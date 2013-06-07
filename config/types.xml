@@ -1,0 +1,40 @@
+<!-- These are read from config/types.xml and jammed into the schema. -->
+<types>
+	<fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+	<fieldType name="text_en_splitting" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+		<analyzer type="index">
+		<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+		<filter class="solr.StopFilterFactory"
+			ignoreCase="true"
+			words="lang/stopwords_en.txt"
+			enablePositionIncrements="true"
+			/>
+		<filter class="solr.WordDelimiterFilterFactory"
+			generateWordParts="1"
+			generateNumberParts="1"
+			catenateWords="1"
+			catenateNumbers="1"
+			catenateAll="0"
+			splitOnCaseChange="1"/>
+		<filter class="solr.LowerCaseFilterFactory"/>
+		<filter class="solr.PorterStemFilterFactory"/>
+	  </analyzer>
+	  <analyzer type="query">
+		<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+		<filter class="solr.StopFilterFactory"
+			ignoreCase="true"
+			words="lang/stopwords_en.txt"
+			enablePositionIncrements="true"
+			/>
+		<filter class="solr.WordDelimiterFilterFactory"
+			generateWordParts="1"
+			generateNumberParts="1"
+			catenateWords="0"
+			catenateNumbers="0"
+			catenateAll="0"
+			splitOnCaseChange="1"/>
+		<filter class="solr.LowerCaseFilterFactory"/>
+		<filter class="solr.PorterStemFilterFactory"/>
+	  </analyzer>
+	</fieldType>
+</types>

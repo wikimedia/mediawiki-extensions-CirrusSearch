@@ -1,0 +1,14 @@
+Generate the config.
+	Generate the config with the correct language.
+	Add caching configuration.
+	Spell check configuration.
+Figure out a good way to update the solr config remotely.
+Turn on CURL mode in Solarium rather than http.
+Move updates to after page render.
+What do we do about wikidate and its json?
+
+
+Things to test:
+User pages
+Unicode
+Non-English Language

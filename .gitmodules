@@ -1,0 +1,3 @@
+[submodule "solarium"]
+	path = solarium
+	url = git://github.com/basdenooijer/solarium.git

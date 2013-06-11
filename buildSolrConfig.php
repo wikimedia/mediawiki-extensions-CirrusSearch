@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Maintenance.php';
+require_once( "maintenance/Maintenance.php" );
 
 /**
  * Build a solr config directory.
@@ -16,11 +16,10 @@ class BuildSolrConfig extends Maintenance {
 	public function execute() {
 		$this->where = $this->getOption( 'where', '/tmp/solrConfig' . getmypid() );
 		if ( file_exists( $this->where ) ) {
-			error_log( "$this->where already exists so I can't build a new solr config there." );
-			return 1;
+			$this->error( "$this->where already exists so I can't build a new solr config there.", true );
 		}
-		print "Building solr config in $this->where\n";
-		mkdir( $this->where, 0755, true );
+		$this->output( "Building solr config in $this->where\n" );
+		wfMkdirParents( $this->where, 0755 );
 		$this->buildSchema();
 		$this->buildSolrconfig();
 		$this->copyRawConfig();
@@ -29,25 +28,29 @@ class BuildSolrConfig extends Maintenance {
 	private function buildSchema() {
 		global $wgSitename;
 		$types = preg_replace( '/^/m', "\t", file_get_contents( __DIR__ . '/config/types.xml' ) );
-		$content = <<<END
+		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="$wgSitename" version="1.5">
 	<uniqueKey>id</uniqueKey>
 	<fields>
 		<field name="_version_" type="long" indexed="true" stored="true" required="true" /> <!-- Required for Solr Cloud -->
-		<field name="id" type="long" indexed="true" stored="true" required="true" />
+		<field name="id" type="id" indexed="true" stored="true" required="true" />
 		<field name="title" type="text_en_splitting" indexed="true" stored="true" required="true" />
 		<field name="text" type="text_en_splitting" indexed="true" stored="false" />
+
+		<!-- Power prefix searches -->
+		<field name="titlePrefix" type="prefix" indexed="true" stored="false" />
 	</fields>
+	<copyField source="title" dest="titlePrefix" />
 	$types
 </schema>
-END;
+XML;
 		file_put_contents( "$this->where/schema.xml", $content );
 	}
 
 	private function buildSolrconfig() {
 		global $wgSolrSearchSoftCommitTimeout, $wgSolrSearchHardCommitTimeout, $wgSolrSearchHardCommitMaxPendingDocs;
-		$content = <<<END
+		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
 	<luceneMatchVersion>LUCENE_43</luceneMatchVersion>
@@ -90,7 +93,7 @@ END;
 		</lst>
 	</requestHandler>
 </config>
-END;
+XML;
 		file_put_contents( "$this->where/solrconfig.xml", $content );
 	}
 
@@ -101,7 +104,7 @@ END;
 		);
 		foreach ( $iterator as $node ) {
 		  if ( $node->isDir() ) {
-			mkdir( $this->where . '/' . $iterator->getSubPathName() );
+			wfMkdirParents( $this->where . '/' . $iterator->getSubPathName() );
 		  } else {
 			copy( $node, $this->where . '/' . $iterator->getSubPathName() );
 		  }

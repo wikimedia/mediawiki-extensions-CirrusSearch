@@ -1,0 +1,142 @@
+<?php
+
+require_once( "maintenance/Maintenance.php" );
+
+/**
+ * Force reindexing change to the wiki.
+ */
+class BuildSolrConfig extends Maintenance {
+	var $from;
+	var $to;
+	var $chunkSize;
+	var $indexUpdates;
+
+	public function __construct() {
+		parent::__construct();
+		$this->mDescription = "Force indexing some pages";
+		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
+		$this->addOption( 'to', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
+		$this->addOption( 'chunkSize', 'Number of articles to update at a time.  Defaults to 50.', false, true );
+		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
+	}
+
+	public function execute() {
+		// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
+		$this->from = new MWTimestamp( $this->getOption( 'from', '00' )  );
+		$this->to = new MWTimestamp( $this->getOption( 'to', false ) );
+		$this->chunkSize = $this->getOption( 'chunkSize', 50 );
+		$this->indexUpdates = !$this->getOption( 'deletes', false );
+		if ( $this->indexUpdates ) {
+			$operationName = 'Indexed';	
+		} else {
+			$operationName = 'Deleted';
+		}
+		$operationStartTime = microtime( true );
+		$completed = 0;
+
+		$minUpdate = $this->from;
+		if ( $this->indexUpdates ) {
+			$minId = -1;
+		} else {
+			$minNamespace = -100000000;
+			$minTitle = '';
+		}
+		while ( true ) {
+			if ( $this->indexUpdates ) {
+				$pages = $this->findUpdates( $minUpdate, $minId, $this->to );
+				$size = count( $pages );
+			} else {
+				$titles = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
+				$size = count( $titles );
+			}
+			
+			if ( $size == 0 ) {
+				break;
+			}
+			if ( $this->indexUpdates ) {
+				$lastPage = $pages[$size - 1];
+				$minUpdate = new MWTimestamp( $lastPage->getRevision()->getTimestamp() );
+				$minId = $lastPage->getId();
+				SolrSearchUpdater::updatePages( $pages );
+			} else {
+				$lastTitle = $titles[$size - 1];
+				$minUpdate = $lastTitle['timestamp'];
+				$minNamespace = $lastTitle['namespace'];
+				$minTitle = $lastTitle['title'];
+				SolrSearchUpdater::deleteTitles( $titles );
+			}
+			$completed += $size;
+			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+			$minUpdateStr = $minUpdate->getTimestamp( TS_ISO_8601 );
+			$this->output( "$operationName $size pages ending at $minUpdateStr at $rate pages/second\n" );
+		}
+		$this->output( "$operationName a total of $completed pages at $rate pages per second\n" );
+	}
+
+	/**
+	 * Find $this->chunkSize pages who's latest revision is after (minUpdate,minId) and before maxUpdate.
+	 *
+	 * @return an array of the last update timestamp and id that were found
+	 */
+	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
+		$dbr = $this->getDB( DB_SLAVE );
+		$dbr->debug( true );
+		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
+		$minId = $dbr->addQuotes( $minId );
+		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
+		$res = $dbr->select(
+			array( 'page', 'revision' ),
+			WikiPage::selectFields(),
+				'page_id = rev_page'
+				. ' AND rev_id = page_latest'
+				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
+				. " AND rev_timestamp <= $maxUpdate",
+			__METHOD__,
+			array( 'ORDER BY' => 'rev_timestamp, page_id',
+			       'LIMIT' => $this->chunkSize )
+		);
+		$result = array();
+		foreach ( $res as $row ) {
+			$result[] = WikiPage::newFromRow( $row );
+		}
+		return $result;
+	}
+
+	/**
+	 * Find $this->chunkSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
+	 *
+	 * @return an array of the last update timestamp and id that were found
+	 */
+	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
+		$dbr = $this->getDB( DB_SLAVE );
+		$dbr->debug( true );
+		$logType = $dbr->addQuotes( 'delete' );
+		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
+		$minNamespace = $dbr->addQuotes( $minNamespace );
+		$minTitle = $dbr->addQuotes( $minTitle );
+		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
+		$res = $dbr->select(
+			'logging',
+			array( 'log_timestamp', 'log_namespace', 'log_title' ),
+				"log_type = $logType"
+				. " AND ( ( $minUpdate = log_timestamp AND $minNamespace < log_namespace AND $minTitle < log_title )"
+				. "    OR $minUpdate < log_timestamp )"
+				. " AND log_timestamp <= $maxUpdate",
+			__METHOD__,
+			array( 'ORDER BY' => 'log_timestamp, log_namespace, log_title',
+			       'LIMIT' => $this->chunkSize )
+		);
+		$result = array();
+		foreach ( $res as $row ) {
+			$result[] = array(
+				'timestamp' => new MWTimestamp( $row->log_timestamp ),  // This feels funky
+				'namespace' => $row->log_namespace,
+				'title' => $row->log_title
+			);
+		}
+		return $result;
+	}
+}
+
+$maintClass = "BuildSolrConfig";
+require_once RUN_MAINTENANCE_IF_MAIN;

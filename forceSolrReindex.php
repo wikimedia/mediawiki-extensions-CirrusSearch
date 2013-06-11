@@ -28,7 +28,6 @@ class BuildSolrConfig extends Maintenance {
 		$solrTime = 0;
 		$operationStartTime = microtime(true);
 		$pages = $this->findUpdates( $this->from, -1, $this->to );
-		$fetchTime = microtime(true) - $operationStartTime;
 		$size = count( $pages );
 		while ($size > 0) {
 			$indexed += $size;
@@ -43,7 +42,8 @@ class BuildSolrConfig extends Maintenance {
 			$pages = $this->findUpdates( $lastUpdateTime, $lastPage->getId(), $this->to	);
 			$size = count( $pages );
 		}
-		print "Indexed a total of $indexed pages at $rate pages per second ($solrRate per second for solr and $fetchRate per second for DB)\n";
+		$rate = round( $indexed / ( microtime(true) - $operationStartTime ) );
+		print "Indexed a total of $indexed pages at $rate pages/second\n";
 	}
 
 	/**

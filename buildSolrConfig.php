@@ -1,14 +1,9 @@
 <?php
-/**
- * Build a solr config directory.
- */
 
 require_once 'Maintenance.php';
 
 /**
- * Maintenance script to wait until slave lag goes under a certain value.
- *
- * @ingroup Maintenance
+ * Build a solr config directory.
  */
 class BuildSolrConfig extends Maintenance {
 	private $where;
@@ -41,7 +36,7 @@ class BuildSolrConfig extends Maintenance {
 	<fields>
 		<field name="_version_" type="long" indexed="true" stored="true" required="true" /> <!-- Required for Solr Cloud -->
 		<field name="id" type="long" indexed="true" stored="true" required="true" />
-		<field name="title" type="text_en_splitting" indexed="true" stored="false" required="true" />
+		<field name="title" type="text_en_splitting" indexed="true" stored="true" required="true" />
 		<field name="text" type="text_en_splitting" indexed="true" stored="false" />
 	</fields>
 	$types
@@ -60,7 +55,7 @@ END;
 		<updateLog> <!-- Required for Solr Cloud -->
 			<str name="dir">\${solr.data.dir:}</str>
 		</updateLog>
-		<autoCommit> 
+		<autoCommit>
 			<maxTime>$wgSolrSearchHardCommitTimeout</maxTime>
 			<maxDocs>$wgSolrSearchHardCommitMaxPendingDocs</maxDocs>
 			<openSearcher>false</openSearcher> 

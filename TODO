@@ -6,6 +6,10 @@ Figure out a good way to update the solr config remotely.
 Turn on CURL mode in Solarium rather than http.
 Move updates to after page render.
 What do we do about wikidate and its json?
+Deletes both in batch and online
+	Must be skippable in batch
+Do we need to bootstrap artciles without revisions?
+Optimizations of batch loading
 
 
 Things to test:

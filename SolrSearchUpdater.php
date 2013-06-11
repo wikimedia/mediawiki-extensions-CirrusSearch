@@ -8,12 +8,11 @@ class SolrSearchUpdater {
 	/**
 	 * @param $article WikiPage the saved page
 	 */
-	static function articleSaved( $article, $user, $text, $summary, $isminor, $iswatch, $section ) {
+	static function articleSaved( $page, $user, $text, $summary, $isminor, $iswatch, $section ) {
 		$id = $article->getId();
 		$title = $article->getTitle();
 		wfDebugLog( 'SolrSearch', "Article Saved: $id($title) with $text" );
-		$updater = new SolrSearchUpdater();
-		$updater->updateArticle( $id, $title, $text );
+		SolrSearchUpdater::updatePages( array( $page ) );
 		return true;
 	}
 	static function articleDeleted( $article, $user, $reason ) {
@@ -27,26 +26,27 @@ class SolrSearchUpdater {
 		return true;
 	}
 
-	private function updateArticle( $id, $title, $text) {
+	static public function updatePages( $pages ) {
 		wfProfileIn( __METHOD__ );
 		$update = SolrSearch::getClient()->createUpdate();
-		$update->addDocument(SolrSearchUpdater::buildDocumentforArticle( $id, $title, $text ) );
+		foreach ( $pages as $page ) {
+			$update->addDocument(SolrSearchUpdater::buildDocumentforPage( $page ) );
+		}
 		try {
 			$result = SolrSearch::getClient()->update( $update );
 			wfDebugLog( 'SolrSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
 		} catch ( Solarium_Exception $e ) {
 			error_log( "SolrSearch update failed for $id caused by:  " . $e->getMessage() );
 		}
-		wfProfileIn( __METHOD__ );
+		wfProfileOut( __METHOD__ );
 		return true;
 	}
 
-	private function buildDocumentForArticle( $id, $title, $text ) {
-		wfDebugLog( 'SolrSearch', "Building document for $id" );
+	static private function buildDocumentForPage( $page ) {
 		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = $id;
-		$doc->title = $title;
-		$doc->text = $text;
+		$doc->id = $page->getId();
+		$doc->title = $page->getTitle();
+		$doc->text = $page->getText();
 		return $doc;
 	}
 }

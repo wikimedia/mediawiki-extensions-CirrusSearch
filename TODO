@@ -4,25 +4,13 @@ Generate the config.
 	Spell check configuration.
 Figure out a good way to update the solr config remotely.
 Move updates to after page render.
-What do we do about wikidata and its json?
-Deletes both in batch and online
-	Must be skippable in batch
-	Must handle revision deletes (for oversighted articles)
-Do we need to bootstrap artciles without revisions?
-	These cases happen but probably don't matter: we have revisions that don't articles and we have missing revisions.
+Revision deletes for oversighted articles (batch and in process)
 Optimizations of batch loading (we'll need about 2000 pages/second to bootstrap enwiki in 10 days)
-Should prefix search be dismax with weights or just default?  Maybe we should sort the length of the thing that is matched?
 Handle offsets in Solr rather than MediaWiki. Only search what you need.
-
+Very very safe batch scripts arround creating and deleting and updating shards.
+Bundle up solr cloud so it can be installed nicely and without collection1.
 
 Things to test:
 User pages
 Unicode
 Non-English Language
-
-
-Notes on redirects:
-	Looks like we don't index the redirects.  We should probably make that explicit.
-	I added support to index the titles of all pages that redirect to a page.  The results look funny but it works pretty well.
-	We really need to make a better weight/sorting for prefix search.
-	

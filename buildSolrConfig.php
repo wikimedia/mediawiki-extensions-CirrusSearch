@@ -26,11 +26,11 @@ class BuildSolrConfig extends Maintenance {
 	}
 
 	private function buildSchema() {
-		global $wgSitename;
 		$types = preg_replace( '/^/m', "\t", file_get_contents( __DIR__ . '/config/types.xml' ) );
+		$wikiId = wfWikiId();
 		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema name="$wgSitename" version="1.5">
+<schema name="$wikiId" version="1.5">
 	<uniqueKey>id</uniqueKey>
 	<fields>
 		<field name="_version_" type="long" indexed="true" stored="true" required="true" /> <!-- Required for Solr Cloud -->

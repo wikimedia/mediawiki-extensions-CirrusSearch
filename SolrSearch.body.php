@@ -10,7 +10,7 @@ class SolrSearch extends SearchEngine {
 		if ( self::$client != null ) {
 			return self::$client;
 		}
-		global $wgSolrSearchServers, $wgSolrSearchMaxRetries, $wgSitename;
+		global $wgSolrSearchServers, $wgSolrSearchMaxRetries;
 
 		self::$client = new Solarium_Client();
 		self::$client->setAdapter( 'Solarium_Client_Adapter_Curl' );
@@ -31,7 +31,7 @@ class SolrSearch extends SearchEngine {
 		foreach ( $wgSolrSearchServers as $server ) {
 			$serverConfig = array( 
 				'host' => $server,
-				'core' => $wgSitename
+				'core' => wfWikiId()
 			);
 			$loadBalancer->addServer( $server, $serverConfig, 1 );
 		}

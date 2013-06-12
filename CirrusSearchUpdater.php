@@ -1,59 +1,59 @@
 <?php
 
-class SolrSearchUpdater {
+class CirrusSearchUpdater {
 	/**
 	 * @param $article WikiPage the saved page
 	 */
 	public static function articleSaved( $page, $user, $text, $summary, $isminor, $iswatch, $section ) {
-		global $wgSolrSearchUpdateInProcess;
-		if ( !$wgSolrSearchUpdateInProcess ) {
+		global $wgCirrusSearchUpdateInProcess;
+		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
 		$title = $page->getTitle()->getPrefixedDBKey();
-		SolrSearchUpdater::updatePages( array( $page ) );
-		wfDebugLog( 'SolrSearch', "Article Saved: $title" );
+		CirrusSearchUpdater::updatePages( array( $page ) );
+		wfDebugLog( 'CirrusSearch', "Article Saved: $title" );
 		return true;
 	}
 
 	public static function articleDeleted( $page, $user, $reason, $id, $content, $logEntry ) {
-		global $wgSolrSearchUpdateInProcess;
-		if ( !$wgSolrSearchUpdateInProcess ) {
+		global $wgCirrusSearchUpdateInProcess;
+		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
 		$title = $page->getTitle()->getPrefixedDBKey();
-		SolrSearchUpdater::deleteTitles( array( $page->getTitle() ) );
-		wfDebugLog( 'SolrSearch', "Article Deleted: $title" );
+		CirrusSearchUpdater::deleteTitles( array( $page->getTitle() ) );
+		wfDebugLog( 'CirrusSearch', "Article Deleted: $title" );
 		return true;
 	}
 
 	public static function articleMoved( $from, $to, $user, $pageid, $redirid ) {
-		global $wgSolrSearchUpdateInProcess;
-		if ( !$wgSolrSearchUpdateInProcess ) {
+		global $wgCirrusSearchUpdateInProcess;
+		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
 		$updates = array( WikiPage::factory( $to ) );
 		if ( $redirid > 0 ) {
 			$updates[] = WikiPage::factory( $from );
 		} else {
-			SolrSearchUpdater::deleteTitles( array( $from ) );
+			CirrusSearchUpdater::deleteTitles( array( $from ) );
 		}
-		SolrSearchUpdater::updatePages( $updates );
-		wfDebugLog( 'SolrSearch', "Article Moved from $from to $to" );
+		CirrusSearchUpdater::updatePages( $updates );
+		wfDebugLog( 'CirrusSearch', "Article Moved from $from to $to" );
 		return true;
 	}
 
 	public static function updatePages( $pages ) {
 		wfProfileIn( __METHOD__ );
-		$client = SolrSearch::getClient();
+		$client = CirrusSearch::getClient();
 		$update = $client->createUpdate();
 		foreach ( $pages as $page ) {
-			$update->addDocument( SolrSearchUpdater::buildDocumentforPage( $page ) );
+			$update->addDocument( CirrusSearchUpdater::buildDocumentforPage( $page ) );
 		}
 		try {
 			$result = $client->update( $update );
-			wfDebugLog( 'SolrSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
+			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
 		} catch ( Solarium_Exception $e ) {
-			error_log( "SolrSearch update failed caused by:  " . $e->getMessage() );
+			error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 		}
 		wfProfileOut( __METHOD__ );
 		return true;
@@ -61,7 +61,7 @@ class SolrSearchUpdater {
 
 	private static function buildDocumentForPage( $page ) {
 		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = SolrSearchUpdater::buildId( $page->getTitle() );
+		$doc->id = CirrusSearchUpdater::buildId( $page->getTitle() );
 		$doc->title = $page->getTitle();
 		$doc->text = $page->getText();
 		return $doc;
@@ -69,17 +69,17 @@ class SolrSearchUpdater {
 
 	public static function deleteTitles( $titles ) {
 		wfProfileIn( __METHOD__ );
-		$client = SolrSearch::getClient();
+		$client = CirrusSearch::getClient();
 		$update = $client->createUpdate();
 		foreach ( $titles as $title ) {
-			$update->addDeleteById( SolrSearchUpdater::buildId( $title ) );
+			$update->addDeleteById( CirrusSearchUpdater::buildId( $title ) );
 		}
 		$update->addCommit();
 		try {
 			$result = $client->update( $update );
-			wfDebugLog( 'SolrSearch', 'Delete completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
+			wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
 		} catch ( Solarium_Exception $e ) {
-			error_log( "SolrSearch delete failed caused by:  " . $e->getMessage() );
+			error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 		}
 		wfProfileOut( __METHOD__ );
 		return true;

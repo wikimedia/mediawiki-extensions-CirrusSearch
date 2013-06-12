@@ -57,13 +57,13 @@ class BuildSolrConfig extends Maintenance {
 				$lastPage = $pages[$size - 1];
 				$minUpdate = new MWTimestamp( $lastPage->getRevision()->getTimestamp() );
 				$minId = $lastPage->getId();
-				SolrSearchUpdater::updatePages( $pages );
+				CirrusSearchUpdater::updatePages( $pages );
 			} else {
 				$lastTitle = $titles[$size - 1];
 				$minUpdate = $lastTitle['timestamp'];
 				$minNamespace = $lastTitle['namespace'];
 				$minTitle = $lastTitle['title'];
-				SolrSearchUpdater::deleteTitles( $titles );
+				CirrusSearchUpdater::deleteTitles( $titles );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );

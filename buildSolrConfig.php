@@ -49,7 +49,7 @@ XML;
 	}
 
 	private function buildSolrconfig() {
-		global $wgSolrSearchSoftCommitTimeout, $wgSolrSearchHardCommitTimeout, $wgSolrSearchHardCommitMaxPendingDocs;
+		global $wgCirrusSearchSoftCommitTimeout, $wgCirrusSearchHardCommitTimeout, $wgCirrusSearchHardCommitMaxPendingDocs;
 		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
@@ -59,12 +59,12 @@ XML;
 			<str name="dir">\${solr.data.dir:}</str>
 		</updateLog>
 		<autoCommit>
-			<maxTime>$wgSolrSearchHardCommitTimeout</maxTime>
-			<maxDocs>$wgSolrSearchHardCommitMaxPendingDocs</maxDocs>
+			<maxTime>$wgCirrusSearchHardCommitTimeout</maxTime>
+			<maxDocs>$wgCirrusSearchHardCommitMaxPendingDocs</maxDocs>
 			<openSearcher>false</openSearcher> 
 		</autoCommit>
 		<autoSoftCommit>
-			<maxTime>$wgSolrSearchSoftCommitTimeout</maxTime>
+			<maxTime>$wgCirrusSearchSoftCommitTimeout</maxTime>
 		</autoSoftCommit>
 	</updateHandler>
 	<requestDispatcher handleSelect="false" />

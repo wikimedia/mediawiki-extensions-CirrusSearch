@@ -1,6 +1,6 @@
 <?php
 
-class SolrSearch extends SearchEngine {
+class CirrusSearch extends SearchEngine {
 	private static $client = null;
 
 	/**
@@ -10,7 +10,7 @@ class SolrSearch extends SearchEngine {
 		if ( self::$client != null ) {
 			return self::$client;
 		}
-		global $wgSolrSearchServers, $wgSolrSearchMaxRetries;
+		global $wgCirrusSearchServers, $wgCirrusSearchMaxRetries;
 
 		self::$client = new Solarium_Client();
 		self::$client->setAdapter( 'Solarium_Client_Adapter_Curl' );
@@ -22,13 +22,13 @@ class SolrSearch extends SearchEngine {
 		$loadBalancer->clearBlockedQueryTypes();
 
 		// Setup failover
-		if ( $wgSolrSearchMaxRetries > 1 ) { 
+		if ( $wgCirrusSearchMaxRetries > 1 ) { 
 			$loadBalancer->setFailoverEnabled( true );
-			$loadBalancer->setFailoverMaxRetries( $wgSolrSearchMaxRetries );
+			$loadBalancer->setFailoverMaxRetries( $wgCirrusSearchMaxRetries );
 		}
 
 		// Setup the Solr endpoints
-		foreach ( $wgSolrSearchServers as $server ) {
+		foreach ( $wgCirrusSearchServers as $server ) {
 			$serverConfig = array( 
 				'host' => $server,
 				'core' => wfWikiId()
@@ -82,11 +82,11 @@ class SolrSearch extends SearchEngine {
 		$query->setQuery( 'text:' . urlencode( $term ) );
 
 		// Perform the search and return a result set
-		return new SolrSearchResultSet( $client->select( $query ) );
+		return new CirrusSearchResultSet( $client->select( $query ) );
 	}
 }
 
-class SolrSearchResultSet extends SearchResultSet {
+class CirrusSearchResultSet extends SearchResultSet {
 	private $docs, $hits, $totalHits;
 
 	public function __construct( $res ) {

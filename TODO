@@ -9,6 +9,9 @@ Optimizations of batch loading (we'll need about 2000 pages/second to bootstrap 
 Handle offsets in Solr rather than MediaWiki. Only search what you need.
 Very very safe batch scripts arround creating and deleting and updating shards.
 Bundle up solr cloud so it can be installed nicely and without collection1.
+Figure out a good way to update the index without blowing it away and rebuilding it.
+Figure out why SolrCloud flakes out sometimes.
+
 
 Things to test:
 User pages

@@ -2,7 +2,7 @@
 <types>
 	<fieldType name="long" class="solr.TrieLongField" precisionStep="0" />
 	<fieldType name="id" class="solr.StrField" />
-	<fieldType name="text_en_splitting" class="solr.TextField" autoGeneratePhraseQueries="true">
+	<fieldType name="text_splitting" class="solr.TextField" autoGeneratePhraseQueries="true">
 		<analyzer type="index">
 			<tokenizer class="solr.WhitespaceTokenizerFactory"/>
 			<filter class="solr.StopFilterFactory"

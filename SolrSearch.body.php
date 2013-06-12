@@ -72,6 +72,9 @@ class SolrSearch extends SearchEngine {
 			$query->setRows( $this->limit );
 		}
 
+		$dismax = $query->getDismax();
+		$dismax->setQueryFields( 'titlePrefix^20.0 redirectsPrefix^3.0' );
+
 		// Actual text query
 		$query->setQuery( 'text:' . urlencode( $term ) );
 

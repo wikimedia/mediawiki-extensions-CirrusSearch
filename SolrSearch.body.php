@@ -76,7 +76,7 @@ class SolrSearch extends SearchEngine {
 		$dismax->setQueryParser( 'edismax' );
 		$dismax->setPhraseFields( 'title^1000.0 text^1000.0' );
 		$dismax->setPhraseSlop( '3' );
-		$dismax->setQueryFields( 'title^20.0 redirectsPrefix^3.0' );
+		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
 		// Actual text query
 		$query->setQuery( 'text:' . urlencode( $term ) );

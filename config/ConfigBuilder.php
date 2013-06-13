@@ -1,4 +1,7 @@
 <?php
+/**
+ * Base class with helpful goodies to build solr configuration files.
+ */
 class ConfigBuilder {
 	protected $where;
 

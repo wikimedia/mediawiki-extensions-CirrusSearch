@@ -1,9 +1,6 @@
 <?php
 
 require_once( "maintenance/Maintenance.php" );
-require_once( __DIR__ . "/config/ConfigBuilder.php" );
-require_once( __DIR__ . "/config/SchemaBuilder.php" );
-require_once( __DIR__ . "/config/SolrConfigBuilder.php" );
 
 /**
  * Build a solr config directory.

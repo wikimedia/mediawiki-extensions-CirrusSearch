@@ -1,7 +1,5 @@
 <?php
 
-require_once( __DIR__ . "/TypesBuilder.php" );
-
 /**
  * Builds schema.xml and all the required files for it to function correctly.
  */

@@ -51,6 +51,10 @@ $dir = __DIR__ . '/';
  */
 $wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
+$wgAutoloadClasses['ConfigBuilder'] = $dir . 'config/ConfigBuilder.php';
+$wgAutoloadClasses['SchemaBuilder'] = $dir . 'config/SchemaBuilder.php';
+$wgAutoloadClasses['SolrConfigBuilder'] = $dir . 'config/SolrConfigBuilder.php';
+$wgAutoloadClasses['TypesBuilder'] = $dir . 'config/TypesBuilder.php';
 
 /**
  * Hooks

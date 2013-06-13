@@ -21,6 +21,7 @@ class BuildSolrConfig extends Maintenance {
 	}
 
 	public function execute() {
+		wfProfileIn( __METHOD__ );
 		// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
 		$this->from = new MWTimestamp( $this->getOption( 'from', '00' )  );
 		$this->to = new MWTimestamp( $this->getOption( 'to', false ) );
@@ -43,8 +44,8 @@ class BuildSolrConfig extends Maintenance {
 		}
 		while ( true ) {
 			if ( $this->indexUpdates ) {
-				$pages = $this->findUpdates( $minUpdate, $minId, $this->to );
-				$size = count( $pages );
+				$revisions = $this->findUpdates( $minUpdate, $minId, $this->to );
+				$size = count( $revisions );
 			} else {
 				$titles = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
 				$size = count( $titles );
@@ -54,10 +55,10 @@ class BuildSolrConfig extends Maintenance {
 				break;
 			}
 			if ( $this->indexUpdates ) {
-				$lastPage = $pages[$size - 1];
-				$minUpdate = new MWTimestamp( $lastPage->getRevision()->getTimestamp() );
+				$lastPage = $revisions[$size - 1];
+				$minUpdate = new MWTimestamp( $lastPage->getTimestamp() );
 				$minId = $lastPage->getId();
-				CirrusSearchUpdater::updatePages( $pages );
+				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
 				$lastTitle = $titles[$size - 1];
 				$minUpdate = $lastTitle['timestamp'];
@@ -71,23 +72,26 @@ class BuildSolrConfig extends Maintenance {
 			$this->output( "$operationName $size pages ending at $minUpdateStr at $rate pages/second\n" );
 		}
 		$this->output( "$operationName a total of $completed pages at $rate pages per second\n" );
+		wfProfileOut( __METHOD__ );
 	}
 
 	/**
-	 * Find $this->chunkSize pages who's latest revision is after (minUpdate,minId) and before maxUpdate.
+	 * Find $this->chunkSize revisions who are the latest for a page and were
+	 * made after (minUpdate,minId) and before maxUpdate.
 	 *
 	 * @return an array of the last update timestamp and id that were found
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
+		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
-		$dbr->debug( true );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minId = $dbr->addQuotes( $minId );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$res = $dbr->select(
-			array( 'page', 'revision' ),
-			WikiPage::selectFields(),
+			array( 'revision', 'page', 'text' ),
+			array_merge( Revision::selectFields(), Revision::selectTextFields(), Revision::selectPageFields() ),
 				'page_id = rev_page'
+				. ' AND rev_text_id = old_id'
 				. ' AND rev_id = page_latest'
 				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
 				. " AND rev_timestamp <= $maxUpdate",
@@ -97,8 +101,9 @@ class BuildSolrConfig extends Maintenance {
 		);
 		$result = array();
 		foreach ( $res as $row ) {
-			$result[] = WikiPage::newFromRow( $row );
+			$result[] = Revision::newFromRow( $row );
 		}
+		wfProfileOut( __METHOD__ );
 		return $result;
 	}
 
@@ -108,8 +113,8 @@ class BuildSolrConfig extends Maintenance {
 	 * @return an array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
+		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
-		$dbr->debug( true );
 		$logType = $dbr->addQuotes( 'delete' );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
@@ -134,6 +139,7 @@ class BuildSolrConfig extends Maintenance {
 				'title' => $row->log_title
 			);
 		}
+		wfProfileOut( __METHOD__ );
 		return $result;
 	}
 }

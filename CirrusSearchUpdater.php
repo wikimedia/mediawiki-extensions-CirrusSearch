@@ -9,9 +9,11 @@ class CirrusSearchUpdater {
 		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
+		wfProfileIn( __METHOD__ );
 		$title = $page->getTitle()->getPrefixedDBKey();
 		CirrusSearchUpdater::updatePages( array( $page ) );
 		wfDebugLog( 'CirrusSearch', "Article Saved: $title" );
+		wfProfileOut( __METHOD__ );
 		return true;
 	}
 
@@ -20,9 +22,11 @@ class CirrusSearchUpdater {
 		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
+		wfProfileIn( __METHOD__ );
 		$title = $page->getTitle()->getPrefixedDBKey();
 		CirrusSearchUpdater::deleteTitles( array( $page->getTitle() ) );
 		wfDebugLog( 'CirrusSearch', "Article Deleted: $title" );
+		wfProfileOut( __METHOD__ );
 		return true;
 	}
 
@@ -31,6 +35,7 @@ class CirrusSearchUpdater {
 		if ( !$wgCirrusSearchUpdateInProcess ) {
 			return true;
 		}
+		wfProfileIn( __METHOD__ );
 		$updates = array( WikiPage::factory( $to ) );
 		if ( $redirid > 0 ) {
 			$updates[] = WikiPage::factory( $from );
@@ -39,15 +44,16 @@ class CirrusSearchUpdater {
 		}
 		CirrusSearchUpdater::updatePages( $updates );
 		wfDebugLog( 'CirrusSearch', "Article Moved from $from to $to" );
+		wfProfileOut( __METHOD__ );
 		return true;
 	}
 
-	public static function updatePages( $pages ) {
+	public static function updateRevisions( $revisions ) {
 		wfProfileIn( __METHOD__ );
 		$client = CirrusSearch::getClient();
 		$update = $client->createUpdate();
-		foreach ( $pages as $page ) {
-			$update->addDocument( CirrusSearchUpdater::buildDocumentforPage( $page ) );
+		foreach ( $revisions as $revision ) {
+			$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $revision ) );
 		}
 		try {
 			$result = $client->update( $update );
@@ -59,11 +65,13 @@ class CirrusSearchUpdater {
 		return true;
 	}
 
-	private static function buildDocumentForPage( $page ) {
+	private static function buildDocumentforRevision( $revision ) {
+		wfProfileIn( __METHOD__ );
 		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = CirrusSearchUpdater::buildId( $page->getTitle() );
-		$doc->title = $page->getTitle();
-		$doc->text = $page->getText();
+		$doc->id = CirrusSearchUpdater::buildId( $revision->getTitle() );
+		$doc->title = $revision->getTitle()->getText();
+		$doc->text = ContentHandler::getContentText( $revision->getContent() );
+		wfProfileOut( __METHOD__ );
 		return $doc;
 	}
 
@@ -90,6 +98,7 @@ class CirrusSearchUpdater {
 	 * @param $page Either a title or an array with 'namespace' and 'title' keys. 
 	 */
 	private static function buildId( $title ) {
+		wfProfileIn( __METHOD__ );
 		if ( method_exists( $title, 'getNamespace' ) ) {
 			$namespace = $title->getNamespace();
 			$titleText = $title->getDBKey();
@@ -97,6 +106,7 @@ class CirrusSearchUpdater {
 			$namespace = $title['namespace'];
 			$titleText = $title['title'];
 		}
+		wfProfileOut( __METHOD__ );
 		return "$namespace:$titleText";
 	}
 }

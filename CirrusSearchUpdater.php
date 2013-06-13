@@ -70,7 +70,7 @@ class CirrusSearchUpdater {
 		$doc = new Solarium_Document_ReadWrite();
 		$doc->id = CirrusSearchUpdater::buildId( $revision->getTitle() );
 		$doc->title = $revision->getTitle()->getText();
-		$doc->text = ContentHandler::getContentText( $revision->getContent() );
+		$doc->text = $revision->getContent()->getTextForSearchIndex();
 		wfProfileOut( __METHOD__ );
 		return $doc;
 	}

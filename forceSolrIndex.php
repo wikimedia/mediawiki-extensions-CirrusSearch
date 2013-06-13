@@ -88,7 +88,7 @@ class BuildSolrConfig extends Maintenance {
 		$minId = $dbr->addQuotes( $minId );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$res = $dbr->select(
-			array( 'revision', 'page', 'text' ),
+			array( 'revision', 'text', 'page' ),
 			array_merge( Revision::selectFields(), Revision::selectTextFields(), Revision::selectPageFields() ),
 				'page_id = rev_page'
 				. ' AND rev_text_id = old_id'

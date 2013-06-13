@@ -1,9 +1,11 @@
 <?php
-class TypesConfigBuilder {
-	private $where;
-
+/**
+ * Config builder that returns a string for types and sets up all the required files for the
+ * types it declares.
+ */
+class TypesBuilder extends ConfigBuilder {
 	public function __construct($where) {
-		$this->where = $where;
+		parent::__construct($where);
 	}
 
 	public function build() {
@@ -101,21 +103,12 @@ XML;
 	</analyzer>
 XML;
 				break;
+			default:
+				throw new Exception("Unknown language code:  $wgLanguageCode");
 		}
 		$types .= <<<XML
 </fieldType>
 XML;
 		return $types;
-	}
-
-	private function indent( $source ) {
-		return preg_replace( '/^/m', "\t", $source );
-	}
-
-	private function copyRawConfigFile( $path ) {
-		$source = __DIR__ . '/copiedRaw/' . $path;
-		$dest = $this->where . '/' . $path;
-		wfMkdirParents( dirname( $dest ), 0755 );
-		copy( $source, $dest );
 	}
 }

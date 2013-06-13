@@ -17,7 +17,7 @@ class BuildSolrConfig extends Maintenance {
 		parent::__construct();
 		$this->mDescription = "Force indexing some pages.  Setting neither from nor to will get you a more efficient "
 			. "query at the cost of having to reindex by page id rather than time.\n\n"
-			. "Note: All limits are _exclusive_ and optional.\n"
+			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
@@ -106,7 +106,7 @@ class BuildSolrConfig extends Maintenance {
 			$toIdPart = '';
 			if ( !is_null( $this->toId ) ) {
 				$toId = $dbr->addQuotes( $this->toId );
-				$toIdPart = " AND page_id < $toId";
+				$toIdPart = " AND page_id <= $toId";
 			}
 			$res = $dbr->select(
 				array( 'revision', 'text', 'page' ),

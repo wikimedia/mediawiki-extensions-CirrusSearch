@@ -92,7 +92,7 @@ class BuildSolrConfig extends Maintenance {
 				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
 				. " AND rev_timestamp <= $maxUpdate",
 			__METHOD__,
-			array( 'ORDER BY' => 'rev_timestamp, page_id',
+			array( 'ORDER BY' => 'rev_timestamp, rev_page',
 			       'LIMIT' => $this->chunkSize )
 		);
 		$result = array();

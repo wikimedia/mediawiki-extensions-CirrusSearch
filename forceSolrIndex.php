@@ -23,7 +23,7 @@ class BuildSolrConfig extends Maintenance {
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
-		$this->addOption( 'chunkSize', 'Number of articles to update at a time.  Defaults to 50.', false, true );
+		$this->addOption( 'chunkSize', 'Number of articles to update at a time.  Defaults to 500.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 	}
@@ -36,7 +36,7 @@ class BuildSolrConfig extends Maintenance {
 			$this->to = new MWTimestamp( $this->getOption( 'to', false ) );
 		}
 		$this->toId = $this->getOption( 'toId' );
-		$this->chunkSize = $this->getOption( 'chunkSize', 50 );
+		$this->chunkSize = $this->getOption( 'chunkSize', 500 );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
 		$this->limit = $this->getOption( 'limit' );
 

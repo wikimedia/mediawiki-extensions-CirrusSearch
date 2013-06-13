@@ -1,6 +1,7 @@
 <?php
 
 require_once( "maintenance/Maintenance.php" );
+require_once( __DIR__ . "/config/TypesConfigBuilder.php" );
 
 /**
  * Build a solr config directory.
@@ -22,11 +23,11 @@ class BuildSolrConfig extends Maintenance {
 		wfMkdirParents( $this->where, 0755 );
 		$this->buildSchema();
 		$this->buildSolrconfig();
-		$this->copyRawConfig();
 	}
 
 	private function buildSchema() {
-		$types = preg_replace( '/^/m', "\t", file_get_contents( __DIR__ . '/config/types.xml' ) );
+		$typesBuilder = new TypesConfigBuilder( $this->where );
+		$types = preg_replace( '/^/m', "\t", $typesBuilder->build() );
 		$wikiId = wfWikiId();
 		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -92,23 +93,24 @@ XML;
 			<str name="echoParams">all</str>
 		</lst>
 	</requestHandler>
+
+	<requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler" />
+	<requestHandler name="/analysis/document" startup="lazy" class="solr.DocumentAnalysisRequestHandler" />
 </config>
 XML;
 		file_put_contents( "$this->where/solrconfig.xml", $content );
 	}
 
-	private function copyRawConfig() {
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( __DIR__ . '/config/copiedRaw/', RecursiveDirectoryIterator::SKIP_DOTS ),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-		foreach ( $iterator as $node ) {
-		  if ( $node->isDir() ) {
-			wfMkdirParents( $this->where . '/' . $iterator->getSubPathName() );
-		  } else {
-			copy( $node, $this->where . '/' . $iterator->getSubPathName() );
-		  }
-		}
+
+	private function indent( $source ) {
+		return preg_replace( '/^/m', "\t", $source );
+	}
+
+	private function copyRawConfigFile( $path ) {
+		$source = __DIR__ . '/config/copiedRaw/' . $path;
+		$dest = $this->where . '/' . $path;
+		wfMkdirParents( dirname( $dest ), 0755 );
+		copy( $source, $dest );
 	}
 }
 

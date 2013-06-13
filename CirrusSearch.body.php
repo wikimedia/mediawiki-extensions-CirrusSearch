@@ -46,7 +46,8 @@ class CirrusSearch extends SearchEngine {
 
 		// Query params
 		$query->setRows( $limit );
-		$query->setQuery( 'titlePrefix:' . urlencode( $search ) );
+		wfDebugLog( 'CirrusSearch', 'Searching:  ' . $search );
+		$query->setQuery( 'titlePrefix:' . $search );
 
 		// Perform the search
 		$res = $client->select( $query );
@@ -79,7 +80,8 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
 		// Actual text query
-		$query->setQuery( 'text:' . urlencode( $term ) );
+		wfDebugLog( 'CirrusSearch', 'Searching:  ' . $term );
+		$query->setQuery( 'text:' . $term );
 
 		// Perform the search and return a result set
 		return new CirrusSearchResultSet( $client->select( $query ) );

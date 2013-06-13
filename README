@@ -10,6 +10,8 @@ Add this to your LocalSettings.php:
 require_once( "$IP/extensions/Solarium/Solarium.php");
 require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
 
+TODO add stuff about building the schema right here.
+
 Then bootstrap the search index by running:
 php maintenance/forceSolrIndex.php
 

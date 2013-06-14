@@ -11,7 +11,7 @@ class CirrusSearchUpdater {
 		}
 		wfProfileIn( __METHOD__ );
 		$title = $page->getTitle()->getPrefixedDBKey();
-		CirrusSearchUpdater::updatePages( array( $page ) );
+		CirrusSearchUpdater::updateRevisions( array( $page->getRevision() ) );
 		wfDebugLog( 'CirrusSearch', "Article Saved: $title" );
 		wfProfileOut( __METHOD__ );
 		return true;
@@ -36,13 +36,13 @@ class CirrusSearchUpdater {
 			return true;
 		}
 		wfProfileIn( __METHOD__ );
-		$updates = array( WikiPage::factory( $to ) );
+		$updates = array( WikiPage::factory( $to )->getRevision() );
 		if ( $redirid > 0 ) {
-			$updates[] = WikiPage::factory( $from );
+			$updates[] = WikiPage::factory( $from )->getRevision();
 		} else {
 			CirrusSearchUpdater::deleteTitles( array( $from ) );
 		}
-		CirrusSearchUpdater::updatePages( $updates );
+		CirrusSearchUpdater::updateRevisions( $updates );
 		wfDebugLog( 'CirrusSearch', "Article Moved from $from to $to" );
 		wfProfileOut( __METHOD__ );
 		return true;

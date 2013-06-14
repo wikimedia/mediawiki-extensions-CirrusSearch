@@ -6,17 +6,35 @@ Installation
 ------------
 Fetch both this plugin and the Solarium plugin into your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
-Add this to your LocalSettings.php:
-require_once( "$IP/extensions/Solarium/Solarium.php");
-require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
+Add this to LocalSettings.php:
+ require_once( "$IP/extensions/Solarium/Solarium.php");
+ require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
+ $wgCirrusSearchUpdateInProcess = false;
 
-TODO add stuff about building the schema right here.
+Now run this script to generate your Solr config:
+ php maintenance/buildSolrConfig.php
 
-Then bootstrap the search index by running:
-php maintenance/forceSolrIndex.php
+Now start solr with that config.  Once it is working remove $wgCirrusSearchUpdateInProcess = false 
+from LocalSettings.php.  Updates should start heading to Solr.  Check on that and make sure they
+are working.
 
-Finally, add this to your LocalSettings.php:
+Next bootstrap the search index by running:
+ php maintenance/forceSolrIndex.php
+
+Finally add this to LocalSettings.php to funnel queries to Solr:
 $wgSearchType = 'CirrusSearch';
+
+
+Bootstrapping Large Wikis
+-------------------------
+forceSolrIndex.php accepts the --fromId and --toId parameters which can be used to split up the
+work of bootstrapping the wiki into multiple processes.  Most of the load caused by bootstrapping
+is on MySQL but if you've got a really big database or a few slaves then they should be able to
+handle a whole bunch of bootstraps at once.
+
+Also, the --chunkSize parameter controls the number documents read from MySQL and inserted into
+Solr at one time.  It defaults to 500 because that seems to give good performence in development
+but you should feel free to play with it. 
 
 
 Handling Solr Outages

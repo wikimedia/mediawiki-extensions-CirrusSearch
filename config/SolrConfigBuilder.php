@@ -33,8 +33,24 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<str name="echoParams">explicit</str>
 			<int name="rows">10</int>
 			<str name="df">text</str>
+			<!-- Defaults for spell checking.
+				If you want spell checking then turn it on with spellcheck=true in the query. -->
+			<str name="spellcheck.dictionary">default</str>
+			<str name="spellcheck.dictionary">wordbreak</str>
+			<str name="spellcheck.extendedResults">true</str>
+			<str name="spellcheck.count">10</str>
+			<str name="spellcheck.alternativeTermCount">5</str>
+			<str name="spellcheck.maxResultsForSuggest">5</str>
+			<str name="spellcheck.collate">true</str>
+			<str name="spellcheck.collateExtendedResults">true</str>
+			<str name="spellcheck.maxCollationTries">10</str>
+			<str name="spellcheck.maxCollations">5</str>
 		</lst>
+		<arr name="last-components">
+			<str>spellcheck</str>
+		</arr>
 	</requestHandler>
+
 	<requestHandler name="/get" class="solr.RealTimeGetHandler"> <!-- Required for Solr Cloud -->
 		<lst name="defaults">
 			<str name="omitHeader">true</str>
@@ -54,6 +70,32 @@ class SolrConfigBuilder extends ConfigBuilder {
 
 	<requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler" />
 	<requestHandler name="/analysis/document" startup="lazy" class="solr.DocumentAnalysisRequestHandler" />
+
+	<searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+		<str name="queryAnalyzerFieldType">text_splitting</str>
+		<!-- a spellchecker built from article text -->
+		<lst name="spellchecker">
+			<str name="name">default</str>
+			<str name="field">text</str>
+			<str name="classname">solr.DirectSolrSpellChecker</str>
+			<float name="accuracy">0.5</float>
+			<int name="maxEdits">2</int>
+			<int name="minPrefix">1</int>
+			<int name="maxInspections">5</int>
+			<int name="minQueryLength">4</int>
+			<float name="maxQueryFrequency">0.01</float>
+		</lst>
+		
+		<!-- a spellchecker that can break or combine words.  See "/spell" handler below for usage -->
+		<lst name="spellchecker">
+			<str name="name">wordbreak</str>
+			<str name="classname">solr.WordBreakSolrSpellChecker</str>      
+			<str name="field">text</str>
+			<str name="combineWords">true</str>
+			<str name="breakWords">true</str>
+			<int name="maxChanges">10</int>
+		</lst>
+	</searchComponent>
 </config>
 XML;
 		$this->writeConfigFile( "solrconfig.xml", $content );

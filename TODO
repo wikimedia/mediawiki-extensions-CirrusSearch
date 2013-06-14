@@ -1,7 +1,6 @@
 Generate the config.
-	Generate the config with the correct language.
 	Add caching configuration.
-	Spell check configuration.
+	Optimize spell check configuration.
 Figure out a good way to update the solr config remotely.
 Move updates to after page render.
 Revision deletes for oversighted articles (batch and in process)

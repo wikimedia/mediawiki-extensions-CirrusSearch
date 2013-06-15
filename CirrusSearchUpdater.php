@@ -67,9 +67,11 @@ class CirrusSearchUpdater {
 
 	private static function buildDocumentforRevision( $revision ) {
 		wfProfileIn( __METHOD__ );
+		$title = $revision->getTitle();
 		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = CirrusSearchUpdater::buildId( $revision->getTitle() );
-		$doc->title = $revision->getTitle()->getText();
+		$doc->id = CirrusSearchUpdater::buildId( $title );
+		$doc->namespace = $title->getNamespace();
+		$doc->title = $title->getText();
 		$doc->text = $revision->getContent()->getTextForSearchIndex();
 		wfProfileOut( __METHOD__ );
 		return $doc;

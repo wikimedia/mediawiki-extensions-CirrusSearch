@@ -74,6 +74,7 @@ class CirrusSearchUpdater {
 		$doc->title = $title->getText();
 		$doc->text = $revision->getContent()->getTextForSearchIndex();
 		$doc->textLen = $revision->getSize();
+		$doc->timestamp = $revision->getTimestamp();
 		wfProfileOut( __METHOD__ );
 		return $doc;
 	}

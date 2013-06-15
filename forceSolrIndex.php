@@ -115,7 +115,7 @@ class BuildSolrConfig extends Maintenance {
 					. ' AND rev_id = page_latest',
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
-				       'LIMIT' => $this->batchSize )
+				       'LIMIT' => $this->mBatchSize )
 			);
 		} else {
 			$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );

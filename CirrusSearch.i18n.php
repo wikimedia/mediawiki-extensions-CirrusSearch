@@ -19,6 +19,13 @@ $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc}}',
 );
 
+/** Asturian (asturianu)
+ * @author Xuacu
+ */
+$messages['ast'] = array(
+	'cirrussearch-desc' => 'Gueta col motor Solr pa MediaWiki',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */
@@ -31,4 +38,11 @@ $messages['de'] = array(
  */
 $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Solr 機能付き検索',
+);
+
+/** Macedonian (македонски)
+ * @author Bjankuloski06
+ */
+$messages['mk'] = array(
+	'cirrussearch-desc' => 'Пребарување на МедијаВики со Solr',
 );

@@ -79,9 +79,12 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setPhraseSlop( '3' );
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
+		$spellCheck = $query->getSpellCheck();
+		$spellCheck->setQuery( $term );
+
 		// Actual text query
-		wfDebugLog( 'CirrusSearch', 'Searching:  ' . $term );
-		$query->setQuery( 'text:' . $term );
+		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		$query->setQuery( $term );
 
 		// Perform the search and return a result set
 		return new CirrusSearchResultSet( $client->select( $query ) );
@@ -89,12 +92,29 @@ class CirrusSearch extends SearchEngine {
 }
 
 class CirrusSearchResultSet extends SearchResultSet {
-	private $docs, $hits, $totalHits;
+	private $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
 	public function __construct( $res ) {
 		$this->docs = $res->getDocuments();
 		$this->hits = $res->count();
 		$this->totalHits = $res->getNumFound();
+		$spellcheck = $res->getSpellcheck();
+		$this->suggestionQuery = null;
+		$this->suggestionSnippet = null;
+		if ( $spellcheck !== null && !$spellcheck->getCorrectlySpelled()  ) {
+			$collation = $spellcheck->getCollation();
+			if ( $collation !== null ) {
+				$this->suggestionQuery = $collation->getQuery();
+				$keys = array();
+				$highlightedKeys = array();
+				foreach ( $collation->getCorrections() as $correction ) {
+					// TODO escaping danger
+					$keys[] = "/$correction/";
+					$highlightedKeys[] = "<em>$correction</em>";
+				}
+				$this->suggestionSnippet = preg_replace( $keys, $highlightedKeys, $this->suggestionQuery );
+			}
+		}
 	}
 
 	public function hasResults() {
@@ -107,6 +127,18 @@ class CirrusSearchResultSet extends SearchResultSet {
 
 	public function numRows() {
 		return $this->hits;
+	}
+
+	public function hasSuggestion() {
+		return $this->suggestionQuery !== null;
+	}
+
+	public function getSuggestionQuery() {
+		return $this->suggestionQuery;
+	}
+
+	public function getSuggestionSnippet() {
+		return $this->suggestionSnippet;
 	}
 
 	public function next() {

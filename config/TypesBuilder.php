@@ -10,11 +10,13 @@ class TypesBuilder extends ConfigBuilder {
 
 	public function build() {
 		$languageIndependentTypes = $this->indent( $this->buildLanguageIndependentTypes() );
-		$languageDependentTypes = $this->indent( $this->buildLanguageDependentTypes() );
+		$textType = $this->indent( $this->buildTextType( 'text_splitting', true ) );
+		$spellType = $this->indent( $this->buildTextType( 'spell', false ) );
 		return <<<XML
 <types>
 $languageIndependentTypes
-$languageDependentTypes
+$textType
+$spellType
 	<fieldType name="prefix" class="solr.TextField">
 		<analyzer type="index">
 			<tokenizer class="solr.LowerCaseTokenizerFactory"/>
@@ -36,15 +38,15 @@ XML;
 XML;
 	}
 
-	private function buildLanguageDependentTypes() {
+	private function buildTextType( $name, $stemming ) {
 		global $wgLanguageCode;
-		$types = <<<XML
-<fieldType name="text_splitting" class="solr.TextField" autoGeneratePhraseQueries="true">
+		$type = <<<XML
+<fieldType name="$name" class="solr.TextField" autoGeneratePhraseQueries="true">
 XML;
 		switch ($wgLanguageCode) {
 			case 'en':
 				$this->copyRawConfigFile( 'lang/stopwords_en.txt' );
-				$types .= <<<XML
+				$type .= <<<XML
 	<analyzer type="index">
 		<tokenizer class="solr.WhitespaceTokenizerFactory"/>
 		<filter class="solr.StopFilterFactory"
@@ -60,7 +62,13 @@ XML;
 			catenateAll="0"
 			splitOnCaseChange="1"/>
 		<filter class="solr.LowerCaseFilterFactory"/>
+XML;
+				if ( $stemming ) {
+					$type .= <<<XML
 		<filter class="solr.PorterStemFilterFactory"/>
+XML;
+				}
+				$type .= <<<XML
 	</analyzer>
 	<analyzer type="query">
 		<tokenizer class="solr.WhitespaceTokenizerFactory"/>
@@ -77,14 +85,20 @@ XML;
 			catenateAll="0"
 			splitOnCaseChange="1"/>
 		<filter class="solr.LowerCaseFilterFactory"/>
+XML;
+				if ( $stemming ) {
+					$type .= <<<XML
 		<filter class="solr.PorterStemFilterFactory"/>
+XML;
+				}
+				$type .= <<<XML
 	</analyzer>
 XML;
 				break;
 			case 'ja':
 				$this->copyRawConfigFile( 'lang/stoptags_ja.txt' );
 				$this->copyRawConfigFile( 'lang/stopwords_ja.txt' );
-				$types .= <<<XML
+				$type .= <<<XML
 	<analyzer>
 		<!-- Kuromoji Japanese morphological analyzer/tokenizer (JapaneseTokenizer) -->
 		<tokenizer class="solr.JapaneseTokenizerFactory" mode="search"/>
@@ -97,7 +111,13 @@ XML;
 		<!-- Removes common tokens typically not useful for search, but have a negative effect on ranking -->
 		<filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ja.txt" enablePositionIncrements="true" />
 		<!-- Normalizes common katakana spelling variations by removing any last long sound character (U+30FC) -->
+XML;
+				if ( $stemming ) {
+					$type .= <<<XML
 		<filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4"/>
+XML;
+				}
+				$type .= <<<XML
 		<!-- Lower-cases romaji characters -->
 		<filter class="solr.LowerCaseFilterFactory"/>
 	</analyzer>
@@ -106,9 +126,9 @@ XML;
 			default:
 				throw new Exception("Unknown language code:  $wgLanguageCode");
 		}
-		$types .= <<<XML
+		$type .= <<<XML
 </fieldType>
 XML;
-		return $types;
+		return $type;
 	}
 }

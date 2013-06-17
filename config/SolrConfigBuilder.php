@@ -44,7 +44,7 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<str name="spellcheck.collate">true</str>
 			<str name="spellcheck.collateExtendedResults">true</str>
 			<str name="spellcheck.maxCollationTries">10</str>
-			<str name="spellcheck.maxCollations">5</str>
+			<str name="spellcheck.maxCollations">1</str>
 		</lst>
 		<arr name="last-components">
 			<str>spellcheck</str>
@@ -72,11 +72,10 @@ class SolrConfigBuilder extends ConfigBuilder {
 	<requestHandler name="/analysis/document" startup="lazy" class="solr.DocumentAnalysisRequestHandler" />
 
 	<searchComponent name="spellcheck" class="solr.SpellCheckComponent">
-		<str name="queryAnalyzerFieldType">text_splitting</str>
-		<!-- a spellchecker built from article text -->
+		<str name="queryAnalyzerFieldType">spell</str>
 		<lst name="spellchecker">
 			<str name="name">default</str>
-			<str name="field">text</str>
+			<str name="field">allText</str>
 			<str name="classname">solr.DirectSolrSpellChecker</str>
 			<float name="accuracy">0.5</float>
 			<int name="maxEdits">2</int>
@@ -86,11 +85,10 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<float name="maxQueryFrequency">0.01</float>
 		</lst>
 		
-		<!-- a spellchecker that can break or combine words.  See "/spell" handler below for usage -->
 		<lst name="spellchecker">
 			<str name="name">wordbreak</str>
 			<str name="classname">solr.WordBreakSolrSpellChecker</str>      
-			<str name="field">text</str>
+			<str name="field">allText</str>
 			<str name="combineWords">true</str>
 			<str name="breakWords">true</str>
 			<int name="maxChanges">10</int>

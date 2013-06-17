@@ -107,7 +107,11 @@ class CirrusSearchResultSet extends SearchResultSet {
 				$this->suggestionQuery = $collation->getQuery();
 				$keys = array();
 				$highlightedKeys = array();
-				foreach ( $collation->getCorrections() as $correction ) {
+				foreach ( $collation->getCorrections() as $misspelling => $correction ) {
+					// Oddly Solr will sometimes claim that a word is misspelled and then not provide a better spelling for it.
+					if ( $misspelling === $correction ) {
+						continue;
+					}
 					// TODO escaping danger
 					$keys[] = "/$correction/";
 					$highlightedKeys[] = "<em>$correction</em>";

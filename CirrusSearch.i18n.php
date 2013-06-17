@@ -33,6 +33,27 @@ $messages['de'] = array(
 	'cirrussearch-desc' => 'Solr-betriebene Suche für MediaWiki',
 );
 
+/** French (français)
+ * @author Gomoko
+ */
+$messages['fr'] = array(
+	'cirrussearch-desc' => 'Recherche basée sur Solr pour MédiaWiki',
+);
+
+/** Galician (galego)
+ * @author Toliño
+ */
+$messages['gl'] = array(
+	'cirrussearch-desc' => 'Procura baseada en Solr para MediaWiki',
+);
+
+/** Italian (italiano)
+ * @author Beta16
+ */
+$messages['it'] = array(
+	'cirrussearch-desc' => 'Ricerca realizzata con Solr per MediaWiki',
+);
+
 /** Japanese (日本語)
  * @author Shirayuki
  */
@@ -45,4 +66,18 @@ $messages['ja'] = array(
  */
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување на МедијаВики со Solr',
+);
+
+/** tarandíne (tarandíne)
+ * @author Joetaras
+ */
+$messages['roa-tara'] = array(
+	'cirrussearch-desc' => 'Solr-powered ricerche pe MediaUicchi',
+);
+
+/** Traditional Chinese (中文（繁體）‎)
+ * @author Justincheng12345
+ */
+$messages['zh-hant'] = array(
+	'cirrussearch-desc' => 'MediaWiki的Solr搜尋',
 );

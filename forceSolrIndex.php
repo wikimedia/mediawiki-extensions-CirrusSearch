@@ -9,7 +9,6 @@ class BuildSolrConfig extends Maintenance {
 	var $from = null;
 	var $to = null;
 	var $toId = null;
-	var $chunkSize;
 	var $indexUpdates;
 	var $limit;
 
@@ -19,11 +18,11 @@ class BuildSolrConfig extends Maintenance {
 			. "query at the cost of having to reindex by page id rather than time.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
+		$this->mBatchSize = 500;
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
-		$this->addOption( 'chunkSize', 'Number of articles to update at a time.  Defaults to 500.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 	}
@@ -36,7 +35,6 @@ class BuildSolrConfig extends Maintenance {
 			$this->to = new MWTimestamp( $this->getOption( 'to', false ) );
 		}
 		$this->toId = $this->getOption( 'toId' );
-		$this->chunkSize = $this->getOption( 'chunkSize', 500 );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
 		$this->limit = $this->getOption( 'limit' );
 
@@ -93,7 +91,7 @@ class BuildSolrConfig extends Maintenance {
 	}
 
 	/**
-	 * Find $this->chunkSize revisions who are the latest for a page and were
+	 * Find $this->mBatchSize revisions who are the latest for a page and were
 	 * made after (minUpdate,minId) and before maxUpdate.
 	 *
 	 * @return an array of the last update timestamp and id that were found
@@ -117,7 +115,7 @@ class BuildSolrConfig extends Maintenance {
 					. ' AND rev_id = page_latest',
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
-				       'LIMIT' => $this->chunkSize )
+				       'LIMIT' => $this->mBatchSize )
 			);
 		} else {
 			$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
@@ -132,7 +130,7 @@ class BuildSolrConfig extends Maintenance {
 					. " AND rev_timestamp <= $maxUpdate",
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
-				       'LIMIT' => $this->chunkSize )
+				       'LIMIT' => $this->mBatchSize )
 			);
 		}
 		$result = array();
@@ -144,7 +142,7 @@ class BuildSolrConfig extends Maintenance {
 	}
 
 	/**
-	 * Find $this->chunkSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
+	 * Find $this->mBatchSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
 	 *
 	 * @return an array of the last update timestamp and id that were found
 	 */
@@ -165,7 +163,7 @@ class BuildSolrConfig extends Maintenance {
 				. " AND log_timestamp <= $maxUpdate",
 			__METHOD__,
 			array( 'ORDER BY' => 'log_timestamp, log_namespace, log_title',
-			       'LIMIT' => $this->chunkSize )
+			       'LIMIT' => $this->mBatchSize )
 		);
 		$result = array();
 		foreach ( $res as $row ) {

@@ -1,26 +1,39 @@
-Generate the config.
-	Add caching configuration.
-Figure out a good way to update the solr config remotely.
-Move updates to after page render.
-Revision deletes for oversighted articles (batch and in process)
-Optimizations of batch loading (we'll need about 2000 pages/second to bootstrap enwiki in 10 days)
-Handle offsets in Solr rather than MediaWiki. Only search what you need.
+Features
+--------
+* (Chad) Move updates to after page render.
+* Handle offsets in Solr rather than MediaWiki. Only search what you need.
+* In the text field index only text - not all the wikitext.
+* Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
+causes searchs for non-ascii characters to fail spectacularly.  Not escaping them at all feels wrong.
+* Handle html &ecric; style encoding - it should be searchable by regular e.
+* We should also be squashing accents for some languages.
+* (Nik looking into which of these is actually used) enwiki has the following in Help:Searching that
+I don't think we support now but probably should at least consider:
+** Entering an article title will jump to that article; to display a list of matches to the search
+term instead, prefixing the search term with "-" or "~" (see "Avoiding automatic direction to page"
+below) will force a full search.
+** Wildcard search – A wildcard character *, standing for any length of character-string can prefix or
+suffix a word or string: *like will return "childlike" and "dream-like"; this*, returns results like
+"thistle". For example, the query *stan lists articles like Kazakhstan and Afghanistan.
+** Search fuzzily – Spelling relaxation occurs by suffixing a tilde (~) like this~, with results like
+"thus" and "thins". For example, searching for james~ watt~ would return James Watt, James Wyatt, and
+James Watts. A mnemonic: <search>-ish.
+** Search results! – Prefixing a tilde ~like this query always gives search results, never jumping to
+a single title. It functions as the keyboard shortcut to clicking on the "containing" option. For
+example, ~similiar finds pages with the misspelling, instead of being redirected to Similarity. Making
+tilde the first character disables a redirect. There will be no disambiguation page, no article, no
+single page as a result. A mnemonic: "wave of <search results>"
+** The entire Parameters section.
+** Stemming may be deactivated by using double quotes.
+
+
+
+Admin
+-----
 Very very safe batch scripts arround creating and deleting and updating shards.
-Bundle up solr cloud so it can be installed nicely and without collection1.
+(Ops) Bundle up solr cloud so it can be installed nicely and without collection1.
 Figure out a good way to update the index without blowing it away and rebuilding it.
-In the text field index only text - not all the wikitext.
-Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
-	causes searchs for non-ascii characters to fail spectacularly.
-We're going to have to do something about the scores - a search for 
-Handle html &ecric; style encoding - it should be searchable by regular e.
-We should also be squashing accents for some languages.
-enwiki has the following in Help:Searching that I don't think we support now but probably should at least consider:
-	Entering an article title will jump to that article; to display a list of matches to the search term instead, prefixing the search term with "-" or "~" (see "Avoiding automatic direction to page" below) will force a full search.
-	Wildcard search – A wildcard character *, standing for any length of character-string can prefix or suffix a word or string: *like will return "childlike" and "dream-like"; this*, returns results like "thistle". For example, the query *stan lists articles like Kazakhstan and Afghanistan.
-	Search fuzzily – Spelling relaxation occurs by suffixing a tilde (~) like this~, with results like "thus" and "thins". For example, searching for james~ watt~ would return James Watt, James Wyatt, and James Watts. A mnemonic: <search>-ish.
-	Search results! – Prefixing a tilde ~like this query always gives search results, never jumping to a single title. It functions as the keyboard shortcut to clicking on the "containing" option. For example, ~similiar finds pages with the misspelling, instead of being redirected to Similarity. Making tilde the first character disables a redirect. There will be no disambiguation page, no article, no single page as a result. A mnemonic: "wave of <search results>"
-	The entire Parameters section.
-	Stemming may be deactivated by using double quotes.
+Figure out a good way to update the solr config remotely.
 
 
 

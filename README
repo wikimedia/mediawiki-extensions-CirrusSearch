@@ -25,7 +25,7 @@ Finally add this to LocalSettings.php to funnel queries to Solr:
 $wgSearchType = 'CirrusSearch';
 
 
-Bootstrapping Large Wikis
+Bootstrapping large wikis
 -------------------------
 forceSolrIndex.php accepts the --fromId and --toId parameters which can be used to split up the
 work of bootstrapping the wiki into multiple processes.  Most of the load caused by bootstrapping
@@ -33,11 +33,11 @@ is on MySQL but if you've got a really big database or a few slaves then they sh
 handle a whole bunch of bootstraps at once.
 
 Also, the --batch-size parameter controls the number documents read from MySQL and inserted into
-Solr at one time.  It defaults to 500 because that seems to give good performence in development
-but you should feel free to play with it. 
+Solr at one time.  It defaults to 500 because that seems to give good performence (~100 articles
+per second) in development but you should feel free to play with it.
 
 
-Handling Solr Outages
+Handling solr outages
 ---------------------
 If for some reason in process updates to Solr begin failing you can immediately
 set "$wgCirrusSearchUpdateInProcess = false;" in your LocalSettings.php file to

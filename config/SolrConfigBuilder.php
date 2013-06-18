@@ -9,6 +9,10 @@ class SolrConfigBuilder extends ConfigBuilder {
 
 	public function build() {
 		global $wgCirrusSearchSoftCommitTimeout, $wgCirrusSearchHardCommitTimeout, $wgCirrusSearchHardCommitMaxPendingDocs;
+		global $wgCirrusSearchCacheCleanupThread;
+		global $wgCirrusSearchFilterCacheSize, $wgCirrusSearchFilterCacheAutowarmCount;
+		global $wgCirrusSearchQueryResultCacheSize, $wgCirrusSearchQueryResultCacheAutowarmCount;
+		global $wgCirrusSearchDocumentCacheSize;
 		$content = <<<XML
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
@@ -94,6 +98,23 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<int name="maxChanges">10</int>
 		</lst>
 	</searchComponent>
+
+	<query>
+		<filterCache class="solr.FastLRUCache"
+			size="$wgCirrusSearchFilterCacheSize"
+			initialSize="$wgCirrusSearchFilterCacheSize"
+			autowarmCount="$wgCirrusSearchFilterCacheAutowarmCount"
+			cleanupThread="$wgCirrusSearchCacheCleanupThread" />
+		<queryResultCache class="solr.FastLRUCache"
+			size="$wgCirrusSearchQueryResultCacheSize"
+			initialSize="$wgCirrusSearchQueryResultCacheSize"
+			autowarmCount="$wgCirrusSearchQueryResultCacheAutowarmCount"
+			cleanupThread="$wgCirrusSearchCacheCleanupThread" />
+		<documentCache class="solr.FastLRUCache"
+			size="$wgCirrusSearchDocumentCacheSize"
+			initialSize="$wgCirrusSearchDocumentCacheSize"
+			cleanupThread="$wgCirrusSearchCacheCleanupThread" />
+	</query>
 </config>
 XML;
 		$this->writeConfigFile( "solrconfig.xml", $content );

@@ -44,6 +44,30 @@ $wgCirrusSearchCacheResultTime = 0;
 // Do we update the search index after a change in the process that changed it?
 $wgCirrusSearchUpdateInProcess = true;
 
+// Do we want Solr to clean up its caches in an external thread?
+$wgCirrusSearchCacheCleanupThread = true;
+
+// Maximum number of whole result sets to cache.  These are big and take up a bunch of space each
+// and are mostly used for filter queries.
+$wgCirrusSearchFilterCacheSize = 64;
+
+// When new data is exposed to the slave keep this much of the filter cache.
+// If you set it in % then caches that are rarely used will be emptied.
+$wgCirrusSearchFilterCacheAutowarmCount = '90%';
+
+// Maximum number of limited result sets to cache.  These are small and we can probably afford to
+// cache a ton of them.  These are used for caching query results.
+$wgCirrusSearchQueryResultCacheSize = 16 * 1024;
+
+// When new data is exposed to the slave keep this much of the query result cache.
+// If you set it in % then caches that are rarely used will be emptied.  In this case that'd be
+// the a leader node that occasionally services queries.
+$wgCirrusSearchQueryResultCacheAutowarmCount = '90%';
+
+// Maximum number of documents to cache.  Used by all queries to turn index results into useful
+// results to be returned.  Since we don't store much in our documents we can cache a bunch of
+// them with little memory cost.
+$wgCirrusSearchDocumentCacheSize = 16 * 1024;
 
 $dir = __DIR__ . '/';
 /**

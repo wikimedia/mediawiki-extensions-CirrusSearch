@@ -193,7 +193,6 @@ class CirrusSearchResultSet extends SearchResultSet {
 	}
 }
 
-
 /**
  * Thrown when there is an error in the user's query.
  */

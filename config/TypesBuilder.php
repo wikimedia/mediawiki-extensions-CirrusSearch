@@ -33,8 +33,10 @@ XML;
 
 	private function buildLanguageIndependentTypes() {
 		return <<<XML
+<fieldType name="integer" class="solr.TrieIntField" precisionStep="0" />
 <fieldType name="long" class="solr.TrieLongField" precisionStep="0" />
 <fieldType name="id" class="solr.StrField" />
+<fieldType name="triedate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
 XML;
 	}
 

@@ -23,7 +23,7 @@ class SchemaBuilder extends ConfigBuilder {
 		<field name="title" type="text_splitting" indexed="true" stored="true" required="true" />
 		<field name="text" type="text_splitting" indexed="true" stored="false" />
 		<field name="textLen" type="long" indexed="true" stored="false" />
-		<field name="timestamp" type="datetime" indexed="true" stored="false" />
+		<field name="timestamp" type="triedate" indexed="true" stored="false" />
 
 		<!-- Power prefix searches -->
 		<field name="titlePrefix" type="prefix" indexed="true" stored="false" />

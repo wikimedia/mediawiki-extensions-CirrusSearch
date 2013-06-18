@@ -61,16 +61,6 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function searchText( $term ) {
-		try {
-			return $this->searchTextInernal( $term );
-		} catch (CirrusSearchInvalidColonPrefixInQueryException $e) {
-			$status = new Status();
-			$status->warning( 'cirrussearch-unknown-colon-keyword-in-query', $e->getKeyword() );
-			return $status;
-		}
-	}
-
-	private function searchTextInernal( $term ) {
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();
@@ -100,7 +90,7 @@ class CirrusSearch extends SearchEngine {
 						$filter->setQuery( "category:$value" );
 						break;
 					default:
-						throw new CirrusSearchInvalidColonPrefixInQueryException( $key );
+						return $matches[0];
 				}
 				return '';
 			},
@@ -191,20 +181,4 @@ class CirrusSearchResultSet extends SearchResultSet {
 		}
 		return $solrResult;
 	}
-}
-
-/**
- * Thrown when there is an error in the user's query.
- */
-class CirrusSearchInvalidColonPrefixInQueryException extends Exception {
-	private $keyword;
-
-	public function __construct( $keyword ) {
-        $this->keyword = $keyword;
-        parent::__construct( "Unknown colon keyword:  $this->keyword" );
-    }
-
-    public function getKeyword() {
-    	return $this->keyword;
-    }
 }

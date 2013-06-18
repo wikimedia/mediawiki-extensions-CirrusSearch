@@ -11,14 +11,12 @@ $messages = array();
  */
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Solr-powered search for MediaWiki',
-	'cirrussearch-unknown-colon-keyword-in-query' => '"$1:" is not a valid prefix'
 );
 
 /** Message documentation (Message documentation)
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc}}',
-	'cirrussearch-unknown-colon-keyword-in-query' => 'Error in query construction caused by providing an unknown keyword before a :'
 );
 
 /** Asturian (asturianu)

@@ -41,9 +41,6 @@ $wgCirrusSearchHardCommitMaxPendingDocs = 15000;
 // How long to cache search results in memcached, if at all (in seconds)
 $wgCirrusSearchCacheResultTime = 0;
 
-// Do we update the search index after a change in the process that changed it?
-$wgCirrusSearchUpdateInProcess = true;
-
 // Do we want Solr to clean up its caches in an external thread?
 $wgCirrusSearchCacheCleanupThread = true;
 
@@ -83,9 +80,6 @@ $wgAutoloadClasses['TypesBuilder'] = $dir . 'config/TypesBuilder.php';
 /**
  * Hooks
  */
-$wgHooks['ArticleDeleteComplete'][] = 'CirrusSearchUpdater::articleDeleted';
-$wgHooks['ArticleSaveComplete'][] = 'CirrusSearchUpdater::articleSaved';
-$wgHooks['TitleMoveComplete'][] = 'CirrusSearchUpdater::articleMoved';
 $wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
 
 /**

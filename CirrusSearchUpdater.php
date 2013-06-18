@@ -2,58 +2,19 @@
 
 class CirrusSearchUpdater {
 	/**
-	 * @param $article WikiPage the saved page
+	 * This updates pages in Solr.
+	 *
+	 * @param array $pageData An array of revisions and their pre-processed
+	 * data. The format is as follows:
+	 *   array( array( 'rev' => $revision, 'text' => $text ), ... )
 	 */
-	public static function articleSaved( $page, $user, $text, $summary, $isminor, $iswatch, $section ) {
-		global $wgCirrusSearchUpdateInProcess;
-		if ( !$wgCirrusSearchUpdateInProcess ) {
-			return true;
-		}
-		wfProfileIn( __METHOD__ );
-		$title = $page->getTitle()->getPrefixedDBKey();
-		CirrusSearchUpdater::updateRevisions( array( $page->getRevision() ) );
-		wfDebugLog( 'CirrusSearch', "Article Saved: $title" );
-		wfProfileOut( __METHOD__ );
-		return true;
-	}
-
-	public static function articleDeleted( $page, $user, $reason, $id, $content, $logEntry ) {
-		global $wgCirrusSearchUpdateInProcess;
-		if ( !$wgCirrusSearchUpdateInProcess ) {
-			return true;
-		}
-		wfProfileIn( __METHOD__ );
-		$title = $page->getTitle()->getPrefixedDBKey();
-		CirrusSearchUpdater::deleteTitles( array( $page->getTitle() ) );
-		wfDebugLog( 'CirrusSearch', "Article Deleted: $title" );
-		wfProfileOut( __METHOD__ );
-		return true;
-	}
-
-	public static function articleMoved( $from, $to, $user, $pageid, $redirid ) {
-		global $wgCirrusSearchUpdateInProcess;
-		if ( !$wgCirrusSearchUpdateInProcess ) {
-			return true;
-		}
-		wfProfileIn( __METHOD__ );
-		$updates = array( WikiPage::factory( $to )->getRevision() );
-		if ( $redirid > 0 ) {
-			$updates[] = WikiPage::factory( $from )->getRevision();
-		} else {
-			CirrusSearchUpdater::deleteTitles( array( $from ) );
-		}
-		CirrusSearchUpdater::updateRevisions( $updates );
-		wfDebugLog( 'CirrusSearch', "Article Moved from $from to $to" );
-		wfProfileOut( __METHOD__ );
-		return true;
-	}
-
-	public static function updateRevisions( $revisions ) {
+	public static function updateRevisions( $pageData ) {
 		wfProfileIn( __METHOD__ );
 		$client = CirrusSearch::getClient();
 		$update = $client->createUpdate();
-		foreach ( $revisions as $revision ) {
-			$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $revision ) );
+		foreach ( $pageData as $page ) {
+			// @todo When $text is null, we only want to update the title, not the whole document
+			$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] ) );
 		}
 		try {
 			$result = $client->update( $update );
@@ -62,20 +23,19 @@ class CirrusSearchUpdater {
 			error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 		}
 		wfProfileOut( __METHOD__ );
-		return true;
 	}
 
-	private static function buildDocumentforRevision( $revision ) {
+	private static function buildDocumentforRevision( $revision, $text ) {
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
 		$content = $revision->getContent();
 		$parserOutput = $content->getParserOutput( $title, null, null, false );
 
 		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = CirrusSearchUpdater::buildId( $title );
+		$doc->id = $revision->getPage();
 		$doc->namespace = $title->getNamespace();
 		$doc->title = $title->getText();
-		$doc->text = $content->getTextForSearchIndex();
+		$doc->text = $text;
 		$doc->textLen = $revision->getSize();
 		$doc->timestamp = wfTimestamp( TS_ISO_8601, $revision->getTimestamp() );
 		// TODO this seems aweful hacky
@@ -87,12 +47,17 @@ class CirrusSearchUpdater {
 		return $doc;
 	}
 
-	public static function deleteTitles( $titles ) {
+	/**
+	 * Delete pages from the Solr index
+	 *
+	 * @param array $pageIds An array of page ids to delete from the index
+	 */
+	public static function deletePages( $pageIds ) {
 		wfProfileIn( __METHOD__ );
 		$client = CirrusSearch::getClient();
 		$update = $client->createUpdate();
-		foreach ( $titles as $title ) {
-			$update->addDeleteById( CirrusSearchUpdater::buildId( $title ) );
+		foreach ( $pageIds as $pid ) {
+			$update->addDeleteById( $pid );
 		}
 		$update->addCommit();
 		try {
@@ -102,23 +67,5 @@ class CirrusSearchUpdater {
 			error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 		}
 		wfProfileOut( __METHOD__ );
-		return true;
-	}
-
-	/**
-	 * Build the id for a title.
-	 * @param $page Either a title or an array with 'namespace' and 'title' keys. 
-	 */
-	private static function buildId( $title ) {
-		wfProfileIn( __METHOD__ );
-		if ( method_exists( $title, 'getNamespace' ) ) {
-			$namespace = $title->getNamespace();
-			$titleText = $title->getDBKey();
-		} else {
-			$namespace = $title['namespace'];
-			$titleText = $title['title'];
-		}
-		wfProfileOut( __METHOD__ );
-		return "$namespace:$titleText";
 	}
 }

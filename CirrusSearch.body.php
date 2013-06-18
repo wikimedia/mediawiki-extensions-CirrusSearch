@@ -113,6 +113,21 @@ class CirrusSearch extends SearchEngine {
 		// Perform the search and return a result set
 		return new CirrusSearchResultSet( $client->select( $query ) );
 	}
+
+	public function update( $id, $title, $text ) {
+		CirrusSearchUpdater::updateRevisions( array( array(
+			'rev' => Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id ),
+			'text' => $text
+		) ) );
+	}
+
+	public function updateTitle( $id, $title ) {
+		$this->update( $id, $title, null );
+	}
+
+	public function delete( $id, $title ) {
+		CirrusSearchUpdater::deletePages( array( $id ) );
+	}
 }
 
 class CirrusSearchResultSet extends SearchResultSet {

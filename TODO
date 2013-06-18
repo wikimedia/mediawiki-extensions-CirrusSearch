@@ -1,6 +1,7 @@
 Features
 --------
 * (Chad) Move updates to after page render.
+* Figure out why the first letter in a search is capitalized and stop it.
 * Handle offsets in Solr rather than MediaWiki. Only search what you need.
 * In the text field index only text - not all the wikitext.
 * Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
@@ -30,10 +31,12 @@ single page as a result. A mnemonic: "wave of <search results>"
 
 Admin
 -----
-Very very safe batch scripts arround creating and deleting and updating shards.
-(Ops) Bundle up solr cloud so it can be installed nicely and without collection1.
-Figure out a good way to update the index without blowing it away and rebuilding it.
-Figure out a good way to update the solr config remotely.
+* Very very safe batch scripts arround creating and deleting and updating shards.
+* (Ops via RT) Bundle up solr cloud so it can be installed nicely and without collection1.
+* Figure out a good way to update the index without blowing it away and rebuilding it.
+** There is a bug that'll be fixed in 4.4 that prevents the RELOAD command.
+** We can work around the bug by using rolling restarts.
+* Figure out a good way to update the solr config remotely.
 
 
 

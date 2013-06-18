@@ -61,6 +61,16 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function searchText( $term ) {
+		try {
+			return $this->searchTextInernal( $term );
+		} catch (CirrusSearchInvalidColonPrefixInQueryException $e) {
+			$status = new Status();
+			$status->warning( 'cirrussearch-unknown-colon-keyword-in-query', $e->getKeyword() );
+			return $status;
+		}
+	}
+
+	private function searchTextInernal( $term ) {
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();
@@ -79,6 +89,30 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setPhraseSlop( '3' );
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
+		$term = preg_replace_callback(
+			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
+			function ( $matches ) use ( $query ) {
+				$key = $matches['key'];
+				$value = $matches['value'];
+				switch ( $key ) {
+					case 'incategory':
+						$filter = $query->createFilterQuery("$key:$value");
+						$filter->setQuery( "category:$value" );
+						break;
+					default:
+						throw new CirrusSearchInvalidColonPrefixInQueryException( $key );
+				}
+				return '';
+			},
+			$term
+		);
+
+		foreach ( $this->namespaces as $namespace ) {
+			$filter = $query->createFilterQuery("namespace:$namespace");
+			$filter->setQuery( 'namespace:%P1%', array( $namespace ) );
+		}
+
+		// Build spellcheck after removing all special commands from the query
 		$spellCheck = $query->getSpellCheck();
 		$spellCheck->setQuery( $term );
 
@@ -157,4 +191,21 @@ class CirrusSearchResultSet extends SearchResultSet {
 		}
 		return $solrResult;
 	}
+}
+
+
+/**
+ * Thrown when there is an error in the user's query.
+ */
+class CirrusSearchInvalidColonPrefixInQueryException extends Exception {
+	private $keyword;
+
+	public function __construct( $keyword ) {
+        $this->keyword = $keyword;
+        parent::__construct( "Unknown colon keyword:  $this->keyword" );
+    }
+
+    public function getKeyword() {
+    	return $this->keyword;
+    }
 }

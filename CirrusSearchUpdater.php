@@ -68,13 +68,21 @@ class CirrusSearchUpdater {
 	private static function buildDocumentforRevision( $revision ) {
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
+		$content = $revision->getContent();
+		$parserOutput = $content->getParserOutput( $title, null, null, false );
+
 		$doc = new Solarium_Document_ReadWrite();
 		$doc->id = CirrusSearchUpdater::buildId( $title );
 		$doc->namespace = $title->getNamespace();
 		$doc->title = $title->getText();
-		$doc->text = $revision->getContent()->getTextForSearchIndex();
+		$doc->text = $content->getTextForSearchIndex();
 		$doc->textLen = $revision->getSize();
 		$doc->timestamp = wfTimestamp( TS_ISO_8601, $revision->getTimestamp() );
+		// TODO this seems aweful hacky
+		foreach ( $parserOutput->getCategories() as $key => $value ) {
+			$doc->addField( 'category', $key );
+		}
+
 		wfProfileOut( __METHOD__ );
 		return $doc;
 	}

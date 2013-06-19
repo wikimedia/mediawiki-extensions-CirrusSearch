@@ -36,7 +36,6 @@ class SolrConfigBuilder extends ConfigBuilder {
 		<lst name="defaults">
 			<str name="echoParams">explicit</str>
 			<int name="rows">10</int>
-			<str name="df">text</str>
 			<!-- Defaults for spell checking.
 				If you want spell checking then turn it on with spellcheck=true in the query. -->
 			<str name="spellcheck.dictionary">default</str>
@@ -49,6 +48,13 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<str name="spellcheck.collateExtendedResults">true</str>
 			<str name="spellcheck.maxCollationTries">10</str>
 			<str name="spellcheck.maxCollations">1</str>
+			<!-- Defaults for highlighting.
+				If you want highlighting then turn it on with hl=true in the query. -->
+			<str name="hl.fl">title,text</str>
+			<int name="hl.snippets">1</int>
+			<str name="hl.simple.pre">&lt;span class=&quot;searchmatch&quot;&gt;</str>
+			<str name="hl.simple.post">&lt;/span&gt;</str>
+			<int name="hl.maxAnalyzedChars">100000</int>
 		</lst>
 		<arr name="last-components">
 			<str>spellcheck</str>

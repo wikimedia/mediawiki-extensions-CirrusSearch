@@ -6,7 +6,6 @@ Features
 * In the text field index only text - not all the wikitext.
 * Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
 causes searchs for non-ascii characters to fail spectacularly.  Not escaping them at all feels wrong.
-* Handle html &ecric; style encoding - it should be searchable by regular e.
 * We should also be squashing accents for some languages.
 * (Nik looking into which of these is actually used) enwiki has the following in Help:Searching that
 I don't think we support now but probably should at least consider:

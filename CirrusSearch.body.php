@@ -64,6 +64,7 @@ class CirrusSearch extends SearchEngine {
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();
+		$query->setFields( array( 'id', 'title' ) );
 
 		// Offset/limit
 		if( $this->offset ) {
@@ -78,6 +79,9 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setPhraseFields( 'title^1000.0 text^1000.0' );
 		$dismax->setPhraseSlop( '3' );
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
+
+		// This is all it takes to turn on highlighting because we're using defaults.
+		$query->getHighlighting();
 
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
@@ -116,9 +120,10 @@ class CirrusSearch extends SearchEngine {
 }
 
 class CirrusSearchResultSet extends SearchResultSet {
-	private $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+	private $result, $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
 	public function __construct( $res ) {
+		$this->result = $res;
 		$this->docs = $res->getDocuments();
 		$this->hits = $res->count();
 		$this->totalHits = $res->getNumFound();
@@ -173,12 +178,43 @@ class CirrusSearchResultSet extends SearchResultSet {
 		static $pos = 0;
 		$solrResult = null;
 		if( isset( $this->docs[$pos] ) ) {
-			$doc = $this->docs[$pos];
-			$fields = $doc->getFields();
-			$solrResult = SearchResult::newFromTitle(
-				Title::newFromText( $fields['title'] ) );
+			$solrResult = new CirrusSearchResult( $this->result, $this->docs[$pos] );
 			$pos++;
 		}
 		return $solrResult;
+	}
+}
+
+class CirrusSearchResult extends SearchResult {
+	private $titleSnippet, $textSnippet;
+
+	public function __construct( $result, $doc ) {
+		$fields = $doc->getFields();
+		$highlighting = $result->getHighlighting()->getResult( $fields[ 'id' ] )->getFields();
+
+		$this->initFromTitle( Title::newFromText( $fields[ 'title' ] ) );
+		if ( isset( $highlighting[ 'title' ] ) ) {
+			$this->titleSnippet = $highlighting[ 'title' ][ 0 ];
+		} else {
+			$this->titleSnippet = '';
+		}
+		if ( isset( $highlighting[ 'text' ] ) ) {
+			$this->textSnippet = $highlighting[ 'text' ][ 0 ];
+		} else {
+			list( $contextLines, $contextChars ) = SearchEngine::userHighlightPrefs();
+			$this->initText();
+			// This is kind of lame because it only is nice for space delimited languages
+			$matches = array();
+			preg_match( "/^((?:.|\n){0,$contextChars})[\\s\\.\n]?/", $this->mText, $matches );
+			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $matches[1] ), 0, $contextLines ) );
+		}
+	}
+
+	public function getTitleSnippet( $terms ) {
+		return $this->titleSnippet;
+	}
+
+	public function getTextSnippet( $terms ) {
+		return $this->textSnippet;
 	}
 }

@@ -19,9 +19,9 @@ class SchemaBuilder extends ConfigBuilder {
 	<fields>
 		<field name="_version_" type="long" indexed="true" stored="true" required="true" /> <!-- Required for Solr Cloud -->
 		<field name="id" type="id" indexed="true" stored="true" required="true" />
-		<field name="namespace" type="integer" indexed="true" stored="true" required="true" />
+		<field name="namespace" type="integer" indexed="true" stored="false" required="true" />
 		<field name="title" type="text_splitting" indexed="true" stored="true" required="true" />
-		<field name="text" type="text_splitting" indexed="true" stored="false" />
+		<field name="text" type="text_splitting" indexed="true" stored="true" />
 		<field name="textLen" type="long" indexed="true" stored="false" />
 		<field name="timestamp" type="triedate" indexed="true" stored="false" />
 		<field name="category" type="text_splitting" indexed="true" stored="false" multiValued="true" />

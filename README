@@ -9,12 +9,12 @@ Make sure you have the curl php library installed (sudo apt-get install php5-cur
 Add this to LocalSettings.php:
  require_once( "$IP/extensions/Solarium/Solarium.php");
  require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
- $wgCirrusSearchUpdateInProcess = false;
+ $wgDisableSearchUpdate = true;
 
 Now run this script to generate your Solr config:
  php maintenance/buildSolrConfig.php
 
-Now start solr with that config.  Once it is working remove $wgCirrusSearchUpdateInProcess = false 
+Now start solr with that config.  Once it is working remove $wgDisableSearchUpdate = true
 from LocalSettings.php.  Updates should start heading to Solr.  Check on that and make sure they
 are working.
 
@@ -40,7 +40,7 @@ per second) in development but you should feel free to play with it.
 Handling solr outages
 ---------------------
 If for some reason in process updates to Solr begin failing you can immediately
-set "$wgCirrusSearchUpdateInProcess = false;" in your LocalSettings.php file to
+set "$wgDisableSearchUpdate = true;" in your LocalSettings.php file to
 stop trying to update solr.  Once you figure out what is wrong with Solr you
 should turn those updates back on and then run the following:
 php maintenance/forceSolrIndex.php --from <whenever the outage started in ISO 8601 format> --deletes

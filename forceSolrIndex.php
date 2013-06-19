@@ -4,6 +4,9 @@ require_once( "maintenance/Maintenance.php" );
 
 /**
  * Force reindexing change to the wiki.
+ *
+ * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
+ * job. In an ideal world, we could just use that script and kill all of this.
  */
 class BuildSolrConfig extends Maintenance {
 	var $from = null;
@@ -66,16 +69,20 @@ class BuildSolrConfig extends Maintenance {
 				break;
 			}
 			if ( $this->indexUpdates ) {
-				$lastRevision = $revisions[$size - 1];
+				$lastRevision = $revisions[$size - 1]['rev'];
 				$minUpdate = new MWTimestamp( $lastRevision->getTimestamp() );
 				$minId = $lastRevision->getTitle()->getArticleID();
 				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
-				$lastTitle = $titles[$size - 1];
+				$titlesToDelete = array();
+				foreach( $titles as $t ) {
+					$titlesToDelete[] = $t['page'];
+					$lastTitle = $t;
+				}
 				$minUpdate = $lastTitle['timestamp'];
 				$minNamespace = $lastTitle['namespace'];
 				$minTitle = $lastTitle['title'];
-				CirrusSearchUpdater::deleteTitles( $titles );
+				CirrusSearchUpdater::deleteTitles( $titlesToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -135,7 +142,11 @@ class BuildSolrConfig extends Maintenance {
 		}
 		$result = array();
 		foreach ( $res as $row ) {
-			$result[] = Revision::newFromRow( $row );
+			$rev = Revision::newFromRow( $row );
+			$result[] = array(
+				'rev' => $rev,
+				'text' => SearchUpdate::updateText( $rev->getContent()->getTextForSearchIndex() )
+			);
 		}
 		wfProfileOut( __METHOD__ );
 		return $result;
@@ -156,7 +167,7 @@ class BuildSolrConfig extends Maintenance {
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$res = $dbr->select(
 			'logging',
-			array( 'log_timestamp', 'log_namespace', 'log_title' ),
+			array( 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ),
 				"log_type = $logType"
 				. " AND ( ( $minUpdate = log_timestamp AND $minNamespace < log_namespace AND $minTitle < log_title )"
 				. "    OR $minUpdate < log_timestamp )"
@@ -170,7 +181,8 @@ class BuildSolrConfig extends Maintenance {
 			$result[] = array(
 				'timestamp' => new MWTimestamp( $row->log_timestamp ),  // This feels funky
 				'namespace' => $row->log_namespace,
-				'title' => $row->log_title
+				'title' => $row->log_title,
+				'page' => $row->log_page
 			);
 		}
 		wfProfileOut( __METHOD__ );

@@ -3,15 +3,10 @@ Features
 * (Chad) Move updates to after page render.
 * Figure out why the first letter in a search is capitalized and stop it.
 * Handle offsets in Solr rather than MediaWiki. Only search what you need.
-* In the text field index only text - not all the wikitext.
-* Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
+* (Nik) Escape the query terms properly.  urlescaping them is wrong because they get urlescaped later which
 causes searchs for non-ascii characters to fail spectacularly.  Not escaping them at all feels wrong.
-* We should also be squashing accents for some languages.
 * (Nik looking into which of these is actually used) enwiki has the following in Help:Searching that
 I don't think we support now but probably should at least consider:
-** Entering an article title will jump to that article; to display a list of matches to the search
-term instead, prefixing the search term with "-" or "~" (see "Avoiding automatic direction to page"
-below) will force a full search.
 ** Wildcard search – A wildcard character *, standing for any length of character-string can prefix or
 suffix a word or string: *like will return "childlike" and "dream-like"; this*, returns results like
 "thistle". For example, the query *stan lists articles like Kazakhstan and Afghanistan.

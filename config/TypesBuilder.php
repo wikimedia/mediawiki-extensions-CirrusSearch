@@ -71,6 +71,7 @@ XML;
 XML;
 				}
 				$type .= <<<XML
+		<filter class="solr.ASCIIFoldingFilterFactory"/>
 	</analyzer>
 	<analyzer type="query">
 		<tokenizer class="solr.WhitespaceTokenizerFactory"/>
@@ -94,6 +95,7 @@ XML;
 XML;
 				}
 				$type .= <<<XML
+		<filter class="solr.ASCIIFoldingFilterFactory"/>
 	</analyzer>
 XML;
 				break;

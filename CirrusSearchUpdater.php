@@ -10,18 +10,26 @@ class CirrusSearchUpdater {
 	 */
 	public static function updateRevisions( $pageData ) {
 		wfProfileIn( __METHOD__ );
+
 		$client = CirrusSearch::getClient();
-		$update = $client->createUpdate();
-		foreach ( $pageData as $page ) {
-			// @todo When $text is null, we only want to update the title, not the whole document
-			$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] ) );
-		}
-		try {
-			$result = $client->update( $update );
-			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
-		} catch ( Solarium_Exception $e ) {
-			error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
-		}
+		$host = $client->getAdapter()->getHost();
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_solr:host:$host",
+			array( 'doWork' => function() use ( $client ) {
+				$update = $client->createUpdate();
+				foreach ( $pageData as $page ) {
+					// @todo When $text is null, we only want to update the title, not the whole document
+					$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] ) );
+				}
+				try {
+					$result = $client->update( $update );
+					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
+				} catch ( Solarium_Exception $e ) {
+					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
+				}
+			}
+		) );
+		$work->execute();
+
 		wfProfileOut( __METHOD__ );
 	}
 
@@ -54,18 +62,28 @@ class CirrusSearchUpdater {
 	 */
 	public static function deletePages( $pageIds ) {
 		wfProfileIn( __METHOD__ );
+
 		$client = CirrusSearch::getClient();
-		$update = $client->createUpdate();
-		foreach ( $pageIds as $pid ) {
-			$update->addDeleteById( $pid );
-		}
-		$update->addCommit();
-		try {
-			$result = $client->update( $update );
-			wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
-		} catch ( Solarium_Exception $e ) {
-			error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
-		}
+		$host = $client->getAdapter()->getHost();
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Delete', "_solr:host:$host",
+			array( 'doWork' => function() use ( $client ) {
+				$client = CirrusSearch::getClient();
+				$update = $client->createUpdate();
+				foreach ( $pageIds as $pid ) {
+					$update->addDeleteById( $pid );
+				}
+				$update->addCommit();
+				try {
+					$result = $client->update( $update );
+					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
+				} catch ( Solarium_Exception $e ) {
+					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
+				}
+			}
+		) );
+
+		$work->execute();
+
 		wfProfileOut( __METHOD__ );
 	}
 }

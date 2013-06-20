@@ -46,8 +46,8 @@ class CirrusSearch extends SearchEngine {
 
 		// Query params
 		$query->setRows( $limit );
-		wfDebugLog( 'CirrusSearch', 'Searching:  ' . $search );
-		$query->setQuery( 'titlePrefix:' . $search );
+		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
+		$query->setQuery( 'titlePrefix:%T1%', array( $search  ) );
 
 		// Perform the search
 		$res = $client->select( $query );

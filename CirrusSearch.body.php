@@ -106,9 +106,8 @@ class CirrusSearch extends SearchEngine {
 			$term
 		);
 
-		foreach ( $this->namespaces as $namespace ) {
-			$filter = $query->createFilterQuery("namespace:$namespace");
-			$filter->setQuery( '+namespace:%T1%', array( $namespace ) );
+		if ( $this->namespaces !== null ) {
+			$query->createFilterQuery( 'namspaces' )->setQuery( '+namespace:(' . implode( ' OR ', $this->namespaces ) . ')' );
 		}
 
 		// Actual text query

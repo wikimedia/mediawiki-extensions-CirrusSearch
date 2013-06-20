@@ -11,12 +11,14 @@ $messages = array();
  */
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Solr-powered search for MediaWiki',
+	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem.  Please try again later.',
 );
 
 /** Message documentation (Message documentation)
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc}}',
+	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
 );
 
 /** Asturian (asturianu)

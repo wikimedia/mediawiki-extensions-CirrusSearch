@@ -50,7 +50,12 @@ class CirrusSearch extends SearchEngine {
 		$query->setQuery( 'titlePrefix:%T1%', array( $search  ) );
 
 		// Perform the search
-		$res = $client->select( $query );
+		try {
+			$res = $client->select( $query );
+		} catch ( Solarium_Exception $e ) {
+			wfLogWarning( "Search backend error during title prefix search for '$search'." );
+			return false;
+		}
 
 		// We only care about title results
 		foreach( $res as $r ) {
@@ -61,6 +66,7 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function searchText( $term ) {
+		$originalTerm = $term;
 		function addHighlighting( $highlighting, $term ) {
 			if ( $highlighting->getQuery() !== null ) {
 				$term = $highlighting->getQuery() . ' OR ' . $term;
@@ -133,7 +139,14 @@ class CirrusSearch extends SearchEngine {
 		$query->setQuery( $term );
 
 		// Perform the search and return a result set
-		return new CirrusSearchResultSet( $client->select( $query ) );
+		try {
+			return new CirrusSearchResultSet( $client->select( $query ) );
+		} catch ( Solarium_Exception $e ) {
+			$status = new Status();
+			$status->warning( 'cirrussearch-backend-error' );
+			wfLogWarning( "Search backend error during full text search for '$originalTerm'." );
+			return $status;
+		}
 	}
 
 	public function update( $id, $title, $text ) {

@@ -1,9 +1,9 @@
 Features
 --------
-* Figure out why the first letter in a search is capitalized and stop it.
-* Handle offsets in Solr rather than MediaWiki. Only search what you need.
 * Handle "List Redirects"
-
+* Allow terms to contain :s
+* Don't turn on our prefix search unless our normal search is on so we don't break prefix search
+while bootstrapping the index.
 
 Admin
 -----
@@ -14,7 +14,7 @@ Admin
 ** We can work around the bug by using rolling restarts.
 * Figure out a good way to update the solr config remotely.
 * Monitoring and metrics
-** jmxtrans looks like it should be good for this.
+** jmxtrans looks like it should be good for metrics
 
 
 Stuff we should try not to do

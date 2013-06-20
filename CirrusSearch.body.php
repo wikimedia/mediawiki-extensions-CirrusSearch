@@ -67,6 +67,12 @@ class CirrusSearch extends SearchEngine {
 			}
 			$highlighting->setQuery( $term );
 		}
+
+		// Ignore leading ~ because it is used to force displaying search results but not to effect them
+		if ( substr( $term, 0, 1 ) === '~' )  {
+			$term = substr( $term, 1 );
+		}
+
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();

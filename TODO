@@ -1,15 +1,8 @@
 Features
 --------
-* (Chad) Move updates to after page render.
 * Figure out why the first letter in a search is capitalized and stop it.
 * Handle offsets in Solr rather than MediaWiki. Only search what you need.
-* Search results! – Prefixing a tilde ~like this query always gives search results, never jumping to
-a single title. It functions as the keyboard shortcut to clicking on the "containing" option. For
-example, ~similiar finds pages with the misspelling, instead of being redirected to Similarity. Making
-tilde the first character disables a redirect. There will be no disambiguation page, no article, no
-single page as a result. A mnemonic: "wave of <search results>"
-** This is absolutely used but really ought to be handled inside MediaWiki's core rather than as a
-search plugin.
+* Handle "List Redirects"
 
 
 Admin

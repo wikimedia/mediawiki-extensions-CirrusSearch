@@ -28,13 +28,15 @@ class SchemaBuilder extends ConfigBuilder {
 
 		<!-- Power prefix searches -->
 		<field name="titlePrefix" type="prefix" indexed="true" stored="false" />
+		<field name="textPrefix" type="prefix" indexed="true" stored="false" />
 		<!-- Power spell check -->
 		<field name="allText" type="spell" indexed="true" stored="false" multiValued="true" />
 	</fields>
 	<copyField source="title" dest="titlePrefix" />
+	<copyField source="text" dest="textPrefix" />
 	<copyField source="title" dest="allText" />
 	<copyField source="text" dest="allText" />
-	$types
+$types
 </schema>
 XML;
 		$this->writeConfigFile( 'schema.xml', $content );

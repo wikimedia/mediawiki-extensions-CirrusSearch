@@ -36,6 +36,8 @@ class SolrConfigBuilder extends ConfigBuilder {
 		<lst name="defaults">
 			<str name="echoParams">explicit</str>
 			<int name="rows">10</int>
+			<!-- Default field should rarely be used but is required if you need highlighting and don't add a field to your query -->
+			<str name="df">title</str>
 			<!-- Defaults for spell checking.
 				If you want spell checking then turn it on with spellcheck=true in the query. -->
 			<str name="spellcheck.dictionary">default</str>

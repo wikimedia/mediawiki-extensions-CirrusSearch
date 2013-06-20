@@ -80,18 +80,23 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setPhraseSlop( '3' );
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
-		// This is all it takes to turn on highlighting because we're using defaults.
-		$query->getHighlighting();
+		$highlighting = $query->getHighlighting();
+		$highlighting->setFields( array( 'title', 'text' ) );
 
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
 			function ( $matches ) use ( $query ) {
 				$key = $matches['key'];
-				$value = $matches['value'];
+				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
 					case 'incategory':
 						$filter = $query->createFilterQuery("$key:$value");
-						$filter->setQuery( "category:$value" );
+						$filter->setQuery( '+category:%P1%', array( $value ) );
+						break;
+					case 'prefix':
+						$filter = $query->createFilterQuery("$key:$value");
+						$filter->setQuery( '+titlePrefix:%P1% OR +textPrefix:%P1%', array( $value ) );
+						$query->getHighlighting()->setQuery( $value . '*' );
 						break;
 					default:
 						return $matches[0];
@@ -103,14 +108,18 @@ class CirrusSearch extends SearchEngine {
 
 		foreach ( $this->namespaces as $namespace ) {
 			$filter = $query->createFilterQuery("namespace:$namespace");
-			$filter->setQuery( 'namespace:%P1%', array( $namespace ) );
+			$filter->setQuery( '+namespace:%T1%', array( $namespace ) );
 		}
 
-		// Build spellcheck after removing all special commands from the query
-		$spellCheck = $query->getSpellCheck();
-		$spellCheck->setQuery( $term );
-
 		// Actual text query
+		if ( trim( $term ) === '' ) {
+			$term = '*:*';
+		} else {
+			$spellCheck = $query->getSpellCheck()->setQuery( $term );
+			if ( $highlighting->getQuery() !== null ) {
+				$highlighting->setQuery( $highlighting->getQuery() . ' OR ' . $term );
+			}
+		}
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 		$query->setQuery( $term );
 

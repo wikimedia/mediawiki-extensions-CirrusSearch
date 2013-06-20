@@ -11,9 +11,6 @@ single page as a result. A mnemonic: "wave of <search results>"
 ** This is absolutely used but really ought to be handled inside MediaWiki's core rather than as a
 search plugin.
 * intitle:
-* filetype:
-* prefix:
-** I'm not sure if this is just how lsearchd talks about prefix search.
 
 
 Admin

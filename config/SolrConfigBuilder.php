@@ -36,7 +36,8 @@ class SolrConfigBuilder extends ConfigBuilder {
 		<lst name="defaults">
 			<str name="echoParams">explicit</str>
 			<int name="rows">10</int>
-			<!-- Default field should rarely be used but is required if you need highlighting and don't add a field to your query -->
+			<!-- Default field should rarely be used but highlighting blows up without it even though
+			     it isn't used. -->
 			<str name="df">title</str>
 			<!-- Defaults for spell checking.
 				If you want spell checking then turn it on with spellcheck=true in the query. -->
@@ -52,7 +53,6 @@ class SolrConfigBuilder extends ConfigBuilder {
 			<str name="spellcheck.maxCollations">1</str>
 			<!-- Defaults for highlighting.
 				If you want highlighting then turn it on with hl=true in the query. -->
-			<str name="hl.fl">title,text</str>
 			<int name="hl.snippets">1</int>
 			<str name="hl.simple.pre">&lt;span class=&quot;searchmatch&quot;&gt;</str>
 			<str name="hl.simple.post">&lt;/span&gt;</str>

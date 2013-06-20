@@ -10,7 +10,6 @@ tilde the first character disables a redirect. There will be no disambiguation p
 single page as a result. A mnemonic: "wave of <search results>"
 ** This is absolutely used but really ought to be handled inside MediaWiki's core rather than as a
 search plugin.
-* intitle:
 
 
 Admin

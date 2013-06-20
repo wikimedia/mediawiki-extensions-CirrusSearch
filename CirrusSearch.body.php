@@ -61,6 +61,12 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function searchText( $term ) {
+		function addHighlighting( $highlighting, $term ) {
+			if ( $highlighting->getQuery() !== null ) {
+				$term = $highlighting->getQuery() . ' OR ' . $term;
+			}
+			$highlighting->setQuery( $term );
+		}
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();
@@ -81,27 +87,27 @@ class CirrusSearch extends SearchEngine {
 		$dismax->setQueryFields( 'title^20.0 text^3.0' );
 
 		$highlighting = $query->getHighlighting();
-		$highlighting->setFields( array( 'title', 'text' ) );
 
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
-			function ( $matches ) use ( $query ) {
+			function ( $matches ) use ( $query, $highlighting ) {
 				$key = $matches['key'];
 				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
 					case 'incategory':
-						$filter = $query->createFilterQuery("$key:$value");
-						$filter->setQuery( '+category:%P1%', array( $value ) );
-						break;
+						$query->createFilterQuery( "$key:$value" )->setQuery( '+category:%P1%', array( $value ) );
+						return '';
 					case 'prefix':
-						$filter = $query->createFilterQuery("$key:$value");
-						$filter->setQuery( '+titlePrefix:%P1% OR +textPrefix:%P1%', array( $value ) );
-						$query->getHighlighting()->setQuery( $value . '*' );
-						break;
+						$query->createFilterQuery( "$key:$value" )->setQuery( '+titlePrefix:%P1% OR +textPrefix:%P1%', array( $value ) );
+						addHighlighting( $highlighting, "$value*" );
+						return '';
+					case 'intitle':
+						$query->createFilterQuery( "$key:$value" )->setQuery( '+title:%P1%', array( $value ) );
+						addHighlighting( $highlighting, $value );
+						return '';
 					default:
 						return $matches[0];
 				}
-				return '';
 			},
 			$term
 		);
@@ -115,9 +121,7 @@ class CirrusSearch extends SearchEngine {
 			$term = '*:*';
 		} else {
 			$spellCheck = $query->getSpellCheck()->setQuery( $term );
-			if ( $highlighting->getQuery() !== null ) {
-				$highlighting->setQuery( $highlighting->getQuery() . ' OR ' . $term );
-			}
+			addHighlighting( $highlighting, $term );
 		}
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 		$query->setQuery( $term );

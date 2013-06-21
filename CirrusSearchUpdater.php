@@ -50,7 +50,7 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	private static function buildDocumentforRevision( $revision, $text ) {
+	public static function buildDocumentforRevision( $revision, $text ) {
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
 		$content = $revision->getContent();

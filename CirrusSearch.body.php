@@ -194,7 +194,7 @@ class CirrusSearch extends SearchEngine {
 				case CONTENT_MODEL_WIKITEXT:
 					global $wgParser;
 					$text = $wgParser->preprocess(
-						$c->getTextForSearchEngine(), $t, new ParserOptions() );
+						$c->getTextForSearchIndex(), $t, new ParserOptions() );
 					break;
 				default:
 					break;

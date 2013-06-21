@@ -128,6 +128,10 @@ class CirrusSearch extends SearchEngine {
 			$query->createFilterQuery( 'namspaces' )->setQuery( '+namespace:(' . implode( ' OR ', $this->namespaces ) . ')' );
 		}
 
+		// Escape some special characters that we don't want users to pass to solr directly.
+		// Some special characters (notable *) are acceptable.
+		$term = preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|~|\?|:|\\\)/', '\\\$1', $term );
+
 		// Actual text query
 		if ( trim( $term ) === '' ) {
 			$term = '*:*';

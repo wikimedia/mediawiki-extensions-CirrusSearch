@@ -1,7 +1,6 @@
 Features
 --------
 * Handle "List Redirects"
-* Allow terms to contain :s
 * Don't turn on our prefix search unless our normal search is on so we don't break prefix search
 while bootstrapping the index.
 
@@ -16,16 +15,16 @@ Admin
 * Monitoring and metrics
 ** jmxtrans looks like it should be good for metrics
 
+Maybe Do
+--------
+* Transform foo* and *foo queries into prefix and suffix search queries.  This is only required if
+these queries are both common and slow.
+* Context free synonym checking.
+** Scoring this appropriately will be interesting.
+
 
 Stuff we should try not to do
 -----------------------------
-* Wildcard search – A wildcard character *, standing for any length of character-string can prefix or
-suffix a word or string: *like will return "childlike" and "dream-like"; this*, returns results like
-"thistle". For example, the query *stan lists articles like Kazakhstan and Afghanistan.
-** This could be done with a combination of prefix and suffix n-grams but that'll take up a bunch of
-space.
-** I _think_ this is used sometimes but in more cases people just seem to be adding * to searches for
-fun rather than when they mean to.
 * Search fuzzily – Spelling relaxation occurs by suffixing a tilde (~) like this~, with results like
 "thus" and "thins". For example, searching for james~ watt~ would return James Watt, James Wyatt, and
 James Watts. A mnemonic: <search>-ish.

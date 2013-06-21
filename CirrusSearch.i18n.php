@@ -28,11 +28,19 @@ $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Solr pa MediaWiki',
 );
 
+/** Belarusian (Taraškievica orthography) (беларуская (тарашкевіца)‎)
+ * @author Wizardist
+ */
+$messages['be-tarask'] = array(
+	'cirrussearch-desc' => 'Пошук у MediaWiki праз Solr',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Solr-betriebene Suche für MediaWiki',
+	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
 );
 
 /** French (français)
@@ -47,6 +55,7 @@ $messages['fr'] = array(
  */
 $messages['gl'] = array(
 	'cirrussearch-desc' => 'Procura baseada en Solr para MediaWiki',
+	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
 );
 
 /** Italian (italiano)
@@ -68,6 +77,7 @@ $messages['ja'] = array(
  */
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување на МедијаВики со Solr',
+	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
 );
 
 /** tarandíne (tarandíne)
@@ -75,6 +85,7 @@ $messages['mk'] = array(
  */
 $messages['roa-tara'] = array(
 	'cirrussearch-desc' => 'Solr-powered ricerche pe MediaUicchi',
+	'cirrussearch-backend-error' => "Non ge putime combletà 'a ricerca toje pe 'nu probbleme tembonarèe. Pe piacere pruève cchiù tarde.",
 );
 
 /** Traditional Chinese (中文（繁體）‎)

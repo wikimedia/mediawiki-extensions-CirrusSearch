@@ -64,12 +64,16 @@ class CirrusSearch extends SearchEngine {
 
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
 		// Boilerplate
+		$nsNames = RequestContext::getMain()->getLanguage()->getNamespaces();
 		$client = self::getClient();
 		$query = $client->createSelect();
 
 		// Query params
 		$query->setRows( $limit );
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
+		if( count( $ns ) ) {
+			$query = self::setNamespaceFilter( $ns, $query );
+		}
 		$query->setQuery( 'titlePrefix:%T1%', array( $search  ) );
 
 		// Perform the search
@@ -82,7 +86,7 @@ class CirrusSearch extends SearchEngine {
 
 		// We only care about title results
 		foreach( $res as $r ) {
-			$results[] = $r->title;
+			$results[] = Title::makeTitle( $r->namespace, $r->title )->getPrefixedText();
 		}
 
 		return false;
@@ -105,7 +109,7 @@ class CirrusSearch extends SearchEngine {
 		// Boilerplate
 		$client = self::getClient();
 		$query = $client->createSelect();
-		$query->setFields( array( 'id', 'title' ) );
+		$query->setFields( array( 'id', 'title', 'namespace' ) );
 
 		// Offset/limit
 		if( $this->offset ) {
@@ -114,6 +118,9 @@ class CirrusSearch extends SearchEngine {
 		if( $this->limit ) {
 			$query->setRows( $this->limit );
 		}
+
+		// Namespaces
+		$query = self::setNamespaceFilter( $this->namespaces, $query );
 
 		$dismax = $query->getDismax();
 		$dismax->setQueryParser( 'edismax' );
@@ -174,6 +181,19 @@ class CirrusSearch extends SearchEngine {
 			wfLogWarning( "Search backend error during full text search for '$originalTerm'." );
 			return $status;
 		}
+	}
+
+	/**
+	 * Filter a query to only return results in given namespace(s)
+	 *
+	 * @param array $ns Array of namespaces
+	 * @param Solarium_Query $query
+	 * @return Solarium_Query
+	 */
+	private static function setNamespaceFilter( array $ns, $query ) {
+		$query->createFilterQuery( 'namespace' )
+				->setQuery( 'namespace:' . implode( ' OR ', $ns ) );
+		return $query;
 	}
 
 	public function update( $id, $title, $text ) {
@@ -287,8 +307,9 @@ class CirrusSearchResult extends SearchResult {
 		$fields = $doc->getFields();
 		$highlighting = $result->getHighlighting()->getResult( $fields[ 'id' ] )->getFields();
 
-		$this->initFromTitle( Title::newFromText( $fields[ 'title' ] ) );
+		$this->initFromTitle( Title::makeTitle( $fields['namespace'], $fields[ 'title' ] ) );
 		if ( isset( $highlighting[ 'title' ] ) ) {
+			// @todo: This should also show the namespace, we know it
 			$this->titleSnippet = $highlighting[ 'title' ][ 0 ];
 		} else {
 			$this->titleSnippet = '';

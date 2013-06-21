@@ -1,10 +1,25 @@
 <?php
-
-require_once( "maintenance/Maintenance.php" );
-
 /**
  * Force reindexing change to the wiki.
  *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * http://www.gnu.org/copyleft/gpl.html
+ */
+require_once( "maintenance/Maintenance.php" );
+
+/**
  * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
  * job. In an ideal world, we could just use that script and kill all of this.
  */
@@ -107,6 +122,7 @@ class BuildSolrConfig extends Maintenance {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
+		$search = SearchEngine::create();
 		if ( is_null( $maxUpdate ) ) {
 			$toIdPart = '';
 			if ( !is_null( $this->toId ) ) {
@@ -145,7 +161,7 @@ class BuildSolrConfig extends Maintenance {
 			$rev = Revision::newFromRow( $row );
 			$result[] = array(
 				'rev' => $rev,
-				'text' => SearchUpdate::updateText( $rev->getContent()->getTextForSearchIndex() )
+				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() )
 			);
 		}
 		wfProfileOut( __METHOD__ );

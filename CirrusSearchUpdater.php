@@ -31,7 +31,7 @@ class CirrusSearchUpdater {
 		$client = CirrusSearch::getClient();
 		$host = $client->getAdapter()->getHost();
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_solr:host:$host",
-			array( 'doWork' => function() use ( $client ) {
+			array( 'doWork' => function() use ( $client, $pageData ) {
 				$update = $client->createUpdate();
 				foreach ( $pageData as $page ) {
 					// @todo When $text is null, we only want to update the title, not the whole document

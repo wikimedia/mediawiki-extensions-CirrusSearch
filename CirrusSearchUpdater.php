@@ -1,5 +1,22 @@
 <?php
-
+/**
+ * Wrapper around the update/delete mechanisms within Solr
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * http://www.gnu.org/copyleft/gpl.html
+ */
 class CirrusSearchUpdater {
 	/**
 	 * This updates pages in Solr.
@@ -14,7 +31,7 @@ class CirrusSearchUpdater {
 		$client = CirrusSearch::getClient();
 		$host = $client->getAdapter()->getHost();
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_solr:host:$host",
-			array( 'doWork' => function() use ( $client ) {
+			array( 'doWork' => function() use ( $client, $pageData ) {
 				$update = $client->createUpdate();
 				foreach ( $pageData as $page ) {
 					// @todo When $text is null, we only want to update the title, not the whole document
@@ -33,7 +50,7 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	private static function buildDocumentforRevision( $revision, $text ) {
+	public static function buildDocumentforRevision( $revision, $text ) {
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
 		$content = $revision->getContent();

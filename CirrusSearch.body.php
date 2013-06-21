@@ -1,10 +1,34 @@
 <?php
-
+/**
+ * Implementation of core search features in Solr
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * http://www.gnu.org/copyleft/gpl.html
+ */
 class CirrusSearch extends SearchEngine {
+	/**
+	 * Singleton instance of the client
+	 *
+	 * @var Solarium_Client
+	 */
 	private static $client = null;
 
 	/**
 	 * Fetch the Solr client.
+	 *
+	 * @return Solarium_Client
 	 */
 	static function getClient() {
 		if ( self::$client != null ) {
@@ -35,7 +59,6 @@ class CirrusSearch extends SearchEngine {
 			);
 			$loadBalancer->addServer( $server, $serverConfig, 1 );
 		}
-
 		return self::$client;
 	}
 
@@ -167,8 +190,27 @@ class CirrusSearch extends SearchEngine {
 	public function delete( $id, $title ) {
 		CirrusSearchUpdater::deletePages( array( $id ) );
 	}
+
+	public function getTextFromContent( Title $t, Content $c = null ) {
+		$text = parent::getTextFromContent( $t, $c );
+		if( $c ) {
+			switch ( $c->getModel() ) {
+				case CONTENT_MODEL_WIKITEXT:
+					global $wgParser;
+					$text = $wgParser->preprocess(
+						$c->getTextForSearchIndex(), $t, new ParserOptions() );
+					break;
+				default:
+					break;
+			}
+		}
+		return SearchUpdate::updateText( $text );
+	}
 }
 
+/**
+ * A set of results for Solr
+ */
 class CirrusSearchResultSet extends SearchResultSet {
 	private $result, $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
@@ -235,6 +277,9 @@ class CirrusSearchResultSet extends SearchResultSet {
 	}
 }
 
+/**
+ * An individual search result for Solr
+ */
 class CirrusSearchResult extends SearchResult {
 	private $titleSnippet, $textSnippet;
 

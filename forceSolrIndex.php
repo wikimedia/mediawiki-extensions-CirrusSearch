@@ -23,7 +23,7 @@ require_once( "maintenance/Maintenance.php" );
  * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
  * job. In an ideal world, we could just use that script and kill all of this.
  */
-class BuildSolrConfig extends Maintenance {
+class ForceSolrIndex extends Maintenance {
 	var $from = null;
 	var $to = null;
 	var $toId = null;
@@ -206,5 +206,5 @@ class BuildSolrConfig extends Maintenance {
 	}
 }
 
-$maintClass = "BuildSolrConfig";
+$maintClass = "ForceSolrIndex";
 require_once RUN_MAINTENANCE_IF_MAIN;

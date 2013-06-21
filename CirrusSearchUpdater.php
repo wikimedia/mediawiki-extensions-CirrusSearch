@@ -53,8 +53,8 @@ class CirrusSearchUpdater {
 	public static function buildDocumentforRevision( $revision, $text ) {
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
-		$content = $revision->getContent();
-		$parserOutput = $content->getParserOutput( $title, null, null, false );
+		$article = new Article( $title, $revision->getId() );
+		$parserOutput = $article->getParserOutput( $revision->getId() );
 
 		$doc = new Solarium_Document_ReadWrite();
 		$doc->id = $revision->getPage();

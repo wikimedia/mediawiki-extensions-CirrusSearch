@@ -26,6 +26,7 @@ $messages['qqq'] = array(
  */
 $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Solr pa MediaWiki',
+	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
 );
 
 /** Belarusian (Taraškievica orthography) (беларуская (тарашкевіца)‎)
@@ -72,12 +73,27 @@ $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Solr 機能付き検索',
 );
 
+/** Luxembourgish (Lëtzebuergesch)
+ * @author Robby
+ */
+$messages['lb'] = array(
+	'cirrussearch-desc' => 'Solr-Sichfonctioun fir MediaWiki',
+	'cirrussearch-backend-error' => 'Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert w.e.g. méi spéit nach eng Kéier.',
+);
+
 /** Macedonian (македонски)
  * @author Bjankuloski06
  */
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување на МедијаВики со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
+);
+
+/** Dutch (Nederlands)
+ * @author Bluyten
+ */
+$messages['nl'] = array(
+	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
 );
 
 /** tarandíne (tarandíne)
@@ -93,4 +109,5 @@ $messages['roa-tara'] = array(
  */
 $messages['zh-hant'] = array(
 	'cirrussearch-desc' => 'MediaWiki的Solr搜尋',
+	'cirrussearch-backend-error' => '由於出現暫時性的問題，我們未能完成你的搜尋。請稍後再試。',
 );

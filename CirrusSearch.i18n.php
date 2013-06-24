@@ -34,6 +34,7 @@ $messages['ast'] = array(
  */
 $messages['be-tarask'] = array(
 	'cirrussearch-desc' => 'Пошук у MediaWiki праз Solr',
+	'cirrussearch-backend-error' => 'Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Паспрабуйце пазьней, калі ласка.',
 );
 
 /** German (Deutsch)
@@ -49,6 +50,7 @@ $messages['de'] = array(
  */
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Recherche basée sur Solr pour MédiaWiki',
+	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
 );
 
 /** Galician (galego)
@@ -64,6 +66,7 @@ $messages['gl'] = array(
  */
 $messages['it'] = array(
 	'cirrussearch-desc' => 'Ricerca realizzata con Solr per MediaWiki',
+	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
 );
 
 /** Japanese (日本語)
@@ -89,6 +92,14 @@ $messages['mk'] = array(
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
 );
 
+/** Malay (Bahasa Melayu)
+ * @author Anakmalaysia
+ */
+$messages['ms'] = array(
+	'cirrussearch-desc' => 'Enjin pencarian yang dikuasakan oleh Solar untuk MediaWiki',
+	'cirrussearch-backend-error' => 'Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.',
+);
+
 /** Dutch (Nederlands)
  * @author Bluyten
  */
@@ -102,6 +113,13 @@ $messages['nl'] = array(
 $messages['roa-tara'] = array(
 	'cirrussearch-desc' => 'Solr-powered ricerche pe MediaUicchi',
 	'cirrussearch-backend-error' => "Non ge putime combletà 'a ricerca toje pe 'nu probbleme tembonarèe. Pe piacere pruève cchiù tarde.",
+);
+
+/** Swedish (svenska)
+ * @author Jopparn
+ */
+$messages['sv'] = array(
+	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
 );
 
 /** Traditional Chinese (中文（繁體）‎)

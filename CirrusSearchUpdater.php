@@ -60,7 +60,7 @@ class CirrusSearchUpdater {
 		$doc->id = $revision->getPage();
 		$doc->namespace = $title->getNamespace();
 		$doc->title = $title->getText();
-		$doc->text = $text;
+		$doc->text = Sanitizer::stripAllTags( $text );
 		$doc->textLen = $revision->getSize();
 		$doc->timestamp = wfTimestamp( TS_ISO_8601, $revision->getTimestamp() );
 		// TODO this seems aweful hacky

@@ -302,8 +302,11 @@ class CirrusSearchResult extends SearchResult {
 			$this->initText();
 			// This is kind of lame because it only is nice for space delimited languages
 			$matches = array();
-			preg_match( "/^((?:.|\n){0,$contextChars})[\\s\\.\n]?/", $this->mText, $matches );
-			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $matches[1] ), 0, $contextLines ) );
+			$text = Sanitizer::stripAllTags( $this->mText );
+			if ( preg_match( "/^((?:.|\n){0,$contextChars})[\\s\\.\n]/", $text, $matches ) ) {
+				$text = $matches[1];
+			}
+			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $text ), 0, $contextLines ) );
 		}
 	}
 

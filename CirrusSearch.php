@@ -94,11 +94,24 @@ $wgAutoloadClasses['TypesBuilder'] = $dir . 'config/TypesBuilder.php';
 
 /**
  * Hooks
+ * Also check Setup for other hooks.
  */
-$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
 $wgHooks['SearchUpdate'][] = function() { return false; };
 
 /**
  * i18n
  */
 $wgExtensionMessagesFiles['CirrusSearch'] = $dir . 'CirrusSearch.i18n.php';
+
+
+/**
+ * Setup
+ */
+$wgExtensionFunctions[] = 'cirrusSearchSetup';
+function cirrusSearchSetup() {
+	global $wgSearchType, $wgHooks;
+	// Install our prefix search hook only if we're enabled.
+	if ( $wgSearchType === 'CirrusSearch' ) {
+		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
+	}
+}

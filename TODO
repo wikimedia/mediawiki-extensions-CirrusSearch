@@ -3,6 +3,14 @@ Features
 * Handle "List Redirects"
 * Don't turn on our prefix search unless our normal search is on so we don't break prefix search
 while bootstrapping the index.
+* Search fuzzily – Spelling relaxation occurs by suffixing a tilde (~) like this~, with results like
+"thus" and "thins". For example, searching for james~ watt~ would return James Watt, James Wyatt, and
+James Watts. A mnemonic: <search>-ish.
+** The "james~ watt~"" query appears every once in a while beyond that this feature doesn't look like
+it is used much.
+* Speed up batch search updates.
+* Give ElasticSearch a shot.
+
 
 Admin
 -----
@@ -24,14 +32,12 @@ these queries are both common and slow.
 * Strip out things like maintenance templates before parsing--the "citation needed" problem.
 See comment in CirrusSearch::getTextFromContent()
 
+Stuff to talk about one day
+---------------------------
+* Interwiki search
 
 Stuff we should try not to do
 -----------------------------
-* Search fuzzily – Spelling relaxation occurs by suffixing a tilde (~) like this~, with results like
-"thus" and "thins". For example, searching for james~ watt~ would return James Watt, James Wyatt, and
-James Watts. A mnemonic: <search>-ish.
-** The "james~ watt~"" query appears every once in a while beyond that this feature doesn't look like
-it is used much.
 * Stemming may be deactivated by using double quotes.
 
 

@@ -30,19 +30,24 @@ class CirrusSearchUpdater {
 
 		$client = CirrusSearch::getClient();
 		$host = $client->getAdapter()->getHost();
+		$method = __METHOD__;
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_solr:host:$host",
-			array( 'doWork' => function() use ( $client, $pageData ) {
+			array( 'doWork' => function() use ( $client, $pageData, $method ) {
+				wfProfileIn( $method . '::doWork' );
 				$update = $client->createUpdate();
 				foreach ( $pageData as $page ) {
 					// @todo When $text is null, we only want to update the title, not the whole document
 					$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] ) );
 				}
 				try {
+					wfProfileIn( $method . '::doWork::sendToSolr' );
 					$result = $client->update( $update );
+					wfProfileOut( $method . '::doWork::sendToSolr' );
 					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
 				} catch ( Solarium_Exception $e ) {
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 				}
+				wfProfileOut( $method . '::doWork' );
 			}
 		) );
 		$work->execute();

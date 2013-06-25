@@ -158,11 +158,13 @@ class ForceSolrIndex extends Maintenance {
 		}
 		$result = array();
 		foreach ( $res as $row ) {
+			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$rev = Revision::newFromRow( $row );
 			$result[] = array(
 				'rev' => $rev,
 				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() )
 			);
+			wfProfileOut( __METHOD__ . '::decodeResults' );
 		}
 		wfProfileOut( __METHOD__ );
 		return $result;

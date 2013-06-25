@@ -151,9 +151,18 @@ class CirrusSearch extends SearchEngine {
 			$query->createFilterQuery( 'namspaces' )->setQuery( '+namespace:(' . implode( ' OR ', $this->namespaces ) . ')' );
 		}
 
-		// Escape some special characters that we don't want users to pass to solr directly.
-		// Some special characters (notable *) are acceptable.
-		$term = preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|~|\?|:|\\\)/', '\\\$1', $term );
+		/*
+		 * Escape some special characters that we don't want users to pass to solr directly.
+		 * These special characters _aren't_ escaped: * and ~
+		 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
+		 * idea but this is so rarely used that adding extra code to flip prefix searches into
+		 * real prefix searches isn't really worth it.  The same goes for postfix searches but
+		 * doubly because we don't have a postfix index (backwards ngram.)
+		 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
+		 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
+		 * extra index for.
+		 */
+		$term = preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|\?|:|\\\)/', '\\\$1', $term );
 
 		// Actual text query
 		if ( trim( $term ) === '' ) {

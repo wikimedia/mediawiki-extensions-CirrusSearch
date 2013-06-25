@@ -196,15 +196,17 @@ class CirrusSearch extends SearchEngine {
 		if( $c ) {
 			switch ( $c->getModel() ) {
 				case CONTENT_MODEL_WIKITEXT:
-					global $wgParser;
-					$text = $wgParser->preprocess(
-						$c->getTextForSearchIndex(), $t, new ParserOptions() );
+					// @todo Possibly strip other templates here?
+					// See TODO document
+					$article = new Article( $t, 0 );
+					$text = $article->getParserOutput()->getText();
 					break;
 				default:
+					$text = SearchUpdate::updateText( $text );
 					break;
 			}
 		}
-		return SearchUpdate::updateText( $text );
+		return $text;
 	}
 }
 

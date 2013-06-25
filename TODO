@@ -21,6 +21,8 @@ Maybe Do
 these queries are both common and slow.
 * Context free synonym checking.
 ** Scoring this appropriately will be interesting.
+* Strip out things like maintenance templates before parsing--the "citation needed" problem.
+See comment in CirrusSearch::getTextFromContent()
 
 
 Stuff we should try not to do

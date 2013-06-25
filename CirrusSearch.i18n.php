@@ -70,10 +70,12 @@ $messages['it'] = array(
 );
 
 /** Japanese (日本語)
+ * @author Fryed-peach
  * @author Shirayuki
  */
 $messages['ja'] = array(
-	'cirrussearch-desc' => 'MediaWiki 用の Solr 機能付き検索',
+	'cirrussearch-desc' => 'MediaWiki 用の Solr による検索',
+	'cirrussearch-backend-error' => '一時的な問題により検索を実行することができませんでした。後でやり直してください。',
 );
 
 /** Luxembourgish (Lëtzebuergesch)

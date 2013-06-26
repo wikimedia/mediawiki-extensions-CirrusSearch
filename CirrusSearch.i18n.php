@@ -75,7 +75,7 @@ $messages['it'] = array(
  */
 $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Solr による検索',
-	'cirrussearch-backend-error' => '一時的な問題により検索を実行することができませんでした。後でやり直してください。',
+	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 );
 
 /** Luxembourgish (Lëtzebuergesch)

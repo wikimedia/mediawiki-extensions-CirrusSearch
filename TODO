@@ -1,8 +1,6 @@
 Features
 --------
 * Handle "List Redirects"
-* Don't turn on our prefix search unless our normal search is on so we don't break prefix search
-while bootstrapping the index.
 * Speed up batch search updates.
 * Give ElasticSearch a shot.
 * Search redirects to a page somehow.

@@ -28,7 +28,7 @@ $wgExtensionCredits['other'][] = array(
 	'name'           => 'CirrusSearch',
 	'author'         => array( 'Nik Everett', 'Chad Horohoe' ),
 	'descriptionmsg' => 'cirrussearch-desc',
-	'url'            => 'https://www.mediawiki.org/wiki/Extension:MWSearch',
+	'url'            => 'https://www.mediawiki.org/wiki/Extension:CirrusSearch',
 	'version'        => '0.1'
 );
 

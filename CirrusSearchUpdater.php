@@ -28,23 +28,22 @@ class CirrusSearchUpdater {
 	public static function updateRevisions( $pageData ) {
 		wfProfileIn( __METHOD__ );
 
-		$client = CirrusSearch::getClient();
-		$host = $client->getAdapter()->getHost();
+		$documents = array();
+		foreach ( $pageData as $page ) {
+			// @todo When $text is null, we only want to update the title, not the whole document
+			$documents[] = CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] );
+		}
+
 		$method = __METHOD__;
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_solr:host:$host",
-			array( 'doWork' => function() use ( $client, $pageData, $method ) {
+		// TODO I think this needs more configuration somewhere
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
+			array( 'doWork' => function() use ( $documents, $method ) {
 				wfProfileIn( $method . '::doWork' );
-				$update = $client->createUpdate();
-				foreach ( $pageData as $page ) {
-					// @todo When $text is null, we only want to update the title, not the whole document
-					$update->addDocument( CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] ) );
-				}
 				try {
-					wfProfileIn( $method . '::doWork::sendToSolr' );
-					$result = $client->update( $update );
-					wfProfileOut( $method . '::doWork::sendToSolr' );
-					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
-				} catch ( Solarium_Exception $e ) {
+					$result = CirrusSearch::getPageType()->addDocuments( $documents );
+					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
+				} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
+					// TODO verify this is the right exception
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 				}
 				wfProfileOut( $method . '::doWork' );
@@ -61,17 +60,20 @@ class CirrusSearchUpdater {
 		$article = new Article( $title, $revision->getId() );
 		$parserOutput = $article->getParserOutput( $revision->getId() );
 
-		$doc = new Solarium_Document_ReadWrite();
-		$doc->id = $revision->getPage();
-		$doc->namespace = $title->getNamespace();
-		$doc->title = $title->getText();
-		$doc->text = Sanitizer::stripAllTags( $text );
-		$doc->textLen = $revision->getSize();
-		$doc->timestamp = wfTimestamp( TS_ISO_8601, $revision->getTimestamp() );
 		// TODO this seems aweful hacky
+		$categories = array();
 		foreach ( $parserOutput->getCategories() as $key => $value ) {
-			$doc->addField( 'category', $key );
+			$categories[] = $key;
 		}
+
+		$doc = new \Elastica\Document( $revision->getPage(), array(
+			'namespace' => $title->getNamespace(),
+			'title' => $title->getText(),
+			'text' => Sanitizer::stripAllTags( $text ),
+			'textLen' => $revision->getSize(),
+			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
+			'category' => $categories
+		));
 
 		wfProfileOut( __METHOD__ );
 		return $doc;

@@ -40,7 +40,10 @@ $wgExtensionCredits['other'][] = array(
 $wgCirrusSearchServers = array( 'elasticsearch1', 'elasticsearch2', 'elasticsearch3', 'elasticsearch4' );
 
 // Number of shards
-$wgCirrusSearchShardCount = 64;
+$wgCirrusSearchShardCount = 4;
+
+// Number of replicas per shard
+$wgCirrusSearchReplicaCount = 1;
 
 // Maximum times to retry on failure
 $wgCirrusSearchMaxRetries = 3;
@@ -115,9 +118,13 @@ $wgAutoloadClasses['Elastica\Bulk\Action\AbstractDocument'] = $elasticaDir . 'Bu
 $wgAutoloadClasses['Elastica\Bulk\Action\IndexDocument'] = $elasticaDir . 'Bulk/Action/IndexDocument.php';
 $wgAutoloadClasses['Elastica\Bulk\Response'] = $elasticaDir . 'Bulk/Response.php';
 $wgAutoloadClasses['Elastica\Bulk\ResponseSet'] = $elasticaDir . 'Bulk/ResponseSet.php';
+$wgAutoloadClasses['Elastica\Exception\BulkException'] = $elasticaDir . 'Exception/BulkException.php';
 $wgAutoloadClasses['Elastica\Exception\ExceptionInterface'] = $elasticaDir . 'Exception/ExceptionInterface.php';
 $wgAutoloadClasses['Elastica\Exception\InvalidException'] = $elasticaDir . 'Exception/InvalidException.php';
+$wgAutoloadClasses['Elastica\Exception\NotFoundException'] = $elasticaDir . 'Exception/NotFoundException.php';
 $wgAutoloadClasses['Elastica\Exception\ResponseException'] = $elasticaDir . 'Exception/ResponseException.php';
+$wgAutoloadClasses['Elastica\Exception\Bulk\ResponseException'] = $elasticaDir . 'Exception/Bulk/ResponseException.php';
+$wgAutoloadClasses['Elastica\Exception\Bulk\Response\ActionException'] = $elasticaDir . 'Exception/Bulk/Response/ActionException.php';
 $wgAutoloadClasses['Elastica\Filter\AbstractFilter'] = $elasticaDir . 'Filter/AbstractFilter.php';
 $wgAutoloadClasses['Elastica\Filter\AbstractMulti'] = $elasticaDir . 'Filter/AbstractMulti.php';
 $wgAutoloadClasses['Elastica\Filter\BoolAnd'] = $elasticaDir . 'Filter/BoolAnd.php';
@@ -125,12 +132,15 @@ $wgAutoloadClasses['Elastica\Filter\BoolOr'] = $elasticaDir . 'Filter/BoolOr.php
 $wgAutoloadClasses['Elastica\Filter\Prefix'] = $elasticaDir . 'Filter/Prefix.php';
 $wgAutoloadClasses['Elastica\Filter\Term'] = $elasticaDir . 'Filter/Term.php';
 $wgAutoloadClasses['Elastica\Filter\Terms'] = $elasticaDir . 'Filter/Terms.php';
+$wgAutoloadClasses['Elastica\Index\Settings'] = $elasticaDir . 'Index/Settings.php';
 $wgAutoloadClasses['Elastica\Query\AbstractQuery'] = $elasticaDir . 'Query/AbstractQuery.php';
 $wgAutoloadClasses['Elastica\Query\MatchAll'] = $elasticaDir . 'Query/MatchAll.php';
 $wgAutoloadClasses['Elastica\Query\Prefix'] = $elasticaDir . 'Query/Prefix.php';
 $wgAutoloadClasses['Elastica\Query\QueryString'] = $elasticaDir . 'Query/QueryString.php';
 $wgAutoloadClasses['Elastica\Transport\AbstractTransport'] = $elasticaDir . 'Transport/AbstractTransport.php';
 $wgAutoloadClasses['Elastica\Transport\Http'] = $elasticaDir . 'Transport/Http.php';
+$wgAutoloadClasses['Elastica\Type\Mapping'] = $elasticaDir . 'Type/Mapping.php';
+
 
 
 

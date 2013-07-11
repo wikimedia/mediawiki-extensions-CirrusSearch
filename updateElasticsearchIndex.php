@@ -20,7 +20,7 @@
 require_once( "maintenance/Maintenance.php" );
 
 /**
- * Build a solr config directory.
+ * Update the elasticsearch configuration for this index.
  */
 class UpdateElasticsearchIndex extends Maintenance {
 	private $rebuild, $closeOk;
@@ -108,7 +108,10 @@ class UpdateElasticsearchIndex extends Maintenance {
 			foreach( $required as $key => $value ) {
 				$settingsKey = $prefix . '.' . $key;
 				if ( is_array( $value ) ) {
-					return vaActualMatchRequired( $settingsKey, $settings, $value );
+					if ( !vaActualMatchRequired( $settingsKey, $settings, $value ) ) {
+						return false;
+					}
+					continue;
 				}
 				// Note that I really mean !=, not !==.  Coercion is cool here.
 				if ( !array_key_exists( $settingsKey, $settings ) || $settings[ $settingsKey ] != $value ) {
@@ -143,7 +146,10 @@ class UpdateElasticsearchIndex extends Maintenance {
 					if ( !is_array( $actual[ $key ] ) ) {
 						return false;
 					}
-					return vmActualMatchRequired( $actual[ $key ], $value );
+					if ( !vmActualMatchRequired( $actual[ $key ], $value ) ) {
+						return false;
+					}
+					continue;
 				}
 				// Note that I really mean !=, not !==.  Coercion is cool here.
 				if ( $actual[ $key ] != $value ) {

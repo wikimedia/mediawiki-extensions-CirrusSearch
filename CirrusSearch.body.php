@@ -76,8 +76,7 @@ class CirrusSearch extends SearchEngine {
 		try {
 			$result = CirrusSearch::getPageType()->search( $query );
 			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-		} catch ( Solarium_Exception $e ) {
-			// TODO find the right exception
+		} catch ( \Elastica\Exception\ResponseException $e ) {
 			wfLogWarning( "Search backend error during title prefix search for '$search'." );
 			return false;
 		}
@@ -122,8 +121,8 @@ class CirrusSearch extends SearchEngine {
 				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
 					case 'incategory':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'category', $value ) );
-						// TODO I used to add highlighting here for $value
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
+							'category', CirrusSearch::escapeQueryString( $value ) ) );
 						return '';
 					case 'prefix':
 						// TODO should prefix searches use term based edge ngrams like with did with solr?
@@ -134,7 +133,8 @@ class CirrusSearch extends SearchEngine {
 						// TODO I used to add highlighting here for $value*
 						return '';
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title', $value ) );
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
+							'title', CirrusSearch::escapeQueryString( $value ) ) );
 						// TODO I used to add highlighting here for $value
 						return '';
 					default:
@@ -165,8 +165,7 @@ class CirrusSearch extends SearchEngine {
 
 		// Actual text query
 		if ( trim( $term ) !== '' ) {
-			// TODO make sure the query is well formed or make elasticsearch do it.
-			$queryStringQuery = new \Elastica\Query\QueryString( $term );
+			$queryStringQuery = new \Elastica\Query\QueryString( CirrusSearch::escapeQueryString( $term ) );
 			$queryStringQuery->setFields( array( 'title^20.0', 'text^3.0' ) );
 			$queryStringQuery->setAutoGeneratePhraseQueries( true );
 			$queryStringQuery->setPhraseSlop( 3 );
@@ -180,7 +179,7 @@ class CirrusSearch extends SearchEngine {
 			$result = CirrusSearch::getPageType()->search( $query );
 			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 			return new CirrusSearchResultSet( $result );
-		} catch ( Solarium_Exception $e ) {
+		} catch ( \Elastica\Exception\ResponseException $e ) {
 			$status = new Status();
 			$status->warning( 'cirrussearch-backend-error' );
 			wfLogWarning( "Search backend error during full text search for '$originalTerm'." );
@@ -198,6 +197,21 @@ class CirrusSearch extends SearchEngine {
 			return new \Elastica\Filter\Terms( 'namespace', $ns );
 		}
 		return null;
+	}
+
+	/**
+	 * Escape some special characters that we don't want users to pass into query strings directly.
+	 * These special characters _aren't_ escaped: * and ~
+	 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
+	 * idea but this is so rarely used that adding extra code to flip prefix searches into
+	 * real prefix searches isn't really worth it.  The same goes for postfix searches but
+	 * doubly because we don't have a postfix index (backwards ngram.)
+	 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
+	 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
+	 * extra index for.
+	 */
+	public static function escapeQueryString( $string ) {
+		return preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|\?|:|\\\)/', '\\\$1', $string );
 	}
 
 	public function update( $id, $title, $text ) {

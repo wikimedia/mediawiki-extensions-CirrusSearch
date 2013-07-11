@@ -126,9 +126,9 @@ class CirrusSearch extends SearchEngine {
 						return '';
 					case 'prefix':
 						// TODO should prefix searches use term based edge ngrams like with did with solr?
-						$filter = new \Elastica\Filter\BoolOr();
-						$filter->addFilter( new \Elastica\Filter\Prefix( 'title', $value ) );
-						$filter->addFilter( new \Elastica\Filter\Prefix( 'text', $value ) );
+						$filter = new \Elastica\Filter\Bool();
+						$filter->addShould( new \Elastica\Filter\Prefix( 'title', $value ) );
+						$filter->addShould( new \Elastica\Filter\Prefix( 'text', $value ) );
 						$filters[] = $filter;
 						// TODO I used to add highlighting here for $value*
 						return '';
@@ -144,7 +144,6 @@ class CirrusSearch extends SearchEngine {
 			$term
 		);
 
-		// TODO do I really not have to/get to specify the terms to try to highlight?
 		// This seems out of the style of the rest of the Elastica....
 		$query->setHighlight( array( 
 			'pre_tags' => array( '<span class="searchmatch">' ),
@@ -155,12 +154,15 @@ class CirrusSearch extends SearchEngine {
 			)
 		) );
 
-		$filters = array_filter( $filters );
-		if ( count( $filters ) ) {
-			$filter = new \Elastica\Filter\BoolAnd();
-			$filter->setFilters( $filters );
-			$query->setFilter( $filter );
-			wfDebugLog( 'CirrusSearch', 'Setting up ' . count( $filters ) . ' filter' );
+		$filters = array_filter( $filters ); // Remove nulls from $fitlers
+		if ( count( $filters ) > 1 ) {
+			$mainFilter = new \Elastica\Filter\Bool();
+			foreach ( $filters as $filter ) {
+				$mainFilter->addMust( $filter );
+			}
+			$query->setFilter( $mainFilter );
+		} else if ( count( $filters ) === 1 ) {
+			$query->setFilter( $filters[0] );
 		}
 
 		// Actual text query

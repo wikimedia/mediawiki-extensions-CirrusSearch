@@ -43,6 +43,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 		$this->addOption( 'forceReindex', "Perform a reindex right now." );
 	}
 	public function execute() {
+		// TODO support http://www.elasticsearch.org/blog/changing-mapping-with-zero-downtime/
 		if ( $this->getOption( 'forceOpen', false) ) {
 			CirrusSearch::getIndex()->open();
 			return;

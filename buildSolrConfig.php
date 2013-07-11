@@ -22,33 +22,24 @@ require_once( "maintenance/Maintenance.php" );
 /**
  * Build a solr config directory.
  */
-class UpdateElasticsearchIndex extends Maintenance {
+class BuildSolrConfig extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Update the elasticsearch index for this wiki";
-		$this->addOption( 'rebuild', 'Rebuild the index' );
+		$this->mDescription = "Build a Solr config directory for this wiki";
+		$this->addOption( 'where', 'Defaults to /tmp/solrConfig/<pid>', false, true );
 	}
 	public function execute() {
-		global $wgCirrusSearchShardCount, $wgCirrusSearchReplicatCount;
-		$rebuild = $this->getOption( 'rebuild', false );
-		if ( $rebuild ) {
-			$this->output( "Rebuilding index\n" );
-			$rebuild = true;
-		} else {
-			$this->output( "Createing index\n" );
-			// TODO update the index if it already exists/warn user about what can't be updated.
+		$where = $this->getOption( 'where', '/tmp/solrConfig' . getmypid() );
+		if ( file_exists( $where ) ) {
+			$this->error( "$where already exists so I can't build a new solr config there.", true );
 		}
-		CirrusSearch::getIndex()->create( array(
-			'number_of_shards' => $wgCirrusSearchShardCount,
-        	'number_of_replicas' => $wgCirrusSearchReplicatCount
-		), $rebuild );
-		// TODO build the analyzers and mappings
-		// $schemaBuilder = new SchemaBuilder( $where );
-		// $schemaBuilder->build();
-		// $solrConfigBuilder = new SolrConfigBuilder( $where );
-		// $solrConfigBuilder->build();
+		$this->output( "Building solr config in $where\n" );
+		$schemaBuilder = new SchemaBuilder( $where );
+		$schemaBuilder->build();
+		$solrConfigBuilder = new SolrConfigBuilder( $where );
+		$solrConfigBuilder->build();
 	}
 }
 
-$maintClass = "UpdateElasticsearchIndex";
+$maintClass = "BuildSolrConfig";
 require_once RUN_MAINTENANCE_IF_MAIN;

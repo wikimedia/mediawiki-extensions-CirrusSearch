@@ -173,8 +173,14 @@ class UpdateElasticsearchIndex extends Maintenance {
 			$this->output( "different..." );
 			// TODO Conflict resolution here might leave old portions of mappings
 			$action = new \Elastica\Type\Mapping( CirrusSearch::getPageType(), $requiredPageMappings );
-			$action->send();
-			$this->output( "corrected\n" );
+			try {
+				$action->send();
+				$this->output( "corrected\n" );
+			} catch ( \Elastica\Exception\ResponseException $e ) {
+				$this->output( "failed!\n" );
+				$message = $e->getMessage();
+				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n" );
+			}
 		}
 	}
 
@@ -242,7 +248,17 @@ class UpdateElasticsearchIndex extends Maintenance {
 		return array(
 			'analysis' => array(
 				'analyzer' => array(
-					'text' => $this->buildTextAnalyzer()
+					'text' => $this->buildTextAnalyzer(),
+					'suggest' => array_merge( $this->buildTextAnalyzer(), array(
+						'filter' => array( 'suggest_shingle' )
+					) )
+				),
+				'filter' => array(
+					'suggest_shingle' => array(
+						'type' => 'shingle',
+						'min_shingle_size' => 2,
+						'max_shingle_size' => 5
+					)
 				)
 			)
 		);
@@ -259,17 +275,21 @@ class UpdateElasticsearchIndex extends Maintenance {
 
 	private function buildPageMappings() {
 		return array(
-			'title' => array(
-				'type' => 'string',
-				'analyzer' => 'text'
-			),
-			'text' => array(
-				'type' => 'string',
-				'analyzer' => 'text'
-			),
+			'title' => $this->buildFieldWithSuggest( 'title' ),
+			'text' => $this->buildFieldWithSuggest( 'text' ),
 			'category' => array(
 				'type' => 'string',
 				'analyzer' => 'text'
+			)
+		);
+	}
+
+	private function buildFieldWithSuggest( $name ) {
+		return array(
+			'type' => 'multi_field',
+			'fields' => array(
+				$name => array( 'type' => 'string', 'analyzer' => 'text' ),
+				'suggest' => array( 'type' => 'string', 'analyzer' => 'suggest' )
 			)
 		);
 	}

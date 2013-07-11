@@ -45,6 +45,13 @@ $wgCirrusSearchShardCount = 4;
 // Number of replicas per shard
 $wgCirrusSearchReplicaCount = 1;
 
+// Maximum number of terms that we ask phrase suggest to correct.
+// See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
+$wgCirrusSearchPhraseSuggestMaxErrors = 5;
+
+
+
+
 // Maximum times to retry on failure
 $wgCirrusSearchMaxRetries = 3;
 

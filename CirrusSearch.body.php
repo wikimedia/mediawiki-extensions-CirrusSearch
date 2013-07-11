@@ -18,6 +18,9 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearch extends SearchEngine {
+	const PHRASE_TITLE = 'phrase_title';
+	const PHRASE_TEXT = 'phrase_text';
+
 	/**
 	 * Singleton instance of the client
 	 *
@@ -91,6 +94,7 @@ class CirrusSearch extends SearchEngine {
 
 	public function searchText( $term ) {
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		global $wgCirrusSearchPhraseSuggestMaxErrors;
 		
 		$originalTerm = $term;
 
@@ -173,7 +177,21 @@ class CirrusSearch extends SearchEngine {
 			$queryStringQuery->setPhraseSlop( 3 );
 			// TODO phrase match boosts?
 			$query->setQuery( $queryStringQuery );
-			// TODO spellcheck
+			$query->setParam( 'suggest', array(
+				'text' => $term,
+				CirrusSearch::PHRASE_TITLE => array(
+					'phrase' => array(
+						'field' => 'title.suggest',
+						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors
+					)
+				),
+				CirrusSearch::PHRASE_TEXT => array(
+					'phrase' => array(
+						'field' => 'text.suggest',
+						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors
+					)
+				)
+			));
 		}
 
 		// Perform the search and return a result set
@@ -260,27 +278,26 @@ class CirrusSearchResultSet extends SearchResultSet {
 		$this->result = $res;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
-		// $spellcheck = $res->getSpellcheck();
-		$this->suggestionQuery = null;
-		$this->suggestionSnippet = null;
-		// if ( $spellcheck !== null && !$spellcheck->getCorrectlySpelled()  ) {
-		// 	$collation = $spellcheck->getCollation();
-		// 	if ( $collation !== null ) {
-		// 		$this->suggestionQuery = $collation->getQuery();
-		// 		$keys = array();
-		// 		$highlightedKeys = array();
-		// 		foreach ( $collation->getCorrections() as $misspelling => $correction ) {
-		// 			// Oddly Solr will sometimes claim that a word is misspelled and then not provide a better spelling for it.
-		// 			if ( $misspelling === $correction ) {
-		// 				continue;
-		// 			}
-		// 			// TODO escaping danger
-		// 			$keys[] = "/$correction/";
-		// 			$highlightedKeys[] = "<em>$correction</em>";
-		// 		}
-		// 		$this->suggestionSnippet = preg_replace( $keys, $highlightedKeys, $this->suggestionQuery );
-		// 	}
-		// }
+		$this->suggestionQuery = $this->findSuggestionQuery();
+		$this->suggestionSnippet = $this->highlightingSuggestionSnippet();
+	}
+
+	private function findSuggestionQuery() {
+		// TODO some kind of weighting?
+		$suggest = $this->result->getResponse()->getData();
+		$suggest = $suggest[ 'suggest' ];
+		foreach ( $suggest[ CirrusSearch::PHRASE_TITLE ][ 0 ][ 'options' ] as $option ) {
+			return $option[ 'text' ];
+		}
+		foreach ( $suggest[ CirrusSearch::PHRASE_TEXT ][ 0 ][ 'options' ] as $option ) {
+			return $option[ 'text' ];
+		}
+		return null;
+	}
+
+	private function highlightingSuggestionSnippet() {
+		// TODO wrap the corrections in <em>s.... ES doesn't make this easy.
+		return $this->suggestionQuery;
 	}
 
 	public function hasResults() {

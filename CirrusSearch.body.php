@@ -21,71 +21,68 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Singleton instance of the client
 	 *
-	 * @var Solarium_Client
+	 * @var \Elastica\Index
 	 */
-	private static $client = null;
+	private static $index = null;
 
 	/**
-	 * Fetch the Solr client.
+	 * Fetch the Elastica Index.
 	 *
-	 * @return Solarium_Client
+	 * @return \Elastica\Index
 	 */
-	static function getClient() {
-		if ( self::$client != null ) {
-			return self::$client;
+	public static function getIndex() {
+		if ( self::$index != null ) {
+			return self::$index;
 		}
 		global $wgCirrusSearchServers, $wgCirrusSearchMaxRetries;
 
-		self::$client = new Solarium_Client();
-		self::$client->setAdapter( 'Solarium_Client_Adapter_Curl' );
-	
-		// Setup the load balancer
-		$loadBalancer = self::$client->getPlugin( 'loadbalancer' );
-
-		// Allow updates to be load balancer just like creates
-		$loadBalancer->clearBlockedQueryTypes();
-
-		// Setup failover
-		if ( $wgCirrusSearchMaxRetries > 1 ) { 
-			$loadBalancer->setFailoverEnabled( true );
-			$loadBalancer->setFailoverMaxRetries( $wgCirrusSearchMaxRetries );
-		}
-
-		// Setup the Solr endpoints
+		// Setup the Elastica endpoints
+		$servers = array();
 		foreach ( $wgCirrusSearchServers as $server ) {
-			$serverConfig = array( 
-				'host' => $server,
-				'core' => wfWikiId()
-			);
-			$loadBalancer->addServer( $server, $serverConfig, 1 );
+			$servers[] = array('host' => $server);
 		}
-		return self::$client;
+		$client = new \Elastica\Client( array(
+			'servers' => $servers
+		) );
+		self::$index = $client->getIndex( wfWikiId() );
+
+		return self::$index;
+	}
+
+	/**
+	 * Fetch the Elastica Type for pages.
+	 *
+	 * @ \Elastica\Type
+	 */
+	static function getPageType() {
+		return CirrusSearch::getIndex()->getType('page');
 	}
 
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
+		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 		// Boilerplate
 		$nsNames = RequestContext::getMain()->getLanguage()->getNamespaces();
-		$client = self::getClient();
-		$query = $client->createSelect();
+		$query = new Elastica\Query();
+		$query->setFields( array( 'id', 'title', 'namespace' ) );
 
 		// Query params
-		$query->setRows( $limit );
-		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
-		if( count( $ns ) ) {
-			$query = self::setNamespaceFilter( $ns, $query );
-		}
-		$query->setQuery( 'titlePrefix:%T1%', array( $search  ) );
+		$query->setLimit( $limit );
+		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
+		// TODO remove the strtolower and let elasticsearch do it because it is a tokenizing beast
+		$query->setQuery( new \Elastica\Query\Prefix( array( 'title' => strtolower( $search ) ) ) );
 
 		// Perform the search
 		try {
-			$res = $client->select( $query );
+			$result = CirrusSearch::getPageType()->search( $query );
+			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 		} catch ( Solarium_Exception $e ) {
+			// TODO find the right exception
 			wfLogWarning( "Search backend error during title prefix search for '$search'." );
 			return false;
 		}
 
 		// We only care about title results
-		foreach( $res as $r ) {
+		foreach( $result->getResults() as $r ) {
 			$results[] = Title::makeTitle( $r->namespace, $r->title )->getPrefixedText();
 		}
 
@@ -93,13 +90,9 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function searchText( $term ) {
+		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		
 		$originalTerm = $term;
-		function addHighlighting( $highlighting, $term ) {
-			if ( $highlighting->getQuery() !== null ) {
-				$term = $highlighting->getQuery() . ' OR ' . $term;
-			}
-			$highlighting->setQuery( $term );
-		}
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
@@ -107,45 +100,41 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// Boilerplate
-		$client = self::getClient();
-		$query = $client->createSelect();
+		$query = new Elastica\Query();
 		$query->setFields( array( 'id', 'title', 'namespace' ) );
+
+		$filters = array();
 
 		// Offset/limit
 		if( $this->offset ) {
-			$query->setStart( $this->offset );
+			$query->setFrom( $this->offset );
 		}
 		if( $this->limit ) {
-			$query->setRows( $this->limit );
+			$query->setLimit( $this->limit );
 		}
-
-		// Namespaces
-		$query = self::setNamespaceFilter( $this->namespaces, $query );
-
-		$dismax = $query->getDismax();
-		$dismax->setQueryParser( 'edismax' );
-		$dismax->setPhraseFields( 'title^1000.0 text^1000.0' );
-		$dismax->setPhraseSlop( '3' );
-		$dismax->setQueryFields( 'title^20.0 text^3.0' );
-
-		$highlighting = $query->getHighlighting();
+		$filters[] = CirrusSearch::buildNamespaceFilter( $this->namespaces );
 
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
-			function ( $matches ) use ( $query, $highlighting ) {
+			function ( $matches ) use ( &$filters ) {
 				$key = $matches['key'];
 				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
 					case 'incategory':
-						$query->createFilterQuery( "$key:$value" )->setQuery( '+category:%P1%', array( $value ) );
+						$filters[] = new \Elastica\Filter\Term( array( 'category' => $value ) );
+						// TODO I used to add highlighting here for $value
 						return '';
 					case 'prefix':
-						$query->createFilterQuery( "$key:$value" )->setQuery( '+titlePrefix:%P1% OR +textPrefix:%P1%', array( $value ) );
-						addHighlighting( $highlighting, "$value*" );
+						// TODO maybe we're better 
+						$filter = new \Elastica\Filter\BoolOr();
+						$filter->addFilter( new \Elastica\Filter\Prefix( 'title', $value ) );
+						$filter->addFilter( new \Elastica\Filter\Prefix( 'text', $value ) );
+						$filters[] = $filter;
+						// TODO I used to add highlighting here for $value*
 						return '';
 					case 'intitle':
-						$query->createFilterQuery( "$key:$value" )->setQuery( '+title:%P1%', array( $value ) );
-						addHighlighting( $highlighting, $value );
+						$filters[] = new \Elastica\Filter\Term( array( 'title' => $value ) );
+						// TODO I used to add highlighting here for $value
 						return '';
 					default:
 						return $matches[0];
@@ -154,36 +143,42 @@ class CirrusSearch extends SearchEngine {
 			$term
 		);
 
-		if ( $this->namespaces !== null ) {
-			$query->createFilterQuery( 'namspaces' )->setQuery( '+namespace:(' . implode( ' OR ', $this->namespaces ) . ')' );
-		}
+		// TODO do I really not have to/get to specify the terms to try to highlight?
+		// This seems out of the style of the rest of the Elastica....
+		$query->setHighlight( array( 
+			'pre_tags' => array( '<span class="searchmatch">' ),
+			'post_tags' => array( '</span>' ),
+			'fields' => array(
+				'title' => array( 'number_of_fragments' => 0 ), // Don't fragment the title - it is too small.
+				'text' => array( 'number_of_fragments' => 1 )
+			)
+		) );
 
-		/*
-		 * Escape some special characters that we don't want users to pass to solr directly.
-		 * These special characters _aren't_ escaped: * and ~
-		 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
-		 * idea but this is so rarely used that adding extra code to flip prefix searches into
-		 * real prefix searches isn't really worth it.  The same goes for postfix searches but
-		 * doubly because we don't have a postfix index (backwards ngram.)
-		 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
-		 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
-		 * extra index for.
-		 */
-		$term = preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|\?|:|\\\)/', '\\\$1', $term );
+		$filters = array_filter( $filters );
+		if ( count( $filters ) ) {
+			$filter = new \Elastica\Filter\BoolAnd();
+			$filter->setFilters( $filters );
+			$query->setFilter( $filter );
+			wfDebugLog( 'CirrusSearch', 'Setting up ' . count( $filters ) . ' filter' );
+		}
 
 		// Actual text query
-		if ( trim( $term ) === '' ) {
-			$term = '*:*';
-		} else {
-			$spellCheck = $query->getSpellCheck()->setQuery( $term );
-			addHighlighting( $highlighting, $term );
+		if ( trim( $term ) !== '' ) {
+			// TODO make sure the query is well formed or make elasticsearch do it.
+			$queryStringQuery = new \Elastica\Query\QueryString( $term );
+			$queryStringQuery->setFields( array( 'title^20.0', 'text^3.0' ) );
+			$queryStringQuery->setAutoGeneratePhraseQueries( true );
+			$queryStringQuery->setPhraseSlop( 3 );
+			// TODO phrase match boosts?
+			$query->setQuery( $queryStringQuery );
+			// TODO spellcheck
 		}
-		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
-		$query->setQuery( $term );
 
 		// Perform the search and return a result set
 		try {
-			return new CirrusSearchResultSet( $client->select( $query ) );
+			$result = CirrusSearch::getPageType()->search( $query );
+			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
+			return new CirrusSearchResultSet( $result );
 		} catch ( Solarium_Exception $e ) {
 			$status = new Status();
 			$status->warning( 'cirrussearch-backend-error' );
@@ -196,13 +191,12 @@ class CirrusSearch extends SearchEngine {
 	 * Filter a query to only return results in given namespace(s)
 	 *
 	 * @param array $ns Array of namespaces
-	 * @param Solarium_Query $query
-	 * @return Solarium_Query
 	 */
-	private static function setNamespaceFilter( array $ns, $query ) {
-		$query->createFilterQuery( 'namespace' )
-				->setQuery( 'namespace:' . implode( ' OR ', $ns ) );
-		return $query;
+	private static function buildNamespaceFilter( array $ns ) {
+		if ( $ns !== null && count( $ns ) ) {
+			return new \Elastica\Filter\Terms( 'namespace', $ns );
+		}
+		return null;
 	}
 
 	public function update( $id, $title, $text ) {
@@ -247,30 +241,29 @@ class CirrusSearchResultSet extends SearchResultSet {
 
 	public function __construct( $res ) {
 		$this->result = $res;
-		$this->docs = $res->getDocuments();
 		$this->hits = $res->count();
-		$this->totalHits = $res->getNumFound();
-		$spellcheck = $res->getSpellcheck();
+		$this->totalHits = $res->getTotalHits();
+		// $spellcheck = $res->getSpellcheck();
 		$this->suggestionQuery = null;
 		$this->suggestionSnippet = null;
-		if ( $spellcheck !== null && !$spellcheck->getCorrectlySpelled()  ) {
-			$collation = $spellcheck->getCollation();
-			if ( $collation !== null ) {
-				$this->suggestionQuery = $collation->getQuery();
-				$keys = array();
-				$highlightedKeys = array();
-				foreach ( $collation->getCorrections() as $misspelling => $correction ) {
-					// Oddly Solr will sometimes claim that a word is misspelled and then not provide a better spelling for it.
-					if ( $misspelling === $correction ) {
-						continue;
-					}
-					// TODO escaping danger
-					$keys[] = "/$correction/";
-					$highlightedKeys[] = "<em>$correction</em>";
-				}
-				$this->suggestionSnippet = preg_replace( $keys, $highlightedKeys, $this->suggestionQuery );
-			}
-		}
+		// if ( $spellcheck !== null && !$spellcheck->getCorrectlySpelled()  ) {
+		// 	$collation = $spellcheck->getCollation();
+		// 	if ( $collation !== null ) {
+		// 		$this->suggestionQuery = $collation->getQuery();
+		// 		$keys = array();
+		// 		$highlightedKeys = array();
+		// 		foreach ( $collation->getCorrections() as $misspelling => $correction ) {
+		// 			// Oddly Solr will sometimes claim that a word is misspelled and then not provide a better spelling for it.
+		// 			if ( $misspelling === $correction ) {
+		// 				continue;
+		// 			}
+		// 			// TODO escaping danger
+		// 			$keys[] = "/$correction/";
+		// 			$highlightedKeys[] = "<em>$correction</em>";
+		// 		}
+		// 		$this->suggestionSnippet = preg_replace( $keys, $highlightedKeys, $this->suggestionQuery );
+		// 	}
+		// }
 	}
 
 	public function hasResults() {
@@ -298,13 +291,12 @@ class CirrusSearchResultSet extends SearchResultSet {
 	}
 
 	public function next() {
-		static $pos = 0;
-		$solrResult = null;
-		if( isset( $this->docs[$pos] ) ) {
-			$solrResult = new CirrusSearchResult( $this->result, $this->docs[$pos] );
-			$pos++;
+		$current = $this->result->current();
+		if ( $current ) {
+			$this->result->next();
+			return new CirrusSearchResult( $current );	
 		}
-		return $solrResult;
+		return false;
 	}
 }
 
@@ -314,19 +306,17 @@ class CirrusSearchResultSet extends SearchResultSet {
 class CirrusSearchResult extends SearchResult {
 	private $titleSnippet, $textSnippet;
 
-	public function __construct( $result, $doc ) {
-		$fields = $doc->getFields();
-		$highlighting = $result->getHighlighting()->getResult( $fields[ 'id' ] )->getFields();
-
-		$this->initFromTitle( Title::makeTitle( $fields['namespace'], $fields[ 'title' ] ) );
-		if ( isset( $highlighting[ 'title' ] ) ) {
+	public function __construct( $result ) {
+		$this->initFromTitle( Title::makeTitle( $result->namespace, $result->title ) );
+		$highlights = $result->getHighlights();
+		if ( isset( $highlights[ 'title' ] ) ) {
 			// @todo: This should also show the namespace, we know it
-			$this->titleSnippet = $highlighting[ 'title' ][ 0 ];
+			$this->titleSnippet = $highlights[ 'title' ][ 0 ];
 		} else {
 			$this->titleSnippet = '';
 		}
-		if ( isset( $highlighting[ 'text' ] ) ) {
-			$this->textSnippet = $highlighting[ 'text' ][ 0 ];
+		if ( isset( $highlights[ 'text' ] ) ) {
+			$this->textSnippet = $highlights[ 'text' ][ 0 ];
 		} else {
 			list( $contextLines, $contextChars ) = SearchEngine::userHighlightPrefs();
 			$this->initText();

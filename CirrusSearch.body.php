@@ -68,6 +68,7 @@ class CirrusSearch extends SearchEngine {
 		// Query params
 		$query->setLimit( $limit );
 		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
+		// TODO should prefix searches use term based edge ngrams like with did with solr?
 		// TODO remove the strtolower and let elasticsearch do it because it is a tokenizing beast
 		$query->setQuery( new \Elastica\Query\Prefix( array( 'title' => strtolower( $search ) ) ) );
 
@@ -121,11 +122,11 @@ class CirrusSearch extends SearchEngine {
 				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
 					case 'incategory':
-						$filters[] = new \Elastica\Filter\Term( array( 'category' => $value ) );
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'category', $value ) );
 						// TODO I used to add highlighting here for $value
 						return '';
 					case 'prefix':
-						// TODO maybe we're better 
+						// TODO should prefix searches use term based edge ngrams like with did with solr?
 						$filter = new \Elastica\Filter\BoolOr();
 						$filter->addFilter( new \Elastica\Filter\Prefix( 'title', $value ) );
 						$filter->addFilter( new \Elastica\Filter\Prefix( 'text', $value ) );
@@ -133,7 +134,7 @@ class CirrusSearch extends SearchEngine {
 						// TODO I used to add highlighting here for $value*
 						return '';
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Term( array( 'title' => $value ) );
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title', $value ) );
 						// TODO I used to add highlighting here for $value
 						return '';
 					default:

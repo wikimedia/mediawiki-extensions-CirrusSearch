@@ -41,7 +41,7 @@ $messages['be-tarask'] = array(
  * @author Metalhead64
  */
 $messages['de'] = array(
-	'cirrussearch-desc' => 'Solr-betriebene Suche für MediaWiki',
+	'cirrussearch-desc' => 'Solr-betriebene Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
 );
 
@@ -49,7 +49,7 @@ $messages['de'] = array(
  * @author Gomoko
  */
 $messages['fr'] = array(
-	'cirrussearch-desc' => 'Recherche basée sur Solr pour MédiaWiki',
+	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
 	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
 );
 
@@ -57,7 +57,7 @@ $messages['fr'] = array(
  * @author Toliño
  */
 $messages['gl'] = array(
-	'cirrussearch-desc' => 'Procura baseada en Solr para MediaWiki',
+	'cirrussearch-desc' => 'Fai que a procura estea baseada en Solr',
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
 );
 
@@ -74,7 +74,7 @@ $messages['it'] = array(
  * @author Shirayuki
  */
 $messages['ja'] = array(
-	'cirrussearch-desc' => 'MediaWiki 用の Solr による検索',
+	'cirrussearch-desc' => '検索に Solr 機能を追加する',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 );
 

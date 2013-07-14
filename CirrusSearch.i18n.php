@@ -45,6 +45,14 @@ $messages['de'] = array(
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
 );
 
+/** Spanish (español)
+ * @author Luis Felipe Schenone
+ */
+$messages['es'] = array(
+	'cirrussearch-desc' => 'Hace que la búsqueda sea con Solr',
+	'cirrussearch-backend-error' => 'No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.',
+);
+
 /** French (français)
  * @author Gomoko
  */
@@ -90,7 +98,7 @@ $messages['lb'] = array(
  * @author Bjankuloski06
  */
 $messages['mk'] = array(
-	'cirrussearch-desc' => 'Пребарување на МедијаВики со Solr',
+	'cirrussearch-desc' => 'Пребарување со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
 );
 

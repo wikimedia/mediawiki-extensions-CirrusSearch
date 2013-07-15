@@ -1,6 +1,6 @@
 <?php
 /**
- * Wrapper around the update/delete mechanisms within Solr
+ * Wrapper around the update/delete mechanisms within elasticsearch
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 class CirrusSearchUpdater {
 	/**
-	 * This updates pages in Solr.
+	 * This updates pages in elasticsearch.
 	 *
 	 * @param array $pageData An array of revisions and their pre-processed
 	 * data. The format is as follows:
@@ -80,27 +80,23 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * Delete pages from the Solr index
+	 * Delete pages from the elasticsearch index
 	 *
 	 * @param array $pageIds An array of page ids to delete from the index
 	 */
 	public static function deletePages( $pageIds ) {
 		wfProfileIn( __METHOD__ );
 
-		$client = CirrusSearch::getClient();
-		$host = $client->getAdapter()->getHost();
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Delete', "_solr:host:$host",
-			array( 'doWork' => function() use ( $client ) {
-				$client = CirrusSearch::getClient();
-				$update = $client->createUpdate();
-				foreach ( $pageIds as $pid ) {
-					$update->addDeleteById( $pid );
-				}
-				$update->addCommit();
+		$method = __METHOD__;
+		// TODO I think this needs more configuration somewhere
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
+			array( 'doWork' => function() use ( $pageIds, $method ) {
+				wfProfileIn( $method . '::doWork' );
 				try {
-					$result = $client->update( $update );
-					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getQueryTime() . ' millis and has status ' . $result->getStatus() );
-				} catch ( Solarium_Exception $e ) {
+					$result = CirrusSearch::getPageType()->deleteIds( $pageIds );
+					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
+				} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
+					// TODO verify this is the right exception
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 				}
 			}

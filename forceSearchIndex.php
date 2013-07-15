@@ -89,15 +89,15 @@ class ForceSolrIndex extends Maintenance {
 				$minId = $lastRevision->getTitle()->getArticleID();
 				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
-				$titlesToDelete = array();
+				$idsToDelete = array();
 				foreach( $titles as $t ) {
-					$titlesToDelete[] = $t['page'];
+					$idsToDelete[] = $t['page'];
 					$lastTitle = $t;
 				}
 				$minUpdate = $lastTitle['timestamp'];
 				$minNamespace = $lastTitle['namespace'];
 				$minTitle = $lastTitle['title'];
-				CirrusSearchUpdater::deleteTitles( $titlesToDelete );
+				CirrusSearchUpdater::deletePages( $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );

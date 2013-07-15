@@ -115,7 +115,7 @@ $messages['ms'] = array(
  * @author Siebrand
  */
 $messages['nl'] = array(
-	'cirrussearch-desc' => 'Zoeken via Solr voor MediaWiki',
+	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
 );
 

@@ -55,25 +55,35 @@ class CirrusSearchUpdater {
 	}
 
 	public static function buildDocumentforRevision( $revision, $text ) {
+		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
 		$title = $revision->getTitle();
 		$article = new Article( $title, $revision->getId() );
 		$parserOutput = $article->getParserOutput( $revision->getId() );
 
-		// TODO this seems aweful hacky
 		$categories = array();
 		foreach ( $parserOutput->getCategories() as $key => $value ) {
 			$categories[] = $key;
 		}
 
+		$redirectLinks = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
+		$redirects = array();
+		foreach ( $redirectLinks as $redirect ) {
+			$redirects[] = array(
+				'namespace' => $redirect->getNamespace(),
+				'title' => $redirect->getText()
+			);
+		}
+
 		$doc = new \Elastica\Document( $revision->getPage(), array(
 			'namespace' => $title->getNamespace(),
 			'title' => $title->getText(),
-			'text' => Sanitizer::stripAllTags( $text ),
+			'text' => $fields[ 'text' ] = Sanitizer::stripAllTags( $text ),
 			'textLen' => $revision->getSize(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
-			'category' => $categories
-		));
+			'category' => $categories,
+			'redirect' => $redirects
+		) );
 
 		wfProfileOut( __METHOD__ );
 		return $doc;

@@ -49,6 +49,9 @@ $wgCirrusSearchReplicaCount = 1;
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestMaxErrors = 5;
 
+// Maximum number of redirects per target page to index.  
+$wgCirrusSearchIndexedRedirects = 1024;
+
 
 
 $dir = __DIR__ . '/';

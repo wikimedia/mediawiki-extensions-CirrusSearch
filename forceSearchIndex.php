@@ -135,7 +135,8 @@ class ForceSearchIndex extends Maintenance {
 					"$minId < page_id"
 					. $toIdPart
 					. ' AND rev_text_id = old_id'
-					. ' AND rev_id = page_latest',
+					. ' AND rev_id = page_latest'
+					. ' AND page_is_redirect = 0',
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -150,7 +151,8 @@ class ForceSearchIndex extends Maintenance {
 					. ' AND rev_text_id = old_id'
 					. ' AND rev_id = page_latest'
 					. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
-					. " AND rev_timestamp <= $maxUpdate",
+					. " AND rev_timestamp <= $maxUpdate"
+					. ' AND page_is_redirect = 0',
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
 				       'LIMIT' => $this->mBatchSize )

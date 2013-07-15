@@ -277,9 +277,12 @@ class UpdateElasticsearchIndex extends Maintenance {
 		return array(
 			'title' => $this->buildFieldWithSuggest( 'title' ),
 			'text' => $this->buildFieldWithSuggest( 'text' ),
-			'category' => array(
-				'type' => 'string',
-				'analyzer' => 'text'
+			'category' => array( 'type' => 'string', 'analyzer' => 'text' ),
+			'redirect' => array(
+				'type' => 'object',
+				'properties' => array(
+					'title' => array( 'type' => 'string', 'analyzer' => 'text' )
+				)
 			)
 		);
 	}

@@ -20,6 +20,8 @@
 class CirrusSearch extends SearchEngine {
 	const PHRASE_TITLE = 'phrase_title';
 	const PHRASE_TEXT = 'phrase_text';
+	const HIGHLIGHT_PRE = '<span class="searchmatch">';
+	const HIGHLIGHT_POST = '</span>';
 
 	/**
 	 * Singleton instance of the client
@@ -105,7 +107,7 @@ class CirrusSearch extends SearchEngine {
 
 		// Boilerplate
 		$query = new Elastica\Query();
-		$query->setFields( array( 'id', 'title', 'namespace' ) );
+		$query->setFields( array( 'id', 'title', 'namespace', 'redirect' ) );
 
 		$filters = array();
 
@@ -150,11 +152,12 @@ class CirrusSearch extends SearchEngine {
 
 		// This seems out of the style of the rest of the Elastica....
 		$query->setHighlight( array( 
-			'pre_tags' => array( '<span class="searchmatch">' ),
-			'post_tags' => array( '</span>' ),
+			'pre_tags' => array( CirrusSearch::HIGHLIGHT_PRE ),
+			'post_tags' => array( CirrusSearch::HIGHLIGHT_POST ),
 			'fields' => array(
 				'title' => array( 'number_of_fragments' => 0 ), // Don't fragment the title - it is too small.
-				'text' => array( 'number_of_fragments' => 1 )
+				'text' => array( 'number_of_fragments' => 1 ),
+				'redirect.title' => array( 'number_of_fragments' => 0 ), // The redirect field is just like the title field.
 			)
 		) );
 
@@ -172,7 +175,7 @@ class CirrusSearch extends SearchEngine {
 		// Actual text query
 		if ( trim( $term ) !== '' ) {
 			$queryStringQuery = new \Elastica\Query\QueryString( CirrusSearch::escapeQueryString( $term ) );
-			$queryStringQuery->setFields( array( 'title^20.0', 'text^3.0' ) );
+			$queryStringQuery->setFields( array( 'title^20.0', 'redirect.title^15.0', 'text^3.0' ) );
 			$queryStringQuery->setAutoGeneratePhraseQueries( true );
 			$queryStringQuery->setPhraseSlop( 3 );
 			// TODO phrase match boosts?
@@ -185,6 +188,7 @@ class CirrusSearch extends SearchEngine {
 						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors
 					)
 				),
+				// TODO redirects here too?
 				CirrusSearch::PHRASE_TEXT => array(
 					'phrase' => array(
 						'field' => 'text.suggest',
@@ -235,10 +239,20 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function update( $id, $title, $text ) {
-		CirrusSearchUpdater::updateRevisions( array( array(
-			'rev' => Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id ),
-			'text' => $text
-		) ) );
+		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
+		$content = $revision->getContent();
+		if ( $content->isRedirect() ) {
+			$target = $content->getUltimateRedirectTarget();
+			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
+			$targetRevision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+			$newUpdate = new SearchUpdate( $target->getArticleID(), $target, $targetRevision->getContent() );
+			$newUpdate->doUpdate();
+		} else {
+			CirrusSearchUpdater::updateRevisions( array( array(
+				'rev' => $revision,
+				'text' => $text
+			) ) );
+		}
 	}
 
 	public function updateTitle( $id, $title ) {
@@ -254,8 +268,6 @@ class CirrusSearch extends SearchEngine {
 		if( $c ) {
 			switch ( $c->getModel() ) {
 				case CONTENT_MODEL_WIKITEXT:
-					// @todo Possibly strip other templates here?
-					// See TODO document
 					$article = new Article( $t, 0 );
 					$text = $article->getParserOutput()->getText();
 					break;
@@ -338,7 +350,7 @@ class CirrusSearchResultSet extends SearchResultSet {
  * An individual search result for Solr
  */
 class CirrusSearchResult extends SearchResult {
-	private $titleSnippet, $textSnippet;
+	private $titleSnippet, $redirectTitle, $redirectSnipppet, $textSnippet;
 
 	public function __construct( $result ) {
 		$this->initFromTitle( Title::makeTitle( $result->namespace, $result->title ) );
@@ -348,6 +360,13 @@ class CirrusSearchResult extends SearchResult {
 			$this->titleSnippet = $highlights[ 'title' ][ 0 ];
 		} else {
 			$this->titleSnippet = '';
+		}
+		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
+			$this->redirectSnipppet = $highlights[ 'redirect.title' ][ 0 ];
+			$this->redirectTitle = $this->findRedirectTitle( $result->redirect );
+		} else {
+			$this->redirectSnipppet = '';
+			$this->redirectTitle = null;
 		}
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$this->textSnippet = $highlights[ 'text' ][ 0 ];
@@ -364,8 +383,39 @@ class CirrusSearchResult extends SearchResult {
 		}
 	}
 
+	/**
+	 * Build the redirect title from the highlighted redirect snippet.
+	 * @param array $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
+	 * @return Title object representing the redirect
+	 */
+	private function findRedirectTitle( $redirects ) {
+		$title = str_replace(
+			array( CirrusSearch::HIGHLIGHT_PRE, CirrusSearch::HIGHLIGHT_POST ),
+			'',
+			$this->redirectSnipppet );
+		// Grab the redirect with the lowest namespace.  That is pretty arbitrary but it prioritizes 0 over others.
+		$best = null;
+		foreach ( $redirects as $redirect ) {
+			if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
+				$best = $redirect;
+			}
+		}
+		if ( $best === null ) {
+			wfLogWarning( "Search backend highlighted a redirect ($title) but didn't return it." );
+		}
+		return Title::makeTitleSafe( $redirect[ 'namespace' ], $redirect[ 'title' ] );
+	}
+
 	public function getTitleSnippet( $terms ) {
 		return $this->titleSnippet;
+	}
+
+	public function getRedirectTitle() {
+		return $this->redirectTitle;
+	}
+
+	public function getRedirectSnippet( $terms ) {
+		return $this->redirectSnipppet;
 	}
 
 	public function getTextSnippet( $terms ) {

@@ -216,7 +216,6 @@ class UpdateElasticsearchIndex extends Maintenance {
 			wfProfileIn( __method__ . '::packageDocs' );
 			$documents = array();
 			while ( $result->current() ) {
-				$this->output( 'Got ' . $result->current()->getId() . "\n" );
 				$documents[] = new \Elastica\Document( $result->current()->getId(), $result->current()->getSource() );
 				$result->next();
 			}

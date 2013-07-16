@@ -105,7 +105,6 @@ class CirrusSearch extends SearchEngine {
 			$term = substr( $term, 1 );
 		}
 
-		// Boilerplate
 		$query = new Elastica\Query();
 		$query->setFields( array( 'id', 'title', 'namespace', 'redirect' ) );
 
@@ -175,7 +174,11 @@ class CirrusSearch extends SearchEngine {
 		// Actual text query
 		if ( trim( $term ) !== '' ) {
 			$queryStringQuery = new \Elastica\Query\QueryString( CirrusSearch::escapeQueryString( $term ) );
-			$queryStringQuery->setFields( array( 'title^20.0', 'redirect.title^15.0', 'text^3.0' ) );
+			$fields = array( 'title^20.0', 'text^3.0' );
+			if ( $this->showRedirects ) {
+				$fields[] = 'redirect.title^15.0';
+			}
+			$queryStringQuery->setFields( $fields );
 			$queryStringQuery->setAutoGeneratePhraseQueries( true );
 			$queryStringQuery->setPhraseSlop( 3 );
 			// TODO phrase match boosts?

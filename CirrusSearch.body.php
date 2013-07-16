@@ -73,8 +73,6 @@ class CirrusSearch extends SearchEngine {
 		// Query params
 		$query->setLimit( $limit );
 		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
-		// TODO should prefix searches use term based edge ngrams like with did with solr?
-		// TODO remove the strtolower and let elasticsearch do it because it is a tokenizing beast
 		$query->setQuery( new \Elastica\Query\Prefix( array( 'title' => strtolower( $search ) ) ) );
 
 		// Perform the search
@@ -118,10 +116,12 @@ class CirrusSearch extends SearchEngine {
 			$query->setLimit( $this->limit );
 		}
 		$filters[] = CirrusSearch::buildNamespaceFilter( $this->namespaces );
+		$extraQueryStrings = array();
 
+		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
-			function ( $matches ) use ( &$filters ) {
+			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
 				$key = $matches['key'];
 				$value = trim( $matches['value'], '"' );
 				switch ( $key ) {
@@ -130,17 +130,9 @@ class CirrusSearch extends SearchEngine {
 							'category', CirrusSearch::escapeQueryString( $value ) ) );
 						return '';
 					case 'prefix':
-						// TODO should prefix searches use term based edge ngrams like with did with solr?
-						$filter = new \Elastica\Filter\Bool();
-						$filter->addShould( new \Elastica\Filter\Prefix( 'title', $value ) );
-						$filter->addShould( new \Elastica\Filter\Prefix( 'text', $value ) );
-						$filters[] = $filter;
-						// TODO I used to add highlighting here for $value*
-						return '';
+						return "$value*";
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
-							'title', CirrusSearch::escapeQueryString( $value ) ) );
-						// TODO I used to add highlighting here for $value
+						$extraQueryStrings[] = 'title:' . CirrusSearch::escapeQueryString( $value );
 						return '';
 					default:
 						return $matches[0];
@@ -172,8 +164,9 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// Actual text query
-		if ( trim( $term ) !== '' ) {
-			$queryStringQuery = new \Elastica\Query\QueryString( CirrusSearch::escapeQueryString( $term ) );
+		if ( trim( $term ) !== '' || !empty( $extraQueryStrings ) ) {
+			$queryStringQueryString = CirrusSearch::escapeQueryString( $term ) . ' ' . implode( ' ', $extraQueryStrings );
+			$queryStringQuery = new \Elastica\Query\QueryString( $queryStringQueryString );
 			$fields = array( 'title^20.0', 'text^3.0' );
 			if ( $this->showRedirects ) {
 				$fields[] = 'redirect.title^15.0';

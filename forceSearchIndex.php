@@ -137,6 +137,8 @@ class ForceSearchIndex extends Maintenance {
 					. ' AND rev_text_id = old_id'
 					. ' AND rev_id = page_latest'
 					. ' AND page_is_redirect = 0',
+					// Note that redirects aren't allowed here because we'll index everything we need from them
+					// when we index the page to which they are redirecting.
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -151,8 +153,8 @@ class ForceSearchIndex extends Maintenance {
 					. ' AND rev_text_id = old_id'
 					. ' AND rev_id = page_latest'
 					. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
-					. " AND rev_timestamp <= $maxUpdate"
-					. ' AND page_is_redirect = 0',
+					. " AND rev_timestamp <= $maxUpdate",
+					// Note that redirects are allowed here so we can pick up redirects made during search downtime
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
 				       'LIMIT' => $this->mBatchSize )
@@ -162,6 +164,10 @@ class ForceSearchIndex extends Maintenance {
 		foreach ( $res as $row ) {
 			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$rev = Revision::newFromRow( $row );
+			if ( $rev->getContent()->isRedirect() ) {
+				$target = $content->getUltimateRedirectTarget();
+				$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+			}
 			$result[] = array(
 				'rev' => $rev,
 				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() )

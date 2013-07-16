@@ -103,7 +103,7 @@ class CirrusSearchUpdater {
 				try {
 					$result = CirrusSearch::getPageType()->deleteIds( $pageIds );
 					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
-				} catch ( \Elastica\Exception\ExceptionInterface  $e ) {
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 				}
 			}

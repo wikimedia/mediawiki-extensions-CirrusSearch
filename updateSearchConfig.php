@@ -176,7 +176,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 			try {
 				$action->send();
 				$this->output( "corrected\n" );
-			} catch ( \Elastica\Exception\ResponseException $e ) {
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
 				$message = $e->getMessage();
 				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n" );
@@ -225,8 +225,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 			try {
 				$updateResult = CirrusSearch::getPageType()->addDocuments( $documents );
 				wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
-			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-				// TODO verify this is the right exception
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 			}
 			wfProfileOut( __method__ . '::sendDocs' );

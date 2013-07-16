@@ -187,6 +187,7 @@ class ForceSearchIndex extends Maintenance {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$logType = $dbr->addQuotes( 'delete' );
+		$logAction = $dbr->addQuotes( 'delete' );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
@@ -195,6 +196,8 @@ class ForceSearchIndex extends Maintenance {
 			'logging',
 			array( 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ),
 				"log_type = $logType"
+				. " AND log_action = $logAction"
+				. ' AND log_page != 0'
 				. " AND ( ( $minUpdate = log_timestamp AND $minNamespace < log_namespace AND $minTitle < log_title )"
 				. "    OR $minUpdate < log_timestamp )"
 				. " AND log_timestamp <= $maxUpdate",

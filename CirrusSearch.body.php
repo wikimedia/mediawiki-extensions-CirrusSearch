@@ -127,12 +127,12 @@ class CirrusSearch extends SearchEngine {
 				switch ( $key ) {
 					case 'incategory':
 						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
-							'category', CirrusSearch::escapeQueryString( $value ) ) );
+							'category', CirrusSearch::fixupQueryString( $value ) ) );
 						return '';
 					case 'prefix':
 						return "$value*";
 					case 'intitle':
-						$extraQueryStrings[] = 'title:' . CirrusSearch::escapeQueryString( $value );
+						$extraQueryStrings[] = 'title:' . CirrusSearch::fixupQueryString( $value );
 						return '';
 					default:
 						return $matches[0];
@@ -165,7 +165,7 @@ class CirrusSearch extends SearchEngine {
 
 		// Actual text query
 		if ( trim( $term ) !== '' || !empty( $extraQueryStrings ) ) {
-			$queryStringQueryString = CirrusSearch::escapeQueryString( $term ) . ' ' . implode( ' ', $extraQueryStrings );
+			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . CirrusSearch::fixupQueryString( $term ) );
 			$queryStringQuery = new \Elastica\Query\QueryString( $queryStringQueryString );
 			$fields = array( 'title^20.0', 'text^3.0' );
 			if ( $this->showRedirects ) {
@@ -221,7 +221,7 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Escape some special characters that we don't want users to pass into query strings directly.
-	 * These special characters _aren't_ escaped: * and ~
+	 * These special characters _aren't_ escaped: *, ~, and "
 	 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
 	 * idea but this is so rarely used that adding extra code to flip prefix searches into
 	 * real prefix searches isn't really worth it.  The same goes for postfix searches but
@@ -229,9 +229,19 @@ class CirrusSearch extends SearchEngine {
 	 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
 	 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
 	 * extra index for.
+	 * ": Perform a phrase search for the quoted term.  If the "s aren't balanced we insert one
+	 * at the end of the term to make sure elasticsearch doesn't barf at us.
 	 */
-	public static function escapeQueryString( $string ) {
-		return preg_replace ( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|\?|:|\\\)/', '\\\$1', $string );
+	public static function fixupQueryString( $string ) {
+		$string = preg_replace( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|\?|:|\\\)/', '\\\$1', $string );
+		if ( !preg_match( '/^(
+				[^"]| 			(?# non quoted terms)
+				"([^"]|\\.)*" 	(?# quoted terms)
+			)*$/x', $string ) ) {
+			$string = $string . '"';
+		}
+
+		return $string;
 	}
 
 	public function update( $id, $title, $text ) {

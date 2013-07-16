@@ -30,7 +30,6 @@ class CirrusSearchUpdater {
 
 		$documents = array();
 		foreach ( $pageData as $page ) {
-			// @todo When $text is null, we only want to update the title, not the whole document
 			$documents[] = CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] );
 		}
 
@@ -42,8 +41,7 @@ class CirrusSearchUpdater {
 				try {
 					$result = CirrusSearch::getPageType()->addDocuments( $documents );
 					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
-				} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-					// TODO verify this is the right exception
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 				}
 				wfProfileOut( $method . '::doWork' );
@@ -78,7 +76,7 @@ class CirrusSearchUpdater {
 		$doc = new \Elastica\Document( $revision->getPage(), array(
 			'namespace' => $title->getNamespace(),
 			'title' => $title->getText(),
-			'text' => $fields[ 'text' ] = Sanitizer::stripAllTags( $text ),
+			'text' => Sanitizer::stripAllTags( $text ),
 			'textLen' => $revision->getSize(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
 			'category' => $categories,
@@ -105,8 +103,7 @@ class CirrusSearchUpdater {
 				try {
 					$result = CirrusSearch::getPageType()->deleteIds( $pageIds );
 					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
-				} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-					// TODO verify this is the right exception
+				} catch ( \Elastica\Exception\ExceptionInterface  $e ) {
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 				}
 			}

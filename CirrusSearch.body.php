@@ -81,7 +81,7 @@ class CirrusSearch extends SearchEngine {
 		try {
 			$result = CirrusSearch::getPageType()->search( $query );
 			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-		} catch ( \Elastica\Exception\ResponseException $e ) {
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			wfLogWarning( "Search backend error during title prefix search for '$search'." );
 			return false;
 		}
@@ -206,7 +206,7 @@ class CirrusSearch extends SearchEngine {
 			$result = CirrusSearch::getPageType()->search( $query );
 			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 			return new CirrusSearchResultSet( $result );
-		} catch ( \Elastica\Exception\ResponseException $e ) {
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$status = new Status();
 			$status->warning( 'cirrussearch-backend-error' );
 			wfLogWarning( "Search backend error during full text search for '$originalTerm'." );
@@ -251,6 +251,12 @@ class CirrusSearch extends SearchEngine {
 			$newUpdate = new SearchUpdate( $target->getArticleID(), $target, $targetRevision->getContent() );
 			$newUpdate->doUpdate();
 		} else {
+			// Technically this is supposed to be just a title update but that is more complicated then
+			// just rebuilding the text.  It doesn't look like these title updates are used frequently
+			// so we'll just go with the simple implementation here.
+			if ( $text === null ) {
+				$text = $this0->getTextFromContent( $revision->getTitle(), $content );
+			}
 			CirrusSearchUpdater::updateRevisions( array( array(
 				'rev' => $revision,
 				'text' => $text

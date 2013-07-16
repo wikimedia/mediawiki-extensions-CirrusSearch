@@ -362,11 +362,15 @@ class CirrusSearchResult extends SearchResult {
 	private $titleSnippet, $redirectTitle, $redirectSnipppet, $textSnippet;
 
 	public function __construct( $result ) {
-		$this->initFromTitle( Title::makeTitle( $result->namespace, $result->title ) );
+		$title = Title::makeTitle( $result->namespace, $result->title );
+		$this->initFromTitle( $title );
 		$highlights = $result->getHighlights();
 		if ( isset( $highlights[ 'title' ] ) ) {
-			// @todo: This should also show the namespace, we know it
-			$this->titleSnippet = $highlights[ 'title' ][ 0 ];
+			$nstext = '';
+			if ( $title->getNamespace() !== 0 ) {
+				$nstext = $title->getNsText() . ':';
+			}
+			$this->titleSnippet = $nstext . $highlights[ 'title' ][ 0 ];
 		} else {
 			$this->titleSnippet = '';
 		}

@@ -54,6 +54,28 @@ should complete quite quickly.  The second command picks up all the updates
 that occurred during the outage and might take significantly longer.
 
 
+PoolCounter
+-----------
+CirrusSearch can leverage the PoolCounter extension to limit the number of concurrent requests to
+elasticsearch.  You can do this by installing the PoolCounter extension and then configuring it in
+LocalSettings.php like so:
+ require_once( "$IP/extensions/PoolCounter/PoolCounterClient.php");
+ $wgPoolCounterConf = array(
+	'CirrusSearch-Update' => array(  // Configuration for all index updates not run by maintenance scripts
+		'class' => 'PoolCounter_Client',
+		'timeout' => 120,
+		'workers' => 20,
+		'maxqueue' => 200,
+	),
+	'CirrusSearch-Search' => array(  // Configuration for all searches
+		'class' => 'PoolCounter_Client',
+		'timeout' => 30,
+		'workers' => 50,
+		'maxqueue' => 10,
+	)
+ );
+
+
 Submodule
 ---------
 CirrusSearch includes the Elastica library as a git submodule.  If you clone this repository you'll need to:

@@ -93,11 +93,20 @@ class CirrusSearch extends SearchEngine {
 		$query->setQuery( new \Elastica\Query\Prefix( array( 'title' => strtolower( $search ) ) ) );
 
 		// Perform the search
-		try {
-			$result = CirrusSearch::getPageType()->search( $query );
-			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			wfLogWarning( "Search backend error during title prefix search for '$search'." );
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+			'doWork' => function() use ( $search, $query ) {
+				try {
+					$result = CirrusSearch::getPageType()->search( $query );
+					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
+					return $result;
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					wfLogWarning( "Search backend error during title prefix search for '$search'." );
+					return false;
+				}
+			}
+		) );
+		$result = $work->execute();
+		if ( !$result ) {
 			return false;
 		}
 
@@ -211,17 +220,27 @@ class CirrusSearch extends SearchEngine {
 			));
 		}
 
-		// Perform the search and return a result set
-		try {
-			$result = CirrusSearch::getPageType()->search( $query );
-			wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-			return new CirrusSearchResultSet( $result );
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+		// Perform the search
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+			'doWork' => function() use ( $originalTerm, $query ) {
+				try {
+					$result = CirrusSearch::getPageType()->search( $query );
+					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
+					return $result;
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					wfLogWarning( "Search backend error during full text search for '$originalTerm'.  " .
+						"Error message is:  " . $e->getMessage() );
+					return false;
+				}
+			}
+		) );
+		$result = $work->execute();
+		if ( !$result ) {
 			$status = new Status();
 			$status->warning( 'cirrussearch-backend-error' );
-			wfLogWarning( "Search backend error during full text search for '$originalTerm'." );
 			return $status;
 		}
+		return new CirrusSearchResultSet( $result );
 	}
 
 	/**

@@ -22,22 +22,18 @@ class CirrusSearch extends SearchEngine {
 	const PHRASE_TEXT = 'phrase_text';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
+	const PAGE_TYPE_NAME = 'page';
 
 	/**
 	 * Singleton instance of the client
 	 *
-	 * @var \Elastica\Index
+	 * @var \Elastica\Client
 	 */
-	private static $index = null;
+	private static $client = null;
 
-	/**
-	 * Fetch the Elastica Index.
-	 *
-	 * @return \Elastica\Index
-	 */
-	public static function getIndex() {
-		if ( self::$index != null ) {
-			return self::$index;
+	public static function getClient() {
+		if ( self::$client != null ) {
+			return self::$client;
 		}
 		global $wgCirrusSearchServers, $wgCirrusSearchMaxRetries;
 
@@ -46,12 +42,33 @@ class CirrusSearch extends SearchEngine {
 		foreach ( $wgCirrusSearchServers as $server ) {
 			$servers[] = array('host' => $server);
 		}
-		$client = new \Elastica\Client( array(
+		self::$client = new \Elastica\Client( array(
 			'servers' => $servers
 		) );
-		self::$index = $client->getIndex( wfWikiId() );
+		return self::$client;
+	}
 
-		return self::$index;
+	/**
+	 * Fetch the Elastica Index.
+	 *
+	 * @param mixed $identifier if specified get the named identified version of the index
+	 * @return \Elastica\Index
+	 */
+	public static function getIndex( $identifier = false ) {
+		return CirrusSearch::getClient()->getIndex( CirrusSearch::getIndexName( $identifier ) );
+	}
+
+	/**
+	 * Get the name of the index.
+	 * @param mixed $identifier if specified get the named identifier of the index
+	 * @return string name index should have considering $identifier
+	 */
+	public static function getIndexName( $identifier = false ) {
+		$name = wfWikiId();
+		if ( $identifier ) {
+			$name = $name . '_' . $identifier;
+		}
+		return $name;
 	}
 
 	/**
@@ -60,7 +77,7 @@ class CirrusSearch extends SearchEngine {
 	 * @ \Elastica\Type
 	 */
 	static function getPageType() {
-		return CirrusSearch::getIndex()->getType('page');
+		return CirrusSearch::getIndex()->getType( CirrusSearch::PAGE_TYPE_NAME );
 	}
 
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {

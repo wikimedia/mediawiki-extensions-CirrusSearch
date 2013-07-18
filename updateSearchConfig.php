@@ -217,7 +217,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 				$otherIndeciesWithAlias[] = $index->getName();
 			}
 		}
-		if ( empty( $otherIndeciesWithAlias ) ) {
+		if ( !$otherIndeciesWithAlias ) {
 			$this->output( "alias is free..." );
 			$this->getIndex()->addAlias( CirrusSearch::getIndexName(), false );
 			$this->output( "corrected\n" );

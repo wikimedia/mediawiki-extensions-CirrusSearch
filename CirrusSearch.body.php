@@ -190,7 +190,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// Actual text query
-		if ( trim( $term ) !== '' || !empty( $extraQueryStrings ) ) {
+		if ( trim( $term ) !== '' || $extraQueryStrings ) {
 			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . CirrusSearch::fixupQueryString( $term ) );
 			$queryStringQuery = new \Elastica\Query\QueryString( $queryStringQueryString );
 			$fields = array( 'title^20.0', 'text^3.0' );

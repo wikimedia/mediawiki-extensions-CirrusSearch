@@ -134,6 +134,14 @@ $messages['sv'] = array(
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
 );
 
+/** Ukrainian (українська)
+ * @author Ата
+ */
+$messages['uk'] = array(
+	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
+	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+);
+
 /** Traditional Chinese (中文（繁體）‎)
  * @author Justincheng12345
  */

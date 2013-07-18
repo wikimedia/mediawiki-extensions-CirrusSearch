@@ -23,7 +23,7 @@ require_once( "maintenance/Maintenance.php" );
  * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
  * job. In an ideal world, we could just use that script and kill all of this.
  */
-class ForceSolrIndex extends Maintenance {
+class ForceSearchIndex extends Maintenance {
 	var $from = null;
 	var $to = null;
 	var $toId = null;
@@ -89,15 +89,15 @@ class ForceSolrIndex extends Maintenance {
 				$minId = $lastRevision->getTitle()->getArticleID();
 				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
-				$titlesToDelete = array();
+				$idsToDelete = array();
 				foreach( $titles as $t ) {
-					$titlesToDelete[] = $t['page'];
+					$idsToDelete[] = $t['page'];
 					$lastTitle = $t;
 				}
 				$minUpdate = $lastTitle['timestamp'];
 				$minNamespace = $lastTitle['namespace'];
 				$minTitle = $lastTitle['title'];
-				CirrusSearchUpdater::deleteTitles( $titlesToDelete );
+				CirrusSearchUpdater::deletePages( $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -135,7 +135,10 @@ class ForceSolrIndex extends Maintenance {
 					"$minId < page_id"
 					. $toIdPart
 					. ' AND rev_text_id = old_id'
-					. ' AND rev_id = page_latest',
+					. ' AND rev_id = page_latest'
+					. ' AND page_is_redirect = 0',
+					// Note that redirects aren't allowed here because we'll index everything we need from them
+					// when we index the page to which they are redirecting.
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -151,6 +154,7 @@ class ForceSolrIndex extends Maintenance {
 					. ' AND rev_id = page_latest'
 					. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
 					. " AND rev_timestamp <= $maxUpdate",
+					// Note that redirects are allowed here so we can pick up redirects made during search downtime
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
 				       'LIMIT' => $this->mBatchSize )
@@ -160,6 +164,10 @@ class ForceSolrIndex extends Maintenance {
 		foreach ( $res as $row ) {
 			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$rev = Revision::newFromRow( $row );
+			if ( $rev->getContent()->isRedirect() ) {
+				$target = $content->getUltimateRedirectTarget();
+				$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+			}
 			$result[] = array(
 				'rev' => $rev,
 				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() )
@@ -179,6 +187,7 @@ class ForceSolrIndex extends Maintenance {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$logType = $dbr->addQuotes( 'delete' );
+		$logAction = $dbr->addQuotes( 'delete' );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
@@ -187,6 +196,8 @@ class ForceSolrIndex extends Maintenance {
 			'logging',
 			array( 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ),
 				"log_type = $logType"
+				. " AND log_action = $logAction"
+				. ' AND log_page != 0'
 				. " AND ( ( $minUpdate = log_timestamp AND $minNamespace < log_namespace AND $minTitle < log_title )"
 				. "    OR $minUpdate < log_timestamp )"
 				. " AND log_timestamp <= $maxUpdate",
@@ -208,5 +219,5 @@ class ForceSolrIndex extends Maintenance {
 	}
 }
 
-$maintClass = "ForceSolrIndex";
+$maintClass = "ForceSearchIndex";
 require_once RUN_MAINTENANCE_IF_MAIN;

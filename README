@@ -4,84 +4,87 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Fetch both this plugin and the Solarium plugin into your extensions directory.
+Fetch this plugin plugin into your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 Add this to LocalSettings.php:
- require_once( "$IP/extensions/Solarium/Solarium.php" );
  require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
  $wgDisableSearchUpdate = true;
 
-Now run this script to generate your Solr config:
- php maintenance/buildSolrConfig.php
+Configure your search servers in LocalSettings.php:
+ $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
+There are other $wgCirrusSearch variables that you might want to change from their defaults.
+If you want to change them then set their new values with $wgCirrusSearchServers in LocalSettings.php.
 
-Now start solr with that config.  Once it is working remove $wgDisableSearchUpdate = true
-from LocalSettings.php.  Updates should start heading to Solr.  Check on that and make sure they
-are working.
+Now run this script to generate your elasticsearch index:
+ php maintenance/updateSearchConfig.php
+
+Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to elasticsearch.
 
 Next bootstrap the search index by running:
- php maintenance/forceSolrIndex.php
+ php maintenance/forceSearchIndex.php
+Note that this can take some time.  For large wikis read Bootstrapping large wikis below.
 
-Finally add this to LocalSettings.php to funnel queries to Solr:
-$wgSearchType = 'CirrusSearch';
+Once that is complete add this to LocalSettings.php to funnel queries to Solr:
+ $wgSearchType = 'CirrusSearch';
 
 
 Bootstrapping large wikis
 -------------------------
-forceSolrIndex.php accepts the --fromId and --toId parameters which can be used to split up the
+forceSeachIndex.php accepts the --fromId and --toId parameters which can be used to split up the
 work of bootstrapping the wiki into multiple processes.  Most of the load caused by bootstrapping
 is on MySQL but if you've got a really big database or a few slaves then they should be able to
 handle a whole bunch of bootstraps at once.
 
 Also, the --batch-size parameter controls the number documents read from MySQL and inserted into
-Solr at one time.  It defaults to 500 because that seems to give good performence (~100 articles
+elasticsearch at one time.  It defaults to 500 because that seems to give good performence (~100 articles
 per second) in development but you should feel free to play with it.
 
 
-Handling solr outages
----------------------
-If for some reason in process updates to Solr begin failing you can immediately
+Handling elasticsearch outages
+------------------------------
+If for some reason in process updates to elasticsearch begin failing you can immediately
 set "$wgDisableSearchUpdate = true;" in your LocalSettings.php file to
-stop trying to update solr.  Once you figure out what is wrong with Solr you
+stop trying to update elasticsearch.  Once you figure out what is wrong with elasticsearch you
 should turn those updates back on and then run the following:
-php maintenance/forceSolrIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
-php maintenance/forceSolrIndex.php --from <whenever the outage started in ISO 8601 format>
+php maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
+php maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
 
 The first command picks up all the deletes that occurred during the outage and
 should complete quite quickly.  The second command picks up all the updates
 that occurred during the outage and might take significantly longer.
 
 
+PoolCounter
+-----------
+CirrusSearch can leverage the PoolCounter extension to limit the number of concurrent requests to
+elasticsearch.  You can do this by installing the PoolCounter extension and then configuring it in
+LocalSettings.php like so:
+ require_once( "$IP/extensions/PoolCounter/PoolCounterClient.php");
+ $wgPoolCounterConf = array(
+	'CirrusSearch-Update' => array(  // Configuration for all index updates not run by maintenance scripts
+		'class' => 'PoolCounter_Client',
+		'timeout' => 120,
+		'workers' => 20,
+		'maxqueue' => 200,
+	),
+	'CirrusSearch-Search' => array(  // Configuration for all searches
+		'class' => 'PoolCounter_Client',
+		'timeout' => 30,
+		'workers' => 50,
+		'maxqueue' => 10,
+	)
+ );
+
+
+Submodule
+---------
+CirrusSearch includes the Elastica library as a git submodule.  If you clone this repository you'll need to:
+ git submodule init
+ git submodule update
+to drop Elastica into place correctly.
+
+
 Licensing information
 ---------------------
-CirrusSearch makes use of the Solarim library to connect to Solr <http://www.solarium-project.org>.
-It's licensing info is reproduced below:
-
----
-Copyright 2011 Bas de Nooijer. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are
-permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
-
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-      of conditions and the following disclaimer in the documentation and/or other materials
-      provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-The views and conclusions contained in the software and documentation are those of the
-authors and should not be interpreted as representing official policies, either expressed
-or implied, of the copyright holder.
----
-
-CirrusSearch itself is licensed under the GNU GPLv2, full licensing text is in COPYING.
+CirrusSearch makes use of the Elastica library to connect to elasticsearch <http://elastica.io/>.
+It is Apache licensed and you can read the license Elastica/LICENSE.txt.

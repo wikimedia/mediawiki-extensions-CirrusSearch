@@ -1,7 +1,0 @@
-Examples queries directly against solr:
-
-http://8983.solr1.instance-proxy.wmflabs.org/solr/testwiki/select?defType=edismax&qf=title^20.0+text^3.0&pf=title^1000.0+text^1000.0&ps=3&q=war is hell
-This one uses phrase matching to float matched phrases to the top and is probably a good start for the general purpose user entered queries.
-
-http://8983.solr1.instance-proxy.wmflabs.org/solr/testwiki/select?q=+titlePrefix:"new te"
-This one uses prefix match in the way that the prefix match should.

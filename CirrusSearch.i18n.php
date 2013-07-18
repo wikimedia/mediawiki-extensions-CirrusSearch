@@ -10,7 +10,7 @@ $messages = array();
  * English
  */
 $messages['en'] = array(
-	'cirrussearch-desc' => 'Makes the search Solr-powered',
+	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
 	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem.  Please try again later.',
 );
 

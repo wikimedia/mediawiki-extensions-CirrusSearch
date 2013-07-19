@@ -15,9 +15,11 @@ $messages['en'] = array(
 );
 
 /** Message documentation (Message documentation)
+ * @author Shirayuki
  */
 $messages['qqq'] = array(
-	'cirrussearch-desc' => '{{desc}}',
+	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
+"Elasticsearch" and "Solr" are full-text search engines. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
 );
 
@@ -82,7 +84,7 @@ $messages['it'] = array(
  * @author Shirayuki
  */
 $messages['ja'] = array(
-	'cirrussearch-desc' => '検索に Solr 機能を追加する',
+	'cirrussearch-desc' => 'MediaWiki 用の Elasticsearch 検索',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 );
 

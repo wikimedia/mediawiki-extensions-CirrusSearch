@@ -294,7 +294,7 @@ class CirrusSearch extends SearchEngine {
 			// just rebuilding the text.  It doesn't look like these title updates are used frequently
 			// so we'll just go with the simple implementation here.
 			if ( $text === null ) {
-				$text = $this0->getTextFromContent( $revision->getTitle(), $content );
+				$text = $this->getTextFromContent( $revision->getTitle(), $content );
 			}
 			CirrusSearchUpdater::updateRevisions( array( array(
 				'rev' => $revision,

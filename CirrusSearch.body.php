@@ -345,6 +345,9 @@ class CirrusSearchResultSet extends SearchResultSet {
 	private function findSuggestionQuery() {
 		// TODO some kind of weighting?
 		$suggest = $this->result->getResponse()->getData();
+		if ( !array_key_exists( 'suggest', $suggest ) ) {
+			return null;
+		}
 		$suggest = $suggest[ 'suggest' ];
 		foreach ( $suggest[ CirrusSearch::PHRASE_TITLE ][ 0 ][ 'options' ] as $option ) {
 			return $option[ 'text' ];

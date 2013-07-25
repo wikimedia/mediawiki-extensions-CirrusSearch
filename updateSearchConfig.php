@@ -310,13 +310,33 @@ class UpdateElasticsearchIndex extends Maintenance {
 					'text' => $this->buildTextAnalyzer(),
 					'suggest' => array_merge( $this->buildTextAnalyzer(), array(
 						'filter' => array( 'suggest_shingle' )
-					) )
+					) ),
+					'prefix' => array(
+						'type' => 'custom',
+						'tokenizer' => 'prefix',
+						'filter' => 'lowercase'
+					),
+					'prefix_query' => array(
+						'type' => 'custom',
+						'tokenizer' => 'no_splitting',
+						'filter' => 'lowercase'
+					)
 				),
 				'filter' => array(
 					'suggest_shingle' => array(
 						'type' => 'shingle',
 						'min_shingle_size' => 2,
 						'max_shingle_size' => 5
+					),
+					'lowercase' => $this->buildLowercaseFilter()
+				),
+				'tokenizer' => array(
+					'prefix' => array(
+						'type' => 'edgeNGram',
+						'max_gram' => CirrusSearch::MAX_PREFIX_SEARCH
+					),
+					'no_splitting' => array( // Just grab the whole term.
+						'type' => 'keyword'
 					)
 				)
 			)
@@ -332,29 +352,64 @@ class UpdateElasticsearchIndex extends Maintenance {
 		}
 	}
 
+	/**
+	 * Build a lowercase filter.  The filter is customized to the wiki's language.
+	 */
+	private function buildLowercaseFilter() {
+		$filter = array(
+			'type' => 'lowercase'
+		);
+		// At present there are only two language codes that support any customization
+		// beyond the defaults: greek and turkish.
+		global $wgLanguageCode;
+		switch ($wgLanguageCode) {
+			case 'el':
+				$filter['language'] = 'greek';
+				break;
+			case 'tr':
+				$filter['language'] = 'turkish';
+				break;
+		}
+		return $filter;
+	}
+
 	private function buildPageMappings() {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 		return array(
-			'title' => $this->buildFieldWithSuggest( 'title' ),
-			'text' => $this->buildFieldWithSuggest( 'text' ),
-			'category' => array( 'type' => 'string', 'analyzer' => 'text' ),
+			'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ) ),
+			'text' => $this->buildStringField( 'text', array( 'suggest' ) ),
+			'category' => $this->buildStringField(),
 			'redirect' => array(
 				'properties' => array(
-					'title' => array( 'type' => 'string', 'analyzer' => 'text' )
+					'title' => $this->buildStringField()
 				)
 			)
 		);
 	}
 
-	private function buildFieldWithSuggest( $name ) {
-		return array(
+	/**
+	 * Build a string field.
+	 * @param name string Name of the field.  Required if extra is not falsy.
+	 * @param extra array Extra analyzers for this field beyond the basic string type.  If not falsy the
+	 *		field will be a multi_field.
+	 * @return array definition of the field
+	 */
+	private function buildStringField( $name = null, $extra = null ) {
+		$field = array( 'type' => 'string', 'analyzer' => 'text' );
+		if ( !$extra ) {
+			return $field;
+		}
+		$field = array(
 			'type' => 'multi_field',
 			'fields' => array(
-				$name => array( 'type' => 'string', 'analyzer' => 'text' ),
-				'suggest' => array( 'type' => 'string', 'analyzer' => 'suggest' )
+				$name => $field
 			)
 		);
+		foreach ( $extra as $extraname ) {
+			$field['fields'][$extraname] = array( 'type' => 'string', 'analyzer' => $extraname );
+		}
+		return $field;
 	}
 
 	private function closeAndCorrect( $callback ) {

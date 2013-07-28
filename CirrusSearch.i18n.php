@@ -71,6 +71,14 @@ $messages['gl'] = array(
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
 );
 
+/** Interlingua (interlingua)
+ * @author McDutchie
+ */
+$messages['ia'] = array(
+	'cirrussearch-desc' => 'Recerca pro MediaWiki actionate per Elasticsearch',
+	'cirrussearch-backend-error' => 'Un problema temporari ha impedite le completion del recerca. Per favor reproba plus tarde.',
+);
+
 /** Italian (italiano)
  * @author Beta16
  */

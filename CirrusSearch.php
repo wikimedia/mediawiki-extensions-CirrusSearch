@@ -107,6 +107,7 @@ $wgAutoloadClasses['Elastica\Index\Status'] = $elasticaDir . 'Index/Status.php';
 $wgAutoloadClasses['Elastica\Query\AbstractQuery'] = $elasticaDir . 'Query/AbstractQuery.php';
 $wgAutoloadClasses['Elastica\Query\Field'] = $elasticaDir . 'Query/Field.php';
 $wgAutoloadClasses['Elastica\Query\MatchAll'] = $elasticaDir . 'Query/MatchAll.php';
+$wgAutoloadClasses['Elastica\Query\Match'] = $elasticaDir . 'Query/Match.php';
 $wgAutoloadClasses['Elastica\Query\Prefix'] = $elasticaDir . 'Query/Prefix.php';
 $wgAutoloadClasses['Elastica\Query\QueryString'] = $elasticaDir . 'Query/QueryString.php';
 $wgAutoloadClasses['Elastica\Transport\AbstractTransport'] = $elasticaDir . 'Transport/AbstractTransport.php';

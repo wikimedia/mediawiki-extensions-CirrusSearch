@@ -23,6 +23,13 @@ class CirrusSearch extends SearchEngine {
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
 	const PAGE_TYPE_NAME = 'page';
+	/**
+	 * Maximum title length that we'll check in prefix search.  Since titles can
+	 * be 255 bytes in length we're setting this to 255 characters but this
+	 * might cause bloat in the title's prefix index so we'll have to keep an
+	 * eye on this.
+	 */
+	const MAX_PREFIX_SEARCH = 255;
 
 	/**
 	 * Singleton instance of the client
@@ -90,7 +97,12 @@ class CirrusSearch extends SearchEngine {
 		// Query params
 		$query->setLimit( $limit );
 		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
-		$query->setQuery( new \Elastica\Query\Prefix( array( 'title' => strtolower( $search ) ) ) );
+		$match = new \Elastica\Query\Match();
+		$match->setField( 'title.prefix', array(
+			'query' => substr( $search, 0, CirrusSearch::MAX_PREFIX_SEARCH ),
+			'analyzer' => 'prefix_query'
+		) );
+		$query->setQuery( $match );
 
 		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(

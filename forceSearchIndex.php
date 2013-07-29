@@ -17,7 +17,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-require_once( "maintenance/Maintenance.php" );
+
+$IP = getenv( 'MW_INSTALL_PATH' );
+if( $IP === false ) {
+	$IP = __DIR__ . '/../..';
+}
+require_once( "$IP/maintenance/Maintenance.php" );
 
 /**
  * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate

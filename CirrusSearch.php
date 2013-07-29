@@ -122,6 +122,7 @@ $wgAutoloadClasses['Elastica\Type\Mapping'] = $elasticaDir . 'Type/Mapping.php';
  * Also check Setup for other hooks.
  */
 $wgHooks['SearchUpdate'][] = function() { return false; };
+$wgHooks['LinksUpdateComplete'][] = 'CirrusSearch::linksUpdateCompletedHook';
 
 /**
  * i18n

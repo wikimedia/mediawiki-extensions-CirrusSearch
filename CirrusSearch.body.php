@@ -38,6 +38,13 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private static $client = null;
 
+	/**
+	 * Article IDs updated in this process.  Used for deduplication of updates.
+	 *
+	 * @var array(Integer)
+	 */
+	private static $updated = array();
+
 	public static function getClient() {
 		if ( self::$client != null ) {
 			return self::$client;
@@ -295,6 +302,10 @@ class CirrusSearch extends SearchEngine {
 	public function update( $id, $title, $text ) {
 		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
 		$content = $revision->getContent();
+		if ( in_array( $id, CirrusSearch::$updated ) ) {
+			// Already indexed $id
+			return;
+		}
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
@@ -312,7 +323,16 @@ class CirrusSearch extends SearchEngine {
 				'rev' => $revision,
 				'text' => $text
 			) ) );
+			CirrusSearch::$updated[] = $id;
 		}
+	}
+
+	public static function linksUpdateCompletedHook( $linkUpdate ) {
+		$title = $linkUpdate->getTitle();
+		$articleId = $title->getArticleID();
+		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $articleId );
+		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );
+		$update->doUpdate();
 	}
 
 	public function updateTitle( $id, $title ) {

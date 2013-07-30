@@ -312,9 +312,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 			'analysis' => array(
 				'analyzer' => array(
 					'text' => $this->buildTextAnalyzer(),
-					'suggest' => array_merge( $this->buildTextAnalyzer(), array(
-						'filter' => array( 'suggest_shingle' )
-					) ),
+					'suggest' => $this->buildSuggestAnalyzer(),
 					'prefix' => array(
 						'type' => 'custom',
 						'tokenizer' => 'prefix',
@@ -347,13 +345,35 @@ class UpdateElasticsearchIndex extends Maintenance {
 		);
 	}
 
+	/**
+	 * Build a suggest analyzer customized for this language code.
+	 */
 	private function buildTextAnalyzer() {
+		$langs = Language::getTranslatedLanguageNames( 'en' );
+		$analyzer = array(
+			'type' => strtolower( $langs["en"] ),
+		);
+
 		global $wgLanguageCode;
 		switch ($wgLanguageCode) {
-			case 'en': return array(
-				'type' => 'english'
-			);
+			// Customization goes here.
 		}
+
+		return $analyzer;
+	}
+
+	private function buildSuggestAnalyzer() {
+		$analyzer = array(
+			'type' => 'default',
+			'filter' => array( 'suggest_shingle' ),
+		);
+
+		global $wgLanguageCode;
+		switch ($wgLanguageCode) {
+			// Customization goes here.
+		}
+
+		return $analyzer;
 	}
 
 	/**

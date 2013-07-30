@@ -96,6 +96,14 @@ $messages['ja'] = array(
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 );
 
+/** Korean (한국어)
+ * @author 아라
+ */
+$messages['ko'] = array(
+	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 찾기',
+	'cirrussearch-backend-error' => '일시적인 문제 떄문에 찾기를 완료할 수 없습니다. 나중에 다시 시도하세요.',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */

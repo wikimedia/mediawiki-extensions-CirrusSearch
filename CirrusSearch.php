@@ -61,10 +61,6 @@ $elasticaDir = $dir . 'Elastica/lib/Elastica/';
  */
 $wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
-$wgAutoloadClasses['ConfigBuilder'] = $dir . 'config/ConfigBuilder.php';
-$wgAutoloadClasses['SchemaBuilder'] = $dir . 'config/SchemaBuilder.php';
-$wgAutoloadClasses['SolrConfigBuilder'] = $dir . 'config/SolrConfigBuilder.php';
-$wgAutoloadClasses['TypesBuilder'] = $dir . 'config/TypesBuilder.php';
 $wgAutoloadClasses['Elastica\Bulk'] = $elasticaDir . 'Bulk.php';
 $wgAutoloadClasses['Elastica\Client'] = $elasticaDir . 'Client.php';
 $wgAutoloadClasses['Elastica\Connection'] = $elasticaDir . 'Connection.php';

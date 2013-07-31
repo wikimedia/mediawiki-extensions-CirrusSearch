@@ -27,7 +27,7 @@ $messages['qqq'] = array(
  * @author Xuacu
  */
 $messages['ast'] = array(
-	'cirrussearch-desc' => 'Gueta col motor Solr pa MediaWiki',
+	'cirrussearch-desc' => 'Gueta col motor Elasticsearch pa MediaWiki',
 	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
 );
 

@@ -83,7 +83,7 @@ $messages['ia'] = array(
  * @author Beta16
  */
 $messages['it'] = array(
-	'cirrussearch-desc' => 'Ricerca realizzata con Solr per MediaWiki',
+	'cirrussearch-desc' => 'Ricerca realizzata con Elasticsearch per MediaWiki',
 	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
 );
 
@@ -141,7 +141,7 @@ $messages['nl'] = array(
  * @author Joetaras
  */
 $messages['roa-tara'] = array(
-	'cirrussearch-desc' => 'Solr-powered ricerche pe MediaUicchi',
+	'cirrussearch-desc' => 'Ricerche Elasticsearch-powered pe MediaUicchi',
 	'cirrussearch-backend-error' => "Non ge putime combletà 'a ricerca toje pe 'nu probbleme tembonarèe. Pe piacere pruève cchiù tarde.",
 );
 
@@ -158,6 +158,14 @@ $messages['sv'] = array(
 $messages['uk'] = array(
 	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
 	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+);
+
+/** Vietnamese (Tiếng Việt)
+ * @author Minh Nguyen
+ */
+$messages['vi'] = array(
+	'cirrussearch-desc' => 'Công cụ tìm kiếm Elasticsearch dành cho MediaWiki',
+	'cirrussearch-backend-error' => 'Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.',
 );
 
 /** Simplified Chinese (中文（简体）‎)

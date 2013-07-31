@@ -349,9 +349,8 @@ class UpdateElasticsearchIndex extends Maintenance {
 	 * Build a suggest analyzer customized for this language code.
 	 */
 	private function buildTextAnalyzer() {
-		$langs = Language::getTranslatedLanguageNames( 'en' );
 		$analyzer = array(
-			'type' => strtolower( $langs["en"] ),
+			'type' => $this->getTextAnalyzerType(),
 		);
 
 		global $wgLanguageCode;
@@ -374,6 +373,15 @@ class UpdateElasticsearchIndex extends Maintenance {
 		}
 
 		return $analyzer;
+	}
+
+	private function getTextAnalyzerType() {
+		global $wgLanguageCode;
+		if ( array_key_exists( $wgLanguageCode, $this->elasticsearchLanguages ) ) {
+			return $this->elasticsearchLanguages[ $wgLanguageCode ];
+		} else {
+			return 'default';
+		}
 	}
 
 	/**
@@ -465,6 +473,46 @@ class UpdateElasticsearchIndex extends Maintenance {
 	private function getPageType() {
 		return $this->getIndex()->getType( CirrusSearch::PAGE_TYPE_NAME );
 	}
+
+	/**
+	 * Languages for which elasticsearch provides a built in analyzer.  All
+	 * other languages get the default analyzer which isn't too good.  Note
+	 * that this array is sorted alphabetically by value and sourced from
+	 * http://www.elasticsearch.org/guide/reference/index-modules/analysis/lang-analyzer/
+	 */
+	private $elasticsearchLanguages = array(
+		'ar' => 'arabic',
+		'hy' => 'armenian',
+		'eu' => 'basque',
+		'pt-br' => 'brazilian',
+		'bg' => 'bulgarian',
+		'ca' => 'catalan',
+		'zh' => 'chinese',
+		// 'cjk', - we don't use this because we don't have a wiki with all three
+		'cs' => 'czech',
+		'da' => 'danish',
+		'nl' => 'dutch',
+		'en' => 'english',
+		'fi' => 'finnish',
+		'fr' => 'french',
+		'gl' => 'galician',
+		'de' => 'german',
+		'el' => 'greek',
+		'hi' => 'hindi',
+		'hu' => 'hungarian',
+		'id' => 'indonesian',
+		'it' => 'italian',
+		'nb' => 'norwegian',
+		'nn' => 'norwegian',
+		'fa' => 'persian',
+		'pt' => 'portuguese',
+		'ro' => 'romanian',
+		'ru' => 'russian',
+		'es' => 'spanish',
+		'sv' => 'swedish',
+		'tr' => 'turkish',
+		'th' => 'thai'
+	);
 }
 
 $maintClass = "UpdateElasticsearchIndex";

@@ -170,7 +170,7 @@ class ForceSearchIndex extends Maintenance {
 			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$rev = Revision::newFromRow( $row );
 			if ( $rev->getContent()->isRedirect() ) {
-				$target = $content->getUltimateRedirectTarget();
+				$target = $rev->getContent()->getUltimateRedirectTarget();
 				$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
 			}
 			$result[] = array(

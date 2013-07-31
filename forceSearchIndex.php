@@ -68,6 +68,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$operationStartTime = microtime( true );
 		$completed = 0;
+		$rate = 0;
 
 		$minUpdate = $this->from;
 		if ( $this->indexUpdates ) {

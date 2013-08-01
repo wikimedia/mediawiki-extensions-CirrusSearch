@@ -288,7 +288,24 @@ class CirrusSearch extends SearchEngine {
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
 	 */
 	public static function fixupQueryString( $string ) {
-		$string = preg_replace( '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|\?|:|\\\)/', '\\\$1', $string );
+		$string = preg_replace( '/(
+				\+|
+				-|
+				\/|		(?# no regex searches allowed)
+				&&|
+				\|\||
+				!|
+				\(|
+				\)|
+				\{|
+				}|
+				\[|
+				]|
+				\^|
+				\?|
+				:|		(?# no specifying your own fields)
+				\\\
+			)/x', '\\\$1', $string );
 		if ( !preg_match( '/^(
 				[^"]| 			(?# non quoted terms)
 				"([^"]|\\.)*" 	(?# quoted terms)

@@ -90,9 +90,10 @@ class ForceSearchIndex extends Maintenance {
 				break;
 			}
 			if ( $this->indexUpdates ) {
-				$lastRevision = $revisions[$size - 1]['rev'];
-				$minUpdate = new MWTimestamp( $lastRevision->getTimestamp() );
-				$minId = $lastRevision->getTitle()->getArticleID();
+				$last = $revisions[ $size - 1 ];
+				$minUpdate = $last[ 'update' ];
+				$minId = $last[ 'id' ];
+
 				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
 				$idsToDelete = array();
@@ -176,7 +177,9 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$result[] = array(
 				'rev' => $rev,
-				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() )
+				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() ),
+				'id' => $row->page_id,
+				'update' => new MWTimestamp( $row->rev_timestamp ),
 			);
 			wfProfileOut( __METHOD__ . '::decodeResults' );
 		}

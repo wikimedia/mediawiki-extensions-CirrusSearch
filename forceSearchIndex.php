@@ -81,6 +81,9 @@ class ForceSearchIndex extends Maintenance {
 			if ( $this->indexUpdates ) {
 				$revisions = $this->findUpdates( $minUpdate, $minId, $this->to );
 				$size = count( $revisions );
+				// Note that we'll strip invalid revisions after checking to the loop break condition
+				// because we don't want a batch the contains only invalid revisions to cause early
+				// termination of the process....
 			} else {
 				$titles = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
 				$size = count( $titles );
@@ -94,6 +97,12 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $last[ 'update' ];
 				$minId = $last[ 'id' ];
 
+				// Strip entries without a revision.  We can't do anything with them.
+				$revisions = array_filter($revisions, function ($rev) {
+					return $rev[ 'rev' ] !== null;
+				});
+				// Update size to reflect stripped entries.
+				$size = count( $revisions );
 				CirrusSearchUpdater::updateRevisions( $revisions );
 			} else {
 				$idsToDelete = array();
@@ -123,14 +132,16 @@ class ForceSearchIndex extends Maintenance {
 	 * Find $this->mBatchSize revisions who are the latest for a page and were
 	 * made after (minUpdate,minId) and before maxUpdate.
 	 *
-	 * @return an array of the last update timestamp and id that were found
+	 * @return an array of the last update timestamp, id, revision, and text that was found.
+	 *    Sometimes rev and text are null - those record should be used to determine new
+	 *    inputs for this function but should not by synced to the search index.
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
 		$search = SearchEngine::create();
-		if ( is_null( $maxUpdate ) ) {
+		if ( $maxUpdate === null ) {
 			$toIdPart = '';
 			if ( !is_null( $this->toId ) ) {
 				$toId = $dbr->addQuotes( $this->toId );
@@ -144,8 +155,8 @@ class ForceSearchIndex extends Maintenance {
 					. ' AND rev_text_id = old_id'
 					. ' AND rev_id = page_latest'
 					. ' AND page_is_redirect = 0',
-					// Note that redirects aren't allowed here because we'll index everything we need from them
-					// when we index the page to which they are redirecting.
+					// Note that we attempt to filter out redirects because everything about the redirect
+					// will be covered when we index the page to which it points.
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -172,12 +183,22 @@ class ForceSearchIndex extends Maintenance {
 			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$rev = Revision::newFromRow( $row );
 			if ( $rev->getContent()->isRedirect() ) {
-				$target = $rev->getContent()->getUltimateRedirectTarget();
-				$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+				if ( $maxUpdate === null ) {
+					// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
+					// ignore redirects!  It must not be marked properly in the database.  Just ignore it!
+					$rev = null;
+				} else {
+					$target = $rev->getContent()->getUltimateRedirectTarget();
+					$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+				}
+			}
+			$text = null;
+			if ( $rev ) {
+				$text = $search->getTextFromContent( $rev->getTitle(), $rev->getContent() );
 			}
 			$result[] = array(
 				'rev' => $rev,
-				'text' => $search->getTextFromContent( $rev->getTitle(), $rev->getContent() ),
+				'text' => $text,
 				'id' => $row->page_id,
 				'update' => new MWTimestamp( $row->rev_timestamp ),
 			);

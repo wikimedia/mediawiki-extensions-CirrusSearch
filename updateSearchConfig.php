@@ -328,7 +328,8 @@ class UpdateElasticsearchIndex extends Maintenance {
 					'suggest_shingle' => array(
 						'type' => 'shingle',
 						'min_shingle_size' => 2,
-						'max_shingle_size' => 5
+						'max_shingle_size' => 5,
+						'output_unigrams' => true,
 					),
 					'lowercase' => $this->buildLowercaseFilter()
 				),
@@ -346,7 +347,7 @@ class UpdateElasticsearchIndex extends Maintenance {
 	}
 
 	/**
-	 * Build a suggest analyzer customized for this language code.
+	 * Build a text analyzer customized for this language code.
 	 */
 	private function buildTextAnalyzer() {
 		$analyzer = array(
@@ -361,10 +362,14 @@ class UpdateElasticsearchIndex extends Maintenance {
 		return $analyzer;
 	}
 
+	/**
+	 * Build a suggest analyzer customized for this language code.
+	 */
 	private function buildSuggestAnalyzer() {
 		$analyzer = array(
-			'type' => 'default',
-			'filter' => array( 'suggest_shingle' ),
+			'type' => 'custom',
+			'tokenizer' => 'standard',
+			'filter' => array( 'standard', 'lowercase', 'suggest_shingle' ),
 		);
 
 		global $wgLanguageCode;

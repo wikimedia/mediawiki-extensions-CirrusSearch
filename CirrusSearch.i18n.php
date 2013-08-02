@@ -35,7 +35,7 @@ $messages['ast'] = array(
  * @author Wizardist
  */
 $messages['be-tarask'] = array(
-	'cirrussearch-desc' => 'Пошук у MediaWiki праз Solr',
+	'cirrussearch-desc' => 'Пошук у MediaWiki з дапамогай ElasticSearch',
 	'cirrussearch-backend-error' => 'Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Паспрабуйце пазьней, калі ласка.',
 );
 

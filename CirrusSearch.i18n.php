@@ -124,7 +124,7 @@ $messages['mk'] = array(
  * @author Anakmalaysia
  */
 $messages['ms'] = array(
-	'cirrussearch-desc' => 'Enjin pencarian yang dikuasakan oleh Solar untuk MediaWiki',
+	'cirrussearch-desc' => 'Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki',
 	'cirrussearch-backend-error' => 'Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.',
 );
 

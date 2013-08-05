@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CirrusSearch - Searching for MediaWiki with Solr
+ * CirrusSearch - Searching for MediaWiki with Elasticsearch.
  * 
  * Requires Solarium extension installed (provides solarium library)
  * Requires cURL support for PHP (php5-curl package)
@@ -39,11 +39,11 @@ $wgExtensionCredits['other'][] = array(
 // Solr servers
 $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 
-// Number of shards
-$wgCirrusSearchShardCount = 4;
+// Number of shards for each index
+$wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 
-// Number of replicas per shard
-$wgCirrusSearchReplicaCount = 1;
+// Number of replicas per shard for each index
+$wgCirrusSearchContentReplicaCount = array( 'content' => 1, 'general' => 1 );
 
 // Maximum number of terms that we ask phrase suggest to correct.
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
@@ -61,6 +61,9 @@ $elasticaDir = $dir . 'Elastica/lib/Elastica/';
  */
 $wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
+$wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'CirrusSearchMappingConfigBuilder.php';
+
 $wgAutoloadClasses['Elastica\Bulk'] = $elasticaDir . 'Bulk.php';
 $wgAutoloadClasses['Elastica\Client'] = $elasticaDir . 'Client.php';
 $wgAutoloadClasses['Elastica\Connection'] = $elasticaDir . 'Connection.php';

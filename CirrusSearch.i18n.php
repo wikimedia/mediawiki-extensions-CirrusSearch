@@ -108,7 +108,7 @@ $messages['ko'] = array(
  * @author Robby
  */
 $messages['lb'] = array(
-	'cirrussearch-desc' => 'Solr-Sichfonctioun fir MediaWiki',
+	'cirrussearch-desc' => 'Elasticsearch-Sichfonctioun fir MediaWiki',
 	'cirrussearch-backend-error' => 'Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert w.e.g. méi spéit nach eng Kéier.',
 );
 

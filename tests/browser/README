@@ -1,0 +1,57 @@
+Browser Tests for Search
+------------------------
+Setup
+-----
+
+These are browser based tests for search written using the ruby page-object gem.
+To run them you should first install rvm from rvm.io.  Go through the whole
+setup including the gnome-terminal instructions if you are using Linux and
+gnome-terminal.
+
+Then you must install the dependencies:
+ cd <this directory>
+ gem update --system
+ gem install bundler
+ bundle install
+
+Some tests have to log in.  The simplest way to get this working is to setup a
+user named 'Selenium_user' with password 'selenium123' in your wiki and give
+them all all permissions.  You can do this by running this script from your
+mediawiki directory:
+ php maintenance/createAndPromote.php --force --sysop Selenium_user selenium123
+
+You can override the password by creating /private/wmf/secret.yml in the format:
+ mediawiki_password: new_password
+or just changing it in config/config.yml.  If you change it in config.yml
+remember not to push it.
+
+
+Running
+-------
+If you want to run tests against anything other than
+en.wikipedia.beta.wmflabs.org first do this:
+ export MEDIAWIKI_URL=http://your-mediawiki/wiki/
+
+To run all tests:
+ bundle exec cucumber
+To run all tests in a file:
+ bundle exec cucumber path/to/file.feature
+To run one test in a file:
+ bundle exec cucumber path/to/file.feature:LINE_NUMBER
+
+By default, the browser will close itself at the end of every scenario. If you
+want the browser to stay open after each scenario:
+ export KEEP_BROWSER_OPEN=true
+
+You can also use one browser for all tests like this:
+ export REUSE_BROWSER=true
+but doing so cause previous tests to effect one another.  Do this at your own
+risk but this should be safe for search tests and is much faster and it doesn't
+cause the browser to keep stealing your focus.
+
+
+Want to Contribute Some Tests?
+------------------------------
+Interested? Read more at [How to contribute]
+(http://www.mediawiki.org/wiki/QA/Browser_testing#How_to_contribute) section of
+Browser testing page.

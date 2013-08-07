@@ -35,9 +35,7 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * @return array the analysis config
 	 */
 	public function buildConfig() {
-		$config = $this->defaults();
-		$this->customize( $config );
-		return $config;
+		return $this->customize( $this->defaults() );
 	}
 
 	/**
@@ -92,32 +90,31 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
-		$analyzers = $config[ 'analyzer' ];
-		$filters = $config[ 'filter' ];
 		switch ( $this->language ) {
 		// Please add languages in alphabetical order.
 		case 'el':
-			$filters[ 'lowercase' ][ 'language' ] = 'greek';
+			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
 		case 'en':
 			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
-			$analyzers[ 'text' ] = array(
+			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => array( 'standard', 'possessive_english', 'lowercase', 'stop', 'porter_stem', 'asciifolding' )
 			);
-			$filters[ 'possessive_english' ] = array(
+			$config[ 'filter' ][ 'possessive_english' ] = array(
 				'type' => 'stemmer',
 				'language' => 'possessive_english',
 			);
 			// Add asciifolding to the prefix queries
-			$analyzers[ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$analyzers[ 'prefix_query' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'prefix_query' ][ 'filter' ][] = 'asciifolding';
 			break;
 		case 'tr':
-			$filter[ 'lowercase' ][ 'language' ] = 'turkish';
+			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
 		}
+		return $config;
 	}
 
 	/**

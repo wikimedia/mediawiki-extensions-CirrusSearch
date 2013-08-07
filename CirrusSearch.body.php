@@ -1,6 +1,6 @@
 <?php
 /**
- * Implementation of core search features in Solr
+ * Implementation of core search features in Elasticsearch.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ class CirrusSearch extends SearchEngine {
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
 	const PAGE_TYPE_NAME = 'page';
+	const CONTENT_INDEX_TYPE = 'content';
+	const GENERAL_INDEX_TYPE = 'general';
 	/**
 	 * Maximum title length that we'll check in prefix search.  Since titles can
 	 * be 255 bytes in length we're setting this to 255 characters but this
@@ -64,21 +66,25 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Fetch the Elastica Index.
-	 *
+	 * @param mixed $type type of index (content or general or false to get all)
 	 * @param mixed $identifier if specified get the named identified version of the index
 	 * @return \Elastica\Index
 	 */
-	public static function getIndex( $identifier = false ) {
-		return CirrusSearch::getClient()->getIndex( CirrusSearch::getIndexName( $identifier ) );
+	public static function getIndex( $type = false, $identifier = false ) {
+		return CirrusSearch::getClient()->getIndex( CirrusSearch::getIndexName( $type, $identifier ) );
 	}
 
 	/**
 	 * Get the name of the index.
+	 * @param mixed $type type of index (content or general or false to get all)
 	 * @param mixed $identifier if specified get the named identifier of the index
 	 * @return string name index should have considering $identifier
 	 */
-	public static function getIndexName( $identifier = false ) {
+	public static function getIndexName( $type = false, $identifier = false ) {
 		$name = wfWikiId();
+		if ( $type ) {
+			$name = $name . '_' . $type;
+		}
 		if ( $identifier ) {
 			$name = $name . '_' . $identifier;
 		}
@@ -87,11 +93,11 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Fetch the Elastica Type for pages.
-	 *
-	 * @ \Elastica\Type
+	 * @param mixed $type type of index (content or general or false to get all)
+	 * @return \Elastica\Type
 	 */
-	static function getPageType() {
-		return CirrusSearch::getIndex()->getType( CirrusSearch::PAGE_TYPE_NAME );
+	static function getPageType( $type = false ) {
+		return CirrusSearch::getIndex( $type )->getType( CirrusSearch::PAGE_TYPE_NAME );
 	}
 
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
@@ -104,6 +110,7 @@ class CirrusSearch extends SearchEngine {
 		// Query params
 		$query->setLimit( $limit );
 		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
+		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $ns );
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.prefix', array(
 			'query' => substr( $search, 0, CirrusSearch::MAX_PREFIX_SEARCH ),
@@ -113,9 +120,9 @@ class CirrusSearch extends SearchEngine {
 
 		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $search, $query ) {
+			'doWork' => function() use ( $indexType, $search, $query ) {
 				try {
-					$result = CirrusSearch::getPageType()->search( $query );
+					$result = CirrusSearch::getPageType( $indexType )->search( $query );
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 					return $result;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -161,6 +168,7 @@ class CirrusSearch extends SearchEngine {
 			$query->setLimit( $this->limit );
 		}
 		$filters[] = CirrusSearch::buildNamespaceFilter( $this->namespaces );
+		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $this->namespaces );
 		$extraQueryStrings = array();
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -241,9 +249,9 @@ class CirrusSearch extends SearchEngine {
 
 		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $originalTerm, $query ) {
+			'doWork' => function() use ( $indexType, $originalTerm, $query ) {
 				try {
-					$result = CirrusSearch::getPageType()->search( $query );
+					$result = CirrusSearch::getPageType( $indexType )->search( $query );
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 					return $result;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -272,6 +280,31 @@ class CirrusSearch extends SearchEngine {
 			return new \Elastica\Filter\Terms( 'namespace', $ns );
 		}
 		return null;
+	}
+
+	/**
+	 * Pick the index type to search bases on the list of namespaces to search.
+	 *
+	 * @param array $ns namespaces to search
+	 * @return mixed index type in which to search
+	 */
+	private static function pickIndexTypeFromNamespaces( array $ns ) {
+		if ( count( $ns ) === 0 ) {
+			return false; // False selects both index types
+		}
+		$needsContent = false;
+		$needsGeneral = false;
+		foreach ( $ns as $namespace ) {
+			if ( MWNamespace::isContent( $namespace ) ) {
+				$needsContent = true;
+			} else {
+				$needsGeneral = true;
+			}
+			if ( $needsContent && $needsGeneral ) {
+				return false; // False selects both index types
+			}
+		}
+		return $needsContent ? CirrusSearch::CONTENT_INDEX_TYPE : CirrusSearch::GENERAL_INDEX_TYPE;
 	}
 
 	/**

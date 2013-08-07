@@ -28,27 +28,41 @@ class CirrusSearchUpdater {
 	public static function updateRevisions( $pageData ) {
 		wfProfileIn( __METHOD__ );
 
-		$documents = array();
+		$contentDocuments = array();
+		$generalDocuments = array();
 		foreach ( $pageData as $page ) {
-			$documents[] = CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] );
+			$document = CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] );
+			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
+				$contentDocuments[] = $document;
+			} else {
+				$generalDocuments[] = $document;
+			}
 		}
+		CirrusSearchUpdater::sendDocuments( CirrusSearch::CONTENT_INDEX_TYPE, $contentDocuments );
+		CirrusSearchUpdater::sendDocuments( CirrusSearch::GENERAL_INDEX_TYPE, $generalDocuments );
 
-		$method = __METHOD__;
-		// TODO I think this needs more configuration somewhere
+		wfProfileOut( __METHOD__ );
+	}
+
+	private static function sendDocuments( $indexType, $documents ) {
+		wfProfileIn( __METHOD__ );
+
+		$documentCount = count( $documents );
+		if ( $documentCount === 0 ) {
+			return;
+		}
+		wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index." );
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
-			array( 'doWork' => function() use ( $documents, $method ) {
-				wfProfileIn( $method . '::doWork' );
+			array( 'doWork' => function() use ( $indexType, $documents ) {
 				try {
-					$result = CirrusSearch::getPageType()->addDocuments( $documents );
+					$result = CirrusSearch::getPageType( $indexType )->addDocuments( $documents );
 					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 				}
-				wfProfileOut( $method . '::doWork' );
 			}
 		) );
 		$work->execute();
-
 		wfProfileOut( __METHOD__ );
 	}
 
@@ -90,27 +104,36 @@ class CirrusSearchUpdater {
 	/**
 	 * Delete pages from the elasticsearch index
 	 *
-	 * @param array $pageIds An array of page ids to delete from the index
+	 * @param array $pageIds An array of ids to delete
 	 */
-	public static function deletePages( $pageIds ) {
+	public static function deletePages( $pages ) {
 		wfProfileIn( __METHOD__ );
 
-		$method = __METHOD__;
-		// TODO I think this needs more configuration somewhere
+		CirrusSearchUpdater::sendDeletes( CirrusSearch::CONTENT_INDEX_TYPE, $pages );
+		CirrusSearchUpdater::sendDeletes( CirrusSearch::GENERAL_INDEX_TYPE, $pages );
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	private static function sendDeletes( $indexType, $ids ) {
+		wfProfileIn( __METHOD__ );
+
+		$idCount = count( $ids );
+		if ( $idCount === 0 ) {
+			return;
+		}
+		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the $indexType index." );
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
-			array( 'doWork' => function() use ( $pageIds, $method ) {
-				wfProfileIn( $method . '::doWork' );
+			array( 'doWork' => function() use ( $indexType, $ids ) {
 				try {
-					$result = CirrusSearch::getPageType()->deleteIds( $pageIds );
+					$result = CirrusSearch::getPageType( $indexType )->deleteIds( $ids );
 					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 				}
 			}
 		) );
-
 		$work->execute();
-
 		wfProfileOut( __METHOD__ );
 	}
 }

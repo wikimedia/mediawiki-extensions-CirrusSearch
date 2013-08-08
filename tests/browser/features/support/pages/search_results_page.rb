@@ -12,6 +12,9 @@ class SearchResultsPage
   def suggestion
     suggestion_wrapper_element.link_element.text
   end
+  def suggestion_element
+    suggestion_wrapper_element.link_element
+  end
   def results
     @browser.divs(:class => 'mw-search-result-heading')
   end

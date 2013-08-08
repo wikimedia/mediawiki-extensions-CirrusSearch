@@ -33,6 +33,12 @@ Before('@setup_suggestions') do
       And a page named Nobel Prize exists with contents nobel prize
       And a page named Noble Gasses exists with contents noble gasses
       And a page named Noble Somethingelse exists with contents noble somethingelse
+      And a page named Noble Somethingelse2 exists with contents noble somethingelse
+      And a page named Noble Somethingelse3 exists with contents noble somethingelse
+      And a page named Noble Somethingelse4 exists with contents noble somethingelse
+      And a page named Noble Somethingelse5 exists with contents noble somethingelse
+      And a page named Noble Somethingelse6 exists with contents noble somethingelse
+      And a page named Noble Somethingelse7 exists with contents noble somethingelse
       And a page named Template:Noble Pipe exists with contents pipes are so noble
     }
     $newsearch_setup_namespaces = true

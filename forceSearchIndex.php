@@ -216,32 +216,27 @@ class ForceSearchIndex extends Maintenance {
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
-		$logType = $dbr->addQuotes( 'delete' );
-		$logAction = $dbr->addQuotes( 'delete' );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$res = $dbr->select(
-			'logging',
-			array( 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ),
-				"log_type = $logType"
-				. " AND log_action = $logAction"
-				. ' AND log_page != 0'
-				. " AND ( ( $minUpdate = log_timestamp AND $minNamespace < log_namespace AND $minTitle < log_title )"
-				. "    OR $minUpdate < log_timestamp )"
-				. " AND log_timestamp <= $maxUpdate",
+			'archive',
+			array( 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ),
+				  "( ( $minUpdate = ar_timestamp AND $minNamespace < ar_namespace AND $minTitle < ar_title )"
+				. "    OR $minUpdate < ar_timestamp )"
+				. " AND ar_timestamp <= $maxUpdate",
 			__METHOD__,
-			array( 'ORDER BY' => 'log_timestamp, log_namespace, log_title',
+			array( 'ORDER BY' => 'ar_timestamp, ar_namespace, ar_title',
 			       'LIMIT' => $this->mBatchSize )
 		);
 		$result = array();
 		foreach ( $res as $row ) {
 			$result[] = array(
-				'timestamp' => new MWTimestamp( $row->log_timestamp ),  // This feels funky
-				'namespace' => $row->log_namespace,
-				'title' => $row->log_title,
-				'page' => $row->log_page
+				'timestamp' => new MWTimestamp( $row->ar_timestamp ),
+				'namespace' => $row->ar_namespace,
+				'title' => $row->ar_title,
+				'page' => $row->ar_page_id,
 			);
 		}
 		wfProfileOut( __METHOD__ );

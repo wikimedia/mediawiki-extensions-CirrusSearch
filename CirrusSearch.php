@@ -49,6 +49,10 @@ $wgCirrusSearchContentReplicaCount = array( 'content' => 1, 'general' => 1 );
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestMaxErrors = 5;
 
+// Confidence level required to suggest new phrases.
+// See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
+$wgCirrusSearchPhraseSuggestConfidence = 2.0;
+
 // Maximum number of redirects per target page to index.  
 $wgCirrusSearchIndexedRedirects = 1024;
 

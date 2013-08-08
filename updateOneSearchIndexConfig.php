@@ -256,7 +256,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->reindexAndRemoveOk ) {
 			$this->output( "is taken...\n" );
 			$this->output( $this->indent . "\tReindexing...\n");
+			// Muck with $this->indent because reindex is used to running at the top level.
+			$saveIndent = $this->indent;
+			$this->indent = $this->indent . "\t\t";
 			$this->reindex();
+			$this->indent = $saveIndent;
 			$this->output( $this->indent . "\tSwapping alias...");
 			$this->getIndex()->addAlias( CirrusSearch::getIndexName( $this->indexType ), true );
 			$this->output( "done\n" );
@@ -306,7 +310,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		) );
 		$totalDocsToReindex = $result->getResponse()->getData();
 		$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
-		$this->output( $this->indent . "\t\tAbout to reindex $totalDocsToReindex documents\n" );
+		$this->output( $this->indent . "About to reindex $totalDocsToReindex documents\n" );
+		$operationStartTime = microtime( true );
+		$completed = 0;
+		$rate = 0;
 
 		while ( true ) {
 			wfProfileIn( __method__ . '::receiveDocs' );
@@ -316,10 +323,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			) );
 			wfProfileOut( __method__ . '::receiveDocs' );
 			if ( !$result->count() ) {
-				$this->output( "\t\tAll done\n" );
+				$this->output( $this->indent . "All done\n" );
 				break;
 			}
-			$this->output( $this->indent . "\t\tSending " . $result->count() . " documents to be reindexed\n" );
 			wfProfileIn( __method__ . '::packageDocs' );
 			$documents = array();
 			while ( $result->current() ) {
@@ -331,6 +337,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
 			wfProfileOut( __method__ . '::sendDocs' );
+			$completed += $result->count();
+			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+			$this->output( $this->indent . "Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
 		}
 	}
 

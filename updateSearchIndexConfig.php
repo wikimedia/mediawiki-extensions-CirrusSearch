@@ -39,13 +39,13 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		$this->output( 'Validating the ' . CirrusSearch::CONTENT_INDEX_TYPE . " index...\n");
+		$this->output( CirrusSearch::CONTENT_INDEX_TYPE . " index...\n");
 		$child = $this->runChild( 'UpdateOneSearchIndexConfig' );
 		$child->mOptions[ 'indexType' ] = CirrusSearch::CONTENT_INDEX_TYPE;
 		$child->mOptions[ 'indent' ] = "\t";
 		$child->execute();
 
-		$this->output( 'Validating the ' . CirrusSearch::GENERAL_INDEX_TYPE . " index...\n");
+		$this->output( CirrusSearch::GENERAL_INDEX_TYPE . " index...\n");
 		$child = $this->runChild( 'UpdateOneSearchIndexConfig' );
 		$child->mOptions[ 'indexType' ] = CirrusSearch::GENERAL_INDEX_TYPE;
 		$child->mOptions[ 'indent' ] = "\t";

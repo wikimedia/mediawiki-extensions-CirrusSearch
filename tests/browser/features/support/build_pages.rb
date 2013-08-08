@@ -3,7 +3,7 @@
 Before('@setup_main') do
   if !$newsearch_setup_main
     steps %Q{
-      And a page named Template:Template Test exists with contents pickles
+      And a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Category:Weaponry]]
       And a page named Two Words exists with contents catapult {{Template_Test}} [[Category:TwoWords]]

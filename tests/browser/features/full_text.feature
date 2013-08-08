@@ -22,6 +22,7 @@ Feature: Full text search
     | incategory:alpha incategory:beta     | AlphaBeta is                      | not in          |
     | incategory:twowords catapult         | Two Words is                      | in              |
     | incategory:twowords intitle:catapult | none is                           | not in          |
+    | incategory:templatetagged two words  | Two Words is                      | in              |
     | talk:catapult                        | Talk:Two Words is                 | not in          |
     | talk:intitle:words                   | Talk:Two Words is                 | not in          |
     | template:pickles                     | Template:Template Test is         | not in          |

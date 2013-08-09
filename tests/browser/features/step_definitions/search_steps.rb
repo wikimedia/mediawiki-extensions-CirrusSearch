@@ -100,6 +100,12 @@ Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
     end
   end
 end
+Then(/^(.*) is the highlighted title of the first search result$/) do |highlighted|
+  on(SearchResultsPage).first_result_highlighted_title.should == highlighted
+end
+Then(/^(.*) is the highlighted text of the first search result$/) do |highlighted|
+  on(SearchResultsPage).first_result_highlighted_text.should == highlighted
+end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
   found = false
   on(SearchResultsPage).results.each do |result|

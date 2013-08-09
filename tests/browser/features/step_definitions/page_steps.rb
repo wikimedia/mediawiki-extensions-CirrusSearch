@@ -12,6 +12,9 @@ When(/^I edit (.+) to add (.+)$/) do |title, text|
 end
 
 def edit_page(title, text, add)
+  if text.start_with?('@')
+    text = File.read('features/support/articles/' + text[1..-1])
+  end
   visit(EditPage, using_params: {page_name: title}) do |page|
     if (!page.article_text? and page.login?) then
       # Looks like we're not being given the article text probably because we're

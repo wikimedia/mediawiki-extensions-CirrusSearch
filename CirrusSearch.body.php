@@ -411,7 +411,7 @@ class CirrusSearch extends SearchEngine {
 }
 
 /**
- * A set of results for Solr
+ * A set of results from Elasticsearch.
  */
 class CirrusSearchResultSet extends SearchResultSet {
 	private $result, $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
@@ -480,7 +480,7 @@ class CirrusSearchResultSet extends SearchResultSet {
 }
 
 /**
- * An individual search result for Solr
+ * An individual search result from Elasticsearch.
  */
 class CirrusSearchResult extends SearchResult {
 	private $titleSnippet, $redirectTitle, $redirectSnipppet, $textSnippet;

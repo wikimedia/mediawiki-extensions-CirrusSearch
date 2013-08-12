@@ -31,12 +31,12 @@ class CirrusSearchMappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 		return array(
-			'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ) ),
-			'text' => $this->buildStringField( 'text', array( 'suggest' ) ),
+			'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
+			'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
 			'category' => $this->buildStringField(),
 			'redirect' => array(
 				'properties' => array(
-					'title' => $this->buildStringField()
+					'title' => $this->buildStringField( 'title', null, true )
 				)
 			)
 		);
@@ -47,10 +47,15 @@ class CirrusSearchMappingConfigBuilder {
 	 * @param name string Name of the field.  Required if extra is not falsy.
 	 * @param extra array Extra analyzers for this field beyond the basic string type.  If not falsy the
 	 *		field will be a multi_field.
+	 * @param willHighlight Will this field be highlighted?  Defaults to false.
 	 * @return array definition of the field
 	 */
-	private function buildStringField( $name = null, $extra = null ) {
+	private function buildStringField( $name = null, $extra = null, $willHighlight = false ) {
 		$field = array( 'type' => 'string', 'analyzer' => 'text' );
+		if ( $willHighlight ) {
+			$field[ 'store' ] = true;
+			$field[ 'term_vector' ] = 'with_positions_offsets';
+		}
 		if ( !$extra ) {
 			return $field;
 		}

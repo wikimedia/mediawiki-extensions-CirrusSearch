@@ -81,7 +81,7 @@ def sauce_browser(test_name, saucelabs_username, saucelabs_key, language)
   browser
 end
 def secret_yml_location
-  secret_yml_locations = ['/private/wmf/secret.yml', 'config/config.yml']
+  secret_yml_locations = ['/private/wmf/secret.yml', 'config/secret.yml', 'config/config.yml']
   secret_yml_locations.each do |secret_yml_location|
     return secret_yml_location if File.exists?("#{secret_yml_location}")
   end
@@ -96,9 +96,9 @@ def test_name(scenario)
 end
 
 config = YAML.load_file('config/config.yml')
-mediawiki_username = config['mediawiki_username']
 
 secret = YAML.load_file("#{secret_yml_location}")
+mediawiki_username = secret['mediawiki_username']
 mediawiki_password = secret['mediawiki_password']
 
 if ENV['ENVIRONMENT'] == 'cloudbees'

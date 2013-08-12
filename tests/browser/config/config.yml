@@ -1,7 +1,5 @@
-# mediawiki_username: Selenium_user
-# mediawiki_password: selenium123
-mediawiki_username: NEverett (WMF)
-mediawiki_password: 'H/a=O>_10lYz'
+mediawiki_username: Selenium_user
+mediawiki_password: selenium123
 
 android:
   name: android

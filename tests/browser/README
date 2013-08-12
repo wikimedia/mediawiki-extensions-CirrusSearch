@@ -20,11 +20,12 @@ them all all permissions.  You can do this by running this script from your
 mediawiki directory:
  php maintenance/createAndPromote.php --force --sysop Selenium_user selenium123
 
-You can override the password by creating /private/wmf/secret.yml in the format:
- mediawiki_password: new_password
-or just changing it in config/config.yml.  If you change it in config.yml
-remember not to push it.
-
+You can override the password by creating /private/wmf/secret.yml or
+config/secret.yml in the format:
+ mediawiki_username: Selenium_user
+ mediawiki_password: selenium123
+While you could technically just change config.yml that wouldn't be a good idea
+because it'd be too easy to accidentally commit your password.
 
 Running
 -------

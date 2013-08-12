@@ -74,7 +74,7 @@ Then(/^suggestions should appear$/) do
   on(SearchPage).search_results_element.when_present.should exist
 end
 Then(/^(.+) is the first suggestion$/) do |title|
-  if (title == 'none') then
+  if title == 'none' then
     on(SearchPage).one_result_element.should_not exist
   else
     on(SearchPage).one_result.should == title
@@ -127,6 +127,13 @@ Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the f
     step("I type #{term} into the search box")
     step('suggestions should appear')
     step("#{title} is the first suggestion")
+  end
+end
+Then(/^(.*) is suggested$/) do |text|
+  if text == 'none' then
+    on(SearchResultsPage).suggestion_element.should_not exist
+  else
+    on(SearchResultsPage).suggestion.should == text
   end
 end
 

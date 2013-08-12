@@ -89,3 +89,4 @@ Feature: Full text search
     | term            | suggestion      |
     | popular culatur | popular culture |
     | noble prize     | nobel prize     |
+    | nobel prize     | none            |

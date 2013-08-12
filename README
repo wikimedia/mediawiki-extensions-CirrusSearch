@@ -30,14 +30,18 @@ Once that is complete add this to LocalSettings.php to funnel queries to Solr:
 
 Bootstrapping large wikis
 -------------------------
-forceSeachIndex.php accepts the --fromId and --toId parameters which can be used to split up the
-work of bootstrapping the wiki into multiple processes.  Most of the load caused by bootstrapping
-is on MySQL but if you've got a really big database or a few slaves then they should be able to
-handle a whole bunch of bootstraps at once.
+The --batch-size parameter controls the number documents read from MySQL and inserted into
+elasticsearch at one time.  It defaults to 500 but you should feel free to play with it.
 
-Also, the --batch-size parameter controls the number documents read from MySQL and inserted into
-elasticsearch at one time.  It defaults to 500 because that seems to give good performence (~100 articles
-per second) in development but you should feel free to play with it.
+forceSeachIndex.php accepts the --fromId and --toId parameters which can be used to split up the
+work of bootstrapping the wiki into multiple processes.  Since most of the load on search indexing is on the
+indexing script in the php process you should be able to break the process into multiple chunks and farm
+them out to multiple php processes/machines.  The --buildChunks argument of forceSearchIndex.php will cause
+the script to build invocations of itself that you can splay out to different processes.  For example:
+ rm -rf /tmp/index_log
+ mkdir /tmp/index_log
+ php forceSearchIndex.php --buildChunks 10 --batch-size 50 |
+   xargs -I{} -t -P4 sh -c 'php {} > /tmp/index_log/$$.log'
 
 
 Handling elasticsearch outages

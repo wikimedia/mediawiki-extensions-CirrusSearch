@@ -9,10 +9,12 @@ Feature: Prefix search
     When I hit enter in the search box
     Then I am on a page titled <title>
   Examples:
-    | term      | first_result | title          |
-    | catapult  | Catapult     | Catapult       |
-    | two words | Two Words    | Two Words      |
-    | ~catapult | none         | Search results |
-    | África    | África       | África         |
+    | term                   | first_result           | title                  |
+    | catapult               | Catapult               | Catapult               |
+    | catapul                | Catapult               | Search results         |
+    | two words              | Two Words              | Two Words              |
+    | ~catapult              | none                   | Search results         |
+    | África                 | África                 | África                 |
 # Hitting enter in a search for Africa should pull up África but that bug is beyond me.
-    | Africa    | África       | Search results |
+    | Africa                 | África                 | Search results         |
+    | Template:Template Test | Template:Template Test | Template:Template Test |

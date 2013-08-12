@@ -146,7 +146,7 @@ class CirrusSearch extends SearchEngine {
 
 	public function searchText( $term ) {
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
-		global $wgCirrusSearchPhraseSuggestMaxErrors;
+		global $wgCirrusSearchPhraseSuggestMaxErrors, $wgCirrusSearchPhraseSuggestConfidence;
 		
 		$originalTerm = $term;
 
@@ -234,14 +234,30 @@ class CirrusSearch extends SearchEngine {
 				CirrusSearch::PHRASE_TITLE => array(
 					'phrase' => array(
 						'field' => 'title.suggest',
-						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors
+						'size' => 1,
+						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
+						'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
+						'direct_generator' => array(
+							array(
+								'field' => 'title.suggest',
+								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
+							),
+						),
 					)
 				),
 				// TODO redirects here too?
 				CirrusSearch::PHRASE_TEXT => array(
 					'phrase' => array(
 						'field' => 'text.suggest',
-						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors
+						'size' => 1,
+						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
+						'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
+						'direct_generator' => array(
+							array(
+								'field' => 'text.suggest',
+								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
+							),
+						),
 					)
 				)
 			));

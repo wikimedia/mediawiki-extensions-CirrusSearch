@@ -2,10 +2,8 @@
 
 /**
  * CirrusSearch - Searching for MediaWiki with Elasticsearch.
- * 
- * Requires Solarium extension installed (provides solarium library)
- * Requires cURL support for PHP (php5-curl package)
- * Set $wgSearchType to 'SearchSolr'
+ *
+ * Set $wgSearchType to 'CirrusSearch'
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

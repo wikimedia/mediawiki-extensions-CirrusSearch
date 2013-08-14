@@ -424,6 +424,10 @@ class CirrusSearch extends SearchEngine {
 		}
 		return $text;
 	}
+
+	public function textAlreadyUpdatedForIndex() {
+		return true;
+	}
 }
 
 /**

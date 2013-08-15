@@ -30,10 +30,14 @@ def edit_page(title, text, add)
         step 'I am logged in'
         visit(EditPage, using_params: {page_name: title})
       end
-      if (add) then
-        page.article_text += text
-      else
-        page.article_text = text
+      if !add then
+        page.article_text = ''
+      end
+      # Firefox chokes on huge batches of text so split it into chunks and use
+      # send_keys rather than page-objects built in += because that clears and
+      # resends everything....
+      text.chars.each_slice(1000) do |chunk|
+        page.article_text_element.send_keys(chunk)
       end
       page.save
     end

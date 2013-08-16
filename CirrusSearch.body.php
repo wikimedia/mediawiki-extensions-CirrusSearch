@@ -397,6 +397,13 @@ class CirrusSearch extends SearchEngine {
 		$title = $linkUpdate->getTitle();
 		$articleId = $title->getArticleID();
 		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $articleId );
+
+		// This usually happens on page creation when all the revision data hasn't
+		// replicated out to the slaves
+		if ( !$revision ) {
+			Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
+		}
+
 		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );
 		$update->doUpdate();
 	}

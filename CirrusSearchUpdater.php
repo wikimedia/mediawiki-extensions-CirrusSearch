@@ -44,6 +44,10 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
+	/**
+	 * @param $indexType
+	 * @param $documents array
+	 */
 	private static function sendDocuments( $indexType, $documents ) {
 		wfProfileIn( __METHOD__ );
 
@@ -66,6 +70,11 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
+	/**
+	 * @param $revision Revision
+	 * @param $text string
+	 * @return \Elastica\Document
+	 */
 	public static function buildDocumentforRevision( $revision, $text ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
@@ -104,7 +113,7 @@ class CirrusSearchUpdater {
 	/**
 	 * Delete pages from the elasticsearch index
 	 *
-	 * @param array $pageIds An array of ids to delete
+	 * @param array $pages An array of ids to delete
 	 */
 	public static function deletePages( $pages ) {
 		wfProfileIn( __METHOD__ );
@@ -115,6 +124,10 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
+	/**
+	 * @param $indexType
+	 * @param $ids array
+	 */
 	private static function sendDeletes( $indexType, $ids ) {
 		wfProfileIn( __METHOD__ );
 

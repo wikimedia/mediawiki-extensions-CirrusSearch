@@ -49,6 +49,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		self::addSharedOptions( $this );
 	}
 
+	/**
+	 * @param $maintenance Maintenance
+	 */
 	public static function addSharedOptions( $maintenance ) {
 		$maintenance->addOption( 'rebuild', 'Blow away the identified index and rebuild it from ' .
 			'scratch.' );
@@ -159,6 +162,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			} );
 		}
 	}
+
+	/**
+	 * @param $prefix
+	 * @param $settings
+	 * @param $required array
+	 * @return bool
+	 */
 	private function vaActualMatchRequired( $prefix, $settings, $required ) {
 		foreach( $required as $key => $value ) {
 			$settingsKey = $prefix . '.' . $key;
@@ -202,6 +212,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	/**
+	 * @param $actual
+	 * @param $required array
+	 * @return bool
+	 */
 	private function vmActualMatchRequired( $actual, $required ) {
 		foreach( $required as $key => $value ) {
 			if ( !array_key_exists( $key, $actual ) ) {
@@ -313,30 +328,29 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . "About to reindex $totalDocsToReindex documents\n" );
 		$operationStartTime = microtime( true );
 		$completed = 0;
-		$rate = 0;
 
 		while ( true ) {
-			wfProfileIn( __method__ . '::receiveDocs' );
+			wfProfileIn( __METHOD__ . '::receiveDocs' );
 			$result = $this->getIndex()->search( array(), array(
 				'scroll_id' => $result->getResponse()->getScrollId(),
 				'scroll' => '10m'
 			) );
-			wfProfileOut( __method__ . '::receiveDocs' );
+			wfProfileOut( __METHOD__ . '::receiveDocs' );
 			if ( !$result->count() ) {
 				$this->output( $this->indent . "All done\n" );
 				break;
 			}
-			wfProfileIn( __method__ . '::packageDocs' );
+			wfProfileIn( __METHOD__ . '::packageDocs' );
 			$documents = array();
 			while ( $result->current() ) {
 				$documents[] = new \Elastica\Document( $result->current()->getId(), $result->current()->getSource() );
 				$result->next();
 			}
-			wfProfileOut( __method__ . '::packageDocs' );
-			wfProfileIn( __method__ . '::sendDocs' );
+			wfProfileOut( __METHOD__ . '::packageDocs' );
+			wfProfileIn( __METHOD__ . '::sendDocs' );
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
-			wfProfileOut( __method__ . '::sendDocs' );
+			wfProfileOut( __METHOD__ . '::sendDocs' );
 			$completed += $result->count();
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
 			$this->output( $this->indent . "Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");

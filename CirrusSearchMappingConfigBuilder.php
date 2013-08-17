@@ -18,6 +18,10 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchMappingConfigBuilder {
+
+	/**
+	 * @return array
+	 */
 	public static function build() {
 		$builder = new CirrusSearchMappingConfigBuilder();
 		return $builder->buildConfig();
@@ -44,10 +48,10 @@ class CirrusSearchMappingConfigBuilder {
 
 	/**
 	 * Build a string field.
-	 * @param name string Name of the field.  Required if extra is not falsy.
-	 * @param extra array Extra analyzers for this field beyond the basic string type.  If not falsy the
+	 * @param $name string|null Name of the field.  Required if extra is not false.
+	 * @param $extra array|null Extra analyzers for this field beyond the basic string type.  If not falsy the
 	 *		field will be a multi_field.
-	 * @param willHighlight Will this field be highlighted?  Defaults to false.
+	 * @param $willHighlight bool Will this field be highlighted?  Defaults to false.
 	 * @return array definition of the field
 	 */
 	private function buildStringField( $name = null, $extra = null, $willHighlight = false ) {

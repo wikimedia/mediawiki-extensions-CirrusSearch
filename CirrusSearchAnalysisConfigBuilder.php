@@ -20,6 +20,9 @@
 class CirrusSearchAnalysisConfigBuilder {
 	private $language;
 
+	/**
+	 * @return array
+	 */
 	public static function build() {
 		$builder = new CirrusSearchAnalysisConfigBuilder();
 		return $builder->buildConfig();

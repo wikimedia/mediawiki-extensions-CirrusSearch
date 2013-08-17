@@ -47,11 +47,14 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private static $updated = array();
 
+	/**
+	 * @return \Elastica\Client|null
+	 */
 	public static function getClient() {
 		if ( self::$client != null ) {
 			return self::$client;
 		}
-		global $wgCirrusSearchServers, $wgCirrusSearchMaxRetries;
+		global $wgCirrusSearchServers;
 
 		// Setup the Elastica endpoints
 		$servers = array();
@@ -100,15 +103,21 @@ class CirrusSearch extends SearchEngine {
 		return CirrusSearch::getIndex( $type )->getType( CirrusSearch::PAGE_TYPE_NAME );
 	}
 
+	/**
+	 * @param $ns
+	 * @param $search
+	 * @param $limit
+	 * @param $results
+	 * @return bool
+	 */
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 		// Boilerplate
-		$nsNames = RequestContext::getMain()->getLanguage()->getNamespaces();
 		$query = new Elastica\Query();
 		$query->setFields( array( 'id', 'title', 'namespace' ) );
 
 		// Query params
-		$query->setLimit( $limit );
+		$query->setSize( $limit );
 		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
 		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $ns );
 		$match = new \Elastica\Query\Match();
@@ -144,10 +153,14 @@ class CirrusSearch extends SearchEngine {
 		return false;
 	}
 
+	/**
+	 * @param string $term
+	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 */
 	public function searchText( $term ) {
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 		global $wgCirrusSearchPhraseSuggestMaxErrors, $wgCirrusSearchPhraseSuggestConfidence;
-		
+
 		$originalTerm = $term;
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
@@ -165,7 +178,7 @@ class CirrusSearch extends SearchEngine {
 			$query->setFrom( $this->offset );
 		}
 		if( $this->limit ) {
-			$query->setLimit( $this->limit );
+			$query->setSize( $this->limit );
 		}
 		$filters[] = CirrusSearch::buildNamespaceFilter( $this->namespaces );
 		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $this->namespaces );
@@ -290,6 +303,7 @@ class CirrusSearch extends SearchEngine {
 	 * Filter a query to only return results in given namespace(s)
 	 *
 	 * @param array $ns Array of namespaces
+	 * @return \Elastica\Filter\Terms|null
 	 */
 	private static function buildNamespaceFilter( array $ns ) {
 		if ( $ns !== null && count( $ns ) ) {
@@ -393,6 +407,9 @@ class CirrusSearch extends SearchEngine {
 		}
 	}
 
+	/**
+	 * @param $linkUpdate LinksUpdate
+	 */
 	public static function linksUpdateCompletedHook( $linkUpdate ) {
 		$title = $linkUpdate->getTitle();
 		$articleId = $title->getArticleID();
@@ -441,7 +458,7 @@ class CirrusSearch extends SearchEngine {
  * A set of results from Elasticsearch.
  */
 class CirrusSearchResultSet extends SearchResultSet {
-	private $result, $docs, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
 	public function __construct( $res ) {
 		$this->result = $res;
@@ -500,7 +517,7 @@ class CirrusSearchResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			return new CirrusSearchResult( $current );	
+			return new CirrusSearchResult( $current );
 		}
 		return false;
 	}

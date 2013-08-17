@@ -132,7 +132,10 @@ class ForceSearchIndex extends Maintenance {
 	 * Find $this->mBatchSize revisions who are the latest for a page and were
 	 * made after (minUpdate,minId) and before maxUpdate.
 	 *
-	 * @return an array of the last update timestamp, id, revision, and text that was found.
+	 * @param $minUpdate
+	 * @param $minId
+	 * @param $maxUpdate
+	 * @return array An array of the last update timestamp, id, revision, and text that was found.
 	 *    Sometimes rev and text are null - those record should be used to determine new
 	 *    inputs for this function but should not by synced to the search index.
 	 */
@@ -211,7 +214,11 @@ class ForceSearchIndex extends Maintenance {
 	/**
 	 * Find $this->mBatchSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
 	 *
-	 * @return an array of the last update timestamp and id that were found
+	 * @param $minUpdate
+	 * @param $minNamespace
+	 * @param $minTitle
+	 * @param $maxUpdate
+	 * @return array An array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
 		wfProfileIn( __METHOD__ );

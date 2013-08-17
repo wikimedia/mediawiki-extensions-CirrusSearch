@@ -27,8 +27,6 @@ require_once( "$IP/maintenance/Maintenance.php" );
  * Update the elasticsearch configuration for this index.
  */
 class UpdateSearchIndexConfig extends Maintenance {
-	private $returnCode = 0;
-
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of all search indecies." );

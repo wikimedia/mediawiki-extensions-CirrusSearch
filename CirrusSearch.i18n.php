@@ -100,7 +100,7 @@ $messages['ja'] = array(
  * @author 아라
  */
 $messages['ko'] = array(
-	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 찾기',
+	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 떄문에 찾기를 완료할 수 없습니다. 나중에 다시 시도하세요.',
 );
 

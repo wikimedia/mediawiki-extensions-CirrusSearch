@@ -10,6 +10,8 @@ Feature: Prefix search
     Then I am on a page titled <title>
   Examples:
     | term                   | first_result           | title                  |
+# Note that there are more links to catapult then to any other page that starts with the
+# word "catapult" so it should be first
     | catapult               | Catapult               | Catapult               |
     | catapul                | Catapult               | Search results         |
     | two words              | Two Words              | Two Words              |

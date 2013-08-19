@@ -429,7 +429,7 @@ class CirrusSearch extends SearchEngine {
 		// This usually happens on page creation when all the revision data hasn't
 		// replicated out to the slaves
 		if ( !$revision ) {
-			Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
+			$revision = Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
 		}
 
 		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );

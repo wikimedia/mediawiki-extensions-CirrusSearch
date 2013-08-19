@@ -43,6 +43,11 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // Number of replicas per shard for each index
 $wgCirrusSearchContentReplicaCount = array( 'content' => 1, 'general' => 1 );
 
+// If true CirrusSearch asks Elasticsearch to perform searches using a mode that should
+// product more accurate results at the cost of performance. See this for more info:
+// http://www.elasticsearch.org/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch/
+$wgCirrusSearchMoreAccurateScoringMode = true;
+
 // Maximum number of terms that we ask phrase suggest to correct.
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestMaxErrors = 5;

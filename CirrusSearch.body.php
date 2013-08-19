@@ -160,6 +160,7 @@ class CirrusSearch extends SearchEngine {
 	public function searchText( $term ) {
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 		global $wgCirrusSearchPhraseSuggestMaxErrors, $wgCirrusSearchPhraseSuggestConfidence;
+		global $wgCirrusSearchMoreAccurateScoringMode;
 
 		$originalTerm = $term;
 
@@ -170,6 +171,7 @@ class CirrusSearch extends SearchEngine {
 
 		$query = new Elastica\Query();
 		$query->setFields( array( 'id', 'title', 'namespace', 'redirect' ) );
+		$queryOptions = array();
 
 		$filters = array();
 
@@ -274,13 +276,16 @@ class CirrusSearch extends SearchEngine {
 					)
 				)
 			));
+			if ( $wgCirrusSearchMoreAccurateScoringMode ) {
+				$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
+			}
 		}
 
 		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $originalTerm, $query ) {
+			'doWork' => function() use ( $indexType, $originalTerm, $query, $queryOptions ) {
 				try {
-					$result = CirrusSearch::getPageType( $indexType )->search( $query );
+					$result = CirrusSearch::getPageType( $indexType )->search( $query, $queryOptions );
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 					return $result;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {

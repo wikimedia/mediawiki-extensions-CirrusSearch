@@ -27,7 +27,7 @@ Before('@setup_namespaces') do
 end
 
 Before('@setup_suggestions') do
-  if !$setup_namespaces
+  if !$setup_suggestions
     steps %Q{
       Given a page named Popular Culture exists with contents popular culture
       And a page named Nobel Prize exists with contents nobel prize
@@ -41,7 +41,7 @@ Before('@setup_suggestions') do
       And a page named Noble Somethingelse7 exists with contents noble somethingelse
       And a page named Template:Noble Pipe exists with contents pipes are so noble
     }
-    $setup_namespaces = true
+    $setup_suggestions = true
   end
 end
 

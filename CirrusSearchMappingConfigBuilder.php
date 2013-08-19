@@ -35,14 +35,20 @@ class CirrusSearchMappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 		return array(
-			'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
-			'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
-			'category' => $this->buildStringField(),
-			'redirect' => array(
-				'properties' => array(
-					'title' => $this->buildStringField( 'title', null, true )
+			'properties' => array(
+				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
+				'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
+				'category' => $this->buildStringField(),
+				'redirect' => array(
+					'properties' => array(
+						'title' => $this->buildStringField( 'title', null, true )
+					)
 				)
-			)
+			),
+			'_boost' => array(
+				'name' => 'boost',
+				'null_value' => 1.0,
+			),
 		);
 	}
 

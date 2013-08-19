@@ -23,7 +23,12 @@ class CirrusSearchUpdater {
 	 *
 	 * @param array $pageData An array of revisions and their pre-processed
 	 * data. The format is as follows:
-	 *   array( array( 'rev' => $revision, 'text' => $text ), ... )
+	 *   array(
+	 *     array(
+	 *       'rev' => current revision object
+	 *       'text' => text of the current page
+	 *     )
+	 *   )
 	 */
 	public static function updateRevisions( $pageData ) {
 		wfProfileIn( __METHOD__ );
@@ -31,7 +36,7 @@ class CirrusSearchUpdater {
 		$contentDocuments = array();
 		$generalDocuments = array();
 		foreach ( $pageData as $page ) {
-			$document = CirrusSearchUpdater::buildDocumentforRevision( $page['rev'], $page['text'] );
+			$document = CirrusSearchUpdater::buildDocumentforRevision( $page );
 			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
 				$contentDocuments[] = $document;
 			} else {
@@ -70,14 +75,11 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	/**
-	 * @param $revision Revision
-	 * @param $text string
-	 * @return \Elastica\Document
-	 */
-	public static function buildDocumentforRevision( $revision, $text ) {
+	public static function buildDocumentforRevision( $page ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
+		$revision = $page[ 'rev' ];
+		$text = $page[ 'text' ];
 		$title = $revision->getTitle();
 		$article = new Article( $title, $revision->getId() );
 		$parserOutput = $article->getParserOutput( $revision->getId() );
@@ -96,6 +98,17 @@ class CirrusSearchUpdater {
 			);
 		}
 
+		// Calculate the query boost.
+		$backlinkCache = new BacklinkCache( $revision->getTitle() );
+		$links = $backlinkCache->getNumLinks( 'pagelinks' );
+		// Boost should increase at log speed with number of links but should never be 0 so just
+		// peg it at one until log( $links ) > 1.
+		if ( $links > 2 ) {
+			$boost = log( $links );
+		} else {
+			$boost = 1;
+		}
+
 		$doc = new \Elastica\Document( $revision->getPage(), array(
 			'namespace' => $title->getNamespace(),
 			'title' => $title->getText(),
@@ -103,7 +116,8 @@ class CirrusSearchUpdater {
 			'textLen' => $revision->getSize(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
 			'category' => $categories,
-			'redirect' => $redirects
+			'redirect' => $redirects,
+			'boost' => $boost,
 		) );
 
 		wfProfileOut( __METHOD__ );

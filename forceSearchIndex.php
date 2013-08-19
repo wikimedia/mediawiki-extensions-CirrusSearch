@@ -159,14 +159,18 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$res = $dbr->select(
 				array( 'revision', 'text', 'page' ),
-				array_merge( Revision::selectFields(), Revision::selectTextFields(), Revision::selectPageFields() ),
-					"$minId < page_id"
-					. $toIdPart
-					. ' AND rev_text_id = old_id'
-					. ' AND rev_id = page_latest'
-					. ' AND page_is_redirect = 0',
-					// Note that we attempt to filter out redirects because everything about the redirect
-					// will be covered when we index the page to which it points.
+				array_merge(
+					Revision::selectFields(),
+					Revision::selectTextFields(),
+					Revision::selectPageFields()
+				),
+				"$minId < page_id"
+				. $toIdPart
+				. ' AND rev_text_id = old_id'
+				. ' AND rev_id = page_latest'
+				. ' AND page_is_redirect = 0',
+				// Note that we attempt to filter out redirects because everything about the redirect
+				// will be covered when we index the page to which it points.
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -176,13 +180,17 @@ class ForceSearchIndex extends Maintenance {
 			$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 			$res = $dbr->select(
 				array( 'revision', 'text', 'page' ),
-				array_merge( Revision::selectFields(), Revision::selectTextFields(), Revision::selectPageFields() ),
-					'page_id = rev_page'
-					. ' AND rev_text_id = old_id'
-					. ' AND rev_id = page_latest'
-					. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
-					. " AND rev_timestamp <= $maxUpdate",
-					// Note that redirects are allowed here so we can pick up redirects made during search downtime
+				array_merge(
+					Revision::selectFields(),
+					Revision::selectTextFields(),
+					Revision::selectPageFields()
+				),
+				'page_id = rev_page'
+				. ' AND rev_text_id = old_id'
+				. ' AND rev_id = page_latest'
+				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
+				. " AND rev_timestamp <= $maxUpdate",
+				// Note that redirects are allowed here so we can pick up redirects made during search downtime
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
 				       'LIMIT' => $this->mBatchSize )

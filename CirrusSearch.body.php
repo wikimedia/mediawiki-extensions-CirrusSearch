@@ -117,15 +117,21 @@ class CirrusSearch extends SearchEngine {
 		$query->setFields( array( 'id', 'title', 'namespace' ) );
 
 		// Query params
-		$query->setSize( $limit );
-		$query->setFilter( CirrusSearch::buildNamespaceFilter( $ns ) );
-		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $ns );
+		$query->setLimit( $limit );
+		$mainFilter = new \Elastica\Filter\Bool();
+		$mainFilter->addMust( CirrusSearch::buildNamespaceFilter( $ns ) );
+		$prefixFilterQuery = new \Elastica\Filter\Query();
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.prefix', array(
 			'query' => substr( $search, 0, CirrusSearch::MAX_PREFIX_SEARCH ),
 			'analyzer' => 'prefix_query'
 		) );
-		$query->setQuery( $match );
+		$mainFilter->addMust( new \Elastica\Filter\Query( $match ) );
+		$query->setFilter( $mainFilter );
+		// This query doesn't have a score because it is all filters so force sorting on the boost
+		$query->setSort( array( 'boost' ) );
+
+		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $ns );
 
 		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
@@ -406,7 +412,7 @@ class CirrusSearch extends SearchEngine {
 			}
 			CirrusSearchUpdater::updateRevisions( array( array(
 				'rev' => $revision,
-				'text' => $text
+				'text' => $text,
 			) ) );
 			CirrusSearch::$updated[] = $id;
 		}

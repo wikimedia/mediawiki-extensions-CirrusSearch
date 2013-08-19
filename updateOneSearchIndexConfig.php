@@ -194,12 +194,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . "\tValidating mapping for page type..." );
 		$requiredPageMappings = CirrusSearchMappingConfigBuilder::build();
 		if ( array_key_exists( 'page', $actualMappings) &&
-				$this->vmActualMatchRequired( $actualMappings[ 'page' ][ 'properties' ], $requiredPageMappings ) ) {
+				$this->vmActualMatchRequired( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
 			// TODO Conflict resolution here might leave old portions of mappings
-			$action = new \Elastica\Type\Mapping( $this->getPageType(), $requiredPageMappings );
+			$action = new \Elastica\Type\Mapping( $this->getPageType() );
+			foreach ( $requiredPageMappings as $key => $value ) {
+				$action->setParam( $key, $value );
+			}
 			try {
 				$action->send();
 				$this->output( "corrected\n" );

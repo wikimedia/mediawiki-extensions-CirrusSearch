@@ -41,13 +41,15 @@ class ForceSearchIndex extends Maintenance {
 			. "query at the cost of having to reindex by page id rather than time.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
-		$this->mBatchSize = 500;
+		$this->setBatchSize( 500 );
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
+		$this->addOption( 'buildChunks', 'Instead of running the script spit out N commands that can be farmed out to ' .
+			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.', false, true );
 	}
 
 	public function execute() {
@@ -60,6 +62,11 @@ class ForceSearchIndex extends Maintenance {
 		$this->toId = $this->getOption( 'toId' );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
 		$this->limit = $this->getOption( 'limit' );
+		$buildChunks = $this->getOption( 'buildChunks' );
+		if ( $buildChunks !== null ) {
+			$this->buildChunks( $buildChunks );
+			return;
+		}
 
 		if ( $this->indexUpdates ) {
 			$operationName = 'Indexed';	
@@ -146,7 +153,7 @@ class ForceSearchIndex extends Maintenance {
 		$search = SearchEngine::create();
 		if ( $maxUpdate === null ) {
 			$toIdPart = '';
-			if ( !is_null( $this->toId ) ) {
+			if ( $this->toId !== null ) {
 				$toId = $dbr->addQuotes( $this->toId );
 				$toIdPart = " AND page_id <= $toId";
 			}
@@ -248,6 +255,40 @@ class ForceSearchIndex extends Maintenance {
 		}
 		wfProfileOut( __METHOD__ );
 		return $result;
+	}
+
+	private function buildChunks( $chunks ) {
+		$dbr = $this->getDB( DB_SLAVE );
+		if ( $this->toId === null ) {
+			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
+			if ( $this->toId === false ) {
+				$this->error( "Couldn't find any pages to index.  toId = $this->toId.", 1 );
+			}
+		}
+		$fromId = $this->getOption( 'fromId' );
+		if ( $fromId === null ) {
+			$fromId = $dbr->selectField( 'page', 'MIN(page_id) - 1' );
+			if ( $fromId === false ) {
+				$this->error( "Couldn't find any pages to index.  fromId = $fromId.", 1 );
+			}
+		}
+		if ( $fromId === $this->toId ) {
+			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
+		}
+		$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $chunks ) );
+		for ( $id = $fromId; $id < $this->toId; $id = $id + $chunkSize ) {
+			$chunkToId = min( $this->toId, $id + $chunkSize );
+			$this->output( $this->mSelf );
+			foreach ( $this->mOptions as $optName => $optVal ) {
+				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
+						$optName === 'toId' || $optName === 'buildChunks' ||
+						($optName === 'memory-limit' && $optVal === 'max')) {
+					continue;
+				}
+				$this->output( " --$optName $optVal" );
+			}
+			$this->output( " --fromId $id --toId $chunkToId\n" );
+		}
 	}
 }
 

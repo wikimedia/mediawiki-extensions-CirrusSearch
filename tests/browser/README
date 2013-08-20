@@ -27,6 +27,36 @@ config/secret.yml in the format:
 While you could technically just change config.yml that wouldn't be a good idea
 because it'd be too easy to accidentally commit your password.
 
+Some tests use instant commans.  You should make sure mediawiki is configured
+to allow this.  If you are using this:
+https://wikitech.wikimedia.org/wiki/Help:Single_Node_MediaWiki
+then you'll just need to switch
+ $wgUseInstantCommons = false;
+to
+ $wgUseInstantCommons = true;
+in orig/LocalSettings.php
+
+And some tests require Ogg support.  Install it too....  On single node
+mediawiki you can do this:
+ pushd /srv/
+ if [ ! -d TimedMediaHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler; fi
+ if [ ! -d MwEmbedSupport ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/MwEmbedSupport; fi
+ pushd mediawiki/extensions
+ if [ ! -d TimedMediaHandler ]; then ln -s ../../TimedMediaHandler; fi
+ if [ ! -d MwEmbedSupport ]; then ln -s ../../MwEmbedSupport; fi
+ sudo su -c 'crontab -u www-data -l' > /tmp/www-data-crontab
+ echo '* * * * * php /srv/mediawiki/maintenance/runJobs.php --type webVideoTranscode --maxjobs 1 >> /tmp/mw-transcode-log' >> /tmp/www-data-crontab
+ echo '0 0 * * * rm /tmp/mw-transcode-log' >> /tmp/www-data-crontab
+ sort /tmp/www-data-crontab | uniq | sudo su -c 'crontab -u www-data -'
+ rm /tmp/www-data-crontab
+ sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53
+ popd
+ popd
+Then add this to your localsettings:
+ require( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
+ require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
+ $wgOggThumbLocation = '/usr/bin/oggThumb';
+
 Running
 -------
 If you want to run tests against anything other than

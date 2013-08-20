@@ -13,6 +13,7 @@ Before('@setup_main') do
       And a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
       And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
+      And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
     }
     $setup_main = true
   end

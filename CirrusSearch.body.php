@@ -26,6 +26,13 @@ class CirrusSearch extends SearchEngine {
 	const CONTENT_INDEX_TYPE = 'content';
 	const GENERAL_INDEX_TYPE = 'general';
 	/**
+	 * Regex to remove text we don't want to search but that isn't already
+	 * removed when stripping HTML or the toc.
+	 */
+	const SANITIZE = '/
+		<video .*?<\/video>  # remove the sorry, not supported message
+	/x';
+	/**
 	 * Maximum title length that we'll check in prefix search.  Since titles can
 	 * be 255 bytes in length we're setting this to 255 characters but this
 	 * might cause bloat in the title's prefix index so we'll have to keep an
@@ -450,7 +457,11 @@ class CirrusSearch extends SearchEngine {
 			switch ( $c->getModel() ) {
 				case CONTENT_MODEL_WIKITEXT:
 					$article = new Article( $t, 0 );
-					$text = $article->getParserOutput()->getText();
+					$parserOutput = $article->getParserOutput();
+					$parserOutput->setEditSectionTokens( false );       // Don't add edit tokens
+					$text = $parserOutput->getText();                   // Fetch the page
+					$text = $this->stripToc( $text );                   // Strip the table of contents
+					$text = preg_replace( self::SANITIZE, '', $text );  // Strip other non-searchable text
 					break;
 				default:
 					$text = SearchUpdate::updateText( $text );
@@ -462,6 +473,23 @@ class CirrusSearch extends SearchEngine {
 
 	public function textAlreadyUpdatedForIndex() {
 		return true;
+	}
+
+	/**
+	 * Strip the table of contents from a rendered page.  Note that we don't use
+	 * regexes for this because we're removing whole lines.
+	 *
+	 * @var $text string the rendered page
+	 * @return string the rendered page without the toc
+	 */
+	private function stripToc( $text ) {
+		$t = explode( "\n", $text );
+		$t = array_filter( $t, function( $line ) {
+			return strpos( $line, 'id="toctitle"' ) === false &&  // Strip the beginning of the toc
+				 strpos( $line, 'class="tocnumber"') === false && // And any lines with toc numbers
+				 strpos( $line, 'class="toctext"') === false;     // And finally lines with toc text
+		});
+		return implode( "\n", $t );
 	}
 }
 

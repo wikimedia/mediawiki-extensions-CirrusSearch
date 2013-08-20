@@ -12,6 +12,7 @@ Before('@setup_main') do
       And a page named África exists with contents for testing
       And a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
+      And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
     }
     $setup_main = true
   end

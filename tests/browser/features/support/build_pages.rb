@@ -18,6 +18,22 @@ Before('@setup_main') do
   end
 end
 
+Before('@setup_weight') do
+  if !$setup_weight
+    steps %Q{
+      Given a page named TestWeight Smaller exists with contents TestWeight
+      And a page named TestWeight Smaller/A exists with contents [[TestWeight Smaller]]
+      And a page named TestWeight Smaller/B exists with contents [[TestWeight Smaller]]
+      And a page named TestWeight Larger exists with contents TestWeight
+      And a page named TestWeight Larger/Redirect exists with contents #REDIRECT [[TestWeight Larger]]
+      And a page named TestWeight Larger/A exists with contents [[TestWeight Larger]]
+      And a page named TestWeight Larger/B exists with contents [[TestWeight Larger/Redirect]]
+      And a page named TestWeight Larger/C exists with contents [[TestWeight Larger/Redirect]]
+    }
+    $setup_weight = true
+  end
+end
+
 Before('@setup_namespaces') do
   if !$setup_namespaces
     steps %Q{

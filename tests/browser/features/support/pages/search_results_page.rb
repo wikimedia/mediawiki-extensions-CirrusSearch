@@ -8,6 +8,7 @@ class SearchResultsPage
   div(:first_result, :class => 'mw-search-result-heading')
   div(:first_result_text, :class => 'searchresult')
   link(:first_image_result){ table_element(:class => 'searchResultImage').cell_element(:index => 1).link_element(:index => 0) }
+  div(:second_result, {:class => 'mw-search-result-heading', :index => 1})
   button(:simple_search_button, value: 'Search')
   text_field(:search_input, name: 'search')
   div(:suggestion_wrapper, class: 'searchdidyoumean')

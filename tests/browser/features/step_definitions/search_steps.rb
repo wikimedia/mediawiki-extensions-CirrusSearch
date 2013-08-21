@@ -117,6 +117,20 @@ Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
     end
   end
 end
+Then(/^(.*) is( in)? the second search result$/) do |title, in_ok|
+  on(SearchResultsPage) do |page|
+    if title == 'none' then
+      page.second_result_element.should_not exist
+    else
+      page.second_result_element.should exist
+      if in_ok then
+        page.second_result.should include title
+      else
+        page.second_result.should == title
+      end
+    end
+  end
+end
 Then(/^(.*) is the highlighted title of the first search result$/) do |highlighted|
   on(SearchResultsPage).first_result_highlighted_title.should == highlighted
 end

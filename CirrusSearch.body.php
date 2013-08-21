@@ -129,7 +129,7 @@ class CirrusSearch extends SearchEngine {
 		$mainFilter->addMust( new \Elastica\Filter\Query( $match ) );
 		$query->setFilter( $mainFilter );
 		// This query doesn't have a score because it is all filters so force sorting on the boost
-		$query->setSort( array( 'boost' ) );
+		$query->setQuery( self::boostQuery( ) );
 
 		$indexType = CirrusSearch::pickIndexTypeFromNamespaces( $ns );
 
@@ -204,10 +204,11 @@ class CirrusSearch extends SearchEngine {
 							'category', CirrusSearch::fixupQueryString( $value ) ) );
 						return '';
 					case 'prefix':
-						return "$value*";
+						return "$value* ";
 					case 'intitle':
-						$extraQueryStrings[] = 'title:' . CirrusSearch::fixupQueryString( $value );
-						return '';
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
+							'title', CirrusSearch::fixupQueryString( $value ) ) );
+						return "$value ";
 					default:
 						return $matches[0];
 				}
@@ -249,7 +250,7 @@ class CirrusSearch extends SearchEngine {
 			$queryStringQuery->setAutoGeneratePhraseQueries( true );
 			$queryStringQuery->setPhraseSlop( 3 );
 			// TODO phrase match boosts?
-			$query->setQuery( $queryStringQuery );
+			$query->setQuery( self::boostQuery( $queryStringQuery ) );
 			$query->setParam( 'suggest', array(
 				'text' => $term,
 				CirrusSearch::PHRASE_TITLE => array(
@@ -285,6 +286,8 @@ class CirrusSearch extends SearchEngine {
 			if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 				$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 			}
+		} else {
+			$query->setQuery( self::boostQuery() );
 		}
 
 		// Perform the search
@@ -388,6 +391,15 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		return $string;
+	}
+
+	/**
+	 * Wrap query in link based boosts.
+	 * @param $query null|Elastica\Query optional query to boost.  if null the match_all is assumed
+	 * @return query that will run $query and boost results based on links
+	 */
+	private static function boostQuery( $query = null ) {
+		return new \Elastica\Query\CustomScore( "_score * log10(doc['links'].value + doc['redirect_links'].value + 2)", $query );
 	}
 
 	public function update( $id, $title, $text ) {

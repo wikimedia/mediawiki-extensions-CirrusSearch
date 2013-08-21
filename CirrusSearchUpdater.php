@@ -89,24 +89,26 @@ class CirrusSearchUpdater {
 			$categories[] = $key;
 		}
 
-		$redirectLinks = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
-		$redirects = array();
-		foreach ( $redirectLinks as $redirect ) {
-			$redirects[] = array(
-				'namespace' => $redirect->getNamespace(),
-				'title' => $redirect->getText()
-			);
-		}
-
-		// Calculate the query boost.
-		$backlinkCache = new BacklinkCache( $revision->getTitle() );
+		$backlinkCache = new BacklinkCache( $title );
 		$links = $backlinkCache->getNumLinks( 'pagelinks' );
-		// Boost should increase at log speed with number of links but should never be 0 so just
-		// peg it at one until log( $links ) > 1.
-		if ( $links > 2 ) {
-			$boost = log( $links );
-		} else {
-			$boost = 1;
+
+		// Handle redirects to this page
+		$redirectTitles = $backlinkCache->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
+		$redirects = array();
+		$redirectLinks = 0;
+		foreach ( $redirectTitles as $redirect ) {
+			// If the redirect is in main or the same namespace as the article the index it
+			if ( $redirect->getNamespace() === NS_MAIN && $redirect->getNamespace() === $title->getNamespace()) {
+				$redirects[] = array(
+					'namespace' => $redirect->getNamespace(),
+					'title' => $redirect->getText()
+				);
+			}
+			// Count redirects as links and links to those redirects as links.
+			// Note that we don't count redirect to redirects here because that seems a bit much.
+			$redirectBacklinkCache = new Backlinkcache( $redirect );
+			$redirectLinks += $redirectBacklinkCache->getNumLinks( 'pagelinks' );
+			$links += 1;
 		}
 
 		$doc = new \Elastica\Document( $revision->getPage(), array(
@@ -117,7 +119,8 @@ class CirrusSearchUpdater {
 			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
 			'category' => $categories,
 			'redirect' => $redirects,
-			'boost' => $boost,
+			'links' => $links,
+			'redirect_links' => $redirectLinks,
 		) );
 
 		wfProfileOut( __METHOD__ );

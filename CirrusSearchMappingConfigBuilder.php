@@ -43,11 +43,15 @@ class CirrusSearchMappingConfigBuilder {
 					'properties' => array(
 						'title' => $this->buildStringField( 'title', null, true )
 					)
+				),
+				'links' => array(
+					'type' => 'integer',
+					'store' => 'yes',
+				),
+				'redirect_links' => array(
+					'type' => 'integer',
+					'store' => 'yes',
 				)
-			),
-			'_boost' => array(
-				'name' => 'boost',
-				'null_value' => 1.0,
 			),
 		);
 	}

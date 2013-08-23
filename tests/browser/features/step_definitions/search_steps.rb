@@ -90,12 +90,29 @@ Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
     if title == 'none' then
       page.first_result_element.should_not exist
+      page.first_image_result_element.should_not exist
     else
       page.first_result_element.should exist
       if in_ok then
         page.first_result.should include title
       else
         page.first_result.should == title
+      end
+    end
+  end
+end
+Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
+  on(SearchResultsPage) do |page|
+    if title == 'none' then
+      page.first_result_element.should_not exist
+      page.first_image_result_element.should_not exist
+    else
+      page.first_image_result_element.should exist
+      if in_ok then
+        page.first_image_result_element.text.should include title
+      else
+        # You can't just use first_image_result.should == because that tries to click the link....
+        page.first_image_result_element.text.should == title
       end
     end
   end

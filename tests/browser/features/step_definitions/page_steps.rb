@@ -2,6 +2,11 @@ Given(/^a page named (.*) exists with contents (.*)$/) do |title, text|
   edit_page(title, text, false)
 end
 
+Given(/^a file named (.*) exists with contents (.*) and description (.*)$/) do |title, contents, description|
+  upload_file(title, contents, description)   # Make sure the file is correct
+  edit_page(title, description, false)        # Make sure the description is correct
+end
+
 When(/^I delete (.+)$/) do |title|
   visit(DeletePage, using_params: {page_name: title}) do |page|
     page.delete
@@ -41,5 +46,33 @@ def edit_page(title, text, add)
       end
       page.save
     end
+  end
+end
+
+def upload_file(title, contents, description)
+  contents = 'features/support/articles/' + contents
+  md5 = Digest::MD5.hexdigest(File.read(contents))
+  md5_string = "md5: #{md5}"
+  visit(ArticlePage, using_params: {page_name: title}) do |page|
+    if page.file_history? && page.file_last_comment? && page.file_last_comment.include?(md5_string)
+      return
+    end
+    if !(page.upload_new_version? || page.upload?)
+      step 'I am logged in'
+      visit(ArticlePage, using_params: {page_name: title})
+    end
+    if page.upload?
+      # New file, upload it
+      page.upload
+    else
+      # Existing file, update it
+      page.upload_new_version
+    end
+  end
+  on(UploadFilePage) do |page|
+    page.description = description + "\n" + md5_string
+    page.file = File.absolute_path(contents)
+    page.submit
+    page.error_element.should_not exist
   end
 end

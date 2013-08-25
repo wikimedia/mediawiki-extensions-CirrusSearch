@@ -71,6 +71,14 @@ $messages['gl'] = array(
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
 );
 
+/** Hebrew (עברית)
+ * @author Amire80
+ */
+$messages['he'] = array(
+	'cirrussearch-desc' => 'חיפוש במדיה־ויקי באמצעות Elasticsearch',
+	'cirrussearch-backend-error' => 'לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.',
+);
+
 /** Interlingua (interlingua)
  * @author McDutchie
  */

@@ -104,11 +104,10 @@ class CirrusSearchUpdater {
 					'title' => $redirect->getText()
 				);
 			}
-			// Count redirects as links and links to those redirects as links.
+			// Count links to redirects
 			// Note that we don't count redirect to redirects here because that seems a bit much.
 			$redirectBacklinkCache = new Backlinkcache( $redirect );
 			$redirectLinks += $redirectBacklinkCache->getNumLinks( 'pagelinks' );
-			$links += 1;
 		}
 
 		$doc = new \Elastica\Document( $revision->getPage(), array(

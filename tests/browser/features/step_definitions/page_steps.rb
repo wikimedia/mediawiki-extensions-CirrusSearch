@@ -1,10 +1,19 @@
-Given(/^a page named (.*) exists with contents (.*)$/) do |title, text|
+Given(/^a page named (.*) exists(?: with contents (.*))?$/) do |title, text|
+  if !text then
+    text = title
+  end
   edit_page(title, text, false)
 end
 
 Given(/^a file named (.*) exists with contents (.*) and description (.*)$/) do |title, contents, description|
   upload_file(title, contents, description)   # Make sure the file is correct
   edit_page(title, description, false)        # Make sure the description is correct
+end
+
+Given(/^a page named (.*) doesn't exist$/) do |title|
+  visit(ArticlePage, using_params: {page_name: title}) do |page|
+    page.create_link_element.should exist
+  end
 end
 
 When(/^I delete (.+)$/) do |title|

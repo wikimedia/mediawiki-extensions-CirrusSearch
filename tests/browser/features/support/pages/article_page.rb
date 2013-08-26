@@ -8,4 +8,5 @@ class ArticlePage
   cell(:file_last_comment){ table_element(:class => 'filehistory')[1][5] }
   link(:upload, text: 'upload it')
   link(:upload_new_version, text: 'Upload a new version of this file')
+  link(:create_link, text: 'Create')
 end

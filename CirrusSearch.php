@@ -59,6 +59,8 @@ $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 // Maximum number of redirects per target page to index.  
 $wgCirrusSearchIndexedRedirects = 1024;
 
+// Maximum number of linked articles to update every time an article changes.
+$wgCirrusSearchLinkedArticlesToUpdate = 5;
 
 
 $dir = __DIR__ . '/';

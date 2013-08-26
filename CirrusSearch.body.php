@@ -410,16 +410,20 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function update( $id, $title, $text ) {
-		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
-		$content = $revision->getContent();
 		if ( in_array( $id, CirrusSearch::$updated ) ) {
 			// Already indexed $id
 			return;
 		}
+		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
+		$content = $revision->getContent();
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 			$targetRevision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+			// If you are building a redirect to a non-existant page then don't error out
+			if ( $targetRevision === null ) {
+				return;
+			}
 			$newUpdate = new SearchUpdate( $target->getArticleID(), $target, $targetRevision->getContent() );
 			$newUpdate->doUpdate();
 		} else {
@@ -438,10 +442,59 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @param $linkUpdate LinksUpdate
+	 * Hooked to update the search index for pages when templates that they include are changed
+	 * and to kick off updating linked articles.
+	 * @param $linksUpdate LinksUpdate
 	 */
-	public static function linksUpdateCompletedHook( $linkUpdate ) {
-		$title = $linkUpdate->getTitle();
+	public static function linksUpdateCompletedHook( $linksUpdate ) {
+		self::updateFromTitle( $linksUpdate->getTitle() );
+		self::updateLinkedArticles( $linksUpdate );
+	}
+
+	/**
+	 * Update the search index for articles linked from this article.
+	 * @param $linksUpdate LinksUpdate
+	 */
+	private static function updateLinkedArticles( $linksUpdate ) {
+		// This could be made more efficient by having LinksUpdate return a list of articles who
+		// have been newly linked or newly unlinked.  Those are the only articles that we need
+		// to reindex any way.
+
+		// This could also be made more efficient by only updating the link counts rather than
+		// reindexing the whole article.
+		global $wgCirrusSearchLinkedArticlesToUpdate;
+
+		// Build a big list of candidate pages who's links we should update
+		$candidates = array();
+		foreach ( $linksUpdate->getParserOutput()->getLinks() as $ns => $ids ) {
+			foreach ( $ids as $id ) {
+				$candidates[] = $id;
+			}
+		}
+
+		// Pick up to $wgCirrusSearchLinkedArticlesToUpdate links to update
+		$chosenCount = min( count( $candidates ), $wgCirrusSearchLinkedArticlesToUpdate );
+		if ( $chosenCount < 1 ) {
+			return;
+		}
+		$chosen = array_rand( $candidates, $chosenCount );
+		// array_rand is $chosenCount === 1 then array_rand will return a key rather than an
+		// array of keys so just wrap the key and move on with the rest of the request.
+		if ( !is_array( $chosen ) ) {
+			$chosen = array( $chosen );
+		}
+		foreach ( $chosen as $key ) {
+			$title = Title::newFromID( $candidates[ $key ] );
+			// Skip links to non-existant pages.
+			if ( $title === null ) {
+				continue;
+			}
+			wfDebugLog( 'CirrusSearch', "Updating $title because it was linked." );
+			self::updateFromTitle( $title );
+		}
+	}
+
+	private static function updateFromTitle( $title ) {
 		$articleId = $title->getArticleID();
 		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $articleId );
 

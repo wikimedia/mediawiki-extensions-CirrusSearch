@@ -419,13 +419,7 @@ class CirrusSearch extends SearchEngine {
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
-			$targetRevision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
-			// If you are building a redirect to a non-existant page then don't error out
-			if ( $targetRevision === null ) {
-				return;
-			}
-			$newUpdate = new SearchUpdate( $target->getArticleID(), $target, $targetRevision->getContent() );
-			$newUpdate->doUpdate();
+			self::updateFromTitle( $target );
 		} else {
 			// Technically this is supposed to be just a title update but that is more complicated then
 			// just rebuilding the text.  It doesn't look like these title updates are used frequently
@@ -502,6 +496,10 @@ class CirrusSearch extends SearchEngine {
 		// replicated out to the slaves
 		if ( !$revision ) {
 			$revision = Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
+			// This usually happens when building a redirect to a non-existant page
+			if ( !$revision ) {
+				return;
+			}
 		}
 
 		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );

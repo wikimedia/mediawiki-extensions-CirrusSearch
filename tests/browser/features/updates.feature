@@ -47,7 +47,7 @@ Feature: Search backend updates
     Given a page named WeightedLinkRdir%{epoch} 1/Rdir exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 1]]
     And a page named WeightedLinkRdir%{epoch} 1 exists
     And a page named WeightedLinkRdir%{epoch} 2/Rdir exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 2]]
-    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLink%{epoch} 2/Rdir]]
+    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLinkRdir%{epoch} 2/Rdir]]
     And a page named WeightedLinkRdir%{epoch} 2 exists
     And I search for WeightedLinkRdir%{epoch}
     And WeightedLinkRdir%{epoch} 2 is the first search result

@@ -44,14 +44,14 @@ Feature: Search backend updates
     Then WeightedLink%{epoch} 1 is the first search result
 
   Scenario: Pages weights are updated when new pages link to their redirects
-    Given a page named WeightedLinkRdir%{epoch} 1/Rdir exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 1]]
+    Given a page named WeightedLinkRdir%{epoch} 1/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 1]]
     And a page named WeightedLinkRdir%{epoch} 1 exists
-    And a page named WeightedLinkRdir%{epoch} 2/Rdir exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 2]]
-    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLinkRdir%{epoch} 2/Rdir]]
+    And a page named WeightedLinkRdir%{epoch} 2/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 2]]
+    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLinkRdir%{epoch} 2/Redirect]]
     And a page named WeightedLinkRdir%{epoch} 2 exists
     And I search for WeightedLinkRdir%{epoch}
     And WeightedLinkRdir%{epoch} 2 is the first search result
-    When a page named WeightedLinkRdir%{epoch} 1/1 exists with contents [[WeightedLinkRdir%{epoch} 1/Rdir]]
-    And a page named WeightedLinkRdir%{epoch} 1/2 exists with contents [[WeightedLinkRdir%{epoch} 1/Rdir]]
+    When a page named WeightedLinkRdir%{epoch} 1/1 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
+    And a page named WeightedLinkRdir%{epoch} 1/2 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
     And I search for WeightedLinkRdir%{epoch}
     Then WeightedLinkRdir%{epoch} 1 is the first search result

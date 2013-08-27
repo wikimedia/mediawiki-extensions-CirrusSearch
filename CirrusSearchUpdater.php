@@ -1,6 +1,8 @@
 <?php
 /**
- * Wrapper around the update/delete mechanisms within elasticsearch
+ * Performs updates and deletes on the Elasticsearch index.  Called by
+ * CirrusSearch.body.php (our SearchEngine implementation), forceSearchIndex
+ * (for bulk updates), and hooked into LinksUpdate (for implied updates).
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +21,76 @@
  */
 class CirrusSearchUpdater {
 	/**
+	 * Regex to remove text we don't want to search but that isn't already
+	 * removed when stripping HTML or the toc.
+	 */
+	const SANITIZE = '/
+		<video .*?<\/video>  # remove the sorry, not supported message
+	/x';
+
+	/**
+	 * Article IDs updated in this process.  Used for deduplication of updates.
+	 * @var array(Integer)
+	 */
+	private static $updated = array();
+
+	/**
+	 * Update a single article using its Title and pre-sanitized text.
+	 */
+	public static function updateFromTitleAndText( $id, $title, $text ) {
+		if ( in_array( $id, self::$updated ) ) {
+			// Already indexed $id
+			return;
+		}
+		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
+		$content = $revision->getContent();
+		if ( $content->isRedirect() ) {
+			$target = $content->getUltimateRedirectTarget();
+			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
+			self::updateFromTitle( $target );
+		} else {
+			self::updateRevisions( array( array(
+				'rev' => $revision,
+				'text' => $text,
+			) ) );
+			self::$updated[] = $id;
+		}
+	}
+
+	/**
+	 * Performs an update when the $text is not already available by firing the
+	 * update back through the SearchEngine to get the sanitized text.
+	 * @param Title $title
+	 */
+	public static function updateFromTitle( $title ) {
+		$articleId = $title->getArticleID();
+		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $articleId );
+
+		// This usually happens on page creation when all the revision data hasn't
+		// replicated out to the slaves
+		if ( !$revision ) {
+			$revision = Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
+			// This usually happens when building a redirect to a non-existant page
+			if ( !$revision ) {
+				return;
+			}
+		}
+
+		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );
+		$update->doUpdate();
+	}
+
+	/**
+	 * Hooked to update the search index for pages when templates that they include are changed
+	 * and to kick off updating linked articles.
+	 * @param $linksUpdate LinksUpdate
+	 */
+	public static function linksUpdateCompletedHook( $linksUpdate ) {
+		self::updateFromTitle( $linksUpdate->getTitle() );
+		self::updateLinkedArticles( $linksUpdate );
+	}
+
+	/**
 	 * This updates pages in elasticsearch.
 	 *
 	 * @param array $pageData An array of revisions and their pre-processed
@@ -36,15 +108,29 @@ class CirrusSearchUpdater {
 		$contentDocuments = array();
 		$generalDocuments = array();
 		foreach ( $pageData as $page ) {
-			$document = CirrusSearchUpdater::buildDocumentforRevision( $page );
+			$document = self::buildDocumentforRevision( $page );
 			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
 				$contentDocuments[] = $document;
 			} else {
 				$generalDocuments[] = $document;
 			}
 		}
-		CirrusSearchUpdater::sendDocuments( CirrusSearch::CONTENT_INDEX_TYPE, $contentDocuments );
-		CirrusSearchUpdater::sendDocuments( CirrusSearch::GENERAL_INDEX_TYPE, $generalDocuments );
+		self::sendDocuments( CirrusSearchConnection::CONTENT_INDEX_TYPE, $contentDocuments );
+		self::sendDocuments( CirrusSearchConnection::GENERAL_INDEX_TYPE, $generalDocuments );
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	/**
+	 * Delete pages from the elasticsearch index
+	 *
+	 * @param array $pages An array of ids to delete
+	 */
+	public static function deletePages( $pages ) {
+		wfProfileIn( __METHOD__ );
+
+		self::sendDeletes( CirrusSearchConnection::CONTENT_INDEX_TYPE, $pages );
+		self::sendDeletes( CirrusSearchConnection::GENERAL_INDEX_TYPE, $pages );
 
 		wfProfileOut( __METHOD__ );
 	}
@@ -64,7 +150,7 @@ class CirrusSearchUpdater {
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
 			array( 'doWork' => function() use ( $indexType, $documents ) {
 				try {
-					$result = CirrusSearch::getPageType( $indexType )->addDocuments( $documents );
+					$result = CirrusSearchConnection::getPageType( $indexType )->addDocuments( $documents );
 					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
@@ -75,7 +161,7 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	public static function buildDocumentforRevision( $page ) {
+	private static function buildDocumentforRevision( $page ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
 		$revision = $page[ 'rev' ];
@@ -127,17 +213,46 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * Delete pages from the elasticsearch index
-	 *
-	 * @param array $pages An array of ids to delete
+	 * Update the search index for articles linked from this article.
+	 * @param $linksUpdate LinksUpdate
 	 */
-	public static function deletePages( $pages ) {
-		wfProfileIn( __METHOD__ );
+	private static function updateLinkedArticles( $linksUpdate ) {
+		// This could be made more efficient by having LinksUpdate return a list of articles who
+		// have been newly linked or newly unlinked.  Those are the only articles that we need
+		// to reindex any way.
 
-		CirrusSearchUpdater::sendDeletes( CirrusSearch::CONTENT_INDEX_TYPE, $pages );
-		CirrusSearchUpdater::sendDeletes( CirrusSearch::GENERAL_INDEX_TYPE, $pages );
+		// This could also be made more efficient by only updating the link counts rather than
+		// reindexing the whole article.
+		global $wgCirrusSearchLinkedArticlesToUpdate;
 
-		wfProfileOut( __METHOD__ );
+		// Build a big list of candidate pages who's links we should update
+		$candidates = array();
+		foreach ( $linksUpdate->getParserOutput()->getLinks() as $ns => $ids ) {
+			foreach ( $ids as $id ) {
+				$candidates[] = $id;
+			}
+		}
+
+		// Pick up to $wgCirrusSearchLinkedArticlesToUpdate links to update
+		$chosenCount = min( count( $candidates ), $wgCirrusSearchLinkedArticlesToUpdate );
+		if ( $chosenCount < 1 ) {
+			return;
+		}
+		$chosen = array_rand( $candidates, $chosenCount );
+		// array_rand is $chosenCount === 1 then array_rand will return a key rather than an
+		// array of keys so just wrap the key and move on with the rest of the request.
+		if ( !is_array( $chosen ) ) {
+			$chosen = array( $chosen );
+		}
+		foreach ( $chosen as $key ) {
+			$title = Title::newFromID( $candidates[ $key ] );
+			// Skip links to non-existant pages.
+			if ( $title === null ) {
+				continue;
+			}
+			wfDebugLog( 'CirrusSearch', "Updating $title because it was linked." );
+			self::updateFromTitle( $title );
+		}
 	}
 
 	/**
@@ -155,7 +270,7 @@ class CirrusSearchUpdater {
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
 			array( 'doWork' => function() use ( $indexType, $ids ) {
 				try {
-					$result = CirrusSearch::getPageType( $indexType )->deleteIds( $ids );
+					$result = CirrusSearchConnection::getPageType( $indexType )->deleteIds( $ids );
 					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );

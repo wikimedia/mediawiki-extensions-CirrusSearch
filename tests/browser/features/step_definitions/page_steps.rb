@@ -12,7 +12,7 @@ end
 
 Given(/^a page named (.*) doesn't exist$/) do |title|
   visit(ArticlePage, using_params: {page_name: title}) do |page|
-    page.create_link_element.should exist
+    (page.create_source_link? or page.create_link?).should be_true
   end
 end
 

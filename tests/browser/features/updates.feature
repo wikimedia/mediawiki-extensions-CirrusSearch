@@ -32,26 +32,27 @@ Feature: Search backend updates
     When a page named IRedirectToNonExistantPages%{epoch} exists with contents #REDIRECT [[IDontExist]]
     Then I am on a page titled IRedirectToNonExistantPages%{epoch}
 
-  Scenario: Pages weights are updated when new pages link to them 
-    Given a page named WeightedLink%{epoch} 1 exists
-    And a page named WeightedLink%{epoch} 2/1 exists with contents [[WeightedLink%{epoch} 2]]
-    And a page named WeightedLink%{epoch} 2 exists
-    And I search for WeightedLink%{epoch}
-    And WeightedLink%{epoch} 2 is the first search result
-    When a page named WeightedLink%{epoch} 1/1 exists with contents [[WeightedLink%{epoch} 1]]
-    And a page named WeightedLink%{epoch} 1/2 exists with contents [[WeightedLink%{epoch} 1]]
-    And I search for WeightedLink%{epoch}
-    Then WeightedLink%{epoch} 1 is the first search result
-
-  Scenario: Pages weights are updated when new pages link to their redirects
-    Given a page named WeightedLinkRdir%{epoch} 1/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 1]]
-    And a page named WeightedLinkRdir%{epoch} 1 exists
-    And a page named WeightedLinkRdir%{epoch} 2/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 2]]
-    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLinkRdir%{epoch} 2/Redirect]]
-    And a page named WeightedLinkRdir%{epoch} 2 exists
-    And I search for WeightedLinkRdir%{epoch}
-    And WeightedLinkRdir%{epoch} 2 is the first search result
-    When a page named WeightedLinkRdir%{epoch} 1/1 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
-    And a page named WeightedLinkRdir%{epoch} 1/2 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
-    And I search for WeightedLinkRdir%{epoch}
-    Then WeightedLinkRdir%{epoch} 1 is the first search result
+# Disabled until Bug 53428 is fixed.
+#  Scenario: Pages weights are updated when new pages link to them
+#    Given a page named WeightedLink%{epoch} 1 exists
+#    And a page named WeightedLink%{epoch} 2/1 exists with contents [[WeightedLink%{epoch} 2]]
+#    And a page named WeightedLink%{epoch} 2 exists
+#    And I search for WeightedLink%{epoch}
+#    And WeightedLink%{epoch} 2 is the first search result
+#    When a page named WeightedLink%{epoch} 1/1 exists with contents [[WeightedLink%{epoch} 1]]
+#    And a page named WeightedLink%{epoch} 1/2 exists with contents [[WeightedLink%{epoch} 1]]
+#    And I search for WeightedLink%{epoch}
+#    Then WeightedLink%{epoch} 1 is the first search result
+#
+#  Scenario: Pages weights are updated when new pages link to their redirects
+#    Given a page named WeightedLinkRdir%{epoch} 1/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 1]]
+#    And a page named WeightedLinkRdir%{epoch} 1 exists
+#    And a page named WeightedLinkRdir%{epoch} 2/Redirect exists with contents #REDIRECT [[WeightedLinkRdir%{epoch} 2]]
+#    And a page named WeightedLinkRdir%{epoch} 2/1 exists with contents [[WeightedLinkRdir%{epoch} 2/Redirect]]
+#    And a page named WeightedLinkRdir%{epoch} 2 exists
+#    And I search for WeightedLinkRdir%{epoch}
+#    And WeightedLinkRdir%{epoch} 2 is the first search result
+#    When a page named WeightedLinkRdir%{epoch} 1/1 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
+#    And a page named WeightedLinkRdir%{epoch} 1/2 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
+#    And I search for WeightedLinkRdir%{epoch}
+#    Then WeightedLinkRdir%{epoch} 1 is the first search result

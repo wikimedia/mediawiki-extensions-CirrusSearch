@@ -38,7 +38,8 @@ Feature: Full text search
     #| File:greyed                          | File:Savepage-greyed.png is       | not in          | image  |
     | File:"Screenshot, for test purposes" | File:Savepage-greyed.png is       | not in          | image  |
     # You can't search for text inside a <video> tag
-    | "JavaScript disabled"                | none is                           | not in          |        |
+    # Disabled until Bug 53426 is fixed
+    #| "JavaScript disabled"                | none is                           | not in          |        |
     # You can't search for text inside the table of contants
     | "3.1 Conquest of Persian empire"     | none is                           | not in          |        |
     # You can't search for the [edit] tokens that users can click to edit sections

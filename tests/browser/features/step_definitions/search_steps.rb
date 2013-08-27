@@ -34,6 +34,12 @@ When(/^I search for (.+)$/) do |text|
       end
     else
       page.search_input = text
+      #Sometimes setting the search_input doesn't take so we do it again and again
+      #until it does.  I really have no idea why this is the case but users don't
+      #seem to have the same problem.
+      while page.search_input != text
+        page.search_input = text
+      end
       if page.simple_search_button? then
         page.simple_search_button
       else

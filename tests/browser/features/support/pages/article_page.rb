@@ -9,4 +9,5 @@ class ArticlePage
   link(:upload, text: 'upload it')
   link(:upload_new_version, text: 'Upload a new version of this file')
   link(:create_link, text: 'Create')
+  link(:create_source_link, text: 'Create source')
 end

@@ -69,9 +69,13 @@ $elasticaDir = $dir . 'Elastica/lib/Elastica/';
  * Classes
  */
 $wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
-$wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'CirrusSearchConnection.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'CirrusSearchMappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'CirrusSearchSearcher.php';
+$wgAutoloadClasses['CirrusSearchTextSanitizer'] = $dir . 'CirrusSearchTextSanitizer.php';
+$wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
+
 
 $wgAutoloadClasses['Elastica\Bulk'] = $elasticaDir . 'Bulk.php';
 $wgAutoloadClasses['Elastica\Client'] = $elasticaDir . 'Client.php';
@@ -131,7 +135,7 @@ $wgAutoloadClasses['Elastica\Type\Mapping'] = $elasticaDir . 'Type/Mapping.php';
  * Hooks
  * Also check Setup for other hooks.
  */
-$wgHooks['LinksUpdateComplete'][] = 'CirrusSearch::linksUpdateCompletedHook';
+$wgHooks['LinksUpdateComplete'][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
 
 /**
  * i18n
@@ -147,6 +151,6 @@ function cirrusSearchSetup() {
 	global $wgSearchType, $wgHooks;
 	// Install our prefix search hook only if we're enabled.
 	if ( $wgSearchType === 'CirrusSearch' ) {
-		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
+		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchSearcher::prefixSearch';
 	}
 }

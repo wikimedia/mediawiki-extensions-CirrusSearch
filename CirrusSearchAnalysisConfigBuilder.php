@@ -80,7 +80,7 @@ class CirrusSearchAnalysisConfigBuilder {
 			'tokenizer' => array(
 				'prefix' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearch::MAX_PREFIX_SEARCH,
+					'max_gram' => CirrusSearchSearcher::MAX_PREFIX_SEARCH,
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',

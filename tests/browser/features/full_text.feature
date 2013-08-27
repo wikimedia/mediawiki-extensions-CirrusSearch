@@ -62,7 +62,8 @@ Feature: Full text search
     | term            | suggestion      |
     | popular culatur | popular culture |
     | noble prize     | nobel prize     |
-    | nobel prize     | none            |
+    # Disabled until 52860 is fixed
+    #| nobel prize     | none            |
 
   @setup_weight
   Scenario: Page weight include redirects

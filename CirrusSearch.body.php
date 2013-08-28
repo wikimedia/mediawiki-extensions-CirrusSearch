@@ -33,7 +33,12 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function updateTitle( $id, $title ) {
-		CirrusSearchUpdater::updateFromTitle( $title );
+		$loadedTitle = Title::newFromID( $id );
+		if ( $loadedTitle === null ) {
+			wfLogWarning( 'Trying to update the search index for a non-existant title.' );
+			return;
+		}
+		CirrusSearchUpdater::updateFromTitle( $loadedTitle );
 	}
 
 	public function delete( $id, $title ) {

@@ -150,7 +150,7 @@ class ForceSearchIndex extends Maintenance {
 		wfProfileIn( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
-		$search = SearchEngine::create();
+		$search = new CirrusSearch();
 		if ( $maxUpdate === null ) {
 			$toIdPart = '';
 			if ( $this->toId !== null ) {

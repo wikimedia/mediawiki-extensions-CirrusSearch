@@ -145,6 +145,14 @@ $messages['nl'] = array(
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
 );
 
+/** Occitan (occitan)
+ * @author Cedric31
+ */
+$messages['oc'] = array(
+	'cirrussearch-desc' => 'Fa efectuar la recèrca per Solr',
+	'cirrussearch-backend-error' => 'Avèm pas pogut menar corrèctament vòstra recèrca a causa d’un problèma temporari. Ensajatz tornarmai ulteriorament.',
+);
+
 /** tarandíne (tarandíne)
  * @author Joetaras
  */

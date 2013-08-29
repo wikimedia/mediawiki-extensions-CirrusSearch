@@ -126,7 +126,7 @@ class CirrusSearchSearcher {
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$term = preg_replace_callback(
-			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ ]+)) ?/',
+			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
 				$key = $matches['key'];
 				$value = trim( $matches['value'], '"' );

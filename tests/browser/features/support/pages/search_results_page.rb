@@ -12,6 +12,7 @@ class SearchResultsPage
   button(:simple_search_button, value: 'Search')
   text_field(:search_input, name: 'search')
   div(:suggestion_wrapper, class: 'searchdidyoumean')
+  div(:error_report, class: 'error')
   def suggestion_element
     suggestion_wrapper_element.link_element
   end

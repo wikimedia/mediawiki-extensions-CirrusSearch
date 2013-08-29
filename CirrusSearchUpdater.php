@@ -192,11 +192,10 @@ class CirrusSearchUpdater {
 			}
 		}
 
-		$backlinkCache = new BacklinkCache( $title );
-		$links = $backlinkCache->getNumLinks( 'pagelinks' );
+		$links = self::countLinksToTitle( $title );
 
 		// Handle redirects to this page
-		$redirectTitles = $backlinkCache->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
+		$redirectTitles = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
 		$redirects = array();
 		$redirectLinks = 0;
 		foreach ( $redirectTitles as $redirect ) {
@@ -209,8 +208,7 @@ class CirrusSearchUpdater {
 			}
 			// Count links to redirects
 			// Note that we don't count redirect to redirects here because that seems a bit much.
-			$redirectBacklinkCache = new Backlinkcache( $redirect );
-			$redirectLinks += $redirectBacklinkCache->getNumLinks( 'pagelinks' );
+			$redirectLinks += self::countLinksToTitle( $redirect );
 		}
 
 		$doc = new \Elastica\Document( $revision->getPage(), array(
@@ -244,6 +242,33 @@ class CirrusSearchUpdater {
 			}
 		}
 		return self::$ignoredHeadings;
+	}
+
+	/**
+	 * Count the links to $title directly in the slave db.
+	 * @param $title a title
+	 * @return an integer count
+	 */
+	private static function countLinksToTitle( $title ) {
+		global $wgMemc, $wgCirrusSearchLinkCountCacheTime;
+		$key = wfMemcKey( 'cirrus', 'linkcounts', $title->getPrefixedDBKey() );
+		$count = $wgMemc->get( $key );
+		if ( !is_int( $count ) ) {
+			$dbr = wfGetDB( DB_SLAVE );
+			$count = $dbr->selectField(
+				array( 'pagelinks' ),
+				'COUNT(*)',
+				array(
+					"pl_namespace" => $title->getNamespace(),
+					"pl_title" => $title->getDBkey() ),
+				__METHOD__
+			);
+			if ( is_int( $count ) && $wgCirrusSearchLinkCountCacheTime > 0 ) {
+				$wgMemc->set( $key, $count, $wgCirrusSearchLinkCountCacheTime );
+			}
+		}
+
+		return $count ? $count : 0;
 	}
 
 	/**

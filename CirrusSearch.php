@@ -65,6 +65,8 @@ $wgCirrusSearchLinkedArticlesToUpdate = 5;
 // Weight of fields relative to article text
 $wgCirrusSearchWeights = array('title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0);
 
+// How long to cache link counts for (in seconds)
+$wgCirrusSearchLinkCountCacheTime = 0;
 
 $dir = __DIR__ . '/';
 $elasticaDir = $dir . 'Elastica/lib/Elastica/';

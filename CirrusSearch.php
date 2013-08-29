@@ -34,7 +34,7 @@ $wgExtensionCredits['other'][] = array(
  * Configuration
  */
 
-// Solr servers
+// ElasticSearch servers
 $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 
 // Number of shards for each index

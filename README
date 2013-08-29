@@ -24,7 +24,7 @@ Next bootstrap the search index by running:
  php maintenance/forceSearchIndex.php
 Note that this can take some time.  For large wikis read Bootstrapping large wikis below.
 
-Once that is complete add this to LocalSettings.php to funnel queries to Solr:
+Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
  $wgSearchType = 'CirrusSearch';
 
 

@@ -40,6 +40,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $indent;
 	private $returnCode = 0;
 
+	// Set with the name of any old indecies to remove if any must be during the alias maintenance
+	// steps.
+	private $removeIndecies = false;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
@@ -244,10 +248,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function validateAlias() {
 		$this->output( $this->indent . "Validating aliases...\n" );
-		// Validate the all alias first because the old index can be removed as a side effect of correcting
-		// the specific alias.  This way the all alias is always pointing to at least one useful index.
-		$this->validateAllAlias();
+		// Since validate the specific alias first as that can cause reindexing
+		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
+		$this->validateAllAlias();
+		// Note that at this point both the old and the new index can have the all
+		// alias but this should be for a very short time.  Like, under a second.
+		$this->removeOldIndeciesIfRequired();
 	}
 
 	/**
@@ -282,11 +289,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . "\tSwapping alias...");
 			$this->getIndex()->addAlias( $this->getIndexTypeName(), true );
 			$this->output( "done\n" );
-			$this->output( $this->indent . "\tRemoving old index..." );
-			foreach ( $otherIndeciesWithAlias as $otherIndex ) {
-				CirrusSearchConnection::getClient()->getIndex( $otherIndex )->delete();
-			}
-			$this->output( "done\n" );
+			$this->removeIndecies = $otherIndeciesWithAlias;
 			return;
 		}
 		$this->output( "cannot correct!\n" );
@@ -300,16 +303,40 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function validateAllAlias() {
 		$this->output( $this->indent . "\tValidating all alias..." );
+		$allAliasName = CirrusSearchConnection::getIndexName();
 		foreach ( CirrusSearchConnection::getClient()->getStatus()
-				->getIndicesWithAlias( CirrusSearchConnection::getIndexName() ) as $index ) {
+				->getIndicesWithAlias( $allAliasName ) as $index ) {
 			if( $index->getName() === $this->getSpecificIndexName() ) {
 				$this->output( "ok\n" );
 				return;
 			}
 		}
 		$this->output( "alias not already assigned to this index..." );
-		$this->getIndex()->addAlias( CirrusSearchConnection::getIndexName(), false );
+		// We'll remove the all alias from the indecies that we're about to delete while
+		// we add it to this index.  Elastica doesn't support this well so we have to
+		// build the request to Elasticsearch ourselves.
+		$data = array(
+			'action' => array(
+				array( 'add' => array( 'index' => $this->getSpecificIndexName(), 'alias' => $allAliasName ) )
+			)
+		);
+		if ( $this->removeIndecies ) {
+			foreach ( $this->removeIndecies as $oldIndex ) {
+				$data['action'][] = array( 'remove' => array( 'index' => $oldIndex, 'alias' => $allAliasName ) );
+			}
+		}
+		CirrusSearchConnection::getClient()->request( '_aliases', \Elastica\Request::POST, $data );
 		$this->output( "corrected\n" );
+	}
+
+	public function removeOldIndeciesIfRequired() {
+		if ( $this->removeIndecies ) {
+			$this->output( $this->indent . "\tRemoving old indecies..." );
+			foreach ( $this->removeIndecies as $oldIndex ) {
+				CirrusSearchConnection::getClient()->getIndex( $oldIndex )->delete();
+			}
+			$this->output( "done\n" );
+		}
 	}
 
 	/**

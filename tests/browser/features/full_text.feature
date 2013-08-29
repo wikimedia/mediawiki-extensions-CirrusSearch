@@ -44,16 +44,23 @@ Feature: Full text search
     | "3.1 Conquest of Persian empire"     | none is                           | not in          |        |
     # You can't search for the [edit] tokens that users can click to edit sections
     | "Succession of Umar edit"            | none is                           | not in          |        |
+    | intitle:"" catapult                  | Catapult is                       | in              |        |
+    | incategory:"" catapult               | Catapult is                       | in              |        |
 
   @setup_main
   Scenario Outline: Searching for empty-string like values
     When I search for <term>
     Then I am on a page titled <title>
     And there are no search results
+    And there are no errors reported
   Examples:
     | term             | title          |
     | the empty string | Search         |
     | ♙                | Search results |
+    | intitle:         | Search results |
+    | intitle:""       | Search results |
+    | incategory:      | Search results |
+    | incategory:""    | Search results |
 
   @setup_suggestions
   Scenario Outline: Suggestions

@@ -179,6 +179,9 @@ Then(/^(.*) is suggested$/) do |text|
     on(SearchResultsPage).suggestion.should == text
   end
 end
+Then(/there are no errors reported$/) do
+  on(SearchResultsPage).error_report_element.should_not exist
+end
 
 def within(seconds)
   end_time = Time.new + Integer(seconds)

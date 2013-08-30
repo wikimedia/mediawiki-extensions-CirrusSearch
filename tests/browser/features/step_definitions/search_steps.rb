@@ -143,6 +143,13 @@ end
 Then(/^(.*) is the highlighted text of the first search result$/) do |highlighted|
   on(SearchResultsPage).first_result_highlighted_text.should == highlighted
 end
+Then(/^(.*) is the highlighted heading of the first search result$/) do |highlighted|
+  if highlighted.empty? then
+    on(SearchResultsPage).first_result_heading_wrapper_element.should_not exist
+  else
+    on(SearchResultsPage).first_result_highlighted_heading.should == highlighted
+  end
+end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
   found = false
   on(SearchResultsPage).results.each do |result|

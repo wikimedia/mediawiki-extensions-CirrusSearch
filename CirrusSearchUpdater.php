@@ -35,6 +35,12 @@ class CirrusSearchUpdater {
 	private static $updated = array();
 
 	/**
+	 * Headings to ignore.  Lazily initialized.
+	 * @var array(String)|null
+	 */
+	private static $ignoredHeadings = null;
+
+	/**
 	 * Update a single article using its Title and pre-sanitized text.
 	 */
 	public static function updateFromTitleAndText( $id, $title, $text ) {
@@ -176,6 +182,16 @@ class CirrusSearchUpdater {
 			$categories[] = $category->getTitle()->getText();
 		}
 
+		$headings = array();
+		$ignoredHeadings = self::getIgnoredHeadings();
+		foreach ( $parserOutput->getSections() as $heading ) {
+			// Note that we don't take the level of the heading into account - all headings are equal.
+			// Except the ones we ignore.
+			if ( !in_array( $heading[ 'line' ], $ignoredHeadings ) ) {
+				$headings[] = $heading[ 'line' ];
+			}
+		}
+
 		$backlinkCache = new BacklinkCache( $title );
 		$links = $backlinkCache->getNumLinks( 'pagelinks' );
 
@@ -204,6 +220,7 @@ class CirrusSearchUpdater {
 			'textLen' => $revision->getSize(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
 			'category' => $categories,
+			'heading' => $headings,
 			'redirect' => $redirects,
 			'links' => $links,
 			'redirect_links' => $redirectLinks,
@@ -211,6 +228,22 @@ class CirrusSearchUpdater {
 
 		wfProfileOut( __METHOD__ );
 		return $doc;
+	}
+
+	private static function getIgnoredHeadings() {
+		if ( self::$ignoredHeadings === null ) {
+			$source = wfMessage( 'cirrussearch-ignored-headings' )->inContentLanguage();
+			if( $source->isDisabled() ) {
+				self::$ignoredHeadings = array();
+			} else {
+				$lines = explode( "\n", $source->plain() );
+				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
+				$lines = array_map( 'trim', $lines );          // Remove extra spaces
+				$lines = array_filter( $lines );               // Remove empty lines
+				self::$ignoredHeadings = $lines;               // Now we just have headings!
+			}
+		}
+		return self::$ignoredHeadings;
 	}
 
 	/**

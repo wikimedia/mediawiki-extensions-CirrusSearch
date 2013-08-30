@@ -97,6 +97,7 @@ class CirrusSearchSearcher {
 	 */
 	public static function searchText( $term, $offset, $limit, $namespaces, $showRedirects ) {
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		global $wgCirrusSearchWeights;
 		global $wgCirrusSearchPhraseSuggestMaxErrors, $wgCirrusSearchPhraseSuggestConfidence;
 		global $wgCirrusSearchMoreAccurateScoringMode;
 
@@ -157,6 +158,7 @@ class CirrusSearchSearcher {
 				'title' => array( 'number_of_fragments' => 0 ), // Don't fragment the title - it is too small.
 				'text' => array( 'number_of_fragments' => 1 ),
 				'redirect.title' => array( 'number_of_fragments' => 0 ), // The redirect field is just like the title field.
+				'heading' => array( 'number_of_fragments' => 0), // Too small to fragment
 			)
 		) );
 
@@ -175,9 +177,16 @@ class CirrusSearchSearcher {
 		if ( trim( $term ) !== '' || $extraQueryStrings ) {
 			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . self::fixupQueryString( $term ) );
 			$queryStringQuery = new \Elastica\Query\QueryString( $queryStringQueryString );
-			$fields = array( 'title^20.0', 'text^3.0' );
+			$titleWeight = $wgCirrusSearchWeights[ 'title' ];
+			$headingWeight = $wgCirrusSearchWeights[ 'heading' ];
+			$fields = array(
+				"title^$titleWeight",
+				"heading^$headingWeight",
+				'text',
+			);
 			if ( $showRedirects ) {
-				$fields[] = 'redirect.title^15.0';
+				$redirectWeight = $wgCirrusSearchWeights[ 'redirect' ];
+				$fields[] = "redirect.title^$redirectWeight";
 			}
 			$queryStringQuery->setFields( $fields );
 			$queryStringQuery->setAutoGeneratePhraseQueries( true );
@@ -411,7 +420,10 @@ class CirrusSearchResultSet extends SearchResultSet {
  * An individual search result from Elasticsearch.
  */
 class CirrusSearchResult extends SearchResult {
-	private $titleSnippet, $redirectTitle, $redirectSnipppet, $textSnippet;
+	private $titleSnippet;
+	private $redirectTitle, $redirectSnipppet;
+	private $sectionTitle, $sectionSnippet;
+	private $textSnippet;
 
 	public function __construct( $result ) {
 		$title = Title::makeTitle( $result->namespace, $result->title );
@@ -446,6 +458,13 @@ class CirrusSearchResult extends SearchResult {
 			}
 			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $text ), 0, $contextLines ) );
 		}
+		if ( isset( $highlights[ 'heading' ] ) ) {
+			$this->sectionSnippet = $highlights[ 'heading' ][ 0 ];
+			$this->sectionTitle = $this->findSectionTitle();
+		} else {
+			$this->sectionSnippet = '';
+			$this->sectionTitle = null;
+		}
 	}
 
 	/**
@@ -454,11 +473,9 @@ class CirrusSearchResult extends SearchResult {
 	 * @return Title object representing the redirect
 	 */
 	private function findRedirectTitle( $redirects ) {
-		$title = str_replace(
-			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
-			'',
-			$this->redirectSnipppet );
-		// Grab the redirect with the lowest namespace.  That is pretty arbitrary but it prioritizes 0 over others.
+		$title = $this->stripHighlighting( $this->redirectSnipppet );
+		// Grab the redirect that matches the highlighted title with the lowest namespace.
+		// That is pretty arbitrary but it prioritizes 0 over others.
 		$best = null;
 		foreach ( $redirects as $redirect ) {
 			if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
@@ -469,6 +486,20 @@ class CirrusSearchResult extends SearchResult {
 			wfLogWarning( "Search backend highlighted a redirect ($title) but didn't return it." );
 		}
 		return Title::makeTitleSafe( $redirect[ 'namespace' ], $redirect[ 'title' ] );
+	}
+
+	private function findSectionTitle() {
+		$heading = $this->stripHighlighting( $this->sectionSnippet );
+		return Title::makeTitle(
+			$this->getTitle()->getNamespace(),
+			$this->getTitle()->getDBkey(),
+			Title::escapeFragmentForURL( $heading )
+		);
+	}
+
+	private function stripHighlighting( $highlighted ) {
+		$markers = array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST );
+		return str_replace( $markers, '', $highlighted );
 	}
 
 	public function getTitleSnippet( $terms ) {
@@ -485,5 +516,13 @@ class CirrusSearchResult extends SearchResult {
 
 	public function getTextSnippet( $terms ) {
 		return $this->textSnippet;
+	}
+
+	public function getSectionSnippet() {
+		return $this->sectionSnippet;
+	}
+
+	function getSectionTitle() {
+		return $this->sectionTitle;
 	}
 }

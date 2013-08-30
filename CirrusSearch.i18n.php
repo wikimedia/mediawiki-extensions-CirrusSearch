@@ -12,6 +12,17 @@ $messages = array();
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
 	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem.  Please try again later.',
+	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
+# Headings that will be ignored by search.
+# Changes to this take effect as soon as the page with the heading is indexed.
+# You can force page reindexing by doing a null edit.
+# Syntax is as follows:
+#   * Everything from a "#" character to the end of the line is a comment
+#   * Every non-blank line is the exact title to ignore, case and everything
+References
+External links
+See also
+ #</pre> <!-- leave this line exactly as it is -->',
 );
 
 /** Message documentation (Message documentation)
@@ -21,6 +32,7 @@ $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
 "Elasticsearch" and "Solr" are full-text search engines. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
+	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );
 
 /** Asturian (asturianu)

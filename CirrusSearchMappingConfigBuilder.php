@@ -39,6 +39,7 @@ class CirrusSearchMappingConfigBuilder {
 				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
 				'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
 				'category' => $this->buildLowercaseKeywordField(),
+				'heading' => $this->buildStringField(),
 				'redirect' => array(
 					'properties' => array(
 						'title' => $this->buildStringField( 'title', null, true )

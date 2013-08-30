@@ -16,6 +16,7 @@ Before('@setup_main') do
       And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
       And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
       And a page named HasASection exists with contents ==I am a section== that contains text!
+      And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
     }
     $setup_main = true
   end

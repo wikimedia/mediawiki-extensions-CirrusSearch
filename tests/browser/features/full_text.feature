@@ -82,3 +82,18 @@ Feature: Full text search
   Scenario: Pages can be found by their sections
     When I search for "I am a section"
     Then HasASection is the first search result
+
+  @setup_main
+  Scenario: Searching for a quoted category that doesn't exist finds nothing even though there is a category that matches one of the words
+    When I search for incategory:"Dontfindme Weaponry"
+    Then there are no search results
+
+  @setup_main
+  Scenario: Searching for a single word category doesn't find a two word category that contains that word
+    When I search for incategory:ASpace
+    Then there are no search results
+
+  @setup_main
+  Scenario: Searching for multiword category finds it
+    When I search for incategory:"CategoryWith ASpace"
+    Then IHaveATwoWordCategory is the first search result

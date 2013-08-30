@@ -52,7 +52,7 @@ class CirrusSearchSearcher {
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.prefix', array(
 			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
-			'analyzer' => 'prefix_query'
+			'analyzer' => 'prefix_query'  // TODO switch this to lowercase_keyword after the it is fully deployed
 		) );
 		$mainFilter->addMust( new \Elastica\Filter\Query( $match ) );
 		$query->setFilter( $mainFilter );
@@ -129,11 +129,12 @@ class CirrusSearchSearcher {
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
 				$key = $matches['key'];
-				$value = trim( $matches['value'], '"' );
+				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				switch ( $key ) {
 					case 'incategory':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
-							'category', CirrusSearchSearcher::fixupQueryString( $value ) ) );
+						$match = new \Elastica\Query\Match();
+						$match->setFieldQuery( 'category', trim( $value, '"' ) );
+						$filters[] = new \Elastica\Filter\Query( $match );
 						return '';
 					case 'prefix':
 						return "$value* ";

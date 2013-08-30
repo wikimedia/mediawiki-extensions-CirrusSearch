@@ -38,7 +38,7 @@ class CirrusSearchMappingConfigBuilder {
 			'properties' => array(
 				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
 				'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
-				'category' => $this->buildStringField(),
+				'category' => $this->buildLowercaseKeywordField(),
 				'redirect' => array(
 					'properties' => array(
 						'title' => $this->buildStringField( 'title', null, true )
@@ -57,7 +57,7 @@ class CirrusSearchMappingConfigBuilder {
 	}
 
 	/**
-	 * Build a string field.
+	 * Build a string field that does standard analysis for the language.
 	 * @param $name string|null Name of the field.  Required if extra is not false.
 	 * @param $extra array|null Extra analyzers for this field beyond the basic string type.  If not falsy the
 	 *		field will be a multi_field.
@@ -83,6 +83,14 @@ class CirrusSearchMappingConfigBuilder {
 			$field['fields'][$extraname] = array( 'type' => 'string', 'analyzer' => $extraname );
 		}
 		return $field;
+	}
+
+	/**
+	 * Create a string field that only lower cases and does ascii folding (if enabled) for the language.
+	 * @return array definition of the field
+	 */
+	private function buildLowercaseKeywordField() {
+		return array( 'type' => 'string', 'analyzer' => 'lowercase_keyword' );
 	}
 
 }

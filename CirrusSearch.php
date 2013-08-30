@@ -114,6 +114,7 @@ $wgAutoloadClasses['Elastica\Filter\AbstractMulti'] = $elasticaDir . 'Filter/Abs
 $wgAutoloadClasses['Elastica\Filter\Bool'] = $elasticaDir . 'Filter/Bool.php';
 $wgAutoloadClasses['Elastica\Filter\Prefix'] = $elasticaDir . 'Filter/Prefix.php';
 $wgAutoloadClasses['Elastica\Filter\Query'] = $elasticaDir . 'Filter/Query.php';
+$wgAutoloadClasses['Elastica\Filter\Term'] = $elasticaDir . 'Filter/Term.php';
 $wgAutoloadClasses['Elastica\Filter\Terms'] = $elasticaDir . 'Filter/Terms.php';
 $wgAutoloadClasses['Elastica\Index\Settings'] = $elasticaDir . 'Index/Settings.php';
 $wgAutoloadClasses['Elastica\Index\Status'] = $elasticaDir . 'Index/Status.php';

@@ -172,7 +172,8 @@ class CirrusSearchUpdater {
 
 		$categories = array();
 		foreach ( $parserOutput->getCategories() as $key => $value ) {
-			$categories[] = $key;
+			$category = Category::newFromName( $key );
+			$categories[] = $category->getTitle()->getText();
 		}
 
 		$backlinkCache = new BacklinkCache( $title );

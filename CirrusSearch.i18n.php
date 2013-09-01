@@ -162,6 +162,14 @@ $messages['oc'] = array(
 	'cirrussearch-backend-error' => 'Avèm pas pogut menar corrèctament vòstra recèrca a causa d’un problèma temporari. Ensajatz tornarmai ulteriorament.',
 );
 
+/** Brazilian Portuguese (português do Brasil)
+ * @author Jaideraf
+ */
+$messages['pt-br'] = array(
+	'cirrussearch-desc' => "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
+	'cirrussearch-backend-error' => 'Não foi possível completar a busca devido a um problema temporário. Por favor, tente novamente mais tarde.',
+);
+
 /** tarandíne (tarandíne)
  * @author Joetaras
  */

@@ -77,3 +77,8 @@ Feature: Full text search
     When I search for TestWeight
     Then TestWeight Larger is the first search result
     And TestWeight Smaller is the second search result
+
+  @setup_main
+  Scenario: Pages can be found by their sections
+    When I search for "I am a section"
+    Then HasASection is the first search result

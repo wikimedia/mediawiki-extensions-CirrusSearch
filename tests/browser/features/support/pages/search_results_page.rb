@@ -7,12 +7,13 @@ class SearchResultsPage
   h1(:title, id: 'firstHeading')
   unordered_list(:search_results, :class => 'mw-search-results')
   li(:first_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 0) }
-  div(:first_result){ |page| page.first_result_wrapper_element.div_element(:class => 'mw-search-result-heading') }
+  link(:first_result){ |page| page.first_result_wrapper_element.div_element(:class => 'mw-search-result-heading').link_element }
   div(:first_result_text){ |page| page.first_result_wrapper_element.div_element(:class => 'searchresult') }
-  span(:first_result_heading_wrapper){ |page| page.first_result_wrapper_element.span_element(:class => 'searchalttitle') }
-  link(:first_result_heading) { |page| page.first_result_heading_wrapper_element.link_element }
+  span(:first_result_alttitle_wrapper){ |page| page.first_result_wrapper_element.span_element(:class => 'searchalttitle') }
+  link(:first_result_alttitle) { |page| page.first_result_alttitle_wrapper_element.link_element }
   link(:first_image_result){ table_element(:class => 'searchResultImage').cell_element(:index => 1).link_element(:index => 0) }
-  div(:second_result, {:class => 'mw-search-result-heading', :index => 1})
+  li(:second_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 1) }
+  link(:second_result){ |page| page.second_result_wrapper_element.div_element(:class => 'mw-search-result-heading').link_element }
   button(:simple_search_button, value: 'Search')
   text_field(:search_input, name: 'search')
   div(:suggestion_wrapper, class: 'searchdidyoumean')
@@ -27,13 +28,13 @@ class SearchResultsPage
     @browser.divs(:class => 'mw-search-result-heading')
   end
   def first_result_highlighted_title
-    get_highlighted_text(first_result_element.link_element)
+    get_highlighted_text(first_result_element)
   end
   def first_result_highlighted_text
     get_highlighted_text(first_result_text_element)
   end
-  def first_result_highlighted_heading
-    get_highlighted_text(first_result_heading_element)
+  def first_result_highlighted_alttitle
+    get_highlighted_text(first_result_alttitle_element)
   end
   private
 

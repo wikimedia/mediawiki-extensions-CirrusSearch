@@ -13,7 +13,7 @@ Feature: Full text search
     | catapult                             | Catapult is in                    | in              |        |
     | pickles                              | Two Words is                      | in              |        |
     | catapul*                             | Catapult is in                    | in              |        |
-    | rdir                                 | Two Words (redirect is in         | not in          |        |
+    | rdir                                 | Two Words is                      | not in          |        |
     | intitle:catapult                     | Catapult is in                    | not in          |        |
     | intitle:catapul*                     | Catapult is in                    | not in          |        |
     | intitle:catapult amazing             | Amazing Catapult is               | not in          |        |
@@ -79,9 +79,14 @@ Feature: Full text search
     And TestWeight Smaller is the second search result
 
   @setup_main
-  Scenario: Pages can be found by their sections
-    When I search for "I am a section"
-    Then HasASection is the first search result
+  Scenario: Pages can be found by their headings
+    When I search for incategory:HeadingsTest "I am a heading"
+    Then HasHeadings is the first search result
+
+  @setup_headings
+  Scenario: Ignored headings aren't searched so text with the same word is wins
+    When I search for incategory:HeadingsTest References
+    Then HasReferencesInText is the first search result
 
   @setup_main
   Scenario: Searching for a quoted category that doesn't exist finds nothing even though there is a category that matches one of the words

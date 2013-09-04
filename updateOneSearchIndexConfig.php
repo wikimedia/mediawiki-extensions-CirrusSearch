@@ -161,8 +161,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
-			$this->closeAndCorrect( function() use ($requiredAnalyzers) {
-				$this->getIndex()->getSettings()->set( $requiredAnalyzers );
+			$index = $this->getIndex();
+			$this->closeAndCorrect( function() use ($index, $requiredAnalyzers) {
+				$index->getSettings()->set( $requiredAnalyzers );
 			} );
 		}
 	}

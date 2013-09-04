@@ -38,6 +38,16 @@ Before('@setup_weight') do
   end
 end
 
+Before('@setup_headings') do
+  if !$setup_headings
+    steps %Q{
+      Given a page named HasHeadings exists with contents @has_headings.txt
+      And a page named HasReferencesInText exists with contents References [[Category:HeadingsTest]]
+    }
+    $setup_headings = true
+  end
+end
+
 Before('@setup_namespaces') do
   if !$setup_namespaces
     steps %Q{

@@ -100,9 +100,9 @@ Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
     else
       page.first_result_element.should exist
       if in_ok then
-        page.first_result.should include title
+        page.first_result_element.text.should include title
       else
-        page.first_result.should == title
+        page.first_result_element.text.should == title
       end
     end
   end
@@ -126,13 +126,13 @@ end
 Then(/^(.*) is( in)? the second search result$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
     if title == 'none' then
-      page.second_result_element.should_not exist
+      page.second_result_wrapper_element.should_not exist
     else
       page.second_result_element.should exist
       if in_ok then
-        page.second_result.should include title
+        page.second_result_element.text.should include title
       else
-        page.second_result.should == title
+        page.second_result_element.text.should == title
       end
     end
   end
@@ -148,6 +148,13 @@ Then(/^(.*) is the highlighted heading of the first search result$/) do |highlig
     on(SearchResultsPage).first_result_heading_wrapper_element.should_not exist
   else
     on(SearchResultsPage).first_result_highlighted_heading.should == highlighted
+  end
+end
+Then(/^(.*) is the highlighted alttitle of the first search result$/) do |highlighted|
+  if highlighted.empty? then
+    on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
+  else
+    on(SearchResultsPage).first_result_highlighted_alttitle.should == highlighted
   end
 end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|

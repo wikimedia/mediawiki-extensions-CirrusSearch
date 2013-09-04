@@ -60,6 +60,14 @@ $messages['be-tarask'] = array(
 	'cirrussearch-backend-error' => 'Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Паспрабуйце пазьней, калі ласка.',
 );
 
+/** Catalan (català)
+ * @author QuimGil
+ */
+$messages['ca'] = array(
+	'cirrussearch-desc' => 'Cerca realitzada amb Elasticsearch per a MediaWiki',
+	'cirrussearch-backend-error' => 'La seva cerca no ha pogut ser completada degut a un problema temporal. Si us plau, provi-ho més tard.',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */

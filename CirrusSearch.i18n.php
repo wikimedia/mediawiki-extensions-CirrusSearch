@@ -41,6 +41,17 @@ $messages['qqq'] = array(
 $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Elasticsearch pa MediaWiki',
 	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
+	'cirrussearch-ignored-headings' => " #<!-- dexar esta llinia exactamente como ta --> <pre>
+# Testeres que nun se tendrán en cuenta na gueta.
+# Los cambios fechos equí son efeutivos nel momentu que s'indexa la páxina cola testera.
+# Pue forzar el reindexáu d'una páxina faciendo una edición nula.
+# La sintaxis ye la siguiente:
+#   * Tolo qu'hai dende un caráuter \"#\" al fin de llinia ye un comentariu
+#   * Cada llinia non-balera ye'l títulu exactu a descartar, incluyendo mayúscules y demás
+Referencies
+Enllaces esternos
+Ver tamién
+ #</pre> <!-- dexar esta llinia exactamente como ta -->",
 );
 
 /** Bikol Central (Bikol Central)
@@ -60,6 +71,13 @@ $messages['be-tarask'] = array(
 	'cirrussearch-backend-error' => 'Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Паспрабуйце пазьней, калі ласка.',
 );
 
+/** Breton (brezhoneg)
+ * @author Fohanno
+ */
+$messages['br'] = array(
+	'cirrussearch-backend-error' => "N'hon eus ket gallet kas hoc'h enklask da benn abalamour d'ur gudenn dibad. Esaeit en-dro diwezhatoc'h, mar plij.",
+);
+
 /** Catalan (català)
  * @author QuimGil
  */
@@ -74,6 +92,17 @@ $messages['ca'] = array(
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Solr-betriebene Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
+	'cirrussearch-ignored-headings' => ' #<!-- diese Zeile nicht verändern --> <pre>
+# Überschriften, die von der Suche ignoriert werden.
+# Diese Änderungen werden wirksam, sobald die Seite mit der Überschrift indexiert wurde.
+# Du kannst die Seitenindexierung erzwingen, indem du einen Nulledit durchführst.
+# Syntax:
+#   * Alles, was einer Raute („#“) bis zum Zeilenende folgt, ist ein Kommentar.
+#   * Jede nicht-leere Zeile ist der exakte zu ignorierende Titel.
+Einzelnachweise
+Weblinks
+Siehe auch
+ #</pre> <!-- diese Zeile nicht verändern -->',
 );
 
 /** Spanish (español)
@@ -96,8 +125,19 @@ $messages['fr'] = array(
  * @author Toliño
  */
 $messages['gl'] = array(
-	'cirrussearch-desc' => 'Fai que a procura estea baseada en Solr',
+	'cirrussearch-desc' => 'Procura baseada en Elasticsearch para MediaWiki',
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
+	'cirrussearch-ignored-headings' => ' #<!-- Deixe esta liña tal e como está --> <pre>
+# Cabeceiras que serán ignoradas nas buscas.
+# Os cambios feitos aquí realízanse en canto se indexa a páxina coa cabeceira.
+# Pode forzar o reindexado da páxina facendo unha edición baleira.
+# A sintaxe é a seguinte:
+#   * Todo o que vaia despois dun carácter "#" ata o final da liña é un comentario
+#   * Toda liña que non estea en branco é o título exacto que ignorar, coas maiúsculas e minúsculas
+Referencias
+Ligazóns externas
+Véxase tamén
+ #</pre> <!-- Deixe esta liña tal e como está -->',
 );
 
 /** Hebrew (עברית)
@@ -122,6 +162,17 @@ $messages['ia'] = array(
 $messages['it'] = array(
 	'cirrussearch-desc' => 'Ricerca realizzata con Elasticsearch per MediaWiki',
 	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
+	'cirrussearch-ignored-headings' => ' #<!-- lascia questa riga esattamente come è --> <pre>
+# Elenco delle intestazioni che saranno ignorate dalla ricerca.
+# Le modifiche a questa pagina saranno effettive non appena la pagina sarà indicizzata.
+# Puoi forzare la re-indicizzazione di una pagina effettuando una modifica nulla.
+# La sintassi è la seguente:
+#   * Tutto dal carattere "#" alla fine della riga è un commento
+#   * Tutte le righe non vuote sono le intestazioni esatte da ignorare, maiuscolo/minuscolo e tutto
+Note
+Voci correlate
+Collegamenti esterni
+ #</pre> <!-- lascia questa riga esattamente come è -->',
 );
 
 /** Japanese (日本語)
@@ -155,6 +206,17 @@ $messages['lb'] = array(
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
+	'cirrussearch-ignored-headings' => ' #<!-- не менувајте ништо во овој ред --> <pre>
+# Заглавија што ќе се занемарат при пребарувањето.
+# Измените во ова ќе стапат на сила штом ќе се индексира страницата со заглавието.
+# Можете да наметнете преиндексирање на страницата ако извршите празно уредување.
+# Синтаксата е следнава:
+#   * Сето она што од знакот „#“ до крајот на редот е коментар
+#   * Секој непразен ред е точниот наслов што треба да се занемари, разликувајќи големи од мали букви и сето останато
+Наводи
+Надворешни врски
+Поврзано
+ #</pre> <!-- не менувајте ништо во овој ред -->',
 );
 
 /** Malay (Bahasa Melayu)
@@ -206,11 +268,23 @@ $messages['sv'] = array(
 );
 
 /** Ukrainian (українська)
+ * @author Andriykopanytsia
  * @author Ата
  */
 $messages['uk'] = array(
 	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
 	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+	'cirrussearch-ignored-headings' => ' #<!-- залиште цей рядок точно таким, яким він є --> <pre>
+# Заголовки, які будуть ігноруватися при пошуці.
+# Зміни, які набирають сили при індексуванні сторінки з заголовком.
+# Ви можете примусити переіндексувати сторінку з нульовим редагуванням.
+# Синтаксис наступний:
+#   * Усе, що починається з символу "#" до кінця рядка, є коментарем
+#   * Кожний непорожній рядок є точним заголовком для ігнорування
+Посилання
+Зовнішні посилання
+Див. також
+ #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
 );
 
 /** Vietnamese (Tiếng Việt)

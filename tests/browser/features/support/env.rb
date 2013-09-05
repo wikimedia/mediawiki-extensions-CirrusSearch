@@ -98,7 +98,7 @@ end
 config = YAML.load_file('config/config.yml')
 
 secret = YAML.load_file("#{secret_yml_location}")
-mediawiki_username = secret['mediawiki_username']
+mediawiki_username = secret['mediawiki_username'] || config['mediawiki_username']
 mediawiki_password = secret['mediawiki_password']
 
 if ENV['ENVIRONMENT'] == 'cloudbees'

@@ -293,6 +293,19 @@ $messages['uk'] = array(
 $messages['vi'] = array(
 	'cirrussearch-desc' => 'Công cụ tìm kiếm Elasticsearch dành cho MediaWiki',
 	'cirrussearch-backend-error' => 'Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.',
+	'cirrussearch-ignored-headings' => ' #<!-- để yên dòng này --> <pre>
+# Công cụ tìm kiếm sẽ bỏ qua các đề mục này.
+# Các thay đổi trên danh sách này sẽ có hiệu lực một khi trang có đề mục được đưa vào chỉ mục.
+# Để bắt trang phải được đưa lại vào chỉ mục, thực hiện một sửa đổi vô hiệu quả.
+# Cú pháp:
+#   * Tất cả mọi thứ từ ký hiệu “#” để cuối dòng là chú thích.
+#   * Mỗi dòng có nội dung là đúng tên đề mục để bỏ qua, phân biệt chữ hoa/thường.
+Tham khảo
+Chú thích
+Liên kết ngoài
+Xem thêm
+Đọc thêm
+ #</pre> <!-- để yên dòng này -->',
 );
 
 /** Simplified Chinese (中文（简体）‎)

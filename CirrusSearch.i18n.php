@@ -115,10 +115,22 @@ $messages['es'] = array(
 
 /** French (français)
  * @author Gomoko
+ * @author Jean-Frédéric
  */
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
 	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
+	'cirrussearch-ignored-headings' => ' #<!-- laisser cette ligne comme telle --> <pre>
+# Titres de sections qui seront ignorés par la recherche
+# Les changements effectués ici prennent effet dès lors que la page avec le titre est indexée.
+# Vous pouvez forcer la réindexation de la page en effectuant une modification vide
+# La syntaxe est la suivante :
+#   * Toute ligne précédée d’un « # » est un commentaire
+#   * Toute ligne non-vide est le titre exact à ignorer, casse comprise
+Références
+Liens externes
+Voir aussi
+ #</pre> <!-- laisser cette ligne comme telle -->',
 );
 
 /** Galician (galego)
@@ -154,6 +166,17 @@ $messages['he'] = array(
 $messages['ia'] = array(
 	'cirrussearch-desc' => 'Recerca pro MediaWiki actionate per Elasticsearch',
 	'cirrussearch-backend-error' => 'Un problema temporari ha impedite le completion del recerca. Per favor reproba plus tarde.',
+	'cirrussearch-ignored-headings' => ' #<!-- non modificar in alcun modo iste linea --> <pre>
+# Titulos de sectiones que essera ignorate per le recerca.
+# Cambiamentos in isto habera effecto post le indexation del paginas con iste sectiones.
+# Tu pote fortiar le re-indexation de un pagina per medio de un modification nulle.
+# Le syntaxe es:
+#   * Toto a partir de un character "#" usque al fin del linea es un commento
+#   * Cata linea non vacue es un titulo exacte a ignorar, con distinction inter majusculas e minusculas
+Referentias
+Ligamines externe
+Vide etiam
+ #</pre> <!-- non modificar in alcun modo iste linea -->',
 );
 
 /** Italian (italiano)
@@ -190,6 +213,21 @@ $messages['ja'] = array(
 $messages['ko'] = array(
 	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 떄문에 찾기를 완료할 수 없습니다. 나중에 다시 시도하세요.',
+	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
+# 검색에서 무시되는 문단 제목입니다.
+# 이 문서에 대한 바뀜은 즉시 문단 제목으로 된 문서가 다시 색인됩니다.
+# null 편집을 하여 문서 다시 색인을 강제할 수 있습니다.
+# 문법은 다음과 같습니다:
+#   * "#" 문자에서 줄의 끝까지는 주석입니다
+#   * 빈 줄이 아닌 줄은 무시할 정확한 제목이며, 대소문자를 무시합니다
+참고
+참조
+출처
+바깥 링크
+바깥 고리
+같이 보기
+함께 보기
+ #</pre> <!-- 이 줄은 그대로 두십시오 -->',
 );
 
 /** Luxembourgish (Lëtzebuergesch)

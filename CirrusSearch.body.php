@@ -29,6 +29,10 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function update( $id, $title, $text ) {
+		if ( $text === false || $text === null ) { // Can't just check falsy text because empty string is ok!
+			wfLogWarning( "Search update called with false or null text for $title.  Ignoring search update." );
+			return;
+		}
 		CirrusSearchUpdater::updateFromTitleAndText( $id, $title, $text );
 	}
 
@@ -62,5 +66,14 @@ class CirrusSearch extends SearchEngine {
 
 	public function textAlreadyUpdatedForIndex() {
 		return true;
+	}
+
+	/**
+	 * Noop because Elasticsearch handles all required normalization.
+	 * @param string $string String to process
+	 * @return string $string exactly as passed in
+	 */
+	public function normalizeText( $string ) {
+		return $string;
 	}
 }

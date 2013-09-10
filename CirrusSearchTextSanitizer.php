@@ -29,11 +29,15 @@ class CirrusSearchTextSanitizer {
 	/**
 	 * Get sanitized text from a Title.
 	 * @param Title $t
-	 * @return sanitized text from the title
+	 * @return sanitized text from the title or null if we can't build the parser output
 	 */
 	public static function getSantizedTextFromTitle( Title $t ) {
 		$article = new Article( $t, 0 );
 		$parserOutput = $article->getParserOutput();
+		if ( !$parserOutput ) {
+			wfLogWarning( "CirrusSearch couldn't get parser output for $t.  Returning null text which should be skipped." );
+			return null;
+		}
 		$parserOutput->setEditSectionTokens( false );       // Don't add edit tokens
 		$text = $parserOutput->getText();                   // Fetch the page
 		$text = self::stripToc( $text );                   // Strip the table of contents

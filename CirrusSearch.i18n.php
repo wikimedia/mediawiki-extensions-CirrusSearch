@@ -86,6 +86,26 @@ $messages['ca'] = array(
 	'cirrussearch-backend-error' => 'La seva cerca no ha pogut ser completada degut a un problema temporal. Si us plau, provi-ho més tard.',
 );
 
+/** Czech (česky)
+ * @author Mormegil
+ */
+$messages['cs'] = array(
+	'cirrussearch-desc' => 'Vyhledávání v MediaWiki běžící na Elasticsearch',
+	'cirrussearch-backend-error' => 'Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.',
+	'cirrussearch-ignored-headings' => ' #<!-- tento řádek ponechte beze změny --> <pre>
+# Zde uvedené nadpisy budou ignorovány vyhledáváním.
+# Změny této stránky se projeví ve chvíli, kdy je stránka používající příslušný nadpis indexována.
+# Přeindexování stránky můžete vynutit prázdnou editací.
+# Syntaxe je taková:
+#   * Cokoli od znaku „#“ do konce řádky je komentář.
+#   * Každá neprázdná řádka je přesný nadpis, který se má ignorovat, včetně velikosti písmen a tak.
+Reference
+Externí odkazy
+Související články
+Související stránky
+ #</pre> <!-- tento řádek ponechte beze změny -->',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */

@@ -86,3 +86,17 @@ Before('@setup_highlighting') do
   end
   $setup_highlighting = true
 end
+
+Before('@setup_more_like_this') do
+  if !$setup_more_like_this
+    # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches
+    steps %Q{
+      Given a page named More Like Me 1 exists with contents MoreLikeMe MoreLikeMe
+      And a page named More Like Me 2 exists with contents MoreLikeMe MoreLikeMe
+      And a page named More Like Me 3 exists with contents MoreLikeMe MoreLikeMe
+      And a page named More Like Me 4 exists with contents MoreLikeMe MoreLikeMe
+      And a page named More Like Me 5 exists with contents MoreLikeMe MoreLikeMe
+    }
+  end
+  $setup_more_like_this = true
+end

@@ -19,13 +19,28 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearch extends SearchEngine {
+	const MORE_LIKE_THIS_PREFIX = 'morelike:';
+
 	/**
 	 * @param string $term
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
 	public function searchText( $term ) {
-		return CirrusSearchSearcher::searchText( $term, $this->offset, $this->limit,
-			$this->namespaces, $this->showRedirects );
+		$searcher = new CirrusSearchSearcher( $this->offset, $this->limit, $this->namespaces );
+
+		// Ignore leading ~ because it is used to force displaying search results but not to effect them
+		if ( substr( $term, 0, 1 ) === '~' )  {
+			$term = substr( $term, 1 );
+		}
+		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
+			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
+			$title = Title::newFromText( $term );
+			if ( !$title ) {
+				return null;
+			}
+			return $searcher->moreLikeThisArticle( $title->getArticleID() );
+		}
+		return $searcher->searchText( $term, $this->showRedirects );
 	}
 
 	public function update( $id, $title, $text ) {

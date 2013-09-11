@@ -63,10 +63,20 @@ $wgCirrusSearchIndexedRedirects = 1024;
 $wgCirrusSearchLinkedArticlesToUpdate = 5;
 
 // Weight of fields relative to article text
-$wgCirrusSearchWeights = array('title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0);
+$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0 );
 
 // How long to cache link counts for (in seconds)
 $wgCirrusSearchLinkCountCacheTime = 0;
+
+// Configuration parameters passed to more_like_this queries.
+$wgCirrusSearchMoreLikeThisConfig = array(
+	'min_doc_freq' => 2,              // Minimum number of documents (per shard) that need a term for it to be considered
+	'max_query_terms' => 25,
+	'min_term_freq' => 2,
+	'percent_terms_to_match' => 0.3,
+	'min_word_len' => 0,
+	'max_word_len' => 0,
+);
 
 $dir = __DIR__ . '/';
 $elasticaDir = $dir . 'Elastica/lib/Elastica/';
@@ -77,6 +87,7 @@ $wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'CirrusSearchAnalysisConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'CirrusSearchConnection.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'CirrusSearchMappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'CirrusSearchPrefixSearchHook.php';
 $wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'CirrusSearchSearcher.php';
 $wgAutoloadClasses['CirrusSearchTextSanitizer'] = $dir . 'CirrusSearchTextSanitizer.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
@@ -117,6 +128,8 @@ $wgAutoloadClasses['Elastica\Exception\Connection\HttpException'] = $elasticaDir
 $wgAutoloadClasses['Elastica\Filter\AbstractFilter'] = $elasticaDir . 'Filter/AbstractFilter.php';
 $wgAutoloadClasses['Elastica\Filter\AbstractMulti'] = $elasticaDir . 'Filter/AbstractMulti.php';
 $wgAutoloadClasses['Elastica\Filter\Bool'] = $elasticaDir . 'Filter/Bool.php';
+$wgAutoloadClasses['Elastica\Filter\BoolNot'] = $elasticaDir . 'Filter/BoolNot.php';
+$wgAutoloadClasses['Elastica\Filter\Ids'] = $elasticaDir . 'Filter/Ids.php';
 $wgAutoloadClasses['Elastica\Filter\Prefix'] = $elasticaDir . 'Filter/Prefix.php';
 $wgAutoloadClasses['Elastica\Filter\Query'] = $elasticaDir . 'Filter/Query.php';
 $wgAutoloadClasses['Elastica\Filter\Term'] = $elasticaDir . 'Filter/Term.php';
@@ -128,6 +141,7 @@ $wgAutoloadClasses['Elastica\Query\CustomScore'] = $elasticaDir . 'Query/CustomS
 $wgAutoloadClasses['Elastica\Query\Field'] = $elasticaDir . 'Query/Field.php';
 $wgAutoloadClasses['Elastica\Query\MatchAll'] = $elasticaDir . 'Query/MatchAll.php';
 $wgAutoloadClasses['Elastica\Query\Match'] = $elasticaDir . 'Query/Match.php';
+$wgAutoloadClasses['Elastica\Query\MoreLikeThis'] = $elasticaDir . 'Query/MoreLikeThis.php';
 $wgAutoloadClasses['Elastica\Query\Prefix'] = $elasticaDir . 'Query/Prefix.php';
 $wgAutoloadClasses['Elastica\Query\QueryString'] = $elasticaDir . 'Query/QueryString.php';
 $wgAutoloadClasses['Elastica\Transport\AbstractTransport'] = $elasticaDir . 'Transport/AbstractTransport.php';
@@ -157,6 +171,6 @@ function cirrusSearchSetup() {
 	global $wgSearchType, $wgHooks;
 	// Install our prefix search hook only if we're enabled.
 	if ( $wgSearchType === 'CirrusSearch' ) {
-		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchSearcher::prefixSearch';
+		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchPrefixSearchHook::prefixSearch';
 	}
 }

@@ -69,6 +69,17 @@ Tabi man paki-otroha giraray oro-atyan.',
 $messages['be-tarask'] = array(
 	'cirrussearch-desc' => 'Пошук у MediaWiki з дапамогай ElasticSearch',
 	'cirrussearch-backend-error' => 'Мы не змаглі выканаць пошукавы запыт з-за часовых праблемаў. Паспрабуйце пазьней, калі ласка.',
+	'cirrussearch-ignored-headings' => ' #<!-- не зьмяняйце гэты радок --> <pre>
+# Загалоўкі, якія мусіць ігнараваць пошукавы рухавік.
+# Зьмены будуць ужытыя па наступным індэксаваньні старонкі.
+# Вы можаце змусіць пераіндэксаваць старонку пустым рэдагаваньнем.
+# Сынтакс наступны:
+#   * Усё, што пачынаецца з "#" — камэнтар
+#   * Усякі непусты радок — загаловак, які трэба ігнараваць
+Крыніцы
+Вонкавыя спасылкі
+Глядзіце таксама
+ #</pre> <!-- не зьмяняйце гэты радок -->',
 );
 
 /** Breton (brezhoneg)
@@ -316,6 +327,17 @@ $messages['pt-br'] = array(
 $messages['roa-tara'] = array(
 	'cirrussearch-desc' => 'Ricerche Elasticsearch-powered pe MediaUicchi',
 	'cirrussearch-backend-error' => "Non ge putime combletà 'a ricerca toje pe 'nu probbleme tembonarèe. Pe piacere pruève cchiù tarde.",
+	'cirrussearch-ignored-headings' => " #<!-- lasse sta linèe accume ste --> <pre>
+# Testate ca avène scettate jndr'à le ricerche.
+# Le cangiaminde devendane effettive quanne 'a pàgene avène indicizzate.
+# Tu puè forzà 'a reindicizzazzione d'a pàgene facenne 'nu cangiamende vecande.
+# 'A sindasse jè 'a seguende:
+#   * Ogneccose da 'u carattere \"#\" 'nzigne a fine d'a linèe jè 'nu commende
+#   * Ogne linèa chiene jè 'u titole esatte da ignorà, case e ogneccose
+Refereminde
+Collegaminde de fore
+'Ndruche pure
+ #</pre> <!-- lasse sta linèe accume ste -->",
 );
 
 /** Swedish (svenska)

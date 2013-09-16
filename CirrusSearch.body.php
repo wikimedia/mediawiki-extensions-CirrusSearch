@@ -64,12 +64,12 @@ class CirrusSearch extends SearchEngine {
 		CirrusSearchUpdater::deletePages( array( $id ) );
 	}
 
-	public function getTextFromContent( Title $t, Content $c = null ) {
+	public function getTextFromContent( Title $t, Content $c = null, $parserOutput = null ) {
 		$text = parent::getTextFromContent( $t, $c );
 		if( $c ) {
 			switch ( $c->getModel() ) {
 				case CONTENT_MODEL_WIKITEXT:
-					$text = CirrusSearchTextSanitizer::getSantizedTextFromTitle( $t );
+					$text = CirrusSearchTextSanitizer::getSantizedTextFromTitle( $t, $parserOutput );
 					break;
 				default:
 					$text = SearchUpdate::updateText( $text );

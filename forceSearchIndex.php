@@ -106,7 +106,7 @@ class ForceSearchIndex extends Maintenance {
 
 				// Strip entries without a revision.  We can't do anything with them.
 				$revisions = array_filter($revisions, function ($rev) {
-					return $rev[ 'rev' ] !== null;
+					return $rev[ 'page' ] !== null;
 				});
 				// Update size to reflect stripped entries.
 				$size = count( $revisions );
@@ -158,15 +158,14 @@ class ForceSearchIndex extends Maintenance {
 				$toIdPart = " AND page_id <= $toId";
 			}
 			$res = $dbr->select(
-				array( 'revision', 'text', 'page' ),
+				array( 'page', 'revision' ),
 				array_merge(
-					Revision::selectFields(),
-					Revision::selectTextFields(),
-					Revision::selectPageFields()
+					array( 'page_touched', 'page_counter', 'page_restrictions' ),
+					Revision::selectPageFields(),
+					Revision::selectFields()
 				),
 				"$minId < page_id"
 				. $toIdPart
-				. ' AND rev_text_id = old_id'
 				. ' AND rev_id = page_latest'
 				. ' AND page_is_redirect = 0',
 				// Note that we attempt to filter out redirects because everything about the redirect
@@ -179,14 +178,13 @@ class ForceSearchIndex extends Maintenance {
 			$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 			$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 			$res = $dbr->select(
-				array( 'revision', 'text', 'page' ),
+				array( 'page', 'revision' ),
 				array_merge(
-					Revision::selectFields(),
-					Revision::selectTextFields(),
-					Revision::selectPageFields()
+					array( 'page_touched', 'page_counter', 'page_restrictions' ),
+					Revision::selectPageFields(),
+					Revision::selectFields()
 				),
 				'page_id = rev_page'
-				. ' AND rev_text_id = old_id'
 				. ' AND rev_id = page_latest'
 				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
 				. " AND rev_timestamp <= $maxUpdate",
@@ -199,24 +197,20 @@ class ForceSearchIndex extends Maintenance {
 		$result = array();
 		foreach ( $res as $row ) {
 			wfProfileIn( __METHOD__ . '::decodeResults' );
-			$rev = Revision::newFromRow( $row );
-			if ( $rev->getContent()->isRedirect() ) {
+			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
+			if ( $page->getContent()->isRedirect() ) {
 				if ( $maxUpdate === null ) {
 					// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
 					// ignore redirects!  It must not be marked properly in the database.  Just ignore it!
-					$rev = null;
+					$page = null;
 				} else {
-					$target = $rev->getContent()->getUltimateRedirectTarget();
-					$rev = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $target->getArticleID() );
+					$target = $page->getContent()->getUltimateRedirectTarget();
+					$page = WikiPage::newFromID( $target->getArticleID(), WikiPage::READ_LATEST );
 				}
 			}
 			$text = null;
-			if ( $rev ) {
-				$text = $search->getTextFromContent( $rev->getTitle(), $rev->getContent() );
-			}
 			$result[] = array(
-				'rev' => $rev,
-				'text' => $text,
+				'page' => $page,
 				'id' => $row->page_id,
 				'update' => new MWTimestamp( $row->rev_timestamp ),
 			);

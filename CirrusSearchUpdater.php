@@ -48,16 +48,15 @@ class CirrusSearchUpdater {
 			// Already indexed $id
 			return;
 		}
-		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $id );
-		$content = $revision->getContent();
+		$page = WikiPage::newFromID( $id, WikiPage::READ_LATEST );
+		$content = $page->getContent();
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 			self::updateFromTitle( $target );
 		} else {
 			self::updateRevisions( array( array(
-				'rev' => $revision,
-				'text' => $text,
+				'page' => $page,
 			) ) );
 			self::$updated[] = $id;
 		}
@@ -170,11 +169,11 @@ class CirrusSearchUpdater {
 	private static function buildDocumentforRevision( $page ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
-		$revision = $page[ 'rev' ];
-		$text = $page[ 'text' ];
-		$title = $revision->getTitle();
-		$article = new Article( $title, $revision->getId() );
-		$parserOutput = $article->getParserOutput( $revision->getId() );
+		$page = $page[ 'page' ];
+		$title = $page->getTitle();
+		$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getId() );
+		$text = SearchEngine::create( 'CirrusSearch' )
+			->getTextFromContent( $title, $page->getContent(), $parserOutput );
 
 		$categories = array();
 		foreach ( $parserOutput->getCategories() as $key => $value ) {
@@ -211,12 +210,12 @@ class CirrusSearchUpdater {
 			$redirectLinks += self::countLinksToTitle( $redirect );
 		}
 
-		$doc = new \Elastica\Document( $revision->getPage(), array(
+		$doc = new \Elastica\Document( $page->getId(), array(
 			'namespace' => $title->getNamespace(),
 			'title' => $title->getText(),
 			'text' => Sanitizer::stripAllTags( $text ),
-			'textLen' => $revision->getSize(),
-			'timestamp' => wfTimestamp( TS_ISO_8601, $revision->getTimestamp() ),
+			'textLen' => $page->getContent()->getSize(),
+			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
 			'category' => $categories,
 			'heading' => $headings,
 			'redirect' => $redirects,

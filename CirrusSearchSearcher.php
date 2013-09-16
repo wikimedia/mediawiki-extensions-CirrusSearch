@@ -501,6 +501,15 @@ class CirrusSearchResultSet extends SearchResultSet {
  * An individual search result from Elasticsearch.
  */
 class CirrusSearchResult extends SearchResult {
+	/**
+	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_PRE
+	 */
+	private static $highlightPreEscaped = null;
+	/**
+	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_POST
+	 */
+	private static $highlightPostEscaped = null;
+
 	private $titleSnippet;
 	private $redirectTitle, $redirectSnipppet;
 	private $sectionTitle, $sectionSnippet;
@@ -515,19 +524,19 @@ class CirrusSearchResult extends SearchResult {
 			if ( $title->getNamespace() !== 0 ) {
 				$nstext = $title->getNsText() . ':';
 			}
-			$this->titleSnippet = $nstext . $highlights[ 'title' ][ 0 ];
+			$this->titleSnippet = $nstext . self::escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
 		} else {
 			$this->titleSnippet = '';
 		}
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
-			$this->redirectSnipppet = $highlights[ 'redirect.title' ][ 0 ];
+			$this->redirectSnipppet = self::escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 			$this->redirectTitle = $this->findRedirectTitle( $result->redirect );
 		} else {
 			$this->redirectSnipppet = '';
 			$this->redirectTitle = null;
 		}
 		if ( isset( $highlights[ 'text' ] ) ) {
-			$this->textSnippet = $highlights[ 'text' ][ 0 ];
+			$this->textSnippet = self::escapeHighlightedText( $highlights[ 'text' ][ 0 ] );
 		} else {
 			list( $contextLines, $contextChars ) = SearchEngine::userHighlightPrefs();
 			$this->initText();
@@ -546,6 +555,19 @@ class CirrusSearchResult extends SearchResult {
 			$this->sectionSnippet = '';
 			$this->sectionTitle = null;
 		}
+	}
+
+	/**
+	 * Escape highlighted text coming back from Elasticsearch.
+	 */
+	public static function escapeHighlightedText( $text ) {
+		if ( self::$highlightPreEscaped === null ) {
+			self::$highlightPreEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_PRE );
+			self::$highlightPostEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_POST );
+		}
+		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
+			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
+			htmlspecialchars( $text ) );
 	}
 
 	/**

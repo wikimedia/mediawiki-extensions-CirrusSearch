@@ -102,3 +102,14 @@ Feature: Full text search
   Scenario: Searching for multiword category finds it
     When I search for incategory:"CategoryWith ASpace"
     Then IHaveATwoWordCategory is the first search result
+
+  @setup_more_like_this
+  Scenario: Searching for morelike:<page that doesn't exist> returns no results
+    When I search for morelike:IDontExist
+    Then there are no search results
+
+  @setup_more_like_this
+  Scenario: Searching for morelike:<page> returns pages that are 'like' that page
+    When I search for morelike:More Like Me 1
+    Then More Like Me is in the first search result
+    But More Like Me 1 is not in the search results

@@ -76,8 +76,14 @@ When(/^I click the (.*) label(?:s)?$/) do |text|
   end
 end
 
-Then(/^suggestions should appear$/) do
-  on(SearchPage).search_results_element.when_present.should exist
+Then(/^suggestions should( not)? appear$/) do |not_appear|
+  if not_appear then
+    # Wait to give the element a chance to load if it was going to
+    sleep(5)
+    on(SearchPage).search_results_element.should_not be_visible
+  else
+    on(SearchPage).search_results_element.when_present.should be_visible
+  end
 end
 Then(/^(.+) is the first suggestion$/) do |title|
   if title == 'none' then

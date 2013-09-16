@@ -171,7 +171,7 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ );
 		$page = $page[ 'page' ];
 		$title = $page->getTitle();
-		$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getId() );
+		$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
 		$text = SearchEngine::create( 'CirrusSearch' )
 			->getTextFromContent( $title, $page->getContent(), $parserOutput );
 

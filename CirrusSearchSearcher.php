@@ -77,6 +77,11 @@ class CirrusSearchSearcher {
 	 * @param array(string) of titles
 	 */
 	public function prefixSearch( $search ) {
+		$requestLength = strlen( $search );
+		if ( $requestLength > self::MAX_PREFIX_SEARCH ) {
+			throw new UsageException( 'Prefix search requset was longer longer than the maximum allowed length.' .
+				" ($requestLength > " . self::MAX_PREFIX_SEARCH . ')', 'request_too_long', 400 );
+		}
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
 		$match = new \Elastica\Query\Match();

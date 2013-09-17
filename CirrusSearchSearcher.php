@@ -371,7 +371,25 @@ class CirrusSearchSearcher {
 			)*$/x', $string ) ) {
 			$string = $string . '"';
 		}
-
+		// Turn bad fuzzy searches into searches that contain a ~
+		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
+			wfDebugLog( 'CirrusSearch', 'checking fuzzy:' . $matches[0] );
+			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {
+				return $matches[ 0 ];
+			} else {
+				return $matches[ 'leading' ] . '\\~' . $matches[ 'trailing' ];
+			}
+		}, $string );
+		// Turn bad proximity searches into seraches that contain a ~
+		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {
+			wfDebugLog( 'CirrusSearch', 'checking proximity:' . $matches[0] );
+			if ( preg_match( '/[0-9]+/', $matches[ 'trailing' ] ) ) {
+				return $matches[ 0 ];
+			} else {
+				return '"\\~' . $matches[ 'trailing' ];
+			}
+		}, $string );
+		wfDebugLog( 'CirrusSearch', 'Got  ' . $string );
 		return $string;
 	}
 

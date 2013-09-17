@@ -49,6 +49,10 @@ class CirrusSearchUpdater {
 			return;
 		}
 		$page = WikiPage::newFromID( $id, WikiPage::READ_LATEST );
+		if ( !$page ) {
+			wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $id" );
+			return;
+		}
 		$content = $page->getContent();
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();

@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchConnection {
+class CirrusSearchConnection extends ElasticaConnection {
 	/**
 	 * Name of the index that holds content articles.
 	 * @var string
@@ -44,50 +44,15 @@ class CirrusSearchConnection {
 	private static $client = null;
 
 	/**
-	 * @return \Elastica\Client|null
+	 * @return array(string)
 	 */
-	public static function getClient() {
-		if ( self::$client != null ) {
-			return self::$client;
-		}
+	public static function getServerList() {
 		global $wgCirrusSearchServers;
-
-		// Setup the Elastica endpoints
-		$servers = array();
-		foreach ( $wgCirrusSearchServers as $server ) {
-			$servers[] = array('host' => $server);
-		}
-		self::$client = new \Elastica\Client( array(
-			'servers' => $servers
-		) );
-		return self::$client;
+		return $wgCirrusSearchServers;
 	}
 
-	/**
-	 * Fetch the Elastica Index.
-	 * @param mixed $type type of index (content or general or false to get all)
-	 * @param mixed $identifier if specified get the named identified version of the index
-	 * @return \Elastica\Index
-	 */
-	public static function getIndex( $type = false, $identifier = false ) {
-		return self::getClient()->getIndex( self::getIndexName( $type, $identifier ) );
-	}
-
-	/**
-	 * Get the name of the index.
-	 * @param mixed $type type of index (content or general or false to get all)
-	 * @param mixed $identifier if specified get the named identifier of the index
-	 * @return string name index should have considering $identifier
-	 */
-	public static function getIndexName( $type = false, $identifier = false ) {
-		$name = wfWikiId();
-		if ( $type ) {
-			$name = $name . '_' . $type;
-		}
-		if ( $identifier ) {
-			$name = $name . '_' . $identifier;
-		}
-		return $name;
+	public static function getIndexBaseName() {
+		return wfWikiId();
 	}
 
 	/**

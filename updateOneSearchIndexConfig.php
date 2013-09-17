@@ -71,7 +71,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"You'll need this if you have an index in production serving queries and you have " .
 			"to alter some portion of its configuration that cannot safely be done without " .
 			"rebuilding it.  Once you specify a new indexIdentify for this wiki you'll have to " .
-			"run this script with the same identifier each time.  Defaults to 'red'.", false, true);
+			"run this script with the same identifier each time.  Defaults to 'current' which " .
+			"infers the currently in use identifier.  You can also use 'now' to set the identifier " .
+			"to the current time in seconds which should give you a unique idenfitier.", false, true);
 		$maintenance->addOption( 'reindexAndRemoveOk', "If the alias is held by another index then " .
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  You'll have to redo all updates ".
@@ -96,7 +98,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		$this->rebuild = $this->getOption( 'rebuild', false );
 		$this->closeOk = $this->getOption( 'closeOk', false );
-		$this->indexIdentifier = $this->getOption( 'indexIdentifier', 'red' );
+		$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 
 		$this->validateIndex();
@@ -332,11 +334,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function removeOldIndeciesIfRequired() {
 		if ( $this->removeIndecies ) {
-			$this->output( $this->indent . "\tRemoving old indecies..." );
+			$this->output( $this->indent . "\tRemoving old indecies...\n" );
 			foreach ( $this->removeIndecies as $oldIndex ) {
+				$this->output( $this->indent . "\t\t$oldIndex..." );
 				CirrusSearchConnection::getClient()->getIndex( $oldIndex )->delete();
+				$this->output( "done\n" );
 			}
-			$this->output( "done\n" );
 		}
 	}
 
@@ -413,6 +416,50 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Note that the index will be unusable while closed." );
 			$this->returnCode = 1;
 		}
+	}
+
+	/**
+	 * Pick the index identifier from the provided command line option.
+	 * @param string $option command line option
+	 *          'now'        => current time
+	 *          'current'    => if there is just one index for this type then use its identifier
+	 *          other string => that string back
+	 * @return string index identifier to use
+	 */
+	private function pickIndexIdentifierFromOption( $option ) {
+		if ( $option === 'now' ) {
+			$identifier = strval( time() );
+			$this->output( $this->indent . "Setting index identifier...$identifier\n" );
+			return $identifier;
+		}
+		if ( $option === 'current' ) {
+			$this->output( $this->indent . 'Infering index identifier...' );
+			$typeName = $this->getIndexTypeName();
+			$found = null;
+			$moreThanOne = array();
+			foreach ( CirrusSearchConnection::getClient()->getStatus()->getIndexNames() as $name ) {
+				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
+					$found[] = $name;
+				}
+			}
+			if ( count( $found ) > 1 ) {
+				$this->output( "error\n" );
+				$this->error("Looks like the index has more than one identifier.  You should delete all\n" .
+					"but the one of them currently active.  Here is the list:");
+				foreach ( $found as $name ) {
+					$this->error( $name );
+				}
+				die( 1 );
+			}
+			if ( $found ) {
+				$identifier = substr( $found[0], strlen( $typeName ) + 1 );
+			} else {
+				$identifier = 'first';
+			}
+			$this->output( "$identifier\n ");
+			return $identifier;
+		}
+		return $option;
 	}
 
 	/**

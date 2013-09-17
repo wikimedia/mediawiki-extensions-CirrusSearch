@@ -8,7 +8,7 @@ Before('@setup_main') do
       And a page named Links To Catapult exists with contents [[Catapult]]
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Catapult]] [[Category:Weaponry]]
-      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} [[Category:TwoWords]]
+      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]]
       And a page named África exists with contents for testing
       And a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]

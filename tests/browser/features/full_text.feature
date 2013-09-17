@@ -127,3 +127,55 @@ Feature: Full text search
   Scenario: Searching for a page using its title and another word in the page's text does find it
     When I search for catapult Two Words
     Then Two Words is the first search result
+
+  @setup_main
+  Scenario: Searching for <text>~ activates fuzzy search
+    When I search for ffnonesensewor~
+    Then Two Words is the first search result
+
+  @setup_main
+  Scenario: Searching for <text>~<text> treats the tilde like a space (finding a result if the term is correct)
+    When I search for ffnonesenseword~pickles
+    Then Two Words is the first search result
+
+  @setup_main
+  Scenario: Searching for <text>~<text> treats the tilde like a space (not finding any results if a fuzzy search was needed)
+    When I search for ffnonesensewor~pickles
+    Then there are no search results
+
+  @setup_main
+  Scenario Outline: Searching for <text>~<number between 0 and 1> activates fuzzy search
+    When I search for ffnonesensewor~<number>
+    Then Two Words is the first search result
+  Examples:
+    | number |
+    | .8     |
+    | 0.8    |
+    | 1      |
+
+  @setup_main
+  Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding a result if the term is corret)
+    When I search for ffnonesenseword~0
+    Then Two Words is the first search result
+
+  @setup_main
+  Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding nothing if fuzzy search is required)
+    When I search for ffnonesensewor~0
+    Then there are no search results
+
+  @setup_main
+  Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search
+    When I search for "ffnonesenseword anotherword"~<proximity>
+    Then <result> is the first search result
+  Examples:
+    | proximity | result    |
+    | 0         | none      |
+    | 1         | none      |
+    | 2         | Two Words |
+    | 3         | Two Words |
+    | 77        | Two Words |
+
+  @setup_main
+  Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
+    When I search for "ffnonesenseword catapult"~anotherword
+    Then Two Words is the first search result

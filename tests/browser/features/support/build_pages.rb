@@ -48,6 +48,16 @@ Before('@setup_headings') do
   end
 end
 
+Before('@setup_javascript_injection') do
+  if !$setup_headings
+    steps %Q{
+      Given a page named Javascript Direct Inclusion exists with contents @javascript.txt
+      Given a page named Javascript Pre Tag Inclusion exists with contents @javascript_in_pre.txt
+    }
+    $setup_headings = true
+  end
+end
+
 Before('@setup_namespaces') do
   if !$setup_namespaces
     steps %Q{

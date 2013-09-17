@@ -113,3 +113,8 @@ Feature: Full text search
     When I search for morelike:More Like Me 1
     Then More Like Me is in the first search result
     But More Like Me 1 is not in the search results
+
+  @setup_javascript_injection
+  Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
+    When I search for Javascript findme
+    Then the title still exists

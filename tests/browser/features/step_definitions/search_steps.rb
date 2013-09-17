@@ -202,6 +202,9 @@ end
 Then(/there are no errors reported$/) do
   on(SearchResultsPage).error_report_element.should_not exist
 end
+Then(/^the title still exists$/) do
+  on(ArticlePage).title_element.should exist
+end
 
 def within(seconds)
   end_time = Time.new + Integer(seconds)

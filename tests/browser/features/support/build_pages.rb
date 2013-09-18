@@ -15,7 +15,6 @@ Before('@setup_main') do
       And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
       And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
       And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
-      And a page named HasASection exists with contents ==I am a section== that contains text!
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
     }
     $setup_main = true
@@ -92,6 +91,8 @@ Before('@setup_highlighting') do
   if !$setup_highlighting
     steps %Q{
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
+      And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
+      And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
     }
   end
   $setup_highlighting = true

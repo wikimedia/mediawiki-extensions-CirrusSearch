@@ -43,8 +43,8 @@ Feature: Full text search
     | "3.1 Conquest of Persian empire"     | none is                           | not in          |        |
     # You can't search for the [edit] tokens that users can click to edit sections
     | "Succession of Umar edit"            | none is                           | not in          |        |
-    | intitle:"" catapult                  | Catapult is                       | in              |        |
-    | incategory:"" catapult               | Catapult is                       | in              |        |
+    | intitle:"" catapult                  | none is                           | not in          |        |
+    | incategory:"" catapult               | none is                           | not in          |        |
 
   @setup_main
   Scenario Outline: Searching for empty-string like values
@@ -117,3 +117,13 @@ Feature: Full text search
   Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
     When I search for Javascript findme
     Then the title still exists
+
+ @setup_main
+  Scenario: Searching for a page using its title and another word not in the page's text doesn't find the page
+    When I search for DontExistWord Two Words
+    Then there are no search results
+
+  @setup_main
+  Scenario: Searching for a page using its title and another word in the page's text does find it
+    When I search for catapult Two Words
+    Then Two Words is the first search result

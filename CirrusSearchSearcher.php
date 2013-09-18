@@ -151,6 +151,7 @@ class CirrusSearchSearcher {
 			$this->query->setFields( $fields );
 			$this->query->setAutoGeneratePhraseQueries( true );
 			$this->query->setPhraseSlop( 3 );
+			$this->query->setDefaultOperator( 'AND' );
 			// TODO phrase match boosts?
 			$this->suggest = array(
 				'text' => $term,
@@ -429,15 +430,24 @@ class CirrusSearchFullTextResultsType {
 	public function getFields() {
 		return array( 'id', 'title', 'namespace', 'redirect' );
 	}
+	/**
+	 * Setup highlighting.
+	 * Don't fragment title because it is small.
+	 * Get just one fragment from the text because that is all we will display.
+	 * Get one fragment from redirect title and heading each or else they
+	 * won't be sorted by score.
+	 * @return array of highlighting configuration
+	 */
 	public function getHighlightingConfiguration() {
 		return array(
+			'order' => 'score',
 			'pre_tags' => array( CirrusSearchSearcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( CirrusSearchSearcher::HIGHLIGHT_POST ),
 			'fields' => array(
-				'title' => array( 'number_of_fragments' => 0 ), // Don't fragment the title - it is too small.
+				'title' => array( 'number_of_fragments' => 0 ),
 				'text' => array( 'number_of_fragments' => 1 ),
-				'redirect.title' => array( 'number_of_fragments' => 0 ), // The redirect field is just like the title field.
-				'heading' => array( 'number_of_fragments' => 0), // Too small to fragment
+				'redirect.title' => array( 'number_of_fragments' => 1 ),
+				'heading' => array( 'number_of_fragments' => 1),
 			),
 		);
 	}
@@ -567,7 +577,7 @@ class CirrusSearchResult extends SearchResult {
 			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $text ), 0, $contextLines ) );
 		}
 		if ( isset( $highlights[ 'heading' ] ) ) {
-			$this->sectionSnippet = $highlights[ 'heading' ][ 0 ];
+			$this->sectionSnippet = self::escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
 			$this->sectionTitle = $this->findSectionTitle();
 		} else {
 			$this->sectionSnippet = '';

@@ -188,10 +188,13 @@ class CirrusSearchUpdater {
 		$headings = array();
 		$ignoredHeadings = self::getIgnoredHeadings();
 		foreach ( $parserOutput->getSections() as $heading ) {
+			$heading = $heading[ 'line' ];
+			// Strip tags from the heading or else we'll display them (escaped) in search results
+			$heading = Sanitizer::stripAllTags( $heading );
 			// Note that we don't take the level of the heading into account - all headings are equal.
 			// Except the ones we ignore.
-			if ( !in_array( $heading[ 'line' ], $ignoredHeadings ) ) {
-				$headings[] = $heading[ 'line' ];
+			if ( !in_array( $heading, $ignoredHeadings ) ) {
+				$headings[] = $heading;
 			}
 		}
 

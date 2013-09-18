@@ -41,7 +41,7 @@ $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsear
 $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 
 // Number of replicas per shard for each index
-$wgCirrusSearchContentReplicaCount = array( 'content' => 1, 'general' => 1 );
+$wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
 
 // If true CirrusSearch asks Elasticsearch to perform searches using a mode that should
 // product more accurate results at the cost of performance. See this for more info:

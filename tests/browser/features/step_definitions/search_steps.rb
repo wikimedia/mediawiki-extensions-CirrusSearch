@@ -146,8 +146,12 @@ end
 Then(/^(.*) is the highlighted title of the first search result$/) do |highlighted|
   on(SearchResultsPage).first_result_highlighted_title.should == highlighted
 end
-Then(/^(.*) is the highlighted text of the first search result$/) do |highlighted|
-  on(SearchResultsPage).first_result_highlighted_text.should == highlighted
+Then(/^(.*) is( in)? the highlighted text of the first search result$/) do |highlighted, in_ok|
+  if in_ok then
+    on(SearchResultsPage).first_result_highlighted_text.should include(highlighted)
+  else
+    on(SearchResultsPage).first_result_highlighted_text.should == highlighted
+  end
 end
 Then(/^(.*) is the highlighted heading of the first search result$/) do |highlighted|
   if highlighted.empty? then

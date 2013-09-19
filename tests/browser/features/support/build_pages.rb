@@ -128,3 +128,14 @@ Before('@setup_phrase_rescore') do
   end
   $setup_phrase_rescore = true
 end
+
+Before('@exact_quotes') do
+  if !$exact_quotes
+    steps %Q{
+      Given a page named Contains A Stop Word exists
+      And a page named Doesn't Actually Contain Stop Words exists
+      And a page named Pick* exists
+    }
+  end
+  $exact_quotes = true
+end

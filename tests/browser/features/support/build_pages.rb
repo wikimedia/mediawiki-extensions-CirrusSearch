@@ -111,3 +111,15 @@ Before('@setup_more_like_this') do
   end
   $setup_more_like_this = true
 end
+
+Before('@setup_phrase_rescore') do
+  if !$setup_phrase_rescore
+    steps %Q{
+      Given a page named Rescore Test Words exists
+      And a page named Test Words Rescore Rescore exists
+      And a page named Rescore Test TextContent exists with contents Chaff
+      And a page named Rescore Test HasTextContent exists with contents Rescore Test TextContent
+    }
+  end
+  $setup_phrase_rescore = true
+end

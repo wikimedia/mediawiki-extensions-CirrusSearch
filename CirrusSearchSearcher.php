@@ -53,6 +53,7 @@ class CirrusSearchSearcher {
 	private $query = null;
 	private $filters = array();
 	private $suggest = null;
+	private $rescore = null;
 	/**
 	 * @var string description of the current operation used in logging errors
 	 */
@@ -103,6 +104,9 @@ class CirrusSearchSearcher {
 	 */
 	public function searchText( $term, $showRedirects ) {
 		global $wgCirrusSearchWeights;
+		global $wgCirrusSearchPhraseSlop;
+		global $wgCirrusSearchPhraseRescoreBoost;
+		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseSuggestMaxErrors;
 		global $wgCirrusSearchPhraseSuggestConfidence;
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
@@ -138,7 +142,8 @@ class CirrusSearchSearcher {
 
 		// Actual text query
 		if ( trim( $term ) !== '' || $extraQueryStrings ) {
-			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . self::fixupQueryString( $term ) );
+			$fixedTerm = self::fixupQueryString( $term );
+			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
 			$this->query = new \Elastica\Query\QueryString( $queryStringQueryString );
 			$fields = array(
 				'title^' . $wgCirrusSearchWeights[ 'title' ],
@@ -150,9 +155,23 @@ class CirrusSearchSearcher {
 			}
 			$this->query->setFields( $fields );
 			$this->query->setAutoGeneratePhraseQueries( true );
-			$this->query->setPhraseSlop( 3 );
+			$this->query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
 			$this->query->setDefaultOperator( 'AND' );
-			// TODO phrase match boosts?
+
+			// Only do a phrase match rescore if the query doesn't include any phrases
+			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && !preg_match( '/"[^ "]+ [^"]+"/', $fixedTerm ) ) {
+				$this->rescore = array(
+					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
+					'query' => array(
+						'rescore_query' => $this->query->toArray(),
+						'query_weight' => 1.0,
+						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
+					)
+				);
+				// Replace the original query string with a quoted copy
+				$this->rescore[ 'query' ][ 'rescore_query' ][ 'query_string' ][ 'query' ] = '"' . $fixedTerm . '"';
+			}
+
 			$this->suggest = array(
 				'text' => $term,
 				self::PHRASE_TITLE => array(
@@ -266,6 +285,12 @@ class CirrusSearchSearcher {
 		if( $this->limit ) {
 			$query->setSize( $this->limit );
 		}
+		if ( $this->rescore ) {
+			// Wrap the rescore query in the boostQuery just as we wrap the regular query.
+			$this->rescore[ 'query' ][ 'rescore_query' ] =
+				self::boostQuery( $this->rescore[ 'query' ][ 'rescore_query' ] )->toArray();
+			$query->setParam( 'rescore', $this->rescore );
+		}
 
 		if ( $this->namespaces ) {
 			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
@@ -366,6 +391,8 @@ class CirrusSearchSearcher {
 				:|		(?# no specifying your own fields)
 				\\\
 			)/x', '\\\$1', $string );
+		// If the string doesn't have balanced quotes then add a quote on the end so Elasticsearch
+		// can parse it.
 		if ( !preg_match( '/^(
 				[^"]| 			(?# non quoted terms)
 				"([^"]|\\.)*" 	(?# quoted terms)

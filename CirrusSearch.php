@@ -43,6 +43,20 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // Number of replicas per shard for each index
 $wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
 
+// When searching for a phrase how many words not searched for can be in the phrase
+// before it doesn't match. If I search for "like yellow candy" then phraseSlop of 0
+// won't match "like brownish yellow candy" but phraseSlop of 1 will.
+$wgCirrusSearchPhraseSlop = 1;
+
+// If the search doesn't include any phrases (delimited by quotes) then we try wrapping
+// the whole thing in quotes because sometimes that can turn up better results. This is
+// the boost that we give such matches. Set this less than or equal to 1.0 to turn off
+// this feature.
+$wgCirrusSearchPhraseRescoreBoost = 10.0;
+
+// Number of documents for which automatic phrase matches are performed if it is enabled.
+$wgCirrusSearchPhraseRescoreWindowSize = 1024;
+
 // If true CirrusSearch asks Elasticsearch to perform searches using a mode that should
 // product more accurate results at the cost of performance. See this for more info:
 // http://www.elasticsearch.org/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch/

@@ -56,6 +56,10 @@ class CirrusSearchUpdater {
 		$content = $page->getContent();
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
+			if ( $target->equals( $page->getTitle() ) ) {
+				wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
+				return;
+			}
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 			self::updateFromTitle( $target );
 		} else {

@@ -179,3 +179,19 @@ Feature: Full text search
   Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
     When I search for "ffnonesenseword catapult"~anotherword
     Then Two Words is the first search result
+
+  @setup_phrase_rescore
+  Scenario: Searching for an unquoted phrase finds the phrase first
+    When I search for Rescore Test
+    Then Rescore Test Words is the first search result
+
+  @setup_phrase_rescore
+  Scenario: Searching for an a quoted phrase finds higher scored matches before the whole query interpreted as a phrase
+    When I search for Rescore "Test Words"
+    Then Test Words Rescore Rescore is the first search result
+
+  # Note that other tests will catch this situration as well but this test should be pretty specific
+  @setup_phrase_rescore
+  Scenario: Searching for an unquoted phrase still prioritizes titles over text
+    When I search for Rescore Test TextContent
+    Then Rescore Test TextContent is the first search result

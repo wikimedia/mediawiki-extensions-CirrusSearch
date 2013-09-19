@@ -87,7 +87,7 @@ class CirrusSearchSearcher {
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.prefix', array(
 			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
-			'analyzer' => 'prefix_query'  // TODO switch this to lowercase_keyword after the it is fully deployed
+			'analyzer' => 'lowercase_keyword',
 		) );
 		$this->filters[] = new \Elastica\Filter\Query( $match );
 		$this->description = "prefix search for '$search'";

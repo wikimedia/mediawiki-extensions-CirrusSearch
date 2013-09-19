@@ -60,11 +60,6 @@ class CirrusSearchAnalysisConfigBuilder {
 					'tokenizer' => 'prefix',
 					'filter' => array( 'lowercase' )
 				),
-				'prefix_query' => array( // TODO remove this after lowercase_keyword is fully deployed
-					'type' => 'custom',
-					'tokenizer' => 'no_splitting',
-					'filter' => array( 'lowercase' )
-				),
 				'lowercase_keyword' => array(
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
@@ -116,8 +111,6 @@ class CirrusSearchAnalysisConfigBuilder {
 			);
 			// Add asciifolding to the prefix queries and incategory filters
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			// TODO remove prefix_query after lowercase_keyword is fully deployed
-			$config[ 'analyzer' ][ 'prefix_query' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
 			break;
 		case 'tr':

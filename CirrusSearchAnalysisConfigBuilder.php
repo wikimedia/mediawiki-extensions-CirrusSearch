@@ -50,6 +50,15 @@ class CirrusSearchAnalysisConfigBuilder {
 				'text' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
 				),
+				'plain' => array(
+					// Surprisingly, the Lucene docs claim this works for
+					// Chinese, Japanese, and Thai as well.
+					// The difference between this and the 'standard'
+					// analzyer is the lack of english stop words.
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => array( 'standard', 'lowercase' )
+				),
 				'suggest' => array(
 					'type' => 'custom',
 					'tokenizer' => 'standard',
@@ -99,16 +108,18 @@ class CirrusSearchAnalysisConfigBuilder {
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
 		case 'en':
+			$config[ 'filter' ][ 'possessive_english' ] = array(
+				'type' => 'stemmer',
+				'language' => 'possessive_english',
+			);
 			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => array( 'standard', 'possessive_english', 'lowercase', 'stop', 'porter_stem', 'asciifolding' )
 			);
-			$config[ 'filter' ][ 'possessive_english' ] = array(
-				'type' => 'stemmer',
-				'language' => 'possessive_english',
-			);
+			// Add asciifolding to the the text_plain analyzer as well
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
 			// Add asciifolding to the prefix queries and incategory filters
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
@@ -127,8 +138,8 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * @return string the analyzer type
 	 */
 	private function getDefaultTextAnalyzerType() {
-		if ( array_key_exists( $this->language, $this->elasticsearchLanguages ) ) {
-			return $this->elasticsearchLanguages[ $this->language ];
+		if ( array_key_exists( $this->language, $this->elasticsearchLanguageAnalyzers ) ) {
+			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
 		} else {
 			return 'default';
 		}
@@ -139,7 +150,7 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * that this array is sorted alphabetically by value and sourced from
 	 * http://www.elasticsearch.org/guide/reference/index-modules/analysis/lang-analyzer/
 	 */
-	private $elasticsearchLanguages = array(
+	private $elasticsearchLanguageAnalyzers = array(
 		'ar' => 'arabic',
 		'hy' => 'armenian',
 		'eu' => 'basque',
@@ -147,7 +158,6 @@ class CirrusSearchAnalysisConfigBuilder {
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
 		'zh' => 'chinese',
-		// 'cjk', - we don't use this because we don't have a wiki with all three
 		'cs' => 'czech',
 		'da' => 'danish',
 		'nl' => 'dutch',
@@ -170,6 +180,6 @@ class CirrusSearchAnalysisConfigBuilder {
 		'es' => 'spanish',
 		'sv' => 'swedish',
 		'tr' => 'turkish',
-		'th' => 'thai'
+		'th' => 'thai',
 	);
 }

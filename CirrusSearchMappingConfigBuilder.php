@@ -42,7 +42,7 @@ class CirrusSearchMappingConfigBuilder {
 				'heading' => $this->buildStringField(),
 				'redirect' => array(
 					'properties' => array(
-						'title' => $this->buildStringField( 'title', null, true )
+						'title' => $this->buildStringField( 'title', array( 'suggest' ), true )
 					)
 				),
 				'links' => array(

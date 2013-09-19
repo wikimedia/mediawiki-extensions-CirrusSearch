@@ -69,7 +69,7 @@ class CirrusSearch extends SearchEngine {
 		if( $c ) {
 			switch ( $c->getModel() ) {
 				case CONTENT_MODEL_WIKITEXT:
-					$text = CirrusSearchTextSanitizer::getSantizedTextFromTitle( $t, $parserOutput );
+					$text = CirrusSearchTextFormatter::formatWikitext( $t, $parserOutput );
 					break;
 				default:
 					$text = SearchUpdate::updateText( $text );

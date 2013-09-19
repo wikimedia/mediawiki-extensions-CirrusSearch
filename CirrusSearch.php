@@ -103,7 +103,7 @@ $wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'CirrusSearchConnection.ph
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'CirrusSearchMappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'CirrusSearchPrefixSearchHook.php';
 $wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'CirrusSearchSearcher.php';
-$wgAutoloadClasses['CirrusSearchTextSanitizer'] = $dir . 'CirrusSearchTextSanitizer.php';
+$wgAutoloadClasses['CirrusSearchTextFormatter'] = $dir . 'CirrusSearchTextFormatter.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
 
 

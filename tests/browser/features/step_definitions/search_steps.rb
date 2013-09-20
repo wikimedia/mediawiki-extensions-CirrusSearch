@@ -197,11 +197,10 @@ Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the f
   end
 end
 Then(/^(.*) is suggested$/) do |text|
-  if text == 'none' then
-    on(SearchResultsPage).suggestion_element.should_not exist
-  else
-    on(SearchResultsPage).suggestion.should == text
-  end
+  on(SearchResultsPage).highlighted_suggestion.should == text
+end
+Then(/^there is no suggestion$/) do
+  on(SearchResultsPage).suggestion_element.should_not exist
 end
 Then(/there are no errors reported$/) do
   on(SearchResultsPage).error_report_element.should_not exist

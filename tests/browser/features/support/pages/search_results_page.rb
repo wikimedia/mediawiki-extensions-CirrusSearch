@@ -21,8 +21,8 @@ class SearchResultsPage
   def suggestion_element
     suggestion_wrapper_element.link_element
   end
-  def suggestion
-    suggestion_element.text
+  def highlighted_suggestion
+    get_highlighted_text(suggestion_element)
   end
   def results
     @browser.divs(:class => 'mw-search-result-heading')
@@ -40,6 +40,9 @@ class SearchResultsPage
 
   def get_highlighted_text(element)
     result = element.element.attribute_value('innerHTML').strip
-    result.gsub('<span class="searchmatch">', '*').gsub('</span>', '*')
+    result.gsub('<span class="searchmatch">', '*').
+           gsub('</span>', '*').
+           gsub('<em>', '*').
+           gsub('</em>', '*')
   end
 end

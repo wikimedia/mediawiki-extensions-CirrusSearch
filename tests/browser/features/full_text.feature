@@ -61,15 +61,20 @@ Feature: Full text search
     | incategory:      | Search results |
     | incategory:""    | Search results |
 
-  @setup_suggestions
-  Scenario Outline: Suggestions
-    When I search for <term>
-    Then <suggestion> is suggested
-  Examples:
-    | term            | suggestion      |
-    | popular culatur | popular culture |
-    | noble prize     | nobel prize     |
-    | nobel prize     | none            |
+  @Setup_suggestions
+  Scenario: Common phrases spelled incorrectly get suggestions
+    When I search for popular cultur
+    Then popular *culture* is suggested
+
+  @Setup_suggestions
+  Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
+    When I search for noble prize
+    Then *nobel* prize is suggested
+
+  @Setup_suggestions
+  Scenario: Uncommon phrases spelled correctly don't get suggestsions even if one of the words is very uncommon
+    When I search for nobel prize
+    Then there is no suggestion
 
   @setup_weight
   Scenario: Page weight include redirects
@@ -190,7 +195,7 @@ Feature: Full text search
     When I search for Rescore "Test Words"
     Then Test Words Rescore Rescore is the first search result
 
-  # Note that other tests will catch this situration as well but this test should be pretty specific
+  # Note that other tests will catch this situation as well but this test should be pretty specific
   @setup_phrase_rescore
   Scenario: Searching for an unquoted phrase still prioritizes titles over text
     When I search for Rescore Test TextContent

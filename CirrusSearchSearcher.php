@@ -21,6 +21,8 @@
 class CirrusSearchSearcher {
 	const PHRASE_TITLE = 'phrase_title';
 	const PHRASE_TEXT = 'phrase_text';
+	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
+	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
 
@@ -186,6 +188,10 @@ class CirrusSearchSearcher {
 								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
 							),
 						),
+						'highlight' => array(
+							'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
+							'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
+						),
 					)
 				),
 				self::PHRASE_TEXT => array(
@@ -199,6 +205,10 @@ class CirrusSearchSearcher {
 								'field' => 'text.suggest',
 								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
 							),
+						),
+						'highlight' => array(
+							'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
+							'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
 						),
 					)
 				)
@@ -487,17 +497,27 @@ class CirrusSearchFullTextResultsType {
  * A set of results from Elasticsearch.
  */
 class CirrusSearchResultSet extends SearchResultSet {
+	/**
+	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE
+	 */
+	private static $suggestionHighlightPreEscaped = null;
+	/**
+	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST
+	 */
+	private static $suggestionHighlightPostEscaped = null;
+
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
 	public function __construct( $res ) {
 		$this->result = $res;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
-		$this->suggestionQuery = $this->findSuggestionQuery();
-		$this->suggestionSnippet = $this->highlightingSuggestionSnippet();
+		$suggestion = $this->findSuggestion();
+		$this->suggestionQuery = $suggestion[ 'text' ];
+		$this->suggestionSnippet = self::escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
 	}
 
-	private function findSuggestionQuery() {
+	private function findSuggestion() {
 		// TODO some kind of weighting?
 		$suggest = $this->result->getResponse()->getData();
 		if ( !array_key_exists( 'suggest', $suggest ) ) {
@@ -505,17 +525,29 @@ class CirrusSearchResultSet extends SearchResultSet {
 		}
 		$suggest = $suggest[ 'suggest' ];
 		foreach ( $suggest[ CirrusSearchSearcher::PHRASE_TITLE ][ 0 ][ 'options' ] as $option ) {
-			return $option[ 'text' ];
+			return $option;
 		}
 		foreach ( $suggest[ CirrusSearchSearcher::PHRASE_TEXT ][ 0 ][ 'options' ] as $option ) {
-			return $option[ 'text' ];
+			return $option;
 		}
 		return null;
 	}
 
-	private function highlightingSuggestionSnippet() {
-		// TODO wrap the corrections in <em>s.... ES doesn't make this easy.
-		return $this->suggestionQuery;
+	/**
+	 * Escape a highlighted suggestion coming back from Elasticsearch.
+	 * @param $suggestion string suggestion from elasticsearch
+	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
+	 */
+	private static function escapeHighlightedSuggestion( $suggestion ) {
+		if ( self::$suggestionHighlightPreEscaped === null ) {
+			self::$suggestionHighlightPreEscaped =
+				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE );
+			self::$suggestionHighlightPostEscaped =
+				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST );
+		}
+		return str_replace( array( self::$suggestionHighlightPreEscaped, self::$suggestionHighlightPostEscaped ),
+			array( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE, CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST ),
+			htmlspecialchars( $suggestion ) );
 	}
 
 	public function hasResults() {
@@ -614,15 +646,17 @@ class CirrusSearchResult extends SearchResult {
 
 	/**
 	 * Escape highlighted text coming back from Elasticsearch.
+	 * @param $snippet string highlighted snippet returned from elasticsearch
+	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
-	public static function escapeHighlightedText( $text ) {
+	private static function escapeHighlightedText( $snippet ) {
 		if ( self::$highlightPreEscaped === null ) {
 			self::$highlightPreEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_PRE );
 			self::$highlightPostEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_POST );
 		}
 		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
 			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
-			htmlspecialchars( $text ) );
+			htmlspecialchars( $snippet ) );
 	}
 
 	/**

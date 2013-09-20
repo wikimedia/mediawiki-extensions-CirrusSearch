@@ -187,7 +187,7 @@ Feature: Full text search
 
   @setup_phrase_rescore
   Scenario: Searching for an unquoted phrase finds the phrase first
-    When I search for Rescore Test
+    When I search for Rescore Test Words
     Then Rescore Test Words is the first search result
 
   @setup_phrase_rescore

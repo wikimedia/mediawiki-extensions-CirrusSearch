@@ -55,6 +55,9 @@ class CirrusSearchSearcher {
 	private $query = null;
 	private $filters = array();
 	private $suggest = null;
+	/**
+	 * @var null|array of rescore configuration as used by elasticsearch.  The query needs to be an Elastica query.
+	 */
 	private $rescore = null;
 	/**
 	 * @var string description of the current operation used in logging errors
@@ -165,13 +168,13 @@ class CirrusSearchSearcher {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->query->toArray(),
+						'rescore_query' => $this->query,
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
 				);
 				// Replace the original query string with a quoted copy
-				$this->rescore[ 'query' ][ 'rescore_query' ][ 'query_string' ][ 'query' ] = '"' . $fixedTerm . '"';
+				$this->rescore[ 'query' ][ 'rescore_query' ]->setQuery( '"' . $fixedTerm . '"' );
 			}
 
 			$this->suggest = array(

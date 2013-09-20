@@ -93,7 +93,6 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 );
 
 $dir = __DIR__ . '/';
-$elasticaDir = $dir . 'Elastica/lib/Elastica/';
 /**
  * Classes
  */
@@ -105,65 +104,6 @@ $wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'CirrusSearchPrefixS
 $wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'CirrusSearchSearcher.php';
 $wgAutoloadClasses['CirrusSearchTextSanitizer'] = $dir . 'CirrusSearchTextSanitizer.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
-
-
-$wgAutoloadClasses['Elastica\Bulk'] = $elasticaDir . 'Bulk.php';
-$wgAutoloadClasses['Elastica\Client'] = $elasticaDir . 'Client.php';
-$wgAutoloadClasses['Elastica\Connection'] = $elasticaDir . 'Connection.php';
-$wgAutoloadClasses['Elastica\Document'] = $elasticaDir . 'Document.php';
-$wgAutoloadClasses['Elastica\Index'] = $elasticaDir . 'Index.php';
-$wgAutoloadClasses['Elastica\Param'] = $elasticaDir . 'Param.php';
-$wgAutoloadClasses['Elastica\Query'] = $elasticaDir . 'Query.php';
-$wgAutoloadClasses['Elastica\Request'] = $elasticaDir . 'Request.php';
-$wgAutoloadClasses['Elastica\Response'] = $elasticaDir . 'Response.php';
-$wgAutoloadClasses['Elastica\Result'] = $elasticaDir . 'Result.php';
-$wgAutoloadClasses['Elastica\ResultSet'] = $elasticaDir . 'ResultSet.php';
-$wgAutoloadClasses['Elastica\Script'] = $elasticaDir . 'Script.php';
-$wgAutoloadClasses['Elastica\Search'] = $elasticaDir . 'Search.php';
-$wgAutoloadClasses['Elastica\SearchableInterface'] = $elasticaDir . 'SearchableInterface.php';
-$wgAutoloadClasses['Elastica\Status'] = $elasticaDir . 'Status.php';
-$wgAutoloadClasses['Elastica\Type'] = $elasticaDir . 'Type.php';
-$wgAutoloadClasses['Elastica\Util'] = $elasticaDir . 'Util.php';
-$wgAutoloadClasses['Elastica\Bulk\Action'] = $elasticaDir . 'Bulk/Action.php';
-$wgAutoloadClasses['Elastica\Bulk\Action\AbstractDocument'] = $elasticaDir . 'Bulk/Action/AbstractDocument.php';
-$wgAutoloadClasses['Elastica\Bulk\Action\IndexDocument'] = $elasticaDir . 'Bulk/Action/IndexDocument.php';
-$wgAutoloadClasses['Elastica\Bulk\Response'] = $elasticaDir . 'Bulk/Response.php';
-$wgAutoloadClasses['Elastica\Bulk\ResponseSet'] = $elasticaDir . 'Bulk/ResponseSet.php';
-$wgAutoloadClasses['Elastica\Exception\BulkException'] = $elasticaDir . 'Exception/BulkException.php';
-$wgAutoloadClasses['Elastica\Exception\ClientException'] = $elasticaDir . 'Exception/ClientException.php';
-$wgAutoloadClasses['Elastica\Exception\ConnectionException'] = $elasticaDir . 'Exception/ConnectionException.php';
-$wgAutoloadClasses['Elastica\Exception\ExceptionInterface'] = $elasticaDir . 'Exception/ExceptionInterface.php';
-$wgAutoloadClasses['Elastica\Exception\InvalidException'] = $elasticaDir . 'Exception/InvalidException.php';
-$wgAutoloadClasses['Elastica\Exception\NotFoundException'] = $elasticaDir . 'Exception/NotFoundException.php';
-$wgAutoloadClasses['Elastica\Exception\ResponseException'] = $elasticaDir . 'Exception/ResponseException.php';
-$wgAutoloadClasses['Elastica\Exception\Bulk\ResponseException'] = $elasticaDir . 'Exception/Bulk/ResponseException.php';
-$wgAutoloadClasses['Elastica\Exception\Bulk\Response\ActionException'] = $elasticaDir . 'Exception/Bulk/Response/ActionException.php';
-$wgAutoloadClasses['Elastica\Exception\Connection\HttpException'] = $elasticaDir . 'Exception/Connection/HttpException.php';
-$wgAutoloadClasses['Elastica\Filter\AbstractFilter'] = $elasticaDir . 'Filter/AbstractFilter.php';
-$wgAutoloadClasses['Elastica\Filter\AbstractMulti'] = $elasticaDir . 'Filter/AbstractMulti.php';
-$wgAutoloadClasses['Elastica\Filter\Bool'] = $elasticaDir . 'Filter/Bool.php';
-$wgAutoloadClasses['Elastica\Filter\BoolNot'] = $elasticaDir . 'Filter/BoolNot.php';
-$wgAutoloadClasses['Elastica\Filter\Ids'] = $elasticaDir . 'Filter/Ids.php';
-$wgAutoloadClasses['Elastica\Filter\Prefix'] = $elasticaDir . 'Filter/Prefix.php';
-$wgAutoloadClasses['Elastica\Filter\Query'] = $elasticaDir . 'Filter/Query.php';
-$wgAutoloadClasses['Elastica\Filter\Term'] = $elasticaDir . 'Filter/Term.php';
-$wgAutoloadClasses['Elastica\Filter\Terms'] = $elasticaDir . 'Filter/Terms.php';
-$wgAutoloadClasses['Elastica\Index\Settings'] = $elasticaDir . 'Index/Settings.php';
-$wgAutoloadClasses['Elastica\Index\Status'] = $elasticaDir . 'Index/Status.php';
-$wgAutoloadClasses['Elastica\Query\AbstractQuery'] = $elasticaDir . 'Query/AbstractQuery.php';
-$wgAutoloadClasses['Elastica\Query\CustomScore'] = $elasticaDir . 'Query/CustomScore.php';
-$wgAutoloadClasses['Elastica\Query\Field'] = $elasticaDir . 'Query/Field.php';
-$wgAutoloadClasses['Elastica\Query\MatchAll'] = $elasticaDir . 'Query/MatchAll.php';
-$wgAutoloadClasses['Elastica\Query\Match'] = $elasticaDir . 'Query/Match.php';
-$wgAutoloadClasses['Elastica\Query\MoreLikeThis'] = $elasticaDir . 'Query/MoreLikeThis.php';
-$wgAutoloadClasses['Elastica\Query\Prefix'] = $elasticaDir . 'Query/Prefix.php';
-$wgAutoloadClasses['Elastica\Query\QueryString'] = $elasticaDir . 'Query/QueryString.php';
-$wgAutoloadClasses['Elastica\Transport\AbstractTransport'] = $elasticaDir . 'Transport/AbstractTransport.php';
-$wgAutoloadClasses['Elastica\Transport\Http'] = $elasticaDir . 'Transport/Http.php';
-$wgAutoloadClasses['Elastica\Type\Mapping'] = $elasticaDir . 'Type/Mapping.php';
-
-
-
 
 /**
  * Hooks

@@ -109,7 +109,6 @@ class CirrusSearchSearcher {
 	 */
 	public function searchText( $term, $showRedirects ) {
 		global $wgCirrusSearchWeights;
-		global $wgCirrusSearchPhraseSlop;
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseSuggestMaxErrors;
@@ -149,7 +148,6 @@ class CirrusSearchSearcher {
 		if ( trim( $term ) !== '' || $extraQueryStrings ) {
 			$fixedTerm = self::fixupQueryString( $term );
 			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
-			$this->query = new \Elastica\Query\QueryString( $queryStringQueryString );
 			$fields = array(
 				'title^' . $wgCirrusSearchWeights[ 'title' ],
 				'heading^' . $wgCirrusSearchWeights[ 'heading' ],
@@ -158,23 +156,18 @@ class CirrusSearchSearcher {
 			if ( $showRedirects ) {
 				$fields[] = 'redirect.title^' . $wgCirrusSearchWeights[ 'redirect' ];
 			}
-			$this->query->setFields( $fields );
-			$this->query->setAutoGeneratePhraseQueries( true );
-			$this->query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
-			$this->query->setDefaultOperator( 'AND' );
+			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any phrases
 			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && !preg_match( '/"[^ "]+ [^"]+"/', $fixedTerm ) ) {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->query,
+						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $fixedTerm . '"' ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
 				);
-				// Replace the original query string with a quoted copy
-				$this->rescore[ 'query' ][ 'rescore_query' ]->setQuery( '"' . $fixedTerm . '"' );
 			}
 
 			$this->suggest = array(
@@ -345,6 +338,16 @@ class CirrusSearchSearcher {
 			return $status;
 		}
 		return $this->resultsType->transformElasticsearchResult( $result );
+	}
+
+	private function buildSearchTextQuery( $fields, $query ) {
+		global $wgCirrusSearchPhraseSlop;
+		$query = new \Elastica\Query\QueryString( $query );
+		$query->setFields( $fields );
+		$query->setAutoGeneratePhraseQueries( true );
+		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
+		$query->setDefaultOperator( 'AND' );
+		return $query;
 	}
 
 	/**

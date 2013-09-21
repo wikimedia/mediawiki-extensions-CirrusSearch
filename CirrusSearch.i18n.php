@@ -61,6 +61,16 @@ $messages['bcl'] = array(
 	'cirrussearch-desc' => 'Elastikongpaghanap-makusugon na panhanap para sa MediaWiki',
 	'cirrussearch-backend-error' => 'Dae nyamo makukumpleto an saimong paghahanap nin huli sa sarong temporaryong problema.
 Tabi man paki-otroha giraray oro-atyan.',
+	'cirrussearch-ignored-headings' => ' #<!-- walaton ining linya eksaktong siring sana kaini --> <pre> 
+# Mga Kapamayuhanan na pinagpapabayaan sa paghahanap. 
+# Mga Kaliwatan kaini magkaka-epekto matapos na an pahina na igwang kapamayuhanan maipaghukdo. 
+# Ika makakapagpuwersa sa pahina na maihuhukdo otro sa paagi nin paghimo nin sarong blangko na pagliwat. # An Sintaks iyo ining minasunod: 
+# * An gabos magpoon sa sarong karakter na "#" sagkod sa tapos kan linya iyo an sarong komento 
+# * An lambang linya na bakong blangko iyo an eksaktong titulo na pababayaan, kaso asin gabos na bagay 
+Mga Panultulan
+Panluwas na mga sugpon
+Hilingon man 
+#</pre> <!-- walaton ining linya eksaktong siring sana kaini -->',
 );
 
 /** Belarusian (Taraškievica orthography) (беларуская (тарашкевіца)‎)

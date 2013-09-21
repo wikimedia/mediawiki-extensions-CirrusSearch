@@ -200,3 +200,13 @@ Feature: Full text search
   Scenario: Searching for an unquoted phrase still prioritizes titles over text
     When I search for Rescore Test TextContent
     Then Rescore Test TextContent is the first search result
+
+  @setup_phrase_rescore
+  Scenario: Searching with a quoted word just treats the word as though it didn't have quotes
+    When I search for "Rescore" Words Test
+    Then Test Words Rescore Rescore is the first search result
+
+  @setup_phrase_rescore
+  Scenario: Searching for a quoted prefix search doesn't find any results
+    When I search for "rescor*"
+    Then there are no search results

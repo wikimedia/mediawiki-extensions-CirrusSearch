@@ -277,6 +277,17 @@ $messages['ko'] = array(
 $messages['lb'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-Sichfonctioun fir MediaWiki',
 	'cirrussearch-backend-error' => 'Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert w.e.g. méi spéit nach eng Kéier.',
+	'cirrussearch-ignored-headings' => " #<!-- dës Zeil net änneren --> <pre>
+# Iwwerschrëften, déi vun der Sich ignoréiert ginn.
+# Dës Ännerunge gi wirksam, soubal déi Säit mat der Iwwerschrëft indexéiert gouf.
+# Dir kënnt déi Säitenindexéierung erzwéngen, andeem dir eng Nullännerung maacht.
+# Syntax:
+# * Alles, wat no enger Raut („#“) bis zum Ënn vun der Zeil steet, ass eng Bemierkung.
+# * All net-eidel Zeil ass de geneeën Titel fir z'ignoréieren.
+Referenzen
+Weblinken
+Kuckt och
+ #</pre> <!-- dës Zeil net änneren -->",
 );
 
 /** Macedonian (македонски)

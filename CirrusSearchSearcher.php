@@ -108,7 +108,6 @@ class CirrusSearchSearcher {
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
 	public function searchText( $term, $showRedirects ) {
-		global $wgCirrusSearchWeights;
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseSuggestMaxErrors;
@@ -148,14 +147,7 @@ class CirrusSearchSearcher {
 		if ( trim( $term ) !== '' || $extraQueryStrings ) {
 			$fixedTerm = self::fixupQueryString( $term );
 			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
-			$fields = array(
-				'title^' . $wgCirrusSearchWeights[ 'title' ],
-				'heading^' . $wgCirrusSearchWeights[ 'heading' ],
-				'text',
-			);
-			if ( $showRedirects ) {
-				$fields[] = 'redirect.title^' . $wgCirrusSearchWeights[ 'redirect' ];
-			}
+			$fields = CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any phrases
@@ -351,6 +343,25 @@ class CirrusSearchSearcher {
 	}
 
 	/**
+	 * Build fields searched by full text search.
+	 * @param $includeRedirects bool show redirects be included
+	 * @param $fieldSuffix string suffux to add to field names.  Defaults to ''.
+	 * @return array(string) of fields to query
+	 */
+	public static function buildFullTextSearchFields( $includeRedirects, $fieldSuffix = '' ) {
+		global $wgCirrusSearchWeights;
+		$fields = array(
+			'title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'title' ],
+			'heading' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'heading' ],
+			'text' . $fieldSuffix,
+		);
+		if ( $includeRedirects ) {
+			$fields[] = 'redirect.title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'redirect' ];
+		}
+		return $fields;
+	}
+
+	/**
 	 * Pick the index type to search bases on the list of namespaces to search.
 	 * @return mixed index type in which to search
 	 */
@@ -417,7 +428,6 @@ class CirrusSearchSearcher {
 		}
 		// Turn bad fuzzy searches into searches that contain a ~
 		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
-			wfDebugLog( 'CirrusSearch', 'checking fuzzy:' . $matches[0] );
 			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {
 				return $matches[ 0 ];
 			} else {
@@ -426,14 +436,12 @@ class CirrusSearchSearcher {
 		}, $string );
 		// Turn bad proximity searches into seraches that contain a ~
 		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {
-			wfDebugLog( 'CirrusSearch', 'checking proximity:' . $matches[0] );
 			if ( preg_match( '/[0-9]+/', $matches[ 'trailing' ] ) ) {
 				return $matches[ 0 ];
 			} else {
 				return '"\\~' . $matches[ 'trailing' ];
 			}
 		}, $string );
-		wfDebugLog( 'CirrusSearch', 'Got  ' . $string );
 		return $string;
 	}
 
@@ -489,8 +497,8 @@ class CirrusSearchFullTextResultsType {
 			'fields' => array(
 				'title' => array( 'number_of_fragments' => 0 ),
 				'text' => array( 'number_of_fragments' => 1 ),
-				'redirect.title' => array( 'number_of_fragments' => 1 ),
-				'heading' => array( 'number_of_fragments' => 1),
+				'redirect.title' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
+				'heading' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
 			),
 		);
 	}

@@ -18,7 +18,6 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchMappingConfigBuilder {
-
 	/**
 	 * @return array
 	 */
@@ -36,13 +35,13 @@ class CirrusSearchMappingConfigBuilder {
 		// and is infered anyway.
 		return array(
 			'properties' => array(
-				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ), true ),
-				'text' => $this->buildStringField( 'text', array( 'suggest' ), true ),
+				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ) ),
+				'text' => $this->buildStringField( 'text', array( 'suggest' ) ),
 				'category' => $this->buildLowercaseKeywordField(),
-				'heading' => $this->buildStringField(),
+				'heading' => $this->buildStringField( 'heading' ),
 				'redirect' => array(
 					'properties' => array(
-						'title' => $this->buildStringField( 'title', array( 'suggest' ), true )
+						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),
 				'links' => array(
@@ -59,29 +58,29 @@ class CirrusSearchMappingConfigBuilder {
 
 	/**
 	 * Build a string field that does standard analysis for the language.
-	 * @param $name string|null Name of the field.  Required if extra is not false.
-	 * @param $extra array|null Extra analyzers for this field beyond the basic string type.  If not falsy the
-	 *		field will be a multi_field.
-	 * @param $willHighlight bool Will this field be highlighted?  Defaults to false.
+	 * @param $name string|null Name of the field.
+	 * @param $extra array|null Extra analyzers for this field beyond the basic text and plain.
 	 * @return array definition of the field
 	 */
-	private function buildStringField( $name = null, $extra = null, $willHighlight = false ) {
-		$field = array( 'type' => 'string', 'analyzer' => 'text' );
-		if ( $willHighlight ) {
-			$field[ 'store' ] = true;
-			$field[ 'term_vector' ] = 'with_positions_offsets';
-		}
-		if ( !$extra ) {
-			return $field;
-		}
+	private function buildStringField( $name, $extra = array() ) {
 		$field = array(
 			'type' => 'multi_field',
 			'fields' => array(
-				$name => $field
+				$name => array(
+					'type' => 'string',
+					'analyzer' => 'text',
+					'store' => 'yes',
+					'term_vector' => 'with_positions_offsets',
+				),
+				'plain' => array(
+					'type' => 'string',
+					'analyzer' => 'plain',
+					'term_vector' => 'with_positions_offsets',
+				),
 			)
 		);
 		foreach ( $extra as $extraname ) {
-			$field['fields'][$extraname] = array( 'type' => 'string', 'analyzer' => $extraname );
+			$field[ 'fields' ][ $extraname ] = array( 'type' => 'string', 'analyzer' => $extraname );
 		}
 		return $field;
 	}

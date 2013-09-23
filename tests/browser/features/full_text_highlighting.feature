@@ -41,8 +41,7 @@ Feature: Full text search highlighting
     When I search for rdir
     And *Rdir* is the highlighted alttitle of the first search result
 
-  # Disabled until bug 54278 is fixed
-  # @setup_highlighting
-  # Scenario: The highest scoring redirect is highlighted
-  #   When I search for crazy rdir
-  #   Then *Crazy* *Rdir* is the highlighted alttitle of the first search result
+  @setup_highlighting
+  Scenario: The highest scoring redirect is highlighted
+    When I search for crazy rdir
+    Then *Crazy* *Rdir* is the highlighted alttitle of the first search result

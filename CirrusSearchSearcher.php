@@ -532,8 +532,12 @@ class CirrusSearchResultSet extends SearchResultSet {
 			return null;
 		}
 		$suggest = $suggest[ 'suggest' ];
-		foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
-			return $option;
+		// Elasticsearch will send back the suggest element but no sub suggestion elements if the wiki is empty.
+		// So we should check to see if they exist even though in normal operation they always will.
+		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ] ) ) {
+			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
+				return $option;
+			}
 		}
 		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
 		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ] ) ) {

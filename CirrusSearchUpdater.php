@@ -54,9 +54,12 @@ class CirrusSearchUpdater {
 			return;
 		}
 		$content = $page->getContent();
+		// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
+		self::$updated[] = $id;
 		if ( $content->isRedirect() ) {
 			$target = $content->getUltimateRedirectTarget();
 			if ( $target->equals( $page->getTitle() ) ) {
+				// This doesn't warn about redirect loops longer than one but that is ok.
 				wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
 				return;
 			}
@@ -66,7 +69,6 @@ class CirrusSearchUpdater {
 			self::updateRevisions( array( array(
 				'page' => $page,
 			) ) );
-			self::$updated[] = $id;
 		}
 	}
 

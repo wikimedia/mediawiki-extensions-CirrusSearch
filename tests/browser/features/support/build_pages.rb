@@ -82,6 +82,11 @@ Before('@setup_suggestions') do
       And a page named Noble Somethingelse6 exists with contents noble somethingelse
       And a page named Noble Somethingelse7 exists with contents noble somethingelse
       And a page named Template:Noble Pipe exists with contents pipes are so noble
+      And a page named Rrr Word 1 exists with contents #REDIRECT [[Popular Culture]]
+      And a page named Rrr Word 2 exists with contents #REDIRECT [[Popular Culture]]
+      And a page named Rrr Word 3 exists with contents #REDIRECT [[Noble Somethingelse3]]
+      And a page named Rrr Word 4 exists with contents #REDIRECT [[Noble Somethingelse4]]
+      And a page named Rrr Word 5 exists with contents #REDIRECT [[Noble Somethingelse5]]
     }
     $setup_suggestions = true
   end

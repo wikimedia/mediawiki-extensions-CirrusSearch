@@ -19,8 +19,8 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchSearcher {
-	const PHRASE_TITLE = 'phrase_title';
-	const PHRASE_TEXT = 'phrase_text';
+	const SUGGESTION_NAME_TITLE = 'title';
+	const SUGGESTION_NAME_REDIRECT = 'redirect';
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
@@ -110,8 +110,6 @@ class CirrusSearchSearcher {
 	public function searchText( $term, $showRedirects ) {
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
-		global $wgCirrusSearchPhraseSuggestMaxErrors;
-		global $wgCirrusSearchPhraseSuggestConfidence;
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -164,43 +162,11 @@ class CirrusSearchSearcher {
 
 			$this->suggest = array(
 				'text' => $term,
-				self::PHRASE_TITLE => array(
-					'phrase' => array(
-						'field' => 'title.suggest',
-						'size' => 1,
-						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
-						'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
-						'direct_generator' => array(
-							array(
-								'field' => 'title.suggest',
-								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
-							),
-						),
-						'highlight' => array(
-							'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
-							'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
-						),
-					)
-				),
-				self::PHRASE_TEXT => array(
-					'phrase' => array(
-						'field' => 'text.suggest',
-						'size' => 1,
-						'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
-						'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
-						'direct_generator' => array(
-							array(
-								'field' => 'text.suggest',
-								'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
-							),
-						),
-						'highlight' => array(
-							'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
-							'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
-						),
-					)
-				)
+				self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
 			);
+			if ( $showRedirects ) {
+				$this->suggest[ self::SUGGESTION_NAME_REDIRECT ] = $this->buildSuggestConfig( 'redirect.title.suggest' );
+			}
 		}
 		$this->description = "full text search for '$originalTerm'";
 		return $this->search();
@@ -340,6 +306,34 @@ class CirrusSearchSearcher {
 		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
 		$query->setDefaultOperator( 'AND' );
 		return $query;
+	}
+
+	/**
+	 * Build suggest config for $field.
+	 * @var $field string field to suggest against
+	 * @return array of Elastica configuration
+	 */
+	private function buildSuggestConfig( $field ) {
+		global $wgCirrusSearchPhraseSuggestMaxErrors;
+		global $wgCirrusSearchPhraseSuggestConfidence;
+		return array(
+			'phrase' => array(
+				'field' => $field,
+				'size' => 1,
+				'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
+				'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
+				'direct_generator' => array(
+					array(
+						'field' => $field,
+						'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
+					),
+				),
+				'highlight' => array(
+					'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
+					'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
+				),
+			),
+		);
 	}
 
 	/**
@@ -534,15 +528,18 @@ class CirrusSearchResultSet extends SearchResultSet {
 	private function findSuggestion() {
 		// TODO some kind of weighting?
 		$suggest = $this->result->getResponse()->getData();
-		if ( !array_key_exists( 'suggest', $suggest ) ) {
+		if ( !isset( $suggest[ 'suggest' ] ) ) {
 			return null;
 		}
 		$suggest = $suggest[ 'suggest' ];
-		foreach ( $suggest[ CirrusSearchSearcher::PHRASE_TITLE ][ 0 ][ 'options' ] as $option ) {
+		foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
 			return $option;
 		}
-		foreach ( $suggest[ CirrusSearchSearcher::PHRASE_TEXT ][ 0 ][ 'options' ] as $option ) {
-			return $option;
+		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
+		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ] ) ) {
+			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
+				return $option;
+			}
 		}
 		return null;
 	}

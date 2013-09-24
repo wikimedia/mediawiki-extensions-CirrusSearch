@@ -139,6 +139,21 @@ class CirrusSearchSearcher {
 			},
 			$term
 		);
+		$term = preg_replace_callback(
+				'/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+				function ( $matches ) use ( $showRedirects, &$extraQueryStrings ) {
+					$main = $matches[ 'main' ];
+					if ( isset( $matches[ 'fuzzy' ] ) ) {
+						return $main;
+					} else {
+						$query = join( ' OR ',
+								CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$main" ) );
+						$extraQueryStrings[] = "($query)";
+					}
+					return '';
+				},
+				$term
+		);
 		$this->filters = $filters;
 
 		// Actual text query
@@ -428,7 +443,7 @@ class CirrusSearchSearcher {
 				return $matches[ 'leading' ] . '\\~' . $matches[ 'trailing' ];
 			}
 		}, $string );
-		// Turn bad proximity searches into seraches that contain a ~
+		// Turn bad proximity searches into searches that contain a ~
 		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {
 			if ( preg_match( '/[0-9]+/', $matches[ 'trailing' ] ) ) {
 				return $matches[ 0 ];

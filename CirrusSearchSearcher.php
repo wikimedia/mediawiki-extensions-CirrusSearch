@@ -640,8 +640,15 @@ class CirrusSearchResult extends SearchResult {
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$this->textSnippet = self::escapeHighlightedText( $highlights[ 'text' ][ 0 ] );
 		} else {
+			// This whole thing is a work around for Elasticsearch #1171.
 			list( $contextLines, $contextChars ) = SearchEngine::userHighlightPrefs();
-			$this->initText();
+			// Inittext is forbidden because it uses the default SearchEngine's getTextFromContent.  No good!
+			if ( $this->mRevision != null ) {
+				$this->mText = SearchEngine::create( 'CirrusSearch' )
+					->getTextFromContent( $this->mTitle, $this->mRevision->getContent() );
+			} else {
+				$this->mText = '';
+			}
 			// This is kind of lame because it only is nice for space delimited languages
 			$matches = array();
 			$text = Sanitizer::stripAllTags( $this->mText );

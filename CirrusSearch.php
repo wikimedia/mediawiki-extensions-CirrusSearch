@@ -96,14 +96,14 @@ $dir = __DIR__ . '/';
 /**
  * Classes
  */
-$wgAutoloadClasses['CirrusSearch'] = $dir . 'CirrusSearch.body.php';
-$wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'CirrusSearchAnalysisConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'CirrusSearchConnection.php';
-$wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'CirrusSearchMappingConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'CirrusSearchPrefixSearchHook.php';
-$wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'CirrusSearchSearcher.php';
-$wgAutoloadClasses['CirrusSearchTextFormatter'] = $dir . 'CirrusSearchTextFormatter.php';
-$wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'CirrusSearchUpdater.php';
+$wgAutoloadClasses['CirrusSearch'] = $dir . 'includes/CirrusSearch.body.php';
+$wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'includes/CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'includes/CirrusSearchConnection.php';
+$wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'includes/CirrusSearchMappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'includes/CirrusSearchPrefixSearchHook.php';
+$wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'includes/CirrusSearchSearcher.php';
+$wgAutoloadClasses['CirrusSearchTextFormatter'] = $dir . 'includes/CirrusSearchTextFormatter.php';
+$wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'includes/CirrusSearchUpdater.php';
 
 /**
  * Hooks

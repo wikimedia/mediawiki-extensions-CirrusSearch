@@ -320,6 +320,7 @@ class CirrusSearchSearcher {
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
 		$query->setDefaultOperator( 'AND' );
+		$query->setRewrite( 'constant_score_filter' ); // Work around for Elasticsearch #3754
 		return $query;
 	}
 

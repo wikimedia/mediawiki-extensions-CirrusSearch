@@ -361,6 +361,13 @@ Collegaminde de fore
  #</pre> <!-- lasse sta linèe accume ste -->",
 );
 
+/** Russian (русский)
+ * @author Okras
+ */
+$messages['ru'] = array(
+	'cirrussearch-backend-error' => 'Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.',
+);
+
 /** Swedish (svenska)
  * @author Jopparn
  */

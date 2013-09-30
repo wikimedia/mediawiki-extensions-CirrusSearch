@@ -108,12 +108,11 @@ class CirrusSearchUpdater {
 	/**
 	 * This updates pages in elasticsearch.
 	 *
-	 * @param array $pageData An array of revisions and their pre-processed
-	 * data. The format is as follows:
+	 * @param array $pageData An array of pages. The format is as follows:
 	 *   array(
 	 *     array(
-	 *       'rev' => current revision object
-	 *       'text' => text of the current page
+	 *       'page' => page,
+	 *       'skip-parse' => true, # Don't parse the page, just update link counts.  Optional.
 	 *     )
 	 *   )
 	 */
@@ -179,32 +178,52 @@ class CirrusSearchUpdater {
 	private static function buildDocumentforRevision( $page ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
+
+		$skipParse = isset( $page[ 'skip-parse' ] ) && $page[ 'skip-parse' ];
 		$page = $page[ 'page' ];
 		$title = $page->getTitle();
-		$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
-		$text = SearchEngine::create( 'CirrusSearch' )
-			->getTextFromContent( $title, $page->getContent(), $parserOutput );
 
-		$categories = array();
-		foreach ( $parserOutput->getCategories() as $key => $value ) {
-			$category = Category::newFromName( $key );
-			$categories[] = $category->getTitle()->getText();
-		}
+		$doc = new \Elastica\Document( $page->getId(), array(
+			'namespace' => $title->getNamespace(),
+			'title' => $title->getText(),
+			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
+		) );
 
-		$headings = array();
-		$ignoredHeadings = self::getIgnoredHeadings();
-		foreach ( $parserOutput->getSections() as $heading ) {
-			$heading = $heading[ 'line' ];
-			// Strip tags from the heading or else we'll display them (escaped) in search results
-			$heading = Sanitizer::stripAllTags( $heading );
-			// Note that we don't take the level of the heading into account - all headings are equal.
-			// Except the ones we ignore.
-			if ( !in_array( $heading, $ignoredHeadings ) ) {
-				$headings[] = $heading;
+		if ( $skipParse ) {
+			// Note that if the entry doesn't yet exist on the server this will create it lacking
+			// text, headings, ceategories, and text length.  That _should_ be ok because the page
+			// _should_ be on its way into the index if it isn't already.
+			$doc->setDocAsUpsert( true );
+		} else {
+			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
+			$doc->add( 'text', Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
+				->getTextFromContent( $title, $page->getContent(), $parserOutput ) ) );
+
+			$categories = array();
+			foreach ( $parserOutput->getCategories() as $key => $value ) {
+				$category = Category::newFromName( $key );
+				$categories[] = $category->getTitle()->getText();
 			}
+			$doc->add( 'category', $categories );
+
+			$headings = array();
+			$ignoredHeadings = self::getIgnoredHeadings();
+			foreach ( $parserOutput->getSections() as $heading ) {
+				$heading = $heading[ 'line' ];
+				// Strip tags from the heading or else we'll display them (escaped) in search results
+				$heading = Sanitizer::stripAllTags( $heading );
+				// Note that we don't take the level of the heading into account - all headings are equal.
+				// Except the ones we ignore.
+				if ( !in_array( $heading, $ignoredHeadings ) ) {
+					$headings[] = $heading;
+				}
+			}
+			$doc->add( 'heading', $headings );
+
+			$doc->add( 'textLen', $page->getContent()->getSize() );
 		}
 
-		$links = self::countLinksToTitle( $title );
+		$doc->add( 'links', self::countLinksToTitle( $title ) );
 
 		// Handle redirects to this page
 		$redirectTitles = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
@@ -222,19 +241,8 @@ class CirrusSearchUpdater {
 			// Note that we don't count redirect to redirects here because that seems a bit much.
 			$redirectLinks += self::countLinksToTitle( $redirect );
 		}
-
-		$doc = new \Elastica\Document( $page->getId(), array(
-			'namespace' => $title->getNamespace(),
-			'title' => $title->getText(),
-			'text' => Sanitizer::stripAllTags( $text ),
-			'textLen' => $page->getContent()->getSize(),
-			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-			'category' => $categories,
-			'heading' => $headings,
-			'redirect' => $redirects,
-			'links' => $links,
-			'redirect_links' => $redirectLinks,
-		) );
+		$doc->add( 'redirect', $redirects );
+		$doc->add( 'redirect_links', $redirectLinks );
 
 		wfProfileOut( __METHOD__ );
 		return $doc;
@@ -275,6 +283,10 @@ class CirrusSearchUpdater {
 					"pl_title" => $title->getDBkey() ),
 				__METHOD__
 			);
+			// Looks like $count can come back as a string....
+			if ( is_string( $count ) ) {
+				$count = (int)$count;
+			}
 			if ( is_int( $count ) && $wgCirrusSearchLinkCountCacheTime > 0 ) {
 				$wgMemc->set( $key, $count, $wgCirrusSearchLinkCountCacheTime );
 			}
@@ -284,16 +296,13 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * Update the search index for articles linked from this article.
+	 * Update the search index for articles linked from this article.  Just updates link counts.
 	 * @param $linksUpdate LinksUpdate
 	 */
 	private static function updateLinkedArticles( $linksUpdate ) {
 		// This could be made more efficient by having LinksUpdate return a list of articles who
 		// have been newly linked or newly unlinked.  Those are the only articles that we need
 		// to reindex any way.
-
-		// This could also be made more efficient by only updating the link counts rather than
-		// reindexing the whole article.
 		global $wgCirrusSearchLinkedArticlesToUpdate;
 
 		// Build a big list of candidate pages who's links we should update
@@ -315,15 +324,38 @@ class CirrusSearchUpdater {
 		if ( !is_array( $chosen ) ) {
 			$chosen = array( $chosen );
 		}
+		$pages = array();
 		foreach ( $chosen as $key ) {
-			$title = Title::newFromID( $candidates[ $key ] );
-			// Skip links to non-existant pages.
-			if ( $title === null ) {
+			$page = WikiPage::newFromID( $candidates[ $key ] );
+			if ( $page === null ) {
+				// Skip link to non-existant page.
 				continue;
 			}
-			wfDebugLog( 'CirrusSearch', "Updating $title because it was linked." );
-			self::updateFromTitle( $title );
+			// Resolve one level of redirects because only one level of redirects is scored.
+			if ( $page->isRedirect() ) {
+				$target = $page->getRedirectTarget();
+				if ( $target === null ) {
+					// Skip link to redirect to non-existant page
+					continue;
+				}
+				$page = new WikiPage( $target );
+			}
+			if ( $page->isRedirect() ) {
+				// This is a redirect to a redirect which doesn't count in the search score any way.
+				continue;
+			}
+			if ( in_array( $page->getId(), self::$updated ) ) {
+				// We've already updated this page in this proces so there is no need to update it again.
+				continue;
+			}
+			// Note that we don't add this page to the list of updated pages because this update isn't
+			// a full update (just link counts.)
+			$pages[] = array(
+				'page' => $page,
+				'skip-parse' => true,  // Just update link counts
+			);
 		}
+		self::updateRevisions( $pages );
 	}
 
 	/**

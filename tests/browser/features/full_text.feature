@@ -35,8 +35,7 @@ Feature: Full text search
     | File:Savepage-greyed.png             | File:Savepage-greyed.png is       | not in          | image  |
     | File:Savepage                        | File:Savepage-greyed.png is       | not in          | image  |
     | File:greyed.png                      | File:Savepage-greyed.png is       | not in          | image  |
-    # Bug 52948
-    #| File:greyed                          | File:Savepage-greyed.png is       | not in          | image  |
+    | File:greyed                          | File:Savepage-greyed.png is       | not in          | image  |
     | File:"Screenshot, for test purposes" | File:Savepage-greyed.png is       | not in          | image  |
     # You can't search for text inside a <video> or <audio> tag
     | "JavaScript disabled"                | none is                           | not in          |        |
@@ -269,3 +268,23 @@ Feature: Full text search
   Scenario: Searching for a quoted * actually searches for a *
     When I search for "pick*"
     Then Pick* is the first search result
+
+  @programmer_friendly
+  Scenario Outline: Programmer friendly searches
+    When I search for <term>
+    Then <page> is the first search result
+  Examples:
+    | term                | page                |
+    | namespace aliases   | $wgNamespaceAliases |
+    | namespaceAliases    | $wgNamespaceAliases |
+    | $wgNamespaceAliases | $wgNamespaceAliases |
+    | namespace_aliases   | $wgNamespaceAliases |
+    | NamespaceAliases    | $wgNamespaceAliases |
+    | snake case          | PFSC                |
+    | snakeCase           | PFSC                |
+    | snake_case          | PFSC                |
+    | SnakeCase           | PFSC                |
+    | Pascal Case         | PascalCase          |
+    | pascalCase          | PascalCase          |
+    | pascal_case         | PascalCase          |
+    | PascalCase          | PascalCase          |

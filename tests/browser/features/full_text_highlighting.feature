@@ -60,3 +60,8 @@ Feature: Full text search highlighting
   Scenario: The highest scoring redirect is highlighted
     When I search for crazy rdir
     Then *Crazy* *Rdir* is the highlighted alttitle of the first search result
+
+  @programmer_friendly
+  Scenario: camelCase is highlighted correctly
+    When I search for namespace aliases
+    Then $wg*Namespace**Aliases* is the highlighted title of the first search result

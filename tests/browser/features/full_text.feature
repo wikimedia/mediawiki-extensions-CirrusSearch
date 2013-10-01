@@ -251,7 +251,7 @@ Feature: Full text search
 
   @exact_quotes
   Scenario: Adding a ~ to a phrase stops it from matching stop words
-    When I search for "doesn't actually Contains A Stop Word"~
+    When I search for "doesn't actually Contain A Stop Words"~
     Then Doesn't Actually Contain Stop Words is the first search result
 
   @setup_main @exact_quotes
@@ -288,3 +288,16 @@ Feature: Full text search
     | pascalCase          | PascalCase          |
     | pascal_case         | PascalCase          |
     | PascalCase          | PascalCase          |
+
+  @stemmer
+  Scenario Outline: Stemming works as expected
+    When I search for StemmerTest <term>
+    Then <result> is the first search result
+  Examples:
+    |   term   |        result        |
+    | aliases  | StemmerTest Aliases  |
+    | alias    | StemmerTest Aliases  |
+    | used     | StemmerTest Used     |
+    | uses     | StemmerTest Used     |
+    | use      | StemmerTest Used     |
+    | us       | none                 |

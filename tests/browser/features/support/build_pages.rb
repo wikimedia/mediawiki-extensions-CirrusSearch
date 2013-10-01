@@ -150,3 +150,13 @@ Before('@programmer_friendly') do
     $programmer_friendly = true
   end
 end
+
+Before('@stemmer') do
+  if !$stemmer
+    steps %Q{
+      Given a page named StemmerTest Aliases exists
+      And a page named StemmerTest Used exists
+    }
+  end
+  $stemmer = true
+end

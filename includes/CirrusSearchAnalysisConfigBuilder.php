@@ -84,6 +84,11 @@ class CirrusSearchAnalysisConfigBuilder {
 				),
 				'lowercase' => array(
 					'type' => 'lowercase',
+				),
+
+				'aggressive_splitting' => array(
+					'type' => 'word_delimiter',
+					'stem_english_possessive' => 'false', // No need
 				)
 			),
 			'tokenizer' => array(
@@ -102,6 +107,7 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
+		global $wgCirrusSearchUseAggressiveSplitting;
 		switch ( $this->language ) {
 		// Please add languages in alphabetical order.
 		case 'el':
@@ -116,8 +122,19 @@ class CirrusSearchAnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'filter' => array( 'standard', 'possessive_english', 'lowercase', 'stop', 'porter_stem', 'asciifolding' )
 			);
+			$filters = array();
+			$filters[] = 'standard';
+			if ( $wgCirrusSearchUseAggressiveSplitting ) {
+				$filters[] = 'aggressive_splitting';
+			}
+			$filters[] = 'possessive_english';
+			$filters[] = 'lowercase';
+			$filters[] = 'stop';
+			$filters[] = 'porter_stem';
+			$filters[] = 'asciifolding';
+			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
+
 			// Add asciifolding to the the text_plain analyzer as well
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
 			// Add asciifolding to the prefix queries and incategory filters

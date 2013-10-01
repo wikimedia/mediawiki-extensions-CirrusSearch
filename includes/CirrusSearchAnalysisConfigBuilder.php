@@ -131,7 +131,7 @@ class CirrusSearchAnalysisConfigBuilder {
 			$filters[] = 'possessive_english';
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';
-			$filters[] = 'porter_stem';
+			$filters[] = 'kstem';
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 

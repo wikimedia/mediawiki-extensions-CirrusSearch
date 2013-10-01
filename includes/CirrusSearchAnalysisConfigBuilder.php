@@ -54,7 +54,7 @@ class CirrusSearchAnalysisConfigBuilder {
 					// Surprisingly, the Lucene docs claim this works for
 					// Chinese, Japanese, and Thai as well.
 					// The difference between this and the 'standard'
-					// analzyer is the lack of english stop words.
+					// analyzer is the lack of english stop words.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' )

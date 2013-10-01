@@ -283,7 +283,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 		} else {
 			foreach ( $status->getIndicesWithAlias( $specificAliasName ) as $index ) {
-				if( $index->getName() === $this->getSpecificIndexName() ) {
+				if( $this->getName() === $this->getSpecificIndexName() ) {
 					$this->output( "ok\n" );
 					return;
 				} else {
@@ -338,7 +338,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return;
 			}
 		} else {
-			foreach ( $status->getIndicesWithAlias( $allAliasName ) as $index ) {
+			foreach ( $this->getIndicesWithAlias( $allAliasName ) as $index ) {
 				if( $index->getName() === $this->getSpecificIndexName() ) {
 					$this->output( "ok\n" );
 					return;
@@ -529,6 +529,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function getReplicaCount() {
 		global $wgCirrusSearchContentReplicaCount;
 		return $wgCirrusSearchContentReplicaCount[ $this->indexType ];
+	}
+
+	/**
+	 * Get indecies with the named alias.  Doesn't use Elastica's status->getIndicesWithAlias because
+	 * that feches index status from _every_ index.
+	 *
+	 * @var $alias string alias name
+	 * @return array(\Elastica\Index) of index names
+	 */
+	private function getIndicesWithAlias( $alias ) {
+		$client = CirrusSearchConnection::getClient();
+		$response = $client->request( "/_alias/$alias" );
+		if ( $response->hasError() ) {
+			$this->error( 'Error fetching indecies with alias:  ' . $response->getError() );
+		}
+		$result = array();
+		foreach ( $response->getData() as $name => $info ) {
+			$result[] = new \Elastica\Index($client, $name);
+		}
+		return $result;
 	}
 }
 

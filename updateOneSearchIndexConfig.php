@@ -77,7 +77,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'reindexAndRemoveOk', "If the alias is held by another index then " .
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  You'll have to redo all updates ".
-			"performed during this operation manually.  Defaults to false.");
+			"performed during this operation manually.  Defaults to false." );
 	}
 
 	public function execute() {
@@ -266,18 +266,34 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		$this->output( $this->indent . "\tValidating $this->indexType alias..." );
 		$otherIndeciesWithAlias = array();
-		foreach ( CirrusSearchConnection::getClient()->getStatus()->getIndicesWithAlias(
-				$this->getIndexTypeName() ) as $index ) {
-			if( $index->getName() === $this->getSpecificIndexName() ) {
-				$this->output( "ok\n" );
-				return;
+		$specificAliasName = $this->getIndexTypeName();
+		$status = CirrusSearchConnection::getClient()->getStatus();
+		if ( $status->indexExists( $specificAliasName ) ) {
+			$this->output( "is an index..." );
+			if ( $this->rebuild ) {
+				CirrusSearchConnection::getClient()->getIndex( $specificAliasName )->delete();
+				$this->output( "index removed..." );
 			} else {
-				$otherIndeciesWithAlias[] = $index->getName();
+				$this->output( "cannot correct!\n" );
+				$this->error(
+					"There is currently an index with the name of the alias.  Rerun this\n" .
+					"script with --rebuild and it'll remove the index and continue.\n" );
+				$this->returnCode = 1;
+				return;
+			}
+		} else {
+			foreach ( $status->getIndicesWithAlias( $specificAliasName ) as $index ) {
+				if( $index->getName() === $this->getSpecificIndexName() ) {
+					$this->output( "ok\n" );
+					return;
+				} else {
+					$otherIndeciesWithAlias[] = $index->getName();
+				}
 			}
 		}
 		if ( !$otherIndeciesWithAlias ) {
 			$this->output( "alias is free..." );
-			$this->getIndex()->addAlias( $this->getIndexTypeName(), false );
+			$this->getIndex()->addAlias( $specificAliasName, false );
 			$this->output( "corrected\n" );
 			return;
 		}
@@ -290,7 +306,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->reindex();
 			$this->indent = $saveIndent;
 			$this->output( $this->indent . "\tSwapping alias...");
-			$this->getIndex()->addAlias( $this->getIndexTypeName(), true );
+			$this->getIndex()->addAlias( $specificAliasName, true );
 			$this->output( "done\n" );
 			$this->removeIndecies = $otherIndeciesWithAlias;
 			return;
@@ -307,11 +323,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	public function validateAllAlias() {
 		$this->output( $this->indent . "\tValidating all alias..." );
 		$allAliasName = CirrusSearchConnection::getIndexName();
-		foreach ( CirrusSearchConnection::getClient()->getStatus()
-				->getIndicesWithAlias( $allAliasName ) as $index ) {
-			if( $index->getName() === $this->getSpecificIndexName() ) {
-				$this->output( "ok\n" );
+		$status = CirrusSearchConnection::getClient()->getStatus();
+		if ( $status->indexExists( $allAliasName ) ) {
+			$this->output( "is an index..." );
+			if ( $this->rebuild ) {
+				CirrusSearchConnection::getClient()->getIndex( $allAliasName )->delete();
+				$this->output( "index removed..." );
+			} else {
+				$this->output( "cannot correct!\n" );
+				$this->error(
+					"There is currently an index with the name of the alias.  Rerun this\n" .
+					"script with --rebuild and it'll remove the index and continue.\n" );
+				$this->returnCode = 1;
 				return;
+			}
+		} else {
+			foreach ( $status->getIndicesWithAlias( $allAliasName ) as $index ) {
+				if( $index->getName() === $this->getSpecificIndexName() ) {
+					$this->output( "ok\n" );
+					return;
+				}
 			}
 		}
 		$this->output( "alias not already assigned to this index..." );

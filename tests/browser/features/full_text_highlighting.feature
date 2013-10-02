@@ -18,22 +18,25 @@ Feature: Full text search highlighting
     # Verify highlighting the presence of accent squashing
     | Africa test                | *África*                 | for *testing*                                    |
     # Verify highlighting on large pages (Bug 52680).  It is neat to see that the stopwords aren't highlighted.
-    # Bug 54526
-    # | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems* of *social* and *cultural importance*. During the caliphate of |
+    | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
     | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems* of *social* and *cultural importance*. During the caliphate of |
+
+  @setup_headings
+  Scenario: Found words are highlighted in headings
+    When I search for "i am a heading"
+    Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
+
+  @setup_highlighting
+  Scenario: Found words are highlighted in headings and text even in large documents
+    When I search for "Succession of Umar"
+    Then *Succession* *of* *Umar* is the highlighted alttitle of the first search result
+    And *Succession of Umar* is in the highlighted text of the first search result
 
   # Bug 54526
   # @setup_headings
-  # Scenario: Found words are highlighted in headings
-  #   When I search for "i am a heading"
-  #   Then *I* *am* a *heading* is the highlighted alttitle of the first search result
-
-  # Bug 54526
-  # @setup_highlighting
-  # Scenario: Found words are highlighted in headings and text even in large documents
-  #   When I search for "Succession of Umar"
-  #   Then *Succession* of *Umar* is the highlighted alttitle of the first search result
-  #   And *Succession* of *Umar* is in the highlighted text of the first search result
+  # Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase
+  #   When I search for "i am a" heading
+  #   Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
 
   @setup_headings
   Scenario: Found words are highlighted in headings when searching for a non-strict phrase

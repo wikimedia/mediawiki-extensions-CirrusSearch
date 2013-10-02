@@ -509,6 +509,10 @@ class CirrusSearchFullTextResultsType {
 				'text' => array( 'number_of_fragments' => 1 ),
 				'redirect.title' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
 				'heading' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
+				'title.plain' => array( 'number_of_fragments' => 0 ),
+				'text.plain' => array( 'number_of_fragments' => 1 ),
+				'redirect.title.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
+				'heading.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
 			),
 		);
 	}
@@ -637,6 +641,11 @@ class CirrusSearchResult extends SearchResult {
 		$title = Title::makeTitle( $result->namespace, $result->title );
 		$this->initFromTitle( $title );
 		$highlights = $result->getHighlights();
+		// Hack for https://github.com/elasticsearch/elasticsearch/issues/3750
+		$highlights = $this->swapInPlainHighlighting( $highlights, 'title' );
+		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
+		$highlights = $this->swapInPlainHighlighting( $highlights, 'text' );
+		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = '';
 			if ( $title->getNamespace() !== 0 ) {
@@ -680,6 +689,19 @@ class CirrusSearchResult extends SearchResult {
 			$this->sectionSnippet = '';
 			$this->sectionTitle = null;
 		}
+	}
+
+	/**
+	 * Swap plain highlighting into the highlighting field if there isn't any normal highlighting.
+	 * @var $highlights array of highlighting results
+	 * @var $name string normal field name
+	 * @return $highlights with $name replaced with plain field results if $name isn't in $highlights
+	 */
+	private function swapInPlainHighlighting( $highlights, $name ) {
+		if ( !isset( $highlights[ $name ] ) && isset( $highlights[ "$name.plain" ] ) ) {
+			$highlights[ $name ] = $highlights[ "$name.plain" ];
+		}
+		return $highlights;
 	}
 
 	/**

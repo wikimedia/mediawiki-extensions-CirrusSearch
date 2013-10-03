@@ -37,6 +37,11 @@ $wgExtensionCredits['other'][] = array(
 // ElasticSearch servers
 $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 
+// How many times to attempt connecting to a given server
+// If you're behind LVS and everything looks like one server,
+// you may want to reattempt 2 or 3 times.
+$wgCirrusSearchConnectionAttempts = 1;
+
 // Number of shards for each index
 $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 

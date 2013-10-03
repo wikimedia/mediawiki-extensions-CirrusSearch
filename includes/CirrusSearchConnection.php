@@ -38,12 +38,6 @@ class CirrusSearchConnection extends ElasticaConnection {
 	const PAGE_TYPE_NAME = 'page';
 
 	/**
-	 * Singleton instance of the client
-	 * @var \Elastica\Client
-	 */
-	private static $client = null;
-
-	/**
 	 * @return array(string)
 	 */
 	public static function getServerList() {
@@ -51,8 +45,21 @@ class CirrusSearchConnection extends ElasticaConnection {
 		return $wgCirrusSearchServers;
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function getIndexBaseName() {
 		return wfWikiId();
+	}
+
+	/**
+	 * How many times can we attempt to connect per host?
+	 *
+	 * @return int
+	 */
+	public function getMaxConnectionAttempts() {
+		global $wgCirrusSearchConnectionAttempts;
+		return $wgCirrusSearchConnectionAttempts;
 	}
 
 	/**

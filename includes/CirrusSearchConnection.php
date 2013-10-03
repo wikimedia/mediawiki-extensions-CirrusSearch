@@ -40,7 +40,7 @@ class CirrusSearchConnection extends ElasticaConnection {
 	/**
 	 * @return array(string)
 	 */
-	public static function getServerList() {
+	public function getServerList() {
 		global $wgCirrusSearchServers;
 		return $wgCirrusSearchServers;
 	}
@@ -48,7 +48,7 @@ class CirrusSearchConnection extends ElasticaConnection {
 	/**
 	 * @return string
 	 */
-	public static function getIndexBaseName() {
+	public function getIndexBaseName() {
 		return wfWikiId();
 	}
 

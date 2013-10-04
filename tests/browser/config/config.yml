@@ -1,6 +1,3 @@
-mediawiki_username: Selenium_user
-mediawiki_password: selenium123
-
 chrome:
   name: chrome
   platform: Linux

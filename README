@@ -16,12 +16,12 @@ There are other $wgCirrusSearch variables that you might want to change from the
 If you want to change them then set their new values with $wgCirrusSearchServers in LocalSettings.php.
 
 Now run this script to generate your elasticsearch index:
- php maintenance/updateSearchConfig.php
+ php ./maintenance/updateSearchIndexConfig.php
 
 Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to elasticsearch.
 
 Next bootstrap the search index by running:
- php maintenance/forceSearchIndex.php
+ php ./maintenance/forceSearchIndex.php
 Note that this can take some time.  For large wikis read Bootstrapping large wikis below.
 
 Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
@@ -50,8 +50,8 @@ If for some reason in process updates to elasticsearch begin failing you can imm
 set "$wgDisableSearchUpdate = true;" in your LocalSettings.php file to
 stop trying to update elasticsearch.  Once you figure out what is wrong with elasticsearch you
 should turn those updates back on and then run the following:
-php maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
-php maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
+php ./maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format> --deletes
+php ./maintenance/forceSearchIndex.php --from <whenever the outage started in ISO 8601 format>
 
 The first command picks up all the deletes that occurred during the outage and
 should complete quite quickly.  The second command picks up all the updates

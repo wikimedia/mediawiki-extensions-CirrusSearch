@@ -6,7 +6,9 @@ Installation
 ------------
 Fetch this plugin plugin into your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
+You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:
+ require_once( "$IP/extensions/Elastica/Elastica.php" );
  require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
  $wgDisableSearchUpdate = true;
 

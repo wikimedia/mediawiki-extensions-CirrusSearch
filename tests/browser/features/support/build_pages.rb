@@ -160,3 +160,16 @@ Before('@stemmer') do
   end
   $stemmer = true
 end
+
+Before('@prefix_filter') do
+  if !$prefix_filter
+    steps %Q{
+      Given a page named Prefix Test exists
+      And a page named Foo Prefix Test exists with contents [[Prefix Test]]
+      And a page named Prefix Test/AAAA exists with contents [[Prefix Test]]
+      And a page named Prefix Test AAAA exists with contents [[Prefix Test]]
+      And a page named Talk:Prefix Test exists with contents [[Prefix Test]]
+    }
+  end
+  $prefix_filter = true
+end

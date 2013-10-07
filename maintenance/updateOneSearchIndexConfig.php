@@ -81,33 +81,39 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		$this->indexType = $this->getOption( 'indexType' );
-		if ( $this->indexType !== CirrusSearchConnection::CONTENT_INDEX_TYPE &&
-				$this->indexType !== CirrusSearchConnection::GENERAL_INDEX_TYPE ) {
-			$this->error( 'indexType option must be ' . CirrusSearchConnection::CONTENT_INDEX_TYPE .
-				' or ' . CirrusSearchConnection::GENERAL_INDEX_TYPE, 1 );
-		}
-		$this->indent = $this->getOption( 'indent', '' );
-		if ( $this->getOption( 'forceOpen', false ) ) {
-			$this->getIndex()->open();
-			return;
-		}
-		if ( $this->getOption( 'forceReindex', false ) ) {
-			$this->reindex();
-			return;
-		}
-		$this->rebuild = $this->getOption( 'rebuild', false );
-		$this->closeOk = $this->getOption( 'closeOk', false );
-		$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
-		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
+		try{
+			$this->indexType = $this->getOption( 'indexType' );
+			if ( $this->indexType !== CirrusSearchConnection::CONTENT_INDEX_TYPE &&
+					$this->indexType !== CirrusSearchConnection::GENERAL_INDEX_TYPE ) {
+				$this->error( 'indexType option must be ' . CirrusSearchConnection::CONTENT_INDEX_TYPE .
+					' or ' . CirrusSearchConnection::GENERAL_INDEX_TYPE, 1 );
+			}
+			$this->indent = $this->getOption( 'indent', '' );
+			if ( $this->getOption( 'forceOpen', false ) ) {
+				$this->getIndex()->open();
+				return;
+			}
+			if ( $this->getOption( 'forceReindex', false ) ) {
+				$this->reindex();
+				return;
+			}
+			$this->rebuild = $this->getOption( 'rebuild', false );
+			$this->closeOk = $this->getOption( 'closeOk', false );
+			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
+			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 
-		$this->validateIndex();
-		$this->validateAnalyzers();
-		$this->validateMapping();
-		$this->validateAlias();
+			$this->validateIndex();
+			$this->validateAnalyzers();
+			$this->validateMapping();
+			$this->validateAlias();
 
-		if ( $this->closed ) {
-			$this->getIndex()->open();
+			if ( $this->closed ) {
+				$this->getIndex()->open();
+			}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$message = $e->getMessage();
+			$this->output( "Unexpected Elasticsearch failure.\n" );
+			$this->error( "Elasticsearch failed at an unexpected place.  Here is Elasticsearch's error message: $message\n", 1 );
 		}
 		if ( $this->returnCode ) {
 			die( $this->returnCode );

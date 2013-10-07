@@ -44,6 +44,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	// steps.
 	private $removeIndecies = false;
 
+	/**
+	 * @var are there too few replicas in the index we're making?
+	 */
+	private $tooFewReplicas = false;
+
+	/**
+	 * @var number of processes to use when reindexing
+	 */
+	private $reindexProcesses;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
@@ -78,6 +88,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  You'll have to redo all updates ".
 			"performed during this operation manually.  Defaults to false." );
+		$maintenance->addOption( 'reindexProcesses', 'Number of processess to use in reindex.  ' .
+			'Not supported on Windows.  Defaults to 1 on Windows and 10 otherwise.', false, true );
 	}
 
 	public function execute() {
@@ -101,6 +113,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->closeOk = $this->getOption( 'closeOk', false );
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
+			$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
 
 			$this->validateIndex();
 			$this->validateAnalyzers();
@@ -134,10 +147,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			return;
 		}
 		$this->output( $this->indent . "Index exists so validating...\n" );
+		$this->validateIndexSettings();
+	}
+
+	private function validateIndexSettings() {
 		$settings = $this->getIndex()->getSettings()->get();
 
 		$this->output( $this->indent . "\tValidating number of shards..." );
-		$actualShardCount = $settings['index.number_of_shards'];
+		$actualShardCount = $settings[ 'index.number_of_shards' ];
 		if ( $actualShardCount == $this->getShardCount() ) {
 			$this->output( "ok\n" );
 		} else {
@@ -151,7 +168,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		$this->output( $this->indent . "\tValidating number of replicas..." );
-		$actualReplicaCount = $settings['index.number_of_replicas'];
+		$actualReplicaCount = $settings[ 'index.number_of_replicas' ];
 		if ( $actualReplicaCount == $this->getReplicaCount() ) {
 			$this->output( "ok\n" );
 		} else {
@@ -289,8 +306,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 		} else {
 			foreach ( $status->getIndicesWithAlias( $specificAliasName ) as $index ) {
-				if( $this->getName() === $this->getSpecificIndexName() ) {
+				if( $index->getName() === $this->getSpecificIndexName() ) {
 					$this->output( "ok\n" );
+					if ( $this->tooFewReplicas ) {
+						$this->validateIndexSettings();
+					}
 					return;
 				} else {
 					$otherIndeciesWithAlias[] = $index->getName();
@@ -301,16 +321,40 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "alias is free..." );
 			$this->getIndex()->addAlias( $specificAliasName, false );
 			$this->output( "corrected\n" );
+			if ( $this->tooFewReplicas ) {
+				$this->validateIndexSettings();
+			}
 			return;
 		}
 		if ( $this->reindexAndRemoveOk ) {
 			$this->output( "is taken...\n" );
-			$this->output( $this->indent . "\tReindexing...\n");
+			$this->output( $this->indent . "\tReindexing...\n" );
 			// Muck with $this->indent because reindex is used to running at the top level.
 			$saveIndent = $this->indent;
 			$this->indent = $this->indent . "\t\t";
 			$this->reindex();
 			$this->indent = $saveIndent;
+			if ( $this->tooFewReplicas ) {
+				// Optimize the index so it'll be more compact for replication.  Not required
+				// but should be helpful.
+				$this->output( $this->indent . "\tOptimizing..." );
+				$this->getIndex()->optimize( array( 'max_num_segments' => 5 ) );
+				$this->output( "Done\n" );
+				$this->validateIndexSettings();
+				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
+				$each = 0;
+				while ( true ) {
+					$unstarted = $this->indexShardsUnstarted();
+					if ( $each === 0 ) {
+						$this->output( $this->indent . "\t\t$unstarted remaining\n" );
+					}
+					if ( $unstarted === 0 ) {
+						break;
+					}
+					$each = ( $each + 1 ) % 20;
+					sleep( 1 );
+				}
+			}
 			$this->output( $this->indent . "\tSwapping alias...");
 			$this->getIndex()->addAlias( $specificAliasName, true );
 			$this->output( "done\n" );
@@ -324,6 +368,21 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"--reindexAndRemoveOk.  Make sure you understand the consequences of either\n" .
 			"choice." );
 		$this->returnCode = 1;
+	}
+
+	private function indexShardsUnstarted() {
+		$data = $this->getIndex()->getStatus()->getData();
+		$count = 0;
+		foreach ( $data[ 'indices' ] as $index ) {
+			foreach ( $index[ 'shards' ] as $shard ) {
+				foreach ( $shard as $replica ) {
+					if ( $replica[ 'state' ] !== 'STARTED' ) {
+						$count++;
+					}
+				}
+			}
+		}
+		return $count;
 	}
 
 	public function validateAllAlias() {
@@ -385,46 +444,111 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * reparsing everything.
 	 */
 	private function reindex() {
-		$query = new Elastica\Query();
-		$query->setFields( array( '_id', '_source' ) );
-
-		// Note here we dump from the current index (using the alias) so we can use CirrusSearchConnection::getPageType
-		$result = CirrusSearchConnection::getPageType( $this->indexType )->search( $query, array(
-			'search_type' => 'scan',
-			'scroll' => '10m',
-			'size'=> $this->reindexChunkSize / $this->getShardCount()
+		$settings = $this->getIndex()->getSettings();
+		$settings->set( array(
+			'refresh_interval' => -1,           // This is supposed to help with bulk index io load.
+			'merge.policy.merge_factor' => 20,  // This is supposed to help with bulk index io load.
 		) );
-		$totalDocsToReindex = $result->getResponse()->getData();
-		$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
-		$this->output( $this->indent . "About to reindex $totalDocsToReindex documents\n" );
-		$operationStartTime = microtime( true );
-		$completed = 0;
 
-		while ( true ) {
-			wfProfileIn( __METHOD__ . '::receiveDocs' );
-			$result = $this->getIndex()->search( array(), array(
-				'scroll_id' => $result->getResponse()->getScrollId(),
-				'scroll' => '10m'
-			) );
-			wfProfileOut( __METHOD__ . '::receiveDocs' );
-			if ( !$result->count() ) {
-				$this->output( $this->indent . "All done\n" );
+		if ( $this->reindexProcesses > 1 ) {
+			$fork = new CirrusSearchReindexForkController( $this->reindexProcesses );
+			$forkResult = $fork->start();
+			switch ( $forkResult ) {
+			case 'child':
+				$this->reindexInternal( $this->reindexProcesses, $fork->childNumber );
+				die( 0 );
+			case 'done':
 				break;
+			default:
+				$this->error( "Unexpected result while forking:  $forkResult", 1 );
 			}
-			wfProfileIn( __METHOD__ . '::packageDocs' );
-			$documents = array();
-			while ( $result->current() ) {
-				$documents[] = new \Elastica\Document( $result->current()->getId(), $result->current()->getSource() );
-				$result->next();
+
+			$this->output( $this->indent . "Verifying counts..." );
+			$oldCount = CirrusSearchConnection::getPageType( $this->indexType )->count();
+			$this->getIndex()->refresh();
+			$newCount = $this->getPageType()->count();
+			if ( $oldCount !== $newCount ) {
+				$this->output( "Different!  Expected $oldCount but got $newCount\n" );
+				$this->error( "Failed to load index.  Expected $oldCount but got $newCount.  Check for warnings above.", 1 );
 			}
-			wfProfileOut( __METHOD__ . '::packageDocs' );
-			wfProfileIn( __METHOD__ . '::sendDocs' );
-			$updateResult = $this->getPageType()->addDocuments( $documents );
-			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
-			wfProfileOut( __METHOD__ . '::sendDocs' );
-			$completed += $result->count();
-			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-			$this->output( $this->indent . "Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
+			$this->output( "done\n" );
+		} else {
+			$this->reindexInternal( 1, 1 );
+		}
+
+		// Revert settings changed just for reindexing
+		$settings->set( array(
+			'refresh_interval' => '1s',
+			'merge.policy.merge_factor' => 10,
+		) );
+	}
+
+	private function reindexInternal( $children, $childNumber ) {
+		$filter = null;
+		$messagePrefix = "";
+		if ( $childNumber === 1 && $children === 1 ) {
+			$this->output( $this->indent . "Starting single process reindex\n" );
+		} else {
+			if ( $childNumber >= $children ) {
+				$this->error( "Invalid parameters - childNumber >= children ($childNumber >= $children) ", 1 );
+			}
+			$messagePrefix = "[$childNumber] ";
+			$this->output( $this->indent . $messagePrefix . "Starting child process reindex\n" );
+			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
+			$filter = new Elastica\Filter\Script(
+				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
+		}
+		try {
+			$query = new Elastica\Query();
+			$query->setFields( array( '_id', '_source' ) );
+			if ( $filter ) {
+				$query->setFilter( $filter );
+			}
+
+			// Note here we dump from the current index (using the alias) so we can use CirrusSearchConnection::getPageType
+			$result = CirrusSearchConnection::getPageType( $this->indexType )->search( $query, array(
+				'search_type' => 'scan',
+				'scroll' => '1h',
+				'size'=> $this->reindexChunkSize / $this->getShardCount()
+			) );
+			$totalDocsToReindex = $result->getResponse()->getData();
+			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
+			$this->output( $this->indent . $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
+			$operationStartTime = microtime( true );
+			$completed = 0;
+			while ( true ) {
+				wfProfileIn( __METHOD__ . '::receiveDocs' );
+				$result = $this->getIndex()->search( array(), array(
+					'scroll_id' => $result->getResponse()->getScrollId(),
+					'scroll' => '1h'
+				) );
+				wfProfileOut( __METHOD__ . '::receiveDocs' );
+				if ( !$result->count() ) {
+					$this->output( $this->indent . $messagePrefix . "All done\n" );
+					break;
+				}
+				wfProfileIn( __METHOD__ . '::packageDocs' );
+				$documents = array();
+				while ( $result->current() ) {
+					$document = new \Elastica\Document( $result->current()->getId(), $result->current()->getSource() );
+					$document->setOpType( 'create' );
+					$documents[] = $document;
+					$result->next();
+				}
+				wfProfileOut( __METHOD__ . '::packageDocs' );
+				wfProfileIn( __METHOD__ . '::sendDocs' );
+				$updateResult = $this->getPageType()->addDocuments( $documents );
+				wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
+				wfProfileOut( __METHOD__ . '::sendDocs' );
+				$completed += $result->count();
+				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+				$this->output( $this->indent . $messagePrefix .
+					"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
+			}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
+			wfLogWarning( "Search backend error during reindex.  Error message is:  " . $e->getMessage() );
+			die( 1 );
 		}
 	}
 
@@ -432,11 +556,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
-				'number_of_replicas' => $this->getReplicaCount(),
+				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
 				'analysis' => CirrusSearchAnalysisConfigBuilder::build(),
+				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 			)
 		), $rebuild );
 		$this->closeOk = false;
+		$this->tooFewReplicas = $this->reindexAndRemoveOk;
 	}
 
 	private function closeAndCorrect( $callback ) {

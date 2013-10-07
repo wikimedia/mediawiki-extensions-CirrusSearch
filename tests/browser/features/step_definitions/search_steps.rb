@@ -1,5 +1,5 @@
-Given(/^I am at the search results page$/) do
-  visit SearchResultsPage
+Given(/^I am at the search results page(?: with the search (.+?)(?: and the prefix (.+))?)?$/) do |search, prefix|
+  visit(SearchResultsPage, using_params: {search: search, prefix: prefix})
 end
 
 When(/^I type (.+) into the search box$/) do |search_term|

@@ -90,12 +90,7 @@ class CirrusSearchSearcher {
 		}
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
-		$match = new \Elastica\Query\Match();
-		$match->setField( 'title.prefix', array(
-			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
-			'analyzer' => 'lowercase_keyword',
-		) );
-		$this->filters[] = new \Elastica\Filter\Query( $match );
+		$this->filters[] = $this->buildPrefixFilter( $search );
 		$this->description = "prefix search for '$search'";
 		$this->buildFullTextResults = false;
 		return $this->search();
@@ -115,6 +110,23 @@ class CirrusSearchSearcher {
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
 		$extraQueryStrings = array();
+		// Handle title prefix notation
+		$prefixPos = strpos( $term, 'prefix:' );
+		if ( $prefixPos !== false ) {
+			$value = substr( $term, 7 + $prefixPos );
+			if ( strlen( $value ) > 0 ) {
+				$term = substr( $term, 0, max( 0, $prefixPos - 1 ) );
+				// Suck namespaces out of $value
+				$cirrusSearchEngine = new CirrusSearch();
+				$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
+				$this->namespaces = $cirrusSearchEngine->namespaces;
+				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
+				if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
+					$this->filters[] = $this->buildPrefixFilter( $value );
+				}
+			}
+		}
+		//Handle other filters
 		$filters = $this->filters;
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
@@ -394,6 +406,15 @@ class CirrusSearchSearcher {
 		return $needsContent ?
 			CirrusSearchConnection::CONTENT_INDEX_TYPE :
 			CirrusSearchConnection::GENERAL_INDEX_TYPE;
+	}
+
+	private function buildPrefixFilter( $search ) {
+		$match = new \Elastica\Query\Match();
+		$match->setField( 'title.prefix', array(
+			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
+			'analyzer' => 'lowercase_keyword',
+		) );
+		return new \Elastica\Filter\Query( $match );
 	}
 
 	/**

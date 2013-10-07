@@ -91,4 +91,16 @@ class CirrusSearch extends SearchEngine {
 	public function normalizeText( $string ) {
 		return $string;
 	}
+
+	/**
+	 * Merge the prefix into the query (if any).
+	 * @var $term string search term
+	 */
+	public function transformSearchTerm( $term ) {
+		if ( $this->prefix != '' ) {
+			// Slap the standard prefix notation onto the query
+			$term = $term . ' prefix:' . $this->prefix;
+		}
+		return $term;
+	}
 }

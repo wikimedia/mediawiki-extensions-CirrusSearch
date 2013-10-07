@@ -101,18 +101,19 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 // Changing it requires an in place reindex to take effect.  Currently only available in English.
 $wgCirrusSearchUseAggressiveSplitting = true;
 
-$dir = __DIR__ . '/';
+$includes = __DIR__ . "/includes/";
 /**
  * Classes
  */
-$wgAutoloadClasses['CirrusSearch'] = $dir . 'includes/CirrusSearch.body.php';
-$wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $dir . 'includes/CirrusSearchAnalysisConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchConnection'] = $dir . 'includes/CirrusSearchConnection.php';
-$wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $dir . 'includes/CirrusSearchMappingConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $dir . 'includes/CirrusSearchPrefixSearchHook.php';
-$wgAutoloadClasses['CirrusSearchSearcher'] = $dir . 'includes/CirrusSearchSearcher.php';
-$wgAutoloadClasses['CirrusSearchTextFormatter'] = $dir . 'includes/CirrusSearchTextFormatter.php';
-$wgAutoloadClasses['CirrusSearchUpdater'] = $dir . 'includes/CirrusSearchUpdater.php';
+$wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.body.php';
+$wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $includes . 'CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnection.php';
+$wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $includes . 'CirrusSearchPrefixSearchHook.php';
+$wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
+$wgAutoloadClasses['CirrusSearchSearcher'] = $includes . 'CirrusSearchSearcher.php';
+$wgAutoloadClasses['CirrusSearchTextFormatter'] = $includes . 'CirrusSearchTextFormatter.php';
+$wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php';
 
 /**
  * Hooks
@@ -123,7 +124,7 @@ $wgHooks['LinksUpdateComplete'][] = 'CirrusSearchUpdater::linksUpdateCompletedHo
 /**
  * i18n
  */
-$wgExtensionMessagesFiles['CirrusSearch'] = $dir . 'CirrusSearch.i18n.php';
+$wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
 
 
 /**

@@ -124,9 +124,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->getIndex()->open();
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$type = get_class( $e );
 			$message = $e->getMessage();
+			$trace = $e->getTraceAsString();
 			$this->output( "Unexpected Elasticsearch failure.\n" );
-			$this->error( "Elasticsearch failed at an unexpected place.  Here is Elasticsearch's error message: $message\n", 1 );
+			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
+				"Error type: $type\n" .
+				"Message: $message\n" .
+				"Trace:\n" . $trace, 1 );
 		}
 		if ( $this->returnCode ) {
 			die( $this->returnCode );
@@ -672,7 +677,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getIndicesWithAlias( $alias ) {
 		$client = CirrusSearchConnection::getClient();
-		$response = $client->request( "/_alias/$alias" );
+		$response = null;
+		try {
+			$response = $client->request( "/_alias/$alias" );
+		} catch ( \Elastica\Exception\ResponseException $e ) {
+			$transferInfo = $e->getResponse()->getTransferInfo();
+			// 404 means the index alias doesn't exist which means no indexes have it.
+			if ( $transferInfo['http_code'] === 404 ) {
+				return array();
+			}
+			// If we don't have a 404 then this is still unexpected so rethrow the exception.
+			throw $e;
+		}
 		if ( $response->hasError() ) {
 			$this->error( 'Error fetching indecies with alias:  ' . $response->getError() );
 		}

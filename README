@@ -123,14 +123,6 @@ _but_ it might be incompatible with some updates.  Safest to never use it unless
 
 The safest thing if you don't know what is required for your update is to execute (1.B).
 
-Submodule
----------
-CirrusSearch includes the Elastica library as a git submodule.  If you clone this repository you'll need to:
- git submodule init
- git submodule update
-to drop Elastica into place correctly.
-
-
 Licensing information
 ---------------------
 CirrusSearch makes use of the Elastica library to connect to elasticsearch <http://elastica.io/>.

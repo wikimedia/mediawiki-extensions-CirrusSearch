@@ -46,7 +46,10 @@ $wgCirrusSearchConnectionAttempts = 1;
 $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 
 // Number of replicas per shard for each index
-$wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
+// The default of 0 is fine for single-node setups, but if this is
+// deployed to a multi-node setting you probably at least want these
+// set to 1 for some redundancy, if not 2 for more redundancy.
+$wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 
 // When searching for a phrase how many words not searched for can be in the phrase
 // before it doesn't match. If I search for "like yellow candy" then phraseSlop of 0

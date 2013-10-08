@@ -35,7 +35,7 @@ $wgExtensionCredits['other'][] = array(
  */
 
 // ElasticSearch servers
-$wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
+$wgCirrusSearchServers = array( 'localhost' );
 
 // How many times to attempt connecting to a given server
 // If you're behind LVS and everything looks like one server,

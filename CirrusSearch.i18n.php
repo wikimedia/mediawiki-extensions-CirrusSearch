@@ -429,6 +429,6 @@ $messages['zh-hans'] = array(
  * @author Justincheng12345
  */
 $messages['zh-hant'] = array(
-	'cirrussearch-desc' => 'MediaWiki的Solr搜尋',
+	'cirrussearch-desc' => 'MediaWiki的Solr搜尋', # Fuzzy
 	'cirrussearch-backend-error' => '由於出現暫時性的問題，我們未能完成你的搜尋。請稍後再試。',
 );

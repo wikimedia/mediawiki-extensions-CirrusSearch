@@ -107,11 +107,18 @@ C.  Perform an in place index update with a brief close then a full reindex from
 only brings down search for a few seconds _but_ it might be incompatible with some updates.  Safest to
 never use it unless you know for sure:
  php updateSearchIndexConfig.php --closeOk
- php forceSearchIndex
+ php forceSearchIndex.php
 
-If you must do (2) readlly have only one option:
+If you must do (2) really have only one option:
 A.  Build of a copy of the index and reindex to it:
  php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
+ php forceSearchIndex.php --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ> --deletes
+ php forceSearchIndex.php --from <time when you started updateSearchIndexConfig.php in YYYY-mm-ddTHH:mm:ssZ>
+or for the Bash inclined:
+ TZ=UTC export REINDEX_START=$(date +%Y-%m-%dT%H:%m:%SZ)
+ php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
+ php forceSearchIndex.php --from $REINDEX_START --deletes
+ php forceSearchIndex.php --from $REINDEX_START
 
 If you must do (3) you have two options:
 A.  Same as (2.A)

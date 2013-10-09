@@ -45,14 +45,20 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $removeIndecies = false;
 
 	/**
-	 * @var are there too few replicas in the index we're making?
+	 * @var boolean are there too few replicas in the index we're making?
 	 */
 	private $tooFewReplicas = false;
 
 	/**
-	 * @var number of processes to use when reindexing
+	 * @var int number of processes to use when reindexing
 	 */
 	private $reindexProcesses;
+
+	/**
+	 * @var float how much can the reindexed copy of an index is allowed to deviate from the current
+	 * copy without triggering a reindex failure
+	 */
+	private $reindexAcceptableCountDeviation;
 
 	public function __construct() {
 		parent::__construct();
@@ -90,6 +96,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"performed during this operation manually.  Defaults to false." );
 		$maintenance->addOption( 'reindexProcesses', 'Number of processess to use in reindex.  ' .
 			'Not supported on Windows.  Defaults to 1 on Windows and 10 otherwise.', false, true );
+		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
+			'copy of an index is allowed to deviate from the current copy without triggering a ' .
+			'reindex failure.  Defaults to 5%.', false, true );
 	}
 
 	public function execute() {
@@ -114,6 +123,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 			$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
+			$this->reindexAcceptableCountDeviation = self::parsePotentialPercent(
+				$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 
 			$this->validateIndex();
 			$this->validateAnalyzers();
@@ -469,12 +480,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->output( $this->indent . "Verifying counts..." );
-			$oldCount = CirrusSearchConnection::getPageType( $this->indexType )->count();
+			// We can't verify counts are exactly equal because they won't be - we still push updates into
+			// the old index while reindexing the new one.
+			$oldCount = (float) CirrusSearchConnection::getPageType( $this->indexType )->count();
 			$this->getIndex()->refresh();
-			$newCount = $this->getPageType()->count();
-			if ( $oldCount !== $newCount ) {
-				$this->output( "Different!  Expected $oldCount but got $newCount\n" );
-				$this->error( "Failed to load index.  Expected $oldCount but got $newCount.  Check for warnings above.", 1 );
+			$newCount = (float) $this->getPageType()->count();
+			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
+			if ( $difference > $this->reindexAcceptableCountDeviation ) {
+				$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
+				$this->error( 'Failed to load index - counts not close enough.  ' .
+					"old=$oldCount new=$newCount difference=$difference.  " .
+					'Check for warnings above.', 1 );
 			}
 			$this->output( "done\n" );
 		} else {
@@ -697,6 +713,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$result[] = new \Elastica\Index($client, $name);
 		}
 		return $result;
+	}
+
+	private static function parsePotentialPercent( $str ) {
+		$result = floatval( $str );
+		if ( strpos( $str, '%' ) === false ) {
+			return $result;
+		}
+		return $result / 100;
 	}
 }
 

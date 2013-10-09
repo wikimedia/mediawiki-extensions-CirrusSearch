@@ -365,6 +365,7 @@ Collegaminde de fore
  * @author Okras
  */
 $messages['ru'] = array(
+	'cirrussearch-desc' => 'Поиск для MediaWiki на базе Elasticsearch',
 	'cirrussearch-backend-error' => 'Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.',
 );
 

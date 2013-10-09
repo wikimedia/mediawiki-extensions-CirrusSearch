@@ -81,8 +81,11 @@ $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 // Maximum number of redirects per target page to index.  
 $wgCirrusSearchIndexedRedirects = 1024;
 
-// Maximum number of linked articles to update every time an article changes.
+// Maximum number of newly linked articles to update when an article changes.
 $wgCirrusSearchLinkedArticlesToUpdate = 5;
+
+// Maximum number of newly unlinked articles to update when an article changes.
+$wgCirrusSearchUnlinkedArticlesToUpdate = 5;
 
 // Weight of fields relative to article text
 $wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0 );

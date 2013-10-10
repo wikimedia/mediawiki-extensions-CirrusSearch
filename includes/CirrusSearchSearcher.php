@@ -208,44 +208,55 @@ class CirrusSearchSearcher {
 
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
 		// two passes but it doesn't support that at this point
-		$indexType = $this->pickIndexTypeFromNamespaces();
-		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $id, $indexType ) {
-				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )->getDocument( $id, array(
-						'fields' => array( 'text' ),
-					) );
-					return $result;
-				} catch ( \Elastica\Exception\NotFoundException $e ) {
-					// We don't need to log NotFoundExceptions....
-					return null;
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					wfLogWarning( "Search backend error during get for $id.  Error message is:  " . $e->getMessage() );
-					return false;
-				}
-			}
-		) );
-		$getResult = $getWork->execute();
-		if ( $getResult === null ) {
-			// This corresponds to not found exceptions
-			return null;
+		$found = $this->get( $id, array( 'text' ) );
+		if ( !$found->isOk() ) {
+			return $found;
 		}
-		if ( $getResult === false ) {
-			// These are actual errors
-			$status = new Status();
-			$status->warning( 'cirrussearch-backend-error' );
-			return $status;
+		$found = $found->getValue();
+		if ( $found === null ) {
+			// If the pge doesn't exist we can't find any articles like it
+			return null;
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
-		$this->query->setLikeText( Sanitizer::stripAllTags( $getResult->text ) );
+		$this->query->setLikeText( Sanitizer::stripAllTags( $found->text ) );
 		$this->query->setFields( array( 'text' ) );
 		$idFilter = new \Elastica\Filter\Ids();
 		$idFilter->addId( $id );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
 		return $this->search();
+	}
+
+	/**
+	 * Get the page with $id.
+	 * @param $id int page id
+	 * @param $fields array(string) fields to fetch
+	 * @return Status containing page data, null if not found, or a if there was an error
+	 */
+	public function get( $id, $fields ) {
+		$indexType = $this->pickIndexTypeFromNamespaces();
+		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+			'doWork' => function() use ( $indexType, $id, $fields ) {
+				try {
+					$result = CirrusSearchConnection::getPageType( $indexType )->getDocument( $id, array(
+						'fields' => $fields,
+					) );
+					return Status::newGood( $result );
+				} catch ( \Elastica\Exception\NotFoundException $e ) {
+					// NotFoundException just means the field didn't exist.
+					// It is up to the called to decide if that is and error.
+					return Status::newGood( null );
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					wfLogWarning( "Search backend error during get for $id.  Error message is:  " . $e->getMessage() );
+					$status = new Status();
+					$status->warning( 'cirrussearch-backend-error' );
+					return $status;
+				}
+			}
+		) );
+		return $getWork->execute();
 	}
 
 	/**

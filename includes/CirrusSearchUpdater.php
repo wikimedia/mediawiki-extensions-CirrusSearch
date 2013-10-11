@@ -116,12 +116,15 @@ class CirrusSearchUpdater {
 	 *     )
 	 *   )
 	 */
-	public static function updateRevisions( $pageData ) {
+	public static function updateRevisions( $pageData, $checkFreshness = false ) {
 		wfProfileIn( __METHOD__ );
 
 		$contentDocuments = array();
 		$generalDocuments = array();
 		foreach ( $pageData as $page ) {
+			if ( $checkFreshness && self::isFresh( $page ) ) {
+				continue;
+			}
 			$document = self::buildDocumentforRevision( $page );
 			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
 				$contentDocuments[] = $document;
@@ -132,7 +135,9 @@ class CirrusSearchUpdater {
 		self::sendDocuments( CirrusSearchConnection::CONTENT_INDEX_TYPE, $contentDocuments );
 		self::sendDocuments( CirrusSearchConnection::GENERAL_INDEX_TYPE, $generalDocuments );
 
+		$count = count( $contentDocuments ) + count( $generalDocuments );
 		wfProfileOut( __METHOD__ );
+		return $count;
 	}
 
 	/**
@@ -147,6 +152,25 @@ class CirrusSearchUpdater {
 		self::sendDeletes( CirrusSearchConnection::GENERAL_INDEX_TYPE, $pages );
 
 		wfProfileOut( __METHOD__ );
+	}
+
+	private static function isFresh( $page ) {
+		$page = $page[ 'page' ];
+		$searcher = new CirrusSearchSearcher( 0, 0, array( $page->getTitle()->getNamespace() ) );
+		$get = $searcher->get( $page->getTitle()->getArticleId(), array( 'timestamp ') );
+		if ( !$get->isOk() ) {
+			return false;
+		}
+		$get = $get->getValue();
+		if ( $get === null ) {
+			return false;
+		}
+		$found = new MWTimestamp( $get->timestamp );
+		$diff = $found->diff( new MWTimestamp( $page->getTimestamp() ) );
+		if ( $diff === false ) {
+			return false;
+		}
+		return !$diff->invert;
 	}
 
 	/**

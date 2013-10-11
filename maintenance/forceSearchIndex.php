@@ -34,6 +34,7 @@ class ForceSearchIndex extends Maintenance {
 	var $toId = null;
 	var $indexUpdates;
 	var $limit;
+	var $forceUpdate;
 
 	public function __construct() {
 		parent::__construct();
@@ -50,6 +51,8 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out N commands that can be farmed out to ' .
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.', false, true );
+		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
+			'to date copy.  Not used with --deletes.' );
 	}
 
 	public function execute() {
@@ -67,6 +70,7 @@ class ForceSearchIndex extends Maintenance {
 			$this->buildChunks( $buildChunks );
 			return;
 		}
+		$this->forceUpdate = $this->getOption( 'forceUpdate' );
 
 		if ( $this->indexUpdates ) {
 			$operationName = 'Indexed';	
@@ -108,18 +112,17 @@ class ForceSearchIndex extends Maintenance {
 				$revisions = array_filter($revisions, function ($rev) {
 					return $rev[ 'page' ] !== null;
 				});
-				// Update size to reflect stripped entries.
-				$size = count( $revisions );
-				CirrusSearchUpdater::updateRevisions( $revisions );
+				// Update size with the actual number of updated documents.
+				$size = CirrusSearchUpdater::updateRevisions( $revisions, !$this->forceUpdate );
 			} else {
 				$idsToDelete = array();
 				foreach( $titles as $t ) {
-					$idsToDelete[] = $t['page'];
+					$idsToDelete[] = $t[ 'page' ];
 					$lastTitle = $t;
 				}
-				$minUpdate = $lastTitle['timestamp'];
-				$minNamespace = $lastTitle['namespace'];
-				$minTitle = $lastTitle['title'];
+				$minUpdate = $lastTitle[ 'timestamp' ];
+				$minNamespace = $lastTitle[ 'namespace' ];
+				$minTitle = $lastTitle[ 'title' ];
 				CirrusSearchUpdater::deletePages( $idsToDelete );
 			}
 			$completed += $size;

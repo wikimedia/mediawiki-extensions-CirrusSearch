@@ -39,8 +39,12 @@ class CirrusSearchMappingConfigBuilder {
 				'text' => $this->buildStringField( 'text', array( 'suggest' ) ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
+				'textLen' => array( 'type' => 'long', 'store' => 'yes' ),	// Deprecated in favor of text_bytes and text_words
+				'text_bytes' => array( 'type' => 'long', 'store' => 'yes' ),
+				'text_words' => array( 'type' => 'long', 'store' => 'yes' ),
 				'redirect' => array(
 					'properties' => array(
+						'namespace' =>  array( 'type' => 'long', 'store' => 'yes' ),
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),

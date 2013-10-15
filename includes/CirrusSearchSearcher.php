@@ -521,7 +521,7 @@ class CirrusSearchTitleResultsType {
 
 class CirrusSearchFullTextResultsType {
 	public function getFields() {
-		return array( 'id', 'title', 'namespace', 'redirect' );
+		return array( 'id', 'title', 'namespace', 'redirect', 'textLen', 'text_bytes', 'text_words' );
 	}
 	/**
 	 * Setup highlighting.
@@ -668,10 +668,15 @@ class CirrusSearchResult extends SearchResult {
 	private $redirectTitle, $redirectSnipppet;
 	private $sectionTitle, $sectionSnippet;
 	private $textSnippet;
+	private $wordCount;
+	private $byteSize;
 
 	public function __construct( $result ) {
 		$title = Title::makeTitle( $result->namespace, $result->title );
 		$this->initFromTitle( $title );
+		// TODO temporary hack until text_words and text_bytes are fully populated.
+		$this->wordCount = $result->text_words === null ? $result->textLen : $result->text_words;
+		$this->byteSize = $result->text_bytes === null ? $result->textLen : $result->text_bytes;
 		$highlights = $result->getHighlights();
 		// Hack for https://github.com/elasticsearch/elasticsearch/issues/3750
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'title' );
@@ -806,7 +811,15 @@ class CirrusSearchResult extends SearchResult {
 		return $this->sectionSnippet;
 	}
 
-	function getSectionTitle() {
+	public function getSectionTitle() {
 		return $this->sectionTitle;
+	}
+
+	public function getWordCount() {
+		return $this->wordCount;
+	}
+
+	public function getByteSize() {
+		return $this->byteSize;
 	}
 }

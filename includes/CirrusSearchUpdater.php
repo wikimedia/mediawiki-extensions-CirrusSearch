@@ -220,8 +220,12 @@ class CirrusSearchUpdater {
 			$doc->setDocAsUpsert( true );
 		} else {
 			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
-			$doc->add( 'text', Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
-				->getTextFromContent( $title, $page->getContent(), $parserOutput ) ) );
+			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
+				->getTextFromContent( $title, $page->getContent(), $parserOutput ) );
+			$doc->add( 'text', $text );
+			$doc->add( 'textLen', strlen( $text ) );            // Deprecated in favor of text_bytes and text_words
+			$doc->add( 'text_bytes', strlen( $text ) );
+			$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
 
 			$categories = array();
 			foreach ( $parserOutput->getCategories() as $key => $value ) {
@@ -243,8 +247,6 @@ class CirrusSearchUpdater {
 				}
 			}
 			$doc->add( 'heading', $headings );
-
-			$doc->add( 'textLen', $page->getContent()->getSize() );
 		}
 
 		$doc->add( 'links', self::countLinksToTitle( $title ) );

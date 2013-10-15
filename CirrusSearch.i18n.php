@@ -127,6 +127,28 @@ Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
 );
 
+/** Danish (dansk)
+ * @author Christian List
+ */
+$messages['da'] = array(
+	'cirrussearch-desc' => 'Søgning for MediaWiki drevet af Elasticsearch',
+	'cirrussearch-backend-error' => 'Vi kunne ikke fuldføre søgningen på grund af et midlertidigt problem.  Prøv igen senere.',
+	'cirrussearch-ignored-headings' => ' #<!-- lad denne linje være præcis som den er --> <pre>
+# Overskrifter, der vil blive ignoreret af søgning.
+# Ændringer til dette træder i kraft så snart siden med overskriften er indekseret.
+# Du kan tvinge siden til genindeksering ved at lave en nul redigering.
+# syntaksen er som følger:
+#   * Alt fra en tegnet "#" til slutningen af linjen er en kommentar
+#   * Hver ikke-tomme linje er den nøjagtige titel der skal ignoreres, der skelnes også mellem store og små bogstaver
+Referencer
+Eksterne henvisninger
+Se også
+Kilder og henvisninger
+Eksterne kilder/henvisninger
+Kilder
+ #</pre> <!-- lad denne linje være præcis som den er -->',
+);
+
 /** German (Deutsch)
  * @author Metalhead64
  */
@@ -378,6 +400,13 @@ $messages['ru'] = array(
 Ссылки
 См. также
  #</pre> <!-- оставьте эту строку как есть -->',
+);
+
+/** Slovak (slovenčina)
+ * @author Sudo77(new)
+ */
+$messages['sk'] = array(
+	'cirrussearch-backend-error' => 'Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.',
 );
 
 /** Swedish (svenska)

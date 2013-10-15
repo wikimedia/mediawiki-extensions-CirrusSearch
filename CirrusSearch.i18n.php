@@ -402,6 +402,13 @@ $messages['ru'] = array(
  #</pre> <!-- оставьте эту строку как есть -->',
 );
 
+/** Slovak (slovenčina)
+ * @author Sudo77(new)
+ */
+$messages['sk'] = array(
+	'cirrussearch-backend-error' => 'Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.',
+);
+
 /** Swedish (svenska)
  * @author Jopparn
  */

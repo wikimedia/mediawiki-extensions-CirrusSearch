@@ -346,6 +346,17 @@ $messages['ms'] = array(
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
+	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
+# Koppen die worden genegeerd tijdens het zoeken.
+# Wijzigingen worden van kracht als een kop wordt geïndexeerd.
+# U kunt opnieuw indexeren afdwingen door het uitvoeren van een nullbewerking.
+# De syntaxis is al volgt:
+#   * All tekst vanaf het teken "#" tot het einde van de regel wordt gezien als een opmerking;
+#   * Iedere niet-lege regel is de precieze te negeren kop, inclusief hoofdlettergebruik en degelijke.
+Referenties
+Externe links
+Zie ook
+ #</pre> <!-- leave this line exactly as it is -->',
 );
 
 /** Occitan (occitan)

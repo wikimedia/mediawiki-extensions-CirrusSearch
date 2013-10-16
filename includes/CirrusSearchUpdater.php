@@ -326,33 +326,16 @@ class CirrusSearchUpdater {
 	 * @param $linksUpdate LinksUpdate
 	 */
 	private static function updateLinkedArticles( $linksUpdate ) {
-		// This could be made more efficient by having LinksUpdate return a list of articles who
-		// have been newly linked or newly unlinked.  Those are the only articles that we need
-		// to reindex any way.
-		global $wgCirrusSearchLinkedArticlesToUpdate;
+		global $wgCirrusSearchLinkedArticlesToUpdate, $wgCirrusSearchUnlinkedArticlesToUpdate;
 
-		// Build a big list of candidate pages who's links we should update
-		$candidates = array();
-		foreach ( $linksUpdate->getParserOutput()->getLinks() as $ns => $ids ) {
-			foreach ( $ids as $id ) {
-				$candidates[] = $id;
-			}
-		}
-
-		// Pick up to $wgCirrusSearchLinkedArticlesToUpdate links to update
-		$chosenCount = min( count( $candidates ), $wgCirrusSearchLinkedArticlesToUpdate );
-		if ( $chosenCount < 1 ) {
-			return;
-		}
-		$chosen = array_rand( $candidates, $chosenCount );
-		// array_rand is $chosenCount === 1 then array_rand will return a key rather than an
-		// array of keys so just wrap the key and move on with the rest of the request.
-		if ( !is_array( $chosen ) ) {
-			$chosen = array( $chosen );
-		}
+		$titles = array_merge(
+			self::pickFromArray( $linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
+			self::pickFromArray( $linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate )
+		);
 		$pages = array();
-		foreach ( $chosen as $key ) {
-			$page = WikiPage::newFromID( $candidates[ $key ] );
+		foreach ( $titles as $title ) {
+			wfDebugLog( 'CirrusSearch', "Updating link counts for $title" );
+			$page = WikiPage::factory( $title );
 			if ( $page === null ) {
 				// Skip link to non-existant page.
 				continue;
@@ -382,6 +365,31 @@ class CirrusSearchUpdater {
 			);
 		}
 		self::updateRevisions( $pages );
+	}
+
+	/**
+	 * Pick $n random entries from $array.
+	 * @var $array array array to pick from
+	 * @var $n int number of entries to pick
+	 * @return array of entries from $array
+	 */
+	private static function pickFromArray( $array, $n ) {
+		if ( $n > count( $array ) ) {
+			return $array;
+		}
+		if ( $n < 1 ) {
+			return array();
+		}
+		$chosen = array_rand( $array, $n );
+		// If $n === 1 then array_rand will return a key rather than an array of keys.
+		if ( !is_array( $chosen ) ) {
+			return array( $array[ $chosen ] );
+		}
+		$result = array();
+		foreach ( $chosen as $key ) {
+			$result[] = $array[ $key ];
+		}
+		return $result;
 	}
 
 	/**

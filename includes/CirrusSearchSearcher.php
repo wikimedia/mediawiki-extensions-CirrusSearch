@@ -104,6 +104,7 @@ class CirrusSearchSearcher {
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
 	public function searchText( $term, $showRedirects ) {
+		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseUseText;
@@ -113,6 +114,7 @@ class CirrusSearchSearcher {
 		$originalTerm = $term;
 		$extraQueryStrings = array();
 		// Handle title prefix notation
+		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $term, 'prefix:' );
 		if ( $prefixPos !== false ) {
 			$value = substr( $term, 7 + $prefixPos );
@@ -128,10 +130,12 @@ class CirrusSearchSearcher {
 				}
 			}
 		}
+		wfProfileOut( __METHOD__ . '-prefix-filter' );
 		//Handle other filters
+		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
 		$term = preg_replace_callback(
-			'/(?<key>[^ ]+):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			'/(?<key>[^ ]{6,10}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
@@ -153,6 +157,8 @@ class CirrusSearchSearcher {
 			},
 			$term
 		);
+		wfProfileOut( __METHOD__ . '-other-filters' );
+		wfProfileIn( __METHOD__ . '-phrase-query-finder' );
 		$term = preg_replace_callback(
 				'/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
 				function ( $matches ) use ( $showRedirects, &$extraQueryStrings ) {
@@ -168,10 +174,13 @@ class CirrusSearchSearcher {
 				},
 				$term
 		);
+		wfProfileOut( __METHOD__ . '-phrase-query-finder' );
 		$this->filters = $filters;
+
 
 		// Actual text query
 		if ( trim( $term ) !== '' || $extraQueryStrings ) {
+			wfProfileIn( __METHOD__ . '-build-query' );
 			$fixedTerm = self::fixupQueryString( $term );
 			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
 			$fields = CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects );
@@ -199,9 +208,12 @@ class CirrusSearchSearcher {
 			if ( $wgCirrusSearchPhraseUseText ) {
 				$this->suggest[ self::SUGGESTION_NAME_TEXT ] = $this->buildSuggestConfig( 'text.suggest' );
 			}
+			wfProfileOut( __METHOD__ . '-build-query' );
 		}
 		$this->description = "full text search for '$originalTerm'";
-		return $this->search();
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	/**
@@ -209,6 +221,7 @@ class CirrusSearchSearcher {
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
 	public function moreLikeThisArticle( $id ) {
+		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreLikeThisConfig;
 
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
@@ -231,7 +244,9 @@ class CirrusSearchSearcher {
 		$idFilter->addId( $id );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
-		return $this->search();
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	/**
@@ -241,6 +256,7 @@ class CirrusSearchSearcher {
 	 * @return Status containing page data, null if not found, or a if there was an error
 	 */
 	public function get( $id, $fields ) {
+		wfProfileIn( __METHOD__ );
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
 			'doWork' => function() use ( $indexType, $id, $fields ) {
@@ -261,7 +277,9 @@ class CirrusSearchSearcher {
 				}
 			}
 		) );
-		return $getWork->execute();
+		$result = $getWork->execute();
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	/**
@@ -269,6 +287,7 @@ class CirrusSearchSearcher {
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
 	private function search() {
+		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreAccurateScoringMode;
 
 		if ( $this->resultsType === null ) {
@@ -338,7 +357,9 @@ class CirrusSearchSearcher {
 			$status->warning( 'cirrussearch-backend-error' );
 			return $status;
 		}
-		return $this->resultsType->transformElasticsearchResult( $result );
+		$result = $this->resultsType->transformElasticsearchResult( $result );
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	private function buildSearchTextQuery( $fields, $query ) {
@@ -447,6 +468,7 @@ class CirrusSearchSearcher {
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
 	 */
 	public static function fixupQueryString( $string ) {
+		wfProfileIn( __METHOD__ );
 		$string = preg_replace( '/(
 				\+|
 				-|
@@ -467,10 +489,22 @@ class CirrusSearchSearcher {
 			)/x', '\\\$1', $string );
 		// If the string doesn't have balanced quotes then add a quote on the end so Elasticsearch
 		// can parse it.
-		if ( !preg_match( '/^(
-				[^"]| 			(?# non quoted terms)
-				"([^"]|\\.)*" 	(?# quoted terms)
-			)*$/x', $string ) ) {
+		$inQuote = false;
+		$inEscape = false;
+		$len = strlen( $string );
+		for ( $i = 0; $i < $len; $i++ ) {
+			if ( $inEscape ) {
+				continue;
+			}
+			switch ( $string[ $i ] ) {
+			case '"':
+				$inQuote = !$inQuote;
+				break;
+			case '\\':
+				$inEscape = true;
+			}
+		}
+		if ( $inQuote ) {
 			$string = $string . '"';
 		}
 		// Turn bad fuzzy searches into searches that contain a ~
@@ -489,6 +523,7 @@ class CirrusSearchSearcher {
 				return '"\\~' . $matches[ 'trailing' ];
 			}
 		}, $string );
+		wfProfileOut( __METHOD__ );
 		return $string;
 	}
 

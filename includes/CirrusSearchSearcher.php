@@ -84,6 +84,7 @@ class CirrusSearchSearcher {
 	 * @param array(string) of titles
 	 */
 	public function prefixSearch( $search ) {
+		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
 		$requestLength = strlen( $search );
 		if ( $requestLength > self::MAX_PREFIX_SEARCH ) {
 			throw new UsageException( 'Prefix search requset was longer longer than the maximum allowed length.' .
@@ -91,7 +92,18 @@ class CirrusSearchSearcher {
 		}
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
-		$this->filters[] = $this->buildPrefixFilter( $search );
+		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
+			$match = new \Elastica\Query\Match();
+			$match->setField( 'title.word_prefix', array(
+				'query' => $search,
+				'analyzer' => 'plain',
+				'operator' => 'and',
+			) );
+			$this->filters[] = new \Elastica\Filter\Query( $match );
+		} else {
+			$this->filters[] = $this->buildPrefixFilter( $search );
+		}
+
 		$this->description = "prefix search for '$search'";
 		$this->buildFullTextResults = false;
 		return $this->search();

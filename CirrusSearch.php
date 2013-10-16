@@ -51,6 +51,15 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // set to 1 for some redundancy, if not 2 for more redundancy.
 $wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 
+// Is it ok if the prefix starts on any word in the title or just the first word?
+// Defaults to false (first word only) because that is the wikipedia behavior and so
+// what we expect users to expect.  Does not effect the prefix: search filter or
+// url parameter - that always starts with the first word.  false -> true will break
+// prefix searching until an in place reindex is complete.  true -> false is fine
+// any time and you can then go false -> true if you haven't run an in place reindex
+// since the change.
+$wgCirrusSearchPrefixSearchStartsWithAnyWord = false;
+
 // When searching for a phrase how many words not searched for can be in the phrase
 // before it doesn't match. If I search for "like yellow candy" then phraseSlop of 0
 // won't match "like brownish yellow candy" but phraseSlop of 1 will.

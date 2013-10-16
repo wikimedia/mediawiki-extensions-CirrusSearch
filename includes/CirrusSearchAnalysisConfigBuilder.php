@@ -69,6 +69,11 @@ class CirrusSearchAnalysisConfigBuilder {
 					'tokenizer' => 'prefix',
 					'filter' => array( 'lowercase' )
 				),
+				'word_prefix' => array(
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => array( 'standard', 'lowercase', 'prefix_ngram_filter' ),
+				),
 				'lowercase_keyword' => array(
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
@@ -85,11 +90,14 @@ class CirrusSearchAnalysisConfigBuilder {
 				'lowercase' => array(
 					'type' => 'lowercase',
 				),
-
 				'aggressive_splitting' => array(
 					'type' => 'word_delimiter',
 					'stem_english_possessive' => 'false', // No need
-				)
+				),
+				'prefix_ngram_filter' => array(
+					'type' => 'edgeNGram',
+					'max_gram' => CirrusSearchSearcher::MAX_PREFIX_SEARCH,
+				),
 			),
 			'tokenizer' => array(
 				'prefix' => array(
@@ -98,7 +106,7 @@ class CirrusSearchAnalysisConfigBuilder {
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',
-				)
+				),
 			)
 		);
 	}
@@ -108,6 +116,7 @@ class CirrusSearchAnalysisConfigBuilder {
 	 */
 	private function customize( $config ) {
 		global $wgCirrusSearchUseAggressiveSplitting;
+
 		switch ( $this->language ) {
 		// Please add languages in alphabetical order.
 		case 'el':

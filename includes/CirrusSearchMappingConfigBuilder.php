@@ -31,9 +31,15 @@ class CirrusSearchMappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig() {
+		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
 		global $wgCirrusSearchPhraseUseText;
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
+
+		$titleExtraAnalyzers = array( 'suggest', 'prefix' );
+		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
+			$titleExtraAnalyzers[] = 'word_prefix';
+		}
 
 		$textExtraAnalyzers = array();
 		if ( $wgCirrusSearchPhraseUseText ) {
@@ -42,7 +48,7 @@ class CirrusSearchMappingConfigBuilder {
 
 		return array(
 			'properties' => array(
-				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ) ),
+				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),

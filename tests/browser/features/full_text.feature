@@ -182,6 +182,17 @@ Feature: Full text search
     Then there are no search results
 
   @setup_main
+  Scenario Outline: Searching for for a phrase with a hanging quote adds the quote automatically
+    When I search for <term>
+    Then Two Words is the first search result
+   Examples:
+    |                      term                     |
+    | "two words                                    |
+    | "two words" "ffnonesenseword catapult         |
+    | "two words" "ffnonesenseword catapult pickles |
+    | "two words" pickles "ffnonesenseword catapult |
+
+  @setup_main
   Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search
     When I search for "ffnonesenseword anotherword"~<proximity>
     Then <result> is the first search result

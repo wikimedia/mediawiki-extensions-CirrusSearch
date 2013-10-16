@@ -78,6 +78,13 @@ $wgCirrusSearchPhraseSuggestMaxErrors = 5;
 // See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 
+// Look for suggestions in the article text?  Changing this from false to true will
+// break search until you perform an in place index rebuild.  Changing it from true
+// to false is ok and then you can change it back to true so long as you _haven't_
+// done an index rebuild since then.  If you perform an in place index rebuild after
+// changing this to false then you'll see some space savings.
+$wgCirrusSearchPhraseUseText = false;
+
 // Maximum number of redirects per target page to index.  
 $wgCirrusSearchIndexedRedirects = 1024;
 

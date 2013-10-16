@@ -31,12 +31,19 @@ class CirrusSearchMappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig() {
+		global $wgCirrusSearchPhraseUseText;
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
+
+		$textExtraAnalyzers = array();
+		if ( $wgCirrusSearchPhraseUseText ) {
+			$textExtraAnalyzers[] = 'suggest';
+		}
+
 		return array(
 			'properties' => array(
 				'title' => $this->buildStringField( 'title', array( 'suggest', 'prefix' ) ),
-				'text' => $this->buildStringField( 'text', array( 'suggest' ) ),
+				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'textLen' => array( 'type' => 'long', 'store' => 'yes' ),	// Deprecated in favor of text_bytes and text_words

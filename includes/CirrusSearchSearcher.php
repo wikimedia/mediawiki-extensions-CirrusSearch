@@ -21,6 +21,7 @@
 class CirrusSearchSearcher {
 	const SUGGESTION_NAME_TITLE = 'title';
 	const SUGGESTION_NAME_REDIRECT = 'redirect';
+	const SUGGESTION_NAME_TEXT = 'text_suggestion';
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
@@ -105,6 +106,7 @@ class CirrusSearchSearcher {
 	public function searchText( $term, $showRedirects ) {
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
+		global $wgCirrusSearchPhraseUseText;
 		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -193,6 +195,9 @@ class CirrusSearchSearcher {
 			);
 			if ( $showRedirects ) {
 				$this->suggest[ self::SUGGESTION_NAME_REDIRECT ] = $this->buildSuggestConfig( 'redirect.title.suggest' );
+			}
+			if ( $wgCirrusSearchPhraseUseText ) {
+				$this->suggest[ self::SUGGESTION_NAME_TEXT ] = $this->buildSuggestConfig( 'text.suggest' );
 			}
 		}
 		$this->description = "full text search for '$originalTerm'";
@@ -594,6 +599,12 @@ class CirrusSearchResultSet extends SearchResultSet {
 		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
 		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ] ) ) {
 			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
+				return $option;
+			}
+		}
+		// This suggestion type is optional, configured in LocalSettings.
+		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ] ) ) {
+			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ][ 0 ][ 'options' ] as $option ) {
 				return $option;
 			}
 		}

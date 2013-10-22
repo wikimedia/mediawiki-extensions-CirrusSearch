@@ -39,6 +39,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private $reindexChunkSize = 1000;
 
+	private $indexBaseName;
 	private $indexIdentifier;
 	private $reindexAndRemoveOk;
 	// How much should this script indent output?
@@ -104,6 +105,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
 			'reindex failure.  Defaults to 5%.', false, true );
+		$maintenance->addOption( 'baseName', 'What basename to use for all indexes, ' .
+			'defaults to wiki id', false, true );
 	}
 
 	public function execute() {
@@ -125,6 +128,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 			$this->startOver = $this->getOption( 'startOver', false );
 			$this->closeOk = $this->getOption( 'closeOk', false );
+			$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 			$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
@@ -315,7 +319,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $status->indexExists( $specificAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				CirrusSearchConnection::getClient()->getIndex( $specificAliasName )->delete();
+				CirrusSearchConnection::getClient()
+					->getIndex( $this->indexBaseName, $specificAliasName )
+					->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
@@ -408,7 +414,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function validateAllAlias() {
 		$this->output( $this->indent . "\tValidating all alias..." );
-		$allAliasName = CirrusSearchConnection::getIndexName();
+		$allAliasName = CirrusSearchConnection::getIndexName( $this->indexBaseName );
 		$status = CirrusSearchConnection::getClient()->getStatus();
 		if ( $status->indexExists( $allAliasName ) ) {
 			$this->output( "is an index..." );
@@ -654,21 +660,21 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \Elastica\Index being updated
 	 */
 	private function getIndex() {
-		return CirrusSearchConnection::getIndex( $this->indexType, $this->indexIdentifier );
+		return CirrusSearchConnection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index being updated
 	 */
 	private function getSpecificIndexName() {
-		return CirrusSearchConnection::getIndexName( $this->indexType, $this->indexIdentifier );
+		return CirrusSearchConnection::getIndexName( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index type being updated
 	 */
 	private function getIndexTypeName() {
-		return CirrusSearchConnection::getIndexName( $this->indexType );
+		return CirrusSearchConnection::getIndexName( $this->indexBaseName, $this->indexType );
 	}
 
 	/**

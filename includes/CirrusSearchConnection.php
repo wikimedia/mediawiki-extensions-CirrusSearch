@@ -46,13 +46,6 @@ class CirrusSearchConnection extends ElasticaConnection {
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getIndexBaseName() {
-		return wfWikiId();
-	}
-
-	/**
 	 * How many times can we attempt to connect per host?
 	 *
 	 * @return int
@@ -65,9 +58,11 @@ class CirrusSearchConnection extends ElasticaConnection {
 	/**
 	 * Fetch the Elastica Type for pages.
 	 * @param mixed $type type of index (content or general or false to get all)
+	 * @param mixed $name basename of index, defaults to wfWikiId()
 	 * @return \Elastica\Type
 	 */
-	public static function getPageType( $type = false ) {
-		return self::getIndex( $type )->getType( self::PAGE_TYPE_NAME );
+	public static function getPageType( $type = false, $name = false ) {
+		$name = $name ?: wfWikiId();
+		return self::getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
 	}
 }

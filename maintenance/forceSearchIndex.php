@@ -145,8 +145,8 @@ class ForceSearchIndex extends Maintenance {
 	 * @param $minUpdate
 	 * @param $minId
 	 * @param $maxUpdate
-	 * @return array An array of the last update timestamp, id, revision, and text that was found.
-	 *    Sometimes rev and text are null - those record should be used to determine new
+	 * @return array An array of the last update timestamp, id, and page that was found.
+	 *    Sometimes page is null - those record should be used to determine new
 	 *    inputs for this function but should not by synced to the search index.
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
@@ -211,7 +211,6 @@ class ForceSearchIndex extends Maintenance {
 					$page = WikiPage::newFromID( $target->getArticleID(), WikiPage::READ_LATEST );
 				}
 			}
-			$text = null;
 			$result[] = array(
 				'page' => $page,
 				'id' => $row->page_id,

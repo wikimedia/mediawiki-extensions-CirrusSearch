@@ -28,12 +28,16 @@ class CirrusSearchSearcher {
 	const HIGHLIGHT_POST = '</span>';
 
 	/**
-	 * Maximum title length that we'll check in prefix search.  Since titles can
-	 * be 255 bytes in length we're setting this to 255 characters but this
-	 * might cause bloat in the title's prefix index so we'll have to keep an
-	 * eye on this.
+	 * Maximum title length that we'll check in prefix and keyword searches.
+	 * Since titles can be 255 bytes in length we're setting this to 255
+	 * characters.
 	 */
-	const MAX_PREFIX_SEARCH = 255;
+	const MAX_TITLE_SEARCH = 255;
+
+	/**
+	 * @var null|array template names to boost factors.  lazily initialized and defaulting to null.
+	 */
+	private static $defaultBoostTemplates = null;
 
 	/**
 	 * @var integer search offset
@@ -51,10 +55,35 @@ class CirrusSearchSearcher {
 	 * @var CirrusSearchResultsType|null type of results.  null defaults to CirrusSearchFullTextResultsType
 	 */
 	private $resultsType;
+	/**
+	 * @var array(string) prefixes that should be prepended to suggestions.  Can be added to externally and is added to
+	 * during search syntax parsing.
+	 */
+	private $suggestPrefixes = array();
+	/**
+	 * @var array(string) suffixes that should be prepended to suggestions.  Can be added to externally and is added to
+	 * during search syntax parsing.
+	 */
+	private $suggestSuffixes = array();
+
 
 	// These fields are filled in by the particule search methods
+	/**
+	 * @var string term to search.
+	 */
+	private $term;
+	/**
+	 * @var \Elastica\Query\AbstractQuery|null main query.  null defaults to \Elastica\Query\MatchAll
+	 */
 	private $query = null;
+	/**
+	 * @var array(\Elastica\Filter\AbstractFilter) filters that MUST hold true of all results
+	 */
 	private $filters = array();
+	/**
+	 * @var array(\Elastica\Filter\AbstractFilter) filters that MUST NOT hold true of all results
+	 */
+	private $notFilters = array();
 	private $suggest = null;
 	/**
 	 * @var null|array of rescore configuration as used by elasticsearch.  The query needs to be an Elastica query.
@@ -64,6 +93,27 @@ class CirrusSearchSearcher {
 	 * @var string description of the current operation used in logging errors
 	 */
 	private $description;
+	/**
+	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
+	 * with time since the last update.
+	 */
+	private $preferRecentDecayPortion = 0;
+	/**
+	 * @var float number of days it takes an the portion of an article score that will decay with time
+	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
+	 */
+	private $preferRecentHalfLife = 0;
+	/**
+	 * @var boolean should the query results boost pages with more incoming links. Defaults to true but some search
+	 * methods disable it.
+	 */
+	private $boostForLinks = true;
+	/**
+	 * @var array template name to boost multiplier for having a template.  Defaults to none but initialized by
+	 * queries that use it to self::getDefaultBoostTemplates() if they need it.  That is too expensive to do by
+	 * default though.
+	 */
+	private $boostTemplates = array();
 
 	public function __construct( $offset, $limit, $namespaces ) {
 		$this->offset = $offset;
@@ -79,17 +129,36 @@ class CirrusSearchSearcher {
 	}
 
 	/**
+	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
+	 * @param string $search text by which to search
+	 * @return Status(mixed) status containing results defined by resultsType on success
+	 */
+	public function nearMatchTitleSearch( $search ) {
+		wfProfileIn( __METHOD__ );
+		self::checkTitleSearchRequestLength( $search );
+		wfDebugLog( 'CirrusSearch', "Lowercased title searching:  $search" );
+
+		$match = new \Elastica\Query\Match();
+		$match->setField( 'title.near_match', $search );
+		$this->filters[] = new \Elastica\Filter\Query( $match );
+		$this->boostForLinks = false;
+
+		$this->description = "lowercase title search for '$search'";
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
+	}
+
+	/**
 	 * Perform a prefix search.
-	 * @param $search
-	 * @param array(string) of titles
+	 * @param string $search text by which to search
+	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
+		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
-		$requestLength = strlen( $search );
-		if ( $requestLength > self::MAX_PREFIX_SEARCH ) {
-			throw new UsageException( 'Prefix search requset was longer longer than the maximum allowed length.' .
-				" ($requestLength > " . self::MAX_PREFIX_SEARCH . ')', 'request_too_long', 400 );
-		}
+
+		self::checkTitleSearchRequestLength( $search );
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
@@ -103,35 +172,54 @@ class CirrusSearchSearcher {
 		} else {
 			$this->filters[] = $this->buildPrefixFilter( $search );
 		}
+		$this->boostTemplates = self::getDefaultBoostTemplates();
 
 		$this->description = "prefix search for '$search'";
-		$this->buildFullTextResults = false;
-		return $this->search();
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	/**
+	 * @param string $suggestPrefix prefix to be prepended to suggestions
+	 */
+	public function addSuggestPrefix( $suggestPrefix ) {
+		$this->suggestPrefixes[] = $suggestPrefix;
+	}
+	/**
+	 * @param string $suggestPrefix suffix to be appended to suggestions.
+	 */
+	public function addSuggestSuffix( $suggestSuffix ) {
+		$this->suggestSuffixes[] = $suggestSuffix;
+	}
+
+
+	/**
 	 * Search articles with provided term.
-	 * @param string $term
-	 * @param boolean $showRedirects
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * @param $term string term to search
+	 * @param $showRedirects boolean should this request show redirects?
+	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function searchText( $term, $showRedirects ) {
 		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseUseText;
-		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
+		global $wgCirrusSearchPreferRecentDefaultHalfLife;
+		wfDebugLog( 'CirrusSearch', "Searching:  \"$term\"" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
-		$extraQueryStrings = array();
+		$this->term = trim( $term );
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
-		$prefixPos = strpos( $term, 'prefix:' );
+		$prefixPos = strpos( $this->term, 'prefix:' );
 		if ( $prefixPos !== false ) {
-			$value = substr( $term, 7 + $prefixPos );
+			$value = substr( $this->term, 7 + $prefixPos );
 			if ( strlen( $value ) > 0 ) {
-				$term = substr( $term, 0, max( 0, $prefixPos - 1 ) );
+				$this->term = substr( $this->term, 0, max( 0, $prefixPos - 1 ) );
+				$this->suggestSuffixes[] = ' prefix:' . $value;
 				// Suck namespaces out of $value
 				$cirrusSearchEngine = new CirrusSearch();
 				$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
@@ -143,67 +231,155 @@ class CirrusSearchSearcher {
 			}
 		}
 		wfProfileOut( __METHOD__ . '-prefix-filter' );
-		//Handle other filters
+
+		wfProfileIn( __METHOD__ . '-prefer-recent' );
+		$preferRecentDecayPortion = $wgCirrusSearchPreferRecentDefaultDecayPortion;
+		$preferRecentHalfLife = $wgCirrusSearchPreferRecentDefaultHalfLife;
+		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
+		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
+		$this->extractSpecialSyntaxFromTerm(
+			'/prefer-recent:(1|(?:0?(?:\.[0-9]+)?))?(?:,([0-9]*\.?[0-9]+))? ?/',
+			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife ) {
+				global $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
+				if ( isset( $matches[ 1 ] ) && strlen( $matches[ 1 ] ) ) {
+					$preferRecentDecayPortion = floatval( $matches[ 1 ] );
+				} else {
+					$preferRecentDecayPortion = $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
+				}
+				if ( isset( $matches[ 2 ] ) ) {
+					$preferRecentHalfLife = floatval( $matches[ 2 ] );
+				}
+				return '';
+			}
+		);
+		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
+		$this->preferRecentHalfLife = $preferRecentHalfLife;
+		wfProfileOut( __METHOD__ . '-prefer-recent' );
+
+		wfProfileIn( __METHOD__ . '-boost-template' );
+		$boostTemplates = null;
+		$this->extractSpecialSyntaxFromTerm(
+			'/boost-templates:"([^"]+)" ?/',
+			function ( $matches ) use ( &$boostTemplates ) {
+				$boostTemplates = CirrusSearchSearcher::parseBoostTemplates( $matches[ 1 ] );
+				return '';
+			}
+		);
+		if ( $boostTemplates === null ) {
+			$boostTemplates = self::getDefaultBoostTemplates();
+		}
+		$this->boostTemplates = $boostTemplates;
+		wfProfileOut( __METHOD__ . '-boost-template' );
+
+		// Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
-		$term = preg_replace_callback(
-			'/(?<key>[^ ]{6,10}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
+		$notFilters = $this->notFilters;
+		// Match filters that look like foobar:thing or foobar:"thing thing"
+		// The {7,12} keeps this from having horrible performance on big strings
+		$this->extractSpecialSyntaxFromTerm(
+			'/(?<key>[a-z\\-]{7,12}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			function ( $matches ) use ( &$filters, &$notFilters ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
+				$filterDestination = &$filters;
+				$keepText = true;
+				if ( $key[ 0 ] === '-' ) {
+					$key = substr( $key, 1 );
+					$filterDestination = &$notFilters;
+					$keepText = false;
+				}
 				switch ( $key ) {
+					case 'hastemplate':
+						$value = trim( $value, '"' );
+						// We emulate template syntax here as best as possible,
+						// so things in NS_MAIN are prefixed with ":" and things
+						// in NS_TEMPLATE don't have a prefix at all. Since we
+						// don't actually index templates like that, munge the
+						// query here
+						if ( strpos( $value, ':' ) === 0 ) {
+							$value = substr( $value, 1 );
+						} else {
+							$title = Title::newFromText( $value );
+							if ( $title && $title->getNamespace() == NS_MAIN ) {
+								$value = Title::makeTitle( NS_TEMPLATE,
+									$title->getDBkey() )->getPrefixedText();
+							}
+						}
+						// Intentional fall through
 					case 'incategory':
+						$queryKey = str_replace( array( 'in', 'has' ), '', $key );
 						$match = new \Elastica\Query\Match();
-						$match->setFieldQuery( 'category', trim( $value, '"' ) );
-						$filters[] = new \Elastica\Filter\Query( $match );
+						$match->setFieldQuery( $queryKey, trim( $value, '"' ) );
+						$filterDestination[] = new \Elastica\Filter\Query( $match );
 						return '';
-					case 'prefix':
-						return "$value* ";
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
-							'title', CirrusSearchSearcher::fixupQueryString( $value ) ) );
-						return "$value ";
+						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
+							CirrusSearchSearcher::fixupWholeQueryString(
+								CirrusSearchSearcher::fixupQueryStringPart( $value )
+							) ) );
+						return $keepText ? "$value " : '';
 					default:
 						return $matches[0];
 				}
-			},
-			$term
+			}
 		);
-		wfProfileOut( __METHOD__ . '-other-filters' );
-		wfProfileIn( __METHOD__ . '-phrase-query-finder' );
-		$term = preg_replace_callback(
-				'/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
-				function ( $matches ) use ( $showRedirects, &$extraQueryStrings ) {
-					$main = $matches[ 'main' ];
-					if ( isset( $matches[ 'fuzzy' ] ) ) {
-						return $main;
-					} else {
-						$query = join( ' OR ',
-								CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$main" ) );
-						$extraQueryStrings[] = "($query)";
-					}
-					return '';
-				},
-				$term
-		);
-		wfProfileOut( __METHOD__ . '-phrase-query-finder' );
 		$this->filters = $filters;
+		$this->notFilters = $notFilters;
+		wfProfileOut( __METHOD__ . '-other-filters' );
+		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
+		// Match quoted phrases including those containing escaped quotes
+		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
+		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
+		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
+		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+			function ( $matches ) use ( $showRedirects ) {
+				$main = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+				if ( !isset( $matches[ 'fuzzy' ] ) ) {
+					$main = CirrusSearchSearcher::switchSearchToExact( $main, $showRedirects );
+				}
+				return array( 'escaped' => $main );
+			} );
+		wfProfileOut( __METHOD__ . '-find-phrase-queries' );
+		wfProfileIn( __METHOD__ . '-switch-prefix-to-plain' );
+		// Find prefix matches and force them to only match against the plain analyzed fields.  This
+		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
+		// in prefix queries.
+		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
+			function ( $matches ) use ( $showRedirects ) {
+				$term = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+				return array( 'escaped' => CirrusSearchSearcher::switchSearchToExact( $term, $showRedirects ) );
+			} );
+		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
+		wfProfileIn( __METHOD__ . '-escape' );
+		$escapedQuery = array();
+		foreach ( $query as $queryPart ) {
+			if ( isset( $queryPart[ 'escaped' ] ) ) {
+				$escapedQuery[] = $queryPart[ 'escaped' ];
+				continue;
+			}
+			if ( isset( $queryPart[ 'raw' ] ) ) {
+				$escapedQuery[] = self::fixupQueryStringPart( $queryPart[ 'raw' ] );
+				continue;
+			}
+			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
+		}
+		wfProfileOut( __METHOD__ . '-escape' );
 
 		// Actual text query
-		if ( trim( $term ) !== '' || $extraQueryStrings ) {
+		if ( count( $query ) > 0 ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
-			$fixedTerm = self::fixupQueryString( $term );
-			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
-			$fields = CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects );
+			$queryStringQueryString = self::fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+			$fields = self::buildFullTextSearchFields( $showRedirects );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any phrases
-			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && !preg_match( '/"[^ "]+ [^"]+"/', $fixedTerm ) ) {
+			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && strpos( $queryStringQueryString, '"' ) === false ) {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $fixedTerm . '"' ),
+						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $queryStringQueryString . '"' ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
@@ -211,7 +387,7 @@ class CirrusSearchSearcher {
 			}
 
 			$this->suggest = array(
-				'text' => $term,
+				'text' => $this->term,
 				self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
 			);
 			if ( $showRedirects ) {
@@ -230,7 +406,7 @@ class CirrusSearchSearcher {
 
 	/**
 	 * @param $id article id to search
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * @return Status(CirrusSearchResultSet|null)
 	 */
 	public function moreLikeThisArticle( $id ) {
 		wfProfileIn( __METHOD__ );
@@ -244,8 +420,8 @@ class CirrusSearchSearcher {
 		}
 		$found = $found->getValue();
 		if ( $found === null ) {
-			// If the pge doesn't exist we can't find any articles like it
-			return null;
+			// If the page doesn't exist we can't find any articles like it
+			return Status::newGood( null );
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
@@ -265,7 +441,7 @@ class CirrusSearchSearcher {
 	 * Get the page with $id.
 	 * @param $id int page id
 	 * @param $fields array(string) fields to fetch
-	 * @return Status containing page data, null if not found, or a if there was an error
+	 * @return Status containing page data, null if not found, or an error if there was an error
 	 */
 	public function get( $id, $fields ) {
 		wfProfileIn( __METHOD__ );
@@ -283,10 +459,13 @@ class CirrusSearchSearcher {
 					return Status::newGood( null );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "Search backend error during get for $id.  Error message is:  " . $e->getMessage() );
-					$status = new Status();
-					$status->warning( 'cirrussearch-backend-error' );
-					return $status;
+					return Status::newFatal( 'cirrussearch-backend-error' );
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error performing a get against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
 		$result = $getWork->execute();
@@ -294,9 +473,85 @@ class CirrusSearchSearcher {
 		return $result;
 	}
 
+	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
+		$suggestPrefixes = $this->suggestPrefixes;
+		$this->term = preg_replace_callback( $regex,
+			function ( $matches ) use ( $callback, &$suggestPrefixes ) {
+				$result = $callback( $matches );
+				if ( $result === '' ) {
+					$suggestPrefixes[] = $matches[ 0 ];
+				}
+				return $result;
+			},
+			$this->term
+		);
+		$this->suggestPrefixes = $suggestPrefixes;
+	}
+
+	private static function replaceAllPartsOfQuery( $query, $regex, $callable ) {
+		$result = array();
+		foreach ( $query as $queryPart ) {
+			if ( isset( $queryPart[ 'raw' ] ) ) {
+				$result = array_merge( $result, self::replacePartsOfQuery( $queryPart[ 'raw' ], $regex, $callable ) );
+				continue;
+			}
+			$result[] = $queryPart;
+		}
+		return $result;
+	}
+
+	private static function replacePartsOfQuery( $queryPart, $regex, $callable ) {
+		$destination = array();
+		$matches = array();
+		$offset = 0;
+		while ( preg_match( $regex, $queryPart, $matches, PREG_OFFSET_CAPTURE, $offset ) ) {
+			$startOffset = $matches[ 0 ][ 1 ];
+			if ( $startOffset > $offset ) {
+				$destination[] = array( 'raw' => substr( $queryPart, $offset, $startOffset - $offset ) );
+			}
+
+			$callableResult = call_user_func( $callable, $matches );
+			if ( $callableResult ) {
+				$destination[] = $callableResult;
+			}
+
+			$offset = $startOffset + strlen( $matches[ 0 ][ 0 ] );
+		}
+		if ( $offset < strlen( $queryPart ) ) {
+			$destination[] = array( 'raw' => substr( $queryPart, $offset ) );
+		}
+		return $destination;
+	}
+
 	/**
-	 * Powers full-text-like searches which means pretty much everything but prefixSearch.
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * Get the version of Elasticsearch with which we're communicating.
+	 * @return Status(string) version number as a string
+	 */
+	public static function getElasticsearchVersion() {
+		global $wgMemc;
+		wfProfileIn( __METHOD__ );
+		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );
+		$result = $wgMemc->get( $mcKey );
+		if ( !$result ) {
+			try {
+				$result = CirrusSearchConnection::getClient()->request( '' );
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				wfLogWarning( "Search backend error getting Elasticsearch version.  Error message is:  " .
+					$e->getMessage() );
+				wfProfileOut( __METHOD__ );
+				return Status::newFatal( 'cirrussearch-backend-error' );
+			}
+			$result = $result->getData();
+			$result = $result[ 'version' ][ 'number' ];
+			$setResult = $wgMemc->set( $mcKey, $result, 3600 * 12 );
+		}
+		wfProfileOut( __METHOD__ );
+		return Status::newGood( $result );
+	}
+
+	/**
+	 * Powers full-text-like searches including prefix search.
+	 * @return Status(CirrusSearchResultSet|null|array(String)) results, no results, or title results
 	 */
 	private function search() {
 		wfProfileIn( __METHOD__ );
@@ -305,9 +560,38 @@ class CirrusSearchSearcher {
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new CirrusSearchFullTextResultsType();
 		}
+		// Default null queries now so the rest of the method can assume it is not null.
+		if ( $this->query === null ) {
+			$this->query = new \Elastica\Query\MatchAll();
+		}
 
 		$query = new Elastica\Query();
 		$query->setFields( $this->resultsType->getFields() );
+
+		$extraIndexes = array();
+		if ( $this->namespaces ) {
+			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+			$extraIndexes = $this->getAndFilterExtraIndexes();
+		}
+
+		// Wrap $this->query in a filtered query if there are filters.
+		$filterCount = count( $this->filters );
+		$notFilterCount = count( $this->notFilters );
+		if ( $filterCount > 0 || $notFilterCount > 0 ) {
+			if ( $filterCount > 1 || $notFilterCount > 0 ) {
+				$filter = new \Elastica\Filter\Bool();
+				foreach ( $this->filters as $must ) {
+					$filter->addMust( $must );
+				}
+				foreach ( $this->notFilters as $mustNot ) {
+					$filter->addMustNot( $mustNot );
+				}
+			} else {
+				$filter = $this->filters[ 0 ];
+			}
+			$this->query = new \Elastica\Query\Filtered( $this->query, $filter );
+		}
+
 		$query->setQuery( self::boostQuery( $this->query ) );
 
 		$highlight = $this->resultsType->getHighlightingConfiguration();
@@ -330,46 +614,42 @@ class CirrusSearchSearcher {
 			$query->setParam( 'rescore', $this->rescore );
 		}
 
-		if ( $this->namespaces ) {
-			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
-		}
-		if ( count( $this->filters ) > 1 ) {
-			$mainFilter = new \Elastica\Filter\Bool();
-			foreach ( $this->filters as $filter ) {
-				$mainFilter->addMust( $filter );
-			}
-			$query->setFilter( $mainFilter );
-		} else if ( count( $this->filters ) === 1 ) {
-			$query->setFilter( $this->filters[0] );
-		}
-
 		$queryOptions = array();
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 
-		// Perform the search
+		// Setup the search
 		$description = $this->description;
-		$indexType = $this->pickIndexTypeFromNamespaces();
+		$search = CirrusSearchConnection::getPageType( $this->pickIndexTypeFromNamespaces() )
+			->createSearch( $query, $queryOptions );
+		foreach ( $extraIndexes as $i ) {
+			$search->addIndex( $i );
+		}
+
+		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $query, $queryOptions, $description ) {
+			'doWork' => function() use ( $description, $search ) {
 				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )->search( $query, $queryOptions );
+					$result = $search->search();
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-					return $result;
+					return Status::newGood( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "Search backend error during $description.  Error message is:  " . $e->getMessage() );
-					return false;
+					return Status::newFatal( 'cirrussearch-backend-error' );
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error searching Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
 		$result = $work->execute();
-		if ( !$result ) {
-			$status = new Status();
-			$status->warning( 'cirrussearch-backend-error' );
-			return $status;
+		if ( $result->isOK() ) {
+			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
+				$this->suggestSuffixes, $result->getValue() ) );
 		}
-		$result = $this->resultsType->transformElasticsearchResult( $result );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -381,7 +661,6 @@ class CirrusSearchSearcher {
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
 		$query->setDefaultOperator( 'AND' );
-		$query->setRewrite( 'constant_score_filter' ); // Work around for Elasticsearch #3754
 		return $query;
 	}
 
@@ -413,6 +692,11 @@ class CirrusSearchSearcher {
 		);
 	}
 
+	public static function switchSearchToExact( $term, $showRedirects ) {
+		$exact = join( ' OR ', CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$term" ) );
+		return "($exact)";
+	}
+
 	/**
 	 * Build fields searched by full text search.
 	 * @param $includeRedirects bool show redirects be included
@@ -425,6 +709,7 @@ class CirrusSearchSearcher {
 			'title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'title' ],
 			'heading' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'heading' ],
 			'text' . $fieldSuffix,
+			'file_text' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'file_text' ],
 		);
 		if ( $includeRedirects ) {
 			$fields[] = 'redirect.title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'redirect' ];
@@ -433,42 +718,49 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Pick the index type to search bases on the list of namespaces to search.
-	 * @return mixed index type in which to search
+	 * Pick the index type to search based on the list of namespaces to search.
+	 * @return string|false either an index type or false to use all index types
 	 */
 	private function pickIndexTypeFromNamespaces() {
 		if ( !$this->namespaces ) {
-			return false; // False selects both index types
+			return false; // False selects all index types
 		}
-		$needsContent = false;
-		$needsGeneral = false;
+
+		$indexTypes = array();
 		foreach ( $this->namespaces as $namespace ) {
-			if ( MWNamespace::isContent( $namespace ) ) {
-				$needsContent = true;
-			} else {
-				$needsGeneral = true;
-			}
-			if ( $needsContent && $needsGeneral ) {
-				return false; // False selects both index types
-			}
+			$indexTypes[] =
+				CirrusSearchConnection::getIndexSuffixForNamespace( $namespace );
 		}
-		return $needsContent ?
-			CirrusSearchConnection::CONTENT_INDEX_TYPE :
-			CirrusSearchConnection::GENERAL_INDEX_TYPE;
+		$indexTypes = array_unique( $indexTypes );
+		return count( $indexTypes ) > 1 ? false : $indexTypes[0];
+	}
+
+	/**
+	 * Retrieve the extra indexes for our searchable namespaces, if any
+	 * exist. If they do exist, also add our wiki to our notFilters so
+	 * we can filter out duplicates properly.
+	 *
+	 * @return array(string)
+	 */
+	private function getAndFilterExtraIndexes() {
+		$extraIndexes = CirrusSearchOtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
+		if ( $extraIndexes ) {
+			$this->notFilters[] = new \Elastica\Filter\Term(
+				array( 'local_sites_with_dupe' => wfWikiId() ) );
+		}
+		return $extraIndexes;
 	}
 
 	private function buildPrefixFilter( $search ) {
 		$match = new \Elastica\Query\Match();
-		$match->setField( 'title.prefix', array(
-			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
-			'analyzer' => 'lowercase_keyword',
-		) );
+		$match->setField( 'title.prefix', $search );
 		return new \Elastica\Filter\Query( $match );
 	}
 
 	/**
-	 * Escape some special characters that we don't want users to pass into query strings directly.
-	 * These special characters _aren't_ escaped: *, ~, and "
+	 * Make sure the the query string part is well formed by escaping some syntax that we don't
+	 * want users to get direct access to and making sure quotes are balanced.
+	 * These special characters _aren't_ escaped:
 	 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
 	 * idea but this is so rarely used that adding extra code to flip prefix searches into
 	 * real prefix searches isn't really worth it.  The same goes for postfix searches but
@@ -478,24 +770,20 @@ class CirrusSearchSearcher {
 	 * extra index for.
 	 * ": Perform a phrase search for the quoted term.  If the "s aren't balanced we insert one
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
+	 * +/-/!/||/&&: Symbols meaning AND, NOT, NOT, OR, and AND respectively.  - was supported by
+	 * LuceneSearch so we need to allow that one but there is no reason not to allow them all.
 	 */
-	public static function fixupQueryString( $string ) {
+	public static function fixupQueryStringPart( $string ) {
 		wfProfileIn( __METHOD__ );
 		$string = preg_replace( '/(
-				\+|
-				-|
 				\/|		(?# no regex searches allowed)
-				&&|
-				\|\||
-				!|
-				\(|
+				\(|     (?# no user supplied groupings)
 				\)|
-				\{|
+				\{|     (?# no exclusive range queries)
 				}|
-				\[|
+				\[|     (?# no inclusive range queries either)
 				]|
-				\^|
-				\?|
+				\^|     (?# no user supplied boosts at this point, though I cant think why)
 				:|		(?# no specifying your own fields)
 				\\\
 			)/x', '\\\$1', $string );
@@ -506,6 +794,7 @@ class CirrusSearchSearcher {
 		$len = strlen( $string );
 		for ( $i = 0; $i < $len; $i++ ) {
 			if ( $inEscape ) {
+				$inEscape = false;
 				continue;
 			}
 			switch ( $string[ $i ] ) {
@@ -519,6 +808,16 @@ class CirrusSearchSearcher {
 		if ( $inQuote ) {
 			$string = $string . '"';
 		}
+		wfProfileOut( __METHOD__ );
+		return $string;
+	}
+
+	/**
+	 * Make sure that all operators and lucene syntax is used correctly in the query string.
+	 * If it isn't then the syntax escaped so it becomes part of the query text.
+	 */
+	public static function fixupWholeQueryString( $string ) {
+		wfProfileIn( __METHOD__ );
 		// Turn bad fuzzy searches into searches that contain a ~
 		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
 			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {
@@ -535,349 +834,111 @@ class CirrusSearchSearcher {
 				return '"\\~' . $matches[ 'trailing' ];
 			}
 		}, $string );
+		// Escape +, -, and ! when not followed immediately by a term.
+		$string = preg_replace( '/(?:\\+|\\-|\\!)(?:\s|$)/', '\\\\$0', $string );
+		// Lowercase AND and OR when not surrounded on both sides by a term.
+		// Lowercase NOT when it doesn't have a term after it.
+		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/', 'CirrusSearchSearcher::lowercaseMatched', $string );
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)/', 'CirrusSearchSearcher::lowercaseMatched', $string );
 		wfProfileOut( __METHOD__ );
 		return $string;
 	}
 
+	private static function lowercaseMatched( $matches ) {
+		return strtolower( $matches[ 0 ] );
+	}
+
 	/**
-	 * Wrap query in link based boosts.
-	 * @param $query null|Elastica\Query optional query to boost.  if null the match_all is assumed
+	 * Wrap query in a CustomScore query if its score need to be modified.
+	 * @param $query Elastica\Query query to boost.
 	 * @return query that will run $query and boost results based on links
 	 */
-	private static function boostQuery( $query = null ) {
-		return new \Elastica\Query\CustomScore( "_score * log10(doc['links'].value + doc['redirect_links'].value + 2)", $query );
-	}
-}
+	private function boostQuery( $query ) {
+		$fuctionScore = new \Elastica\Query\FunctionScore();
+		$fuctionScore->setQuery( $query );
+		$useFunctionScore = false;
 
-interface CirrusSearchResultsType {
-	function getFields();
-	function getHighlightingConfiguration();
-	function transformElasticsearchResult( $result );
-}
-
-class CirrusSearchTitleResultsType {
-	public function getFields() {
-		return array( 'namespace', 'title' );
-	}
-	public function getHighlightingConfiguration() {
-		return null;
-	}
-	public function transformElasticsearchResult( $result ) {
-		$results = array();
-		foreach( $result->getResults() as $r ) {
-			$results[] = Title::makeTitle( $r->namespace, $r->title )->getPrefixedText();
+		// Customize score by boosting based on incoming links count
+		if ( $this->boostForLinks ) {
+			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
+			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
+			$scoreBoostMvel = "log10($incomingLinks + $incomingRedirectLinks + 2)";
+			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
+			$useFunctionScore = true;
 		}
-		return $results;
-	}
-}
 
-class CirrusSearchFullTextResultsType {
-	public function getFields() {
-		return array( 'id', 'title', 'namespace', 'redirect', 'textLen', 'text_bytes', 'text_words' );
-	}
-	/**
-	 * Setup highlighting.
-	 * Don't fragment title because it is small.
-	 * Get just one fragment from the text because that is all we will display.
-	 * Get one fragment from redirect title and heading each or else they
-	 * won't be sorted by score.
-	 * @return array of highlighting configuration
-	 */
-	public function getHighlightingConfiguration() {
-		return array(
-			'order' => 'score',
-			'pre_tags' => array( CirrusSearchSearcher::HIGHLIGHT_PRE ),
-			'post_tags' => array( CirrusSearchSearcher::HIGHLIGHT_POST ),
-			'fields' => array(
-				'title' => array( 'number_of_fragments' => 0 ),
-				'text' => array( 'number_of_fragments' => 1 ),
-				'redirect.title' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'heading' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'title.plain' => array( 'number_of_fragments' => 0 ),
-				'text.plain' => array( 'number_of_fragments' => 1 ),
-				'redirect.title.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'heading.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-			),
-		);
-	}
-	public function transformElasticsearchResult( $result ) {
-		return new CirrusSearchResultSet( $result );
-	}
-}
-
-/**
- * A set of results from Elasticsearch.
- */
-class CirrusSearchResultSet extends SearchResultSet {
-	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE
-	 */
-	private static $suggestionHighlightPreEscaped = null;
-	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST
-	 */
-	private static $suggestionHighlightPostEscaped = null;
-
-	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
-
-	public function __construct( $res ) {
-		$this->result = $res;
-		$this->hits = $res->count();
-		$this->totalHits = $res->getTotalHits();
-		$suggestion = $this->findSuggestion();
-		$this->suggestionQuery = $suggestion[ 'text' ];
-		$this->suggestionSnippet = self::escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
-	}
-
-	private function findSuggestion() {
-		// TODO some kind of weighting?
-		$suggest = $this->result->getResponse()->getData();
-		if ( !isset( $suggest[ 'suggest' ] ) ) {
-			return null;
-		}
-		$suggest = $suggest[ 'suggest' ];
-		// Elasticsearch will send back the suggest element but no sub suggestion elements if the wiki is empty.
-		// So we should check to see if they exist even though in normal operation they always will.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
-				return $option;
+		// Customize score by decaying a portion by time since last update
+		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {
+			// Convert half life for time in days to decay constant for time in milliseconds.
+			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
+			// e^ct - 1 where t is last modified time - now which is negative
+			$exponentialDecayMvel = "Math.expm1($decayConstant * (doc['timestamp'].value - time()))";
+			// p(e^ct - 1)
+			if ( $this->preferRecentDecayPortion !== 1.0 ) {
+				$exponentialDecayMvel = "$exponentialDecayMvel * $this->preferRecentDecayPortion";
 			}
+			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
+			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
+			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
+			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
+			$useFunctionScore = true;
 		}
-		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
-				return $option;
+
+		if ( $this->boostTemplates ) {
+			foreach ( $this->boostTemplates as $name => $boost ) {
+				$match = new \Elastica\Query\Match();
+				$match->setFieldQuery( 'template', $name );
+				// TODO replace with a boost_factor function when that is supported by elastica
+				$fuctionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
+					new \Elastica\Filter\Query( $match ) );
 			}
+			$useFunctionScore = true;
 		}
-		// This suggestion type is optional, configured in LocalSettings.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ][ 0 ][ 'options' ] as $option ) {
-				return $option;
-			}
+
+		if ( $useFunctionScore ) {
+			return $fuctionScore;
 		}
-		return null;
+		return $query;
 	}
 
-	/**
-	 * Escape a highlighted suggestion coming back from Elasticsearch.
-	 * @param $suggestion string suggestion from elasticsearch
-	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
-	 */
-	private static function escapeHighlightedSuggestion( $suggestion ) {
-		if ( self::$suggestionHighlightPreEscaped === null ) {
-			self::$suggestionHighlightPreEscaped =
-				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE );
-			self::$suggestionHighlightPostEscaped =
-				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST );
-		}
-		return str_replace( array( self::$suggestionHighlightPreEscaped, self::$suggestionHighlightPostEscaped ),
-			array( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE, CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST ),
-			htmlspecialchars( $suggestion ) );
-	}
-
-	public function hasResults() {
-		return $this->totalHits > 0;
-	}
-
-	public function getTotalHits() {
-		return $this->totalHits;
-	}
-
-	public function numRows() {
-		return $this->hits;
-	}
-
-	public function hasSuggestion() {
-		return $this->suggestionQuery !== null;
-	}
-
-	public function getSuggestionQuery() {
-		return $this->suggestionQuery;
-	}
-
-	public function getSuggestionSnippet() {
-		return $this->suggestionSnippet;
-	}
-
-	public function next() {
-		$current = $this->result->current();
-		if ( $current ) {
-			$this->result->next();
-			return new CirrusSearchResult( $current );
-		}
-		return false;
-	}
-}
-
-/**
- * An individual search result from Elasticsearch.
- */
-class CirrusSearchResult extends SearchResult {
-	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_PRE
-	 */
-	private static $highlightPreEscaped = null;
-	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_POST
-	 */
-	private static $highlightPostEscaped = null;
-
-	private $titleSnippet;
-	private $redirectTitle, $redirectSnipppet;
-	private $sectionTitle, $sectionSnippet;
-	private $textSnippet;
-	private $wordCount;
-	private $byteSize;
-
-	public function __construct( $result ) {
-		$title = Title::makeTitle( $result->namespace, $result->title );
-		$this->initFromTitle( $title );
-		// TODO temporary hack until text_words and text_bytes are fully populated.
-		$this->wordCount = $result->text_words === null ? $result->textLen : $result->text_words;
-		$this->byteSize = $result->text_bytes === null ? $result->textLen : $result->text_bytes;
-		$highlights = $result->getHighlights();
-		// Hack for https://github.com/elasticsearch/elasticsearch/issues/3750
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'title' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'text' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
-		if ( isset( $highlights[ 'title' ] ) ) {
-			$nstext = '';
-			if ( $title->getNamespace() !== 0 ) {
-				$nstext = $title->getNsText() . ':';
-			}
-			$this->titleSnippet = $nstext . self::escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
-		} else {
-			$this->titleSnippet = '';
-		}
-		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
-			$this->redirectSnipppet = self::escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
-			$this->redirectTitle = $this->findRedirectTitle( $result->redirect );
-		} else {
-			$this->redirectSnipppet = '';
-			$this->redirectTitle = null;
-		}
-		if ( isset( $highlights[ 'text' ] ) ) {
-			$this->textSnippet = self::escapeHighlightedText( $highlights[ 'text' ][ 0 ] );
-		} else {
-			// This whole thing is a work around for Elasticsearch #1171.
-			list( $contextLines, $contextChars ) = SearchEngine::userHighlightPrefs();
-			// Inittext is forbidden because it uses the default SearchEngine's getTextFromContent.  No good!
-			if ( $this->mRevision != null ) {
-				$this->mText = SearchEngine::create( 'CirrusSearch' )
-					->getTextFromContent( $this->mTitle, $this->mRevision->getContent() );
+	private static function getDefaultBoostTemplates() {
+		if ( self::$defaultBoostTemplates === null ) {
+			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
+			if( $source->isDisabled() ) {
+				self::$defaultBoostTemplates = array();
 			} else {
-				$this->mText = '';
+				$lines = explode( "\n", $source->plain() );
+				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
+				$lines = array_map( 'trim', $lines );          // Remove extra spaces
+				$lines = array_filter( $lines );               // Remove empty lines
+				self::$defaultBoostTemplates = self::parseBoostTemplates(
+					implode( ' ', $lines ) );                  // Now parse the templates
 			}
-			// This is kind of lame because it only is nice for space delimited languages
-			$matches = array();
-			$text = Sanitizer::stripAllTags( $this->mText );
-			if ( preg_match( "/^((?:.|\n){0,$contextChars})[\\s\\.\n]/", $text, $matches ) ) {
-				$text = $matches[1];
-			}
-			$this->textSnippet = implode( "\n", array_slice( explode( "\n", $text ), 0, $contextLines ) );
 		}
-		if ( isset( $highlights[ 'heading' ] ) ) {
-			$this->sectionSnippet = self::escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
-			$this->sectionTitle = $this->findSectionTitle();
-		} else {
-			$this->sectionSnippet = '';
-			$this->sectionTitle = null;
-		}
+		return self::$defaultBoostTemplates;
 	}
 
 	/**
-	 * Swap plain highlighting into the highlighting field if there isn't any normal highlighting.
-	 * @var $highlights array of highlighting results
-	 * @var $name string normal field name
-	 * @return $highlights with $name replaced with plain field results if $name isn't in $highlights
+	 * Parse boosted templates.  Parse failures silently return no boosted templates.
+	 * @param string $text text representation of boosted templates
+	 * @return array of boosted templates.
 	 */
-	private function swapInPlainHighlighting( $highlights, $name ) {
-		if ( !isset( $highlights[ $name ] ) && isset( $highlights[ "$name.plain" ] ) ) {
-			$highlights[ $name ] = $highlights[ "$name.plain" ];
-		}
-		return $highlights;
-	}
-
-	/**
-	 * Escape highlighted text coming back from Elasticsearch.
-	 * @param $snippet string highlighted snippet returned from elasticsearch
-	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
-	 */
-	private static function escapeHighlightedText( $snippet ) {
-		if ( self::$highlightPreEscaped === null ) {
-			self::$highlightPreEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_PRE );
-			self::$highlightPostEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_POST );
-		}
-		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
-			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
-			htmlspecialchars( $snippet ) );
-	}
-
-	/**
-	 * Build the redirect title from the highlighted redirect snippet.
-	 * @param array $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
-	 * @return Title object representing the redirect
-	 */
-	private function findRedirectTitle( $redirects ) {
-		$title = $this->stripHighlighting( $this->redirectSnipppet );
-		// Grab the redirect that matches the highlighted title with the lowest namespace.
-		// That is pretty arbitrary but it prioritizes 0 over others.
-		$best = null;
-		foreach ( $redirects as $redirect ) {
-			if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
-				$best = $redirect;
+	public static function parseBoostTemplates( $text ) {
+		$boostTemplates = array();
+		$templateMatches = array();
+		if ( preg_match_all( '/([^|]+)\|([0-9]+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
+			foreach ( $templateMatches as $templateMatch ) {
+				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
 			}
 		}
-		if ( $best === null ) {
-			wfLogWarning( "Search backend highlighted a redirect ($title) but didn't return it." );
+		return $boostTemplates;
+	}
+
+	private function checkTitleSearchRequestLength( $search ) {
+		$requestLength = strlen( $search );
+		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
+			throw new UsageException( 'Prefix search request was longer longer than the maximum allowed length.' .
+				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 		}
-		return Title::makeTitleSafe( $redirect[ 'namespace' ], $redirect[ 'title' ] );
-	}
-
-	private function findSectionTitle() {
-		$heading = $this->stripHighlighting( $this->sectionSnippet );
-		return Title::makeTitle(
-			$this->getTitle()->getNamespace(),
-			$this->getTitle()->getDBkey(),
-			Title::escapeFragmentForURL( $heading )
-		);
-	}
-
-	private function stripHighlighting( $highlighted ) {
-		$markers = array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST );
-		return str_replace( $markers, '', $highlighted );
-	}
-
-	public function getTitleSnippet( $terms ) {
-		return $this->titleSnippet;
-	}
-
-	public function getRedirectTitle() {
-		return $this->redirectTitle;
-	}
-
-	public function getRedirectSnippet( $terms ) {
-		return $this->redirectSnipppet;
-	}
-
-	public function getTextSnippet( $terms ) {
-		return $this->textSnippet;
-	}
-
-	public function getSectionSnippet() {
-		return $this->sectionSnippet;
-	}
-
-	public function getSectionTitle() {
-		return $this->sectionTitle;
-	}
-
-	public function getWordCount() {
-		return $this->wordCount;
-	}
-
-	public function getByteSize() {
-		return $this->byteSize;
 	}
 }

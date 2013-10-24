@@ -1,7 +1,9 @@
 <?php
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
- * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.
+ * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.  Note
+ * that lots of search behavior is hooked in CirrusSearchHooks rather than
+ * overridden here.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +24,30 @@ class CirrusSearch extends SearchEngine {
 	const MORE_LIKE_THIS_PREFIX = 'morelike:';
 
 	/**
-	 * @param string $term
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * @var string The last prefix substituted by replacePrefixes.
+	 */
+	private $lastNamespacePrefix;
+
+	/**
+	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
+	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
+	 * via the ArticleDeleteComplete hook.
+	 * @param string $feature feature name
+	 * @return bool is this feature supported?
+	 */
+	public function supports( $feature ) {
+		switch ( $feature ) {
+		case 'search-update':
+			return false;
+		default:
+			return parent::supports( $feature );
+		}
+	}
+
+	/**
+	 * Overridden to delegate prefix searching to CirrusSearchSearcher.
+	 * @param string $term text to search
+	 * @return CirrusSearchResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
 		$searcher = new CirrusSearchSearcher( $this->offset, $this->limit, $this->namespaces );
@@ -31,70 +55,39 @@ class CirrusSearch extends SearchEngine {
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
 			$term = substr( $term, 1 );
+			$searcher->addSuggestPrefix( '~' );
 		}
+
+		if ( $this->lastNamespacePrefix ) {
+			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
+		}
+
+		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
 			$title = Title::newFromText( $term );
 			if ( !$title ) {
-				return null;
+				$status = Status::newGood( null );
+			} else {
+				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
 			}
-			return $searcher->moreLikeThisArticle( $title->getArticleID() );
+		} else {
+			$status = $searcher->searchText( $term, $this->showRedirects );
 		}
-		return $searcher->searchText( $term, $this->showRedirects );
-	}
 
-	public function update( $id, $title, $text ) {
-		if ( $text === false || $text === null ) { // Can't just check falsy text because empty string is ok!
-			wfLogWarning( "Search update called with false or null text for $title.  Ignoring search update." );
-			return;
+		// For historical reasons all callers of searchText interpret any Status return as an error
+		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
+		// since that is interpreted as no results.
+		if ( $status->isOK() ) {
+			return $status->getValue();
 		}
-		CirrusSearchUpdater::updateFromTitleAndText( $id, $title, $text );
-	}
-
-	public function updateTitle( $id, $title ) {
-		$loadedTitle = Title::newFromID( $id );
-		if ( $loadedTitle === null ) {
-			wfLogWarning( 'Trying to update the search index for a non-existant title.' );
-			return;
-		}
-		CirrusSearchUpdater::updateFromTitle( $loadedTitle );
-	}
-
-	public function delete( $id, $title ) {
-		CirrusSearchUpdater::deletePages( array( $id ) );
-	}
-
-	public function getTextFromContent( Title $t, Content $c = null, $parserOutput = null ) {
-		$text = parent::getTextFromContent( $t, $c );
-		if( $c ) {
-			switch ( $c->getModel() ) {
-				case CONTENT_MODEL_WIKITEXT:
-					$text = CirrusSearchTextFormatter::formatWikitext( $t, $parserOutput );
-					break;
-				default:
-					$text = SearchUpdate::updateText( $text );
-					break;
-			}
-		}
-		return $text;
-	}
-
-	public function textAlreadyUpdatedForIndex() {
-		return true;
-	}
-
-	/**
-	 * Noop because Elasticsearch handles all required normalization.
-	 * @param string $string String to process
-	 * @return string $string exactly as passed in
-	 */
-	public function normalizeText( $string ) {
-		return $string;
+		return $status;
 	}
 
 	/**
 	 * Merge the prefix into the query (if any).
-	 * @var $term string search term
+	 * @var string $term search term
+	 * @return string possibly with a prefix appended
 	 */
 	public function transformSearchTerm( $term ) {
 		if ( $this->prefix != '' ) {
@@ -102,5 +95,15 @@ class CirrusSearch extends SearchEngine {
 			$term = $term . ' prefix:' . $this->prefix;
 		}
 		return $term;
+	}
+
+	public function replacePrefixes( $query ) {
+		$parsed = parent::replacePrefixes( $query );
+		if ( $parsed !== $query ) {
+			$this->lastNamespacePrefix = substr( $query, 0, strlen( $query ) - strlen( $parsed ) );
+		} else {
+			$this->lastNamespacePrefix = '';
+		}
+		return $parsed;
 	}
 }

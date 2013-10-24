@@ -16,7 +16,7 @@ Given(/^a page named (.*) doesn't exist$/) do |title|
   end
 end
 
-When(/^I delete (.+)$/) do |title|
+When(/^I delete (?!the second)(.+)$/) do |title|
   visit(DeletePage, using_params: {page_name: title}) do |page|
     page.delete
   end
@@ -24,28 +24,39 @@ end
 When(/^I edit (.+) to add (.+)$/) do |title, text|
   edit_page(title, text, true)
 end
+When(/^I delete the second most recent revision of (.*)$/) do |title|
+  visit(ArticleHistoryPage, using_params: {page_name: title}) do |page|
+    page.check_second_most_recent_checkbox
+    page.change_visibility_of_selected
+  end
+  on(ArticleRevisionDeletePage) do |page|
+    page.check_revisions_text
+    page.change_visibility_of_selected
+  end
+end
+
 
 def edit_page(title, text, add)
-  if text.start_with?('@')
-    text = File.read('features/support/articles/' + text[1..-1])
+  if text.start_with?("@")
+    text = File.read("features/support/articles/" + text[1..-1])
   end
   visit(EditPage, using_params: {page_name: title}) do |page|
     if (!page.article_text? and page.login?) then
       # Looks like we're not being given the article text probably because we're
       # trying to edit an article that requires us to be logged in.  Lets try
       # logging in.
-      step 'I am logged in'
+      step "I am logged in"
       visit(EditPage, using_params: {page_name: title})
     end
     if (page.article_text.strip != text.strip) then
       if (!page.save? and page.login?) then
         # Looks like I'm at a page I don't have permission to change and I'm not
         # logged in.  Lets log in and try again.
-        step 'I am logged in'
+        step "I am logged in"
         visit(EditPage, using_params: {page_name: title})
       end
       if !add then
-        page.article_text = ''
+        page.article_text = ""
       end
       # Firefox chokes on huge batches of text so split it into chunks and use
       # send_keys rather than page-objects built in += because that clears and
@@ -59,7 +70,7 @@ def edit_page(title, text, add)
 end
 
 def upload_file(title, contents, description)
-  contents = 'features/support/articles/' + contents
+  contents = "features/support/articles/" + contents
   md5 = Digest::MD5.hexdigest(File.read(contents))
   md5_string = "md5: #{md5}"
   visit(ArticlePage, using_params: {page_name: title}) do |page|
@@ -67,7 +78,7 @@ def upload_file(title, contents, description)
       return
     end
     if !(page.upload_new_version? || page.upload?)
-      step 'I am logged in'
+      step "I am logged in"
       visit(ArticlePage, using_params: {page_name: title})
     end
     if page.upload?

@@ -68,3 +68,37 @@ Feature: Full text search highlighting
   Scenario: camelCase is highlighted correctly
     When I search for namespace aliases
     Then $wg*Namespace**Aliases* is the highlighted title of the first search result
+
+  @file_text
+  Scenario: When you search for text that is in a file if there are no matches on the page you get the highlighted text from the file
+    When I search for File:debian rhino
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+    And File contents match: *Debian* is in the highlighted text of the first search result
+    And Arco-*Debian* is in the highlighted text of the first search result
+    And Black*Rhino* is in the highlighted text of the first search result
+
+  @file_text
+  Scenario: When you search for text that is in a file if there are matches on the page you get those
+    When I search for File:debian rhino linux
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+    And *Linux* distribution timeline. is the highlighted text of the first search result
+
+  @highlight_redirect
+  Scenario: Redirects containing &s are highlighted
+    Given a page named Highlight & Ampersand exists with contents #REDIRECT [[Main Page]]
+    When I search for Highlight Ampersand
+    Then *Highlight* &amp; *Ampersand* is the highlighted alttitle of the first search result
+
+  @highlight_redirect
+  Scenario: The best matched redirect is highlighted
+    Given a page named Rrrrtest Foorr exists with contents #REDIRECT [[Main Page]]
+    And a page named Rrrrtest Foorr Barr exists with contents #REDIRECT [[Main Page]]
+    And a page named Rrrrtest exists with contents #REDIRECT [[Main Page]]
+    When I search for Rrrrtest Foorr Barr
+    Then *Rrrrtest* *Foorr* *Barr* is the highlighted alttitle of the first search result
+
+  @highlight_redirect
+  Scenario: Long redirects are highlighted
+    Given a page named Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong exists with contents #REDIRECT [[Main Page]]
+    When I search for Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong
+    Then *Joint* *Declaration* of the *Government* of the *United* *Kingdom* of *Great* *Britain* and *Northern* *Ireland* and the *Government* of the *People*'*s* *Republic* of *China* on the *Question* of *Hong* *Kong* is the highlighted alttitle of the first search result

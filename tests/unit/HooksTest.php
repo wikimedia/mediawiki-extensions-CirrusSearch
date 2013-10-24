@@ -1,6 +1,6 @@
 <?php
 /**
- * Hooks prefixSearch to back search results to CirrusSearchSearcher.
+ * Make sure cirrus doens't break any hooks.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchPrefixSearchHook {
-	/**
-	 * @param $ns
-	 * @param $search
-	 * @param $limit
-	 * @param $results
-	 * @return bool 
-	 */
-	public static function prefixSearch( $ns, $search, $limit, &$results ) {
-		$searcher = new CirrusSearchSearcher( 0, $limit, $ns );
-		$searcher->setResultsType( new CirrusSearchTitleResultsType() );
-		$results = $searcher->prefixSearch( $search );
-		return false;
+class HooksTest extends MediaWikiTestCase {
+	public function testHooksAreArrays() {
+		global $wgHooks;
+
+		foreach ( $wgHooks as $name => $array ) {
+			$this->assertThat( $array, $this->isType( 'array' ),
+				"The $name hook should be an array." );
+		}
 	}
 }

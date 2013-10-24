@@ -57,17 +57,24 @@ class CirrusSearchAnalysisConfigBuilder {
 					// analyzer is the lack of english stop words.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase' )
+					'filter' => array( 'standard', 'lowercase' ),
 				),
 				'suggest' => array(
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase', 'suggest_shingle' ),
 				),
+				'near_match' => array(
+					'type' => 'custom',
+					'tokenizer' => 'no_splitting',
+					'filter' => array( 'lowercase' ),
+					'char_filter' => array( 'near_space_flattener' ),
+				),
 				'prefix' => array(
 					'type' => 'custom',
 					'tokenizer' => 'prefix',
-					'filter' => array( 'lowercase' )
+					'filter' => array( 'lowercase' ),
+					'char_filter' => array( 'near_space_flattener' ),
 				),
 				'word_prefix' => array(
 					'type' => 'custom',
@@ -77,7 +84,7 @@ class CirrusSearchAnalysisConfigBuilder {
 				'lowercase_keyword' => array(
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => array( 'lowercase' )
+					'filter' => array( 'lowercase' ),
 				),
 			),
 			'filter' => array(
@@ -96,18 +103,28 @@ class CirrusSearchAnalysisConfigBuilder {
 				),
 				'prefix_ngram_filter' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_PREFIX_SEARCH,
+					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
 				),
 			),
 			'tokenizer' => array(
 				'prefix' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_PREFIX_SEARCH,
+					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',
 				),
-			)
+			),
+			'char_filter' => array(
+				// Flattens things that are space like to spaces in the near_match style analyzersc
+				'near_space_flattener' => array(
+					'type' => 'mapping',
+					'mappings' => array(
+						"'=>\u0020",
+						'’=>\u0020',
+					),
+				),
+			),
 		);
 	}
 
@@ -149,6 +166,7 @@ class CirrusSearchAnalysisConfigBuilder {
 			// Add asciifolding to the prefix queries and incategory filters
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
 			break;
 		case 'tr':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';

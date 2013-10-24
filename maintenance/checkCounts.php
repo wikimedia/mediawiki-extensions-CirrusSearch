@@ -1,6 +1,7 @@
 <?php
 /**
- * Update the search configuration on the search backend.
+ * Check the number of documents in the search index against the number of pages
+ * in SiteStats.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,29 +24,22 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
-/**
- * Update the elasticsearch configuration for this index.
- */
-class UpdateSearchIndexConfig extends Maintenance {
+
+class CheckCounts extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies." );
-		// Directly require this script so we can include its parameters as maintenance scripts can't use the autoloader
-		// in __construct.  Lame.
-		require_once __DIR__ . '/updateOneSearchIndexConfig.php';
-		UpdateOneSearchIndexConfig::addSharedOptions( $this );
+		$this->mDescription = "Check count of documents in search index against count in SiteStats.";
 	}
 
 	public function execute() {
-		foreach ( CirrusSearchConnection::getAllIndexTypes() as $indexType ) {
-			$this->output( "$indexType index...\n");
-			$child = $this->runChild( 'UpdateOneSearchIndexConfig' );
-			$child->mOptions[ 'indexType' ] = $indexType;
-			$child->mOptions[ 'indent' ] = "\t";
-			$child->execute();
-		}
+		$siteStats = SiteStats::pages();
+		$elasticsearch = CirrusSearchConnection::getPageType()->count();
+		$difference = round( 200.0 * abs( $siteStats - $elasticsearch ) / ( $siteStats + $elasticsearch ) );
+		$this->output( "SiteStats=$siteStats\n" );
+		$this->output( "Elasticsearch=$elasticsearch\n" );
+		$this->output( "Percentage=$difference%\n");
 	}
 }
 
-$maintClass = "UpdateSearchIndexConfig";
+$maintClass = "CheckCounts";
 require_once RUN_MAINTENANCE_IF_MAIN;

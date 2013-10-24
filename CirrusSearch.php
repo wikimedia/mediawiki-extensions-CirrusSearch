@@ -49,7 +49,51 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // The default of 0 is fine for single-node setups, but if this is
 // deployed to a multi-node setting you probably at least want these
 // set to 1 for some redundancy, if not 2 for more redundancy.
-$wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
+$wgCirrusSearchReplicaCount = array( 'content' => 0, 'general' => 0 );
+
+// By default, Cirrus will organize pages into one of two indexes (general or
+// content) based on whether a page is in a content namespace. This should
+// suffice for most wikis. This setting allows individual namespaces to be
+// mapped to specific index suffixes. The keys are the namespace number, and
+// the value is a string name of what index suffix to use. Changing this setting
+// requires a full reindex (not in-place) of the wiki.  If this setting contains
+// any values then the index names must also exist in $wgCirrusSearchShardCount
+// and $wgCirrusSearchReplicaCount.
+$wgCirrusSearchNamespaceMappings = array();
+
+// Extra indexes (if any) you want to search, and for what namespaces?
+// The key should be the local namespace, with the value being an array of one
+// or more indexes that should be searched as well for that namespace.
+//
+// NOTE: This setting makes no attempts to ensure compatibility across
+// multiple indexes, and basically assumes everyone's using a CirrusSearch
+// index that's more or less the same. Most notably, we can't guarantee
+// that namespaces match up; so you should only use this for core namespaces
+// or other times you can be sure that namespace IDs match 1-to-1.
+//
+// NOTE Part Two: Adding an index here is cause cirrus to update spawn jobs to
+// update that other index, trying to set the local_sites_with_dupe field.  This
+// is used to filter duplicates that appear on the remote index.  This is always
+// done by a job, even when run from forceSearchIndex.php.  If you add an image
+// to your wiki but after it is in the extra search index you'll see duplicate
+// results until the job is done.
+$wgCirrusSearchExtraIndexes = array();
+
+// Shard timeout for non-maintenance index operations including those done in the web
+// process and those done via job queue.  This is the amount of time Elasticsearch
+// will wait around for an offline primary shard.  Currently this is just used in
+// page updates and not deletes.  If this is specified then page updates cannot use
+// the bulk api so they will be less efficient.  Luckily, this isn't used in
+// maintenance scripts which really need bulk operations.  It is defined in
+// Elasticsearch's time format which is a string containing a number and then a unit
+// which is one of d (days), m (minutes), h (hours), ms (milliseconds) or w (weeks).
+// Cirrus defaults to a very tiny value to prevent folks from waiting around for
+// updates.
+$wgCirrusSearchShardTimeout = '1ms';
+
+// Client side timeout for non-maintenance index and delete operations and freshness
+// checks in seconds.
+$wgCirrusSearchClientSideUpdateTimeout = 5;
 
 // Is it ok if the prefix starts on any word in the title or just the first word?
 // Defaults to false (first word only) because that is the wikipedia behavior and so
@@ -104,7 +148,22 @@ $wgCirrusSearchLinkedArticlesToUpdate = 5;
 $wgCirrusSearchUnlinkedArticlesToUpdate = 5;
 
 // Weight of fields relative to article text
-$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0 );
+$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0, 'file_text' => 0.8 );
+
+// Portion of an article's score that decays with time since it's last update.  Defaults to 0
+// meaning don't decay the score at all unless prefer-recent: prefixes the query.
+$wgCirrusSearchPreferRecentDefaultDecayPortion = 0;
+
+// Portion of an article's score that decays with time if prefer-recent: prefixes the query but
+// doesn't specify a portion.  Defaults to .6 because that approximates the behavior that
+// wikinews has been using for years.  An article 160 days old is worth about 70% of its new score.
+$wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
+
+// Default number of days it takes the portion of an article's score that decays with time since
+// last update to half way decay to use if prefer-recent: prefixes query and doesn't specify a
+// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 157 because
+// that approximates the behavior that wikinews has been using for years.
+$wgCirrusSearchPreferRecentDefaultHalfLife = 160;
 
 // How long to cache link counts for (in seconds)
 $wgCirrusSearchLinkCountCacheTime = 0;
@@ -123,40 +182,74 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 // Changing it requires an in place reindex to take effect.  Currently only available in English.
 $wgCirrusSearchUseAggressiveSplitting = true;
 
+// Show the notification about this wiki using CirrusSearch on the search page.
+$wgCirrusSearchShowNowUsing = false;
+
+// If Cirrus is enabled as a secondary search, allow users to
+// set a preference with Extension:BetaFeatures to set it as
+// their primary search engine.
+$wgCirrusSearchEnablePref = false;
+
+// Should Cirrus show the score?
+$wgCirrusSearchShowScore = false;
+
 $includes = __DIR__ . "/includes/";
 /**
  * Classes
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $includes . 'CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchHooks'] = $includes . 'CirrusSearchHooks.php';
 $wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnection.php';
+$wgAutoloadClasses['CirrusSearchDeletePagesJob'] = $includes . 'CirrusSearchDeletePagesJob.php';
+$wgAutoloadClasses['CirrusSearchLinksUpdateJob'] = $includes . 'CirrusSearchLinksUpdateJob.php';
+$wgAutoloadClasses['CirrusSearchFullTextResultsType'] = $includes . 'CirrusSearchResultsType.php';
+$wgAutoloadClasses['CirrusSearchJob'] = $includes . 'CirrusSearchJob.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $includes . 'CirrusSearchPrefixSearchHook.php';
+$wgAutoloadClasses['CirrusSearchOtherIndexes'] = $includes . 'CirrusSearchOtherIndexes.php';
+$wgAutoloadClasses['CirrusSearchOtherIndexJob'] = $includes . 'CirrusSearchOtherIndexJob.php';
 $wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
+$wgAutoloadClasses['CirrusSearchResult'] = $includes . 'CirrusSearchResult.php';
+$wgAutoloadClasses['CirrusSearchResultSet'] = $includes . 'CirrusSearchResultSet.php';
+$wgAutoloadClasses['CirrusSearchResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchSearcher'] = $includes . 'CirrusSearchSearcher.php';
 $wgAutoloadClasses['CirrusSearchTextFormatter'] = $includes . 'CirrusSearchTextFormatter.php';
+$wgAutoloadClasses['CirrusSearchTitleResultsType'] = $includes . 'CirrusSearchResultsType.php';
+$wgAutoloadClasses['CirrusSearchUpdatePagesJob'] = $includes . 'CirrusSearchUpdatePagesJob.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php';
 
 /**
  * Hooks
- * Also check Setup for other hooks.
  */
-$wgHooks['LinksUpdateComplete'][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
+$wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearchHooks::apiBeforeMainHook';
+$wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearchHooks::articleDeleteCompleteHook';
+$wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearchHooks::onRevisionDelete';
+$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearchHooks::beforeInitializeHook';
+$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearchHooks::getPreferencesHook';
+$wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchHooks::linksUpdateCompletedHook';
+$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearchHooks::searchGetNearMatchBeforeHook';
+$wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearchHooks::softwareInfoHook';
+$wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearchHooks::specialSearchResultsPrependHook';
+$wgHooks[ 'UnitTestsList' ][] = 'CirrusSearchHooks::getUnitTestsList';
+$wgExtensionFunctions[] = 'cirrusSetup';
+
+function cirrusSetup() {
+	global $wgSearchType;
+	global $wgHooks;
+	if ( $wgSearchType === 'CirrusSearch' ) {
+		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchHooks::prefixSearch';
+	}
+}
 
 /**
  * i18n
  */
 $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
 
-
 /**
- * Setup
+ * Jobs
  */
-$wgExtensionFunctions[] = 'cirrusSearchSetup';
-function cirrusSearchSetup() {
-	global $wgSearchType, $wgHooks;
-	// Install our prefix search hook only if we're enabled.
-	if ( $wgSearchType === 'CirrusSearch' ) {
-		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchPrefixSearchHook::prefixSearch';
-	}
-}
+$wgJobClasses[ 'cirrusSearchDeletePages' ] = 'CirrusSearchDeletePagesJob';
+$wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearchLinksUpdateJob';
+$wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearchOtherIndexJob';
+$wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearchUpdatePagesJob';

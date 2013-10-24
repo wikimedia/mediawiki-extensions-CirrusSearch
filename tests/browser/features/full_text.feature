@@ -12,20 +12,7 @@ Feature: Full text search
     | term                                 | first_result                      | two_words_is_in | image? |
     | catapult                             | Catapult is in                    | in              |        |
     | pickles                              | Two Words is                      | in              |        |
-    # Catches Bug 54399
-    | catapul*                             | Catapult is in                    | in              |        |
     | rdir                                 | Two Words is                      | not in          |        |
-    | intitle:catapult                     | Catapult is in                    | not in          |        |
-    | intitle:catapul*                     | Catapult is in                    | not in          |        |
-    | intitle:catapult amazing             | Amazing Catapult is               | not in          |        |
-    | intitle:catapul* amaz*               | Amazing Catapult is               | not in          |        |
-    | incategory:weaponry                  | Catapult is in                    | not in          |        |
-    | incategory:weaponry amazing          | Amazing Catapult is               | not in          |        |
-    | incategory:weaponry intitle:catapult | Catapult is in                    | not in          |        |
-    | incategory:alpha incategory:beta     | AlphaBeta is                      | not in          |        |
-    | incategory:twowords catapult         | Two Words is                      | in              |        |
-    | incategory:twowords intitle:catapult | none is                           | not in          |        |
-    | incategory:templatetagged two words  | Two Words is                      | in              |        |
     | talk:catapult                        | Talk:Two Words is                 | not in          |        |
     | talk:intitle:words                   | Talk:Two Words is                 | not in          |        |
     | template:pickles                     | Template:Template Test is         | not in          |        |
@@ -43,8 +30,6 @@ Feature: Full text search
     | "3.1 Conquest of Persian empire"     | none is                           | not in          |        |
     # You can't search for the [edit] tokens that users can click to edit sections
     | "Succession of Umar edit"            | none is                           | not in          |        |
-    | intitle:"" catapult                  | none is                           | not in          |        |
-    | incategory:"" catapult               | none is                           | not in          |        |
 
   @setup_main
   Scenario Outline: Searching for empty-string like values
@@ -53,41 +38,45 @@ Feature: Full text search
     And there are no search results
     And there are no errors reported
   Examples:
-    | term             | title          |
-    | the empty string | Search         |
-    | ♙                | Search results |
-    | intitle:         | Search results |
-    | intitle:""       | Search results |
-    | incategory:      | Search results |
-    | incategory:""    | Search results |
+    | term                    | title          |
+    | the empty string        | Search         |
+    | ♙                       | Search results |
+    | %{exact: }              | Search results |
+    | %{exact:      }         | Search results |
+    | %{exact:              } | Search results |
 
-  @setup_suggestions
+  @suggestions
   Scenario: Common phrases spelled incorrectly get suggestions
     When I search for popular cultur
     Then popular *culture* is suggested
 
-  @setup_suggestions
+  @suggestions
   Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
     When I search for noble prize
     Then *nobel* prize is suggested
 
-  @setup_suggestions
+  @suggestions
   Scenario: Uncommon phrases spelled correctly don't get suggestions even if one of the words is very uncommon
     When I search for nobel prize
     Then there is no suggestion
 
-  @setup_suggestions
-  Scenario: Suggetions can come from redirect titles when redirects are included in search
+  @suggestions
+  Scenario: Suggestions can come from redirect titles when redirects are included in search
     When I search for Rrr Ward
     Then rrr *word* is suggested
 
-  @setup_suggestions
-  Scenario: Suggetions don't come from redirect titles when redirects are not included in search
+  @suggestions
+  Scenario: Suggestions don't come from redirect titles when redirects are not included in search
     Given I am at the search results page
     And I click the Advanced link
     And I click the List redirects label
     When I search for Rrr Ward
     Then there is no suggestion
+
+  @suggestions
+  Scenario: When the search contains a namespace prefix the suggestion should also contain that prefix
+    When I search for Template:nobel piep
+    Then Template:*noble pipe* is suggested
 
   @setup_weight
   Scenario: Page weight include redirects
@@ -105,28 +94,13 @@ Feature: Full text search
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
 
-  @setup_main
-  Scenario: Searching for a quoted category that doesn't exist finds nothing even though there is a category that matches one of the words
-    When I search for incategory:"Dontfindme Weaponry"
-    Then there are no search results
-
-  @setup_main
-  Scenario: Searching for a single word category doesn't find a two word category that contains that word
-    When I search for incategory:ASpace
-    Then there are no search results
-
-  @setup_main
-  Scenario: Searching for multiword category finds it
-    When I search for incategory:"CategoryWith ASpace"
-    Then IHaveATwoWordCategory is the first search result
-
   @setup_more_like_this
   Scenario: Searching for morelike:<page that doesn't exist> returns no results
     When I search for morelike:IDontExist
     Then there are no search results
 
   @setup_more_like_this
-  Scenario: Searching for morelike:<page> returns pages that are 'like' that page
+  Scenario: Searching for morelike:<page> returns pages that are "like" that page
     When I search for morelike:More Like Me 1
     Then More Like Me is in the first search result
     But More Like Me 1 is not in the search results
@@ -181,7 +155,7 @@ Feature: Full text search
     When I search for ffnonesensewor~0
     Then there are no search results
 
-  @setup_main
+  @setup_main @balance_quotes
   Scenario Outline: Searching for for a phrase with a hanging quote adds the quote automatically
     When I search for <term>
     Then Two Words is the first search result
@@ -191,6 +165,19 @@ Feature: Full text search
     | "two words" "ffnonesenseword catapult         |
     | "two words" "ffnonesenseword catapult pickles |
     | "two words" pickles "ffnonesenseword catapult |
+
+  @balance_quotes
+  Scenario Outline: Searching for a phrase containing /, :, and \" find the page as expected
+    Given a page named <title> exists
+    When I search for <term>
+    Then <title> is the first search result
+  Examples:
+    |                        term                       |                   title                   |
+    | "10.1093/acprof:oso/9780195314250.003.0001"       | 10.1093/acprof:oso/9780195314250.003.0001 |
+    | "10.5194/os-8-1071-2012"                          | 10.5194/os-8-1071-2012                    |
+    | "10.7227/rie.86.2"                                | 10.7227/rie.86.2                          |
+    | "10.7227\"yay"                                    | 10.7227"yay                               |
+    | intitle:"1911 Encyclopædia Britannica/Dionysius"' | 1911 Encyclopædia Britannica/Dionysius    |
 
   @setup_main
   Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search
@@ -357,3 +344,147 @@ Feature: Full text search
     When I search for prefix test aaaa prefix:Prefix Test/aa
     Then Prefix Test/AAAA is the first search result
     But Prefix Test AAAA is not in the search results
+
+  @boolean_operators @setup_main
+  Scenario Outline: -, !, and NOT prohibit words in search results
+    When I search for <query>
+    Then Catapult is the first search result
+    But Amazing Catapult is not in the search results
+  Examples:
+  |        query         |
+  | catapult -amazing    |
+  | -amazing catapult    |
+  | catapult !amazing    |
+  | !amazing catapult    |
+  | catapult NOT amazing |
+  | NOT amazing catapult |
+
+  @boolean_operators @setup_main
+  Scenario Outline: +, &&, and AND require matches but since that is the default they don't look like they do anything
+    When I search for <query>
+    Then Amazing Catapult is the first search result
+    But Catapult is not in the search results
+  Examples:
+  |         query         |
+  | +catapult amazing     |
+  | amazing +catapult     |
+  | +amazing +catapult    |
+  | catapult AND amazing  |
+
+  @boolean_operators @setup_main
+  Scenario Outline: OR and || matches docs with either set
+    When I search for <query>
+    Then Catapult is in the search results
+    And Two Words is in the search results
+  Examples:
+  |          query          |
+  | catapult OR África      |
+  | África \|\| catapult    |
+  | catapult OR "África"   |
+  | catapult \|\| "África" |
+  | "África" OR catapult   |
+  | "África" \|\| catapult |
+
+  @boolean_operators @setup_main
+  Scenario Outline: boolean operators in bad positions in the query are ignored
+    When I search for <query>
+    Then Catapult is in the first search result
+  Examples:
+  |         query          |
+  | catapult +             |
+  | catapult -             |
+  | catapult !             |
+  | catapult AND           |
+  | catapult OR            |
+  | catapult NOT           |
+  | + catapult             |
+  | - catapult             |
+  | ! catapult             |
+  | AND catapult           |
+  | OR catapult            |
+  | catapult + amazing     |
+  | catapult - amazing     |
+  | catapult ! amazing     |
+  | catapult AND + amazing |
+  | catapult AND - amazing |
+  | catapult AND ! amazing |
+
+  @boolean_operators @setup_main
+  Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)
+    When I search for NOT catapult
+    Then there is a search result
+
+  @wildcards @setup_main
+  Scenario: searching with a single wildcard finds expected results
+    When I search for catapul*
+    Then Catapult is the first search result
+
+  @wildcards @setup_main
+  Scenario: wildcards match plain matches
+    When I search for pi*les
+    Then Two Words is the first search result
+
+  @wildcards @setup_main
+  Scenario: wildcards don't match stemmed matches
+    When I search for pi*le
+    Then there are no search results
+
+  @prefer_recent
+  Scenario Outline: Recently updated articles are prefered if prefer-recent: is specified
+    When I search for PreferRecent First OR Second OR Third
+    Then PreferRecent Second Second is the first search result
+    When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
+    Then PreferRecent Third is the first search result
+  Examples:
+    |   options   |
+    | 1,.001      |
+    | 1,0.001     |
+    | 1,.0001     |
+    | .99,.0001   |
+    | .99,.001    |
+    | .8,.0001    |
+    | .7,.0001    |
+
+  @prefer_recent
+  Scenario Outline: You can specify prefer-recent: in such a way that being super recent isn't enough
+    When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
+    Then PreferRecent Second Second is the first search result
+  Examples:
+    |  options  |
+    |           |
+    | 1         |
+    | 1,1       |
+    | 1,.1      |
+    | .4,.0001  |
+
+  @boost_template
+  Scenario: Searching for a page without template boosts doesn't use them
+    When I search for BoostTemplateTest
+    Then NoTemplates BoostTemplateTest is the first search result
+
+  @boost_template
+  Scenario: Adding a single template boost is recognized
+    When I search for boost-templates:"Template:BoostTemplateLow|10000%" BoostTemplateTest
+    Then LowTemplate is the first search result
+
+  @boost_template
+  Scenario: Adding two template boosts is also recognized
+    When I search for boost-templates:"Template:BoostTemplateLow|10000% Template:BoostTemplateHigh|100000%" BoostTemplateTest
+    Then HighTemplate is the first search result
+
+  @boost_template
+  Scenario: Four templates is just fine (though I'm only actually using two of them)
+    When I search for boost-templates:"Template:BoostTemplateFake|10% Template:BoostTemplateLow|10000% Template:BoostTemplateFake2|1000000% Template:BoostTemplateHigh|100000%" BoostTemplateTest
+    Then HighTemplate is the first search result
+
+  @boost_template
+  Scenario: Template boosts can also lower the score of a template
+    When I search for boost-templates:"Template:BoostTemplateLow|1%" BoostTemplateTest -intitle:"BoostTemplateTest"
+    Then HighTemplate is the first search result
+    When I search for boost-templates:"Template:BoostTemplateHigh|1%" BoostTemplateTest -intitle:"BoostTemplateTest"
+    Then LowTemplate is the first search result
+
+  @file_text
+  Scenario: When you search for text that is in a file, you can find it!
+    When I search for File:debian rhino
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult

@@ -1,6 +1,9 @@
 Given(/^I am at the search results page(?: with the search (.+?)(?: and the prefix (.+))?)?$/) do |search, prefix|
   visit(SearchResultsPage, using_params: {search: search, prefix: prefix})
 end
+When(/^I go search for (.*)$/) do |search|
+  visit(SearchResultsPage, using_params: {search: search})
+end
 
 When(/^I type (.+) into the search box$/) do |search_term|
   on(SearchPage).search_input = search_term
@@ -21,12 +24,12 @@ When(/^I search for (.+)$/) do |text|
   #If I'm on the search page then I actually want to search in that box not the
   #one in the upper right.
   page_type = RandomPage
-  if ['Search', 'Search results'].include?(on(ArticlePage).title) then
+  if ["Search", "Search results"].include?(on(ArticlePage).title) then
     page_type = SearchResultsPage
   end
   on(page_type) do |page|
-    if text == 'the empty string' then
-      page.search_input = ''
+    if text == "the empty string" then
+      page.search_input = ""
       if page.simple_search_button? then
         page.simple_search_button
       else
@@ -55,7 +58,7 @@ When(/^I click the (.*) link$/) do |text|
   @browser.link(:text => text).click
 end
 When(/^I click the (.*) label(?:s)?$/) do |text|
-  text.split(',').each do |link_text|
+  text.split(",").each do |link_text|
     link_text.strip!
     if link_text.include? " or " then
       found = false
@@ -86,8 +89,8 @@ Then(/^suggestions should( not)? appear$/) do |not_appear|
   end
 end
 Then(/^(.+) is the first suggestion$/) do |title|
-  if title == 'none' then
-    step 'there are no search results'
+  if title == "none" then
+    on(SearchPage).one_result_element.should_not be_visible
   else
     on(SearchPage).one_result.should == title
   end
@@ -98,9 +101,12 @@ end
 Then(/^I am on a page titled (.*)$/) do |title|
   on(ArticlePage).title.should == title
 end
+Then(/^there is a search result$/) do
+  on(SearchResultsPage).first_result_element.should exist
+end
 Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
-    if title == 'none' then
+    if title == "none" then
       page.first_result_element.should_not exist
       page.first_image_result_element.should_not exist
     else
@@ -115,7 +121,7 @@ Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
 end
 Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
-    if title == 'none' then
+    if title == "none" then
       page.first_result_element.should_not exist
       page.first_image_result_element.should_not exist
     else
@@ -131,7 +137,7 @@ Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
 end
 Then(/^(.*) is( in)? the second search result$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
-    if title == 'none' then
+    if title == "none" then
       page.second_result_wrapper_element.should_not exist
     else
       page.second_result_element.should exist
@@ -185,14 +191,14 @@ Then(/^there are no search results$/) do
 end
 Then(/^within (\d+) seconds searching for (.*) yields (.*) as the first result$/) do |seconds, term, title|
   within(seconds) do
-    step('I search for ' + term)
+    step("I search for " + term)
     step("#{title} is the first search result")
   end
 end
 Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the first suggestion$/) do |seconds, term, title|
   within(seconds) do
     step("I type #{term} into the search box")
-    step('suggestions should appear')
+    step("suggestions should appear")
     step("#{title} is the first suggestion")
   end
 end
@@ -207,6 +213,19 @@ Then(/there are no errors reported$/) do
 end
 Then(/^the title still exists$/) do
   on(ArticlePage).title_element.should exist
+end
+Then(/^there are( no)? search results with (.+) in the data/) do |should_not_find, within|
+  found = false
+  on(SearchResultsPage).result_data.each do |result|
+    if result.text.include? within then
+      found = true
+    end
+  end
+  if should_not_find then
+    found.should == false
+  else
+    found.should == true
+  end
 end
 
 def within(seconds)

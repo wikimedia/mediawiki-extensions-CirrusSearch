@@ -1,18 +1,17 @@
 Feature: Search backend updates
   Background:
     Given I am logged in
+
   Scenario: Deleted pages are removed from the index
-    Given a page named DeleteMe exists with contents deleteme
+    Given a page named DeleteMe exists
+    Then within 75 seconds searching for DeleteMe yields DeleteMe as the first result
     When I delete DeleteMe
-    And I am at a random page so I can reload it if I need to
-    # Sometimes deletes take a second or two to kick in
-    And within 3 seconds typing deleteme into the search box yields none as the first suggestion
+    Then within 75 seconds searching for DeleteMe yields none as the first result
 
   Scenario: Altered pages are updated in the index
     Given a page named ChangeMe exists with contents foo
     When I edit ChangeMe to add superduperchangedme
-    And I search for superduperchangedme
-    Then ChangeMe is the first search result
+    Then within 75 seconds searching for superduperchangedme yields ChangeMe as the first result
 
   Scenario: Pages containing altered template are updated in the index
     Given a page named Template:ChangeMe exists with contents foo
@@ -21,16 +20,52 @@ Feature: Search backend updates
     # Updating a template uses the job queue and that can take quite a while to complete in beta
     Then within 75 seconds searching for superduperultrachangedme yields ChangeMyTemplate as the first result
 
+  @non_existant
   Scenario: Pages that link to non-existant pages still get their search index updated
     Given a page named IDontExist doesn't exist
     And a page named ILinkToNonExistantPages%{epoch} exists with contents [[IDontExist]]
     When I search for ILinkToNonExistantPages%{epoch}
     Then ILinkToNonExistantPages%{epoch} is the first search result
 
+  @non_existant
   Scenario: Pages that redirect to non-existant pages don't throw errors
     Given a page named IDontExist doesn't exist
     When a page named IRedirectToNonExistantPages%{epoch} exists with contents #REDIRECT [[IDontExist]]
     Then I am on a page titled IRedirectToNonExistantPages%{epoch}
+
+  @non_existant
+  Scenario: Linking to a non-existant page doesn't add it to the search index with an [INVALID] word count
+    Given a page named IDontExistLink%{epoch} doesn't exist
+    And a page named ILinkToNonExistantPages%{epoch} exists with contents [[IDontExistLink%{epoch}]]
+    When I search for IDontExistLink%{epoch}
+    Then there are no search results with [INVALID] words in the data
+    When a page named IDontExistLink%{epoch} exists
+    And I search for IDontExistLink%{epoch}
+    Then IDontExistLink%{epoch} is the first search result
+    And there are no search results with [INVALID] words in the data
+
+  @non_existant
+  Scenario: Redirecting to a non-existing page doesn't add it to the search index with an [INVALID] word count
+    Given a page named IDontExistRdir%{epoch} doesn't exist
+    And a page named IRedirectToNonExistantPages%{epoch} exists with contents #REDIRECT [[IDontExistRdir%{epoch}]]
+    When I search for IDontExistRdir%{epoch}
+    Then there are no search results with [INVALID] words in the data
+    When a page named IDontExistRdir%{epoch} exists
+    And I search for IDontExistRdir%{epoch}
+    Then IDontExistRdir%{epoch} is the first search result
+    And there are no search results with [INVALID] words in the data
+
+  @non_existant
+  Scenario: Linking to a page that redirects to a non-existing page doesn't add it to the search index with an [INVALID] word count
+    Given a page named IDontExistRdirLinked%{epoch} doesn't exist
+    And a page named IRedirectToNonExistantPagesLinked%{epoch} exists with contents #REDIRECT [[IDontExistRdirLinked%{epoch}]]
+    And a page named ILinkIRedirectToNonExistantPages%{epoch} exists with contents [[IRedirectToNonExistantPagesLinked%{epoch}]]
+    When I search for IDontExistRdirLinked%{epoch}
+    Then there are no search results with [INVALID] words in the data
+    When a page named IDontExistRdirLinked%{epoch} exists
+    And I search for IDontExistRdirLinked%{epoch}
+    Then IDontExistRdirLinked%{epoch} is the first search result
+    And there are no search results with [INVALID] words in the data
 
   @redirect_loop
   Scenario: Pages that redirect to themself don't throw errors
@@ -105,5 +140,16 @@ Feature: Search backend updates
     And a page named WLDoubleRdir%{epoch} 2/1 exists with contents [[WLDoubleRdir%{epoch} 2/Redirect]]
     And a page named WLDoubleRdir%{epoch} 2/2 exists with contents [[WLDoubleRdir%{epoch} 2/Redirect]]
     And a page named WLDoubleRdir%{epoch} 2 exists
-    When I search for WLDoubleRdir%{epoch}
-    Then WLDoubleRdir%{epoch} 2 is the first search result
+    When within 75 seconds searching for WLDoubleRdir%{epoch} yields WLDoubleRdir%{epoch} 2 as the first result
+
+  # This test doesn't rely on our paranoid revision delete handling logic, rather, it verifies what should work with the
+  # logic with a similar degree of paranoia
+  Scenario: When a revision is deleted the page is updated regardless of if the revision is current
+    Given a page named RevDelTest exists with contents first
+    And a page named RevDelTest exists with contents delete this revision
+    And within 75 seconds searching for intitle:RevDelTest "delete this revision" yields RevDelTest as the first result
+    And a page named RevDelTest exists with contents current revision
+    When I delete the second most recent revision of RevDelTest
+    Then within 75 seconds searching for intitle:RevDelTest "delete this revision" yields none as the first result
+    When I search for intitle:RevDelTest current revision
+    Then RevDelTest is the first search result

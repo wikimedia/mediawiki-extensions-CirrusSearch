@@ -1,5 +1,11 @@
 Browser Tests for Search
 ------------------------
+
+Read https://github.com/wikimedia/mediawiki-selenium for general instructions
+regarding running tests then read the rest of this file for information
+specific to CirrusSearch.
+
+
 Setup
 -----
 
@@ -41,27 +47,35 @@ mediawiki you can do this:
  pushd /srv/
  if [ ! -d TimedMediaHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler; fi
  if [ ! -d MwEmbedSupport ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/MwEmbedSupport; fi
+ if [ ! -d PdfHander ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/PdfHander; fi
  pushd mediawiki/extensions
  if [ ! -d TimedMediaHandler ]; then ln -s ../../TimedMediaHandler; fi
  if [ ! -d MwEmbedSupport ]; then ln -s ../../MwEmbedSupport; fi
+ if [ ! -d PdfHander ]; then ln -s ../../PdfHander; fi
  sudo su -c 'crontab -u www-data -l' > /tmp/www-data-crontab
  echo '* * * * * php /srv/mediawiki/maintenance/runJobs.php --type webVideoTranscode --maxjobs 1 >> /tmp/mw-transcode-log' >> /tmp/www-data-crontab
  echo '0 0 * * * rm /tmp/mw-transcode-log' >> /tmp/www-data-crontab
  sort /tmp/www-data-crontab | uniq | sudo su -c 'crontab -u www-data -'
  rm /tmp/www-data-crontab
- sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53
+ sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils
  popd
  popd
 Then add this to your localsettings:
  require( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
  require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
+ require_once("$IP/extensions/PdfHandler/PdfHandler.php");
  $wgOggThumbLocation = '/usr/bin/oggThumb';
+ $wgGroupPermissions['*']['deleterevision'] = true;
+ $wgFileExtensions[] = 'pdf';
+
 
 Running
 -------
 If you want to run tests against anything other than
 en.wikipedia.beta.wmflabs.org first do this:
  export MEDIAWIKI_URL=http://your-mediawiki/wiki/
+ export MEDIAWIKI_USER=Selenium_user
+ export MEDIAWIKI_PASSWORD=selenium123
 
 To run all tests:
  bundle exec cucumber
@@ -69,6 +83,8 @@ To run all tests in a file:
  bundle exec cucumber path/to/file.feature
 To run one test in a file:
  bundle exec cucumber path/to/file.feature:LINE_NUMBER
+To run tests with a tag:
+ bundle exec cucumber -t @exact_quotes
 
 By default, the browser will close itself at the end of every scenario. If you
 want the browser to stay open after each scenario:

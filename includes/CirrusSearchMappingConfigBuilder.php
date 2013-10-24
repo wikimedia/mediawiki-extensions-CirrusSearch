@@ -36,9 +36,14 @@ class CirrusSearchMappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 
-		$titleExtraAnalyzers = array( 'suggest', 'prefix' );
+		$titleExtraAnalyzers = array(
+			'suggest',
+			array( 'index' => 'prefix', 'search' => 'near_match' ),
+			'near_match',
+			'keyword',
+		);
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
-			$titleExtraAnalyzers[] = 'word_prefix';
+			$titleExtraAnalyzers[] = array( 'index' => 'word_prefix', 'search' => 'plain' );
 		}
 
 		$textExtraAnalyzers = array();
@@ -47,28 +52,35 @@ class CirrusSearchMappingConfigBuilder {
 		}
 
 		return array(
+			'dynamic' => false,
 			'properties' => array(
+				'timestamp' => array(
+					'type' => 'date',
+					'format' => 'dateOptionalTime',
+					'include_in_all' => false,
+				),
+				'namespace' => $this->buildLongField(),
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
+				'file_text' => $this->buildStringField( 'file_text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
+				'template' => $this->buildLowercaseKeywordField(),
+				'outgoing_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
-				'textLen' => array( 'type' => 'long', 'store' => 'yes' ),	// Deprecated in favor of text_bytes and text_words
-				'text_bytes' => array( 'type' => 'long', 'store' => 'yes' ),
-				'text_words' => array( 'type' => 'long', 'store' => 'yes' ),
+				'text_bytes' => $this->buildLongField(),
+				'file_text_bytes' => $this->buildLongField(),
+				'text_words' => $this->buildLongField(),
+				'file_text_words' => $this->buildLongField(),
 				'redirect' => array(
+					'dynamic' => false,
 					'properties' => array(
-						'namespace' =>  array( 'type' => 'long', 'store' => 'yes' ),
+						'namespace' =>  $this->buildLongField(),
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),
-				'links' => array(
-					'type' => 'integer',
-					'store' => 'yes',
-				),
-				'redirect_links' => array(
-					'type' => 'integer',
-					'store' => 'yes',
-				)
+				'incoming_links' => $this->buildLongField(),
+				'incoming_redirect_links' => $this->buildLongField(),
+				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);
 	}
@@ -86,18 +98,32 @@ class CirrusSearchMappingConfigBuilder {
 				$name => array(
 					'type' => 'string',
 					'analyzer' => 'text',
-					'store' => 'yes',
 					'term_vector' => 'with_positions_offsets',
+					'include_in_all' => false,
 				),
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'term_vector' => 'with_positions_offsets',
+					'include_in_all' => false,
 				),
 			)
 		);
-		foreach ( $extra as $extraname ) {
-			$field[ 'fields' ][ $extraname ] = array( 'type' => 'string', 'analyzer' => $extraname );
+		foreach ( $extra as $extraName ) {
+			if ( is_array( $extraName ) ) {
+				$searchAnalyzer = $extraName[ 'search' ];
+				$indexAnalyzer = $extraName[ 'index' ];
+				$extraName = $indexAnalyzer;
+			} else {
+				$searchAnalyzer = $extraName;
+				$indexAnalyzer = $extraName;
+			}
+			$field[ 'fields' ][ $extraName ] = array(
+				'type' => 'string',
+				'search_analyzer' => $searchAnalyzer,
+				'index_analyzer' => $indexAnalyzer,
+				'include_in_all' => false,
+			);
 		}
 		return $field;
 	}
@@ -107,7 +133,33 @@ class CirrusSearchMappingConfigBuilder {
 	 * @return array definition of the field
 	 */
 	private function buildLowercaseKeywordField() {
-		return array( 'type' => 'string', 'analyzer' => 'lowercase_keyword' );
+		return array(
+			'type' => 'string',
+			'analyzer' => 'lowercase_keyword',
+			'include_in_all' => false,
+		);
 	}
 
+	/**
+	 * Create a string field that does no analyzing whatsoever.
+	 * @return array definition of the field
+	 */
+	private function buildKeywordField() {
+		return array(
+			'type' => 'string',
+			'analyzer' => 'keyword',
+			'include_in_all' => false,
+		);
+	}
+
+	/**
+	 * Create a long field.
+	 * @return array definition of the field
+	 */
+	private function buildLongField() {
+		return array(
+			'type' => 'long',
+			'include_in_all' => false,
+		);
+	}
 }

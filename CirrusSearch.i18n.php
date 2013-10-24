@@ -432,10 +432,23 @@ $messages['sk'] = array(
 );
 
 /** Swedish (svenska)
+ * @author Bengt B
  * @author Jopparn
  */
 $messages['sv'] = array(
+	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
+	'cirrussearch-ignored-headings' => '#<!-- leave this line exactly as it is --> <pre>
+ # Rubriker som kommer att ignoreras av sökningen.
+ # Ändringar till detta kommer att gälla så fort sidan med rubriken är indexerad.
+ # Du kan tvinga sidan omindexera genom att göra en null redigering.
+ # syntaxen är då följande:
+ #   * Allt från ett "#" tecken till slutet av raden är en kommentar
+ #   * Varje icke-tom rad är den exakta titeln som kommer att ignoreras, shiftläge och allt
+Referenser
+Externa länkar
+Se också
+ #</pre> <!-- leave this line exactly as it is -->',
 );
 
 /** Ukrainian (українська)

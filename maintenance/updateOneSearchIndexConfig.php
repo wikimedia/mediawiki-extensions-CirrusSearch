@@ -27,7 +27,12 @@ require_once( "$IP/maintenance/Maintenance.php" );
  * Update the elasticsearch configuration for this index.
  */
 class UpdateOneSearchIndexConfig extends Maintenance {
-	private $indexType, $rebuild, $closeOk;
+	private $indexType;
+
+	// Are we going to blow the index away and start from scratch?
+	private $startOver;
+
+	private $closeOk;
 
 	// Is the index currently closed?
 	private $closed = false;
@@ -73,8 +78,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param $maintenance Maintenance
 	 */
 	public static function addSharedOptions( $maintenance ) {
-		$maintenance->addOption( 'rebuild', 'Blow away the identified index and rebuild it from ' .
-			'scratch.' );
+		$maintenance->addOption( 'startOver', 'Blow away the identified index and rebuild it with ' .
+			'no data.' );
 		$maintenance->addOption( 'forceOpen', "Open the index but do nothing else.  Use this if " .
 			"you've stuck the index closed and need it to start working right now." );
 		$maintenance->addOption( 'closeOk', "Allow the script to close the index if decides it has " .
@@ -118,7 +123,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->reindex();
 				return;
 			}
-			$this->rebuild = $this->getOption( 'rebuild', false );
+			$this->startOver = $this->getOption( 'startOver', false );
 			$this->closeOk = $this->getOption( 'closeOk', false );
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
@@ -150,8 +155,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndex() {
-		if ( $this->rebuild ) {
-			$this->output( $this->indent . "Rebuilding index..." );
+		if ( $this->startOver ) {
+			$this->output( $this->indent . "Blowing away index to start over..." );
 			$this->createIndex( true );
 			$this->output( "ok\n" );
 			return;
@@ -177,7 +182,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "is $actualShardCount but should be " . $this->getShardCount() . "...cannot correct!\n" );
 			$this->error(
 				"Number of shards is incorrect and cannot be changed without a rebuild. You can solve this\n" .
-				"problem by running this program again with either --rebuild or --reindexAndRemoveOk.  Make\n" .
+				"problem by running this program again with either --startOver or --reindexAndRemoveOk.  Make\n" .
 				"sure you understand the consequences of either choice..  This script will now continue to\n" .
 				"validate everything else." );
 			$this->returnCode = 1;
@@ -309,14 +314,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$status = CirrusSearchConnection::getClient()->getStatus();
 		if ( $status->indexExists( $specificAliasName ) ) {
 			$this->output( "is an index..." );
-			if ( $this->rebuild ) {
+			if ( $this->startOver ) {
 				CirrusSearchConnection::getClient()->getIndex( $specificAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
 				$this->error(
 					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --rebuild and it'll remove the index and continue.\n" );
+					"script with --startOver and it'll remove the index and continue.\n" );
 				$this->returnCode = 1;
 				return;
 			}
@@ -407,14 +412,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$status = CirrusSearchConnection::getClient()->getStatus();
 		if ( $status->indexExists( $allAliasName ) ) {
 			$this->output( "is an index..." );
-			if ( $this->rebuild ) {
+			if ( $this->startOver ) {
 				CirrusSearchConnection::getClient()->getIndex( $allAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
 				$this->error(
 					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --rebuild and it'll remove the index and continue.\n" );
+					"script with --startOver and it'll remove the index and continue.\n" );
 				$this->returnCode = 1;
 				return;
 			}
@@ -456,8 +461,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * Rebuild the index by pulling everything out of it and putting it back in.  This should be faster than
-	 * reparsing everything.
+	 * Dump everything from the live index into the one being worked on.
 	 */
 	private function reindex() {
 		$settings = $this->getIndex()->getSettings();

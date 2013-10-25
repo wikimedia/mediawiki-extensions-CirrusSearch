@@ -130,6 +130,50 @@ _but_ it might be incompatible with some updates.  Safest to never use it unless
 
 The safest thing if you don't know what is required for your update is to execute (1.B).
 
+
+Production suggestions
+----------------------
+
+Elasticsearch
+
+All the general rules for making Elasticsearch production ready apply here.  So you don't have to go
+round them up below is a list.  Some of these steps are obvious, others will take some research.
+1.  Have >= 3 nodes.
+2.  Configure Elasticsearch for memlock.
+3.  Change each node's elasticsearch.yml file in a few ways.
+3a.  Change node name to the real host name.
+3b.  Turn off autocreation and some other scary stuff by adding this (tested with 0.90.4):
+ ################################### Actions #################################
+ ## Modulo some small changes to comments this section comes directly from the
+ ## wonderful Elasticsearch mailing list, specifically Dan Everton.
+ ##
+ # Require explicit index creation.  ES never autocreates the indexes the way we
+ # like them.
+ ##
+ action.auto_create_index: false
+
+ ##
+ # Protect against accidental close/delete operations on all indices. You can
+ # still close/delete individual indices.
+ ##
+ action.disable_close_all_indices: true
+ action.disable_delete_all_indices: true
+
+ ##
+ # Disable ability to shutdown nodes via REST API.
+ ##
+ action.disable_shutdown: true
+
+
+CirrusSearch
+
+You should change the number of replicas to at least one, two if you want protection from crashes
+during upgrades.  More replicas will help distribute queries across more nodes.  Having more
+replicas than nodes doesn't make sense and Elasticsearch will stay "yellow" if you do that.
+Anyway, you should add this to LocalSettings.php to change it:
+ $wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
+
+
 Licensing information
 ---------------------
 CirrusSearch makes use of the Elastica library to connect to elasticsearch <http://elastica.io/>.

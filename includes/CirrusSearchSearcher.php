@@ -478,24 +478,20 @@ class CirrusSearchSearcher {
 	 * extra index for.
 	 * ": Perform a phrase search for the quoted term.  If the "s aren't balanced we insert one
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
+	 * +/-/!/||/&&: Symbols meaning AND, NOT, NOT, OR, and AND respectively.  - was supported by
+	 * LuceneSearch so we need to allow that one but there is no reason not to allow them all.
 	 */
 	public static function fixupQueryString( $string ) {
 		wfProfileIn( __METHOD__ );
 		$string = preg_replace( '/(
-				\+|
-				-|
 				\/|		(?# no regex searches allowed)
-				&&|
-				\|\||
-				!|
-				\(|
+				\(|     (?# no user supplied groupings)
 				\)|
-				\{|
+				\{|     (?# no exclusive range queries)
 				}|
-				\[|
+				\[|     (?# no inclusive range queries either)
 				]|
-				\^|
-				\?|
+				\^|     (?# no user supplied boosts at this point, though I cant think why)
 				:|		(?# no specifying your own fields)
 				\\\
 			)/x', '\\\$1', $string );
@@ -535,8 +531,18 @@ class CirrusSearchSearcher {
 				return '"\\~' . $matches[ 'trailing' ];
 			}
 		}, $string );
+		// Escape +, -, and ! when not followed immediately by a term.
+		$string = preg_replace( '/(?:\\+|\\-|\\!)(?:\s|$)/', '\\\\$0', $string );
+		// Lowercase AND and OR when not surrounded on both sides by a term.
+		// Lowercase NOT when it doesn't have a term after it.
+		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/', 'CirrusSearchSearcher::lowercaseMatched', $string );
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)/', 'CirrusSearchSearcher::lowercaseMatched', $string );
 		wfProfileOut( __METHOD__ );
 		return $string;
+	}
+
+	private static function lowercaseMatched( $matches ) {
+		return strtolower( $matches[ 0 ] );
 	}
 
 	/**

@@ -21,14 +21,6 @@
  */
 class CirrusSearchUpdater {
 	/**
-	 * Regex to remove text we don't want to search but that isn't already
-	 * removed when stripping HTML or the toc.
-	 */
-	const SANITIZE = '/
-		<video .*?<\/video>  # remove the sorry, not supported message
-	/x';
-
-	/**
 	 * Article IDs updated in this process.  Used for deduplication of updates.
 	 * @var array(Integer)
 	 */
@@ -126,6 +118,9 @@ class CirrusSearchUpdater {
 				continue;
 			}
 			$document = self::buildDocumentforRevision( $page );
+			if ( $document === null ) {
+				continue;
+			}
 			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
 				$contentDocuments[] = $document;
 			} else {
@@ -206,6 +201,11 @@ class CirrusSearchUpdater {
 		$skipParse = isset( $page[ 'skip-parse' ] ) && $page[ 'skip-parse' ];
 		$page = $page[ 'page' ];
 		$title = $page->getTitle();
+		if ( !$page->exists() ) {
+			wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
+				"earlier but wasn't.  Page: $title" );
+			return null;
+		}
 
 		$doc = new \Elastica\Document( $page->getId(), array(
 			'namespace' => $title->getNamespace(),
@@ -223,7 +223,6 @@ class CirrusSearchUpdater {
 			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
 				->getTextFromContent( $title, $page->getContent(), $parserOutput ) );
 			$doc->add( 'text', $text );
-			$doc->add( 'textLen', strlen( $text ) );            // Deprecated in favor of text_bytes and text_words
 			$doc->add( 'text_bytes', strlen( $text ) );
 			$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
 
@@ -336,18 +335,18 @@ class CirrusSearchUpdater {
 		foreach ( $titles as $title ) {
 			wfDebugLog( 'CirrusSearch', "Updating link counts for $title" );
 			$page = WikiPage::factory( $title );
-			if ( $page === null ) {
+			if ( $page === null || !$page->exists() ) {
 				// Skip link to non-existant page.
 				continue;
 			}
 			// Resolve one level of redirects because only one level of redirects is scored.
 			if ( $page->isRedirect() ) {
 				$target = $page->getRedirectTarget();
-				if ( $target === null ) {
-					// Skip link to redirect to non-existant page
+				$page = new WikiPage( $target );
+				if ( !$page->exists() ) {
+					// Skip redirects to non-existant pages
 					continue;
 				}
-				$page = new WikiPage( $target );
 			}
 			if ( $page->isRedirect() ) {
 				// This is a redirect to a redirect which doesn't count in the search score any way.

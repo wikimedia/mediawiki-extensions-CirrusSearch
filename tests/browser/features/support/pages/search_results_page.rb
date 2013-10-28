@@ -27,6 +27,9 @@ class SearchResultsPage
   def results
     @browser.divs(:class => 'mw-search-result-heading')
   end
+  def result_data
+    @browser.divs(:class => 'mw-search-result-data')
+  end
   def first_result_highlighted_title
     get_highlighted_text(first_result_element)
   end

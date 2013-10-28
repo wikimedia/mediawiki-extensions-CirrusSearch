@@ -211,6 +211,19 @@ end
 Then(/^the title still exists$/) do
   on(ArticlePage).title_element.should exist
 end
+Then(/^there are( no)? search results with (.+) in the data/) do |should_not_find, within|
+  found = false
+  on(SearchResultsPage).result_data.each do |result|
+    if result.text.include? within then
+      found = true
+    end
+  end
+  if should_not_find then
+    found.should == false
+  else
+    found.should == true
+  end
+end
 
 def within(seconds)
   end_time = Time.new + Integer(seconds)

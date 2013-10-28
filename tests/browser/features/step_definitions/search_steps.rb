@@ -98,6 +98,9 @@ end
 Then(/^I am on a page titled (.*)$/) do |title|
   on(ArticlePage).title.should == title
 end
+Then(/^there is a search result$/) do
+  on(SearchResultsPage).first_result_element.should exist
+end
 Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
     if title == 'none' then

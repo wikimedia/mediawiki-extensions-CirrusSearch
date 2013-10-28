@@ -62,6 +62,8 @@ Running
 If you want to run tests against anything other than
 en.wikipedia.beta.wmflabs.org first do this:
  export MEDIAWIKI_URL=http://your-mediawiki/wiki/
+ export MEDIAWIKI_USER=Selenium_user
+ export MEDIAWIKI_PASSWORD=selenium123
 
 To run all tests:
  bundle exec cucumber

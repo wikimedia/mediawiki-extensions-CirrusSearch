@@ -357,3 +357,73 @@ Feature: Full text search
     When I search for prefix test aaaa prefix:Prefix Test/aa
     Then Prefix Test/AAAA is the first search result
     But Prefix Test AAAA is not in the search results
+
+  @boolean_operators @setup_main
+  Scenario Outline: -, !, and NOT prohibit words in search results
+    When I search for <query>
+    Then Catapult is the first search result
+    But Amazing Catapult is not in the search results
+  Examples:
+  |        query         |
+  | catapult -amazing    |
+  | -amazing catapult    |
+  | catapult !amazing    |
+  | !amazing catapult    |
+  | catapult NOT amazing |
+  | NOT amazing catapult |
+
+  @boolean_operators @setup_main
+  Scenario Outline: +, &&, and AND require matches but since that is the default they don't look like they do anything
+    When I search for <query>
+    Then Amazing Catapult is the first search result
+    But Catapult is not in the search results
+  Examples:
+  |         query         |
+  | +catapult amazing     |
+  | amazing +catapult     |
+  | +amazing +catapult    |
+  | catapult AND amazing  |
+
+  @boolean_operators @setup_main
+  Scenario Outline: OR and || matches docs with either set
+    When I search for <query>
+    Then Catapult is in the search results
+    And Two Words is in the search results
+  Examples:
+  |          query          |
+  | catapult OR África      |
+  | África \|\| catapult    |
+# Bug 56239
+#  | catapult OR "África"   |
+#  | catapult \|\| "África" |
+#  | "África" OR catapult   |
+#  | "África" \|\| catapult |
+
+  @boolean_operators @setup_main
+  Scenario Outline: boolean operators in bad positions in the query are ignored
+    When I search for <query>
+    Then Catapult is in the first search result
+  Examples:
+  |         query          |
+  | catapult +             |
+  | catapult -             |
+  | catapult !             |
+  | catapult AND           |
+  | catapult OR            |
+  | catapult NOT           |
+  | + catapult             |
+  | - catapult             |
+  | ! catapult             |
+  | AND catapult           |
+  | OR catapult            |
+  | catapult + amazing     |
+  | catapult - amazing     |
+  | catapult ! amazing     |
+  | catapult AND + amazing |
+  | catapult AND - amazing |
+  | catapult AND ! amazing |
+
+  @boolean_operators @setup_main
+  Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)
+    When I search for NOT catapult
+    Then there is a search result

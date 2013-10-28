@@ -30,7 +30,7 @@ See also
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
-"Elasticsearch" and "Solr" are full-text search engines. See http://www.elasticsearch.org/',
+"Elasticsearch" is a full-text search engine. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );

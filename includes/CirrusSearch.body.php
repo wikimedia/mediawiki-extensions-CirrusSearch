@@ -43,6 +43,20 @@ class CirrusSearch extends SearchEngine {
 		return $searcher->searchText( $term, $this->showRedirects );
 	}
 
+	/**
+	 * @param $ns
+	 * @param $search
+	 * @param $limit
+	 * @param $results
+	 * @return bool
+	 */
+	public static function prefixSearch( $ns, $search, $limit, &$results ) {
+		$searcher = new CirrusSearchSearcher( 0, $limit, $ns );
+		$searcher->setResultsType( new CirrusSearchTitleResultsType() );
+		$results = $searcher->prefixSearch( $search );
+		return false;
+	}
+
 	public function update( $id, $title, $text ) {
 		if ( $text === false || $text === null ) { // Can't just check falsy text because empty string is ok!
 			wfLogWarning( "Search update called with false or null text for $title.  Ignoring search update." );

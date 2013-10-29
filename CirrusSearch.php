@@ -130,33 +130,30 @@ $includes = __DIR__ . "/includes/";
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $includes . 'CirrusSearchAnalysisConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnection.php';
+$wgAutoloadClasses['CirrusSearchFullTextResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearchPrefixSearchHook'] = $includes . 'CirrusSearchPrefixSearchHook.php';
 $wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
+$wgAutoloadClasses['CirrusSearchResult'] = $includes . 'CirrusSearchResult.php';
+$wgAutoloadClasses['CirrusSearchResultSet'] = $includes . 'CirrusSearchResultSet.php';
+$wgAutoloadClasses['CirrusSearchResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchSearcher'] = $includes . 'CirrusSearchSearcher.php';
 $wgAutoloadClasses['CirrusSearchTextFormatter'] = $includes . 'CirrusSearchTextFormatter.php';
+$wgAutoloadClasses['CirrusSearchTitleResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php';
 
 /**
  * Hooks
- * Also check Setup for other hooks.
  */
 $wgHooks['LinksUpdateComplete'][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
+// Install our prefix search hook only if we're enabled.
+$wgExtensionFunctions[] = function() {
+	global $wgSearchType, $wgHooks;
+	if ( $wgSearchType === 'CirrusSearch' ) {
+		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
+	}
+};
 
 /**
  * i18n
  */
 $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
-
-
-/**
- * Setup
- */
-$wgExtensionFunctions[] = 'cirrusSearchSetup';
-function cirrusSearchSetup() {
-	global $wgSearchType, $wgHooks;
-	// Install our prefix search hook only if we're enabled.
-	if ( $wgSearchType === 'CirrusSearch' ) {
-		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchPrefixSearchHook::prefixSearch';
-	}
-}

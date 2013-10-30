@@ -180,14 +180,19 @@ class CirrusSearchUpdater {
 			return;
 		}
 		wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index." );
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
-			array( 'doWork' => function() use ( $indexType, $documents ) {
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
+			'doWork' => function() use ( $indexType, $documents ) {
 				try {
 					$result = CirrusSearchConnection::getPageType( $indexType )->addDocuments( $documents );
 					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error sending documents to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return false;
 			}
 		) );
 		$work->execute();
@@ -403,14 +408,19 @@ class CirrusSearchUpdater {
 			return;
 		}
 		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the $indexType index." );
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch",
-			array( 'doWork' => function() use ( $indexType, $ids ) {
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
+			'doWork' => function() use ( $indexType, $ids ) {
 				try {
 					$result = CirrusSearchConnection::getPageType( $indexType )->deleteIds( $ids );
 					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error sending deletes to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return false;
 			}
 		) );
 		$work->execute();

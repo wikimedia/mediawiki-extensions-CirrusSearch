@@ -48,26 +48,26 @@ class CirrusSearchMappingConfigBuilder {
 
 		return array(
 			'properties' => array(
+				'timestamp' => array(
+					'type' => 'date',
+					'format' => 'dateOptionalTime',
+					'include_in_all' => false,
+				),
+				'namespace' => $this->buildLongField(),
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
-				'text_bytes' => array( 'type' => 'long', 'store' => 'yes' ),
-				'text_words' => array( 'type' => 'long', 'store' => 'yes' ),
+				'text_bytes' => $this->buildLongField(),
+				'text_words' => $this->buildLongField(),
 				'redirect' => array(
 					'properties' => array(
-						'namespace' =>  array( 'type' => 'long', 'store' => 'yes' ),
+						'namespace' =>  $this->buildLongField(),
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),
-				'links' => array(
-					'type' => 'integer',
-					'store' => 'yes',
-				),
-				'redirect_links' => array(
-					'type' => 'integer',
-					'store' => 'yes',
-				)
+				'links' => $this->buildLongField(),
+				'redirect_links' => $this->buildLongField(),
 			),
 		);
 	}
@@ -87,16 +87,22 @@ class CirrusSearchMappingConfigBuilder {
 					'analyzer' => 'text',
 					'store' => 'yes',
 					'term_vector' => 'with_positions_offsets',
+					'include_in_all' => false,
 				),
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'term_vector' => 'with_positions_offsets',
+					'include_in_all' => false,
 				),
 			)
 		);
 		foreach ( $extra as $extraname ) {
-			$field[ 'fields' ][ $extraname ] = array( 'type' => 'string', 'analyzer' => $extraname );
+			$field[ 'fields' ][ $extraname ] = array(
+				'type' => 'string',
+				'analyzer' => $extraname,
+				'include_in_all' => false,
+			);
 		}
 		return $field;
 	}
@@ -106,7 +112,22 @@ class CirrusSearchMappingConfigBuilder {
 	 * @return array definition of the field
 	 */
 	private function buildLowercaseKeywordField() {
-		return array( 'type' => 'string', 'analyzer' => 'lowercase_keyword' );
+		return array(
+			'type' => 'string',
+			'analyzer' => 'lowercase_keyword',
+			'include_in_all' => false,
+		);
 	}
 
+	/**
+	 * Create a long field.
+	 * @return array definition of the field
+	 */
+	private function buildLongField() {
+		return array(
+			'type' => 'long',
+			'store' => 'yes',
+			'include_in_all' => false,
+		);
+	}
 }

@@ -590,6 +590,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
 				'analysis' => CirrusSearchAnalysisConfigBuilder::build(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
+				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
 			)
 		), $rebuild );
 		$this->closeOk = false;

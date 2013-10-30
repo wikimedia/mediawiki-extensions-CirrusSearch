@@ -130,6 +130,7 @@ $includes = __DIR__ . "/includes/";
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $includes . 'CirrusSearchAnalysisConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnection.php';
+$wgAutoloadClasses['CirrusSearchLinksUpdateJob'] = $includes . 'CirrusSearchLinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearchFullTextResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
@@ -157,3 +158,8 @@ $wgExtensionFunctions[] = function() {
  * i18n
  */
 $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
+
+/**
+ * Jobs
+ */
+$wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearchLinksUpdateJob';

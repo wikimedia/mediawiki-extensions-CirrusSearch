@@ -89,12 +89,36 @@ class CirrusSearchUpdater {
 
 	/**
 	 * Hooked to update the search index for pages when templates that they include are changed
-	 * and to kick off updating linked articles.
+	 * and to update the link counts on newly linked or unlinked articles.  These updates are
+	 * all performed on the job queue.  If this is called in a web process then this adds the
+	 * appropriate job to the queue.  If this is called from a cli process then this just
+	 * immediately executes the job.
 	 * @param $linksUpdate LinksUpdate
 	 */
 	public static function linksUpdateCompletedHook( $linksUpdate ) {
-		self::updateFromTitle( $linksUpdate->getTitle() );
-		self::updateLinkedArticles( $linksUpdate );
+		$inCli = PHP_SAPI == 'cli';
+		// In the web process the title update will be taken care of by the SearchEngine infrastructure
+		// so no need to update it in the job.
+		$titleNeedsUpdate = $inCli;
+		$addedLinks = $linksUpdate->getAddedLinks();
+		$removedLinks = $linksUpdate->getRemovedLinks();
+		if ( !$titleNeedsUpdate && count( $addedLinks ) === 0 && count( $removedLinks ) === 0 ) {
+			// Nothing to do so no sense in going any further.
+			return;
+		}
+		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), array(
+			'addedLinks' => $addedLinks,
+			'removedLinks' => $removedLinks,
+			'titleNeedsUpdate' => $titleNeedsUpdate,
+		) );
+		if ( $inCli ) {
+			// We are already on the cli (probably already running jobs) then there is no reason
+			// to fork this job from the hook - just run them right now.
+			$job->run();
+		} else {
+			// We're in a web process so we should push this job on the queue and get to it later.
+			JobQueueGroup::singleton()->push( $job );
+		}
 	}
 
 	/**
@@ -322,14 +346,15 @@ class CirrusSearchUpdater {
 
 	/**
 	 * Update the search index for articles linked from this article.  Just updates link counts.
-	 * @param $linksUpdate LinksUpdate
+	 * @param $addedLinks array of Titles added to the page
+	 * @param $removedLinks array of Titles removed from the page
 	 */
-	private static function updateLinkedArticles( $linksUpdate ) {
+	public static function updateLinkedArticles( $addedLinks, $removedLinks ) {
 		global $wgCirrusSearchLinkedArticlesToUpdate, $wgCirrusSearchUnlinkedArticlesToUpdate;
 
 		$titles = array_merge(
-			self::pickFromArray( $linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
-			self::pickFromArray( $linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate )
+			self::pickFromArray( $addedLinks, $wgCirrusSearchLinkedArticlesToUpdate ),
+			self::pickFromArray( $removedLinks, $wgCirrusSearchUnlinkedArticlesToUpdate )
 		);
 		$pages = array();
 		foreach ( $titles as $title ) {

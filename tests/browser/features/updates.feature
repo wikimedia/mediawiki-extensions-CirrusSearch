@@ -141,5 +141,4 @@ Feature: Search backend updates
     And a page named WLDoubleRdir%{epoch} 2/1 exists with contents [[WLDoubleRdir%{epoch} 2/Redirect]]
     And a page named WLDoubleRdir%{epoch} 2/2 exists with contents [[WLDoubleRdir%{epoch} 2/Redirect]]
     And a page named WLDoubleRdir%{epoch} 2 exists
-    When I search for WLDoubleRdir%{epoch}
-    Then WLDoubleRdir%{epoch} 2 is the first search result
+    When within 75 seconds searching for WLDoubleRdir%{epoch} yields WLDoubleRdir%{epoch} 2 as the first result

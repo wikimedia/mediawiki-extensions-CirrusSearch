@@ -124,7 +124,6 @@ class CirrusSearchSearcher {
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
-		$extraQueryStrings = array();
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $term, 'prefix:' );
@@ -148,7 +147,7 @@ class CirrusSearchSearcher {
 		$filters = $this->filters;
 		$term = preg_replace_callback(
 			'/(?<key>[^ ]{6,10}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( &$filters, &$extraQueryStrings ) {
+			function ( $matches ) use ( &$filters ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				switch ( $key ) {
@@ -157,11 +156,11 @@ class CirrusSearchSearcher {
 						$match->setFieldQuery( 'category', trim( $value, '"' ) );
 						$filters[] = new \Elastica\Filter\Query( $match );
 						return '';
-					case 'prefix':
-						return "$value* ";
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field(
-							'title', CirrusSearchSearcher::fixupQueryString( $value ) ) );
+						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
+							CirrusSearchSearcher::fixupWholeQueryString(
+								CirrusSearchSearcher::fixupQueryStringPart( $value )
+							) ) );
 						return "$value ";
 					default:
 						return $matches[0];
@@ -169,41 +168,47 @@ class CirrusSearchSearcher {
 			},
 			$term
 		);
-		wfProfileOut( __METHOD__ . '-other-filters' );
-		wfProfileIn( __METHOD__ . '-phrase-query-finder' );
-		$term = preg_replace_callback(
-				'/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
-				function ( $matches ) use ( $showRedirects, &$extraQueryStrings ) {
-					$main = $matches[ 'main' ];
-					if ( isset( $matches[ 'fuzzy' ] ) ) {
-						return $main;
-					} else {
-						$query = join( ' OR ',
-								CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$main" ) );
-						$extraQueryStrings[] = "($query)";
-					}
-					return '';
-				},
-				$term
-		);
-		wfProfileOut( __METHOD__ . '-phrase-query-finder' );
 		$this->filters = $filters;
+		wfProfileOut( __METHOD__ . '-other-filters' );
+		wfProfileIn( __METHOD__ . '-find-phrase-queries-and-escape' );
+		$query = array();
+		$matches = array();
+		$offset = 0;
+		while ( preg_match( '/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+				$term, $matches, PREG_OFFSET_CAPTURE, $offset ) ) {
+			$startOffset = $matches[ 0 ][ 1 ];
+			if ( $startOffset > $offset ) {
+				$query[] = self::fixupQueryStringPart( substr( $term, $offset, $startOffset - $offset ) );
+			}
 
+			$main = self::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+			if ( isset( $matches[ 'fuzzy' ] ) ) {
+				$query[] = $main;
+			} else {
+				$main = $main;
+				$exact = join( ' OR ', self::buildFullTextSearchFields( $showRedirects, ".plain:$main" ) );
+				$query[] = "($exact)";
+			}
+			$offset = $startOffset + strlen( $matches[ 0 ][ 0 ] );
+		}
+		if ( $offset < strlen( $term ) ) {
+			$query[] = self::fixupQueryStringPart( substr( $term, $offset ) );
+		}
+		wfProfileOut( __METHOD__ . '-find-phrase-queries-and-escape' );
 
 		// Actual text query
-		if ( trim( $term ) !== '' || $extraQueryStrings ) {
+		if ( count( $query ) > 0 ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
-			$fixedTerm = self::fixupQueryString( $term );
-			$queryStringQueryString = trim( implode( ' ', $extraQueryStrings ) . ' ' . $fixedTerm );
-			$fields = CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects );
+			$queryStringQueryString = self::fixupWholeQueryString( implode( ' ', $query ) );
+			$fields = self::buildFullTextSearchFields( $showRedirects );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any phrases
-			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && !preg_match( '/"[^ "]+ [^"]+"/', $fixedTerm ) ) {
+			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && strpos( $queryStringQueryString, '"' ) === false ) {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $fixedTerm . '"' ),
+						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $queryStringQueryString . '"' ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
@@ -468,8 +473,9 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Escape some special characters that we don't want users to pass into query strings directly.
-	 * These special characters _aren't_ escaped: *, ~, and "
+	 * Make sure the the query string part is well formed by escaping some syntax that we don't
+	 * want users to get direct access to and making sure quotes are balanced.
+	 * These special characters _aren't_ escaped:
 	 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
 	 * idea but this is so rarely used that adding extra code to flip prefix searches into
 	 * real prefix searches isn't really worth it.  The same goes for postfix searches but
@@ -482,7 +488,7 @@ class CirrusSearchSearcher {
 	 * +/-/!/||/&&: Symbols meaning AND, NOT, NOT, OR, and AND respectively.  - was supported by
 	 * LuceneSearch so we need to allow that one but there is no reason not to allow them all.
 	 */
-	public static function fixupQueryString( $string ) {
+	public static function fixupQueryStringPart( $string ) {
 		wfProfileIn( __METHOD__ );
 		$string = preg_replace( '/(
 				\/|		(?# no regex searches allowed)
@@ -516,6 +522,14 @@ class CirrusSearchSearcher {
 		if ( $inQuote ) {
 			$string = $string . '"';
 		}
+		return $string;
+	}
+
+	/**
+	 * Make sure that all operators and lucene syntax is used correctly in the query string.
+	 * If it isn't then the syntax escaped so it becomes part of the query text.
+	 */
+	public static function fixupWholeQueryString( $string ) {
 		// Turn bad fuzzy searches into searches that contain a ~
 		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
 			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {

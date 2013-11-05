@@ -393,11 +393,10 @@ Feature: Full text search
   |          query          |
   | catapult OR África      |
   | África \|\| catapult    |
-# Bug 56239
-#  | catapult OR "África"   |
-#  | catapult \|\| "África" |
-#  | "África" OR catapult   |
-#  | "África" \|\| catapult |
+  | catapult OR "África"   |
+  | catapult \|\| "África" |
+  | "África" OR catapult   |
+  | "África" \|\| catapult |
 
   @boolean_operators @setup_main
   Scenario Outline: boolean operators in bad positions in the query are ignored

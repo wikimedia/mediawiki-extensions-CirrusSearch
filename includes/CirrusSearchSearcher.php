@@ -283,10 +283,15 @@ class CirrusSearchSearcher {
 					return Status::newGood( null );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "Search backend error during get for $id.  Error message is:  " . $e->getMessage() );
-					$status = new Status();
-					$status->warning( 'cirrussearch-backend-error' );
-					return $status;
+					return Status::newFatal( 'cirrussearch-backend-error' );
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error performing a get against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				// We return a Status here because the get method actually supports returning a Status.  Other methods
+				// should support this but don't yet.
+				return $status;
 			}
 		) );
 		$result = $getWork->execute();
@@ -362,6 +367,11 @@ class CirrusSearchSearcher {
 					wfLogWarning( "Search backend error during $description.  Error message is:  " . $e->getMessage() );
 					return false;
 				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error searching Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return false;
 			}
 		) );
 		$result = $work->execute();

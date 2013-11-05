@@ -117,4 +117,12 @@ class CirrusSearch extends SearchEngine {
 		}
 		return $term;
 	}
+
+	public static function softwareInfoHook( $software ) {
+		$version = CirrusSearchSearcher::getElasticsearchVersion();
+		if ( $version->isOk() ) {
+			// We've already logged if this isn't ok and there is no need to warn the user on this page.
+			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();
+		}
+	}
 }

@@ -300,6 +300,32 @@ class CirrusSearchSearcher {
 	}
 
 	/**
+	 * Get the version of Elasticsearch with which we're communicating.
+	 * @return Status containing the version number as a string or an error
+	 */
+	public static function getElasticsearchVersion() {
+		global $wgMemc;
+		wfProfileIn( __METHOD__ );
+		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );
+		$result = $wgMemc->get( $mcKey );
+		if ( !$result ) {
+			try {
+				$result = CirrusSearchConnection::getClient()->request( '' );
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				wfLogWarning( "Search backend error getting Elasticsearch version.  Error message is:  " .
+					$e->getMessage() );
+				wfProfileOut( __METHOD__ );
+				return Status::newFatal( 'cirrussearch-backend-error' );
+			}
+			$result = $result->getData();
+			$result = $result[ 'version' ][ 'number' ];
+			$setResult = $wgMemc->set( $mcKey, $result, 3600 * 12 );
+		}
+		wfProfileOut( __METHOD__ );
+		return Status::newGood( $result );
+	}
+
+	/**
 	 * Powers full-text-like searches which means pretty much everything but prefixSearch.
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */

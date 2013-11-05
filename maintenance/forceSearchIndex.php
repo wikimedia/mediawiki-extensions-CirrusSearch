@@ -35,6 +35,7 @@ class ForceSearchIndex extends Maintenance {
 	var $indexUpdates;
 	var $limit;
 	var $forceUpdate;
+	var $queue;
 
 	public function __construct() {
 		parent::__construct();
@@ -42,7 +43,7 @@ class ForceSearchIndex extends Maintenance {
 			. "query at the cost of having to reindex by page id rather than time.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
-		$this->setBatchSize( 500 );
+		$this->setBatchSize( 50 );
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
@@ -53,6 +54,7 @@ class ForceSearchIndex extends Maintenance {
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.', false, true );
 		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
 			'to date copy.  Not used with --deletes.' );
+		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
 	}
 
 	public function execute() {
@@ -71,9 +73,14 @@ class ForceSearchIndex extends Maintenance {
 			return;
 		}
 		$this->forceUpdate = $this->getOption( 'forceUpdate' );
+		$this->queue = $this->getOption( 'queue' );
 
 		if ( $this->indexUpdates ) {
-			$operationName = 'Indexed';	
+			if ( $this->queue ) {
+				$operationName = 'Queued';
+			} else {
+				$operationName = 'Indexed';
+			}
 		} else {
 			$operationName = 'Deleted';
 		}
@@ -90,10 +97,10 @@ class ForceSearchIndex extends Maintenance {
 		}
 		while ( is_null( $this->limit ) || $this->limit > $completed ) {
 			if ( $this->indexUpdates ) {
-				$revisions = $this->findUpdates( $minUpdate, $minId, $this->to );
-				$size = count( $revisions );
-				// Note that we'll strip invalid revisions after checking to the loop break condition
-				// because we don't want a batch the contains only invalid revisions to cause early
+				$updates = $this->findUpdates( $minUpdate, $minId, $this->to );
+				$size = count( $updates );
+				// Note that we'll strip invalid updates after checking to the loop break condition
+				// because we don't want a batch the contains only invalid updates to cause early
 				// termination of the process....
 			} else {
 				$titles = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
@@ -104,16 +111,25 @@ class ForceSearchIndex extends Maintenance {
 				break;
 			}
 			if ( $this->indexUpdates ) {
-				$last = $revisions[ $size - 1 ];
-				$minUpdate = $last[ 'update' ];
+				$last = $updates[ $size - 1 ];
+				// We make sure to set this if we need it but don't bother when we don't because
+				// it requires loading the revision.
+				if ( isset( $last[ 'update' ] ) ) {
+					$minUpdate = $last[ 'update' ];
+				}
 				$minId = $last[ 'id' ];
 
-				// Strip entries without a revision.  We can't do anything with them.
-				$revisions = array_filter($revisions, function ($rev) {
+				// Strip entries without a page.  We can't do anything with them.
+				$updates = array_filter( $updates, function ($rev) {
 					return $rev[ 'page' ] !== null;
-				});
+				} );
 				// Update size with the actual number of updated documents.
-				$size = CirrusSearchUpdater::updateRevisions( $revisions, !$this->forceUpdate );
+				if ( $this->queue ) {
+					JobQueueGroup::singleton()->push(
+						CirrusSearchUpdatePagesJob::build( $updates, !$this->forceUpdate ) );
+				} else {
+					$size = CirrusSearchUpdater::updatePages( $updates, !$this->forceUpdate );
+				}
 			} else {
 				$idsToDelete = array();
 				foreach( $titles as $t ) {
@@ -139,8 +155,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	/**
-	 * Find $this->mBatchSize revisions who are the latest for a page and were
-	 * made after (minUpdate,minId) and before maxUpdate.
+	 * Find $this->mBatchSize pages that have updates made after (minUpdate,minId) and before maxUpdate.
 	 *
 	 * @param $minUpdate
 	 * @param $minId
@@ -161,15 +176,12 @@ class ForceSearchIndex extends Maintenance {
 				$toIdPart = " AND page_id <= $toId";
 			}
 			$res = $dbr->select(
-				array( 'page', 'revision' ),
+				array( 'page' ),
 				array_merge(
-					array( 'page_touched', 'page_counter', 'page_restrictions' ),
-					Revision::selectPageFields(),
-					Revision::selectFields()
+					WikiPage::selectFields()
 				),
 				"$minId < page_id"
 				. $toIdPart
-				. ' AND rev_id = page_latest'
 				. ' AND page_is_redirect = 0',
 				// Note that we attempt to filter out redirects because everything about the redirect
 				// will be covered when we index the page to which it points.
@@ -183,9 +195,8 @@ class ForceSearchIndex extends Maintenance {
 			$res = $dbr->select(
 				array( 'page', 'revision' ),
 				array_merge(
-					array( 'page_touched', 'page_counter', 'page_restrictions' ),
-					Revision::selectPageFields(),
-					Revision::selectFields()
+					array( 'rev_timestamp' ),
+					WikiPage::selectFields()
 				),
 				'page_id = rev_page'
 				. ' AND rev_id = page_latest'
@@ -197,9 +208,9 @@ class ForceSearchIndex extends Maintenance {
 				       'LIMIT' => $this->mBatchSize )
 			);
 		}
+		wfProfileIn( __METHOD__ . '::decodeResults' );
 		$result = array();
 		foreach ( $res as $row ) {
-			wfProfileIn( __METHOD__ . '::decodeResults' );
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
 			if ( $page->getContent()->isRedirect() ) {
 				if ( $maxUpdate === null ) {
@@ -211,13 +222,16 @@ class ForceSearchIndex extends Maintenance {
 					$page = WikiPage::newFromID( $target->getArticleID(), WikiPage::READ_LATEST );
 				}
 			}
-			$result[] = array(
+			$update = array(
 				'page' => $page,
 				'id' => $row->page_id,
-				'update' => new MWTimestamp( $row->rev_timestamp ),
 			);
-			wfProfileOut( __METHOD__ . '::decodeResults' );
+			if ( $maxUpdate !== null ) {
+				$update[ 'update' ] = new MWTimestamp( $row->rev_timestamp );
+			}
+			$result[] = $update;
 		}
+		wfProfileOut( __METHOD__ . '::decodeResults' );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}

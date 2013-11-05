@@ -140,6 +140,7 @@ $wgAutoloadClasses['CirrusSearchResultsType'] = $includes . 'CirrusSearchResults
 $wgAutoloadClasses['CirrusSearchSearcher'] = $includes . 'CirrusSearchSearcher.php';
 $wgAutoloadClasses['CirrusSearchTextFormatter'] = $includes . 'CirrusSearchTextFormatter.php';
 $wgAutoloadClasses['CirrusSearchTitleResultsType'] = $includes . 'CirrusSearchResultsType.php';
+$wgAutoloadClasses['CirrusSearchUpdatePagesJob'] = $includes . 'CirrusSearchUpdatePagesJob.php';
 $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php';
 
 /**
@@ -163,3 +164,4 @@ $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
  * Jobs
  */
 $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearchLinksUpdateJob';
+$wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearchUpdatePagesJob';

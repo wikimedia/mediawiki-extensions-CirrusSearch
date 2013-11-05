@@ -58,7 +58,7 @@ class CirrusSearchUpdater {
 			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 			self::updateFromTitle( $target );
 		} else {
-			self::updateRevisions( array( array(
+			self::updatePages( array( array(
 				'page' => $page,
 			) ) );
 		}
@@ -132,7 +132,7 @@ class CirrusSearchUpdater {
 	 *     )
 	 *   )
 	 */
-	public static function updateRevisions( $pageData, $checkFreshness = false ) {
+	public static function updatePages( $pageData, $checkFreshness = false ) {
 		wfProfileIn( __METHOD__ );
 
 		$contentDocuments = array();
@@ -228,6 +228,7 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ );
 
 		$skipParse = isset( $page[ 'skip-parse' ] ) && $page[ 'skip-parse' ];
+		wfDebugLog( 'CirrusSearch', "SkipParse = $skipParse" );
 		$page = $page[ 'page' ];
 		$title = $page->getTitle();
 		if ( !$page->exists() ) {
@@ -393,7 +394,7 @@ class CirrusSearchUpdater {
 				'skip-parse' => true,  // Just update link counts
 			);
 		}
-		self::updateRevisions( $pages );
+		self::updatePages( $pages );
 	}
 
 	/**

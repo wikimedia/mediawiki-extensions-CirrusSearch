@@ -34,8 +34,10 @@ Once that is complete add this to LocalSettings.php to funnel queries to Elastic
 
 Bootstrapping large wikis
 -------------------------
-The --batch-size parameter controls the number documents read from MySQL and inserted into
-elasticsearch at one time.  It defaults to 500 but you should feel free to play with it.
+The --batch-size parameter controls the number documents read from MySQL and indexed into elasticsearch at
+one time.  It defaults to 50 but you should feel free to play with it.  Too low causes transport overhead (sql
+and Elasticsearch) but too high can make the process feel sluggish and can get you into trouble with the
+OOM Killer.
 
 forceSeachIndex.php accepts the --fromId and --toId parameters which can be used to split up the
 work of bootstrapping the wiki into multiple processes.  Since most of the load on search indexing is on the
@@ -44,9 +46,15 @@ them out to multiple php processes/machines.  The --buildChunks argument of forc
 the script to build invocations of itself that you can splay out to different processes.  For example:
  rm -rf /tmp/index_log
  mkdir /tmp/index_log
- php forceSearchIndex.php --buildChunks 10 --batch-size 50 |
+ php forceSearchIndex.php --buildChunks 10 --batch-size 100 |
    xargs -I{} -t -P4 sh -c 'php {} > /tmp/index_log/$$.log'
 
+forceSearchIndex.php also accepts --queue which can be used to enqueue all of its work onto the job queue
+rather than running in process.  They will then be processed by whatever job queue consumers you have set
+up.  Keep in mind that each one of these jobs can be slow and that adding all of them can cause a significant
+backlog on the queue.  This is really only a good idea if you have a very robust job queue infrastructure.
+This mechanism is more susceptible to the OOM Killer so you should make sure to keep the batch sizes low.
+The default is fine.
 
 Handling elasticsearch outages
 ------------------------------

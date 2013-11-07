@@ -20,15 +20,14 @@
  */
 class CirrusSearchUpdatePagesJob extends Job {
 	public static function build( $revisions, $checkFreshness ) {
-		// We don't have a "title" for this job so we use the Main Page because it exists.
-		$title = Title::newFromText( 'Main Page' );
-
 		// Strip $revisions down to page ids so we don't put a ton of stuff in the job queue.
 		$pageIds = array();
 		foreach ( $revisions as $rev ) {
 			$pageIds[] = $rev[ 'id' ];
 		}
-		return new CirrusSearchUpdatePagesJob( $title, array(
+
+		// We don't have a "title" for this job so we use the Main Page because it exists.
+		return new CirrusSearchUpdatePagesJob( Title::newMainPage(), array(
 			'pageIds' => $pageIds,
 			'checkFreshness' => $checkFreshness,
 		) );

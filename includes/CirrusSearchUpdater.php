@@ -244,10 +244,12 @@ class CirrusSearchUpdater {
 		) );
 
 		if ( $skipParse ) {
-			// Note that if the entry doesn't yet exist on the server this will create it lacking
-			// text, headings, ceategories, and text length.  That _should_ be ok because the page
-			// _should_ be on its way into the index if it isn't already.
+			// These are sent as updates so if the document isn't already in the index this is
+			// ignored.  This is prferable to sending regular index requests because those ignore
+			// doc_as_upsert.  Without that this feature just trashes the search index by removing
+			// the text from entries.
 			$doc->setDocAsUpsert( true );
+			$doc->setOpType( 'update' );
 		} else {
 			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
 			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )

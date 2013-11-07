@@ -146,7 +146,8 @@ $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php
 /**
  * Hooks
  */
-$wgHooks['LinksUpdateComplete'][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
+$wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
+$wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch::softwareInfoHook';
 // Install our prefix search hook only if we're enabled.
 $wgExtensionFunctions[] = function() {
 	global $wgSearchType, $wgHooks;

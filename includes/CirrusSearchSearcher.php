@@ -53,6 +53,9 @@ class CirrusSearchSearcher {
 	private $resultsType;
 
 	// These fields are filled in by the particule search methods
+	/**
+	 * @var \Elastica\Query\AbstractQuery|null main query.  null defaults to \Elastica\Query\MatchAll
+	 */
 	private $query = null;
 	private $filters = array();
 	private $suggest = null;
@@ -341,9 +344,32 @@ class CirrusSearchSearcher {
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new CirrusSearchFullTextResultsType();
 		}
+		// Default null queries now so the rest of the method can assume it is not null.
+		if ( $this->query === null ) {
+			$this->query = new \Elastica\Query\MatchAll();
+		}
 
 		$query = new Elastica\Query();
 		$query->setFields( $this->resultsType->getFields() );
+
+		if ( $this->namespaces ) {
+			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+		}
+
+		// Wrap $this->query in a filtered query if there are filters.
+		$filterCount = count( $this->filters );
+		if ( $filterCount > 0 ) {
+			if ( $filterCount > 1 ) {
+				$filter = new \Elastica\Filter\Bool();
+				foreach ( $this->filters as $must ) {
+					$filter->addMust( $must );
+				}
+			} else {
+				$filter = $this->filters[ 0 ];
+			}
+			$this->query = new \Elastica\Query\Filtered( $this->query, $filter );
+		}
+
 		$query->setQuery( self::boostQuery( $this->query ) );
 
 		$highlight = $this->resultsType->getHighlightingConfiguration();
@@ -364,19 +390,6 @@ class CirrusSearchSearcher {
 			$this->rescore[ 'query' ][ 'rescore_query' ] =
 				self::boostQuery( $this->rescore[ 'query' ][ 'rescore_query' ] )->toArray();
 			$query->setParam( 'rescore', $this->rescore );
-		}
-
-		if ( $this->namespaces ) {
-			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
-		}
-		if ( count( $this->filters ) > 1 ) {
-			$mainFilter = new \Elastica\Filter\Bool();
-			foreach ( $this->filters as $filter ) {
-				$mainFilter->addMust( $filter );
-			}
-			$query->setFilter( $mainFilter );
-		} else if ( count( $this->filters ) === 1 ) {
-			$query->setFilter( $this->filters[0] );
 		}
 
 		$queryOptions = array();

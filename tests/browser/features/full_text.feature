@@ -12,13 +12,9 @@ Feature: Full text search
     | term                                 | first_result                      | two_words_is_in | image? |
     | catapult                             | Catapult is in                    | in              |        |
     | pickles                              | Two Words is                      | in              |        |
-    # Catches Bug 54399
-    | catapul*                             | Catapult is in                    | in              |        |
     | rdir                                 | Two Words is                      | not in          |        |
     | intitle:catapult                     | Catapult is in                    | not in          |        |
-    | intitle:catapul*                     | Catapult is in                    | not in          |        |
     | intitle:catapult amazing             | Amazing Catapult is               | not in          |        |
-    | intitle:catapul* amaz*               | Amazing Catapult is               | not in          |        |
     | incategory:weaponry                  | Catapult is in                    | not in          |        |
     | incategory:weaponry amazing          | Amazing Catapult is               | not in          |        |
     | incategory:weaponry intitle:catapult | Catapult is in                    | not in          |        |
@@ -426,3 +422,28 @@ Feature: Full text search
   Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)
     When I search for NOT catapult
     Then there is a search result
+
+  @wildcards @setup_main
+  Scenario: searching with a single wildcard finds expected results
+    When I search for catapul*
+    Then Catapult is the first search result
+
+  @wildcards @setup_main
+  Scenario: searching for intitle: with a wildcard find expected results
+    When I search for intitle:catapul*
+    Then Catapult is the first search result
+
+  @wildcards @setup_main
+  Scenario: searching for intitle: with a wildcard and a regular wildcard find expected results
+    When I search for intitle:catapul* amaz*
+    Then Amazing Catapult is the first search result
+
+  @wildcards @setup_main
+  Scenario: wildcards match plain matches
+    When I search for pi*les
+    Then Two Words is the first search result
+
+  @wildcards @setup_main
+  Scenario: wildcards don't match stemmed matches
+    When I search for pi*le
+    Then there are no search results

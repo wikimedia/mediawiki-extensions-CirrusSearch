@@ -67,6 +67,16 @@ class CirrusSearchSearcher {
 	 * @var string description of the current operation used in logging errors
 	 */
 	private $description;
+	/**
+	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
+	 * with time since the last update.
+	 */
+	private $preferRecentDecayPortion = 0;
+	/**
+	 * @var float number of days it takes an the portion of an article score that will decay with time
+	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
+	 */
+	private $preferRecentHalfLife = 0;
 
 	public function __construct( $offset, $limit, $namespaces ) {
 		$this->offset = $offset;
@@ -123,6 +133,8 @@ class CirrusSearchSearcher {
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseUseText;
+		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
+		global $wgCirrusSearchPreferRecentDefaultHalfLife;
 		wfDebugLog( 'CirrusSearch', "Searching:  \"$term\"" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -146,6 +158,33 @@ class CirrusSearchSearcher {
 			}
 		}
 		wfProfileOut( __METHOD__ . '-prefix-filter' );
+
+		wfProfileIn( __METHOD__ . '-prefer-recent' );
+		$preferRecentDecayPortion = $wgCirrusSearchPreferRecentDefaultDecayPortion;
+		$preferRecentHalfLife = $wgCirrusSearchPreferRecentDefaultHalfLife;
+		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
+		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
+		$term = preg_replace_callback(
+			'/prefer-recent:(1|(?:0?(?:\.[0-9]+)?))?(?:,([0-9]*\.?[0-9]+))? ?/',
+			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife ) {
+				global $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
+				if ( isset( $matches[ 1 ] ) && strlen( $matches[ 1 ] ) ) {
+					$preferRecentDecayPortion = floatval( $matches[ 1 ] );
+				} else {
+					$preferRecentDecayPortion = $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
+				}
+				if ( isset( $matches[ 2 ] ) ) {
+					$preferRecentHalfLife = floatval( $matches[ 2 ] );
+				}
+				wfDebugLog( 'CirrusSearch', "prefer recent $preferRecentDecayPortion $preferRecentHalfLife" );
+				return '';
+			},
+			$term
+		);
+		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
+		$this->preferRecentHalfLife = $preferRecentHalfLife;
+		wfProfileOut( __METHOD__ . '-prefer-recent' );
+
 		//Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
@@ -663,11 +702,28 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Wrap query in link based boosts.
+	 * Wrap query in link (and potentially last update time) based boosts.
 	 * @param $query null|Elastica\Query optional query to boost.  if null the match_all is assumed
 	 * @return query that will run $query and boost results based on links
 	 */
-	private static function boostQuery( $query = null ) {
-		return new \Elastica\Query\CustomScore( "_score * log10(doc['links'].value + doc['redirect_links'].value + 2)", $query );
+	private function boostQuery( $query = null ) {
+		// MVEL code for incoming links boost
+		$scoreBoostMvel = " * log10(doc['links'].value + doc['redirect_links'].value + 2)";
+		// MVEL code for last update time decay
+		$lastUpdateDecayMvel = '';
+		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {
+			// Convert half life for time in days to decay constant for time in milliseconds.
+			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
+			// e^ct - 1 where t is last modified time - now which is negative
+			$exponentialDecayMvel = "Math.expm1($decayConstant * (doc['timestamp'].value - time()))";
+			// p(e^ct - 1)
+			if ( $this->preferRecentDecayPortion !== 1.0 ) {
+				$exponentialDecayMvel = "$exponentialDecayMvel * $this->preferRecentDecayPortion";
+			}
+			// p(e^ct - 1) + 1 which is easier to calculate than bet reduces to 1 - p + pe^ct
+			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
+			$lastUpdateDecayMvel = " * ($exponentialDecayMvel + 1)";
+		}
+		return new \Elastica\Query\CustomScore( '_score' . $scoreBoostMvel . $lastUpdateDecayMvel, $query );
 	}
 }

@@ -253,6 +253,7 @@ class CirrusSearchUpdater {
 			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
 			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
 				->getTextFromContent( $title, $page->getContent(), $parserOutput ) );
+			$text = trim( $text ); // No need to store the trailing spaces in Elasticsearch....
 			$doc->add( 'text', $text );
 			$doc->add( 'text_bytes', strlen( $text ) );
 			$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it

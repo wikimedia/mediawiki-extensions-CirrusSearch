@@ -170,36 +170,43 @@ class CirrusSearchSearcher {
 		);
 		$this->filters = $filters;
 		wfProfileOut( __METHOD__ . '-other-filters' );
-		wfProfileIn( __METHOD__ . '-find-phrase-queries-and-escape' );
-		$query = array();
-		$matches = array();
-		$offset = 0;
-		while ( preg_match( '/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
-				$term, $matches, PREG_OFFSET_CAPTURE, $offset ) ) {
-			$startOffset = $matches[ 0 ][ 1 ];
-			if ( $startOffset > $offset ) {
-				$query[] = self::fixupQueryStringPart( substr( $term, $offset, $startOffset - $offset ) );
-			}
+		wfProfileIn( __METHOD__ . '-switch-phrase-queries-to-plain' );
+		$query = self::replacePartsOfQuery( $term, '/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+			function ( $matches ) use ( $showRedirects ) {
+				$main = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+				if ( !isset( $matches[ 'fuzzy' ] ) ) {
+					$main = CirrusSearchSearcher::switchSearchToExact( $main, $showRedirects );
+				}
+				return array( 'escaped' => $main );
+			} );
+		wfProfileOut( __METHOD__ . '-find-phrase-queries' );
+		wfProfileIn( __METHOD__ . '-switch-prefix-to-plain' );
+		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
+			function ( $matches ) use ( $showRedirects ) {
+				$term = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+				return array( 'escaped' => CirrusSearchSearcher::switchSearchToExact( $term, $showRedirects ) );
+			} );
+		wfProfileOut( __METHOD__ . '-switch-phrase-queries-to-plain' );
 
-			$main = self::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
-			if ( isset( $matches[ 'fuzzy' ] ) ) {
-				$query[] = $main;
-			} else {
-				$main = $main;
-				$exact = join( ' OR ', self::buildFullTextSearchFields( $showRedirects, ".plain:$main" ) );
-				$query[] = "($exact)";
+		wfProfileIn( __METHOD__ . '-escape' );
+		$escapedQuery = array();
+		foreach ( $query as $queryPart ) {
+			if ( isset( $queryPart[ 'escaped' ] ) ) {
+				$escapedQuery[] = $queryPart[ 'escaped' ];
+				continue;
 			}
-			$offset = $startOffset + strlen( $matches[ 0 ][ 0 ] );
+			if ( isset( $queryPart[ 'raw' ] ) ) {
+				$escapedQuery[] = self::fixupQueryStringPart( $queryPart[ 'raw' ] );
+				continue;
+			}
+			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
 		}
-		if ( $offset < strlen( $term ) ) {
-			$query[] = self::fixupQueryStringPart( substr( $term, $offset ) );
-		}
-		wfProfileOut( __METHOD__ . '-find-phrase-queries-and-escape' );
+		wfProfileOut( __METHOD__ . '-escape' );
 
 		// Actual text query
 		if ( count( $query ) > 0 ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
-			$queryStringQueryString = self::fixupWholeQueryString( implode( ' ', $query ) );
+			$queryStringQueryString = self::fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 			$fields = self::buildFullTextSearchFields( $showRedirects );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
@@ -302,6 +309,41 @@ class CirrusSearchSearcher {
 		$result = $getWork->execute();
 		wfProfileOut( __METHOD__ );
 		return $result;
+	}
+
+	private static function replaceAllPartsOfQuery( $query, $regex, $callable ) {
+		$result = array();
+		foreach ( $query as $queryPart ) {
+			if ( isset( $queryPart[ 'raw' ] ) ) {
+				$result = array_merge( $result, self::replacePartsOfQuery( $queryPart[ 'raw' ], $regex, $callable ) );
+				continue;
+			}
+			$result[] = $queryPart;
+		}
+		return $result;
+	}
+
+	private static function replacePartsOfQuery( $queryPart, $regex, $callable ) {
+		$destination = array();
+		$matches = array();
+		$offset = 0;
+		while ( preg_match( $regex, $queryPart, $matches, PREG_OFFSET_CAPTURE, $offset ) ) {
+			$startOffset = $matches[ 0 ][ 1 ];
+			if ( $startOffset > $offset ) {
+				$destination[] = array( 'raw' => substr( $queryPart, $offset, $startOffset - $offset ) );
+			}
+
+			$callableResult = call_user_func( $callable, $matches );
+			if ( $callableResult ) {
+				$destination[] = $callableResult;
+			}
+
+			$offset = $startOffset + strlen( $matches[ 0 ][ 0 ] );
+		}
+		if ( $offset < strlen( $queryPart ) ) {
+			$destination[] = array( 'raw' => substr( $queryPart, $offset ) );
+		}
+		return $destination;
 	}
 
 	/**
@@ -453,6 +495,11 @@ class CirrusSearchSearcher {
 				),
 			),
 		);
+	}
+
+	public static function switchSearchToExact( $term, $showRedirects ) {
+		$exact = join( ' OR ', CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$term" ) );
+		return "($exact)";
 	}
 
 	/**

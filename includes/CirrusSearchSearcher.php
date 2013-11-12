@@ -123,10 +123,11 @@ class CirrusSearchSearcher {
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
 		global $wgCirrusSearchPhraseUseText;
-		wfDebugLog( 'CirrusSearch', "Searching:  $term" );
+		wfDebugLog( 'CirrusSearch', "Searching:  \"$term\"" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
+		$term = trim( $term );
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $term, 'prefix:' );
@@ -174,7 +175,11 @@ class CirrusSearchSearcher {
 		$this->filters = $filters;
 		wfProfileOut( __METHOD__ . '-other-filters' );
 		wfProfileIn( __METHOD__ . '-switch-phrase-queries-to-plain' );
-		$query = self::replacePartsOfQuery( $term, '/(?<main>"([^"]+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+		// Match quoted phrases including those containing escaped quotes
+		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
+		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
+		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
+		$query = self::replacePartsOfQuery( $term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $showRedirects ) {
 				$main = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
@@ -605,6 +610,7 @@ class CirrusSearchSearcher {
 		$len = strlen( $string );
 		for ( $i = 0; $i < $len; $i++ ) {
 			if ( $inEscape ) {
+				$inEscape = false;
 				continue;
 			}
 			switch ( $string[ $i ] ) {

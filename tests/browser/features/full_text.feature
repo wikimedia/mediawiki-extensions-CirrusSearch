@@ -49,13 +49,16 @@ Feature: Full text search
     And there are no search results
     And there are no errors reported
   Examples:
-    | term             | title          |
-    | the empty string | Search         |
-    | ♙                | Search results |
-    | intitle:         | Search results |
-    | intitle:""       | Search results |
-    | incategory:      | Search results |
-    | incategory:""    | Search results |
+    | term                    | title          |
+    | the empty string        | Search         |
+    | ♙                       | Search results |
+    | intitle:                | Search results |
+    | intitle:""              | Search results |
+    | incategory:             | Search results |
+    | incategory:""           | Search results |
+    | %{exact: }              | Search results |
+    | %{exact:      }         | Search results |
+    | %{exact:              } | Search results |
 
   @setup_suggestions
   Scenario: Common phrases spelled incorrectly get suggestions
@@ -177,7 +180,7 @@ Feature: Full text search
     When I search for ffnonesensewor~0
     Then there are no search results
 
-  @setup_main
+  @setup_main @balance_quotes
   Scenario Outline: Searching for for a phrase with a hanging quote adds the quote automatically
     When I search for <term>
     Then Two Words is the first search result
@@ -187,6 +190,19 @@ Feature: Full text search
     | "two words" "ffnonesenseword catapult         |
     | "two words" "ffnonesenseword catapult pickles |
     | "two words" pickles "ffnonesenseword catapult |
+
+  @balance_quotes
+  Scenario Outline: Searching for a phrase containing /, :, and \" find the page as expected
+    Given a page named <title> exists
+    When I search for <term>
+    Then <title> is the first search result
+  Examples:
+    |                        term                       |                   title                   |
+    | "10.1093/acprof:oso/9780195314250.003.0001"       | 10.1093/acprof:oso/9780195314250.003.0001 |
+    | "10.5194/os-8-1071-2012"                          | 10.5194/os-8-1071-2012                    |
+    | "10.7227/rie.86.2"                                | 10.7227/rie.86.2                          |
+    | "10.7227\"yay"                                    | 10.7227"yay                               |
+    | intitle:"1911 Encyclopædia Britannica/Dionysius"' | 1911 Encyclopædia Britannica/Dionysius    |
 
   @setup_main
   Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search

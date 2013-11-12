@@ -228,7 +228,6 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ );
 
 		$skipParse = isset( $page[ 'skip-parse' ] ) && $page[ 'skip-parse' ];
-		wfDebugLog( 'CirrusSearch', "SkipParse = $skipParse" );
 		$page = $page[ 'page' ];
 		$title = $page->getTitle();
 		if ( !$page->exists() ) {

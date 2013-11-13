@@ -53,19 +53,32 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 	 * @return array of highlighting configuration
 	 */
 	public function getHighlightingConfiguration() {
+		$entireValue = array(
+			'number_of_fragments' => 0,
+		);
+		$entireValueInListField = array(
+			'number_of_fragments' => 1, // Just of the values in the list
+			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
+			'type' => 'plain',          // The fvh doesn't sort list fields by score correctly
+		);
+		$text = array(
+			'number_of_fragments' => 1, // Just one fragment
+			'fragment_size' => 100,
+		);
+
 		return array(
 			'order' => 'score',
 			'pre_tags' => array( CirrusSearchSearcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( CirrusSearchSearcher::HIGHLIGHT_POST ),
 			'fields' => array(
-				'title' => array( 'number_of_fragments' => 0 ),
-				'text' => array( 'number_of_fragments' => 1 ),
-				'redirect.title' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'heading' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'title.plain' => array( 'number_of_fragments' => 0 ),
-				'text.plain' => array( 'number_of_fragments' => 1 ),
-				'redirect.title.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
-				'heading.plain' => array( 'number_of_fragments' => 1, 'type' => 'plain' ),
+				'title' => $entireValue,
+				'text' => $text,
+				'redirect.title' => $entireValueInListField,
+				'heading' => $entireValueInListField,
+				'title.plain' => $entireValue,
+				'text.plain' => $text,
+				'redirect.title.plain' => $entireValueInListField,
+				'heading.plain' => $entireValueInListField,
 			),
 		);
 	}

@@ -212,7 +212,13 @@ class ForceSearchIndex extends Maintenance {
 		$result = array();
 		foreach ( $res as $row ) {
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
-			if ( $page->getContent()->isRedirect() ) {
+			$content = $page->getContent();
+			if ( $content === null ) {
+				// Skip pages without content.  Pages have no content because their latest revision
+				// as loaded by the query above doesn't exist.
+				$this->output( "Skipping page with no content: $row->page_id\n" );
+				$page = null;
+			} else if ( $content->isRedirect() ) {
 				if ( $maxUpdate === null ) {
 					// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
 					// ignore redirects!  It must not be marked properly in the database.  Just ignore it!

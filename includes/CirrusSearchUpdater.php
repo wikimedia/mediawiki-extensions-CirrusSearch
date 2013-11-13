@@ -111,14 +111,7 @@ class CirrusSearchUpdater {
 			'removedLinks' => $removedLinks,
 			'titleNeedsUpdate' => $titleNeedsUpdate,
 		) );
-		if ( $inCli ) {
-			// We are already on the cli (probably already running jobs) then there is no reason
-			// to fork this job from the hook - just run them right now.
-			$job->run();
-		} else {
-			// We're in a web process so we should push this job on the queue and get to it later.
-			JobQueueGroup::singleton()->push( $job );
-		}
+		JobQueueGroup::singleton()->push( $job );
 	}
 
 	/**

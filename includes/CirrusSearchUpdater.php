@@ -271,9 +271,20 @@ class CirrusSearchUpdater {
 				}
 			}
 			$doc->add( 'heading', $headings );
+
+			$outgoingLinks = array();
+			foreach ( $parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
+				foreach ( $namespaceLinks as $linkedDbKey => $ignored ) {
+					$linked = Title::makeTitle( $linkedNamespace, $linkedDbKey );
+					$outgoingLinks[] = $linked->getPrefixedDBKey();
+				}
+			}
+			$doc->add( 'outgoing_link', $outgoingLinks );
 		}
 
-		$doc->add( 'links', self::countLinksToTitle( $title ) );
+		$incomingLinks = self::countLinksToTitle( $title );
+		$doc->add( 'links', $incomingLinks );                    #Deprecated
+		$doc->add( 'incoming_links', $incomingLinks );
 
 		// Handle redirects to this page
 		$redirectTitles = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
@@ -292,7 +303,8 @@ class CirrusSearchUpdater {
 			$redirectLinks += self::countLinksToTitle( $redirect );
 		}
 		$doc->add( 'redirect', $redirects );
-		$doc->add( 'redirect_links', $redirectLinks );
+		$doc->add( 'redirect_links', $redirectLinks );           #Deprecated
+		$doc->add( 'incoming_redirect_links', $redirectLinks );
 
 		wfProfileOut( __METHOD__ );
 		return $doc;

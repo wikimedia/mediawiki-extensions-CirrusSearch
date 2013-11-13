@@ -57,6 +57,7 @@ class CirrusSearchMappingConfigBuilder {
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
+				'outgoing_link' => $this->buildLowercaseKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'text_bytes' => $this->buildLongField(),
 				'text_words' => $this->buildLongField(),
@@ -66,8 +67,10 @@ class CirrusSearchMappingConfigBuilder {
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),
-				'links' => $this->buildLongField(),
-				'redirect_links' => $this->buildLongField(),
+				'links' => $this->buildLongField(),             #Deprecated
+				'redirect_links' => $this->buildLongField(),    #Deprecated
+				'incoming_links' => $this->buildLongField(),
+				'incoming_redirect_links' => $this->buildLongField(),
 			),
 		);
 	}

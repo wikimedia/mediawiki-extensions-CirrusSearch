@@ -55,8 +55,9 @@ class CirrusSearchResult extends SearchResult {
 			$this->titleSnippet = '';
 		}
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
+			// Make sure to find the redirect title before escaping because escaping breaks it....
+			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $result->redirect );
 			$this->redirectSnipppet = self::escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
-			$this->redirectTitle = $this->findRedirectTitle( $result->redirect );
 		} else {
 			$this->redirectSnipppet = '';
 			$this->redirectTitle = null;
@@ -120,11 +121,12 @@ class CirrusSearchResult extends SearchResult {
 
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
+	 * @param string highlighted redirect snippet
 	 * @param array $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
 	 * @return Title object representing the redirect
 	 */
-	private function findRedirectTitle( $redirects ) {
-		$title = $this->stripHighlighting( $this->redirectSnipppet );
+	private function findRedirectTitle( $snippet, $redirects ) {
+		$title = $this->stripHighlighting( $snippet );
 		// Grab the redirect that matches the highlighted title with the lowest namespace.
 		// That is pretty arbitrary but it prioritizes 0 over others.
 		$best = null;
@@ -135,8 +137,9 @@ class CirrusSearchResult extends SearchResult {
 		}
 		if ( $best === null ) {
 			wfLogWarning( "Search backend highlighted a redirect ($title) but didn't return it." );
+			return null;
 		}
-		return Title::makeTitleSafe( $redirect[ 'namespace' ], $redirect[ 'title' ] );
+		return Title::makeTitleSafe( $best[ 'namespace' ], $best[ 'title' ] );
 	}
 
 	private function findSectionTitle() {

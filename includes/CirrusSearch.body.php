@@ -125,4 +125,14 @@ class CirrusSearch extends SearchEngine {
 			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();
 		}
 	}
+
+	public static function specialSearchResultsPrependHook( $specialSearch, $out, $term ) {
+		global $wgCirrusSearchShowNowUsing;
+		if ( $wgCirrusSearchShowNowUsing ) {
+			$out->addHtml( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
+				$specialSearch->msg( 'cirrussearch-now-using' )->parse() .
+				Xml::closeElement( 'div' ) );
+		}
+		return true;
+	}
 }

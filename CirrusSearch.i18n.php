@@ -502,10 +502,11 @@ Xem thêm
 
 /** Simplified Chinese (中文（简体）‎)
  * @author Qiyue2001
+ * @author Shizhao
  * @author TianyinLee
  */
 $messages['zh-hans'] = array(
-	'cirrussearch-desc' => 'MediaWiki专用的Elasticsearch搜索',
+	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 );
 

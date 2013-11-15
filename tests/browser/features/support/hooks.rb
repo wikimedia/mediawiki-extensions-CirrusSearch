@@ -173,3 +173,17 @@ Before('@prefix_filter') do
   end
   $prefix_filter = true
 end
+
+Before('@prefer_recent') do
+  if !$prefix_filter
+    # These are updated per process instead of per test because of the 20 second wait
+    # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot
+    steps %Q{
+      Given a page named PreferRecent First exists with contents %{epoch}
+      And a page named PreferRecent Second Second exists with contents %{epoch}
+      And wait 20 seconds
+      And a page named PreferRecent Third exists with contents %{epoch}
+    }
+  end
+  $prefix_filter = true
+end

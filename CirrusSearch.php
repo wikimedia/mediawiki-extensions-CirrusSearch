@@ -106,6 +106,21 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 5;
 // Weight of fields relative to article text
 $wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0 );
 
+// Portion of an article's score that decays with time since it's last update.  Defaults to 0
+// meaning don't decay the score at all unless prefer-recent: prefixes the query.
+$wgCirrusSearchPreferRecentDefaultDecayPortion = 0;
+
+// Portion of an article's score that decays with time if prefer-recent: prefixes the query but
+// doesn't specify a portion.  Defaults to .6 because that approximates the behavior that
+// wikinews has been using for years.  An article 160 days old is worth about 70% of its new score.
+$wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
+
+// Default number of days it takes the portion of an article's score that decays with time since
+// last update to half way decay to use if prefer-recent: prefixes query and doesn't specify a
+// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 157 because
+// that approximates the behavior that wikinews has been using for years.
+$wgCirrusSearchPreferRecentDefaultHalfLife = 160;
+
 // How long to cache link counts for (in seconds)
 $wgCirrusSearchLinkCountCacheTime = 0;
 

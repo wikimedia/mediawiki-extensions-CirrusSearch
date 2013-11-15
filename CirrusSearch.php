@@ -138,6 +138,9 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 // Changing it requires an in place reindex to take effect.  Currently only available in English.
 $wgCirrusSearchUseAggressiveSplitting = true;
 
+// Show the notification about this wiki using CirrusSearch on the search page.
+$wgCirrusSearchShowNowUsing = false;
+
 $includes = __DIR__ . "/includes/";
 /**
  * Classes
@@ -163,6 +166,7 @@ $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php
  */
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch::softwareInfoHook';
+$wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch::specialSearchResultsPrependHook';
 // Install our prefix search hook only if we're enabled.
 $wgExtensionFunctions[] = function() {
 	global $wgSearchType, $wgHooks;

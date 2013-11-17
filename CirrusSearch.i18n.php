@@ -156,6 +156,7 @@ Kilder
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Solr-betriebene Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
+	'cirrussearch-now-using' => 'Dieses Wiki verwendet eine neue Suchmaschine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mehr erfahren]])',
 	'cirrussearch-ignored-headings' => ' #<!-- diese Zeile nicht verändern --> <pre>
 # Überschriften, die von der Suche ignoriert werden.
 # Diese Änderungen werden wirksam, sobald die Seite mit der Überschrift indexiert wurde.
@@ -188,10 +189,12 @@ $messages['fa'] = array(
 /** French (français)
  * @author Gomoko
  * @author Jean-Frédéric
+ * @author Linedwell
  */
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
 	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
+	'cirrussearch-now-using' => 'Ce wiki utilise un nouveau moteur de recherche. ([[mw:Special:MyLanguage/Help:CirrusSearch|en savoir plus]])',
 	'cirrussearch-ignored-headings' => ' #<!-- laisser cette ligne comme telle --> <pre>
 # Titres de sections qui seront ignorés par la recherche
 # Les changements effectués ici prennent effet dès lors que la page avec le titre est indexée.
@@ -288,6 +291,7 @@ Collegamenti esterni
 $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Elasticsearch 検索',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
+	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 );
 
 /** Korean (한국어)
@@ -319,6 +323,7 @@ $messages['ko'] = array(
 $messages['lb'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-Sichfonctioun fir MediaWiki',
 	'cirrussearch-backend-error' => 'Mir konnten Är Sich wéint engem temporäre Problem net maachen. Probéiert w.e.g. méi spéit nach eng Kéier.',
+	'cirrussearch-now-using' => 'Dës Wiki benotzt eng nei Sichmaschinn.([[mw:Special:MyLanguage/Help:CirrusSearch|Fir méi ze wëssen]])',
 	'cirrussearch-ignored-headings' => " #<!-- dës Zeil net änneren --> <pre>
 # Iwwerschrëften, déi vun der Sich ignoréiert ginn.
 # Dës Ännerunge gi wirksam, soubal déi Säit mat der Iwwerschrëft indexéiert gouf.
@@ -338,6 +343,7 @@ Kuckt och
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
+	'cirrussearch-now-using' => 'Ова вики користи нов пребарувач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Дознајте повеќе]])',
 	'cirrussearch-ignored-headings' => ' #<!-- не менувајте ништо во овој ред --> <pre>
 # Заглавија што ќе се занемарат при пребарувањето.
 # Измените во ова ќе стапат на сила штом ќе се индексира страницата со заглавието.
@@ -361,11 +367,13 @@ $messages['ms'] = array(
 
 /** Dutch (Nederlands)
  * @author Bluyten
+ * @author Breghtje
  * @author Siebrand
  */
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
+	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw: Special: MyLanguage / Help: CirrusSearch | Leer meer]])', # Fuzzy
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.
 # Wijzigingen worden van kracht als een kop wordt geïndexeerd.
@@ -420,6 +428,7 @@ Collegaminde de fore
 $messages['ru'] = array(
 	'cirrussearch-desc' => 'Поиск для MediaWiki на базе Elasticsearch',
 	'cirrussearch-backend-error' => 'Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.',
+	'cirrussearch-now-using' => 'Эта вики использует новый поисковый движок. ([[mw:Special:MyLanguage/Help:CirrusSearch|Подробнее]])',
 	'cirrussearch-ignored-headings' => ' #<!-- оставьте эту строку как есть --> <pre>
 # Заголовки, которые будут игнорироваться поиском.
 # Изменения вступают в силу, как только страница с заголовком индексируется.
@@ -467,6 +476,7 @@ Se också
 $messages['uk'] = array(
 	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
 	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+	'cirrussearch-now-using' => 'Це вікі використовує новий пошуковий рушій. ([[mw:Special:MyLanguage/Help:CirrusSearch|Докладніше]])',
 	'cirrussearch-ignored-headings' => ' #<!-- залиште цей рядок точно таким, яким він є --> <pre>
 # Заголовки, які будуть ігноруватися при пошуці.
 # Зміни, які набирають сили при індексуванні сторінки з заголовком.

@@ -11,7 +11,7 @@ $messages = array();
  */
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
-	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem.  Please try again later.',
+	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem. Please try again later.',
 	'cirrussearch-now-using' => 'This wiki is using a new search engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Headings that will be ignored by search.

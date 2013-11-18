@@ -33,7 +33,7 @@ $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
 "Elasticsearch" is a full-text search engine. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
-	'cirrussearch-now-using' => 'Note that this wiki is using a new search engine with a link for people to learn more.  That\'ll contain information on filing a bug, new syntax, etc.',
+	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );
 
@@ -43,6 +43,7 @@ $messages['qqq'] = array(
 $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Elasticsearch pa MediaWiki',
 	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
+	'cirrussearch-now-using' => 'Esta wiki ta usando un motor de gueta nuevu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más]])',
 	'cirrussearch-ignored-headings' => " #<!-- dexar esta llinia exactamente como ta --> <pre>
 # Testeres que nun se tendrán en cuenta na gueta.
 # Los cambios fechos equí son efeutivos nel momentu que s'indexa la páxina cola testera.
@@ -234,6 +235,7 @@ Véxase tamén
 $messages['he'] = array(
 	'cirrussearch-desc' => 'חיפוש במדיה־ויקי באמצעות Elasticsearch',
 	'cirrussearch-backend-error' => 'לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.',
+	'cirrussearch-now-using' => 'הוויקי הזה משתמש במנוע חיפוש חדש. ([[mw:Special:MyLanguage/Help:CirrusSearch|מידע נוסף]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # כותרות של פסקאות שהחיפוש יתעלם מהן
 # שינויים כאן ייכנסו לתוקף כשדף עם הכותרת הזאת ייכנס לאינדקס החיפוש
@@ -272,6 +274,7 @@ Vide etiam
 $messages['it'] = array(
 	'cirrussearch-desc' => 'Ricerca realizzata con Elasticsearch per MediaWiki',
 	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
+	'cirrussearch-now-using' => 'Questo wiki usa un nuovo motore di ricerca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ulteriori informazioni]])',
 	'cirrussearch-ignored-headings' => ' #<!-- lascia questa riga esattamente come è --> <pre>
 # Elenco delle intestazioni che saranno ignorate dalla ricerca.
 # Le modifiche a questa pagina saranno effettive non appena la pagina sarà indicizzata.

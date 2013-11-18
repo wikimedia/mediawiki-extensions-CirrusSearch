@@ -33,6 +33,7 @@ $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
 "Elasticsearch" is a full-text search engine. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
+	'cirrussearch-now-using' => 'Note that this wiki is using a new search engine with a link for people to learn more.  That\'ll contain information on filing a bug, new syntax, etc.',
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );
 

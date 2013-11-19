@@ -369,14 +369,28 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->output( "Done\n" );
 				$this->validateIndexSettings();
 				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
+				$expectedActive = $this->getShardCount() * ( 1 + $this->getReplicaCount() );
+				$indexName = $this->getSpecificIndexName();
+				$path = "_cluster/health/$indexName";
 				$each = 0;
 				while ( true ) {
-					$unstarted = $this->indexShardsUnstarted();
-					if ( $each === 0 ) {
-						$this->output( $this->indent . "\t\t$unstarted remaining\n" );
+					$response = CirrusSearchConnection::getClient()->request( $path );
+					if ( $response->hasError() ) {
+						$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
+						sleep( 1 );
+						continue;
 					}
-					if ( $unstarted === 0 ) {
-						break;
+					$health = $response->getData();
+					$active = $health[ 'active_shards' ];
+					$relocating = $health[ 'relocating_shards' ];
+					$initializing = $health[ 'initializing_shards' ];
+					$unassigned = $health[ 'unassigned_shards' ];
+					if ( $each === 0 || $active === $expectedActive ) {
+						$this->output( $this->indent . "\t\tactive:$active/$expectedActive relocating:$relocating " .
+							"initializing:$initializing unassigned:$unassigned\n" );
+						if ( $active === $expectedActive ) {
+							break;
+						}
 					}
 					$each = ( $each + 1 ) % 20;
 					sleep( 1 );
@@ -395,21 +409,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"--reindexAndRemoveOk.  Make sure you understand the consequences of either\n" .
 			"choice." );
 		$this->returnCode = 1;
-	}
-
-	private function indexShardsUnstarted() {
-		$data = $this->getIndex()->getStatus()->getData();
-		$count = 0;
-		foreach ( $data[ 'indices' ] as $index ) {
-			foreach ( $index[ 'shards' ] as $shard ) {
-				foreach ( $shard as $replica ) {
-					if ( $replica[ 'state' ] !== 'STARTED' ) {
-						$count++;
-					}
-				}
-			}
-		}
-		return $count;
 	}
 
 	public function validateAllAlias() {

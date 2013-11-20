@@ -59,6 +59,11 @@ class ForceSearchIndex extends Maintenance {
 
 	public function execute() {
 		wfProfileIn( __METHOD__ );
+
+		// Make sure we don't flood the pool counter
+		unset( $wgPoolCounterConf['CirrusSearch-Update'] );
+		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
 			// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
 			$this->from = new MWTimestamp( $this->getOption( 'from', '00' )  );

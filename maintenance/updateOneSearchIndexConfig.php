@@ -109,6 +109,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
+		// Make sure we don't flood the pool counter
+		unset( $wgPoolCounterConf['CirrusSearch-Update'] );
+		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+
 		try{
 			$this->indexType = $this->getOption( 'indexType' );
 			if ( $this->indexType !== CirrusSearchConnection::CONTENT_INDEX_TYPE &&

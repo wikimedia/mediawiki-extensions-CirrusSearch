@@ -173,11 +173,24 @@ Siehe auch
 );
 
 /** Spanish (español)
+ * @author Ihojose
  * @author Luis Felipe Schenone
  */
 $messages['es'] = array(
 	'cirrussearch-desc' => 'Hace que la búsqueda sea con Solr',
 	'cirrussearch-backend-error' => 'No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.',
+	'cirrussearch-now-using' => 'Esta wiki está utilizando un nuevo motor de búsqueda. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más información]])',
+	'cirrussearch-ignored-headings' => ' #<!-- deje esta línea tal y como está --> <pre>
+# Títulos que serán ignorados por la búsqueda.
+# Los cambios estarán en vigor tan pronto como la página con el título esté indexada.
+# Puede forzar la página a ser reindexada haciendo una edición nula.
+# La sintaxis es la siguiente: .N!
+#   * Todo, desde un carácter "#" al final de la línea es un comentario
+#   * Todas las líneas en blanco es un título exacto para ignorar, caso y cualquier 
+Referencia
+Enlaces externos
+Véase también
+ #</pre> <!-- deje esta línea tal y como está -->',
 );
 
 /** Persian (فارسی)
@@ -372,12 +385,13 @@ $messages['ms'] = array(
 /** Dutch (Nederlands)
  * @author Bluyten
  * @author Breghtje
+ * @author Romaine
  * @author Siebrand
  */
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
-	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw: Special: MyLanguage / Help: CirrusSearch | Leer meer]])', # Fuzzy
+	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Leer meer]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.
 # Wijzigingen worden van kracht als een kop wordt geïndexeerd.

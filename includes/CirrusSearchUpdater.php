@@ -36,6 +36,8 @@ class CirrusSearchUpdater {
 	 * Update a single article using its Title and pre-sanitized text.
 	 */
 	public static function updateFromTitleAndText( $id, $title, $text ) {
+		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
+
 		if ( in_array( $id, self::$updated ) ) {
 			// Already indexed $id
 			return;
@@ -60,7 +62,7 @@ class CirrusSearchUpdater {
 		} else {
 			self::updatePages( array( array(
 				'page' => $page,
-			) ) );
+			) ), false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
 		}
 	}
 
@@ -124,10 +126,22 @@ class CirrusSearchUpdater {
 	 *       'skip-parse' => true, # Don't parse the page, just update link counts.  Optional.
 	 *     )
 	 *   )
+	 * @param boolean $checkFreshness Should we check if Elasticsearch already has
+	 *   up to date copy of the document before sending it?
+	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
+	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
+	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
+	 *   Elasticsearch's time format.
+	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null if using
+	 *   the Elastica default which is 300 seconds.
 	 */
-	public static function updatePages( $pageData, $checkFreshness = false ) {
+	public static function updatePages( $pageData, $checkFreshness = false, $shardTimeout = null,
+			$clientSideTimeout = null) {
 		wfProfileIn( __METHOD__ );
 
+		if ( $clientSideTimeout !== null ) {
+			CirrusSearchConnection::setTimeout( $clientSideTimeout );
+		}
 		$contentDocuments = array();
 		$generalDocuments = array();
 		foreach ( $pageData as $page ) {
@@ -144,8 +158,8 @@ class CirrusSearchUpdater {
 				$generalDocuments[] = $document;
 			}
 		}
-		self::sendDocuments( CirrusSearchConnection::CONTENT_INDEX_TYPE, $contentDocuments );
-		self::sendDocuments( CirrusSearchConnection::GENERAL_INDEX_TYPE, $generalDocuments );
+		self::sendDocuments( CirrusSearchConnection::CONTENT_INDEX_TYPE, $contentDocuments, $shardTimeout );
+		self::sendDocuments( CirrusSearchConnection::GENERAL_INDEX_TYPE, $generalDocuments, $shardTimeout );
 
 		$count = count( $contentDocuments ) + count( $generalDocuments );
 		wfProfileOut( __METHOD__ );
@@ -156,12 +170,16 @@ class CirrusSearchUpdater {
 	 * Delete pages from the elasticsearch index
 	 *
 	 * @param array $pages An array of ids to delete
+	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null if using
+	 *   the Elastica default which is 300 seconds.
 	 */
-	public static function deletePages( $pages ) {
+	public static function deletePages( $pages, $clientSideTimeout = null ) {
 		wfProfileIn( __METHOD__ );
 
-		self::sendDeletes( CirrusSearchConnection::CONTENT_INDEX_TYPE, $pages );
-		self::sendDeletes( CirrusSearchConnection::GENERAL_INDEX_TYPE, $pages );
+		if ( $clientSideTimeout !== null ) {
+			CirrusSearchConnection::setTimeout( $clientSideTimeout );
+		}
+		self::sendDeletes( $pages );
 
 		wfProfileOut( __METHOD__ );
 	}
@@ -186,29 +204,62 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * @param $indexType
-	 * @param $documents array
+	 * @param string $indexType type of index to which to send $documents
+	 * @param array $documents documents to send
+	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
+	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
+	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
+	 *   Elasticsearch's time format.
 	 */
-	private static function sendDocuments( $indexType, $documents ) {
+	private static function sendDocuments( $indexType, $documents, $shardTimeout = null ) {
 		wfProfileIn( __METHOD__ );
 
 		$documentCount = count( $documents );
 		if ( $documentCount === 0 ) {
 			return;
 		}
-		wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index." );
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $documents ) {
+			'doWork' => function() use ( $indexType, $documents, $documentCount, $shardTimeout ) {
 				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )->addDocuments( $documents );
-					wfDebugLog( 'CirrusSearch', 'Update completed in ' . $result->getEngineTime() . ' (engine) millis' );
+					$pageType = CirrusSearchConnection::getPageType( $indexType );
+					// The bulk api doesn't support shardTimeout so don't use it if one is set
+					if ( $shardTimeout === null ) {
+						$start = microtime();
+						wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index via bulk api." );
+						// addDocuments (notice plural) is the bulk api
+						$pageType->addDocuments( $documents );
+						$took = round( ( microtime() - $start ) * 1000 );
+						wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
+					} else {
+						foreach ( $documents as $document ) {
+							$start = microtime();
+							wfDebugLog( 'CirrusSearch', 'Sending id=' . $document->getId() . " to the $indexType index." );
+							$document->setTimeout( $shardTimeout );
+							// The bulk api automatically performs an update if the opType is update but the index api
+							// doesn't so we have to make the switch ourselves
+							if ( $document->getOpType() === 'update' ) {
+								$pageType->updateDocument( $document );
+							} else {
+								// addDocument (notice singular) is the non-bulk index api
+								$pageType->addDocument( $document );
+							}
+							$took = round( ( microtime() - $start ) * 1000 );
+							wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
+						}
+					}
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					error_log( "CirrusSearch update failed caused by:  " . $e->getMessage() );
+					wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
+					foreach ( $documents as $document ) {
+						wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
+					}
 				}
 			},
-			'error' => function( $status ) {
+			'error' => function( $status ) use ( $documents ) {
 				$status = $status->getErrorsArray();
 				wfLogWarning( 'Pool error sending documents to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				foreach ( $documents as $document ) {
+					wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
+				}
 				return false;
 			}
 		) );
@@ -243,6 +294,7 @@ class CirrusSearchUpdater {
 			$doc->setDocAsUpsert( true );
 			$doc->setOpType( 'update' );
 		} else {
+			$doc->setOpType( 'index' );
 			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
 			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
 				->getTextFromContent( $title, $page->getContent(), $parserOutput ) );
@@ -364,6 +416,7 @@ class CirrusSearchUpdater {
 	 */
 	public static function updateLinkedArticles( $addedLinks, $removedLinks ) {
 		global $wgCirrusSearchLinkedArticlesToUpdate, $wgCirrusSearchUnlinkedArticlesToUpdate;
+		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		$titles = array_merge(
 			self::pickFromArray( $addedLinks, $wgCirrusSearchLinkedArticlesToUpdate ),
@@ -401,7 +454,7 @@ class CirrusSearchUpdater {
 				'skip-parse' => true,  // Just update link counts
 			);
 		}
-		self::updatePages( $pages );
+		self::updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
 	}
 
 	/**
@@ -430,29 +483,39 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * @param $indexType
 	 * @param $ids array
 	 */
-	private static function sendDeletes( $indexType, $ids ) {
+	private static function sendDeletes( $ids ) {
 		wfProfileIn( __METHOD__ );
 
 		$idCount = count( $ids );
 		if ( $idCount === 0 ) {
 			return;
 		}
-		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the $indexType index." );
+		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the index." );
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
 			'doWork' => function() use ( $indexType, $ids ) {
 				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )->deleteIds( $ids );
-					wfDebugLog( 'CirrusSearch', 'Delete completed in ' . $result->getEngineTime() . ' (engine) millis' );
+					$start = microtime();
+					CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
+						->deleteIds( $ids );
+					CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
+						->deleteIds( $ids );
+					$took = round( ( microtime() - $start ) * 1000 );
+					wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					error_log( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
+					wfLogWarning( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
+					foreach ( $ids as $id ) {
+						wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
+					}
 				}
 			},
-			'error' => function( $status ) {
+			'error' => function( $status ) use ( $ids ) {
 				$status = $status->getErrorsArray();
 				wfLogWarning( 'Pool error sending deletes to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				foreach ( $ids as $id ) {
+					wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
+				}
 				return false;
 			}
 		) );

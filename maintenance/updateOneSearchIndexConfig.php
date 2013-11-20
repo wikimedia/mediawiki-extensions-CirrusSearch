@@ -44,7 +44,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexAndRemoveOk;
 	// How much should this script indent output?
 	private $indent;
-	private $returnCode = 0;
 
 	// Set with the name of any old indecies to remove if any must be during the alias maintenance
 	// steps.
@@ -153,9 +152,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
-		if ( $this->returnCode ) {
-			die( $this->returnCode );
-		}
 	}
 
 	private function validateIndex() {
@@ -176,9 +172,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndexSettings() {
-		$settings = $this->getIndex()->getSettings()->get();
-
 		$this->output( $this->indent . "\tValidating number of shards..." );
+		$settingsObject = $this->getIndex()->getSettings();
+		$settings = $settingsObject->get();
 		$actualShardCount = $settings[ 'index.number_of_shards' ];
 		if ( $actualShardCount == $this->getShardCount() ) {
 			$this->output( "ok\n" );
@@ -188,8 +184,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Number of shards is incorrect and cannot be changed without a rebuild. You can solve this\n" .
 				"problem by running this program again with either --startOver or --reindexAndRemoveOk.  Make\n" .
 				"sure you understand the consequences of either choice..  This script will now continue to\n" .
-				"validate everything else." );
-			$this->returnCode = 1;
+				"validate everything else.", 1 );
 		}
 
 		$this->output( $this->indent . "\tValidating number of replicas..." );
@@ -198,23 +193,33 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualReplicaCount but should be " . $this->getReplicaCount() . '...' );
-			$this->getIndex()->getSettings()->setNumberOfReplicas( $this->getReplicaCount() );
+			$settingsObject->setNumberOfReplicas( $this->getReplicaCount() );
 			$this->output( "corrected\n" );
 		}
 	}
 
 	private function validateAnalyzers() {
 		$this->output( $this->indent . "Validating analyzers..." );
-		$settings = $this->getIndex()->getSettings()->get();
+		$settingsObject = $this->getIndex()->getSettings();
+		$settings = $settingsObject->get();
 		$requiredAnalyzers = CirrusSearchAnalysisConfigBuilder::build();
 		if ( $this->vaActualMatchRequired( 'index.analysis', $settings, $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
 			$index = $this->getIndex();
-			$this->closeAndCorrect( function() use ($index, $requiredAnalyzers) {
-				$index->getSettings()->set( $requiredAnalyzers );
-			} );
+			if ( $this->closeOk ) {
+				$this->getIndex()->close();
+				$this->closed = true;
+				$settingsObject->set( $requiredAnalyzers );
+				$this->output( "corrected\n" );
+			} else {
+				$this->output( "cannot correct\n" );
+				$this->error("This script encountered an index difference that requires that the index be\n" .
+					"closed, modified, and then reopened.  To allow this script to close the index run it\n" .
+					"with the --closeOk parameter and it'll close the index for the briefest possible time\n" .
+					"Note that the index will be unusable while closed.", 1 );
+			}
 		}
 	}
 
@@ -264,8 +269,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
 				$message = $e->getMessage();
-				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n" );
-				$this->returnCode = 1;
+				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n", 1 );
 			}
 		}
 	}
@@ -320,16 +324,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
 				CirrusSearchConnection::getClient()
-					->getIndex( $this->indexBaseName, $specificAliasName )
-					->delete();
+					->getIndex( $this->indexBaseName, $specificAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
 				$this->error(
 					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --startOver and it'll remove the index and continue.\n" );
-				$this->returnCode = 1;
-				return;
+					"script with --startOver and it'll remove the index and continue.\n", 1 );
 			}
 		} else {
 			foreach ( $status->getIndicesWithAlias( $specificAliasName ) as $index ) {
@@ -407,8 +408,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"The alias is held by another index which means it might be actively serving\n" .
 			"queries.  You can solve this problem by running this program again with\n" .
 			"--reindexAndRemoveOk.  Make sure you understand the consequences of either\n" .
-			"choice." );
-		$this->returnCode = 1;
+			"choice.", 1 );
 	}
 
 	public function validateAllAlias() {
@@ -424,8 +424,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->output( "cannot correct!\n" );
 				$this->error(
 					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --startOver and it'll remove the index and continue.\n" );
-				$this->returnCode = 1;
+					"script with --startOver and it'll remove the index and continue.\n", 1 );
 				return;
 			}
 		} else {
@@ -596,22 +595,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->tooFewReplicas = $this->reindexAndRemoveOk;
 	}
 
-	private function closeAndCorrect( $callback ) {
-		if ( $this->closeOk ) {
-			$this->getIndex()->close();
-			$this->closed = true;
-			$callback();
-			$this->output( "corrected\n" );
-		} else {
-			$this->output( "cannot correct\n" );
-			$this->error("This script encountered an index difference that requires that the index be\n" .
-				"closed, modified, and then reopened.  To allow this script to close the index run it\n" .
-				"with the --closeOk parameter and it'll close the index for the briefest possible time\n" .
-				"Note that the index will be unusable while closed." );
-			$this->returnCode = 1;
-		}
-	}
-
 	/**
 	 * Pick the index identifier from the provided command line option.
 	 * @param string $option command line option
@@ -621,14 +604,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return string index identifier to use
 	 */
 	private function pickIndexIdentifierFromOption( $option ) {
+		$typeName = $this->getIndexTypeName();
 		if ( $option === 'now' ) {
 			$identifier = strval( time() );
-			$this->output( $this->indent . "Setting index identifier...$identifier\n" );
+			$this->output( $this->indent . "Setting index identifier...${typeName}_${identifier}\n" );
 			return $identifier;
 		}
 		if ( $option === 'current' ) {
 			$this->output( $this->indent . 'Infering index identifier...' );
-			$typeName = $this->getIndexTypeName();
 			$found = null;
 			$moreThanOne = array();
 			foreach ( CirrusSearchConnection::getClient()->getStatus()->getIndexNames() as $name ) {
@@ -650,7 +633,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			} else {
 				$identifier = 'first';
 			}
-			$this->output( "$identifier\n ");
+			$this->output( "${typeName}_${identifier}\n ");
 			return $identifier;
 		}
 		return $option;

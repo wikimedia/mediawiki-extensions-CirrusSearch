@@ -51,6 +51,22 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // set to 1 for some redundancy, if not 2 for more redundancy.
 $wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 
+// Shard timeout for non-maintenance index operations including those done in the web
+// process and those done via job queue.  This is the amount of time Elasticsearch
+// will wait around for an offline primary shard.  Currently this is just used in
+// page updates and not deletes.  If this is specified then page updates cannot use
+// the bulk api so they will be less efficient.  Luckily, this isn't used in
+// maintenance scripts which really need bulk operations.  It is defined in
+// Elasticsearch's time format which is a string containing a number and then a unit
+// which is one of d (days), m (minutes), h (hours), ms (milliseconds) or w (weeks).
+// Cirrus defaults to a very tiny value to prevent folks from waiting around for
+// updates.
+$wgCirrusSearchShardTimeout = '1ms';
+
+// Client side timeout for non-maintenance index and delete operations and freshness
+// checks in seconds.
+$wgCirrusSearchClientSideUpdateTimeout = 5;
+
 // Is it ok if the prefix starts on any word in the title or just the first word?
 // Defaults to false (first word only) because that is the wikipedia behavior and so
 // what we expect users to expect.  Does not effect the prefix: search filter or

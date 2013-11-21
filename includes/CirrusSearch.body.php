@@ -75,7 +75,9 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	public function delete( $id, $title ) {
-		CirrusSearchUpdater::deletePages( array( $id ) );
+		global $wgCirrusSearchClientSideUpdateTimeout;
+
+		CirrusSearchUpdater::deletePages( array( $id ), $wgCirrusSearchClientSideUpdateTimeout );
 	}
 
 	public function getTextFromContent( Title $t, Content $c = null, $parserOutput = null ) {

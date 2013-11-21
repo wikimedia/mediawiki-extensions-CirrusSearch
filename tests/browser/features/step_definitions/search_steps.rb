@@ -87,7 +87,7 @@ Then(/^suggestions should( not)? appear$/) do |not_appear|
 end
 Then(/^(.+) is the first suggestion$/) do |title|
   if title == 'none' then
-    step 'there are no search results'
+    on(SearchPage).one_result_element.should_not be_visible
   else
     on(SearchPage).one_result.should == title
   end

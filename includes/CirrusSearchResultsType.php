@@ -57,7 +57,7 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 			'number_of_fragments' => 0,
 		);
 		$entireValueInListField = array(
-			'number_of_fragments' => 1, // Just of the values in the list
+			'number_of_fragments' => 1, // Just one of the values in the list
 			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
 			'type' => 'plain',          // The fvh doesn't sort list fields by score correctly
 		);
@@ -65,6 +65,14 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 			'number_of_fragments' => 1, // Just one fragment
 			'fragment_size' => 100,
 		);
+		$textPlain = $text;
+		// If there isn't a match just return a match sized chunk from the beginning of the page
+		// This is only set on textPlain because we check that text isn't highlighted to return
+		// plain matches (horrible hack that will go away one day).  So we can't return anything
+		// if there aren't any matches.  But since we still want to return some text and we're
+		// already defaulting to the plain match if there isn't any text we can just have it
+		// return the chunk.
+		$textPlain[ 'no_match_size' ] = 100;
 
 		return array(
 			'order' => 'score',
@@ -76,7 +84,7 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
 				'title.plain' => $entireValue,
-				'text.plain' => $text,
+				'text.plain' => $textPlain,
 				'redirect.title.plain' => $entireValueInListField,
 				'heading.plain' => $entireValueInListField,
 			),

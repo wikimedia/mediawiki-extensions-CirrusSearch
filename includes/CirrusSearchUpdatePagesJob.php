@@ -38,6 +38,11 @@ class CirrusSearchUpdatePagesJob extends Job {
 	}
 
 	public function run() {
+		global $wgDisableSearchUpdate;
+
+		if ( $wgDisableSearchUpdate ) {
+			return;
+		}
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
 		foreach ( $this->params[ 'pageIds' ] as $pageId ) {

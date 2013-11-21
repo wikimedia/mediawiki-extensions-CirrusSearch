@@ -22,6 +22,22 @@ class CirrusSearch extends SearchEngine {
 	const MORE_LIKE_THIS_PREFIX = 'morelike:';
 
 	/**
+	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
+	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
+	 * via the ArticleDeleteComplete hook.
+	 * @param $feature String representing feature
+	 * @return bool is this feature supported?
+	 */
+	public function supports( $feature ) {
+		switch ( $feature ) {
+		case 'search-update':
+			return false;
+		default:
+			return parent::supports( $feature );
+		}
+	}
+
+	/**
 	 * @param string $term
 	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
 	 */
@@ -57,57 +73,6 @@ class CirrusSearch extends SearchEngine {
 		return false;
 	}
 
-	public function update( $id, $title, $text ) {
-		if ( $text === false || $text === null ) { // Can't just check falsy text because empty string is ok!
-			wfLogWarning( "Search update called with false or null text for $title.  Ignoring search update." );
-			return;
-		}
-		CirrusSearchUpdater::updateFromTitleAndText( $id, $title, $text );
-	}
-
-	public function updateTitle( $id, $title ) {
-		$loadedTitle = Title::newFromID( $id );
-		if ( $loadedTitle === null ) {
-			wfLogWarning( 'Trying to update the search index for a non-existant title.' );
-			return;
-		}
-		CirrusSearchUpdater::updateFromTitle( $loadedTitle );
-	}
-
-	public function delete( $id, $title ) {
-		global $wgCirrusSearchClientSideUpdateTimeout;
-
-		CirrusSearchUpdater::deletePages( array( $id ), $wgCirrusSearchClientSideUpdateTimeout );
-	}
-
-	public function getTextFromContent( Title $t, Content $c = null, $parserOutput = null ) {
-		$text = parent::getTextFromContent( $t, $c );
-		if( $c ) {
-			switch ( $c->getModel() ) {
-				case CONTENT_MODEL_WIKITEXT:
-					$text = CirrusSearchTextFormatter::formatWikitext( $t, $parserOutput );
-					break;
-				default:
-					$text = SearchUpdate::updateText( $text );
-					break;
-			}
-		}
-		return $text;
-	}
-
-	public function textAlreadyUpdatedForIndex() {
-		return true;
-	}
-
-	/**
-	 * Noop because Elasticsearch handles all required normalization.
-	 * @param string $string String to process
-	 * @return string $string exactly as passed in
-	 */
-	public function normalizeText( $string ) {
-		return $string;
-	}
-
 	/**
 	 * Merge the prefix into the query (if any).
 	 * @var $term string search term
@@ -119,6 +84,14 @@ class CirrusSearch extends SearchEngine {
 		}
 		return $term;
 	}
+
+	public static function articleDeleteCompleteHook( $page, $user, $reason, $id ) {
+		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
+		// load it from the title because the page row has already been deleted.
+		JobQueueGroup::singleton()->push( CirrusSearchDeletePagesJob::build(
+			$page->getTitle(), $id ) );
+	}
+
 
 	public static function softwareInfoHook( $software ) {
 		$version = CirrusSearchSearcher::getElasticsearchVersion();

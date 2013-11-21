@@ -24,9 +24,12 @@ class CirrusSearchLinksUpdateJob extends Job {
 	}
 
 	public function run() {
-		if ( $this->params[ 'titleNeedsUpdate' ] ) {
-			CirrusSearchUpdater::updateFromTitle( $this->title );
+		global $wgDisableSearchUpdate;
+
+		if ( $wgDisableSearchUpdate ) {
+			return;
 		}
+		CirrusSearchUpdater::updateFromTitle( $this->title );
 		CirrusSearchUpdater::updateLinkedArticles( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
 	}

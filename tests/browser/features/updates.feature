@@ -2,11 +2,13 @@ Feature: Search backend updates
   Background:
     Given I am logged in
   Scenario: Deleted pages are removed from the index
-    Given a page named DeleteMe exists with contents deleteme
+    Given a page named DeleteMe exists
     When I delete DeleteMe
     And I am at a random page so I can reload it if I need to
-    # Sometimes deletes take a second or two to kick in
-    And within 3 seconds typing deleteme into the search box yields none as the first suggestion
+    And wait 5 seconds
+    And I type DeleteMe into the search box
+    Then suggestions should appear
+    And none is the first suggestion
 
   Scenario: Altered pages are updated in the index
     Given a page named ChangeMe exists with contents foo

@@ -21,8 +21,9 @@
  */
 class CirrusSearchUpdater {
 	/**
-	 * Article IDs updated in this process.  Used for deduplication of updates.
-	 * @var array(Integer)
+	 * Full title text of pages updated in this process.  Used for deduplication
+	 * of updates.
+	 * @var array(String)
 	 */
 	private static $updated = array();
 
@@ -33,85 +34,62 @@ class CirrusSearchUpdater {
 	private static $ignoredHeadings = null;
 
 	/**
-	 * Update a single article using its Title and pre-sanitized text.
-	 */
-	public static function updateFromTitleAndText( $id, $title, $text ) {
-		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
-
-		if ( in_array( $id, self::$updated ) ) {
-			// Already indexed $id
-			return;
-		}
-		$page = WikiPage::newFromID( $id, WikiPage::READ_LATEST );
-		if ( !$page ) {
-			wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $id" );
-			return;
-		}
-		$content = $page->getContent();
-		// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
-		self::$updated[] = $id;
-		if ( $content->isRedirect() ) {
-			$target = $content->getUltimateRedirectTarget();
-			if ( $target->equals( $page->getTitle() ) ) {
-				// This doesn't warn about redirect loops longer than one but that is ok.
-				wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
-				return;
-			}
-			wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
-			self::updateFromTitle( $target );
-		} else {
-			self::updatePages( array( array(
-				'page' => $page,
-			) ), false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
-		}
-	}
-
-	/**
-	 * Performs an update when the $text is not already available by firing the
-	 * update back through the SearchEngine to get the sanitized text.
+	 * Update a single page.
 	 * @param Title $title
 	 */
 	public static function updateFromTitle( $title ) {
-		$articleId = $title->getArticleID();
-		$revision = Revision::loadFromPageId( wfGetDB( DB_SLAVE ), $articleId );
+		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		// This usually happens on page creation when all the revision data hasn't
-		// replicated out to the slaves
-		if ( !$revision ) {
-			$revision = Revision::loadFromPageId( wfGetDB( DB_MASTER ), $articleId );
-			// This usually happens when building a redirect to a non-existant page
-			if ( !$revision ) {
+		// Loop through redirects until we get to the ultimate target
+		while ( true ) {
+			$titleText = $title->getFullText();
+			if ( in_array( $titleText, self::$updated ) ) {
+				// Already indexed this article in this process.  This is mostly useful
+				// to catch self redirects but has a storied history of catching strange
+				// behavior.
+				return;
+			}
+
+			$page = WikiPage::factory( $title );
+			if ( !$page ) {
+				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );
+				return;
+			}
+			$content = $page->getContent();
+			if ( is_string( $content ) ) {
+				$content = new TextContent( $content );
+			}
+
+			// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
+			self::$updated[] = $titleText;
+			if ( $content->isRedirect() ) {
+				$target = $content->getUltimateRedirectTarget();
+				if ( $target->equals( $page->getTitle() ) ) {
+					// This doesn't warn about redirect loops longer than one but we'll catch those anyway.
+					wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
+					return;
+				}
+				wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
+				$title = $target;
+				continue;
+			} else {
+				self::updatePages( array( array(
+					'page' => $page,
+				) ), false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
 				return;
 			}
 		}
-
-		$update = new SearchUpdate( $articleId, $title, $revision->getContent() );
-		$update->doUpdate();
 	}
 
 	/**
-	 * Hooked to update the search index for pages when templates that they include are changed
-	 * and to update the link counts on newly linked or unlinked articles.  These updates are
-	 * all performed on the job queue.  If this is called in a web process then this adds the
-	 * appropriate job to the queue.  If this is called from a cli process then this just
-	 * immediately executes the job.
-	 * @param $linksUpdate LinksUpdate
+	 * Hooked to update the search index when pages change directly or when templates that
+	 * they include change.
+	 * @param $linksUpdate LinksUpdate source of all links update information
 	 */
 	public static function linksUpdateCompletedHook( $linksUpdate ) {
-		$inCli = PHP_SAPI == 'cli';
-		// In the web process the title update will be taken care of by the SearchEngine infrastructure
-		// so no need to update it in the job.
-		$titleNeedsUpdate = $inCli;
-		$addedLinks = $linksUpdate->getAddedLinks();
-		$removedLinks = $linksUpdate->getRemovedLinks();
-		if ( !$titleNeedsUpdate && count( $addedLinks ) === 0 && count( $removedLinks ) === 0 ) {
-			// Nothing to do so no sense in going any further.
-			return;
-		}
 		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), array(
-			'addedLinks' => $addedLinks,
-			'removedLinks' => $removedLinks,
-			'titleNeedsUpdate' => $titleNeedsUpdate,
+			'addedLinks' => $linksUpdate->getAddedLinks(),
+			'removedLinks' => $linksUpdate->getRemovedLinks(),
 		) );
 		JobQueueGroup::singleton()->push( $job );
 	}
@@ -296,9 +274,7 @@ class CirrusSearchUpdater {
 		} else {
 			$doc->setOpType( 'index' );
 			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
-			$text = Sanitizer::stripAllTags( SearchEngine::create( 'CirrusSearch' )
-				->getTextFromContent( $title, $page->getContent(), $parserOutput ) );
-			$text = trim( $text ); // No need to store the trailing spaces in Elasticsearch....
+			$text = self::buildTextToIndex( $page->getContent(), $parserOutput );
 			$doc->add( 'text', $text );
 			$doc->add( 'text_bytes', strlen( $text ) );
 			$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
@@ -360,6 +336,21 @@ class CirrusSearchUpdater {
 
 		wfProfileOut( __METHOD__ );
 		return $doc;
+	}
+
+	/**
+	 * Fetch text to index.  If $content is wikitext then render and clean it.  Otherwise delegate
+	 * to the $content itself and then to SearchUpdate::updateText to clean the result.
+	 * @param $content Content of page
+	 * @param $parserOutput ParserOutput from page
+	 */
+	public static function buildTextToIndex( $content, $parserOutput ) {
+		switch ( $content->getModel() ) {
+		case CONTENT_MODEL_WIKITEXT:
+			return CirrusSearchTextFormatter::formatWikitext( $parserOutput );
+		default:
+			return SearchUpdate::updateText( $content->getTextForSearchIndex() );
+		}
 	}
 
 	private static function getIgnoredHeadings() {
@@ -494,10 +485,10 @@ class CirrusSearchUpdater {
 		}
 		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the index." );
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $ids ) {
+			'doWork' => function() use ( $ids ) {
 				try {
 					$start = microtime();
-					CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
+					$response = CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
 						->deleteIds( $ids );
 					CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
 						->deleteIds( $ids );

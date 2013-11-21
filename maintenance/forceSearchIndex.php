@@ -58,6 +58,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	public function execute() {
+		global $wgPoolCounterConf;
 		wfProfileIn( __METHOD__ );
 
 		// Make sure we don't flood the pool counter

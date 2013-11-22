@@ -29,6 +29,7 @@ require_once( "$IP/maintenance/Maintenance.php" );
  * job. In an ideal world, we could just use that script and kill all of this.
  */
 class ForceSearchIndex extends Maintenance {
+	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
 	var $from = null;
 	var $to = null;
 	var $toId = null;
@@ -36,6 +37,8 @@ class ForceSearchIndex extends Maintenance {
 	var $limit;
 	var $forceUpdate;
 	var $queue;
+	var $maxJobs;
+	var $pauseForJobs;
 
 	public function __construct() {
 		parent::__construct();
@@ -55,6 +58,11 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
 			'to date copy.  Not used with --deletes.' );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
+		$this->addOption( 'maxJobs', 'If there are more than this many index jobs in the queue then pause before adding ' .
+			'more.  This is only checked every ' . self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS . ' seconds.  Not meaningful ' .
+			'without --queue.', false, true );
+		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for the there to be less than this many before ' .
+			'starting again.  Defaults to the value specified for --maxJobs.  Not meaningful without --queue.', false, true );
 	}
 
 	public function execute() {
@@ -80,6 +88,9 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->forceUpdate = $this->getOption( 'forceUpdate' );
 		$this->queue = $this->getOption( 'queue' );
+		$this->maxJobs = $this->getOption( 'maxJobs' ) ? intval( $this->getOption( 'maxJobs' ) ) : null;
+		$this->pauseForJobs = $this->getOption( 'pauseForJobs' ) ?
+			intval( $this->getOption( 'pauseForJobs' ) ) : $this->maxJobs;
 
 		if ( $this->indexUpdates ) {
 			if ( $this->queue ) {
@@ -91,6 +102,7 @@ class ForceSearchIndex extends Maintenance {
 			$operationName = 'Deleted';
 		}
 		$operationStartTime = microtime( true );
+		$lastJobQueueCheckTime = 0;
 		$completed = 0;
 		$rate = 0;
 
@@ -131,6 +143,18 @@ class ForceSearchIndex extends Maintenance {
 				} );
 				// Update size with the actual number of updated documents.
 				if ( $this->queue ) {
+					$now = microtime( true );
+					if ( $now - $lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
+						$lastJobQueueCheckTime = $now;
+						$queueSize = self::getUpdatesInQueue();
+						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
+							do {
+								$this->output( "Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
+								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+								$queueSize = self::getUpdatesInQueue();
+							} while ( $this->pauseForJobs < $queueSize );
+						}
+					}
 					JobQueueGroup::singleton()->push(
 						CirrusSearchUpdatePagesJob::build( $updates, !$this->forceUpdate ) );
 				} else {
@@ -157,6 +181,18 @@ class ForceSearchIndex extends Maintenance {
 			$this->output( "$operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
 		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
+
+		if ( $this->queue ) {
+			$this->output( "Waiting for jobs to drain from the queue\n" );
+			while ( true ) {
+				$queueSizeForOurJob = self::getUpdatesInQueue();
+				if ( $queueSizeForOurJob === 0 ) {
+					break;
+				}
+				$this->output( "$queueSizeForOurJob jobs left on the queue.\n" );
+				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+			}
+		}
 		wfProfileOut( __METHOD__ );
 	}
 
@@ -319,6 +355,14 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$this->output( " --fromId $id --toId $chunkToId\n" );
 		}
+	}
+
+	/**
+	 * Get the number of cirrusSearchUpdatePages jobs in the queue.
+	 * @return int length
+	 */
+	private static function getUpdatesInQueue() {
+		return JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
 	}
 }
 

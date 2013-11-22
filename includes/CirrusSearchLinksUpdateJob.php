@@ -1,7 +1,8 @@
 <?php
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
- * completed.
+ * completed.  The page itself is updated first then a second copy of this job
+ * is queued to update linked articles.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +30,17 @@ class CirrusSearchLinksUpdateJob extends Job {
 		if ( $wgDisableSearchUpdate ) {
 			return;
 		}
-		CirrusSearchUpdater::updateFromTitle( $this->title );
-		CirrusSearchUpdater::updateLinkedArticles( $this->params[ 'addedLinks' ],
-			$this->params[ 'removedLinks' ] );
+		if ( $this->params[ 'primary' ] ) {
+			CirrusSearchUpdater::updateFromTitle( $this->title );
+			$next = new CirrusSearchLinksUpdateJob( $this->title, array(
+				'addedLinks' => $this->params[ 'addedLinks' ],
+				'removedLinks' => $this->params[ 'removedLinks' ],
+				'primary' => false,
+			) );
+			JobQueueGroup::singleton()->push( $next );
+		} else {
+			CirrusSearchUpdater::updateLinkedArticles( $this->params[ 'addedLinks' ],
+				$this->params[ 'removedLinks' ] );
+		}
 	}
 }

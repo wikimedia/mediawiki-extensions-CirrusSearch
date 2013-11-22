@@ -57,7 +57,7 @@ class CirrusSearchMappingConfigBuilder {
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
-				'outgoing_link' => $this->buildLowercaseKeywordField(),
+				'outgoing_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'text_bytes' => $this->buildLongField(),
 				'text_words' => $this->buildLongField(),
@@ -67,8 +67,6 @@ class CirrusSearchMappingConfigBuilder {
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
 					)
 				),
-				'links' => $this->buildLongField(),             #Deprecated
-				'redirect_links' => $this->buildLongField(),    #Deprecated
 				'incoming_links' => $this->buildLongField(),
 				'incoming_redirect_links' => $this->buildLongField(),
 			),
@@ -118,6 +116,18 @@ class CirrusSearchMappingConfigBuilder {
 		return array(
 			'type' => 'string',
 			'analyzer' => 'lowercase_keyword',
+			'include_in_all' => false,
+		);
+	}
+
+	/**
+	 * Create a string field that does no analyzing whatsoever.
+	 * @return array definition of the field
+	 */
+	private function buildKeywordField() {
+		return array(
+			'type' => 'string',
+			'analyzer' => 'keyword',
 			'include_in_all' => false,
 		);
 	}

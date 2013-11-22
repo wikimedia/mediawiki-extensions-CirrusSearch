@@ -25,7 +25,8 @@ Now run this script to generate your elasticsearch index:
 Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to elasticsearch.
 
 Next bootstrap the search index by running:
- php ./maintenance/forceSearchIndex.php
+ php ./maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
+ php ./maintenance/forceSearchIndex.php --forceUpdate --skipParse
 Note that this can take some time.  For large wikis read Bootstrapping large wikis below.
 
 Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
@@ -46,7 +47,7 @@ them out to multiple php processes/machines.  The --buildChunks argument of forc
 the script to build invocations of itself that you can splay out to different processes.  For example:
  rm -rf /tmp/index_log
  mkdir /tmp/index_log
- php forceSearchIndex.php --buildChunks 10 --batch-size 100 |
+ php forceSearchIndex.php --buildChunks 10 --forceUpdate --skipLinks --indexOnSkip --batch-size 100 |
    xargs -I{} -t -P4 sh -c 'php {} > /tmp/index_log/$$.log'
 
 forceSearchIndex.php also accepts --queue which can be used to enqueue all of its work onto the job queue

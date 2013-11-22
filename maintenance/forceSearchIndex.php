@@ -63,6 +63,14 @@ class ForceSearchIndex extends Maintenance {
 			'without --queue.', false, true );
 		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for the there to be less than this many before ' .
 			'starting again.  Defaults to the value specified for --maxJobs.  Not meaningful without --queue.', false, true );
+		$this->addOption( 'indexOnSkip', 'When skipping either parsing or links send the document as an index.  ' .
+			'This replaces the contents of the index for that entry with the entry built from a skipped process.' .
+			'Without this if the entry does not exist then it will be skipped enirely.  Only set this when running ' .
+			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
+		$this->addOption( 'skipParse', 'Skip parsing the page.  This is realy only good for running the second half ' .
+			'of the two phase index build.' );
+		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
+			'this with --indexOnSkip for the first half of the two phase index build.' );
 	}
 
 	public function execute() {
@@ -91,6 +99,16 @@ class ForceSearchIndex extends Maintenance {
 		$this->maxJobs = $this->getOption( 'maxJobs' ) ? intval( $this->getOption( 'maxJobs' ) ) : null;
 		$this->pauseForJobs = $this->getOption( 'pauseForJobs' ) ?
 			intval( $this->getOption( 'pauseForJobs' ) ) : $this->maxJobs;
+		$updateFlags = 0;
+		if ( $this->getOption( 'indexOnSkip' ) ) {
+			$updateFlags |= CirrusSearchUpdater::INDEX_ON_SKIP;
+		}
+		if ( $this->getOption( 'skipParse' ) ) {
+			$updateFlags |= CirrusSearchUpdater::SKIP_PARSE;
+		}
+		if ( $this->getOption( 'skipLinks' ) ) {
+			$updateFlags |= CirrusSearchUpdater::SKIP_LINKS;
+		}
 
 		if ( $this->indexUpdates ) {
 			if ( $this->queue ) {
@@ -137,11 +155,13 @@ class ForceSearchIndex extends Maintenance {
 				}
 				$minId = $last[ 'id' ];
 
-				// Strip entries without a page.  We can't do anything with them.
-				$updates = array_filter( $updates, function ($rev) {
-					return $rev[ 'page' ] !== null;
-				} );
-				// Update size with the actual number of updated documents.
+				// Strip updates down to just pages
+				$pages = array();
+				foreach ( $updates as $update ) {
+					if ( isset( $update[ 'page' ] ) ) {
+						$pages[] = $update[ 'page' ];
+					}
+				}
 				if ( $this->queue ) {
 					$now = microtime( true );
 					if ( $now - $lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
@@ -156,9 +176,11 @@ class ForceSearchIndex extends Maintenance {
 						}
 					}
 					JobQueueGroup::singleton()->push(
-						CirrusSearchUpdatePagesJob::build( $updates, !$this->forceUpdate ) );
+						CirrusSearchUpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
 				} else {
-					$size = CirrusSearchUpdater::updatePages( $updates, !$this->forceUpdate );
+					// Update size with the actual number of updated documents.
+					$size = CirrusSearchUpdater::updatePages( $pages, !$this->forceUpdate,
+						null, null, $updateFlags );
 				}
 			} else {
 				$idsToDelete = array();

@@ -20,6 +20,12 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchUpdater {
+	// Bit field parameters for updatePages et al.
+	const INDEX_EVERYTHING = 0;
+	const INDEX_ON_SKIP = 1;
+	const SKIP_PARSE = 2;
+	const SKIP_LINKS = 4;
+
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
 	 * of updates.
@@ -51,7 +57,7 @@ class CirrusSearchUpdater {
 			}
 
 			$page = WikiPage::factory( $title );
-			if ( !$page ) {
+			if ( !$page->exists() ) {
 				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );
 				return;
 			}
@@ -73,9 +79,8 @@ class CirrusSearchUpdater {
 				$title = $target;
 				continue;
 			} else {
-				self::updatePages( array( array(
-					'page' => $page,
-				) ), false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
+				self::updatePages( array( $page ), false, $wgCirrusSearchShardTimeout,
+					$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
 				return;
 			}
 		}
@@ -90,6 +95,7 @@ class CirrusSearchUpdater {
 		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), array(
 			'addedLinks' => $linksUpdate->getAddedLinks(),
 			'removedLinks' => $linksUpdate->getRemovedLinks(),
+			'primary' => true,
 		) );
 		JobQueueGroup::singleton()->push( $job );
 	}
@@ -97,36 +103,51 @@ class CirrusSearchUpdater {
 	/**
 	 * This updates pages in elasticsearch.
 	 *
-	 * @param array $pageData An array of pages. The format is as follows:
-	 *   array(
-	 *     array(
-	 *       'page' => page,
-	 *       'skip-parse' => true, # Don't parse the page, just update link counts.  Optional.
-	 *     )
-	 *   )
-	 * @param boolean $checkFreshness Should we check if Elasticsearch already has
+	 * $flags includes:
+	 *   INDEX_EVERYTHING Cirrus will parse the page and count the links and send the document
+	 *     to Elasticsearch as an index so if it doesn't exist it'll be created.
+	 *   SKIP_PARSE Cirrus will skip parsing the page when building the document.  It makes
+	 *     sense to do this when you know the page hasn't changed like when it is newly linked
+	 *     from another page.
+	 *   SKIP_LINKS Cirrus will skip collecting links information.  It makes sense to do this
+	 *     when you know the link counts aren't yet available like during the first phase of
+	 *     the two phase index build.
+	 *   INDEX_ON_SKIP Cirrus will send an update if SKIP_PARSE or SKIP_LINKS rather than an
+	 *     index.  Indexing with any portion of the document skipped is dangerous because it
+	 *     can put half created pages in the index.  This is only a good idea during the first
+	 *     half of the two phase index build.
+	 *
+	 * @param $pages array(WikiPage) pages to update
+	 * @param $checkFreshness boolean Should we check if Elasticsearch already has
 	 *   up to date copy of the document before sending it?
-	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
+	 * @param $shardTimeout null|string How long should elaticsearch wait for an offline
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
-	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null if using
+	 * @param $clientSideTimeout null|int Timeout in seconds to update pages or null if using
 	 *   the Elastica default which is 300 seconds.
+	 * @param $flags int Bitfield containing instructions about how the document should be built
+	 *   and sent to Elasticsearch.
 	 */
-	public static function updatePages( $pageData, $checkFreshness = false, $shardTimeout = null,
-			$clientSideTimeout = null) {
+	public static function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags) {
 		wfProfileIn( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {
 			CirrusSearchConnection::setTimeout( $clientSideTimeout );
 		}
+		if ( $checkFreshness ) {
+			// TODO I bet we can do this with a multi-get
+			$freshPages = array();
+			foreach ( $pages as $page ) {
+				if ( !self::isFresh( $page ) ) {
+					$freshPages[] = $page;
+				}
+			}
+			$pages = $freshPages;
+		}
 		$contentDocuments = array();
 		$generalDocuments = array();
-		foreach ( $pageData as $page ) {
-			if ( $checkFreshness && self::isFresh( $page ) ) {
-				continue;
-			}
-			$document = self::buildDocumentforRevision( $page );
+		foreach ( self::buildDocumentForPages( $pages, $flags ) as $document ) {
 			if ( $document === null ) {
 				continue;
 			}
@@ -163,7 +184,6 @@ class CirrusSearchUpdater {
 	}
 
 	private static function isFresh( $page ) {
-		$page = $page[ 'page' ];
 		$searcher = new CirrusSearchSearcher( 0, 0, array( $page->getTitle()->getNamespace() ) );
 		$get = $searcher->get( $page->getTitle()->getArticleId(), array( 'timestamp ') );
 		if ( !$get->isOk() ) {
@@ -226,9 +246,28 @@ class CirrusSearchUpdater {
 						}
 					}
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
-					foreach ( $documents as $document ) {
-						wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
+					$ignore = false;
+					if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
+						$ignore = true;
+						foreach ( $e->getResponseSet()->getBulkResponses() as $bulkResponse ) {
+							if ( $bulkResponse->hasError() ) {
+								if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
+									$ignore = false;
+								} else {
+									// If this isn't common then it isn't really an error - more of a side effect of
+									// having everything on the job queue.
+									$id = $bulkResponse->getAction()->getDocument()->getId();
+									wfDebugLog( 'CirrusSearch',
+										"Updating a page that doesn't yet exist in Elasticsearch:  $id" );
+								}
+							}
+						}
+					}
+					if ( !$ignore ) {
+						wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
+						foreach ( $documents as $document ) {
+							wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
+						}
 					}
 				}
 			},
@@ -245,97 +284,174 @@ class CirrusSearchUpdater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	private static function buildDocumentforRevision( $page ) {
+	private static function buildDocumentForPages( $pages, $flags ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
 
-		$skipParse = isset( $page[ 'skip-parse' ] ) && $page[ 'skip-parse' ];
-		$page = $page[ 'page' ];
-		$title = $page->getTitle();
-		if ( !$page->exists() ) {
-			wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
-				"earlier but wasn't.  Page: $title" );
-			return null;
+		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
+		$skipParse = $flags & self::SKIP_PARSE;
+		$skipLinks = $flags & self::SKIP_LINKS;
+
+		$documents = array();
+		$linkCountClosures = array();
+		$linkCountMultiSearch = new \Elastica\Multi\Search( CirrusSearchConnection::getClient() );
+		foreach ( $pages as $page ) {
+			wfProfileIn( __METHOD__ . '-basic' );
+			$title = $page->getTitle();
+			if ( !$page->exists() ) {
+				wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
+					"earlier but wasn't.  Page: $title" );
+				continue;
+				wfProfileOut( __METHOD__ . '-basic' );
+			}
+
+			$doc = new \Elastica\Document( $page->getId(), array(
+				'namespace' => $title->getNamespace(),
+				'title' => $title->getText(),
+				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
+			) );
+			$documents[] = $doc;
+
+			if ( !$indexOnSkip && ( $skipParse || $skipLinks ) ) {
+				// These are sent as updates so if the document isn't already in the index this is
+				// ignored.  This is preferable to sending regular index requests because those ignore
+				// doc_as_upsert.  Without that this feature just trashes the search index by removing
+				// the text from entries.
+				$doc->setOpType( 'update' );
+			} else {
+				$doc->setOpType( 'index' );
+			}
+			wfProfileOut( __METHOD__ . '-basic' );
+
+			if ( !$skipParse ) {
+				wfProfileIn( __METHOD__ . '-parse' );
+				$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
+				$text = self::buildTextToIndex( $page->getContent(), $parserOutput );
+				$doc->add( 'text', $text );
+				$doc->add( 'text_bytes', strlen( $text ) );
+				$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
+
+				$categories = array();
+				foreach ( $parserOutput->getCategories() as $key => $value ) {
+					$category = Category::newFromName( $key );
+					$categories[] = $category->getTitle()->getText();
+				}
+				$doc->add( 'category', $categories );
+
+				$headings = array();
+				$ignoredHeadings = self::getIgnoredHeadings();
+				foreach ( $parserOutput->getSections() as $heading ) {
+					$heading = $heading[ 'line' ];
+					// Strip tags from the heading or else we'll display them (escaped) in search results
+					$heading = Sanitizer::stripAllTags( $heading );
+					// Note that we don't take the level of the heading into account - all headings are equal.
+					// Except the ones we ignore.
+					if ( !in_array( $heading, $ignoredHeadings ) ) {
+						$headings[] = $heading;
+					}
+				}
+				$doc->add( 'heading', $headings );
+
+				$outgoingLinks = array();
+				foreach ( $parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
+					foreach ( $namespaceLinks as $linkedDbKey => $ignored ) {
+						$linked = Title::makeTitle( $linkedNamespace, $linkedDbKey );
+						$outgoingLinks[] = $linked->getPrefixedDBKey();
+					}
+				}
+				$doc->add( 'outgoing_link', $outgoingLinks );
+				wfProfileOut( __METHOD__ . '-parse' );
+			}
+
+			if ( !$skipLinks ) {
+				wfProfileIn( __METHOD__ . '-redirects' );
+				// Handle redirects to this page
+				$redirectTitles = $title->getBacklinkCache()
+					->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
+				$redirects = array();
+				$redirectPrefixedDBKeys = array();
+				// $redirectLinks = 0;
+				foreach ( $redirectTitles as $redirect ) {
+					// If the redirect is in main or the same namespace as the article the index it
+					if ( $redirect->getNamespace() === NS_MAIN && $redirect->getNamespace() === $title->getNamespace()) {
+						$redirects[] = array(
+							'namespace' => $redirect->getNamespace(),
+							'title' => $redirect->getText()
+						);
+						$redirectPrefixedDBKeys[] = $redirect->getPrefixedDBKey();
+					}
+				}
+				$doc->add( 'redirect', $redirects );
+
+				// Count links
+				// Incoming links is the sum of the number of linked pages which we count in Elasticsearch
+				// and the number of incoming redirects of which we have a handy list so we count that here.
+				$linkCountMultiSearch->addSearch( self::buildCount(
+					new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
+				$redirectCount = count( $redirects );
+				$linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
+					$doc->add( 'incoming_links', $count + $redirectCount );
+				};
+				// If a page doesn't have any redirects then count the links to them.
+				if ( count( $redirectPrefixedDBKeys ) ) {
+					$linkCountMultiSearch->addSearch( self::buildCount(
+						new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
+					$linkCountClosures[] = function ( $count ) use( $doc ) {
+						$doc->add( 'incoming_redirect_links', $count );
+					};
+				} else {
+					$doc->add( 'incoming_redirect_links', 0 );
+				}
+				wfProfileOut( __METHOD__ . '-redirects' );
+			}
 		}
 
-		$doc = new \Elastica\Document( $page->getId(), array(
-			'namespace' => $title->getNamespace(),
-			'title' => $title->getText(),
-			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-		) );
-
-		if ( $skipParse ) {
-			// These are sent as updates so if the document isn't already in the index this is
-			// ignored.  This is prferable to sending regular index requests because those ignore
-			// doc_as_upsert.  Without that this feature just trashes the search index by removing
-			// the text from entries.
-			$doc->setDocAsUpsert( true );
-			$doc->setOpType( 'update' );
-		} else {
-			$doc->setOpType( 'index' );
-			$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
-			$text = self::buildTextToIndex( $page->getContent(), $parserOutput );
-			$doc->add( 'text', $text );
-			$doc->add( 'text_bytes', strlen( $text ) );
-			$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
-
-			$categories = array();
-			foreach ( $parserOutput->getCategories() as $key => $value ) {
-				$category = Category::newFromName( $key );
-				$categories[] = $category->getTitle()->getText();
-			}
-			$doc->add( 'category', $categories );
-
-			$headings = array();
-			$ignoredHeadings = self::getIgnoredHeadings();
-			foreach ( $parserOutput->getSections() as $heading ) {
-				$heading = $heading[ 'line' ];
-				// Strip tags from the heading or else we'll display them (escaped) in search results
-				$heading = Sanitizer::stripAllTags( $heading );
-				// Note that we don't take the level of the heading into account - all headings are equal.
-				// Except the ones we ignore.
-				if ( !in_array( $heading, $ignoredHeadings ) ) {
-					$headings[] = $heading;
+		wfProfileIn( __METHOD__ . '-link-counts' );
+		$linkCountClosureCount = count( $linkCountClosures );
+		if ( !$skipLinks && $linkCountClosureCount ) {
+			$linkCountWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+				'doWork' => function() use ( $linkCountMultiSearch, $pages ) {
+					try {
+						$start = microtime();
+						$result = $linkCountMultiSearch->search();
+						$took = round( ( microtime() - $start ) * 1000 );
+						$pageCount = count( $pages );
+						wfDebugLog( 'CirrusSearch', "Counted links to $pageCount pages in $took millis." );
+						return Status::newGood( $result );
+					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+						wfLogWarning( "Search backend error during link count.  Error message is:  " .
+							$e->getMessage() );
+						foreach ( $pages as $page ) {
+							$id = $page->getId();
+							wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
+						}
+						return Status::newFatal( 'cirrussearch-backend-error' );
+					}
+				},
+				'error' => function( $status ) use ( $pages ) {
+					$status = $status->getErrorsArray();
+					$pageCount = count( $pages );
+					wfLogWarning( "Pool error performing a link count against Elasticsearch for $pageCount pages:  " .
+						$status[ 0 ][ 0 ] );
+					foreach ( $pages as $page ) {
+						$id = $page->getId();
+						wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
+					}
+					return $status;
+				}
+			) );
+			$linkCountWork = $linkCountWork->execute();
+			if ( $linkCountWork->isGood() ) {
+				// If it isn't good we've already logged enough information to track it down
+				$linkCountMultiSearchResult = $linkCountWork->getValue();
+				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
+					$linkCountClosures[ $index ]( $linkCountMultiSearchResult[ $index ]->getTotalHits() );
 				}
 			}
-			$doc->add( 'heading', $headings );
-
-			$outgoingLinks = array();
-			foreach ( $parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
-				foreach ( $namespaceLinks as $linkedDbKey => $ignored ) {
-					$linked = Title::makeTitle( $linkedNamespace, $linkedDbKey );
-					$outgoingLinks[] = $linked->getPrefixedDBKey();
-				}
-			}
-			$doc->add( 'outgoing_link', $outgoingLinks );
 		}
-
-		$incomingLinks = self::countLinksToTitle( $title );
-		$doc->add( 'links', $incomingLinks );                    #Deprecated
-		$doc->add( 'incoming_links', $incomingLinks );
-
-		// Handle redirects to this page
-		$redirectTitles = $title->getLinksTo( array( 'limit' => $wgCirrusSearchIndexedRedirects ), 'redirect', 'rd' );
-		$redirects = array();
-		$redirectLinks = 0;
-		foreach ( $redirectTitles as $redirect ) {
-			// If the redirect is in main or the same namespace as the article the index it
-			if ( $redirect->getNamespace() === NS_MAIN && $redirect->getNamespace() === $title->getNamespace()) {
-				$redirects[] = array(
-					'namespace' => $redirect->getNamespace(),
-					'title' => $redirect->getText()
-				);
-			}
-			// Count links to redirects
-			// Note that we don't count redirect to redirects here because that seems a bit much.
-			$redirectLinks += self::countLinksToTitle( $redirect );
-		}
-		$doc->add( 'redirect', $redirects );
-		$doc->add( 'redirect_links', $redirectLinks );           #Deprecated
-		$doc->add( 'incoming_redirect_links', $redirectLinks );
-
+		wfProfileIn( __METHOD__ . '-link-counts' );
 		wfProfileOut( __METHOD__ );
-		return $doc;
+		return $documents;
 	}
 
 	/**
@@ -344,13 +460,25 @@ class CirrusSearchUpdater {
 	 * @param $content Content of page
 	 * @param $parserOutput ParserOutput from page
 	 */
-	public static function buildTextToIndex( $content, $parserOutput ) {
+	private static function buildTextToIndex( $content, $parserOutput ) {
 		switch ( $content->getModel() ) {
 		case CONTENT_MODEL_WIKITEXT:
 			return CirrusSearchTextFormatter::formatWikitext( $parserOutput );
 		default:
 			return SearchUpdate::updateText( $content->getTextForSearchIndex() );
 		}
+	}
+
+	private static function buildCount( $filter ) {
+		$type = CirrusSearchConnection::getPageType();
+		$search = new \Elastica\Search( $type->getIndex()->getClient() );
+		$search->addIndex( $type->getIndex() );
+		$search->addType( $type );
+		$search->setOption( \Elastica\Search::OPTION_SEARCH_TYPE,
+			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
+		$matchAll = new \Elastica\Query\MatchAll();
+		$search->setQuery( new \Elastica\Query\Filtered( $matchAll, $filter ) );
+		return $search;
 	}
 
 	private static function getIgnoredHeadings() {
@@ -367,37 +495,6 @@ class CirrusSearchUpdater {
 			}
 		}
 		return self::$ignoredHeadings;
-	}
-
-	/**
-	 * Count the links to $title directly in the slave db.
-	 * @param $title a title
-	 * @return an integer count
-	 */
-	private static function countLinksToTitle( $title ) {
-		global $wgMemc, $wgCirrusSearchLinkCountCacheTime;
-		$key = wfMemcKey( 'cirrus', 'linkcounts', $title->getPrefixedDBKey() );
-		$count = $wgMemc->get( $key );
-		if ( !is_int( $count ) ) {
-			$dbr = wfGetDB( DB_SLAVE );
-			$count = $dbr->selectField(
-				array( 'pagelinks' ),
-				'COUNT(*)',
-				array(
-					"pl_namespace" => $title->getNamespace(),
-					"pl_title" => $title->getDBkey() ),
-				__METHOD__
-			);
-			// Looks like $count can come back as a string....
-			if ( is_string( $count ) ) {
-				$count = (int)$count;
-			}
-			if ( is_int( $count ) && $wgCirrusSearchLinkCountCacheTime > 0 ) {
-				$wgMemc->set( $key, $count, $wgCirrusSearchLinkCountCacheTime );
-			}
-		}
-
-		return $count ? $count : 0;
 	}
 
 	/**
@@ -439,13 +536,11 @@ class CirrusSearchUpdater {
 				continue;
 			}
 			// Note that we don't add this page to the list of updated pages because this update isn't
-			// a full update (just link counts.)
-			$pages[] = array(
-				'page' => $page,
-				'skip-parse' => true,  // Just update link counts
-			);
+			// a full update (just link counts).
+			$pages[] = $page;
 		}
-		self::updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout );
+		self::updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
+			self::SKIP_PARSE );
 	}
 
 	/**

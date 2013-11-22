@@ -19,17 +19,18 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchUpdatePagesJob extends Job {
-	public static function build( $revisions, $checkFreshness ) {
-		// Strip $revisions down to page ids so we don't put a ton of stuff in the job queue.
-		$pageIds = array();
-		foreach ( $revisions as $rev ) {
-			$pageIds[] = $rev[ 'id' ];
+	public static function build( $pages, $checkFreshness, $updateFlags ) {
+		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
+		$pageDBKeys = array();
+		foreach ( $pages as $page ) {
+			$pageDBKeys[] = $page->getTitle()->getPrefixedDBkey();
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
 		return new CirrusSearchUpdatePagesJob( Title::newMainPage(), array(
-			'pageIds' => $pageIds,
+			'pageDBKeys' => $pageDBKeys,
 			'checkFreshness' => $checkFreshness,
+			'updateFlags' => $updateFlags,
 		) );
 	}
 
@@ -45,10 +46,11 @@ class CirrusSearchUpdatePagesJob extends Job {
 		}
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
-		foreach ( $this->params[ 'pageIds' ] as $pageId ) {
-			$pageData[] = array( 'page' => WikiPage::newFromID( $pageId ) );
+		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {
+			$pageData[] = WikiPage::factory( Title::newFromDBKey( $pageDBKey ) );
 		}
 		// Now invoke the updater!
-		CirrusSearchUpdater::updatePages( $pageData, $this->params[ 'checkFreshness' ] );
+		CirrusSearchUpdater::updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
+			$this->params[ 'updateFlags' ] );
 	}
 }

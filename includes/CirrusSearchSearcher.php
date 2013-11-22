@@ -707,7 +707,9 @@ class CirrusSearchSearcher {
 	 */
 	private function boostQuery( $query = null ) {
 		// MVEL code for incoming links boost
-		$scoreBoostMvel = " * log10(doc['links'].value + doc['redirect_links'].value + 2)";
+		$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
+		$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
+		$scoreBoostMvel = " * ($incomingLinks + $incomingRedirectLinks + 2)";
 		// MVEL code for last update time decay
 		$lastUpdateDecayMvel = '';
 		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {

@@ -202,15 +202,15 @@ class CirrusSearchUpdater {
 					$pageType = CirrusSearchConnection::getPageType( $indexType );
 					// The bulk api doesn't support shardTimeout so don't use it if one is set
 					if ( $shardTimeout === null ) {
-						$start = microtime();
+						$start = microtime( true );
 						wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index via bulk api." );
 						// addDocuments (notice plural) is the bulk api
 						$pageType->addDocuments( $documents );
-						$took = round( ( microtime() - $start ) * 1000 );
+						$took = round( ( microtime( true ) - $start ) * 1000 );
 						wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
 					} else {
 						foreach ( $documents as $document ) {
-							$start = microtime();
+							$start = microtime( true );
 							wfDebugLog( 'CirrusSearch', 'Sending id=' . $document->getId() . " to the $indexType index." );
 							$document->setTimeout( $shardTimeout );
 							// The bulk api automatically performs an update if the opType is update but the index api
@@ -221,7 +221,7 @@ class CirrusSearchUpdater {
 								// addDocument (notice singular) is the non-bulk index api
 								$pageType->addDocument( $document );
 							}
-							$took = round( ( microtime() - $start ) * 1000 );
+							$took = round( ( microtime( true ) - $start ) * 1000 );
 							wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
 						}
 					}
@@ -487,12 +487,12 @@ class CirrusSearchUpdater {
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
 			'doWork' => function() use ( $ids ) {
 				try {
-					$start = microtime();
+					$start = microtime( true );
 					$response = CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
 						->deleteIds( $ids );
 					CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
 						->deleteIds( $ids );
-					$took = round( ( microtime() - $start ) * 1000 );
+					$took = round( ( microtime( true ) - $start ) * 1000 );
 					wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "CirrusSearch delete failed caused by:  " . $e->getMessage() );

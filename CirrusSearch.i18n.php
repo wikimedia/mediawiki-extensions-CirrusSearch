@@ -316,7 +316,7 @@ $messages['ja'] = array(
  */
 $messages['ko'] = array(
 	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
-	'cirrussearch-backend-error' => '일시적인 문제 떄문에 찾기를 완료할 수 없습니다. 나중에 다시 시도하세요.',
+	'cirrussearch-backend-error' => '일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.',
 	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
 # 검색에서 무시되는 문단 제목입니다.
 # 이 문서에 대한 바뀜은 즉시 문단 제목으로 된 문서가 다시 색인됩니다.

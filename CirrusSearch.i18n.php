@@ -104,10 +104,23 @@ $messages['br'] = array(
 
 /** Catalan (català)
  * @author QuimGil
+ * @author Vriullop
  */
 $messages['ca'] = array(
 	'cirrussearch-desc' => 'Cerca realitzada amb Elasticsearch per a MediaWiki',
 	'cirrussearch-backend-error' => 'La seva cerca no ha pogut ser completada degut a un problema temporal. Si us plau, provi-ho més tard.',
+	'cirrussearch-now-using' => 'Aquest wiki està utilitzant un nou cercador. ([[mw:Special:MyLanguage/Help:CirrusSearch|Més informació]])',
+	'cirrussearch-ignored-headings' => ' #<!-- deixeu aquesta línia tal com està --> <pre>
+# Títols que seran ignorats pel cercador.
+# Els canvis fets aquí tindran efecte tant aviat com la pàgina amb el títol sigui indexada.
+# Podeu forçar que una pàgina s\'indexi de nou fent una edició nul·la.
+# La sintaxi és la següent:
+#   * Tot el que hi hagi des d\'un caràcter "#" fins el final de línia és un comentari
+#   * Tota línia no buida és el títol exacte a ignorar, amb les majúscules i complet
+Referències
+Enllaços externs
+Vegeu també
+ #</pre> <!-- deixeu aquesta línia tal com està -->',
 );
 
 /** Czech (česky)

@@ -125,7 +125,7 @@ Feature: Full text search
     Then there are no search results
 
   @setup_more_like_this
-  Scenario: Searching for morelike:<page> returns pages that are 'like' that page
+  Scenario: Searching for morelike:<page> returns pages that are "like" that page
     When I search for morelike:More Like Me 1
     Then More Like Me is in the first search result
     But More Like Me 1 is not in the search results

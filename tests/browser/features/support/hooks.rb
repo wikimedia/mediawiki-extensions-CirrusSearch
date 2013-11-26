@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-Before('@setup_main') do
+Before("@setup_main") do
   if !$setup_main
     steps %Q{
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
@@ -21,7 +21,7 @@ Before('@setup_main') do
   end
 end
 
-Before('@setup_weight') do
+Before("@setup_weight") do
   if !$setup_weight
     steps %Q{
       Given a page named TestWeight Smaller exists with contents TestWeight
@@ -37,7 +37,7 @@ Before('@setup_weight') do
   end
 end
 
-Before('@setup_headings') do
+Before("@setup_headings") do
   if !$setup_headings
     steps %Q{
       Given a page named HasHeadings exists with contents @has_headings.txt
@@ -47,7 +47,7 @@ Before('@setup_headings') do
   end
 end
 
-Before('@setup_javascript_injection') do
+Before("@setup_javascript_injection") do
   if !$setup_headings
     steps %Q{
       Given a page named Javascript Direct Inclusion exists with contents @javascript.txt
@@ -57,7 +57,7 @@ Before('@setup_javascript_injection') do
   end
 end
 
-Before('@setup_namespaces') do
+Before("@setup_namespaces") do
   if !$setup_namespaces
     steps %Q{
       Given a page named Talk:Two Words exists with contents why is this page about catapults?
@@ -68,7 +68,7 @@ Before('@setup_namespaces') do
   end
 end
 
-Before('@setup_suggestions') do
+Before("@setup_suggestions") do
   if !$setup_suggestions
     steps %Q{
       Given a page named Popular Culture exists with contents popular culture
@@ -92,7 +92,7 @@ Before('@setup_suggestions') do
   end
 end
 
-Before('@setup_highlighting') do
+Before("@setup_highlighting") do
   if !$setup_highlighting
     steps %Q{
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
@@ -103,7 +103,7 @@ Before('@setup_highlighting') do
   $setup_highlighting = true
 end
 
-Before('@setup_more_like_this') do
+Before("@setup_more_like_this") do
   if !$setup_more_like_this
     # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches
     steps %Q{
@@ -117,7 +117,7 @@ Before('@setup_more_like_this') do
   $setup_more_like_this = true
 end
 
-Before('@setup_phrase_rescore') do
+Before("@setup_phrase_rescore") do
   if !$setup_phrase_rescore
     steps %Q{
       Given a page named Rescore Test Words exists
@@ -129,7 +129,7 @@ Before('@setup_phrase_rescore') do
   $setup_phrase_rescore = true
 end
 
-Before('@exact_quotes') do
+Before("@exact_quotes") do
   if !$exact_quotes
     steps %Q{
       Given a page named Contains A Stop Word exists
@@ -140,7 +140,7 @@ Before('@exact_quotes') do
   $exact_quotes = true
 end
 
-Before('@programmer_friendly') do
+Before("@programmer_friendly") do
   if !$programmer_friendly
     steps %Q{
       Given a page named $wgNamespaceAliases exists
@@ -151,7 +151,7 @@ Before('@programmer_friendly') do
   end
 end
 
-Before('@stemmer') do
+Before("@stemmer") do
   if !$stemmer
     steps %Q{
       Given a page named StemmerTest Aliases exists
@@ -161,7 +161,7 @@ Before('@stemmer') do
   $stemmer = true
 end
 
-Before('@prefix_filter') do
+Before("@prefix_filter") do
   if !$prefix_filter
     steps %Q{
       Given a page named Prefix Test exists
@@ -174,7 +174,7 @@ Before('@prefix_filter') do
   $prefix_filter = true
 end
 
-Before('@prefer_recent') do
+Before("@prefer_recent") do
   if !$prefix_filter
     # These are updated per process instead of per test because of the 20 second wait
     # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot

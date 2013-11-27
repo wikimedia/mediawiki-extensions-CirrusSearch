@@ -24,9 +24,12 @@ References
 External links
 See also
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-pref-label' => 'New search',
+	'cirrussearch-pref-desc' => 'Use a new search engine which indexes expanded templates, supports more languages, and updates faster.'
 );
 
 /** Message documentation (Message documentation)
+ * @author Kunal Mehta
  * @author Shirayuki
  */
 $messages['qqq'] = array(
@@ -35,6 +38,8 @@ $messages['qqq'] = array(
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
 	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
+	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
+	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
 );
 
 /** Asturian (asturianu)

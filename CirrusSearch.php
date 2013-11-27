@@ -157,6 +157,11 @@ $wgCirrusSearchUseAggressiveSplitting = true;
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;
 
+// If Cirrus is enabled as a secondary search, allow users to
+// set a preference with Extension:BetaFeatures to set it as
+// their primary search engine.
+$wgCirrusSearchEnablePref = false;
+
 $includes = __DIR__ . "/includes/";
 /**
  * Classes
@@ -185,9 +190,17 @@ $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch::articleDeleteCompleteHook
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch::softwareInfoHook';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch::specialSearchResultsPrependHook';
+$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch::getPreferencesHook';
 // Install our prefix search hook only if we're enabled.
 $wgExtensionFunctions[] = function() {
-	global $wgSearchType, $wgHooks;
+	global $wgSearchType, $wgHooks, $wgCirrusSearchEnablePref;
+	$user = RequestContext::getMain()->getUser();
+	if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
+		&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' )
+	) {
+		// If the user has the BetaFeature enabled, use Cirrus as default
+		$wgSearchType = 'CirrusSearch';
+	}
 	if ( $wgSearchType === 'CirrusSearch' ) {
 		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
 	}

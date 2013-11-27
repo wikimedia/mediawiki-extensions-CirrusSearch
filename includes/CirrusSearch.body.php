@@ -110,4 +110,26 @@ class CirrusSearch extends SearchEngine {
 		}
 		return true;
 	}
+
+	/**
+	 * Adds using CirrusSearch as default as a BetaFeature
+	 * @param User $user
+	 * @param array $prefs
+	 * @return bool
+	 */
+	public static function getPreferencesHook( $user, &$prefs ) {
+		global $wgCirrusSearchEnablePref;
+
+		if ( $wgCirrusSearchEnablePref ) {
+			$prefs['cirrussearch-default'] = array(
+				'label-message' => 'cirrussearch-pref-label',
+				'desc-message' => 'cirrussearch-pref-desc',
+				'info-link' => 'https://www.mediawiki.org/wiki/Search',
+				'discussion-link' => 'https://www.mediawiki.org/wiki/Talk:Search',
+			);
+		}
+
+		return true;
+	}
+
 }

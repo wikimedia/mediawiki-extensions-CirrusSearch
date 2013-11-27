@@ -1,1 +1,1 @@
-require 'mediawiki/selenium'
+require "mediawiki/selenium"

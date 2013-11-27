@@ -247,6 +247,7 @@ Voir aussi
 $messages['gl'] = array(
 	'cirrussearch-desc' => 'Procura baseada en Elasticsearch para MediaWiki',
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
+	'cirrussearch-now-using' => 'Este wiki utiliza un novo motor de procuras. ([[mw:Special:MyLanguage/Help:CirrusSearch|Máis información]])',
 	'cirrussearch-ignored-headings' => ' #<!-- Deixe esta liña tal e como está --> <pre>
 # Cabeceiras que serán ignoradas nas buscas.
 # Os cambios feitos aquí realízanse en canto se indexa a páxina coa cabeceira.

@@ -188,6 +188,8 @@ Einzelnachweise
 Weblinks
 Siehe auch
  #</pre> <!-- diese Zeile nicht verändern -->',
+	'cirrussearch-pref-label' => 'Neue Suche',
+	'cirrussearch-pref-desc' => 'Eine neue Suchmaschine verwenden, die expandierte Vorlagen indexiert, weitere Sprachen unterstützt und schneller aktualisiert wird.',
 );
 
 /** Spanish (español)
@@ -223,6 +225,7 @@ $messages['fa'] = array(
  * @author Gomoko
  * @author Jean-Frédéric
  * @author Linedwell
+ * @author Robby
  */
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
@@ -239,6 +242,8 @@ Références
 Liens externes
 Voir aussi
  #</pre> <!-- laisser cette ligne comme telle -->',
+	'cirrussearch-pref-label' => 'Nouvelle recherche',
+	'cirrussearch-pref-desc' => 'Utiliser un nouveau moteur de recherche qui indexe les modèles développés, supporte davantage de langues et se met à jour plus vite.',
 );
 
 /** Galician (galego)
@@ -279,6 +284,8 @@ $messages['he'] = array(
 קישורים חיצוניים
 לקריאה נוספת
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-pref-label' => 'חיפוש חדש',
+	'cirrussearch-pref-desc' => 'שימוש במנוע חיפוש חדש שממפתח תבניות מפוענחות, תומך ביותר שפות ומתעדכן מהר יותר.',
 );
 
 /** Interlingua (interlingua)
@@ -318,6 +325,8 @@ Note
 Voci correlate
 Collegamenti esterni
  #</pre> <!-- lascia questa riga esattamente come è -->',
+	'cirrussearch-pref-label' => 'Nuova ricerca',
+	'cirrussearch-pref-desc' => 'Utilizza un nuovo motore di ricerca che indicizza i template espansi, supporta più lingue e si aggiorna più velocemente.',
 );
 
 /** Japanese (日本語)
@@ -328,6 +337,8 @@ $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Elasticsearch 検索',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
+	'cirrussearch-pref-label' => '新規検索',
+	'cirrussearch-pref-desc' => '新しい検索エンジンを使用する (特徴: テンプレートを展開してからインデックス化、より多くの言語に対応、より速く更新)',
 );
 
 /** Korean (한국어)
@@ -371,6 +382,7 @@ Referenzen
 Weblinken
 Kuckt och
  #</pre> <!-- dës Zeil net änneren -->",
+	'cirrussearch-pref-label' => 'Nei sichen',
 );
 
 /** Macedonian (македонски)
@@ -391,6 +403,8 @@ $messages['mk'] = array(
 Надворешни врски
 Поврзано
  #</pre> <!-- не менувајте ништо во овој ред -->',
+	'cirrussearch-pref-label' => 'Ново пребарување',
+	'cirrussearch-pref-desc' => 'Користете нов пребарувач што индексира проширени шаблони, поддржува повеќе јазици и побргу се подновува.',
 );
 
 /** Malay (Bahasa Melayu)
@@ -477,6 +491,8 @@ $messages['ru'] = array(
 Ссылки
 См. также
  #</pre> <!-- оставьте эту строку как есть -->',
+	'cirrussearch-pref-label' => 'Новый поиск',
+	'cirrussearch-pref-desc' => 'Используйте новый поисковый движок, который индексирует расширяемые шаблоны, поддерживает больше языков и обновляется быстрее.',
 );
 
 /** Slovak (slovenčina)
@@ -504,6 +520,8 @@ Referenser
 Externa länkar
 Se också
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-pref-label' => 'Ny sökning',
+	'cirrussearch-pref-desc' => 'Använd en ny sökmotor som indexerar utökade mallar, som har stöd för fler språk och som uppdateras snabbare.',
 );
 
 /** Ukrainian (українська)
@@ -525,6 +543,8 @@ $messages['uk'] = array(
 Зовнішні посилання
 Див. також
  #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
+	'cirrussearch-pref-label' => 'Новий пошук',
+	'cirrussearch-pref-desc' => 'Використовує нову пошукову систему, яка індексує  розширені шаблони, підтримує більше мов і швидше оновлюється.',
 );
 
 /** Vietnamese (Tiếng Việt)

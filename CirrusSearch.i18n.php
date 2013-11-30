@@ -60,6 +60,8 @@ Referencies
 Enllaces esternos
 Ver tamién
  #</pre> <!-- dexar esta llinia exactamente como ta -->",
+	'cirrussearch-pref-label' => 'Gueta nueva',
+	'cirrussearch-pref-desc' => 'Usar un motor de gueta nuevu que fai índices de plantíes espandíes, tien sofitu pa más llingües y anueva más rápido.',
 );
 
 /** Bikol Central (Bikol Central)
@@ -342,11 +344,13 @@ $messages['ja'] = array(
 );
 
 /** Korean (한국어)
+ * @author Hym411
  * @author 아라
  */
 $messages['ko'] = array(
 	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.',
+	'cirrussearch-now-using' => '이 위키는 새로운 검색 엔진을 사용합니다. ([[mw:Special:MyLanguage/Help:CirrusSearch|더 알아보기]])',
 	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
 # 검색에서 무시되는 문단 제목입니다.
 # 이 문서에 대한 바뀜은 즉시 문단 제목으로 된 문서가 다시 색인됩니다.
@@ -362,6 +366,8 @@ $messages['ko'] = array(
 같이 보기
 함께 보기
  #</pre> <!-- 이 줄은 그대로 두십시오 -->',
+	'cirrussearch-pref-label' => '새 검색',
+	'cirrussearch-pref-desc' => '확장된 틀 검색, 더 많은 언어 지원, 더 빠른 업데이트를 지원하는 새로운 검색 엔진을 사용합니다.',
 );
 
 /** Luxembourgish (Lëtzebuergesch)

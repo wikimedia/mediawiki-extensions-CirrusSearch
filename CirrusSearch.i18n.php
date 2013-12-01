@@ -573,6 +573,8 @@ Liên kết ngoài
 Xem thêm
 Đọc thêm
  #</pre> <!-- để yên dòng này -->',
+	'cirrussearch-pref-label' => 'Công cụ tìm kiếm mới',
+	'cirrussearch-pref-desc' => 'Sử dụng một công cụ tìm kiếm mới có khả năng tìm văn bản được bung từ bản mẫu, hỗ trợ nhiều ngôn ngữ hơn, và cập nhật nhanh hơn.',
 );
 
 /** Simplified Chinese (中文（简体）‎)

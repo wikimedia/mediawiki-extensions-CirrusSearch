@@ -430,7 +430,7 @@ $messages['ms'] = array(
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
-	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Leer meer]])',
+	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.
 # Wijzigingen worden van kracht als een kop wordt geïndexeerd.
@@ -442,6 +442,7 @@ Referenties
 Externe links
 Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
 );
 
 /** Occitan (occitan)

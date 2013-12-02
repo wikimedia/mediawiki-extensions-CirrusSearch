@@ -129,7 +129,7 @@ class CirrusSearchUpdater {
 	 * @param $flags int Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 */
-	public static function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags) {
+	public static function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
 		wfProfileIn( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {

@@ -32,12 +32,15 @@ class CirrusSearchLinksUpdateJob extends Job {
 		}
 		if ( $this->params[ 'primary' ] ) {
 			CirrusSearchUpdater::updateFromTitle( $this->title );
-			$next = new CirrusSearchLinksUpdateJob( $this->title, array(
-				'addedLinks' => $this->params[ 'addedLinks' ],
-				'removedLinks' => $this->params[ 'removedLinks' ],
-				'primary' => false,
-			) );
-			JobQueueGroup::singleton()->push( $next );
+			if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
+					count( $this->params[ 'removedLinks' ] ) > 0 ) {
+				$next = new CirrusSearchLinksUpdateJob( $this->title, array(
+					'addedLinks' => $this->params[ 'addedLinks' ],
+					'removedLinks' => $this->params[ 'removedLinks' ],
+					'primary' => false,
+				) );
+				JobQueueGroup::singleton()->push( $next );
+			}
 		} else {
 			CirrusSearchUpdater::updateLinkedArticles( $this->params[ 'addedLinks' ],
 				$this->params[ 'removedLinks' ] );

@@ -107,6 +107,7 @@ $messages['be-tarask'] = array(
  */
 $messages['br'] = array(
 	'cirrussearch-backend-error' => "N'hon eus ket gallet kas hoc'h enklask da benn abalamour d'ur gudenn dibad. Esaeit en-dro diwezhatoc'h, mar plij.",
+	'cirrussearch-pref-label' => 'Enklask nevez',
 );
 
 /** Catalan (català)
@@ -443,6 +444,7 @@ Externe links
 Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
+	'cirrussearch-pref-desc' => 'Zoekmachine die sjablonen uitbreidt, meer talen ondersteunt en sneller bijgewerkt is.',
 );
 
 /** Occitan (occitan)

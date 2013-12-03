@@ -175,7 +175,7 @@ Before("@prefix_filter") do
 end
 
 Before("@prefer_recent") do
-  if !$prefix_filter
+  if !$prefer_recent
     # These are updated per process instead of per test because of the 20 second wait
     # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot
     steps %Q{
@@ -185,5 +185,5 @@ Before("@prefer_recent") do
       And a page named PreferRecent Third exists with contents %{epoch}
     }
   end
-  $prefix_filter = true
+  $prefer_recent = true
 end

@@ -13,15 +13,6 @@ Feature: Full text search
     | catapult                             | Catapult is in                    | in              |        |
     | pickles                              | Two Words is                      | in              |        |
     | rdir                                 | Two Words is                      | not in          |        |
-    | intitle:catapult                     | Catapult is in                    | not in          |        |
-    | intitle:catapult amazing             | Amazing Catapult is               | not in          |        |
-    | incategory:weaponry                  | Catapult is in                    | not in          |        |
-    | incategory:weaponry amazing          | Amazing Catapult is               | not in          |        |
-    | incategory:weaponry intitle:catapult | Catapult is in                    | not in          |        |
-    | incategory:alpha incategory:beta     | AlphaBeta is                      | not in          |        |
-    | incategory:twowords catapult         | Two Words is                      | in              |        |
-    | incategory:twowords intitle:catapult | none is                           | not in          |        |
-    | incategory:templatetagged two words  | Two Words is                      | in              |        |
     | talk:catapult                        | Talk:Two Words is                 | not in          |        |
     | talk:intitle:words                   | Talk:Two Words is                 | not in          |        |
     | template:pickles                     | Template:Template Test is         | not in          |        |
@@ -39,8 +30,6 @@ Feature: Full text search
     | "3.1 Conquest of Persian empire"     | none is                           | not in          |        |
     # You can't search for the [edit] tokens that users can click to edit sections
     | "Succession of Umar edit"            | none is                           | not in          |        |
-    | intitle:"" catapult                  | none is                           | not in          |        |
-    | incategory:"" catapult               | none is                           | not in          |        |
 
   @setup_main
   Scenario Outline: Searching for empty-string like values
@@ -52,10 +41,6 @@ Feature: Full text search
     | term                    | title          |
     | the empty string        | Search         |
     | ♙                       | Search results |
-    | intitle:                | Search results |
-    | intitle:""              | Search results |
-    | incategory:             | Search results |
-    | incategory:""           | Search results |
     | %{exact: }              | Search results |
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |
@@ -103,21 +88,6 @@ Feature: Full text search
   Scenario: Ignored headings aren't searched so text with the same word is wins
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
-
-  @setup_main
-  Scenario: Searching for a quoted category that doesn't exist finds nothing even though there is a category that matches one of the words
-    When I search for incategory:"Dontfindme Weaponry"
-    Then there are no search results
-
-  @setup_main
-  Scenario: Searching for a single word category doesn't find a two word category that contains that word
-    When I search for incategory:ASpace
-    Then there are no search results
-
-  @setup_main
-  Scenario: Searching for multiword category finds it
-    When I search for incategory:"CategoryWith ASpace"
-    Then IHaveATwoWordCategory is the first search result
 
   @setup_more_like_this
   Scenario: Searching for morelike:<page that doesn't exist> returns no results
@@ -443,16 +413,6 @@ Feature: Full text search
   Scenario: searching with a single wildcard finds expected results
     When I search for catapul*
     Then Catapult is the first search result
-
-  @wildcards @setup_main
-  Scenario: searching for intitle: with a wildcard find expected results
-    When I search for intitle:catapul*
-    Then Catapult is the first search result
-
-  @wildcards @setup_main
-  Scenario: searching for intitle: with a wildcard and a regular wildcard find expected results
-    When I search for intitle:catapul* amaz*
-    Then Amazing Catapult is the first search result
 
   @wildcards @setup_main
   Scenario: wildcards match plain matches

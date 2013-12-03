@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-Before("@setup_main") do
+Before('@setup_main, @filters') do
   if !$setup_main
     steps %Q{
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
@@ -9,15 +9,23 @@ Before("@setup_main") do
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Catapult]] [[Category:Weaponry]]
       And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]]
-      And a page named África exists with contents for testing
-      And a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
-      And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
-      And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
-      And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
     }
     $setup_main = true
+  end
+end
+
+Before('@setup_main') do
+  if !$setup_main2
+    steps %Q{
+      Given a page named África exists with contents for testing
+      And a page named Rdir exists with contents #REDIRECT [[Two Words]]
+      And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
+      And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
+      And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
+    }
+    $setup_main2 = true
   end
 end
 

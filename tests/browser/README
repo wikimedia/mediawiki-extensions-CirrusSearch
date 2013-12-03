@@ -1,5 +1,11 @@
 Browser Tests for Search
 ------------------------
+
+Read https://github.com/wikimedia/mediawiki-selenium for general instructions
+regarding running tests then read the rest of this file for information
+specific to CirrusSearch.
+
+
 Setup
 -----
 
@@ -57,6 +63,7 @@ Then add this to your localsettings:
  require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
  $wgOggThumbLocation = '/usr/bin/oggThumb';
 
+
 Running
 -------
 If you want to run tests against anything other than
@@ -71,6 +78,8 @@ To run all tests in a file:
  bundle exec cucumber path/to/file.feature
 To run one test in a file:
  bundle exec cucumber path/to/file.feature:LINE_NUMBER
+To run tests with a tag:
+ bundle exec cucumber -t @exact_quotes
 
 By default, the browser will close itself at the end of every scenario. If you
 want the browser to stay open after each scenario:

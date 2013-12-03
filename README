@@ -1,7 +1,6 @@
 MediaWiki extension: CirrusSearch
 ---------------------------------
 
-
 Installation
 ------------
 Fetch this plugin plugin into your extensions directory.
@@ -181,6 +180,11 @@ during upgrades.  More replicas will help distribute queries across more nodes. 
 replicas than nodes doesn't make sense and Elasticsearch will stay "yellow" if you do that.
 Anyway, you should add this to LocalSettings.php to change it:
  $wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
+
+
+Testing
+-------
+See tests/browser/README
 
 
 Licensing information

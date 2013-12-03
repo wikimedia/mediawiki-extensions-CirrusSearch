@@ -138,8 +138,8 @@ class ForceSearchIndex extends Maintenance {
 				// because we don't want a batch the contains only invalid updates to cause early
 				// termination of the process....
 			} else {
-				$titles = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
-				$size = count( $titles );
+				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
+				$size = count( $deletes );
 			}
 			
 			if ( $size == 0 ) {
@@ -182,15 +182,17 @@ class ForceSearchIndex extends Maintenance {
 						null, null, $updateFlags );
 				}
 			} else {
+				$titlesToDelete = array();
 				$idsToDelete = array();
-				foreach( $titles as $t ) {
-					$idsToDelete[] = $t[ 'page' ];
-					$lastTitle = $t;
+				foreach( $deletes as $delete ) {
+					$titlesToDelete[] = $delete[ 'title' ];
+					$idsToDelete[] = $delete[ 'page' ];
+					$lastDelete = $delete;
 				}
-				$minUpdate = $lastTitle[ 'timestamp' ];
-				$minNamespace = $lastTitle[ 'namespace' ];
-				$minTitle = $lastTitle[ 'title' ];
-				CirrusSearchUpdater::deletePages( $idsToDelete );
+				$minUpdate = $lastDelete[ 'timestamp' ];
+				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
+				$minTitle = $lastDelete[ 'title' ]->getText();
+				CirrusSearchUpdater::deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -331,8 +333,7 @@ class ForceSearchIndex extends Maintenance {
 		foreach ( $res as $row ) {
 			$result[] = array(
 				'timestamp' => new MWTimestamp( $row->ar_timestamp ),
-				'namespace' => $row->ar_namespace,
-				'title' => $row->ar_title,
+				'title' => Title::makeTitle( $row->ar_namespace, $row->ar_title ),
 				'page' => $row->ar_page_id,
 			);
 		}

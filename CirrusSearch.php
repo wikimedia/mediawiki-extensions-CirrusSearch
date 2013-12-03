@@ -61,6 +61,24 @@ $wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 // and $wgCirrusSearchContentReplicaCount.
 $wgCirrusSearchNamespaceMappings = array();
 
+// Extra indexes (if any) you want to search, and for what namespaces?
+// The key should be the local namespace, with the value being an array of one
+// or more indexes that should be searched as well for that namespace.
+//
+// NOTE: This setting makes no attempts to ensure compatibility across
+// multiple indexes, and basically assumes everyone's using a CirrusSearch
+// index that's more or less the same. Most notably, we can't guarantee
+// that namespaces match up; so you should only use this for core namespaces
+// or other times you can be sure that namespace IDs match 1-to-1.
+//
+// NOTE Part Two: Adding an index here is cause cirrus to update spawn jobs to
+// update that other index, trying to set the local_sites_with_dupe field.  This
+// is used to filter duplicates that appear on the remote index.  This is always
+// done by a job, even when run from forceSearchIndex.php.  If you add an image
+// to your wiki but after it is in the extra search index you'll see duplicate
+// results until the job is done.
+$wgCirrusSearchExtraIndexes = array();
+
 // Shard timeout for non-maintenance index operations including those done in the web
 // process and those done via job queue.  This is the amount of time Elasticsearch
 // will wait around for an offline primary shard.  Currently this is just used in
@@ -184,6 +202,8 @@ $wgAutoloadClasses['CirrusSearchLinksUpdateJob'] = $includes . 'CirrusSearchLink
 $wgAutoloadClasses['CirrusSearchFullTextResultsType'] = $includes . 'CirrusSearchResultsType.php';
 $wgAutoloadClasses['CirrusSearchJob'] = $includes . 'CirrusSearchJob.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchOtherIndexes'] = $includes . 'CirrusSearchOtherIndexes.php';
+$wgAutoloadClasses['CirrusSearchOtherIndexJob'] = $includes . 'CirrusSearchOtherIndexJob.php';
 $wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
 $wgAutoloadClasses['CirrusSearchResult'] = $includes . 'CirrusSearchResult.php';
 $wgAutoloadClasses['CirrusSearchResultSet'] = $includes . 'CirrusSearchResultSet.php';
@@ -227,4 +247,5 @@ $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
  */
 $wgJobClasses[ 'cirrusSearchDeletePages' ] = 'CirrusSearchDeletePagesJob';
 $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearchLinksUpdateJob';
+$wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearchOtherIndexJob';
 $wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearchUpdatePagesJob';

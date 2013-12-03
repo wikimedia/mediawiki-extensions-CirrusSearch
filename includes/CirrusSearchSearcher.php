@@ -456,8 +456,10 @@ class CirrusSearchSearcher {
 		$query = new Elastica\Query();
 		$query->setFields( $this->resultsType->getFields() );
 
+		$extraIndexes = array();
 		if ( $this->namespaces ) {
 			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+			$extraIndexes = $this->getAndFilterExtraIndexes();
 		}
 
 		// Wrap $this->query in a filtered query if there are filters.
@@ -505,14 +507,19 @@ class CirrusSearchSearcher {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 
-		// Perform the search
+		// Setup the search
 		$description = $this->description;
-		$indexType = $this->pickIndexTypeFromNamespaces();
+		$search = CirrusSearchConnection::getPageType( $this->pickIndexTypeFromNamespaces() )
+			->createSearch( $query, $queryOptions );
+		foreach ( $extraIndexes as $i ) {
+			$search->addIndex( $i );
+		}
+
+		// Perform the search
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $query, $queryOptions, $description ) {
+			'doWork' => function() use ( $description, $search ) {
 				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )
-						->search( $query, $queryOptions );
+					$result = $search->search();
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
 					return Status::newGood( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -612,6 +619,22 @@ class CirrusSearchSearcher {
 		}
 		$indexTypes = array_unique( $indexTypes );
 		return count( $indexTypes ) > 1 ? false : $indexTypes[0];
+	}
+
+	/**
+	 * Retrieve the extra indexes for our searchable namespaces, if any
+	 * exist. If they do exist, also add our wiki to our notFilters so
+	 * we can filter out duplicates properly.
+	 *
+	 * @return array(string)
+	 */
+	private function getAndFilterExtraIndexes() {
+		$extraIndexes = CirrusSearchOtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
+		if ( $extraIndexes ) {
+			$this->notFilters[] = new \Elastica\Filter\Term(
+				array( 'local_sites_with_dupe' => wfWikiId() ) );
+		}
+		return $extraIndexes;
 	}
 
 	private function buildPrefixFilter( $search ) {

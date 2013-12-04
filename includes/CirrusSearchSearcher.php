@@ -57,7 +57,14 @@ class CirrusSearchSearcher {
 	 * @var \Elastica\Query\AbstractQuery|null main query.  null defaults to \Elastica\Query\MatchAll
 	 */
 	private $query = null;
+	/**
+	 * @var array(\Elastica\Filter\AbstractFilter) filters that MUST hold true of all results
+	 */
 	private $filters = array();
+	/**
+	 * @var array(\Elastica\Filter\AbstractFilter) filters that MUST NOT hold true of all results
+	 */
+	private $notFilters = array();
 	private $suggest = null;
 	/**
 	 * @var null|array of rescore configuration as used by elasticsearch.  The query needs to be an Elastica query.
@@ -188,23 +195,35 @@ class CirrusSearchSearcher {
 		//Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
+		$notFilters = $this->notFilters;
+		// Match filters that look like foobar:thing or foobar:"thing thing"
+		// The {7,11} keeps this from having horrible performance on big strings
 		$term = preg_replace_callback(
-			'/(?<key>[^ ]{6,10}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( &$filters ) {
+			'/(?<key>[a-z\\-]{7,11}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			function ( $matches ) use ( &$filters, &$notFilters ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
+				$filterDestination = &$filters;
+				$keepText = true;
 				switch ( $key ) {
+					case '-incategory':
+						$filterDestination = &$notFilters;
+						// Intentional fall through
 					case 'incategory':
 						$match = new \Elastica\Query\Match();
 						$match->setFieldQuery( 'category', trim( $value, '"' ) );
-						$filters[] = new \Elastica\Filter\Query( $match );
+						$filterDestination[] = new \Elastica\Filter\Query( $match );
 						return '';
+					case '-intitle':
+						$filterDestination = &$notFilters;
+						$keepText = false;
+						// Intentional fall through
 					case 'intitle':
-						$filters[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
+						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
 							CirrusSearchSearcher::fixupWholeQueryString(
 								CirrusSearchSearcher::fixupQueryStringPart( $value )
 							) ) );
-						return "$value ";
+						return $keepText ? "$value " : '';
 					default:
 						return $matches[0];
 				}
@@ -212,6 +231,7 @@ class CirrusSearchSearcher {
 			$term
 		);
 		$this->filters = $filters;
+		$this->notFilters = $notFilters;
 		wfProfileOut( __METHOD__ . '-other-filters' );
 		wfProfileIn( __METHOD__ . '-switch-phrase-queries-to-plain' );
 		// Match quoted phrases including those containing escaped quotes
@@ -442,11 +462,15 @@ class CirrusSearchSearcher {
 
 		// Wrap $this->query in a filtered query if there are filters.
 		$filterCount = count( $this->filters );
-		if ( $filterCount > 0 ) {
-			if ( $filterCount > 1 ) {
+		$notFilterCount = count( $this->notFilters );
+		if ( $filterCount > 0 || $notFilterCount > 0 ) {
+			if ( $filterCount > 1 || $notFilterCount > 0 ) {
 				$filter = new \Elastica\Filter\Bool();
 				foreach ( $this->filters as $must ) {
 					$filter->addMust( $must );
+				}
+				foreach ( $this->notFilters as $mustNot ) {
+					$filter->addMustNot( $mustNot );
 				}
 			} else {
 				$filter = $this->filters[ 0 ];

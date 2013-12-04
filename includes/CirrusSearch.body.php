@@ -89,10 +89,6 @@ class CirrusSearch extends SearchEngine {
 		if ( $status->isOK() ) {
 			$array = $status->getValue();
 			$results = $array;
-			wfDebugLog( 'CirrusSearch', "RESULTas:  $array" );
-			foreach ( $array as $result ) {
-				wfDebugLog( 'CirrusSearch', "RESULT:  $result" );
-			}
 		}
 		return false;
 	}

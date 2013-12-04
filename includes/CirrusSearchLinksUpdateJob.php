@@ -20,16 +20,7 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearchLinksUpdateJob extends Job {
-	public function __construct( $title, $params, $id = 0 ) {
-		parent::__construct( 'cirrusSearchLinksUpdate', $title, $params, $id );
-	}
-
-	public function run() {
-		global $wgDisableSearchUpdate;
-
-		if ( $wgDisableSearchUpdate ) {
-			return;
-		}
+	protected function doJob() {
 		if ( $this->params[ 'primary' ] ) {
 			CirrusSearchUpdater::updateFromTitle( $this->title );
 			if ( count( $this->params[ 'addedLinks' ] ) > 0 ||

@@ -78,7 +78,6 @@ class ForceSearchIndex extends Maintenance {
 		wfProfileIn( __METHOD__ );
 
 		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Update'] );
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {

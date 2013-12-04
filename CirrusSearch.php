@@ -172,6 +172,7 @@ $wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnecti
 $wgAutoloadClasses['CirrusSearchDeletePagesJob'] = $includes . 'CirrusSearchDeletePagesJob.php';
 $wgAutoloadClasses['CirrusSearchLinksUpdateJob'] = $includes . 'CirrusSearchLinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearchFullTextResultsType'] = $includes . 'CirrusSearchResultsType.php';
+$wgAutoloadClasses['CirrusSearchJob'] = $includes . 'CirrusSearchJob.php';
 $wgAutoloadClasses['CirrusSearchMappingConfigBuilder'] = $includes . 'CirrusSearchMappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearchReindexForkController'] = $includes . 'CirrusSearchReindexForkController.php';
 $wgAutoloadClasses['CirrusSearchResult'] = $includes . 'CirrusSearchResult.php';

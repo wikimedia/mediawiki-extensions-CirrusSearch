@@ -34,16 +34,7 @@ class CirrusSearchUpdatePagesJob extends Job {
 		) );
 	}
 
-	public function __construct( $title, $params, $id = 0 ) {
-		parent::__construct( 'cirrusSearchUpdatePages', $title, $params, $id );
-	}
-
-	public function run() {
-		global $wgDisableSearchUpdate;
-
-		if ( $wgDisableSearchUpdate ) {
-			return;
-		}
+	protected function doJob() {
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
 		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {

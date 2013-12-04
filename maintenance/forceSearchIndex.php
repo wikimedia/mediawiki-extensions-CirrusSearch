@@ -239,16 +239,14 @@ class ForceSearchIndex extends Maintenance {
 				$toId = $dbr->addQuotes( $this->toId );
 				$toIdPart = " AND page_id <= $toId";
 			}
+			// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
 			$res = $dbr->select(
 				array( 'page' ),
 				array_merge(
 					WikiPage::selectFields()
 				),
 				"$minId < page_id"
-				. $toIdPart
-				. ' AND page_is_redirect = 0',
-				// Note that we attempt to filter out redirects because everything about the redirect
-				// will be covered when we index the page to which it points.
+				. $toIdPart,
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )
@@ -285,7 +283,8 @@ class ForceSearchIndex extends Maintenance {
 			} else if ( $content->isRedirect() ) {
 				if ( $maxUpdate === null ) {
 					// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
-					// ignore redirects!  It must not be marked properly in the database.  Just ignore it!
+					// ignore redirects!  Just ignore it!  We would filter them out at the db level but that is slow
+					// for large wikis.
 					$page = null;
 				} else {
 					$target = $page->getContent()->getUltimateRedirectTarget();

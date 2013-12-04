@@ -216,71 +216,60 @@ class CirrusSearchUpdater {
 		if ( $documentCount === 0 ) {
 			return;
 		}
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $documents, $documentCount, $shardTimeout ) {
-				try {
-					$pageType = CirrusSearchConnection::getPageType( $indexType );
-					// The bulk api doesn't support shardTimeout so don't use it if one is set
-					if ( $shardTimeout === null ) {
-						$start = microtime( true );
-						wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index via bulk api." );
-						// addDocuments (notice plural) is the bulk api
-						$pageType->addDocuments( $documents );
-						$took = round( ( microtime( true ) - $start ) * 1000 );
-						wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
+
+		try {
+			$pageType = CirrusSearchConnection::getPageType( $indexType );
+			// The bulk api doesn't support shardTimeout so don't use it if one is set
+			if ( $shardTimeout === null ) {
+				$start = microtime( true );
+				wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index via bulk api." );
+				// addDocuments (notice plural) is the bulk api
+				$pageType->addDocuments( $documents );
+				$took = round( ( microtime( true ) - $start ) * 1000 );
+				wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
+			} else {
+				foreach ( $documents as $document ) {
+					$start = microtime( true );
+					wfDebugLog( 'CirrusSearch', 'Sending id=' . $document->getId() . " to the $indexType index." );
+					$document->setTimeout( $shardTimeout );
+					// The bulk api automatically performs an update if the opType is update but the index api
+					// doesn't so we have to make the switch ourselves
+					if ( $document->getOpType() === 'update' ) {
+						$pageType->updateDocument( $document );
 					} else {
-						foreach ( $documents as $document ) {
-							$start = microtime( true );
-							wfDebugLog( 'CirrusSearch', 'Sending id=' . $document->getId() . " to the $indexType index." );
-							$document->setTimeout( $shardTimeout );
-							// The bulk api automatically performs an update if the opType is update but the index api
-							// doesn't so we have to make the switch ourselves
-							if ( $document->getOpType() === 'update' ) {
-								$pageType->updateDocument( $document );
-							} else {
-								// addDocument (notice singular) is the non-bulk index api
-								$pageType->addDocument( $document );
-							}
-							$took = round( ( microtime( true ) - $start ) * 1000 );
-							wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
-						}
+						// addDocument (notice singular) is the non-bulk index api
+						$pageType->addDocument( $document );
 					}
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					$ignore = false;
-					if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
-						$ignore = true;
-						foreach ( $e->getResponseSet()->getBulkResponses() as $bulkResponse ) {
-							if ( $bulkResponse->hasError() ) {
-								if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
-									$ignore = false;
-								} else {
-									// If this isn't common then it isn't really an error - more of a side effect of
-									// having everything on the job queue.
-									$id = $bulkResponse->getAction()->getDocument()->getId();
-									wfDebugLog( 'CirrusSearch',
-										"Updating a page that doesn't yet exist in Elasticsearch:  $id" );
-								}
-							}
-						}
-					}
-					if ( !$ignore ) {
-						wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
-						foreach ( $documents as $document ) {
-							wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
+					$took = round( ( microtime( true ) - $start ) * 1000 );
+					wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
+				}
+			}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$ignore = false;
+			if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
+				$ignore = true;
+				foreach ( $e->getResponseSet()->getBulkResponses() as $bulkResponse ) {
+					if ( $bulkResponse->hasError() ) {
+						if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
+							$ignore = false;
+						} else {
+							// If this isn't common then it isn't really an error - more of a side effect of
+							// having everything on the job queue.
+							$id = $bulkResponse->getAction()->getDocument()->getId();
+							wfDebugLog( 'CirrusSearch',
+								"Updating a page that doesn't yet exist in Elasticsearch:  $id" );
 						}
 					}
 				}
-			},
-			'error' => function( $status ) use ( $documents ) {
-				$status = $status->getErrorsArray();
-				wfLogWarning( 'Pool error sending documents to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+			}
+			if ( !$ignore ) {
+				wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
 				foreach ( $documents as $document ) {
 					wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
 				}
-				return false;
 			}
-		) );
-		$work->execute();
+		}
+
 		wfProfileOut( __METHOD__ );
 	}
 
@@ -579,33 +568,22 @@ class CirrusSearchUpdater {
 			return;
 		}
 		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the index." );
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Update', "_elasticsearch", array(
-			'doWork' => function() use ( $ids ) {
-				try {
-					$start = microtime( true );
-					$response = CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
-						->deleteIds( $ids );
-					CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
-						->deleteIds( $ids );
-					$took = round( ( microtime( true ) - $start ) * 1000 );
-					wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					wfLogWarning( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
-					foreach ( $ids as $id ) {
-						wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
-					}
-				}
-			},
-			'error' => function( $status ) use ( $ids ) {
-				$status = $status->getErrorsArray();
-				wfLogWarning( 'Pool error sending deletes to Elasticsearch:  ' . $status[ 0 ][ 0 ] );
-				foreach ( $ids as $id ) {
-					wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
-				}
-				return false;
+
+		try {
+			$start = microtime( true );
+			$response = CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
+				->deleteIds( $ids );
+			CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
+				->deleteIds( $ids );
+			$took = round( ( microtime( true ) - $start ) * 1000 );
+			wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			wfLogWarning( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
+			foreach ( $ids as $id ) {
+				wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
 			}
-		) );
-		$work->execute();
+		}
+
 		wfProfileOut( __METHOD__ );
 	}
 }

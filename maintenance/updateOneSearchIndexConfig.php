@@ -112,7 +112,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	public function execute() {
 		global $wgPoolCounterConf;
 		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Update'] );
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		try{

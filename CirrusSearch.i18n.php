@@ -196,6 +196,7 @@ Siehe auch
 );
 
 /** Spanish (español)
+ * @author Fitoschido
  * @author Ihojose
  * @author Luis Felipe Schenone
  */
@@ -214,6 +215,8 @@ Referencia
 Enlaces externos
 Véase también
  #</pre> <!-- deje esta línea tal y como está -->',
+	'cirrussearch-pref-label' => 'Búsqueda nueva',
+	'cirrussearch-pref-desc' => 'Usar un motor de búsqueda nuevo, que indiza plantillas expandidas, admite más idiomas y se actualiza más seguido.',
 );
 
 /** Persian (فارسی)
@@ -461,6 +464,20 @@ $messages['oc'] = array(
 $messages['pt-br'] = array(
 	'cirrussearch-desc' => "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
 	'cirrussearch-backend-error' => 'Não foi possível completar a busca devido a um problema temporário. Por favor, tente novamente mais tarde.',
+	'cirrussearch-now-using' => 'Este wiki está utilizando um novo mecanismo de busca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
+	'cirrussearch-ignored-headings' => ' #<!-- deixe esta linha exatamente como está --> <pre>
+# Subtítulos que serão ignorados pela busca.
+# Mudanças feitas aqui têm efeito quando a página com o subtítulo é indexada.
+# Você pode forçar a reindexação realizando uma edição nula.
+# A sintaxe é a seguinte:
+#   * Tudo a partir do caractere "#", até o final da linha, é um comentário
+#   * Cada linha não vazia é o título exato a ser ignorado, inclusive no uso de maiúsculas
+Referências
+Ligações externas
+Ver também
+ #</pre> <!-- deixe esta linha exatamente como está -->',
+	'cirrussearch-pref-label' => 'Nova busca',
+	'cirrussearch-pref-desc' => 'Utilizar o novo mecanismo de busca que indexa predefinições, suporta mais idiomas e atualiza mais rápido.',
 );
 
 /** tarandíne (tarandíne)

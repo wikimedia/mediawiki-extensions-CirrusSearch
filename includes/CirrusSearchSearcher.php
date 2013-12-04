@@ -94,7 +94,7 @@ class CirrusSearchSearcher {
 	/**
 	 * Perform a prefix search.
 	 * @param $search
-	 * @param array(string) of titles
+	 * @param Status(array(string)) of titles
 	 */
 	public function prefixSearch( $search ) {
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
@@ -124,9 +124,9 @@ class CirrusSearchSearcher {
 
 	/**
 	 * Search articles with provided term.
-	 * @param string $term
-	 * @param boolean $showRedirects
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * @param $term string term to search
+	 * @param $showRedirects boolean should this request show redirects?
+	 * @return Status(CirrusSearchResultSet|null)
 	 */
 	public function searchText( $term, $showRedirects ) {
 		wfProfileIn( __METHOD__ );
@@ -289,7 +289,7 @@ class CirrusSearchSearcher {
 
 	/**
 	 * @param $id article id to search
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * @return Status(CirrusSearchResultSet|null)
 	 */
 	public function moreLikeThisArticle( $id ) {
 		wfProfileIn( __METHOD__ );
@@ -303,8 +303,8 @@ class CirrusSearchSearcher {
 		}
 		$found = $found->getValue();
 		if ( $found === null ) {
-			// If the pge doesn't exist we can't find any articles like it
-			return null;
+			// If the page doesn't exist we can't find any articles like it
+			return Status::newGood( null );
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
@@ -324,7 +324,7 @@ class CirrusSearchSearcher {
 	 * Get the page with $id.
 	 * @param $id int page id
 	 * @param $fields array(string) fields to fetch
-	 * @return Status containing page data, null if not found, or a if there was an error
+	 * @return Status containing page data, null if not found, or an error if there was an error
 	 */
 	public function get( $id, $fields ) {
 		wfProfileIn( __METHOD__ );
@@ -348,9 +348,7 @@ class CirrusSearchSearcher {
 			'error' => function( $status ) {
 				$status = $status->getErrorsArray();
 				wfLogWarning( 'Pool error performing a get against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
-				// We return a Status here because the get method actually supports returning a Status.  Other methods
-				// should support this but don't yet.
-				return $status;
+				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
 		$result = $getWork->execute();
@@ -395,7 +393,7 @@ class CirrusSearchSearcher {
 
 	/**
 	 * Get the version of Elasticsearch with which we're communicating.
-	 * @return Status containing the version number as a string or an error
+	 * @return Status(string) version number as a string
 	 */
 	public static function getElasticsearchVersion() {
 		global $wgMemc;
@@ -420,8 +418,8 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Powers full-text-like searches which means pretty much everything but prefixSearch.
-	 * @return CirrusSearchResultSet|null|SearchResultSet|Status
+	 * Powers full-text-like searches including prefix search.
+	 * @return Status(CirrusSearchResultSet|null|array(String)) results, no results, or title results
 	 */
 	private function search() {
 		wfProfileIn( __METHOD__ );
@@ -492,25 +490,22 @@ class CirrusSearchSearcher {
 					$result = CirrusSearchConnection::getPageType( $indexType )
 						->search( $query, $queryOptions );
 					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
-					return $result;
+					return Status::newGood( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "Search backend error during $description.  Error message is:  " . $e->getMessage() );
-					return false;
+					return Status::newFatal( 'cirrussearch-backend-error' );
 				}
 			},
 			'error' => function( $status ) {
 				$status = $status->getErrorsArray();
 				wfLogWarning( 'Pool error searching Elasticsearch:  ' . $status[ 0 ][ 0 ] );
-				return false;
+				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
 		$result = $work->execute();
-		if ( !$result ) {
-			$status = new Status();
-			$status->warning( 'cirrussearch-backend-error' );
-			return $status;
+		if ( $result->isOK() ) {
+			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $result->getValue() ) );
 		}
-		$result = $this->resultsType->transformElasticsearchResult( $result );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}

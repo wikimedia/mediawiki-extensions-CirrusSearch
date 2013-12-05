@@ -233,19 +233,16 @@ class ForceSearchIndex extends Maintenance {
 		$minId = $dbr->addQuotes( $minId );
 		$search = new CirrusSearch();
 		if ( $maxUpdate === null ) {
-			$toIdPart = '';
+			$where = array( "$minId < page_id" );
 			if ( $this->toId !== null ) {
 				$toId = $dbr->addQuotes( $this->toId );
-				$toIdPart = " AND page_id <= $toId";
+				$where[] = "page_id <= $toId";
 			}
 			// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
 			$res = $dbr->select(
 				array( 'page' ),
-				array_merge(
-					WikiPage::selectFields()
-				),
-				"$minId < page_id"
-				. $toIdPart,
+				WikiPage::selectFields(),
+				$where,
 				__METHOD__,
 				array( 'ORDER BY' => 'page_id',
 				       'LIMIT' => $this->mBatchSize )

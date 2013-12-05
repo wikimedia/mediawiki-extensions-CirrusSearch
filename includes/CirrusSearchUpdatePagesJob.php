@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchUpdatePagesJob extends Job {
+class CirrusSearchUpdatePagesJob extends CirrusSearchJob {
 	public static function build( $pages, $checkFreshness, $updateFlags ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();

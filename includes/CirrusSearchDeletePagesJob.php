@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchDeletePagesJob extends Job {
+class CirrusSearchDeletePagesJob extends CirrusSearchJob {
 	/**
 	 * Build this job for just one title.
 	 * @param $title Title title

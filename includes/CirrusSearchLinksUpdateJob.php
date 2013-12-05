@@ -19,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchLinksUpdateJob extends Job {
+class CirrusSearchLinksUpdateJob extends CirrusSearchJob {
 	protected function doJob() {
 		if ( $this->params[ 'primary' ] ) {
 			CirrusSearchUpdater::updateFromTitle( $this->title );

@@ -597,28 +597,21 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Pick the index type to search bases on the list of namespaces to search.
-	 * @return mixed index type in which to search
+	 * Pick the index type to search based on the list of namespaces to search.
+	 * @return string|false either an index type or false to use all index types
 	 */
 	private function pickIndexTypeFromNamespaces() {
 		if ( !$this->namespaces ) {
-			return false; // False selects both index types
+			return false; // False selects all index types
 		}
-		$needsContent = false;
-		$needsGeneral = false;
+
+		$indexTypes = array();
 		foreach ( $this->namespaces as $namespace ) {
-			if ( MWNamespace::isContent( $namespace ) ) {
-				$needsContent = true;
-			} else {
-				$needsGeneral = true;
-			}
-			if ( $needsContent && $needsGeneral ) {
-				return false; // False selects both index types
-			}
+			$indexTypes[] =
+				CirrusSearchConnection::getIndexSuffixForNamespace( $namespace );
 		}
-		return $needsContent ?
-			CirrusSearchConnection::CONTENT_INDEX_TYPE :
-			CirrusSearchConnection::GENERAL_INDEX_TYPE;
+		$indexTypes = array_unique( $indexTypes );
+		return count( $indexTypes ) > 1 ? false : $indexTypes[0];
 	}
 
 	private function buildPrefixFilter( $search ) {

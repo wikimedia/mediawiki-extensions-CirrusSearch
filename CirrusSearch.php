@@ -51,6 +51,16 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // set to 1 for some redundancy, if not 2 for more redundancy.
 $wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 
+// By default, Cirrus will organize pages into one of two indexes (general or
+// content) based on whether a page is in a content namespace. This should
+// suffice for most wikis. This setting allows individual namespaces to be
+// mapped to specific index suffixes. The keys are the namespace number, and
+// the value is a string name of what index suffix to use. Changing this setting
+// requires a full reindex (not in-place) of the wiki.  If this setting contains
+// any values then the index names must also exist in $wgCirrusSearchShardCount
+// and $wgCirrusSearchContentReplicaCount.
+$wgCirrusSearchNamespaceMappings = array();
+
 // Shard timeout for non-maintenance index operations including those done in the web
 // process and those done via job queue.  This is the amount of time Elasticsearch
 // will wait around for an offline primary shard.  Currently this is just used in

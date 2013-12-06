@@ -145,22 +145,17 @@ class CirrusSearchUpdater {
 			}
 			$pages = $freshPages;
 		}
-		$contentDocuments = array();
-		$generalDocuments = array();
+		$allDocuments = array_fill_keys( CirrusSearchConnection::getAllIndexTypes(), array() );
 		foreach ( self::buildDocumentForPages( $pages, $flags ) as $document ) {
-			if ( $document === null ) {
-				continue;
-			}
-			if ( MWNamespace::isContent( $document->get( 'namespace' ) ) ) {
-				$contentDocuments[] = $document;
-			} else {
-				$generalDocuments[] = $document;
-			}
+			$suffix = CirrusSearchConnection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
+			$allDocuments[$suffix][] = $document;
 		}
-		self::sendDocuments( CirrusSearchConnection::CONTENT_INDEX_TYPE, $contentDocuments, $shardTimeout );
-		self::sendDocuments( CirrusSearchConnection::GENERAL_INDEX_TYPE, $generalDocuments, $shardTimeout );
+		$count = 0;
+		foreach( $allDocuments as $indexType => $documents ) {
+			self::sendDocuments( $indexType, $documents, $shardTimeout );
+			$count += count( $documents );
+		}
 
-		$count = count( $contentDocuments ) + count( $generalDocuments );
 		wfProfileOut( __METHOD__ );
 		return $count;
 	}
@@ -595,10 +590,10 @@ class CirrusSearchUpdater {
 
 		try {
 			$start = microtime( true );
-			$response = CirrusSearchConnection::getPageType( CirrusSearchConnection::CONTENT_INDEX_TYPE )
-				->deleteIds( $ids );
-			CirrusSearchConnection::getPageType( CirrusSearchConnection::GENERAL_INDEX_TYPE )
-				->deleteIds( $ids );
+			foreach ( CirrusSearchConnection::getAllIndexTypes() as $type ) {
+				CirrusSearchConnection::getPageType( $type )
+					->deleteIds( $ids );
+			}
 			$took = round( ( microtime( true ) - $start ) * 1000 );
 			wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {

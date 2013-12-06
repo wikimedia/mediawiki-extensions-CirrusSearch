@@ -116,10 +116,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		try{
 			$this->indexType = $this->getOption( 'indexType' );
-			if ( $this->indexType !== CirrusSearchConnection::CONTENT_INDEX_TYPE &&
-					$this->indexType !== CirrusSearchConnection::GENERAL_INDEX_TYPE ) {
-				$this->error( 'indexType option must be ' . CirrusSearchConnection::CONTENT_INDEX_TYPE .
-					' or ' . CirrusSearchConnection::GENERAL_INDEX_TYPE, 1 );
+			$indexTypes = CirrusSearchConnection::getAllIndexTypes();
+			if ( !in_array( $this->indexType, $indexTypes ) ) {
+				$this->error( 'indexType option must be one of ' .
+					implode( ', ', $indexTypes ), 1 );
 			}
 			$this->indent = $this->getOption( 'indent', '' );
 			if ( $this->getOption( 'forceOpen', false ) ) {
@@ -674,11 +674,19 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function getShardCount() {
 		global $wgCirrusSearchShardCount;
+		if ( !isset( $wgCirrusSearchShardCount[ $this->indexType ] ) ) {
+			$this->error( 'Could not find a shard count for ' . $this->indexType . '.  Did you add an index to ' .
+				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchShardCount?', 1 );
+		}
 		return $wgCirrusSearchShardCount[ $this->indexType ];
 	}
 
 	private function getReplicaCount() {
 		global $wgCirrusSearchContentReplicaCount;
+		if ( !isset( $wgCirrusSearchContentReplicaCount[ $this->indexType ] ) ) {
+			$this->error( 'Could not find a replica count for ' . $this->indexType . '.  Did you add an index to ' .
+				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchContentReplicaCount?', 1 );
+		}
 		return $wgCirrusSearchContentReplicaCount[ $this->indexType ];
 	}
 

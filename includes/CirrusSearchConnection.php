@@ -65,4 +65,31 @@ class CirrusSearchConnection extends ElasticaConnection {
 		$name = $name ?: wfWikiId();
 		return self::getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
 	}
+
+	/**
+	 * Get all index types we support, content, general, plus custom ones
+	 *
+	 * @return array(string)
+	 */
+	public static function getAllIndexTypes() {
+		global $wgCirrusSearchNamespaceMappings;
+		return array_merge( array_values( $wgCirrusSearchNamespaceMappings ),
+			array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ) );
+	}
+
+	/**
+	 * Get the index suffix for a given namespace
+	 * @param int $namespace A namespace id
+	 * @return string
+	 */
+	public static function getIndexSuffixForNamespace( $namespace ) {
+		global $wgCirrusSearchNamespaceMappings;
+		if ( isset( $wgCirrusSearchNamespaceMappings[$namespace] ) ) {
+			return $wgCirrusSearchNamespaceMappings[$namespace];
+		} elseif ( MWNamespace::isContent( $namespace ) ) {
+			return self::CONTENT_INDEX_TYPE;
+		} else {
+			return self::GENERAL_INDEX_TYPE;
+		}
+	}
 }

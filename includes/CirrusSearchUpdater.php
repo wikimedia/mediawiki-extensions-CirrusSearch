@@ -314,8 +314,11 @@ class CirrusSearchUpdater {
 
 			if ( !$skipParse ) {
 				wfProfileIn( __METHOD__ . '-parse' );
-				$parserOutput = $page->getParserOutput( new ParserOptions(), $page->getRevision()->getId() );
-				$text = self::buildTextToIndex( $page->getContent(), $parserOutput );
+
+				// Get text to index, based on content and parser output
+				list( $content, $parserOutput ) = self::getContentAndParserOutput( $page );
+				$text = self::buildTextToIndex( $content, $parserOutput );
+
 				$doc->add( 'text', $text );
 				$doc->add( 'text_bytes', strlen( $text ) );
 				$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
@@ -441,6 +444,27 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ . '-link-counts' );
 		wfProfileOut( __METHOD__ );
 		return $documents;
+	}
+
+	/**
+	 * Fetch page's content and parser output, using the parser cache if we can
+	 *
+	 * @param WikiPage $page The wikipage to get output for
+	 * @return array(Content,ParserOutput)
+	 */
+	private static function getContentAndParserOutput( $page ) {
+		$content = $page->getContent();
+		$parserOptions = $page->makeParserOptions( 'canonical' );
+		$parserOutput = ParserCache::singleton()->get( $page, $parserOptions );
+		if ( !$parserOutput ) {
+			// We specify the revision ID here. There might be a newer revision,
+			// but we don't care because (a) we've already got a job somewhere
+			// in the queue to index it, and (b) we want magic words like
+			// {{REVISIONUSER}} to be accurate
+			$revId = $page->getRevision()->getId();
+			$parserOutput = $content->getParserOutput( $page->getTitle(), $revId );
+		}
+		return array( $content, $parserOutput );
 	}
 
 	/**

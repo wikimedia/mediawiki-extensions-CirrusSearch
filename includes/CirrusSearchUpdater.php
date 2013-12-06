@@ -225,7 +225,9 @@ class CirrusSearchUpdater {
 			} else {
 				foreach ( $documents as $document ) {
 					$start = microtime( true );
-					wfDebugLog( 'CirrusSearch', 'Sending id=' . $document->getId() . " to the $indexType index." );
+					// Logging a fully qualified title here makes for easier debugging
+					$title = $document->get( 'namespace' ) . ':' . $document->get( 'title' );
+					wfDebugLog( 'CirrusSearch', "Sending $title to the $indexType index." );
 					$document->setTimeout( $shardTimeout );
 					// The bulk api automatically performs an update if the opType is update but the index api
 					// doesn't so we have to make the switch ourselves
@@ -396,43 +398,22 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ . '-link-counts' );
 		$linkCountClosureCount = count( $linkCountClosures );
 		if ( !$skipLinks && $linkCountClosureCount ) {
-			$linkCountWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-				'doWork' => function() use ( $linkCountMultiSearch, $pages ) {
-					try {
-						$start = microtime();
-						$result = $linkCountMultiSearch->search();
-						$took = round( ( microtime() - $start ) * 1000 );
-						$pageCount = count( $pages );
-						wfDebugLog( 'CirrusSearch', "Counted links to $pageCount pages in $took millis." );
-						return Status::newGood( $result );
-					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-						wfLogWarning( "Search backend error during link count.  Error message is:  " .
-							$e->getMessage() );
-						foreach ( $pages as $page ) {
-							$id = $page->getId();
-							wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
-						}
-						return Status::newFatal( 'cirrussearch-backend-error' );
-					}
-				},
-				'error' => function( $status ) use ( $pages ) {
-					$status = $status->getErrorsArray();
-					$pageCount = count( $pages );
-					wfLogWarning( "Pool error performing a link count against Elasticsearch for $pageCount pages:  " .
-						$status[ 0 ][ 0 ] );
-					foreach ( $pages as $page ) {
-						$id = $page->getId();
-						wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
-					}
-					return $status;
-				}
-			) );
-			$linkCountWork = $linkCountWork->execute();
-			if ( $linkCountWork->isGood() ) {
-				// If it isn't good we've already logged enough information to track it down
-				$linkCountMultiSearchResult = $linkCountWork->getValue();
+			try {
+				$start = microtime();
+				$result = $linkCountMultiSearch->search();
+				$took = round( ( microtime() - $start ) * 1000 );
+				$pageCount = count( $pages );
+				wfDebugLog( 'CirrusSearch', "Counted links to $pageCount pages in $took millis." );
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
-					$linkCountClosures[ $index ]( $linkCountMultiSearchResult[ $index ]->getTotalHits() );
+					$linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
+				}
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				// Note that we still return the pages and execute the update here, we just complain
+				wfLogWarning( "Search backend error during link count.  Error message is:  " .
+					$e->getMessage() );
+				foreach ( $pages as $page ) {
+					$id = $page->getId();
+					wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
 				}
 			}
 		}

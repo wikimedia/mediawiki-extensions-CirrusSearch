@@ -131,7 +131,7 @@ Vegeu també
  #</pre> <!-- deixeu aquesta línia tal com està -->',
 );
 
-/** Czech (česky)
+/** Czech (čeština)
  * @author Mormegil
  */
 $messages['cs'] = array(

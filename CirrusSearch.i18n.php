@@ -602,11 +602,14 @@ Xem thêm
  * @author Qiyue2001
  * @author Shizhao
  * @author TianyinLee
+ * @author Yfdyh000
  */
 $messages['zh-hans'] = array(
 	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
+	'cirrussearch-pref-label' => '新搜索',
+	'cirrussearch-pref-desc' => '使用新的搜索引擎，能索引展开的模板、支持更多语言、并且更新更快。',
 );
 
 /** Traditional Chinese (中文（繁體）‎)

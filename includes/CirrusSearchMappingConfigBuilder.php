@@ -86,7 +86,6 @@ class CirrusSearchMappingConfigBuilder {
 				$name => array(
 					'type' => 'string',
 					'analyzer' => 'text',
-					'store' => 'yes',
 					'term_vector' => 'with_positions_offsets',
 					'include_in_all' => false,
 				),
@@ -139,7 +138,6 @@ class CirrusSearchMappingConfigBuilder {
 	private function buildLongField() {
 		return array(
 			'type' => 'long',
-			'store' => 'yes',
 			'include_in_all' => false,
 		);
 	}

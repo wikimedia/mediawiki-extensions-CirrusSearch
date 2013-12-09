@@ -112,7 +112,7 @@ class CirrusSearchResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			return new CirrusSearchResult( $current );
+			return new CirrusSearchResult( $this->result, $current );
 		}
 		return false;
 	}

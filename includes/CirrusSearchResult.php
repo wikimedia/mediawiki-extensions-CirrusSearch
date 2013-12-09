@@ -33,8 +33,16 @@ class CirrusSearchResult extends SearchResult {
 	private $textSnippet;
 	private $wordCount;
 	private $byteSize;
+	private $score;
 
-	public function __construct( $result ) {
+	/**
+	 * Build the result.
+	 * @param $results \Elastica\ResultSet containing all search results
+	 * @param $result \Elastic\Result containing information about the result this class should represent
+	 */
+	public function __construct( $results, $result ) {
+		global $wgCirrusSearchShowScore;
+
 		$title = Title::makeTitle( $result->namespace, $result->title );
 		$this->initFromTitle( $title );
 		$this->wordCount = $result->text_words;
@@ -75,6 +83,9 @@ class CirrusSearchResult extends SearchResult {
 		} else {
 			$this->sectionSnippet = '';
 			$this->sectionTitle = null;
+		}
+		if ( $wgCirrusSearchShowScore ) {
+			$this->score = $result->getScore() / $results->getMaxScore();
 		}
 	}
 
@@ -173,5 +184,9 @@ class CirrusSearchResult extends SearchResult {
 
 	public function getByteSize() {
 		return $this->byteSize;
+	}
+
+	public function getScore() {
+		return $this->score;
 	}
 }

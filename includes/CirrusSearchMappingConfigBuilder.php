@@ -36,7 +36,7 @@ class CirrusSearchMappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 
-		$titleExtraAnalyzers = array( 'suggest', 'prefix' );
+		$titleExtraAnalyzers = array( 'suggest', 'prefix', 'keyword' );
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
 			$titleExtraAnalyzers[] = 'word_prefix';
 		}
@@ -69,6 +69,7 @@ class CirrusSearchMappingConfigBuilder {
 				),
 				'incoming_links' => $this->buildLongField(),
 				'incoming_redirect_links' => $this->buildLongField(),
+				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);
 	}

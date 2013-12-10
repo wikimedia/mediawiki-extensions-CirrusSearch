@@ -143,10 +143,14 @@ class CirrusSearchUpdater {
 					$freshPages[] = $page;
 				}
 			}
-			$pages = $freshPages;
+		} else {
+			$freshPages = $pages;
 		}
+
+		CirrusSearchOtherIndexJob::queueIfRequired( self::pagesToTitles( $pages ), true );
+
 		$allDocuments = array_fill_keys( CirrusSearchConnection::getAllIndexTypes(), array() );
-		foreach ( self::buildDocumentForPages( $pages, $flags ) as $document ) {
+		foreach ( self::buildDocumentForPages( $freshPages, $flags ) as $document ) {
 			$suffix = CirrusSearchConnection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
@@ -161,19 +165,23 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * Delete pages from the elasticsearch index
+	 * Delete pages from the elasticsearch index.  $titles and $ids must point to the
+	 * same pages and should point to them in the same order.
 	 *
-	 * @param array $pages An array of ids to delete
-	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null if using
+	 * @param $titles array(Title) of titles to delete
+	 * @param $ids array(integer) of ids to delete
+	 * @param $clientSideTimeout timeout in seconds to update pages or null if using
 	 *   the Elastica default which is 300 seconds.
 	 */
-	public static function deletePages( $pages, $clientSideTimeout = null ) {
+	public static function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		wfProfileIn( __METHOD__ );
+
+		CirrusSearchOtherIndexJob::queueIfRequired( $titles, false );
 
 		if ( $clientSideTimeout !== null ) {
 			CirrusSearchConnection::setTimeout( $clientSideTimeout );
 		}
-		self::sendDeletes( $pages );
+		self::sendDeletes( $ids );
 
 		wfProfileOut( __METHOD__ );
 	}
@@ -212,6 +220,7 @@ class CirrusSearchUpdater {
 			return;
 		}
 
+		$exception = null;
 		try {
 			$pageType = CirrusSearchConnection::getPageType( $indexType );
 			// The bulk api doesn't support shardTimeout so don't use it if one is set
@@ -241,29 +250,18 @@ class CirrusSearchUpdater {
 					wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
 				}
 			}
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$ignore = false;
-			if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
-				$ignore = true;
-				foreach ( $e->getResponseSet()->getBulkResponses() as $bulkResponse ) {
-					if ( $bulkResponse->hasError() ) {
-						if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
-							$ignore = false;
-						} else {
-							// If this isn't common then it isn't really an error - more of a side effect of
-							// having everything on the job queue.
-							$id = $bulkResponse->getAction()->getDocument()->getId();
-							wfDebugLog( 'CirrusSearch',
-								"Updating a page that doesn't yet exist in Elasticsearch:  $id" );
-						}
-					}
-				}
+		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
+			if ( self::bulkResponseExceptionIsJustDocumentMissing( $e,
+					"Updating a page that doesn't yet exist in Elasticsearch" ) ) {
+				$exception = $e;
 			}
-			if ( !$ignore ) {
-				wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
-				foreach ( $documents as $document ) {
-					wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
-				}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$exception = $e;
+		}
+		if ( $exception !== null ) {
+			wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
+			foreach ( $documents as $document ) {
+				wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
 			}
 		}
 
@@ -532,6 +530,128 @@ class CirrusSearchUpdater {
 			self::SKIP_PARSE );
 	}
 
+	public static function addLocalSiteToOtherIndex( $titles ) {
+		// Script is in MVEL and is run in a context with local_site set to this wiki's name
+		$script  = <<<MVEL
+			if (!ctx._source.containsKey("local_sites_with_dupe")) {
+				ctx._source.local_sites_with_dupe = [local_site]
+			} else if (ctx._source.local_sites_with_dupe.contains(local_site)) {
+				ctx.op = "none"
+			} else {
+				ctx._source.local_sites_with_dupe += local_site
+			}
+MVEL;
+		self::updateOtherIndex( 'addLocalSite', $script, $titles );
+	}
+
+	public static function removeLocalSiteFromOtherIndex( $titles ) {
+		// Script is in MVEL and is run in a context with local_site set to this wiki's name
+		$script  = <<<MVEL
+			if (!ctx._source.containsKey("local_sites_with_dupe")) {
+				ctx.op = "none"
+			} else if (!ctx._source.local_sites_with_dupe.remove(local_site)) {
+				ctx.op = "none"
+			}
+MVEL;
+		self::updateOtherIndex( 'removeLocalSite', $script, $titles );
+	}
+
+	private static function updateOtherIndex( $actionName, $scriptSource, $titles ) {
+		$client = CirrusSearchConnection::getClient();
+		$bulk = new \Elastica\Bulk( $client );
+		$updatesInBulk = 0;
+		$localSite = wfWikiId();
+
+		// Build multisearch to find ids to update
+		$findIdsMultiSearch = new \Elastica\Multi\Search( CirrusSearchConnection::getClient() );
+		$findIdsClosures = array();
+		foreach ( $titles as $title ) {
+			foreach ( CirrusSearchOtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {
+				if ( $otherIndex === null ) {
+					continue;
+				}
+				$type = CirrusSearchConnection::getPageType( false, $otherIndex );
+				$bool = new \Elastica\Filter\Bool();
+				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
+				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
+				$bool->addMust( new \Elastica\Filter\Term( array( 'namespace' => $title->getNamespace() ) ) );
+				$filtered = new \Elastica\Query\Filtered( new \Elastica\Query\MatchAll(), $bool );
+				$query = new \Elastica\Query( $filtered );
+				$query->setFields( array() ); // We only need the _id so don't load the _source
+				$query->setSize( 1 );
+				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
+				$findIdsClosures[] = function( $id ) use
+						( $scriptSource, $bulk, $otherIndex, $localSite, &$updatesInBulk ) {
+					$script = new \Elastica\Script( $scriptSource, array( 'local_site' => $localSite ) );
+					$script->setId( $id );
+					$script->setParam( '_type', 'page' );
+					$script->setParam( '_index', $otherIndex );
+					$bulk->addScript( $script, 'update' );
+					$updatesInBulk += 1;
+				};
+			}
+		}
+		$findIdsClosuresCount = count( $findIdsClosures );
+		if ( $findIdsClosuresCount === 0 ) {
+			// No other indexes to check.
+			return;
+		}
+
+		// Look up the ids and run all closures to build the bulk update
+		$start = microtime();
+		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
+		$took = round( ( microtime() - $start ) * 1000 );
+		wfDebugLog( 'CirrusSearch', "Searched for $findIdsClosuresCount ids in other indexes in $took millis." );
+		for ( $i = 0; $i < $findIdsClosuresCount; $i++ ) {
+			$results = $findIdsMultiSearchResult[ $i ]->getResults();
+			if ( count( $results ) === 0 ) {
+				continue;
+			}
+			$result = $results[ 0 ];
+			$findIdsClosures[ $i ]( $result->getId() );
+		}
+
+		// Execute the bulk update
+		$exception = null;
+		try {
+			$start = microtime();
+			$bulk->send();
+			$took = round( ( microtime() - $start ) * 1000 );
+			wfDebugLog( 'CirrusSearch', "Updated $updatesInBulk documents in other indexes in $took millis." );
+		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
+			if ( self::bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
+				$exception = $e;
+			}
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$exception = $e;
+		}
+		if ( $exception !== null ) {
+			wfLogWarning( 'CirrusSearch other index update failure:  ' . $e->getMessage() );
+			foreach ( $titles as $title ) {
+				$id = $title->getArticleID();
+				wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName: $id" );
+			}
+		}
+	}
+
+	private static function bulkResponseExceptionIsJustDocumentMissing( $exception, $log = false ) {
+		$justDocumentMissing = true;
+		foreach ( $exception->getResponseSet()->getBulkResponses() as $bulkResponse ) {
+			if ( $bulkResponse->hasError() ) {
+				if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
+					$justDocumentMissing = false;
+				} else {
+					// This is generally not an error but we should log it to see how many we get
+					if ( $log ) {
+						$id = $bulkResponse->getAction()->getDocument()->getId();
+						wfDebugLog( 'CirrusSearch', $log . ":  $id" );
+					}
+				}
+			}
+		}
+		return $justDocumentMissing;
+	}
+
 	/**
 	 * Pick $n random entries from $array.
 	 * @var $array array array to pick from
@@ -585,5 +705,18 @@ class CirrusSearchUpdater {
 		}
 
 		wfProfileOut( __METHOD__ );
+	}
+
+	/**
+	 * Convert an array of pages to an array of their titles.
+	 * @param $pages array(WikiPage)
+	 * @return array(Title)
+	 */
+	private static function pagesToTitles( $pages ) {
+		$titles = array();
+		foreach ( $pages as $page ) {
+			$titles[] = $page->getTitle();
+		}
+		return $titles;
 	}
 }

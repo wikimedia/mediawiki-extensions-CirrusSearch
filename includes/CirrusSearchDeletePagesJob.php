@@ -31,7 +31,7 @@ class CirrusSearchDeletePagesJob extends CirrusSearchJob {
 	protected function doJob() {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 
-		CirrusSearchUpdater::deletePages( array( $this->params[ 'id' ] ),
-			$wgCirrusSearchClientSideUpdateTimeout );
+		CirrusSearchUpdater::deletePages( array( $this->title ),
+			array( $this->params[ 'id' ] ), $wgCirrusSearchClientSideUpdateTimeout );
 	}
 }

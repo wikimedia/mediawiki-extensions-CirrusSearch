@@ -137,6 +137,7 @@ Vegeu també
 $messages['cs'] = array(
 	'cirrussearch-desc' => 'Vyhledávání v MediaWiki běžící na Elasticsearch',
 	'cirrussearch-backend-error' => 'Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.',
+	'cirrussearch-now-using' => 'Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])',
 	'cirrussearch-ignored-headings' => ' #<!-- tento řádek ponechte beze změny --> <pre>
 # Zde uvedené nadpisy budou ignorovány vyhledáváním.
 # Změny této stránky se projeví ve chvíli, kdy je stránka používající příslušný nadpis indexována.
@@ -149,6 +150,8 @@ Externí odkazy
 Související články
 Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
+	'cirrussearch-pref-label' => 'Nové hledání',
+	'cirrussearch-pref-desc' => 'Používat nový vyhledávač, který indexuje rozbalené šablony, podporuje více jazyků a rychleji se aktualizuje.',
 );
 
 /** Danish (dansk)

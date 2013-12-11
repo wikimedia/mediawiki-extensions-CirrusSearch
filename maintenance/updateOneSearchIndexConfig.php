@@ -682,12 +682,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function getReplicaCount() {
-		global $wgCirrusSearchContentReplicaCount;
-		if ( !isset( $wgCirrusSearchContentReplicaCount[ $this->indexType ] ) ) {
+		global $wgCirrusSearchReplicaCount;
+		if ( !isset( $wgCirrusSearchReplicaCount[ $this->indexType ] ) ) {
 			$this->error( 'Could not find a replica count for ' . $this->indexType . '.  Did you add an index to ' .
-				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchContentReplicaCount?', 1 );
+				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchReplicaCount?', 1 );
 		}
-		return $wgCirrusSearchContentReplicaCount[ $this->indexType ];
+		return $wgCirrusSearchReplicaCount[ $this->indexType ];
 	}
 
 	/**

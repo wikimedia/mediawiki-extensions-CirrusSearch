@@ -190,6 +190,9 @@ $wgCirrusSearchShowNowUsing = false;
 // their primary search engine.
 $wgCirrusSearchEnablePref = false;
 
+// Should Cirrus show the score?
+$wgCirrusSearchShowScore = false;
+
 $includes = __DIR__ . "/includes/";
 /**
  * Classes

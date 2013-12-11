@@ -111,6 +111,7 @@ $messages['br'] = array(
 );
 
 /** Catalan (català)
+ * @author Fitoschido
  * @author QuimGil
  * @author Vriullop
  */
@@ -129,6 +130,7 @@ Referències
 Enllaços externs
 Vegeu també
  #</pre> <!-- deixeu aquesta línia tal com està -->',
+	'cirrussearch-pref-desc' => 'Usa un motor de cerca nou, que indexa plantilles expandides, admet més idiomes i s’actualitza més freqüentment.',
 );
 
 /** Czech (čeština)
@@ -605,6 +607,7 @@ Xem thêm
  * @author Qiyue2001
  * @author Shizhao
  * @author TianyinLee
+ * @author Xiaomingyan
  * @author Yfdyh000
  */
 $messages['zh-hans'] = array(
@@ -612,7 +615,7 @@ $messages['zh-hans'] = array(
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
 	'cirrussearch-pref-label' => '新搜索',
-	'cirrussearch-pref-desc' => '使用新的搜索引擎，能索引展开的模板、支持更多语言、并且更新更快。',
+	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。',
 );
 
 /** Traditional Chinese (中文（繁體）‎)

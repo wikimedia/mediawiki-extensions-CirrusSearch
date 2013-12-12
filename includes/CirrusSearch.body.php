@@ -152,4 +152,44 @@ class CirrusSearch extends SearchEngine {
 		return true;
 	}
 
+	/**
+	 * Hooked to call initialize after the user is set up.
+	 */
+	public static function beforeInitializeHook( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
+		self::initialize( $user );
+
+		return true;
+	}
+
+	/**
+	 * Hooked to call initialize after the user is set up.
+	 */
+	public static function apiBeforeMainHook( $apiMain ) {
+		self::initialize( RequestContext::getMain()->getUser() );
+
+		return true;
+	}
+
+	/**
+	 * Initializes the portions of Cirrus that require the $user to be fully initialized and therefore
+	 * cannot be done in $wgExtensionFunctions.  Specifically this means the beta features check and
+	 * installing the prefix search hook, because it needs information from the beta features check.
+	 */
+	private static function initialize( $user ) {
+		global $wgCirrusSearchEnablePref;
+		global $wgSearchType;
+		global $wgHooks;
+
+		// If the user has the BetaFeature enabled, use Cirrus as default.
+		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
+			&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' )
+		) {
+			$wgSearchType = 'CirrusSearch';
+		}
+
+		// Install our prefix search hook only if we're enabled.
+		if ( $wgSearchType === 'CirrusSearch' ) {
+			$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
+		}
+	}
 }

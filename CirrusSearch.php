@@ -220,25 +220,13 @@ $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php
 /**
  * Hooks
  */
+$wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearch::apiBeforeMainHook';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch::articleDeleteCompleteHook';
+$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch::beforeInitializeHook';
+$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch::getPreferencesHook';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch::softwareInfoHook';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch::specialSearchResultsPrependHook';
-$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch::getPreferencesHook';
-// Install our prefix search hook only if we're enabled.
-$wgExtensionFunctions[] = function() {
-	global $wgSearchType, $wgHooks, $wgCirrusSearchEnablePref;
-	$user = RequestContext::getMain()->getUser();
-	if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
-		&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' )
-	) {
-		// If the user has the BetaFeature enabled, use Cirrus as default
-		$wgSearchType = 'CirrusSearch';
-	}
-	if ( $wgSearchType === 'CirrusSearch' ) {
-		$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
-	}
-};
 
 /**
  * i18n

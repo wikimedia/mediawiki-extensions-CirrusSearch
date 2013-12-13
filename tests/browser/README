@@ -62,6 +62,7 @@ Then add this to your localsettings:
  require( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
  require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
  $wgOggThumbLocation = '/usr/bin/oggThumb';
+ $wgGroupPermissions['*']['deleterevision'] = true;
 
 
 Running

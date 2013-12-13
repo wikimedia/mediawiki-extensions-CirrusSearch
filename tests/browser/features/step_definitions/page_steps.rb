@@ -16,7 +16,7 @@ Given(/^a page named (.*) doesn't exist$/) do |title|
   end
 end
 
-When(/^I delete (.+)$/) do |title|
+When(/^I delete (?!the second)(.+)$/) do |title|
   visit(DeletePage, using_params: {page_name: title}) do |page|
     page.delete
   end
@@ -24,6 +24,17 @@ end
 When(/^I edit (.+) to add (.+)$/) do |title, text|
   edit_page(title, text, true)
 end
+When(/^I delete the second most recent revision of (.*)$/) do |title|
+  visit(ArticleHistoryPage, using_params: {page_name: title}) do |page|
+    page.check_second_most_recent_checkbox
+    page.change_visibility_of_selected
+  end
+  on(ArticleRevisionDeletePage) do |page|
+    page.check_revisions_text
+    page.change_visibility_of_selected
+  end
+end
+
 
 def edit_page(title, text, add)
   if text.start_with?("@")

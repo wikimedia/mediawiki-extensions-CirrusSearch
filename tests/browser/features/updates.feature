@@ -11,8 +11,7 @@ Feature: Search backend updates
   Scenario: Altered pages are updated in the index
     Given a page named ChangeMe exists with contents foo
     When I edit ChangeMe to add superduperchangedme
-    And I search for superduperchangedme
-    Then ChangeMe is the first search result
+    Then within 75 seconds searching for superduperchangedme yields ChangeMe as the first result
 
   Scenario: Pages containing altered template are updated in the index
     Given a page named Template:ChangeMe exists with contents foo
@@ -142,3 +141,15 @@ Feature: Search backend updates
     And a page named WLDoubleRdir%{epoch} 2/2 exists with contents [[WLDoubleRdir%{epoch} 2/Redirect]]
     And a page named WLDoubleRdir%{epoch} 2 exists
     When within 75 seconds searching for WLDoubleRdir%{epoch} yields WLDoubleRdir%{epoch} 2 as the first result
+
+  # This test doesn't rely on our paranoid revision delete handling logic, rather, it verifies what should work with the
+  # logic with a similar degree of paranoia
+  Scenario: When a revision is deleted the page is updated regardless of if the revision is current
+    Given a page named RevDelTest exists with contents first
+    And a page named RevDelTest exists with contents delete this revision
+    And within 75 seconds searching for intitle:RevDelTest "delete this revision" yields RevDelTest as the first result
+    And a page named RevDelTest exists with contents current revision
+    When I delete the second most recent revision of RevDelTest
+    Then within 75 seconds searching for intitle:RevDelTest "delete this revision" yields none as the first result
+    When I search for intitle:RevDelTest current revision
+    Then RevDelTest is the first search result

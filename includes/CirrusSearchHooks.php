@@ -76,6 +76,22 @@ class CirrusSearchHooks {
 	}
 
 	/**
+	 * Called when a revision is deleted. In theory, we shouldn't need to to this since
+	 * you can't delete the current text of a page (so we should've already updated when
+	 * the page was updated last). But we're paranoid, because deleted revisions absolutely
+	 * should not be in the index.
+	 *
+	 * @param Title $title The page title we've had a revision deleted on
+	 * @return bool
+	 */
+	public static function onRevisionDelete( $title ) {
+		$page = WikiPage::factory( $title );
+		JobQueueGroup::singleton()->push(
+			CirrusSearchUpdatePagesJob::build( array( $page ), true )
+		);
+	}
+
+	/**
 	 * Hook called to include Elasticsearch version info on Special:Version
 	 * @param array $software Array of wikitext and version numbers
 	 * @return bool

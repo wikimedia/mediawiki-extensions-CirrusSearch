@@ -223,6 +223,7 @@ $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php
  */
 $wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearchHooks::apiBeforeMainHook';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearchHooks::articleDeleteCompleteHook';
+$wgHooks[ 'ArticleRevisionVisibilitySet' ] = 'CirrusSearchHooks::onRevisionDelete';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearchHooks::beforeInitializeHook';
 $wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearchHooks::getPreferencesHook';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchHooks::linksUpdateCompletedHook';

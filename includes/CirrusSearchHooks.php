@@ -113,7 +113,7 @@ class CirrusSearchHooks {
 	 * @return bool
 	 */
 	public static function getPreferencesHook( $user, &$prefs ) {
-		global $wgCirrusSearchEnablePref;
+		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
 
 		if ( $wgCirrusSearchEnablePref ) {
 			$prefs['cirrussearch-default'] = array(
@@ -121,6 +121,7 @@ class CirrusSearchHooks {
 				'desc-message' => 'cirrussearch-pref-desc',
 				'info-link' => 'https://www.mediawiki.org/wiki/Search',
 				'discussion-link' => 'https://www.mediawiki.org/wiki/Talk:Search',
+				'screenshot' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta.svg",
 			);
 		}
 

@@ -79,14 +79,14 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 			'number_of_fragments' => 1, // Just one fragment
 			'fragment_size' => 100,
 		);
-		$textPlain = $text;
+		$textWithNoMatch = $text;
 		// If there isn't a match just return a match sized chunk from the beginning of the page
-		// This is only set on textPlain because we check that text isn't highlighted to return
+		// This is only set on text.plain because we check that text isn't highlighted to return
 		// plain matches (horrible hack that will go away one day).  So we can't return anything
 		// if there aren't any matches.  But since we still want to return some text and we're
 		// already defaulting to the plain match if there isn't any text we can just have it
 		// return the chunk.
-		$textPlain[ 'no_match_size' ] = 100;
+		$textWithNoMatch[ 'no_match_size' ] = 100;
 
 		return array(
 			'order' => 'score',
@@ -95,10 +95,12 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 			'fields' => array(
 				'title' => $entireValue,
 				'text' => $text,
+				'file_text' => $text,
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
 				'title.plain' => $entireValue,
-				'text.plain' => $textPlain,
+				'text.plain' => $textWithNoMatch,
+				'file_text.plain' => $text,
 				'redirect.title.plain' => $entireValueInListField,
 				'heading.plain' => $entireValueInListField,
 			),

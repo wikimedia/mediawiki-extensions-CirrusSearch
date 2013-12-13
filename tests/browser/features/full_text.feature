@@ -483,3 +483,8 @@ Feature: Full text search
     Then HighTemplate is the first search result
     When I search for boost-templates:"Template:BoostTemplateHigh|1%" BoostTemplateTest -intitle:"BoostTemplateTest"
     Then LowTemplate is the first search result
+
+  @file_text
+  Scenario: When you search for text that is in a file, you can find it!
+    When I search for File:debian rhino
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult

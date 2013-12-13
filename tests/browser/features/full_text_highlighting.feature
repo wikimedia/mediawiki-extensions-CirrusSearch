@@ -69,6 +69,20 @@ Feature: Full text search highlighting
     When I search for namespace aliases
     Then $wg*Namespace**Aliases* is the highlighted title of the first search result
 
+  @file_text
+  Scenario: When you search for text that is in a file if there are no matches on the page you get the highlighted text from the file
+    When I search for File:debian rhino
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+    And File contents match: *Debian* is in the highlighted text of the first search result
+    And Arco-*Debian* is in the highlighted text of the first search result
+    And Black*Rhino* is in the highlighted text of the first search result
+
+  @file_text
+  Scenario: When you search for text that is in a file if there are matches on the page you get those
+    When I search for File:debian rhino linux
+    Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+    And *Linux* distribution timeline. is the highlighted text of the first search result
+
   @highlight_redirect
   Scenario: Redirects containing &s are highlighted
     Given a page named Highlight & Ampersand exists with contents #REDIRECT [[Main Page]]

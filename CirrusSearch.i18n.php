@@ -42,6 +42,7 @@ See also
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'New search',
 	'cirrussearch-pref-desc' => 'Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates.',
+	'cirrussearch-file-contents-match' => 'File contents match: $1',
 );
 
 /** Message documentation (Message documentation)
@@ -57,6 +58,7 @@ $messages['qqq'] = array(
 	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
+	'cirrussearch-file-contents-match' => 'Display a match from file contents on the search results page'
 );
 
 /** Arabic (العربية)

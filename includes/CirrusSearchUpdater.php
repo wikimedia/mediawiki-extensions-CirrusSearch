@@ -332,6 +332,19 @@ class CirrusSearchUpdater {
 				$doc->add( 'text_bytes', strlen( $text ) );
 				$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
 
+				// Index PDF or DJVU text as well
+				if ( $title->getNamespace() == NS_FILE ) {
+					$file = wfLocalFile( $title );
+					if ( $file && $file->exists() && $file->getHandler() ) {
+						$fileText = $file->getHandler()->getEntireText( $file );
+						if ( $fileText ) {
+							$doc->add( 'file_text', $fileText );
+							$doc->add( 'file_text_bytes', strlen( $fileText ) );
+							$doc->add( 'file_text_words', str_word_count( $fileText ) );
+						}
+					}
+				}
+
 				$categories = array();
 				foreach ( $parserOutput->getCategories() as $key => $value ) {
 					$category = Category::newFromName( $key );

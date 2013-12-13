@@ -52,6 +52,7 @@ class CirrusSearchResult extends SearchResult {
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'title' );
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'text' );
+		$highlights = $this->swapInPlainHighlighting( $highlights, 'file_text' );
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = '';
@@ -71,7 +72,14 @@ class CirrusSearchResult extends SearchResult {
 			$this->redirectTitle = null;
 		}
 		if ( isset( $highlights[ 'text' ] ) ) {
-			$this->textSnippet = self::escapeHighlightedText( $highlights[ 'text' ][ 0 ] );
+			$snippet = $highlights[ 'text' ][ 0 ];
+			if ( isset( $highlights[ 'file_text' ] ) ) {
+				$fileTextSnippet = $highlights[ 'file_text' ][ 0 ];
+				if ( !self::containsMatches( $snippet ) && self::containsMatches( $fileTextSnippet ) ) {
+					$snippet = wfMessage( 'cirrussearch-file-contents-match', $fileTextSnippet )->toString();
+				}
+			}
+			$this->textSnippet = self::escapeHighlightedText( $snippet );
 		} else {
 			// This can happen if there the page was sent to Elasticsearch without text.  This could be
 			// a bug or it could be that the page simply doesn't have any text.
@@ -115,6 +123,15 @@ class CirrusSearchResult extends SearchResult {
 		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
 			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
 			htmlspecialchars( $snippet ) );
+	}
+
+	/**
+	 * Checks if a snippet contains matches by looking for HIGHLIGHT_PRE.
+	 * @param string $snippet highlighted snippet returned from elasticsearch
+	 * @return boolean true if $snippet contains matches, false otherwise
+	 */
+	private static function containsMatches( $snippet ) {
+		return strpos( $snippet, CirrusSearchSearcher::HIGHLIGHT_PRE ) !== false;
 	}
 
 	/**

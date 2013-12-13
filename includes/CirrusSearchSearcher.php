@@ -706,6 +706,7 @@ class CirrusSearchSearcher {
 			'title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'title' ],
 			'heading' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'heading' ],
 			'text' . $fieldSuffix,
+			'file_text' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'file_text' ],
 		);
 		if ( $includeRedirects ) {
 			$fields[] = 'redirect.title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'redirect' ];

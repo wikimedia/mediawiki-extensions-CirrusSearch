@@ -148,7 +148,7 @@ $wgCirrusSearchLinkedArticlesToUpdate = 5;
 $wgCirrusSearchUnlinkedArticlesToUpdate = 5;
 
 // Weight of fields relative to article text
-$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0 );
+$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0, 'file_text' => 0.8 );
 
 // Portion of an article's score that decays with time since it's last update.  Defaults to 0
 // meaning don't decay the score at all unless prefer-recent: prefixes the query.

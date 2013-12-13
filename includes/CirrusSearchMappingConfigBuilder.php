@@ -62,12 +62,15 @@ class CirrusSearchMappingConfigBuilder {
 				'namespace' => $this->buildLongField(),
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
+				'file_text' => $this->buildStringField( 'file_text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'text_bytes' => $this->buildLongField(),
+				'file_text_bytes' => $this->buildLongField(),
 				'text_words' => $this->buildLongField(),
+				'file_text_words' => $this->buildLongField(),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(

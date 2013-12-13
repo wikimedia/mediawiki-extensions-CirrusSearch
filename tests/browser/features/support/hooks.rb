@@ -246,3 +246,12 @@ Before("@go") do
   end
   $go = true
 end
+
+Before("@file_text") do
+  if !$file_text
+    steps %Q{
+    Given a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
+    }
+  end
+  $file_text = true
+end

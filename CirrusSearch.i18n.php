@@ -162,6 +162,7 @@ Související stránky
 $messages['da'] = array(
 	'cirrussearch-desc' => 'Søgning for MediaWiki drevet af Elasticsearch',
 	'cirrussearch-backend-error' => 'Vi kunne ikke fuldføre søgningen på grund af et midlertidigt problem.  Prøv igen senere.',
+	'cirrussearch-now-using' => 'Denne wiki bruger en ny søgemaskine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læs mere]])',
 	'cirrussearch-ignored-headings' => ' #<!-- lad denne linje være præcis som den er --> <pre>
 # Overskrifter, der vil blive ignoreret af søgning.
 # Ændringer til dette træder i kraft så snart siden med overskriften er indekseret.
@@ -176,13 +177,16 @@ Kilder og henvisninger
 Eksterne kilder/henvisninger
 Kilder
  #</pre> <!-- lad denne linje være præcis som den er -->',
+	'cirrussearch-pref-label' => 'Ny søgning',
+	'cirrussearch-pref-desc' => 'Brug en ny søgemaskine, der indekserer udvidede skabeloner, understøtter flere sprog, og opdatere hurtigere.',
 );
 
 /** German (Deutsch)
+ * @author Kghbln
  * @author Metalhead64
  */
 $messages['de'] = array(
-	'cirrussearch-desc' => 'Solr-betriebene Suche',
+	'cirrussearch-desc' => 'Ermöglicht eine „elasticsearch“-gestütze Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
 	'cirrussearch-now-using' => 'Dieses Wiki verwendet eine neue Suchmaschine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mehr erfahren]])',
 	'cirrussearch-ignored-headings' => ' #<!-- diese Zeile nicht verändern --> <pre>
@@ -230,6 +234,13 @@ Véase también
 $messages['fa'] = array(
 	'cirrussearch-desc' => 'جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی',
 	'cirrussearch-backend-error' => 'ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.',
+);
+
+/** Finnish (suomi)
+ * @author Nike
+ */
+$messages['fi'] = array(
+	'cirrussearch-pref-label' => 'Uusi haku',
 );
 
 /** French (français)

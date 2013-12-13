@@ -199,6 +199,7 @@ $includes = __DIR__ . "/includes/";
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.body.php';
 $wgAutoloadClasses['CirrusSearchAnalysisConfigBuilder'] = $includes . 'CirrusSearchAnalysisConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearchHooks'] = $includes . 'CirrusSearchHooks.php';
 $wgAutoloadClasses['CirrusSearchConnection'] = $includes . 'CirrusSearchConnection.php';
 $wgAutoloadClasses['CirrusSearchDeletePagesJob'] = $includes . 'CirrusSearchDeletePagesJob.php';
 $wgAutoloadClasses['CirrusSearchLinksUpdateJob'] = $includes . 'CirrusSearchLinksUpdateJob.php';
@@ -220,13 +221,13 @@ $wgAutoloadClasses['CirrusSearchUpdater'] = $includes . 'CirrusSearchUpdater.php
 /**
  * Hooks
  */
-$wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearch::apiBeforeMainHook';
-$wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch::articleDeleteCompleteHook';
-$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch::beforeInitializeHook';
-$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch::getPreferencesHook';
-$wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchUpdater::linksUpdateCompletedHook';
-$wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch::softwareInfoHook';
-$wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch::specialSearchResultsPrependHook';
+$wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearchHooks::apiBeforeMainHook';
+$wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearchHooks::articleDeleteCompleteHook';
+$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearchHooks::beforeInitializeHook';
+$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearchHooks::getPreferencesHook';
+$wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchHooks::linksUpdateCompletedHook';
+$wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearchHooks::softwareInfoHook';
+$wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearchHooks::specialSearchResultsPrependHook';
 
 /**
  * i18n

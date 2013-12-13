@@ -87,20 +87,6 @@ class CirrusSearchUpdater {
 	}
 
 	/**
-	 * Hooked to update the search index when pages change directly or when templates that
-	 * they include change.
-	 * @param $linksUpdate LinksUpdate source of all links update information
-	 */
-	public static function linksUpdateCompletedHook( $linksUpdate ) {
-		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), array(
-			'addedLinks' => $linksUpdate->getAddedLinks(),
-			'removedLinks' => $linksUpdate->getRemovedLinks(),
-			'primary' => true,
-		) );
-		JobQueueGroup::singleton()->push( $job );
-	}
-
-	/**
 	 * This updates pages in elasticsearch.
 	 *
 	 * $flags includes:

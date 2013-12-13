@@ -49,7 +49,7 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // The default of 0 is fine for single-node setups, but if this is
 // deployed to a multi-node setting you probably at least want these
 // set to 1 for some redundancy, if not 2 for more redundancy.
-$wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
+$wgCirrusSearchReplicaCount = array( 'content' => 0, 'general' => 0 );
 
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
@@ -58,7 +58,7 @@ $wgCirrusSearchContentReplicaCount = array( 'content' => 0, 'general' => 0 );
 // the value is a string name of what index suffix to use. Changing this setting
 // requires a full reindex (not in-place) of the wiki.  If this setting contains
 // any values then the index names must also exist in $wgCirrusSearchShardCount
-// and $wgCirrusSearchContentReplicaCount.
+// and $wgCirrusSearchReplicaCount.
 $wgCirrusSearchNamespaceMappings = array();
 
 // Extra indexes (if any) you want to search, and for what namespaces?

@@ -15,7 +15,7 @@ Configure your search servers in LocalSettings.php:
  $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
 In production setups, you will very likely want to increase the number of replicas using
-$wgCirrusSearchContentReplicaCount.
+$wgCirrusSearchReplicaCount.
 If you want to change them then set their new values with $wgCirrusSearchServers in LocalSettings.php.
 
 Now run this script to generate your elasticsearch index:
@@ -173,7 +173,7 @@ You should change the number of replicas to at least one, two if you want protec
 during upgrades.  More replicas will help distribute queries across more nodes.  Having more
 replicas than nodes doesn't make sense and Elasticsearch will stay "yellow" if you do that.
 Anyway, you should add this to LocalSettings.php to change it:
- $wgCirrusSearchContentReplicaCount = array( 'content' => 2, 'general' => 2 );
+ $wgCirrusSearchReplicaCount = array( 'content' => 2, 'general' => 2 );
 
 
 Testing

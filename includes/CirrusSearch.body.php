@@ -25,7 +25,7 @@ class CirrusSearch extends SearchEngine {
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.
-	 * @param $feature String representing feature
+	 * @param string $feature feature name
 	 * @return bool is this feature supported?
 	 */
 	public function supports( $feature ) {
@@ -39,7 +39,7 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Overridden to delegate prefix searching to CirrusSearchSearcher.
-	 * @param $term string to search
+	 * @param string $term text to search
 	 * @return CirrusSearchResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
@@ -73,10 +73,10 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Hooked to delegate prefix searching to CirrusSearchSearcher.
-	 * @param $ns int namespace to search
-	 * @param $search string search text
-	 * @param $limit int maximum number of titles to return
-	 * @param $results array(String) outbound variable with string versions of titles
+	 * @param int $ns namespace to search
+	 * @param string $search search text
+	 * @param int $limit maximum number of titles to return
+	 * @param array(string) $results outbound variable with string versions of titles
 	 * @return bool always false because we are the authoritative prefix search
 	 */
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
@@ -95,7 +95,8 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Merge the prefix into the query (if any).
-	 * @var $term string search term
+	 * @var string $term search term
+	 * @return string possibly with a prefix appended
 	 */
 	public function transformSearchTerm( $term ) {
 		if ( $this->prefix != '' ) {

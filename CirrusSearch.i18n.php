@@ -25,7 +25,7 @@ External links
 See also
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'New search',
-	'cirrussearch-pref-desc' => 'Use a new search engine which indexes expanded templates, supports more languages, and updates faster.'
+	'cirrussearch-pref-desc' => 'Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates.',
 );
 
 /** Message documentation (Message documentation)

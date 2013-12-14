@@ -316,6 +316,7 @@ $messages['he'] = array(
 $messages['ia'] = array(
 	'cirrussearch-desc' => 'Recerca pro MediaWiki actionate per Elasticsearch',
 	'cirrussearch-backend-error' => 'Un problema temporari ha impedite le completion del recerca. Per favor reproba plus tarde.',
+	'cirrussearch-now-using' => 'Iste wiki usa un nove motor de recerca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Leger plus]])',
 	'cirrussearch-ignored-headings' => ' #<!-- non modificar in alcun modo iste linea --> <pre>
 # Titulos de sectiones que essera ignorate per le recerca.
 # Cambiamentos in isto habera effecto post le indexation del paginas con iste sectiones.
@@ -327,6 +328,8 @@ Referentias
 Ligamines externe
 Vide etiam
  #</pre> <!-- non modificar in alcun modo iste linea -->',
+	'cirrussearch-pref-label' => 'Nove recerca',
+	'cirrussearch-pref-desc' => 'Usar un nove motor de recerca que indexa patronos in forma expandite, supporta plus linguas, e se actualisa plus rapidemente.',
 );
 
 /** Italian (italiano)

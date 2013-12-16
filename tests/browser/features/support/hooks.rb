@@ -195,3 +195,15 @@ Before("@prefer_recent") do
   end
   $prefer_recent = true
 end
+
+Before("@hastemplate") do
+  if !$hastemplate
+    steps %Q{
+      Given a page named MainNamespaceTemplate exists
+      And a page named HasMainNSTemplate exists with contents {{:MainNamespaceTemplate}}
+      And a page named Talk:TalkTemplate exists
+      And a page named HasTTemplate exists with contents {{Talk:TalkTemplate}}
+    }
+  end
+  $hastemplate = true
+end

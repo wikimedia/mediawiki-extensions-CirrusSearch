@@ -192,32 +192,48 @@ class CirrusSearchSearcher {
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
 		wfProfileOut( __METHOD__ . '-prefer-recent' );
 
-		//Handle other filters
+		// Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
 		// Match filters that look like foobar:thing or foobar:"thing thing"
-		// The {7,11} keeps this from having horrible performance on big strings
+		// The {7,12} keeps this from having horrible performance on big strings
 		$term = preg_replace_callback(
-			'/(?<key>[a-z\\-]{7,11}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			'/(?<key>[a-z\\-]{7,12}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( &$filters, &$notFilters ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$filterDestination = &$filters;
 				$keepText = true;
+				if ( $key[ 0 ] === '-' ) {
+					$key = substr( $key, 1 );
+					$filterDestination = &$notFilters;
+					$keepText = false;
+				}
 				switch ( $key ) {
-					case '-incategory':
-						$filterDestination = &$notFilters;
+					case 'hastemplate':
+						$value = trim( $value, '"' );
+						// We emulate template syntax here as best as possible,
+						// so things in NS_MAIN are prefixed with ":" and things
+						// in NS_TEMPLATE don't have a prefix at all. Since we
+						// don't actually index templates like that, munge the
+						// query here
+						if ( strpos( $value, ':' ) === 0 ) {
+							$value = substr( $value, 1 );
+						} else {
+							$title = Title::newFromText( $value );
+							if ( $title && $title->getNamespace() == NS_MAIN ) {
+								$value = Title::makeTitle( NS_TEMPLATE,
+									$title->getDBkey() )->getPrefixedText();
+							}
+						}
 						// Intentional fall through
 					case 'incategory':
+						$queryKey = str_replace( array( 'in', 'has' ), '', $key );
 						$match = new \Elastica\Query\Match();
-						$match->setFieldQuery( 'category', trim( $value, '"' ) );
+						$match->setFieldQuery( $queryKey, trim( $value, '"' ) );
 						$filterDestination[] = new \Elastica\Filter\Query( $match );
 						return '';
-					case '-intitle':
-						$filterDestination = &$notFilters;
-						$keepText = false;
-						// Intentional fall through
 					case 'intitle':
 						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
 							CirrusSearchSearcher::fixupWholeQueryString(

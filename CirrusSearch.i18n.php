@@ -130,7 +130,7 @@ Referències
 Enllaços externs
 Vegeu també
  #</pre> <!-- deixeu aquesta línia tal com està -->',
-	'cirrussearch-pref-desc' => 'Usa un motor de cerca nou, que indexa plantilles expandides, admet més idiomes i s’actualitza més freqüentment.',
+	'cirrussearch-pref-desc' => 'Usa un motor de cerca nou, que indexa plantilles expandides, admet més idiomes i s’actualitza més freqüentment.', # Fuzzy
 );
 
 /** Czech (čeština)
@@ -153,7 +153,7 @@ Související články
 Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
-	'cirrussearch-pref-desc' => 'Používat nový vyhledávač, který indexuje rozbalené šablony, podporuje více jazyků a rychleji se aktualizuje.',
+	'cirrussearch-pref-desc' => 'Používat nový vyhledávač, který indexuje rozbalené šablony, podporuje více jazyků a rychleji se aktualizuje.', # Fuzzy
 );
 
 /** Danish (dansk)
@@ -178,7 +178,7 @@ Eksterne kilder/henvisninger
 Kilder
  #</pre> <!-- lad denne linje være præcis som den er -->',
 	'cirrussearch-pref-label' => 'Ny søgning',
-	'cirrussearch-pref-desc' => 'Brug en ny søgemaskine, der indekserer udvidede skabeloner, understøtter flere sprog, og opdatere hurtigere.',
+	'cirrussearch-pref-desc' => 'Brug en ny søgemaskine, der indekserer udvidede skabeloner, understøtter flere sprog, og opdatere hurtigere.', # Fuzzy
 );
 
 /** German (Deutsch)
@@ -201,7 +201,14 @@ Weblinks
 Siehe auch
  #</pre> <!-- diese Zeile nicht verändern -->',
 	'cirrussearch-pref-label' => 'Neue Suche',
-	'cirrussearch-pref-desc' => 'Eine neue Suchmaschine verwenden, die expandierte Vorlagen indexiert, weitere Sprachen unterstützt und schneller aktualisiert wird.',
+	'cirrussearch-pref-desc' => 'Teste unsere neue Suchmaschine, die eine größere Anzahl an Sprachen unterstützt, aktuellere Ergebnisse liefert und auch Text innerhalb Vorlagen finden kann.',
+);
+
+/** Swiss High German (Schweizer Hochdeutsch)
+ * @author Filzstift
+ */
+$messages['de-ch'] = array(
+	'cirrussearch-desc' => 'Ermöglicht eine durch «Elasticsearch» gestützte Suche',
 );
 
 /** Spanish (español)
@@ -270,6 +277,7 @@ Voir aussi
 
 /** Galician (galego)
  * @author Toliño
+ * @author Vivaelcelta
  */
 $messages['gl'] = array(
 	'cirrussearch-desc' => 'Procura baseada en Elasticsearch para MediaWiki',
@@ -286,6 +294,7 @@ Referencias
 Ligazóns externas
 Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
+	'cirrussearch-pref-label' => 'Busca nova',
 );
 
 /** Hebrew (עברית)
@@ -329,7 +338,7 @@ Ligamines externe
 Vide etiam
  #</pre> <!-- non modificar in alcun modo iste linea -->',
 	'cirrussearch-pref-label' => 'Nove recerca',
-	'cirrussearch-pref-desc' => 'Usar un nove motor de recerca que indexa patronos in forma expandite, supporta plus linguas, e se actualisa plus rapidemente.',
+	'cirrussearch-pref-desc' => 'Usar un nove motor de recerca que indexa patronos in forma expandite, supporta plus linguas, e se actualisa plus rapidemente.', # Fuzzy
 );
 
 /** Italian (italiano)
@@ -629,7 +638,7 @@ $messages['zh-hans'] = array(
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
 	'cirrussearch-pref-label' => '新搜索',
-	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。',
+	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。', # Fuzzy
 );
 
 /** Traditional Chinese (中文（繁體）‎)

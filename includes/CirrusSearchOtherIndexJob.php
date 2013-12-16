@@ -26,7 +26,7 @@ class CirrusSearchOtherIndexJob extends CirrusSearchJob {
 	public static function queueIfRequired( $titles, $existsInLocalIndex ) {
 		$titlesToUpdate = array();
 		foreach( $titles as $title ) {
-			if ( CirrusSearchOtherIndexes::getExternalIndexes( $title ) !== null ) {
+			if ( CirrusSearchOtherIndexes::getExternalIndexes( $title ) ) {
 				$titlesToUpdate[] = array( $title->getNamespace(), $title->getText() );
 			}
 		}

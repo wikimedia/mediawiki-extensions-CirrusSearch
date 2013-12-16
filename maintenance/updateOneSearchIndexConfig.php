@@ -543,7 +543,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$result = CirrusSearchConnection::getPageType( $this->indexType )->search( $query, array(
 				'search_type' => 'scan',
 				'scroll' => '1h',
-				'size'=> $this->reindexChunkSize / $this->getShardCount()
+				'size'=> $this->reindexChunkSize,
 			) );
 			$totalDocsToReindex = $result->getResponse()->getData();
 			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];

@@ -42,8 +42,8 @@ class ForceSearchIndex extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Force indexing some pages.  Setting neither from nor to will get you a more efficient "
-			. "query at the cost of having to reindex by page id rather than time.\n\n"
+		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from id based indexing to "
+			. "date based indexing which uses less efficient queries and follows redirects.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
 		$this->setBatchSize( 50 );
@@ -271,6 +271,8 @@ class ForceSearchIndex extends Maintenance {
 		wfProfileIn( __METHOD__ . '::decodeResults' );
 		$result = array();
 		foreach ( $res as $row ) {
+			// No need to call CirrusSearchUpdater::traceRedirects here because we know this is a valid page because
+			// it is in the database.
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
 			$content = $page->getContent();
 			if ( $content === null ) {
@@ -285,8 +287,16 @@ class ForceSearchIndex extends Maintenance {
 					// for large wikis.
 					$page = null;
 				} else {
-					$target = $page->getContent()->getUltimateRedirectTarget();
-					$page = WikiPage::newFromID( $target->getArticleID(), WikiPage::READ_LATEST );
+					// We found a redirect.  Great.  Since we can't index special pages and redirects to special pages
+					// are totally possible, as well as fun stuff like redirect loops, we need to use
+					// CirrusSearchUpdater's redirect tracing logic which is very complete.  Also, it returns null on
+					// self redirects.  Great!
+					$page = CirrusSearchUpdater::traceRedirects( $page->getTitle() );
+					// The cost of using the fancy redirect handling logic is that we have to clear some global state
+					// that cirrus maintains to prevent duplicate in process updates and to catch redirect loops.
+					// We could use the deplicate prevention, but we can't afford to let a global array grow without
+					// bounds, so clear it.
+					CirrusSearchUpdater::clearUpdated();
 				}
 			}
 			$update = array(

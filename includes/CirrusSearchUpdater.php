@@ -46,6 +46,22 @@ class CirrusSearchUpdater {
 	public static function updateFromTitle( $title ) {
 		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
+		$page = self::traceRedirects( $title );
+		if ( $page ) {
+			self::updatePages( array( $page ), false, $wgCirrusSearchShardTimeout,
+				$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
+		}
+	}
+
+	/**
+	 * Trace redirects from the title to the destination.  Also registers the title in the
+	 * memory of titles updated and detects special pages.
+	 * @param Title $title title to trace
+	 * @return WikiPage|null wikipage if the $title either isn't a redirect or resolves to
+	 *    an updateable page that hasn't been updated yet.  Null if the page has been
+	 *    updated, is a special page, or the redirects enter a loop.
+	 */
+	public static function traceRedirects( $title ) {
 		// Loop through redirects until we get to the ultimate target
 		while ( true ) {
 			$titleText = $title->getFullText();
@@ -53,18 +69,18 @@ class CirrusSearchUpdater {
 				// Already indexed this article in this process.  This is mostly useful
 				// to catch self redirects but has a storied history of catching strange
 				// behavior.
-				return;
+				return null;
 			}
 
 			// Never. Ever. Index. Negative. Namespaces.
 			if ( $title->getNamespace() < 0 ) {
-				return;
+				return null;
 			}
 
 			$page = WikiPage::factory( $title );
 			if ( !$page->exists() ) {
 				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );
-				return;
+				return null;
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
@@ -78,17 +94,23 @@ class CirrusSearchUpdater {
 				if ( $target->equals( $page->getTitle() ) ) {
 					// This doesn't warn about redirect loops longer than one but we'll catch those anyway.
 					wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
-					return;
+					return null;
 				}
 				wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 				$title = $target;
 				continue;
 			} else {
-				self::updatePages( array( $page ), false, $wgCirrusSearchShardTimeout,
-					$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
-				return;
+				return $page;
 			}
 		}
+	}
+
+	/**
+	 * Clear the array of already updated/seen pages that is used for deduplication and redirect
+	 * chain detection to free memory.
+	 */
+	public static function clearUpdated() {
+		self::$updated = array();
 	}
 
 	/**

@@ -338,6 +338,17 @@ class CirrusSearchUpdater {
 				}
 				$doc->add( 'category', $categories );
 
+				$templates = array();
+				foreach ( $parserOutput->getTemplates() as $tNS => $templatesInNS ) {
+					foreach ( $templatesInNS as $tDbKey => $unused ) {
+						$templateTitle = Title::makeTitleSafe( $tNS, $tDbKey );
+						if ( $templateTitle && $templateTitle->exists() ) {
+							$templates[] = $templateTitle->getPrefixedText();
+						}
+					}
+				}
+				$doc->add( 'template', $templates );
+
 				$headings = array();
 				$ignoredHeadings = self::getIgnoredHeadings();
 				foreach ( $parserOutput->getSections() as $heading ) {

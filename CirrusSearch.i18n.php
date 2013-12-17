@@ -272,7 +272,7 @@ Liens externes
 Voir aussi
  #</pre> <!-- laisser cette ligne comme telle -->',
 	'cirrussearch-pref-label' => 'Nouvelle recherche',
-	'cirrussearch-pref-desc' => 'Utiliser un nouveau moteur de recherche qui indexe les modèles développés, supporte davantage de langues et se met à jour plus vite.',
+	'cirrussearch-pref-desc' => 'Essayer notre nouvelle recherche qui supporte un plus grand nombre de langues, fournit davantage de résultats à jour, et peut même trouver du texte dans les modèles.',
 );
 
 /** Galician (galego)
@@ -316,7 +316,7 @@ $messages['he'] = array(
 לקריאה נוספת
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'חיפוש חדש',
-	'cirrussearch-pref-desc' => 'שימוש במנוע חיפוש חדש שממפתח תבניות מפוענחות, תומך ביותר שפות ומתעדכן מהר יותר.',
+	'cirrussearch-pref-desc' => 'נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.',
 );
 
 /** Interlingua (interlingua)
@@ -372,7 +372,7 @@ $messages['ja'] = array(
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 	'cirrussearch-pref-label' => '新規検索',
-	'cirrussearch-pref-desc' => '新しい検索エンジンを使用する (特徴: テンプレートを展開してからインデックス化、より多くの言語に対応、より速く更新)',
+	'cirrussearch-pref-desc' => '数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用',
 );
 
 /** Korean (한국어)
@@ -546,7 +546,7 @@ $messages['ru'] = array(
 См. также
  #</pre> <!-- оставьте эту строку как есть -->',
 	'cirrussearch-pref-label' => 'Новый поиск',
-	'cirrussearch-pref-desc' => 'Используйте новый поисковый движок, который индексирует расширяемые шаблоны, поддерживает больше языков и обновляется быстрее.',
+	'cirrussearch-pref-desc' => 'Попробуйте наш новый поиск, который поддерживает большее количество языков, предоставляет более свежие результаты, и может даже найти текст внутри шаблонов.',
 );
 
 /** Slovak (slovenčina)
@@ -559,6 +559,7 @@ $messages['sk'] = array(
 /** Swedish (svenska)
  * @author Bengt B
  * @author Jopparn
+ * @author WikiPhoenix
  */
 $messages['sv'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
@@ -575,7 +576,7 @@ Externa länkar
 Se också
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'Ny sökning',
-	'cirrussearch-pref-desc' => 'Använd en ny sökmotor som indexerar utökade mallar, som har stöd för fler språk och som uppdateras snabbare.',
+	'cirrussearch-pref-desc' => 'Prova vår nya sökning som stöder ett större antal språk, ger fler uppdaterade resultat och kan även hitta text inuti mallar.',
 );
 
 /** Ukrainian (українська)
@@ -598,7 +599,7 @@ $messages['uk'] = array(
 Див. також
  #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
 	'cirrussearch-pref-label' => 'Новий пошук',
-	'cirrussearch-pref-desc' => 'Використовує нову пошукову систему, яка індексує  розширені шаблони, підтримує більше мов і швидше оновлюється.',
+	'cirrussearch-pref-desc' => 'Спробуйте наш новий пошук, який підтримує більше число мов, надає більше оновлених результатів і навіть може шукати текст всередині шаблону.',
 );
 
 /** Vietnamese (Tiếng Việt)

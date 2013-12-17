@@ -1,7 +1,8 @@
 <?php
 /**
  * Job wrapper around CirrusSearchUpdater::updatePages.  Used by
- * forceSearchIndex.php when in job queueing mode.
+ * forceSearchIndex.php when in job queueing mode and by Cirrus's revision
+ * delete hook.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

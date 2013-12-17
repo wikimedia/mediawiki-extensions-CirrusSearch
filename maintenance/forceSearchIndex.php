@@ -39,6 +39,7 @@ class ForceSearchIndex extends Maintenance {
 	var $queue;
 	var $maxJobs;
 	var $pauseForJobs;
+	var $namespace;
 
 	public function __construct() {
 		parent::__construct();
@@ -71,6 +72,7 @@ class ForceSearchIndex extends Maintenance {
 			'of the two phase index build.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );
+		$this->addOption( 'namespace', 'Only index pages in this given namespace', false, true );
 	}
 
 	public function execute() {
@@ -108,6 +110,8 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->getOption( 'skipLinks' ) ) {
 			$updateFlags |= CirrusSearchUpdater::SKIP_LINKS;
 		}
+		$this->namespace = $this->hasOption( 'namespace' ) ?
+			intval( $this->getOption( 'namespace' ) ) : null;
 
 		if ( $this->indexUpdates ) {
 			if ( $this->queue ) {
@@ -240,6 +244,10 @@ class ForceSearchIndex extends Maintenance {
 				$toId = $dbr->addQuotes( $this->toId );
 				$where[] = "page_id <= $toId";
 			}
+			if ( $this->namespace ) {
+				$where['page_namespace'] = $this->namespace;
+			}
+
 			// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
 			$res = $dbr->select(
 				array( 'page' ),
@@ -252,16 +260,24 @@ class ForceSearchIndex extends Maintenance {
 		} else {
 			$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 			$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
+
+			$where = array(
+				'page_id = rev_page',
+				'rev_id = page_latest',
+				"( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )",
+				"rev_timestamp <= $maxUpdate"
+			);
+			if ( $this->namespace ) {
+				$where['page_namespace'] = $this->namespace;
+			}
+
 			$res = $dbr->select(
 				array( 'page', 'revision' ),
 				array_merge(
 					array( 'rev_timestamp' ),
 					WikiPage::selectFields()
 				),
-				'page_id = rev_page'
-				. ' AND rev_id = page_latest'
-				. " AND ( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )"
-				. " AND rev_timestamp <= $maxUpdate",
+				$where,
 				// Note that redirects are allowed here so we can pick up redirects made during search downtime
 				__METHOD__,
 				array( 'ORDER BY' => 'rev_timestamp, rev_page',
@@ -329,12 +345,19 @@ class ForceSearchIndex extends Maintenance {
 		$minNamespace = $dbr->addQuotes( $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
+		$where = array(
+			"( ( $minUpdate = ar_timestamp AND $minNamespace < ar_namespace AND $minTitle < ar_title )"
+				. " OR $minUpdate < ar_timestamp )",
+			"ar_timestamp <= $maxUpdate"
+		);
+		if ( $this->namespace ) {
+			$where['ar_namespace'] = $this->namespace;
+		}
+
 		$res = $dbr->select(
 			'archive',
 			array( 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ),
-				  "( ( $minUpdate = ar_timestamp AND $minNamespace < ar_namespace AND $minTitle < ar_title )"
-				. "    OR $minUpdate < ar_timestamp )"
-				. " AND ar_timestamp <= $maxUpdate",
+			$where,
 			__METHOD__,
 			array( 'ORDER BY' => 'ar_timestamp, ar_namespace, ar_title',
 			       'LIMIT' => $this->mBatchSize )

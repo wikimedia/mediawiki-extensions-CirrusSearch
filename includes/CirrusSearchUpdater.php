@@ -56,6 +56,11 @@ class CirrusSearchUpdater {
 				return;
 			}
 
+			// Never. Ever. Index. Negative. Namespaces.
+			if ( $title->getNamespace() < 0 ) {
+				return;
+			}
+
 			$page = WikiPage::factory( $title );
 			if ( !$page->exists() ) {
 				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );

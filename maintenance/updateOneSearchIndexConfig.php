@@ -258,7 +258,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->output( $this->indent . "\tValidating mapping for page type..." );
 		$requiredPageMappings = CirrusSearchMappingConfigBuilder::build();
-		if ( array_key_exists( 'page', $actualMappings) &&
+		if ( array_key_exists( 'page', $actualMappings ) &&
 				$this->vmActualMatchRequired( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
 			$this->output( "ok\n" );
 		} else {
@@ -297,6 +297,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					return false;
 				}
 				continue;
+			}
+
+			if ( $actual[ $key ] === 'false' ) {
+				$actual[ $key ] = false;
 			}
 			// Note that I really mean !=, not !==.  Coercion is cool here.
 			if ( $actual[ $key ] != $value ) {

@@ -554,6 +554,10 @@ class CirrusSearchUpdater {
 			self::SKIP_PARSE );
 	}
 
+	/**
+	 * Add the local wiki to the duplicate tracking list on the indexes of other wikis for $titles.
+	 * @param Array(Title) $titles titles for which to add to the tracking list
+	 */
 	public static function addLocalSiteToOtherIndex( $titles ) {
 		// Script is in MVEL and is run in a context with local_site set to this wiki's name
 		$script  = <<<MVEL
@@ -568,6 +572,10 @@ MVEL;
 		self::updateOtherIndex( 'addLocalSite', $script, $titles );
 	}
 
+	/**
+	 * Remove the local wiki from the duplicate tracking list on the indexes of other wikis for $titles.
+	 * @param array(Title) $titles titles for which to remove the tracking field
+	 */
 	public static function removeLocalSiteFromOtherIndex( $titles ) {
 		// Script is in MVEL and is run in a context with local_site set to this wiki's name
 		$script  = <<<MVEL
@@ -580,6 +588,12 @@ MVEL;
 		self::updateOtherIndex( 'removeLocalSite', $script, $titles );
 	}
 
+	/**
+	 * Update the indexes for other wiki that also store information about $titles.
+	 * @param string $actionName name of the action to report in logging
+	 * @param string $scriptSource MVEL source script for performing the update
+	 * @param array(Title) $titles titles in other indexes to update
+	 */
 	private static function updateOtherIndex( $actionName, $scriptSource, $titles ) {
 		$client = CirrusSearchConnection::getClient();
 		$bulk = new \Elastica\Bulk( $client );
@@ -633,6 +647,11 @@ MVEL;
 			}
 			$result = $results[ 0 ];
 			$findIdsClosures[ $i ]( $result->getId() );
+		}
+
+		if ( $updatesInBulk === 0 ) {
+			// None of the titles are in the other index so do nothing.
+			return;
 		}
 
 		// Execute the bulk update

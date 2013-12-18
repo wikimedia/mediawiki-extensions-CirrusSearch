@@ -294,7 +294,7 @@ Referencias
 Ligazóns externas
 Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
-	'cirrussearch-pref-label' => 'Busca nova',
+	'cirrussearch-pref-label' => 'Nova pescuda',
 );
 
 /** Hebrew (עברית)

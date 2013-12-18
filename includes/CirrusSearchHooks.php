@@ -159,4 +159,14 @@ class CirrusSearchHooks {
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}
+
+	/**
+	 * Register Cirrus's unit tests.
+	 * @param array $files containing tests
+	 * @return bool
+	 */
+	public static function getUnitTestsList( &$files ) {
+		$files = array_merge( $files, glob( __DIR__ . '/tests/unit/*Test.php' ) );
+		return true;
+	}
 }

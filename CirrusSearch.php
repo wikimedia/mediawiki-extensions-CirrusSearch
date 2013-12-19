@@ -229,6 +229,7 @@ $wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearchHooks::getPreferencesHo
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchHooks::linksUpdateCompletedHook';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearchHooks::softwareInfoHook';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearchHooks::specialSearchResultsPrependHook';
+$wgHooks[ 'UnitTestsList' ][] = 'CirrusSearchHooks::unitTestsList';
 
 /**
  * i18n

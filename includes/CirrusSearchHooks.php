@@ -87,7 +87,7 @@ class CirrusSearchHooks {
 	public static function onRevisionDelete( $title ) {
 		$page = WikiPage::factory( $title );
 		JobQueueGroup::singleton()->push(
-			CirrusSearchUpdatePagesJob::build( array( $page ), true )
+			CirrusSearchUpdatePagesJob::build( array( $page ), true, CirrusSearchUpdater::INDEX_EVERYTHING )
 		);
 	}
 

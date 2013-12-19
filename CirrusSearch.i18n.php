@@ -360,7 +360,7 @@ Voci correlate
 Collegamenti esterni
  #</pre> <!-- lascia questa riga esattamente come è -->',
 	'cirrussearch-pref-label' => 'Nuova ricerca',
-	'cirrussearch-pref-desc' => 'Utilizza un nuovo motore di ricerca che indicizza i template espansi, supporta più lingue e si aggiorna più velocemente.',
+	'cirrussearch-pref-desc' => "Prova la nostra nuova ricerca, che supporta un numero maggiore di lingue, fornisce risultati più aggiornati e può anche trovare il testo all'interno di template.",
 );
 
 /** Japanese (日本語)
@@ -475,7 +475,7 @@ Externe links
 Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
-	'cirrussearch-pref-desc' => 'Zoekmachine die sjablonen uitbreidt, meer talen ondersteunt en sneller bijgewerkt is.',
+	'cirrussearch-pref-desc' => 'Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.',
 );
 
 /** Occitan (occitan)
@@ -484,6 +484,13 @@ Zie ook
 $messages['oc'] = array(
 	'cirrussearch-desc' => 'Fa efectuar la recèrca per Solr',
 	'cirrussearch-backend-error' => 'Avèm pas pogut menar corrèctament vòstra recèrca a causa d’un problèma temporari. Ensajatz tornarmai ulteriorament.',
+);
+
+/** Polish (polski)
+ * @author Chrumps
+ */
+$messages['pl'] = array(
+	'cirrussearch-pref-label' => 'Nowe wyszukiwanie',
 );
 
 /** Brazilian Portuguese (português do Brasil)

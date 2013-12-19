@@ -47,6 +47,7 @@ class CirrusSearchMappingConfigBuilder {
 		}
 
 		return array(
+			'dynamic' => false,
 			'properties' => array(
 				'timestamp' => array(
 					'type' => 'date',
@@ -63,6 +64,7 @@ class CirrusSearchMappingConfigBuilder {
 				'text_bytes' => $this->buildLongField(),
 				'text_words' => $this->buildLongField(),
 				'redirect' => array(
+					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
 						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),

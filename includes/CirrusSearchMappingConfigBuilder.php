@@ -36,9 +36,14 @@ class CirrusSearchMappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 
-		$titleExtraAnalyzers = array( 'suggest', 'prefix', 'keyword' );
+		$titleExtraAnalyzers = array(
+			'suggest',
+			array( 'index' => 'prefix', 'search' => 'near_match' ),
+			'near_match',
+			'keyword',
+		);
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
-			$titleExtraAnalyzers[] = 'word_prefix';
+			$titleExtraAnalyzers[] = array( 'index' => 'word_prefix', 'search' => 'plain' );
 		}
 
 		$textExtraAnalyzers = array();
@@ -101,10 +106,19 @@ class CirrusSearchMappingConfigBuilder {
 				),
 			)
 		);
-		foreach ( $extra as $extraname ) {
-			$field[ 'fields' ][ $extraname ] = array(
+		foreach ( $extra as $extraName ) {
+			if ( is_array( $extraName ) ) {
+				$searchAnalyzer = $extraName[ 'search' ];
+				$indexAnalyzer = $extraName[ 'index' ];
+				$extraName = $indexAnalyzer;
+			} else {
+				$searchAnalyzer = $extraName;
+				$indexAnalyzer = $extraName;
+			}
+			$field[ 'fields' ][ $extraName ] = array(
 				'type' => 'string',
-				'analyzer' => $extraname,
+				'search_analyzer' => $searchAnalyzer,
+				'index_analyzer' => $indexAnalyzer,
 				'include_in_all' => false,
 			);
 		}

@@ -2,7 +2,7 @@ Feature: Prefix search
   Background:
     Given I am at a random page
 
-  @setup_main
+  @prefix
   Scenario Outline: Search suggestions
     When I type <term> into the search box
     Then suggestions should appear
@@ -19,9 +19,14 @@ Feature: Prefix search
     | two words              | Two Words              | Two Words              |
     | ~catapult              | none                   | Search results         |
     | África                 | África                 | África                 |
-# Hitting enter in a search for Africa should pull up África but that bug is beyond me.
-    | Africa                 | África                 | Search results         |
+    | Africa                 | África                 | África                 |
     | Template:Template Test | Template:Template Test | Template:Template Test |
+    | l'or                   | L'Oréal                | Search results         |
+    | l or                   | L'Oréal                | Search results         |
+    | L'orea                 | L'Oréal                | Search results         |
+    | L'Oréal                | L'Oréal                | L'Oréal                |
+    | L’Oréal                | L'Oréal                | L'Oréal                |
+    | L Oréal                | L'Oréal                | L'Oréal                |
 
   Scenario: Suggestions don't appear when you search for a string that is too long
     When I type 贵州省瞬时速度团头鲂身体c实施ysstsstsg说tyttxy以推销员会同香港推广系统在同他讨厌她团体淘汰赛系统大选于它拥有一天天用于与体育学院国ttxzyttxtxytdttyyyztdsytstsstxtttd天天体育系统的摄像头听到他他偷笑偷笑太阳团体杏眼桃腮他要tttxx y into the search box

@@ -28,12 +28,11 @@ class CirrusSearchSearcher {
 	const HIGHLIGHT_POST = '</span>';
 
 	/**
-	 * Maximum title length that we'll check in prefix search.  Since titles can
-	 * be 255 bytes in length we're setting this to 255 characters but this
-	 * might cause bloat in the title's prefix index so we'll have to keep an
-	 * eye on this.
+	 * Maximum title length that we'll check in prefix and keyword searches.
+	 * Since titles can be 255 bytes in length we're setting this to 255
+	 * characters.
 	 */
-	const MAX_PREFIX_SEARCH = 255;
+	const MAX_TITLE_SEARCH = 255;
 
 	/**
 	 * @var null|array template names to boost factors.  lazily initialized and defaulting to null.
@@ -130,17 +129,36 @@ class CirrusSearchSearcher {
 	}
 
 	/**
+	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
+	 * @param string $search text by which to search
+	 * @return Status(mixed) status containing results defined by resultsType on success
+	 */
+	public function nearMatchTitleSearch( $search ) {
+		wfProfileIn( __METHOD__ );
+		self::checkTitleSearchRequestLength( $search );
+		wfDebugLog( 'CirrusSearch', "Lowercased title searching:  $search" );
+
+		$match = new \Elastica\Query\Match();
+		$match->setField( 'title.near_match', $search );
+		$this->filters[] = new \Elastica\Filter\Query( $match );
+		$this->boostForLinks = false;
+
+		$this->description = "lowercase title search for '$search'";
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
+	}
+
+	/**
 	 * Perform a prefix search.
-	 * @param $search
-	 * @param Status(array(string)) of titles
+	 * @param string $search text by which to search
+	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
+		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
-		$requestLength = strlen( $search );
-		if ( $requestLength > self::MAX_PREFIX_SEARCH ) {
-			throw new UsageException( 'Prefix search requset was longer longer than the maximum allowed length.' .
-				" ($requestLength > " . self::MAX_PREFIX_SEARCH . ')', 'request_too_long', 400 );
-		}
+
+		self::checkTitleSearchRequestLength( $search );
 		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
@@ -157,8 +175,9 @@ class CirrusSearchSearcher {
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 
 		$this->description = "prefix search for '$search'";
-		$this->buildFullTextResults = false;
-		return $this->search();
+		$result = $this->search();
+		wfProfileOut( __METHOD__ );
+		return $result;
 	}
 
 	/**
@@ -179,7 +198,7 @@ class CirrusSearchSearcher {
 	 * Search articles with provided term.
 	 * @param $term string term to search
 	 * @param $showRedirects boolean should this request show redirects?
-	 * @return Status(CirrusSearchResultSet|null)
+	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function searchText( $term, $showRedirects ) {
 		wfProfileIn( __METHOD__ );
@@ -730,10 +749,7 @@ class CirrusSearchSearcher {
 
 	private function buildPrefixFilter( $search ) {
 		$match = new \Elastica\Query\Match();
-		$match->setField( 'title.prefix', array(
-			'query' => substr( $search, 0, self::MAX_PREFIX_SEARCH ),
-			'analyzer' => 'lowercase_keyword',
-		) );
+		$match->setField( 'title.prefix', $search );
 		return new \Elastica\Filter\Query( $match );
 	}
 
@@ -827,13 +843,14 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * Wrap query in link (and potentially last update time) based boosts.
-	 * @param $query null|Elastica\Query optional query to boost.  if null the match_all is assumed
+	 * Wrap query in a CustomScore query if its score need to be modified.
+	 * @param $query Elastica\Query query to boost.
 	 * @return query that will run $query and boost results based on links
 	 */
 	private function boostQuery( $query ) {
 		$fuctionScore = new \Elastica\Query\FunctionScore();
 		$fuctionScore->setQuery( $query );
+		$useFunctionScore = false;
 
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostForLinks ) {
@@ -841,6 +858,7 @@ class CirrusSearchSearcher {
 			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
 			$scoreBoostMvel = "log10($incomingLinks + $incomingRedirectLinks + 2)";
 			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
+			$useFunctionScore = true;
 		}
 
 		// Customize score by decaying a portion by time since last update
@@ -857,6 +875,7 @@ class CirrusSearchSearcher {
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
 			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
 			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
+			$useFunctionScore = true;
 		}
 
 		if ( $this->boostTemplates ) {
@@ -867,9 +886,13 @@ class CirrusSearchSearcher {
 				$fuctionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
 					new \Elastica\Filter\Query( $match ) );
 			}
+			$useFunctionScore = true;
 		}
 
-		return $fuctionScore;
+		if ( $useFunctionScore ) {
+			return $fuctionScore;
+		}
+		return $query;
 	}
 
 	private static function getDefaultBoostTemplates() {
@@ -903,5 +926,13 @@ class CirrusSearchSearcher {
 			}
 		}
 		return $boostTemplates;
+	}
+
+	private function checkTitleSearchRequestLength( $search ) {
+		$requestLength = strlen( $search );
+		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
+			throw new UsageException( 'Prefix search request was longer longer than the maximum allowed length.' .
+				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+		}
 	}
 }

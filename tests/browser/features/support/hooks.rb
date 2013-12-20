@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-Before('@setup_main, @filters') do
+Before('@setup_main, @filters, @prefix') do
   if !$setup_main
     steps %Q{
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
@@ -16,16 +16,33 @@ Before('@setup_main, @filters') do
   end
 end
 
-Before('@setup_main') do
+Before('@setup_main, @prefix') do
   if !$setup_main2
     steps %Q{
-      Given a page named África exists with contents for testing
-      And a page named Rdir exists with contents #REDIRECT [[Two Words]]
+      Given a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
       And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
       And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
     }
     $setup_main2 = true
+  end
+end
+
+Before('@setup_main, @prefix, @go') do
+  if !$africa
+    steps %Q{
+      Given a page named África exists with contents for testing
+    }
+    $africa = true
+  end
+end
+
+Before('@prefix') do
+  if !$prefix
+    steps %Q{
+      Given a page named L'Oréal exists
+    }
+    $prefix = true
   end
 end
 
@@ -219,4 +236,13 @@ Before("@boost_template") do
     }
   end
   $boost_template = true
+end
+
+Before("@go") do
+  if !$go
+    steps %Q{
+      Given a page named MixedCapsAndLowerCase exists
+    }
+  end
+  $go = true
 end

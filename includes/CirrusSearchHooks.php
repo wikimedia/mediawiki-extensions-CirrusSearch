@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple wrappers around things for hooks to call.
+ * All CirrusSearch's hooks.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class CirrusSearchHooks {
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
-			$wgHooks['PrefixSearchBackend'][] = 'CirrusSearch::prefixSearch';
+			$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchHooks::prefixSearch';
 		}
 	}
 
@@ -168,5 +168,58 @@ class CirrusSearchHooks {
 	public static function getUnitTestsList( &$files ) {
 		$files = array_merge( $files, glob( __DIR__ . '/tests/unit/*Test.php' ) );
 		return true;
+	}
+
+	/**
+	 * Hooked to delegate prefix searching to CirrusSearchSearcher.
+	 * @param int $ns namespace to search
+	 * @param string $search search text
+	 * @param int $limit maximum number of titles to return
+	 * @param array(string) $results outbound variable with string versions of titles
+	 * @return bool always false because we are the authoritative prefix search
+	 */
+	public static function prefixSearch( $ns, $search, $limit, &$results ) {
+		$searcher = new CirrusSearchSearcher( 0, $limit, $ns );
+		$searcher->setResultsType( new CirrusSearchTitleResultsType( true ) );
+		$status = $searcher->prefixSearch( $search );
+		// There is no way to send errors or warnings back to the caller here so we have to make do with
+		// only sending results back if there are results and relying on the logging done at the status
+		// constrution site to log errors.
+		if ( $status->isOK() ) {
+			$array = $status->getValue();
+			$results = $array;
+		}
+		return false;
+	}
+
+	/**
+	 * Let Elasticsearch take a crack at getting near matches before mediawiki tries all kinds of variants.
+	 * @param array(string) $termAnAllLanguageVariants the original search term and all language variants
+	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
+	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
+	 */
+	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, $titleResult ) {
+		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.
+		$term = $termAndAllLanguageVariants[ 0 ];
+		$title = Title::newFromText( $term );
+		if ( $title === null ) {
+			return false;
+		}
+
+		$searcher = new CirrusSearchSearcher( 0, 1, array( $title->getNamespace() ) );
+		$searcher->setResultsType( new CirrusSearchTitleResultsType( false ) );
+		$status = $searcher->nearMatchTitleSearch( $term );
+		// There is no way to send errors or warnings back to the caller here so we have to make do with
+		// only sending results back if there are results and relying on the logging done at the status
+		// constrution site to log errors.
+		if ( !$status->isOK() ) {
+			return true;
+		}
+		$array = $status->getValue();
+		if ( !isset( $array[ 0 ] ) ) {
+			return true;
+		}
+		$titleResult = $array[ 0 ];
+		return false;
 	}
 }

@@ -1,6 +1,9 @@
 Given(/^I am at the search results page(?: with the search (.+?)(?: and the prefix (.+))?)?$/) do |search, prefix|
   visit(SearchResultsPage, using_params: {search: search, prefix: prefix})
 end
+When(/^I go search for (.*)$/) do |search|
+  visit(SearchResultsPage, using_params: {search: search})
+end
 
 When(/^I type (.+) into the search box$/) do |search_term|
   on(SearchPage).search_input = search_term

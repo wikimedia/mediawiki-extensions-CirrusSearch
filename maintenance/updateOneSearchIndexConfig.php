@@ -536,6 +536,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$filter = new Elastica\Filter\Script(
 				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
 		}
+		$pageProperties = CirrusSearchMappingConfigBuilder::build();
+		$pageProperties = $pageProperties[ 'properties' ];
 		try {
 			$query = new Elastica\Query();
 			$query->setFields( array( '_id', '_source' ) );
@@ -568,7 +570,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				wfProfileIn( __METHOD__ . '::packageDocs' );
 				$documents = array();
 				while ( $result->current() ) {
-					$document = new \Elastica\Document( $result->current()->getId(), $result->current()->getSource() );
+					// Build the new document to just contain keys which have a mapping in the new properties.  To clean
+					// out any old fields that we no longer use.  Note that this filter is only a single level which is
+					// likely ok for us.
+					$document = new \Elastica\Document( $result->current()->getId(),
+						array_intersect_key( $result->current()->getSource(), $pageProperties ) );
 					$document->setOpType( 'create' );
 					$documents[] = $document;
 					$result->next();

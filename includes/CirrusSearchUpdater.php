@@ -288,6 +288,7 @@ class CirrusSearchUpdater {
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
 		$skipParse = $flags & self::SKIP_PARSE;
 		$skipLinks = $flags & self::SKIP_LINKS;
+		$fullDocument = !( $skipParse || $skipLinks );
 
 		$documents = array();
 		$linkCountClosures = array();
@@ -307,17 +308,17 @@ class CirrusSearchUpdater {
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
 			) );
+			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
+			// addLocalSiteToOtherIndex and removeLocalSiteFromOtherIndex.
+			$doc->setOpType( 'update' );
+			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
+			// documents or any documents that we've been explicitly told it is ok to index when they aren't full.
+			// This is typically just done during the first phase of the initial index build.
+			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc unless they
+			// are objects in both doc and the indexed source.  We're ok with this because all of our fields are either
+			// regular types or lists of objects and lists are overwritten.
+			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$documents[] = $doc;
-
-			if ( !$indexOnSkip && ( $skipParse || $skipLinks ) ) {
-				// These are sent as updates so if the document isn't already in the index this is
-				// ignored.  This is preferable to sending regular index requests because those ignore
-				// doc_as_upsert.  Without that this feature just trashes the search index by removing
-				// the text from entries.
-				$doc->setOpType( 'update' );
-			} else {
-				$doc->setOpType( 'index' );
-			}
 			wfProfileOut( __METHOD__ . '-basic' );
 
 			if ( !$skipParse ) {

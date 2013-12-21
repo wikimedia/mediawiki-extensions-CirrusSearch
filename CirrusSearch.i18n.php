@@ -42,6 +42,28 @@ $messages['qqq'] = array(
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
 );
 
+/** Arabic (العربية)
+ * @author Asaifm
+ */
+$messages['ar'] = array(
+	'cirrussearch-desc' => 'عملية البحث مدعومة من قبل Elasticsearch لميدياويكي',
+	'cirrussearch-backend-error' => 'لم نستطع إكمال بحثك بسبب مشكلة مؤقتة. الرجاء المحاولة لاحقاً.',
+	'cirrussearch-now-using' => 'تستخدم الويكي محرك بحث جديد. ([[mw:Special:MyLanguage/Help:CirrusSearch|إضغط هنا للمزيد من المعلومات]])',
+	'cirrussearch-ignored-headings' => ' # <!-- أترك هذا السطر كما هو --> <pre>
+# سيتم تجاهل الترويسات خلال عملية البحث
+#ا لتغييرات ستأخذ مجراها ما أن يتم فهرسة الصفحة التي تحتوي على ترويسات
+# يمكنك فرض عملية فهرسة الصفحة من خلال تعديل فارغ
+# الصيغة هي كالأتي:
+# * كل ما يكتب بعد "#" إلى آخر السطر يعتبر تعليق
+# * كل سطر غير فارغ سيكون العنوان الذي سيتم تجاهله (سيأخذ العنوان كما هو بالضبط بالتشكيل وخلافه)
+المراجع
+الوصلات الخارجية
+أنظر أيضا
+#</pre><!--أترك هذا السطر كما هو -->',
+	'cirrussearch-pref-label' => 'بحث جديد',
+	'cirrussearch-pref-desc' => 'جرب طريقة البحث الجديدة التي تدعم عدد أكبر من اللغات وتوفر نتائج أفضل من ناحية التحديثات. كما يمكنها أيضا البحث لك عن نصوص داخل قوالب.',
+);
+
 /** Asturian (asturianu)
  * @author Xuacu
  */

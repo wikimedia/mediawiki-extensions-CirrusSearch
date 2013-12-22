@@ -156,6 +156,7 @@ Vegeu també
 );
 
 /** Czech (čeština)
+ * @author Matěj Grabovský
  * @author Mormegil
  */
 $messages['cs'] = array(
@@ -175,7 +176,7 @@ Související články
 Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
-	'cirrussearch-pref-desc' => 'Používat nový vyhledávač, který indexuje rozbalené šablony, podporuje více jazyků a rychleji se aktualizuje.', # Fuzzy
+	'cirrussearch-pref-desc' => 'Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.',
 );
 
 /** Danish (dansk)

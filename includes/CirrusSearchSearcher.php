@@ -36,6 +36,11 @@ class CirrusSearchSearcher {
 	const MAX_PREFIX_SEARCH = 255;
 
 	/**
+	 * @var null|array template names to boost factors.  lazily initialized and defaulting to null.
+	 */
+	private static $defaultBoostTemplates = null;
+
+	/**
 	 * @var integer search offset
 	 */
 	private $offset;
@@ -84,6 +89,17 @@ class CirrusSearchSearcher {
 	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
 	 */
 	private $preferRecentHalfLife = 0;
+	/**
+	 * @var boolean should the query results boost pages with more incoming links. Defaults to true but some search
+	 * methods disable it.
+	 */
+	private $boostForLinks = true;
+	/**
+	 * @var array template name to boost multiplier for having a template.  Defaults to none but initialized by
+	 * queries that use it to self::getDefaultBoostTemplates() if they need it.  That is too expensive to do by
+	 * default though.
+	 */
+	private $boostTemplates = array();
 
 	public function __construct( $offset, $limit, $namespaces ) {
 		$this->offset = $offset;
@@ -123,6 +139,7 @@ class CirrusSearchSearcher {
 		} else {
 			$this->filters[] = $this->buildPrefixFilter( $search );
 		}
+		$this->boostTemplates = self::getDefaultBoostTemplates();
 
 		$this->description = "prefix search for '$search'";
 		$this->buildFullTextResults = false;
@@ -183,7 +200,6 @@ class CirrusSearchSearcher {
 				if ( isset( $matches[ 2 ] ) ) {
 					$preferRecentHalfLife = floatval( $matches[ 2 ] );
 				}
-				wfDebugLog( 'CirrusSearch', "prefer recent $preferRecentDecayPortion $preferRecentHalfLife" );
 				return '';
 			},
 			$term
@@ -191,6 +207,22 @@ class CirrusSearchSearcher {
 		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
 		wfProfileOut( __METHOD__ . '-prefer-recent' );
+
+		wfProfileIn( __METHOD__ . '-boost-template' );
+		$boostTemplates = null;
+		$term = preg_replace_callback(
+			'/boost-templates:"([^"]+)" ?/',
+			function ( $matches ) use ( &$boostTemplates ) {
+				$boostTemplates = CirrusSearchSearcher::parseBoostTemplates( $matches[ 1 ] );
+				return '';
+			},
+			$term
+		);
+		if ( $boostTemplates === null ) {
+			$boostTemplates = self::getDefaultBoostTemplates();
+		}
+		$this->boostTemplates = $boostTemplates;
+		wfProfileOut( __METHOD__ . '-boost-template' );
 
 		// Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
@@ -756,13 +788,19 @@ class CirrusSearchSearcher {
 	 * @param $query null|Elastica\Query optional query to boost.  if null the match_all is assumed
 	 * @return query that will run $query and boost results based on links
 	 */
-	private function boostQuery( $query = null ) {
-		// MVEL code for incoming links boost
-		$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
-		$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
-		$scoreBoostMvel = " * log10($incomingLinks + $incomingRedirectLinks + 2)";
-		// MVEL code for last update time decay
-		$lastUpdateDecayMvel = '';
+	private function boostQuery( $query ) {
+		$fuctionScore = new \Elastica\Query\FunctionScore();
+		$fuctionScore->setQuery( $query );
+
+		// Customize score by boosting based on incoming links count
+		if ( $this->boostForLinks ) {
+			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
+			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
+			$scoreBoostMvel = "log10($incomingLinks + $incomingRedirectLinks + 2)";
+			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
+		}
+
+		// Customize score by decaying a portion by time since last update
 		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {
 			// Convert half life for time in days to decay constant for time in milliseconds.
 			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
@@ -775,7 +813,52 @@ class CirrusSearchSearcher {
 			// p(e^ct - 1) + 1 which is easier to calculate than bet reduces to 1 - p + pe^ct
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
 			$lastUpdateDecayMvel = " * ($exponentialDecayMvel + 1)";
+			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
 		}
-		return new \Elastica\Query\CustomScore( '_score' . $scoreBoostMvel . $lastUpdateDecayMvel, $query );
+
+		if ( $this->boostTemplates ) {
+			foreach ( $this->boostTemplates as $name => $boost ) {
+				$match = new \Elastica\Query\Match();
+				$match->setFieldQuery( 'template', $name );
+				// TODO replace with a boost_factor function when that is supported by elastica
+				$fuctionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
+					new \Elastica\Filter\Query( $match ) );
+			}
+		}
+
+		return $fuctionScore;
+	}
+
+	private static function getDefaultBoostTemplates() {
+		if ( self::$defaultBoostTemplates === null ) {
+			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
+			if( $source->isDisabled() ) {
+				self::$defaultBoostTemplates = array();
+			} else {
+				$lines = explode( "\n", $source->plain() );
+				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
+				$lines = array_map( 'trim', $lines );          // Remove extra spaces
+				$lines = array_filter( $lines );               // Remove empty lines
+				self::$defaultBoostTemplates = self::parseBoostTemplates(
+					implode( ' ', $lines ) );                  // Now parse the templates
+			}
+		}
+		return self::$defaultBoostTemplates;
+	}
+
+	/**
+	 * Parse boosted templates.  Parse failures silently return no boosted templates.
+	 * @param string $text text representation of boosted templates
+	 * @return array of boosted templates.
+	 */
+	public static function parseBoostTemplates( $text ) {
+		$boostTemplates = array();
+		$templateMatches = array();
+		if ( preg_match_all( '/([^|]+)\|([0-9]+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
+			foreach ( $templateMatches as $templateMatch ) {
+				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
+			}
+		}
+		return $boostTemplates;
 	}
 }

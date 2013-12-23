@@ -24,6 +24,22 @@ References
 External links
 See also
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => ' #<!-- leave this line exactly as it is --> <pre>
+# If a page contains one of these templates then its search score is multiplied by the configured percentage.
+# Changes to this take effect immediately.
+# Syntax is as follows:
+#   * Everything from a "#" character to the end of the line is a comment
+#   * Every non-blank line is the exact template name to boost, namespace, case and everything, followed by a "|" character followed by a number followed by a "%" character.
+# Examples of good lines:
+# Template:Good|150%
+# Template:Very Very Good|300%
+# Template:Bad|50%
+# Examples of non-working lines:
+# Template:Foo|150.234234% <-- no decimal points allowed!
+# Foo|150% <--- technically works, but for transclusions of the Foo page from the main namespace
+# You can test configuration changes by performing a query prefixed with boost-templates:"XX" where XX is all of the templates you want to boost separated by spaces instead of line breaks.
+# Queries that specify boost-templates:"XX" ignore the contents of this field.
+ #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'New search',
 	'cirrussearch-pref-desc' => 'Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates.',
 );
@@ -40,6 +56,7 @@ $messages['qqq'] = array(
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
+	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );
 
 /** Asturian (asturianu)

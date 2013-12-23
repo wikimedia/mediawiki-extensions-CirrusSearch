@@ -207,3 +207,16 @@ Before("@hastemplate") do
   end
   $hastemplate = true
 end
+
+Before("@boost_template") do
+  if !$boost_template
+    steps %Q{
+      Given a page named Template:BoostTemplateHigh exists with contents BoostTemplateTest
+      And a page named Template:BoostTemplateLow exists with contents BoostTemplateTest
+      And a page named NoTemplates BoostTemplateTest exists with contents nothing important
+      And a page named HighTemplate exists with contents {{BoostTemplateHigh}}
+      And a page named LowTemplate exists with contents {{BoostTemplateLow}}
+    }
+  end
+  $boost_template = true
+end

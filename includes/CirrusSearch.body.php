@@ -22,6 +22,11 @@ class CirrusSearch extends SearchEngine {
 	const MORE_LIKE_THIS_PREFIX = 'morelike:';
 
 	/**
+	 * @var string The last prefix substituted by replacePrefixes.
+	 */
+	private $lastNamespacePrefix;
+
+	/**
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.
@@ -48,7 +53,13 @@ class CirrusSearch extends SearchEngine {
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
 			$term = substr( $term, 1 );
+			$searcher->addSuggestPrefix( '~' );
 		}
+
+		if ( $this->lastNamespacePrefix ) {
+			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
+		}
+
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
@@ -104,5 +115,15 @@ class CirrusSearch extends SearchEngine {
 			$term = $term . ' prefix:' . $this->prefix;
 		}
 		return $term;
+	}
+
+	public function replacePrefixes( $query ) {
+		$parsed = parent::replacePrefixes( $query );
+		if ( $parsed !== $query ) {
+			$this->lastNamespacePrefix = substr( $query, 0, strlen( $query ) - strlen( $parsed ) );
+		} else {
+			$this->lastNamespacePrefix = '';
+		}
+		return $parsed;
 	}
 }

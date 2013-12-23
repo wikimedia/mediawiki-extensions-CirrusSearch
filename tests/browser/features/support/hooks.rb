@@ -76,7 +76,7 @@ Before("@setup_namespaces") do
   end
 end
 
-Before("@setup_suggestions") do
+Before("@suggestions") do
   if !$setup_suggestions
     steps %Q{
       Given a page named Popular Culture exists with contents popular culture

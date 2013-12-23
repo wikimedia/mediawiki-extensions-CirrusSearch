@@ -20,7 +20,7 @@
 interface CirrusSearchResultsType {
 	function getFields();
 	function getHighlightingConfiguration();
-	function transformElasticsearchResult( $result );
+	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result );
 }
 
 class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
@@ -30,7 +30,7 @@ class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
 	public function getHighlightingConfiguration() {
 		return null;
 	}
-	public function transformElasticsearchResult( $result ) {
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
 		$results = array();
 		foreach( $result->getResults() as $r ) {
 			$results[] = Title::makeTitle( $r->namespace, $r->title )->getPrefixedText();
@@ -91,7 +91,7 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 		);
 	}
 
-	public function transformElasticsearchResult( $result ) {
-		return new CirrusSearchResultSet( $result );
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
+		return new CirrusSearchResultSet( $suggestPrefixes, $suggestSuffixes, $result );
 	}
 }

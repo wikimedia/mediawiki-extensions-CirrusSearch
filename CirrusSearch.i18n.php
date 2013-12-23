@@ -124,6 +124,16 @@ $messages['be-tarask'] = array(
  #</pre> <!-- не зьмяняйце гэты радок -->',
 );
 
+/** Bengali (বাংলা)
+ * @author Aftab1995
+ */
+$messages['bn'] = array(
+	'cirrussearch-backend-error' => 'একটি সাময়িক সমস্যার কারণে আমরা আপনার অনুসন্ধান সম্পন্ন করতে পারেনি। দয়া করে পরে আবার চেষ্টা করুন।',
+	'cirrussearch-now-using' => 'এই উইকি একটি নতুন অনুসন্ধান ইঞ্জিন ব্যবহার করছে।([[mw:Special:MyLanguage/Help:CirrusSearch|আরো জানুন]])',
+	'cirrussearch-pref-label' => 'নতুন অনুসন্ধান',
+	'cirrussearch-pref-desc' => 'আমাদের নতুন অনুসন্ধান ব্যবহার করে দেখুন যা অধিক সংখ্যক ভাষা সমর্থন করে, আরও হালনাগাদকৃত ফলাফল প্রদান করে এবং এমনকি টেমপ্লেট ভিতরের পাঠ্যও অনুসন্ধান করতে পারে।',
+);
+
 /** Breton (brezhoneg)
  * @author Fohanno
  */

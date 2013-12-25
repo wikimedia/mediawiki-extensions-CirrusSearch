@@ -309,6 +309,7 @@ Voir aussi
 );
 
 /** Galician (galego)
+ * @author Elisardojm
  * @author Toliño
  * @author Vivaelcelta
  */
@@ -328,6 +329,7 @@ Ligazóns externas
 Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
 	'cirrussearch-pref-label' => 'Nova pescuda',
+	'cirrussearch-pref-desc' => 'Probe o noso novo buscador que soporta un maior número de idiomas, proporciona resultados máis actuais e incluso pode atopar texto dentro dos modelos.',
 );
 
 /** Hebrew (עברית)

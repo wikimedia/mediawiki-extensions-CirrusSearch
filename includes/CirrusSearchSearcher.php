@@ -810,9 +810,9 @@ class CirrusSearchSearcher {
 			if ( $this->preferRecentDecayPortion !== 1.0 ) {
 				$exponentialDecayMvel = "$exponentialDecayMvel * $this->preferRecentDecayPortion";
 			}
-			// p(e^ct - 1) + 1 which is easier to calculate than bet reduces to 1 - p + pe^ct
+			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
-			$lastUpdateDecayMvel = " * ($exponentialDecayMvel + 1)";
+			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
 			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
 		}
 

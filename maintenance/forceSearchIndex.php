@@ -47,7 +47,7 @@ class ForceSearchIndex extends Maintenance {
 			. "date based indexing which uses less efficient queries and follows redirects.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
-		$this->setBatchSize( 50 );
+		$this->setBatchSize( 10 );
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
@@ -69,7 +69,7 @@ class ForceSearchIndex extends Maintenance {
 			'Without this if the entry does not exist then it will be skipped enirely.  Only set this when running ' .
 			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
 		$this->addOption( 'skipParse', 'Skip parsing the page.  This is realy only good for running the second half ' .
-			'of the two phase index build.' );
+			'of the two phase index build.  If this is specified then the default batch size is actually 500.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );
 		$this->addOption( 'namespace', 'Only index pages in this given namespace', false, true );
@@ -106,6 +106,9 @@ class ForceSearchIndex extends Maintenance {
 		}
 		if ( $this->getOption( 'skipParse' ) ) {
 			$updateFlags |= CirrusSearchUpdater::SKIP_PARSE;
+			if ( !$this->getOption( 'batch-size' ) ) {
+				$this->setBatchSize( 500 );
+			}
 		}
 		if ( $this->getOption( 'skipLinks' ) ) {
 			$updateFlags |= CirrusSearchUpdater::SKIP_LINKS;

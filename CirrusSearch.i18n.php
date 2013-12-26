@@ -54,9 +54,9 @@ $messages['qqq'] = array(
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
 	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
+	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
-	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 );
 
 /** Arabic (العربية)
@@ -250,6 +250,22 @@ Einzelnachweise
 Weblinks
 Siehe auch
  #</pre> <!-- diese Zeile nicht verändern -->',
+	'cirrussearch-boost-templates' => ' #<!-- Diese Zeile nicht verändern. --> <pre>
+# Falls eine Seite eine dieser Vorlagen enthält, wird der Such-Score mit dem konfigurierten Prozentsatz multipliziert.
+# Änderungen werden sofort wirksam.
+# Syntax:
+#   * Alles ab einem Sternchen „#“ bis zum Zeilenende ist ein Kommentar.
+#   * Jede nicht-leere Zeile ist der genaue Name der zu optimierenden Vorlage mit Namensraum und Unterscheidung zwischen Groß-/Kleinschreibung, gefolgt von einem Pipe-Symbol („|“), einer Zahl und einem Prozentzeichen („%“).
+# Beispiele funktionierender Zeilen:
+# Vorlage:Gut|150%
+# Vorlage:Sehr gut|300%
+# Vorlage:Schlecht|50%
+# Beispiele nicht funktionierender Zeilen:
+# Vorlage:Foo|150.234234% <-- Keine Dezimalstellen erlaubt!
+# Foo|150% <-- Technisch möglich, allerdings für Einbindungen der Seite „Foo“ aus dem Haupt-Namensraum.
+# Du kannst die Konfiguration durch eine Abfrage mit dem Präfix boost-templates:"XX" testen, wobei XX für alle Vorlagen steht, die du optimieren möchtest, getrennt durch Leerzeichen anstelle von Zeilenumbrüchen.
+# Abfragen mit boost-templates:"XX" ignorieren die Inhalte dieses Feldes.
+ #</pre> <!-- Diese Zeile nicht verändern. -->',
 	'cirrussearch-pref-label' => 'Neue Suche',
 	'cirrussearch-pref-desc' => 'Teste unsere neue Suchmaschine, die eine größere Anzahl an Sprachen unterstützt, aktuellere Ergebnisse liefert und auch Text innerhalb Vorlagen finden kann.',
 );
@@ -286,11 +302,15 @@ Véase también
 );
 
 /** Persian (فارسی)
+ * @author Armin1392
  * @author Ebraminio
  */
 $messages['fa'] = array(
 	'cirrussearch-desc' => 'جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی',
 	'cirrussearch-backend-error' => 'ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.',
+	'cirrussearch-now-using' => 'این ویکی از یک موتور جستجوی جدید استفاده می‌کند.
+([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
+	'cirrussearch-pref-label' => 'جستجوی جدید',
 );
 
 /** Finnish (suomi)
@@ -656,6 +676,22 @@ $messages['uk'] = array(
 Посилання
 Зовнішні посилання
 Див. також
+ #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
+	'cirrussearch-boost-templates' => ' #<!-- залиште цей рядок таким, яким він є --> <pre>
+# Якщо сторінка містить один із цих шаблонів, то оцінка пошуку множиться на налаштований відсоток.
+# Зміни цього вступають у силу негайно.
+# Синтаксис виглядає наступним чином:
+#   * Усе від символу "#" до кінця рядка є коментарем
+#   * Кожний непорожній рядок - це точна назва шаблону для завантаження, простору імен, справи та і усього, після якого слідує символ "|", число та символ "%".
+# Взірці вірних рядків:
+# Шаблон:Добрий|150%
+# Шаблон:Дуже дуже добрий|300%
+# Шаблон:Поганий|50%
+# Взірці непрацюючих рядків:
+# Шаблон:Foo|150.234234% <-- десяткова крапка чи кома не дозволені!
+# Foo|150% <--- технічно працює, але для включень сторінки Foo із головного простору імен
+# Ви можете тестувати зміни конфігурації, виконавши запит із префіксом boost-templates:"XX", де XX - це усі шаблони, які ви хочете завантажити, відокремлені пробілами замість розривів рядків.
+# Запити, які визначають boost-templates:"XX" ігнорувати вміст цього поля.
  #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
 	'cirrussearch-pref-label' => 'Новий пошук',
 	'cirrussearch-pref-desc' => 'Спробуйте наш новий пошук, який підтримує більше число мов, надає більше оновлених результатів і навіть може шукати текст всередині шаблону.',

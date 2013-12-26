@@ -24,6 +24,16 @@ interface CirrusSearchResultsType {
 }
 
 class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
+	private $getText;
+
+	/**
+	 * Build result type.
+	 * @param boolean $getText should the results be text (true) or titles (false)
+	 */
+	public function __construct( $getText ) {
+		$this->getText = $getText;
+	}
+
 	public function getFields() {
 		return array( 'namespace', 'title' );
 	}
@@ -33,7 +43,11 @@ class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
 		$results = array();
 		foreach( $result->getResults() as $r ) {
-			$results[] = Title::makeTitle( $r->namespace, $r->title )->getPrefixedText();
+			$title = Title::makeTitle( $r->namespace, $r->title );
+			if ( $this->getText ) {
+				$title = $title->getPrefixedText();
+			}
+			$results[] = $title;
 		}
 		return $results;
 	}

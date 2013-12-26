@@ -1,7 +1,9 @@
 <?php
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
- * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.
+ * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.  Note
+ * that lots of search behavior is hooked in CirrusSearchHooks rather than
+ * overridden here.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,28 +82,6 @@ class CirrusSearch extends SearchEngine {
 			return $status->getValue();
 		}
 		return $status;
-	}
-
-	/**
-	 * Hooked to delegate prefix searching to CirrusSearchSearcher.
-	 * @param int $ns namespace to search
-	 * @param string $search search text
-	 * @param int $limit maximum number of titles to return
-	 * @param array(string) $results outbound variable with string versions of titles
-	 * @return bool always false because we are the authoritative prefix search
-	 */
-	public static function prefixSearch( $ns, $search, $limit, &$results ) {
-		$searcher = new CirrusSearchSearcher( 0, $limit, $ns );
-		$searcher->setResultsType( new CirrusSearchTitleResultsType() );
-		$status = $searcher->prefixSearch( $search );
-		// There is no way to send errors or warnings back to the caller here so we have to make do with
-		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
-		if ( $status->isOK() ) {
-			$array = $status->getValue();
-			$results = $array;
-		}
-		return false;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 class SearchResultsPage
   include PageObject
 
-  page_url URL.url("/w/index.php?search=<%=params[:search]%>&prefix=<%=params[:prefix]%>")
+  page_url URL.url("/w/index.php?search=<%=params[:search]%><%if (params[:prefix]) %>&prefix=<%=params[:prefix]%><% end %>")
 
   text_field(:search, id: "searchText")
   h1(:title, id: "firstHeading")

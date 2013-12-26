@@ -29,13 +29,27 @@ class CirrusSearchResultSet extends SearchResultSet {
 
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
-	public function __construct( $res ) {
+	public function __construct( $suggestPrefixes, $suggestSuffixes, $res ) {
 		$this->result = $res;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$suggestion = $this->findSuggestion();
-		$this->suggestionQuery = $suggestion[ 'text' ];
-		$this->suggestionSnippet = self::escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
+		if ( $suggestion ) {
+			$this->suggestionQuery = $suggestion[ 'text' ];
+			$this->suggestionSnippet = self::escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
+			if ( $suggestPrefixes ) {
+				$suggestPrefix = implode( ' ', $suggestPrefixes );
+				// No need to escape suggestionQuery because Linker will escape it.
+				$this->suggestionQuery = $suggestPrefix . $this->suggestionQuery;
+				$this->suggestionSnippet = htmlspecialchars( $suggestPrefix ) . $this->suggestionSnippet;
+			}
+			if ( $suggestSuffixes ) {
+				$suggestSuffix = implode( ' ', $suggestSuffixes );
+				// No need to escape suggestionQuery because Linker will escape it.
+				$this->suggestionQuery = $this->suggestionQuery . $suggestSuffix;
+				$this->suggestionSnippet = $this->suggestionSnippet . htmlspecialchars( $suggestSuffix );
+			}
+		}
 	}
 
 	private function findSuggestion() {

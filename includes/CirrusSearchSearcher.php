@@ -56,8 +56,23 @@ class CirrusSearchSearcher {
 	 * @var CirrusSearchResultsType|null type of results.  null defaults to CirrusSearchFullTextResultsType
 	 */
 	private $resultsType;
+	/**
+	 * @var array(string) prefixes that should be prepended to suggestions.  Can be added to externally and is added to
+	 * during search syntax parsing.
+	 */
+	private $suggestPrefixes = array();
+	/**
+	 * @var array(string) suffixes that should be prepended to suggestions.  Can be added to externally and is added to
+	 * during search syntax parsing.
+	 */
+	private $suggestSuffixes = array();
+
 
 	// These fields are filled in by the particule search methods
+	/**
+	 * @var string term to search.
+	 */
+	private $term;
 	/**
 	 * @var \Elastica\Query\AbstractQuery|null main query.  null defaults to \Elastica\Query\MatchAll
 	 */
@@ -147,6 +162,20 @@ class CirrusSearchSearcher {
 	}
 
 	/**
+	 * @param string $suggestPrefix prefix to be prepended to suggestions
+	 */
+	public function addSuggestPrefix( $suggestPrefix ) {
+		$this->suggestPrefixes[] = $suggestPrefix;
+	}
+	/**
+	 * @param string $suggestPrefix suffix to be appended to suggestions.
+	 */
+	public function addSuggestSuffix( $suggestSuffix ) {
+		$this->suggestSuffixes[] = $suggestSuffix;
+	}
+
+
+	/**
 	 * Search articles with provided term.
 	 * @param $term string term to search
 	 * @param $showRedirects boolean should this request show redirects?
@@ -163,14 +192,15 @@ class CirrusSearchSearcher {
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
-		$term = trim( $term );
+		$this->term = trim( $term );
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
-		$prefixPos = strpos( $term, 'prefix:' );
+		$prefixPos = strpos( $this->term, 'prefix:' );
 		if ( $prefixPos !== false ) {
-			$value = substr( $term, 7 + $prefixPos );
+			$value = substr( $this->term, 7 + $prefixPos );
 			if ( strlen( $value ) > 0 ) {
-				$term = substr( $term, 0, max( 0, $prefixPos - 1 ) );
+				$this->term = substr( $this->term, 0, max( 0, $prefixPos - 1 ) );
+				$this->suggestSuffixes[] = ' prefix:' . $value;
 				// Suck namespaces out of $value
 				$cirrusSearchEngine = new CirrusSearch();
 				$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
@@ -188,7 +218,7 @@ class CirrusSearchSearcher {
 		$preferRecentHalfLife = $wgCirrusSearchPreferRecentDefaultHalfLife;
 		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
 		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
-		$term = preg_replace_callback(
+		$this->extractSpecialSyntaxFromTerm(
 			'/prefer-recent:(1|(?:0?(?:\.[0-9]+)?))?(?:,([0-9]*\.?[0-9]+))? ?/',
 			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife ) {
 				global $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
@@ -201,8 +231,7 @@ class CirrusSearchSearcher {
 					$preferRecentHalfLife = floatval( $matches[ 2 ] );
 				}
 				return '';
-			},
-			$term
+			}
 		);
 		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
@@ -210,13 +239,12 @@ class CirrusSearchSearcher {
 
 		wfProfileIn( __METHOD__ . '-boost-template' );
 		$boostTemplates = null;
-		$term = preg_replace_callback(
+		$this->extractSpecialSyntaxFromTerm(
 			'/boost-templates:"([^"]+)" ?/',
 			function ( $matches ) use ( &$boostTemplates ) {
 				$boostTemplates = CirrusSearchSearcher::parseBoostTemplates( $matches[ 1 ] );
 				return '';
-			},
-			$term
+			}
 		);
 		if ( $boostTemplates === null ) {
 			$boostTemplates = self::getDefaultBoostTemplates();
@@ -230,7 +258,7 @@ class CirrusSearchSearcher {
 		$notFilters = $this->notFilters;
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,12} keeps this from having horrible performance on big strings
-		$term = preg_replace_callback(
+		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,12}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( &$filters, &$notFilters ) {
 				$key = $matches['key'];
@@ -275,8 +303,7 @@ class CirrusSearchSearcher {
 					default:
 						return $matches[0];
 				}
-			},
-			$term
+			}
 		);
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
@@ -286,7 +313,7 @@ class CirrusSearchSearcher {
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
-		$query = self::replacePartsOfQuery( $term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $showRedirects ) {
 				$main = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
@@ -338,7 +365,7 @@ class CirrusSearchSearcher {
 			}
 
 			$this->suggest = array(
-				'text' => $term,
+				'text' => $this->term,
 				self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
 			);
 			if ( $showRedirects ) {
@@ -422,6 +449,21 @@ class CirrusSearchSearcher {
 		$result = $getWork->execute();
 		wfProfileOut( __METHOD__ );
 		return $result;
+	}
+
+	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
+		$suggestPrefixes = $this->suggestPrefixes;
+		$this->term = preg_replace_callback( $regex,
+			function ( $matches ) use ( $callback, &$suggestPrefixes ) {
+				$result = $callback( $matches );
+				if ( $result === '' ) {
+					$suggestPrefixes[] = $matches[ 0 ];
+				}
+				return $result;
+			},
+			$this->term
+		);
+		$this->suggestPrefixes = $suggestPrefixes;
 	}
 
 	private static function replaceAllPartsOfQuery( $query, $regex, $callable ) {
@@ -583,7 +625,8 @@ class CirrusSearchSearcher {
 		) );
 		$result = $work->execute();
 		if ( $result->isOK() ) {
-			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $result->getValue() ) );
+			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
+				$this->suggestSuffixes, $result->getValue() ) );
 		}
 		wfProfileOut( __METHOD__ );
 		return $result;

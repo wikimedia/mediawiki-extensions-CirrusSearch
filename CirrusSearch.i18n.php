@@ -58,7 +58,6 @@ $messages['qqq'] = array(
 	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
-	'cirrussearch-file-contents-match' => 'Display a match from file contents on the search results page.  $1 is a snippet from the file with the matching text highlighted.'
 );
 
 /** Arabic (العربية)
@@ -279,6 +278,15 @@ $messages['de-ch'] = array(
 	'cirrussearch-desc' => 'Ermöglicht eine durch «Elasticsearch» gestützte Suche',
 );
 
+/** Lower Sorbian (dolnoserbski)
+ * @author Michawiki
+ */
+$messages['dsb'] = array(
+	'cirrussearch-desc' => 'Pytanje na zakłaźe "elasticsearch" za MediaWiki',
+	'cirrussearch-backend-error' => 'Twójo pytanje njedajo se nachylnego problema dla skóńcyś. Pšosym wopytaj pózdźej hyšći raz.',
+	'cirrussearch-now-using' => 'Toś ten wiki wužywa nowu pytnicu ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalšne informacije]])',
+);
+
 /** Spanish (español)
  * @author Fitoschido
  * @author Ihojose
@@ -391,6 +399,44 @@ $messages['he'] = array(
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'חיפוש חדש',
 	'cirrussearch-pref-desc' => 'נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.',
+);
+
+/** Upper Sorbian (hornjoserbsce)
+ * @author Michawiki
+ */
+$messages['hsb'] = array(
+	'cirrussearch-desc' => 'Pytanje na zakładźe "elasticsearch" za MediaWiki',
+	'cirrussearch-backend-error' => 'Twoje pytanje njeda so nachwilneho problema dla skónčić. Prošu spytaj pozdźišo hišće raz.',
+	'cirrussearch-now-using' => 'Tutón wiki wužiwa nowu pytawu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalše informacije]])',
+	'cirrussearch-ignored-headings' => ' #<!-- njezměń tutu linku --> <pre>
+# Nadpisma, kotrež pytanje ignoruje.
+# Tute změny budu so wuskutkować, po tym zo strona bě so indikowała.
+# Móžeš indikowanje stronow wunuzować, přewjedujo prózdnu změnu.
+# Syntaksa:
+#   * Wšitko, štož znamješku "#" hač do kónca linki slěduje, je komentar
+#   * Kózda njeprózdna linka je eksaktny titul, kotryž dyrbi so ignorować
+Žórła
+Eksterne wotkazy
+Hlej tež
+ #</pre> <!-- njezměń tutu linku -->',
+	'cirrussearch-boost-templates' => ' #<!-- Njezměń tutu linku. --> <pre>
+# Jeli strona wobsahuje jednu z tutych předłohow, budźe so pytanske pohódnoćenje z konfigurowanej procentowej sadźbu multiplikować.
+# Změny so hnydom wuskutkuja.
+# Syntaksa:
+#   * Wšitko za znamješkom „#“ hač do kónca linki je komentar.
+#   * Kóžda njeprózdna linka je eksaktne mjeno předłohi, kotraž ma so zesylnić, z mjenowym rumom, wulkopisanjom, haj wšitko, slědowane přez znamješko "|", ličbu a znamješko "%".
+# Přikłady fungowacych linkow:
+# Předłoha:Dobry|150%
+# Předłoha:Jara dobry|300%
+# Předłoha:Špatny|50%
+# Přikłady njefungowacych linkow:
+# Předłoha:Foo|150.234234% <-- Decimalne městna dowolene njejsu!
+# Foo|150% <-- Technisce móžno, ale za zapřijimanja strony "Foo" z hłowneho mjenoweho ruma.
+# Móžeš konfiguraciju přez naprašowanje z prefiksom boost-templates:"XX"" testować, při čimž XX za wšě předłohi steji, kotrež chceš optimizować, dźělene přez mjezeru město łamanja linki.
+# Naprašowanja z boost-templates:"XX" ignoruja wobsah tutoho pola.
+ #</pre> <!-- Njezměń tutu linku. -->',
+	'cirrussearch-pref-label' => 'Nowe pytanje',
+	'cirrussearch-pref-desc' => 'Spytaj naše nowe pytanje, kotrež podpěruje wjetšu ličbu rěčow, podawa bóle aktualne wuslědki a móže samo tekst znutřka předłohow namakać.',
 );
 
 /** Interlingua (interlingua)
@@ -515,8 +561,24 @@ $messages['mk'] = array(
 Надворешни врски
 Поврзано
  #</pre> <!-- не менувајте ништо во овој ред -->',
+	'cirrussearch-boost-templates' => ' #<!-- не менувајте го овој ред --> <pre>
+# Ако една страница содржи еден од овие шаблони, тогаш добиеното салдо од пребарувањето се множи со зададениот постоток.
+# Измените во ова веднаш стапуваат на сила.
+# Синтаксата е следнава:
+#   * Сето она што стои од знакот „#“ до крајот на редот е коментар
+#   * Секој непразен ред претставува точно има на шаблонот за оптимизирање (сосе именскиот простор, запазени големи/мали букви и сето останато), проследено од знакот „|“, па број, па знакот „%“.
+# Примери за редови што работат:
+# Шаблон:Добро|150%
+# Шаблон:Многу добро|300%
+# Шаблон:Лошо|50%
+# Примери за редови што не би работеле:
+# Шаблон:Foo|150.234234% <-- не се дозволени децимали!
+# Foo|150% <--- технички работи, но за превметнување на страницата „Foo“ од главниот именски простор
+# Можете да ги испробате измените во поставките извршувајќи барање со претставката boost-templates:„XX“, каде XX се сите шаблони што сакате да ги оптимизирате одделени со празни места наместо нови редови.
+# Барањата што укажуваат boost-templates:„XX“ ја занемаруваат содржината на ова поле.
+ #</pre> <!-- не менувајте го овој ред -->',
 	'cirrussearch-pref-label' => 'Ново пребарување',
-	'cirrussearch-pref-desc' => 'Користете нов пребарувач што индексира проширени шаблони, поддржува повеќе јазици и побргу се подновува.',
+	'cirrussearch-pref-desc' => 'Пробајте го нашето ново пребарување кое поддржува поголем број јазици, дава потековни и понавремени резултати, па дури и наоѓа текст во шаблони.',
 );
 
 /** Malay (Bahasa Melayu)
@@ -562,9 +624,11 @@ $messages['oc'] = array(
 
 /** Polish (polski)
  * @author Chrumps
+ * @author Tar Lócesilion
  */
 $messages['pl'] = array(
 	'cirrussearch-pref-label' => 'Nowe wyszukiwanie',
+	'cirrussearch-pref-desc' => 'Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.',
 );
 
 /** Brazilian Portuguese (português do Brasil)
@@ -719,8 +783,25 @@ Liên kết ngoài
 Xem thêm
 Đọc thêm
  #</pre> <!-- để yên dòng này -->',
+	'cirrussearch-boost-templates' => ' #<!-- xin để yên dòng này --> <pre>
+# Nếu trang chứa một trong những bản mẫu này, điểm tìm kiếm của nó được nhân bằng số phần trăm được định rõ.
+# Các thay đổi tại thông điệp này được áp dụng ngay.
+# Cú pháp là:
+#   * Bất cứ gì từ dấu “#” đến cuối dòng là chú thích
+#   * Mọi dòng không để trống là đúng tên bản mẫu đúng để nâng lên, kể cả không gian tên, phân biệt chữ hoa/thường, đằng sau là dấu “|”, số, và dấu “%”.
+# Ví dụ dòng hợp lệ:
+# Bản mẫu:Tốt|150%
+# Bản mẫu:Tốt thật tốt|300%
+# Bản mẫu:Dở|50%
+# Ví dụ dòng không hợp lệ:
+# Bản mẫu:Foo|150.234234% <-- không cho phép số thập phân!
+# Bản mẫu:Foo|1.000.000% <-- không phân tách số!
+# Foo|150% <--- hợp lệ, nhưng chỉ trùng với những lần nhúng trang Foo thuộc không gian tên chính
+# Để kiểm thử các thay đổi thiết lập, thực hiện một truy vấn có tiền tố boost-templates:"XX" trong đó XX là tất cả các bản mẫu bạn muốn nâng lên, phân cách bằng khoảng cách thay vì ngắt dòng.
+# Các truy vấn định rõ boost-templates:"XX" sẽ bỏ qua nội dung của thông điệp này.
+ #</pre> <!-- xin để yên dòng này -->',
 	'cirrussearch-pref-label' => 'Công cụ tìm kiếm mới',
-	'cirrussearch-pref-desc' => 'Sử dụng một công cụ tìm kiếm mới có khả năng tìm văn bản được bung từ bản mẫu, hỗ trợ nhiều ngôn ngữ hơn, và cập nhật nhanh hơn.',
+	'cirrussearch-pref-desc' => 'Thử công cụ tìm kiếm mới hỗ trợ nhiều ngôn ngữ hơn, cung cấp kết quả tức thời hơn, có khả năng tìm văn bản được bung từ bản mẫu.',
 );
 
 /** Simplified Chinese (中文（简体）‎)

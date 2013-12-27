@@ -230,7 +230,7 @@ $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearchHooks::linksUpdateCompletedHo
 $wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearchHooks::searchGetNearMatchBeforeHook';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearchHooks::softwareInfoHook';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearchHooks::specialSearchResultsPrependHook';
-$wgHooks[ 'UnitTestsList' ][] = 'CirrusSearchHooks::unitTestsList';
+$wgHooks[ 'UnitTestsList' ][] = 'CirrusSearchHooks::getUnitTestsList';
 
 /**
  * i18n

@@ -327,7 +327,7 @@ class CirrusSearchSearcher {
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
 		wfProfileOut( __METHOD__ . '-other-filters' );
-		wfProfileIn( __METHOD__ . '-switch-phrase-queries-to-plain' );
+		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
@@ -342,12 +342,15 @@ class CirrusSearchSearcher {
 			} );
 		wfProfileOut( __METHOD__ . '-find-phrase-queries' );
 		wfProfileIn( __METHOD__ . '-switch-prefix-to-plain' );
+		// Find prefix matches and force them to only match against the plain analyzed fields.  This
+		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
+		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
 			function ( $matches ) use ( $showRedirects ) {
 				$term = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array( 'escaped' => CirrusSearchSearcher::switchSearchToExact( $term, $showRedirects ) );
 			} );
-		wfProfileOut( __METHOD__ . '-switch-phrase-queries-to-plain' );
+		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
 		wfProfileIn( __METHOD__ . '-escape' );
 		$escapedQuery = array();
@@ -805,6 +808,7 @@ class CirrusSearchSearcher {
 		if ( $inQuote ) {
 			$string = $string . '"';
 		}
+		wfProfileOut( __METHOD__ );
 		return $string;
 	}
 
@@ -813,6 +817,7 @@ class CirrusSearchSearcher {
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
 	 */
 	public static function fixupWholeQueryString( $string ) {
+		wfProfileIn( __METHOD__ );
 		// Turn bad fuzzy searches into searches that contain a ~
 		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
 			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {

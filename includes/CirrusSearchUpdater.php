@@ -2,7 +2,7 @@
 /**
  * Performs updates and deletes on the Elasticsearch index.  Called by
  * CirrusSearch.body.php (our SearchEngine implementation), forceSearchIndex
- * (for bulk updates), and hooked into LinksUpdate (for implied updates).
+ * (for bulk updates), and CirrusSearch's jobs.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

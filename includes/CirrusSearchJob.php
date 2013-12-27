@@ -22,6 +22,12 @@ abstract class CirrusSearchJob extends Job {
 		// eg: CirrusSearchDeletePagesJob -> cirrusSearchDeletePages
 		$jobName = lcfirst( str_replace( 'Job', '', get_class( $this ) ) );
 		parent::__construct( $jobName, $title, $params, $id );
+
+		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it
+		// is ok to remove duplicate _unclaimed_ cirrus jobs.  Once a cirrus job is claimed
+		// it can't be deduplicated or else the search index will end up with out of date
+		// data.  Luckily, this is how the JobQueue implementations work.
+		$this->removeDuplicates = true;
 	}
 
 	/**

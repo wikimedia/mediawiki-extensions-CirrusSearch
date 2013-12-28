@@ -48,6 +48,7 @@ See also
 /** Message documentation (Message documentation)
  * @author Kunal Mehta
  * @author Shirayuki
+ * @author Siebrand
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
@@ -58,6 +59,8 @@ $messages['qqq'] = array(
 	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
+	'cirrussearch-file-contents-match' => 'Parameters:
+* $1 is a part of the text extracted from the file that was found to match the search criteria.',
 );
 
 /** Arabic (العربية)
@@ -203,6 +206,22 @@ Externí odkazy
 Související články
 Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
+	'cirrussearch-boost-templates' => ' #<!-- tuto řádku ponechte přesně takto --> <pre>
+# Pokud stránka obsahuje jednu z těchto šablon, je její vyhledávací skóre vynásobeno nastaveným procentem.
+# Změny této stránky se projeví okamžitě.
+# Syntax je následující:
+#   * Všechno od znaku „#“ do konce řádky je komentář.
+#   * Každý neprázdný řádek je přesný název šablony, která se má bonifikovat, včetně jmenného prostoru, přesné velikosti písmen a tak, následovaný znakem „|“ následovaný číslem následovaným znakem „%“.
+# Příklad správných řádek:
+# Šablona:Dobré|150%
+# Šablona:Velmi velmi dobré|300%
+# Šablona:Špatné|50%
+# Příklady nefunkčních řádek:
+# Šablona:Foo|150.234234% <-- desetinná tečka/čárka není dovolena!
+# Foo|150% <--- technicky vzato funguje, ale pro vložení stránky Foo v hlavním jmenném prostoru
+# Změny konfigurace můžete otestovat vyhledávacím dotazem, před který uvedete boost-templates:"XX", kde XX je seznam všech šablon, které chcete bonifikovat, oddělené mezerou místo konce řádky.
+# Dotazy uvádějící boost-templates:"XX" ignorují obsah tohoto pole.
+#</pre> <!-- tuto řádku ponechte přesně takto -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
 	'cirrussearch-pref-desc' => 'Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.',
 );
@@ -235,6 +254,7 @@ Kilder
 /** German (Deutsch)
  * @author Kghbln
  * @author Metalhead64
+ * @author Michawiki
  */
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Ermöglicht eine „elasticsearch“-gestütze Suche',
@@ -255,7 +275,7 @@ Siehe auch
 # Falls eine Seite eine dieser Vorlagen enthält, wird der Such-Score mit dem konfigurierten Prozentsatz multipliziert.
 # Änderungen werden sofort wirksam.
 # Syntax:
-#   * Alles ab einem Sternchen „#“ bis zum Zeilenende ist ein Kommentar.
+#   * Alles ab einer Raute („#“) bis zum Zeilenende ist ein Kommentar.
 #   * Jede nicht-leere Zeile ist der genaue Name der zu optimierenden Vorlage mit Namensraum und Unterscheidung zwischen Groß-/Kleinschreibung, gefolgt von einem Pipe-Symbol („|“), einer Zahl und einem Prozentzeichen („%“).
 # Beispiele funktionierender Zeilen:
 # Vorlage:Gut|150%
@@ -269,6 +289,7 @@ Siehe auch
  #</pre> <!-- Diese Zeile nicht verändern. -->',
 	'cirrussearch-pref-label' => 'Neue Suche',
 	'cirrussearch-pref-desc' => 'Teste unsere neue Suchmaschine, die eine größere Anzahl an Sprachen unterstützt, aktuellere Ergebnisse liefert und auch Text innerhalb Vorlagen finden kann.',
+	'cirrussearch-file-contents-match' => 'Dateiinhaltstreffer: $1',
 );
 
 /** Swiss High German (Schweizer Hochdeutsch)
@@ -285,6 +306,36 @@ $messages['dsb'] = array(
 	'cirrussearch-desc' => 'Pytanje na zakłaźe "elasticsearch" za MediaWiki',
 	'cirrussearch-backend-error' => 'Twójo pytanje njedajo se nachylnego problema dla skóńcyś. Pšosym wopytaj pózdźej hyšći raz.',
 	'cirrussearch-now-using' => 'Toś ten wiki wužywa nowu pytnicu ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalšne informacije]])',
+	'cirrussearch-ignored-headings' => ' #<!-- njezměń toś tu smužku --> <pre>
+# Nadpisma, kótarež pytanje ignorěrujo.
+# Toś te změny budu se wustatkowaś, za tym až bok jo se indicěrował.
+# Móžoš indicěrowanje bokow wunuźiś, z tym až pśewjedujoš proznu změnu.
+# Syntaksa:
+#   * Wšykno, což slědujo znamušku "#" až do kóńca smužki, jo komentar
+#   * Kuzda njeprozna smužka jo eksaktny titel, kótaryž ma se ignorěrowaś
+Žrědła
+Eksterne wótkaze
+Glědaj teke
+ #</pre> <!-- njezměń toś tu smužku -->',
+	'cirrussearch-boost-templates' => ' #<!-- Njezměń toś tu smužku. --> <pre>
+# Jolic bok wopśimujo jadnu z toś tych pśedłogow, buźo se pytańske pogódnośenje z konfigurěrowaneju procentoweju sajźbu multiplicěrowaś.
+# Změny se ned wustatkuju.
+# Syntaksa:
+#   * Wšykno za znamuškom „#“ až do kóńca smužki jo komentar.
+#   * Kužda njeprozna smužka jo eksaktne mě pśedłogi, kótaraž ma se optiměrowaś, z mjenjowym rumom, wjelikopisanim, jo wšykno, slědowane pśez znamuško "|", licbu a znamuško "%".
+# Pśikłady funkcioněrujucych smužkow:
+# Pśedłoga:Dobry|150%
+# Pśedłoga:Wjelgin dobry|300%
+# Pśedłoga:Špatny|50%
+# Pśikłady njefunkcioněrujucych smužkow:
+# Pśedłoga:Foo|150.234234% <-- Decimalne městna njejsu dowólone!
+# Foo|150% <-- Techniski móžno, ale za zapśěgowanja boka "Foo" z głownego mjenjowego ruma.
+# Móžoš konfiguraciju pśez napšašowanje z prefiksom boost-templates:"XX"" testowaś, pśi comž XX stoj za wšykne pśedłogi, kótarež coš optiměrowaś, źělone pśez prozne znamje město łamanja smužki.
+# Napšašowanja z boost-templates:"XX" ignorěruju wopśimjeśe toś togo póla.
+ #</pre> <!-- Njezměń toś tu smužku. -->',
+	'cirrussearch-pref-label' => 'Nowe pytanje',
+	'cirrussearch-pref-desc' => 'Wopytaj našo nowe pytanje, kótarež pódpěra wětšu licbu rěcow, pódawa aktualnjejše wuslědki a móžo samo tekst w pśedłogacj namakaś.',
+	'cirrussearch-file-contents-match' => 'Trjefaŕ datajowego wopśimjeśa: $1',
 );
 
 /** Spanish (español)
@@ -437,6 +488,7 @@ Hlej tež
  #</pre> <!-- Njezměń tutu linku. -->',
 	'cirrussearch-pref-label' => 'Nowe pytanje',
 	'cirrussearch-pref-desc' => 'Spytaj naše nowe pytanje, kotrež podpěruje wjetšu ličbu rěčow, podawa bóle aktualne wuslědki a móže samo tekst znutřka předłohow namakać.',
+	'cirrussearch-file-contents-match' => 'Wotpowědnik datajoweho wobsaha: $1',
 );
 
 /** Interlingua (interlingua)
@@ -493,6 +545,7 @@ $messages['ja'] = array(
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 	'cirrussearch-pref-label' => '新規検索',
 	'cirrussearch-pref-desc' => '数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用',
+	'cirrussearch-file-contents-match' => 'ファイルの内容との一致: $1',
 );
 
 /** Korean (한국어)
@@ -500,7 +553,7 @@ $messages['ja'] = array(
  * @author 아라
  */
 $messages['ko'] = array(
-	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
+	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch가 공급하는 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.',
 	'cirrussearch-now-using' => '이 위키는 새로운 검색 엔진을 사용합니다. ([[mw:Special:MyLanguage/Help:CirrusSearch|더 알아보기]])',
 	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
@@ -519,7 +572,8 @@ $messages['ko'] = array(
 함께 보기
  #</pre> <!-- 이 줄은 그대로 두십시오 -->',
 	'cirrussearch-pref-label' => '새 검색',
-	'cirrussearch-pref-desc' => '확장된 틀 검색, 더 많은 언어 지원, 더 빠른 업데이트를 지원하는 새로운 검색 엔진을 사용합니다.',
+	'cirrussearch-pref-desc' => '언어의 더 많은 수를 지원하고, 더 최신의 결과를 제공하고, 심지어 틀의 안쪽의 텍스트를 찾을 수 있는 우리의 새 검색을 시도합니다.',
+	'cirrussearch-file-contents-match' => '파일 내용 일치: $1',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
@@ -612,6 +666,7 @@ Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
 	'cirrussearch-pref-desc' => 'Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.',
+	'cirrussearch-file-contents-match' => 'Gevonden in de bestandsinhoud: $1',
 );
 
 /** Occitan (occitan)
@@ -761,6 +816,7 @@ $messages['uk'] = array(
  #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
 	'cirrussearch-pref-label' => 'Новий пошук',
 	'cirrussearch-pref-desc' => 'Спробуйте наш новий пошук, який підтримує більше число мов, надає більше оновлених результатів і навіть може шукати текст всередині шаблону.',
+	'cirrussearch-file-contents-match' => 'Збіг вмісту файлу: $1',
 );
 
 /** Vietnamese (Tiếng Việt)

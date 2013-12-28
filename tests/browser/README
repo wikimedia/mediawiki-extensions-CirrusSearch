@@ -26,47 +26,70 @@ them all all permissions.  You can do this by running this script from your
 mediawiki directory:
  php maintenance/createAndPromote.php --force --sysop Selenium_user selenium123
 
-You can override the password by creating /private/wmf/secret.yml or
-config/secret.yml in the format:
- mediawiki_username: Selenium_user
- mediawiki_password: selenium123
-While you could technically just change config.yml that wouldn't be a good idea
-because it'd be too easy to accidentally commit your password.
+Back on the machine that will be running the tests you'll have to setup the
+environment variables that contain connection information.  In bash you'd do
+this:
+ export MEDIAWIKI_USER=Selenium_user
+ export MEDIAWIKI_PASSWORD=selenium123
+ export MEDIAWIKI_URL=http://<url>/wiki/
 
-Some tests use instant commans.  You should make sure mediawiki is configured
-to allow this.  If you are using this:
-https://wikitech.wikimedia.org/wiki/Help:Single_Node_MediaWiki
-then you'll just need to switch
- $wgUseInstantCommons = false;
-to
- $wgUseInstantCommons = true;
-in orig/LocalSettings.php
-
-And some tests require Ogg support.  Install it too....  On single node
-mediawiki you can do this:
- pushd /srv/
+You'll have to install a bunch of plugins and set up the search index for all
+the tests to pass.  In bash you'd do this (assuming your mediawiki install path
+is /srv/mediawiki and you are using debian/ubuntu):
+ export MW_INSTALL_PATH=/srv/mediawiki
+ pushd $MW_INSTALL_PATH/..
+ if [ ! -d Elastica ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Elastica; fi
+ pushd Elastica
+ git submodule update --init --recursive
+ popd
+ if [ ! -d CirrusSearch ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CirrusSearch; fi
  if [ ! -d TimedMediaHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler; fi
  if [ ! -d MwEmbedSupport ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/MwEmbedSupport; fi
- if [ ! -d PdfHander ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/PdfHander; fi
+ if [ ! -d PdfHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/PdfHandler; fi
  pushd mediawiki/extensions
+ if [ ! -d Elastica ]; then ln -s ../../Elastica; fi
+ if [ ! -d CirrusSearch ]; then ln -s ../../CirrusSearch; fi
  if [ ! -d TimedMediaHandler ]; then ln -s ../../TimedMediaHandler; fi
  if [ ! -d MwEmbedSupport ]; then ln -s ../../MwEmbedSupport; fi
- if [ ! -d PdfHander ]; then ln -s ../../PdfHander; fi
+ if [ ! -d PdfHandler ]; then ln -s ../../PdfHandler; fi
  sudo su -c 'crontab -u www-data -l' > /tmp/www-data-crontab
  echo '* * * * * php /srv/mediawiki/maintenance/runJobs.php --type webVideoTranscode --maxjobs 1 >> /tmp/mw-transcode-log' >> /tmp/www-data-crontab
  echo '0 0 * * * rm /tmp/mw-transcode-log' >> /tmp/www-data-crontab
  sort /tmp/www-data-crontab | uniq | sudo su -c 'crontab -u www-data -'
  rm /tmp/www-data-crontab
- sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils
+ sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils php5-curl
  popd
+ php CirrusSearch/maintenance/updateSearchIndexConfig.php
+ php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
+ php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipParse
  popd
-Then add this to your localsettings:
+ sudo /etc/init.d/apache2 restart
+
+
+Then add this to your LocalSettings.php:
+ require( "$IP/extensions/Elastica/Elastica.php" );
+ require( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
  require( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
  require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
  require_once("$IP/extensions/PdfHandler/PdfHandler.php");
+ $wgSearchType = 'CirrusSearch';
  $wgOggThumbLocation = '/usr/bin/oggThumb';
  $wgGroupPermissions['*']['deleterevision'] = true;
  $wgFileExtensions[] = 'pdf';
+ $wgShowExceptionDetails = true;
+ $wgDebugLogFile = '/tmp/mw-log';
+
+Replace:
+ $wgUseInstantCommons = false
+with
+ $wgUseInstantCommons = true;
+and replace:
+ $wgEnableUploads = false
+with
+ $wgEnableUploads = true;
+
+And add an Elasticsearch server, for example:
+ $wgCirrusSearchServers = array( '10.4.1.52' );
 
 
 Running

@@ -45,39 +45,6 @@ Feature: Full text search
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |
 
-  @suggestions
-  Scenario: Common phrases spelled incorrectly get suggestions
-    When I search for popular cultur
-    Then popular *culture* is suggested
-
-  @suggestions
-  Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
-    When I search for noble prize
-    Then *nobel* prize is suggested
-
-  @suggestions
-  Scenario: Uncommon phrases spelled correctly don't get suggestions even if one of the words is very uncommon
-    When I search for nobel prize
-    Then there is no suggestion
-
-  @suggestions
-  Scenario: Suggestions can come from redirect titles when redirects are included in search
-    When I search for Rrr Ward
-    Then rrr *word* is suggested
-
-  @suggestions
-  Scenario: Suggestions don't come from redirect titles when redirects are not included in search
-    Given I am at the search results page
-    And I click the Advanced link
-    And I click the List redirects label
-    When I search for Rrr Ward
-    Then there is no suggestion
-
-  @suggestions
-  Scenario: When the search contains a namespace prefix the suggestion should also contain that prefix
-    When I search for Template:nobel piep
-    Then Template:*noble pipe* is suggested
-
   @setup_weight
   Scenario: Page weight include redirects
     When I search for TestWeight

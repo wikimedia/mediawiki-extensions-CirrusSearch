@@ -224,6 +224,7 @@ Související stránky
 #</pre> <!-- tuto řádku ponechte přesně takto -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
 	'cirrussearch-pref-desc' => 'Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.',
+	'cirrussearch-file-contents-match' => 'Odpovídající obsah souboru: $1',
 );
 
 /** Danish (dansk)
@@ -633,6 +634,7 @@ $messages['mk'] = array(
  #</pre> <!-- не менувајте го овој ред -->',
 	'cirrussearch-pref-label' => 'Ново пребарување',
 	'cirrussearch-pref-desc' => 'Пробајте го нашето ново пребарување кое поддржува поголем број јазици, дава потековни и понавремени резултати, па дури и наоѓа текст во шаблони.',
+	'cirrussearch-file-contents-match' => 'Совпадната содржина на податотеката: $1',
 );
 
 /** Malay (Bahasa Melayu)

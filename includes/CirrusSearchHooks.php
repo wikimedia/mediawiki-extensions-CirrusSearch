@@ -56,7 +56,8 @@ class CirrusSearchHooks {
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
-			$wgHooks['PrefixSearchBackend'][] = 'CirrusSearchHooks::prefixSearch';
+			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearchHooks::prefixSearch';
+			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearchHooks::searchGetNearMatchBeforeHook';
 		}
 	}
 

@@ -241,5 +241,6 @@ $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
  */
 $wgJobClasses[ 'cirrusSearchDeletePages' ] = 'CirrusSearchDeletePagesJob';
 $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearchLinksUpdateJob';
+$wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearchLinksUpdateJob';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearchOtherIndexJob';
 $wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearchUpdatePagesJob';

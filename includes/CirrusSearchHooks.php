@@ -152,11 +152,17 @@ class CirrusSearchHooks {
 	 * @return bool
 	 */
 	public static function linksUpdateCompletedHook( $linksUpdate ) {
-		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), array(
+		$params = array(
 			'addedLinks' => $linksUpdate->getAddedLinks(),
 			'removedLinks' => $linksUpdate->getRemovedLinks(),
 			'primary' => true,
-		) );
+		);
+		// Prioritize jobs that are triggered from a web process.  This should prioritize
+		// single page update jobs over those triggered by template changes.
+		if ( PHP_SAPI != 'cli' ) {
+			$params[ 'prioritize' ] = true;
+		}
+		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), $params );
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}

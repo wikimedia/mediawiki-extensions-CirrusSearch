@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Extensions to ForeController to prepare Elastica and to tell the child
  * process which one it is.

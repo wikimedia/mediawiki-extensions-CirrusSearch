@@ -1,7 +1,12 @@
 <?php
+
+namespace CirrusSearch;
+use \HtmlFormatter;
+use \ParserOutput;
+use \Sanitizer;
+
 /**
- * Job wrapper around CirrusSearchUpdater::deletePages.  Used by
- * CirrusSearch.body.php.
+ * Gets formatted article text from titles.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +23,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchDeletePagesJob extends CirrusSearchJob {
+class TextFormatter extends HtmlFormatter {
 	/**
-	 * Build this job for just one title.
-	 * @param $title Title title
-	 * @param $id int article id of title
+	 * Get text to index from a ParserOutput assuming the content was wikitext.
+	 *
+	 * @param ParserOutput $po
+	 * @return formatted text from the provided parser output
 	 */
-	public static function build( $title, $id ) {
-		return new CirrusSearchDeletePagesJob( $title, array( 'id' => $id ) );
-	}
-
-	protected function doJob() {
-		global $wgCirrusSearchClientSideUpdateTimeout;
-
-		CirrusSearchUpdater::deletePages( array( $this->title ),
-			array( $this->params[ 'id' ] ), $wgCirrusSearchClientSideUpdateTimeout );
+	public static function formatWikitext( ParserOutput $po ) {
+		$po->setEditSectionTokens( false );
+		$formatter = new self( $po->getText() );
+		$formatter->remove( array( 'audio', 'video', '#toc' ) );
+		$formatter->filterContent();
+		return trim( Sanitizer::stripAllTags( $formatter->getText() ) );
 	}
 }

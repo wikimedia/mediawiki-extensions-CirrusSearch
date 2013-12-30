@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \Title;
+
 /**
  * Tracks whether a Title is known on other indexes.
  *
@@ -17,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchOtherIndexes {
+class OtherIndexes {
 	/**
 	 * Get the external index identifiers for title.
 	 * @param $title Title

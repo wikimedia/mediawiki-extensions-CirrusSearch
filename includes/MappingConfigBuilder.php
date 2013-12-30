@@ -1,4 +1,7 @@
 <?php
+
+namespace CirrusSearch;
+
 /**
  * Builds elasticsearch mapping configuration arrays.
  *
@@ -17,12 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchMappingConfigBuilder {
+class MappingConfigBuilder {
 	/**
 	 * @return array
 	 */
 	public static function build() {
-		$builder = new CirrusSearchMappingConfigBuilder();
+		$builder = new MappingConfigBuilder();
 		return $builder->buildConfig();
 	}
 

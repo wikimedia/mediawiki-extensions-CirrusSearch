@@ -1,4 +1,11 @@
 <?php
+
+namespace CirrusSearch;
+use \JobQueueGroup;
+use \Title;
+use \WikiPage;
+use \Xml;
+
 /**
  * All CirrusSearch's hooks.
  *
@@ -17,7 +24,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchHooks {
+class Hooks {
 	/**
 	 * Hooked to call initialize after the user is set up.
 	 * @return bool
@@ -33,7 +40,7 @@ class CirrusSearchHooks {
 	 * @return bool
 	 */
 	public static function apiBeforeMainHook( $apiMain ) {
-		self::initializeForUser( RequestContext::getMain()->getUser() );
+		self::initializeForUser( $apiMain->getUser() );
 		return true;
 	}
 
@@ -56,8 +63,8 @@ class CirrusSearchHooks {
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
-			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearchHooks::prefixSearch';
-			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearchHooks::searchGetNearMatchBeforeHook';
+			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
+			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::searchGetNearMatchBeforeHook';
 		}
 	}
 
@@ -72,7 +79,7 @@ class CirrusSearchHooks {
 	public static function articleDeleteCompleteHook( $page, $user, $reason, $id ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
-		JobQueueGroup::singleton()->push( CirrusSearchDeletePagesJob::build(
+		JobQueueGroup::singleton()->push( DeletePagesJob::build(
 			$page->getTitle(), $id ) );
 	}
 
@@ -88,7 +95,7 @@ class CirrusSearchHooks {
 	public static function onRevisionDelete( $title ) {
 		$page = WikiPage::factory( $title );
 		JobQueueGroup::singleton()->push(
-			CirrusSearchUpdatePagesJob::build( array( $page ), true, CirrusSearchUpdater::INDEX_EVERYTHING )
+			UpdatePagesJob::build( array( $page ), true, Updater::INDEX_EVERYTHING )
 		);
 	}
 
@@ -98,7 +105,7 @@ class CirrusSearchHooks {
 	 * @return bool
 	 */
 	public static function softwareInfoHook( $software ) {
-		$version = CirrusSearchSearcher::getElasticsearchVersion();
+		$version = Searcher::getElasticsearchVersion();
 		if ( $version->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
 			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();
@@ -162,7 +169,7 @@ class CirrusSearchHooks {
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
 		}
-		$job = new CirrusSearchLinksUpdateJob( $linksUpdate->getTitle(), $params );
+		$job = new LinksUpdateJob( $linksUpdate->getTitle(), $params );
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}
@@ -178,7 +185,7 @@ class CirrusSearchHooks {
 	}
 
 	/**
-	 * Hooked to delegate prefix searching to CirrusSearchSearcher.
+	 * Hooked to delegate prefix searching to Searcher.
 	 * @param int $ns namespace to search
 	 * @param string $search search text
 	 * @param int $limit maximum number of titles to return
@@ -186,8 +193,8 @@ class CirrusSearchHooks {
 	 * @return bool always false because we are the authoritative prefix search
 	 */
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
-		$searcher = new CirrusSearchSearcher( 0, $limit, $ns );
-		$searcher->setResultsType( new CirrusSearchTitleResultsType( true ) );
+		$searcher = new Searcher( 0, $limit, $ns );
+		$searcher->setResultsType( new TitleResultsType( true ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -213,8 +220,8 @@ class CirrusSearchHooks {
 			return false;
 		}
 
-		$searcher = new CirrusSearchSearcher( 0, 1, array( $title->getNamespace() ) );
-		$searcher->setResultsType( new CirrusSearchTitleResultsType( false ) );
+		$searcher = new Searcher( 0, 1, array( $title->getNamespace() ) );
+		$searcher->setResultsType( new TitleResultsType( false ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status

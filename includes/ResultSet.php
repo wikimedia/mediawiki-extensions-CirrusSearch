@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \SearchResultSet;
+
 /**
  * A set of results from Elasticsearch.
  *
@@ -17,13 +21,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchResultSet extends SearchResultSet {
+class ResultSet extends SearchResultSet {
 	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE
+	 * @var string|null lazy built escaped copy of Searcher::SUGGESTION_HIGHLIGHT_PRE
 	 */
 	private static $suggestionHighlightPreEscaped = null;
 	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST
+	 * @var string|null lazy built escaped copy of Searcher::SUGGESTION_HIGHLIGHT_POST
 	 */
 	private static $suggestionHighlightPostEscaped = null;
 
@@ -61,20 +65,20 @@ class CirrusSearchResultSet extends SearchResultSet {
 		$suggest = $suggest[ 'suggest' ];
 		// Elasticsearch will send back the suggest element but no sub suggestion elements if the wiki is empty.
 		// So we should check to see if they exist even though in normal operation they always will.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
+		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_TITLE ] ) ) {
+			foreach ( $suggest[ Searcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
 				return $option;
 			}
 		}
 		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
+		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_REDIRECT ] ) ) {
+			foreach ( $suggest[ Searcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
 				return $option;
 			}
 		}
 		// This suggestion type is optional, configured in LocalSettings.
-		if ( isset( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ] ) ) {
-			foreach ( $suggest[ CirrusSearchSearcher::SUGGESTION_NAME_TEXT ][ 0 ][ 'options' ] as $option ) {
+		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_TEXT ] ) ) {
+			foreach ( $suggest[ Searcher::SUGGESTION_NAME_TEXT ][ 0 ][ 'options' ] as $option ) {
 				return $option;
 			}
 		}
@@ -89,12 +93,12 @@ class CirrusSearchResultSet extends SearchResultSet {
 	private static function escapeHighlightedSuggestion( $suggestion ) {
 		if ( self::$suggestionHighlightPreEscaped === null ) {
 			self::$suggestionHighlightPreEscaped =
-				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE );
+				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_PRE );
 			self::$suggestionHighlightPostEscaped =
-				htmlspecialchars( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST );
+				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_POST );
 		}
 		return str_replace( array( self::$suggestionHighlightPreEscaped, self::$suggestionHighlightPostEscaped ),
-			array( CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_PRE, CirrusSearchSearcher::SUGGESTION_HIGHLIGHT_POST ),
+			array( Searcher::SUGGESTION_HIGHLIGHT_PRE, Searcher::SUGGESTION_HIGHLIGHT_POST ),
 			htmlspecialchars( $suggestion ) );
 	}
 
@@ -126,7 +130,7 @@ class CirrusSearchResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			return new CirrusSearchResult( $this->result, $current );
+			return new Result( $this->result, $current );
 		}
 		return false;
 	}

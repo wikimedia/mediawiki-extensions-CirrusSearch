@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \Job as MWJob;
+
 /**
  * Abstract job class used by all CirrusSearch*Job classes
  *
@@ -17,10 +21,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-abstract class CirrusSearchJob extends Job {
+abstract class Job extends MWJob {
 	public function __construct( $title, $params, $id = 0 ) {
-		// eg: CirrusSearchDeletePagesJob -> cirrusSearchDeletePages
-		$jobName = lcfirst( str_replace( 'Job', '', get_class( $this ) ) );
+		// eg: DeletePagesJob -> cirrusSearchDeletePages
+		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\', '', str_replace( 'Job', '', get_class( $this ) ) );
 		parent::__construct( $jobName, $title, $params, $id );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it

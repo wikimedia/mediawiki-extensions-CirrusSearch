@@ -1,8 +1,12 @@
 <?php
+
+namespace CirrusSearch;
+use \Title;
+use \WikiPage;
+
 /**
- * Job wrapper around CirrusSearchUpdater::updatePages.  Used by
- * forceSearchIndex.php when in job queueing mode and by Cirrus's revision
- * delete hook.
+ * Job wrapper around Updater::updatePages.  Used by forceSearchIndex.php
+ * when in job queueing mode and by Cirrus's revision delete hook.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +23,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchUpdatePagesJob extends CirrusSearchJob {
+class UpdatePagesJob extends Job {
 	public static function build( $pages, $checkFreshness, $updateFlags ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();
@@ -28,7 +32,7 @@ class CirrusSearchUpdatePagesJob extends CirrusSearchJob {
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
-		return new CirrusSearchUpdatePagesJob( Title::newMainPage(), array(
+		return new UpdatePagesJob( Title::newMainPage(), array(
 			'pageDBKeys' => $pageDBKeys,
 			'checkFreshness' => $checkFreshness,
 			'updateFlags' => $updateFlags,
@@ -42,7 +46,7 @@ class CirrusSearchUpdatePagesJob extends CirrusSearchJob {
 			$pageData[] = WikiPage::factory( Title::newFromDBKey( $pageDBKey ) );
 		}
 		// Now invoke the updater!
-		CirrusSearchUpdater::updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
+		Updater::updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
 			$this->params[ 'updateFlags' ] );
 	}
 }

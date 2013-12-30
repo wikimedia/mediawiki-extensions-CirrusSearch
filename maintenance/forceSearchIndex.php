@@ -1,4 +1,10 @@
 <?php
+
+namespace CirrusSearch;
+use \Maintenance;
+use \CirrusSearch;
+use \WikiPage;
+
 /**
  * Force reindexing change to the wiki.
  *
@@ -102,16 +108,16 @@ class ForceSearchIndex extends Maintenance {
 			intval( $this->getOption( 'pauseForJobs' ) ) : $this->maxJobs;
 		$updateFlags = 0;
 		if ( $this->getOption( 'indexOnSkip' ) ) {
-			$updateFlags |= CirrusSearchUpdater::INDEX_ON_SKIP;
+			$updateFlags |= Updater::INDEX_ON_SKIP;
 		}
 		if ( $this->getOption( 'skipParse' ) ) {
-			$updateFlags |= CirrusSearchUpdater::SKIP_PARSE;
+			$updateFlags |= Updater::SKIP_PARSE;
 			if ( !$this->getOption( 'batch-size' ) ) {
 				$this->setBatchSize( 500 );
 			}
 		}
 		if ( $this->getOption( 'skipLinks' ) ) {
-			$updateFlags |= CirrusSearchUpdater::SKIP_LINKS;
+			$updateFlags |= Updater::SKIP_LINKS;
 		}
 		$this->namespace = $this->hasOption( 'namespace' ) ?
 			intval( $this->getOption( 'namespace' ) ) : null;
@@ -182,10 +188,10 @@ class ForceSearchIndex extends Maintenance {
 						}
 					}
 					JobQueueGroup::singleton()->push(
-						CirrusSearchUpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
+						UpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
-					$size = CirrusSearchUpdater::updatePages( $pages, !$this->forceUpdate,
+					$size = Updater::updatePages( $pages, !$this->forceUpdate,
 						null, null, $updateFlags );
 				}
 			} else {
@@ -199,7 +205,7 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $lastDelete[ 'timestamp' ];
 				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
 				$minTitle = $lastDelete[ 'title' ]->getText();
-				CirrusSearchUpdater::deletePages( $titlesToDelete, $idsToDelete );
+				Updater::deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -290,7 +296,7 @@ class ForceSearchIndex extends Maintenance {
 		wfProfileIn( __METHOD__ . '::decodeResults' );
 		$result = array();
 		foreach ( $res as $row ) {
-			// No need to call CirrusSearchUpdater::traceRedirects here because we know this is a valid page because
+			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
 			$content = $page->getContent();
@@ -308,14 +314,14 @@ class ForceSearchIndex extends Maintenance {
 				} else {
 					// We found a redirect.  Great.  Since we can't index special pages and redirects to special pages
 					// are totally possible, as well as fun stuff like redirect loops, we need to use
-					// CirrusSearchUpdater's redirect tracing logic which is very complete.  Also, it returns null on
+					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 					// self redirects.  Great!
-					$page = CirrusSearchUpdater::traceRedirects( $page->getTitle() );
+					$page = Updater::traceRedirects( $page->getTitle() );
 					// The cost of using the fancy redirect handling logic is that we have to clear some global state
 					// that cirrus maintains to prevent duplicate in process updates and to catch redirect loops.
 					// We could use the deplicate prevention, but we can't afford to let a global array grow without
 					// bounds, so clear it.
-					CirrusSearchUpdater::clearUpdated();
+					Updater::clearUpdated();
 				}
 			}
 			$update = array(
@@ -420,5 +426,5 @@ class ForceSearchIndex extends Maintenance {
 	}
 }
 
-$maintClass = "ForceSearchIndex";
+$maintClass = "CirrusSearch\ForceSearchIndex";
 require_once RUN_MAINTENANCE_IF_MAIN;

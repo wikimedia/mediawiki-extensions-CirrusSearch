@@ -1,7 +1,16 @@
 <?php
+
+namespace CirrusSearch;
+use \MWTimestamp;
+use \ParserCache;
+use \SearchUpdate;
+use \Sanitizer;
+use \Title;
+use \WikiPage;
+
 /**
  * Performs updates and deletes on the Elasticsearch index.  Called by
- * CirrusSearch.body.php (our SearchEngine implementation), forceSearchIndex
+ * CirrusSearch.php (our SearchEngine implementation), forceSearchIndex
  * (for bulk updates), and CirrusSearch's jobs.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,7 +28,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchUpdater {
+class Updater {
 	// Bit field parameters for updatePages et al.
 	const INDEX_EVERYTHING = 0;
 	const INDEX_ON_SKIP = 1;
@@ -146,7 +155,7 @@ class CirrusSearchUpdater {
 		wfProfileIn( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {
-			CirrusSearchConnection::setTimeout( $clientSideTimeout );
+			Connection::setTimeout( $clientSideTimeout );
 		}
 		if ( $checkFreshness ) {
 			// TODO I bet we can do this with a multi-get
@@ -160,11 +169,11 @@ class CirrusSearchUpdater {
 			$freshPages = $pages;
 		}
 
-		CirrusSearchOtherIndexJob::queueIfRequired( self::pagesToTitles( $pages ), true );
+		OtherIndexJob::queueIfRequired( self::pagesToTitles( $pages ), true );
 
-		$allDocuments = array_fill_keys( CirrusSearchConnection::getAllIndexTypes(), array() );
+		$allDocuments = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( self::buildDocumentForPages( $freshPages, $flags ) as $document ) {
-			$suffix = CirrusSearchConnection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
+			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
 		$count = 0;
@@ -189,10 +198,10 @@ class CirrusSearchUpdater {
 	public static function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		wfProfileIn( __METHOD__ );
 
-		CirrusSearchOtherIndexJob::queueIfRequired( $titles, false );
+		OtherIndexJob::queueIfRequired( $titles, false );
 
 		if ( $clientSideTimeout !== null ) {
-			CirrusSearchConnection::setTimeout( $clientSideTimeout );
+			Connection::setTimeout( $clientSideTimeout );
 		}
 		self::sendDeletes( $ids );
 
@@ -200,7 +209,7 @@ class CirrusSearchUpdater {
 	}
 
 	private static function isFresh( $page ) {
-		$searcher = new CirrusSearchSearcher( 0, 0, array( $page->getTitle()->getNamespace() ) );
+		$searcher = new Searcher( 0, 0, array( $page->getTitle()->getNamespace() ) );
 		$get = $searcher->get( $page->getTitle()->getArticleId(), array( 'timestamp ') );
 		if ( !$get->isOk() ) {
 			return false;
@@ -235,7 +244,7 @@ class CirrusSearchUpdater {
 
 		$exception = null;
 		try {
-			$pageType = CirrusSearchConnection::getPageType( $indexType );
+			$pageType = Connection::getPageType( $indexType );
 			// The bulk api doesn't support shardTimeout so don't use it if one is set
 			if ( $shardTimeout === null ) {
 				$start = microtime( true );
@@ -292,7 +301,7 @@ class CirrusSearchUpdater {
 
 		$documents = array();
 		$linkCountClosures = array();
-		$linkCountMultiSearch = new \Elastica\Multi\Search( CirrusSearchConnection::getClient() );
+		$linkCountMultiSearch = new \Elastica\Multi\Search( Connection::getClient() );
 		foreach ( $pages as $page ) {
 			wfProfileIn( __METHOD__ . '-basic' );
 			$title = $page->getTitle();
@@ -488,14 +497,14 @@ class CirrusSearchUpdater {
 	private static function buildTextToIndex( $content, $parserOutput ) {
 		switch ( $content->getModel() ) {
 		case CONTENT_MODEL_WIKITEXT:
-			return CirrusSearchTextFormatter::formatWikitext( $parserOutput );
+			return TextFormatter::formatWikitext( $parserOutput );
 		default:
 			return SearchUpdate::updateText( $content->getTextForSearchIndex() );
 		}
 	}
 
 	private static function buildCount( $filter ) {
-		$type = CirrusSearchConnection::getPageType();
+		$type = Connection::getPageType();
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
@@ -609,20 +618,20 @@ MVEL;
 	 * @param array(Title) $titles titles in other indexes to update
 	 */
 	private static function updateOtherIndex( $actionName, $scriptSource, $titles ) {
-		$client = CirrusSearchConnection::getClient();
+		$client = Connection::getClient();
 		$bulk = new \Elastica\Bulk( $client );
 		$updatesInBulk = 0;
 		$localSite = wfWikiId();
 
 		// Build multisearch to find ids to update
-		$findIdsMultiSearch = new \Elastica\Multi\Search( CirrusSearchConnection::getClient() );
+		$findIdsMultiSearch = new \Elastica\Multi\Search( Connection::getClient() );
 		$findIdsClosures = array();
 		foreach ( $titles as $title ) {
-			foreach ( CirrusSearchOtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {
+			foreach ( OtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {
 				if ( $otherIndex === null ) {
 					continue;
 				}
-				$type = CirrusSearchConnection::getPageType( false, $otherIndex );
+				$type = Connection::getPageType( false, $otherIndex );
 				$bool = new \Elastica\Filter\Bool();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
 				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
@@ -748,8 +757,8 @@ MVEL;
 
 		try {
 			$start = microtime( true );
-			foreach ( CirrusSearchConnection::getAllIndexTypes() as $type ) {
-				CirrusSearchConnection::getPageType( $type )
+			foreach ( Connection::getAllIndexTypes() as $type ) {
+				Connection::getPageType( $type )
 					->deleteIds( $ids );
 			}
 			$took = round( ( microtime( true ) - $start ) * 1000 );

@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \Title;
+
 /**
  * Lightweight classes to describe specific result types we can return
  *
@@ -17,13 +21,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-interface CirrusSearchResultsType {
+interface ResultsType {
 	function getFields();
 	function getHighlightingConfiguration();
 	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result );
 }
 
-class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
+class TitleResultsType implements ResultsType {
 	private $getText;
 
 	/**
@@ -53,7 +57,7 @@ class CirrusSearchTitleResultsType implements CirrusSearchResultsType {
 	}
 }
 
-class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
+class FullTextResultsType implements ResultsType {
 	public function getFields() {
 		return array( 'id', 'title', 'namespace', 'redirect', 'text_bytes', 'text_words' );
 	}
@@ -90,8 +94,8 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 
 		return array(
 			'order' => 'score',
-			'pre_tags' => array( CirrusSearchSearcher::HIGHLIGHT_PRE ),
-			'post_tags' => array( CirrusSearchSearcher::HIGHLIGHT_POST ),
+			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
+			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(
 				'title' => $entireValue,
 				'text' => $text,
@@ -108,6 +112,6 @@ class CirrusSearchFullTextResultsType implements CirrusSearchResultsType {
 	}
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
-		return new CirrusSearchResultSet( $suggestPrefixes, $suggestSuffixes, $result );
+		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result );
 	}
 }

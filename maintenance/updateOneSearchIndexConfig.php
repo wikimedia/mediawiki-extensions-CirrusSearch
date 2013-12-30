@@ -1,5 +1,8 @@
-
 <?php
+
+namespace CirrusSearch;
+use \Maintenance;
+
 /**
  * Update the search configuration on the search backend.
  *
@@ -24,6 +27,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+
 /**
  * Update the elasticsearch configuration for this index.
  */
@@ -116,7 +120,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		try{
 			$this->indexType = $this->getOption( 'indexType' );
-			$indexTypes = CirrusSearchConnection::getAllIndexTypes();
+			$indexTypes = Connection::getAllIndexTypes();
 			if ( !in_array( $this->indexType, $indexTypes ) ) {
 				$this->error( 'indexType option must be one of ' .
 					implode( ', ', $indexTypes ), 1 );
@@ -207,7 +211,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . "Validating analyzers..." );
 		$settingsObject = $this->getIndex()->getSettings();
 		$settings = $settingsObject->get();
-		$requiredAnalyzers = CirrusSearchAnalysisConfigBuilder::build();
+		$requiredAnalyzers = AnalysisConfigBuilder::build();
 		if ( $this->vaActualMatchRequired( 'index.analysis', $settings, $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
@@ -257,7 +261,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$actualMappings = $actualMappings[ $this->getIndex()->getName() ];
 
 		$this->output( $this->indent . "\tValidating mapping for page type..." );
-		$requiredPageMappings = CirrusSearchMappingConfigBuilder::build();
+		$requiredPageMappings = MappingConfigBuilder::build();
 		if ( array_key_exists( 'page', $actualMappings ) &&
 				$this->vmActualMatchRequired( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
 			$this->output( "ok\n" );
@@ -328,11 +332,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . "\tValidating $this->indexType alias..." );
 		$otherIndeciesWithAlias = array();
 		$specificAliasName = $this->getIndexTypeName();
-		$status = CirrusSearchConnection::getClient()->getStatus();
+		$status = Connection::getClient()->getStatus();
 		if ( $status->indexExists( $specificAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				CirrusSearchConnection::getClient()
+				Connection::getClient()
 					->getIndex( $this->indexBaseName, $specificAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
@@ -384,7 +388,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$path = "_cluster/health/$indexName";
 				$each = 0;
 				while ( true ) {
-					$response = CirrusSearchConnection::getClient()->request( $path );
+					$response = Connection::getClient()->request( $path );
 					if ( $response->hasError() ) {
 						$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
 						sleep( 1 );
@@ -422,12 +426,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function validateAllAlias() {
 		$this->output( $this->indent . "\tValidating all alias..." );
-		$allAliasName = CirrusSearchConnection::getIndexName( $this->indexBaseName );
-		$status = CirrusSearchConnection::getClient()->getStatus();
+		$allAliasName = Connection::getIndexName( $this->indexBaseName );
+		$status = Connection::getClient()->getStatus();
 		if ( $status->indexExists( $allAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				CirrusSearchConnection::getClient()->getIndex( $allAliasName )->delete();
+				Connection::getClient()->getIndex( $allAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
@@ -458,7 +462,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$data['action'][] = array( 'remove' => array( 'index' => $oldIndex, 'alias' => $allAliasName ) );
 			}
 		}
-		CirrusSearchConnection::getClient()->request( '_aliases', \Elastica\Request::POST, $data );
+		Connection::getClient()->request( '_aliases', \Elastica\Request::POST, $data );
 		$this->output( "corrected\n" );
 	}
 
@@ -467,7 +471,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . "\tRemoving old indecies...\n" );
 			foreach ( $this->removeIndecies as $oldIndex ) {
 				$this->output( $this->indent . "\t\t$oldIndex..." );
-				CirrusSearchConnection::getClient()->getIndex( $oldIndex )->delete();
+				Connection::getClient()->getIndex( $oldIndex )->delete();
 				$this->output( "done\n" );
 			}
 		}
@@ -484,7 +488,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
-			$fork = new CirrusSearchReindexForkController( $this->reindexProcesses );
+			$fork = new ReindexForkController( $this->reindexProcesses );
 			$forkResult = $fork->start();
 			switch ( $forkResult ) {
 			case 'child':
@@ -499,7 +503,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . "Verifying counts..." );
 			// We can't verify counts are exactly equal because they won't be - we still push updates into
 			// the old index while reindexing the new one.
-			$oldCount = (float) CirrusSearchConnection::getPageType( $this->indexType )->count();
+			$oldCount = (float) Connection::getPageType( $this->indexType )->count();
 			$this->getIndex()->refresh();
 			$newCount = (float) $this->getPageType()->count();
 			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
@@ -536,7 +540,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$filter = new Elastica\Filter\Script(
 				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
 		}
-		$pageProperties = CirrusSearchMappingConfigBuilder::build();
+		$pageProperties = MappingConfigBuilder::build();
 		$pageProperties = $pageProperties[ 'properties' ];
 		try {
 			$query = new Elastica\Query();
@@ -545,8 +549,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$query->setFilter( $filter );
 			}
 
-			// Note here we dump from the current index (using the alias) so we can use CirrusSearchConnection::getPageType
-			$result = CirrusSearchConnection::getPageType( $this->indexType )->search( $query, array(
+			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
+			$result = Connection::getPageType( $this->indexType )->search( $query, array(
 				'search_type' => 'scan',
 				'scroll' => '1h',
 				'size'=> $this->reindexChunkSize,
@@ -601,7 +605,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
 				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
-				'analysis' => CirrusSearchAnalysisConfigBuilder::build(),
+				'analysis' => AnalysisConfigBuilder::build(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
 			)
@@ -629,7 +633,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . 'Infering index identifier...' );
 			$found = null;
 			$moreThanOne = array();
-			foreach ( CirrusSearchConnection::getClient()->getStatus()->getIndexNames() as $name ) {
+			foreach ( Connection::getClient()->getStatus()->getIndexNames() as $name ) {
 				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
 					$found[] = $name;
 				}
@@ -658,28 +662,28 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \Elastica\Index being updated
 	 */
 	private function getIndex() {
-		return CirrusSearchConnection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+		return Connection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index being updated
 	 */
 	private function getSpecificIndexName() {
-		return CirrusSearchConnection::getIndexName( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+		return Connection::getIndexName( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index type being updated
 	 */
 	private function getIndexTypeName() {
-		return CirrusSearchConnection::getIndexName( $this->indexBaseName, $this->indexType );
+		return Connection::getIndexName( $this->indexBaseName, $this->indexType );
 	}
 
 	/**
 	 * Get the type being updated by the search config.
 	 */
 	private function getPageType() {
-		return $this->getIndex()->getType( CirrusSearchConnection::PAGE_TYPE_NAME );
+		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
 	}
 
 	private function getShardCount() {
@@ -708,7 +712,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return array(\Elastica\Index) of index names
 	 */
 	private function getIndicesWithAlias( $alias ) {
-		$client = CirrusSearchConnection::getClient();
+		$client = Connection::getClient();
 		$response = null;
 		try {
 			$response = $client->request( "/_alias/$alias" );
@@ -740,5 +744,5 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 }
 
-$maintClass = "UpdateOneSearchIndexConfig";
+$maintClass = "CirrusSearch\UpdateOneSearchIndexConfig";
 require_once RUN_MAINTENANCE_IF_MAIN;

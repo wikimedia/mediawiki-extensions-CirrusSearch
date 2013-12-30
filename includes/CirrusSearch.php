@@ -1,4 +1,7 @@
 <?php
+
+use CirrusSearch\Searcher;
+
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
  * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.  Note
@@ -45,12 +48,12 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * Overridden to delegate prefix searching to CirrusSearchSearcher.
+	 * Overridden to delegate prefix searching to Searcher.
 	 * @param string $term text to search
-	 * @return CirrusSearchResultSet|null|Status results, no results, or error respectively
+	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
-		$searcher = new CirrusSearchSearcher( $this->offset, $this->limit, $this->namespaces );
+		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {

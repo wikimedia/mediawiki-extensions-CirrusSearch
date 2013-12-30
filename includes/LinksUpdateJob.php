@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \JobQueueGroup;
+
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
  * completed.  The page itself is updated first then a second copy of this job
@@ -24,7 +28,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchLinksUpdateJob extends CirrusSearchJob {
+class LinksUpdateJob extends Job {
 	public function __construct( $title, $params, $id = 0 ) {
 		parent::__construct( $title, $params, $id );
 
@@ -38,7 +42,7 @@ class CirrusSearchLinksUpdateJob extends CirrusSearchJob {
 
 	protected function doJob() {
 		if ( $this->params[ 'primary' ] ) {
-			CirrusSearchUpdater::updateFromTitle( $this->title );
+			Updater::updateFromTitle( $this->title );
 			if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 					count( $this->params[ 'removedLinks' ] ) > 0 ) {
 				$params = array(
@@ -49,11 +53,11 @@ class CirrusSearchLinksUpdateJob extends CirrusSearchJob {
 				if ( $this->isPrioritized() ) {
 					$params[ 'prioritize' ] = true;
 				}
-				$next = new CirrusSearchLinksUpdateJob( $this->title, $params );
+				$next = new LinksUpdateJob( $this->title, $params );
 				JobQueueGroup::singleton()->push( $next );
 			}
 		} else {
-			CirrusSearchUpdater::updateLinkedArticles( $this->params[ 'addedLinks' ],
+			Updater::updateLinkedArticles( $this->params[ 'addedLinks' ],
 				$this->params[ 'removedLinks' ] );
 		}
 	}

@@ -1,4 +1,9 @@
 <?php
+
+namespace CirrusSearch;
+use \SearchResult;
+use \Title;
+
 /**
  * An individual search result from Elasticsearch.
  *
@@ -17,13 +22,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchResult extends SearchResult {
+class Result extends SearchResult {
 	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_PRE
+	 * @var string|null lazy built escaped copy of Searcher::HIGHLIGHT_PRE
 	 */
 	private static $highlightPreEscaped = null;
 	/**
-	 * @var string|null lazy built escaped copy of CirrusSearchSearcher::HIGHLIGHT_POST
+	 * @var string|null lazy built escaped copy of Searcher::HIGHLIGHT_POST
 	 */
 	private static $highlightPostEscaped = null;
 
@@ -117,11 +122,11 @@ class CirrusSearchResult extends SearchResult {
 	 */
 	private static function escapeHighlightedText( $snippet ) {
 		if ( self::$highlightPreEscaped === null ) {
-			self::$highlightPreEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_PRE );
-			self::$highlightPostEscaped = htmlspecialchars( CirrusSearchSearcher::HIGHLIGHT_POST );
+			self::$highlightPreEscaped = htmlspecialchars( Searcher::HIGHLIGHT_PRE );
+			self::$highlightPostEscaped = htmlspecialchars( Searcher::HIGHLIGHT_POST );
 		}
 		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
-			array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST ),
+			array( Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ),
 			htmlspecialchars( $snippet ) );
 	}
 
@@ -131,7 +136,7 @@ class CirrusSearchResult extends SearchResult {
 	 * @return boolean true if $snippet contains matches, false otherwise
 	 */
 	private static function containsMatches( $snippet ) {
-		return strpos( $snippet, CirrusSearchSearcher::HIGHLIGHT_PRE ) !== false;
+		return strpos( $snippet, Searcher::HIGHLIGHT_PRE ) !== false;
 	}
 
 	/**
@@ -167,7 +172,7 @@ class CirrusSearchResult extends SearchResult {
 	}
 
 	private function stripHighlighting( $highlighted ) {
-		$markers = array( CirrusSearchSearcher::HIGHLIGHT_PRE, CirrusSearchSearcher::HIGHLIGHT_POST );
+		$markers = array( Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST );
 		return str_replace( $markers, '', $highlighted );
 	}
 

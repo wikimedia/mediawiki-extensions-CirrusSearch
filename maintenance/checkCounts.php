@@ -1,4 +1,9 @@
 <?php
+
+namespace CirrusSearch;
+use \Maintenance;
+use \SiteStats;
+
 /**
  * Check the number of documents in the search index against the number of pages
  * in SiteStats.
@@ -33,7 +38,7 @@ class CheckCounts extends Maintenance {
 
 	public function execute() {
 		$siteStats = SiteStats::pages();
-		$elasticsearch = CirrusSearchConnection::getPageType()->count();
+		$elasticsearch = Connection::getPageType()->count();
 		$difference = round( 200.0 * abs( $siteStats - $elasticsearch ) / ( $siteStats + $elasticsearch ) );
 		$this->output( "SiteStats=$siteStats\n" );
 		$this->output( "Elasticsearch=$elasticsearch\n" );
@@ -41,5 +46,5 @@ class CheckCounts extends Maintenance {
 	}
 }
 
-$maintClass = "CheckCounts";
+$maintClass = "CirrusSearch\CheckCounts";
 require_once RUN_MAINTENANCE_IF_MAIN;

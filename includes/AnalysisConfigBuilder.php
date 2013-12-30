@@ -1,4 +1,7 @@
 <?php
+
+namespace CirrusSearch;
+
 /**
  * Builds elasticsearch analysis config arrays.
  *
@@ -17,14 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchAnalysisConfigBuilder {
+class AnalysisConfigBuilder {
 	private $language;
 
 	/**
 	 * @return array
 	 */
 	public static function build() {
-		$builder = new CirrusSearchAnalysisConfigBuilder();
+		$builder = new AnalysisConfigBuilder();
 		return $builder->buildConfig();
 	}
 
@@ -103,13 +106,13 @@ class CirrusSearchAnalysisConfigBuilder {
 				),
 				'prefix_ngram_filter' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
+					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
 			),
 			'tokenizer' => array(
 				'prefix' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
+					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',

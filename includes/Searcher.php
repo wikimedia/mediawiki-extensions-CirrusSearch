@@ -1,4 +1,14 @@
 <?php
+
+namespace CirrusSearch;
+use Elastica;
+use \CirrusSearch;
+use \PoolCounterWorkViaCallback;
+use \Sanitizer;
+use \Status;
+use \Title;
+use \UsageException;
+
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
  * is single use only.
@@ -18,7 +28,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchSearcher {
+class Searcher {
 	const SUGGESTION_NAME_TITLE = 'title';
 	const SUGGESTION_NAME_REDIRECT = 'redirect';
 	const SUGGESTION_NAME_TEXT = 'text_suggestion';
@@ -52,7 +62,7 @@ class CirrusSearchSearcher {
 	 */
 	private $namespaces;
 	/**
-	 * @var CirrusSearchResultsType|null type of results.  null defaults to CirrusSearchFullTextResultsType
+	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
 	 */
 	private $resultsType;
 	/**
@@ -122,7 +132,7 @@ class CirrusSearchSearcher {
 	}
 
 	/**
-	 * @param CirrusSearchResultsType $resultsType results type to return
+	 * @param ResultsType $resultsType results type to return
 	 */
 	public function setResultsType( $resultsType ) {
 		$this->resultsType = $resultsType;
@@ -261,7 +271,7 @@ class CirrusSearchSearcher {
 		$this->extractSpecialSyntaxFromTerm(
 			'/boost-templates:"([^"]+)" ?/',
 			function ( $matches ) use ( &$boostTemplates ) {
-				$boostTemplates = CirrusSearchSearcher::parseBoostTemplates( $matches[ 1 ] );
+				$boostTemplates = Searcher::parseBoostTemplates( $matches[ 1 ] );
 				return '';
 			}
 		);
@@ -315,8 +325,8 @@ class CirrusSearchSearcher {
 						return '';
 					case 'intitle':
 						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
-							CirrusSearchSearcher::fixupWholeQueryString(
-								CirrusSearchSearcher::fixupQueryStringPart( $value )
+							Searcher::fixupWholeQueryString(
+								Searcher::fixupQueryStringPart( $value )
 							) ) );
 						return $keepText ? "$value " : '';
 					default:
@@ -334,9 +344,9 @@ class CirrusSearchSearcher {
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
 		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $showRedirects ) {
-				$main = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+				$main = Searcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
-					$main = CirrusSearchSearcher::switchSearchToExact( $main, $showRedirects );
+					$main = Searcher::switchSearchToExact( $main, $showRedirects );
 				}
 				return array( 'escaped' => $main );
 			} );
@@ -347,8 +357,8 @@ class CirrusSearchSearcher {
 		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
 			function ( $matches ) use ( $showRedirects ) {
-				$term = CirrusSearchSearcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
-				return array( 'escaped' => CirrusSearchSearcher::switchSearchToExact( $term, $showRedirects ) );
+				$term = Searcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+				return array( 'escaped' => Searcher::switchSearchToExact( $term, $showRedirects ) );
 			} );
 		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
@@ -406,7 +416,7 @@ class CirrusSearchSearcher {
 
 	/**
 	 * @param $id article id to search
-	 * @return Status(CirrusSearchResultSet|null)
+	 * @return Status(ResultSet|null)
 	 */
 	public function moreLikeThisArticle( $id ) {
 		wfProfileIn( __METHOD__ );
@@ -426,6 +436,7 @@ class CirrusSearchSearcher {
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
+		// TODO figure out why we strip tags here and document it.
 		$this->query->setLikeText( Sanitizer::stripAllTags( $found->text ) );
 		$this->query->setFields( array( 'text' ) );
 		$idFilter = new \Elastica\Filter\Ids();
@@ -449,7 +460,7 @@ class CirrusSearchSearcher {
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
 			'doWork' => function() use ( $indexType, $id, $fields ) {
 				try {
-					$result = CirrusSearchConnection::getPageType( $indexType )->getDocument( $id, array(
+					$result = Connection::getPageType( $indexType )->getDocument( $id, array(
 						'fields' => $fields,
 					) );
 					return Status::newGood( $result );
@@ -534,7 +545,7 @@ class CirrusSearchSearcher {
 		$result = $wgMemc->get( $mcKey );
 		if ( !$result ) {
 			try {
-				$result = CirrusSearchConnection::getClient()->request( '' );
+				$result = Connection::getClient()->request( '' );
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				wfLogWarning( "Search backend error getting Elasticsearch version.  Error message is:  " .
 					$e->getMessage() );
@@ -551,14 +562,14 @@ class CirrusSearchSearcher {
 
 	/**
 	 * Powers full-text-like searches including prefix search.
-	 * @return Status(CirrusSearchResultSet|null|array(String)) results, no results, or title results
+	 * @return Status(ResultSet|null|array(String)) results, no results, or title results
 	 */
 	private function search() {
 		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreAccurateScoringMode;
 
 		if ( $this->resultsType === null ) {
-			$this->resultsType = new CirrusSearchFullTextResultsType();
+			$this->resultsType = new FullTextResultsType();
 		}
 		// Default null queries now so the rest of the method can assume it is not null.
 		if ( $this->query === null ) {
@@ -621,7 +632,7 @@ class CirrusSearchSearcher {
 
 		// Setup the search
 		$description = $this->description;
-		$search = CirrusSearchConnection::getPageType( $this->pickIndexTypeFromNamespaces() )
+		$search = Connection::getPageType( $this->pickIndexTypeFromNamespaces() )
 			->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
@@ -693,7 +704,7 @@ class CirrusSearchSearcher {
 	}
 
 	public static function switchSearchToExact( $term, $showRedirects ) {
-		$exact = join( ' OR ', CirrusSearchSearcher::buildFullTextSearchFields( $showRedirects, ".plain:$term" ) );
+		$exact = join( ' OR ', Searcher::buildFullTextSearchFields( $showRedirects, ".plain:$term" ) );
 		return "($exact)";
 	}
 
@@ -729,7 +740,7 @@ class CirrusSearchSearcher {
 		$indexTypes = array();
 		foreach ( $this->namespaces as $namespace ) {
 			$indexTypes[] =
-				CirrusSearchConnection::getIndexSuffixForNamespace( $namespace );
+				Connection::getIndexSuffixForNamespace( $namespace );
 		}
 		$indexTypes = array_unique( $indexTypes );
 		return count( $indexTypes ) > 1 ? false : $indexTypes[0];
@@ -743,7 +754,7 @@ class CirrusSearchSearcher {
 	 * @return array(string)
 	 */
 	private function getAndFilterExtraIndexes() {
-		$extraIndexes = CirrusSearchOtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
+		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
 		if ( $extraIndexes ) {
 			$this->notFilters[] = new \Elastica\Filter\Term(
 				array( 'local_sites_with_dupe' => wfWikiId() ) );
@@ -838,8 +849,8 @@ class CirrusSearchSearcher {
 		$string = preg_replace( '/(?:\\+|\\-|\\!)(?:\s|$)/', '\\\\$0', $string );
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
-		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/', 'CirrusSearchSearcher::lowercaseMatched', $string );
-		$string = preg_replace_callback( '/^\s*(?:AND|OR)/', 'CirrusSearchSearcher::lowercaseMatched', $string );
+		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/', 'CirrusSearch\Searcher::lowercaseMatched', $string );
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)/', 'CirrusSearch\Searcher::lowercaseMatched', $string );
 		wfProfileOut( __METHOD__ );
 		return $string;
 	}

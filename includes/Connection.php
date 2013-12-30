@@ -1,4 +1,9 @@
 <?php
+
+namespace CirrusSearch;
+use \ElasticaConnection;
+use \MWNamespace;
+
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
  * that contain connection information like \Elastica\Index and \Elastica\Type.
@@ -18,7 +23,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchConnection extends ElasticaConnection {
+class Connection extends ElasticaConnection {
 	/**
 	 * Name of the index that holds content articles.
 	 * @var string

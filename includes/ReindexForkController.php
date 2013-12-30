@@ -1,4 +1,7 @@
 <?php
+
+namespace CirrusSearch;
+
 /**
  * Extensions to ForeController to prepare Elastica and to tell the child
  * process which one it is.
@@ -18,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchReindexForkController extends ForkController {
+class ReindexForkController extends ForkController {
 	/**
 	 * @var integer number of this child or null if this is the parent
 	 */
@@ -56,6 +59,6 @@ class CirrusSearchReindexForkController extends ForkController {
 
 	protected function prepareEnvironment() {
 		parent::prepareEnvironment();
-		CirrusSearchConnection::destroySingleton();
+		Connection::destroySingleton();
 	}
 }

@@ -1,6 +1,10 @@
 <?php
+
+namespace CirrusSearch;
+use \JobQueueGroup;
+
 /**
- * Job wrapper around CirrusSearchOtherIndexes. Used during page updates.
+ * Job wrapper around OtherIndexes. Used during page updates.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchOtherIndexJob extends CirrusSearchJob {
+class OtherIndexJob extends Job {
 	/**
 	 * Check if we need to make a job and inject one if so.
 	 * @param $titles array(Title) The title we might update
@@ -26,7 +30,7 @@ class CirrusSearchOtherIndexJob extends CirrusSearchJob {
 	public static function queueIfRequired( $titles, $existsInLocalIndex ) {
 		$titlesToUpdate = array();
 		foreach( $titles as $title ) {
-			if ( CirrusSearchOtherIndexes::getExternalIndexes( $title ) ) {
+			if ( OtherIndexes::getExternalIndexes( $title ) ) {
 				$titlesToUpdate[] = array( $title->getNamespace(), $title->getText() );
 			}
 		}
@@ -34,7 +38,7 @@ class CirrusSearchOtherIndexJob extends CirrusSearchJob {
 			// Note that we're updating a bunch of titles but we have to pick one to
 			// attach to the job so we pick the first one.
 			JobQueueGroup::singleton()->push(
-				new CirrusSearchOtherIndexJob( $titles[ 0 ], array(
+				new OtherIndexJob( $titles[ 0 ], array(
 					'titles' => $titlesToUpdate,
 					'existsInLocalIndex' => $existsInLocalIndex,
 				) )
@@ -49,9 +53,9 @@ class CirrusSearchOtherIndexJob extends CirrusSearchJob {
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
 		if ( $this->params[ 'existsInLocalIndex' ] ) {
-			CirrusSearchUpdater::addLocalSiteToOtherIndex( $titles );
+			Updater::addLocalSiteToOtherIndex( $titles );
 		} else {
-			CirrusSearchUpdater::removeLocalSiteFromOtherIndex( $titles );
+			Updater::removeLocalSiteFromOtherIndex( $titles );
 		}
 	}
 }

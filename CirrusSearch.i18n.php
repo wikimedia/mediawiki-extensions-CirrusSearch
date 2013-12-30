@@ -373,6 +373,7 @@ $messages['fa'] = array(
 	'cirrussearch-now-using' => 'این ویکی از یک موتور جستجوی جدید استفاده می‌کند.
 ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-pref-label' => 'جستجوی جدید',
+	'cirrussearch-file-contents-match' => 'هماهنگی محتویات پرونده: $1',
 );
 
 /** Finnish (suomi)
@@ -403,8 +404,25 @@ Références
 Liens externes
 Voir aussi
  #</pre> <!-- laisser cette ligne comme telle -->',
+	'cirrussearch-boost-templates' => " #<!-- laisser cette ligne exactement en l’état --> <pre>
+# Si une page contient un de ces modèles alors son score de recherche sera multiplié par un pourcentage configuré.
+# Les modifications prennent effet immédiatement.
+# La syntaxe est la suivante :
+#   * Tout ce qui est entre un caractère '#' et la fin de la ligne est un commentaire
+#   * Toute ligne non vide est le nom exact dEvery non-blank line is the exact d’un modèle à promouvoir, avec espace de noms, casse exacte et complète, suivi d’un caractère '|' suivi d’un nombre suivi d’un caractère '%'.
+# Exemples de lignes correctes :
+# Modèle:Bon|150%
+# Modèle:Très Très bon|300%
+# Modèle:Mauvais|50%
+# Exemples de lignes non valides :
+# Modèle:Foo|150.234234% <-- pas de décimale autorisée !
+# Foo|150% <--- fonctionne techniquement, mais pour des inclusiosn de la page Foo depuis l’espace de noms principal
+# Vous pouvez tester les modifications de configuration en effectuant une recherche préfixée par boost-templates:\"XX\" où XX est l’ensemble des modèles que vous voulez promouvoir, séparés par des espaces au lieu de sauts de ligne.
+# Les requêtes qui spécifient boost-templates:\"XX\" ignorent le contenu de ce champ-ci.
+ #</pre> <!-- laisser cette ligne exactement en l’état -->",
 	'cirrussearch-pref-label' => 'Nouvelle recherche',
 	'cirrussearch-pref-desc' => 'Essayer notre nouvelle recherche qui supporte un plus grand nombre de langues, fournit davantage de résultats à jour, et peut même trouver du texte dans les modèles.',
+	'cirrussearch-file-contents-match' => 'Correspondance du contenu du fichier : $1',
 );
 
 /** Galician (galego)
@@ -451,6 +469,7 @@ $messages['he'] = array(
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'חיפוש חדש',
 	'cirrussearch-pref-desc' => 'נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.',
+	'cirrussearch-file-contents-match' => 'תוכן הקבצים תואם: $1',
 );
 
 /** Upper Sorbian (hornjoserbsce)
@@ -532,8 +551,25 @@ Note
 Voci correlate
 Collegamenti esterni
  #</pre> <!-- lascia questa riga esattamente come è -->',
+	'cirrussearch-boost-templates' => ' #<!-- lascia questa riga esattamente come è --> <pre>
+# Se una pagina contiene uno dei seguenti template, allora il suo punteggio di ricerca è moltiplicato per la percentuale indicata.
+# Le modifiche a questa pagina saranno effettive immediatamente.
+# La sintassi è la seguente:
+#   * Tutto dal carattere "#" alla fine della riga è un commento
+#   * Tutte le righe non vuote sono i template esatti da modificare, namespace, maiuscolo/minuscolo e tutto, seguiti da un carattere "|", da un numero, e da un carattere "%".
+# Esempi di righe corrette:
+# Template:Buono|150%
+# Template:Molto molto buono|300%
+# Template:Male|50%
+# Esempi di righe errate:
+# Template:Prova|150.234234% <-- non sono consentiti decimali!
+# Prova|150% <--- tecnicamente funziona, ma per inclusioni della pagina "Prova" dal namespace principale
+# Puoi provare le modifiche alla configurazione eseguendo una ricerca inserendo il prefisso boost-templates:"XX" dove XX sono tutti i template da modificare, separati da uno spazio.
+# Le ricerche con boost-templates:"XX" ignorano il contenuto di questa pagina.
+ #</pre> <!-- lascia questa riga esattamente come è -->',
 	'cirrussearch-pref-label' => 'Nuova ricerca',
 	'cirrussearch-pref-desc' => "Prova la nostra nuova ricerca, che supporta un numero maggiore di lingue, fornisce risultati più aggiornati e può anche trovare il testo all'interno di template.",
+	'cirrussearch-file-contents-match' => 'Contenuto del file corrispondente: $1',
 );
 
 /** Japanese (日本語)

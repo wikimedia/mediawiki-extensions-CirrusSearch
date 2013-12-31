@@ -1,8 +1,10 @@
 <?php
 
 namespace CirrusSearch;
-use \Maintenance;
 use \CirrusSearch;
+use \JobQueueGroup;
+use \LinkCache;
+use \Maintenance;
 use \WikiPage;
 
 /**
@@ -333,6 +335,8 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$result[] = $update;
 		}
+		// Clear the LinkCache to prevent its memory use from growing without bounds.
+		LinkCache::singleton()->clear();
 		wfProfileOut( __METHOD__ . '::decodeResults' );
 		wfProfileOut( __METHOD__ );
 		return $result;

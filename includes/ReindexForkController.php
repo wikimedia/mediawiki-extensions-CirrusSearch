@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use \ForkController;
 
 /**
  * Extensions to ForeController to prepare Elastica and to tell the child

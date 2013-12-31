@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use Elastica;
 use \Maintenance;
 
 /**

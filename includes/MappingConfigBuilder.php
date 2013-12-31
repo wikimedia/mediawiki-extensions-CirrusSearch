@@ -54,7 +54,7 @@ class MappingConfigBuilder {
 			$textExtraAnalyzers[] = 'suggest';
 		}
 
-		return array(
+		$config = array(
 			'dynamic' => false,
 			'properties' => array(
 				'timestamp' => array(
@@ -86,6 +86,8 @@ class MappingConfigBuilder {
 				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);
+		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config ) );
+		return $config;
 	}
 
 	/**

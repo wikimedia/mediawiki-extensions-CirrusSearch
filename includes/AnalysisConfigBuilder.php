@@ -41,7 +41,9 @@ class AnalysisConfigBuilder {
 	 * @return array the analysis config
 	 */
 	public function buildConfig() {
-		return $this->customize( $this->defaults() );
+		$config = $this->customize( $this->defaults() );
+		wfRunHooks( 'CirrusSearchAnalysisConfig', array( &$config ) );
+		return $config;
 	}
 
 	/**

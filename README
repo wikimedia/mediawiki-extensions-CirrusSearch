@@ -181,6 +181,19 @@ Testing
 See tests/browser/README
 
 
+Hooks
+-----
+CirrusSearch provides two hooks that other extensions can make use of to extend the core schema.
+Note that at present editing the core schema is a somewhat expert feature and requires Elasticsearch
+knowledge.  Also the config parameter is not really a stable API so be careful upgrading Cirrus.
+
+'CirrusSearchAnalysisConfig': Allows to hook into the configuration for analysis
+ &config - multi-dimensional configuration array for analysis of various languages and fields
+
+'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
+ &config - multi-dimensional configuration array that contains page metadata
+
+
 Licensing information
 ---------------------
 CirrusSearch makes use of the Elastica library to connect to elasticsearch <http://elastica.io/>.

@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use \Category;
 use \MWTimestamp;
 use \ParserCache;
 use \SearchUpdate;

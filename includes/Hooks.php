@@ -159,9 +159,14 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function linksUpdateCompletedHook( $linksUpdate ) {
+		global $wgCirrusSearchLinkedArticlesToUpdate;
+		global $wgCirrusSearchUnlinkedArticlesToUpdate;
+
 		$params = array(
-			'addedLinks' => $linksUpdate->getAddedLinks(),
-			'removedLinks' => $linksUpdate->getRemovedLinks(),
+			'addedLinks' => self::prepareTitlesForLinksUpdate(
+				$linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
+			'removedLinks' => self::prepareTitlesForLinksUpdate(
+				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
 			'primary' => true,
 		);
 		// Prioritize jobs that are triggered from a web process.  This should prioritize
@@ -235,5 +240,45 @@ class Hooks {
 		}
 		$titleResult = $array[ 0 ];
 		return false;
+	}
+
+	/**
+	 * Take a list of titles either linked or unlinked and prepare them for LinksUpdateJob.
+	 * This includes limiting them to $max titles.
+	 * @param array(Title) $titles titles to prepare
+	 * @param int $max maximum number of titles to return
+	 */
+	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
+		$titles = self::pickFromArray( $titles, $max );
+		$dBKeys = array();
+		foreach ( $titles as $title ) {
+			$dBKeys[] = $title->getPrefixedDBkey();
+		}
+		return $dBKeys;
+	}
+
+	/**
+	 * Pick $n random entries from $array.
+	 * @var $array array array to pick from
+	 * @var $n int number of entries to pick
+	 * @return array of entries from $array
+	 */
+	private static function pickFromArray( $array, $n ) {
+		if ( $n > count( $array ) ) {
+			return $array;
+		}
+		if ( $n < 1 ) {
+			return array();
+		}
+		$chosen = array_rand( $array, $n );
+		// If $n === 1 then array_rand will return a key rather than an array of keys.
+		if ( !is_array( $chosen ) ) {
+			return array( $array[ $chosen ] );
+		}
+		$result = array();
+		foreach ( $chosen as $key ) {
+			$result[] = $array[ $key ];
+		}
+		return $result;
 	}
 }

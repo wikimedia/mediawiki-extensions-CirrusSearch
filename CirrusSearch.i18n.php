@@ -944,6 +944,7 @@ Xem thêm
 
 /** Simplified Chinese (中文（简体）‎)
  * @author Cwek
+ * @author Linxue9786
  * @author Qiyue2001
  * @author Shizhao
  * @author TianyinLee
@@ -954,8 +955,25 @@ $messages['zh-hans'] = array(
 	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
+	'cirrussearch-boost-templates' => '#<!-- 此行绝对保持原状 --> <pre>
+# 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。
+# 更改至此立即生效。
+# 句法如下所示：
+#   *从"#"符到行末的所有信息是注释
+#   * 每一非空白行均为确切的模板名称，如加速器，域名空间， 事件以所有信息，接以"|"符，再接以数字及"%"符。
+# 良好行目示例：
+# 模板：良好|150%
+# 模板：非常非常好|300%
+# 模板：不良|50%
+# 失效行目示例：
+# 模板：Foo|150.234234% <-- 不允许使用小数点!
+# Foo|150% <--- 技术上可行，但不能用于从主域名空间将Foo页面切换插入至其他页面。
+# 你可以通过操作带有加速模板前置"XX"的质询来检测配置的变化：XX 是所有你想加速的模板名称，被空格键分开而不是行间隔。
+# 特定加速模板的质询："XX"通常忽略其所涉及的内容。
+ #</pre> <!-- 此行绝对保持原状 -->',
 	'cirrussearch-pref-label' => '新搜索',
 	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。', # Fuzzy
+	'cirrussearch-file-contents-match' => '文件内容匹配：$1',
 );
 
 /** Traditional Chinese (中文（繁體）‎)

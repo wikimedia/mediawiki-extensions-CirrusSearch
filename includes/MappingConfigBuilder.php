@@ -69,6 +69,7 @@ class MappingConfigBuilder {
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
+				'external_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'text_bytes' => $this->buildLongField(),
 				'file_text_bytes' => $this->buildLongField(),

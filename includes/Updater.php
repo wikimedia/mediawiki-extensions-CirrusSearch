@@ -395,6 +395,9 @@ class Updater {
 					}
 				}
 				$doc->add( 'outgoing_link', $outgoingLinks );
+
+				$doc->add( 'external_link', array_keys( $parserOutput->getExternalLinks() ) );
+
 				wfProfileOut( __METHOD__ . '-parse' );
 			}
 

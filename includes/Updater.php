@@ -541,13 +541,10 @@ class Updater {
 	 * @param $removedLinks array of Titles removed from the page
 	 */
 	public static function updateLinkedArticles( $addedLinks, $removedLinks ) {
-		global $wgCirrusSearchLinkedArticlesToUpdate, $wgCirrusSearchUnlinkedArticlesToUpdate;
 		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		$titles = array_merge(
-			self::pickFromArray( $addedLinks, $wgCirrusSearchLinkedArticlesToUpdate ),
-			self::pickFromArray( $removedLinks, $wgCirrusSearchUnlinkedArticlesToUpdate )
-		);
+		// We don't do anything different with removed or added pages at this point so merge them.
+		$titles = array_merge( $addedLinks, $removedLinks );
 		$pages = array();
 		foreach ( $titles as $title ) {
 			wfDebugLog( 'CirrusSearch', "Updating link counts for $title" );
@@ -722,30 +719,6 @@ MVEL;
 		return $justDocumentMissing;
 	}
 
-	/**
-	 * Pick $n random entries from $array.
-	 * @var $array array array to pick from
-	 * @var $n int number of entries to pick
-	 * @return array of entries from $array
-	 */
-	private static function pickFromArray( $array, $n ) {
-		if ( $n > count( $array ) ) {
-			return $array;
-		}
-		if ( $n < 1 ) {
-			return array();
-		}
-		$chosen = array_rand( $array, $n );
-		// If $n === 1 then array_rand will return a key rather than an array of keys.
-		if ( !is_array( $chosen ) ) {
-			return array( $array[ $chosen ] );
-		}
-		$result = array();
-		foreach ( $chosen as $key ) {
-			$result[] = $array[ $key ];
-		}
-		return $result;
-	}
 
 	/**
 	 * @param $ids array

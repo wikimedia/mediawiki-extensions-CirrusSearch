@@ -142,10 +142,10 @@ $wgCirrusSearchPhraseUseText = false;
 $wgCirrusSearchIndexedRedirects = 1024;
 
 // Maximum number of newly linked articles to update when an article changes.
-$wgCirrusSearchLinkedArticlesToUpdate = 5;
+$wgCirrusSearchLinkedArticlesToUpdate = 25;
 
 // Maximum number of newly unlinked articles to update when an article changes.
-$wgCirrusSearchUnlinkedArticlesToUpdate = 5;
+$wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 
 // Weight of fields relative to article text
 $wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0, 'file_text' => 0.8 );

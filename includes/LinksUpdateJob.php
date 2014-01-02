@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 use \JobQueueGroup;
+use \Title;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
@@ -57,9 +58,32 @@ class LinksUpdateJob extends Job {
 				JobQueueGroup::singleton()->push( $next );
 			}
 		} else {
-			Updater::updateLinkedArticles( $this->params[ 'addedLinks' ],
-				$this->params[ 'removedLinks' ] );
+			// Load the titles and filter out any that no longer exist.
+			Updater::updateLinkedArticles(
+				self::loadTitles( $this->params[ 'addedLinks' ] ),
+				self::loadTitles( $this->params[ 'removedLinks' ] ) );
 		}
+	}
+
+	/**
+	 * Convert a serialized title to a title ready to be passed to updateLinkedArticles.
+	 * @param Title|string $title Either a Title or a string to be loaded.
+	 * @return array(Title) loaded titles
+	 */
+	private static function loadTitles( $titles ) {
+		$result = array();
+		foreach ( $titles as $title ) {
+			// TODO remove support for Title objects when the queues have drained of them
+			if ( $title instanceof Title ) {
+				$result[] = $title;
+			} else {
+				$title = Title::newFromDBKey( $title );
+				if ( $title ) {
+					$result[] = $title;
+				}
+			}
+		}
+		return $result;
 	}
 
 	/**

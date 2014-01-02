@@ -62,8 +62,11 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
-		$this->addOption( 'buildChunks', 'Instead of running the script spit out N commands that can be farmed out to ' .
-			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.', false, true );
+		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
+			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
+			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number with ' .
+			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
+			'cover the entire wiki.' , false, true );
 		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
 			'to date copy.  Not used with --deletes.' );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
@@ -387,7 +390,7 @@ class ForceSearchIndex extends Maintenance {
 		return $result;
 	}
 
-	private function buildChunks( $chunks ) {
+	private function buildChunks( $buildChunks ) {
 		$dbr = $this->getDB( DB_SLAVE );
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
@@ -405,7 +408,14 @@ class ForceSearchIndex extends Maintenance {
 		if ( $fromId === $this->toId ) {
 			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
 		}
-		$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $chunks ) );
+		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
+		$buildChunks = intval( $buildChunks );
+		print $buildChunks . ' ' . $fixedChunkSize . "\n";
+		if ( $fixedChunkSize ) {
+			$chunkSize = $buildChunks;
+		} else {
+			$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $buildChunks ) );
+		}
 		for ( $id = $fromId; $id < $this->toId; $id = $id + $chunkSize ) {
 			$chunkToId = min( $this->toId, $id + $chunkSize );
 			$this->output( $this->mSelf );

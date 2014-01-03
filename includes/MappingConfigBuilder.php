@@ -87,7 +87,7 @@ class MappingConfigBuilder {
 				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);
-		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config ) );
+		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
 		return $config;
 	}
 
@@ -97,7 +97,7 @@ class MappingConfigBuilder {
 	 * @param $extra array|null Extra analyzers for this field beyond the basic text and plain.
 	 * @return array definition of the field
 	 */
-	private function buildStringField( $name, $extra = array() ) {
+	public function buildStringField( $name, $extra = array() ) {
 		$field = array(
 			'type' => 'multi_field',
 			'fields' => array(
@@ -138,7 +138,7 @@ class MappingConfigBuilder {
 	 * Create a string field that only lower cases and does ascii folding (if enabled) for the language.
 	 * @return array definition of the field
 	 */
-	private function buildLowercaseKeywordField() {
+	public function buildLowercaseKeywordField() {
 		return array(
 			'type' => 'string',
 			'analyzer' => 'lowercase_keyword',
@@ -150,7 +150,7 @@ class MappingConfigBuilder {
 	 * Create a string field that does no analyzing whatsoever.
 	 * @return array definition of the field
 	 */
-	private function buildKeywordField() {
+	public function buildKeywordField() {
 		return array(
 			'type' => 'string',
 			'analyzer' => 'keyword',
@@ -162,7 +162,7 @@ class MappingConfigBuilder {
 	 * Create a long field.
 	 * @return array definition of the field
 	 */
-	private function buildLongField() {
+	public function buildLongField() {
 		return array(
 			'type' => 'long',
 			'include_in_all' => false,

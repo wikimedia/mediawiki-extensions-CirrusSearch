@@ -191,6 +191,7 @@ knowledge.  Also the config parameter is not really a stable API so be careful u
 
 'CirrusSearchAnalysisConfig': Allows to hook into the configuration for analysis
  &config - multi-dimensional configuration array for analysis of various languages and fields
+ $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields
 
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
  &config - multi-dimensional configuration array that contains page metadata

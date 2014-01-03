@@ -64,7 +64,15 @@ class MappingConfigBuilder {
 				),
 				'namespace' => $this->buildLongField(),
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
-				'text' => $this->buildStringField( 'text', $textExtraAnalyzers ),
+				'text' => array_merge_recursive(
+					$this->buildStringField( 'text', $textExtraAnalyzers ),
+					array( 'fields' => array( 'word_count' => array(
+						'type' => 'token_count',
+						'store' => 'yes',
+						'analyzer' => 'plain',
+						'include_in_all' => false,
+					) ) )
+				),
 				'file_text' => $this->buildStringField( 'file_text', $textExtraAnalyzers ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
@@ -72,9 +80,7 @@ class MappingConfigBuilder {
 				'external_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading' ),
 				'text_bytes' => $this->buildLongField(),
-				'file_text_bytes' => $this->buildLongField(),
-				'text_words' => $this->buildLongField(),
-				'file_text_words' => $this->buildLongField(),
+				'text_words' => $this->buildLongField(),      // TODO remove once text.word_count is available everywhere
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(

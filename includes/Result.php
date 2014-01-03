@@ -27,7 +27,7 @@ class Result extends SearchResult {
 	private $titleSnippet;
 	private $redirectTitle, $redirectSnipppet;
 	private $sectionTitle, $sectionSnippet;
-	private $textSnippet;
+	private $textSnippet, $isFileMatch;
 	private $wordCount;
 	private $byteSize;
 	private $score;
@@ -76,7 +76,8 @@ class Result extends SearchResult {
 			if ( isset( $highlights[ 'file_text' ] ) ) {
 				$fileTextSnippet = $highlights[ 'file_text' ][ 0 ];
 				if ( !$this->containsMatches( $snippet ) && $this->containsMatches( $fileTextSnippet ) ) {
-					$snippet = wfMessage( 'cirrussearch-file-contents-match', $fileTextSnippet )->toString();
+					$snippet = $fileTextSnippet;
+					$this->isFileMatch = true;
 				}
 			}
 			$this->textSnippet = $this->escapeHighlightedText( $snippet );
@@ -219,5 +220,9 @@ class Result extends SearchResult {
 
 	public function getTimestamp() {
 		return $this->timestamp->getTimestamp( TS_MW );
+	}
+
+	public function isFileMatch() {
+		return $this->isFileMatch;
 	}
 }

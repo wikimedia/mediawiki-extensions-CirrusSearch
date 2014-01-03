@@ -88,9 +88,10 @@ Feature: Highlighting
   Scenario: When you search for text that is in a file if there are no matches on the page you get the highlighted text from the file
     When I search for File:debian rhino
     Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
-    And File contents match: *Debian* is in the highlighted text of the first search result
+    And *Debian* is in the highlighted text of the first search result
     And Arco-*Debian* is in the highlighted text of the first search result
     And Black*Rhino* is in the highlighted text of the first search result
+    And (matches file content) is the highlighted alttitle of the first search result
 
   @file_text @highlighting
   Scenario: When you search for text that is in a file if there are matches on the page you get those

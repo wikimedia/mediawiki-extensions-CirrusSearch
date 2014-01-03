@@ -41,7 +41,11 @@ class SearchResultsPage
     get_highlighted_text(first_result_text_element)
   end
   def first_result_highlighted_alttitle
-    get_highlighted_text(first_result_alttitle_element)
+    if first_result_alttitle_element.exists? then
+      get_highlighted_text(first_result_alttitle_element)
+    else
+      get_highlighted_text(first_result_alttitle_wrapper_element)
+    end
   end
   private
 

@@ -573,6 +573,22 @@ Referentias
 Ligamines externe
 Vide etiam
  #</pre> <!-- non modificar in alcun modo iste linea -->',
+	'cirrussearch-boost-templates' => ' #<!-- non modificar in alcun modo iste linea --> <pre>
+# Si un pagina contine un de iste patronos alora su punctage de recerca es multiplicate per le percentage configurate.
+# Cambios a isto essera effective immediatemente.
+# Le syntaxe es le sequente:
+#   * Toto ab un character "#" al fin del linea es un commento
+#   * Cata linea non vacue debe continer le nomine exacte del patrono a promover, incluse le spatio de nomines, majusculas e minusculas correcte e toto altere, sequite per un character "|", un numero e un character "%".
+# Exemplos de bon lineas:
+# Patrono:Bon|150%
+# Patrono:Multo multo bon|300%
+# Patrono:Mal|50%
+# Exemplos de lineas que non functiona:
+# Patrono:Exemplo|150.234234% <-- decimales non permittite!
+# Exemplo|150% <--- functiona technicamente, ma solo pro transclusiones del pagina Exemplo ab le spatio de nomines principal
+# Pro testar le cambios de configuration, exeque un recerca prefixate con boost-templates:"XX" ubi XX representa tote le patronos que tu vole promover, separate per spatios e non saltas de linea.
+# Le recercas que specifica boost-templates:"XX" ignora le contento de iste campo.
+ #</pre> <!-- non modificar in alcun modo iste linea -->',
 	'cirrussearch-pref-label' => 'Nove recerca',
 	'cirrussearch-pref-desc' => 'Essaya nostre nove motor de recerca que supporta un numero major de linguas, forni resultatos plus actual e pote mesmo cercar texto intra patronos.',
 );
@@ -940,6 +956,7 @@ Xem thêm
  #</pre> <!-- xin để yên dòng này -->',
 	'cirrussearch-pref-label' => 'Công cụ tìm kiếm mới',
 	'cirrussearch-pref-desc' => 'Thử công cụ tìm kiếm mới hỗ trợ nhiều ngôn ngữ hơn, cung cấp kết quả tức thời hơn, có khả năng tìm văn bản được bung từ bản mẫu.',
+	'cirrussearch-file-contents-match' => 'Nội dung tập tin khớp: $1',
 );
 
 /** Simplified Chinese (中文（简体）‎)
@@ -972,7 +989,7 @@ $messages['zh-hans'] = array(
 # 特定加速模板的质询："XX"通常忽略其所涉及的内容。
  #</pre> <!-- 此行绝对保持原状 -->',
 	'cirrussearch-pref-label' => '新搜索',
-	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。', # Fuzzy
+	'cirrussearch-pref-desc' => '试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。',
 	'cirrussearch-file-contents-match' => '文件内容匹配：$1',
 );
 

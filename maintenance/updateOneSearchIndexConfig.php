@@ -93,7 +93,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"that changing analysers might require a reindex for them to take effect so you might " .
 			"be better off using --reindexAndRemoveOk and a new --indexIdentifier to rebuild the " .
 			"entire index. Defaults to false." );
-		$maintenance->addOption( 'forceReindex', "Perform a reindex right now." );
 		$maintenance->addOption( 'indexIdentifier', "Set the identifier of the index to work on.  " .
 			"You'll need this if you have an index in production serving queries and you have " .
 			"to alter some portion of its configuration that cannot safely be done without " .
@@ -129,10 +128,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->indent = $this->getOption( 'indent', '' );
 			if ( $this->getOption( 'forceOpen', false ) ) {
 				$this->getIndex()->open();
-				return;
-			}
-			if ( $this->getOption( 'forceReindex', false ) ) {
-				$this->reindex();
 				return;
 			}
 			$this->startOver = $this->getOption( 'startOver', false );

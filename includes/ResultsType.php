@@ -74,45 +74,53 @@ class FullTextResultsType implements ResultsType {
 	public function getHighlightingConfiguration() {
 		$entireValue = array(
 			'number_of_fragments' => 0,
+			'type' => 'fvh',
 		);
 		$entireValueInListField = array(
 			'number_of_fragments' => 1, // Just one of the values in the list
 			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
-			'type' => 'plain',          // The fvh doesn't sort list fields by score correctly
+			'type' => 'plain',          // TODO switch to fvh when Elasticserach issue 3757 is fixed
 		);
-		$text = array(
+		$singleFragment = array(
 			'number_of_fragments' => 1, // Just one fragment
 			'fragment_size' => 100,
+			'type' => 'fvh',
 		);
-		$textWithNoMatch = $text;
-		// If there isn't a match just return a match sized chunk from the beginning of the page
-		// This is only set on text.plain because we check that text isn't highlighted to return
-		// plain matches (horrible hack that will go away one day).  So we can't return anything
-		// if there aren't any matches.  But since we still want to return some text and we're
-		// already defaulting to the plain match if there isn't any text we can just have it
-		// return the chunk.
-		$textWithNoMatch[ 'no_match_size' ] = 100;
+
+		// If there isn't a match just return a match sized chunk from the beginning of the page.
+		$text = $singleFragment;
+		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
 
 		return array(
 			'order' => 'score',
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
-			'fields' => array(
+			'fields' => $this->addMatchedFields( array(
 				'title' => $entireValue,
 				'text' => $text,
-				'file_text' => $text,
+				'file_text' => $singleFragment,
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
-				'title.plain' => $entireValue,
-				'text.plain' => $textWithNoMatch,
-				'file_text.plain' => $text,
+				// TODO remove when Elasticsearch issue 3757 is fixed
 				'redirect.title.plain' => $entireValueInListField,
 				'heading.plain' => $entireValueInListField,
-			),
+			) ),
 		);
 	}
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result );
+	}
+
+	private function addMatchedFields( $fields ) {
+		foreach ( $fields as $name => $config ) {
+			// TODO remove when Elasticsearch issue 3757 is fixed
+			if ( strpos( $name, '.plain' ) !== false ) {
+				continue;
+			}
+			$config[ 'matched_fields' ] = array( $name, "$name.plain" );
+			$fields[ $name ] = $config;
+		}
+		return $fields;
 	}
 }

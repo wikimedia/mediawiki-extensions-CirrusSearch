@@ -21,6 +21,11 @@ Feature: Full text search highlighting
     | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
     | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems* of *social* and *cultural importance*. During the caliphate of |
 
+  @highlighting
+  Scenario: Found words are highlighted even if found by different analyzers
+    When I search for "threatening the unity" community
+    Then *threatening the unity* and stability of the new *community* is in the highlighted text of the first search result
+
   @headings @highlighting
   Scenario: Found words are highlighted in headings
     When I search for "i am a heading"

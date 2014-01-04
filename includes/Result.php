@@ -55,11 +55,8 @@ class Result extends SearchResult {
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
 		$this->byteSize = $result->text_bytes;
 		$highlights = $result->getHighlights();
-		// Hack for https://github.com/elasticsearch/elasticsearch/issues/3750
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'title' );
+		// TODO remove when Elasticsearch issue 3757 is fixed
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'text' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'file_text' );
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = '';
@@ -106,6 +103,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Swap plain highlighting into the highlighting field if there isn't any normal highlighting.
+	 * TODO remove when Elasticsearch issue 3757 is fixed.
 	 * @var $highlights array of highlighting results
 	 * @var $name string normal field name
 	 * @return $highlights with $name replaced with plain field results if $name isn't in $highlights

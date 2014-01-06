@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 use \JobQueueGroup;
+use \Title;
 
 /**
  * Job wrapper around OtherIndexes. Used during page updates.

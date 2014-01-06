@@ -56,7 +56,7 @@ Feature: Full text search
     When I search for incategory:HeadingsTest "I am a heading"
     Then HasHeadings is the first search result
 
-  @setup_headings
+  @headings
   Scenario: Ignored headings aren't searched so text with the same word is wins
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
@@ -72,7 +72,7 @@ Feature: Full text search
     Then More Like Me is in the first search result
     But More Like Me 1 is not in the search results
 
-  @setup_javascript_injection
+  @javascript_injection
   Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
     When I search for Javascript findme
     Then the title still exists

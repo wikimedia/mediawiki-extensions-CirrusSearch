@@ -62,23 +62,24 @@ Before("@setup_weight") do
   end
 end
 
-Before("@setup_headings") do
-  if !$setup_headings
+Before("@headings") do
+  if !$headings
     steps %Q{
       Given a page named HasHeadings exists with contents @has_headings.txt
       And a page named HasReferencesInText exists with contents References [[Category:HeadingsTest]]
+      And a page named HasHeadingsWithHtmlComment exists with contents @has_headings_with_html_comment.txt
     }
-    $setup_headings = true
+    $headings = true
   end
 end
 
-Before("@setup_javascript_injection") do
-  if !$setup_headings
+Before("@javascript_injection") do
+  if !$javascript_injection
     steps %Q{
       Given a page named Javascript Direct Inclusion exists with contents @javascript.txt
       Given a page named Javascript Pre Tag Inclusion exists with contents @javascript_in_pre.txt
     }
-    $setup_headings = true
+    $javascript_injection = true
   end
 end
 
@@ -117,15 +118,15 @@ Before("@suggestions") do
   end
 end
 
-Before("@setup_highlighting") do
-  if !$setup_highlighting
+Before("@highlighting") do
+  if !$highlighting
     steps %Q{
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
       And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
     }
   end
-  $setup_highlighting = true
+  $highlighting = true
 end
 
 Before("@setup_more_like_this") do

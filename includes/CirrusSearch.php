@@ -82,7 +82,7 @@ class CirrusSearch extends SearchEngine {
 				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
 			}
 		} else {
-			$status = $searcher->searchText( $term, $this->showRedirects );
+			$status = $searcher->searchText( $term, $this->showRedirects, $this->showSuggestion );
 		}
 
 		// For historical reasons all callers of searchText interpret any Status return as an error

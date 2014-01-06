@@ -38,6 +38,11 @@ Feature: Suggestions
     Then rrr *word* is suggested
 
   @suggestions
+  Scenario: Suggestions don't come from redirect titles when it matches an actual title
+    When I search for Noble Gasses
+    Then there is no suggestion
+
+  @suggestions
   Scenario: Suggestions don't come from redirect titles when redirects are not included in search
     Given I am at the search results page
     And I click the Advanced link

@@ -208,21 +208,15 @@ class Searcher extends ElasticsearchIntermediary {
 	public function addSuggestPrefix( $suggestPrefix ) {
 		$this->suggestPrefixes[] = $suggestPrefix;
 	}
-	/**
-	 * @param string $suggestPrefix suffix to be appended to suggestions.
-	 */
-	public function addSuggestSuffix( $suggestSuffix ) {
-		$this->suggestSuffixes[] = $suggestSuffix;
-	}
-
 
 	/**
 	 * Search articles with provided term.
 	 * @param $term string term to search
 	 * @param $showRedirects boolean should this request show redirects?
+	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
-	public function searchText( $term, $showRedirects ) {
+	public function searchText( $term, $showRedirects, $showSuggestion ) {
 		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPhraseRescoreBoost;
 		global $wgCirrusSearchPhraseRescoreWindowSize;
@@ -409,15 +403,17 @@ class Searcher extends ElasticsearchIntermediary {
 				);
 			}
 
-			$this->suggest = array(
-				'text' => $this->term,
-				self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
-			);
-			if ( $showRedirects ) {
-				$this->suggest[ self::SUGGESTION_NAME_REDIRECT ] = $this->buildSuggestConfig( 'redirect.title.suggest' );
-			}
-			if ( $wgCirrusSearchPhraseUseText ) {
-				$this->suggest[ self::SUGGESTION_NAME_TEXT ] = $this->buildSuggestConfig( 'text.suggest' );
+			if ( $showSuggestion ) {
+				$this->suggest = array(
+					'text' => $this->term,
+					self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
+				);
+				if ( $showRedirects ) {
+					$this->suggest[ self::SUGGESTION_NAME_REDIRECT ] = $this->buildSuggestConfig( 'redirect.title.suggest' );
+				}
+				if ( $wgCirrusSearchPhraseUseText ) {
+					$this->suggest[ self::SUGGESTION_NAME_TEXT ] = $this->buildSuggestConfig( 'text.suggest' );
+				}
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
 		}

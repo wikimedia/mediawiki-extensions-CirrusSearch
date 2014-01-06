@@ -125,7 +125,7 @@ $wgCirrusSearchMoreAccurateScoringMode = true;
 
 // Maximum number of terms that we ask phrase suggest to correct.
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
-$wgCirrusSearchPhraseSuggestMaxErrors = 5;
+$wgCirrusSearchPhraseSuggestMaxErrors = 2;
 
 // Confidence level required to suggest new phrases.
 // See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/

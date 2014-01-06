@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use \BetaFeatures;
 use \JobQueueGroup;
 use \Title;
 use \WikiPage;

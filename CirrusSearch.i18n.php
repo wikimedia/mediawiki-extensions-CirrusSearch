@@ -120,8 +120,25 @@ Referencies
 Enllaces esternos
 Ver tamién
  #</pre> <!-- dexar esta llinia exactamente como ta -->",
+	'cirrussearch-boost-templates' => ' #<!-- dexar esta llinia exactamente como ta --> <pre>
+# Si una páxina contién una d\'estes plantíes, la so puntuación na gueta multiplícase pol porcentax configuráu.
+# Los cambios equí son efeutivos darréu.
+# La sintaxis ye como sigue:
+#   * Cualquier cosa dende un caráuter "#" al fin de llinia ye un comentariu
+#   * Cada llinia non-balera ye\'l nome de plantía exactu a aumentar, con espaciu de nomes, mayúscules, etc, siguíu por un caráuter "|", siguíu por un númberu, siguíu por un caráuter "%".
+# Exemplos de llinies correutes:
+# Plantía:Novedaes|150%
+# Plantía:Destacaos|300%
+# Plantía:Correxir|50%
+# Exemplos de llinies incorreutes:
+# Plantía:Foo|150,234234% <-- nun se permiten los decimales
+# Foo|150% <--- téunicamente funciona, pero sólo pa tresclusiones de la páxina Foo nel espaciu de nomes principal
+# Pue probar los cambios na configuración faciendo una consulta col prefixu boost-templates:"XX" onde XX son toles plantíes que quiera aumentar separaes con espacios en llugar de saltos de llinia.
+# Les consultes qu\'especifiquen boost-templates:"XX" saltense\'l conteníu d\'esti campu.
+ #</pre> <!-- dexar esta llinia exactamente como ta -->',
 	'cirrussearch-pref-label' => 'Gueta nueva',
-	'cirrussearch-pref-desc' => 'Usar un motor de gueta nuevu que fai índices de plantíes espandíes, tien sofitu pa más llingües y anueva más rápido.',
+	'cirrussearch-pref-desc' => 'Pruebe la nuesa gueta nueva que tien sofitu pa más llingües, ufre resultaos más actuales, ya inda pue alcontrar testu dientro de les plantíes.',
+	'cirrussearch-file-contents-match' => 'Conteníu del ficheru que casa: $1',
 );
 
 /** Bikol Central (Bikol Central)
@@ -266,7 +283,7 @@ Eksterne kilder/henvisninger
 Kilder
  #</pre> <!-- lad denne linje være præcis som den er -->',
 	'cirrussearch-pref-label' => 'Ny søgning',
-	'cirrussearch-pref-desc' => 'Brug en ny søgemaskine, der indekserer udvidede skabeloner, understøtter flere sprog, og opdatere hurtigere.', # Fuzzy
+	'cirrussearch-pref-desc' => 'Prøv vores nye søgning, som understøtter et større antal sprog, giver mere opdaterede resultater og kan endda finde tekst inden i skabeloner.',
 );
 
 /** German (Deutsch)
@@ -357,6 +374,7 @@ Glědaj teke
 );
 
 /** Spanish (español)
+ * @author Ciencia Al Poder
  * @author Fitoschido
  * @author Ihojose
  * @author Luis Felipe Schenone
@@ -376,8 +394,25 @@ Referencia
 Enlaces externos
 Véase también
  #</pre> <!-- deje esta línea tal y como está -->',
+	'cirrussearch-boost-templates' => ' #<!-- deja esta línea exactamente como está --> <pre>
+# Si una página contiene una de estas plantillas, entonces su puntuación en la búsqueda se multiplicará por el porcentaje configurado
+# Los cambios realizados aquí tendrán efecto de forma inmediata.
+# La sintaxis es la siguiente:
+#   * Todo el contenido desde un caracter "#" hasta el final de la línea se tomará como un comentario
+#   * Toda línea que no esté en blanco será el nombre exacto de la plantilla a impulsar, espacio de nombres, mayúsculas/minúsculas y todo, seguido por un caracter "|", un número y el carácter "%".
+# Ejemplos de líneas correctas:
+# Plantilla:Bueno|150%
+# Plantilla:Muy muy bueno|300%
+# Plantilla:Malo|50%
+# Ejemplos de líneas que no funcionarán:
+# Plantilla:Foo|150.234234% <-- no se permiten decimales!
+# Foo|150% <--- técnicamente funciona, pero para transclusiones de la página Foo del espacio de nombres principal
+# Puedes probar cambios en la configuración realizando una búsqueda que contenga como prefijo boost-templates:"XX", donde XX son todas las plantillas que quieras impulsar, separadas por espacios en lugar de saltos de línea.
+# Búsquedas que especifiquen boost-templates:"XX" ignorarán el contenido de este campo.
+ #</pre> <!-- deja esta línea exactamente como está -->',
 	'cirrussearch-pref-label' => 'Búsqueda nueva',
-	'cirrussearch-pref-desc' => 'Usar un motor de búsqueda nuevo, que indiza plantillas expandidas, admite más idiomas y se actualiza más seguido.',
+	'cirrussearch-pref-desc' => 'Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.',
+	'cirrussearch-file-contents-match' => 'Coincidencia en el contenido del archivo: $1',
 );
 
 /** Persian (فارسی)
@@ -591,6 +626,7 @@ Vide etiam
  #</pre> <!-- non modificar in alcun modo iste linea -->',
 	'cirrussearch-pref-label' => 'Nove recerca',
 	'cirrussearch-pref-desc' => 'Essaya nostre nove motor de recerca que supporta un numero major de linguas, forni resultatos plus actual e pote mesmo cercar texto intra patronos.',
+	'cirrussearch-file-contents-match' => 'Contento del file correspondente: $1',
 );
 
 /** Italian (italiano)

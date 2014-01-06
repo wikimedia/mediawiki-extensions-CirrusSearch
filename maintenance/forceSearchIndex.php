@@ -410,7 +410,6 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
 		$buildChunks = intval( $buildChunks );
-		print $buildChunks . ' ' . $fixedChunkSize . "\n";
 		if ( $fixedChunkSize ) {
 			$chunkSize = $buildChunks;
 		} else {

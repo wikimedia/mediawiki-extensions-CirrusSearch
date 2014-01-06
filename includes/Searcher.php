@@ -319,8 +319,9 @@ class Searcher {
 						// Intentional fall through
 					case 'incategory':
 						$queryKey = str_replace( array( 'in', 'has' ), '', $key );
+						$queryValue = str_replace( '_', ' ', trim( $value, '"' ) );
 						$match = new \Elastica\Query\Match();
-						$match->setFieldQuery( $queryKey, trim( $value, '"' ) );
+						$match->setFieldQuery( $queryKey, $queryValue );
 						$filterDestination[] = new \Elastica\Filter\Query( $match );
 						return '';
 					case 'intitle':

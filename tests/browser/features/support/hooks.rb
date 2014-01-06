@@ -8,7 +8,7 @@ Before('@setup_main, @filters, @prefix') do
       And a page named Links To Catapult exists with contents [[Catapult]]
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Catapult]] [[Category:Weaponry]]
-      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]]
+      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
     }

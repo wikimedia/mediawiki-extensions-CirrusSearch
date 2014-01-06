@@ -60,6 +60,16 @@ Feature: Full text search with filters
     Then Two Words is the first search result
 
   @filters
+  Scenario: incategory works with multi word categories
+    When I search for incategory:"Categorywith Twowords"
+    Then Two Words is the first search result
+
+  @filters
+  Scenario: incategory works with can find two word categories with spaces
+    When I search for incategory:Categorywith_Twowords
+    Then Two Words is the first search result
+
+  @filters
   Scenario: incategory: when passed a quoted category that doesn't exist finds nothing even though there is a category that matches one of the words
     When I search for incategory:"Dontfindme Weaponry"
     Then there are no search results

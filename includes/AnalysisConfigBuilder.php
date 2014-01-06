@@ -193,6 +193,7 @@ class AnalysisConfigBuilder {
 			return 'default';
 		}
 	}
+
 	/**
 	 * Languages for which elasticsearch provides a built in analyzer.  All
 	 * other languages default to the default analyzer which isn't too good.  Note

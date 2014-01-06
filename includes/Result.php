@@ -50,7 +50,9 @@ class Result extends SearchResult {
 
 		$title = Title::makeTitle( $result->namespace, $result->title );
 		$this->initFromTitle( $title );
-		$this->wordCount = $result->text_words;
+		$data = $result->getData();
+		// TODO remove ternary once text.word_count is available everywhere
+		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
 		$this->byteSize = $result->text_bytes;
 		$highlights = $result->getHighlights();
 		// Hack for https://github.com/elasticsearch/elasticsearch/issues/3750

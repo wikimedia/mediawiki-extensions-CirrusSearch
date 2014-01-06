@@ -340,7 +340,7 @@ class Updater {
 
 				$doc->add( 'text', $text );
 				$doc->add( 'text_bytes', strlen( $text ) );
-				$doc->add( 'text_words', str_word_count( $text ) ); // It would be better if we could let ES calculate it
+				$doc->add( 'text_words', str_word_count( $text ) ); // TODO remove once text.word_count is available everywhere
 
 				// Index PDF or DJVU text as well
 				if ( $title->getNamespace() == NS_FILE ) {
@@ -349,8 +349,6 @@ class Updater {
 						$fileText = $file->getHandler()->getEntireText( $file );
 						if ( $fileText ) {
 							$doc->add( 'file_text', $fileText );
-							$doc->add( 'file_text_bytes', strlen( $fileText ) );
-							$doc->add( 'file_text_words', str_word_count( $fileText ) );
 						}
 					}
 				}

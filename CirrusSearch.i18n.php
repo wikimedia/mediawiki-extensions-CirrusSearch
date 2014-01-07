@@ -457,8 +457,23 @@ $messages['fa'] = array(
 
 /** Finnish (suomi)
  * @author Nike
+ * @author Stryn
  */
 $messages['fi'] = array(
+	'cirrussearch-desc' => '"Elasticsearch"-käyttöinen haku MediaWikille',
+	'cirrussearch-backend-error' => 'Emme voineet suorittaa hakuasi väliaikaisen ongelman vuoksi. Yritä myöhemmin uudelleen.',
+	'cirrussearch-now-using' => 'Tämä wiki käyttää uutta hakukonetta. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lue lisää]])',
+	'cirrussearch-ignored-headings' => '#<!-- jätä tämä rivi sellaiseksi kuin se on --> <pre>
+# Otsikot, jotka haku ohittaa.
+# Muutokset tulevat voimaan heti, kun otsikon sivu indeksoidaan.
+# Voit pakottaa sivun indeksoimisen tekemällä nollamuokkauksen.
+# Syntaksi on seuraava:
+#   * Kaikki "#"-merkistä rivin loppuun asti on kommenttia
+#   * Kaikki ei-tyhjät rivit ovat otsikoita, jotka ohitetaan.
+Lähteet
+Aiheesta muualla
+Katso myös
+#</pre> <!-- jätä tämä rivi sellaiseksi kuin se on -->',
 	'cirrussearch-pref-label' => 'Uusi haku',
 );
 
@@ -782,10 +797,11 @@ $messages['ms'] = array(
  * @author Breghtje
  * @author Romaine
  * @author Siebrand
+ * @author Sjoerddebruin
  */
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
-	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
+	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.',
 	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.

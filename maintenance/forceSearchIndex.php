@@ -183,12 +183,12 @@ class ForceSearchIndex extends Maintenance {
 					$now = microtime( true );
 					if ( $now - $lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
 						$lastJobQueueCheckTime = $now;
-						$queueSize = self::getUpdatesInQueue();
+						$queueSize = $this->getUpdatesInQueue();
 						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
 							do {
 								$this->output( "Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
 								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-								$queueSize = self::getUpdatesInQueue();
+								$queueSize = $this->getUpdatesInQueue();
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
@@ -226,7 +226,7 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->queue ) {
 			$this->output( "Waiting for jobs to drain from the queue\n" );
 			while ( true ) {
-				$queueSizeForOurJob = self::getUpdatesInQueue();
+				$queueSizeForOurJob = $this->getUpdatesInQueue();
 				if ( $queueSizeForOurJob === 0 ) {
 					break;
 				}
@@ -434,7 +434,7 @@ class ForceSearchIndex extends Maintenance {
 	 * Get the number of cirrusSearchUpdatePages jobs in the queue.
 	 * @return int length
 	 */
-	private static function getUpdatesInQueue() {
+	private function getUpdatesInQueue() {
 		return JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
 	}
 }

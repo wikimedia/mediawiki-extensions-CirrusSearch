@@ -24,12 +24,14 @@ use \SearchResultSet;
 class ResultSet extends SearchResultSet {
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 	private $searchContainedSyntax;
+	private $interwikiMap, $interwikiResults;
 
-	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax ) {
+	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwikis = array() ) {
 		$this->result = $res;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
+		$this->interwikiMap = $interwikis;
 		$suggestion = $this->findSuggestion();
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
@@ -137,12 +139,17 @@ class ResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			return new Result( $this->result, $current );
+			return new Result( $this->result, $current, $this->interwikiMap );
 		}
 		return false;
 	}
 
+	public function setInterwikiResults( $res ) {
+		$this->interwikiResults = $res;
+	}
+
 	public function getInterwikiResults() {
+		return $this->interwikiResults;
 	}
 
 	public function searchContainedSyntax() {

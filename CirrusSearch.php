@@ -204,6 +204,11 @@ $wgCirrusSearchEnablePref = false;
 // Should Cirrus show the score?
 $wgCirrusSearchShowScore = false;
 
+// CirrusSearch interwiki searching
+// Keys are the interwiki prefix, values are the index to search
+// Results are cached.
+$wgCirrusSearchInterwikiSources = array();
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**
@@ -223,6 +228,8 @@ $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateSecondaryJob'] = $includes . 'LinksUpdateSecondaryJob.php';
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
+$wgAutoloadClasses['CirrusSearch\InterwikiResultsType'] = $includes . 'ResultsType.php';
+$wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MassIndexJob'] = $includes . 'MassIndexJob.php';

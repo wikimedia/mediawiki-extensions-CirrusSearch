@@ -128,3 +128,21 @@ class FullTextResultsType implements ResultsType {
 		return $fields;
 	}
 }
+
+class InterwikiResultsType extends TitleResultsType {
+	/**
+	 * @var array interwiki prefix mappings
+	 */
+	private $prefixes;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct( $interwikis ) {
+		$this->prefixes = $interwikis;
+	}
+
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax ) {
+		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefixes );
+	}
+}

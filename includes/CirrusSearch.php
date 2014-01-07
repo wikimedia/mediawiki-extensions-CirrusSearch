@@ -1,5 +1,6 @@
 <?php
 
+use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Searcher;
 
 /**
@@ -94,8 +95,15 @@ class CirrusSearch extends SearchEngine {
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
 		if ( $status->isOK() ) {
-			return $status->getValue();
+			$result = $status->getValue();
+			$interwiki = new InterwikiSearcher( $this->offset, $this->limit, $this->namespaces, $user );
+			$interwikiResult = $interwiki->getInterwikiResults( $term );
+			if ( $interwikiResult ) {
+				$result->setInterwikiResults( $interwikiResult );
+			}
+			return $result;
 		}
+
 		return $status;
 	}
 

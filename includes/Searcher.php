@@ -50,14 +50,17 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var integer search offset
 	 */
 	private $offset;
+
 	/**
 	 * @var integer maximum number of result
 	 */
 	private $limit;
+
 	/**
 	 * @var array(integer) namespaces in which to search
 	 */
-	private $namespaces;
+	protected $namespaces;
+
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
 	 */
@@ -141,6 +144,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $searchContainedSyntax = false;
 
 	/**
+	 * @var array indexes to use, if not the default
+	 */
+	private $explicitIndexes;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -171,6 +179,13 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setSort( $sort ) {
 		$this->sort = $sort;
+	}
+
+	/**
+	 * @param array $idx Indexes to use, explicitly
+	 */
+	public function setExplicitIndexes( $idxs ) {
+		$this->explicitIndexes = $idxs;
 	}
 
 	/**
@@ -718,8 +733,16 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		// Setup the search
-		$search = Connection::getPageType( $this->indexBaseName, $this->pickIndexTypeFromNamespaces() )
-			->createSearch( $query, $queryOptions );
+		if ( $this->explicitIndexes ) {
+			$baseName = array_shift( $this->explicitIndexes );
+			$extraIndexes = $this->explicitIndexes;
+			$pageType = Connection::getPageType( $baseName );
+				
+		} else {
+			$pageType = Connection::getPageType( $this->indexBaseName,
+				$this->pickIndexTypeFromNamespaces() );
+		}
+		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
 		}

@@ -32,19 +32,24 @@ class Result extends SearchResult {
 	private $byteSize;
 	private $score;
 	private $timestamp;
+	private $interwiki;
 
 	/**
 	 * Build the result.
 	 * @param $results \Elastica\ResultSet containing all search results
+	 * @param $result \Elastica\Result containing the given search result
+	 * @param $interwiki Interwiki prefix, if any
 	 * @param $result \Elastic\Result containing information about the result this class should represent
 	 */
-	public function __construct( $results, $result ) {
+	public function __construct( $results, $result, $interwikis = array() ) {
 		global $wgCirrusSearchShowScore;
 
-		$this->mTitle = Title::makeTitle( $result->namespace, $result->title );
+		$this->maybeSetInterwiki( $result, $interwikis );
+		$this->mTitle = Title::makeTitle( $result->namespace, $result->title, '', $this->interwiki );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
+
 		$data = $result->getData();
 		// TODO remove ternary once text.word_count is available everywhere
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
@@ -183,6 +188,18 @@ class Result extends SearchResult {
 		return str_replace( $markers, '', $highlighted );
 	}
 
+	private function maybeSetInterwiki( $result, $interwikis ) {
+		$iw = '';
+		array_walk( $interwikis, function( $indexBase, $interwiki ) use ( $result, &$iw ) {
+			$index = $result->getIndex();
+			$pos = strpos( $index, $indexBase );
+			if ( $pos === 0 && $index[strlen( $indexBase )] == '_' ) {
+				$iw = $interwiki;
+			}
+		} );
+		$this->interwiki = $iw;
+	}
+
 	public function getTitleSnippet( $terms ) {
 		return $this->titleSnippet;
 	}
@@ -225,5 +242,9 @@ class Result extends SearchResult {
 
 	public function isFileMatch() {
 		return $this->isFileMatch;
+	}
+
+	public function getInterwikiPrefix() {
+		return $this->interwiki;
 	}
 }

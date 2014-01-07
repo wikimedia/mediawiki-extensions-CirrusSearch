@@ -150,7 +150,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->indent = $this->getOption( 'indent', '' );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
-		$this->reindexAcceptableCountDeviation = self::parsePotentialPercent(
+		$this->reindexAcceptableCountDeviation = $this->parsePotentialPercent(
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->langCode = $wgLanguageCode;
 		$this->aggressiveSplitting = $wgCirrusSearchUseAggressiveSplitting;
@@ -768,7 +768,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		return $result;
 	}
 
-	private static function parsePotentialPercent( $str ) {
+	private function parsePotentialPercent( $str ) {
 		$result = floatval( $str );
 		if ( strpos( $str, '%' ) === false ) {
 			return $result;

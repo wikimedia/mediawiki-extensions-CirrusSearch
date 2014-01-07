@@ -125,10 +125,23 @@ class Searcher {
 	 */
 	private $boostTemplates = array();
 
-	public function __construct( $offset, $limit, $namespaces ) {
+	/**
+	 * @var string index base name to use
+	 */
+	private $indexBaseName;
+
+	/**
+	 * Constructor
+	 * @param int $offset Offset the results by this much
+	 * @param int $limit Limit the results to this many
+	 * @param array $namespaces Namespace numbers to search
+	 * @param string $index Base name for index to search from, defaults to wfWikiId()
+	 */
+	public function __construct( $offset, $limit, $namespaces, $index = false ) {
 		$this->offset = $offset;
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
+		$this->indexBaseName = $index ?: wfWikiId();
 	}
 
 	/**
@@ -457,13 +470,13 @@ class Searcher {
 	 */
 	public function get( $id, $fields ) {
 		wfProfileIn( __METHOD__ );
+		$indexBase = $this->indexBaseName;
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $indexType, $id, $fields ) {
+			'doWork' => function() use ( $indexBase, $indexType, $id, $fields ) {
 				try {
-					$result = Connection::getPageType( $indexType )->getDocument( $id, array(
-						'fields' => $fields,
-					) );
+					$result = Connection::getPageType( $indexBase, $indexType )
+						->getDocument( $id, array( 'fields' => $fields, ) );
 					return Status::newGood( $result );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
@@ -633,7 +646,7 @@ class Searcher {
 
 		// Setup the search
 		$description = $this->description;
-		$search = Connection::getPageType( $this->pickIndexTypeFromNamespaces() )
+		$search = Connection::getPageType( $this->indexBaseName, $this->pickIndexTypeFromNamespaces() )
 			->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );

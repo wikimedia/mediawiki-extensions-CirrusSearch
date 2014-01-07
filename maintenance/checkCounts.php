@@ -38,7 +38,7 @@ class CheckCounts extends Maintenance {
 
 	public function execute() {
 		$siteStats = SiteStats::pages();
-		$elasticsearch = Connection::getPageType()->count();
+		$elasticsearch = Connection::getPageType( wfWikiId() )->count();
 		$difference = round( 200.0 * abs( $siteStats - $elasticsearch ) / ( $siteStats + $elasticsearch ) );
 		$this->output( "SiteStats=$siteStats\n" );
 		$this->output( "Elasticsearch=$elasticsearch\n" );

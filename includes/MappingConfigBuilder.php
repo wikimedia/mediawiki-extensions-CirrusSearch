@@ -22,11 +22,25 @@ namespace CirrusSearch;
  */
 class MappingConfigBuilder {
 	/**
-	 * @return array
+	 * Whether to allow prefix searches to match on any word
+	 * @var bool
 	 */
-	public static function build() {
-		$builder = new MappingConfigBuilder();
-		return $builder->buildConfig();
+	private $prefixSearchStartsWithAnyWord;
+
+	/**
+	 * Whether phrase searches should use the suggestion analyzer
+	 * @var bool
+	 */
+	private $phraseUseText;
+
+	/**
+	 * Constructor
+	 * @param bool $anyWord Prefix search on any word
+	 * @param bool $useText Text uses suggestion analyzer
+	 */
+	public function __construct( $anyWord, $useText ) {
+		$this->prefixSearchStartsWithAnyWord = $anyWord;
+		$this->phraseUseText = $useText;
 	}
 
 	/**
@@ -34,23 +48,20 @@ class MappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig() {
-		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
-		global $wgCirrusSearchPhraseUseText;
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
-
 		$titleExtraAnalyzers = array(
 			'suggest',
 			array( 'index' => 'prefix', 'search' => 'near_match' ),
 			'near_match',
 			'keyword',
 		);
-		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
+		if ( $this->prefixSearchStartsWithAnyWord ) {
 			$titleExtraAnalyzers[] = array( 'index' => 'word_prefix', 'search' => 'plain' );
 		}
 
 		$textExtraAnalyzers = array();
-		if ( $wgCirrusSearchPhraseUseText ) {
+		if ( $this->phraseUseText ) {
 			$textExtraAnalyzers[] = 'suggest';
 		}
 

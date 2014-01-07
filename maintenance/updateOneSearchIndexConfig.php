@@ -66,6 +66,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexProcesses;
 
 	/**
+	 * @var string language code we're building for
+	 */
+	private $langCode;
+
+	/**
+	 * @var bool when to aggressively split
+	 */
+	private $aggressiveSplitting;
+
+	/**
+	 * @var bool prefix search on any term
+	 */
+	private $prefixSearchStartsWithAny;
+
+	/**
+	 * @var bool use suggestions on text fields
+	 */
+	private $phraseUseText;
+
+	/**
 	 * @var float how much can the reindexed copy of an index is allowed to deviate from the current
 	 * copy without triggering a reindex failure
 	 */
@@ -114,31 +134,42 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf;
+		global $wgPoolCounterConf,
+			$wgLanguageCode,
+			$wgCirrusSearchPhraseUseText,
+			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
+			$wgCirrusSearchUseAggressiveSplitting;
+
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
+		$this->indexType = $this->getOption( 'indexType' );
+		$this->startOver = $this->getOption( 'startOver', false );
+		$this->closeOk = $this->getOption( 'closeOk', false );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indent = $this->getOption( 'indent', '' );
+		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
+		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
+		$this->reindexAcceptableCountDeviation = self::parsePotentialPercent(
+			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
+		$this->langCode = $wgLanguageCode;
+		$this->aggressiveSplitting = $wgCirrusSearchUseAggressiveSplitting;
+		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
+		$this->phraseUseText = $wgCirrusSearchPhraseUseText;
+
 		try{
-			$this->indexType = $this->getOption( 'indexType' );
 			$indexTypes = Connection::getAllIndexTypes();
 			if ( !in_array( $this->indexType, $indexTypes ) ) {
 				$this->error( 'indexType option must be one of ' .
 					implode( ', ', $indexTypes ), 1 );
 			}
-			$this->indent = $this->getOption( 'indent', '' );
+
 			if ( $this->getOption( 'forceOpen', false ) ) {
 				$this->getIndex()->open();
 				return;
 			}
-			$this->startOver = $this->getOption( 'startOver', false );
-			$this->closeOk = $this->getOption( 'closeOk', false );
-			$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
-			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
-			$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
-			$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
-			$this->reindexAcceptableCountDeviation = self::parsePotentialPercent(
-				$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 
+			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -207,7 +238,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . "Validating analyzers..." );
 		$settingsObject = $this->getIndex()->getSettings();
 		$settings = $settingsObject->get();
-		$requiredAnalyzers = AnalysisConfigBuilder::build();
+		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
+		$requiredAnalyzers = $analysisConfig->buildConfig();
 		if ( $this->vaActualMatchRequired( 'index.analysis', $settings, $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
@@ -257,7 +289,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$actualMappings = $actualMappings[ $this->getIndex()->getName() ];
 
 		$this->output( $this->indent . "\tValidating mapping for page type..." );
-		$requiredPageMappings = MappingConfigBuilder::build();
+		$requiredPageMappings = new MappingConfigBuilder(
+			$this->prefixSearchStartsWithAny, $this->phraseUseText );
+		$requiredPageMappings = $requiredPageMappings->buildConfig();
 		if ( array_key_exists( 'page', $actualMappings ) &&
 				$this->vmActualMatchRequired( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
 			$this->output( "ok\n" );
@@ -536,7 +570,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$filter = new Elastica\Filter\Script(
 				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
 		}
-		$pageProperties = MappingConfigBuilder::build();
+		$pageProperties = new MappingConfigBuilder(
+			$this->prefixSearchStartsWithAny, $this->phraseUseText );
+		$pageProperties = $pageProperties->buildConfig();
 		$pageProperties = $pageProperties[ 'properties' ];
 		try {
 			$query = new Elastica\Query();
@@ -597,11 +633,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
+		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
 				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
-				'analysis' => AnalysisConfigBuilder::build(),
+				'analysis' => $analysisConfig->buildConfig(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
 			)

@@ -21,19 +21,25 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class AnalysisConfigBuilder {
+	/**
+	 * Language code we're building analysis for
+	 * @var string
+	 */
 	private $language;
 
 	/**
-	 * @return array
+	 * Should we use aggressive splitting?
+	 * @var bool
 	 */
-	public static function build() {
-		$builder = new AnalysisConfigBuilder();
-		return $builder->buildConfig();
-	}
+	private $aggressiveSplitting;
 
-	public function __construct() {
-		global $wgLanguageCode;
-		$this->language = $wgLanguageCode;
+	/**
+	 * Constructor
+	 * @param string $langCode The language code to build config for
+	 */
+	public function __construct( $langCode, $aggressiveSplitting ) {
+		$this->language = $langCode;
+		$this->aggressiveSplitting = $aggressiveSplitting;
 	}
 
 	/**
@@ -137,8 +143,6 @@ class AnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
-		global $wgCirrusSearchUseAggressiveSplitting;
-
 		switch ( $this->language ) {
 		// Please add languages in alphabetical order.
 		case 'el':
@@ -156,7 +160,7 @@ class AnalysisConfigBuilder {
 			);
 			$filters = array();
 			$filters[] = 'standard';
-			if ( $wgCirrusSearchUseAggressiveSplitting ) {
+			if ( $this->aggressiveSplitting ) {
 				$filters[] = 'aggressive_splitting';
 			}
 			$filters[] = 'possessive_english';

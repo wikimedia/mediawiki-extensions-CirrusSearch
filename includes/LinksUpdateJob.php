@@ -60,8 +60,8 @@ class LinksUpdateJob extends Job {
 		} else {
 			// Load the titles and filter out any that no longer exist.
 			Updater::updateLinkedArticles(
-				self::loadTitles( $this->params[ 'addedLinks' ] ),
-				self::loadTitles( $this->params[ 'removedLinks' ] ) );
+				$this->loadTitles( $this->params[ 'addedLinks' ] ),
+				$this->loadTitles( $this->params[ 'removedLinks' ] ) );
 		}
 	}
 
@@ -70,7 +70,7 @@ class LinksUpdateJob extends Job {
 	 * @param Title|string $title Either a Title or a string to be loaded.
 	 * @return array(Title) loaded titles
 	 */
-	private static function loadTitles( $titles ) {
+	private function loadTitles( $titles ) {
 		$result = array();
 		foreach ( $titles as $title ) {
 			// TODO remove support for Title objects when the queues have drained of them

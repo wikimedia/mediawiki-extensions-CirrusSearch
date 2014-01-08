@@ -62,12 +62,11 @@ class Connection extends ElasticaConnection {
 
 	/**
 	 * Fetch the Elastica Type for pages.
+	 * @param mixed $name basename of index
 	 * @param mixed $type type of index (content or general or false to get all)
-	 * @param mixed $name basename of index, defaults to wfWikiId()
 	 * @return \Elastica\Type
 	 */
-	public static function getPageType( $type = false, $name = false ) {
-		$name = $name ?: wfWikiId();
+	public static function getPageType( $name, $type = false ) {
 		return self::getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
 	}
 

@@ -245,7 +245,7 @@ class Updater {
 
 		$exception = null;
 		try {
-			$pageType = Connection::getPageType( $indexType );
+			$pageType = Connection::getPageType( wfWikiId(), $indexType );
 			// The bulk api doesn't support shardTimeout so don't use it if one is set
 			if ( $shardTimeout === null ) {
 				$start = microtime( true );
@@ -506,7 +506,7 @@ class Updater {
 	}
 
 	private static function buildCount( $filter ) {
-		$type = Connection::getPageType();
+		$type = Connection::getPageType( wfWikiId() );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
@@ -630,7 +630,7 @@ MVEL;
 				if ( $otherIndex === null ) {
 					continue;
 				}
-				$type = Connection::getPageType( false, $otherIndex );
+				$type = Connection::getPageType( $otherIndex );
 				$bool = new \Elastica\Filter\Bool();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
 				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
@@ -733,7 +733,7 @@ MVEL;
 		try {
 			$start = microtime( true );
 			foreach ( Connection::getAllIndexTypes() as $type ) {
-				Connection::getPageType( $type )
+				Connection::getPageType( wfWikiId(), $type )
 					->deleteIds( $ids );
 			}
 			$took = round( ( microtime( true ) - $start ) * 1000 );

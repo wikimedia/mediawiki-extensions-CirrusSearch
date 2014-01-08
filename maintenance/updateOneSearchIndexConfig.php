@@ -533,7 +533,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . "Verifying counts..." );
 			// We can't verify counts are exactly equal because they won't be - we still push updates into
 			// the old index while reindexing the new one.
-			$oldCount = (float) Connection::getPageType( $this->indexType )->count();
+			$oldCount = (float) Connection::getPageType( $this->indexBaseName, $this->indexType )->count();
 			$this->getIndex()->refresh();
 			$newCount = (float) $this->getPageType()->count();
 			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
@@ -582,11 +582,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
-			$result = Connection::getPageType( $this->indexType )->search( $query, array(
-				'search_type' => 'scan',
-				'scroll' => '1h',
-				'size'=> $this->reindexChunkSize,
-			) );
+			$result = Connection::getPageType( $this->indexBaseName, $this->indexType )
+				->search( $query, array(
+					'search_type' => 'scan',
+					'scroll' => '1h',
+					'size'=> $this->reindexChunkSize,
+				)
+			);
 			$totalDocsToReindex = $result->getResponse()->getData();
 			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
 			$this->output( $this->indent . $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );

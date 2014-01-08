@@ -53,6 +53,12 @@ class CirrusSearch extends SearchEngine {
 	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
+		$term = trim( $term );
+		// No searching for nothing!  That takes forever!
+		if ( !$term ) {
+			return null;
+		}
+
 		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them

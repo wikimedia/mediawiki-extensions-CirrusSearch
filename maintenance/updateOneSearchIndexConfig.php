@@ -531,7 +531,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$forkResult = $fork->start();
 			switch ( $forkResult ) {
 			case 'child':
-				$this->reindexInternal( $this->reindexProcesses, $fork->childNumber );
+				$this->reindexInternal( $this->reindexProcesses, $fork->getChildNumber() );
 				die( 0 );
 			case 'done':
 				break;

@@ -23,41 +23,6 @@ use \ForkController;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ReindexForkController extends ForkController {
-	/**
-	 * @var integer number of this child or null if this is the parent
-	 */
-	var $childNumber;
-	/**
-	 * Fork a number of worker processes.  Have to hack ForkController to store
-	 * the child number.
-	 *
-	 * @return string
-	 */
-	protected function forkWorkers( $numProcs ) {
-		$this->prepareEnvironment();
-
-		// Create the child processes
-		for ( $i = 0; $i < $numProcs; $i++ ) {
-			// Do the fork
-			$pid = pcntl_fork();
-			if ( $pid === -1 || $pid === false ) {
-				echo "Error creating child processes\n";
-				exit( 1 );
-			}
-
-			if ( !$pid ) {
-				$this->initChild();
-				$this->childNumber = $i; // Hack right here.
-				return 'child';
-			} else {
-				// This is the parent process
-				$this->children[$pid] = true;
-			}
-		}
-
-		return 'parent';
-	}
-
 	protected function prepareEnvironment() {
 		parent::prepareEnvironment();
 		Connection::destroySingleton();

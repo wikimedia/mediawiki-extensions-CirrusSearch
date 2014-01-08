@@ -724,6 +724,18 @@ $messages['ko'] = array(
 	'cirrussearch-file-contents-match' => '파일 내용 일치: $1',
 );
 
+/** Colognian (Ripoarisch)
+ * @author Purodha
+ */
+$messages['ksh'] = array(
+	'cirrussearch-desc' => 'Söhke em MedijaWikki met <i lang="en" xml:lang="en">Elasticsearch</i> dohenger.',
+	'cirrussearch-backend-error' => 'Mer hatte e problem, wat ävver flök verbei sin sullt. Bes esu jood u versöhg et schpääder norr_ens.',
+	'cirrussearch-now-using' => 'Heh dat Wikke hädd_en neu Söhkmaschiin. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mieh drövver lässe]])',
+	'cirrussearch-pref-label' => 'Et neue Söhke',
+	'cirrussearch-pref-desc' => 'Probeer ons neu Projrammdeil zum Söhke. Et kann met mieh Schprohche ömjonn, brängk flöker un neue Antwoote un kann esujaa Täx em Ennere vun Schablohne fenge.',
+	'cirrussearch-file-contents-match' => 'Der Enhalld vun dä Dattei paß: $1',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */

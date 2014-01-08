@@ -446,9 +446,9 @@ class Updater {
 		$linkCountClosureCount = count( $linkCountClosures );
 		if ( !$skipLinks && $linkCountClosureCount ) {
 			try {
-				$start = microtime();
+				$start = microtime( true );
 				$result = $linkCountMultiSearch->search();
-				$took = round( ( microtime() - $start ) * 1000 );
+				$took = round( ( microtime( true ) - $start ) * 1000 );
 				$pageCount = count( $pages );
 				wfDebugLog( 'CirrusSearch', "Counted links to $pageCount pages in $took millis." );
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
@@ -658,9 +658,9 @@ MVEL;
 		}
 
 		// Look up the ids and run all closures to build the bulk update
-		$start = microtime();
+		$start = microtime( true );
 		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
-		$took = round( ( microtime() - $start ) * 1000 );
+		$took = round( ( microtime( true ) - $start ) * 1000 );
 		wfDebugLog( 'CirrusSearch', "Searched for $findIdsClosuresCount ids in other indexes in $took millis." );
 		for ( $i = 0; $i < $findIdsClosuresCount; $i++ ) {
 			$results = $findIdsMultiSearchResult[ $i ]->getResults();
@@ -679,9 +679,9 @@ MVEL;
 		// Execute the bulk update
 		$exception = null;
 		try {
-			$start = microtime();
+			$start = microtime( true );
 			$bulk->send();
-			$took = round( ( microtime() - $start ) * 1000 );
+			$took = round( ( microtime( true ) - $start ) * 1000 );
 			wfDebugLog( 'CirrusSearch', "Updated $updatesInBulk documents in other indexes in $took millis." );
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
 			if ( self::bulkResponseExceptionIsJustDocumentMissing( $e ) ) {

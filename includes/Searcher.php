@@ -643,8 +643,11 @@ class Searcher {
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
 			'doWork' => function() use ( $description, $search ) {
 				try {
+					$start = microtime( true );
 					$result = $search->search();
-					wfDebugLog( 'CirrusSearch', 'Search completed in ' . $result->getTotalTime() . ' millis' );
+					$took = round( ( microtime( true ) - $start ) * 1000 );
+					$elasticTook = $result->getTotalTime();
+					wfDebugLog( 'CirrusSearch', "Search completed in $took millis and $elasticTook Elasticsearch millis" );
 					return Status::newGood( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					wfLogWarning( "Search backend error during $description.  Error message is:  " . $e->getMessage() );

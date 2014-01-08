@@ -115,7 +115,7 @@ class FullTextResultsType implements ResultsType {
 	private function addMatchedFields( $fields ) {
 		foreach ( $fields as $name => $config ) {
 			// TODO remove when Elasticsearch issue 3757 is fixed
-			if ( strpos( $name, '.plain' ) !== false ) {
+			if ( $config[ 'type' ] !== 'fvh' ) {
 				continue;
 			}
 			$config[ 'matched_fields' ] = array( $name, "$name.plain" );

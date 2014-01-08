@@ -196,7 +196,8 @@ class ForceSearchIndex extends Maintenance {
 						UpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
-					$size = Updater::updatePages( $pages, !$this->forceUpdate,
+					$updater = new Updater();
+					$size = $updater->updatePages( $pages, !$this->forceUpdate,
 						null, null, $updateFlags );
 				}
 			} else {
@@ -210,7 +211,8 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $lastDelete[ 'timestamp' ];
 				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
 				$minTitle = $lastDelete[ 'title' ]->getText();
-				Updater::deletePages( $titlesToDelete, $idsToDelete );
+				$updater = new Updater();
+				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -300,6 +302,9 @@ class ForceSearchIndex extends Maintenance {
 		}
 		wfProfileIn( __METHOD__ . '::decodeResults' );
 		$result = array();
+		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
+		// level so those are stored when it is freed.
+		$updater = new Updater();
 		foreach ( $res as $row ) {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
@@ -321,12 +326,7 @@ class ForceSearchIndex extends Maintenance {
 					// are totally possible, as well as fun stuff like redirect loops, we need to use
 					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 					// self redirects.  Great!
-					$page = Updater::traceRedirects( $page->getTitle() );
-					// The cost of using the fancy redirect handling logic is that we have to clear some global state
-					// that cirrus maintains to prevent duplicate in process updates and to catch redirect loops.
-					// We could use the deplicate prevention, but we can't afford to let a global array grow without
-					// bounds, so clear it.
-					Updater::clearUpdated();
+					$page = $updater->traceRedirects( $page->getTitle() );
 				}
 			}
 			$update = array(

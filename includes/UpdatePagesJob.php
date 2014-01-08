@@ -46,7 +46,8 @@ class UpdatePagesJob extends Job {
 			$pageData[] = WikiPage::factory( Title::newFromDBKey( $pageDBKey ) );
 		}
 		// Now invoke the updater!
-		Updater::updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
+		$updater = new Updater();
+		$updater->updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
 			$this->params[ 'updateFlags' ] );
 	}
 }

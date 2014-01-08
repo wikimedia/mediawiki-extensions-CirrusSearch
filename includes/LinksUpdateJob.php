@@ -42,8 +42,9 @@ class LinksUpdateJob extends Job {
 	}
 
 	protected function doJob() {
+		$updater = new Updater();
 		if ( $this->params[ 'primary' ] ) {
-			Updater::updateFromTitle( $this->title );
+			$updater->updateFromTitle( $this->title );
 			if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 					count( $this->params[ 'removedLinks' ] ) > 0 ) {
 				$params = array(
@@ -59,7 +60,7 @@ class LinksUpdateJob extends Job {
 			}
 		} else {
 			// Load the titles and filter out any that no longer exist.
-			Updater::updateLinkedArticles(
+			$updater->updateLinkedArticles(
 				$this->loadTitles( $this->params[ 'addedLinks' ] ),
 				$this->loadTitles( $this->params[ 'removedLinks' ] ) );
 		}

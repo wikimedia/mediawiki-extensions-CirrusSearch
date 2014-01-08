@@ -53,10 +53,11 @@ class OtherIndexJob extends Job {
 			list( $namespace, $title ) = $t;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
+		$updater = new Updater();
 		if ( $this->params[ 'existsInLocalIndex' ] ) {
-			Updater::addLocalSiteToOtherIndex( $titles );
+			$updater->addLocalSiteToOtherIndex( $titles );
 		} else {
-			Updater::removeLocalSiteFromOtherIndex( $titles );
+			$updater->removeLocalSiteFromOtherIndex( $titles );
 		}
 	}
 }

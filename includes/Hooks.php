@@ -4,6 +4,7 @@ namespace CirrusSearch;
 use \BetaFeatures;
 use \JobQueueGroup;
 use \Title;
+use \RequestContext;
 use \WikiPage;
 use \Xml;
 
@@ -199,7 +200,8 @@ class Hooks {
 	 * @return bool always false because we are the authoritative prefix search
 	 */
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
-		$searcher = new Searcher( 0, $limit, $ns );
+		$user = RequestContext::getMain()->getUser();
+		$searcher = new Searcher( 0, $limit, $ns, $user );
 		$searcher->setResultsType( new TitleResultsType( true ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
@@ -226,7 +228,8 @@ class Hooks {
 			return false;
 		}
 
-		$searcher = new Searcher( 0, 1, array( $title->getNamespace() ) );
+		$user = RequestContext::getMain()->getUser();
+		$searcher = new Searcher( 0, 1, array( $title->getNamespace() ), $user );
 		$searcher->setResultsType( new TitleResultsType( false ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with

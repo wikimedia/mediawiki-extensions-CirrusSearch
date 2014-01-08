@@ -28,7 +28,7 @@ use \UsageException;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Searcher {
+class Searcher extends ElasticsearchIntermediary {
 	const SUGGESTION_NAME_TITLE = 'title';
 	const SUGGESTION_NAME_REDIRECT = 'redirect';
 	const SUGGESTION_NAME_TEXT = 'text_suggestion';
@@ -100,10 +100,6 @@ class Searcher {
 	 */
 	private $rescore = null;
 	/**
-	 * @var string description of the current operation used in logging errors
-	 */
-	private $description;
-	/**
 	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
 	 * with time since the last update.
 	 */
@@ -135,9 +131,13 @@ class Searcher {
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
 	 * @param array $namespaces Namespace numbers to search
+	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
 	 */
-	public function __construct( $offset, $limit, $namespaces, $index = false ) {
+	public function __construct( $offset, $limit, $namespaces, $user, $index = false ) {
+		global $wgCirrusSearchSlowSearch;
+
+		parent::__construct( $user, $wgCirrusSearchSlowSearch );
 		$this->offset = $offset;
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
@@ -159,15 +159,13 @@ class Searcher {
 	public function nearMatchTitleSearch( $search ) {
 		wfProfileIn( __METHOD__ );
 		self::checkTitleSearchRequestLength( $search );
-		wfDebugLog( 'CirrusSearch', "Lowercased title searching:  $search" );
 
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.near_match', $search );
 		$this->filters[] = new \Elastica\Filter\Query( $match );
 		$this->boostForLinks = false;
 
-		$this->description = "lowercase title search for '$search'";
-		$result = $this->search();
+		$result = $this->search( "lowercase title search for '$search'" );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -182,7 +180,6 @@ class Searcher {
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
 
 		self::checkTitleSearchRequestLength( $search );
-		wfDebugLog( 'CirrusSearch', "Prefix searching:  $search" );
 
 		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
 			$match = new \Elastica\Query\Match();
@@ -197,8 +194,7 @@ class Searcher {
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 
-		$this->description = "prefix search for '$search'";
-		$result = $this->search();
+		$result = $this->search( "prefix search for '$search'" );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -230,7 +226,6 @@ class Searcher {
 		global $wgCirrusSearchPhraseUseText;
 		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
 		global $wgCirrusSearchPreferRecentDefaultHalfLife;
-		wfDebugLog( 'CirrusSearch', "Searching:  \"$term\"" );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
@@ -422,8 +417,7 @@ class Searcher {
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
 		}
-		$this->description = "full text search for '$originalTerm'";
-		$result = $this->search();
+		$result = $this->search( "full text search for '$originalTerm'" );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -457,7 +451,7 @@ class Searcher {
 		$idFilter->addId( $id );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
-		$result = $this->search();
+		$result = $this->search( "more like $found->namespace:$found->title search" );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -470,21 +464,21 @@ class Searcher {
 	 */
 	public function get( $id, $fields ) {
 		wfProfileIn( __METHOD__ );
-		$indexBase = $this->indexBaseName;
+		$searcher = $this;
 		$indexType = $this->pickIndexTypeFromNamespaces();
+		$indexBaseName = $this->indexBaseName;
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $indexBase, $indexType, $id, $fields ) {
+			'doWork' => function() use ( $searcher, $id, $fields, $indexType, $indexBaseName ) {
 				try {
-					$result = Connection::getPageType( $indexBase, $indexType )
-						->getDocument( $id, array( 'fields' => $fields, ) );
-					return Status::newGood( $result );
+					$searcher->start( "get of $indexType.$id" );
+					$pageType = Connection::getPageType( $indexBaseName, $indexType );
+					return $searcher->success( $pageType->getDocument( $id, array( 'fields' => $fields, ) ) );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the called to decide if that is and error.
-					return Status::newGood( null );
+					return $searcher->success( null );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					wfLogWarning( "Search backend error during get for $id.  Error message is:  " . $e->getMessage() );
-					return Status::newFatal( 'cirrussearch-backend-error' );
+					return $searcher->failure();
 				}
 			},
 			'error' => function( $status ) {
@@ -559,14 +553,13 @@ class Searcher {
 		$result = $wgMemc->get( $mcKey );
 		if ( !$result ) {
 			try {
+				$this->start( 'fetching elasticsearch version' );
 				$result = Connection::getClient()->request( '' );
+				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				wfLogWarning( "Search backend error getting Elasticsearch version.  Error message is:  " .
-					$e->getMessage() );
 				wfProfileOut( __METHOD__ );
-				return Status::newFatal( 'cirrussearch-backend-error' );
+				return $this->failure();
 			}
-			$result = $result->getData();
 			$result = $result[ 'version' ][ 'number' ];
 			$setResult = $wgMemc->set( $mcKey, $result, 3600 * 12 );
 		}
@@ -578,7 +571,7 @@ class Searcher {
 	 * Powers full-text-like searches including prefix search.
 	 * @return Status(ResultSet|null|array(String)) results, no results, or title results
 	 */
-	private function search() {
+	private function search( $description ) {
 		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreAccurateScoringMode;
 
@@ -645,7 +638,6 @@ class Searcher {
 		}
 
 		// Setup the search
-		$description = $this->description;
 		$search = Connection::getPageType( $this->indexBaseName, $this->pickIndexTypeFromNamespaces() )
 			->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
@@ -653,18 +645,14 @@ class Searcher {
 		}
 
 		// Perform the search
+		$searcher = $this;
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $description, $search ) {
+			'doWork' => function() use ( $searcher, $search, $description ) {
 				try {
-					$start = microtime( true );
-					$result = $search->search();
-					$took = round( ( microtime( true ) - $start ) * 1000 );
-					$elasticTook = $result->getTotalTime();
-					wfDebugLog( 'CirrusSearch', "Search completed in $took millis and $elasticTook Elasticsearch millis" );
-					return Status::newGood( $result );
+					$searcher->start( $description );
+					return $searcher->success( $search->search() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					wfLogWarning( "Search backend error during $description.  Error message is:  " . $e->getMessage() );
-					return Status::newFatal( 'cirrussearch-backend-error' );
+					return $searcher->failure( $e );
 				}
 			},
 			'error' => function( $status ) {

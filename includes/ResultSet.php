@@ -38,9 +38,9 @@ class ResultSet extends SearchResultSet {
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$suggestion = $this->findSuggestion();
-		if ( $suggestion ) {
+		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
-			$this->suggestionSnippet = self::escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
+			$this->suggestionSnippet = $this->escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
 			if ( $suggestPrefixes ) {
 				$suggestPrefix = implode( ' ', $suggestPrefixes );
 				// No need to escape suggestionQuery because Linker will escape it.
@@ -90,7 +90,7 @@ class ResultSet extends SearchResultSet {
 	 * @param $suggestion string suggestion from elasticsearch
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
-	private static function escapeHighlightedSuggestion( $suggestion ) {
+	private function escapeHighlightedSuggestion( $suggestion ) {
 		if ( self::$suggestionHighlightPreEscaped === null ) {
 			self::$suggestionHighlightPreEscaped =
 				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_PRE );
@@ -100,6 +100,18 @@ class ResultSet extends SearchResultSet {
 		return str_replace( array( self::$suggestionHighlightPreEscaped, self::$suggestionHighlightPostEscaped ),
 			array( Searcher::SUGGESTION_HIGHLIGHT_PRE, Searcher::SUGGESTION_HIGHLIGHT_POST ),
 			htmlspecialchars( $suggestion ) );
+	}
+
+	private function resultContainsFullyHighlightedMatch() {
+		foreach ( $this->result->getResults() as $result ) {
+			$highlights = $result->getHighlights();
+			// If the whole string is highlighted then return true
+			if ( isset( $highlights[ 'title' ] ) &&
+					!trim( preg_replace( Searcher::HIGHLIGHT_REGEX, '', $highlights[ 'title' ][ 0 ] ) ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function hasResults() {

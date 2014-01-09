@@ -17,6 +17,21 @@ Feature: Suggestions
     When I search for nobel prize
     Then there is no suggestion
 
+  @suggestions @stemming
+  Scenario: Suggestions do not show up when a full title matches but with stemming
+    When I search for stemmingsingleword
+    Then there is no suggestion
+
+  @suggestions @stemming
+  Scenario: Suggestions do not show up when a full multi word title matches but with stemming
+    When I search for stemming multiword
+    Then there is no suggestion
+
+  @suggestions @stemming
+  Scenario: Suggestions do not show up when a full multi word title matches but with apostrophe normalization
+    When I search for stemming possessive's
+    Then there is no suggestion
+
   @suggestions
   Scenario: Suggestions can come from redirect titles when redirects are included in search
     When I search for Rrr Ward

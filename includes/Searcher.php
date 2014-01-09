@@ -36,6 +36,7 @@ class Searcher {
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
+	const HIGHLIGHT_REGEX = '/<span class="searchmatch">.*?<\/span>/';
 
 	/**
 	 * Maximum title length that we'll check in prefix and keyword searches.

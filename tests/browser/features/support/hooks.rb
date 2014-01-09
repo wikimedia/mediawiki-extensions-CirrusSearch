@@ -95,7 +95,7 @@ Before("@setup_namespaces") do
 end
 
 Before("@suggestions") do
-  if !$setup_suggestions
+  if !$suggestions
     steps %Q{
       Given a page named Popular Culture exists with contents popular culture
       And a page named Nobel Prize exists with contents nobel prize
@@ -114,7 +114,30 @@ Before("@suggestions") do
       And a page named Rrr Word 4 exists with contents #REDIRECT [[Noble Somethingelse4]]
       And a page named Rrr Word 5 exists with contents #REDIRECT [[Noble Somethingelse5]]
     }
-    $setup_suggestions = true
+    $suggestions = true
+  end
+end
+
+Before("@suggestions", "@stemming") do
+  if !$suggestions_stemming
+    steps %Q{
+      Given a page named Stemming Multiwords exists
+      And a page named Stemming Possessive’s exists
+      And a page named Stemmingsinglewords exists
+      And a page named Stemmingsinglewords Other 1 exists
+      And a page named Stemmingsinglewords Other 2 exists
+      And a page named Stemmingsinglewords Other 3 exists
+      And a page named Stemmingsinglewords Other 4 exists
+      And a page named Stemmingsinglewords Other 5 exists
+      And a page named Stemmingsinglewords Other 6 exists
+      And a page named Stemmingsinglewords Other 7 exists
+      And a page named Stemmingsinglewords Other 8 exists
+      And a page named Stemmingsinglewords Other 9 exists
+      And a page named Stemmingsinglewords Other 10 exists
+      And a page named Stemmingsinglewords Other 11 exists
+      And a page named Stemmingsinglewords Other 12 exists
+    }
+    $suggestions_stemming = true
   end
 end
 

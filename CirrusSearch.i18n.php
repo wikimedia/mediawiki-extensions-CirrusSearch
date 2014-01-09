@@ -848,6 +848,19 @@ $messages['pl'] = array(
 	'cirrussearch-pref-desc' => 'Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.',
 );
 
+/** Portuguese (português)
+ * @author Vitorvicentevalente
+ */
+$messages['pt'] = array(
+	'cirrussearch-desc' => 'Mecanismo de procura "Elasticsearch" para o MediaWiki',
+	'cirrussearch-backend-error' => 'Não foi possível completar a sua pesquisa devido a um problema temporário. Por favor, tente novamente mais tarde.',
+	'cirrussearch-now-using' => 'Esta wiki está a utilizar um novo motor de busca.
+([[mw:Special:MyLanguage/Help:CirrusSearch|Saiba mais]])',
+	'cirrussearch-pref-label' => 'Nova procura',
+	'cirrussearch-pref-desc' => 'Experimente a nossa nova forma de pesquisa que suporta um maior número de idiomas, fornece resultados mais actualizados e pode ainda encontrar o texto de predefinições.',
+	'cirrussearch-file-contents-match' => 'Conteúdos de ficheiros correspondentes: $1',
+);
+
 /** Brazilian Portuguese (português do Brasil)
  * @author Jaideraf
  */

@@ -375,6 +375,14 @@ Feature: Full text search
   | catapult AND + amazing |
   | catapult AND - amazing |
   | catapult AND ! amazing |
+  | catapult!!!!!!!        |
+  | catapult !!!!!!!!      |
+  | !!!! catapult          |
+  | ------- catapult       |
+  | ++++ catapult ++++     |
+  | ++catapult++++catapult |
+  | :~!$$=!~\!{<} catapult |
+  | catapult -_~^_~^_^^    |
 
   @boolean_operators @setup_main
   Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)

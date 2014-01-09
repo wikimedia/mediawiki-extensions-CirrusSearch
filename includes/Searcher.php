@@ -848,10 +848,11 @@ class Searcher {
 		wfProfileIn( __METHOD__ );
 		// Turn bad fuzzy searches into searches that contain a ~
 		$string = preg_replace_callback( '/(?<leading>[^\s"])~(?<trailing>\S+)/', function ( $matches ) {
-			if ( preg_match( '/0|(?:0?\.[0-9]+)|(?:1(?:\.0)?)/', $matches[ 'trailing' ] ) ) {
+			if ( preg_match( '/^(?:0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
+				wfDebugLog( 'CirrusSearch', "Found fuzzy:  " . $matches[ 'trailing' ] );
 				return $matches[ 0 ];
 			} else {
-				return $matches[ 'leading' ] . '\\~' . $matches[ 'trailing' ];
+				return $matches[ 'leading' ] . '\\~' . preg_replace( '/~/', '\~', $matches[ 'trailing' ] );
 			}
 		}, $string );
 		// Turn bad proximity searches into searches that contain a ~
@@ -863,13 +864,17 @@ class Searcher {
 			}
 		}, $string );
 		// Escape +, -, and ! when not followed immediately by a term.
-		$string = preg_replace( '/(?:\\+|\\-|\\!)(?:\s|$)/', '\\\\$0', $string );
+		$string = preg_replace_callback( '/([\\+\\-\\!]+)([\\+\\-\\!\\~\s]|$)/', 'CirrusSearch\Searcher::escapeBadSyntax', $string );
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/', 'CirrusSearch\Searcher::lowercaseMatched', $string );
 		$string = preg_replace_callback( '/^\s*(?:AND|OR)/', 'CirrusSearch\Searcher::lowercaseMatched', $string );
 		wfProfileOut( __METHOD__ );
 		return $string;
+	}
+
+	private static function escapeBadSyntax( $matches ) {
+		return "\\" . implode( "\\", str_split( $matches[ 1 ] ) ) . $matches[ 2 ];
 	}
 
 	private static function lowercaseMatched( $matches ) {

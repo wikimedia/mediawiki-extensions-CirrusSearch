@@ -8,17 +8,8 @@ end
 When(/^I type (.+) into the search box$/) do |search_term|
   on(SearchPage).search_input = search_term
 end
-When(/^I click the Search button$/) do
-  on(RandomPage) do |page|
-    if page.search_button? then
-      page.search_button
-    else
-      page.simple_search_button
-    end
-  end
-end
-When(/^I hit enter in the search box$/) do
-  on(SearchPage).search_input += "\n"
+When(/^I click the search button$/) do
+  on(SearchPage).search_button
 end
 When(/^I search for (.+)$/) do |text|
   #If I'm on the search page then I actually want to search in that box not the

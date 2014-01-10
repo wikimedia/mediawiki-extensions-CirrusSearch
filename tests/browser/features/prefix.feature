@@ -8,7 +8,7 @@ Feature: Prefix search
     Then suggestions should appear
     And <first_result> is the first suggestion
     And I should be offered to search for <term>
-    When I hit enter in the search box
+    When I click the search button
     Then I am on a page titled <title>
   Examples:
     | term                   | first_result           | title                  |

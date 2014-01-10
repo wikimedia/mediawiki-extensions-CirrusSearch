@@ -39,6 +39,9 @@ GEM
       watir-webdriver (>= 0.6.4)
     page_navigation (0.9)
       data_magic (>= 0.14)
+    parallel (0.9.1)
+    parallel_tests (0.16.6)
+      parallel
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec-expectations (2.14.4)
@@ -60,3 +63,4 @@ PLATFORMS
 
 DEPENDENCIES
   mediawiki-selenium
+  parallel_tests

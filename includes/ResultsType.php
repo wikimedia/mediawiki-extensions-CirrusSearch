@@ -60,7 +60,8 @@ class TitleResultsType implements ResultsType {
 class FullTextResultsType implements ResultsType {
 	public function getFields() {
 		// TODO remove text_words once text.word_count is available everywhere
-		return array( 'id', 'title', 'namespace', 'redirect', 'text_bytes', 'text.word_count', 'text_words' );
+		return array( 'id', 'title', 'namespace', 'redirect', 'timestamp',
+			'text_bytes', 'text.word_count', 'text_words' );
 	}
 
 	/**

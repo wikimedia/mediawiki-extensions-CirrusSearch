@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use \MWTimestamp;
 use \SearchResult;
 use \Title;
 
@@ -39,6 +40,7 @@ class Result extends SearchResult {
 	private $wordCount;
 	private $byteSize;
 	private $score;
+	private $timestamp;
 
 	/**
 	 * Build the result.
@@ -54,6 +56,7 @@ class Result extends SearchResult {
 		// TODO remove ternary once text.word_count is available everywhere
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
 		$this->byteSize = $result->text_bytes;
+		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();
 		// TODO remove when Elasticsearch issue 3757 is fixed
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
@@ -210,5 +213,9 @@ class Result extends SearchResult {
 
 	public function getScore() {
 		return $this->score;
+	}
+
+	public function getTimestamp() {
+		return $this->timestamp->getTimestamp( TS_MW );
 	}
 }

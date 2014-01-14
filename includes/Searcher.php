@@ -910,7 +910,7 @@ class Searcher extends ElasticsearchIntermediary {
 			case 'linear':
 				break;  // scoreBoostMvel already correct
 			case 'log':
-				$scoreBostMvel = "log10($scoreBoostMvel + 2)";
+				$scoreBoostMvel = "log10($scoreBoostMvel + 2)";
 				break;
 			default:
 				wfLogWarning( "Invalid links boost type:  $this->boostLinks" );

@@ -935,11 +935,13 @@ $messages['sk'] = array(
 /** Swedish (svenska)
  * @author Bengt B
  * @author Jopparn
+ * @author Lokal Profil
  * @author WikiPhoenix
  */
 $messages['sv'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
+	'cirrussearch-now-using' => 'Denna wiki använder en ny sökmotor ([[mw:Special:MyLanguage/Help:CirrusSearch|Läs mer]])',
 	'cirrussearch-ignored-headings' => '#<!-- leave this line exactly as it is --> <pre>
  # Rubriker som kommer att ignoreras av sökningen.
  # Ändringar till detta kommer att gälla så fort sidan med rubriken är indexerad.
@@ -951,8 +953,25 @@ Referenser
 Externa länkar
 Se också
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => ' #<!-- lämna denna rad precis som den är --> <pre>
+# Om en sida innehåller en av följande mallar multipliceras dess sökbetyg med den konfigurerade procentsatsen.
+# Ändringar till detta träder i kraft med omedelbar verkan.
+# Syntaxen är följande:
+#   * Alt efter en "#"-tecknet till slutet på raden är en kommentar
+#   * Var icke-tom rad är exakt det mallnamn som ska förstärkas, namnrymd, versalisering och allt, följt av ett "|"-tecken, följt av ett nummer, följt av ett "%"-tecken.
+# Exempel på välformaterade rader:
+# Mall:Bra|150%
+# Mall:Väldigt Väldigt bra|300%
+# Mall:Dålig|50%
+# Exempel på ogiltiga rader:
+# Mall:Foo|150.234234% <-- decimaltal tillåts inte!
+# Foo|150% <--- fungerar tekniskt sett men för mallinkluderingar av Foo-sidan i huvudnamnrymden
+# Du kan testa konfigurationsändringar genom att utföra en förfrågan med boost-templates:"XX" där XX är alla de mallar du önskar förstärka, separerade med blanksteg istället för radbrytningar.
+# Förfrågor som anger boost-templates:"XX" ignorerar innehållet av detta fält.
+ #</pre> <!-- lämna denna rad precis som den är -->',
 	'cirrussearch-pref-label' => 'Ny sökning',
 	'cirrussearch-pref-desc' => 'Prova vår nya sökning som stöder ett större antal språk, ger fler uppdaterade resultat och kan även hitta text inuti mallar.',
+	'cirrussearch-file-contents-match' => 'Filinnehållsträff: $1',
 );
 
 /** Ukrainian (українська)

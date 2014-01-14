@@ -51,6 +51,12 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // set to 1 for some redundancy, if not 2 for more redundancy.
 $wgCirrusSearchReplicaCount = array( 'content' => 0, 'general' => 0 );
 
+// How many seconds must a search of Elasticsearch be before we consider it
+// slow?  Default value is 10 seconds which should be fine for catching the rare
+// truely abusive queries.  Use Elasticsearch query more granular logs that
+// don't contain user information.
+$wgCirrusSearchSlowSearch = 10.0;
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be
@@ -202,6 +208,7 @@ $wgAutoloadClasses['CirrusSearch\AnalysisConfigBuilder'] = $includes . 'Analysis
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\DeletePagesJob'] = $includes . 'DeletePagesJob.php';
+$wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';

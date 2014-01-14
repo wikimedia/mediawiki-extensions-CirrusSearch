@@ -29,7 +29,7 @@ use \WikiPage;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Updater {
+class Updater extends ElasticsearchIntermediary {
 	// Bit field parameters for updatePages et al.
 	const INDEX_EVERYTHING = 0;
 	const INDEX_ON_SKIP = 1;
@@ -41,7 +41,7 @@ class Updater {
 	 * of updates.
 	 * @var array(String)
 	 */
-	private static $updated = array();
+	private $updated = array();
 
 	/**
 	 * Headings to ignore.  Lazily initialized.
@@ -49,16 +49,20 @@ class Updater {
 	 */
 	private static $ignoredHeadings = null;
 
+	public function __construct() {
+		parent::__construct( null, null );
+	}
+
 	/**
 	 * Update a single page.
 	 * @param Title $title
 	 */
-	public static function updateFromTitle( $title ) {
+	public function updateFromTitle( $title ) {
 		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		$page = self::traceRedirects( $title );
+		$page = $this->traceRedirects( $title );
 		if ( $page ) {
-			self::updatePages( array( $page ), false, $wgCirrusSearchShardTimeout,
+			$this->updatePages( array( $page ), false, $wgCirrusSearchShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
 		}
 	}
@@ -66,16 +70,17 @@ class Updater {
 	/**
 	 * Trace redirects from the title to the destination.  Also registers the title in the
 	 * memory of titles updated and detects special pages.
+	 *
 	 * @param Title $title title to trace
 	 * @return WikiPage|null wikipage if the $title either isn't a redirect or resolves to
 	 *    an updateable page that hasn't been updated yet.  Null if the page has been
 	 *    updated, is a special page, or the redirects enter a loop.
 	 */
-	public static function traceRedirects( $title ) {
+	public function traceRedirects( $title ) {
 		// Loop through redirects until we get to the ultimate target
 		while ( true ) {
 			$titleText = $title->getFullText();
-			if ( in_array( $titleText, self::$updated ) ) {
+			if ( in_array( $titleText, $this->updated ) ) {
 				// Already indexed this article in this process.  This is mostly useful
 				// to catch self redirects but has a storied history of catching strange
 				// behavior.
@@ -98,7 +103,7 @@ class Updater {
 			}
 
 			// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
-			self::$updated[] = $titleText;
+			$this->updated[] = $titleText;
 			if ( $content->isRedirect() ) {
 				$target = $content->getUltimateRedirectTarget();
 				if ( $target->equals( $page->getTitle() ) ) {
@@ -113,14 +118,6 @@ class Updater {
 				return $page;
 			}
 		}
-	}
-
-	/**
-	 * Clear the array of already updated/seen pages that is used for deduplication and redirect
-	 * chain detection to free memory.
-	 */
-	public static function clearUpdated() {
-		self::$updated = array();
 	}
 
 	/**
@@ -152,7 +149,7 @@ class Updater {
 	 * @param $flags int Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 */
-	public static function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
+	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
 		wfProfileIn( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {
@@ -162,7 +159,7 @@ class Updater {
 			// TODO I bet we can do this with a multi-get
 			$freshPages = array();
 			foreach ( $pages as $page ) {
-				if ( !self::isFresh( $page ) ) {
+				if ( !$this->isFresh( $page ) ) {
 					$freshPages[] = $page;
 				}
 			}
@@ -170,16 +167,16 @@ class Updater {
 			$freshPages = $pages;
 		}
 
-		OtherIndexJob::queueIfRequired( self::pagesToTitles( $pages ), true );
+		OtherIndexJob::queueIfRequired( $this->pagesToTitles( $pages ), true );
 
 		$allDocuments = array_fill_keys( Connection::getAllIndexTypes(), array() );
-		foreach ( self::buildDocumentForPages( $freshPages, $flags ) as $document ) {
+		foreach ( $this->buildDocumentForPages( $freshPages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
 		$count = 0;
 		foreach( $allDocuments as $indexType => $documents ) {
-			self::sendDocuments( $indexType, $documents, $shardTimeout );
+			$this->sendDocuments( $indexType, $documents, $shardTimeout );
 			$count += count( $documents );
 		}
 
@@ -196,7 +193,7 @@ class Updater {
 	 * @param $clientSideTimeout timeout in seconds to update pages or null if using
 	 *   the Elastica default which is 300 seconds.
 	 */
-	public static function deletePages( $titles, $ids, $clientSideTimeout = null ) {
+	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		wfProfileIn( __METHOD__ );
 
 		OtherIndexJob::queueIfRequired( $titles, false );
@@ -204,13 +201,13 @@ class Updater {
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
-		self::sendDeletes( $ids );
+		$this->sendDeletes( $ids );
 
 		wfProfileOut( __METHOD__ );
 	}
 
-	private static function isFresh( $page ) {
-		$searcher = new Searcher( 0, 0, array( $page->getTitle()->getNamespace() ) );
+	private function isFresh( $page ) {
+		$searcher = new Searcher( 0, 0, array( $page->getTitle()->getNamespace(), null ), null );
 		$get = $searcher->get( $page->getTitle()->getArticleId(), array( 'timestamp ') );
 		if ( !$get->isOk() ) {
 			return false;
@@ -235,7 +232,7 @@ class Updater {
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
 	 */
-	private static function sendDocuments( $indexType, $documents, $shardTimeout = null ) {
+	private function sendDocuments( $indexType, $documents, $shardTimeout ) {
 		wfProfileIn( __METHOD__ );
 
 		$documentCount = count( $documents );
@@ -246,43 +243,27 @@ class Updater {
 		$exception = null;
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );
-			// The bulk api doesn't support shardTimeout so don't use it if one is set
-			if ( $shardTimeout === null ) {
-				$start = microtime( true );
-				wfDebugLog( 'CirrusSearch', "Sending $documentCount documents to the $indexType index via bulk api." );
-				// addDocuments (notice plural) is the bulk api
-				$pageType->addDocuments( $documents );
-				$took = round( ( microtime( true ) - $start ) * 1000 );
-				wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
-			} else {
-				foreach ( $documents as $document ) {
-					$start = microtime( true );
-					// Logging a fully qualified title here makes for easier debugging
-					$title = $document->get( 'namespace' ) . ':' . $document->get( 'title' );
-					wfDebugLog( 'CirrusSearch', "Sending $title to the $indexType index." );
-					$document->setTimeout( $shardTimeout );
-					// The bulk api automatically performs an update if the opType is update but the index api
-					// doesn't so we have to make the switch ourselves
-					if ( $document->getOpType() === 'update' ) {
-						$pageType->updateDocument( $document );
-					} else {
-						// addDocument (notice singular) is the non-bulk index api
-						$pageType->addDocument( $document );
-					}
-					$took = round( ( microtime( true ) - $start ) * 1000 );
-					wfDebugLog( 'CirrusSearch', "Update completed in $took millis" );
-				}
+			$this->start( "sending $documentCount documents to the $indexType index" );
+			// addDocuments (notice plural) is the bulk api
+			$bulk = new \Elastica\Bulk( Connection::getClient() );
+			if ( $shardTimeout ) {
+				$bulk->setShardTimeout( $shardTimeout );
 			}
+			$bulk->setType( $pageType );
+			$bulk->addDocuments( $documents );
+			$bulk->send();
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-			if ( self::bulkResponseExceptionIsJustDocumentMissing( $e,
+			if ( $this->bulkResponseExceptionIsJustDocumentMissing( $e,
 					"Updating a page that doesn't yet exist in Elasticsearch" ) ) {
 				$exception = $e;
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$exception = $e;
 		}
-		if ( $exception !== null ) {
-			wfLogWarning( 'CirrusSearch update failed caused by:  ' . $e->getMessage() );
+		if ( $exception === null ) {
+			$this->success();
+		} else {
+			$this->failure( $exception );
 			foreach ( $documents as $document ) {
 				wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
 			}
@@ -291,7 +272,7 @@ class Updater {
 		wfProfileOut( __METHOD__ );
 	}
 
-	private static function buildDocumentForPages( $pages, $flags ) {
+	private function buildDocumentForPages( $pages, $flags ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
 
@@ -335,8 +316,8 @@ class Updater {
 				wfProfileIn( __METHOD__ . '-parse' );
 
 				// Get text to index, based on content and parser output
-				list( $content, $parserOutput ) = self::getContentAndParserOutput( $page );
-				$text = self::buildTextToIndex( $content, $parserOutput );
+				list( $content, $parserOutput ) = $this->getContentAndParserOutput( $page );
+				$text = $this->buildTextToIndex( $content, $parserOutput );
 
 				$doc->add( 'text', $text );
 				$doc->add( 'text_bytes', strlen( $text ) );
@@ -422,7 +403,7 @@ class Updater {
 				// Count links
 				// Incoming links is the sum of the number of linked pages which we count in Elasticsearch
 				// and the number of incoming redirects of which we have a handy list so we count that here.
-				$linkCountMultiSearch->addSearch( self::buildCount(
+				$linkCountMultiSearch->addSearch( $this->buildCount(
 					new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
 				$redirectCount = count( $redirects );
 				$linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
@@ -430,7 +411,7 @@ class Updater {
 				};
 				// If a page doesn't have any redirects then count the links to them.
 				if ( count( $redirectPrefixedDBKeys ) ) {
-					$linkCountMultiSearch->addSearch( self::buildCount(
+					$linkCountMultiSearch->addSearch( $this->buildCount(
 						new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
 					$linkCountClosures[] = function ( $count ) use( $doc ) {
 						$doc->add( 'incoming_redirect_links', $count );
@@ -446,18 +427,16 @@ class Updater {
 		$linkCountClosureCount = count( $linkCountClosures );
 		if ( !$skipLinks && $linkCountClosureCount ) {
 			try {
-				$start = microtime( true );
-				$result = $linkCountMultiSearch->search();
-				$took = round( ( microtime( true ) - $start ) * 1000 );
 				$pageCount = count( $pages );
-				wfDebugLog( 'CirrusSearch', "Counted links to $pageCount pages in $took millis." );
+				$this->start( "counting links to $pageCount pages" );
+				$result = $linkCountMultiSearch->search();
+				$this->success();
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
 					$linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
-				wfLogWarning( "Search backend error during link count.  Error message is:  " .
-					$e->getMessage() );
+				$this->failure( $e );
 				foreach ( $pages as $page ) {
 					$id = $page->getId();
 					wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
@@ -475,7 +454,7 @@ class Updater {
 	 * @param WikiPage $page The wikipage to get output for
 	 * @return array(Content,ParserOutput)
 	 */
-	private static function getContentAndParserOutput( $page ) {
+	private function getContentAndParserOutput( $page ) {
 		$content = $page->getContent();
 		$parserOptions = $page->makeParserOptions( 'canonical' );
 		$parserOutput = ParserCache::singleton()->get( $page, $parserOptions );
@@ -496,7 +475,7 @@ class Updater {
 	 * @param $content Content of page
 	 * @param $parserOutput ParserOutput from page
 	 */
-	private static function buildTextToIndex( $content, $parserOutput ) {
+	private function buildTextToIndex( $content, $parserOutput ) {
 		switch ( $content->getModel() ) {
 		case CONTENT_MODEL_WIKITEXT:
 			return TextFormatter::formatWikitext( $parserOutput );
@@ -505,7 +484,7 @@ class Updater {
 		}
 	}
 
-	private static function buildCount( $filter ) {
+	private function buildCount( $filter ) {
 		$type = Connection::getPageType( wfWikiId() );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
@@ -538,14 +517,13 @@ class Updater {
 	 * @param $addedLinks array of Titles added to the page
 	 * @param $removedLinks array of Titles removed from the page
 	 */
-	public static function updateLinkedArticles( $addedLinks, $removedLinks ) {
+	public function updateLinkedArticles( $addedLinks, $removedLinks ) {
 		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		// We don't do anything different with removed or added pages at this point so merge them.
 		$titles = array_merge( $addedLinks, $removedLinks );
 		$pages = array();
 		foreach ( $titles as $title ) {
-			wfDebugLog( 'CirrusSearch', "Updating link counts for $title" );
 			$page = WikiPage::factory( $title );
 			if ( $page === null || !$page->exists() ) {
 				// Skip link to non-existant page.
@@ -564,7 +542,7 @@ class Updater {
 				// This is a redirect to a redirect which doesn't count in the search score any way.
 				continue;
 			}
-			if ( in_array( $page->getId(), self::$updated ) ) {
+			if ( in_array( $page->getId(), $this->updated ) ) {
 				// We've already updated this page in this proces so there is no need to update it again.
 				continue;
 			}
@@ -572,7 +550,7 @@ class Updater {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		self::updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
+		$this->updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
 			self::SKIP_PARSE );
 	}
 
@@ -580,7 +558,7 @@ class Updater {
 	 * Add the local wiki to the duplicate tracking list on the indexes of other wikis for $titles.
 	 * @param Array(Title) $titles titles for which to add to the tracking list
 	 */
-	public static function addLocalSiteToOtherIndex( $titles ) {
+	public function addLocalSiteToOtherIndex( $titles ) {
 		// Script is in MVEL and is run in a context with local_site set to this wiki's name
 		$script  = <<<MVEL
 			if (!ctx._source.containsKey("local_sites_with_dupe")) {
@@ -591,14 +569,14 @@ class Updater {
 				ctx._source.local_sites_with_dupe += local_site
 			}
 MVEL;
-		self::updateOtherIndex( 'addLocalSite', $script, $titles );
+		$this->updateOtherIndex( 'addLocalSite', $script, $titles );
 	}
 
 	/**
 	 * Remove the local wiki from the duplicate tracking list on the indexes of other wikis for $titles.
 	 * @param array(Title) $titles titles for which to remove the tracking field
 	 */
-	public static function removeLocalSiteFromOtherIndex( $titles ) {
+	public function removeLocalSiteFromOtherIndex( $titles ) {
 		// Script is in MVEL and is run in a context with local_site set to this wiki's name
 		$script  = <<<MVEL
 			if (!ctx._source.containsKey("local_sites_with_dupe")) {
@@ -607,7 +585,7 @@ MVEL;
 				ctx.op = "none"
 			}
 MVEL;
-		self::updateOtherIndex( 'removeLocalSite', $script, $titles );
+		$this->updateOtherIndex( 'removeLocalSite', $script, $titles );
 	}
 
 	/**
@@ -616,7 +594,7 @@ MVEL;
 	 * @param string $scriptSource MVEL source script for performing the update
 	 * @param array(Title) $titles titles in other indexes to update
 	 */
-	private static function updateOtherIndex( $actionName, $scriptSource, $titles ) {
+	private function updateOtherIndex( $actionName, $scriptSource, $titles ) {
 		$client = Connection::getClient();
 		$bulk = new \Elastica\Bulk( $client );
 		$updatesInBulk = 0;
@@ -658,17 +636,21 @@ MVEL;
 		}
 
 		// Look up the ids and run all closures to build the bulk update
-		$start = microtime( true );
+		$this->start( "searching for $findIdsClosuresCount ids in other indexes" );
 		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
-		$took = round( ( microtime( true ) - $start ) * 1000 );
-		wfDebugLog( 'CirrusSearch', "Searched for $findIdsClosuresCount ids in other indexes in $took millis." );
-		for ( $i = 0; $i < $findIdsClosuresCount; $i++ ) {
-			$results = $findIdsMultiSearchResult[ $i ]->getResults();
-			if ( count( $results ) === 0 ) {
-				continue;
+		try {
+			$this->success();
+			for ( $i = 0; $i < $findIdsClosuresCount; $i++ ) {
+				$results = $findIdsMultiSearchResult[ $i ]->getResults();
+				if ( count( $results ) === 0 ) {
+					continue;
+				}
+				$result = $results[ 0 ];
+				$findIdsClosures[ $i ]( $result->getId() );
 			}
-			$result = $results[ 0 ];
-			$findIdsClosures[ $i ]( $result->getId() );
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$this->failure();
+			return;
 		}
 
 		if ( $updatesInBulk === 0 ) {
@@ -679,19 +661,19 @@ MVEL;
 		// Execute the bulk update
 		$exception = null;
 		try {
-			$start = microtime( true );
+			$this->start( "updating $updatesInBulk documents in other indexes" );
 			$bulk->send();
-			$took = round( ( microtime( true ) - $start ) * 1000 );
-			wfDebugLog( 'CirrusSearch', "Updated $updatesInBulk documents in other indexes in $took millis." );
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-			if ( self::bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
+			if ( $this->bulkResponseExceptionIsJustDocumentMissing( $e, null ) ) {
 				$exception = $e;
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$exception = $e;
 		}
-		if ( $exception !== null ) {
-			wfLogWarning( 'CirrusSearch other index update failure:  ' . $e->getMessage() );
+		if ( $exception === null ) {
+			$this->success();
+		} else {
+			$this->failure();
 			foreach ( $titles as $title ) {
 				$id = $title->getArticleID();
 				wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName: $id" );
@@ -699,7 +681,13 @@ MVEL;
 		}
 	}
 
-	private static function bulkResponseExceptionIsJustDocumentMissing( $exception, $log = false ) {
+	/**
+	 * Check if $exception is a bulk response exception that just contains document is missing failures.
+	 *
+	 * @param \Elastica\Exception\Bulk\ResponseException $exception exception to check
+	 * @param string|null $log debug message to log if this happens or null to log nothing
+	 */
+	private function bulkResponseExceptionIsJustDocumentMissing( $exception, $log ) {
 		$justDocumentMissing = true;
 		foreach ( $exception->getResponseSet()->getBulkResponses() as $bulkResponse ) {
 			if ( $bulkResponse->hasError() ) {
@@ -717,29 +705,27 @@ MVEL;
 		return $justDocumentMissing;
 	}
 
-
 	/**
-	 * @param $ids array
+	 * Send delete requests to Elasticsearch.
+	 *
+	 * @param array(int) $ids ids to delete from Elasticsearch
 	 */
-	private static function sendDeletes( $ids ) {
+	private function sendDeletes( $ids ) {
 		wfProfileIn( __METHOD__ );
 
 		$idCount = count( $ids );
 		if ( $idCount === 0 ) {
 			return;
 		}
-		wfDebugLog( 'CirrusSearch', "Sending $idCount deletes to the index." );
 
 		try {
-			$start = microtime( true );
 			foreach ( Connection::getAllIndexTypes() as $type ) {
-				Connection::getPageType( wfWikiId(), $type )
-					->deleteIds( $ids );
+				$this->start( "deleting $idCount from $type" );
+				Connection::getPageType( wfWikiId(), $type )->deleteIds( $ids );
+				$this->success();
 			}
-			$took = round( ( microtime( true ) - $start ) * 1000 );
-			wfDebugLog( 'CirrusSearch', "Delete completed in $took millis" );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			wfLogWarning( "CirrusSearch delete failed caused by:  " . $e->getMessage() );
+			$this->failure( $e );
 			foreach ( $ids as $id ) {
 				wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
 			}
@@ -750,10 +736,11 @@ MVEL;
 
 	/**
 	 * Convert an array of pages to an array of their titles.
+	 *
 	 * @param $pages array(WikiPage)
 	 * @return array(Title)
 	 */
-	private static function pagesToTitles( $pages ) {
+	private function pagesToTitles( $pages ) {
 		$titles = array();
 		foreach ( $pages as $page ) {
 			$titles[] = $page->getTitle();

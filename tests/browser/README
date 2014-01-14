@@ -120,6 +120,20 @@ risk but this should be safe for search tests and is much faster and it doesn't
 cause the browser to keep stealing your focus.
 
 
+PhantomJS and Parallel Tests
+----------------------------
+We're starting to get things working on PhantomJS so we can run them in
+parallel and we don't have to worry about Firefox stealing out focus all the
+time.  You can install PhantomJS and then try it!
+ export BROWSER_LABEL=phantomjs
+ export -n REUSE_BROWSER
+ bundle exec cucumber features/prefix.feature
+Or in parallel:
+ export BROWSER_LABEL=phantomjs
+ export -n REUSE_BROWSER
+ bundle exec parallel_cucumber -n10 features
+
+
 Want to Contribute Some Tests?
 ------------------------------
 Interested? Read more at [How to contribute]

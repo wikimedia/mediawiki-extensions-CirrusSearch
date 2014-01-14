@@ -78,6 +78,7 @@ Then add this to your LocalSettings.php:
  $wgFileExtensions[] = 'pdf';
  $wgShowExceptionDetails = true;
  $wgDebugLogFile = '/tmp/mw-log';
+ $wgCapitalLinks = false;
 
 Replace:
  $wgUseInstantCommons = false

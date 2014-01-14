@@ -271,6 +271,28 @@ Before("@go") do
   $go = true
 end
 
+Before("@go", "@options") do
+  if !$go_options
+    steps %Q{
+      Given a page named son Nearmatchflattentest exists
+      And a page named Son Nearmatchflattentest exists
+      And a page named SON Nearmatchflattentest exists
+      And a page named soñ Nearmatchflattentest exists
+      And a page named Son Nolower Nearmatchflattentest exists
+      And a page named SON Nolower Nearmatchflattentest exists
+      And a page named Soñ Nolower Nearmatchflattentest exists
+      And a page named Son Titlecase Nearmatchflattentest exists
+      And a page named Soñ Titlecase Nearmatchflattentest exists
+      And a page named Soñ Onlyaccent Nearmatchflattentest exists
+      And a page named Soñ Twoaccents Nearmatchflattentest exists
+      And a page named Són Twoaccents Nearmatchflattentest exists
+      And a page named son Double Nearmatchflattentest exists
+      And a page named SON Double Nearmatchflattentest exists
+    }
+  end
+  $go_options = true
+end
+
 Before("@file_text") do
   if !$file_text
     steps %Q{

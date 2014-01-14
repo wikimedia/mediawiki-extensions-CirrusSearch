@@ -111,10 +111,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $preferRecentHalfLife = 0;
 	/**
-	 * @var boolean should the query results boost pages with more incoming links. Defaults to true but some search
-	 * methods disable it.
+	 * @var string should the query results boost pages with more incoming links.  Default to empty stream meaning
+	 * don't boost.  Other values are 'linear' meaning boost score linearly with number of incoming links or 'log'
+	 * meaning boost score by log10(incoming_links + 2).
 	 */
-	private $boostForLinks = true;
+	private $boostLinks = '';
 	/**
 	 * @var array template name to boost multiplier for having a template.  Defaults to none but initialized by
 	 * queries that use it to self::getDefaultBoostTemplates() if they need it.  That is too expensive to do by
@@ -164,7 +165,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.near_match', $search );
 		$this->filters[] = new \Elastica\Filter\Query( $match );
-		$this->boostForLinks = false;
+		$this->boostLinks = ''; // No boost
 
 		$result = $this->search( "lowercase title search for '$search'" );
 		wfProfileOut( __METHOD__ );
@@ -193,6 +194,7 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->filters[] = $this->buildPrefixFilter( $search );
 		}
+		$this->boostLinks = 'linear';
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 
 		$result = $this->search( "prefix search for '$search'" );
@@ -287,6 +289,7 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $boostTemplates === null ) {
 			$boostTemplates = self::getDefaultBoostTemplates();
 		}
+		$this->boostLinks = 'log';
 		$this->boostTemplates = $boostTemplates;
 		wfProfileOut( __METHOD__ . '-boost-template' );
 
@@ -899,10 +902,19 @@ class Searcher extends ElasticsearchIntermediary {
 		$useFunctionScore = false;
 
 		// Customize score by boosting based on incoming links count
-		if ( $this->boostForLinks ) {
+		if ( $this->boostLinks ) {
 			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
 			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
-			$scoreBoostMvel = "log10($incomingLinks + $incomingRedirectLinks + 2)";
+			$scoreBoostMvel = "$incomingLinks + $incomingRedirectLinks";
+			switch ( $this->boostLinks ) {
+			case 'linear':
+				break;  // scoreBoostMvel already correct
+			case 'log':
+				$scoreBostMvel = "log10($scoreBoostMvel + 2)";
+				break;
+			default:
+				wfLogWarning( "Invalid links boost type:  $this->boostLinks" );
+			}
 			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
 			$useFunctionScore = true;
 		}

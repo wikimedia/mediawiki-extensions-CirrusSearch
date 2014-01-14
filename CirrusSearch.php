@@ -213,6 +213,7 @@ $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexes'] = $includes . 'OtherIndexes.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexJob'] = $includes . 'OtherIndexJob.php';
 $wgAutoloadClasses['CirrusSearch\ReindexForkController'] = $includes . 'ReindexForkController.php';

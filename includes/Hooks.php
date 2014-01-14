@@ -221,6 +221,8 @@ class Hooks {
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
 	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, $titleResult ) {
+		global $wgContLang;
+
 		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.
 		$term = $termAndAllLanguageVariants[ 0 ];
 		$title = Title::newFromText( $term );
@@ -229,7 +231,8 @@ class Hooks {
 		}
 
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, 1, array( $title->getNamespace() ), $user );
+		// Ask for the first 50 results we see.  If there are more than that too bad.
+		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
 		$searcher->setResultsType( new TitleResultsType( false ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
@@ -238,12 +241,16 @@ class Hooks {
 		if ( !$status->isOK() ) {
 			return true;
 		}
-		$array = $status->getValue();
-		if ( !isset( $array[ 0 ] ) ) {
-			return true;
+
+		$picker = new NearMatchPicker( $wgContLang, $term, $status->getValue() );
+		$best = $picker->pickBest();
+		if ( $best ) {
+			// Found a near match.
+			$titleResult = $best;
+			return false;
 		}
-		$titleResult = $array[ 0 ];
-		return false;
+		// Didn't find a result so let Mediawiki have a crack at it.
+		return true;
 	}
 
 	/**

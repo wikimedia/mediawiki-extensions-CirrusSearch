@@ -344,9 +344,9 @@ Feature: Full text search
     Then Catapult is in the search results
     And Two Words is in the search results
   Examples:
-  |          query          |
-  | catapult OR África      |
-  | África \|\| catapult    |
+  |          query         |
+  | catapult OR África     |
+  | África \|\| catapult   |
   | catapult OR "África"   |
   | catapult \|\| "África" |
   | "África" OR catapult   |
@@ -383,6 +383,14 @@ Feature: Full text search
   | ++catapult++++catapult |
   | :~!$$=!~\!{<} catapult |
   | catapult -_~^_~^_^^    |
+  | catapult \|\|          |
+  | catapult ~/            |
+  | \|\| catapult          |
+  | ~/ catapult            |
+  | AND catapult           |
+  | --- AND catapult       |
+  | catapult \|\|---       |
+  | catapult ~~~~~~        |
 
   @boolean_operators @setup_main
   Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)

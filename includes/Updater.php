@@ -43,12 +43,6 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	private $updated = array();
 
-	/**
-	 * Headings to ignore.  Lazily initialized.
-	 * @var array(String)|null
-	 */
-	private static $ignoredHeadings = null;
-
 	public function __construct() {
 		parent::__construct( null, null );
 	}
@@ -353,7 +347,7 @@ class Updater extends ElasticsearchIntermediary {
 				$doc->add( 'template', $templates );
 
 				$headings = array();
-				$ignoredHeadings = self::getIgnoredHeadings();
+				$ignoredHeadings = $this->getIgnoredHeadings();
 				foreach ( $parserOutput->getSections() as $heading ) {
 					$heading = $heading[ 'line' ];
 					// Strip tags from the heading or else we'll display them (escaped) in search results
@@ -496,20 +490,21 @@ class Updater extends ElasticsearchIntermediary {
 		return $search;
 	}
 
-	private static function getIgnoredHeadings() {
-		if ( self::$ignoredHeadings === null ) {
+	private function getIgnoredHeadings() {
+		static $ignoredHeadings = null;
+		if ( $ignoredHeadings === null ) {
 			$source = wfMessage( 'cirrussearch-ignored-headings' )->inContentLanguage();
 			if( $source->isDisabled() ) {
-				self::$ignoredHeadings = array();
+				$ignoredHeadings = array();
 			} else {
 				$lines = explode( "\n", $source->plain() );
 				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
 				$lines = array_map( 'trim', $lines );          // Remove extra spaces
 				$lines = array_filter( $lines );               // Remove empty lines
-				self::$ignoredHeadings = $lines;               // Now we just have headings!
+				$ignoredHeadings = $lines;               // Now we just have headings!
 			}
 		}
-		return self::$ignoredHeadings;
+		return $ignoredHeadings;
 	}
 
 	/**

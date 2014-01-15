@@ -53,11 +53,11 @@ class OtherIndexJob extends Job {
 			list( $namespace, $title ) = $t;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$updater = new Updater();
+		$oi = new OtherIndexes( wfWikiId() );
 		if ( $this->params[ 'existsInLocalIndex' ] ) {
-			$updater->addLocalSiteToOtherIndex( $titles );
+			$oi->addLocalSiteToOtherIndex( $titles );
 		} else {
-			$updater->removeLocalSiteFromOtherIndex( $titles );
+			$oi->removeLocalSiteFromOtherIndex( $titles );
 		}
 	}
 }

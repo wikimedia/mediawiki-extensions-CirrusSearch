@@ -107,7 +107,8 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function softwareInfoHook( $software ) {
-		$version = Searcher::getElasticsearchVersion();
+		$searcher = new Searcher( 0, 0, array(), false );
+		$version = $searcher->getElasticsearchVersion();
 		if ( $version->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
 			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();

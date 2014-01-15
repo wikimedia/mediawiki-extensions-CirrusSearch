@@ -550,7 +550,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Get the version of Elasticsearch with which we're communicating.
 	 * @return Status(string) version number as a string
 	 */
-	public static function getElasticsearchVersion() {
+	public function getElasticsearchVersion() {
 		global $wgMemc;
 		wfProfileIn( __METHOD__ );
 		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );

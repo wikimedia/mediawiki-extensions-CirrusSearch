@@ -81,8 +81,9 @@ class Hooks {
 	public static function articleDeleteCompleteHook( $page, $user, $reason, $id ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
-		JobQueueGroup::singleton()->push( DeletePagesJob::build(
-			$page->getTitle(), $id ) );
+		JobQueueGroup::singleton()->push(
+			new DeletePagesJob( $page->getTitle(), array( 'id' => $id ) )
+		);
 	}
 
 	/**

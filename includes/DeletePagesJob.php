@@ -21,15 +21,6 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DeletePagesJob extends Job {
-	/**
-	 * Build this job for just one title.
-	 * @param $title Title title
-	 * @param $id int article id of title
-	 */
-	public static function build( $title, $id ) {
-		return new DeletePagesJob( $title, array( 'id' => $id ) );
-	}
-
 	protected function doJob() {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 

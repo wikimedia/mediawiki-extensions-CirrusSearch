@@ -443,7 +443,7 @@ class Updater extends ElasticsearchIntermediary {
 				}
 			}
 		}
-		wfProfileIn( __METHOD__ . '-link-counts' );
+		wfProfileOut( __METHOD__ . '-link-counts' );
 		wfProfileOut( __METHOD__ );
 		return $documents;
 	}

@@ -50,8 +50,10 @@ class Result extends SearchResult {
 	public function __construct( $results, $result ) {
 		global $wgCirrusSearchShowScore;
 
-		$title = Title::makeTitle( $result->namespace, $result->title );
-		$this->initFromTitle( $title );
+		$this->mTitle = Title::makeTitle( $result->namespace, $result->title );
+		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
+			$this->mImage = wfFindFile( $this->mTitle );
+		}
 		$data = $result->getData();
 		// TODO remove ternary once text.word_count is available everywhere
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
@@ -63,8 +65,8 @@ class Result extends SearchResult {
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = '';
-			if ( $title->getNamespace() !== 0 ) {
-				$nstext = $title->getNsText() . ':';
+			if ( $this->getTitle()->getNamespace() !== 0 ) {
+				$nstext = $this->getTitle()->getNsText() . ':';
 			}
 			$this->titleSnippet = $nstext . self::escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
 		} else {
@@ -102,6 +104,14 @@ class Result extends SearchResult {
 		if ( $wgCirrusSearchShowScore ) {
 			$this->score = $result->getScore() / $results->getMaxScore();
 		}
+	}
+
+	/**
+	 * Assume we're never missing. We always know about page updates
+	 * @return bool
+	 */
+	public function isMissingRevision() {
+		return false;
 	}
 
 	/**

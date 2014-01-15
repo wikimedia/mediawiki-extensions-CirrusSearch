@@ -564,6 +564,7 @@ class Searcher extends ElasticsearchIntermediary {
 				wfProfileOut( __METHOD__ );
 				return $this->failure();
 			}
+			$result = $result->getData();
 			$result = $result[ 'version' ][ 'number' ];
 			$setResult = $wgMemc->set( $mcKey, $result, 3600 * 12 );
 		}

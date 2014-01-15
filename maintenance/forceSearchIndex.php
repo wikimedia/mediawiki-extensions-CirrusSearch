@@ -5,6 +5,8 @@ use \CirrusSearch;
 use \JobQueueGroup;
 use \LinkCache;
 use \Maintenance;
+use \MWTimestamp;
+use \Title;
 use \WikiPage;
 
 /**

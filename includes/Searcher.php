@@ -271,31 +271,16 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
 		wfProfileOut( __METHOD__ . '-prefer-recent' );
 
-		wfProfileIn( __METHOD__ . '-boost-template' );
-		$boostTemplates = null;
-		$this->extractSpecialSyntaxFromTerm(
-			'/boost-templates:"([^"]+)" ?/',
-			function ( $matches ) use ( &$boostTemplates ) {
-				$boostTemplates = Searcher::parseBoostTemplates( $matches[ 1 ] );
-				return '';
-			}
-		);
-		if ( $boostTemplates === null ) {
-			$boostTemplates = self::getDefaultBoostTemplates();
-		}
-		$this->boostLinks = 'log';
-		$this->boostTemplates = $boostTemplates;
-		wfProfileOut( __METHOD__ . '-boost-template' );
-
 		// Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
+		$boostTemplates = null;
 		// Match filters that look like foobar:thing or foobar:"thing thing"
-		// The {7,12} keeps this from having horrible performance on big strings
+		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,12}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( &$filters, &$notFilters ) {
+			'/(?<key>[a-z\\-]{7,15}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			function ( $matches ) use ( &$filters, &$notFilters, &$boostTemplates ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$filterDestination = &$filters;
@@ -306,6 +291,12 @@ class Searcher extends ElasticsearchIntermediary {
 					$keepText = false;
 				}
 				switch ( $key ) {
+					case 'boost-templates':
+						$boostTemplates = Searcher::parseBoostTemplates( trim( $value, '"' ) );
+						if ( $boostTemplates === null ) {
+							$boostTemplates = self::getDefaultBoostTemplates();
+						}
+						return '';
 					case 'hastemplate':
 						$value = trim( $value, '"' );
 						// We emulate template syntax here as best as possible,
@@ -343,6 +334,8 @@ class Searcher extends ElasticsearchIntermediary {
 		);
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
+		$this->boostTemplates = $boostTemplates;
+		$this->boostLinks = 'log';
 		wfProfileOut( __METHOD__ . '-other-filters' );
 		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
 		// Match quoted phrases including those containing escaped quotes

@@ -90,14 +90,15 @@ class ElasticsearchIntermediary {
 	 * @return \Status representing a backend failure
 	 */
 	public function failure( $exception ) {
-		$this->finishRequest();
+		$took = $this->finishRequest();
 		wfLogWarning( "Search backend error during $this->description after $took.  " .
-			'Error message is:  ' . $e->getMessage() );
+			'Error message is:  ' . $exception->getMessage() );
 		return Status::newFatal( 'cirrussearch-backend-error' );
 	}
 
 	/**
 	 * Log the completion of a request to Elasticsearch.
+	 * @return int number of milliseconds it took to complete the request
 	 */
 	private function finishRequest() {
 		if ( !$this->requestStart ) {
@@ -129,5 +130,6 @@ class ElasticsearchIntermediary {
 			wfDebugLog( 'CirrusSearchSlowRequests', $logMessage );
 		}
 		$this->requestStart = null;
+		return $took;
 	}
 }

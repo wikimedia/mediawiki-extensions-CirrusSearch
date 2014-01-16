@@ -96,9 +96,12 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onRevisionDelete( $title ) {
-		$page = WikiPage::factory( $title );
 		JobQueueGroup::singleton()->push(
-			UpdatePagesJob::build( array( $page ), true, Updater::INDEX_EVERYTHING )
+			new LinksUpdateJob( $title, array(
+				'checkFreshness' => true,
+				'addedLinks' => array(),
+				'removedLinks' => array()
+			) )
 		);
 	}
 

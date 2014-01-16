@@ -42,15 +42,16 @@ class LinksUpdateJob extends Job {
 
 	protected function doJob() {
 		$updater = new Updater();
-		$updater->updateFromTitle( $this->title );
+		$check = isset( $this->params['checkFreshness'] ) && $this->params['checkFreshness'];
+		$updater->updateFromTitle( $this->title, $check );
 		if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 				count( $this->params[ 'removedLinks' ] ) > 0 ) {
-			$params = array(
-				'addedLinks' => $this->params[ 'addedLinks' ],
-				'removedLinks' => $this->params[ 'removedLinks' ],
+			JobQueueGroup::singleton()->push(
+				new LinksUpdateSecondaryJob( $this->title, array(
+					'addedLinks' => $this->params[ 'addedLinks' ],
+					'removedLinks' => $this->params[ 'removedLinks' ],
+				) )
 			);
-			$next = new LinksUpdateSecondaryJob( $this->title, $params );
-			JobQueueGroup::singleton()->push( $next );
 		}
 	}
 

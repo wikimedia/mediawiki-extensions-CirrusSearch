@@ -23,7 +23,7 @@ use \WikiPage;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class UpdatePagesJob extends Job {
+class MassIndexJob extends Job {
 	public static function build( $pages, $checkFreshness, $updateFlags ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();
@@ -32,7 +32,7 @@ class UpdatePagesJob extends Job {
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
-		return new UpdatePagesJob( Title::newMainPage(), array(
+		return new MassIndexJob( Title::newMainPage(), array(
 			'pageDBKeys' => $pageDBKeys,
 			'checkFreshness' => $checkFreshness,
 			'updateFlags' => $updateFlags,

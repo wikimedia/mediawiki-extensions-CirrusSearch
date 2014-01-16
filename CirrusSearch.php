@@ -214,6 +214,7 @@ $wgAutoloadClasses['CirrusSearch\LinksUpdateSecondaryJob'] = $includes . 'LinksU
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearch\MassIndexJob'] = $includes . 'MassIndexJob.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexes'] = $includes . 'OtherIndexes.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexJob'] = $includes . 'OtherIndexJob.php';
@@ -224,7 +225,6 @@ $wgAutoloadClasses['CirrusSearch\ResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
 $wgAutoloadClasses['CirrusSearch\TextFormatter'] = $includes . 'TextFormatter.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';
-$wgAutoloadClasses['CirrusSearch\UpdatePagesJob'] = $includes . 'UpdatePagesJob.php';
 $wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
 $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
 
@@ -253,5 +253,7 @@ $wgJobClasses[ 'cirrusSearchDeletePages' ] = 'CirrusSearch\DeletePagesJob';
 $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearch\LinksUpdateJob';
 $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\LinksUpdateJob';
 $wgJobClasses[ 'cirrusSearchLinksUpdateSecondary' ] = 'CirrusSearch\LinksUpdateSecondaryJob';
+$wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\MassIndexJob';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\OtherIndexJob';
-$wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearch\UpdatePagesJob';
+// todo: remove once no more UpdatePages jobs are left in any queues
+$wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearch\MassIndexJob';

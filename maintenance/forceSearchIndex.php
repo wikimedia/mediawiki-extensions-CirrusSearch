@@ -195,7 +195,7 @@ class ForceSearchIndex extends Maintenance {
 						}
 					}
 					JobQueueGroup::singleton()->push(
-						UpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
+						MassIndexJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = new Updater();
@@ -433,11 +433,13 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	/**
-	 * Get the number of cirrusSearchUpdatePages jobs in the queue.
+	 * Get the number of cirrusSearchMassIndex jobs in the queue.
 	 * @return int length
 	 */
 	private function getUpdatesInQueue() {
-		return JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
+		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize()
+			// todo: remove once no more UpdatePages jobs are left in any queues
+			+ JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
 	}
 }
 

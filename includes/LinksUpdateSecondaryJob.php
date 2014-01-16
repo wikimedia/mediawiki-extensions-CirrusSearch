@@ -1,7 +1,7 @@
 <?php
 
 namespace CirrusSearch;
-use \JobQueueGroup;
+use \Title;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
@@ -28,36 +28,37 @@ use \JobQueueGroup;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LinksUpdateJob extends Job {
+class LinksUpdateSecondaryJob extends Job {
 	public function __construct( $title, $params, $id = 0 ) {
 		parent::__construct( $title, $params, $id );
-
-		if ( $this->isPrioritized() ) {
-			$this->command .= 'Prioritized';
-		}
-		// Note that we have to keep the prioritized param or else when the job
-		// is loaded it'll load under a different name/command/type which would
-		// be confusing.
 	}
 
 	protected function doJob() {
+		// Load the titles and filter out any that no longer exist.
 		$updater = new Updater();
-		$updater->updateFromTitle( $this->title );
-		if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
-				count( $this->params[ 'removedLinks' ] ) > 0 ) {
-			$params = array(
-				'addedLinks' => $this->params[ 'addedLinks' ],
-				'removedLinks' => $this->params[ 'removedLinks' ],
-			);
-			$next = new LinksUpdateSecondaryJob( $this->title, $params );
-			JobQueueGroup::singleton()->push( $next );
-		}
+		$updater->updateLinkedArticles(
+			$this->loadTitles( $this->params[ 'addedLinks' ] ),
+			$this->loadTitles( $this->params[ 'removedLinks' ] ) );
 	}
 
 	/**
-	 * @return is this job prioritized?
+	 * Convert a serialized title to a title ready to be passed to updateLinkedArticles.
+	 * @param Title|string $title Either a Title or a string to be loaded.
+	 * @return array(Title) loaded titles
 	 */
-	private function isPrioritized() {
-		return isset( $this->params[ 'prioritize' ] ) && $this->params[ 'prioritize' ];
+	private function loadTitles( $titles ) {
+		$result = array();
+		foreach ( $titles as $title ) {
+			// TODO remove support for Title objects when the queues have drained of them
+			if ( $title instanceof Title ) {
+				$result[] = $title;
+			} else {
+				$title = Title::newFromDBKey( $title );
+				if ( $title ) {
+					$result[] = $title;
+				}
+			}
+		}
+		return $result;
 	}
 }

@@ -24,15 +24,6 @@ use \Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
-	/**
-	 * @var string|null lazy built escaped copy of Searcher::HIGHLIGHT_PRE
-	 */
-	private static $highlightPreEscaped = null;
-	/**
-	 * @var string|null lazy built escaped copy of Searcher::HIGHLIGHT_POST
-	 */
-	private static $highlightPostEscaped = null;
-
 	private $titleSnippet;
 	private $redirectTitle, $redirectSnipppet;
 	private $sectionTitle, $sectionSnippet;
@@ -68,14 +59,14 @@ class Result extends SearchResult {
 			if ( $this->getTitle()->getNamespace() !== 0 ) {
 				$nstext = $this->getTitle()->getNsText() . ':';
 			}
-			$this->titleSnippet = $nstext . self::escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
+			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
 		} else {
 			$this->titleSnippet = '';
 		}
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $result->redirect );
-			$this->redirectSnipppet = self::escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
+			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		} else {
 			$this->redirectSnipppet = '';
 			$this->redirectTitle = null;
@@ -84,18 +75,18 @@ class Result extends SearchResult {
 			$snippet = $highlights[ 'text' ][ 0 ];
 			if ( isset( $highlights[ 'file_text' ] ) ) {
 				$fileTextSnippet = $highlights[ 'file_text' ][ 0 ];
-				if ( !self::containsMatches( $snippet ) && self::containsMatches( $fileTextSnippet ) ) {
+				if ( !$this->containsMatches( $snippet ) && $this->containsMatches( $fileTextSnippet ) ) {
 					$snippet = wfMessage( 'cirrussearch-file-contents-match', $fileTextSnippet )->toString();
 				}
 			}
-			$this->textSnippet = self::escapeHighlightedText( $snippet );
+			$this->textSnippet = $this->escapeHighlightedText( $snippet );
 		} else {
 			// This can happen if there the page was sent to Elasticsearch without text.  This could be
 			// a bug or it could be that the page simply doesn't have any text.
 			$this->textSnippet = '';
 		}
 		if ( isset( $highlights[ 'heading' ] ) ) {
-			$this->sectionSnippet = self::escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
+			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
 			$this->sectionTitle = $this->findSectionTitle();
 		} else {
 			$this->sectionSnippet = '';
@@ -133,12 +124,13 @@ class Result extends SearchResult {
 	 * @param $snippet string highlighted snippet returned from elasticsearch
 	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
-	private static function escapeHighlightedText( $snippet ) {
-		if ( self::$highlightPreEscaped === null ) {
-			self::$highlightPreEscaped = htmlspecialchars( Searcher::HIGHLIGHT_PRE );
-			self::$highlightPostEscaped = htmlspecialchars( Searcher::HIGHLIGHT_POST );
+	private function escapeHighlightedText( $snippet ) {
+		static $highlightPreEscaped = null, $highlightPostEscaped = null;
+		if ( $highlightPreEscaped === null ) {
+			$highlightPreEscaped = htmlspecialchars( Searcher::HIGHLIGHT_PRE );
+			$highlightPostEscaped = htmlspecialchars( Searcher::HIGHLIGHT_POST );
 		}
-		return str_replace( array( self::$highlightPreEscaped, self::$highlightPostEscaped ),
+		return str_replace( array( $highlightPreEscaped, $highlightPostEscaped ),
 			array( Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ),
 			htmlspecialchars( $snippet ) );
 	}
@@ -148,7 +140,7 @@ class Result extends SearchResult {
 	 * @param string $snippet highlighted snippet returned from elasticsearch
 	 * @return boolean true if $snippet contains matches, false otherwise
 	 */
-	private static function containsMatches( $snippet ) {
+	private function containsMatches( $snippet ) {
 		return strpos( $snippet, Searcher::HIGHLIGHT_PRE ) !== false;
 	}
 

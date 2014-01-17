@@ -22,15 +22,6 @@ use \SearchResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ResultSet extends SearchResultSet {
-	/**
-	 * @var string|null lazy built escaped copy of Searcher::SUGGESTION_HIGHLIGHT_PRE
-	 */
-	private static $suggestionHighlightPreEscaped = null;
-	/**
-	 * @var string|null lazy built escaped copy of Searcher::SUGGESTION_HIGHLIGHT_POST
-	 */
-	private static $suggestionHighlightPostEscaped = null;
-
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 
 	public function __construct( $suggestPrefixes, $suggestSuffixes, $res ) {
@@ -91,13 +82,15 @@ class ResultSet extends SearchResultSet {
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedSuggestion( $suggestion ) {
-		if ( self::$suggestionHighlightPreEscaped === null ) {
-			self::$suggestionHighlightPreEscaped =
+		static $suggestionHighlightPreEscaped = null, 
+			$suggestionHighlightPostEscaped = null;
+		if ( $suggestionHighlightPreEscaped === null ) {
+			$suggestionHighlightPreEscaped =
 				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_PRE );
-			self::$suggestionHighlightPostEscaped =
+			$suggestionHighlightPostEscaped =
 				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_POST );
 		}
-		return str_replace( array( self::$suggestionHighlightPreEscaped, self::$suggestionHighlightPostEscaped ),
+		return str_replace( array( $suggestionHighlightPreEscaped, $suggestionHighlightPostEscaped ),
 			array( Searcher::SUGGESTION_HIGHLIGHT_PRE, Searcher::SUGGESTION_HIGHLIGHT_POST ),
 			htmlspecialchars( $suggestion ) );
 	}

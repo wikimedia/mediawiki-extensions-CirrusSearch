@@ -171,7 +171,6 @@ class Hooks {
 				$linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
 			'removedLinks' => self::prepareTitlesForLinksUpdate(
 				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
-			'primary' => true,
 		);
 		// Prioritize jobs that are triggered from a web process.  This should prioritize
 		// single page update jobs over those triggered by template changes.

@@ -46,11 +46,6 @@ class Searcher extends ElasticsearchIntermediary {
 	const MAX_TITLE_SEARCH = 255;
 
 	/**
-	 * @var null|array template names to boost factors.  lazily initialized and defaulting to null.
-	 */
-	private static $defaultBoostTemplates = null;
-
-	/**
 	 * @var integer search offset
 	 */
 	private $offset;
@@ -944,20 +939,21 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	private static function getDefaultBoostTemplates() {
-		if ( self::$defaultBoostTemplates === null ) {
+		static $defaultBoostTemplates = null;
+		if ( $defaultBoostTemplates === null ) {
 			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
 			if( $source->isDisabled() ) {
-				self::$defaultBoostTemplates = array();
+				$defaultBoostTemplates = array();
 			} else {
 				$lines = explode( "\n", $source->plain() );
 				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
 				$lines = array_map( 'trim', $lines );          // Remove extra spaces
 				$lines = array_filter( $lines );               // Remove empty lines
-				self::$defaultBoostTemplates = self::parseBoostTemplates(
+				$defaultBoostTemplates = self::parseBoostTemplates(
 					implode( ' ', $lines ) );                  // Now parse the templates
 			}
 		}
-		return self::$defaultBoostTemplates;
+		return $defaultBoostTemplates;
 	}
 
 	/**

@@ -813,6 +813,13 @@ $messages['mk'] = array(
 	'cirrussearch-file-contents-match' => 'Совпадната содржина на податотеката: $1',
 );
 
+/** Marathi (मराठी)
+ * @author V.narsikar
+ */
+$messages['mr'] = array(
+	'cirrussearch-pref-label' => 'नविन शोध',
+);
+
 /** Malay (Bahasa Melayu)
  * @author Anakmalaysia
  */
@@ -1076,6 +1083,7 @@ Xem thêm
 /** Simplified Chinese (中文（简体）‎)
  * @author Cwek
  * @author Linxue9786
+ * @author Liuxinyu970226
  * @author Qiyue2001
  * @author Shizhao
  * @author TianyinLee
@@ -1086,7 +1094,7 @@ $messages['zh-hans'] = array(
 	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
 	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
-	'cirrussearch-boost-templates' => '#<!-- 此行绝对保持原状 --> <pre>
+	'cirrussearch-boost-templates' => ' #<!-- 此行绝对保持原状 --> <pre>
 # 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。
 # 更改至此立即生效。
 # 句法如下所示：
@@ -1109,8 +1117,25 @@ $messages['zh-hans'] = array(
 
 /** Traditional Chinese (中文（繁體）‎)
  * @author Justincheng12345
+ * @author Liuxinyu970226
  */
 $messages['zh-hant'] = array(
 	'cirrussearch-desc' => 'MediaWiki的Solr搜尋', # Fuzzy
 	'cirrussearch-backend-error' => '由於出現暫時性的問題，我們未能完成你的搜尋。請稍後再試。',
+	'cirrussearch-boost-templates' => ' #<!-- leave this line exactly as it is --> <pre>
+# 如果一個頁面包含下述模板之一，其搜尋結果將帶百分比。
+# 對之更改將即行生效。
+# 句法如下：
+#  * 從「#」位元至頁尾所有內容為注釋
+#  * 每一非空白行均為確切模板名稱，如加速器、名字空間，接於「|」位元、數位和「%」位元。
+# 良好行目如下：
+# 模板：良好|150%
+# 模板：非常非常良好|300%
+# 模板：糟糕|50%
+# 無效行目如下：
+# 模板:Foo|150.234234% <-- 不得使用小數點！
+# Foo|150% <--- 技術可行，唯主名字空間與其他頁面之超連接將因此失效
+# You can test configuration changes by performing a query prefixed with boost-templates:"XX" where XX is all of the templates you want to boost separated by spaces instead of line breaks.
+# Queries that specify boost-templates:"XX" ignore the contents of this field.
+ #</pre> <!-- leave this line exactly as it is -->',
 );

@@ -19,7 +19,12 @@ Feature: Full text search highlighting
     | Africa test                | *África*                 | for *testing*                                    |
     # Verify highlighting on large pages (Bug 52680).  It is neat to see that the stopwords aren't highlighted.
     | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
-    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems* of *social* and *cultural importance*. During the caliphate of |
+    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
+
+  @highlighting
+  Scenario: Even stopwords are highlighted
+    When I search for the once and future king
+    Then *The* *Once* *and* *Future* *King* is the highlighted title of the first search result
 
   @highlighting
   Scenario: Found words are highlighted even if found by different analyzers
@@ -52,7 +57,7 @@ Feature: Full text search highlighting
   Scenario: Found words are highlighted in headings and text even in large documents when searching in a non-strict phrase
     When I search for "Succession of Umar"~
     Then *Succession* of *Umar* is the highlighted alttitle of the first search result
-    And *Succession* of *Umar* is in the highlighted text of the first search result
+    And *Succession of Umar* is in the highlighted text of the first search result
 
   @headings @highlighting
   Scenario: The highest scoring heading is highlighted AND it doesn't contain html even if the heading on the page does

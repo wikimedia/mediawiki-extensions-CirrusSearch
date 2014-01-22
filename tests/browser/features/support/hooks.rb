@@ -148,6 +148,7 @@ Before("@highlighting") do
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
       And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
+      And a page named The Once and Future King exists
     }
   end
   $highlighting = true
@@ -205,6 +206,7 @@ Before("@stemmer") do
   if !$stemmer
     steps %Q{
       Given a page named StemmerTest Aliases exists
+      And a page named StemmerTest Alias exists
       And a page named StemmerTest Used exists
     }
   end
@@ -297,8 +299,17 @@ end
 Before("@file_text") do
   if !$file_text
     steps %Q{
-    Given a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
+      Given a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
     }
   end
   $file_text = true
+end
+
+Before("@match_stopwords") do
+  if !$match_plain
+    steps %Q{
+      Given a page named To exists
+    }
+  end
+  $match_plain = true
 end

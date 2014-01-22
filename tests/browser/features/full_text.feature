@@ -257,15 +257,16 @@ Feature: Full text search
   @stemmer
   Scenario Outline: Stemming works as expected
     When I search for StemmerTest <term>
-    Then <result> is the first search result
+    Then <first_result> is the first search result
+    Then <second_result> is the second search result
   Examples:
-    |   term   |        result        |
-    | aliases  | StemmerTest Aliases  |
-    | alias    | StemmerTest Aliases  |
-    | used     | StemmerTest Used     |
-    | uses     | StemmerTest Used     |
-    | use      | StemmerTest Used     |
-    | us       | none                 |
+    |   term   |     first_result     |    second_result    |
+    | aliases  | StemmerTest Aliases  | StemmerTest Alias   |
+    | alias    | StemmerTest Alias    | StemmerTest Aliases |
+    | used     | StemmerTest Used     | none                |
+    | uses     | StemmerTest Used     | none                |
+    | use      | StemmerTest Used     | none                |
+    | us       | none                 | none                |
 
   @prefix_filter
   Scenario: The prefix: filter filters results to those with titles prefixed by value
@@ -361,14 +362,16 @@ Feature: Full text search
   | catapult +             |
   | catapult -             |
   | catapult !             |
-  | catapult AND           |
-  | catapult OR            |
-  | catapult NOT           |
+  # Bug 60362
+  #| catapult AND           |
+  #| catapult OR            |
+  #| catapult NOT           |
   | + catapult             |
   | - catapult             |
   | ! catapult             |
-  | AND catapult           |
-  | OR catapult            |
+  # Bug 60362
+  #| AND catapult           |
+  #| OR catapult            |
   | catapult + amazing     |
   | catapult - amazing     |
   | catapult ! amazing     |
@@ -387,7 +390,6 @@ Feature: Full text search
   | catapult ~/            |
   | \|\| catapult          |
   | ~/ catapult            |
-  | AND catapult           |
   | --- AND catapult       |
   | catapult \|\|---       |
   | catapult ~~~~~~        |
@@ -471,3 +473,8 @@ Feature: Full text search
   Scenario: When you search for text that is in a file, you can find it!
     When I search for File:debian rhino
     Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+
+  @match_stopwords
+  Scenario: When you search for a stopword you find pages with that stopword
+    When I search for to
+    Then To is the first search result

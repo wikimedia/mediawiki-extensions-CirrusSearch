@@ -117,11 +117,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 * default though.
 	 */
 	private $boostTemplates = array();
-
 	/**
 	 * @var string index base name to use
 	 */
 	private $indexBaseName;
+	/**
+	 * @var bool should this search show redirects?
+	 */
+	private $showRedirects;
 
 	/**
 	 * @var boolean is this a fuzzy query?
@@ -223,10 +226,12 @@ class Searcher extends ElasticsearchIntermediary {
 		global $wgCirrusSearchPhraseUseText;
 		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
 		global $wgCirrusSearchPreferRecentDefaultHalfLife;
+		global $wgCirrusSearchStemmedWeight;
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$searcher = $this;
 		$originalTerm = $term;
+		$this->showRedirects = $showRedirects;
 		$this->term = trim( $term );
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
@@ -344,10 +349,10 @@ class Searcher extends ElasticsearchIntermediary {
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
 		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
-			function ( $matches ) use ( $searcher, $showRedirects ) {
+			function ( $matches ) use ( $searcher ) {
 				$main = $searcher->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
-					$main = Searcher::switchSearchToExact( $main, $showRedirects );
+					$main = $searcher->switchSearchToExact( $main );
 				}
 				return array( 'escaped' => $main );
 			} );
@@ -357,9 +362,9 @@ class Searcher extends ElasticsearchIntermediary {
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
-			function ( $matches ) use ( $searcher, $showRedirects ) {
+			function ( $matches ) use ( $searcher ) {
 				$term = $searcher->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
-				return array( 'escaped' => Searcher::switchSearchToExact( $term, $showRedirects ) );
+				return array( 'escaped' => $searcher->switchSearchToExact( $term ) );
 			} );
 		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
@@ -382,7 +387,9 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( count( $query ) > 0 ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
 			$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
-			$fields = self::buildFullTextSearchFields( $showRedirects );
+			$fields = array_merge(
+				$this->buildFullTextSearchFields( 1, '.plain' ),
+				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any phrases
@@ -714,27 +721,31 @@ class Searcher extends ElasticsearchIntermediary {
 		);
 	}
 
-	public static function switchSearchToExact( $term, $showRedirects ) {
-		$exact = join( ' OR ', Searcher::buildFullTextSearchFields( $showRedirects, ".plain:$term" ) );
+	public function switchSearchToExact( $term ) {
+		$exact = join( ' OR ', $this->buildFullTextSearchFields( 1, ".plain:$term" ) );
 		return "($exact)";
 	}
 
 	/**
 	 * Build fields searched by full text search.
-	 * @param $includeRedirects bool show redirects be included
-	 * @param $fieldSuffix string suffux to add to field names.  Defaults to ''.
+	 * @param float $weight weight to multiply by all fields
+	 * @param string $fieldSuffix suffux to add to field names
 	 * @return array(string) of fields to query
 	 */
-	public static function buildFullTextSearchFields( $includeRedirects, $fieldSuffix = '' ) {
+	public function buildFullTextSearchFields( $weight, $fieldSuffix ) {
 		global $wgCirrusSearchWeights;
+		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
+		$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
+		$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
 		$fields = array(
-			'title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'title' ],
-			'heading' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'heading' ],
-			'text' . $fieldSuffix,
-			'file_text' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'file_text' ],
+			"title${fieldSuffix}^${titleWeight}",
+			"heading${fieldSuffix}^${headingWeight}",
+			"text${fieldSuffix}^${weight}",
+			"file_text${fieldSuffix}^${fileTextWeight}",
 		);
-		if ( $includeRedirects ) {
-			$fields[] = 'redirect.title' . $fieldSuffix . '^' . $wgCirrusSearchWeights[ 'redirect' ];
+		if ( $this->showRedirects ) {
+			$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
+			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
 		}
 		return $fields;
 	}

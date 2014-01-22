@@ -92,7 +92,7 @@ class Result extends SearchResult {
 			$this->sectionSnippet = '';
 			$this->sectionTitle = null;
 		}
-		if ( $wgCirrusSearchShowScore ) {
+		if ( $wgCirrusSearchShowScore && $results->getMaxScore() ) {
 			$this->score = $result->getScore() / $results->getMaxScore();
 		}
 	}

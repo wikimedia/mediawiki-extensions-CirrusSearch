@@ -174,6 +174,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->validateAnalyzers();
 			$this->validateMapping();
 			$this->validateAlias();
+			$this->updateVersions();
 
 			if ( $this->closed ) {
 				$this->getIndex()->open();
@@ -188,6 +189,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
+	}
+
+	private function updateVersions() {
+		$child = $this->runChild( 'CirrusSearch\UpdateVersionIndex' );
+		$child->mOptions['baseName'] = $this->indexBaseName;
+		$child->mOptions['update'] = true;
+		$child->mOptions['indent'] = "\t";
+		$child->execute();
 	}
 
 	private function validateIndex() {

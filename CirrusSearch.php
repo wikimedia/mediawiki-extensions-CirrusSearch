@@ -231,6 +231,7 @@ $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
 $wgAutoloadClasses['CirrusSearch\TextFormatter'] = $includes . 'TextFormatter.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
+$wgAutoloadClasses['CirrusSearch\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
 
 /**

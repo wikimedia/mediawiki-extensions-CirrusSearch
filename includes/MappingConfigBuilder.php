@@ -22,6 +22,14 @@ namespace CirrusSearch;
  */
 class MappingConfigBuilder {
 	/**
+	 * Version number for the core analysis. Increment the major
+	 * version when the analysis changes in an incompatible way,
+	 * and change the minor version when it changes but isn't
+	 * incompatible
+	 */
+	const VERSION = 0.1;
+
+	/**
 	 * Whether to allow prefix searches to match on any word
 	 * @var bool
 	 */

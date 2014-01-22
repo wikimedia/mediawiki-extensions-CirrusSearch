@@ -124,6 +124,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $indexBaseName;
 
 	/**
+	 * @var boolean is this a fuzzy query?
+	 */
+	private $fuzzyQuery = false;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -220,6 +225,7 @@ class Searcher extends ElasticsearchIntermediary {
 		global $wgCirrusSearchPreferRecentDefaultHalfLife;
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
+		$searcher = $this;
 		$originalTerm = $term;
 		$this->term = trim( $term );
 		// Handle title prefix notation
@@ -275,7 +281,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( &$filters, &$notFilters, &$boostTemplates ) {
+			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$boostTemplates ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$filterDestination = &$filters;
@@ -318,8 +324,8 @@ class Searcher extends ElasticsearchIntermediary {
 						return '';
 					case 'intitle':
 						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
-							Searcher::fixupWholeQueryString(
-								Searcher::fixupQueryStringPart( $value )
+							$searcher->fixupWholeQueryString(
+								$searcher->fixupQueryStringPart( $value )
 							) ) );
 						return $keepText ? "$value " : '';
 					default:
@@ -338,8 +344,8 @@ class Searcher extends ElasticsearchIntermediary {
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
 		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
-			function ( $matches ) use ( $showRedirects ) {
-				$main = Searcher::fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+			function ( $matches ) use ( $searcher, $showRedirects ) {
+				$main = $searcher->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
 					$main = Searcher::switchSearchToExact( $main, $showRedirects );
 				}
@@ -351,8 +357,8 @@ class Searcher extends ElasticsearchIntermediary {
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
-			function ( $matches ) use ( $showRedirects ) {
-				$term = Searcher::fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+			function ( $matches ) use ( $searcher, $showRedirects ) {
+				$term = $searcher->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array( 'escaped' => Searcher::switchSearchToExact( $term, $showRedirects ) );
 			} );
 		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
@@ -365,7 +371,7 @@ class Searcher extends ElasticsearchIntermediary {
 				continue;
 			}
 			if ( isset( $queryPart[ 'raw' ] ) ) {
-				$escapedQuery[] = self::fixupQueryStringPart( $queryPart[ 'raw' ] );
+				$escapedQuery[] = $this->fixupQueryStringPart( $queryPart[ 'raw' ] );
 				continue;
 			}
 			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
@@ -375,7 +381,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Actual text query
 		if ( count( $query ) > 0 ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
-			$queryStringQueryString = self::fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+			$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 			$fields = self::buildFullTextSearchFields( $showRedirects );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
@@ -603,6 +609,14 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$highlight = $this->resultsType->getHighlightingConfiguration();
 		if ( $highlight ) {
+			// Fuzzy queries work _terribly_ with the plain highlighter so just drop any field that is forcing
+			// the plain highlighter all together.  Do this here because this works so badly that no
+			// ResultsType should be able to use the plain highlighter for these queries.
+			if ( $this->fuzzyQuery ) {
+				$highlight[ 'fields' ] = array_filter( $highlight[ 'fields' ], function( $field ) {
+					return $field[ 'type' ] !== 'plain';
+				});
+			}
 			$query->setHighlight( $highlight );
 		}
 		if ( $this->suggest ) {
@@ -781,7 +795,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * +/-/!/||/&&: Symbols meaning AND, NOT, NOT, OR, and AND respectively.  - was supported by
 	 * LuceneSearch so we need to allow that one but there is no reason not to allow them all.
 	 */
-	public static function fixupQueryStringPart( $string ) {
+	public function fixupQueryStringPart( $string ) {
 		wfProfileIn( __METHOD__ );
 		$string = preg_replace( '/(
 				\/|		(?# no regex searches allowed)
@@ -821,10 +835,11 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Make sure that all operators and lucene syntax is used correctly in the query string.
+	 * Make sure that all operators and lucene syntax is used correctly in the query string
+	 * and store if this is a fuzzy query.
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
 	 */
-	public static function fixupWholeQueryString( $string ) {
+	public function fixupWholeQueryString( $string ) {
 		wfProfileIn( __METHOD__ );
 		// Be careful when editing this method because the ordering of the replacements matters.
 
@@ -833,14 +848,19 @@ class Searcher extends ElasticsearchIntermediary {
 		$string = preg_replace_callback( '/(?<![\w"])~/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
-		// Turn bad fuzzy searches into searches that contain a ~
-		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S+)/', function ( $matches ) {
-			if ( preg_match( '/^(?:0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
-				return $matches[ 0 ];
-			} else {
-				return $matches[ 'leading' ] . '\\~' . preg_replace( '/~/', '\~', $matches[ 'trailing' ] );
-			}
-		}, $string );
+		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
+		$searcher = $this;
+		$fuzzyQuery = $this->fuzzyQuery;
+		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/',
+			function ( $matches ) use ( $searcher, &$fuzzyQuery ) {
+				if ( preg_match( '/^(?:|0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
+					$fuzzyQuery = true;
+					return $matches[ 0 ];
+				} else {
+					return $matches[ 'leading' ] . '\\~' . preg_replace( '/~/', '\~', $matches[ 'trailing' ] );
+				}
+			}, $string );
+		$this->fuzzyQuery = $fuzzyQuery;
 
 		// Turn bad proximity searches into searches that contain a ~
 		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {

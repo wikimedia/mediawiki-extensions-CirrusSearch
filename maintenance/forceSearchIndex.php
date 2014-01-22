@@ -432,9 +432,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return int length
 	 */
 	private function getUpdatesInQueue() {
-		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize()
-			// todo: remove once no more UpdatePages jobs are left in any queues
-			+ JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
+		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize();
 	}
 }
 

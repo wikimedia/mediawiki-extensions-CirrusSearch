@@ -255,5 +255,3 @@ $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\LinksUpdat
 $wgJobClasses[ 'cirrusSearchLinksUpdateSecondary' ] = 'CirrusSearch\LinksUpdateSecondaryJob';
 $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\MassIndexJob';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\OtherIndexJob';
-// todo: remove once no more UpdatePages jobs are left in any queues
-$wgJobClasses[ 'cirrusSearchUpdatePages' ] = 'CirrusSearch\MassIndexJob';

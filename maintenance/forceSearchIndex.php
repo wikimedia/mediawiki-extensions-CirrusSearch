@@ -34,10 +34,6 @@ if( $IP === false ) {
 }
 require_once( "$IP/maintenance/Maintenance.php" );
 
-/**
- * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
- * job. In an ideal world, we could just use that script and kill all of this.
- */
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
 	var $from = null;

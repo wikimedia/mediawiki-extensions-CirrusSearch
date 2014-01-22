@@ -162,7 +162,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->filters[] = new \Elastica\Filter\Query( $match );
 		$this->boostLinks = ''; // No boost
 
-		$result = $this->search( "lowercase title search for '$search'" );
+		$result = $this->search( 'near_match', $search );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -192,7 +192,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->boostLinks = 'linear';
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 
-		$result = $this->search( "prefix search for '$search'" );
+		$result = $this->search( 'prefix', $search );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -405,7 +405,7 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
 		}
-		$result = $this->search( "full text search for '$originalTerm'" );
+		$result = $this->search( 'full_text', $originalTerm );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -439,7 +439,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$idFilter->addId( $id );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
-		$result = $this->search( "more like $found->namespace:$found->title search" );
+		$result = $this->search( 'more_like', "$found->namespace:$found->title" );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}
@@ -560,7 +560,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Powers full-text-like searches including prefix search.
 	 * @return Status(ResultSet|null|array(String)) results, no results, or title results
 	 */
-	private function search( $description ) {
+	private function search( $type, $for ) {
 		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreAccurateScoringMode;
 
@@ -620,6 +620,7 @@ class Searcher extends ElasticsearchIntermediary {
 				self::boostQuery( $this->rescore[ 'query' ][ 'rescore_query' ] )->toArray();
 			$query->setParam( 'rescore', $this->rescore );
 		}
+		$query->addParam( 'stats', $type );
 
 		$queryOptions = array();
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
@@ -632,6 +633,8 @@ class Searcher extends ElasticsearchIntermediary {
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
 		}
+
+		$description = "$type search for '$for'";
 
 		// Perform the search
 		$searcher = $this;

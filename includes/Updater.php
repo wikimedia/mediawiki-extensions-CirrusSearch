@@ -398,7 +398,7 @@ class Updater extends ElasticsearchIntermediary {
 				// Count links
 				// Incoming links is the sum of the number of linked pages which we count in Elasticsearch
 				// and the number of incoming redirects of which we have a handy list so we count that here.
-				$linkCountMultiSearch->addSearch( $this->buildCount(
+				$linkCountMultiSearch->addSearch( $this->buildLinkCount(
 					new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
 				$redirectCount = count( $redirects );
 				$linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
@@ -406,7 +406,7 @@ class Updater extends ElasticsearchIntermediary {
 				};
 				// If a page doesn't have any redirects then count the links to them.
 				if ( count( $redirectPrefixedDBKeys ) ) {
-					$linkCountMultiSearch->addSearch( $this->buildCount(
+					$linkCountMultiSearch->addSearch( $this->buildLinkCount(
 						new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
 					$linkCountClosures[] = function ( $count ) use( $doc ) {
 						$doc->add( 'incoming_redirect_links', $count );
@@ -479,7 +479,7 @@ class Updater extends ElasticsearchIntermediary {
 		}
 	}
 
-	private function buildCount( $filter ) {
+	private function buildLinkCount( $filter ) {
 		$type = Connection::getPageType( wfWikiId() );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
@@ -488,6 +488,7 @@ class Updater extends ElasticsearchIntermediary {
 			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
 		$matchAll = new \Elastica\Query\MatchAll();
 		$search->setQuery( new \Elastica\Query\Filtered( $matchAll, $filter ) );
+		$search->getQuery()->addParam( 'stats', 'link_count' );
 		return $search;
 	}
 

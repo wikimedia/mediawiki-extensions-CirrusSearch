@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch;
-use \Category;
+use CirrusSearch\BuildDocument\PageDataBuilder;
+use CirrusSearch\BuildDocument\PageTextBuilder;
 use \MWTimestamp;
 use \ParserCache;
 use \SearchUpdate;
@@ -164,7 +165,7 @@ class Updater extends ElasticsearchIntermediary {
 		OtherIndexJob::queueIfRequired( $this->pagesToTitles( $pages ), true );
 
 		$allDocuments = array_fill_keys( Connection::getAllIndexTypes(), array() );
-		foreach ( $this->buildDocumentForPages( $freshPages, $flags ) as $document ) {
+		foreach ( $this->buildDocumentsForPages( $freshPages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
@@ -266,7 +267,7 @@ class Updater extends ElasticsearchIntermediary {
 		wfProfileOut( __METHOD__ );
 	}
 
-	private function buildDocumentForPages( $pages, $flags ) {
+	private function buildDocumentsForPages( $pages, $flags ) {
 		global $wgCirrusSearchIndexedRedirects;
 		wfProfileIn( __METHOD__ );
 
@@ -276,8 +277,6 @@ class Updater extends ElasticsearchIntermediary {
 		$fullDocument = !( $skipParse || $skipLinks );
 
 		$documents = array();
-		$linkCountClosures = array();
-		$linkCountMultiSearch = new \Elastica\Multi\Search( Connection::getClient() );
 		foreach ( $pages as $page ) {
 			wfProfileIn( __METHOD__ . '-basic' );
 			$title = $page->getTitle();
@@ -311,140 +310,31 @@ class Updater extends ElasticsearchIntermediary {
 
 				// Get text to index, based on content and parser output
 				list( $content, $parserOutput ) = $this->getContentAndParserOutput( $page );
-				$text = $this->buildTextToIndex( $content, $parserOutput );
 
-				$doc->add( 'text', $text );
-				$doc->add( 'text_bytes', strlen( $text ) );
-				$doc->add( 'text_words', str_word_count( $text ) ); // TODO remove once text.word_count is available everywhere
+				// Build our page data
+				$pageBuilder = new PageDataBuilder( $doc, $title, $content, $parserOutput );
+				$doc = $pageBuilder->build();
 
-				// Index PDF or DJVU text as well
-				if ( $title->getNamespace() == NS_FILE ) {
-					$file = wfLocalFile( $title );
-					if ( $file && $file->exists() && $file->getHandler() ) {
-						$fileText = $file->getHandler()->getEntireText( $file );
-						if ( $fileText ) {
-							$doc->add( 'file_text', $fileText );
-						}
-					}
-				}
+				// And build the page text itself
+				$textBuilder = new PageTextBuilder( $doc, $content, $parserOutput );
+				$doc = $textBuilder->build();
 
-				$categories = array();
-				foreach ( $parserOutput->getCategories() as $key => $value ) {
-					$category = Category::newFromName( $key );
-					$categories[] = $category->getTitle()->getText();
-				}
-				$doc->add( 'category', $categories );
-
-				$templates = array();
-				foreach ( $parserOutput->getTemplates() as $tNS => $templatesInNS ) {
-					foreach ( $templatesInNS as $tDbKey => $unused ) {
-						$templateTitle = Title::makeTitleSafe( $tNS, $tDbKey );
-						if ( $templateTitle && $templateTitle->exists() ) {
-							$templates[] = $templateTitle->getPrefixedText();
-						}
-					}
-				}
-				$doc->add( 'template', $templates );
-
-				$headings = array();
-				$ignoredHeadings = $this->getIgnoredHeadings();
-				foreach ( $parserOutput->getSections() as $heading ) {
-					$heading = $heading[ 'line' ];
-					// Strip tags from the heading or else we'll display them (escaped) in search results
-					$heading = Sanitizer::stripAllTags( $heading );
-					// Note that we don't take the level of the heading into account - all headings are equal.
-					// Except the ones we ignore.
-					if ( !in_array( $heading, $ignoredHeadings ) ) {
-						$headings[] = $heading;
-					}
-				}
-				$doc->add( 'heading', $headings );
-
-				$outgoingLinks = array();
-				foreach ( $parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
-					foreach ( $namespaceLinks as $linkedDbKey => $ignored ) {
-						$linked = Title::makeTitle( $linkedNamespace, $linkedDbKey );
-						$outgoingLinks[] = $linked->getPrefixedDBKey();
-					}
-				}
-				$doc->add( 'outgoing_link', $outgoingLinks );
-
-				$doc->add( 'external_link', array_keys( $parserOutput->getExternalLinks() ) );
+				// Then let hooks have a go
+				wfRunHooks( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
 
 				wfProfileOut( __METHOD__ . '-parse' );
 			}
 
 			if ( !$skipLinks ) {
-				wfProfileIn( __METHOD__ . '-redirects' );
-				// Handle redirects to this page
-				$redirectTitles = $title->getBacklinkCache()
-					->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
-				$redirects = array();
-				$redirectPrefixedDBKeys = array();
-				// $redirectLinks = 0;
-				foreach ( $redirectTitles as $redirect ) {
-					// If the redirect is in main or the same namespace as the article the index it
-					if ( $redirect->getNamespace() === NS_MAIN && $redirect->getNamespace() === $title->getNamespace()) {
-						$redirects[] = array(
-							'namespace' => $redirect->getNamespace(),
-							'title' => $redirect->getText()
-						);
-						$redirectPrefixedDBKeys[] = $redirect->getPrefixedDBKey();
-					}
-				}
-				$doc->add( 'redirect', $redirects );
-
-				// Count links
-				// Incoming links is the sum of the number of linked pages which we count in Elasticsearch
-				// and the number of incoming redirects of which we have a handy list so we count that here.
-				$linkCountMultiSearch->addSearch( $this->buildLinkCount(
-					new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
-				$redirectCount = count( $redirects );
-				$linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
-					if ( $count + $redirectCount > 0 ) {
-						$doc->add( 'incoming_links', $count + $redirectCount );
-					}
-				};
-				// If a page doesn't have any redirects then count the links to them.
-				if ( count( $redirectPrefixedDBKeys ) ) {
-					$linkCountMultiSearch->addSearch( $this->buildLinkCount(
-						new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
-					$linkCountClosures[] = function ( $count ) use( $doc ) {
-						if ( $count > 0 ) {
-							$incomingLinks = $doc->has( 'incoming_links' ) ? $doc->get( 'incoming_links' ) : 0;
-							$doc->add( 'incoming_links', $count + $incomingLinks );
-							// TODO remove incoming_redirect_links entirely once it is 0 across the board.
-							$doc->add( 'incoming_redirect_links', 0 );
-						}
-					};
-				} else {
-					$doc->add( 'incoming_redirect_links', 0 );
-				}
-				wfProfileOut( __METHOD__ . '-redirects' );
+				wfProfileIn( __METHOD__ . '-links' );
+				wfRunHooks( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
+				wfProfileOut( __METHOD__ . '-links' );
 			}
 		}
 
-		wfProfileIn( __METHOD__ . '-link-counts' );
-		$linkCountClosureCount = count( $linkCountClosures );
-		if ( !$skipLinks && $linkCountClosureCount ) {
-			try {
-				$pageCount = count( $pages );
-				$this->start( "counting links to $pageCount pages" );
-				$result = $linkCountMultiSearch->search();
-				$this->success();
-				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
-					$linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
-				}
-			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				// Note that we still return the pages and execute the update here, we just complain
-				$this->failure( $e );
-				foreach ( $pages as $page ) {
-					$id = $page->getId();
-					wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
-				}
-			}
-		}
-		wfProfileOut( __METHOD__ . '-link-counts' );
+		wfProfileIn( __METHOD__ . '-finish-batch' );
+		wfRunHooks( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
+		wfProfileOut( __METHOD__ . '-finish-batch' );
 		wfProfileOut( __METHOD__ );
 		return $documents;
 	}
@@ -468,51 +358,6 @@ class Updater extends ElasticsearchIntermediary {
 			$parserOutput = $content->getParserOutput( $page->getTitle(), $revId );
 		}
 		return array( $content, $parserOutput );
-	}
-
-	/**
-	 * Fetch text to index.  If $content is wikitext then render and clean it.  Otherwise delegate
-	 * to the $content itself and then to SearchUpdate::updateText to clean the result.
-	 * @param $content Content of page
-	 * @param $parserOutput ParserOutput from page
-	 */
-	private function buildTextToIndex( $content, $parserOutput ) {
-		switch ( $content->getModel() ) {
-		case CONTENT_MODEL_WIKITEXT:
-			return TextFormatter::formatWikitext( $parserOutput );
-		default:
-			return SearchUpdate::updateText( $content->getTextForSearchIndex() );
-		}
-	}
-
-	private function buildLinkCount( $filter ) {
-		$type = Connection::getPageType( wfWikiId() );
-		$search = new \Elastica\Search( $type->getIndex()->getClient() );
-		$search->addIndex( $type->getIndex() );
-		$search->addType( $type );
-		$search->setOption( \Elastica\Search::OPTION_SEARCH_TYPE,
-			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
-		$matchAll = new \Elastica\Query\MatchAll();
-		$search->setQuery( new \Elastica\Query\Filtered( $matchAll, $filter ) );
-		$search->getQuery()->addParam( 'stats', 'link_count' );
-		return $search;
-	}
-
-	private function getIgnoredHeadings() {
-		static $ignoredHeadings = null;
-		if ( $ignoredHeadings === null ) {
-			$source = wfMessage( 'cirrussearch-ignored-headings' )->inContentLanguage();
-			if( $source->isDisabled() ) {
-				$ignoredHeadings = array();
-			} else {
-				$lines = explode( "\n", $source->plain() );
-				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
-				$lines = array_map( 'trim', $lines );          // Remove extra spaces
-				$lines = array_filter( $lines );               // Remove empty lines
-				$ignoredHeadings = $lines;               // Now we just have headings!
-			}
-		}
-		return $ignoredHeadings;
 	}
 
 	/**

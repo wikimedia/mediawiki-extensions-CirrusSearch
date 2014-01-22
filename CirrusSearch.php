@@ -205,15 +205,21 @@ $wgCirrusSearchEnablePref = false;
 $wgCirrusSearchShowScore = false;
 
 $includes = __DIR__ . "/includes/";
+$buildDocument = $includes . 'BuildDocument/';
 /**
  * Classes
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\Builder'] = $buildDocument . 'Builder.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\PageDataBuilder'] = $buildDocument . 'PageDataBuilder.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\PageTextBuilder'] = $buildDocument . 'PageTextBuilder.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\ParseBuilder'] = $buildDocument . 'Builder.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\RedirectsAndIncomingLinks'] = $buildDocument . 'RedirectsAndIncomingLinks.php';
 $wgAutoloadClasses['CirrusSearch\AnalysisConfigBuilder'] = $includes . 'AnalysisConfigBuilder.php';
-$wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\DeletePagesJob'] = $includes . 'DeletePagesJob.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
+$wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateSecondaryJob'] = $includes . 'LinksUpdateSecondaryJob.php';
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
@@ -228,7 +234,6 @@ $wgAutoloadClasses['CirrusSearch\Result'] = $includes . 'Result.php';
 $wgAutoloadClasses['CirrusSearch\ResultSet'] = $includes . 'ResultSet.php';
 $wgAutoloadClasses['CirrusSearch\ResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
-$wgAutoloadClasses['CirrusSearch\TextFormatter'] = $includes . 'TextFormatter.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
 $wgAutoloadClasses['CirrusSearch\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
@@ -237,6 +242,8 @@ $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
 /**
  * Hooks
  */
+$wgHooks[ 'CirrusSearchBuildDocumentFinishBatch'][] = 'CirrusSearch\BuildDocument\RedirectsAndIncomingLinks::finishBatch';
+$wgHooks[ 'CirrusSearchBuildDocumentLinks'][] = 'CirrusSearch\BuildDocument\RedirectsAndIncomingLinks::buildDocument';
 $wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearch\Hooks::apiBeforeMainHook';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::articleDeleteCompleteHook';
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';

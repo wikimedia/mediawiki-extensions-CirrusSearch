@@ -248,7 +248,7 @@ class Updater extends ElasticsearchIntermediary {
 			$bulk->addDocuments( $documents );
 			$bulk->send();
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-			if ( $this->bulkResponseExceptionIsJustDocumentMissing( $e,
+			if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e,
 					"Updating a page that doesn't yet exist in Elasticsearch" ) ) {
 				$exception = $e;
 			}

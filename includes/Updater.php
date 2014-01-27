@@ -106,7 +106,6 @@ class Updater extends ElasticsearchIntermediary {
 					wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
 					return null;
 				}
-				wfDebugLog( 'CirrusSearch', "Updating search index for $title which is a redirect to " . $target->getText() );
 				$title = $target;
 				continue;
 			} else {

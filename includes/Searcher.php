@@ -281,7 +281,7 @@ class Searcher extends ElasticsearchIntermediary {
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
-		$boostTemplates = null;
+		$boostTemplates = self::getDefaultBoostTemplates();
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(

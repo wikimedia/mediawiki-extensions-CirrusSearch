@@ -48,21 +48,26 @@ class MappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig() {
+		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
 		$titleExtraAnalyzers = array(
-			'suggest',
-			array( 'index' => 'prefix', 'search' => 'near_match' ),
-			'near_match',
-			'keyword',
+			$suggestExtra,
+			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'analyzer' => 'keyword', 'index_options' => 'docs' ),
 		);
 		if ( $this->prefixSearchStartsWithAnyWord ) {
-			$titleExtraAnalyzers[] = array( 'index' => 'word_prefix', 'search' => 'plain' );
+			$titleExtraAnalyzers[] = array(
+				'index_analyzer' => 'word_prefix',
+				'search_analyzer' => 'plain',
+				'index_options' => 'docs'
+			);
 		}
 
 		$textExtraAnalyzers = array();
 		if ( $this->phraseUseText ) {
-			$textExtraAnalyzers[] = 'suggest';
+			$textExtraAnalyzers[] = $suggestExtra;
 		}
 
 		$config = array(
@@ -89,14 +94,14 @@ class MappingConfigBuilder {
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( 'heading' ),
+				'heading' => $this->buildStringField( 'heading', array(), false ),
 				'text_bytes' => $this->buildLongField(),
 				'text_words' => $this->buildLongField(),      // TODO remove once text.word_count is available everywhere
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField( 'title', array( 'suggest' ) ),
+						'title' => $this->buildStringField( 'title', array( $suggestExtra ), false ),
 					)
 				),
 				'incoming_links' => $this->buildLongField(),
@@ -110,11 +115,13 @@ class MappingConfigBuilder {
 
 	/**
 	 * Build a string field that does standard analysis for the language.
-	 * @param $name string|null Name of the field.
-	 * @param $extra array|null Extra analyzers for this field beyond the basic text and plain.
+	 * @param string $name Name of the field.
+	 * @param array|null $extra Extra analyzers for this field beyond the basic text and plain.
+	 * @param boolean $enableNorms Should length norms be enabled for the field?  Defaults to true.
 	 * @return array definition of the field
 	 */
-	public function buildStringField( $name, $extra = array() ) {
+	public function buildStringField( $name, $extra = array(), $enableNorms = true ) {
+		$norms = array( 'enabled' => $enableNorms );
 		$field = array(
 			'type' => 'multi_field',
 			'fields' => array(
@@ -123,30 +130,28 @@ class MappingConfigBuilder {
 					'analyzer' => 'text',
 					'term_vector' => 'with_positions_offsets',
 					'include_in_all' => false,
+					'norms' => $norms,
 				),
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'term_vector' => 'with_positions_offsets',
 					'include_in_all' => false,
+					'norms' => $norms,
 				),
 			)
 		);
-		foreach ( $extra as $extraName ) {
-			if ( is_array( $extraName ) ) {
-				$searchAnalyzer = $extraName[ 'search' ];
-				$indexAnalyzer = $extraName[ 'index' ];
-				$extraName = $indexAnalyzer;
+		foreach ( $extra as $extraField ) {
+			if ( isset( $extraField[ 'analyzer' ] ) ) {
+				$extraName = $extraField[ 'analyzer' ];
 			} else {
-				$searchAnalyzer = $extraName;
-				$indexAnalyzer = $extraName;
+				$extraName = $extraField[ 'index_analyzer' ];
 			}
-			$field[ 'fields' ][ $extraName ] = array(
+			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'type' => 'string',
-				'search_analyzer' => $searchAnalyzer,
-				'index_analyzer' => $indexAnalyzer,
 				'include_in_all' => false,
-			);
+				'norms' => $norms,
+			), $extraField );
 		}
 		return $field;
 	}
@@ -160,6 +165,8 @@ class MappingConfigBuilder {
 			'type' => 'string',
 			'analyzer' => 'lowercase_keyword',
 			'include_in_all' => false,
+			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
+			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
 		);
 	}
 
@@ -172,6 +179,8 @@ class MappingConfigBuilder {
 			'type' => 'string',
 			'analyzer' => 'keyword',
 			'include_in_all' => false,
+			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
+			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
 		);
 	}
 

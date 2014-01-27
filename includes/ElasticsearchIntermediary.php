@@ -89,10 +89,13 @@ class ElasticsearchIntermediary {
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
 	 * @return \Status representing a backend failure
 	 */
-	public function failure( $exception ) {
+	public function failure( $exception = null ) {
 		$took = $this->finishRequest();
-		wfLogWarning( "Search backend error during $this->description after $took.  " .
-			'Error message is:  ' . $exception->getMessage() );
+		$message = '';
+		if ( $exception ) {
+			$message = 'Error message is:  ' . $exception->getMessage();
+		}
+		wfLogWarning( "Search backend error during $this->description after $took.  $message" );
 		return Status::newFatal( 'cirrussearch-backend-error' );
 	}
 

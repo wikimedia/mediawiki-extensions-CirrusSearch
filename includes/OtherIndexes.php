@@ -159,7 +159,7 @@ MVEL;
 				$findIdsClosures[ $i ]( $result->getId() );
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$this->failure();
+			$this->failure( $e );
 			return;
 		}
 
@@ -183,7 +183,7 @@ MVEL;
 		if ( $exception === null ) {
 			$this->success();
 		} else {
-			$this->failure();
+			$this->failure( $e );
 			foreach ( $titles as $title ) {
 				$id = $title->getArticleID();
 				wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName: $id" );

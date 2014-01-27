@@ -479,7 +479,7 @@ class Searcher extends ElasticsearchIntermediary {
 					// It is up to the called to decide if that is and error.
 					return $searcher->success( null );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $searcher->failure();
+					return $searcher->failure( $e );
 				}
 			},
 			'error' => function( $status ) {
@@ -559,7 +559,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				wfProfileOut( __METHOD__ );
-				return $this->failure();
+				return $this->failure( $e );
 			}
 			$result = $result->getData();
 			$result = $result[ 'version' ][ 'number' ];

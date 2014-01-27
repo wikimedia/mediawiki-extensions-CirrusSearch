@@ -62,6 +62,10 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $resultsType;
 	/**
+	 * @var string sort type
+	 */
+	private $sort = 'relevance';
+	/**
 	 * @var array(string) prefixes that should be prepended to suggestions.  Can be added to externally and is added to
 	 * during search syntax parsing.
 	 */
@@ -151,6 +155,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setResultsType( $resultsType ) {
 		$this->resultsType = $resultsType;
+	}
+
+	/**
+	 * Set the type of sort to perform.  Must be 'relevance', 'title_asc', 'title_desc'.
+	 * @param string sort type
+	 */
+	public function setSort( $sort ) {
+		$this->sort = $sort;
 	}
 
 	/**
@@ -635,6 +647,18 @@ class Searcher extends ElasticsearchIntermediary {
 			$query->setParam( 'rescore', $this->rescore );
 		}
 		$query->addParam( 'stats', $type );
+		switch ( $this->sort ) {
+		case 'relevance':
+			break;  // The default
+		case 'title_asc':
+			$query->setSort( array( 'title.keyword' => 'asc' ) );
+			break;
+		case 'title_desc':
+			$query->setSort( array( 'title.keyword' => 'desc' ) );
+			break;
+		default:
+			wfLogWarning( "Invalid sort type:  $this->sort" );
+		}
 
 		$queryOptions = array();
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {

@@ -71,6 +71,7 @@ class CirrusSearch extends SearchEngine {
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
 		}
+		$searcher->setSort( $this->getSort() );
 
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
@@ -115,5 +116,9 @@ class CirrusSearch extends SearchEngine {
 			$this->lastNamespacePrefix = '';
 		}
 		return $parsed;
+	}
+
+	public function getValidSorts() {
+		return array( 'relevance', 'title_asc', 'title_desc' );
 	}
 }

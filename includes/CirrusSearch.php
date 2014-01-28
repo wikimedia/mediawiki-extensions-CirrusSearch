@@ -71,7 +71,11 @@ class CirrusSearch extends SearchEngine {
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
 		}
-		$searcher->setSort( $this->getSort() );
+		// TODO remove this when we no longer have to support core versions without
+		// Ie946150c6796139201221dfa6f7750c210e97166
+		if ( method_exists( $this, 'getSort' ) ) {
+			$searcher->setSort( $this->getSort() );
+		}
 
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {

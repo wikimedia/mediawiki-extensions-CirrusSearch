@@ -476,5 +476,10 @@ Feature: Full text search
 
   @match_stopwords
   Scenario: When you search for a stopword you find pages with that stopword
-    When I search for to
+    When I search for to -intitle:Manyredirectstarget
     Then To is the first search result
+
+  @many_redirects
+  Scenario: When you search for a page by redirects having more unrelated redirects doesn't penalize the score
+    When I search for incategory:ManyRedirectsTest Many Redirects Test
+    Then Manyredirectstarget is the first search result

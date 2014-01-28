@@ -313,3 +313,21 @@ Before("@match_stopwords") do
   end
   $match_plain = true
 end
+
+Before("@many_redirects") do
+  if !$many_redirects
+    steps %Q{
+      Given a page named Manyredirectstarget exists with contents [[Category:ManyRedirectsTest]]
+      And a page named Fewredirectstarget exists with contents [[Category:ManyRedirectsTest]]
+      And a page named Many Redirects Test 1 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Many Redirects Test 2 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Useless redirect to target 1 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Useless redirect to target 2 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Useless redirect to target 3 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Useless redirect to target 4 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Useless redirect to target 5 exists with contents #REDIRECT [[Manyredirectstarget]]
+      And a page named Many Redirects Test ToFew exists with contents #REDIRECT [[Fewredirectstarget]]
+    }
+  end
+  $many_redirects = true
+end

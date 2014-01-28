@@ -399,6 +399,16 @@ Feature: Full text search
     When I search for NOT catapult
     Then there is a search result
 
+  Scenario Outline: searching for less than and greater than doesn't find tons and tons of tokens
+    When I search for <query>
+    Then there are no search results
+  Examples:
+  | query |
+  | <}    |
+  | <=}   |
+  | >.    |
+  | >=.   |
+
   @wildcards @setup_main
   Scenario: searching with a single wildcard finds expected results
     When I search for catapul*

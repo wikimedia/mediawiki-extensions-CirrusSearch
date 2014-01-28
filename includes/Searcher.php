@@ -808,6 +808,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function fixupQueryStringPart( $string ) {
 		wfProfileIn( __METHOD__ );
+		// Escape characters that can be escaped with \\
 		$string = preg_replace( '/(
 				\/|		(?# no regex searches allowed)
 				\(|     (?# no user supplied groupings)
@@ -820,6 +821,11 @@ class Searcher extends ElasticsearchIntermediary {
 				:|		(?# no specifying your own fields)
 				\\\
 			)/x', '\\\$1', $string );
+		//Nuke characters that can't be escaped with \\
+		$string = preg_replace( '/(
+				<|      (?# no specifying ranges of tokens)
+				>
+			)/x', '', $string );
 		// If the string doesn't have balanced quotes then add a quote on the end so Elasticsearch
 		// can parse it.
 		$inQuote = false;

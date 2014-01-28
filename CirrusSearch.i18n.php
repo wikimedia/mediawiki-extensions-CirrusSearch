@@ -12,6 +12,7 @@ $messages = array();
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
 	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem. Please try again later.',
+	'cirrussearch-parse-error' => "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
 	'cirrussearch-now-using' => 'This wiki is using a new search engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Headings that will be ignored by search.
@@ -54,6 +55,7 @@ $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
 "Elasticsearch" is a full-text search engine. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
+	'cirrussearch-parse-error' => "Error message shown to the users when we couldn't understand the query.  For the most part we don't expect users to see this because we retry retry queries that we don't unserstand using a (hopefully) fail safe method.",
 	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',

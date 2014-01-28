@@ -429,8 +429,30 @@ class Searcher extends ElasticsearchIntermediary {
 				}
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
+
+			$result = $this->search( 'full_text', $originalTerm );
+
+			if ( !$result->isOK() && $this->isParseError( $result ) ) {
+				wfProfileIn( __METHOD__ . '-degraded-query' );
+				// Elasticsearch has reported a parse error and we've already logged it when we built the status
+				// so at this point all we can do is retry the query as a simple query string query.
+				$this->query = new \Elastica\Query\Simple( array( 'simple_query_string' => array(
+					'fields' => $fields,
+					'query' => $queryStringQueryString,
+					'default_operator' => 'AND',
+				) ) );
+				$this->rescore = null; // Not worth trying in this state.
+				$result = $this->search( 'degraded_full_text', $originalTerm );
+				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
+				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
+				// the parse errors that come in.
+				wfProfileOut( __METHOD__ . '-degraded-query' );
+			}
+		} else {
+			$result = $this->search( 'full_text', $originalTerm );
+			// No need to check for a parse error here because we don't actually create a query for
+			// Elasticsearch to parse
 		}
-		$result = $this->search( 'full_text', $originalTerm );
 		wfProfileOut( __METHOD__ );
 		return $result;
 	}

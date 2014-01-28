@@ -92,11 +92,40 @@ class ElasticsearchIntermediary {
 	public function failure( $exception = null ) {
 		$took = $this->finishRequest();
 		$message = '';
+		$status = Status::newFatal( 'cirrussearch-backend-error' );
 		if ( $exception ) {
-			$message = 'Error message is:  ' . $exception->getMessage();
+			$message = $exception->getMessage();
+			$marker = 'ParseException[Cannot parse ';
+			$markerLocation = strpos( $message, $marker );
+			if ( $markerLocation === false ) {
+				$message = 'Error message:  ' . $message;
+			} else {
+				// The important part of the parse error message comes before the next new line
+				// so lets slurp it up and log it rather than the huge clump of error.
+				$start = $markerLocation + strlen( $marker );
+				$end = strpos( $message, "\n", $start );
+				$parseError = substr( $message, $start, $end - $start );
+				$message = 'Parse error on ' . $parseError;
+				// Finally, return a different fatal status that we can check later on.
+				$status = Status::newFatal( 'cirrussearch-parse-error' );
+			}
 		}
 		wfLogWarning( "Search backend error during $this->description after $took.  $message" );
-		return Status::newFatal( 'cirrussearch-backend-error' );
+		return $status;
+	}
+
+	/**
+	 * Does this status represent an Elasticsearch parse error?
+	 * @param $status Status to check
+	 * @return boolean is this a parse error?
+	 */
+	protected function isParseError( $status ) {
+		foreach ( $status->getErrorsArray() as $errorMessage ) {
+			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

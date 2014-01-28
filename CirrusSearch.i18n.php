@@ -539,8 +539,25 @@ Referencias
 Ligazóns externas
 Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
+	'cirrussearch-boost-templates' => ' #<!-- Deixe esta liña tal e como está --> <pre>
+# Se unha páxina contén un destes modelos, entón a súa puntuación de procura multiplícase pola porcentaxe configurada.
+# Calquera cambio feito aplícase inmediatamente.
+# A sintaxe é a seguinte:
+#   * Todo o que vaia despois dun carácter "#" ata o final da liña é un comentario
+#   * Toda liña que non estea en branco é o modelo exacto que promover, co espazo de nomes, coas maiúsculas e minúsculas e completo, seguido dun carácter "|", seguido dun número, seguido dun carácter "%".
+# Exemplos de liñas correctas:
+# Modelo:Ben|150%
+# Modelo:Moi ben|300%
+# Modelo:Mal|50%
+# Exemplos de liñas que non funcionan:
+# Modelo:Erro|150.234234% <-- non están permitidos os puntos ou comas decimais!
+# Erro|150% <--- tecnicamente funciona, pero para as transclusións da páxina "Erro" desde o espazo de nomes principal
+# Pode probar os cambios na configuración levando a cabo unha pescuda con boost-templates:"XX", onde XX son todos os modelos que quere promover, separados por espazos no canto de saltos de liña.
+# As pescudas que especifican boost-templates:"XX" ignoran os contidos deste campo.
+ #</pre> <!-- Deixe esta liña tal e como está -->',
 	'cirrussearch-pref-label' => 'Nova pescuda',
 	'cirrussearch-pref-desc' => 'Probe o noso novo buscador, que soporta un maior número de linguas, proporciona resultados máis actulizados e mesmo pode atopar texto dentro dos modelos.',
+	'cirrussearch-file-contents-match' => 'Coincidencia cos contidos do ficheiro: $1',
 );
 
 /** Hebrew (עברית)
@@ -943,6 +960,22 @@ $messages['ru'] = array(
 Примечания
 Ссылки
 См. также
+ #</pre> <!-- оставьте эту строку как есть -->',
+	'cirrussearch-boost-templates' => ' #<!-- оставьте эту строку как есть --> <pre>
+# Если страница содержит один из этих шаблонов, её вес при поиске умножается на указанный процент.
+# Изменения вступают в силу немедленно.
+# Синтаксис выглядит следующим образом:
+# * Всё, что начинается с символа «#» (и до конца строки) является комментарием
+# * Каж̠дая непустая строка — это точное имя шаблона для повышения веса с указанием пространства имён, с последующим символом «|», за которым следует число со знаком «%».
+# Примеры правильных строк:
+# Template:Good|150%
+# Template:Very Very Good|300%
+# Template:Bad|50%
+# Примеры неправильных строк:
+# Template:Foo|150.234234% <-- десятичный разделитель недопустим!
+# Foo|150% <--- технически это работает, но только для включений страницы Foo из основного пространства имён
+# Вы можете протестировать изменение настроек, выполнив запрос с префиксом boost-templates:"XX", где XX — это шаблоны, которые вы хотите использовать, разделенных пробелами вместо символов разрыва строки.
+# Запросы, которые определяют boost-templates:"XX", игнорируют содержимое этого поля.
  #</pre> <!-- оставьте эту строку как есть -->',
 	'cirrussearch-pref-label' => 'Новый поиск',
 	'cirrussearch-pref-desc' => 'Попробуйте наш новый поиск, который поддерживает большее количество языков, предоставляет более свежие результаты, и может даже найти текст внутри шаблонов.',

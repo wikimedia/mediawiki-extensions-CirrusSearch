@@ -1,33 +1,54 @@
-Feature: Prefix search
+Feature: Searches with a prefix filter
   Background:
     Given I am at a random page
 
-  @prefix
-  Scenario Outline: Search suggestions
-    When I type <term> into the search box
-    Then suggestions should appear
-    And <first_result> is the first suggestion
-    And I should be offered to search for <term>
-    When I click the search button
-    Then I am on a page titled <title>
-  Examples:
-    | term                   | first_result           | title                  |
-# Note that there are more links to catapult then to any other page that starts with the
-# word "catapult" so it should be first
-    | catapult               | Catapult               | Catapult               |
-    | catapul                | Catapult               | Search results         |
-    | two words              | Two Words              | Two Words              |
-    | ~catapult              | none                   | Search results         |
-    | África                 | África                 | África                 |
-    | Africa                 | África                 | África                 |
-    | Template:Template Test | Template:Template Test | Template:Template Test |
-    | l'or                   | L'Oréal                | Search results         |
-    | l or                   | L'Oréal                | Search results         |
-    | L'orea                 | L'Oréal                | Search results         |
-    | L'Oréal                | L'Oréal                | L'Oréal                |
-    | L’Oréal                | L'Oréal                | L'Oréal                |
-    | L Oréal                | L'Oréal                | L'Oréal                |
+  @prefix_filter
+  Scenario: You can add the prefix to the url
+    When I am at the search results page with the search prefix and the prefix prefix
+    Then Prefix Test is the first search result
+    But Foo Prefix Test is not in the search results
 
-  Scenario: Suggestions don't appear when you search for a string that is too long
-    When I type 贵州省瞬时速度团头鲂身体c实施ysstsstsg说tyttxy以推销员会同香港推广系统在同他讨厌她团体淘汰赛系统大选于它拥有一天天用于与体育学院国ttxzyttxtxytdttyyyztdsytstsstxtttd天天体育系统的摄像头听到他他偷笑偷笑太阳团体杏眼桃腮他要tttxx y into the search box
-    Then suggestions should not appear
+  @prefix_filter
+  Scenario: The prefix: filter filters results to those with titles prefixed by value
+    When I search for prefix prefix:prefix
+    Then Prefix Test is the first search result
+    But Foo Prefix Test is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter interprets spaces literally
+    When I search for prefix prefix:prefix tes
+    Then Prefix Test is the first search result
+
+  @prefix_filter
+  Scenario: It is ok to start the query with the prefix filter
+    When I search for prefix:prefix tes
+    Then Prefix Test is the first search result
+
+  @prefix_filter
+  Scenario: It is ok to specify an empty prefix filter
+    When I search for prefix test prefix:
+    Then Prefix Test is the first search result
+
+  @prefix_filter
+  Scenario: The prefix: filter can be used to apply a namespace and a title prefix
+    When I search for prefix:talk:prefix tes
+    Then Talk:Prefix Test is the first search result
+    But Prefix Test is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter can be used to apply a namespace without a title prefix
+    When I search for prefix test prefix:talk:
+    Then Talk:Prefix Test is the first search result
+    But Prefix Test is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter can be used to filter to subpages
+    When I search for prefix test aaaa prefix:Prefix Test/
+    Then Prefix Test/AAAA is the first search result
+    But Prefix Test AAAA is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter can be used to filter to subpages starting with some title
+    When I search for prefix test aaaa prefix:Prefix Test/aa
+    Then Prefix Test/AAAA is the first search result
+    But Prefix Test AAAA is not in the search results

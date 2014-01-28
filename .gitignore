@@ -4,3 +4,4 @@
 .*.swp
 tests/browser/cucumber_failures.log
 tests/browser/.bundle
+tests/browser/screenshots

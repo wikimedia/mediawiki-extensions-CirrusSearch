@@ -110,7 +110,7 @@ class AnalysisConfigBuilder {
 				'suggest_shingle' => array(
 					'type' => 'shingle',
 					'min_shingle_size' => 2,
-					'max_shingle_size' => 5,
+					'max_shingle_size' => 3,
 					'output_unigrams' => true,
 				),
 				'lowercase' => array(

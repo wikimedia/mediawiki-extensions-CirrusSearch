@@ -1,4 +1,4 @@
-Feature: Suggestions
+Feature: Did you mean
   Background:
     Given I am at a random page
 

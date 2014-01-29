@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-Before('@setup_main, @filters, @prefix') do
+Before('@setup_main, @filters, @prefix, @bad_syntax') do
   if !$setup_main
     steps %Q{
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
@@ -16,7 +16,7 @@ Before('@setup_main, @filters, @prefix') do
   end
 end
 
-Before('@setup_main, @prefix') do
+Before('@setup_main, @prefix, @bad_syntax') do
   if !$setup_main2
     steps %Q{
       Given a page named Rdir exists with contents #REDIRECT [[Two Words]]
@@ -28,7 +28,7 @@ Before('@setup_main, @prefix') do
   end
 end
 
-Before('@setup_main, @prefix, @go') do
+Before('@setup_main, @prefix, @go, @bad_syntax') do
   if !$africa
     steps %Q{
       Given a page named África exists with contents for testing

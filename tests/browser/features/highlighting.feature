@@ -1,4 +1,4 @@
-Feature: Full text search highlighting
+Feature: Highlighting
   Background:
     Given I am at a random page
 

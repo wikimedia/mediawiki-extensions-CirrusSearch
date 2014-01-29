@@ -81,6 +81,11 @@ Feature: Searches with syntax errors
   | --- AND catapult       |
   | catapult \|\|---       |
   | catapult ~~~~~~        |
+  | catapult~◆~catapult    |
+  | catapult~~~~....[[\|\|.\|\|\|\|\|\|+\|+\|=\\\\=\\*.$.$.$. |
+  | T:8~=~¥9:77:7:57;7;76;6346- OR catapult |
+  | catapult OR T:8~=~¥9:77:7:57;7;76;6346- |
+
 
   @bad_syntax
   Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)

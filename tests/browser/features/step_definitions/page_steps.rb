@@ -34,7 +34,13 @@ When(/^I delete the second most recent revision of (.*)$/) do |title|
     page.change_visibility_of_selected
   end
 end
+When(/^I go to (.*)$/) do |title|
+  visit(ArticlePage, using_params: {page_name: title})
+end
 
+Then(/^there is a software version row for (.+)$/) do |name|
+  on(SpecialVersion).software_table_row(name).exists?
+end
 
 def edit_page(title, text, add)
   if text.start_with?("@")

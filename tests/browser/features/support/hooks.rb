@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-Before('@setup_main, @filters, @prefix, @bad_syntax') do
+Before('@setup_main, @filters, @prefix, @bad_syntax, @wildcard') do
   if !$setup_main
     steps %Q{
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]

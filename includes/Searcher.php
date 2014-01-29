@@ -975,6 +975,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostLinks ) {
 			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
+			// TODO remove redirect links once they are empty and switch prefix search to some kind of sort
 			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
 			$scoreBoostMvel = "$incomingLinks + $incomingRedirectLinks";
 			switch ( $this->boostLinks ) {

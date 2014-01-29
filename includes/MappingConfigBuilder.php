@@ -103,8 +103,8 @@ class MappingConfigBuilder {
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading', array(), false ),
-				'text_bytes' => $this->buildLongField(),
-				'text_words' => $this->buildLongField(),      // TODO remove once text.word_count is available everywhere
+				'text_bytes' => $this->buildLongField( false ),
+				'text_words' => $this->buildLongField( false ),  // TODO remove once text.word_count is available everywhere
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
@@ -113,7 +113,7 @@ class MappingConfigBuilder {
 					)
 				),
 				'incoming_links' => $this->buildLongField(),
-				'incoming_redirect_links' => $this->buildLongField(),
+				'incoming_redirect_links' => $this->buildLongField( false ),
 				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);
@@ -194,12 +194,17 @@ class MappingConfigBuilder {
 
 	/**
 	 * Create a long field.
+	 * @param boolean $index should this be indexed
 	 * @return array definition of the field
 	 */
-	public function buildLongField() {
-		return array(
+	public function buildLongField( $index = true ) {
+		$config = array(
 			'type' => 'long',
 			'include_in_all' => false,
 		);
+		if ( !$index ) {
+			$config[ 'index' ] = 'no';
+		}
+		return $config;
 	}
 }

@@ -26,3 +26,8 @@ Feature: Searches that contain fuzzy matches
   Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding nothing if fuzzy search is required)
     When I search for ffnonesensewor~0
     Then there are no search results
+
+  @setup_main
+  Scenario: Fuzzy search doesn't find terms that don't match the first two characters for performance reasons
+    When I search for fgnonesenseword~
+    Then there are no search results

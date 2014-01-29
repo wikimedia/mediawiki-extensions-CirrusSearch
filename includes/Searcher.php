@@ -714,6 +714,8 @@ class Searcher extends ElasticsearchIntermediary {
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
 		$query->setDefaultOperator( 'AND' );
+		$query->setAllowLeadingWildcard( false );
+		$query->setFuzzyPrefixLength( 2 );
 		return $query;
 	}
 
@@ -887,6 +889,10 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Escape ~ that don't follow a term or a quote and isn't already escaped
 		$string = preg_replace_callback( '/(?<![\w"])~/',
+			'CirrusSearch\Searcher::escapeBadSyntax', $string );
+
+		// Escape ? and * that don't follow a term.  These are slow so we turned them off.
+		$string = preg_replace_callback( '/(?<![\w])[?*]/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.

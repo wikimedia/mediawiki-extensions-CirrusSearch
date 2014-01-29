@@ -111,3 +111,12 @@ Feature: Searches with syntax errors
     | incategory:""          |
     | hastemplate:           |
     | hastemplate:""         |
+
+  @wildcard
+  Scenario Outline: Wildcards can't start a term
+    When I search for <wildcard>ickle
+    Then there are no search results
+  Examples:
+    | wildcard |
+    | *        |
+    | ?        |

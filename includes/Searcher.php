@@ -909,7 +909,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Be careful when editing this method because the ordering of the replacements matters.
 
 
-		// Escape ~ that don't follow a term or a quote and isn't already escaped
+		// Escape ~ that don't follow a term or a quote
 		$string = preg_replace_callback( '/(?<![\w"])~/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
@@ -926,7 +926,8 @@ class Searcher extends ElasticsearchIntermediary {
 					$fuzzyQuery = true;
 					return $matches[ 0 ];
 				} else {
-					return $matches[ 'leading' ] . '\\~' . preg_replace( '/~/', '\~', $matches[ 'trailing' ] );
+					return $matches[ 'leading' ] . '\\~' .
+						preg_replace( '/(?<!\\\\)~/', '\~', $matches[ 'trailing' ] );
 				}
 			}, $string );
 		$this->fuzzyQuery = $fuzzyQuery;

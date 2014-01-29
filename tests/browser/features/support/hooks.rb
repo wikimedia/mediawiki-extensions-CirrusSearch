@@ -331,3 +331,16 @@ Before("@many_redirects") do
   end
   $many_redirects = true
 end
+
+Before("@relevancy") do
+  if !$relevancy
+    steps %Q{
+      Given a page named Relevancytest exists with contents not relevant
+      And a page named Relevancytestviaredirect exists with contents not relevant
+      And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
+      And a page named Relevancytestviaheading exists with contents ==Relevancytest==
+      And a page named Relevancytestviatext exists with contents Relevancytest
+    }
+  end
+  $relevancy = true
+end

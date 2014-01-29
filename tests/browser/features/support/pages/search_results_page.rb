@@ -14,6 +14,10 @@ class SearchResultsPage
   link(:first_image_result){ table_element(:class => "searchResultImage").cell_element(:index => 1).link_element(:index => 0) }
   li(:second_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 1) }
   link(:second_result){ |page| page.second_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
+  li(:third_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 2) }
+  link(:third_result){ |page| page.third_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
+  li(:fourth_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 3) }
+  link(:fourth_result){ |page| page.fourth_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
   button(:simple_search_button, value: "Search")
   text_field(:search_input, name: "search")
   div(:suggestion_wrapper, class: "searchdidyoumean")

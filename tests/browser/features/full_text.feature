@@ -156,3 +156,11 @@ Feature: Full text search
   Scenario: When you search for a page by redirects having more unrelated redirects doesn't penalize the score
     When I search for incategory:ManyRedirectsTest Many Redirects Test
     Then Manyredirectstarget is the first search result
+
+  @relevancy
+  Scenario: Results are sorted in roughly the order we expect
+    When I search for Relevancytest
+    Then Relevancytest is the first search result
+    And Relevancytestviaredirect is the second search result
+    And Relevancytestviaheading is the third search result
+    And Relevancytestviatext is the fourth search result

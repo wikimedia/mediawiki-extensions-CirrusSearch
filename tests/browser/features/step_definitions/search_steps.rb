@@ -95,19 +95,10 @@ end
 Then(/^there is a search result$/) do
   on(SearchResultsPage).first_result_element.should exist
 end
-Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
+Then(/^(.+) is( in)? the ([^ ]+) search result$/) do |title, in_ok, index|
   on(SearchResultsPage) do |page|
-    if title == "none" then
-      page.first_result_element.should_not exist
-      page.first_image_result_element.should_not exist
-    else
-      page.first_result_element.should exist
-      if in_ok then
-        page.first_result_element.text.should include title
-      else
-        page.first_result_element.text.should == title
-      end
-    end
+    check_search_result(page.send("#{index}_result_wrapper_element"),
+      page.send("#{index}_result_element"), title, in_ok)
   end
 end
 Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
@@ -122,20 +113,6 @@ Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
       else
         # You can't just use first_image_result.should == because that tries to click the link....
         page.first_image_result_element.text.should == title
-      end
-    end
-  end
-end
-Then(/^(.*) is( in)? the second search result$/) do |title, in_ok|
-  on(SearchResultsPage) do |page|
-    if title == "none" then
-      page.second_result_wrapper_element.should_not exist
-    else
-      page.second_result_element.should exist
-      if in_ok then
-        page.second_result_element.text.should include title
-      else
-        page.second_result_element.text.should == title
       end
     end
   end
@@ -229,6 +206,19 @@ def within(seconds)
     else
       @browser.refresh
       retry
+    end
+  end
+end
+
+def check_search_result(wrapper_element, element, title, in_ok)
+  if title == "none" then
+    wrapper_element.should_not exist
+  else
+    element.should exist
+    if in_ok then
+      element.text.should include title
+    else
+      element.text.should == title
     end
   end
 end

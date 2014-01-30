@@ -1,12 +1,13 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\BuildDocument;
 use \HtmlFormatter;
 use \ParserOutput;
 use \Sanitizer;
+use \SearchUpdate;
 
 /**
- * Gets formatted article text from titles.
+ * Adds fields to the document that require article text.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,18 +24,44 @@ use \Sanitizer;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class TextFormatter extends HtmlFormatter {
+class PageTextBuilder extends ParseBuilder {
+	public function __construct( $doc, $content, $parserOutput ) {
+		parent::__construct( $doc, null, $content, $parserOutput );
+	}
+
+	public function build() {
+		$text = $this->buildTextToIndex();
+		$this->doc->add( 'text', $text );
+		$this->doc->add( 'text_bytes', strlen( $text ) );
+		$this->doc->add( 'text_words', str_word_count( $text ) ); // TODO remove once text.word_count is available everywhere
+		return $this->doc;
+	}
+
+	/**
+	 * Fetch text to index.  If $content is wikitext then render and clean it.  Otherwise delegate
+	 * to the $content itself and then to SearchUpdate::updateText to clean the result.
+	 */
+	private function buildTextToIndex() {
+		switch ( $this->content->getModel() ) {
+		case CONTENT_MODEL_WIKITEXT:
+			return $this->formatWikitext( $this->parserOutput );
+		default:
+			return SearchUpdate::updateText( $this->content->getTextForSearchIndex() );
+		}
+	}
+
 	/**
 	 * Get text to index from a ParserOutput assuming the content was wikitext.
 	 *
 	 * @param ParserOutput $po
 	 * @return formatted text from the provided parser output
 	 */
-	public static function formatWikitext( ParserOutput $po ) {
+	private function formatWikitext( ParserOutput $po ) {
 		$po->setEditSectionTokens( false );
-		$formatter = new self( $po->getText() );
+		$formatter = new HtmlFormatter( $po->getText() );
 		$formatter->remove( array( 'audio', 'video', '#toc' ) );
 		$formatter->filterContent();
 		return trim( Sanitizer::stripAllTags( $formatter->getText() ) );
 	}
+
 }

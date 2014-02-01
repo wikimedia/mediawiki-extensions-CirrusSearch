@@ -225,10 +225,12 @@ Vegeu també
 /** Czech (čeština)
  * @author Matěj Grabovský
  * @author Mormegil
+ * @author Paxt
  */
 $messages['cs'] = array(
 	'cirrussearch-desc' => 'Vyhledávání v MediaWiki běžící na Elasticsearch',
 	'cirrussearch-backend-error' => 'Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.',
+	'cirrussearch-parse-error' => 'Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl přihlášen ke zlepšení vyhledávacího systému.',
 	'cirrussearch-now-using' => 'Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])',
 	'cirrussearch-ignored-headings' => ' #<!-- tento řádek ponechte beze změny --> <pre>
 # Zde uvedené nadpisy budou ignorovány vyhledáváním.
@@ -296,6 +298,7 @@ Kilder
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Ermöglicht eine „elasticsearch“-gestütze Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
+	'cirrussearch-parse-error' => 'Die Suchanfrage wurde nicht verstanden. Bitte mache sie einfacher. Die Anfrage wurde protokolliert, um das Suchsystem zu verbessern.',
 	'cirrussearch-now-using' => 'Dieses Wiki verwendet eine neue Suchmaschine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mehr erfahren]])',
 	'cirrussearch-ignored-headings' => ' #<!-- diese Zeile nicht verändern --> <pre>
 # Überschriften, die von der Suche ignoriert werden.
@@ -377,6 +380,7 @@ Glědaj teke
 
 /** Spanish (español)
  * @author Ciencia Al Poder
+ * @author Csbotero
  * @author Fitoschido
  * @author Ihojose
  * @author Luis Felipe Schenone
@@ -384,6 +388,7 @@ Glědaj teke
 $messages['es'] = array(
 	'cirrussearch-desc' => 'Hace que la búsqueda sea con Solr',
 	'cirrussearch-backend-error' => 'No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.',
+	'cirrussearch-parse-error' => 'La queja no fue entendida. Hágala más sencilla. La queja fue registrada para mejorar el sistema de búsqueda.',
 	'cirrussearch-now-using' => 'Esta wiki está utilizando un nuevo motor de búsqueda. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más información]])',
 	'cirrussearch-ignored-headings' => ' #<!-- deje esta línea tal y como está --> <pre>
 # Títulos que serán ignorados por la búsqueda.
@@ -488,6 +493,7 @@ Katso myös
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
 	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
+	'cirrussearch-parse-error' => 'La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.',
 	'cirrussearch-now-using' => 'Ce wiki utilise un nouveau moteur de recherche. ([[mw:Special:MyLanguage/Help:CirrusSearch|en savoir plus]])',
 	'cirrussearch-ignored-headings' => ' #<!-- laisser cette ligne comme telle --> <pre>
 # Titres de sections qui seront ignorés par la recherche
@@ -529,6 +535,7 @@ Voir aussi
 $messages['gl'] = array(
 	'cirrussearch-desc' => 'Procura baseada en Elasticsearch para MediaWiki',
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
+	'cirrussearch-parse-error' => 'Non se entendeu a pescuda. Fágaa máis sinxela. Rexistrouse a pescuda para mellorar o sistema de procuras.',
 	'cirrussearch-now-using' => 'Este wiki utiliza un novo motor de procuras. ([[mw:Special:MyLanguage/Help:CirrusSearch|Máis información]])',
 	'cirrussearch-ignored-headings' => ' #<!-- Deixe esta liña tal e como está --> <pre>
 # Cabeceiras que serán ignoradas nas buscas.
@@ -568,6 +575,7 @@ Véxase tamén
 $messages['he'] = array(
 	'cirrussearch-desc' => 'חיפוש במדיה־ויקי באמצעות Elasticsearch',
 	'cirrussearch-backend-error' => 'לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.',
+	'cirrussearch-parse-error' => 'השאילתה לא הייתה ברורה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.',
 	'cirrussearch-now-using' => 'הוויקי הזה משתמש במנוע חיפוש חדש. ([[mw:Special:MyLanguage/Help:CirrusSearch|מידע נוסף]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # כותרות של פסקאות שהחיפוש יתעלם מהן
@@ -665,10 +673,12 @@ Vide etiam
 
 /** Italian (italiano)
  * @author Beta16
+ * @author Rosh
  */
 $messages['it'] = array(
 	'cirrussearch-desc' => 'Ricerca realizzata con Elasticsearch per MediaWiki',
 	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
+	'cirrussearch-parse-error' => 'Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.',
 	'cirrussearch-now-using' => 'Questo wiki usa un nuovo motore di ricerca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ulteriori informazioni]])',
 	'cirrussearch-ignored-headings' => ' #<!-- lascia questa riga esattamente come è --> <pre>
 # Elenco delle intestazioni che saranno ignorate dalla ricerca.
@@ -709,6 +719,7 @@ Collegamenti esterni
 $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Elasticsearch 検索',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
+	'cirrussearch-parse-error' => 'クエリを理解できませんでした。より単純なものにしてください。検索システムの改善のため、クエリを記録しました。',
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 	'cirrussearch-pref-label' => '新規検索',
 	'cirrussearch-pref-desc' => '数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用',
@@ -799,6 +810,7 @@ Kuckt och
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
+	'cirrussearch-parse-error' => 'Не го разбрав барањето. Упростете го. Ова го заведувам за да го подобриме пребарувачкиот систем.',
 	'cirrussearch-now-using' => 'Ова вики користи нов пребарувач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Дознајте повеќе]])',
 	'cirrussearch-ignored-headings' => ' #<!-- не менувајте ништо во овој ред --> <pre>
 # Заглавија што ќе се занемарат при пребарувањето.
@@ -951,6 +963,7 @@ Collegaminde de fore
 $messages['ru'] = array(
 	'cirrussearch-desc' => 'Поиск для MediaWiki на базе Elasticsearch',
 	'cirrussearch-backend-error' => 'Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.',
+	'cirrussearch-parse-error' => 'Запрос не был понят. Пожалуйста, сделайте его проще. Запрос был записан для улучшения поисковой системы.',
 	'cirrussearch-now-using' => 'Эта вики использует новый поисковый движок. ([[mw:Special:MyLanguage/Help:CirrusSearch|Подробнее]])',
 	'cirrussearch-ignored-headings' => ' #<!-- оставьте эту строку как есть --> <pre>
 # Заголовки, которые будут игнорироваться поиском.
@@ -1033,6 +1046,13 @@ Se också
 	'cirrussearch-file-contents-match' => 'Filinnehållsträff: $1',
 );
 
+/** Tagalog (Tagalog)
+ * @author Jewel457
+ */
+$messages['tl'] = array(
+	'cirrussearch-parse-error' => 'Ang pagtatanong ay hindi naintindihan. Mangyaring gawin itong payak. Ang pagtatanong ay naitala upang pag-ibayuhin ang paraan ng paghahanap.',
+);
+
 /** Ukrainian (українська)
  * @author Andriykopanytsia
  * @author Ата
@@ -1040,6 +1060,7 @@ Se också
 $messages['uk'] = array(
 	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
 	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+	'cirrussearch-parse-error' => 'Запит не зрозуміли. Будь ласка, зробіть його простішим. Запит був записаний для поліпшення пошукової системи.',
 	'cirrussearch-now-using' => 'Це вікі використовує новий пошуковий рушій. ([[mw:Special:MyLanguage/Help:CirrusSearch|Докладніше]])',
 	'cirrussearch-ignored-headings' => ' #<!-- залиште цей рядок точно таким, яким він є --> <pre>
 # Заголовки, які будуть ігноруватися при пошуці.
@@ -1079,6 +1100,7 @@ $messages['uk'] = array(
 $messages['vi'] = array(
 	'cirrussearch-desc' => 'Công cụ tìm kiếm Elasticsearch dành cho MediaWiki',
 	'cirrussearch-backend-error' => 'Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.',
+	'cirrussearch-parse-error' => 'Không hiểu rõ truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.',
 	'cirrussearch-now-using' => 'Wiki này đang sử dụng một công cụ tìm kiếm mới. ([[mw:Special:MyLanguage/Help:CirrusSearch|Tìm hiểu thêm]])',
 	'cirrussearch-ignored-headings' => ' #<!-- để yên dòng này --> <pre>
 # Công cụ tìm kiếm sẽ bỏ qua các đề mục này.

@@ -624,7 +624,9 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$extraIndexes = array();
 		if ( $this->namespaces ) {
-			$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+			if ( count( $this->namespaces ) < count( MWNamespace::getValidNamespaces() ) ) {
+				$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+			}
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 		}
 

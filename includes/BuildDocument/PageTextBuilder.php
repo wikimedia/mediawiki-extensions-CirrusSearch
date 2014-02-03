@@ -43,11 +43,14 @@ class PageTextBuilder extends ParseBuilder {
 	 */
 	private function buildTextToIndex() {
 		switch ( $this->content->getModel() ) {
-		case CONTENT_MODEL_WIKITEXT:
-			return $this->formatWikitext( $this->parserOutput );
-		default:
-			return SearchUpdate::updateText( $this->content->getTextForSearchIndex() );
+			case CONTENT_MODEL_WIKITEXT:
+				$text = $this->formatWikitext( $this->parserOutput );
+				break;
+			default:
+				$text = $this->content->getTextForSearchIndex();
 		}
+
+		return trim( Sanitizer::stripAllTags( $text ) );
 	}
 
 	/**
@@ -61,7 +64,7 @@ class PageTextBuilder extends ParseBuilder {
 		$formatter = new HtmlFormatter( $po->getText() );
 		$formatter->remove( array( 'audio', 'video', '#toc' ) );
 		$formatter->filterContent();
-		return trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+		return $formatter->getText();
 	}
 
 }

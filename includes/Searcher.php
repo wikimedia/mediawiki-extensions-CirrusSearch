@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 use Elastica;
 use \CirrusSearch;
+use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \Sanitizer;
 use \Status;

@@ -57,7 +57,8 @@ class Result extends SearchResult {
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = '';
 			if ( $this->getTitle()->getNamespace() !== 0 ) {
-				$nstext = $this->getTitle()->getNsText() . ':';
+				// We have to replace the _s because getNsText spits them out....
+				$nstext = str_replace( '_', ' ', $this->getTitle()->getNsText() ) . ':';
 			}
 			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
 		} else {

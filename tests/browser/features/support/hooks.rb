@@ -149,6 +149,7 @@ Before("@highlighting") do
       And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named The Once and Future King exists
+      And a page named User_talk:Test exists
     }
   end
   $highlighting = true

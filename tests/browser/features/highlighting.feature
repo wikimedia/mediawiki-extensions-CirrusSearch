@@ -79,6 +79,11 @@ Feature: Highlighting
     When I search for crazy rdir
     Then *Crazy* *Rdir* is the highlighted alttitle of the first search result
 
+  @highlighting
+  Scenario: Highlighted titles don't contain underscores in the namespace
+    When I search for user_talk:test
+    Then User talk:*Test* is the highlighted title of the first search result
+
   @programmer_friendly @highlighting
   Scenario: camelCase is highlighted correctly
     When I search for namespace aliases

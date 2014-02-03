@@ -665,6 +665,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		if ( $this->suggest ) {
 			$query->setParam( 'suggest', $this->suggest );
+			$query->addParam( 'stats', 'suggest' );
 		}
 		if( $this->offset ) {
 			$query->setFrom( $this->offset );

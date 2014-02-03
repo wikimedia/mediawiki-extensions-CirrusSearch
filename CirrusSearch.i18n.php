@@ -107,6 +107,7 @@ $messages['ar'] = array(
 $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Elasticsearch pa MediaWiki',
 	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
+	'cirrussearch-parse-error' => "Nun s'entendió la consulta. Por favor, fáigala más cenciella. La consulta quedó rexistrada p'ameyorar el sistema de gueta.",
 	'cirrussearch-now-using' => 'Esta wiki ta usando un motor de gueta nuevu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más]])',
 	'cirrussearch-ignored-headings' => " #<!-- dexar esta llinia exactamente como ta --> <pre>
 # Testeres que nun se tendrán en cuenta na gueta.
@@ -137,7 +138,6 @@ Ver tamién
  #</pre> <!-- dexar esta llinia exactamente como ta -->',
 	'cirrussearch-pref-label' => 'Gueta nueva',
 	'cirrussearch-pref-desc' => 'Pruebe la nuesa gueta nueva que tien sofitu pa más llingües, ufre resultaos más actuales, ya inda pue alcontrar testu dientro de les plantíes.',
-	'cirrussearch-file-contents-match' => 'Conteníu del ficheru que casa: $1',
 );
 
 /** Bikol Central (Bikol Central)
@@ -223,11 +223,12 @@ Vegeu també
  * @author Matěj Grabovský
  * @author Mormegil
  * @author Paxt
+ * @author Utar
  */
 $messages['cs'] = array(
 	'cirrussearch-desc' => 'Vyhledávání v MediaWiki běžící na Elasticsearch',
 	'cirrussearch-backend-error' => 'Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.',
-	'cirrussearch-parse-error' => 'Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl přihlášen ke zlepšení vyhledávacího systému.',
+	'cirrussearch-parse-error' => 'Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.',
 	'cirrussearch-now-using' => 'Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])',
 	'cirrussearch-ignored-headings' => ' #<!-- tento řádek ponechte beze změny --> <pre>
 # Zde uvedené nadpisy budou ignorovány vyhledáváním.
@@ -259,7 +260,6 @@ Související stránky
 #</pre> <!-- tuto řádku ponechte přesně takto -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
 	'cirrussearch-pref-desc' => 'Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.',
-	'cirrussearch-file-contents-match' => 'Odpovídající obsah souboru: $1',
 );
 
 /** Danish (dansk)
@@ -326,7 +326,6 @@ Siehe auch
  #</pre> <!-- Diese Zeile nicht verändern. -->',
 	'cirrussearch-pref-label' => 'Neue Suche',
 	'cirrussearch-pref-desc' => 'Teste unsere neue Suchmaschine, die eine größere Anzahl an Sprachen unterstützt, aktuellere Ergebnisse liefert und auch Text innerhalb Vorlagen finden kann.',
-	'cirrussearch-file-contents-match' => 'Dateiinhaltstreffer: $1',
 );
 
 /** Swiss High German (Schweizer Hochdeutsch)
@@ -416,7 +415,6 @@ Véase también
  #</pre> <!-- deja esta línea exactamente como está -->',
 	'cirrussearch-pref-label' => 'Búsqueda nueva',
 	'cirrussearch-pref-desc' => 'Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.',
-	'cirrussearch-file-contents-match' => 'Coincidencia en el contenido del archivo: $1',
 );
 
 /** Persian (فارسی)
@@ -426,6 +424,7 @@ Véase también
 $messages['fa'] = array(
 	'cirrussearch-desc' => 'جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی',
 	'cirrussearch-backend-error' => 'ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.',
+	'cirrussearch-parse-error' => 'پرسش درک نشد. لطفاً آن را ساده‌تر کنید. پرسش برای جستجوی سیستم وارد شد.',
 	'cirrussearch-now-using' => 'این ویکی از یک موتور جستجوی جدید استفاده می‌کند.
 ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => '#<!-- این صفحه را درست همانطور که هست رها کنید --> <pre>
@@ -456,7 +455,6 @@ $messages['fa'] = array(
 #</pre> <!--این خط را همانطور که هست رها کنید-->',
 	'cirrussearch-pref-label' => 'جستجوی جدید',
 	'cirrussearch-pref-desc' => 'جستجوی جدید ما را که از تعداد بیشتر زبان‌ها پشتیبانی می‌کند،نتایج به روز بیشتری فراهم می‌کند، و حتی می‌تواند متن درون الگو را پیدا کند،امتحان کنید.',
-	'cirrussearch-file-contents-match' => 'هماهنگی محتویات پرونده: $1',
 );
 
 /** Finnish (suomi)
@@ -521,7 +519,6 @@ Voir aussi
  #</pre> <!-- laisser cette ligne exactement en l’état -->",
 	'cirrussearch-pref-label' => 'Nouvelle recherche',
 	'cirrussearch-pref-desc' => 'Essayer notre nouvelle recherche qui supporte un plus grand nombre de langues, fournit davantage de résultats à jour, et peut même trouver du texte dans les modèles.',
-	'cirrussearch-file-contents-match' => 'Correspondance du contenu du fichier : $1',
 );
 
 /** Galician (galego)
@@ -563,7 +560,6 @@ Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
 	'cirrussearch-pref-label' => 'Nova pescuda',
 	'cirrussearch-pref-desc' => 'Probe o noso novo buscador, que soporta un maior número de linguas, proporciona resultados máis actulizados e mesmo pode atopar texto dentro dos modelos.',
-	'cirrussearch-file-contents-match' => 'Coincidencia cos contidos do ficheiro: $1',
 );
 
 /** Hebrew (עברית)
@@ -587,7 +583,6 @@ $messages['he'] = array(
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'חיפוש חדש',
 	'cirrussearch-pref-desc' => 'נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.',
-	'cirrussearch-file-contents-match' => 'תוכן הקבצים תואם: $1',
 );
 
 /** Upper Sorbian (hornjoserbsce)
@@ -706,7 +701,6 @@ Collegamenti esterni
  #</pre> <!-- lascia questa riga esattamente come è -->',
 	'cirrussearch-pref-label' => 'Nuova ricerca',
 	'cirrussearch-pref-desc' => "Prova la nostra nuova ricerca, che supporta un numero maggiore di lingue, fornisce risultati più aggiornati e può anche trovare il testo all'interno di template.",
-	'cirrussearch-file-contents-match' => 'Contenuto del file corrispondente: $1',
 );
 
 /** Japanese (日本語)
@@ -720,7 +714,6 @@ $messages['ja'] = array(
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 	'cirrussearch-pref-label' => '新規検索',
 	'cirrussearch-pref-desc' => '数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用',
-	'cirrussearch-file-contents-match' => 'ファイルの内容との一致: $1',
 );
 
 /** Korean (한국어)
@@ -731,6 +724,7 @@ $messages['ja'] = array(
 $messages['ko'] = array(
 	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch가 공급하는 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.',
+	'cirrussearch-parse-error' => '쿼리를 이해할 수 없습니다. 간단하게 만들어 주세요. 쿼리는 검색 시스템을 개선하기 위해 기록이 남습니다.',
 	'cirrussearch-now-using' => '이 위키는 새로운 검색 엔진을 사용합니다. ([[mw:Special:MyLanguage/Help:CirrusSearch|더 알아보기]])',
 	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
 # 검색에서 무시되는 문단 제목입니다.
@@ -765,7 +759,6 @@ $messages['ko'] = array(
  #</pre> <!-- 이 줄은 그대로 남겨두세요 -->',
 	'cirrussearch-pref-label' => '새 검색',
 	'cirrussearch-pref-desc' => '언어의 더 많은 수를 지원하고, 더 최신의 결과를 제공하고, 심지어 틀의 안쪽의 텍스트를 찾을 수 있는 우리의 새 검색을 시도합니다.',
-	'cirrussearch-file-contents-match' => '파일 내용 일치: $1',
 );
 
 /** Colognian (Ripoarisch)
@@ -838,7 +831,6 @@ $messages['mk'] = array(
  #</pre> <!-- не менувајте го овој ред -->',
 	'cirrussearch-pref-label' => 'Ново пребарување',
 	'cirrussearch-pref-desc' => 'Пробајте го нашето ново пребарување кое поддржува поголем број јазици, дава потековни и понавремени резултати, па дури и наоѓа текст во шаблони.',
-	'cirrussearch-file-contents-match' => 'Совпадната содржина на податотеката: $1',
 );
 
 /** Marathi (मराठी)
@@ -857,6 +849,7 @@ $messages['ms'] = array(
 );
 
 /** Dutch (Nederlands)
+ * @author Arent
  * @author Bluyten
  * @author Breghtje
  * @author Romaine
@@ -866,6 +859,7 @@ $messages['ms'] = array(
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
 	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.',
+	'cirrussearch-parse-error' => 'De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.',
 	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.
@@ -880,7 +874,6 @@ Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
 	'cirrussearch-pref-desc' => 'Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.',
-	'cirrussearch-file-contents-match' => 'Gevonden in de bestandsinhoud: $1',
 );
 
 /** Occitan (occitan)
@@ -991,7 +984,6 @@ $messages['ru'] = array(
  #</pre> <!-- оставьте эту строку как есть -->',
 	'cirrussearch-pref-label' => 'Новый поиск',
 	'cirrussearch-pref-desc' => 'Попробуйте наш новый поиск, который поддерживает большее количество языков, предоставляет более свежие результаты, и может даже найти текст внутри шаблонов.',
-	'cirrussearch-file-contents-match' => 'Содержимое файла совпадает: $1',
 );
 
 /** Slovak (slovenčina)
@@ -1088,7 +1080,6 @@ $messages['uk'] = array(
  #</pre> <!-- залиште цей рядок точно таким, яким він є -->',
 	'cirrussearch-pref-label' => 'Новий пошук',
 	'cirrussearch-pref-desc' => 'Спробуйте наш новий пошук, який підтримує більше число мов, надає більше оновлених результатів і навіть може шукати текст всередині шаблону.',
-	'cirrussearch-file-contents-match' => 'Збіг вмісту файлу: $1',
 );
 
 /** Vietnamese (Tiếng Việt)
@@ -1131,7 +1122,6 @@ Xem thêm
  #</pre> <!-- xin để yên dòng này -->',
 	'cirrussearch-pref-label' => 'Công cụ tìm kiếm mới',
 	'cirrussearch-pref-desc' => 'Thử công cụ tìm kiếm mới hỗ trợ nhiều ngôn ngữ hơn, cung cấp kết quả tức thời hơn, có khả năng tìm văn bản được bung từ bản mẫu.',
-	'cirrussearch-file-contents-match' => 'Nội dung tập tin khớp: $1',
 );
 
 /** Simplified Chinese (中文（简体）‎)

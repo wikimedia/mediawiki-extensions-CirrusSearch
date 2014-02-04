@@ -397,9 +397,9 @@ class Searcher extends ElasticsearchIntermediary {
 		wfProfileOut( __METHOD__ . '-escape' );
 
 		// Actual text query
-		if ( count( $query ) > 0 ) {
+		$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+		if ( $queryStringQueryString !== '' ) {
 			wfProfileIn( __METHOD__ . '-build-query' );
-			$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 			$fields = array_merge(
 				$this->buildFullTextSearchFields( 1, '.plain' ),
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
@@ -872,11 +872,7 @@ class Searcher extends ElasticsearchIntermediary {
 				:|		(?# no specifying your own fields)
 				\\\
 			)/x', '\\\$1', $string );
-		//Nuke characters that can't be escaped with \\
-		$string = preg_replace( '/(
-				<|      (?# no specifying ranges of tokens)
-				>
-			)/x', '', $string );
+
 		// If the string doesn't have balanced quotes then add a quote on the end so Elasticsearch
 		// can parse it.
 		$inQuote = false;
@@ -919,6 +915,9 @@ class Searcher extends ElasticsearchIntermediary {
 		// Escape ? and * that don't follow a term.  These are slow so we turned them off.
 		$string = preg_replace_callback( '/(?<![\w])[?*]/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
+
+		// Reduce token ranges to bare tokens without the < or >
+		$string = preg_replace( '/(?:<|>)([^\s])/', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$searcher = $this;

@@ -42,6 +42,18 @@ Feature: Searches with a prefix filter
     But Prefix Test is not in the search results
 
   @prefix_filter
+  Scenario: The prefix: filter can apply a namespace containing a space
+    When I search for prefix test prefix:user talk:
+    Then User talk:Prefix Test is the first search result
+    But Prefix Test is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter can apply a namespace containing an underscore
+    When I search for prefix test prefix:user_talk:
+    Then User talk:Prefix Test is the first search result
+    But Prefix Test is not in the search results
+
+  @prefix_filter
   Scenario: The prefix: filter can be used to filter to subpages
     When I search for prefix test aaaa prefix:Prefix Test/
     Then Prefix Test/AAAA is the first search result
@@ -52,3 +64,9 @@ Feature: Searches with a prefix filter
     When I search for prefix test aaaa prefix:Prefix Test/aa
     Then Prefix Test/AAAA is the first search result
     But Prefix Test AAAA is not in the search results
+
+  @prefix_filter
+  Scenario: The prefix: filter can be quoted
+    When I search for prefix test prefix:"user_talk:"
+    Then User talk:Prefix Test is the first search result
+    But Prefix Test is not in the search results

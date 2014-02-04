@@ -222,6 +222,7 @@ Before("@prefix_filter") do
       And a page named Prefix Test/AAAA exists with contents [[Prefix Test]]
       And a page named Prefix Test AAAA exists with contents [[Prefix Test]]
       And a page named Talk:Prefix Test exists with contents [[Prefix Test]]
+      And a page named User_talk:Prefix Test exists with contents [[Prefix Text]]
     }
   end
   $prefix_filter = true

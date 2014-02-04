@@ -251,6 +251,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$prefixPos = strpos( $this->term, 'prefix:' );
 		if ( $prefixPos !== false ) {
 			$value = substr( $this->term, 7 + $prefixPos );
+			$value = trim( $value, '"' ); // Trim quotes in case the user wanted to quote the prefix
 			if ( strlen( $value ) > 0 ) {
 				$this->term = substr( $this->term, 0, max( 0, $prefixPos - 1 ) );
 				$this->suggestSuffixes[] = ' prefix:' . $value;

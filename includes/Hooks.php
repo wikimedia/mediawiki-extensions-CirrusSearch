@@ -54,12 +54,15 @@ class Hooks {
 	private static function initializeForUser( $user ) {
 		global $wgCirrusSearchEnablePref;
 		global $wgSearchType;
+		global $wgSearchTypeAlternatives;
 		global $wgHooks;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
 			&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' )
 		) {
+			// Make the old main search available as an alternative (bug 60439)
+			$wgSearchTypeAlternatives[] = $wgSearchType;
 			$wgSearchType = 'CirrusSearch';
 		}
 

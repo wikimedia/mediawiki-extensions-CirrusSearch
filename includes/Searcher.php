@@ -135,6 +135,10 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var boolean is this a fuzzy query?
 	 */
 	private $fuzzyQuery = false;
+	/**
+	 * @var boolean did this search contain any special search syntax?
+	 */
+	private $searchContainedSyntax = false;
 
 	/**
 	 * Constructor
@@ -244,6 +248,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$searcher = $this;
 		$originalTerm = $term;
+		$searchContainedSyntax = false;
 		$this->showRedirects = $showRedirects;
 		$this->term = trim( $term );
 		// Handle title prefix notation
@@ -253,6 +258,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$value = substr( $this->term, 7 + $prefixPos );
 			$value = trim( $value, '"' ); // Trim quotes in case the user wanted to quote the prefix
 			if ( strlen( $value ) > 0 ) {
+				$searchContainedSyntax = true;
 				$this->term = substr( $this->term, 0, max( 0, $prefixPos - 1 ) );
 				$this->suggestSuffixes[] = ' prefix:' . $value;
 				// Suck namespaces out of $value
@@ -274,7 +280,8 @@ class Searcher extends ElasticsearchIntermediary {
 		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
 		$this->extractSpecialSyntaxFromTerm(
 			'/prefer-recent:(1|(?:0?(?:\.[0-9]+)?))?(?:,([0-9]*\.?[0-9]+))? ?/',
-			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife ) {
+			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife,
+					&$searchContainedSyntax ) {
 				global $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
 				if ( isset( $matches[ 1 ] ) && strlen( $matches[ 1 ] ) ) {
 					$preferRecentDecayPortion = floatval( $matches[ 1 ] );
@@ -284,6 +291,7 @@ class Searcher extends ElasticsearchIntermediary {
 				if ( isset( $matches[ 2 ] ) ) {
 					$preferRecentHalfLife = floatval( $matches[ 2 ] );
 				}
+				$searchContainedSyntax = true;
 				return '';
 			}
 		);
@@ -300,7 +308,8 @@ class Searcher extends ElasticsearchIntermediary {
 		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
-			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$boostTemplates ) {
+			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$boostTemplates,
+					&$searchContainedSyntax ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$filterDestination = &$filters;
@@ -316,6 +325,7 @@ class Searcher extends ElasticsearchIntermediary {
 						if ( $boostTemplates === null ) {
 							$boostTemplates = self::getDefaultBoostTemplates();
 						}
+						$searchContainedSyntax = true;
 						return '';
 					case 'hastemplate':
 						$value = trim( $value, '"' );
@@ -340,12 +350,14 @@ class Searcher extends ElasticsearchIntermediary {
 						$match = new \Elastica\Query\Match();
 						$match->setFieldQuery( $queryKey, $queryValue );
 						$filterDestination[] = new \Elastica\Filter\Query( $match );
+						$searchContainedSyntax = true;
 						return '';
 					case 'intitle':
 						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
 							$searcher->fixupWholeQueryString(
 								$searcher->fixupQueryStringPart( $value )
 							) ) );
+						$searchContainedSyntax = true;
 						return $keepText ? "$value " : '';
 					default:
 						return $matches[0];
@@ -356,6 +368,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->notFilters = $notFilters;
 		$this->boostTemplates = $boostTemplates;
 		$this->boostLinks = 'log';
+		$this->searchContainedSyntax = $searchContainedSyntax;
 		wfProfileOut( __METHOD__ . '-other-filters' );
 		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
 		// Match quoted phrases including those containing escaped quotes
@@ -400,6 +413,11 @@ class Searcher extends ElasticsearchIntermediary {
 		// Actual text query
 		$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 		if ( $queryStringQueryString !== '' ) {
+			if ( $this->queryStringContainsSyntax( $queryStringQueryString ) ) {
+				$this->searchContainedSyntax = true;
+				// We're unlikey to make good suggestions for query string with special syntax in them....
+				$showSuggestion = false;
+			}
 			wfProfileIn( __METHOD__ . '-build-query' );
 			$fields = array_merge(
 				$this->buildFullTextSearchFields( 1, '.plain' ),
@@ -728,7 +746,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$result = $work->execute();
 		if ( $result->isOK() ) {
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
-				$this->suggestSuffixes, $result->getValue() ) );
+				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
 		}
 		wfProfileOut( __METHOD__ );
 		return $result;
@@ -963,6 +981,17 @@ class Searcher extends ElasticsearchIntermediary {
 			'CirrusSearch\Searcher::lowercaseMatched', $string );
 		wfProfileOut( __METHOD__ );
 		return $string;
+	}
+
+	/**
+	 * Does $string contain unescaped query string syntax?  Note that we're not
+	 * careful about if the syntax is escaped - that still count.
+	 * @param $string string query string to check
+	 * @return boolean does it contain special syntax?
+	 */
+	private function queryStringContainsSyntax( $string ) {
+		// Matches the upper case syntax and character syntax
+		return preg_match( '/[?*+~"!|-]|AND|OR|NOT/', $string );
 	}
 
 	private static function escapeBadSyntax( $matches ) {

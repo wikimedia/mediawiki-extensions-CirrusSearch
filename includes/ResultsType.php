@@ -24,7 +24,8 @@ use \Title;
 interface ResultsType {
 	function getFields();
 	function getHighlightingConfiguration();
-	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result );
+	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
+		$result, $searchContainedSyntax );
 }
 
 class TitleResultsType implements ResultsType {
@@ -44,7 +45,8 @@ class TitleResultsType implements ResultsType {
 	public function getHighlightingConfiguration() {
 		return null;
 	}
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
+			$result, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $result->getResults() as $r ) {
 			$title = Title::makeTitle( $r->namespace, $r->title );
@@ -109,8 +111,9 @@ class FullTextResultsType implements ResultsType {
 		);
 	}
 
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result ) {
-		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result );
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
+			$result, $searchContainedSyntax ) {
+		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax );
 	}
 
 	private function addMatchedFields( $fields ) {

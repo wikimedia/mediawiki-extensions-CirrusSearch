@@ -6,6 +6,7 @@ Feature: Searches that contain quotes
   Scenario: Searching for a word in quotes disbles stemming (can't find plural with singular)
     When I search for "pickle"
     Then there are no search results
+    And there is no link to create a new page from the search result
 
   @setup_main @exact_quotes
   Scenario: Searching for a word in quotes disbles stemming (can still find plural with exact match)

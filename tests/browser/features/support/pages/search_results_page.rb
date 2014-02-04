@@ -22,6 +22,7 @@ class SearchResultsPage
   text_field(:search_input, name: "search")
   div(:suggestion_wrapper, class: "searchdidyoumean")
   div(:error_report, class: "error")
+  paragraph(:create_page, :class => "mw-search-createlink")
   def suggestion_element
     suggestion_wrapper_element.link_element
   end

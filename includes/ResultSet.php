@@ -23,9 +23,11 @@ use \SearchResultSet;
  */
 class ResultSet extends SearchResultSet {
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+	private $searchContainedSyntax;
 
-	public function __construct( $suggestPrefixes, $suggestSuffixes, $res ) {
+	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax ) {
 		$this->result = $res;
+		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$suggestion = $this->findSuggestion();
@@ -141,5 +143,9 @@ class ResultSet extends SearchResultSet {
 	}
 
 	public function getInterwikiResults() {
+	}
+
+	public function searchContainedSyntax() {
+		return $this->searchContainedSyntax;
 	}
 }

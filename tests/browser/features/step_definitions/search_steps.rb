@@ -170,6 +170,13 @@ Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the f
     step("#{title} is the first suggestion")
   end
 end
+Then(/^there is (no|a)? link to create a new page from the search result$/) do |modifier|
+  if modifier == "a" then
+    on(SearchResultsPage).create_page_element.should exist
+  else
+    on(SearchResultsPage).create_page_element.should_not exist
+  end
+end
 Then(/^(.*) is suggested$/) do |text|
   on(SearchResultsPage).highlighted_suggestion.should == text
 end

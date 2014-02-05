@@ -8,6 +8,7 @@ Feature: Searches with prefer-recent
     Then PreferRecent Second Second is the first search result
     When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
     Then PreferRecent Third is the first search result
+    And there is no link to create a new page from the search result
   Examples:
     |   options   |
     | 1,.001      |
@@ -22,6 +23,7 @@ Feature: Searches with prefer-recent
   Scenario Outline: You can specify prefer-recent: in such a way that being super recent isn't enough
     When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
     Then PreferRecent Second Second is the first search result
+    And there is no link to create a new page from the search result
   Examples:
     |  options  |
     |           |

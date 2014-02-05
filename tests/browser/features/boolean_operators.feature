@@ -7,6 +7,7 @@ Feature: Searches with boolean operators
     When I search for <query>
     Then Catapult is the first search result
     But Amazing Catapult is not in the search results
+    And there is no link to create a new page from the search result
   Examples:
   |        query         |
   | catapult -amazing    |
@@ -21,6 +22,7 @@ Feature: Searches with boolean operators
     When I search for <query>
     Then Amazing Catapult is the first search result
     But Catapult is not in the search results
+    And there is no link to create a new page from the search result
   Examples:
   |         query         |
   | +catapult amazing     |
@@ -33,6 +35,7 @@ Feature: Searches with boolean operators
     When I search for <query>
     Then Catapult is in the search results
     And Two Words is in the search results
+    And there is no link to create a new page from the search result
   Examples:
   |          query         |
   | catapult OR África     |

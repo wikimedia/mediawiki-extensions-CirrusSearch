@@ -13,6 +13,7 @@ Feature: Searches with a prefix filter
     When I search for prefix prefix:prefix
     Then Prefix Test is the first search result
     But Foo Prefix Test is not in the search results
+    And there is no link to create a new page from the search result
 
   @prefix_filter
   Scenario: The prefix: filter interprets spaces literally

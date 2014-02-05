@@ -622,7 +622,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					// likely ok for us.
 					$document = new \Elastica\Document( $result->current()->getId(),
 						array_intersect_key( $result->current()->getSource(), $pageProperties ) );
-					$document->setOpType( 'create' );
+					// Note that while setting the opType to create might improve performance slightly it can cause
+					// trouble if the scroll returns the same id twice.  It can do that if the document is updated
+					// during the scroll process.  I'm unclear on if it will always do that, so you still have to
+					// perform the date based catch up after the reindex.
 					$documents[] = $document;
 					$result->next();
 				}

@@ -21,9 +21,6 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class InterwikiSearcher extends Searcher {
-	/** How long to cache results for, 2 hours */
-	const CACHE_TIME = 7200;
-
 	/**
 	 * @var array interwiki mappings to search
 	 */
@@ -52,7 +49,7 @@ class InterwikiSearcher extends Searcher {
 	 * @return ResultSet|null
 	 */
 	public function getInterwikiResults( $term ) {
-		global $wgMemc;
+		global $wgMemc, $wgCirrusSearchLinkCountCacheTime;
 
 		// Return early if we can
 		if ( !$this->interwikis || !$term ) {
@@ -73,7 +70,7 @@ class InterwikiSearcher extends Searcher {
 			$results = $this->searchText( $term, false, false );
 			if ( $results->isOk() ) {
 				$res = $results->getValue();
-				$wgMemc->set( $key, $res, self::CACHE_TIME );
+				$wgMemc->set( $key, $res, $wgCirrusSearchLinkCountCacheTime );
 			}
 		}
 

@@ -114,11 +114,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $preferRecentHalfLife = 0;
 	/**
-	 * @var string should the query results boost pages with more incoming links.  Default to empty stream meaning
-	 * don't boost.  Other values are 'linear' meaning boost score linearly with number of incoming links or 'log'
-	 * meaning boost score by log10(incoming_links + 2).
+	 * @var boolean should the query results boost pages with more incoming links.  Default to false.
 	 */
-	private $boostLinks = '';
+	private $boostLinks = false;
 	/**
 	 * @var array template name to boost multiplier for having a template.  Defaults to none but initialized by
 	 * queries that use it to self::getDefaultBoostTemplates() if they need it.  That is too expensive to do by
@@ -200,7 +198,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$match = new \Elastica\Query\Match();
 		$match->setField( 'title.near_match', $search );
 		$this->filters[] = new \Elastica\Filter\Query( $match );
-		$this->boostLinks = ''; // No boost
 
 		$result = $this->search( 'near_match', $search );
 		wfProfileOut( __METHOD__ );
@@ -229,8 +226,12 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->filters[] = $this->buildPrefixFilter( $search );
 		}
-		$this->boostLinks = 'linear';
 		$this->boostTemplates = self::getDefaultBoostTemplates();
+		// If there aren't any boost templates then we can use a sort for ordering
+		// rather than a boost.
+		if ( count( $this->boostTemplates ) === 0 ) {
+			$this->sort = 'incoming_links_desc';
+		}
 
 		$result = $this->search( 'prefix', $search );
 		wfProfileOut( __METHOD__ );
@@ -266,6 +267,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$searchContainedSyntax = false;
 		$this->showRedirects = $showRedirects;
 		$this->term = trim( $term );
+		$this->boostLinks = true;
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $this->term, 'prefix:' );
@@ -382,7 +384,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
 		$this->boostTemplates = $boostTemplates;
-		$this->boostLinks = 'log';
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		wfProfileOut( __METHOD__ . '-other-filters' );
 		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
@@ -439,8 +440,16 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
 
-			// Only do a phrase match rescore if the query doesn't include any phrases
-			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 && strpos( $queryStringQueryString, '"' ) === false ) {
+			// Only do a phrase match rescore if the query doesn't include any quotes and has a space
+			// TODO allow phrases without spaces to support things like words with dashes and languages
+			// that don't use spaces.  The space check is really only important because it catches an
+			// common class of slow queries: <<-foo>> which it only needs to catch because Elasticsearch
+			// only supports a single rescore.  If it supported multiple rescores it would be worth
+			// trying the phrase rescore because it wouldn't prevent us from having the script score in
+			// a rescore.
+			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 &&
+					strpos( $queryStringQueryString, '"' ) === false &&
+					strpos( $queryStringQueryString, ' ' ) !== false ) {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
@@ -683,7 +692,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->query = new \Elastica\Query\Filtered( $this->query, $filter );
 		}
 
-		$query->setQuery( self::boostQuery( $this->query ) );
+		// Call installBoosts right after we're done munging the query to include filters
+		// so any rescores installBoosts adds to the query are done against filtered results.
+		$this->installBoosts();
+
+		$query->setQuery( $this->query );
 
 		$highlight = $this->resultsType->getHighlightingConfiguration();
 		if ( $highlight ) {
@@ -708,11 +721,12 @@ class Searcher extends ElasticsearchIntermediary {
 			$query->setSize( $this->limit );
 		}
 		if ( $this->rescore ) {
-			// Wrap the rescore query in the boostQuery just as we wrap the regular query.
-			$this->rescore[ 'query' ][ 'rescore_query' ] =
-				self::boostQuery( $this->rescore[ 'query' ][ 'rescore_query' ] )->toArray();
+			// rescore_query has to be in array form before we send it to Elasticsearch but it is way easier to work
+			// with if we leave it in query for until now
+			$this->rescore[ 'query' ][ 'rescore_query' ] = $this->rescore[ 'query' ][ 'rescore_query' ]->toArray();
 			$query->setParam( 'rescore', $this->rescore );
 		}
+
 		$query->addParam( 'stats', $type );
 		switch ( $this->sort ) {
 		case 'relevance':
@@ -722,6 +736,18 @@ class Searcher extends ElasticsearchIntermediary {
 			break;
 		case 'title_desc':
 			$query->setSort( array( 'title.keyword' => 'desc' ) );
+			break;
+		case 'incoming_links_asc':
+			$query->setSort( array( 'incoming_links' => array(
+				'order' => 'asc',
+				'missing' => '_first',
+			) ) );
+			break;
+		case 'incoming_links_desc':
+			$query->setSort( array( 'incoming_links' => array(
+				'order' => 'desc',
+				'missing' => '_last',
+			) ) );
 			break;
 		default:
 			wfLogWarning( "Invalid sort type:  $this->sort" );
@@ -1026,31 +1052,24 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Wrap query in a CustomScore query if its score need to be modified.
-	 * @param $query Elastica\Query query to boost.
-	 * @return query that will run $query and boost results based on links
+	 * If there is any boosting to be done munge the the current query to get it right.
 	 */
-	private function boostQuery( $query ) {
-		$fuctionScore = new \Elastica\Query\FunctionScore();
-		$fuctionScore->setQuery( $query );
+	private function installBoosts() {
+		global $wgCirrusSearchFunctionRescoreWindowSize;
+
+		if ( $this->sort !== 'relevance' ) {
+			// Boosts are irrelevant if you aren't sorting by, well, relevance
+			return;
+		}
+
+		$functionScore = new \Elastica\Query\FunctionScore();
 		$useFunctionScore = false;
 
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostLinks ) {
 			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
-			// TODO remove redirect links once they are empty and switch prefix search to some kind of sort
-			$incomingRedirectLinks = "(doc['incoming_redirect_links'].empty ? 0 : doc['incoming_redirect_links'].value)";
-			$scoreBoostMvel = "$incomingLinks + $incomingRedirectLinks";
-			switch ( $this->boostLinks ) {
-			case 'linear':
-				break;  // scoreBoostMvel already correct
-			case 'log':
-				$scoreBoostMvel = "log10($scoreBoostMvel + 2)";
-				break;
-			default:
-				wfLogWarning( "Invalid links boost type:  $this->boostLinks" );
-			}
-			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
+			$scoreBoostMvel = "log10($incomingLinks + 2)";
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
 			$useFunctionScore = true;
 		}
 
@@ -1067,7 +1086,7 @@ class Searcher extends ElasticsearchIntermediary {
 			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
 			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
-			$fuctionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
 			$useFunctionScore = true;
 		}
 
@@ -1076,16 +1095,43 @@ class Searcher extends ElasticsearchIntermediary {
 				$match = new \Elastica\Query\Match();
 				$match->setFieldQuery( 'template', $name );
 				// TODO replace with a boost_factor function when that is supported by elastica
-				$fuctionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
+				$functionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
 					new \Elastica\Filter\Query( $match ) );
 			}
 			$useFunctionScore = true;
 		}
 
-		if ( $useFunctionScore ) {
-			return $fuctionScore;
+		if ( !$useFunctionScore ) {
+			// Nothing to do
+			return;
 		}
-		return $query;
+
+		// Since Elasticsearch doesn't support multiple rescores we have to pick a strategy here....
+		// TODO just use multiple rescores when Elasticsearch supports it (1.x)
+
+		// If there isn't already a rescore then we can just add the boosting as a multiply rescore
+		if ( !$this->rescore ) {
+			$this->rescore = array(
+				'window_size' => $wgCirrusSearchFunctionRescoreWindowSize,
+				'query' => array(
+					'rescore_query' => $functionScore,
+					'query_weight' => 1.0,
+					'rescore_query_weight' => 1.0,
+					'score_mode' => 'multiply',
+				)
+			);
+			return;
+		}
+
+		// Since there is already a rescore we have to wrap _both_ the rescore and the query in our
+		// function score query.  Nothing else really spits out the right numbers.  The problem
+		// with this is that the function score isn't just in the rescore which means that it can
+		// be slow if the main query finds lots of results.
+		$functionScore->setQuery( $this->query );
+		$this->query = new \Elastica\Query\Simple( $functionScore->toArray() );
+
+		$functionScore->setQuery( $this->rescore[ 'query' ][ 'rescore_query' ] );
+		$this->rescore[ 'query' ][ 'rescore_query' ] = $functionScore;
 	}
 
 	private static function getDefaultBoostTemplates() {

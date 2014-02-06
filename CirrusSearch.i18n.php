@@ -591,6 +591,7 @@ $messages['he'] = array(
 $messages['hsb'] = array(
 	'cirrussearch-desc' => 'Pytanje na zakładźe "elasticsearch" za MediaWiki',
 	'cirrussearch-backend-error' => 'Twoje pytanje njeda so nachwilneho problema dla skónčić. Prošu spytaj pozdźišo hišće raz.',
+	'cirrussearch-parse-error' => 'Naprašowanje njeje so zrozumiło. Prošu čiń jo jednoriše. Naprašowanje so protokoluje, zo by so pytanski system polěpšił.',
 	'cirrussearch-now-using' => 'Tutón wiki wužiwa nowu pytawu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalše informacije]])',
 	'cirrussearch-ignored-headings' => ' #<!-- njezměń tutu linku --> <pre>
 # Nadpisma, kotrež pytanje ignoruje.
@@ -621,7 +622,6 @@ Hlej tež
  #</pre> <!-- Njezměń tutu linku. -->',
 	'cirrussearch-pref-label' => 'Nowe pytanje',
 	'cirrussearch-pref-desc' => 'Spytaj naše nowe pytanje, kotrež podpěruje wjetšu ličbu rěčow, podawa bóle aktualne wuslědki a móže samo tekst znutřka předłohow namakać.',
-	'cirrussearch-file-contents-match' => 'Wotpowědnik datajoweho wobsaha: $1',
 );
 
 /** Interlingua (interlingua)
@@ -846,6 +846,7 @@ $messages['mr'] = array(
 $messages['ms'] = array(
 	'cirrussearch-desc' => 'Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki',
 	'cirrussearch-backend-error' => 'Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.',
+	'cirrussearch-parse-error' => 'Pertanyaan tidak difahami. Sila permudahnya. Pertanyaan itu telah dilogkan untuk menambah baik sistem pencarian.',
 );
 
 /** Dutch (Nederlands)
@@ -1002,6 +1003,7 @@ $messages['sk'] = array(
 $messages['sv'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
+	'cirrussearch-parse-error' => 'Frågan kunde inte tolkas. Vänligen gör det enklare. Frågan har loggats för att förbättra söksystemet.',
 	'cirrussearch-now-using' => 'Denna wiki använder en ny sökmotor ([[mw:Special:MyLanguage/Help:CirrusSearch|Läs mer]])',
 	'cirrussearch-ignored-headings' => '#<!-- leave this line exactly as it is --> <pre>
  # Rubriker som kommer att ignoreras av sökningen.
@@ -1032,7 +1034,6 @@ Se också
  #</pre> <!-- lämna denna rad precis som den är -->',
 	'cirrussearch-pref-label' => 'Ny sökning',
 	'cirrussearch-pref-desc' => 'Prova vår nya sökning som stöder ett större antal språk, ger fler uppdaterade resultat och kan även hitta text inuti mallar.',
-	'cirrussearch-file-contents-match' => 'Filinnehållsträff: $1',
 );
 
 /** Tagalog (Tagalog)

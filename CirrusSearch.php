@@ -210,7 +210,7 @@ $wgCirrusSearchShowScore = false;
 $wgCirrusSearchInterwikiSources = array();
 
 // How long to cache interwiki search results for (in seconds)
-$wgCirrusSearchLinkCountCacheTime = 7200;
+$wgCirrusSearchInterwikiCacheTime = 7200;
 
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';

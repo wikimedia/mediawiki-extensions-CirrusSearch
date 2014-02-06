@@ -49,7 +49,7 @@ class InterwikiSearcher extends Searcher {
 	 * @return ResultSet|null
 	 */
 	public function getInterwikiResults( $term ) {
-		global $wgMemc, $wgCirrusSearchLinkCountCacheTime;
+		global $wgMemc, $wgCirrusSearchInterwikiCacheTime;
 
 		// Return early if we can
 		if ( !$this->interwikis || !$term ) {
@@ -70,7 +70,7 @@ class InterwikiSearcher extends Searcher {
 			$results = $this->searchText( $term, false, false );
 			if ( $results->isOk() ) {
 				$res = $results->getValue();
-				$wgMemc->set( $key, $res, $wgCirrusSearchLinkCountCacheTime );
+				$wgMemc->set( $key, $res, $wgCirrusSearchInterwikiCacheTime );
 			}
 		}
 

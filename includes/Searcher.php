@@ -140,6 +140,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var boolean did this search contain any special search syntax?
 	 */
 	private $searchContainedSyntax = false;
+	/**
+	 * @var null|\Elastica\AbstractQuery query that should be used for highlighting if different from the
+	 * query used for selecting.
+	 */
+	private $highlightQuery = null;
 
 	/**
 	 * @var array indexes to use, if not the default
@@ -195,9 +200,13 @@ class Searcher extends ElasticsearchIntermediary {
 		wfProfileIn( __METHOD__ );
 		self::checkTitleSearchRequestLength( $search );
 
-		$match = new \Elastica\Query\Match();
-		$match->setField( 'title.near_match', $search );
-		$this->filters[] = new \Elastica\Filter\Query( $match );
+		// Elasticsearch seems to have trouble extracting the proper terms to highlight
+		// from the default query we make so we feed it exactly the right query to highlight.
+		$this->highlightQuery = new \Elastica\Query\MultiMatch();
+		$this->highlightQuery->setQuery( $search );
+		$this->highlightQuery->setFields( array( 'title.near_match', 'redirect.title.near_match' ) );
+		$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
+		$this->boostLinks = ''; // No boost
 
 		$result = $this->search( 'near_match', $search );
 		wfProfileOut( __METHOD__ );
@@ -224,7 +233,10 @@ class Searcher extends ElasticsearchIntermediary {
 			) );
 			$this->filters[] = new \Elastica\Filter\Query( $match );
 		} else {
-			$this->filters[] = $this->buildPrefixFilter( $search );
+			// Elasticsearch seems to have trouble extracting the proper terms to highlight
+			// from the default query we make so we feed it exactly the right query to highlight.
+			$this->highlightQuery = $this->buildPrefixQuery( $search );
+			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 		// If there aren't any boost templates then we can use a sort for ordering
@@ -284,7 +296,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->namespaces = $cirrusSearchEngine->namespaces;
 				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 				if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
-					$this->filters[] = $this->buildPrefixFilter( $value );
+					$this->filters[] = new \Elastica\Filter\Query( $this->buildPrefixQuery( $value ) );
 				}
 			}
 		}
@@ -708,6 +720,9 @@ class Searcher extends ElasticsearchIntermediary {
 					return $field[ 'type' ] !== 'plain';
 				});
 			}
+			if ( $this->highlightQuery ) {
+				$highlight[ 'highlight_query' ] = $this->highlightQuery->toArray();
+			}
 			$query->setHighlight( $highlight );
 		}
 		if ( $this->suggest ) {
@@ -904,10 +919,16 @@ class Searcher extends ElasticsearchIntermediary {
 		return $extraIndexes;
 	}
 
-	private function buildPrefixFilter( $search ) {
-		$match = new \Elastica\Query\Match();
-		$match->setField( 'title.prefix', $search );
-		return new \Elastica\Filter\Query( $match );
+	/**
+	 * Build the query that powers the prefix search and the prefix filter.
+	 * @param string $search prefix search string
+	 * @return \Elastica\AbstractQuery to perform the query
+	 */
+	private function buildPrefixQuery( $search ) {
+		$match = new \Elastica\Query\MultiMatch();
+		$match->setQuery( $search );
+		$match->setFields( array( 'title.prefix', 'redirect.title.prefix' ) );
+		return $match;
 	}
 
 	/**

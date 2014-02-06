@@ -298,6 +298,17 @@ Before("@go", "@options") do
   $go_options = true
 end
 
+Before("@go, @prefix", "@redirect") do
+  if !$go_options
+    steps %Q{
+      Given a page named Seo Redirecttest exists
+      And a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
+      And a page named Search Engine Optimization Redirecttest exists
+    }
+  end
+  $go_options = true
+end
+
 Before("@file_text") do
   if !$file_text
     steps %Q{

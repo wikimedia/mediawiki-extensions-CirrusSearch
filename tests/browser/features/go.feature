@@ -62,3 +62,8 @@ Feature: Go Search
     |       term      |
     | son twoaccents  |
     | Son Double      |
+
+  @go @redirect
+  Scenario: When I near match a redirect and a page then the redirect is chosen if it is a better match
+    When I go search for SEO Redirecttest
+    Then I am on a page titled Search Engine Optimization Redirecttest

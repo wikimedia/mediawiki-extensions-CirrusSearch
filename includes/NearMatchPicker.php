@@ -77,6 +77,7 @@ class NearMatchPicker {
 			$found = null;
 			foreach ( $this->titles as $title ) {
 				$transformedTitle = call_user_func( $transformer, $title->getText() );
+				// wfDebugLog( 'CirrusSearch', "Near match candidates: $transformedTerm  $transformedTitle");
 				if ( $transformedTerm === $transformedTitle ) {
 					if ( !$found ) {
 						$found = $title;

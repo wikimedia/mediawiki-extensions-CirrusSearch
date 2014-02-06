@@ -209,7 +209,7 @@ class Hooks {
 	public static function prefixSearch( $ns, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
 		$searcher = new Searcher( 0, $limit, $ns, $user );
-		$searcher->setResultsType( new TitleResultsType( true ) );
+		$searcher->setResultsType( new TitleResultsType( true, 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -240,7 +240,7 @@ class Hooks {
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
 		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
-		$searcher->setResultsType( new TitleResultsType( false ) );
+		$searcher->setResultsType( new TitleResultsType( false, 'near_match' ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status

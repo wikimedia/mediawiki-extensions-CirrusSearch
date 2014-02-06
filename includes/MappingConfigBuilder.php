@@ -109,7 +109,7 @@ class MappingConfigBuilder {
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField( 'title', array( $suggestExtra ), false ),
+						'title' => $this->buildStringField( 'title', $titleExtraAnalyzers, false ),
 					)
 				),
 				'incoming_links' => $this->buildLongField(),

@@ -30,26 +30,74 @@ interface ResultsType {
 
 class TitleResultsType implements ResultsType {
 	private $getText;
+	private $matchedAnalyzer;
 
 	/**
-	 * Build result type.
+	 * Build result type.   The matchedAnalyzer is required to detect if the match
+	 * was from the title or a redirect (and is kind of a leaky abstraction.)
 	 * @param boolean $getText should the results be text (true) or titles (false)
+	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 */
-	public function __construct( $getText ) {
+	public function __construct( $getText, $matchedAnalyzer ) {
 		$this->getText = $getText;
+		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
 	public function getFields() {
 		return array( 'namespace', 'title' );
 	}
+
 	public function getHighlightingConfiguration() {
-		return null;
+		// This is similar to the FullTextResults type but against the near_match and
+		// with the plain highlighter.  Near match because that is how the field is
+		// queried.  Plain highlighter because we don't want to add the FVH's space
+		// overhead for storing extra stuff and we don't need it for combining fields.
+		$entireValue = array(
+			'number_of_fragments' => 0,
+			'type' => 'plain',
+		);
+		$entireValueInListField = array(
+			'number_of_fragments' => 1, // Just one of the values in the list
+			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
+			'type' => 'plain',
+		);
+		return array(
+			'order' => 'score',
+			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
+			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
+			'fields' => array(
+				"title.$this->matchedAnalyzer" => $entireValue,
+				"redirect.title.$this->matchedAnalyzer" => $entireValueInListField,
+			)
+		);
 	}
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 			$result, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $result->getResults() as $r ) {
 			$title = Title::makeTitle( $r->namespace, $r->title );
+			$highlights = $r->getHighlights();
+
+			// Now we have to use the highlights to figure out whether it was the title or the redirect
+			// that matched.  It is kind of a shame we can't really give the highlighting to the client
+			// though.
+			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+				// The match was against a redirect so we should replace the $title with one that
+				// represents the redirect.
+				// The first step is to strip the actual highlighting from the title.
+				$redirectTitle = $highlights[ "redirect.title.$this->matchedAnalyzer" ][ 0 ];
+				$redirectTitle = str_replace( Searcher::HIGHLIGHT_PRE, '', $redirectTitle );
+				$redirectTitle = str_replace( Searcher::HIGHLIGHT_POST, '', $redirectTitle );
+
+				// Instead of getting the redirect's real namespace we're going to just use the namespace
+				// of the title.  This is not great but OK given that we can't find cross namespace
+				// redirects properly any way.
+				$title = Title::makeTitle( $r->namespace, $redirectTitle );
+			} else if ( !isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
+				// We're not really sure where the match came from so lets just pretend it was the title?
+				wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
+					"figure out what caused the match:  $r->namespace:$r->title");
+			}
 			if ( $this->getText ) {
 				$title = $title->getPrefixedText();
 			}
@@ -129,7 +177,7 @@ class FullTextResultsType implements ResultsType {
 	}
 }
 
-class InterwikiResultsType extends TitleResultsType {
+class InterwikiResultsType implements ResultsType {
 	/**
 	 * @var array interwiki prefix mappings
 	 */
@@ -144,5 +192,13 @@ class InterwikiResultsType extends TitleResultsType {
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax ) {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefixes );
+	}
+
+	public function getHighlightingConfiguration() {
+		return null;
+	}
+
+	public function getFields() {
+		return array( 'namespace', 'title' );
 	}
 }

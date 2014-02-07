@@ -1115,9 +1115,7 @@ class Searcher extends ElasticsearchIntermediary {
 			foreach ( $this->boostTemplates as $name => $boost ) {
 				$match = new \Elastica\Query\Match();
 				$match->setFieldQuery( 'template', $name );
-				// TODO replace with a boost_factor function when that is supported by elastica
-				$functionScore->addScriptScoreFunction( new \Elastica\Script( 'boost', array( 'boost' => $boost ) ),
-					new \Elastica\Filter\Query( $match ) );
+				$functionScore->addBoostFactorFunction( $boost, new \Elastica\Filter\Query( $match ) );
 			}
 			$useFunctionScore = true;
 		}

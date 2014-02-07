@@ -1,4 +1,4 @@
-require "mediawiki/selenium"
+require "mediawiki_selenium"
 require "fileutils"
 
 After do |scenario|

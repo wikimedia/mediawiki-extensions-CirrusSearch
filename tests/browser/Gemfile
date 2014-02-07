@@ -3,5 +3,5 @@
 
 source "https://rubygems.org"
 
-gem "mediawiki-selenium", "~> 0.1.20"
+gem "mediawiki_selenium", "~> 0.2.0"
 gem "parallel_tests"

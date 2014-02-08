@@ -228,13 +228,12 @@ class Updater extends ElasticsearchIntermediary {
 	 *   Elasticsearch's time format.
 	 */
 	private function sendDocuments( $indexType, $documents, $shardTimeout ) {
-		wfProfileIn( __METHOD__ );
-
 		$documentCount = count( $documents );
 		if ( $documentCount === 0 ) {
 			return;
 		}
 
+		wfProfileIn( __METHOD__ );
 		$exception = null;
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );

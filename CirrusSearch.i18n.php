@@ -341,6 +341,7 @@ $messages['de-ch'] = array(
 $messages['dsb'] = array(
 	'cirrussearch-desc' => 'Pytanje na zakłaźe "elasticsearch" za MediaWiki',
 	'cirrussearch-backend-error' => 'Twójo pytanje njedajo se nachylnego problema dla skóńcyś. Pšosym wopytaj pózdźej hyšći raz.',
+	'cirrussearch-parse-error' => 'Napšašowanje njejo se zrozměło. Pšosym cyń jo jadnorješe. Napšašowanje se protokolěrujo, aby se pytański system pólěpšył.',
 	'cirrussearch-now-using' => 'Toś ten wiki wužywa nowu pytnicu ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalšne informacije]])',
 	'cirrussearch-ignored-headings' => ' #<!-- njezměń toś tu smužku --> <pre>
 # Nadpisma, kótarež pytanje ignorěrujo.
@@ -371,7 +372,6 @@ Glědaj teke
  #</pre> <!-- Njezměń toś tu smužku. -->',
 	'cirrussearch-pref-label' => 'Nowe pytanje',
 	'cirrussearch-pref-desc' => 'Wopytaj našo nowe pytanje, kótarež pódpěra wětšu licbu rěcow, pódawa aktualnjejše wuslědki a móžo samo tekst w pśedłogacj namakaś.',
-	'cirrussearch-file-contents-match' => 'Trjefaŕ datajowego wopśimjeśa: $1',
 );
 
 /** Spanish (español)
@@ -415,6 +415,13 @@ Véase también
  #</pre> <!-- deja esta línea exactamente como está -->',
 	'cirrussearch-pref-label' => 'Búsqueda nueva',
 	'cirrussearch-pref-desc' => 'Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.',
+);
+
+/** Basque (euskara)
+ * @author Subi
+ */
+$messages['eu'] = array(
+	'cirrussearch-pref-label' => 'Bilaketa berria',
 );
 
 /** Persian (فارسی)

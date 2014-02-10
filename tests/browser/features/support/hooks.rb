@@ -353,7 +353,22 @@ Before("@relevancy") do
       And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
       And a page named Relevancytestviaheading exists with contents ==Relevancytest==
       And a page named Relevancytestviatext exists with contents Relevancytest
+      And a page named Relevancytwo Wordtest exists
+      And a page named Wordtest Relevancytwo exists
     }
   end
   $relevancy = true
+end
+
+Before("@fallback_finder") do
+  if !$fallback_finder
+    steps %Q{
+      Given a page named $US exists
+      And a page named US exists
+      And a page named Uslink exists with contents [[US]]
+      And a page named Cent (currency) exists
+      And a page named ¢ exists with contents #REDIRECT [[Cent (currency)]]
+    }
+  end
+  $fallback_finder = true
 end

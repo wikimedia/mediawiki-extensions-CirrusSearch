@@ -163,6 +163,9 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 // Weight of fields relative to article text
 $wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0, 'file_text' => 0.8 );
 
+// Weight of fields that match via "near_match" which is ordered.
+$wgCirrusSearchNearMatchWeight = 2;
+
 // Weight of stemmed fields relative to unstemmed.  Meaning if searching for <used>, <use> is only
 // worth this much while <used> is worth 1.  Searching for <"used"> will still only find exact
 // matches.

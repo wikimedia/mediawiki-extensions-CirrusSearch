@@ -271,6 +271,7 @@ class Searcher extends ElasticsearchIntermediary {
 		global $wgCirrusSearchPhraseUseText;
 		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
 		global $wgCirrusSearchPreferRecentDefaultHalfLife;
+		global $wgCirrusSearchNearMatchWeight;
 		global $wgCirrusSearchStemmedWeight;
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -448,6 +449,7 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 			wfProfileIn( __METHOD__ . '-build-query' );
 			$fields = array_merge(
+				$this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match' ),
 				$this->buildFullTextSearchFields( 1, '.plain' ),
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
 			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
@@ -873,12 +875,14 @@ class Searcher extends ElasticsearchIntermediary {
 		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
 		$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
 		$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
-		$fields = array(
-			"title${fieldSuffix}^${titleWeight}",
-			"heading${fieldSuffix}^${headingWeight}",
-			"text${fieldSuffix}^${weight}",
-			"file_text${fieldSuffix}^${fileTextWeight}",
-		);
+		$fields = array();
+		$fields[] = "title${fieldSuffix}^${titleWeight}";
+		// Only title and redirect support near_match so skip it for everything else
+		if ( $fieldSuffix !== '.near_match' ) {
+			$fields[] = "heading${fieldSuffix}^${headingWeight}";
+			$fields[] = "text${fieldSuffix}^${weight}";
+			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
+		}
 		if ( $this->showRedirects ) {
 			$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
 			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";

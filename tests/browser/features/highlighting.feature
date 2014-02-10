@@ -42,6 +42,11 @@ Feature: Highlighting
     Then *Succession* *of* *Umar* is the highlighted alttitle of the first search result
     And *Succession of Umar* is in the highlighted text of the first search result
 
+  @highlighting
+  Scenario: Words are not found in image captions
+    When I search for The Rose Trellis Egg
+    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia is the highlighted text of the first search result
+
   # Bug 54526
   # @headings
   # Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase

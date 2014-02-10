@@ -62,7 +62,7 @@ class PageTextBuilder extends ParseBuilder {
 	private function formatWikitext( ParserOutput $po ) {
 		$po->setEditSectionTokens( false );
 		$formatter = new HtmlFormatter( $po->getText() );
-		$formatter->remove( array( 'audio', 'video', '#toc' ) );
+		$formatter->remove( array( 'audio', 'video', '#toc', '.thumbcaption' ) );
 		$formatter->filterContent();
 		return $formatter->getText();
 	}

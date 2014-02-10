@@ -33,7 +33,6 @@ class PageTextBuilder extends ParseBuilder {
 		$text = $this->buildTextToIndex();
 		$this->doc->add( 'text', $text );
 		$this->doc->add( 'text_bytes', strlen( $text ) );
-		$this->doc->add( 'text_words', str_word_count( $text ) ); // TODO remove once text.word_count is available everywhere
 		return $this->doc;
 	}
 

@@ -51,8 +51,7 @@ class Result extends SearchResult {
 		}
 
 		$data = $result->getData();
-		// TODO remove ternary once text.word_count is available everywhere
-		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : $result->text_words;
+		$this->wordCount = $data['text.word_count'];
 		$this->byteSize = $result->text_bytes;
 		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();

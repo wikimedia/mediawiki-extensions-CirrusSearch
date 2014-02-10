@@ -27,7 +27,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 0.1;
+	const VERSION = 0.2;
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -104,7 +104,6 @@ class MappingConfigBuilder {
 				'external_link' => $this->buildKeywordField(),
 				'heading' => $this->buildStringField( 'heading', array(), false ),
 				'text_bytes' => $this->buildLongField( false ),
-				'text_words' => $this->buildLongField( false ),  // TODO remove once text.word_count is available everywhere
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
@@ -113,7 +112,6 @@ class MappingConfigBuilder {
 					)
 				),
 				'incoming_links' => $this->buildLongField(),
-				'incoming_redirect_links' => $this->buildLongField( false ),
 				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
 			),
 		);

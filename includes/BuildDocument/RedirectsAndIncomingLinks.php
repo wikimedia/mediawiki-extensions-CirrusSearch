@@ -93,11 +93,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			$this->linkCountClosures[] = function ( $count ) use( $doc ) {
 				$incomingLinks = $doc->has( 'incoming_links' ) ? $doc->get( 'incoming_links' ) : 0;
 				$doc->add( 'incoming_links', $count + $incomingLinks );
-				// TODO remove incoming_redirect_links entirely once it is 0 across the board.
-				$doc->add( 'incoming_redirect_links', 0 );
 			};
-		} else {
-			$doc->add( 'incoming_redirect_links', 0 );
 		}
 	}
 

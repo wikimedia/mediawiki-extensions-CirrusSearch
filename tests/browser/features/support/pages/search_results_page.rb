@@ -18,6 +18,12 @@ class SearchResultsPage
   link(:third_result){ |page| page.third_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
   li(:fourth_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 3) }
   link(:fourth_result){ |page| page.fourth_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
+  li(:fifth_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 4) }
+  link(:fifth_result){ |page| page.fifth_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
+  li(:sixth_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 5) }
+  link(:sixth_result){ |page| page.sixth_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
+  li(:seventh_result_wrapper){ |page| page.search_results_element.list_item_element(:index => 6) }
+  link(:seventh_result){ |page| page.seventh_result_wrapper_element.div_element(:class => "mw-search-result-heading").link_element }
   button(:simple_search_button, value: "Search")
   text_field(:search_input, name: "search")
   div(:suggestion_wrapper, class: "searchdidyoumean")

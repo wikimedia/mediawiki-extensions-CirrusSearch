@@ -356,6 +356,13 @@ Before("@relevancy") do
       And a page named Relevancytestviatext exists with contents Relevancytest
       And a page named Relevancytwo Wordtest exists
       And a page named Wordtest Relevancytwo exists
+      And a page named Relevancynamespacetest exists
+      And a page named Talk:Relevancynamespacetest exists
+      And a page named File:Relevancynamespacetest exists
+      And a page named Help:Relevancynamespacetest exists
+      And a page named File talk:Relevancynamespacetest exists
+      And a page named User talk:Relevancynamespacetest exists
+      And a page named Template:Relevancynamespacetest exists
     }
   end
   $relevancy = true

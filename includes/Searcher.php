@@ -460,6 +460,7 @@ class Searcher extends ElasticsearchIntermediary {
 			// trying the phrase rescore because it wouldn't prevent us from having the script score in
 			// a rescore.
 			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 &&
+					!$this->searchContainedSyntax &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {
 				$this->rescore = array(

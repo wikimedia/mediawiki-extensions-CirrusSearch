@@ -297,6 +297,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->namespaces = $cirrusSearchEngine->namespaces;
 				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 				if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
+					$value = str_replace( '_', ' ', $value );
 					$this->filters[] = new \Elastica\Filter\Query( $this->buildPrefixQuery( $value ) );
 				}
 			}

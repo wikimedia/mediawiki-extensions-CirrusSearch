@@ -21,6 +21,11 @@ Feature: Searches with a prefix filter
     Then Prefix Test is the first search result
 
   @prefix_filter
+  Scenario: The prefix: filter interprets underscores as spaces
+    When I search for prefix prefix:prefix_tes
+    Then Prefix Test is the first search result
+
+  @prefix_filter
   Scenario: It is ok to start the query with the prefix filter
     When I search for prefix:prefix tes
     Then Prefix Test is the first search result

@@ -1084,6 +1084,9 @@ class Searcher extends ElasticsearchIntermediary {
 	private function installBoosts() {
 		global $wgCirrusSearchFunctionRescoreWindowSize;
 
+		// Quick note:  At the moment ".isEmpty()" is _much_ faster then ".empty".  Never
+		// use ".empty".  See https://github.com/elasticsearch/elasticsearch/issues/5086
+
 		if ( $this->sort !== 'relevance' ) {
 			// Boosts are irrelevant if you aren't sorting by, well, relevance
 			return;
@@ -1094,7 +1097,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostLinks ) {
-			$incomingLinks = "(doc['incoming_links'].empty ? 0 : doc['incoming_links'].value)";
+			$incomingLinks = "(doc['incoming_links'].isEmpty() ? 0 : doc['incoming_links'].value)";
 			$scoreBoostMvel = "log10($incomingLinks + 2)";
 			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
 			$useFunctionScore = true;

@@ -38,9 +38,11 @@ class InterwikiSearcher extends Searcher {
 		parent::__construct( $offset, $limit, $namespaces, $user );
 		$this->interwikis = $wgCirrusSearchInterwikiSources;
 		// Only allow core namespaces. We can't be sure any others exist
-		$this->namespaces = array_filter( $namespaces, function( $v ) {
-			return $v <= 15;
-		} );
+		if ( $this->namespaces !== null ) {
+			$this->namespaces = array_filter( $namespaces, function( $v ) {
+				return $v <= 15;
+			} );
+		}
 	}
 
 	/**

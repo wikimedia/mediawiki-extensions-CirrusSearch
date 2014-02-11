@@ -450,10 +450,10 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 			wfProfileIn( __METHOD__ . '-build-query' );
 			$fields = array_merge(
-				$this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match' ),
 				$this->buildFullTextSearchFields( 1, '.plain' ),
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
-			$this->query = $this->buildSearchTextQuery( $fields, $queryStringQueryString );
+			$nearMatchFields = $this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match' );
+			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields, $queryStringQueryString );
 
 			// Only do a phrase match rescore if the query doesn't include any quotes and has a space
 			// TODO allow phrases without spaces to support things like words with dashes and languages
@@ -469,7 +469,8 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->rescore = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->buildSearchTextQuery( $fields, '"' . $queryStringQueryString . '"' ),
+						'rescore_query' => $this->buildSearchTextQueryForFields( $fields, 
+							'"' . $queryStringQueryString . '"' ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
@@ -820,9 +821,19 @@ class Searcher extends ElasticsearchIntermediary {
 		return $result;
 	}
 
-	private function buildSearchTextQuery( $fields, $query ) {
+	private function buildSearchTextQuery( $fields, $nearMatchFields, $queryString ) {
+		// Build one query for the full text fields and one for the near match fields so that
+		// the near match analyzer doesn't confuse the full text analyzers.
+		$bool = new \Elastica\Query\Bool();
+		$bool->setMinimumNumberShouldMatch( 1 );
+		$bool->addShould( $this->buildSearchTextQueryForFields( $fields, $queryString ) );
+		$bool->addShould( $this->buildSearchTextQueryForFields( $nearMatchFields, $queryString ) );
+		return $bool;
+	}
+
+	private function buildSearchTextQueryForFields( $fields, $queryString ) {
 		global $wgCirrusSearchPhraseSlop;
-		$query = new \Elastica\Query\QueryString( $query );
+		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );

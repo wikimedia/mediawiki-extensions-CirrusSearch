@@ -171,6 +171,17 @@ Feature: Full text search
     Then Relevancytwo Wordtest is the first search result
     And Wordtest Relevancytwo is the second search result
 
+  @relevancy
+  Scenario: Results are effected by the namespace boost
+    When I search for all:Relevancynamespacetest
+    Then Relevancynamespacetest is the first search result
+    And Talk:Relevancynamespacetest is the second search result
+    And File:Relevancynamespacetest is the third search result
+    And Help:Relevancynamespacetest is the fourth search result
+    And File talk:Relevancynamespacetest is the fifth search result
+    And User talk:Relevancynamespacetest is the sixth search result
+    And Template:Relevancynamespacetest is the seventh search result
+
   @fallback_finder
   Scenario: I can find things that Elasticsearch typically thinks of as word breaks in the title
     When I search for $US

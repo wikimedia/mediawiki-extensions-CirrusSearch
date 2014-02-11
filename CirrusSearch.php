@@ -171,6 +171,23 @@ $wgCirrusSearchNearMatchWeight = 2;
 // matches.
 $wgCirrusSearchStemmedWeight = 0.5;
 
+// Weight of each namespace relative.  If not specified non-talk namespaces default to 0.  If not
+// specified talk namspaces default to:
+//   $wgCirrusSearchTalkNamespaceWeight * weightOfCorrespondingNonTalkNamespace
+// The default values are inspired by the configuration used for lsearchd.
+$wgCirrusSearchNamespaceWeights = array(
+	NS_USER => 0.05,
+	NS_PROJECT => 0.1,
+	NS_FILE => 0.2,
+	NS_MEDIAWIKI => 0.05,
+	NS_TEMPLATE => 0.005,
+	NS_HELP => 0.1,
+	NS_CATEGORY => 0.2,
+);
+
+// Default weight of a talk namespace relative to its corresponding non-talk namespace.
+$wgCirrusSearchTalkNamespaceWeight = 0.25;
+
 // Portion of an article's score that decays with time since it's last update.  Defaults to 0
 // meaning don't decay the score at all unless prefer-recent: prefixes the query.
 $wgCirrusSearchPreferRecentDefaultDecayPortion = 0;

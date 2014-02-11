@@ -1117,6 +1117,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$useFunctionScore = true;
 		}
 
+		// Add boosts for pages that contain certain templates
 		if ( $this->boostTemplates ) {
 			foreach ( $this->boostTemplates as $name => $boost ) {
 				$match = new \Elastica\Query\Match();
@@ -1126,6 +1127,26 @@ class Searcher extends ElasticsearchIntermediary {
 					new \Elastica\Filter\Query( $match ) );
 			}
 			$useFunctionScore = true;
+		}
+
+		// Add boosts for namespaces
+		$namespacesToBoost = $this->namespaces === null ? MWNamespace::getValidNamespaces() : $this->namespaces;
+		if ( $namespacesToBoost ) {
+			// Group common weights together and build a single filter per weight
+			// to save on filters.
+			$weightToNs = array();
+			foreach ( $namespacesToBoost as $ns ) {
+				$weight = $this->getBoostForNamespace( $ns );
+				$weightToNs[ (string)$weight ][] = $ns;
+			}
+			if ( count( $weightToNs ) > 1 ) {
+				unset( $weightToNs[ '1' ] );  // That'd be redundant.
+				foreach ( $weightToNs as $weight => $namespaces ) {
+					$filter = new \Elastica\Filter\Terms( 'namespace', $namespaces );
+					$functionScore->addBoostFactorFunction( $weight, $filter );
+					$useFunctionScore = true;
+				}
+			}
 		}
 
 		if ( !$useFunctionScore ) {
@@ -1193,6 +1214,28 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 		return $boostTemplates;
+	}
+
+	/**
+	 * Get the weight of a namespace.  Public so it can be used in a callback.
+	 * @param int $ns the namespace
+	 * @return float the weight of the namespace
+	 */
+	private function getBoostForNamespace( $ns ) {
+		global $wgCirrusSearchNamespaceWeights;
+		global $wgCirrusSearchTalkNamespaceWeight;
+
+		if ( isset( $wgCirrusSearchNamespaceWeights[ $ns ] ) ) {
+			return $wgCirrusSearchNamespaceWeights[ $ns ];
+		}
+		if ( MWNamespace::isSubject( $ns ) ) {
+			return 1;
+		}
+		$subjectNs = MWNamespace::getSubject( $ns );
+		if ( isset( $wgCirrusSearchNamespaceWeights[ $subjectNs ] ) ) {
+			return $wgCirrusSearchTalkNamespaceWeight * $wgCirrusSearchNamespaceWeights[ $subjectNs ];
+		}
+		return $wgCirrusSearchTalkNamespaceWeight;
 	}
 
 	private function checkTitleSearchRequestLength( $search ) {

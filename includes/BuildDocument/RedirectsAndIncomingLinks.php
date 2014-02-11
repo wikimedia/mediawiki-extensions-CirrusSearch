@@ -84,21 +84,17 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
 		$redirectCount = count( $redirects );
 		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
-			if ( $count + $redirectCount > 0 ) {
-				$doc->add( 'incoming_links', $count + $redirectCount );
-			}
+			$doc->add( 'incoming_links', $count + $redirectCount );
 		};
 		// If a page doesn't have any redirects then count the links to them.
 		if ( count( $redirectPrefixedDBKeys ) ) {
 			$this->linkCountMultiSearch->addSearch( $this->buildCount(
 				new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
 			$this->linkCountClosures[] = function ( $count ) use( $doc ) {
-				if ( $count > 0 ) {
-					$incomingLinks = $doc->has( 'incoming_links' ) ? $doc->get( 'incoming_links' ) : 0;
-					$doc->add( 'incoming_links', $count + $incomingLinks );
-					// TODO remove incoming_redirect_links entirely once it is 0 across the board.
-					$doc->add( 'incoming_redirect_links', 0 );
-				}
+				$incomingLinks = $doc->has( 'incoming_links' ) ? $doc->get( 'incoming_links' ) : 0;
+				$doc->add( 'incoming_links', $count + $incomingLinks );
+				// TODO remove incoming_redirect_links entirely once it is 0 across the board.
+				$doc->add( 'incoming_redirect_links', 0 );
 			};
 		} else {
 			$doc->add( 'incoming_redirect_links', 0 );

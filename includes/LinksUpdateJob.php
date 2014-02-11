@@ -46,12 +46,19 @@ class LinksUpdateJob extends Job {
 		$updater->updateFromTitle( $this->title, $check );
 		if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 				count( $this->params[ 'removedLinks' ] ) > 0 ) {
-			JobQueueGroup::singleton()->push(
-				new LinksUpdateSecondaryJob( $this->title, array(
-					'addedLinks' => $this->params[ 'addedLinks' ],
-					'removedLinks' => $this->params[ 'removedLinks' ],
-				) )
+			$params = array(
+				'addedLinks' => $this->params[ 'addedLinks' ],
+				'removedLinks' => $this->params[ 'removedLinks' ],
 			);
+			$jobQueueGroup = JobQueueGroup::singleton();
+			$jobQueue = $jobQueueGroup->get( 'cirrusSearchLinksUpdateSecondary' );
+			// If possible, delay the job execution by a few seconds so Elasticsearch
+			// can refresh to contain what we just sent it.
+			if ( $jobQueue->delayedJobsEnabled() ) {
+				$params[ 'jobReleaseTimestamp' ] = time() + 3;
+			}
+			$jobQueueGroup->push(
+				new LinksUpdateSecondaryJob( $this->title, $params ) );
 		}
 	}
 

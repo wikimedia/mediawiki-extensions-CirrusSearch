@@ -57,7 +57,7 @@ is /srv/mediawiki and you are using debian/ubuntu):
  echo '0 0 * * * rm /tmp/mw-transcode-log' >> /tmp/www-data-crontab
  sort /tmp/www-data-crontab | uniq | sudo su -c 'crontab -u www-data -'
  rm /tmp/www-data-crontab
- sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils php5-curl
+ sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils php5-curl php5-redis
  popd
  php CirrusSearch/maintenance/updateSearchIndexConfig.php
  php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
@@ -91,6 +91,26 @@ with
 
 And add an Elasticsearch server, for example:
  $wgCirrusSearchServers = array( '10.4.1.52' );
+
+If you want to test with Redis (it is better) add this to LocalSettings.php and
+installl Redis:
+ $wgRedisPassword = 'Q6dzak4k9vjYjh341fHS';
+ $wgJobTypeConf['default'] = array(
+	'class' => 'JobQueueRedis',
+	'order' => 'fifo',
+	'redisServer' => 'localhost',
+	'checkDelay' => true,
+	'redisConfig' => array(
+		'password' => $wgRedisPassword,
+	),
+ );
+ $wgJobQueueAggregator = array(
+	'class'       => 'JobQueueAggregatorRedis',
+	'redisServer' => 'localhost',
+	'redisConfig' => array(
+		'password' => $wgRedisPassword,
+			),
+ );
 
 
 Running

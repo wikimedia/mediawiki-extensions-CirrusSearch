@@ -158,9 +158,25 @@ Feature: Full text search
     Then Manyredirectstarget is the first search result
 
   @relevancy
-  Scenario: Results are sorted in roughly the order we expect
+  Scenario: Results are sorted in the order we expect
     When I search for Relevancytest
     Then Relevancytest is the first search result
     And Relevancytestviaredirect is the second search result
     And Relevancytestviaheading is the third search result
     And Relevancytestviatext is the fourth search result
+
+  @relevancy
+  Scenario: Two word searches are sorted in the order we expect
+    When I search for Relevancytwo Wordtest
+    Then Relevancytwo Wordtest is the first search result
+    And Wordtest Relevancytwo is the second search result
+
+  @fallback_finder
+  Scenario: I can find things that Elasticsearch typically thinks of as word breaks in the title
+    When I search for $US
+    Then $US is the first search result
+
+  @fallback_finder
+  Scenario: I can find things that Elaticsearch typically thinks of as word breaks in redirect title
+    When I search for ¢
+    Then Cent (currency) is the first search result

@@ -51,7 +51,8 @@ class Result extends SearchResult {
 		}
 
 		$data = $result->getData();
-		$this->wordCount = $data['text.word_count'];
+		// Not all results requested a word count. Just pretend we have none if so
+		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : 0;
 		$this->byteSize = $result->text_bytes;
 		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();

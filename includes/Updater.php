@@ -5,6 +5,7 @@ use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
 use \MWTimestamp;
 use \ParserCache;
+use \ProfileSection;
 use \SearchUpdate;
 use \Sanitizer;
 use \Title;

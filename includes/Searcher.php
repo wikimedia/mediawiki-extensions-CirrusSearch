@@ -5,6 +5,7 @@ use Elastica;
 use \CirrusSearch;
 use \MWNamespace;
 use \PoolCounterWorkViaCallback;
+use \ProfileSection;
 use \Sanitizer;
 use \Status;
 use \Title;

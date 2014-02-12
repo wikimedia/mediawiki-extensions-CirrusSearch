@@ -6,6 +6,7 @@ use \JobQueueGroup;
 use \LinkCache;
 use \Maintenance;
 use \MWTimestamp;
+use \ProfileSection;
 use \Title;
 use \WikiPage;
 

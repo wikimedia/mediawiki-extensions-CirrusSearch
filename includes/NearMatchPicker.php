@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use \ProfileSection;
 
 /**
  * Picks the best "near match" title.

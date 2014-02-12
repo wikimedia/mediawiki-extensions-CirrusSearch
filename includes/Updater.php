@@ -288,6 +288,8 @@ class Updater extends ElasticsearchIntermediary {
 
 			$doc = new \Elastica\Document( $page->getId(), array(
 				'namespace' => $title->getNamespace(),
+				'namespace_text' => $title->getPageLanguage()->getFormattedNsText(
+						$title->getNamespace() ),
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
 			) );

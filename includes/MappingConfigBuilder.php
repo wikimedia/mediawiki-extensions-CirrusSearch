@@ -27,7 +27,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 0.2;
+	const VERSION = 0.3;
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -87,6 +87,7 @@ class MappingConfigBuilder {
 					'include_in_all' => false,
 				),
 				'namespace' => $this->buildLongField(),
+				'namespace_text' => $this->buildKeywordField(),
 				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
 				'text' => array_merge_recursive(
 					$this->buildStringField( 'text', $textExtraAnalyzers ),

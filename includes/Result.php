@@ -33,6 +33,7 @@ class Result extends SearchResult {
 	private $score;
 	private $timestamp;
 	private $interwiki;
+	private $interwikiNamespace;
 
 	/**
 	 * Build the result.
@@ -190,14 +191,17 @@ class Result extends SearchResult {
 
 	private function maybeSetInterwiki( $result, $interwikis ) {
 		$iw = '';
-		array_walk( $interwikis, function( $indexBase, $interwiki ) use ( $result, &$iw ) {
+		$iwNS = '';
+		array_walk( $interwikis, function( $indexBase, $interwiki ) use ( $result, &$iw, &$iwNS ) {
 			$index = $result->getIndex();
 			$pos = strpos( $index, $indexBase );
 			if ( $pos === 0 && $index[strlen( $indexBase )] == '_' ) {
 				$iw = $interwiki;
+				$iwNS = $result->namespace_text ? $result->namespace_text : '';
 			}
 		} );
 		$this->interwiki = $iw;
+		$this->interwikiNamespace = $iwNS;
 	}
 
 	public function getTitleSnippet( $terms ) {
@@ -246,5 +250,9 @@ class Result extends SearchResult {
 
 	public function getInterwikiPrefix() {
 		return $this->interwiki;
+	}
+
+	public function getInterwikiNamespaceText() {
+		return $this->interwikiNamespace;
 	}
 }

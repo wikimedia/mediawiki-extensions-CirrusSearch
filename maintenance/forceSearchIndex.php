@@ -86,7 +86,8 @@ class ForceSearchIndex extends Maintenance {
 
 	public function execute() {
 		global $wgPoolCounterConf;
-		wfProfileIn( __METHOD__ );
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -234,7 +235,6 @@ class ForceSearchIndex extends Maintenance {
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -248,7 +248,7 @@ class ForceSearchIndex extends Maintenance {
 	 *    inputs for this function but should not by synced to the search index.
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
 		if ( $maxUpdate === null ) {
@@ -338,7 +338,6 @@ class ForceSearchIndex extends Maintenance {
 		// Clear the LinkCache to prevent its memory use from growing without bounds.
 		LinkCache::singleton()->clear();
 		wfProfileOut( __METHOD__ . '::decodeResults' );
-		wfProfileOut( __METHOD__ );
 		return $result;
 	}
 
@@ -352,7 +351,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return array An array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
@@ -383,7 +382,6 @@ class ForceSearchIndex extends Maintenance {
 				'page' => $row->ar_page_id,
 			);
 		}
-		wfProfileOut( __METHOD__ );
 		return $result;
 	}
 

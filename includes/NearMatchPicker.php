@@ -53,13 +53,12 @@ class NearMatchPicker {
 	 * @return Title|null title if there is a near match and null otherwise
 	 */
 	public function pickBest() {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
+
 		if ( !$this->titles ) {
-			wfProfileOut( __METHOD__ );
 			return null;
 		}
 		if ( !$this->term ) {
-			wfProfileOut( __METHOD__ );
 			return null;
 		}
 		if ( count( $this->titles ) === 1 ) {
@@ -89,13 +88,11 @@ class NearMatchPicker {
 				}
 			}
 			if ( $found ) {
-				wfProfileOut( __METHOD__ );
 				return $found;
 			}
 		}
 
 		// Didn't find anything
-		wfProfileOut( __METHOD__ );
 		return null;
 	}
 }

@@ -197,7 +197,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function nearMatchTitleSearch( $search ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
+
 		self::checkTitleSearchRequestLength( $search );
 
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
@@ -208,9 +209,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
 		$this->boostLinks = ''; // No boost
 
-		$result = $this->search( 'near_match', $search );
-		wfProfileOut( __METHOD__ );
-		return $result;
+		return $this->search( 'near_match', $search );
 	}
 
 	/**
@@ -219,8 +218,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
-		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		self::checkTitleSearchRequestLength( $search );
 
@@ -245,9 +245,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->sort = 'incoming_links_desc';
 		}
 
-		$result = $this->search( 'prefix', $search );
-		wfProfileOut( __METHOD__ );
-		return $result;
+		return $this->search( 'prefix', $search );
 	}
 
 	/**
@@ -265,14 +263,15 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function searchText( $term, $showRedirects, $showSuggestion ) {
-		wfProfileIn( __METHOD__ );
-		global $wgCirrusSearchPhraseRescoreBoost;
-		global $wgCirrusSearchPhraseRescoreWindowSize;
-		global $wgCirrusSearchPhraseUseText;
-		global $wgCirrusSearchPreferRecentDefaultDecayPortion;
-		global $wgCirrusSearchPreferRecentDefaultHalfLife;
-		global $wgCirrusSearchNearMatchWeight;
-		global $wgCirrusSearchStemmedWeight;
+		global $wgCirrusSearchPhraseRescoreBoost,
+			$wgCirrusSearchPhraseRescoreWindowSize,
+			$wgCirrusSearchPhraseUseText,
+			$wgCirrusSearchPreferRecentDefaultDecayPortion,
+			$wgCirrusSearchPreferRecentDefaultHalfLife,
+			$wgCirrusSearchNearMatchWeight,
+			$wgCirrusSearchStemmedWeight;
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$searcher = $this;
@@ -514,7 +513,7 @@ class Searcher extends ElasticsearchIntermediary {
 			// No need to check for a parse error here because we don't actually create a query for
 			// Elasticsearch to parse
 		}
-		wfProfileOut( __METHOD__ );
+
 		return $result;
 	}
 
@@ -523,8 +522,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status(ResultSet|null)
 	 */
 	public function moreLikeThisArticle( $id ) {
-		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreLikeThisConfig;
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
 		// two passes but it doesn't support that at this point
@@ -547,9 +547,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$idFilter->addId( $id );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
-		$result = $this->search( 'more_like', "$found->namespace:$found->title" );
-		wfProfileOut( __METHOD__ );
-		return $result;
+		return $this->search( 'more_like', "$found->namespace:$found->title" );
 	}
 
 	/**
@@ -559,7 +557,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status containing page data, null if not found, or an error if there was an error
 	 */
 	public function get( $id, $fields ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
+
 		$searcher = $this;
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$indexBaseName = $this->indexBaseName;
@@ -583,9 +582,8 @@ class Searcher extends ElasticsearchIntermediary {
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
-		$result = $getWork->execute();
-		wfProfileOut( __METHOD__ );
-		return $result;
+
+		return $getWork->execute();
 	}
 
 	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
@@ -644,7 +642,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function getElasticsearchVersion() {
 		global $wgMemc;
-		wfProfileIn( __METHOD__ );
+
+		$profiler = new ProfileSection( __METHOD__ );
+
 		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );
 		$result = $wgMemc->get( $mcKey );
 		if ( !$result ) {
@@ -653,14 +653,13 @@ class Searcher extends ElasticsearchIntermediary {
 				$result = Connection::getClient()->request( '' );
 				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				wfProfileOut( __METHOD__ );
 				return $this->failure( $e );
 			}
 			$result = $result->getData();
 			$result = $result[ 'version' ][ 'number' ];
 			$wgMemc->set( $mcKey, $result, 3600 * 12 );
 		}
-		wfProfileOut( __METHOD__ );
+
 		return Status::newGood( $result );
 	}
 
@@ -669,8 +668,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status(ResultSet|null|array(String)) results, no results, or title results
 	 */
 	private function search( $type, $for ) {
-		wfProfileIn( __METHOD__ );
 		global $wgCirrusSearchMoreAccurateScoringMode;
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType();
@@ -817,7 +817,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
 		}
-		wfProfileOut( __METHOD__ );
+
 		return $result;
 	}
 
@@ -965,7 +965,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * LuceneSearch so we need to allow that one but there is no reason not to allow them all.
 	 */
 	public function fixupQueryStringPart( $string ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
+
 		// Escape characters that can be escaped with \\
 		$string = preg_replace( '/(
 				\/|		(?# no regex searches allowed)
@@ -1001,7 +1002,7 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $inQuote ) {
 			$string = $string . '"';
 		}
-		wfProfileOut( __METHOD__ );
+
 		return $string;
 	}
 
@@ -1011,9 +1012,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
 	 */
 	public function fixupWholeQueryString( $string ) {
-		wfProfileIn( __METHOD__ );
-		// Be careful when editing this method because the ordering of the replacements matters.
+		$profiler = new ProfileSection( __METHOD__ );
 
+		// Be careful when editing this method because the ordering of the replacements matters.
 
 		// Escape ~ that don't follow a term or a quote
 		$string = preg_replace_callback( '/(?<![\w"])~/',
@@ -1066,7 +1067,7 @@ class Searcher extends ElasticsearchIntermediary {
 			'CirrusSearch\Searcher::lowercaseMatched', $string );
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/',
 			'CirrusSearch\Searcher::lowercaseMatched', $string );
-		wfProfileOut( __METHOD__ );
+
 		return $string;
 	}
 

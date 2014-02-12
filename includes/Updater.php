@@ -145,7 +145,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *   and sent to Elasticsearch.
 	 */
 	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
@@ -175,7 +175,6 @@ class Updater extends ElasticsearchIntermediary {
 			$count += count( $documents );
 		}
 
-		wfProfileOut( __METHOD__ );
 		return $count;
 	}
 
@@ -189,7 +188,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *   the Elastica default which is 300 seconds.
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 
 		OtherIndexJob::queueIfRequired( $titles, false );
 
@@ -197,8 +196,6 @@ class Updater extends ElasticsearchIntermediary {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		$this->sendDeletes( $ids );
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	private function isFresh( $page ) {
@@ -233,7 +230,8 @@ class Updater extends ElasticsearchIntermediary {
 			return;
 		}
 
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
+
 		$exception = null;
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );
@@ -262,13 +260,12 @@ class Updater extends ElasticsearchIntermediary {
 				wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
 			}
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	private function buildDocumentsForPages( $pages, $flags ) {
 		global $wgCirrusSearchIndexedRedirects;
-		wfProfileIn( __METHOD__ );
+
+		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
 		$skipParse = $flags & self::SKIP_PARSE;
@@ -282,8 +279,8 @@ class Updater extends ElasticsearchIntermediary {
 			if ( !$page->exists() ) {
 				wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: $title" );
-				continue;
 				wfProfileOut( __METHOD__ . '-basic' );
+				continue;	
 			}
 
 			$doc = new \Elastica\Document( $page->getId(), array(
@@ -334,7 +331,7 @@ class Updater extends ElasticsearchIntermediary {
 		wfProfileIn( __METHOD__ . '-finish-batch' );
 		wfRunHooks( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
 		wfProfileOut( __METHOD__ . '-finish-batch' );
-		wfProfileOut( __METHOD__ );
+
 		return $documents;
 	}
 
@@ -431,7 +428,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param array(int) $ids ids to delete from Elasticsearch
 	 */
 	private function sendDeletes( $ids ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 
 		$idCount = count( $ids );
 		if ( $idCount === 0 ) {
@@ -450,8 +447,6 @@ class Updater extends ElasticsearchIntermediary {
 				wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
 			}
 		}
-
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**

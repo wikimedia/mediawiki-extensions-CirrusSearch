@@ -115,7 +115,7 @@ $messages['ast'] = array(
 # Pue forzar el reindexáu d'una páxina faciendo una edición nula.
 # La sintaxis ye la siguiente:
 #   * Tolo qu'hai dende un caráuter \"#\" al fin de llinia ye un comentariu
-#   * Cada llinia non-balera ye'l títulu exactu a descartar, incluyendo mayúscules y demás
+#   * Cada llinia nun-balera ye'l títulu exactu a descartar, incluyendo mayúscules y demás
 Referencies
 Enllaces esternos
 Ver tamién

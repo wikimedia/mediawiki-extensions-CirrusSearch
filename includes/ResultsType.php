@@ -198,6 +198,6 @@ class InterwikiResultsType implements ResultsType {
 	}
 
 	public function getFields() {
-		return array( 'namespace', 'title' );
+		return array( 'namespace', 'namespace_text', 'title' );
 	}
 }

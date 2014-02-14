@@ -10,7 +10,7 @@
 # https://git.wikimedia.org/blob/mediawiki%2Fextensions%2FCirrusSearch/HEAD/CREDITS
 #
 @clean @en.wikipedia.beta.wmflabs.org @test2.wikipedia.org
-Feature: Search
+Feature: Smoke test
 
   Scenario: Search suggestions
     Given I am at a random page
@@ -24,7 +24,7 @@ Feature: Search
       And I click the search button
     Then I should land on Search Results page
 
-  Scenario:  Search with accent yields result page with accent
+  Scenario: Search with accent yields result page with accent
     Given I am at a random page
     When I search for África
     Then the page I arrive on has title África

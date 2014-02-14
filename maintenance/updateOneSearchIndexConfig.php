@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 use Elastica;
 use \Maintenance;
+use \ProfileSection;
 
 /**
  * Update the search configuration on the search backend.
@@ -43,7 +44,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	// Is the index currently closed?
 	private $closed = false;
 
-	private $reindexChunkSize = 1000;
+	private $reindexChunkSize;
+	private $reindexRetryAttempts;
 
 	private $indexBaseName;
 	private $indexIdentifier;
@@ -129,6 +131,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
 			'reindex failure.  Defaults to 5%.', false, true );
+		$maintenance->addOption( 'reindexChunkSize', 'Documents per shard to reindex in a batch.   ' .
+		    'Note when changing the number of shards that the old shard size is used, not the new ' .
+		    'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
+		    'singles works then lower this number.  Defaults to 100.', false, true );
+		$maintenance->addOption( 'reindexRetryAttempts', 'Number of times to back off and retry ' .
+			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
+			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
+			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
 		$maintenance->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 	}
@@ -152,6 +162,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
 		$this->reindexAcceptableCountDeviation = $this->parsePotentialPercent(
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
+		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
+		$this->reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 		$this->langCode = $wgLanguageCode;
 		$this->aggressiveSplitting = $wgCirrusSearchUseAggressiveSplitting;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
@@ -630,10 +642,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$result->next();
 				}
 				wfProfileOut( __METHOD__ . '::packageDocs' );
-				wfProfileIn( __METHOD__ . '::sendDocs' );
-				$updateResult = $this->getPageType()->addDocuments( $documents );
-				wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
-				wfProfileOut( __METHOD__ . '::sendDocs' );
+				$this->sendDocumentsWithRetry( $messagePrefix, $documents );
 				$completed += $result->count();
 				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
 				$this->output( $this->indent . $messagePrefix .
@@ -643,6 +652,51 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			wfLogWarning( "Search backend error during reindex.  Error message is:  " . $e->getMessage() );
 			die( 1 );
+		}
+	}
+
+	private function sendDocumentsWithRetry( $messagePrefix, $documents ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
+		$errors = 0;
+		while ( true ) {
+			if ( $errors < $this->reindexRetryAttempts ) {
+				try {
+					$this->sendDocuments( $messagePrefix, $documents );
+					return;
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					$errors += 1;
+					// Random backoff with lowest possible upper bound as 16 seconds.
+					// With the default mximum number of errors (5) this maxes out at 256 seconds.
+					$seconds = rand( 1, pow( 2, 3 + $errors ) );
+					$this->output( $this->indent . $messagePrefix . "Caught an error retrying as singles.  " .
+						"Backing off for $seconds and retrying.\n" );
+					sleep( $seconds );
+				}
+			} else {
+				$this->sendDocuments( $messagePrefix, $documents );
+				return;
+			}
+		}
+	}
+
+	private function sendDocuments( $messagePrefix, $documents ) {
+		try {
+			$updateResult = $this->getPageType()->addDocuments( $documents );
+			// if ( rand( 0, 9 ) < 3 ) {
+			// 	throw new \Elastica\Exception\InvalidException();
+			// }
+			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.\n" );
+			foreach ( $documents as $document ) {
+				// Continue using the bulk api because we're used to it.
+				$updateResult = $this->getPageType()->addDocuments( array( $document ) );
+				// if ( rand( 0, 9 ) < 3 ) {
+				// 	throw new \Elastica\Exception\InvalidException();
+				// }
+				wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
+			}
 		}
 	}
 

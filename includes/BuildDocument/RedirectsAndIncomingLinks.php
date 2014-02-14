@@ -111,10 +111,11 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
 				$this->failure( $e );
-				foreach ( $pages as $page ) {
-					$id = $page->getId();
-					wfDebugLog( 'CirrusSearchChangeFailed', "Links:  $id" );
-				}
+				$pageIds = array_map( function( $page ) {
+					return $page->getId();
+				}, $pages );
+				wfDebugLog( 'CirrusSearchChangeFailed', 'Links for page ids: ' .
+					implode( ',', $pageIds ) );
 			}
 		}
 	}

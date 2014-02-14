@@ -184,10 +184,11 @@ MVEL;
 			$this->success();
 		} else {
 			$this->failure( $e );
-			foreach ( $titles as $title ) {
-				$id = $title->getArticleID();
-				wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName: $id" );
-			}
+			$articleIDs = array_map( function( $title ) {
+				return $title->getArticleID();
+			}, $titles );
+			wfDebugLog( 'CirrusSearchChangeFailed', 'Other Index $actionName for article ids: ' .
+				implode( ',', $pageIds ) );
 		}
 	}
 }

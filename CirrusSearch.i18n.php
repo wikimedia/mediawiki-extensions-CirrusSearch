@@ -1143,9 +1143,21 @@ Xem thêm
  * @author Yfdyh000
  */
 $messages['zh-hans'] = array(
-	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
-	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
+	'cirrussearch-desc' => '基于Elasticsearch为MediaWiki设计的搜索',
+	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。',
+	'cirrussearch-parse-error' => '此查询无法理解。请将其简化。查询已被记录以改进搜索系统。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
+	'cirrussearch-ignored-headings' => ' #<!--请忽略此行因为此行有碍于翻译--> <pre>
+# 搜索时标题将被忽略。
+# 对此更改将很快生效，并将尽快被索引。
+# 您可通过清空编辑强制页面重新索引。
+# 语法如下：
+#   * 一切以“#”符号开头的内容是一个注释
+#   * 任何非空白行是可忽略的
+参考文献
+外部链接
+参见
+ #</pre> <!--请忽略此行因为此行有碍于翻译-->',
 	'cirrussearch-boost-templates' => ' #<!-- 此行绝对保持原状 --> <pre>
 # 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。
 # 更改至此立即生效。
@@ -1164,7 +1176,6 @@ $messages['zh-hans'] = array(
  #</pre> <!-- 此行绝对保持原状 -->',
 	'cirrussearch-pref-label' => '新搜索',
 	'cirrussearch-pref-desc' => '试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。',
-	'cirrussearch-file-contents-match' => '文件内容匹配：$1',
 );
 
 /** Traditional Chinese (中文（繁體）‎)

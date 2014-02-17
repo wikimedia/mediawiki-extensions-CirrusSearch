@@ -1043,6 +1043,13 @@ Se också
 	'cirrussearch-pref-desc' => 'Prova vår nya sökning som stöder ett större antal språk, ger fler uppdaterade resultat och kan även hitta text inuti mallar.',
 );
 
+/** Telugu (తెలుగు)
+ * @author Ravichandra
+ */
+$messages['te'] = array(
+	'cirrussearch-pref-label' => 'కొత్తగా వెతుకు',
+);
+
 /** Tagalog (Tagalog)
  * @author Jewel457
  */

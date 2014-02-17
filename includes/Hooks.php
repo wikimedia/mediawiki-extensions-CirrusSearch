@@ -147,15 +147,17 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function getPreferencesHook( $user, &$prefs ) {
-		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
+		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath, $wgLang;
 
 		if ( $wgCirrusSearchEnablePref ) {
+			$dir = $wgLang->getDir();
+
 			$prefs['cirrussearch-default'] = array(
 				'label-message' => 'cirrussearch-pref-label',
 				'desc-message' => 'cirrussearch-pref-desc',
 				'info-link' => 'https://www.mediawiki.org/wiki/Search',
 				'discussion-link' => 'https://www.mediawiki.org/wiki/Talk:Search',
-				'screenshot' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta.svg",
+				'screenshot' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-$dir.svg",
 			);
 		}
 

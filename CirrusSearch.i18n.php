@@ -631,6 +631,47 @@ Hlej tež
 	'cirrussearch-pref-desc' => 'Spytaj naše nowe pytanje, kotrež podpěruje wjetšu ličbu rěčow, podawa bóle aktualne wuslědki a móže samo tekst znutřka předłohow namakać.',
 );
 
+/** Hungarian (magyar)
+ * @author Tgr
+ */
+$messages['hu'] = array(
+	'cirrussearch-desc' => 'Elasticsearch alapú MediaWiki kereső',
+	'cirrussearch-backend-error' => 'Egy átmeneti hiba miatt nem tudtuk végrehajtani a keresést. Kérlek, próbálkozz később.',
+	'cirrussearch-parse-error' => 'Nem értem a keresőkifejezést, kérlek írd át egyszerűbbre. (A kifejezést eltároltuk és felhasználjuk a keresőrendszer fejlesztésére.)',
+	'cirrussearch-now-using' => 'Ez a wiki egy új keresőt használ. ([[mw:Special:MyLanguage/Help:CirrusSearch|Bővebben]])',
+	'cirrussearch-ignored-headings' => ' #<!-- ezen a soron ne változtass --> <pre>
+# Az itt megadott szakaszokat figyelmen kívül hagyja a kereső.
+# Ha megváltoztatod ezt a listát, csak a változtatás után indexelt lapokra lesz hatása.
+# Ha újra akarsz indexelni egy adott oldalt, egy üres szerkesztéssel (megnyit-elment) megteheted.
+# Szintaxis:
+#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja
+#   * Minden nem üres sor egy olyan szakasz címe, amit nem akarjuk, hogy indexeljen a kereső. (Csak a pontos egyezés számít, kisbetű/nagybetűt is beleértve.)
+Források
+Jegyzetek
+Hivatkozások
+Külső hivatkozások
+Lásd még
+ #</pre> <!-- ezen a soron ne változtass -->',
+	'cirrussearch-boost-templates' => ' #<!-- ezen a soron ne változtass --> <pre>
+# Ha egy lap tartalmazza az itt megadott sablonok valamelyikét, akkor a keresési pontszáma (ami alapján a találatok rendezve lesznek) szorzódik a megadott százalékkal.
+# Ha ezt az oldalt módosítod, az azonnal hatással lesz minden lapra.
+# Szintaxis:
+#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja
+#   * Minden nem üres sor egy sablon neve (csak a pontos egyezés számít, beleértve a névteret és a kisbetű/nagybetűt is), majd egy | karakter, majd egy százalékként megadott szám.
+# Jó példák:
+# Sablon:Jó|150%
+# Sablon:Nagyon-nagyon jó|300%
+# Sablon:Rossz|50%
+# Rossz példák:
+# Sablon:Bah|150.234234% <-- tizedestörtet nem használhatsz!
+# Bah|150% <--- ez a fő névtérben lévő "Bah" lapra fog vonatkozni, nem a Bah sablonra
+# Ha tesztelni akarod, milyen hatása lenne ezen lap megváltoztatásának egy adott keresésre, írd be a keresés legelejére a boost-templates:"XX" kulcsszót, ahol XX az ezen a lapon megadotthoz hasonló konfiguráció, de újsor helyett szóközökkel elválasztva.
+# Az ilyen keresések figyelmen kívül hagyják ennek a lapnak a beállításait.
+ #</pre> <!-- ezen a soron ne változtass -->',
+	'cirrussearch-pref-label' => 'Új keresés',
+	'cirrussearch-pref-desc' => 'Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele.',
+);
+
 /** Interlingua (interlingua)
  * @author McDutchie
  */

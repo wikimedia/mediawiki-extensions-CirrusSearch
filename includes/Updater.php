@@ -257,9 +257,11 @@ class Updater extends ElasticsearchIntermediary {
 			$this->success();
 		} else {
 			$this->failure( $exception );
-			foreach ( $documents as $document ) {
-				wfDebugLog( 'CirrusSearchChangeFailed', 'Update: ' . $document->getId() );
-			}
+			$documentIds = array_map( function( $doc ) {
+				return $doc->getId();
+			}, $documents );
+			wfDebugLog( 'CirrusSearchChangeFailed', 'Update for doc ids: ' .
+				implode( ',', $documentIds ) );
 		}
 	}
 
@@ -446,9 +448,8 @@ class Updater extends ElasticsearchIntermediary {
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$this->failure( $e );
-			foreach ( $ids as $id ) {
-				wfDebugLog( 'CirrusSearchChangeFailed', "Delete: $id" );
-			}
+			wfDebugLog( 'CirrusSearchChangeFailed', 'Delete for ids: ' .
+				implode( ',', $ids ) );
 		}
 	}
 

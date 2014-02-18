@@ -298,11 +298,18 @@ class ForceSearchIndex extends Maintenance {
 				       'LIMIT' => $this->mBatchSize )
 			);
 		}
-		wfProfileIn( __METHOD__ . '::decodeResults' );
+
+		return $this->decodeResults( $res, $maxUpdate );
+	}
+
+	private function decodeResults( $res, $maxUpdate ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
 		$result = array();
 		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
 		// level so those are stored when it is freed.
 		$updater = new Updater();
+
 		foreach ( $res as $row ) {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
@@ -338,7 +345,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		// Clear the LinkCache to prevent its memory use from growing without bounds.
 		LinkCache::singleton()->clear();
-		wfProfileOut( __METHOD__ . '::decodeResults' );
+
 		return $result;
 	}
 

@@ -147,10 +147,10 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function getPreferencesHook( $user, &$prefs ) {
-		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath, $wgLang;
+		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
 
 		if ( $wgCirrusSearchEnablePref ) {
-			$dir = $wgLang->getDir();
+			$dir = RequestContext::getMain()->getLanguage()->getDir();
 
 			$prefs['cirrussearch-default'] = array(
 				'label-message' => 'cirrussearch-pref-label',

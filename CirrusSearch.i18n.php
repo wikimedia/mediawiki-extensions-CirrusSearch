@@ -1037,6 +1037,13 @@ $messages['ru'] = array(
 	'cirrussearch-pref-desc' => 'Попробуйте наш новый поиск, который поддерживает большее количество языков, предоставляет более свежие результаты, и может даже найти текст внутри шаблонов.',
 );
 
+/** Scots (Scots)
+ * @author John Reid
+ */
+$messages['sco'] = array(
+	'cirrussearch-parse-error' => 'Speirin wisna unnerstood. Please mak it simpler. The speirin wis loggit fer tae improve the rake system.',
+);
+
 /** Slovak (slovenčina)
  * @author Sudo77(new)
  */

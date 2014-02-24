@@ -1,3 +1,4 @@
+@clean
 Feature: Searches with the hastemplate filter
   Background:
     Given I am at a random page

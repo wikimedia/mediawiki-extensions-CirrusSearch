@@ -1,3 +1,4 @@
+@clean
 Feature: Full text search
   Background:
     Given I am at a random page

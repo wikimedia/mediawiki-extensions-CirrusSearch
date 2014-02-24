@@ -1,3 +1,4 @@
+@clean
 Feature: Elasticsearch version in Special:Version
   Scenario: Elasticsearch version is in Special:Version
     When I go to Special:Version

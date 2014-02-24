@@ -1,3 +1,4 @@
+@clean
 Feature: Search backend updates
   Background:
     Given I am logged in

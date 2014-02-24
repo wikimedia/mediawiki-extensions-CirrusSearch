@@ -1,3 +1,4 @@
+@clean
 Feature: Prefix search
   Background:
     Given I am at a random page

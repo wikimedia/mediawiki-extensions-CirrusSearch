@@ -268,6 +268,7 @@ $wgAutoloadClasses['CirrusSearch\AnalysisConfigBuilder'] = $includes . 'Analysis
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\DeletePagesJob'] = $includes . 'DeletePagesJob.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
+$wgAutoloadClasses['CirrusSearch\ForceSearchIndex'] = __DIR__ . '/maintenance/forceSearchIndex.php';
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateSecondaryJob'] = $includes . 'LinksUpdateSecondaryJob.php';
@@ -319,3 +320,13 @@ $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\LinksUpdat
 $wgJobClasses[ 'cirrusSearchLinksUpdateSecondary' ] = 'CirrusSearch\LinksUpdateSecondaryJob';
 $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\MassIndexJob';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\OtherIndexJob';
+
+/**
+ * Jenkins configuration required to get all the browser tests passing cleanly.
+ * Note that it is only hooked for browser tests.
+ */
+if ( isset( $wgWikimediaJenkinsCI ) && $wgWikimediaJenkinsCI === true && (
+		PHP_SAPI !== 'cli' ||    // If we're not in the CLI then this is certainly a browser test
+		strpos( getenv( 'JOB_NAME' ), 'browsertests' ) !== false ) ) {
+	require( __DIR__ . '/tests/jenkins/Jenkins.php' );
+}

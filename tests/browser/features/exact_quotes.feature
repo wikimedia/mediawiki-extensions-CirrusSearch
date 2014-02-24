@@ -1,3 +1,4 @@
+@clean
 Feature: Searches that contain quotes
   Background:
     Given I am at a random page

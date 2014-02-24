@@ -1,3 +1,4 @@
+@clean
 Feature: Search backend updates that reference non-existant pages
   Background:
     Given I am logged in

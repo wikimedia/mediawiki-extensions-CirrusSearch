@@ -67,6 +67,8 @@ def edit_page(title, text, add)
       # Firefox chokes on huge batches of text so split it into chunks and use
       # send_keys rather than page-objects built in += because that clears and
       # resends everything....
+
+      # Note that this doens't work with tabs!!!!!!!
       text.chars.each_slice(1000) do |chunk|
         page.article_text_element.send_keys(chunk)
       end

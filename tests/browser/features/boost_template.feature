@@ -1,3 +1,4 @@
+@clean
 Feature: Searches with the boost-template operator
   Background:
     Given I am at a random page

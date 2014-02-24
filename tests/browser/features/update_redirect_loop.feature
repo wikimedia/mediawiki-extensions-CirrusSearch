@@ -1,3 +1,4 @@
+@clean
 Feature: Search backend updates containing redirect loops
   Background:
     Given I am logged in

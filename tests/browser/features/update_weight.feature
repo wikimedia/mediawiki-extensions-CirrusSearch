@@ -1,3 +1,4 @@
+@clean
 Feature: Page updates trigger appropriate weight updates in newly linked and unlinked articles
   Background:
     Given I am logged in

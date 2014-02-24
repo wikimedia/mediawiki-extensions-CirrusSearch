@@ -46,7 +46,8 @@ class Result extends SearchResult {
 		global $wgCirrusSearchShowScore;
 
 		$this->maybeSetInterwiki( $result, $interwikis );
-		$this->mTitle = Title::makeTitle( $result->namespace, $result->title, '', $this->interwiki );
+		$this->mTitle = Title::makeTitle( ElasticsearchIntermediary::singleValue( $result, 'namespace' ),
+			ElasticsearchIntermediary::singleValue( $result, 'title' ), '', $this->interwiki );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
@@ -54,8 +55,9 @@ class Result extends SearchResult {
 		$data = $result->getData();
 		// Not all results requested a word count. Just pretend we have none if so
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : 0;
-		$this->byteSize = $result->text_bytes;
-		$this->timestamp = new MWTimestamp( $result->timestamp );
+		$this->byteSize = ElasticsearchIntermediary::singleValue( $result, 'text_bytes' );
+		$this->timestamp = ElasticsearchIntermediary::singleValue( $result, 'timestamp' );
+		$this->timestamp = new MWTimestamp( $this->timestamp );
 		$highlights = $result->getHighlights();
 		// TODO remove when Elasticsearch issue 3757 is fixed
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
@@ -72,7 +74,24 @@ class Result extends SearchResult {
 		}
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
-			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $result->redirect );
+
+			// This odd juggling is the second half of the script fields hack to get redirect loaded.
+			// It'll go away when we switch to source filtering.
+			$redirects = $result->redirect;
+			wfDebugLog( 'CirrusSearch', "ASDFASDF  " . implode( ' ', explode( "\n", var_export( $redirects, true ) ) ) );
+			if ( $redirects !== null ) {
+				// I not null it'll always be an array.
+				// In Elasticsearch 0.90 it'll be an array of arrays which is what we need.
+				// In Elasticsearch 1.0 it'll be an array of arrays of arrays where the outer most array
+				// has only a single element which is exactly what would come back from 0.90.
+				if ( count( $redirects ) !== 0 && !array_key_exists( 'title', $redirects[ 0 ] ) ) {
+					wfDebugLog( 'CirrusSearch', "1.0");
+					// Since the first entry doesn't have a title we assume we're in 1.0
+					$redirects = $redirects[ 0 ];
+					wfDebugLog( 'CirrusSearch', "ASDFASDF  " . implode( ' ', explode( "\n", var_export( $redirects, true ) ) ) );
+				}
+			}
+			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
 			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		} else {
 			$this->redirectSnipppet = '';

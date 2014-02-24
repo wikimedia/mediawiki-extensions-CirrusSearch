@@ -118,7 +118,7 @@ class AnalysisConfigBuilder {
 				),
 				'aggressive_splitting' => array(
 					'type' => 'word_delimiter',
-					'stem_english_possessive' => 'false', // No need
+					'stem_english_possessive' => false, // No need
 				),
 				'prefix_ngram_filter' => array(
 					'type' => 'edgeNGram',

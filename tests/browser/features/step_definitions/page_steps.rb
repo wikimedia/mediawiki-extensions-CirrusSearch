@@ -80,20 +80,16 @@ def upload_file(title, contents, description)
   md5 = Digest::MD5.hexdigest(File.read(contents))
   md5_string = "md5: #{md5}"
   visit(ArticlePage, using_params: {page_name: title}) do |page|
-    if page.file_history? && page.file_last_comment? && page.file_last_comment.include?(md5_string)
+    if page.file_history? &&
+        page.file_last_comment? &&
+        page.file_last_comment.include?(md5_string)
       return
     end
-    if !(page.upload_new_version? || page.upload?)
+    if !page.upload?
       step "I am logged in"
-      visit(ArticlePage, using_params: {page_name: title})
     end
-    if page.upload?
-      # New file, upload it
-      page.upload
-    else
-      # Existing file, update it
-      page.upload_new_version
-    end
+    # If this doesn't exist then file uploading is probably disabled
+    page.upload
   end
   on(UploadFilePage) do |page|
     page.description = description + "\n" + md5_string

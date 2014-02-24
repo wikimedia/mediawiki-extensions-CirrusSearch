@@ -141,6 +141,9 @@ Then(/^(.*) is the highlighted alttitle of the first search result$/) do |highli
     on(SearchResultsPage).first_result_highlighted_alttitle.should == highlighted
   end
 end
+Then(/^there is not alttitle on the first search result$/) do
+  on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
+end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
   found = false
   on(SearchResultsPage).results.each do |result|

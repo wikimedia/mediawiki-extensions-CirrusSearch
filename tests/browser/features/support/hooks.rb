@@ -380,3 +380,13 @@ Before("@fallback_finder") do
   end
   $fallback_finder = true
 end
+
+Before("@js_and_css") do
+  if !$js_and_css
+    steps %Q{
+      Given a page named User:Tools/Some.js exists with contents @some.js
+      And a page named User:Tools/Some.css exists with contents @some.css
+    }
+  end
+  $js_and_css = true
+end

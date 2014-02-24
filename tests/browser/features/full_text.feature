@@ -191,3 +191,13 @@ Feature: Full text search
   Scenario: I can find things that Elaticsearch typically thinks of as word breaks in redirect title
     When I search for ¢
     Then Cent (currency) is the first search result
+
+  @js_and_css
+  Scenario: JS pages don't corrupt the output
+    When I search for User:Tools/some.js jQuery
+    Then there is not alttitle on the first search result
+
+  @js_and_css
+  Scenario: CSS pages don't corrupt the output
+    When I search for User:Tools/some.css jQuery
+    Then there is not alttitle on the first search result

@@ -35,8 +35,21 @@ class PageDataBuilder extends ParseBuilder {
 	);
 
 	public function build() {
-		foreach( $this->parseFuncs as $f ) {
-			$this->$f();
+		switch ( $this->content->getModel() ) {
+			case CONTENT_MODEL_CSS:
+			case CONTENT_MODEL_JAVASCRIPT:
+				// Don't use parser output here. It's useless and leads
+				// to weird results. Instead, clear everything. See bug 61752.
+				$this->doc->add( 'category', array() );
+				$this->doc->add( 'outgoing_link', array() );
+				$this->doc->add( 'template', array() );
+				$this->doc->add( 'file_text', array() );
+				$this->doc->add( 'heading', array() );
+				break;
+			default:
+				foreach( $this->parseFuncs as $f ) {
+					$this->$f();
+				}
 		}
 
 		return $this->doc;

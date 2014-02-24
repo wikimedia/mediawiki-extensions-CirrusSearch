@@ -196,7 +196,7 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function getUnitTestsList( &$files ) {
-		$files = array_merge( $files, glob( __DIR__ . '/tests/unit/*Test.php' ) );
+		$files = array_merge( $files, glob( __DIR__ . '/../tests/unit/*Test.php' ) );
 		return true;
 	}
 

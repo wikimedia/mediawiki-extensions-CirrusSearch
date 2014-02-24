@@ -39,9 +39,6 @@ is /srv/mediawiki and you are using debian/ubuntu):
  export MW_INSTALL_PATH=/srv/mediawiki
  pushd $MW_INSTALL_PATH/..
  if [ ! -d Elastica ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Elastica; fi
- pushd Elastica
- git submodule update --init --recursive
- popd
  if [ ! -d CirrusSearch ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CirrusSearch; fi
  if [ ! -d TimedMediaHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler; fi
  if [ ! -d MwEmbedSupport ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/MwEmbedSupport; fi
@@ -59,13 +56,6 @@ is /srv/mediawiki and you are using debian/ubuntu):
  rm /tmp/www-data-crontab
  sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils php5-curl php5-redis
  popd
- php CirrusSearch/maintenance/updateSearchIndexConfig.php
- php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
- php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipParse
- popd
- sudo /etc/init.d/apache2 restart
-
-
 Then add this to your LocalSettings.php:
  require( "$IP/extensions/Elastica/Elastica.php" );
  require( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
@@ -79,6 +69,15 @@ Then add this to your LocalSettings.php:
  $wgShowExceptionDetails = true;
  $wgDebugLogFile = '/tmp/mw-log';
  $wgCapitalLinks = false;
+
+Finally, go back to the console:
+ php CirrusSearch/maintenance/updateSearchIndexConfig.php
+ php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
+ php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipParse
+ popd
+ sudo /etc/init.d/apache2 restart
+
+
 
 Replace:
  $wgUseInstantCommons = false

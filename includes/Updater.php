@@ -266,8 +266,6 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	private function buildDocumentsForPages( $pages, $flags ) {
-		global $wgCirrusSearchIndexedRedirects;
-
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;

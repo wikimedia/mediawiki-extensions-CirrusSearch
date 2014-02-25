@@ -187,8 +187,8 @@ MVEL;
 			$articleIDs = array_map( function( $title ) {
 				return $title->getArticleID();
 			}, $titles );
-			wfDebugLog( 'CirrusSearchChangeFailed', 'Other Index $actionName for article ids: ' .
-				implode( ',', $pageIds ) );
+			wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName for article ids: " .
+				implode( ',', $articleIDs ) );
 		}
 	}
 }

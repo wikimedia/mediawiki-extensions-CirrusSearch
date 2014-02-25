@@ -25,15 +25,6 @@ use \Title;
  */
 
 class PageDataBuilder extends ParseBuilder {
-	private $parseFuncs = array(
-		'categories',
-		'externalLinks',
-		'fileText',
-		'headings',
-		'outgoingLinks',
-		'templates',
-	);
-
 	public function build() {
 		switch ( $this->content->getModel() ) {
 			case CONTENT_MODEL_CSS:
@@ -47,9 +38,12 @@ class PageDataBuilder extends ParseBuilder {
 				$this->doc->add( 'heading', array() );
 				break;
 			default:
-				foreach( $this->parseFuncs as $f ) {
-					$this->$f();
-				}
+				$this->categories();
+				$this->externalLinks();
+				$this->fileText();
+				$this->headings();
+				$this->outgoingLinks();
+				$this->templates();
 		}
 
 		return $this->doc;

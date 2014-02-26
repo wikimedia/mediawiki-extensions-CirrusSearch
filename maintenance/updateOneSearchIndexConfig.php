@@ -88,10 +88,20 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $phraseUseText;
 
 	/**
+	 * @var bool print config as it is being checked
+	 */
+	private $printDebugCheckConfig;
+
+	/**
 	 * @var float how much can the reindexed copy of an index is allowed to deviate from the current
 	 * copy without triggering a reindex failure
 	 */
 	private $reindexAcceptableCountDeviation;
+
+	/**
+	 * @var bool is this Elasticsearch 0.90.x?
+	 */
+	private $elasticsearch90;
 
 	public function __construct() {
 		parent::__construct();
@@ -141,6 +151,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
 		$maintenance->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
+		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
+			'to help debug unexepcted configuration missmatches.' );
 	}
 
 	public function execute() {
@@ -164,6 +176,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$this->reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
+		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
 		$this->langCode = $wgLanguageCode;
 		$this->aggressiveSplitting = $wgCirrusSearchUseAggressiveSplitting;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
@@ -175,6 +188,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->error( 'indexType option must be one of ' .
 					implode( ', ', $indexTypes ), 1 );
 			}
+
+			$this->fetchElasticsearchVersion();
 
 			if ( $this->getOption( 'forceOpen', false ) ) {
 				$this->getIndex()->open();
@@ -201,6 +216,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
+	}
+
+	private function fetchElasticsearchVersion() {
+		$this->output( $this->indent . 'Fetching Elasticsearch version...' );
+		$result = Connection::getClient()->request( '' );
+		$result = $result->getData();
+		$result = $result[ 'version' ][ 'number' ];
+		$this->elasticsearch90 = strpos( $result, '0.90.' ) !== false;
+		$this->output( ( $this->elasticsearch90 ? '' : 'after ' ) . "0.90\n" );
 	}
 
 	private function updateVersions() {
@@ -230,9 +254,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function validateIndexSettings() {
 		$this->output( $this->indent . "\tValidating number of shards..." );
-		$settingsObject = $this->getIndex()->getSettings();
-		$settings = $settingsObject->get();
-		$actualShardCount = $settings[ 'index.number_of_shards' ];
+		$settings = $this->getSettings();
+		$actualShardCount = $settings[ 'index' ][ 'number_of_shards' ];
 		if ( $actualShardCount == $this->getShardCount() ) {
 			$this->output( "ok\n" );
 		} else {
@@ -245,23 +268,22 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		$this->output( $this->indent . "\tValidating number of replicas..." );
-		$actualReplicaCount = $settings[ 'index.number_of_replicas' ];
+		$actualReplicaCount = $settings[ 'index' ][ 'number_of_replicas' ];
 		if ( $actualReplicaCount == $this->getReplicaCount() ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualReplicaCount but should be " . $this->getReplicaCount() . '...' );
-			$settingsObject->setNumberOfReplicas( $this->getReplicaCount() );
+			$this->getIndex()->getSettings()->setNumberOfReplicas( $this->getReplicaCount() );
 			$this->output( "corrected\n" );
 		}
 	}
 
 	private function validateAnalyzers() {
 		$this->output( $this->indent . "Validating analyzers..." );
-		$settingsObject = $this->getIndex()->getSettings();
-		$settings = $settingsObject->get();
+		$settings = $this->getSettings();
 		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
 		$requiredAnalyzers = $analysisConfig->buildConfig();
-		if ( $this->vaActualMatchRequired( 'index.analysis', $settings, $requiredAnalyzers ) ) {
+		if ( $this->checkConfig( $settings[ 'index' ][ 'analysis' ], $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
@@ -282,42 +304,37 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @param $prefix
-	 * @param $settings
-	 * @param $required array
-	 * @return bool
+	 * Load the settings array.  You can't use this to set the settings, use $this->getIndex()->getSettings() for that.
+	 * @return array of settings always in Elasticsearch 1.0 format
 	 */
-	private function vaActualMatchRequired( $prefix, $settings, $required ) {
-		foreach( $required as $key => $value ) {
-			$settingsKey = $prefix . '.' . $key;
-			if ( is_array( $value ) ) {
-				if ( !$this->vaActualMatchRequired( $settingsKey, $settings, $value ) ) {
-					return false;
-				}
-				continue;
-			}
-			// Note that I really mean !=, not !==.  Coercion is cool here.
-			if ( !array_key_exists( $settingsKey, $settings ) || $settings[ $settingsKey ] != $value ) {
-				return false;
-			}
+	private function getSettings() {
+		$settings = $this->getIndex()->getSettings()->get();
+		if ( !$this->elasticsearch90 ) { // 1.0 compat
+			// Looks like we're already in the new format already
+			return $settings;
 		}
-		return true;
+		$to = array();
+		foreach ( $settings as $key => $value ) {
+			$current = &$to;
+			foreach ( explode( '.', $key ) as $segment ) {
+				$current = &$current[ $segment ];
+			}
+			$current = $value;
+		}
+		return $to;
 	}
 
 	private function validateMapping() {
-		$this->output( $this->indent . "Validating mappings...\n" );
-		$actualMappings = $this->getIndex()->getMapping();
-		$actualMappings = $actualMappings[ $this->getIndex()->getName() ];
-
-		$this->output( $this->indent . "\tValidating mapping for page type..." );
+		$this->output( $this->indent . "Validating mappings..." );
 		$requiredPageMappings = new MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseUseText );
 		$requiredPageMappings = $requiredPageMappings->buildConfig();
-		if ( array_key_exists( 'page', $actualMappings ) &&
-				$this->vmActualMatchRequired( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
-			$this->output( "ok\n" );
-		} else {
-			$this->output( "different..." );
+
+		if ( $this->elasticsearch90 ) {
+			$requiredPageMappings = $this->transformMappingToElasticsearch90( $requiredPageMappings );
+		}
+
+		if ( !$this->checkMapping( $requiredPageMappings ) ) {
 			// TODO Conflict resolution here might leave old portions of mappings
 			$action = new \Elastica\Type\Mapping( $this->getPageType() );
 			foreach ( $requiredPageMappings as $key => $value ) {
@@ -334,35 +351,121 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	private function transformMappingToElasticsearch90( $mapping ) {
+		foreach ( $mapping[ 'properties' ] as $name => $field ) {
+			if ( array_key_exists( 'fields', $field ) ) {
+				// Move the main field configuration to a subfield
+				$field[ 'fields' ][ $name ] = $field;
+				unset( $field[ 'fields' ][ $name ][ 'fields' ] );
+				// Now clear everything from the "main" field that we've moved
+				$mapping[ 'properties' ][ $name ] = array(
+					'type' => 'multi_field',
+					'fields' => $field[ 'fields' ],
+				);
+			}
+			if ( array_key_exists( 'properties', $field ) ) {
+				$mapping[ 'properties' ][ $name ] = $this->transformMappingToElasticsearch90(
+					$field );
+			}
+		}
+		return $mapping;
+	}
+
+	/**
+	 * Check that the mapping returned from Elasticsearch is as we want it.
+	 * @param array $requiredPageMappings the mappings we want
+	 * @return bool is the mapping good enough for us?
+	 */
+	private function checkMapping( $requiredPageMappings ) {
+		$indexName = $this->getIndex()->getName();
+		$actualMappings = $this->getIndex()->getMapping();
+		if ( !array_key_exists( $indexName, $actualMappings ) ) {
+			$this->output( "nonexistent...");
+			return false;
+		}
+		$actualMappings = $actualMappings[ $indexName ];
+		if ( !$this->elasticsearch90 ) { // 1.0 compat
+			$actualMappings = $actualMappings[ 'mappings' ];
+		}
+
+		$this->output( "\n" . $this->indent . "\tValidating mapping for page type..." );
+		if ( array_key_exists( 'page', $actualMappings ) &&
+				$this->checkConfig( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
+			$this->output( "ok\n" );
+			return true;
+		} else {
+			$this->output( "different..." );
+			return false;
+		}
+	}
+
 	/**
 	 * @param $actual
 	 * @param $required array
 	 * @return bool
 	 */
-	private function vmActualMatchRequired( $actual, $required ) {
+	private function checkConfig( $actual, $required, $indent = null ) {
+		if ( $indent === null ) {
+			$indent = $this->indent . "\t\t";
+		}
 		foreach( $required as $key => $value ) {
+			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
+				$this->debugCheckConfig( "not found..." );
+				if ( $key === '_all' ) {
+					// The _all field never comes back so we just have to assume it
+					// is set correctly.
+					$this->debugCheckConfig( "was the all field so skipping..." );
+					continue;
+				}
 				return false;
 			}
 			if ( is_array( $value ) ) {
+				$this->debugCheckConfig( "descend..." );
 				if ( !is_array( $actual[ $key ] ) ) {
+					$this->debugCheckConfig( "other not array..." );
 					return false;
 				}
-				if ( !$this->vmActualMatchRequired( $actual[ $key ], $value ) ) {
+				if ( !$this->checkConfig( $actual[ $key ], $value, $indent . "\t" ) ) {
 					return false;
 				}
 				continue;
 			}
 
-			if ( $actual[ $key ] === 'false' ) {
-				$actual[ $key ] = false;
-			}
+			$actual[ $key ] = $this->normalizeConfigValue( $actual[ $key ] );
+			$value = $this->normalizeConfigValue( $value );
+			$this->debugCheckConfig( $actual[ $key ] . " ?? $value..." );
 			// Note that I really mean !=, not !==.  Coercion is cool here.
+			// print $actual[ $key ] . "  $value\n";
 			if ( $actual[ $key ] != $value ) {
+				$this->debugCheckConfig( 'different...' );
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Normalize a config value for comparison.  Elasticsearch will accept all kinds
+	 * of config values but it tends to through back 'true' for true and 'false' for
+	 * false so we normalize everything.  Sometimes, oddly, it'll through back false
+	 * for false....
+	 * @param mixed $value config value
+	 * @return mixes value normalized
+	 */
+	private function normalizeConfigValue( $value ) {
+		if ( $value === true ) {
+			return 'true';
+		} else if ( $value === false ) {
+			return 'false';
+		}
+		return $value;
+	}
+
+	private function debugCheckConfig( $string ) {
+		if ( $this->printDebugCheckConfig ) {
+			$this->output( $string );
+		}
 	}
 
 	private function validateAlias() {

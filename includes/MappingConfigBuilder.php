@@ -80,11 +80,11 @@ class MappingConfigBuilder {
 
 		$config = array(
 			'dynamic' => false,
+			'_all' => array( 'enabled' => false ),
 			'properties' => array(
 				'timestamp' => array(
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
-					'include_in_all' => false,
 				),
 				'namespace' => $this->buildLongField(),
 				'namespace_text' => $this->buildKeywordField(),
@@ -93,9 +93,8 @@ class MappingConfigBuilder {
 					$this->buildStringField( 'text', $textExtraAnalyzers ),
 					array( 'fields' => array( 'word_count' => array(
 						'type' => 'token_count',
-						'store' => 'yes',
+						'store' => true,
 						'analyzer' => 'plain',
-						'include_in_all' => false,
 					) ) )
 				),
 				'file_text' => $this->buildStringField( 'file_text', $textExtraAnalyzers ),
@@ -128,26 +127,24 @@ class MappingConfigBuilder {
 	 * @return array definition of the field
 	 */
 	public function buildStringField( $name, $extra = array(), $enableNorms = true ) {
-		$norms = array( 'enabled' => $enableNorms );
+		$norms = array( 'norms' => array( 'enabled' => $enableNorms ) );
+		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
-			'type' => 'multi_field',
+			'type' => 'string',
+			'analyzer' => 'text',
+			'term_vector' => 'with_positions_offsets',
 			'fields' => array(
-				$name => array(
-					'type' => 'string',
-					'analyzer' => 'text',
-					'term_vector' => 'with_positions_offsets',
-					'include_in_all' => false,
-					'norms' => $norms,
-				),
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'term_vector' => 'with_positions_offsets',
-					'include_in_all' => false,
-					'norms' => $norms,
 				),
 			)
 		);
+		if ( !$enableNorms ) {
+			$field = array_merge( $field, $norms );
+			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $norms );
+		}
 		foreach ( $extra as $extraField ) {
 			if ( isset( $extraField[ 'analyzer' ] ) ) {
 				$extraName = $extraField[ 'analyzer' ];
@@ -156,9 +153,11 @@ class MappingConfigBuilder {
 			}
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'type' => 'string',
-				'include_in_all' => false,
-				'norms' => $norms,
 			), $extraField );
+			if ( !$enableNorms ) {
+				$field[ 'fields' ][ $extraName ] = array_merge(
+					$field[ 'fields' ][ $extraName ], $norms );
+			}
 		}
 		return $field;
 	}
@@ -171,7 +170,6 @@ class MappingConfigBuilder {
 		return array(
 			'type' => 'string',
 			'analyzer' => 'lowercase_keyword',
-			'include_in_all' => false,
 			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
 			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
 		);
@@ -185,7 +183,6 @@ class MappingConfigBuilder {
 		return array(
 			'type' => 'string',
 			'analyzer' => 'keyword',
-			'include_in_all' => false,
 			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
 			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
 		);
@@ -199,7 +196,6 @@ class MappingConfigBuilder {
 	public function buildLongField( $index = true ) {
 		$config = array(
 			'type' => 'long',
-			'include_in_all' => false,
 		);
 		if ( !$index ) {
 			$config[ 'index' ] = 'no';

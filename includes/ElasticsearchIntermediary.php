@@ -115,6 +115,28 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Unwrap a result that we expect to be a single value.
+	 * @param mixed $data from Elastica result
+	 * @return mixed the single result
+	 */
+	public static function singleValue( $result, $name ) {
+		$data = $result->__get( $name );
+		if ( $data === null ) {
+			return null;
+		}
+		// Elasticsearch 0.90 returns single results as, well, single results
+		if ( !is_array( $data ) ) {
+			return $data;
+		}
+		// Elasticsearch 1.0 returns them as single node arrays
+		$count = count( $data );
+		if ( $count !== 1 ) {
+			wfLogWarning( "Expected a single result for $name but got $count." );
+		}
+		return $data[ 0 ];
+	}
+
+	/**
 	 * Does this status represent an Elasticsearch parse error?
 	 * @param $status Status to check
 	 * @return boolean is this a parse error?

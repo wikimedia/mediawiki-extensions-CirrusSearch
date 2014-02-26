@@ -384,10 +384,15 @@ class Searcher extends ElasticsearchIntermediary {
 						$searchContainedSyntax = true;
 						return '';
 					case 'intitle':
-						$filterDestination[] = new \Elastica\Filter\Query( new \Elastica\Query\Field( 'title',
+						$query = new \Elastica\Query\QueryString(
 							$searcher->fixupWholeQueryString(
 								$searcher->fixupQueryStringPart( $value )
-							) ) );
+							) );
+						$query->setFields( array( 'title' ) );
+						$query->setDefaultOperator( 'AND' );
+						$query->setAllowLeadingWildcard( false );
+						$query->setFuzzyPrefixLength( 2 );
+						$filterDestination[] = new \Elastica\Filter\Query( $query );
 						$searchContainedSyntax = true;
 						return $keepText ? "$value " : '';
 					default:
@@ -683,6 +688,10 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$query = new Elastica\Query();
 		$query->setFields( $this->resultsType->getFields() );
+		$scriptFields = $this->resultsType->getScriptFields();
+		if ( $scriptFields ) {
+			$query->setScriptFields( $scriptFields );
+		}
 
 		$extraIndexes = array();
 		if ( $this->namespaces ) {
@@ -862,6 +871,11 @@ class Searcher extends ElasticsearchIntermediary {
 					array(
 						'field' => $field,
 						'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
+						// If a term appears in more then half the docs then don't try to correct it.  This really
+						// shouldn't kick in much because we're not looking for misspellings.  We're looking for phrases
+						// that can be might off.  Like "noble prize" ->  "nobel prize".  In any case, the default was
+						// 0.01 which way too frequently decided not to correct some terms.
+						'max_term_freq' => 0.5,
 					),
 				),
 				'highlight' => array(

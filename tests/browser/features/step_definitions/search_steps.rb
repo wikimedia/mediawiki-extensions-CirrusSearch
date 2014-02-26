@@ -37,10 +37,16 @@ When(/^I search for (.+)$/) do |text|
       if page.simple_search_button? then
         page.simple_search_button
       else
-        #Since there isn't a simple search button on this page we're going to have
-        #to use the "containing..." drop down....
-        on(SearchPage).search_special_element.when_present.should exist
-        on(SearchPage).search_special_element.click
+        #Since there isn't a search button on this page we're going to have
+        #to use the "containing..." drop down....  We can't even click the
+        #search_button because that is a "go" search and we need one that won't
+        #drop us directly to the page on a perfect match
+
+        #I have no idea why, but just clicking on the element isn't good enough
+        #so we deploy this hack copied from mediawiki.searchSuggest.js
+        page.execute_script("$( '\#searchInput' ).closest( 'form' )
+          .append( $( '<input type=\"hidden\" name=\"fulltext\" value=\"1\"/>' ) );")
+        page.search_button
       end
     end
   end

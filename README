@@ -3,6 +3,9 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
+Get Elasticsearch up and running somewhere.  0.90.10 and above are all fine but 1.0 will be supported
+for longer.
+
 Fetch this plugin plugin into your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 You also need to install the Elastica MediaWiki extension.
@@ -11,26 +14,24 @@ Add this to LocalSettings.php:
  require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
  $wgDisableSearchUpdate = true;
 
-Configure your search servers in LocalSettings.php:
+Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:
  $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
 In production setups, you will very likely want to increase the number of replicas using
 $wgCirrusSearchReplicaCount.
-If you want to change them then set their new values with $wgCirrusSearchServers in LocalSettings.php.
 
 Now run this script to generate your elasticsearch index:
- php ./maintenance/updateSearchIndexConfig.php
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/updateSearchIndexConfig.php
 
-Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to elasticsearch.
+Now remove $wgDisableSearchUpdate = true from LocalSettings.php.  Updates should start heading to Elasticsearch.
 
 Next bootstrap the search index by running:
- php ./maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
- php ./maintenance/forceSearchIndex.php --forceUpdate --skipParse
-Note that this can take some time.  For large wikis read Bootstrapping large wikis below.
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
+ php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipParse
+Note that this can take some time.  For large wikis read "Bootstrapping large wikis" below.
 
 Once that is complete add this to LocalSettings.php to funnel queries to ElasticSearch:
  $wgSearchType = 'CirrusSearch';
-
 
 Bootstrapping large wikis
 -------------------------
@@ -38,25 +39,51 @@ Since most of the load involved in indexing is parsing the pages in php we provi
 process into multiple processes.  Don't worry too much about the database during this process.  It can generally
 handle more processess indexing then you are likely to be able to spawn.
 
-The --fromId and --toId let you break the job into smaller chunks or restart the process after ctrl-c-ing it.
+General strategy:
+0.  Make sure you have a good job queue setup.  It'll be doing most of the work.  In fact, Cirrus won't work
+well on large wikis without it.
+1.  Generate scripts to add all the pages without link counts to the index.
+2.  Execute them any way you like.
+3.  Generate scripts to count all the links.
+4.  Execute them any way you like.
 
-The --buildChunks parameter lets you either build chunks of a fixed size or a fixed number of chunks.  Since the
-process of indexing leaks an unfortunate amount of memory, we suggest using fixed size chunks:
- rm -rf /tmp/index_log
- mkdir /tmp/index_log
- php forceSearchIndex.php --buildChunks 10000 --forceUpdate --skipLinks --indexOnSkip |
-   xargs -I{} -t -P4 sh -c 'php {} > /tmp/index_log/$$.log'
+Step 1:
+In bash I do this:
+ export PROCS=5 #or whatever number you want
+ rm -rf cirrus_scripts
+ mkdir cirrus_scripts
+ mkdir cirrus_log
+ pushd cirrus_scripts
+ php extensions/CirrusSearch/maintenance/forceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
+    --forceUpdate --skipLinks --indexOnSkip --buildChunks 250000 |
+    sed -e 's/$/ | tee -a cirrus_log\/'$wiki'.parse.log/' |
+    split -n r/$PROCS
+ for script in x*; do sort -R $script > $script.sh && rm $script; done
+ popd
 
-forceSearchIndex.php also accepts --queue which can be used to enqueue all of its work onto the job queue rather
-than running in process.  They will then be processed by whatever job queue consumers you have set up.  This is
-really only a good idea if you have a very robust job queue infrastructure.
+Step 2:
+Just run all the scripts that step 1 made.  Best to run them in screen or something and in the directory above
+cirrus_scripts.  So like this:
+ bash cirrus_scripts/xaa.sh
 
-The --batch-size parameter controls the number documents read from MySQL and indexed into elasticsearch at
-one time.  It defaults to 10 when parsing and 500 when not and those values work pretty well.  Feel free to play
-with it but remember that setting it too high while parsing will make each batch take _forever_.  This is really
-bad on the job queue because they'll just be killed.  When not parsing having a large number is pretty efficient
-because Elasticsearch does a good job parallelizing the link counts and index operations that take up the bulk
-of the time when not parsing.  The defaults are generally good for this.
+Step 3:
+In bash I do this:
+ pushd cirrus_scripts
+ rm *.sh
+ php extensions/CirrusSearch/maintenance/forceSearchIndex.php --queue --maxJobs 10000 --pauseForJobs 1000 \
+    --forceUpdate --skipParse --buildChunks 250000 |
+    sed -e 's/$/ | tee -a cirrus_log\/'$wiki'.parse.log/' |
+    split -n r/$PROCS
+ for script in x*; do sort -R $script > $script.sh && rm $script; done
+ popd
+
+Step 4:
+Same as step 2 but for the new scripts.  These scripts put more load on Elasticsearch so you might want to run
+them just one at a time if you don't have a huge Elasticsearch cluster or you want to make sure not to cause load
+spikes.
+
+If you don't have a good job queue you can try the above but lower the buildChunks parameter significantly and
+remove the --queue parameter.
 
 Handling elasticsearch outages
 ------------------------------
@@ -142,6 +169,10 @@ Elasticsearch
 
 All the general rules for making Elasticsearch production ready apply here.  So you don't have to go
 round them up below is a list.  Some of these steps are obvious, others will take some research.
+
+** NOTE: this list was written for 0.90 so it may not work well for 1.0.  It'll be revised when I have
+more experience with 1.0.  --Nik
+
 1.  Have >= 3 nodes.
 2.  Configure Elasticsearch for memlock.
 3.  Change each node's elasticsearch.yml file in a few ways.
@@ -227,6 +258,7 @@ really been settled.
 
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
  &config - multi-dimensional configuration array that contains page metadata
+
 
 Licensing information
 ---------------------

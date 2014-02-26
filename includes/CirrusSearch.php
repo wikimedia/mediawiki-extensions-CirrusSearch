@@ -1,4 +1,8 @@
 <?php
+
+use CirrusSearch\InterwikiSearcher;
+use CirrusSearch\Searcher;
+
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
  * CirrusSearchSearcher for searches and CirrusSearchUpdater for updates.  Note
@@ -45,12 +49,19 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * Overridden to delegate prefix searching to CirrusSearchSearcher.
+	 * Overridden to delegate prefix searching to Searcher.
 	 * @param string $term text to search
-	 * @return CirrusSearchResultSet|null|Status results, no results, or error respectively
+	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
-		$searcher = new CirrusSearchSearcher( $this->offset, $this->limit, $this->namespaces );
+		$term = trim( $term );
+		// No searching for nothing!  That takes forever!
+		if ( !$term ) {
+			return null;
+		}
+
+		$user = RequestContext::getMain()->getUser();
+		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces, $user );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
@@ -60,6 +71,11 @@ class CirrusSearch extends SearchEngine {
 
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
+		}
+		// TODO remove this when we no longer have to support core versions without
+		// Ie946150c6796139201221dfa6f7750c210e97166
+		if ( method_exists( $this, 'getSort' ) ) {
+			$searcher->setSort( $this->getSort() );
 		}
 
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
@@ -72,15 +88,22 @@ class CirrusSearch extends SearchEngine {
 				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
 			}
 		} else {
-			$status = $searcher->searchText( $term, $this->showRedirects );
+			$status = $searcher->searchText( $term, $this->showRedirects, /* 1.22 compat */ true );
 		}
 
 		// For historical reasons all callers of searchText interpret any Status return as an error
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
 		if ( $status->isOK() ) {
-			return $status->getValue();
+			$result = $status->getValue();
+			$interwiki = new InterwikiSearcher( $this->offset, $this->limit, $this->namespaces, $user );
+			$interwikiResult = $interwiki->getInterwikiResults( $term );
+			if ( $interwikiResult ) {
+				$result->setInterwikiResults( $interwikiResult );
+			}
+			return $result;
 		}
+
 		return $status;
 	}
 
@@ -105,5 +128,9 @@ class CirrusSearch extends SearchEngine {
 			$this->lastNamespacePrefix = '';
 		}
 		return $parsed;
+	}
+
+	public function getValidSorts() {
+		return array( 'relevance', 'title_asc', 'title_desc' );
 	}
 }

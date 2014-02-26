@@ -1,4 +1,8 @@
 <?php
+
+namespace CirrusSearch;
+use \Maintenance;
+
 /**
  * Update the search configuration on the search backend.
  *
@@ -23,6 +27,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+
 /**
  * Update the elasticsearch configuration for this index.
  */
@@ -37,9 +42,9 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		foreach ( CirrusSearchConnection::getAllIndexTypes() as $indexType ) {
+		foreach ( Connection::getAllIndexTypes() as $indexType ) {
 			$this->output( "$indexType index...\n");
-			$child = $this->runChild( 'UpdateOneSearchIndexConfig' );
+			$child = $this->runChild( 'CirrusSearch\UpdateOneSearchIndexConfig' );
 			$child->mOptions[ 'indexType' ] = $indexType;
 			$child->mOptions[ 'indent' ] = "\t";
 			$child->execute();
@@ -47,5 +52,5 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 }
 
-$maintClass = "UpdateSearchIndexConfig";
+$maintClass = "CirrusSearch\UpdateSearchIndexConfig";
 require_once RUN_MAINTENANCE_IF_MAIN;

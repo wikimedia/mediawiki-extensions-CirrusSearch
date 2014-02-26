@@ -1,4 +1,9 @@
 <?php
+
+namespace CirrusSearch;
+use \ElasticaConnection;
+use \MWNamespace;
+
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
  * that contain connection information like \Elastica\Index and \Elastica\Type.
@@ -18,7 +23,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchConnection extends ElasticaConnection {
+class Connection extends ElasticaConnection {
 	/**
 	 * Name of the index that holds content articles.
 	 * @var string
@@ -57,12 +62,12 @@ class CirrusSearchConnection extends ElasticaConnection {
 
 	/**
 	 * Fetch the Elastica Type for pages.
+	 * @param mixed $name basename of index
 	 * @param mixed $type type of index (content or general or false to get all)
 	 * @param mixed $name basename of index, defaults to wfWikiId()
 	 * @return \Elastica\Type
 	 */
-	public static function getPageType( $type = false, $name = false ) {
-		$name = $name ?: wfWikiId();
+	public static function getPageType( $name, $type = false ) {
 		return self::getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
 	}
 

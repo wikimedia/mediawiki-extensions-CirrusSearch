@@ -1,4 +1,7 @@
 <?php
+
+namespace CirrusSearch;
+
 /**
  * Builds elasticsearch analysis config arrays.
  *
@@ -17,20 +20,34 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchAnalysisConfigBuilder {
+class AnalysisConfigBuilder {
+	/**
+	 * Version number for the core analysis. Increment the major
+	 * version when the analysis changes in an incompatible way,
+	 * and change the minor version when it changes but isn't
+	 * incompatible
+	 */
+	const VERSION = 0.1;
+
+	/**
+	 * Language code we're building analysis for
+	 * @var string
+	 */
 	private $language;
 
 	/**
-	 * @return array
+	 * Should we use aggressive splitting?
+	 * @var bool
 	 */
-	public static function build() {
-		$builder = new CirrusSearchAnalysisConfigBuilder();
-		return $builder->buildConfig();
-	}
+	private $aggressiveSplitting;
 
-	public function __construct() {
-		global $wgLanguageCode;
-		$this->language = $wgLanguageCode;
+	/**
+	 * Constructor
+	 * @param string $langCode The language code to build config for
+	 */
+	public function __construct( $langCode, $aggressiveSplitting ) {
+		$this->language = $langCode;
+		$this->aggressiveSplitting = $aggressiveSplitting;
 	}
 
 	/**
@@ -38,7 +55,9 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * @return array the analysis config
 	 */
 	public function buildConfig() {
-		return $this->customize( $this->defaults() );
+		$config = $this->customize( $this->defaults() );
+		wfRunHooks( 'CirrusSearchAnalysisConfig', array( &$config ) );
+		return $config;
 	}
 
 	/**
@@ -91,7 +110,7 @@ class CirrusSearchAnalysisConfigBuilder {
 				'suggest_shingle' => array(
 					'type' => 'shingle',
 					'min_shingle_size' => 2,
-					'max_shingle_size' => 5,
+					'max_shingle_size' => 3,
 					'output_unigrams' => true,
 				),
 				'lowercase' => array(
@@ -99,17 +118,17 @@ class CirrusSearchAnalysisConfigBuilder {
 				),
 				'aggressive_splitting' => array(
 					'type' => 'word_delimiter',
-					'stem_english_possessive' => 'false', // No need
+					'stem_english_possessive' => false, // No need
 				),
 				'prefix_ngram_filter' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
+					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
 			),
 			'tokenizer' => array(
 				'prefix' => array(
 					'type' => 'edgeNGram',
-					'max_gram' => CirrusSearchSearcher::MAX_TITLE_SEARCH,
+					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',
@@ -132,8 +151,6 @@ class CirrusSearchAnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
-		global $wgCirrusSearchUseAggressiveSplitting;
-
 		switch ( $this->language ) {
 		// Please add languages in alphabetical order.
 		case 'el':
@@ -151,7 +168,7 @@ class CirrusSearchAnalysisConfigBuilder {
 			);
 			$filters = array();
 			$filters[] = 'standard';
-			if ( $wgCirrusSearchUseAggressiveSplitting ) {
+			if ( $this->aggressiveSplitting ) {
 				$filters[] = 'aggressive_splitting';
 			}
 			$filters[] = 'possessive_english';
@@ -188,6 +205,7 @@ class CirrusSearchAnalysisConfigBuilder {
 			return 'default';
 		}
 	}
+
 	/**
 	 * Languages for which elasticsearch provides a built in analyzer.  All
 	 * other languages default to the default analyzer which isn't too good.  Note

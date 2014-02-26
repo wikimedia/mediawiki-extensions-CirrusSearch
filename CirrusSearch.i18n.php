@@ -12,6 +12,7 @@ $messages = array();
 $messages['en'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
 	'cirrussearch-backend-error' => 'We could not complete your search due to a temporary problem. Please try again later.',
+	'cirrussearch-parse-error' => "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
 	'cirrussearch-now-using' => 'This wiki is using a new search engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Headings that will be ignored by search.
@@ -42,17 +43,18 @@ See also
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-pref-label' => 'New search',
 	'cirrussearch-pref-desc' => 'Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates.',
-	'cirrussearch-file-contents-match' => 'File contents match: $1',
 );
 
 /** Message documentation (Message documentation)
  * @author Kunal Mehta
  * @author Shirayuki
+ * @author Siebrand
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
 "Elasticsearch" is a full-text search engine. See http://www.elasticsearch.org/',
 	'cirrussearch-backend-error' => 'Error message shown to the users when we have an issue communicating with our search backend',
+	'cirrussearch-parse-error' => "Error message shown to the users when we couldn't understand the query.  For the most part we don't expect users to see this because we retry retry queries that we don't unserstand using a (hopefully) fail safe method.",
 	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
 	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
@@ -67,7 +69,7 @@ $messages['ar'] = array(
 	'cirrussearch-desc' => 'عملية البحث مدعومة من قبل Elasticsearch لميدياويكي',
 	'cirrussearch-backend-error' => 'لم نستطع إكمال بحثك بسبب مشكلة مؤقتة. الرجاء المحاولة لاحقاً.',
 	'cirrussearch-now-using' => 'تستخدم الويكي محرك بحث جديد. ([[mw:Special:MyLanguage/Help:CirrusSearch|إضغط هنا للمزيد من المعلومات]])',
-	'cirrussearch-ignored-headings' => ' # <!-- أترك هذا السطر كما هو --> <pre>
+	'cirrussearch-ignored-headings' => '# <!-- أترك هذا السطر كما هو --> <pre>
 # سيتم تجاهل الترويسات خلال عملية البحث
 #ا لتغييرات ستأخذ مجراها ما أن يتم فهرسة الصفحة التي تحتوي على ترويسات
 # يمكنك فرض عملية فهرسة الصفحة من خلال تعديل فارغ
@@ -78,8 +80,25 @@ $messages['ar'] = array(
 الوصلات الخارجية
 أنظر أيضا
 #</pre><!--أترك هذا السطر كما هو -->',
+	'cirrussearch-boost-templates' => '# <!-- أترك هذا السطر كما هو --> <pre>
+# إذا كانت الصفحة تحتوى على إحدى القوالب المذكورة أدناه سيتم ضرب درجة البحث بالنسبة المئوية المحددة.
+#التغييرات هذه نافذة المفعول فور حدوثها.
+#الصياغة تكون كالآتي:
+# *كل ما يبدأ بالعلامة "#" إلى آخر السطر سيتم إعتباره على أنه تعليق
+# * كل سطر غير فارغ سيكون إسم القالب الذي سيتم دعم وزيادة نتيجته (سيأخذ الإسم كما هو بالضبط بالتشكيل وخلافه). بعد الإسم ستوضع علامة "|" ثم الرقم ثم علامة "%".
+#بعض الأمثلة الجيدة:
+#قالب:جيد|150%
+#قالب:جيد جداً|300%
+#قالب:سيئ|50%
+#بعض الأمثلة التي لن تعمل:
+#قالب:مغفل|150.234234% <-- لا يسمح بإستخدام الفاصلة العشرية!
+#فو|150% <-- تقنياً ستعمل ولكن لتضمينات صفحة فو من النطاق الرئيسي
+#يمكنك تجربة التغييرات التي تمت على الإعدادت عن طريقة كتابة إستعلام يبدأ بالقوالب المدعومة: "XX" هي كل القوالب التي ترغب في دعمها مفصولة بمسافات عوضاً عن فواصل الأسطر (line breaks).
+# الإستعلامات التي تحدد القوالب المدعومة:"XX" تجاهل محتويات هذا الحقل.
+#</pre> <!-- أترك هذا السطر كما هو -->',
 	'cirrussearch-pref-label' => 'بحث جديد',
 	'cirrussearch-pref-desc' => 'جرب طريقة البحث الجديدة التي تدعم عدد أكبر من اللغات وتوفر نتائج أفضل من ناحية التحديثات. كما يمكنها أيضا البحث لك عن نصوص داخل قوالب.',
+	'cirrussearch-file-contents-match' => 'محتويات الملف المطابقة للبحث: $1',
 );
 
 /** Asturian (asturianu)
@@ -88,6 +107,7 @@ $messages['ar'] = array(
 $messages['ast'] = array(
 	'cirrussearch-desc' => 'Gueta col motor Elasticsearch pa MediaWiki',
 	'cirrussearch-backend-error' => 'Nun pudimos completar la gueta por un problema temporal. Por favor, vuelva a intentalo más sero.',
+	'cirrussearch-parse-error' => "Nun s'entendió la consulta. Por favor, fáigala más cenciella. La consulta quedó rexistrada p'ameyorar el sistema de gueta.",
 	'cirrussearch-now-using' => 'Esta wiki ta usando un motor de gueta nuevu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más]])',
 	'cirrussearch-ignored-headings' => " #<!-- dexar esta llinia exactamente como ta --> <pre>
 # Testeres que nun se tendrán en cuenta na gueta.
@@ -95,13 +115,29 @@ $messages['ast'] = array(
 # Pue forzar el reindexáu d'una páxina faciendo una edición nula.
 # La sintaxis ye la siguiente:
 #   * Tolo qu'hai dende un caráuter \"#\" al fin de llinia ye un comentariu
-#   * Cada llinia non-balera ye'l títulu exactu a descartar, incluyendo mayúscules y demás
+#   * Cada llinia nun-balera ye'l títulu exactu a descartar, incluyendo mayúscules y demás
 Referencies
 Enllaces esternos
 Ver tamién
  #</pre> <!-- dexar esta llinia exactamente como ta -->",
+	'cirrussearch-boost-templates' => ' #<!-- dexar esta llinia exactamente como ta --> <pre>
+# Si una páxina contién una d\'estes plantíes, la so puntuación na gueta multiplícase pol porcentax configuráu.
+# Los cambios equí son efeutivos darréu.
+# La sintaxis ye como sigue:
+#   * Cualquier cosa dende un caráuter "#" al fin de llinia ye un comentariu
+#   * Cada llinia non-balera ye\'l nome de plantía exactu a aumentar, con espaciu de nomes, mayúscules, etc, siguíu por un caráuter "|", siguíu por un númberu, siguíu por un caráuter "%".
+# Exemplos de llinies correutes:
+# Plantía:Novedaes|150%
+# Plantía:Destacaos|300%
+# Plantía:Correxir|50%
+# Exemplos de llinies incorreutes:
+# Plantía:Foo|150,234234% <-- nun se permiten los decimales
+# Foo|150% <--- téunicamente funciona, pero sólo pa tresclusiones de la páxina Foo nel espaciu de nomes principal
+# Pue probar los cambios na configuración faciendo una consulta col prefixu boost-templates:"XX" onde XX son toles plantíes que quiera aumentar separaes con espacios en llugar de saltos de llinia.
+# Les consultes qu\'especifiquen boost-templates:"XX" saltense\'l conteníu d\'esti campu.
+ #</pre> <!-- dexar esta llinia exactamente como ta -->',
 	'cirrussearch-pref-label' => 'Gueta nueva',
-	'cirrussearch-pref-desc' => 'Usar un motor de gueta nuevu que fai índices de plantíes espandíes, tien sofitu pa más llingües y anueva más rápido.',
+	'cirrussearch-pref-desc' => 'Pruebe la nuesa gueta nueva que tien sofitu pa más llingües, ufre resultaos más actuales, ya inda pue alcontrar testu dientro de les plantíes.',
 );
 
 /** Bikol Central (Bikol Central)
@@ -157,6 +193,8 @@ $messages['bn'] = array(
  */
 $messages['br'] = array(
 	'cirrussearch-backend-error' => "N'hon eus ket gallet kas hoc'h enklask da benn abalamour d'ur gudenn dibad. Esaeit en-dro diwezhatoc'h, mar plij.",
+	'cirrussearch-parse-error' => "N'eo ket bet komprenet ar reked. Grit unan eeunoc'h, mar plij. Marilhet eo bet ar reked evit gwellaat ar reizhiad enklask.",
+	'cirrussearch-now-using' => "Emañ ar wiki-mañ oc'h implijout ur c'heflusker enklask nevez. ([[mw:Special:MyLanguage/Help:CirrusSearch|Gouzout hiroc'h]])",
 	'cirrussearch-pref-label' => 'Enklask nevez',
 );
 
@@ -186,10 +224,13 @@ Vegeu també
 /** Czech (čeština)
  * @author Matěj Grabovský
  * @author Mormegil
+ * @author Paxt
+ * @author Utar
  */
 $messages['cs'] = array(
 	'cirrussearch-desc' => 'Vyhledávání v MediaWiki běžící na Elasticsearch',
 	'cirrussearch-backend-error' => 'Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.',
+	'cirrussearch-parse-error' => 'Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.',
 	'cirrussearch-now-using' => 'Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])',
 	'cirrussearch-ignored-headings' => ' #<!-- tento řádek ponechte beze změny --> <pre>
 # Zde uvedené nadpisy budou ignorovány vyhledáváním.
@@ -203,6 +244,22 @@ Externí odkazy
 Související články
 Související stránky
  #</pre> <!-- tento řádek ponechte beze změny -->',
+	'cirrussearch-boost-templates' => ' #<!-- tuto řádku ponechte přesně takto --> <pre>
+# Pokud stránka obsahuje jednu z těchto šablon, je její vyhledávací skóre vynásobeno nastaveným procentem.
+# Změny této stránky se projeví okamžitě.
+# Syntax je následující:
+#   * Všechno od znaku „#“ do konce řádky je komentář.
+#   * Každý neprázdný řádek je přesný název šablony, která se má bonifikovat, včetně jmenného prostoru, přesné velikosti písmen a tak, následovaný znakem „|“ následovaný číslem následovaným znakem „%“.
+# Příklad správných řádek:
+# Šablona:Dobré|150%
+# Šablona:Velmi velmi dobré|300%
+# Šablona:Špatné|50%
+# Příklady nefunkčních řádek:
+# Šablona:Foo|150.234234% <-- desetinná tečka/čárka není dovolena!
+# Foo|150% <--- technicky vzato funguje, ale pro vložení stránky Foo v hlavním jmenném prostoru
+# Změny konfigurace můžete otestovat vyhledávacím dotazem, před který uvedete boost-templates:"XX", kde XX je seznam všech šablon, které chcete bonifikovat, oddělené mezerou místo konce řádky.
+# Dotazy uvádějící boost-templates:"XX" ignorují obsah tohoto pole.
+#</pre> <!-- tuto řádku ponechte přesně takto -->',
 	'cirrussearch-pref-label' => 'Nové hledání',
 	'cirrussearch-pref-desc' => 'Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.',
 );
@@ -229,16 +286,18 @@ Eksterne kilder/henvisninger
 Kilder
  #</pre> <!-- lad denne linje være præcis som den er -->',
 	'cirrussearch-pref-label' => 'Ny søgning',
-	'cirrussearch-pref-desc' => 'Brug en ny søgemaskine, der indekserer udvidede skabeloner, understøtter flere sprog, og opdatere hurtigere.', # Fuzzy
+	'cirrussearch-pref-desc' => 'Prøv vores nye søgning, som understøtter et større antal sprog, giver mere opdaterede resultater og kan endda finde tekst inden i skabeloner.',
 );
 
 /** German (Deutsch)
  * @author Kghbln
  * @author Metalhead64
+ * @author Michawiki
  */
 $messages['de'] = array(
 	'cirrussearch-desc' => 'Ermöglicht eine „elasticsearch“-gestütze Suche',
 	'cirrussearch-backend-error' => 'Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.',
+	'cirrussearch-parse-error' => 'Die Suchanfrage wurde nicht verstanden. Bitte mache sie einfacher. Die Anfrage wurde protokolliert, um das Suchsystem zu verbessern.',
 	'cirrussearch-now-using' => 'Dieses Wiki verwendet eine neue Suchmaschine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mehr erfahren]])',
 	'cirrussearch-ignored-headings' => ' #<!-- diese Zeile nicht verändern --> <pre>
 # Überschriften, die von der Suche ignoriert werden.
@@ -255,7 +314,7 @@ Siehe auch
 # Falls eine Seite eine dieser Vorlagen enthält, wird der Such-Score mit dem konfigurierten Prozentsatz multipliziert.
 # Änderungen werden sofort wirksam.
 # Syntax:
-#   * Alles ab einem Sternchen „#“ bis zum Zeilenende ist ein Kommentar.
+#   * Alles ab einer Raute („#“) bis zum Zeilenende ist ein Kommentar.
 #   * Jede nicht-leere Zeile ist der genaue Name der zu optimierenden Vorlage mit Namensraum und Unterscheidung zwischen Groß-/Kleinschreibung, gefolgt von einem Pipe-Symbol („|“), einer Zahl und einem Prozentzeichen („%“).
 # Beispiele funktionierender Zeilen:
 # Vorlage:Gut|150%
@@ -284,10 +343,42 @@ $messages['de-ch'] = array(
 $messages['dsb'] = array(
 	'cirrussearch-desc' => 'Pytanje na zakłaźe "elasticsearch" za MediaWiki',
 	'cirrussearch-backend-error' => 'Twójo pytanje njedajo se nachylnego problema dla skóńcyś. Pšosym wopytaj pózdźej hyšći raz.',
+	'cirrussearch-parse-error' => 'Napšašowanje njejo se zrozměło. Pšosym cyń jo jadnorješe. Napšašowanje se protokolěrujo, aby se pytański system pólěpšył.',
 	'cirrussearch-now-using' => 'Toś ten wiki wužywa nowu pytnicu ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalšne informacije]])',
+	'cirrussearch-ignored-headings' => ' #<!-- njezměń toś tu smužku --> <pre>
+# Nadpisma, kótarež pytanje ignorěrujo.
+# Toś te změny budu se wustatkowaś, za tym až bok jo se indicěrował.
+# Móžoš indicěrowanje bokow wunuźiś, z tym až pśewjedujoš proznu změnu.
+# Syntaksa:
+#   * Wšykno, což slědujo znamušku "#" až do kóńca smužki, jo komentar
+#   * Kuzda njeprozna smužka jo eksaktny titel, kótaryž ma se ignorěrowaś
+Žrědła
+Eksterne wótkaze
+Glědaj teke
+ #</pre> <!-- njezměń toś tu smužku -->',
+	'cirrussearch-boost-templates' => ' #<!-- Njezměń toś tu smužku. --> <pre>
+# Jolic bok wopśimujo jadnu z toś tych pśedłogow, buźo se pytańske pogódnośenje z konfigurěrowaneju procentoweju sajźbu multiplicěrowaś.
+# Změny se ned wustatkuju.
+# Syntaksa:
+#   * Wšykno za znamuškom „#“ až do kóńca smužki jo komentar.
+#   * Kužda njeprozna smužka jo eksaktne mě pśedłogi, kótaraž ma se optiměrowaś, z mjenjowym rumom, wjelikopisanim, jo wšykno, slědowane pśez znamuško "|", licbu a znamuško "%".
+# Pśikłady funkcioněrujucych smužkow:
+# Pśedłoga:Dobry|150%
+# Pśedłoga:Wjelgin dobry|300%
+# Pśedłoga:Špatny|50%
+# Pśikłady njefunkcioněrujucych smužkow:
+# Pśedłoga:Foo|150.234234% <-- Decimalne městna njejsu dowólone!
+# Foo|150% <-- Techniski móžno, ale za zapśěgowanja boka "Foo" z głownego mjenjowego ruma.
+# Móžoš konfiguraciju pśez napšašowanje z prefiksom boost-templates:"XX"" testowaś, pśi comž XX stoj za wšykne pśedłogi, kótarež coš optiměrowaś, źělone pśez prozne znamje město łamanja smužki.
+# Napšašowanja z boost-templates:"XX" ignorěruju wopśimjeśe toś togo póla.
+ #</pre> <!-- Njezměń toś tu smužku. -->',
+	'cirrussearch-pref-label' => 'Nowe pytanje',
+	'cirrussearch-pref-desc' => 'Wopytaj našo nowe pytanje, kótarež pódpěra wětšu licbu rěcow, pódawa aktualnjejše wuslědki a móžo samo tekst w pśedłogacj namakaś.',
 );
 
 /** Spanish (español)
+ * @author Ciencia Al Poder
+ * @author Csbotero
  * @author Fitoschido
  * @author Ihojose
  * @author Luis Felipe Schenone
@@ -295,6 +386,7 @@ $messages['dsb'] = array(
 $messages['es'] = array(
 	'cirrussearch-desc' => 'Hace que la búsqueda sea con Solr',
 	'cirrussearch-backend-error' => 'No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.',
+	'cirrussearch-parse-error' => 'La queja no fue entendida. Hágala más sencilla. La queja fue registrada para mejorar el sistema de búsqueda.',
 	'cirrussearch-now-using' => 'Esta wiki está utilizando un nuevo motor de búsqueda. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más información]])',
 	'cirrussearch-ignored-headings' => ' #<!-- deje esta línea tal y como está --> <pre>
 # Títulos que serán ignorados por la búsqueda.
@@ -307,8 +399,31 @@ Referencia
 Enlaces externos
 Véase también
  #</pre> <!-- deje esta línea tal y como está -->',
+	'cirrussearch-boost-templates' => ' #<!-- deja esta línea exactamente como está --> <pre>
+# Si una página contiene una de estas plantillas, entonces su puntuación en la búsqueda se multiplicará por el porcentaje configurado
+# Los cambios realizados aquí tendrán efecto de forma inmediata.
+# La sintaxis es la siguiente:
+#   * Todo el contenido desde un caracter "#" hasta el final de la línea se tomará como un comentario
+#   * Toda línea que no esté en blanco será el nombre exacto de la plantilla a impulsar, espacio de nombres, mayúsculas/minúsculas y todo, seguido por un caracter "|", un número y el carácter "%".
+# Ejemplos de líneas correctas:
+# Plantilla:Bueno|150%
+# Plantilla:Muy muy bueno|300%
+# Plantilla:Malo|50%
+# Ejemplos de líneas que no funcionarán:
+# Plantilla:Foo|150.234234% <-- no se permiten decimales!
+# Foo|150% <--- técnicamente funciona, pero para transclusiones de la página Foo del espacio de nombres principal
+# Puedes probar cambios en la configuración realizando una búsqueda que contenga como prefijo boost-templates:"XX", donde XX son todas las plantillas que quieras impulsar, separadas por espacios en lugar de saltos de línea.
+# Búsquedas que especifiquen boost-templates:"XX" ignorarán el contenido de este campo.
+ #</pre> <!-- deja esta línea exactamente como está -->',
 	'cirrussearch-pref-label' => 'Búsqueda nueva',
-	'cirrussearch-pref-desc' => 'Usar un motor de búsqueda nuevo, que indiza plantillas expandidas, admite más idiomas y se actualiza más seguido.',
+	'cirrussearch-pref-desc' => 'Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.',
+);
+
+/** Basque (euskara)
+ * @author Subi
+ */
+$messages['eu'] = array(
+	'cirrussearch-pref-label' => 'Bilaketa berria',
 );
 
 /** Persian (فارسی)
@@ -318,15 +433,58 @@ Véase también
 $messages['fa'] = array(
 	'cirrussearch-desc' => 'جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی',
 	'cirrussearch-backend-error' => 'ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.',
+	'cirrussearch-parse-error' => 'پرسش درک نشد. لطفاً آن را ساده‌تر کنید. پرسش برای جستجوی سیستم وارد شد.',
 	'cirrussearch-now-using' => 'این ویکی از یک موتور جستجوی جدید استفاده می‌کند.
 ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
+	'cirrussearch-ignored-headings' => '#<!-- این صفحه را درست همانطور که هست رها کنید --> <pre>
+#سر‌فصل‌هایی که توسط تحقیق نادیده گرفته خواهندشد.‌
+#به محض اینکه صفحه با سرفصل، فهرست شده‌است،تغییرات متاثر می‌شود.
+#شما می‌توانید با انجام یک ویرایش پوچ صفحه را وادار به دوباره فهرست کردن کنید.
+#نحو به شرح زیر است:
+#  *همه چیز از یک خصیصهٔ "#" گرفته تا آخر خط، یک نظر است
+#  *هر خط بدون فاصله، عنوان دقیق برای نادیده گرفتن،موضوع و همه چیز منابع است
+اتصالات خارجی
+همچنین مشاهده کنید
+#</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => '#<!--این خط را همانطور که هست رها کنید--> <pre>
+#اگز صفحه‌ای شامل یکی از این الگوها است سپس نتیجهٔ جستجو توسط درصد پیکربندی افزایش یافته‌است.
+#فوراً تغییرات متأثر می‌شوند.
+#نحو به شرح زیر است:
+#   *همه‌ چیز از یک خصیصهٔ "#" گرفته تا آخر خط یک نظر است.
+#   *هر خط بدون فاصله نام دقیق الگو برای افزایش، فضای نام،وضعیت و همه‌ چیز،توسط خصیصهٔ  "|"،توسط تعدادی،توسط خصیصهٔ "%" دنبال شده.
+#مثال‌های خط‌های مطلوب:
+#الگو:خوب|۱۵۰٪
+#الگو:خیلی خیلی خوب|۳۰۰٪
+#الگو:بد|۵۰٪
+#مثال‌های خط های بدون کارایی:
+#الگو:فو|۱۵۰.۲۳۴۲۳۴% <--هیچ نقطه‌ٔ اعشاری مجاز نیست!
+#فو|۱۵۰٪ <--- اما برای ترنسکلوژن صفحهٔ فو از فضای نامی،به طور دقیق کار می‌کند.
+#شما می‌توانید تغییرات پیکربندی را توسط انجام یک سوال عنوان شده با افزایش الگوها امتحان کنید:"ایکس‌ایکس" جایی که ایکس‌ایکس همهٔ الگوهایی است که می‌خواهید به طور مجزا توسط فاصله‌ها به جای شکستگی خط‌ها، افزایش یابد.
+#سوالاتی که الگوهای افزایش یافته تعیین من‌کنند:"ایکس‌ایکس" محتویات این زمینه را رد می‌کنند.
+#</pre> <!--این خط را همانطور که هست رها کنید-->',
 	'cirrussearch-pref-label' => 'جستجوی جدید',
+	'cirrussearch-pref-desc' => 'جستجوی جدید ما را که از تعداد بیشتر زبان‌ها پشتیبانی می‌کند،نتایج به روز بیشتری فراهم می‌کند، و حتی می‌تواند متن درون الگو را پیدا کند،امتحان کنید.',
 );
 
 /** Finnish (suomi)
  * @author Nike
+ * @author Stryn
  */
 $messages['fi'] = array(
+	'cirrussearch-desc' => '"Elasticsearch"-käyttöinen haku MediaWikille',
+	'cirrussearch-backend-error' => 'Emme voineet suorittaa hakuasi väliaikaisen ongelman vuoksi. Yritä myöhemmin uudelleen.',
+	'cirrussearch-now-using' => 'Tämä wiki käyttää uutta hakukonetta. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lue lisää]])',
+	'cirrussearch-ignored-headings' => '#<!-- jätä tämä rivi sellaiseksi kuin se on --> <pre>
+# Otsikot, jotka haku ohittaa.
+# Muutokset tulevat voimaan heti, kun otsikon sivu indeksoidaan.
+# Voit pakottaa sivun indeksoimisen tekemällä nollamuokkauksen.
+# Syntaksi on seuraava:
+#   * Kaikki "#"-merkistä rivin loppuun asti on kommenttia
+#   * Kaikki ei-tyhjät rivit ovat otsikoita, jotka ohitetaan.
+Lähteet
+Aiheesta muualla
+Katso myös
+#</pre> <!-- jätä tämä rivi sellaiseksi kuin se on -->',
 	'cirrussearch-pref-label' => 'Uusi haku',
 );
 
@@ -339,6 +497,7 @@ $messages['fi'] = array(
 $messages['fr'] = array(
 	'cirrussearch-desc' => 'Fait effectuer la recherche par Solr',
 	'cirrussearch-backend-error' => 'Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.',
+	'cirrussearch-parse-error' => 'La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.',
 	'cirrussearch-now-using' => 'Ce wiki utilise un nouveau moteur de recherche. ([[mw:Special:MyLanguage/Help:CirrusSearch|en savoir plus]])',
 	'cirrussearch-ignored-headings' => ' #<!-- laisser cette ligne comme telle --> <pre>
 # Titres de sections qui seront ignorés par la recherche
@@ -351,6 +510,22 @@ Références
 Liens externes
 Voir aussi
  #</pre> <!-- laisser cette ligne comme telle -->',
+	'cirrussearch-boost-templates' => " #<!-- laisser cette ligne exactement en l’état --> <pre>
+# Si une page contient un de ces modèles alors son score de recherche sera multiplié par un pourcentage configuré.
+# Les modifications prennent effet immédiatement.
+# La syntaxe est la suivante :
+#   * Tout ce qui est entre un caractère '#' et la fin de la ligne est un commentaire
+#   * Toute ligne non vide est le nom exact dEvery non-blank line is the exact d’un modèle à promouvoir, avec espace de noms, casse exacte et complète, suivi d’un caractère '|' suivi d’un nombre suivi d’un caractère '%'.
+# Exemples de lignes correctes :
+# Modèle:Bon|150%
+# Modèle:Très Très bon|300%
+# Modèle:Mauvais|50%
+# Exemples de lignes non valides :
+# Modèle:Foo|150.234234% <-- pas de décimale autorisée !
+# Foo|150% <--- fonctionne techniquement, mais pour des inclusiosn de la page Foo depuis l’espace de noms principal
+# Vous pouvez tester les modifications de configuration en effectuant une recherche préfixée par boost-templates:\"XX\" où XX est l’ensemble des modèles que vous voulez promouvoir, séparés par des espaces au lieu de sauts de ligne.
+# Les requêtes qui spécifient boost-templates:\"XX\" ignorent le contenu de ce champ-ci.
+ #</pre> <!-- laisser cette ligne exactement en l’état -->",
 	'cirrussearch-pref-label' => 'Nouvelle recherche',
 	'cirrussearch-pref-desc' => 'Essayer notre nouvelle recherche qui supporte un plus grand nombre de langues, fournit davantage de résultats à jour, et peut même trouver du texte dans les modèles.',
 );
@@ -363,6 +538,7 @@ Voir aussi
 $messages['gl'] = array(
 	'cirrussearch-desc' => 'Procura baseada en Elasticsearch para MediaWiki',
 	'cirrussearch-backend-error' => 'Non puidemos completar a súa procura debido a un problema temporal. Inténteo de novo máis tarde.',
+	'cirrussearch-parse-error' => 'Non se entendeu a pescuda. Fágaa máis sinxela. Rexistrouse a pescuda para mellorar o sistema de procuras.',
 	'cirrussearch-now-using' => 'Este wiki utiliza un novo motor de procuras. ([[mw:Special:MyLanguage/Help:CirrusSearch|Máis información]])',
 	'cirrussearch-ignored-headings' => ' #<!-- Deixe esta liña tal e como está --> <pre>
 # Cabeceiras que serán ignoradas nas buscas.
@@ -375,8 +551,24 @@ Referencias
 Ligazóns externas
 Véxase tamén
  #</pre> <!-- Deixe esta liña tal e como está -->',
+	'cirrussearch-boost-templates' => ' #<!-- Deixe esta liña tal e como está --> <pre>
+# Se unha páxina contén un destes modelos, entón a súa puntuación de procura multiplícase pola porcentaxe configurada.
+# Calquera cambio feito aplícase inmediatamente.
+# A sintaxe é a seguinte:
+#   * Todo o que vaia despois dun carácter "#" ata o final da liña é un comentario
+#   * Toda liña que non estea en branco é o modelo exacto que promover, co espazo de nomes, coas maiúsculas e minúsculas e completo, seguido dun carácter "|", seguido dun número, seguido dun carácter "%".
+# Exemplos de liñas correctas:
+# Modelo:Ben|150%
+# Modelo:Moi ben|300%
+# Modelo:Mal|50%
+# Exemplos de liñas que non funcionan:
+# Modelo:Erro|150.234234% <-- non están permitidos os puntos ou comas decimais!
+# Erro|150% <--- tecnicamente funciona, pero para as transclusións da páxina "Erro" desde o espazo de nomes principal
+# Pode probar os cambios na configuración levando a cabo unha pescuda con boost-templates:"XX", onde XX son todos os modelos que quere promover, separados por espazos no canto de saltos de liña.
+# As pescudas que especifican boost-templates:"XX" ignoran os contidos deste campo.
+ #</pre> <!-- Deixe esta liña tal e como está -->',
 	'cirrussearch-pref-label' => 'Nova pescuda',
-	'cirrussearch-pref-desc' => 'Probe o noso novo buscador que soporta un maior número de idiomas, proporciona resultados máis actuais e incluso pode atopar texto dentro dos modelos.',
+	'cirrussearch-pref-desc' => 'Probe o noso novo buscador, que soporta un maior número de linguas, proporciona resultados máis actulizados e mesmo pode atopar texto dentro dos modelos.',
 );
 
 /** Hebrew (עברית)
@@ -385,6 +577,7 @@ Véxase tamén
 $messages['he'] = array(
 	'cirrussearch-desc' => 'חיפוש במדיה־ויקי באמצעות Elasticsearch',
 	'cirrussearch-backend-error' => 'לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.',
+	'cirrussearch-parse-error' => 'השאילתה לא הייתה ברורה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.',
 	'cirrussearch-now-using' => 'הוויקי הזה משתמש במנוע חיפוש חדש. ([[mw:Special:MyLanguage/Help:CirrusSearch|מידע נוסף]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # כותרות של פסקאות שהחיפוש יתעלם מהן
@@ -407,6 +600,7 @@ $messages['he'] = array(
 $messages['hsb'] = array(
 	'cirrussearch-desc' => 'Pytanje na zakładźe "elasticsearch" za MediaWiki',
 	'cirrussearch-backend-error' => 'Twoje pytanje njeda so nachwilneho problema dla skónčić. Prošu spytaj pozdźišo hišće raz.',
+	'cirrussearch-parse-error' => 'Naprašowanje njeje so zrozumiło. Prošu čiń jo jednoriše. Naprašowanje so protokoluje, zo by so pytanski system polěpšił.',
 	'cirrussearch-now-using' => 'Tutón wiki wužiwa nowu pytawu. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dalše informacije]])',
 	'cirrussearch-ignored-headings' => ' #<!-- njezměń tutu linku --> <pre>
 # Nadpisma, kotrež pytanje ignoruje.
@@ -439,6 +633,47 @@ Hlej tež
 	'cirrussearch-pref-desc' => 'Spytaj naše nowe pytanje, kotrež podpěruje wjetšu ličbu rěčow, podawa bóle aktualne wuslědki a móže samo tekst znutřka předłohow namakać.',
 );
 
+/** Hungarian (magyar)
+ * @author Tgr
+ */
+$messages['hu'] = array(
+	'cirrussearch-desc' => 'Elasticsearch alapú MediaWiki kereső',
+	'cirrussearch-backend-error' => 'Egy átmeneti hiba miatt nem tudtuk végrehajtani a keresést. Kérlek, próbálkozz később.',
+	'cirrussearch-parse-error' => 'Nem értem a keresőkifejezést, kérlek írd át egyszerűbbre. (A kifejezést eltároltuk és felhasználjuk a keresőrendszer fejlesztésére.)',
+	'cirrussearch-now-using' => 'Ez a wiki egy új keresőt használ. ([[mw:Special:MyLanguage/Help:CirrusSearch|Bővebben]])',
+	'cirrussearch-ignored-headings' => ' #<!-- ezen a soron ne változtass --> <pre>
+# Az itt megadott szakaszokat figyelmen kívül hagyja a kereső.
+# Ha megváltoztatod ezt a listát, csak a változtatás után indexelt lapokra lesz hatása.
+# Ha újra akarsz indexelni egy adott oldalt, egy üres szerkesztéssel (megnyit-elment) megteheted.
+# Szintaxis:
+#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja
+#   * Minden nem üres sor egy olyan szakasz címe, amit nem akarjuk, hogy indexeljen a kereső. (Csak a pontos egyezés számít, kisbetű/nagybetűt is beleértve.)
+Források
+Jegyzetek
+Hivatkozások
+Külső hivatkozások
+Lásd még
+ #</pre> <!-- ezen a soron ne változtass -->',
+	'cirrussearch-boost-templates' => ' #<!-- ezen a soron ne változtass --> <pre>
+# Ha egy lap tartalmazza az itt megadott sablonok valamelyikét, akkor a keresési pontszáma (ami alapján a találatok rendezve lesznek) szorzódik a megadott százalékkal.
+# Ha ezt az oldalt módosítod, az azonnal hatással lesz minden lapra.
+# Szintaxis:
+#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja
+#   * Minden nem üres sor egy sablon neve (csak a pontos egyezés számít, beleértve a névteret és a kisbetű/nagybetűt is), majd egy | karakter, majd egy százalékként megadott szám.
+# Jó példák:
+# Sablon:Jó|150%
+# Sablon:Nagyon-nagyon jó|300%
+# Sablon:Rossz|50%
+# Rossz példák:
+# Sablon:Bah|150.234234% <-- tizedestörtet nem használhatsz!
+# Bah|150% <--- ez a fő névtérben lévő "Bah" lapra fog vonatkozni, nem a Bah sablonra
+# Ha tesztelni akarod, milyen hatása lenne ezen lap megváltoztatásának egy adott keresésre, írd be a keresés legelejére a boost-templates:"XX" kulcsszót, ahol XX az ezen a lapon megadotthoz hasonló konfiguráció, de újsor helyett szóközökkel elválasztva.
+# Az ilyen keresések figyelmen kívül hagyják ennek a lapnak a beállításait.
+ #</pre> <!-- ezen a soron ne változtass -->',
+	'cirrussearch-pref-label' => 'Új keresés',
+	'cirrussearch-pref-desc' => 'Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele.',
+);
+
 /** Interlingua (interlingua)
  * @author McDutchie
  */
@@ -457,16 +692,35 @@ Referentias
 Ligamines externe
 Vide etiam
  #</pre> <!-- non modificar in alcun modo iste linea -->',
+	'cirrussearch-boost-templates' => ' #<!-- non modificar in alcun modo iste linea --> <pre>
+# Si un pagina contine un de iste patronos alora su punctage de recerca es multiplicate per le percentage configurate.
+# Cambios a isto essera effective immediatemente.
+# Le syntaxe es le sequente:
+#   * Toto ab un character "#" al fin del linea es un commento
+#   * Cata linea non vacue debe continer le nomine exacte del patrono a promover, incluse le spatio de nomines, majusculas e minusculas correcte e toto altere, sequite per un character "|", un numero e un character "%".
+# Exemplos de bon lineas:
+# Patrono:Bon|150%
+# Patrono:Multo multo bon|300%
+# Patrono:Mal|50%
+# Exemplos de lineas que non functiona:
+# Patrono:Exemplo|150.234234% <-- decimales non permittite!
+# Exemplo|150% <--- functiona technicamente, ma solo pro transclusiones del pagina Exemplo ab le spatio de nomines principal
+# Pro testar le cambios de configuration, exeque un recerca prefixate con boost-templates:"XX" ubi XX representa tote le patronos que tu vole promover, separate per spatios e non saltas de linea.
+# Le recercas que specifica boost-templates:"XX" ignora le contento de iste campo.
+ #</pre> <!-- non modificar in alcun modo iste linea -->',
 	'cirrussearch-pref-label' => 'Nove recerca',
-	'cirrussearch-pref-desc' => 'Usar un nove motor de recerca que indexa patronos in forma expandite, supporta plus linguas, e se actualisa plus rapidemente.', # Fuzzy
+	'cirrussearch-pref-desc' => 'Essaya nostre nove motor de recerca que supporta un numero major de linguas, forni resultatos plus actual e pote mesmo cercar texto intra patronos.',
+	'cirrussearch-file-contents-match' => 'Contento del file correspondente: $1',
 );
 
 /** Italian (italiano)
  * @author Beta16
+ * @author Rosh
  */
 $messages['it'] = array(
 	'cirrussearch-desc' => 'Ricerca realizzata con Elasticsearch per MediaWiki',
 	'cirrussearch-backend-error' => 'Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.',
+	'cirrussearch-parse-error' => 'Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.',
 	'cirrussearch-now-using' => 'Questo wiki usa un nuovo motore di ricerca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ulteriori informazioni]])',
 	'cirrussearch-ignored-headings' => ' #<!-- lascia questa riga esattamente come è --> <pre>
 # Elenco delle intestazioni che saranno ignorate dalla ricerca.
@@ -479,6 +733,22 @@ Note
 Voci correlate
 Collegamenti esterni
  #</pre> <!-- lascia questa riga esattamente come è -->',
+	'cirrussearch-boost-templates' => ' #<!-- lascia questa riga esattamente come è --> <pre>
+# Se una pagina contiene uno dei seguenti template, allora il suo punteggio di ricerca è moltiplicato per la percentuale indicata.
+# Le modifiche a questa pagina saranno effettive immediatamente.
+# La sintassi è la seguente:
+#   * Tutto dal carattere "#" alla fine della riga è un commento
+#   * Tutte le righe non vuote sono i template esatti da modificare, namespace, maiuscolo/minuscolo e tutto, seguiti da un carattere "|", da un numero, e da un carattere "%".
+# Esempi di righe corrette:
+# Template:Buono|150%
+# Template:Molto molto buono|300%
+# Template:Male|50%
+# Esempi di righe errate:
+# Template:Prova|150.234234% <-- non sono consentiti decimali!
+# Prova|150% <--- tecnicamente funziona, ma per inclusioni della pagina "Prova" dal namespace principale
+# Puoi provare le modifiche alla configurazione eseguendo una ricerca inserendo il prefisso boost-templates:"XX" dove XX sono tutti i template da modificare, separati da uno spazio.
+# Le ricerche con boost-templates:"XX" ignorano il contenuto di questa pagina.
+ #</pre> <!-- lascia questa riga esattamente come è -->',
 	'cirrussearch-pref-label' => 'Nuova ricerca',
 	'cirrussearch-pref-desc' => "Prova la nostra nuova ricerca, che supporta un numero maggiore di lingue, fornisce risultati più aggiornati e può anche trovare il testo all'interno di template.",
 );
@@ -490,6 +760,7 @@ Collegamenti esterni
 $messages['ja'] = array(
 	'cirrussearch-desc' => 'MediaWiki 用の Elasticsearch 検索',
 	'cirrussearch-backend-error' => '一時的な問題により検索を実行できませんでした。後でやり直してください。',
+	'cirrussearch-parse-error' => 'クエリを理解できませんでした。より単純なものにしてください。検索システムの改善のため、クエリを記録しました。',
 	'cirrussearch-now-using' => 'このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])',
 	'cirrussearch-pref-label' => '新規検索',
 	'cirrussearch-pref-desc' => '数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用',
@@ -497,11 +768,13 @@ $messages['ja'] = array(
 
 /** Korean (한국어)
  * @author Hym411
+ * @author Priviet
  * @author 아라
  */
 $messages['ko'] = array(
-	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch 검색',
+	'cirrussearch-desc' => '미디어위키를 위한 Elasticsearch가 공급하는 검색',
 	'cirrussearch-backend-error' => '일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.',
+	'cirrussearch-parse-error' => '쿼리를 이해할 수 없습니다. 간단하게 만들어 주세요. 쿼리는 검색 시스템을 개선하기 위해 기록이 남습니다.',
 	'cirrussearch-now-using' => '이 위키는 새로운 검색 엔진을 사용합니다. ([[mw:Special:MyLanguage/Help:CirrusSearch|더 알아보기]])',
 	'cirrussearch-ignored-headings' => ' #<!-- 이 줄은 그대로 두십시오 --> <pre>
 # 검색에서 무시되는 문단 제목입니다.
@@ -518,8 +791,36 @@ $messages['ko'] = array(
 같이 보기
 함께 보기
  #</pre> <!-- 이 줄은 그대로 두십시오 -->',
+	'cirrussearch-boost-templates' => ' #<!-- 이 줄은 그대로 남겨두세요 --> <pre>
+#  문서가 이 틀 중 하나를 포함하고 있다면 검색 점수에 설정된 비율이 곱해질 것입니다. 
+# 이에 대한 바뀜은 나타날 것입니다.
+# 구문은 다음과 같습니다:
+#   * "#" 문자에서 마지막 줄까지 다 주석입니다.
+#   * 공백이 아닌 모든 줄은 "|" 문자가 뒤에 붙고 그뒤에 "%" 문자가 뒤따라 붙는 부스트, 이름 공간, 케이스와 모든 것에 대한 정확한 틀 이름입니다.
+# 좋은 줄의 예:
+# 틀:좋음|150%
+# 틀:아주 아주 좋음|300%
+# 틀:나쁨|50%
+# 작동되지 않는 틀의 예:
+# 틀:가나다|150.234234% <-- 소수점은 인정되지 않습니다!
+# 가나다|150% <--- 기술적으로 작동은 하나, 일반 이름공간의 가나다 문서의 끼워넣기용입니다
+# 부스트 틀들을 접두어로 하는 쿼리를 실행하여 설정변경을 시험해볼 수 있습니다:  줄 개행(엔터) 대신 간격(스페이스 바)으로 구분되며, XX는 부스트 하려는 모든 틀들 입니다. 
+# 부스트 틀을 특정하는 쿼리: "XX"는 이 필드의 내용을 무시합니다.
+ #</pre> <!-- 이 줄은 그대로 남겨두세요 -->',
 	'cirrussearch-pref-label' => '새 검색',
-	'cirrussearch-pref-desc' => '확장된 틀 검색, 더 많은 언어 지원, 더 빠른 업데이트를 지원하는 새로운 검색 엔진을 사용합니다.',
+	'cirrussearch-pref-desc' => '언어의 더 많은 수를 지원하고, 더 최신의 결과를 제공하고, 심지어 틀의 안쪽의 텍스트를 찾을 수 있는 우리의 새 검색을 시도합니다.',
+);
+
+/** Colognian (Ripoarisch)
+ * @author Purodha
+ */
+$messages['ksh'] = array(
+	'cirrussearch-desc' => 'Söhke em MedijaWikki met <i lang="en" xml:lang="en">Elasticsearch</i> dohenger.',
+	'cirrussearch-backend-error' => 'Mer hatte e problem, wat ävver flök verbei sin sullt. Bes esu jood u versöhg et schpääder norr_ens.',
+	'cirrussearch-now-using' => 'Heh dat Wikke hädd_en neu Söhkmaschiin. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mieh drövver lässe]])',
+	'cirrussearch-pref-label' => 'Et neue Söhke',
+	'cirrussearch-pref-desc' => 'Probeer ons neu Projrammdeil zum Söhke. Et kann met mieh Schprohche ömjonn, brängk flöker un neue Antwoote un kann esujaa Täx em Ennere vun Schablohne fenge.',
+	'cirrussearch-file-contents-match' => 'Der Enhalld vun dä Dattei paß: $1',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
@@ -549,6 +850,7 @@ Kuckt och
 $messages['mk'] = array(
 	'cirrussearch-desc' => 'Пребарување со Solr',
 	'cirrussearch-backend-error' => 'Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.',
+	'cirrussearch-parse-error' => 'Не го разбрав барањето. Упростете го. Ова го заведувам за да го подобриме пребарувачкиот систем.',
 	'cirrussearch-now-using' => 'Ова вики користи нов пребарувач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Дознајте повеќе]])',
 	'cirrussearch-ignored-headings' => ' #<!-- не менувајте ништо во овој ред --> <pre>
 # Заглавија што ќе се занемарат при пребарувањето.
@@ -581,23 +883,34 @@ $messages['mk'] = array(
 	'cirrussearch-pref-desc' => 'Пробајте го нашето ново пребарување кое поддржува поголем број јазици, дава потековни и понавремени резултати, па дури и наоѓа текст во шаблони.',
 );
 
+/** Marathi (मराठी)
+ * @author V.narsikar
+ */
+$messages['mr'] = array(
+	'cirrussearch-pref-label' => 'नविन शोध',
+);
+
 /** Malay (Bahasa Melayu)
  * @author Anakmalaysia
  */
 $messages['ms'] = array(
 	'cirrussearch-desc' => 'Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki',
 	'cirrussearch-backend-error' => 'Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.',
+	'cirrussearch-parse-error' => 'Pertanyaan tidak difahami. Sila permudahnya. Pertanyaan itu telah dilogkan untuk menambah baik sistem pencarian.',
 );
 
 /** Dutch (Nederlands)
+ * @author Arent
  * @author Bluyten
  * @author Breghtje
  * @author Romaine
  * @author Siebrand
+ * @author Sjoerddebruin
  */
 $messages['nl'] = array(
 	'cirrussearch-desc' => 'Zoeken via Solr',
-	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooit. Probeer het later opnieuw.',
+	'cirrussearch-backend-error' => 'Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.',
+	'cirrussearch-parse-error' => 'De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.',
 	'cirrussearch-now-using' => 'Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])',
 	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
 # Koppen die worden genegeerd tijdens het zoeken.
@@ -629,6 +942,19 @@ $messages['oc'] = array(
 $messages['pl'] = array(
 	'cirrussearch-pref-label' => 'Nowe wyszukiwanie',
 	'cirrussearch-pref-desc' => 'Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.',
+);
+
+/** Portuguese (português)
+ * @author Vitorvicentevalente
+ */
+$messages['pt'] = array(
+	'cirrussearch-desc' => 'Mecanismo de procura "Elasticsearch" para o MediaWiki',
+	'cirrussearch-backend-error' => 'Não foi possível completar a sua pesquisa devido a um problema temporário. Por favor, tente novamente mais tarde.',
+	'cirrussearch-now-using' => 'Esta wiki está a utilizar um novo motor de busca.
+([[mw:Special:MyLanguage/Help:CirrusSearch|Saiba mais]])',
+	'cirrussearch-pref-label' => 'Nova procura',
+	'cirrussearch-pref-desc' => 'Experimente a nossa nova forma de pesquisa que suporta um maior número de idiomas, fornece resultados mais actualizados e pode ainda encontrar o texto de predefinições.',
+	'cirrussearch-file-contents-match' => 'Conteúdos de ficheiros correspondentes: $1',
 );
 
 /** Brazilian Portuguese (português do Brasil)
@@ -678,6 +1004,7 @@ Collegaminde de fore
 $messages['ru'] = array(
 	'cirrussearch-desc' => 'Поиск для MediaWiki на базе Elasticsearch',
 	'cirrussearch-backend-error' => 'Нам не удалось завершить поиск из-за временной проблемы. Пожалуйста, повторите попытку позже.',
+	'cirrussearch-parse-error' => 'Запрос не был понят. Пожалуйста, сделайте его проще. Запрос был записан для улучшения поисковой системы.',
 	'cirrussearch-now-using' => 'Эта вики использует новый поисковый движок. ([[mw:Special:MyLanguage/Help:CirrusSearch|Подробнее]])',
 	'cirrussearch-ignored-headings' => ' #<!-- оставьте эту строку как есть --> <pre>
 # Заголовки, которые будут игнорироваться поиском.
@@ -690,8 +1017,63 @@ $messages['ru'] = array(
 Ссылки
 См. также
  #</pre> <!-- оставьте эту строку как есть -->',
+	'cirrussearch-boost-templates' => ' #<!-- оставьте эту строку как есть --> <pre>
+# Если страница содержит один из этих шаблонов, её вес при поиске умножается на указанный процент.
+# Изменения вступают в силу немедленно.
+# Синтаксис выглядит следующим образом:
+# * Всё, что начинается с символа «#» (и до конца строки) является комментарием
+# * Каж̠дая непустая строка — это точное имя шаблона для повышения веса с указанием пространства имён, с последующим символом «|», за которым следует число со знаком «%».
+# Примеры правильных строк:
+# Template:Good|150%
+# Template:Very Very Good|300%
+# Template:Bad|50%
+# Примеры неправильных строк:
+# Template:Foo|150.234234% <-- десятичный разделитель недопустим!
+# Foo|150% <--- технически это работает, но только для включений страницы Foo из основного пространства имён
+# Вы можете протестировать изменение настроек, выполнив запрос с префиксом boost-templates:"XX", где XX — это шаблоны, которые вы хотите использовать, разделенных пробелами вместо символов разрыва строки.
+# Запросы, которые определяют boost-templates:"XX", игнорируют содержимое этого поля.
+ #</pre> <!-- оставьте эту строку как есть -->',
 	'cirrussearch-pref-label' => 'Новый поиск',
 	'cirrussearch-pref-desc' => 'Попробуйте наш новый поиск, который поддерживает большее количество языков, предоставляет более свежие результаты, и может даже найти текст внутри шаблонов.',
+);
+
+/** Scots (Scots)
+ * @author John Reid
+ */
+$messages['sco'] = array(
+	'cirrussearch-desc' => 'Elasticrake-pwred rake fer MediaWiki',
+	'cirrussearch-backend-error' => 'We coudna compleate yer rake cause o ae temperie problem. Please try again later.',
+	'cirrussearch-parse-error' => 'Speirin wisna unnerstood. Please mak it simpler. The speirin wis loggit fer tae improve the rake system.',
+	'cirrussearch-now-using' => 'This wiki is uising ae new rake engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn mair]])',
+	'cirrussearch-ignored-headings' => ' #<!-- lea this line exactly aes it is --> <pre>
+# Heidins that will be ignored bi rake.
+# Chynges til this tak effect aes suin aes the page wi the heiding is index\'t.
+# Ye can force page reindexin bi daeing ae null edit.
+# Syntax is aes follaes:
+#   * Awthin fae ae "#" chairacter til the end o the line is ae comment
+#   * Ilka no-blank line is the exact title tae ignore, case an awthin
+References
+External links
+See ava
+ #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => ' #<!-- lea this line exactly aes it is --> <pre>
+# Gif ae page contains yin o these templates than its rake score is multiplied bi the configured percentage.
+# Chynges til this tak effect immediately.
+# Syntax is aes follaes:
+#   * awthin fae ae "#" chairacter til the end o the line is ae comment
+#   * Ilka no-blank line is the exact template name tae buist, namespace, case an ilkathin, follaed b aa "|" chairacter follaed bi ae nummer follaed bi ae "%" chairacter.
+# Examples o guid lines:
+# Template:Guid|150%
+# Template:Vera Vera Guid|300%
+# Template:Bad|50%
+# Examples o no-warkin lines:
+# Template:Foo|150.234234% <-- naw decimal pynts alloued!
+# Foo|150% <--- technically warks, but fer transclusions o the Foo page fae the main namespace
+# Ye can test configuration chynges b performing ae query prefixed wi buist-templates:"XX" whaur XX is aw o the templates ye wish tae buist separated bi spaces instead o line breaks.
+# Speirins that specify buist-templates:"XX" ignore the contents o this field.
+ #</pre> <!-- lea this line exactly aes it is -->',
+	'cirrussearch-pref-label' => 'New rake',
+	'cirrussearch-pref-desc' => "Try oor new rake that supports ae greater nummer o leids, provides ae mair up-til-date affcome, an can e'en fynn tex inside o templates.",
 );
 
 /** Slovak (slovenčina)
@@ -704,11 +1086,14 @@ $messages['sk'] = array(
 /** Swedish (svenska)
  * @author Bengt B
  * @author Jopparn
+ * @author Lokal Profil
  * @author WikiPhoenix
  */
 $messages['sv'] = array(
 	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
+	'cirrussearch-parse-error' => 'Frågan kunde inte tolkas. Vänligen gör det enklare. Frågan har loggats för att förbättra söksystemet.',
+	'cirrussearch-now-using' => 'Denna wiki använder en ny sökmotor ([[mw:Special:MyLanguage/Help:CirrusSearch|Läs mer]])',
 	'cirrussearch-ignored-headings' => '#<!-- leave this line exactly as it is --> <pre>
  # Rubriker som kommer att ignoreras av sökningen.
  # Ändringar till detta kommer att gälla så fort sidan med rubriken är indexerad.
@@ -720,8 +1105,38 @@ Referenser
 Externa länkar
 Se också
  #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => ' #<!-- lämna denna rad precis som den är --> <pre>
+# Om en sida innehåller en av följande mallar multipliceras dess sökbetyg med den konfigurerade procentsatsen.
+# Ändringar till detta träder i kraft med omedelbar verkan.
+# Syntaxen är följande:
+#   * Alt efter en "#"-tecknet till slutet på raden är en kommentar
+#   * Var icke-tom rad är exakt det mallnamn som ska förstärkas, namnrymd, versalisering och allt, följt av ett "|"-tecken, följt av ett nummer, följt av ett "%"-tecken.
+# Exempel på välformaterade rader:
+# Mall:Bra|150%
+# Mall:Väldigt Väldigt bra|300%
+# Mall:Dålig|50%
+# Exempel på ogiltiga rader:
+# Mall:Foo|150.234234% <-- decimaltal tillåts inte!
+# Foo|150% <--- fungerar tekniskt sett men för mallinkluderingar av Foo-sidan i huvudnamnrymden
+# Du kan testa konfigurationsändringar genom att utföra en förfrågan med boost-templates:"XX" där XX är alla de mallar du önskar förstärka, separerade med blanksteg istället för radbrytningar.
+# Förfrågor som anger boost-templates:"XX" ignorerar innehållet av detta fält.
+ #</pre> <!-- lämna denna rad precis som den är -->',
 	'cirrussearch-pref-label' => 'Ny sökning',
 	'cirrussearch-pref-desc' => 'Prova vår nya sökning som stöder ett större antal språk, ger fler uppdaterade resultat och kan även hitta text inuti mallar.',
+);
+
+/** Telugu (తెలుగు)
+ * @author Ravichandra
+ */
+$messages['te'] = array(
+	'cirrussearch-pref-label' => 'కొత్తగా వెతుకు',
+);
+
+/** Tagalog (Tagalog)
+ * @author Jewel457
+ */
+$messages['tl'] = array(
+	'cirrussearch-parse-error' => 'Ang pagtatanong ay hindi naintindihan. Mangyaring gawin itong payak. Ang pagtatanong ay naitala upang pag-ibayuhin ang paraan ng paghahanap.',
 );
 
 /** Ukrainian (українська)
@@ -731,6 +1146,7 @@ Se också
 $messages['uk'] = array(
 	'cirrussearch-desc' => 'Вмикає пошук з допомогою Solr',
 	'cirrussearch-backend-error' => 'Нам не вдалося завершити ваш пошук через тимчасову проблему. Спробуйте ще раз пізніше.',
+	'cirrussearch-parse-error' => 'Запит не зрозуміли. Будь ласка, зробіть його простішим. Запит був записаний для поліпшення пошукової системи.',
 	'cirrussearch-now-using' => 'Це вікі використовує новий пошуковий рушій. ([[mw:Special:MyLanguage/Help:CirrusSearch|Докладніше]])',
 	'cirrussearch-ignored-headings' => ' #<!-- залиште цей рядок точно таким, яким він є --> <pre>
 # Заголовки, які будуть ігноруватися при пошуці.
@@ -769,6 +1185,7 @@ $messages['uk'] = array(
 $messages['vi'] = array(
 	'cirrussearch-desc' => 'Công cụ tìm kiếm Elasticsearch dành cho MediaWiki',
 	'cirrussearch-backend-error' => 'Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.',
+	'cirrussearch-parse-error' => 'Không hiểu rõ truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.',
 	'cirrussearch-now-using' => 'Wiki này đang sử dụng một công cụ tìm kiếm mới. ([[mw:Special:MyLanguage/Help:CirrusSearch|Tìm hiểu thêm]])',
 	'cirrussearch-ignored-headings' => ' #<!-- để yên dòng này --> <pre>
 # Công cụ tìm kiếm sẽ bỏ qua các đề mục này.
@@ -806,6 +1223,8 @@ Xem thêm
 
 /** Simplified Chinese (中文（简体）‎)
  * @author Cwek
+ * @author Linxue9786
+ * @author Liuxinyu970226
  * @author Qiyue2001
  * @author Shizhao
  * @author TianyinLee
@@ -813,17 +1232,62 @@ Xem thêm
  * @author Yfdyh000
  */
 $messages['zh-hans'] = array(
-	'cirrussearch-desc' => '搜索由Elasticsearch为MediaWiki提供',
-	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜寻。请稍后再试。',
+	'cirrussearch-desc' => '基于Elasticsearch为MediaWiki设计的搜索',
+	'cirrussearch-backend-error' => '由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。',
+	'cirrussearch-parse-error' => '此查询无法理解。请将其简化。查询已被记录以改进搜索系统。',
 	'cirrussearch-now-using' => '这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）',
+	'cirrussearch-ignored-headings' => ' #<!--请忽略此行因为此行有碍于翻译--> <pre>
+# 搜索时标题将被忽略。
+# 对此更改将很快生效，并将尽快被索引。
+# 您可通过清空编辑强制页面重新索引。
+# 语法如下：
+#   * 一切以“#”符号开头的内容是一个注释
+#   * 任何非空白行是可忽略的
+参考文献
+外部链接
+参见
+ #</pre> <!--请忽略此行因为此行有碍于翻译-->',
+	'cirrussearch-boost-templates' => ' #<!-- 此行绝对保持原状 --> <pre>
+# 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。
+# 更改至此立即生效。
+# 句法如下所示：
+#   *从"#"符到行末的所有信息是注释
+#   * 每一非空白行均为确切的模板名称，如加速器，域名空间， 事件以所有信息，接以"|"符，再接以数字及"%"符。
+# 良好行目示例：
+# 模板：良好|150%
+# 模板：非常非常好|300%
+# 模板：不良|50%
+# 失效行目示例：
+# 模板：Foo|150.234234% <-- 不允许使用小数点!
+# Foo|150% <--- 技术上可行，但不能用于从主域名空间将Foo页面切换插入至其他页面。
+# 你可以通过操作带有加速模板前置"XX"的质询来检测配置的变化：XX 是所有你想加速的模板名称，被空格键分开而不是行间隔。
+# 特定加速模板的质询："XX"通常忽略其所涉及的内容。
+ #</pre> <!-- 此行绝对保持原状 -->',
 	'cirrussearch-pref-label' => '新搜索',
-	'cirrussearch-pref-desc' => '使用新搜索引擎。该搜索引擎能索引展开模板，支持更多语言，更新更快。', # Fuzzy
+	'cirrussearch-pref-desc' => '试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。',
 );
 
 /** Traditional Chinese (中文（繁體）‎)
  * @author Justincheng12345
+ * @author Liuxinyu970226
  */
 $messages['zh-hant'] = array(
 	'cirrussearch-desc' => 'MediaWiki的Solr搜尋', # Fuzzy
 	'cirrussearch-backend-error' => '由於出現暫時性的問題，我們未能完成你的搜尋。請稍後再試。',
+	'cirrussearch-boost-templates' => ' #<!-- leave this line exactly as it is --> <pre>
+# 如果一個頁面包含下述模板之一，其搜尋結果將帶百分比。
+# 對之更改將即行生效。
+# 句法如下：
+#  * 從「#」位元至頁尾所有內容為注釋
+#  * 每一非空白行均為確切模板名稱，如加速器、名字空間，接於「|」位元、數位和「%」位元。
+# 良好行目如下：
+# 模板：良好|150%
+# 模板：非常非常良好|300%
+# 模板：糟糕|50%
+# 無效行目如下：
+# 模板:Foo|150.234234% <-- 不得使用小數點！
+# Foo|150% <--- 技術可行，唯主名字空間與其他頁面之超連接將因此失效
+# You can test configuration changes by performing a query prefixed with boost-templates:"XX" where XX is all of the templates you want to boost separated by spaces instead of line breaks.
+# Queries that specify boost-templates:"XX" ignore the contents of this field.
+ #</pre> <!-- leave this line exactly as it is -->',
 );

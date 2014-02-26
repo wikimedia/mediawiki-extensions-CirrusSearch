@@ -2,4 +2,7 @@
 *~
 *.kate-swp
 .*.swp
-Elastica
+.indexed
+tests/browser/cucumber_failures.log
+tests/browser/.bundle
+tests/browser/screenshots

@@ -1,4 +1,15 @@
 <?php
+
+namespace CirrusSearch;
+use \CirrusSearch;
+use \JobQueueGroup;
+use \LinkCache;
+use \Maintenance;
+use \MWTimestamp;
+use \ProfileSection;
+use \Title;
+use \WikiPage;
+
 /**
  * Force reindexing change to the wiki.
  *
@@ -24,10 +35,6 @@ if( $IP === false ) {
 }
 require_once( "$IP/maintenance/Maintenance.php" );
 
-/**
- * @todo Right now this basically duplicates core's updateSearchIndex and SearchUpdate
- * job. In an ideal world, we could just use that script and kill all of this.
- */
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
 	var $from = null;
@@ -54,8 +61,11 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
-		$this->addOption( 'buildChunks', 'Instead of running the script spit out N commands that can be farmed out to ' .
-			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.', false, true );
+		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
+			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
+			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number with ' .
+			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
+			'cover the entire wiki.' , false, true );
 		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
 			'to date copy.  Not used with --deletes.' );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
@@ -69,7 +79,7 @@ class ForceSearchIndex extends Maintenance {
 			'Without this if the entry does not exist then it will be skipped enirely.  Only set this when running ' .
 			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
 		$this->addOption( 'skipParse', 'Skip parsing the page.  This is realy only good for running the second half ' .
-			'of the two phase index build.  If this is specified then the default batch size is actually 500.' );
+			'of the two phase index build.  If this is specified then the default batch size is actually 50.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );
 		$this->addOption( 'namespace', 'Only index pages in this given namespace', false, true );
@@ -77,7 +87,7 @@ class ForceSearchIndex extends Maintenance {
 
 	public function execute() {
 		global $wgPoolCounterConf;
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -102,16 +112,16 @@ class ForceSearchIndex extends Maintenance {
 			intval( $this->getOption( 'pauseForJobs' ) ) : $this->maxJobs;
 		$updateFlags = 0;
 		if ( $this->getOption( 'indexOnSkip' ) ) {
-			$updateFlags |= CirrusSearchUpdater::INDEX_ON_SKIP;
+			$updateFlags |= Updater::INDEX_ON_SKIP;
 		}
 		if ( $this->getOption( 'skipParse' ) ) {
-			$updateFlags |= CirrusSearchUpdater::SKIP_PARSE;
+			$updateFlags |= Updater::SKIP_PARSE;
 			if ( !$this->getOption( 'batch-size' ) ) {
-				$this->setBatchSize( 500 );
+				$this->setBatchSize( 50 );
 			}
 		}
 		if ( $this->getOption( 'skipLinks' ) ) {
-			$updateFlags |= CirrusSearchUpdater::SKIP_LINKS;
+			$updateFlags |= Updater::SKIP_LINKS;
 		}
 		$this->namespace = $this->hasOption( 'namespace' ) ?
 			intval( $this->getOption( 'namespace' ) ) : null;
@@ -172,20 +182,21 @@ class ForceSearchIndex extends Maintenance {
 					$now = microtime( true );
 					if ( $now - $lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
 						$lastJobQueueCheckTime = $now;
-						$queueSize = self::getUpdatesInQueue();
+						$queueSize = $this->getUpdatesInQueue();
 						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
 							do {
 								$this->output( "Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
 								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-								$queueSize = self::getUpdatesInQueue();
+								$queueSize = $this->getUpdatesInQueue();
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
 					JobQueueGroup::singleton()->push(
-						CirrusSearchUpdatePagesJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
+						MassIndexJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
-					$size = CirrusSearchUpdater::updatePages( $pages, !$this->forceUpdate,
+					$updater = new Updater();
+					$size = $updater->updatePages( $pages, !$this->forceUpdate,
 						null, null, $updateFlags );
 				}
 			} else {
@@ -199,7 +210,8 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $lastDelete[ 'timestamp' ];
 				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
 				$minTitle = $lastDelete[ 'title' ]->getText();
-				CirrusSearchUpdater::deletePages( $titlesToDelete, $idsToDelete );
+				$updater = new Updater();
+				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -215,7 +227,7 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->queue ) {
 			$this->output( "Waiting for jobs to drain from the queue\n" );
 			while ( true ) {
-				$queueSizeForOurJob = self::getUpdatesInQueue();
+				$queueSizeForOurJob = $this->getUpdatesInQueue();
 				if ( $queueSizeForOurJob === 0 ) {
 					break;
 				}
@@ -223,7 +235,6 @@ class ForceSearchIndex extends Maintenance {
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
-		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -237,10 +248,9 @@ class ForceSearchIndex extends Maintenance {
 	 *    inputs for this function but should not by synced to the search index.
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
-		$search = new CirrusSearch();
 		if ( $maxUpdate === null ) {
 			$where = array( "$minId < page_id" );
 			if ( $this->toId !== null ) {
@@ -287,10 +297,20 @@ class ForceSearchIndex extends Maintenance {
 				       'LIMIT' => $this->mBatchSize )
 			);
 		}
-		wfProfileIn( __METHOD__ . '::decodeResults' );
+
+		return $this->decodeResults( $res, $maxUpdate );
+	}
+
+	private function decodeResults( $res, $maxUpdate ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
 		$result = array();
+		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
+		// level so those are stored when it is freed.
+		$updater = new Updater();
+
 		foreach ( $res as $row ) {
-			// No need to call CirrusSearchUpdater::traceRedirects here because we know this is a valid page because
+			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
 			$content = $page->getContent();
@@ -308,14 +328,9 @@ class ForceSearchIndex extends Maintenance {
 				} else {
 					// We found a redirect.  Great.  Since we can't index special pages and redirects to special pages
 					// are totally possible, as well as fun stuff like redirect loops, we need to use
-					// CirrusSearchUpdater's redirect tracing logic which is very complete.  Also, it returns null on
+					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 					// self redirects.  Great!
-					$page = CirrusSearchUpdater::traceRedirects( $page->getTitle() );
-					// The cost of using the fancy redirect handling logic is that we have to clear some global state
-					// that cirrus maintains to prevent duplicate in process updates and to catch redirect loops.
-					// We could use the deplicate prevention, but we can't afford to let a global array grow without
-					// bounds, so clear it.
-					CirrusSearchUpdater::clearUpdated();
+					$page = $updater->traceRedirects( $page->getTitle() );
 				}
 			}
 			$update = array(
@@ -327,8 +342,9 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$result[] = $update;
 		}
-		wfProfileOut( __METHOD__ . '::decodeResults' );
-		wfProfileOut( __METHOD__ );
+		// Clear the LinkCache to prevent its memory use from growing without bounds.
+		LinkCache::singleton()->clear();
+
 		return $result;
 	}
 
@@ -342,7 +358,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return array An array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
-		wfProfileIn( __METHOD__ );
+		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );
@@ -373,11 +389,10 @@ class ForceSearchIndex extends Maintenance {
 				'page' => $row->ar_page_id,
 			);
 		}
-		wfProfileOut( __METHOD__ );
 		return $result;
 	}
 
-	private function buildChunks( $chunks ) {
+	private function buildChunks( $buildChunks ) {
 		$dbr = $this->getDB( DB_SLAVE );
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
@@ -395,7 +410,13 @@ class ForceSearchIndex extends Maintenance {
 		if ( $fromId === $this->toId ) {
 			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
 		}
-		$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $chunks ) );
+		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
+		$buildChunks = intval( $buildChunks );
+		if ( $fixedChunkSize ) {
+			$chunkSize = $buildChunks;
+		} else {
+			$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $buildChunks ) );
+		}
 		for ( $id = $fromId; $id < $this->toId; $id = $id + $chunkSize ) {
 			$chunkToId = min( $this->toId, $id + $chunkSize );
 			$this->output( $this->mSelf );
@@ -412,13 +433,13 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	/**
-	 * Get the number of cirrusSearchUpdatePages jobs in the queue.
+	 * Get the number of cirrusSearchMassIndex jobs in the queue.
 	 * @return int length
 	 */
-	private static function getUpdatesInQueue() {
-		return JobQueueGroup::singleton()->get( 'cirrusSearchUpdatePages' )->getSize();
+	private function getUpdatesInQueue() {
+		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize();
 	}
 }
 
-$maintClass = "ForceSearchIndex";
+$maintClass = "CirrusSearch\ForceSearchIndex";
 require_once RUN_MAINTENANCE_IF_MAIN;

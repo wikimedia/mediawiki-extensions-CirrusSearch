@@ -5,9 +5,8 @@ class ArticlePage
 
   h1(:title, id: "firstHeading")
   table(:file_history, :class => "filehistory")
-  cell(:file_last_comment){ table_element(:class => "filehistory")[1][5] }
-  link(:upload, text: "upload it")
-  link(:upload_new_version, text: "Upload a new version of this file")
+  cell(:file_last_comment){ |page| page.file_history_element[1][page.file_history_element[1].columns - 1] }
+  link(:upload, text: "Upload file")
   link(:create_link, text: "Create")
   link(:create_source_link, text: "Create source")
 end

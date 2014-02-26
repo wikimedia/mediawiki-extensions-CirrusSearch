@@ -45,39 +45,6 @@ Feature: Full text search
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |
 
-  @suggestions
-  Scenario: Common phrases spelled incorrectly get suggestions
-    When I search for popular cultur
-    Then popular *culture* is suggested
-
-  @suggestions
-  Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
-    When I search for noble prize
-    Then *nobel* prize is suggested
-
-  @suggestions
-  Scenario: Uncommon phrases spelled correctly don't get suggestions even if one of the words is very uncommon
-    When I search for nobel prize
-    Then there is no suggestion
-
-  @suggestions
-  Scenario: Suggestions can come from redirect titles when redirects are included in search
-    When I search for Rrr Ward
-    Then rrr *word* is suggested
-
-  @suggestions
-  Scenario: Suggestions don't come from redirect titles when redirects are not included in search
-    Given I am at the search results page
-    And I click the Advanced link
-    And I click the List redirects label
-    When I search for Rrr Ward
-    Then there is no suggestion
-
-  @suggestions
-  Scenario: When the search contains a namespace prefix the suggestion should also contain that prefix
-    When I search for Template:nobel piep
-    Then Template:*noble pipe* is suggested
-
   @setup_weight
   Scenario: Page weight include redirects
     When I search for TestWeight
@@ -89,7 +56,7 @@ Feature: Full text search
     When I search for incategory:HeadingsTest "I am a heading"
     Then HasHeadings is the first search result
 
-  @setup_headings
+  @headings
   Scenario: Ignored headings aren't searched so text with the same word is wins
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
@@ -105,7 +72,7 @@ Feature: Full text search
     Then More Like Me is in the first search result
     But More Like Me 1 is not in the search results
 
-  @setup_javascript_injection
+  @javascript_injection
   Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
     When I search for Javascript findme
     Then the title still exists
@@ -118,82 +85,6 @@ Feature: Full text search
   @setup_main
   Scenario: Searching for a page using its title and another word in the page's text does find it
     When I search for catapult Two Words
-    Then Two Words is the first search result
-
-  @setup_main
-  Scenario: Searching for <text>~ activates fuzzy search
-    When I search for ffnonesensewor~
-    Then Two Words is the first search result
-
-  @setup_main
-  Scenario: Searching for <text>~<text> treats the tilde like a space (finding a result if the term is correct)
-    When I search for ffnonesenseword~pickles
-    Then Two Words is the first search result
-
-  @setup_main
-  Scenario: Searching for <text>~<text> treats the tilde like a space (not finding any results if a fuzzy search was needed)
-    When I search for ffnonesensewor~pickles
-    Then there are no search results
-
-  @setup_main
-  Scenario Outline: Searching for <text>~<number between 0 and 1> activates fuzzy search
-    When I search for ffnonesensewor~<number>
-    Then Two Words is the first search result
-  Examples:
-    | number |
-    | .8     |
-    | 0.8    |
-    | 1      |
-
-  @setup_main
-  Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding a result if the term is corret)
-    When I search for ffnonesenseword~0
-    Then Two Words is the first search result
-
-  @setup_main
-  Scenario: Searching for <text>~0 activates fuzzy search but with 0 fuzziness (finding nothing if fuzzy search is required)
-    When I search for ffnonesensewor~0
-    Then there are no search results
-
-  @setup_main @balance_quotes
-  Scenario Outline: Searching for for a phrase with a hanging quote adds the quote automatically
-    When I search for <term>
-    Then Two Words is the first search result
-   Examples:
-    |                      term                     |
-    | "two words                                    |
-    | "two words" "ffnonesenseword catapult         |
-    | "two words" "ffnonesenseword catapult pickles |
-    | "two words" pickles "ffnonesenseword catapult |
-
-  @balance_quotes
-  Scenario Outline: Searching for a phrase containing /, :, and \" find the page as expected
-    Given a page named <title> exists
-    When I search for <term>
-    Then <title> is the first search result
-  Examples:
-    |                        term                       |                   title                   |
-    | "10.1093/acprof:oso/9780195314250.003.0001"       | 10.1093/acprof:oso/9780195314250.003.0001 |
-    | "10.5194/os-8-1071-2012"                          | 10.5194/os-8-1071-2012                    |
-    | "10.7227/rie.86.2"                                | 10.7227/rie.86.2                          |
-    | "10.7227\"yay"                                    | 10.7227"yay                               |
-    | intitle:"1911 Encyclopædia Britannica/Dionysius"' | 1911 Encyclopædia Britannica/Dionysius    |
-
-  @setup_main
-  Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search
-    When I search for "ffnonesenseword anotherword"~<proximity>
-    Then <result> is the first search result
-  Examples:
-    | proximity | result    |
-    | 0         | none      |
-    | 1         | none      |
-    | 2         | Two Words |
-    | 3         | Two Words |
-    | 77        | Two Words |
-
-  @setup_main
-  Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
-    When I search for "ffnonesenseword catapult"~anotherword
     Then Two Words is the first search result
 
   @setup_phrase_rescore
@@ -216,56 +107,6 @@ Feature: Full text search
   Scenario: Searching with a quoted word just treats the word as though it didn't have quotes
     When I search for "Rescore" Words Test
     Then Test Words Rescore Rescore is the first search result
-
-  @setup_main @exact_quotes
-  Scenario: Searching for a word in quotes disbles stemming (can't find plural with singular)
-    When I search for "pickle"
-    Then there are no search results
-
-  @setup_main @exact_quotes
-  Scenario: Searching for a word in quotes disbles stemming (can still find plural with exact match)
-    When I search for "pickles"
-    Then Two Words is the first search result
-
-  @setup_main @exact_quotes
-  Scenario: Searching for a phrase in quotes disbles stemming (can't find plural with singular)
-    When I search for "catapult pickle"
-    Then there are no search results
-
-  @setup_main @exact_quotes
-  Scenario: Searching for a phrase in quotes disbles stemming (can still find plural with exact match)
-    When I search for "catapult pickles"
-    Then Two Words is the first search result
-
-  @exact_quotes
-  Scenario: Quoted phrases match stop words
-    When I search for "Contains A Stop Word"
-    Then Contains A Stop Word is the first search result
-
-  @setup_main @exact_quotes
-  Scenario: Adding a ~ to a phrase keeps stemming enabled
-    When I search for "catapult pickle"~
-    Then Two Words is the first search result
-
-  @exact_quotes
-  Scenario: Adding a ~ to a phrase stops it from matching stop words
-    When I search for "doesn't actually Contain A Stop Words"~
-    Then Doesn't Actually Contain Stop Words is the first search result
-
-  @setup_main @exact_quotes
-  Scenario: Adding a ~<a number>~ to a phrase keeps stemming enabled
-    When I search for "catapult pickle"~0~
-    Then Two Words is the first search result
-
-  @setup_main @exact_quotes
-  Scenario: Adding a ~<a number> to a phrase turns off because it is a proximity search
-    When I search for "catapult pickle"~0
-    Then there are no search results
-
-  @exact_quotes
-  Scenario: Searching for a quoted * actually searches for a *
-    When I search for "pick*"
-    Then Pick* is the first search result
 
   @programmer_friendly
   Scenario Outline: Programmer friendly searches
@@ -290,201 +131,73 @@ Feature: Full text search
   @stemmer
   Scenario Outline: Stemming works as expected
     When I search for StemmerTest <term>
-    Then <result> is the first search result
+    Then <first_result> is the first search result
+    Then <second_result> is the second search result
   Examples:
-    |   term   |        result        |
-    | aliases  | StemmerTest Aliases  |
-    | alias    | StemmerTest Aliases  |
-    | used     | StemmerTest Used     |
-    | uses     | StemmerTest Used     |
-    | use      | StemmerTest Used     |
-    | us       | none                 |
-
-  @prefix_filter
-  Scenario: The prefix: filter filters results to those with titles prefixed by value
-    When I search for prefix prefix:prefix
-    Then Prefix Test is the first search result
-    But Foo Prefix Test is not in the search results
-
-  @prefix_filter
-  Scenario: The prefix: filter interprets spaces literally
-    When I search for prefix prefix:prefix tes
-    Then Prefix Test is the first search result
-
-  @prefix_filter
-  Scenario: It is ok to start the query with the prefix filter
-    When I search for prefix:prefix tes
-    Then Prefix Test is the first search result
-
-  @prefix_filter
-  Scenario: It is ok to specify an empty prefix filter
-    When I search for prefix test prefix:
-    Then Prefix Test is the first search result
-
-  @prefix_filter
-  Scenario: The prefix: filter can be used to apply a namespace and a title prefix
-    When I search for prefix:talk:prefix tes
-    Then Talk:Prefix Test is the first search result
-    But Prefix Test is not in the search results
-
-  @prefix_filter
-  Scenario: The prefix: filter can be used to apply a namespace without a title prefix
-    When I search for prefix test prefix:talk:
-    Then Talk:Prefix Test is the first search result
-    But Prefix Test is not in the search results
-
-  @prefix_filter
-  Scenario: The prefix: filter can be used to filter to subpages
-    When I search for prefix test aaaa prefix:Prefix Test/
-    Then Prefix Test/AAAA is the first search result
-    But Prefix Test AAAA is not in the search results
-
-  @prefix_filter
-  Scenario: The prefix: filter can be used to filter to subpages starting with some title
-    When I search for prefix test aaaa prefix:Prefix Test/aa
-    Then Prefix Test/AAAA is the first search result
-    But Prefix Test AAAA is not in the search results
-
-  @boolean_operators @setup_main
-  Scenario Outline: -, !, and NOT prohibit words in search results
-    When I search for <query>
-    Then Catapult is the first search result
-    But Amazing Catapult is not in the search results
-  Examples:
-  |        query         |
-  | catapult -amazing    |
-  | -amazing catapult    |
-  | catapult !amazing    |
-  | !amazing catapult    |
-  | catapult NOT amazing |
-  | NOT amazing catapult |
-
-  @boolean_operators @setup_main
-  Scenario Outline: +, &&, and AND require matches but since that is the default they don't look like they do anything
-    When I search for <query>
-    Then Amazing Catapult is the first search result
-    But Catapult is not in the search results
-  Examples:
-  |         query         |
-  | +catapult amazing     |
-  | amazing +catapult     |
-  | +amazing +catapult    |
-  | catapult AND amazing  |
-
-  @boolean_operators @setup_main
-  Scenario Outline: OR and || matches docs with either set
-    When I search for <query>
-    Then Catapult is in the search results
-    And Two Words is in the search results
-  Examples:
-  |          query          |
-  | catapult OR África      |
-  | África \|\| catapult    |
-  | catapult OR "África"   |
-  | catapult \|\| "África" |
-  | "África" OR catapult   |
-  | "África" \|\| catapult |
-
-  @boolean_operators @setup_main
-  Scenario Outline: boolean operators in bad positions in the query are ignored
-    When I search for <query>
-    Then Catapult is in the first search result
-  Examples:
-  |         query          |
-  | catapult +             |
-  | catapult -             |
-  | catapult !             |
-  | catapult AND           |
-  | catapult OR            |
-  | catapult NOT           |
-  | + catapult             |
-  | - catapult             |
-  | ! catapult             |
-  | AND catapult           |
-  | OR catapult            |
-  | catapult + amazing     |
-  | catapult - amazing     |
-  | catapult ! amazing     |
-  | catapult AND + amazing |
-  | catapult AND - amazing |
-  | catapult AND ! amazing |
-
-  @boolean_operators @setup_main
-  Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)
-    When I search for NOT catapult
-    Then there is a search result
-
-  @wildcards @setup_main
-  Scenario: searching with a single wildcard finds expected results
-    When I search for catapul*
-    Then Catapult is the first search result
-
-  @wildcards @setup_main
-  Scenario: wildcards match plain matches
-    When I search for pi*les
-    Then Two Words is the first search result
-
-  @wildcards @setup_main
-  Scenario: wildcards don't match stemmed matches
-    When I search for pi*le
-    Then there are no search results
-
-  @prefer_recent
-  Scenario Outline: Recently updated articles are prefered if prefer-recent: is specified
-    When I search for PreferRecent First OR Second OR Third
-    Then PreferRecent Second Second is the first search result
-    When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
-    Then PreferRecent Third is the first search result
-  Examples:
-    |   options   |
-    | 1,.001      |
-    | 1,0.001     |
-    | 1,.0001     |
-    | .99,.0001   |
-    | .99,.001    |
-    | .8,.0001    |
-    | .7,.0001    |
-
-  @prefer_recent
-  Scenario Outline: You can specify prefer-recent: in such a way that being super recent isn't enough
-    When I search for prefer-recent:<options> PreferRecent First OR Second OR Third
-    Then PreferRecent Second Second is the first search result
-  Examples:
-    |  options  |
-    |           |
-    | 1         |
-    | 1,1       |
-    | 1,.1      |
-    | .4,.0001  |
-
-  @boost_template
-  Scenario: Searching for a page without template boosts doesn't use them
-    When I search for BoostTemplateTest
-    Then NoTemplates BoostTemplateTest is the first search result
-
-  @boost_template
-  Scenario: Adding a single template boost is recognized
-    When I search for boost-templates:"Template:BoostTemplateLow|10000%" BoostTemplateTest
-    Then LowTemplate is the first search result
-
-  @boost_template
-  Scenario: Adding two template boosts is also recognized
-    When I search for boost-templates:"Template:BoostTemplateLow|10000% Template:BoostTemplateHigh|100000%" BoostTemplateTest
-    Then HighTemplate is the first search result
-
-  @boost_template
-  Scenario: Four templates is just fine (though I'm only actually using two of them)
-    When I search for boost-templates:"Template:BoostTemplateFake|10% Template:BoostTemplateLow|10000% Template:BoostTemplateFake2|1000000% Template:BoostTemplateHigh|100000%" BoostTemplateTest
-    Then HighTemplate is the first search result
-
-  @boost_template
-  Scenario: Template boosts can also lower the score of a template
-    When I search for boost-templates:"Template:BoostTemplateLow|1%" BoostTemplateTest -intitle:"BoostTemplateTest"
-    Then HighTemplate is the first search result
-    When I search for boost-templates:"Template:BoostTemplateHigh|1%" BoostTemplateTest -intitle:"BoostTemplateTest"
-    Then LowTemplate is the first search result
+    |   term   |     first_result     |    second_result    |
+    | aliases  | StemmerTest Aliases  | StemmerTest Alias   |
+    | alias    | StemmerTest Alias    | StemmerTest Aliases |
+    | used     | StemmerTest Used     | none                |
+    | uses     | StemmerTest Used     | none                |
+    | use      | StemmerTest Used     | none                |
+    | us       | none                 | none                |
 
   @file_text
   Scenario: When you search for text that is in a file, you can find it!
     When I search for File:debian rhino
     Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
+
+  @match_stopwords
+  Scenario: When you search for a stopword you find pages with that stopword
+    When I search for to -intitle:Manyredirectstarget
+    Then To is the first search result
+
+  @many_redirects
+  Scenario: When you search for a page by redirects having more unrelated redirects doesn't penalize the score
+    When I search for incategory:ManyRedirectsTest Many Redirects Test
+    Then Manyredirectstarget is the first search result
+
+  @relevancy
+  Scenario: Results are sorted in the order we expect
+    When I search for Relevancytest
+    Then Relevancytest is the first search result
+    And Relevancytestviaredirect is the second search result
+    And Relevancytestviaheading is the third search result
+    And Relevancytestviatext is the fourth search result
+
+  @relevancy
+  Scenario: Two word searches are sorted in the order we expect
+    When I search for Relevancytwo Wordtest
+    Then Relevancytwo Wordtest is the first search result
+    And Wordtest Relevancytwo is the second search result
+
+  @relevancy
+  Scenario: Results are effected by the namespace boost
+    When I search for all:Relevancynamespacetest
+    Then Relevancynamespacetest is the first search result
+    And Talk:Relevancynamespacetest is the second search result
+    And File:Relevancynamespacetest is the third search result
+    And Help:Relevancynamespacetest is the fourth search result
+    And File talk:Relevancynamespacetest is the fifth search result
+    And User talk:Relevancynamespacetest is the sixth search result
+    And Template:Relevancynamespacetest is the seventh search result
+
+  @fallback_finder
+  Scenario: I can find things that Elasticsearch typically thinks of as word breaks in the title
+    When I search for $US
+    Then $US is the first search result
+
+  @fallback_finder
+  Scenario: I can find things that Elaticsearch typically thinks of as word breaks in redirect title
+    When I search for ¢
+    Then Cent (currency) is the first search result
+
+  @js_and_css
+  Scenario: JS pages don't corrupt the output
+    When I search for User:Tools/some.js jQuery
+    Then there is not alttitle on the first search result
+
+  @js_and_css
+  Scenario: CSS pages don't corrupt the output
+    When I search for User:Tools/some.css jQuery
+    Then there is not alttitle on the first search result

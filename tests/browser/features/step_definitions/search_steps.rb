@@ -8,17 +8,8 @@ end
 When(/^I type (.+) into the search box$/) do |search_term|
   on(SearchPage).search_input = search_term
 end
-When(/^I click the Search button$/) do
-  on(RandomPage) do |page|
-    if page.search_button? then
-      page.search_button
-    else
-      page.simple_search_button
-    end
-  end
-end
-When(/^I hit enter in the search box$/) do
-  on(SearchPage).search_input += "\n"
+When(/^I click the search button$/) do
+  on(SearchPage).search_button
 end
 When(/^I search for (.+)$/) do |text|
   #If I'm on the search page then I actually want to search in that box not the
@@ -46,10 +37,16 @@ When(/^I search for (.+)$/) do |text|
       if page.simple_search_button? then
         page.simple_search_button
       else
-        #Since there isn't a simple search button on this page we're going to have
-        #to use the "containing..." drop down....
-        on(SearchPage).search_special_element.when_present.should exist
-        on(SearchPage).search_special_element.click
+        #Since there isn't a search button on this page we're going to have
+        #to use the "containing..." drop down....  We can't even click the
+        #search_button because that is a "go" search and we need one that won't
+        #drop us directly to the page on a perfect match
+
+        #I have no idea why, but just clicking on the element isn't good enough
+        #so we deploy this hack copied from mediawiki.searchSuggest.js
+        page.execute_script("$( '\#searchInput' ).closest( 'form' )
+          .append( $( '<input type=\"hidden\" name=\"fulltext\" value=\"1\"/>' ) );")
+        page.search_button
       end
     end
   end
@@ -104,19 +101,10 @@ end
 Then(/^there is a search result$/) do
   on(SearchResultsPage).first_result_element.should exist
 end
-Then(/^(.*) is( in)? the first search result$/) do |title, in_ok|
+Then(/^(.+) is( in)? the ([^ ]+) search result$/) do |title, in_ok, index|
   on(SearchResultsPage) do |page|
-    if title == "none" then
-      page.first_result_element.should_not exist
-      page.first_image_result_element.should_not exist
-    else
-      page.first_result_element.should exist
-      if in_ok then
-        page.first_result_element.text.should include title
-      else
-        page.first_result_element.text.should == title
-      end
-    end
+    check_search_result(page.send("#{index}_result_wrapper_element"),
+      page.send("#{index}_result_element"), title, in_ok)
   end
 end
 Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
@@ -131,20 +119,6 @@ Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
       else
         # You can't just use first_image_result.should == because that tries to click the link....
         page.first_image_result_element.text.should == title
-      end
-    end
-  end
-end
-Then(/^(.*) is( in)? the second search result$/) do |title, in_ok|
-  on(SearchResultsPage) do |page|
-    if title == "none" then
-      page.second_result_wrapper_element.should_not exist
-    else
-      page.second_result_element.should exist
-      if in_ok then
-        page.second_result_element.text.should include title
-      else
-        page.second_result_element.text.should == title
       end
     end
   end
@@ -172,6 +146,9 @@ Then(/^(.*) is the highlighted alttitle of the first search result$/) do |highli
   else
     on(SearchResultsPage).first_result_highlighted_alttitle.should == highlighted
   end
+end
+Then(/^there is not alttitle on the first search result$/) do
+  on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
 end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
   found = false
@@ -201,6 +178,14 @@ Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the f
     step("suggestions should appear")
     step("#{title} is the first suggestion")
   end
+end
+Then(/^there is (no|a)? link to create a new page from the search result$/) do |modifier|
+  # 1.22 compat - this feature is new in 1.23
+  # if modifier == "a" then
+  #   on(SearchResultsPage).create_page_element.should exist
+  # else
+  #   on(SearchResultsPage).create_page_element.should_not exist
+  # end
 end
 Then(/^(.*) is suggested$/) do |text|
   on(SearchResultsPage).highlighted_suggestion.should == text
@@ -238,6 +223,19 @@ def within(seconds)
     else
       @browser.refresh
       retry
+    end
+  end
+end
+
+def check_search_result(wrapper_element, element, title, in_ok)
+  if title == "none" then
+    wrapper_element.should_not exist
+  else
+    element.should exist
+    if in_ok then
+      element.text.should include title
+    else
+      element.text.should == title
     end
   end
 end

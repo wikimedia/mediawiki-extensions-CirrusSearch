@@ -1,2 +1,1 @@
-ci: --format Cucumber::Formatter::Sauce --out reports/junit
-default: --format pretty
+parallel: --format progress --format ParallelTests::Cucumber::FailuresLogger --out cucumber_failures.log

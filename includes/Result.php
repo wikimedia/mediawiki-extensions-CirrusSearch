@@ -78,7 +78,6 @@ class Result extends SearchResult {
 			// This odd juggling is the second half of the script fields hack to get redirect loaded.
 			// It'll go away when we switch to source filtering.
 			$redirects = $result->redirect;
-			wfDebugLog( 'CirrusSearch', "ASDFASDF  " . implode( ' ', explode( "\n", var_export( $redirects, true ) ) ) );
 			if ( $redirects !== null ) {
 				// I not null it'll always be an array.
 				// In Elasticsearch 0.90 it'll be an array of arrays which is what we need.
@@ -88,7 +87,6 @@ class Result extends SearchResult {
 					wfDebugLog( 'CirrusSearch', "1.0");
 					// Since the first entry doesn't have a title we assume we're in 1.0
 					$redirects = $redirects[ 0 ];
-					wfDebugLog( 'CirrusSearch', "ASDFASDF  " . implode( ' ', explode( "\n", var_export( $redirects, true ) ) ) );
 				}
 			}
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );

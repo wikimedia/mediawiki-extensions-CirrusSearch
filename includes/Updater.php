@@ -55,11 +55,11 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param bool $checkFreshness Whether to check page freshness when updating
 	 */
 	public function updateFromTitle( $title, $checkFreshness = false ) {
-		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
+		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		$page = $this->traceRedirects( $title );
 		if ( $page ) {
-			$this->updatePages( array( $page ), $checkFreshness, $wgCirrusSearchShardTimeout,
+			$this->updatePages( array( $page ), $checkFreshness, $wgCirrusSearchUpdateShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
 		}
 	}
@@ -148,7 +148,9 @@ class Updater extends ElasticsearchIntermediary {
 	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
-		if ( $clientSideTimeout !== null ) {
+		if ( $clientSideTimeout === null ) {
+			Connection::setTimeout( null );
+		} else {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		if ( $checkFreshness ) {
@@ -193,7 +195,9 @@ class Updater extends ElasticsearchIntermediary {
 
 		OtherIndexJob::queueIfRequired( $titles, false );
 
-		if ( $clientSideTimeout !== null ) {
+		if ( $clientSideTimeout === null ) {
+			Connection::setTimeout( null );
+		} else {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		$this->sendDeletes( $ids );
@@ -365,7 +369,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param $removedLinks array of Titles removed from the page
 	 */
 	public function updateLinkedArticles( $addedLinks, $removedLinks ) {
-		global $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
+		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		// We don't do anything different with removed or added pages at this point so merge them.
 		$titles = array_merge( $addedLinks, $removedLinks );
@@ -397,7 +401,7 @@ class Updater extends ElasticsearchIntermediary {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$this->updatePages( $pages, false, $wgCirrusSearchShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
+		$this->updatePages( $pages, false, $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
 			self::SKIP_PARSE );
 	}
 

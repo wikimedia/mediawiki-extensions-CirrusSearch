@@ -95,6 +95,8 @@ class CirrusSearch extends SearchEngine {
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
 		if ( $status->isOK() ) {
+			// Note that we have no way of sending warning back to the user.  In this case all warnings
+			// are logged when they are added to the status object so we just ignore them here....
 			$result = $status->getValue();
 			$interwiki = new InterwikiSearcher( $this->offset, $this->limit, $this->namespaces, $user );
 			$interwikiResult = $interwiki->getInterwikiResults( $term );

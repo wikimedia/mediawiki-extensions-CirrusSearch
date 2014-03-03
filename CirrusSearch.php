@@ -85,21 +85,30 @@ $wgCirrusSearchNamespaceMappings = array();
 // results until the job is done.
 $wgCirrusSearchExtraIndexes = array();
 
-// Shard timeout for non-maintenance index operations including those done in the web
-// process and those done via job queue.  This is the amount of time Elasticsearch
-// will wait around for an offline primary shard.  Currently this is just used in
-// page updates and not deletes.  If this is specified then page updates cannot use
-// the bulk api so they will be less efficient.  Luckily, this isn't used in
-// maintenance scripts which really need bulk operations.  It is defined in
-// Elasticsearch's time format which is a string containing a number and then a unit
-// which is one of d (days), m (minutes), h (hours), ms (milliseconds) or w (weeks).
-// Cirrus defaults to a very tiny value to prevent folks from waiting around for
-// updates.
-$wgCirrusSearchShardTimeout = '1ms';
+// Shard timeout for non-maintenance index operations.  This is the amount of
+// time Elasticsearch will wait around for an offline primary shard. Currently
+// this is just used in page updates and not deletes.  It is defined in
+// Elasticsearch's time format which is a string containing a number and then
+// a unit which is one of d (days), m (minutes), h (hours), ms (milliseconds) or
+// w (weeks).  Cirrus defaults to a very tiny value to prevent job executors
+// from waiting around a long time for Elasticsearch.  Instead, the job will
+// fail and be retried later.
+$wgCirrusSearchUpdateShardTimeout = '1ms';
 
-// Client side timeout for non-maintenance index and delete operations and freshness
-// checks in seconds.
+// Client side timeout for non-maintenance index and delete operations and
+// freshness checks in seconds.
 $wgCirrusSearchClientSideUpdateTimeout = 5;
+
+// The amount of time Elasticsearch will wait for search shard actions before
+// giving up on them and returning the results from the other shards.  Defaults
+// to 20s which is about twice the slowest queries we see.  Some shard actions
+// are capable of returning partial results and others are just ignored.
+$wgCirrusSearchSearchShardTimeout = '20s';
+
+// Client side timeout for searches in seconds.  Best to keep this double the
+// shard timeout to give Elasticsearch a change to timeout the shards and return
+// partial results.  Defaults to 20 seconds.
+$wgCirrusSearchClientSideSearchTimeout = 40;
 
 // Is it ok if the prefix starts on any word in the title or just the first word?
 // Defaults to false (first word only) because that is the wikipedia behavior and so

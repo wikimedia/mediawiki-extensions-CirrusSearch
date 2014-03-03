@@ -571,7 +571,10 @@ class Searcher extends ElasticsearchIntermediary {
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
 			'doWork' => function() use ( $searcher, $id, $fields, $indexType, $indexBaseName ) {
 				try {
+					global $wgCirrusSearchClientSideSearchTimeout;
 					$searcher->start( "get of $indexType.$id" );
+					// Shard timeout not supported on get requests so we just use the client side timeout
+					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
 					return $searcher->success( $pageType->getDocument( $id, array( 'fields' => $fields, ) ) );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
@@ -647,7 +650,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status(string) version number as a string
 	 */
 	public function getElasticsearchVersion() {
-		global $wgMemc;
+		global $wgMemc, $wgCirrusSearchClientSideSearchTimeout;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -656,6 +659,9 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( !$result ) {
 			try {
 				$this->start( 'fetching elasticsearch version' );
+				// If this times out the cluster is in really bad shape but we should still
+				// check it.
+				Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
 				$result = Connection::getClient()->request( '' );
 				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -675,6 +681,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private function search( $type, $for ) {
 		global $wgCirrusSearchMoreAccurateScoringMode;
+		global $wgCirrusSearchSearchShardTimeout;
+		global $wgCirrusSearchClientSideSearchTimeout;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -787,13 +795,15 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
+		$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout;
+		Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
+
 
 		// Setup the search
 		if ( $this->explicitIndexes ) {
 			$baseName = array_shift( $this->explicitIndexes );
 			$extraIndexes = $this->explicitIndexes;
 			$pageType = Connection::getPageType( $baseName );
-				
 		} else {
 			$pageType = Connection::getPageType( $this->indexBaseName,
 				$this->pickIndexTypeFromNamespaces() );
@@ -824,8 +834,17 @@ class Searcher extends ElasticsearchIntermediary {
 		) );
 		$result = $work->execute();
 		if ( $result->isOK() ) {
+			$responseData = $result->getValue()->getResponse()->getData();
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
+			if ( $responseData[ 'timed_out' ] ) {
+				wfLogWarning( "$description timed out and only returned partial results!" );
+				if ( $result->getValue()->numRows() === 0 ) {
+					return Status::newFatal( 'cirrussearch-backend-error' );
+				} else {
+					$result->warning( 'cirrussearch-timed-out' );
+				}
+			}
 		}
 
 		return $result;

@@ -595,7 +595,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return;
 			}
 		} else {
-			foreach ( $this->getIndicesWithAlias( $allAliasName ) as $index ) {
+			foreach ( $status->getIndicesWithAlias( $allAliasName ) as $index ) {
 				if( $index->getName() === $this->getSpecificIndexName() ) {
 					$this->output( "ok\n" );
 					return;
@@ -906,37 +906,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchReplicaCount?', 1 );
 		}
 		return $wgCirrusSearchReplicaCount[ $this->indexType ];
-	}
-
-	/**
-	 * Get indecies with the named alias.  Doesn't use Elastica's status->getIndicesWithAlias because
-	 * that feches index status from _every_ index.
-	 *
-	 * @var $alias string alias name
-	 * @return array(\Elastica\Index) of index names
-	 */
-	private function getIndicesWithAlias( $alias ) {
-		$client = Connection::getClient();
-		$response = null;
-		try {
-			$response = $client->request( "/_alias/$alias" );
-		} catch ( \Elastica\Exception\ResponseException $e ) {
-			$transferInfo = $e->getResponse()->getTransferInfo();
-			// 404 means the index alias doesn't exist which means no indexes have it.
-			if ( $transferInfo['http_code'] === 404 ) {
-				return array();
-			}
-			// If we don't have a 404 then this is still unexpected so rethrow the exception.
-			throw $e;
-		}
-		if ( $response->hasError() ) {
-			$this->error( 'Error fetching indecies with alias:  ' . $response->getError() );
-		}
-		$result = array();
-		foreach ( $response->getData() as $name => $info ) {
-			$result[] = new \Elastica\Index($client, $name);
-		}
-		return $result;
 	}
 
 	private function parsePotentialPercent( $str ) {

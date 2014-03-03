@@ -961,16 +961,44 @@ $messages['pl'] = array(
 );
 
 /** Portuguese (português)
+ * @author Hamilton Abreu
  * @author Vitorvicentevalente
  */
 $messages['pt'] = array(
 	'cirrussearch-desc' => 'Mecanismo de procura "Elasticsearch" para o MediaWiki',
-	'cirrussearch-backend-error' => 'Não foi possível completar a sua pesquisa devido a um problema temporário. Por favor, tente novamente mais tarde.',
+	'cirrussearch-backend-error' => 'Não foi possível concluir a pesquisa devido a um problema temporário. Tente novamente mais tarde, por favor.',
+	'cirrussearch-parse-error' => 'O pedido de pesquisa não foi compreendido. Simplifique-o, por favor. O pedido foi registado para melhorar o sistema de pesquisa.',
 	'cirrussearch-now-using' => 'Esta wiki está a utilizar um novo motor de busca.
 ([[mw:Special:MyLanguage/Help:CirrusSearch|Saiba mais]])',
-	'cirrussearch-pref-label' => 'Nova procura',
-	'cirrussearch-pref-desc' => 'Experimente a nossa nova forma de pesquisa que suporta um maior número de idiomas, fornece resultados mais actualizados e pode ainda encontrar o texto de predefinições.',
-	'cirrussearch-file-contents-match' => 'Conteúdos de ficheiros correspondentes: $1',
+	'cirrussearch-ignored-headings' => ' #<!-- deixe esta linha exatamente como ela está --> <pre>
+# Títulos de página que serão ignorados pela pesquisa.
+# Mudanças a esta lista terão efeito quando a página com o título referido for indexada.
+# Pode forçar a indexação de uma página realizando uma edição nula nessa página.
+# A sintaxe é a seguinte:
+#  * Tudo desde um símbolo de cardinal (#) até ao fim da linha é um comentário
+#  * Cada linha não vazia é o título exato a ignorar, respeitando o uso de maiúsculas
+Referências
+Links externos
+Ver também
+ #</pre> <!-- deixe esta linha exatamente como ela está -->',
+	'cirrussearch-boost-templates' => ' #<!-- deixe esta linha exatamente como ela está --> <pre>
+# Se uma página contiver uma destas predefinições a sua classificação na pesquisa será multiplicada pela percentagem configurada.
+# As alterações a esta página têm efeito imediato.
+# A sintaxe é a seguinte:
+#   * Tudo desde um símbolo de cardinal (#) até ao fim da linha é um comentário
+#   * Todas as linhas não vazias são o nome exato da predefinição cuja classificação deve ser alterada, incluindo o espaço nominal e respeitando o uso de maiúsculas, seguido pelo carácter "|", seguido por um número, seguido pelo carácter "%".
+# Exemplos de linhas corretas:
+# Predefinição:Boa|150%
+# Predefinição:Muito muito boa|300%
+# Predefinição:Má|50%
+# Exemplos de linhas que não terão efeito:
+# Predefinição:Exemplo|150.234234% <-- não são permitidos algarismos decimais!
+# Exemplo|150% <--- funciona do ponto de vista técnico, mas só para tansclusão da página Exemplo no espaço nominal principal
+# Pode testar alterações da configuração realizando uma pesquisa com a forma boost-templates:"XX" onde XX são todas as predefinições cuja classificação pretende alterar, separadas por espaços em vez de quebras de linha.
+# As pesquisas com a forma boost-templates:"XX" ignoram o conteúdo deste campo.
+ #</pre> <!-- deixe esta linha exatamente como ela está -->',
+	'cirrussearch-pref-label' => 'Nova pesquisa',
+	'cirrussearch-pref-desc' => 'Experimente a nossa nova forma de pesquisa que suporta um maior número de idiomas, fornece resultados mais actualizados e pode ainda encontrar o texto incluído em predefinições.',
 );
 
 /** Brazilian Portuguese (português do Brasil)

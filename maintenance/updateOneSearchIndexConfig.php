@@ -160,10 +160,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$wgLanguageCode,
 			$wgCirrusSearchPhraseUseText,
 			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
-			$wgCirrusSearchUseAggressiveSplitting;
+			$wgCirrusSearchUseAggressiveSplitting,
+			$wgCirrusSearchMaintenanceTimeout;
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		// Set the timeout for maintenance actions
+		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
@@ -635,6 +638,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Dump everything from the live index into the one being worked on.
 	 */
 	private function reindex() {
+		global $wgCirrusSearchMaintenanceTimeout;
+
 		$settings = $this->getIndex()->getSettings();
 		$settings->set( array(
 			'refresh_interval' => -1,           // This is supposed to help with bulk index io load.
@@ -644,6 +649,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->reindexProcesses > 1 ) {
 			$fork = new ReindexForkController( $this->reindexProcesses );
 			$forkResult = $fork->start();
+			// Forking clears the timeout so we have to reinstate it.
+			Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+
 			switch ( $forkResult ) {
 			case 'child':
 				$this->reindexInternal( $this->reindexProcesses, $fork->getChildNumber() );

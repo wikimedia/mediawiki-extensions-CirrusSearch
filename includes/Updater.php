@@ -140,17 +140,15 @@ class Updater extends ElasticsearchIntermediary {
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
-	 * @param $clientSideTimeout null|int Timeout in seconds to update pages or null if using
-	 *   the Elastica default which is 300 seconds.
+	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
+	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param $flags int Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 */
 	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
-		if ( $clientSideTimeout === null ) {
-			Connection::setTimeout( null );
-		} else {
+		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		if ( $checkFreshness ) {
@@ -187,17 +185,15 @@ class Updater extends ElasticsearchIntermediary {
 	 *
 	 * @param $titles array(Title) of titles to delete
 	 * @param $ids array(integer) of ids to delete
-	 * @param $clientSideTimeout timeout in seconds to update pages or null if using
-	 *   the Elastica default which is 300 seconds.
+	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
+	 *      change the configured timeout which defaults to 300 seconds.
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		OtherIndexJob::queueIfRequired( $titles, false );
 
-		if ( $clientSideTimeout === null ) {
-			Connection::setTimeout( null );
-		} else {
+		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		$this->sendDeletes( $ids );

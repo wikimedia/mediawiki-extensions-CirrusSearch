@@ -1085,8 +1085,12 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}, $string );
 
-		// Escape +, -, and ! when not followed immediately by a term.
+		// Escape +, -, and ! when not immediately followed by a term or when immediately
+		// prefixed with a term.  Catches "foo-bar", "foo- bar", "foo - bar".  The only
+		// acceptable use is "foo -bar" and "-bar foo".
 		$string = preg_replace_callback( '/[+\-!]+(?!\w)/',
+			'CirrusSearch\Searcher::escapeBadSyntax', $string );
+		$string = preg_replace_callback( '/(?<!^| )[+\-!]+/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
 		// Escape || when not between terms
@@ -1113,7 +1117,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private function queryStringContainsSyntax( $string ) {
 		// Matches the upper case syntax and character syntax
-		return preg_match( '/[?*+~"!|-]|AND|OR|NOT/', $string );
+		return preg_match( '/(?:(?<!\\\\)[?*+~"!|-])|AND|OR|NOT/', $string );
 	}
 
 	private static function escapeBadSyntax( $matches ) {

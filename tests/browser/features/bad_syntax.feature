@@ -6,13 +6,13 @@ Feature: Searches with syntax errors
   Scenario: Searching for <text>~<text> treats the tilde like a space (finding a result if the term is correct)
     When I search for ffnonesenseword~pickles
     Then Two Words is the first search result
-    And there is no link to create a new page from the search result
+    And there is a link to create a new page from the search result
 
   @bad_syntax @setup_main
   Scenario: Searching for <text>~<text> treats the tilde like a space (not finding any results if a fuzzy search was needed)
     When I search for ffnonesensewor~pickles
     Then there are no search results
-    And there is no link to create a new page from the search result
+    And there is a link to create a new page from the search result
 
   @bad_syntax @exact_quotes @setup_main
   Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
@@ -47,10 +47,10 @@ Feature: Searches with syntax errors
     | intitle:"1911 Encyclopædia Britannica/Dionysius"' | 1911 Encyclopædia Britannica/Dionysius    |
 
   @bad_syntax @boolean_operators
-  Scenario Outline: boolean operators in bad positions in the query are ignored
+  Scenario Outline: boolean operators in bad positions in the query are ignored so you get the option to create a new page
     When I search for <query>
     Then Catapult is in the first search result
-    And there is no link to create a new page from the search result
+    And there is a link to create a new page from the search result
   Examples:
   |         query          |
   | catapult +             |
@@ -69,28 +69,48 @@ Feature: Searches with syntax errors
   | catapult + amazing     |
   | catapult - amazing     |
   | catapult ! amazing     |
-  | catapult AND + amazing |
-  | catapult AND - amazing |
-  | catapult AND ! amazing |
+  | amazing+catapult       |
+  | amazing-catapult       |
+  | amazing!catapult       |
   | catapult!!!!!!!        |
   | catapult !!!!!!!!      |
   | !!!! catapult          |
   | ------- catapult       |
   | ++++ catapult ++++     |
   | ++catapult++++catapult |
-  | :~!$$=!~\!{<} catapult |
-  | catapult -_~^_~^_^^    |
-  | catapult \|\|          |
   | catapult ~/            |
-  | \|\| catapult          |
   | catapult ~/            |
-  | --- AND catapult       |
-  | catapult \|\|---       |
-  | catapult ~~~~~~        |
   | catapult~◆~catapult    |
+
+  @bad_syntax @boolean_operators
+  Scenario Outline: boolean operators in bad positions in the query are ignored but if there are other valid operators then you don't get the option to create a new page
+    When I search for <query>
+    Then Catapult is in the first search result
+    And there is no link to create a new page from the search result
+  Examples:
+  |         query          |
+  | catapult AND + amazing |
+  | catapult AND - amazing |
+  | catapult AND ! amazing |
+  | catapult \|\|---       |
   | catapult~~~~....[[\|\|.\|\|\|\|\|\|+\|+\|=\\\\=\\*.$.$.$. |
   | T:8~=~¥9:77:7:57;7;76;6346- OR catapult |
   | catapult OR T:8~=~¥9:77:7:57;7;76;6346- |
+  | --- AND catapult       |
+
+  @bad_syntax @boolean_operators
+  Scenario Outline: boolean operators in bad positions in the query are ignored and if the title isn't a valid article title then you don't get the option to create a new page
+    When I search for <query>
+    Then Catapult is in the first search result
+    And there is no link to create a new page from the search result
+  Examples:
+  |         query          |
+  | :~!$$=!~\!{<} catapult |
+  | catapult -_~^_~^_^^    |
+  | catapult \|\|          |
+  | catapult ~~~~~~        |
+  | catapult \|\|---       |
+  | \|\| catapult          |
 
   @bad_syntax
   Scenario: searching for NOT something will not crash (technically it should bring up the most linked document, but this isn't worth checking)
@@ -129,11 +149,11 @@ Feature: Searches with syntax errors
     | hastemplate:""         |
 
   @wildcard
-  Scenario Outline: Wildcards can't start a term
+  Scenario Outline: Wildcards can't start a term but they aren't valid titles so you still don't get the link to create an article
     When I search for <wildcard>ickle
     Then there are no search results
-    And there is no link to create a new page from the search result
+    And there is <link> to create a new page from the search result
   Examples:
-    | wildcard |
-    | *        |
-    | ?        |
+    | wildcard |   link  |
+    | *        | no link |
+    | ?        | a link  |

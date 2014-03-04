@@ -110,6 +110,11 @@ $wgCirrusSearchSearchShardTimeout = '20s';
 // partial results.  Defaults to 20 seconds.
 $wgCirrusSearchClientSideSearchTimeout = 40;
 
+// Client side timeout for maintanance operations.  We can't disable the timeout
+// all together so we set it to one hour for really long running operations
+// like optimize.
+$wgCirrusSearchMaintenanceTimeout = 3600;
+
 // Is it ok if the prefix starts on any word in the title or just the first word?
 // Defaults to false (first word only) because that is the wikipedia behavior and so
 // what we expect users to expect.  Does not effect the prefix: search filter or

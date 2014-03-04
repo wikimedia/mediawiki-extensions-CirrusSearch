@@ -86,7 +86,11 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf;
+		global $wgPoolCounterConf,
+			$wgCirrusSearchMaintenanceTimeout;
+
+		// Set the timeout for maintenance actions
+		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
 		$profiler = new ProfileSection( __METHOD__ );
 

@@ -87,6 +87,26 @@ class Hooks {
 		JobQueueGroup::singleton()->push(
 			new DeletePagesJob( $page->getTitle(), array( 'id' => $id ) )
 		);
+		return true;
+	}
+
+	/**
+	 * Called when a page is imported. Force a full index of the page. Use the MassIndex
+	 * job since there's likely to be a bunch and we'll prioritize them well but use
+	 * INDEX_EVERYTHING since we won't get a chance at a second pass.
+	 *
+	 * @param Title $title The page title we've just imported
+	 * @return bool
+	 */
+	public static function onAfterImportPage( $title ) {
+		JobQueueGroup::singleton()->push(
+			MassIndexJob::build(
+				array( WikiPage::factory( $title ) ),
+				false,
+				Updater::INDEX_EVERYTHING
+			)
+		);
+		return true;
 	}
 
 	/**
@@ -106,6 +126,7 @@ class Hooks {
 				'removedLinks' => array()
 			) )
 		);
+		return true;
 	}
 
 	/**

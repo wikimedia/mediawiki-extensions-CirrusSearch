@@ -63,6 +63,8 @@ class UpdateVersionIndex extends Maintenance {
 		if ( $filter ) {
 			$query->setFilter( $filter );
 		}
+		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
+		$query->setSize( 5000 );
 		$res = $this->getType()->getIndex()->search( $query );
 		foreach( $res as $r ) {
 			$data = $r->getData();

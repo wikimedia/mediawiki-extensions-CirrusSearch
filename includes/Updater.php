@@ -187,6 +187,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param $ids array(integer) of ids to delete
 	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
+	 * @return bool True if nothing happened or we deleted, false on failure
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
@@ -196,7 +197,7 @@ class Updater extends ElasticsearchIntermediary {
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
-		$this->sendDeletes( $ids );
+		return $this->sendDeletes( $ids );
 	}
 
 	private function isFresh( $page ) {
@@ -429,26 +430,28 @@ class Updater extends ElasticsearchIntermediary {
 	 * Send delete requests to Elasticsearch.
 	 *
 	 * @param array(int) $ids ids to delete from Elasticsearch
+	 * @return bool True if nothing happened or we deleted, false on failure
 	 */
 	private function sendDeletes( $ids ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$idCount = count( $ids );
-		if ( $idCount === 0 ) {
-			return;
+		if ( $idCount !== 0 ) {
+			try {
+				foreach ( Connection::getAllIndexTypes() as $type ) {
+					$this->start( "deleting $idCount from $type" );
+					Connection::getPageType( wfWikiId(), $type )->deleteIds( $ids );
+					$this->success();
+				}
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				$this->failure( $e );
+				wfDebugLog( 'CirrusSearchChangeFailed', 'Delete for ids: ' .
+					implode( ',', $ids ) );
+				return false;
+			}
 		}
 
-		try {
-			foreach ( Connection::getAllIndexTypes() as $type ) {
-				$this->start( "deleting $idCount from $type" );
-				Connection::getPageType( wfWikiId(), $type )->deleteIds( $ids );
-				$this->success();
-			}
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$this->failure( $e );
-			wfDebugLog( 'CirrusSearchChangeFailed', 'Delete for ids: ' .
-				implode( ',', $ids ) );
-		}
+		return true;
 	}
 
 	/**

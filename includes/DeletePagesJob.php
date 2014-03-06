@@ -25,7 +25,7 @@ class DeletePagesJob extends Job {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 
 		$updater = new Updater();
-		$updater->deletePages( array( $this->title ),
+		return $updater->deletePages( array( $this->title ),
 			array( $this->params[ 'id' ] ), $wgCirrusSearchClientSideUpdateTimeout );
 	}
 }

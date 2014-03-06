@@ -49,10 +49,12 @@ abstract class Job extends MWJob {
 		$backupPoolCounterSearch = $wgPoolCounterConf['CirrusSearch-Search'];
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
-		$this->doJob();
+		$ret = $this->doJob();
 
 		// Restore the pool counter settings in case other jobs need them
 		$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
+
+		return $ret;
 	}
 
 	/**

@@ -24,10 +24,10 @@ use \Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
-	private $titleSnippet;
-	private $redirectTitle, $redirectSnipppet;
-	private $sectionTitle, $sectionSnippet;
-	private $textSnippet, $isFileMatch;
+	private $titleSnippet = '';
+	private $redirectTitle = null, $redirectSnipppet = '';
+	private $sectionTitle = null, $sectionSnippet = '';
+	private $textSnippet = '', $isFileMatch = false;
 	private $wordCount;
 	private $byteSize;
 	private $score;
@@ -69,9 +69,8 @@ class Result extends SearchResult {
 				$nstext = str_replace( '_', ' ', $this->getTitle()->getNsText() ) . ':';
 			}
 			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
-		} else {
-			$this->titleSnippet = '';
 		}
+
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
 
@@ -91,11 +90,11 @@ class Result extends SearchResult {
 			}
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
 			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
-		} else {
-			$this->redirectSnipppet = '';
-			$this->redirectTitle = null;
 		}
+
 		if ( isset( $highlights[ 'text' ] ) ) {
+			// This can get skipped if there the page was sent to Elasticsearch without text.
+			// This could be a bug or it could be that the page simply doesn't have any text.
 			$snippet = $highlights[ 'text' ][ 0 ];
 			if ( isset( $highlights[ 'file_text' ] ) ) {
 				$fileTextSnippet = $highlights[ 'file_text' ][ 0 ];
@@ -105,18 +104,13 @@ class Result extends SearchResult {
 				}
 			}
 			$this->textSnippet = $this->escapeHighlightedText( $snippet );
-		} else {
-			// This can happen if there the page was sent to Elasticsearch without text.  This could be
-			// a bug or it could be that the page simply doesn't have any text.
-			$this->textSnippet = '';
 		}
+
 		if ( isset( $highlights[ 'heading' ] ) ) {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
 			$this->sectionTitle = $this->findSectionTitle();
-		} else {
-			$this->sectionSnippet = '';
-			$this->sectionTitle = null;
 		}
+
 		if ( $wgCirrusSearchShowScore && $results->getMaxScore() ) {
 			$this->score = $result->getScore() / $results->getMaxScore();
 		}

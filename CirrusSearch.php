@@ -296,6 +296,7 @@ $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
  */
 $wgHooks[ 'CirrusSearchBuildDocumentFinishBatch'][] = 'CirrusSearch\BuildDocument\RedirectsAndIncomingLinks::finishBatch';
 $wgHooks[ 'CirrusSearchBuildDocumentLinks'][] = 'CirrusSearch\BuildDocument\RedirectsAndIncomingLinks::buildDocument';
+$wgHooks[ 'AfterImportPage' ][] = 'CirrusSearch\Hooks::onAfterImportPage';
 $wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearch\Hooks::apiBeforeMainHook';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::articleDeleteCompleteHook';
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';
@@ -305,6 +306,7 @@ $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearch\Hooks::linksUpdateCompletedH
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch\Hooks::softwareInfoHook';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::specialSearchResultsPrependHook';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::getUnitTestsList';
+
 
 /**
  * i18n

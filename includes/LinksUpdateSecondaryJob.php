@@ -49,14 +49,9 @@ class LinksUpdateSecondaryJob extends Job {
 	private function loadTitles( $titles ) {
 		$result = array();
 		foreach ( $titles as $title ) {
-			// TODO remove support for Title objects when the queues have drained of them
-			if ( $title instanceof Title ) {
+			$title = Title::newFromDBKey( $title );
+			if ( $title ) {
 				$result[] = $title;
-			} else {
-				$title = Title::newFromDBKey( $title );
-				if ( $title ) {
-					$result[] = $title;
-				}
 			}
 		}
 		return $result;

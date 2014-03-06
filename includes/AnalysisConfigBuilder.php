@@ -201,9 +201,9 @@ class AnalysisConfigBuilder {
 	private function getDefaultTextAnalyzerType() {
 		if ( array_key_exists( $this->language, $this->elasticsearchLanguageAnalyzers ) ) {
 			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
-		} else {
-			return 'default';
 		}
+
+		return 'default';
 	}
 
 	/**

@@ -185,19 +185,23 @@ $wgCirrusSearchNearMatchWeight = 2;
 // matches.
 $wgCirrusSearchStemmedWeight = 0.5;
 
-// Weight of each namespace relative.  If not specified non-talk namespaces default to 0.  If not
-// specified talk namspaces default to:
+// Weight of each namespace relative to NS_MAIN.  If not specified non-talk namespaces default to
+// $wgCirrusSearchDefaultNamespaceWeight.  If not specified talk namspaces default to:
 //   $wgCirrusSearchTalkNamespaceWeight * weightOfCorrespondingNonTalkNamespace
-// The default values are inspired by the configuration used for lsearchd.
+// The default values below inspired by the configuration used for lsearchd.  Note that _technically_
+// NS_MAIN can be overriden with this then 1 just represents what NS_MAIN would have been....
+// If you override NS_MAIN here then NS_TALK will still default to:
+//   $wgCirrusSearchNamespaceWeights[ NS_MAIN ] * wgCirrusSearchTalkNamespaceWeight
 $wgCirrusSearchNamespaceWeights = array(
 	NS_USER => 0.05,
 	NS_PROJECT => 0.1,
-	NS_FILE => 0.2,
 	NS_MEDIAWIKI => 0.05,
 	NS_TEMPLATE => 0.005,
 	NS_HELP => 0.1,
-	NS_CATEGORY => 0.2,
 );
+
+// Default weight of non-talks namespaces
+$wgCirrusSearchDefaultNamespaceWeight = 0.2;
 
 // Default weight of a talk namespace relative to its corresponding non-talk namespace.
 $wgCirrusSearchTalkNamespaceWeight = 0.25;

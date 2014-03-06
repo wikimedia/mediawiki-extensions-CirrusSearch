@@ -1268,25 +1268,32 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Get the weight of a namespace.  Public so it can be used in a callback.
+	 * Get the weight of a namespace.
 	 * @param int $ns the namespace
 	 * @return float the weight of the namespace
 	 */
 	private function getBoostForNamespace( $ns ) {
-		global $wgCirrusSearchNamespaceWeights;
-		global $wgCirrusSearchTalkNamespaceWeight;
+		global $wgCirrusSearchNamespaceWeights,
+			$wgCirrusSearchDefaultNamespaceWeight,
+			$wgCirrusSearchTalkNamespaceWeight;
 
 		if ( isset( $wgCirrusSearchNamespaceWeights[ $ns ] ) ) {
 			return $wgCirrusSearchNamespaceWeights[ $ns ];
 		}
 		if ( MWNamespace::isSubject( $ns ) ) {
-			return 1;
+			if ( $ns === NS_MAIN ) {
+				return 1;
+			}
+			return $wgCirrusSearchDefaultNamespaceWeight;
 		}
 		$subjectNs = MWNamespace::getSubject( $ns );
 		if ( isset( $wgCirrusSearchNamespaceWeights[ $subjectNs ] ) ) {
 			return $wgCirrusSearchTalkNamespaceWeight * $wgCirrusSearchNamespaceWeights[ $subjectNs ];
 		}
-		return $wgCirrusSearchTalkNamespaceWeight;
+		if ( $ns === NS_TALK ) {
+			return $wgCirrusSearchTalkNamespaceWeight;
+		}
+		return $wgCirrusSearchDefaultNamespaceWeight * $wgCirrusSearchTalkNamespaceWeight;
 	}
 
 	private function checkTitleSearchRequestLength( $search ) {

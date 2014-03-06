@@ -22,8 +22,11 @@ use \Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 interface ResultsType {
-	function getFields();
-	function getScriptFields();
+	/**
+	 * Get the source filtering to be used loading the result.
+	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 */
+	function getSourceFiltering();
 	function getHighlightingConfiguration();
 	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 		$result, $searchContainedSyntax );
@@ -44,12 +47,8 @@ class TitleResultsType implements ResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
-	public function getFields() {
+	public function getSourceFiltering() {
 		return array( 'namespace', 'title' );
-	}
-
-	public function getScriptFields() {
-		return null;
 	}
 
 	public function getHighlightingConfiguration() {
@@ -80,8 +79,7 @@ class TitleResultsType implements ResultsType {
 			$result, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $result->getResults() as $r ) {
-			$title = Title::makeTitle( ElasticsearchIntermediary::singleValue( $r, 'namespace' ),
-				ElasticsearchIntermediary::singleValue( $r, 'title' ) );
+			$title = Title::makeTitle( $r->namespace, $r->title );
 			$highlights = $r->getHighlights();
 
 			// Now we have to use the highlights to figure out whether it was the title or the redirect
@@ -98,7 +96,7 @@ class TitleResultsType implements ResultsType {
 				// Instead of getting the redirect's real namespace we're going to just use the namespace
 				// of the title.  This is not great but OK given that we can't find cross namespace
 				// redirects properly any way.
-				$title = Title::makeTitle( ElasticsearchIntermediary::singleValue( $r, 'namespace' ), $redirectTitle );
+				$title = Title::makeTitle( $r->namespace, $redirectTitle );
 			} else if ( !isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
 				// We're not really sure where the match came from so lets just pretend it was the title?
 				wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
@@ -114,17 +112,8 @@ class TitleResultsType implements ResultsType {
 }
 
 class FullTextResultsType implements ResultsType {
-	public function getFields() {
-		return array( 'id', 'title', 'namespace',
-			// 'redirect', was moved to a script field....
-			'timestamp', 'text_bytes', 'text.word_count' );
-	}
-
-	public function getScriptFields() {
-		// Works for both 1.0 and 0.90.
-		// TODO remove this in favor of source filtering when we remove support for 0.90.
-		// see http://www.elasticsearch.org/guide/en/elasticsearch/reference/1.x/search-request-source-filtering.html
-		return array( 'redirect' => new \Elastica\Script( '_source[ "redirect" ]' ) );
+	public function getSourceFiltering() {
+		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes', 'text.word_count' );
 	}
 
 	/**
@@ -211,11 +200,7 @@ class InterwikiResultsType implements ResultsType {
 		return null;
 	}
 
-	public function getFields() {
+	public function getSourceFiltering() {
 		return array( 'namespace', 'namespace_text', 'title' );
-	}
-
-	public function getScriptFields() {
-		return null;
 	}
 }

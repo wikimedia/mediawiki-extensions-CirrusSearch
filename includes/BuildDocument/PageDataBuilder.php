@@ -121,9 +121,8 @@ class PageDataBuilder extends ParseBuilder {
 		static $ignoredHeadings = null;
 		if ( $ignoredHeadings === null ) {
 			$source = wfMessage( 'cirrussearch-ignored-headings' )->inContentLanguage();
-			if( $source->isDisabled() ) {
-				$ignoredHeadings = array();
-			} else {
+			$ignoredHeadings = array();
+			if( !$source->isDisabled() ) {
 				$lines = explode( "\n", $source->plain() );
 				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
 				$lines = array_map( 'trim', $lines );          // Remove extra spaces

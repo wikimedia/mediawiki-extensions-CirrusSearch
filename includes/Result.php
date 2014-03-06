@@ -221,7 +221,7 @@ class Result extends SearchResult {
 		$this->interwikiNamespace = $iwNS;
 	}
 
-	public function getTitleSnippet( $terms ) {
+	public function getTitleSnippet() {
 		return $this->titleSnippet;
 	}
 
@@ -229,7 +229,7 @@ class Result extends SearchResult {
 		return $this->redirectTitle;
 	}
 
-	public function getRedirectSnippet( $terms ) {
+	public function getRedirectSnippet() {
 		return $this->redirectSnipppet;
 	}
 

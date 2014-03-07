@@ -98,11 +98,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private $reindexAcceptableCountDeviation;
 
-	/**
-	 * @var bool is this Elasticsearch 0.90.x?
-	 */
-	private $elasticsearch90;
-
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
@@ -192,7 +187,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					implode( ', ', $indexTypes ), 1 );
 			}
 
-			$this->fetchElasticsearchVersion();
+			$this->checkElasticsearchVersion();
 
 			if ( $this->getOption( 'forceOpen', false ) ) {
 				$this->getIndex()->open();
@@ -221,13 +216,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function fetchElasticsearchVersion() {
+	private function checkElasticsearchVersion() {
 		$this->output( $this->indent . 'Fetching Elasticsearch version...' );
 		$result = Connection::getClient()->request( '' );
 		$result = $result->getData();
 		$result = $result[ 'version' ][ 'number' ];
-		$this->elasticsearch90 = strpos( $result, '0.90.' ) !== false;
-		$this->output( ( $this->elasticsearch90 ? '' : 'after ' ) . "0.90\n" );
+		$this->output( "$result..." );
+		if ( strpos( $result, '1.' ) !== 0 ) {
+			$this->output( "Not supported!\n" );
+			$this->error( "Only Elasticsearch 1.x is supported.  Your version: $result.", 1 );
+		} else {
+			$this->output( "OK\n" );
+		}
 	}
 
 	private function updateVersions() {
@@ -258,7 +258,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateIndexSettings() {
 		$this->output( $this->indent . "\tValidating number of shards..." );
 		$settings = $this->getSettings();
-		$actualShardCount = $settings[ 'index' ][ 'number_of_shards' ];
+		$actualShardCount = $settings[ 'number_of_shards' ];
 		if ( $actualShardCount == $this->getShardCount() ) {
 			$this->output( "ok\n" );
 		} else {
@@ -271,7 +271,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		$this->output( $this->indent . "\tValidating number of replicas..." );
-		$actualReplicaCount = $settings[ 'index' ][ 'number_of_replicas' ];
+		$actualReplicaCount = $settings[ 'number_of_replicas' ];
 		if ( $actualReplicaCount == $this->getReplicaCount() ) {
 			$this->output( "ok\n" );
 		} else {
@@ -286,7 +286,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$settings = $this->getSettings();
 		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
 		$requiredAnalyzers = $analysisConfig->buildConfig();
-		if ( $this->checkConfig( $settings[ 'index' ][ 'analysis' ], $requiredAnalyzers ) ) {
+		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
@@ -308,23 +308,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * Load the settings array.  You can't use this to set the settings, use $this->getIndex()->getSettings() for that.
-	 * @return array of settings always in Elasticsearch 1.0 format
+	 * @return array of settings
 	 */
 	private function getSettings() {
-		$settings = $this->getIndex()->getSettings()->get();
-		if ( !$this->elasticsearch90 ) { // 1.0 compat
-			// Looks like we're already in the new format already
-			return $settings;
-		}
-		$to = array();
-		foreach ( $settings as $key => $value ) {
-			$current = &$to;
-			foreach ( explode( '.', $key ) as $segment ) {
-				$current = &$current[ $segment ];
-			}
-			$current = $value;
-		}
-		return $to;
+		return $this->getIndex()->getSettings()->get();
 	}
 
 	private function validateMapping() {
@@ -332,10 +319,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$requiredPageMappings = new MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseUseText );
 		$requiredPageMappings = $requiredPageMappings->buildConfig();
-
-		if ( $this->elasticsearch90 ) {
-			$requiredPageMappings = $this->transformMappingToElasticsearch90( $requiredPageMappings );
-		}
 
 		if ( !$this->checkMapping( $requiredPageMappings ) ) {
 			// TODO Conflict resolution here might leave old portions of mappings
@@ -354,26 +337,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function transformMappingToElasticsearch90( $mapping ) {
-		foreach ( $mapping[ 'properties' ] as $name => $field ) {
-			if ( array_key_exists( 'fields', $field ) ) {
-				// Move the main field configuration to a subfield
-				$field[ 'fields' ][ $name ] = $field;
-				unset( $field[ 'fields' ][ $name ][ 'fields' ] );
-				// Now clear everything from the "main" field that we've moved
-				$mapping[ 'properties' ][ $name ] = array(
-					'type' => 'multi_field',
-					'fields' => $field[ 'fields' ],
-				);
-			}
-			if ( array_key_exists( 'properties', $field ) ) {
-				$mapping[ 'properties' ][ $name ] = $this->transformMappingToElasticsearch90(
-					$field );
-			}
-		}
-		return $mapping;
-	}
-
 	/**
 	 * Check that the mapping returned from Elasticsearch is as we want it.
 	 * @param array $requiredPageMappings the mappings we want
@@ -382,15 +345,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function checkMapping( $requiredPageMappings ) {
 		$indexName = $this->getIndex()->getName();
 		$actualMappings = $this->getIndex()->getMapping();
-		if ( !array_key_exists( $indexName, $actualMappings ) ) {
-			$this->output( "nonexistent...");
-			return false;
-		}
-		$actualMappings = $actualMappings[ $indexName ];
-		if ( !$this->elasticsearch90 ) { // 1.0 compat
-			$actualMappings = $actualMappings[ 'mappings' ];
-		}
-
 		$this->output( "\n" . $this->indent . "\tValidating mapping for page type..." );
 		if ( array_key_exists( 'page', $actualMappings ) &&
 				$this->checkConfig( $actualMappings[ 'page' ], $requiredPageMappings ) ) {

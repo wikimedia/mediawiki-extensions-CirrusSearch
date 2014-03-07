@@ -46,8 +46,7 @@ class Result extends SearchResult {
 		global $wgCirrusSearchShowScore;
 
 		$this->maybeSetInterwiki( $result, $interwikis );
-		$this->mTitle = Title::makeTitle( ElasticsearchIntermediary::singleValue( $result, 'namespace' ),
-			ElasticsearchIntermediary::singleValue( $result, 'title' ), '', $this->interwiki );
+		$this->mTitle = Title::makeTitle( $result->namespace, $result->title, '', $this->interwiki );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
@@ -55,8 +54,8 @@ class Result extends SearchResult {
 		$data = $result->getData();
 		// Not all results requested a word count. Just pretend we have none if so
 		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : 0;
-		$this->byteSize = ElasticsearchIntermediary::singleValue( $result, 'text_bytes' );
-		$this->timestamp = ElasticsearchIntermediary::singleValue( $result, 'timestamp' );
+		$this->byteSize = $result->text_bytes;
+		$this->timestamp = $result->timestamp;
 		$this->timestamp = new MWTimestamp( $this->timestamp );
 		$highlights = $result->getHighlights();
 		// TODO remove when Elasticsearch issue 3757 is fixed

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use \Language;
+
 /**
  * Builds elasticsearch analysis config arrays.
  *
@@ -199,8 +201,18 @@ class AnalysisConfigBuilder {
 	 * @return string the analyzer type
 	 */
 	private function getDefaultTextAnalyzerType() {
+		// If we match a language exactly, use it
 		if ( array_key_exists( $this->language, $this->elasticsearchLanguageAnalyzers ) ) {
 			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
+		}
+
+		// Try the fallback chain, unless we hit english
+		$code = Language::getFallbackFor( $this->language );
+		while ( $code && $code != 'en' ) {
+			if ( array_key_exists( $code, $this->elasticsearchLanguageAnalyzers ) ) {
+				return $this->elasticsearchLanguageAnalyzers[ $code ];
+			}
+			$code = Language::getFallbackFor( $code );
 		}
 
 		return 'default';
@@ -219,7 +231,7 @@ class AnalysisConfigBuilder {
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
-		'zh' => 'chinese',
+		'zh-hans' => 'chinese',
 		'cs' => 'czech',
 		'da' => 'danish',
 		'nl' => 'dutch',

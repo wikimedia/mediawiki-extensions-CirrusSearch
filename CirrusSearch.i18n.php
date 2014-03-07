@@ -433,7 +433,7 @@ $messages['eu'] = array(
 $messages['fa'] = array(
 	'cirrussearch-desc' => 'جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی',
 	'cirrussearch-backend-error' => 'ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.',
-	'cirrussearch-parse-error' => 'پرسش درک نشد. لطفاً آن را ساده‌تر کنید. پرسش برای جستجوی سیستم وارد شد.',
+	'cirrussearch-parse-error' => 'پرسش درک نشد. لطفاً آن را ساده‌تر کنید. پرسش برای جستجوی سامانه وارد شد.',
 	'cirrussearch-now-using' => 'این ویکی از یک موتور جستجوی جدید استفاده می‌کند.
 ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => '#<!-- این صفحه را درست همانطور که هست رها کنید --> <pre>

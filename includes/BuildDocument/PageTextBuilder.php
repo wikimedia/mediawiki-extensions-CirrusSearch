@@ -4,7 +4,6 @@ namespace CirrusSearch\BuildDocument;
 use \HtmlFormatter;
 use \ParserOutput;
 use \Sanitizer;
-use \SearchUpdate;
 
 /**
  * Adds fields to the document that require article text.
@@ -37,8 +36,8 @@ class PageTextBuilder extends ParseBuilder {
 	}
 
 	/**
-	 * Fetch text to index.  If $content is wikitext then render and clean it.  Otherwise delegate
-	 * to the $content itself and then to SearchUpdate::updateText to clean the result.
+	 * Fetch text to index. If $content is wikitext then render and strip things from it.
+	 * Otherwise delegate to the $content itself. Then trim and sanitize the result.
 	 */
 	private function buildTextToIndex() {
 		switch ( $this->content->getModel() ) {

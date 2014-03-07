@@ -222,7 +222,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$result = $result->getData();
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
-		if ( strpos( $result, '1.' ) !== 0 ) {
+		if ( !preg_match( '/^(1|2)./', $result ) ) {
 			$this->output( "Not supported!\n" );
 			$this->error( "Only Elasticsearch 1.x is supported.  Your version: $result.", 1 );
 		} else {

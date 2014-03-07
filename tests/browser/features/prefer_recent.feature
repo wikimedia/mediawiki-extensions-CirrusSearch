@@ -18,7 +18,6 @@ Feature: Searches with prefer-recent
     | .99,.0001   |
     | .99,.001    |
     | .8,.0001    |
-    | .7,.0001    |
 
   @prefer_recent
   Scenario Outline: You can specify prefer-recent: in such a way that being super recent isn't enough

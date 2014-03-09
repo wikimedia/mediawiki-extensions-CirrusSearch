@@ -713,6 +713,45 @@ Vide etiam
 	'cirrussearch-file-contents-match' => 'Contento del file correspondente: $1',
 );
 
+/** Iloko (Ilokano)
+ * @author Lam-ang
+ */
+$messages['ilo'] = array(
+	'cirrussearch-desc' => 'Pinaandar ti Elasticsearch a panagbiruk para iti MediaWiki',
+	'cirrussearch-backend-error' => 'Saanmi a makompleto ti panagbirukmo gapu ti temporario a problema. Pangngaasi a padasem manen intono madamdama.',
+	'cirrussearch-parse-error' => 'Saan a naawatan ti panag-usisa. Pangngaasi a palakaem. Ti usisa ket nailista tapno mapasayaat ti sistema ti panagbiruk.',
+	'cirrussearch-now-using' => 'Daytoy a wiki ket agus-usar ti baro a makina ti panagbiruk. ([[mw:Special:MyLanguage/Help:CirrusSearch|Agadal pay ti adu]])',
+	'cirrussearch-ignored-headings' => ' #<!-- saan a kutkutien daytoy a linia --> <pre>
+# Dagiti paulo a saanto nga ikaskaso babaen ti panagbiruk.
+# Dagiti panagbalbaliw mabalinton intono ti panid nga addaan ti paulo ket maipasurotan.
+# Mabalinmo a piliten ti panangisurot manen iti panid babaen ti awan linaon a panag-urnos.
+# Ti eskritu ket kasla dagiti sumaganad:
+#   * Amin manipud ti karater ti "#" aginggan ti gibus ti linia ket komentario
+#   * Amin a saan a blanko a linia ket eksakto a titulo a saan nga maikaskaso, ckadakkel ti letra ken amin
+Dagit ireperensia
+Dagiti silpo ti ruar
+Kitaen pay
+ #</pre> <!-- saan a kutkutien daytoy a linia -->',
+	'cirrussearch-boost-templates' => ' #<!-- saan a kutkutien daytoy a linia --> <pre>
+# No ti panid ket aglaon kadagitoy a palntilia ti iskor ti panagbiruk ket maipaadu babaen ti naaramid a porsiento.
+# Dagiti panagbalbaliw iti daytoy ket dagus a mabalin.
+# Ti eskritu ket kasla dagiti sumaganad:
+#   * Amin manipud ti karakter ti "#" aginggana ti gibus ti linia ket komentario
+#   * Amin a saan a blanko a linia ket isu ti eksakto a nagan ti plantilia ti maingato, nagan ti espasio, kadakkel ti letra ken amin, a sarunuen ti karakter ti "|" a sarunuen babaen ti bilang a sarunuen babaen ti karakter ti "%" .
+# Dagiti kas pagarigan ti nasayaat a linia:
+# Plantilia:Nasayaat|150%
+# Plantilia:Nasayat unay unay|300%
+# Plantilia:Madi|50%
+# Dagiti kas pagarigan dagiti saan a mabalin a linia:
+# Plantilia:Foo|150.234234% <-- saan a maipalubos dagiti desimal a puntos!
+# Foo|150% <--- teknikal a mabalin, ngem para kadagiti panagilak-am ti panid ti Foo manipud ti umuna a nagan ti espasio
+# Mabalinmo a subokan kadagiti panagbalbaliw ti pannakaaramid babaen ti panagaramid ti usisa a napasarunuan kadagiti maipanagto a lantilia:"XX" a ti XX ket dagiti amin a plantilia a kayatmo nga ipangato nga insinsina babaen dagiti baetan imbes dagiti panagtukkol ti linia.
+# Dagiti usisa a manginagan kadagiti maipangato a plantilia:"XX" ket saan a mangikaskaso kadagiti linaon iti daytoy a pagikabilan.
+ #</pre> <!-- saan a kutkutien daytoy a linia -->',
+	'cirrussearch-pref-label' => 'Baro a panagbiruk',
+	'cirrussearch-pref-desc' => 'Padasen ti baro a panagbirukmi a mangsuporta kadagiti ad-adu a bilang ti pagsasao, mangited kadagiti barbaro a resulta, ken makabiruk pay iti testo iti uneg dagiti plantilia.',
+);
+
 /** Italian (italiano)
  * @author Beta16
  * @author Rosh
@@ -1007,6 +1046,7 @@ Ver também
 $messages['pt-br'] = array(
 	'cirrussearch-desc' => "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
 	'cirrussearch-backend-error' => 'Não foi possível completar a busca devido a um problema temporário. Por favor, tente novamente mais tarde.',
+	'cirrussearch-parse-error' => 'A consulta não foi compreendida. Por favor, simplifique-a. A consulta foi registrada para melhorar o sistema de busca.',
 	'cirrussearch-now-using' => 'Este wiki está utilizando um novo mecanismo de busca. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])',
 	'cirrussearch-ignored-headings' => ' #<!-- deixe esta linha exatamente como está --> <pre>
 # Subtítulos que serão ignorados pela busca.
@@ -1019,8 +1059,24 @@ Referências
 Ligações externas
 Ver também
  #</pre> <!-- deixe esta linha exatamente como está -->',
+	'cirrussearch-boost-templates' => ' #<!-- deixe esta linha exatamente como está --> <pre>
+# Se uma página contiver uma destas predefinições a sua classificação na pesquisa será multiplicada pela percentagem configurada.
+# As alterações a esta página têm efeito imediato.
+# A sintaxe é a seguinte:
+#   * Tudo desde um símbolo de cardinal (#) até ao fim da linha é um comentário
+#   * Todas as linhas não vazias são o nome exato da predefinição cuja classificação deve ser alterada, incluindo o espaço nominal e respeitando o uso de maiúsculas, seguido pelo carácter "|", seguido por um número, seguido pelo carácter "%".
+# Exemplos de linhas corretas:
+# Predefinição:Boa|150%
+# Predefinição:Muito muito boa|300%
+# Predefinição:Má|50%
+# Exemplos de linhas que não terão efeito:
+# Predefinição:Exemplo|150.234234% <-- não são permitidos algarismos decimais!
+# Exemplo|150% <--- funciona do ponto de vista técnico, mas só para tansclusão da página Exemplo no espaço nominal principal
+# Pode testar alterações da configuração realizando uma pesquisa com a forma boost-templates:"XX" onde XX são todas as predefinições cuja classificação pretende alterar, separadas por espaços em vez de quebras de linha.
+# As pesquisas com a forma boost-templates:"XX" ignoram o conteúdo deste campo.
+ #</pre> <!-- deixe esta linha exatamente como ela está -->',
 	'cirrussearch-pref-label' => 'Nova busca',
-	'cirrussearch-pref-desc' => 'Utilizar o novo mecanismo de busca que indexa predefinições, suporta mais idiomas e atualiza mais rápido.',
+	'cirrussearch-pref-desc' => 'Experimente o nosso novo mecanismo de busca que suporta um maior número de idiomas, fornece resultados mais atualizados e pode encontrar o texto incluído em predefinições.',
 );
 
 /** tarandíne (tarandíne)
@@ -1170,9 +1226,24 @@ Se också
 );
 
 /** Telugu (తెలుగు)
+ * @author Chaduvari
  * @author Ravichandra
  */
 $messages['te'] = array(
+	'cirrussearch-parse-error' => 'ప్రశ్న అర్థం కాలేదు. దాన్ని కొంత సరళంగా చేయండి. వెతుకులాటను మెరుగుపరచడం కోసం ఈ ప్రశ్నను భద్రపరచాం.',
+	'cirrussearch-now-using' => 'ఈ వికీ సరికొత్త శోధనా యంత్రాన్ని వాడుతున్నది.
+([[mw:Special:MyLanguage/Help:CirrusSearch|ఇంకా తెలుసుకోండి]])',
+	'cirrussearch-ignored-headings' => ' #<!-- ఈ లైనును ఉన్నది ఉన్నట్లుగా వదిలేయండి --> <pre>
+# వెతుకులాటలో పరిగణింపబడని శీర్షికలు.
+# శీర్షికతో సహా పేజీ ఇండెక్స్ కాగానే మార్పులు వర్తిస్తాయి.
+# ఉత్తుత్తి సవరణ చేయడం ద్వారా బలవంతంగా రీయిండెక్సింగ్ చేయించవచ్చు.
+# వ్యాకరణం ఇలా ఉంటుంది:
+#   * "#" కారెక్టరు నుండి లైను చివరి వరకూ ఉన్నదంతా వ్యాఖ్య అవుతుంది
+#   * ఖాళీగా లేని ప్రతీ లైను వెతుకులాటలో పట్టించుకోనక్కర్లేని శీర్షికగా పరిగణింపబడుతుంది.
+మూలాలు
+బయటి లింకులు
+ఇవి కూడా చూడండి
+ #</pre> <!-- ఈ లైనును ఉన్నది ఉన్నట్లుగా వదిలేయండి -->',
 	'cirrussearch-pref-label' => 'కొత్తగా వెతుకు',
 );
 

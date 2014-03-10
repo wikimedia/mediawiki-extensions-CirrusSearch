@@ -1156,24 +1156,24 @@ References
 External links
 See ava
  #</pre> <!-- leave this line exactly as it is -->',
-	'cirrussearch-boost-templates' => ' #<!-- lea this line exactly aes it is --> <pre>
-# Gif ae page contains yin o these templates than its rake score is multiplied bi the configured percentage.
-# Chynges til this tak effect immediately.
+	'cirrussearch-boost-templates' => ' #<!-- lea this line exactlie aes it is --> <pre>
+# Gif ae page contains yin o thir templates than its rake score is multiplied bi the confeegured percentage.
+# Chynges til this tak effect immediatelie.
 # Syntax is aes follaes:
-#   * awthin fae ae "#" chairacter til the end o the line is ae comment
-#   * Ilka no-blank line is the exact template name tae buist, namespace, case an ilkathin, follaed b aa "|" chairacter follaed bi ae nummer follaed bi ae "%" chairacter.
+#   * awthing fae ae "#" chairacter til the end o the line is ae comment
+#   * Ilka no-blank line is the exact template name tae buist, namespace, case n awthing, follaed bi ae "|" chairacter follaed bi ae nummer follaed bi ae "%" chairacter.
 # Examples o guid lines:
 # Template:Guid|150%
-# Template:Vera Vera Guid|300%
+# Template:Ver Ver Guid|300%
 # Template:Bad|50%
 # Examples o no-warkin lines:
-# Template:Foo|150.234234% <-- naw decimal pynts alloued!
-# Foo|150% <--- technically warks, but fer transclusions o the Foo page fae the main namespace
-# Ye can test configuration chynges b performing ae query prefixed wi buist-templates:"XX" whaur XX is aw o the templates ye wish tae buist separated bi spaces instead o line breaks.
-# Speirins that specify buist-templates:"XX" ignore the contents o this field.
- #</pre> <!-- lea this line exactly aes it is -->',
+# Template:Foo|150.234234% <-- naw decimal poynts permitit!
+# Foo|150% <--- techniclie warks, but fer transcluisions o the Foo page fae the main namespace
+# Ye can test confeeguration chynges bi performin ae speirin prefixed wi buist-templates:"XX" whaur XX is aw o the templates ye wish tae buist separated bi spaces instead o line breaks.
+# Speirins that specifie buist-templates:"XX" ignore the contents o this field.
+ #</pre> <!-- lea this line exactlie aes it is -->',
 	'cirrussearch-pref-label' => 'New rake',
-	'cirrussearch-pref-desc' => "Try oor new rake that supports ae greater nummer o leids, provides ae mair up-til-date affcome, an can e'en fynn tex inside o templates.",
+	'cirrussearch-pref-desc' => 'Gie oor new rake ae gae, this supports ae mair muckle nummer o leids, provides mair up-til-date affcomes, n can even fynd tex inside o templates.',
 );
 
 /** Slovak (slovenčina)

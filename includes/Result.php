@@ -72,21 +72,7 @@ class Result extends SearchResult {
 
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
-
-			// This odd juggling is the second half of the script fields hack to get redirect loaded.
-			// It'll go away when we switch to source filtering.
 			$redirects = $result->redirect;
-			if ( $redirects !== null ) {
-				// I not null it'll always be an array.
-				// In Elasticsearch 0.90 it'll be an array of arrays which is what we need.
-				// In Elasticsearch 1.0 it'll be an array of arrays of arrays where the outer most array
-				// has only a single element which is exactly what would come back from 0.90.
-				if ( count( $redirects ) !== 0 && !array_key_exists( 'title', $redirects[ 0 ] ) ) {
-					wfDebugLog( 'CirrusSearch', "1.0");
-					// Since the first entry doesn't have a title we assume we're in 1.0
-					$redirects = $redirects[ 0 ];
-				}
-			}
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
 			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		}
@@ -173,9 +159,11 @@ class Result extends SearchResult {
 		// Grab the redirect that matches the highlighted title with the lowest namespace.
 		// That is pretty arbitrary but it prioritizes 0 over others.
 		$best = null;
-		foreach ( $redirects as $redirect ) {
-			if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
-				$best = $redirect;
+		if ( $redirects !== null ) {
+			foreach ( $redirects as $redirect ) {
+				if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
+					$best = $redirect;
+				}
 			}
 		}
 		if ( $best === null ) {

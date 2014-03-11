@@ -1161,12 +1161,12 @@ See ava
 # Chynges til this tak effect immediatelie.
 # Syntax is aes follaes:
 #   * awthing fae ae "#" chairacter til the end o the line is ae comment
-#   * Ilka no-blank line is the exact template name tae buist, namespace, case n awthing, follaed bi ae "|" chairacter follaed bi ae nummer follaed bi ae "%" chairacter.
+#   * Ilka non-blank line is the exact template name tae buist, namespace, case n awthing, follaed bi ae "|" chairacter follaed bi ae nummer follaed bi ae "%" chairacter.
 # Examples o guid lines:
 # Template:Guid|150%
 # Template:Ver Ver Guid|300%
 # Template:Bad|50%
-# Examples o no-warkin lines:
+# Examples o non-warkin lines:
 # Template:Foo|150.234234% <-- naw decimal poynts permitit!
 # Foo|150% <--- techniclie warks, but fer transcluisions o the Foo page fae the main namespace
 # Ye can test confeeguration chynges bi performin ae speirin prefixed wi buist-templates:"XX" whaur XX is aw o the templates ye wish tae buist separated bi spaces instead o line breaks.

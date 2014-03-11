@@ -31,7 +31,8 @@ if ( !isset( $wgRedisPassword ) ) {
 
 // Extra Cirrus stuff for Jenkins
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
-$wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installCleanSetup';
+$wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
+$wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
 
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
@@ -53,7 +54,8 @@ $wgJobTypeConf['default'] = array(
 	'class' => 'JobQueueRedis',
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
-	'checkDelay' => true, # The magic bit.
+	'checkDelay' => true,
+	'maximumPeriodicTaskSeconds' => 1,
 	'redisConfig' => array(
 		'password' => $wgRedisPassword,
 	),
@@ -76,11 +78,12 @@ $wgCirrusSearchShowScore = true;
 
 class Jenkins {
 	/**
-	 * Installs a maintenance script the provides a clean Elasticsearch index for testing.
+	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.
 	 * @param DatabaseUpdater $updater database updater
 	 * @return bool true so we let other extensions install more maintenance actions
 	 */
-	public static function installCleanSetup( $updater ) {
+	public static function installDatabaseUpdatePostActions( $updater ) {
+		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes');
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup');
 		return true;
 	}

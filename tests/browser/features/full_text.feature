@@ -3,7 +3,7 @@ Feature: Full text search
   Background:
     Given I am at a random page
 
-  @setup_main
+  @setup_main @setup_namespaces
   Scenario Outline: Query string search
     When I search for <term>
     Then I am on a page titled Search results
@@ -52,7 +52,7 @@ Feature: Full text search
     Then TestWeight Larger is the first search result
     And TestWeight Smaller is the second search result
 
-  @setup_main
+  @headings
   Scenario: Pages can be found by their headings
     When I search for incategory:HeadingsTest "I am a heading"
     Then HasHeadings is the first search result

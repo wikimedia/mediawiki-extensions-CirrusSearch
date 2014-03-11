@@ -107,7 +107,9 @@ Before("@suggestions") do
       And a page named Noble Somethingelse5 exists with contents noble somethingelse
       And a page named Noble Somethingelse6 exists with contents noble somethingelse
       And a page named Noble Somethingelse7 exists with contents noble somethingelse
-      And a page named Template:Noble Pipe exists with contents pipes are so noble
+      And a page named Template:Noble Pipe 1 exists with contents pipes are so noble
+      And a page named Template:Noble Pipe 2 exists with contents pipes are so noble
+      And a page named Template:Noble Pipe 3 exists with contents pipes are so noble
       And a page named Rrr Word 1 exists with contents #REDIRECT [[Popular Culture]]
       And a page named Rrr Word 2 exists with contents #REDIRECT [[Popular Culture]]
       And a page named Rrr Word 3 exists with contents #REDIRECT [[Noble Somethingelse3]]
@@ -299,11 +301,12 @@ Before("@go", "@options") do
   $go_options = true
 end
 
-Before("@go, @prefix", "@redirect") do
+Before("@redirect") do
   if !$go_options
     steps %Q{
-      Given a page named Seo Redirecttest exists
-      And a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
+      Given a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
+      And wait 3 seconds
+      And a page named Seo Redirecttest exists
       And a page named Search Engine Optimization Redirecttest exists
     }
   end

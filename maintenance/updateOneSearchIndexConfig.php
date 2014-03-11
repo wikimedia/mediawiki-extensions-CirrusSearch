@@ -294,7 +294,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			if ( $this->closeOk ) {
 				$this->getIndex()->close();
 				$this->closed = true;
-				$settingsObject->set( $requiredAnalyzers );
+				$this->getIndex()->getSettings()->set( $requiredAnalyzers );
 				$this->output( "corrected\n" );
 			} else {
 				$this->output( "cannot correct\n" );

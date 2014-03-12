@@ -1233,9 +1233,8 @@ class Searcher extends ElasticsearchIntermediary {
 		static $defaultBoostTemplates = null;
 		if ( $defaultBoostTemplates === null ) {
 			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
-			if( $source->isDisabled() ) {
-				$defaultBoostTemplates = array();
-			} else {
+			$defaultBoostTemplates = array();
+			if( !$source->isDisabled() ) {
 				$lines = explode( "\n", $source->plain() );
 				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
 				$lines = array_map( 'trim', $lines );          // Remove extra spaces

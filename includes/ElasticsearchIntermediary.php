@@ -27,7 +27,7 @@ class ElasticsearchIntermediary {
 	 * @var string|null the name or ip of the user for which we're performing this search or null in the case of
 	 * requests kicked off by jobs
 	 */
-	private $user;
+	private $user = 'nobody';
 	/**
 	 * @var float|null start time of current request or null if none is running
 	 */
@@ -55,8 +55,6 @@ class ElasticsearchIntermediary {
 	protected function __construct( $user, $slowSeconds ) {
 		if ( $user ) {
 			$this->user = 'User:' . $user->getName(); // name is the ip address of anonymous users
-		} else {
-			$this->user = 'nobody';
 		}
 		$this->slowMillis = round( 1000 * $slowSeconds );
 	}

@@ -39,4 +39,3 @@ Feature: Full text search advanced features
     | Talk, Help          | catapult | Talk:Two Words is |
     | Help, Help talk     | catapult | none is           |
     | (Main) or (Article) | catapult | Catapult is in    |
-    | List redirects      | "rdir"   | none is           |

@@ -67,7 +67,7 @@ class InterwikiSearcher extends Searcher {
 		if ( !$res ) {
 			$this->setExplicitIndexes( array_values( $this->interwikis ) );
 			$this->setResultsType( new InterwikiResultsType( $this->interwikis ) );
-			$results = $this->searchText( $term, false, false );
+			$results = $this->searchText( $term, false );
 			if ( $results->isOk() ) {
 				$res = $results->getValue();
 				$wgMemc->set( $key, $res, $wgCirrusSearchInterwikiCacheTime );

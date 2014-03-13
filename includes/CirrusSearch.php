@@ -47,6 +47,7 @@ class CirrusSearch extends SearchEngine {
 	public function supports( $feature ) {
 		switch ( $feature ) {
 		case 'search-update':
+		case 'list-redirects':
 			return false;
 		default:
 			return parent::supports( $feature );
@@ -93,7 +94,7 @@ class CirrusSearch extends SearchEngine {
 				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
 			}
 		} else {
-			$status = $searcher->searchText( $term, $this->showRedirects, $this->showSuggestion );
+			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
 
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();

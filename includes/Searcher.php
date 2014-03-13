@@ -125,10 +125,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var string index base name to use
 	 */
 	private $indexBaseName;
-	/**
-	 * @var bool should this search show redirects?
-	 */
-	private $showRedirects;
 
 	/**
 	 * @var boolean is this a fuzzy query?
@@ -256,11 +252,10 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Search articles with provided term.
 	 * @param $term string term to search
-	 * @param $showRedirects boolean should this request show redirects?
 	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
-	public function searchText( $term, $showRedirects, $showSuggestion ) {
+	public function searchText( $term, $showSuggestion ) {
 		global $wgCirrusSearchPhraseRescoreBoost,
 			$wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchPhraseUseText,
@@ -275,7 +270,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$searcher = $this;
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
-		$this->showRedirects = $showRedirects;
 		$this->term = trim( $term );
 		$this->boostLinks = true;
 		// Handle title prefix notation
@@ -918,10 +912,10 @@ class Searcher extends ElasticsearchIntermediary {
 			$fields[] = "text${fieldSuffix}^${weight}";
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
 		}
-		if ( $this->showRedirects ) {
-			$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
-			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
-		}
+
+		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
+		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+
 		return $fields;
 	}
 

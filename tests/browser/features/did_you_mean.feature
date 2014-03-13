@@ -44,14 +44,6 @@ Feature: Did you mean
     Then there is no suggestion
 
   @suggestions
-  Scenario: Suggestions don't come from redirect titles when redirects are not included in search
-    Given I am at the search results page
-    And I click the Advanced link
-    And I click the List redirects label
-    When I search for Rrr Ward
-    Then there is no suggestion
-
-  @suggestions
   Scenario Outline: Special search syntax is preserved in suggestions (though sometimes moved around)
     When I search for <term>
     Then <suggested> is suggested

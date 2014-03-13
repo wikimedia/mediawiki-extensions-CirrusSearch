@@ -90,10 +90,9 @@ class Connection extends ElasticaConnection {
 		global $wgCirrusSearchNamespaceMappings;
 		if ( isset( $wgCirrusSearchNamespaceMappings[$namespace] ) ) {
 			return $wgCirrusSearchNamespaceMappings[$namespace];
-		} elseif ( MWNamespace::isContent( $namespace ) ) {
-			return self::CONTENT_INDEX_TYPE;
-		} else {
-			return self::GENERAL_INDEX_TYPE;
 		}
+
+		return MWNamespace::isContent( $namespace ) ?
+			self::CONTENT_INDEX_TYPE : self::GENERAL_INDEX_TYPE;
 	}
 }

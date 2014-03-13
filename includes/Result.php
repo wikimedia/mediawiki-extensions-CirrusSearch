@@ -51,9 +51,9 @@ class Result extends SearchResult {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
 
-		$data = $result->getData();
+		$fields = $result->getFields();
 		// Not all results requested a word count. Just pretend we have none if so
-		$this->wordCount = isset( $data['text.word_count'] ) ? $data['text.word_count'] : 0;
+		$this->wordCount = isset( $fields['text.word_count'] ) ? $fields['text.word_count'][ 0 ] : 0;
 		$this->byteSize = $result->text_bytes;
 		$this->timestamp = $result->timestamp;
 		$this->timestamp = new MWTimestamp( $this->timestamp );

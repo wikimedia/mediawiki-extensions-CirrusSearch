@@ -27,6 +27,12 @@ interface ResultsType {
 	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
 	 */
 	function getSourceFiltering();
+	/**
+	 * Get the fields to load.  Most of the time we'll use source filtering instead but
+	 * some fields aren't part of the source.
+	 * @return false|string|array corresponding to Elasticsearch fields syntax
+	 */
+	function getFields();
 	function getHighlightingConfiguration();
 	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 		$result, $searchContainedSyntax );
@@ -49,6 +55,10 @@ class TitleResultsType implements ResultsType {
 
 	public function getSourceFiltering() {
 		return array( 'namespace', 'title' );
+	}
+
+	public function getFields() {
+		return false;
 	}
 
 	public function getHighlightingConfiguration() {
@@ -113,7 +123,11 @@ class TitleResultsType implements ResultsType {
 
 class FullTextResultsType implements ResultsType {
 	public function getSourceFiltering() {
-		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes', 'text.word_count' );
+		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
+	}
+
+	public function getFields() {
+		return "text.word_count"; // word_count is only a stored field and isn't part of the source.
 	}
 
 	/**
@@ -202,5 +216,9 @@ class InterwikiResultsType implements ResultsType {
 
 	public function getSourceFiltering() {
 		return array( 'namespace', 'namespace_text', 'title' );
+	}
+
+	public function getFields() {
+		return false;
 	}
 }

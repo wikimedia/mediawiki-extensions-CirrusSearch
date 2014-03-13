@@ -696,6 +696,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$query = new Elastica\Query();
 		$query->setParam( '_source', $this->resultsType->getSourceFiltering() );
+		$query->setParam( 'fields', $this->resultsType->getFields() );
 
 		$extraIndexes = array();
 		if ( $this->namespaces ) {

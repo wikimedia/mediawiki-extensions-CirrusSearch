@@ -28,14 +28,12 @@ class InterwikiSearcher extends Searcher {
 
 	/**
 	 * Constructor
-	 * @param int $offset Offset the results by this much
-	 * @param int $limit Limit the results to this many
 	 * @param array $namespaces Namespace numbers to search
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
 	 */
-	public function __construct( $offset, $limit, $namespaces, $user ) {
+	public function __construct( $namespaces, $user ) {
 		global $wgCirrusSearchInterwikiSources;
-		parent::__construct( $offset, $limit, $namespaces, $user );
+		parent::__construct( 0, 10, $namespaces, $user );
 		$this->interwikis = $wgCirrusSearchInterwikiSources;
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $this->namespaces !== null ) {

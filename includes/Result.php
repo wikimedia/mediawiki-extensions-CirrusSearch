@@ -68,6 +68,12 @@ class Result extends SearchResult {
 				$nstext = str_replace( '_', ' ', $this->getTitle()->getNsText() ) . ':';
 			}
 			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
+		} elseif ( $this->mTitle->isExternal() ) {
+			// Interwiki searches are weird. They won't have title highlights by design, but
+			// if we don't return a title snippet we'll get weird display results.
+			$nsText = $this->getInterwikiNamespaceText();
+			$titleText = $this->mTitle->getText();
+			$this->titleSnippet = $nsText ? "$nsText:$titleText" : $titleText;
 		}
 
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {

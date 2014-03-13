@@ -98,7 +98,7 @@ class CirrusSearch extends SearchEngine {
 			// Note that we have no way of sending warning back to the user.  In this case all warnings
 			// are logged when they are added to the status object so we just ignore them here....
 			$result = $status->getValue();
-			$interwiki = new InterwikiSearcher( $this->offset, $this->limit, $this->namespaces, $user );
+			$interwiki = new InterwikiSearcher( $this->namespaces, $user );
 			$interwikiResult = $interwiki->getInterwikiResults( $term );
 			if ( $interwikiResult ) {
 				$result->setInterwikiResults( $interwikiResult );

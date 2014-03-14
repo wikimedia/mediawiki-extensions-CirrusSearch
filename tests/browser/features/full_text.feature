@@ -202,3 +202,8 @@ Feature: Full text search
   Scenario: CSS pages don't corrupt the output
     When I search for User:Tools/some.css jQuery
     Then there is not alttitle on the first search result
+
+  @setup_main
+  Scenario: Word count is output in the results
+    When I search for Two Words
+    Then there are search results with (4 words) in the data

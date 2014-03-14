@@ -423,7 +423,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Find prefix matches and force them to only match against the plain analyzed fields.  This
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
-		$query = self::replaceAllPartsOfQuery( $query, '/\w*\*(?:\w*\*?)*/',
+		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/',
 			function ( $matches ) use ( $searcher ) {
 				$term = $searcher->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array( 'escaped' => $searcher->switchSearchToExact( $term ) );
@@ -983,10 +983,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Make sure the the query string part is well formed by escaping some syntax that we don't
 	 * want users to get direct access to and making sure quotes are balanced.
 	 * These special characters _aren't_ escaped:
-	 * *: Do a prefix or postfix search against the stemmed text which isn't strictly a good
+	 * * and ?: Do a wildcard search against the stemmed text which isn't strictly a good
 	 * idea but this is so rarely used that adding extra code to flip prefix searches into
-	 * real prefix searches isn't really worth it.  The same goes for postfix searches but
-	 * doubly because we don't have a postfix index (backwards ngram.)
+	 * real prefix searches isn't really worth it.
 	 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
 	 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
 	 * extra index for.
@@ -1051,9 +1050,8 @@ class Searcher extends ElasticsearchIntermediary {
 		$string = preg_replace_callback( '/(?<![\w"])~/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
-		// Escape ? and * that don't follow a term.  These are slow so we turned them off.
-		$string = preg_replace_callback( '/(?<![\w])[?*]/',
-			'CirrusSearch\Searcher::escapeBadSyntax', $string );
+		// Remove ? and * that don't follow a term.  These are slow so we turned them off and escaping isn't working....
+		$string = preg_replace( '/(?<![\w])([?*])/', '', $string );
 
 		// Reduce token ranges to bare tokens without the < or >
 		$string = preg_replace( '/(?:<|>)([^\s])/', '$1', $string );
@@ -1087,7 +1085,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// acceptable use is "foo -bar" and "-bar foo".
 		$string = preg_replace_callback( '/[+\-!]+(?!\w)/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
-		$string = preg_replace_callback( '/(?<!^| )[+\-!]+/',
+		$string = preg_replace_callback( '/(?<!^|[ \\\\])[+\-!]+/',
 			'CirrusSearch\Searcher::escapeBadSyntax', $string );
 
 		// Escape || when not between terms

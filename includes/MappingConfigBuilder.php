@@ -157,7 +157,7 @@ class MappingConfigBuilder {
 				),
 			)
 		);
-		$disableNorms = $options & MappingConfigBuilder::ENABLE_NORMS === 0;
+		$disableNorms = ( $options & MappingConfigBuilder::ENABLE_NORMS ) === 0;
 		if ( $disableNorms ) {
 			$disableNorms = array( 'norms' => array( 'enabled' => false ) );
 			$field = array_merge( $field, $disableNorms );

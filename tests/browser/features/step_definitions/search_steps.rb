@@ -212,6 +212,10 @@ Then(/^there are( no)? search results with (.+) in the data/) do |should_not_fin
   end
 end
 
+Then(/^there is no warning$/) do
+  on(SearchResultsPage).warning.should == ''
+end
+
 def within(seconds)
   end_time = Time.new + Integer(seconds)
   begin

@@ -21,13 +21,18 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class MappingConfigBuilder {
+	// Bit field parameters for buildStringField.
+	const MINIMAL = 0;
+	const ENABLE_NORMS = 1;
+	const COPY_TO_SUGGEST = 2;
+
 	/**
 	 * Version number for the core analysis. Increment the major
 	 * version when the analysis changes in an incompatible way,
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 0.3;
+	const VERSION = 0.4;
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -74,8 +79,10 @@ class MappingConfigBuilder {
 		}
 
 		$textExtraAnalyzers = array();
+		$textOptions = MappingConfigBuilder::ENABLE_NORMS;
 		if ( $this->phraseUseText ) {
 			$textExtraAnalyzers[] = $suggestExtra;
+			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
 		}
 
 		$config = array(
@@ -88,31 +95,38 @@ class MappingConfigBuilder {
 				),
 				'namespace' => $this->buildLongField(),
 				'namespace_text' => $this->buildKeywordField(),
-				'title' => $this->buildStringField( 'title', $titleExtraAnalyzers ),
+				'title' => $this->buildStringField( 'title',
+					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::COPY_TO_SUGGEST,
+					$titleExtraAnalyzers ),
 				'text' => array_merge_recursive(
-					$this->buildStringField( 'text', $textExtraAnalyzers ),
+					$this->buildStringField( 'text', $textOptions, $textExtraAnalyzers ),
 					array( 'fields' => array( 'word_count' => array(
 						'type' => 'token_count',
 						'store' => true,
 						'analyzer' => 'plain',
 					) ) )
 				),
-				'file_text' => $this->buildStringField( 'file_text', $textExtraAnalyzers ),
+				'file_text' => $this->buildStringField( 'file_text', $textOptions ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( 'heading', array(), false ),
+				'heading' => $this->buildStringField( 'heading', MappingConfigBuilder::MINIMAL ),
 				'text_bytes' => $this->buildLongField( false ),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField( 'title', $titleExtraAnalyzers, false ),
+						'title' => $this->buildStringField( 'title', MappingConfigBuilder::COPY_TO_SUGGEST,
+							$titleExtraAnalyzers ),
 					)
 				),
 				'incoming_links' => $this->buildLongField(),
 				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
+				'suggest' => array(
+					'type' => 'string',
+					'analyzer' => 'suggest',
+				)
 			),
 		);
 		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
@@ -123,11 +137,13 @@ class MappingConfigBuilder {
 	 * Build a string field that does standard analysis for the language.
 	 * @param string $name Name of the field.
 	 * @param array|null $extra Extra analyzers for this field beyond the basic text and plain.
-	 * @param boolean $enableNorms Should length norms be enabled for the field?  Defaults to true.
+	 * @param int $options Field options:
+	 *   ENABLE_NORMS: Gnable norms on the field.  Good for text you search against but bad for array fields and useless
+	 *     for fields that don't get involved in the score.
+	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
 	 * @return array definition of the field
 	 */
-	public function buildStringField( $name, $extra = array(), $enableNorms = true ) {
-		$norms = array( 'norms' => array( 'enabled' => $enableNorms ) );
+	public function buildStringField( $name, $options, $extra = array() ) {
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
 			'type' => 'string',
@@ -141,9 +157,14 @@ class MappingConfigBuilder {
 				),
 			)
 		);
-		if ( !$enableNorms ) {
-			$field = array_merge( $field, $norms );
-			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $norms );
+		$disableNorms = $options & MappingConfigBuilder::ENABLE_NORMS === 0;
+		if ( $disableNorms ) {
+			$disableNorms = array( 'norms' => array( 'enabled' => false ) );
+			$field = array_merge( $field, $disableNorms );
+			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
+		}
+		if ( $options & MappingConfigBuilder::COPY_TO_SUGGEST ) {
+			$field[ 'copy_to' ] = array( 'suggest' );
 		}
 		foreach ( $extra as $extraField ) {
 			if ( isset( $extraField[ 'analyzer' ] ) ) {
@@ -154,9 +175,9 @@ class MappingConfigBuilder {
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'type' => 'string',
 			), $extraField );
-			if ( !$enableNorms ) {
+			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(
-					$field[ 'fields' ][ $extraName ], $norms );
+					$field[ 'fields' ][ $extraName ], $disableNorms );
 			}
 		}
 		return $field;

@@ -206,13 +206,12 @@ class AnalysisConfigBuilder {
 			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
 		}
 
-		// Try the fallback chain, unless we hit english
-		$code = Language::getFallbackFor( $this->language );
-		while ( $code && $code != 'en' ) {
-			if ( array_key_exists( $code, $this->elasticsearchLanguageAnalyzers ) ) {
+		// Try the fallback chain, excluding English
+		$languages = Language::getFallbacksFor( $this->language );
+		foreach ( $languages as $code ) {
+			if ( $code !== 'en' && array_key_exists( $code, $this->elasticsearchLanguageAnalyzers ) ) {
 				return $this->elasticsearchLanguageAnalyzers[ $code ];
 			}
-			$code = Language::getFallbackFor( $code );
 		}
 
 		return 'default';

@@ -29,6 +29,7 @@ class SearchResultsPage
   div(:suggestion_wrapper, class: "searchdidyoumean")
   div(:error_report, class: "error")
   paragraph(:create_page, :class => "mw-search-createlink")
+
   def suggestion_element
     suggestion_wrapper_element.link_element
   end
@@ -54,6 +55,16 @@ class SearchResultsPage
       get_highlighted_text(first_result_alttitle_wrapper_element)
     end
   end
+  # Note that this is really only useful if Warnings are being echod to the page.  In testing environments they usually are.
+  def warning
+    text = @browser.text
+    if text.start_with?("Warning: ") then
+      return text.slice("Warning: ".length, text.index("\n"))
+    else
+      return ""
+    end
+  end
+
   private
 
   def get_highlighted_text(element)

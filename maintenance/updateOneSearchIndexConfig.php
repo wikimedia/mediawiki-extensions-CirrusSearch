@@ -226,7 +226,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "Not supported!\n" );
 			$this->error( "Only Elasticsearch 1.x is supported.  Your version: $result.", 1 );
 		} else {
-			$this->output( "OK\n" );
+			$this->output( "ok\n" );
 		}
 	}
 

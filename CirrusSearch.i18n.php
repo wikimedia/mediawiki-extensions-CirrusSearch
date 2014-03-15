@@ -988,6 +988,8 @@ Zie ook
 $messages['oc'] = array(
 	'cirrussearch-desc' => 'Fa efectuar la recèrca per Solr',
 	'cirrussearch-backend-error' => 'Avèm pas pogut menar corrèctament vòstra recèrca a causa d’un problèma temporari. Ensajatz tornarmai ulteriorament.',
+	'cirrussearch-now-using' => 'Aqueste wiki utiliza un novèl motor de recèrca. ([[mw:Special:MyLanguage/Help:CirrusSearch|ne saber mai]])',
+	'cirrussearch-pref-label' => 'Recèrca novèla',
 );
 
 /** Polish (polski)
@@ -1181,6 +1183,45 @@ See ava
  */
 $messages['sk'] = array(
 	'cirrussearch-backend-error' => 'Kvôli dočasnému problému sme nemohli dokončiť požadované vyhľadávanie. Skúste to znovu neskôr.',
+);
+
+/** Somali (Soomaaliga)
+ * @author Abshirdheere
+ */
+$messages['so'] = array(
+	'cirrussearch-desc' => 'Elasticsearch-powered search for MediaWiki',
+	'cirrussearch-backend-error' => 'ma sii wadi karno raadintaadii sabab la xiriirta dhibaato kooban. Fadlan isku day mar kale.',
+	'cirrussearch-parse-error' => 'Suurta gal maaha in la fasiro. Fadlan ka dhig si kale oo fudud. Waxaa la gaarsiiyey ogaysiis si loo wanaajiyo habka baarista.',
+	'cirrussearch-now-using' => 'Waxaa wikiga loo adeegsan doonaa mashiin baare cusub. ([[mw:Special:MyLanguage/Help:CirrusSearch|Wax badan ka ogoow]])',
+	'cirrussearch-ignored-headings' => ' #<!-- Udaa sadarkaan sida uu yahay --> <pre>
+# Waxaa dhacaysa in la iska iloowo madaxqorkiisa inta lagu gudajiro raadinta.
+# Isbedeleda waxay aadi doonaan halkii loogu talo galay ee hordhaca bogga uu ku jiro madaxqorkiisa.
+# Waxaa kuu suurtagal ah inaad howl hordhac ah usameeyso bogga adigoo bedela bogga banaan.
+# Weeraynta waa sidaan soo socota:
+#   * wax kasta oo gadaasheeda lagu qoro "#" sadarka dhammaadkiis waxaa loo qaadanaa faallo
+#   * Sadarkasta ee banaan wuxuu qaadanayaa ciwaankii laga tagay, isagii iyo wax kabedelan
+References
+Linkiyada dibadda
+Sidoo kale eeg
+ #</pre> <!-- leave this line exactly as it is -->',
+	'cirrussearch-boost-templates' => ' #<!-- Qoraalkaan sidiisa ku dhaaf --> <pre>
+# Haddii uu boggu ku jiro mid ka mid ah tusmooyinka lagu xusay hoos waxaa la samayn doonaa in lagu dhufto heerka raadinta qiyaasta ah boqolkiiba ee la koobay.
+# Isbedelada qaybtaan lagu sameeyey isla markii ay dhacaan.
+# Weerayntu waxay noqon doontaa sidaan:
+#   * Wax kasta oo ka biloowda calaamadaan "#" ilaa sadarka dhamaadkiisa waxaa loo qaadan doonaa faallo
+#   * Sadar kasta ee aan banaanayn wuxuu noqonayaa maga tusmada kaasoo awalba lagu kordhiyey (wuxuuna soo qaadan doonaa magaca sida uu yahay) magaca kadib waxaa la dhigayaa camadaan "|" kadibna lambarka kadibna calaamadda  "%".
+# Qaar ka mid ah tusaaleha wanaagsan:
+# Template:Good|150%
+# Template:Very Very Good|300%
+# Template:Bad|50%
+# Tusaalooyinka aan shaqayn:
+# Template:Foo|150.234234% <-- lama ogola adeegsiga hakad tobanaale!
+# Foo|150% <--- farsamo ahaan wey shaqaynaysaa, laakiin sugnaanta ah "Foo" magaca bogga
+# Waad tijaabin kartaa isbedeleda la diyaariyey ee loo qoray habka ogaysiiska wuxuuna ka bilaabanayaa tusmooyinka lagu taageeray:"XX" dhammaan tusmooyinka aad dooneeyso taageeradooda ee u dhxeeya fogaann haba ku jirtee hakadka saderka.
+# Ogaysiinta tusmooyinka lagu taageeray:"XX" qaybtaan iska illoow.
+ #</pre> <!-- Sida uu yahay udaa sadarkaan -->',
+	'cirrussearch-pref-label' => 'Raadin cusub',
+	'cirrussearch-pref-desc' => 'Tijaabi habka baarista cusub taasoo taageera u ah luqado farabadan kuna deeqaysa natiijooyin ka wanaagsan marka la eego dhanka dib u habaynta, waxaa sidoo kale usuurtoowda baarista weedh ku jirta tusmo (template)',
 );
 
 /** Swedish (svenska)

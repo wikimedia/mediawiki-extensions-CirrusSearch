@@ -19,8 +19,8 @@ $messages['en'] = array(
 # Changes to this take effect as soon as the page with the heading is indexed.
 # You can force page reindexing by doing a null edit.
 # Syntax is as follows:
-#   * Everything from a "#" character to the end of the line is a comment
-#   * Every non-blank line is the exact title to ignore, case and everything
+#   * Everything from a "#" character to the end of the line is a comment.
+#   * Every non-blank line is the exact title to ignore, case and everything.
 References
 External links
 See also
@@ -29,7 +29,7 @@ See also
 # If a page contains one of these templates then its search score is multiplied by the configured percentage.
 # Changes to this take effect immediately.
 # Syntax is as follows:
-#   * Everything from a "#" character to the end of the line is a comment
+#   * Everything from a "#" character to the end of the line is a comment.
 #   * Every non-blank line is the exact template name to boost, namespace, case and everything, followed by a "|" character followed by a number followed by a "%" character.
 # Examples of good lines:
 # Template:Good|150%

@@ -35,7 +35,7 @@ Feature: Did you mean
 
   @suggestions
   Scenario: Suggestions can come from redirect titles when redirects are included in search
-    When I search for Rrr Ward
+    When I search for Rrr Worrd
     Then rrr *word* is suggested
 
   @suggestions

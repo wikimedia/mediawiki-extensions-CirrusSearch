@@ -892,6 +892,7 @@ class Searcher extends ElasticsearchIntermediary {
 						// that can be might off.  Like "noble prize" ->  "nobel prize".  In any case, the default was
 						// 0.01 which way too frequently decided not to correct some terms.
 						'max_term_freq' => 0.5,
+						'prefix_length' => 2,
 					),
 				),
 				'highlight' => array(

@@ -54,6 +54,7 @@ Feature: Go Search
     | SON Titlecase  | Son Titlecase   |
     | soñ twoaccents | Soñ Twoaccents  |
     | són twoaccents | Són Twoaccents  |
+    | bach           | Johann Sebastian Bach |
 
   @go @options
   Scenario Outline: When I near match more than one page but none of them are exact then I go to the search results page

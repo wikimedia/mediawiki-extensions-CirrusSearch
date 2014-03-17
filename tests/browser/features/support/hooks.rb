@@ -296,6 +296,9 @@ Before("@go", "@options") do
       And a page named Són Twoaccents Nearmatchflattentest exists
       And a page named son Double Nearmatchflattentest exists
       And a page named SON Double Nearmatchflattentest exists
+      And a page named Bach Nearmatchflattentest exists with contents #REDIRECT [[Johann Sebastian Bach Nearmatchflattentest]]
+      And a page named Bạch Nearmatchflattentest exists with contents Notice the dot under the a.
+      And a page named Johann Sebastian Bach Nearmatchflattentest exists
     }
   end
   $go_options = true

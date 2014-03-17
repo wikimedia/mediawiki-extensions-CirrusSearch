@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class HooksTest extends MediaWikiTestCase {
+class CirrusSearchHooksTest extends MediaWikiTestCase {
 	public function testHooksAreArrays() {
 		global $wgHooks;
 

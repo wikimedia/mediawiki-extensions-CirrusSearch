@@ -49,6 +49,7 @@ See also
  * @author Kunal Mehta
  * @author Shirayuki
  * @author Siebrand
+ * @author Srolanh
  */
 $messages['qqq'] = array(
 	'cirrussearch-desc' => '{{desc|name=Cirrus Search|url=http://www.mediawiki.org/wiki/Extension:CirrusSearch}}
@@ -57,7 +58,9 @@ $messages['qqq'] = array(
 	'cirrussearch-parse-error' => "Error message shown to the users when we couldn't understand the query.  For the most part we don't expect users to see this because we retry retry queries that we don't unserstand using a (hopefully) fail safe method.",
 	'cirrussearch-now-using' => "Note that this wiki is using a new search engine with a link for people to learn more.  That'll contain information on filing a bug, new syntax, etc.",
 	'cirrussearch-ignored-headings' => 'Headings that will be ignored by search. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
-	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space.',
+	'cirrussearch-boost-templates' => 'Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including "Leave this line exactly as it is". Some lines of this messages have one (1) leading space. 
+
+This message will be shown with left-to-right direction, so when you are translating to a right-to-left language, you may want to test how it looks in left-to-right and add right-to-left marks as needed.',
 	'cirrussearch-pref-label' => 'Preference label for option to enable CirrusSearch by default',
 	'cirrussearch-pref-desc' => 'Description for option to enable CirrusSearch by default',
 );
@@ -186,6 +189,39 @@ $messages['bn'] = array(
 	'cirrussearch-now-using' => 'এই উইকি একটি নতুন অনুসন্ধান ইঞ্জিন ব্যবহার করছে।([[mw:Special:MyLanguage/Help:CirrusSearch|আরো জানুন]])',
 	'cirrussearch-pref-label' => 'নতুন অনুসন্ধান',
 	'cirrussearch-pref-desc' => 'আমাদের নতুন অনুসন্ধান ব্যবহার করে দেখুন যা অধিক সংখ্যক ভাষা সমর্থন করে, আরও হালনাগাদকৃত ফলাফল প্রদান করে এবং এমনকি টেমপ্লেট ভিতরের পাঠ্যও অনুসন্ধান করতে পারে।',
+);
+
+/** Tibetan (བོད་ཡིག)
+ * @author Phurbutsering
+ */
+$messages['bo'] = array(
+	'cirrussearch-ignored-headings' => ' #<!-- སྟར་པ་འདི་སྔར་གྱི་ཇི་མ་ཇི་འཞིན་དུ་འཇོག་རོགས། --> <pre>
+# འགོ་བརྗོད་དེ་འཚོལ་ཞིབ་ནང་སྣང་མེད་དུ་བསྐྱུར་རོགས།
+# ཤོག་ངོས་འདིའི་འགོ་བརྗོད་ལ་ཐོ་འགོད་རེའུ་མིག་དུ་འགོད་ཚར་མ་ཐག་འགྱུར་བ་རྣམས་མངོན་ཐུབ།
+# ཁྱེད་ཀྱི་རྩོམ་སྒྲིག་སྟོང་པ་དྱས་མ་ཐག་ཤོག་ངོས་འདི་དབང་ཤུགས་ཀྱི་ཐོ་འགོད་རེའུ་མིག་དུ་འགོད་ཐུབ།
+# ཚིག་སྦྱོར་རྣམས་གཤམ་གསལ་ལྟར་དཀོད་རོགས།
+#   * ཡིག་འབྲུ་"#" ནས་སྟར་པའི་འཇུག་བར་ཚང་མ་མཆན་འགྲེལ་ཡིན།
+#   * སྟོང་ཆ་མེད་པའི་སྟར་པ་འདི་སྣང་མེད་དུ་བསྐྱུར་དགོས་པའི་འགོ་བརྗོད་ཡིན། 
+ཟུར་མཆན།
+ཕྱི་ཕྱོགས་སྦྲེལ་མཐུད།
+འདིར་ཡང་གཟིགས་རོགས།
+ #</pre> <!-- སྟར་པ་འདི་སྔར་གྱི་ཇི་མ་ཇི་འཞིན་དུ་འཇོག་རོགས། -->',
+	'cirrussearch-boost-templates' => ' #<!-- སྟར་པ་འདི་སྔར་གྱི་ཇི་མ་ཇི་འཞིན་དུ་འཇོག་རོགས། --> <pre>
+# གལ་སྲིད་ཤོག་ངོས་ནང་དོན་ལ་དཔེ་དཔང་འདི་རྣམས་ཡོད་ན། འཚོལ་ཞིབ་ཐོབ་གྲངས་ཀྱི་སྡེབ་སྒྲིགས་བརྒྱ་ཆས་སྒྱུར་བ་གཏོང་རོགས།
+# འགྱུར་བ་འདི་ལམ་སེང་མངོན་ཐུབ།
+# ཚིག་སྦྱོར་རྣམས་གཤམ་གསལ་ལྟར་བཀོད་རོགས།
+#   * ཡིག་འབྲུ་"#" ནས་སྟར་པའི་འཇུག་བར་ཚང་མ་མཆན་འགྲེལ་ཡིན།
+#   * སྟོང་ཆ་མེད་པའི་སྟར་པ་རྣམས་དཔེ་དཔང་གི་མིང་ཡིན།  ཡིག་འབྲུ་  "|" འདི་ཐོབ་གྲངས་འཁོད་པའི་ ཡིག་འབྲུ་ "%" མུ་མཐུད་རྒྱུཡིན།
+# འོས་འཚམ་ཡིན་པའི་སྟར་པའི་དཔེ་མཚོན།:
+# དཔེ་དཔང། :ལེགས་པོ།|150%
+# དཔེ་དཔང།:ཤིན་ཏུ་ནས་ལེགས།|300%
+# དཔེ་དཔང།:མི་ལེགས་པ།|50%
+# ཕན་མེད་ཀྱི་སྟར་པའི་དཔེ་མཚོན།:
+# དཔེ་དཔང།:Foo|150.234234% <-- བཅུ་ཟུར་མིན་པའི་གྲངས་ཚིགས་བཀོད་མི་ཆོག།!
+# Foo|150% <--- ཆེད་ལས།, but for transclusions of the Foo page from the main namespace
+#  boost-templates:"XX" ཞེས་པ་འདི་འདྲི་ཞིབ་ཏུ་ཀྱི་ཁ་བྱང་ཏུ་བཀོད་ཏེ། ཁྱེད་ཀྱི་སྡེབ་གྲངས་འགྱུར་བ་ལ་ཚོད་ལྟ་བྱེད་ཚོག། 
+#  boost-templates:"XX" ཞེས་པའི་འདྲི་ཞིབ་འདིས་ནང་དོན་རྣམས་སྣང་མེད་དུ་བསྐྱུར་འཇོག་རྒྱུ་ཡིན།
+ #</pre> <!-- སྟར་པ་འདི་སྔར་གྱི་ཇི་མ་ཇི་འཞིན་དུ་འཇོག་རོགས། -->',
 );
 
 /** Breton (brezhoneg)
@@ -577,19 +613,37 @@ Véxase tamén
 $messages['he'] = array(
 	'cirrussearch-desc' => 'חיפוש במדיה־ויקי באמצעות Elasticsearch',
 	'cirrussearch-backend-error' => 'לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.',
-	'cirrussearch-parse-error' => 'השאילתה לא הייתה ברורה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.',
+	'cirrussearch-parse-error' => 'השאילתה לא הובנה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.',
 	'cirrussearch-now-using' => 'הוויקי הזה משתמש במנוע חיפוש חדש. ([[mw:Special:MyLanguage/Help:CirrusSearch|מידע נוסף]])',
-	'cirrussearch-ignored-headings' => ' #<!-- leave this line exactly as it is --> <pre>
-# כותרות של פסקאות שהחיפוש יתעלם מהן
-# שינויים כאן ייכנסו לתוקף כשדף עם הכותרת הזאת ייכנס לאינדקס החיפוש
-# אפשר לכפות הכנסה מחדש לאינדקס על־ידי עשיית עריכה אפסית
-# התחביר הוא
-#   * כל דבר שמתחילת בתו # ועד סוף השורה הוא הערה
-#   * כל שורה שאינה ריקה היא כותרת שיש להתעלם ממנה, כולל רישיות האותיות וכיו"ב
+	'cirrussearch-ignored-headings' => ' #<!-- יש להשאיר את השורה הזאת ללא שינוי --> <pre>
+# בשורות ההסבר בעברית בהערה הזאת יש תווי כיווניות לשם סידור סימני פיסוק.‏
+# כותרות של פסקאות שהחיפוש יתעלם מהן.‏
+# שינויים כאן ייכנסו לתוקף כשדף עם הכותרת הזאת ייכנס לאינדקס החיפוש.‏
+# אפשר לכפות מפתוח חוזר של דפים על־ידי עשיית עריכה אפסית.‏
+# התחביר הוא:‏
+# * כל דבר מהתו "#" עד סוף השורה הוא הערה.‏
+# * כל שורה שאינה ריקה היא כותרת שיש להתעלם ממנה, רגישות לאותיות רישיות וקטנות וכו\'.‏
 הערות שוליים
 קישורים חיצוניים
 לקריאה נוספת
- #</pre> <!-- leave this line exactly as it is -->',
+ #</pre> <!-- יש להשאיר את השורה הזאת ללא שינוי -->',
+	'cirrussearch-boost-templates' => ' #<!-- יש להשאיר את השורה הזאת ללא שינוי --> <pre>
+# בשורות ההסבר בעברית בהערה הזאת יש תווי כיווניות לשם סידור סימני פיסוק.‏
+# אם דף מכיל אחת מהתבניות האלו, אז דירוג החיפוש שלו מוכפל באחוז המצוין.‏
+# השינויים נכנסים לתוקף מיד.‏
+# התחביר הוא:‏
+# * כל דבר מהתו "#" עד סוף השורה הוא הערה.‏
+# * כל שורה שאינה ריקה היא תבנית שרוצים להקפיץ, עם מרחב שם, רגישות לאותיות רישיות וקטנות, ולאחר מכן התו "|" ומספר שאחריו התו "%".‏
+# דוגמאות לשורות טובות:
+# תבנית:טוב|150%
+# תבנית:טוב מאוד מאוד|300%
+# תבנית:גרוע|50%
+# דוגמאות לשורות שלא יעבדו:‏
+# תבנית:שבר|150.234234% <-- אסור להשתמש בנקודה עשרונית!‏
+# כותרת|150% <-- טכנית זה יעבוד, אבל רק להכללה של דף בשם "כותרת" מהמרחב הראשי
+# ‫אפשר לבדוק את שינויי ההגדרות באמצעות שאילתה עם תחילית boost-templates:"אבג", כאשר אבג הן כל התבניות שאתם רוצים להקפיץ, מופרדות ברווחים במקום ירידות שורה.‬
+# ‫שאילתות עם תחילית boost-templates:"אבג" מתעלמות מהתוכן של השדה הזה.‬
+ #</pre> <!-- יש להשאיר את השורה הזאת ללא שינוי -->',
 	'cirrussearch-pref-label' => 'חיפוש חדש',
 	'cirrussearch-pref-desc' => 'נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.',
 );
@@ -883,6 +937,23 @@ Kuckt och
 	'cirrussearch-pref-label' => 'Nei sichen',
 );
 
+/** Latvian (latviešu)
+ * @author Srolanh
+ */
+$messages['lv'] = array(
+	'cirrussearch-ignored-headings' => ' #<!-- atstāt šo rindiņu tādu, kāda tā ir --> <pre>
+#Virsraksti, kas tiks ignorēti meklējot.
+#Izmaiņas stāsies spēkā, kad lapa ar virsrakstiem ir indeksēta.
+#Jūs varat piespiest lapai tikt indeksētai vēlreiz ar nulles labojumu.
+#Sintakse:
+# * Jebkas no "#" zīmes līdz rindiņas beigām ir komentārs.
+# * Katra līnija ir precīzs ignorējamais virsraksts, ieskaitot lielos / mazos burtus.
+Atsauces
+Ārējās saites
+Skatīt arī
+ #</pre> <!-- atstāt šo rindiņu tādu, kāda tā ir -->',
+);
+
 /** Macedonian (македонски)
  * @author Bjankuloski06
  */
@@ -995,8 +1066,39 @@ $messages['oc'] = array(
 /** Polish (polski)
  * @author Chrumps
  * @author Tar Lócesilion
+ * @author WTM
  */
 $messages['pl'] = array(
+	'cirrussearch-desc' => 'Wyszukiwanie dla MediaWiki za pomocą Elasticsearch',
+	'cirrussearch-backend-error' => 'Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.',
+	'cirrussearch-parse-error' => 'Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.',
+	'cirrussearch-now-using' => 'Ta wiki wykorzystuje nową wyszukiwarkę. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dowiedz się więcej]])',
+	'cirrussearch-ignored-headings' => ' #<!-- ten wiersz zostaw bez zmian --> <pre>
+# Umieszczone tutaj nagłówki będą ignorowane podczas wyszukiwania.
+# Zmiany wprowadzone tutaj zostaną zastosowane, gdy strona wykorzystująca odpowiedni nagłówek zostanie zindeksowana.
+# Można wymusić ponowne zindeksowanie strony wykonując na niej null edit.
+# Składnia jest następująca:
+#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.
+#   * Każdy niepusty wiersz wprowadza dokładną treść nagłówka, który należy zignorować, wielkość liter ma znaczenie.
+Linki zewnętrzne
+Zobacz też
+ #</pre> <!-- ten wiersz zostaw bez zmian -->',
+	'cirrussearch-boost-templates' => ' #<!-- ten wiersz zostaw bez zmian --> <pre>
+# Jeżeli strona zawiera jeden z następujących szablonów, to jej rezultat wyszukiwania jest mnożony przez ustawioną wartość procentową.
+# Zmiany wprowadzone tutaj zostaną zastosowane natychmiast.
+# Składnia jest następująca:
+#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.
+#   * Każdy niepusty wiersz wprowadza dokładną nazwę premiowanego szablonu, wielkość liter ma znaczenie, po której następuje znak „|”, za nim liczba, a po niej symbol „%”.
+# Przykłady prawidłowych wierszy:
+# Szablon:Dobrze|150%
+# Szablon:Bardzo bardzo dobrze|300%
+# Szablon:Źle|50%
+# Przykłady niedziałających wierszy:
+# Szablon:Foo|150.234234% <-- separator dziesiętny nie jest dozwolony!
+# Foo|150% <--- technicznie zadziała, ale tylko dla transkluzji strony Foo 
+# Zmiany konfiguracji można przetestować zadając zadając wyszukiwarce pytanie poprzedzone  boost-szablonem:"XX" gdzie XX oznacza zbiór wszystkich szablonów, które chcesz premiować, oddzielonych spacjami.
+# Zapytania wykorzystuujące boost-szablony:"XX" ignorują zawartość tego pola.
+ #</pre> <!-- ten wiersz zostaw bez zmian -->',
 	'cirrussearch-pref-label' => 'Nowe wyszukiwanie',
 	'cirrussearch-pref-desc' => 'Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.',
 );
@@ -1175,7 +1277,7 @@ See ava
 # Speirins that specifie buist-templates:"XX" ignore the contents o this field.
  #</pre> <!-- lea this line exactlie aes it is -->',
 	'cirrussearch-pref-label' => 'New rake',
-	'cirrussearch-pref-desc' => 'Gie oor new rake ae gae, this supports ae mair muckle nummer o leids, provides mair up-til-date affcomes, n can even fynd tex inside o templates.',
+	'cirrussearch-pref-desc' => 'Gie oor new rake ae gae, this supports ae mair muckle nummer o leids, provides mair up-til-date ootcomes, n can even fynd tex inside o templates.',
 );
 
 /** Slovak (slovenčina)

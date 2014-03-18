@@ -133,8 +133,8 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
-	public function setInterwikiResults( $res ) {
-		$this->interwikiResults = $res;
+	public function addInterwikiResults( $res ) {
+		$this->interwikiResults[] = $res;
 	}
 
 	public function getInterwikiResults() {

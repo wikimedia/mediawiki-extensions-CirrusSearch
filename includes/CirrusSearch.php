@@ -60,6 +60,8 @@ class CirrusSearch extends SearchEngine {
 	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
+		global $wgCirrusSearchInterwikiSources;
+
 		$term = trim( $term );
 		// No searching for nothing!  That takes forever!
 		if ( !$term ) {
@@ -99,22 +101,25 @@ class CirrusSearch extends SearchEngine {
 
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();
 
+		// Add interwiki results, if we have a sane result
+		// Note that we have no way of sending warning back to the user.  In this case all warnings
+		// are logged when they are added to the status object so we just ignore them here....
+		if ( $status->isOK() && $wgCirrusSearchInterwikiSources ) {
+			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
+			// wrote the code but Searcher needs some refactoring first.
+			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
+				$iwSearch = new InterwikiSearcher( $this->namespaces, $user, $index, $interwiki );
+				$interwikiResult = $iwSearch->getInterwikiResults( $term );
+				if ( $interwikiResult ) {
+					$status->getValue()->addInterwikiResults( $interwikiResult );
+				}
+			}
+		}
+
 		// For historical reasons all callers of searchText interpret any Status return as an error
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
-		if ( $status->isOK() ) {
-			// Note that we have no way of sending warning back to the user.  In this case all warnings
-			// are logged when they are added to the status object so we just ignore them here....
-			$result = $status->getValue();
-			$interwiki = new InterwikiSearcher( $this->namespaces, $user );
-			$interwikiResult = $interwiki->getInterwikiResults( $term );
-			if ( $interwikiResult ) {
-				$result->setInterwikiResults( $interwikiResult );
-			}
-			return $result;
-		}
-
-		return $status;
+		return $status->isOk() ? $status->getValue() : $status;
 	}
 
 	/**

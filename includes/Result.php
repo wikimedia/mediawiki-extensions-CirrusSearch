@@ -28,24 +28,25 @@ class Result extends SearchResult {
 	private $redirectTitle = null, $redirectSnipppet = '';
 	private $sectionTitle = null, $sectionSnippet = '';
 	private $textSnippet = '', $isFileMatch = false;
+	private $interwiki = '', $interwikiNamespace = '';
 	private $wordCount;
 	private $byteSize;
 	private $score;
 	private $timestamp;
-	private $interwiki;
-	private $interwikiNamespace;
 
 	/**
 	 * Build the result.
 	 * @param $results \Elastica\ResultSet containing all search results
 	 * @param $result \Elastica\Result containing the given search result
-	 * @param $interwiki Interwiki prefix, if any
+	 * @param string $interwiki Interwiki prefix, if any
 	 * @param $result \Elastic\Result containing information about the result this class should represent
 	 */
-	public function __construct( $results, $result, $interwikis = array() ) {
+	public function __construct( $results, $result, $interwiki = '' ) {
 		global $wgCirrusSearchShowScore;
 
-		$this->maybeSetInterwiki( $result, $interwikis );
+		if ( $interwiki ) {
+			$this->setInterwiki( $result, $interwiki );
+		}
 		$this->mTitle = Title::makeTitle( $result->namespace, $result->title, '', $this->interwiki );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
@@ -192,19 +193,19 @@ class Result extends SearchResult {
 		return str_replace( $markers, '', $highlighted );
 	}
 
-	private function maybeSetInterwiki( $result, $interwikis ) {
-		$iw = '';
-		$iwNS = '';
-		array_walk( $interwikis, function( $indexBase, $interwiki ) use ( $result, &$iw, &$iwNS ) {
-			$index = $result->getIndex();
-			$pos = strpos( $index, $indexBase );
-			if ( $pos === 0 && $index[strlen( $indexBase )] == '_' ) {
-				$iw = $interwiki;
-				$iwNS = $result->namespace_text ? $result->namespace_text : '';
-			}
-		} );
-		$this->interwiki = $iw;
-		$this->interwikiNamespace = $iwNS;
+	/**
+	 * Set interwiki and interwikiNamespace properties
+	 * @param \Elastica\Result $result containing the given search result
+	 * @param string $interwiki Interwiki prefix, if any
+	 */
+	private function setInterwiki( $result, $interwiki ) {
+		$resultIndex = $result->getIndex();
+		$indexBase = InterwikiSearcher::getIndexForInterwiki( $interwiki );
+		$pos = strpos( $resultIndex, $indexBase );
+		if ( $pos === 0 && $index[strlen( $indexBase )] == '_' ) {
+			$this->interwiki = $interwiki;
+			$this->interwikiNamespace = $result->namespace_text ? $result->namespace_text : '';
+		}
 	}
 
 	public function getTitleSnippet() {

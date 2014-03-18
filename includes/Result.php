@@ -55,8 +55,7 @@ class Result extends SearchResult {
 		// Not all results requested a word count. Just pretend we have none if so
 		$this->wordCount = isset( $fields['text.word_count'] ) ? $fields['text.word_count'][ 0 ] : 0;
 		$this->byteSize = $result->text_bytes;
-		$this->timestamp = $result->timestamp;
-		$this->timestamp = new MWTimestamp( $this->timestamp );
+		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();
 		// TODO remove when Elasticsearch issue 3757 is fixed
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );

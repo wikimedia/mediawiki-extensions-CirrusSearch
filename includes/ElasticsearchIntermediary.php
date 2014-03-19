@@ -43,6 +43,11 @@ class ElasticsearchIntermediary {
 	private $slowMillis;
 
 	/**
+	 * @var array Metrics about a completed search
+	 */
+	private $searchMetrics = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.  Note that
@@ -113,6 +118,14 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Get the search metrics we have
+	 * @return array
+	 */
+	public function getSearchMetrics() {
+		return $this->searchMetrics;
+	}
+
+	/**
 	 * Does this status represent an Elasticsearch parse error?
 	 * @param $status Status to check
 	 * @return boolean is this a parse error?
@@ -138,8 +151,12 @@ class ElasticsearchIntermediary {
 		// No need to check description because it must be set by $this->start.
 
 		// Build the log message
-		$took = round( ( microtime( true ) - $this->requestStart ) * 1000 );
+		$endTime = microtime( true );
+		$took = round( ( $endTime - $this->requestStart ) * 1000 );
 		$logMessage = "$this->description took $took millis";
+
+		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
+		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 
 		// Extract the amount of time Elasticsearch reported the last request took if possible.
 		$result = ElasticaConnection::getClient()->getLastResponse();
@@ -148,6 +165,7 @@ class ElasticsearchIntermediary {
 			if ( isset( $data[ 'took' ] ) ) {
 				$elasticTook = $data[ 'took' ];
 				$logMessage .= " and $elasticTook Elasticsearch millis";
+				$this->searchMetrics['wgCirrusElasticTime'] = $elasticTook;
 			}
 		}
 

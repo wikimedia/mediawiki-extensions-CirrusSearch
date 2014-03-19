@@ -33,6 +33,11 @@ class CirrusSearch extends SearchEngine {
 	private $lastNamespacePrefix;
 
 	/**
+	 * @var array metrics about the last thing we searched
+	 */
+	private $lastSearchMetrics;
+
+	/**
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.
@@ -91,6 +96,8 @@ class CirrusSearch extends SearchEngine {
 			$status = $searcher->searchText( $term, $this->showRedirects, $this->showSuggestion );
 		}
 
+		$this->lastSearchMetrics = $searcher->getSearchMetrics();
+
 		// For historical reasons all callers of searchText interpret any Status return as an error
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
@@ -132,7 +139,19 @@ class CirrusSearch extends SearchEngine {
 		return $parsed;
 	}
 
+	/**
+	 * Get the sort of sorts we allow
+	 * @return array
+	 */
 	public function getValidSorts() {
 		return array( 'relevance', 'title_asc', 'title_desc' );
+	}
+
+	/**
+	 * Get the metrics for the last search we performed. Null if we haven't done any.
+	 * @return array
+	 */
+	public function getLastSearchMetrics() {
+		return $this->lastSearchMetrics;
 	}
 }

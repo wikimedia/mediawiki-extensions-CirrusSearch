@@ -31,9 +31,6 @@ use \UsageException;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Searcher extends ElasticsearchIntermediary {
-	const SUGGESTION_NAME_TITLE = 'title';
-	const SUGGESTION_NAME_REDIRECT = 'redirect';
-	const SUGGESTION_NAME_TEXT = 'text_suggestion';
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
@@ -485,14 +482,8 @@ class Searcher extends ElasticsearchIntermediary {
 			if ( $showSuggestion ) {
 				$this->suggest = array(
 					'text' => $this->term,
-					self::SUGGESTION_NAME_TITLE => $this->buildSuggestConfig( 'title.suggest' ),
+					'suggest' => $this->buildSuggestConfig( 'suggest' ),
 				);
-				if ( $showRedirects ) {
-					$this->suggest[ self::SUGGESTION_NAME_REDIRECT ] = $this->buildSuggestConfig( 'redirect.title.suggest' );
-				}
-				if ( $wgCirrusSearchPhraseUseText ) {
-					$this->suggest[ self::SUGGESTION_NAME_TEXT ] = $this->buildSuggestConfig( 'text.suggest' );
-				}
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
 

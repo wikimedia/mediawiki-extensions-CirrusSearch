@@ -60,20 +60,9 @@ class ResultSet extends SearchResultSet {
 		$suggest = $suggest[ 'suggest' ];
 		// Elasticsearch will send back the suggest element but no sub suggestion elements if the wiki is empty.
 		// So we should check to see if they exist even though in normal operation they always will.
-		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_TITLE ] ) ) {
-			foreach ( $suggest[ Searcher::SUGGESTION_NAME_TITLE ][ 0 ][ 'options' ] as $option ) {
-				return $option;
-			}
-		}
-		// If the user doesn't search against redirects we don't check them for suggestions so the result might not be there.
-		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_REDIRECT ] ) ) {
-			foreach ( $suggest[ Searcher::SUGGESTION_NAME_REDIRECT ][ 0 ][ 'options' ] as $option ) {
-				return $option;
-			}
-		}
-		// This suggestion type is optional, configured in LocalSettings.
-		if ( isset( $suggest[ Searcher::SUGGESTION_NAME_TEXT ] ) ) {
-			foreach ( $suggest[ Searcher::SUGGESTION_NAME_TEXT ][ 0 ][ 'options' ] as $option ) {
+		if ( isset( $suggest[ 'suggest' ] ) ) {
+			// Now just grab the first one it sent back.
+			foreach ( $suggest[ 'suggest' ][ 0 ][ 'options' ] as $option ) {
 				return $option;
 			}
 		}

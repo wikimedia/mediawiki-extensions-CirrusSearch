@@ -325,15 +325,11 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			if ( !$skipLinks ) {
-				wfProfileIn( __METHOD__ . '-links' );
 				wfRunHooks( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
-				wfProfileOut( __METHOD__ . '-links' );
 			}
 		}
 
-		wfProfileIn( __METHOD__ . '-finish-batch' );
 		wfRunHooks( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
-		wfProfileOut( __METHOD__ . '-finish-batch' );
 
 		return $documents;
 	}

@@ -1034,20 +1034,20 @@ Externe links
 Zie ook
  #</pre> <!-- leave this line exactly as it is -->',
 	'cirrussearch-boost-templates' => '#<!-- laat deze regel precies zoals deze is --> <pre>
-# Als een pagina met een van deze sjablonen dan wordt de zoekscore vermenigvuldigd met het ingestelde percentage.
+# Als een pagina een van deze sjablonen bevat, dan wordt de zoekscore vermenigvuldigd met het ingestelde percentage.
 # Wijzigingen hierin worden onmiddellijk van kracht.
 # De syntaxis is als volgt:
-# * Alles na een "#" teken aan het einde van de regel is commentaar
-# * Iedere niet-lege regel is de te promoten sjabloonnaam, naamruimte, hoofdlettergebruik enz., gevolgd door een "|" teken, een nummer, en een \'%\'-teken.
-# Voorbeelden van correcte regels
+# * Alles na een "#" teken aan het einde van de regel wordt beschouwd als opmerking;
+# * Iedere niet lege regel is de exacte naam van het sjabloon dat zorgt voor de gewijzigde zoekscore, inclusief naamruimte, hoofdlettergebruik enzovoort, gevolgd door het teken "|", een geheel getal, en het teken "%".
+# Voorbeelden van correcte regels:
 # Sjabloon:Goed|150%
-# Sjabloon:Zeer Goed|300%
+# Sjabloon:Zeer goed|300%
 # Sjabloon:Slecht|50%
-# Voorbeelden van niet-werkende regels:
-# Sjabloon:Foo|150.234234% <-- geen decimale punten
-# Foo|150% <--- technisch in orde, maar gebruikt de Foo-pagina uit de hoofdnaamruimte
-# Je kunt wijzigingen in de configuratie testen door het uitvoeren van een query die begint met boost-sjablonen:"XX" waarbij XX staat voor alle sjablonen die u wilt promoten gescheiden door spaties in plaats van regeleindes.
-# Query\'s die promotie-sjablonen aangeven: "XX" het negeren van de inhoud van dit veld.
+# Voorbeelden van regels die niet werken:
+# Sjabloon:Foo|150.234234% <-- decimalen niet toegestaan
+# Voorbeeld|150% <--- technisch gezien in orde, maar gebruikt de pagina "Voorbeeld" uit de hoofdnaamruimte
+# U kunt wijzigingen in de instellingen testen door het uitvoeren van een zoekopdracht die begint met boost-templates:"XX" waarbij XX staat voor alle sjablonen waarvan u wilt dat die de zoekscore wijzigen, gescheiden door spaties in plaats van regeleindes.
+# Voor zoekopdrachten die boost-templates:"XX" gebruiken, wordt de inhoud van deze pagina genegeerd.
  #</pre> <!-- laat deze regel precies zoals deze is -->',
 	'cirrussearch-pref-label' => 'Nieuwe zoekopdracht',
 	'cirrussearch-pref-desc' => 'Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.',

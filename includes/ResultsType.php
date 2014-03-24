@@ -195,19 +195,19 @@ class FullTextResultsType implements ResultsType {
 
 class InterwikiResultsType implements ResultsType {
 	/**
-	 * @var array interwiki prefix mappings
+	 * @var string interwiki prefix mappings
 	 */
-	private $prefixes;
+	private $prefix;
 
 	/**
 	 * Constructor
 	 */
-	public function __construct( $interwikis ) {
-		$this->prefixes = $interwikis;
+	public function __construct( $interwiki ) {
+		$this->prefix = $interwiki;
 	}
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax ) {
-		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefixes );
+		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
 	public function getHighlightingConfiguration() {

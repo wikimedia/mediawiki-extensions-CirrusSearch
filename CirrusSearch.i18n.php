@@ -1333,21 +1333,22 @@ Sidoo kale eeg
  * @author WikiPhoenix
  */
 $messages['sv'] = array(
-	'cirrussearch-desc' => 'Elasticsearch-driven sökning för Mediawiki',
+	'cirrussearch-desc' => 'Elasticsearch-driven sökning för MediaWiki',
 	'cirrussearch-backend-error' => 'Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.',
 	'cirrussearch-parse-error' => 'Frågan kunde inte tolkas. Vänligen gör det enklare. Frågan har loggats för att förbättra söksystemet.',
 	'cirrussearch-now-using' => 'Denna wiki använder en ny sökmotor ([[mw:Special:MyLanguage/Help:CirrusSearch|Läs mer]])',
-	'cirrussearch-ignored-headings' => '#<!-- leave this line exactly as it is --> <pre>
- # Rubriker som kommer att ignoreras av sökningen.
- # Ändringar till detta kommer att gälla så fort sidan med rubriken är indexerad.
- # Du kan tvinga sidan omindexera genom att göra en null redigering.
- # syntaxen är då följande:
- #   * Allt från ett "#" tecken till slutet av raden är en kommentar
- #   * Varje icke-tom rad är den exakta titeln som kommer att ignoreras, shiftläge och allt
+	'cirrussearch-ignored-headings' => '#<!-- lämna denna rad precis som den är --> <pre>
+# Rubriker som kommer att ignoreras av sökningen.
+# Ändringar till detta kommer att gälla så fort sidan med rubriken är indexerad.
+# Du kan tvinga sidan att indexeras om genom att göra en null-redigering.
+# Syntaxen är som följer:
+#  * Allt från ett "#" tecken till slutet av raden är en kommentar.
+#  * Varje icke-tom rad är den exakta titeln som ska ignoreras, shiftläge och allt.
 Referenser
+Källor
 Externa länkar
-Se också
- #</pre> <!-- leave this line exactly as it is -->',
+Se även
+ #</pre> <!-- lämna denna rad precis som den är -->',
 	'cirrussearch-boost-templates' => ' #<!-- lämna denna rad precis som den är --> <pre>
 # Om en sida innehåller en av följande mallar multipliceras dess sökbetyg med den konfigurerade procentsatsen.
 # Ändringar till detta träder i kraft med omedelbar verkan.

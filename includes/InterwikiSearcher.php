@@ -91,4 +91,14 @@ class InterwikiSearcher extends Searcher {
 		return isset( $wgCirrusSearchInterwikiSources[ $interwiki ] ) ?
 			$wgCirrusSearchInterwikiSources[ $interwiki ] : null;
 	}
+
+	/**
+	 * We don't support extra indicies when we're doing interwiki searches
+	 *
+	 * @see Searcher::getAndFilterExtraIndexes()
+	 * @return array()
+	 */
+	protected function getAndFilterExtraIndexes() {
+		return array();
+	}
 }

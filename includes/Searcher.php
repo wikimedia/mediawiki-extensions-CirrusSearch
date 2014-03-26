@@ -926,7 +926,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 *
 	 * @return array(string)
 	 */
-	private function getAndFilterExtraIndexes() {
+	protected function getAndFilterExtraIndexes() {
 		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
 		if ( $extraIndexes ) {
 			$this->notFilters[] = new \Elastica\Filter\Term(

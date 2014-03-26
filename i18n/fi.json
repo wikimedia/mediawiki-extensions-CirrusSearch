@@ -1,0 +1,13 @@
+{
+    "@metadata": {
+        "authors": [
+            "Nike",
+            "Stryn"
+        ]
+    },
+    "cirrussearch-desc": "\"Elasticsearch\"-käyttöinen haku MediaWikille",
+    "cirrussearch-backend-error": "Emme voineet suorittaa hakuasi väliaikaisen ongelman vuoksi. Yritä myöhemmin uudelleen.",
+    "cirrussearch-now-using": "Tämä wiki käyttää uutta hakukonetta. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lue lisää]])",
+    "cirrussearch-ignored-headings": "#<!-- jätä tämä rivi sellaiseksi kuin se on --> <pre>\n# Otsikot, jotka haku ohittaa.\n# Muutokset tulevat voimaan heti, kun otsikon sivu indeksoidaan.\n# Voit pakottaa sivun indeksoimisen tekemällä nollamuokkauksen.\n# Syntaksi on seuraava:\n#   * Kaikki \"#\"-merkistä rivin loppuun asti on kommenttia\n#   * Kaikki ei-tyhjät rivit ovat otsikoita, jotka ohitetaan.\nLähteet\nAiheesta muualla\nKatso myös\n#</pre> <!-- jätä tämä rivi sellaiseksi kuin se on -->",
+    "cirrussearch-pref-label": "Uusi haku"
+}

@@ -1,0 +1,10 @@
+{
+    "@metadata": {
+        "authors": [
+            "Geopoet"
+        ]
+    },
+    "cirrussearch-desc": "Elastikongpaghanap-makusugon na panhanap para sa MediaWiki",
+    "cirrussearch-backend-error": "Dae nyamo makukumpleto an saimong paghahanap nin huli sa sarong temporaryong problema.\nTabi man paki-otroha giraray oro-atyan.",
+    "cirrussearch-ignored-headings": " #<!-- walaton ining linya eksaktong siring sana kaini --> <pre> \n# Mga Kapamayuhanan na pinagpapabayaan sa paghahanap. \n# Mga Kaliwatan kaini magkaka-epekto matapos na an pahina na igwang kapamayuhanan maipaghukdo. \n# Ika makakapagpuwersa sa pahina na maihuhukdo otro sa paagi nin paghimo nin sarong blangko na pagliwat. # An Sintaks iyo ining minasunod: \n# * An gabos magpoon sa sarong karakter na \"#\" sagkod sa tapos kan linya iyo an sarong komento \n# * An lambang linya na bakong blangko iyo an eksaktong titulo na pababayaan, kaso asin gabos na bagay \nMga Panultulan\nPanluwas na mga sugpon\nHilingon man \n#</pre> <!-- walaton ining linya eksaktong siring sana kaini -->"
+}

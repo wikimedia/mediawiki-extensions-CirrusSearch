@@ -165,7 +165,7 @@ $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 // changing this to false then you'll see some space savings.
 $wgCirrusSearchPhraseUseText = false;
 
-// Maximum number of redirects per target page to index.  
+// Maximum number of redirects per target page to index.
 $wgCirrusSearchIndexedRedirects = 1024;
 
 // Maximum number of newly linked articles to update when an article changes.
@@ -315,6 +315,7 @@ $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::getUnitTestsList';
 /**
  * i18n
  */
+$wgMessagesDirs['CirrusSearch'] = __DIR__ . '/i18n';
 $wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
 
 /**

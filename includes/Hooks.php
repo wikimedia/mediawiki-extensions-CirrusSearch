@@ -181,14 +181,15 @@ class Hooks {
 		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
 
 		if ( $wgCirrusSearchEnablePref ) {
-			$dir = RequestContext::getMain()->getLanguage()->getDir();
-
 			$prefs['cirrussearch-default'] = array(
 				'label-message' => 'cirrussearch-pref-label',
 				'desc-message' => 'cirrussearch-pref-desc',
 				'info-link' => 'https://www.mediawiki.org/wiki/Search',
 				'discussion-link' => 'https://www.mediawiki.org/wiki/Talk:Search',
-				'screenshot' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-$dir.svg",
+				'screenshot' => array(
+					'ltr' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-ltr.svg",
+					'rtl' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-rtl.svg",
+				),
 			);
 		}
 

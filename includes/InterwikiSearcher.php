@@ -62,11 +62,15 @@ class InterwikiSearcher extends Searcher {
 			return;
 		}
 
+		$namespaceKey = $this->namespaces !== null ?
+			implode( ',', $this->namespaces ) : '';
+
 		$results = array();
 		$key = wfMemcKey(
 			'cirrus',
 			'interwiki',
 			$this->interwiki,
+			$namespaceKey,
 			md5( $term )
 		);
 

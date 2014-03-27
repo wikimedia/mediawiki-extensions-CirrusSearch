@@ -72,12 +72,15 @@ class UpdateVersionIndex extends Maintenance {
 				"{$this->indent}  analysis version: " .
 					"{$data['analysis_maj']}.{$data['analysis_min']}\n" .
 				"{$this->indent}  mapping version: " .
-					"{$data['mapping_maj']}.{$data['mapping_min']}\n"
+					"{$data['mapping_maj']}.{$data['mapping_min']}\n" .
+				"{$this->indent}  shards: {$data['shard_count']}\n" .
+				"{$this->indent}  replicas: {$data['replica_count']}\n"
 			);
 		}
 	}
 
 	private function update( $baseName ) {
+		global $wgCirrusSearchShardCount, $wgCirrusSearchReplicaCount;
 		$versionType = $this->getType();
 		$this->output( "{$this->indent}Updating tracking indexes..." );
 		$docs = array();
@@ -91,6 +94,8 @@ class UpdateVersionIndex extends Maintenance {
 					'analysis_min' => $aMin,
 					'mapping_maj' => $mMaj,
 					'mapping_min' => $mMin,
+					'shard_count' => $wgCirrusSearchShardCount[ $type ],
+					'replica_count' => $wgCirrusSearchReplicaCount[ $type ],
 				)
 			);
 		}
@@ -111,6 +116,8 @@ class UpdateVersionIndex extends Maintenance {
 				'analysis_min' => array( 'type' => 'long', 'include_in_all' => false ),
 				'mapping_maj' => array( 'type' => 'long', 'include_in_all' => false ),
 				'mapping_min' => array( 'type' => 'long', 'include_in_all' => false ),
+				'shard_count' => array( 'type' => 'long', 'include_in_all' => false ),
+				'replica_count' => array( 'type' => 'long', 'include_in_all' => false ),
 			) );
 			$mapping->send();
 			$this->output( "done\n" );

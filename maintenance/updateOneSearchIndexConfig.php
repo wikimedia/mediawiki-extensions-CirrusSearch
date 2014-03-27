@@ -98,6 +98,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private $reindexAcceptableCountDeviation;
 
+	/**
+	 * @var array(String) list of available plugins
+	 */
+	private $availablePlugins;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
@@ -188,6 +193,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->checkElasticsearchVersion();
+			$this->scanAvailablePlugins();
 
 			if ( $this->getOption( 'forceOpen', false ) ) {
 				$this->getIndex()->open();
@@ -204,11 +210,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			if ( $this->closed ) {
 				$this->getIndex()->open();
 			}
+		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
+			$message = $e->getMessage();
+			$this->output( "\nUnexpected Elasticsearch failure.\n" );
+			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = $e->getMessage();
 			$trace = $e->getTraceAsString();
-			$this->output( "Unexpected Elasticsearch failure.\n" );
+			$this->output( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
@@ -227,6 +237,32 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->error( "Only Elasticsearch 1.x is supported.  Your version: $result.", 1 );
 		} else {
 			$this->output( "ok\n" );
+		}
+	}
+
+	private function scanAvailablePlugins() {
+		$this->output( $this->indent . "Scanning available plugins..." );
+		$result = Connection::getClient()->request( '_nodes' );
+		$result = $result->getData();
+		$first = true;
+		foreach ( $result[ 'nodes' ] as $nodeName => $node ) {
+			$plugins = array();
+			foreach ( $node[ 'plugins' ] as $plugin ) {
+				$plugins[] = $plugin[ 'name' ];
+			}
+			if ( $first ) {
+				$this->availablePlugins = $plugins;
+			} else {
+				$this->availablePlugins = array_intersect( $this->availablePlugins, $plugins );
+			}
+		}
+		if ( count( $this->availablePlugins ) === 0 ) {
+			$this->output( 'none' );
+		}
+		$this->output( "\n" );
+		foreach ( array_chunk( $this->availablePlugins, 5 ) as $pluginChunk ) {
+			$plugins = implode( ', ', $pluginChunk );
+			$this->output( $this->indent . "\t$plugins\n" );
 		}
 	}
 

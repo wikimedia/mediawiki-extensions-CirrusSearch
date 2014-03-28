@@ -76,7 +76,7 @@ class InterwikiSearcher extends Searcher {
 
 		$res = $wgMemc->get( $key );
 		if ( !$res ) {
-			$this->setResultsType( new InterwikiResultsType( $this->interwikis ) );
+			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
 			$results = $this->searchText( $term, false );
 			if ( $results->isOk() ) {
 				$res = $results->getValue();

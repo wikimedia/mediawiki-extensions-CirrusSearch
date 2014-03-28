@@ -208,7 +208,7 @@ class Result extends SearchResult {
 		$resultIndex = $result->getIndex();
 		$indexBase = InterwikiSearcher::getIndexForInterwiki( $interwiki );
 		$pos = strpos( $resultIndex, $indexBase );
-		if ( $pos === 0 && $index[strlen( $indexBase )] == '_' ) {
+		if ( $pos === 0 && $resultIndex[strlen( $indexBase )] == '_' ) {
 			$this->interwiki = $interwiki;
 			$this->interwikiNamespace = $result->namespace_text ? $result->namespace_text : '';
 		}

@@ -246,7 +246,6 @@ class Searcher extends ElasticsearchIntermediary {
 	public function searchText( $term, $showSuggestion ) {
 		global $wgCirrusSearchPhraseRescoreBoost,
 			$wgCirrusSearchPhraseRescoreWindowSize,
-			$wgCirrusSearchPhraseUseText,
 			$wgCirrusSearchPreferRecentDefaultDecayPortion,
 			$wgCirrusSearchPreferRecentDefaultHalfLife,
 			$wgCirrusSearchNearMatchWeight,
@@ -1025,10 +1024,9 @@ class Searcher extends ElasticsearchIntermediary {
 		$string = preg_replace( '/(?:<|>)([^\s])/', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
-		$searcher = $this;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/',
-			function ( $matches ) use ( $searcher, &$fuzzyQuery ) {
+			function ( $matches ) use ( &$fuzzyQuery ) {
 				if ( preg_match( '/^(?:|0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
 					$fuzzyQuery = true;
 					return $matches[ 0 ];

@@ -95,29 +95,29 @@ class MappingConfigBuilder {
 				),
 				'namespace' => $this->buildLongField(),
 				'namespace_text' => $this->buildKeywordField(),
-				'title' => $this->buildStringField( 'title',
+				'title' => $this->buildStringField(
 					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::COPY_TO_SUGGEST,
 					$titleExtraAnalyzers ),
 				'text' => array_merge_recursive(
-					$this->buildStringField( 'text', $textOptions, $textExtraAnalyzers ),
+					$this->buildStringField( $textOptions, $textExtraAnalyzers ),
 					array( 'fields' => array( 'word_count' => array(
 						'type' => 'token_count',
 						'store' => true,
 						'analyzer' => 'plain',
 					) ) )
 				),
-				'file_text' => $this->buildStringField( 'file_text', $textOptions ),
+				'file_text' => $this->buildStringField( $textOptions ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( 'heading', MappingConfigBuilder::MINIMAL ),
+				'heading' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),
 				'text_bytes' => $this->buildLongField( false ),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField( 'title', MappingConfigBuilder::COPY_TO_SUGGEST,
+						'title' => $this->buildStringField( MappingConfigBuilder::COPY_TO_SUGGEST,
 							$titleExtraAnalyzers ),
 					)
 				),
@@ -135,7 +135,6 @@ class MappingConfigBuilder {
 
 	/**
 	 * Build a string field that does standard analysis for the language.
-	 * @param string $name Name of the field.
 	 * @param array|null $extra Extra analyzers for this field beyond the basic text and plain.
 	 * @param int $options Field options:
 	 *   ENABLE_NORMS: Gnable norms on the field.  Good for text you search against but bad for array fields and useless
@@ -143,7 +142,7 @@ class MappingConfigBuilder {
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
 	 * @return array definition of the field
 	 */
-	public function buildStringField( $name, $options, $extra = array() ) {
+	public function buildStringField( $options, $extra = array() ) {
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
 			'type' => 'string',

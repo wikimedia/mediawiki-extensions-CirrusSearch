@@ -245,7 +245,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$result = Connection::getClient()->request( '_nodes' );
 		$result = $result->getData();
 		$first = true;
-		foreach ( $result[ 'nodes' ] as $nodeName => $node ) {
+		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
 			$plugins = array();
 			foreach ( $node[ 'plugins' ] as $plugin ) {
 				$plugins[] = $plugin[ 'name' ];
@@ -326,7 +326,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "different..." );
-			$index = $this->getIndex();
 			if ( $this->closeOk ) {
 				$this->getIndex()->close();
 				$this->closed = true;
@@ -379,7 +378,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return bool is the mapping good enough for us?
 	 */
 	private function checkMapping( $requiredPageMappings ) {
-		$indexName = $this->getIndex()->getName();
 		$actualMappings = $this->getIndex()->getMapping();
 		$this->output( "\n" . $this->indent . "\tValidating mapping for page type..." );
 		if ( array_key_exists( 'page', $actualMappings ) &&
@@ -833,8 +831,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		if ( $option === 'current' ) {
 			$this->output( $this->indent . 'Infering index identifier...' );
-			$found = null;
-			$moreThanOne = array();
+			$found = array();
 			foreach ( Connection::getClient()->getStatus()->getIndexNames() as $name ) {
 				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
 					$found[] = $name;

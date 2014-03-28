@@ -108,11 +108,17 @@ class Result extends SearchResult {
 	}
 
 	/**
-	 * Assume we're never missing. We always know about page updates
+	 * Don't bother hitting the revision table and loading extra stuff like
+	 * that into memory like the parent does, just return if we've got an idea
+	 * about page existence.
+	 *
+	 * Protects against things like bug 61464, where a page clearly doesn't
+	 * exist anymore but we've got something stuck in the index.
+	 *
 	 * @return bool
 	 */
 	public function isMissingRevision() {
-		return false;
+		return !$this->mTitle->isKnown();
 	}
 
 	/**

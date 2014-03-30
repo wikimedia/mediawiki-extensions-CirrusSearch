@@ -4,6 +4,10 @@
             "Умар"
         ]
     },
+    "cirrussearch-desc": "MediaWiki-на лахар Elasticsearch базанца",
+    "cirrussearch-backend-error": "Хана долу гӀалат бахьнехь лахар чекхдакха цаделира. Дехар до гӀорта тӀехьо.",
+    "cirrussearch-parse-error": "Дехарах цакхийтира. Дехар до, и атта дар. Дехар дӀаяздина лахаран система дика ян.",
+    "cirrussearch-now-using": "ХӀокху викис лелош ю керла лахаран таро. ([[mw:Special:MyLanguage/Help:CirrusSearch|Мадарра]])",
     "cirrussearch-pref-label": "Керла лахар",
     "cirrussearch-pref-desc": "Леладе Википедин керла лахар, цо дукху меттанаш ловш ду, керла хилам а гойту, кхин тӀе кепаш чура йоза карадо."
 }

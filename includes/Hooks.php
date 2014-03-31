@@ -261,7 +261,7 @@ class Hooks {
 	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
-	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, $titleResult ) {
+	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, &$titleResult ) {
 		global $wgContLang;
 
 		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.

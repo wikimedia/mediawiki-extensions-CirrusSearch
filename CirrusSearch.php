@@ -257,6 +257,15 @@ $wgCirrusSearchInterwikiSources = array();
 // How long to cache interwiki search results for (in seconds)
 $wgCirrusSearchInterwikiCacheTime = 7200;
 
+// Configuration for backups, array format is as follows:
+//  array(
+//    'my_backups' => array( 'type' => 'fs', 'location' => '/bar/baz/' )
+//  )
+//
+// See the Elasticsearch configuration for more settings you can give, note
+// that type and location are required.
+$wgCirrusSearchBackup = array();
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**

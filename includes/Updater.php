@@ -52,14 +52,20 @@ class Updater extends ElasticsearchIntermediary {
 	 * Update a single page.
 	 * @param Title $title
 	 * @param bool $checkFreshness Whether to check page freshness when updating
+	 * @return bool true if the page updated, false if it failed, null if it didn't need updating
 	 */
 	public function updateFromTitle( $title, $checkFreshness = false ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		$page = $this->traceRedirects( $title );
 		if ( $page ) {
-			$this->updatePages( array( $page ), $checkFreshness, $wgCirrusSearchUpdateShardTimeout,
-				$wgCirrusSearchClientSideUpdateTimeout, self::INDEX_EVERYTHING );
+			return (bool)$this->updatePages(
+				array( $page ),
+				$checkFreshness,
+				$wgCirrusSearchUpdateShardTimeout,
+				$wgCirrusSearchClientSideUpdateTimeout,
+				self::INDEX_EVERYTHING
+			);
 		}
 	}
 

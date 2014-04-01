@@ -149,6 +149,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param $flags int Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
+	 * @return int Number of documents updated
 	 */
 	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );

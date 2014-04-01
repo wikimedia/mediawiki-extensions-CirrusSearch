@@ -96,7 +96,7 @@ $wgCirrusSearchExtraIndexes = array();
 $wgCirrusSearchUpdateShardTimeout = '1ms';
 
 // Client side timeout for non-maintenance index and delete operations and
-// freshness checks in seconds.
+// in seconds.
 $wgCirrusSearchClientSideUpdateTimeout = 5;
 
 // The amount of time Elasticsearch will wait for search shard actions before

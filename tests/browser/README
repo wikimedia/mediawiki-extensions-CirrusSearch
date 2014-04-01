@@ -72,8 +72,8 @@ Then add this to your LocalSettings.php:
 
 Finally, go back to the console:
  php CirrusSearch/maintenance/updateSearchIndexConfig.php
- php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipLinks --indexOnSkip
- php CirrusSearch/maintenance/forceSearchIndex.php --forceUpdate --skipParse
+ php CirrusSearch/maintenance/forceSearchIndex.php --skipLinks --indexOnSkip
+ php CirrusSearch/maintenance/forceSearchIndex.php --skipParse
  popd
  sudo /etc/init.d/apache2 restart
 

@@ -42,7 +42,6 @@ class ForceSearchIndex extends Maintenance {
 	var $toId = null;
 	var $indexUpdates;
 	var $limit;
-	var $forceUpdate;
 	var $queue;
 	var $maxJobs;
 	var $pauseForJobs;
@@ -66,8 +65,6 @@ class ForceSearchIndex extends Maintenance {
 			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number with ' .
 			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
 			'cover the entire wiki.' , false, true );
-		$this->addOption( 'forceUpdate', 'Blindly upload pages to Elasticsearch whether or not it already has an up ' .
-			'to date copy.  Not used with --deletes.' );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
 		$this->addOption( 'maxJobs', 'If there are more than this many index jobs in the queue then pause before adding ' .
 			'more.  This is only checked every ' . self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS . ' seconds.  Not meaningful ' .
@@ -110,7 +107,6 @@ class ForceSearchIndex extends Maintenance {
 			$this->buildChunks( $buildChunks );
 			return;
 		}
-		$this->forceUpdate = $this->getOption( 'forceUpdate' );
 		$this->queue = $this->getOption( 'queue' );
 		$this->maxJobs = $this->getOption( 'maxJobs' ) ? intval( $this->getOption( 'maxJobs' ) ) : null;
 		$this->pauseForJobs = $this->getOption( 'pauseForJobs' ) ?
@@ -196,13 +192,11 @@ class ForceSearchIndex extends Maintenance {
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
-					JobQueueGroup::singleton()->push(
-						MassIndexJob::build( $pages, !$this->forceUpdate, $updateFlags ) );
+					JobQueueGroup::singleton()->push( MassIndexJob::build( $pages, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = new Updater();
-					$size = $updater->updatePages( $pages, !$this->forceUpdate,
-						null, null, $updateFlags );
+					$size = $updater->updatePages( $pages, null, null, $updateFlags );
 				}
 			} else {
 				$titlesToDelete = array();

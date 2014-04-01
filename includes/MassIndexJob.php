@@ -24,7 +24,7 @@ use \WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class MassIndexJob extends Job {
-	public static function build( $pages, $checkFreshness, $updateFlags ) {
+	public static function build( $pages, $updateFlags ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();
 		foreach ( $pages as $page ) {
@@ -34,7 +34,6 @@ class MassIndexJob extends Job {
 		// We don't have a "title" for this job so we use the Main Page because it exists.
 		return new MassIndexJob( Title::newMainPage(), array(
 			'pageDBKeys' => $pageDBKeys,
-			'checkFreshness' => $checkFreshness,
 			'updateFlags' => $updateFlags,
 		) );
 	}
@@ -47,7 +46,6 @@ class MassIndexJob extends Job {
 		}
 		// Now invoke the updater!
 		$updater = new Updater();
-		$updater->updatePages( $pageData, $this->params[ 'checkFreshness' ], null, null,
-			$this->params[ 'updateFlags' ] );
+		$count = $updater->updatePages( $pageData, null, null, $this->params[ 'updateFlags' ] );
 	}
 }

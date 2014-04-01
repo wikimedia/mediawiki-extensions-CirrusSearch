@@ -103,6 +103,7 @@ MVEL;
 	 * @param string $actionName name of the action to report in logging
 	 * @param string $scriptSource MVEL source script for performing the update
 	 * @param array(Title) $titles titles in other indexes to update
+	 * @return bool false on failure, null otherwise
 	 */
 	private function updateOtherIndex( $actionName, $scriptSource, $titles ) {
 		$client = Connection::getClient();
@@ -189,6 +190,7 @@ MVEL;
 			}, $titles );
 			wfDebugLog( 'CirrusSearchChangeFailed', "Other Index $actionName for article ids: " .
 				implode( ',', $articleIDs ) );
+			return false;
 		}
 	}
 }

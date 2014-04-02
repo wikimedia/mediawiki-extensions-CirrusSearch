@@ -42,8 +42,7 @@ class LinksUpdateJob extends Job {
 
 	protected function doJob() {
 		$updater = new Updater();
-		$check = isset( $this->params['checkFreshness'] ) && $this->params['checkFreshness'];
-		$res = $updater->updateFromTitle( $this->title, $check );
+		$res = $updater->updateFromTitle( $this->title );
 		if ( !$res ) {
 			return false;
 		}

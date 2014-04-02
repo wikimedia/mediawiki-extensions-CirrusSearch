@@ -51,17 +51,15 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Update a single page.
 	 * @param Title $title
-	 * @param bool $checkFreshness Whether to check page freshness when updating
 	 * @return bool true if the page updated, false if it failed, null if it didn't need updating
 	 */
-	public function updateFromTitle( $title, $checkFreshness = false ) {
+	public function updateFromTitle( $title ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		$page = $this->traceRedirects( $title );
 		if ( $page ) {
 			return (bool)$this->updatePages(
 				array( $page ),
-				$checkFreshness,
 				$wgCirrusSearchUpdateShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout,
 				self::INDEX_EVERYTHING
@@ -139,8 +137,6 @@ class Updater extends ElasticsearchIntermediary {
 	 *     half of the two phase index build.
 	 *
 	 * @param $pages array(WikiPage) pages to update
-	 * @param $checkFreshness boolean Should we check if Elasticsearch already has
-	 *   up to date copy of the document before sending it?
 	 * @param $shardTimeout null|string How long should elaticsearch wait for an offline
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
@@ -151,28 +147,17 @@ class Updater extends ElasticsearchIntermediary {
 	 *   and sent to Elasticsearch.
 	 * @return int Number of documents updated
 	 */
-	public function updatePages( $pages, $checkFreshness, $shardTimeout, $clientSideTimeout, $flags ) {
+	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
-		if ( $checkFreshness ) {
-			// TODO I bet we can do this with a multi-get
-			$freshPages = array();
-			foreach ( $pages as $page ) {
-				if ( !$this->isFresh( $page ) ) {
-					$freshPages[] = $page;
-				}
-			}
-		} else {
-			$freshPages = $pages;
-		}
 
 		OtherIndexJob::queueIfRequired( $this->pagesToTitles( $pages ), true );
 
 		$allDocuments = array_fill_keys( Connection::getAllIndexTypes(), array() );
-		foreach ( $this->buildDocumentsForPages( $freshPages, $flags ) as $document ) {
+		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			$allDocuments[$suffix][] = $document;
 		}
@@ -204,24 +189,6 @@ class Updater extends ElasticsearchIntermediary {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 		return $this->sendDeletes( $ids );
-	}
-
-	private function isFresh( $page ) {
-		$searcher = new Searcher( 0, 0, array( $page->getTitle()->getNamespace(), null ), null );
-		$get = $searcher->get( $page->getTitle()->getArticleId(), array( 'timestamp ') );
-		if ( !$get->isOk() ) {
-			return false;
-		}
-		$get = $get->getValue();
-		if ( $get === null ) {
-			return false;
-		}
-		$found = new MWTimestamp( $get->timestamp );
-		$diff = $found->diff( new MWTimestamp( $page->getTimestamp() ) );
-		if ( $diff === false ) {
-			return false;
-		}
-		return !$diff->invert;
 	}
 
 	/**
@@ -400,7 +367,7 @@ class Updater extends ElasticsearchIntermediary {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$this->updatePages( $pages, false, $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
+		$this->updatePages( $pages, $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
 			self::SKIP_PARSE );
 	}
 

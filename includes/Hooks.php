@@ -122,7 +122,6 @@ class Hooks {
 	public static function onRevisionDelete( $title ) {
 		JobQueueGroup::singleton()->push(
 			new LinksUpdateJob( $title, array(
-				'checkFreshness' => true,
 				'addedLinks' => array(),
 				'removedLinks' => array()
 			) )

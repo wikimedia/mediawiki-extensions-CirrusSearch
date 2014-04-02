@@ -43,10 +43,13 @@ class LinksUpdateJob extends Job {
 	protected function doJob() {
 		$updater = new Updater();
 		$res = $updater->updateFromTitle( $this->title );
-		if ( !$res ) {
-			return false;
+		if ( $res === false ) {
+			// Couldn't update. Bail early and retry rather than adding a
+			// secondary job that probably won't work.
+			return $res;
 		}
 
+		// Trigger LinksUpdateSecondary jobs when links were...updated
 		if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 				count( $this->params[ 'removedLinks' ] ) > 0 ) {
 			$params = array(
@@ -63,6 +66,9 @@ class LinksUpdateJob extends Job {
 			$jobQueueGroup->push(
 				new LinksUpdateSecondaryJob( $this->title, $params ) );
 		}
+
+		// All done
+		return $res;
 	}
 
 	/**

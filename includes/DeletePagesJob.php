@@ -21,6 +21,15 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DeletePagesJob extends Job {
+	public function __construct( $title, $params ) {
+		parent::__construct( $title, $params );
+
+		// This is one of the cheapest jobs we have. Plus I'm reasonably
+		// paranoid about deletions so I'd rather delete things extra times
+		// if something actually requested it.
+		$this->removeDuplicates = false;
+	}
+
 	protected function doJob() {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 

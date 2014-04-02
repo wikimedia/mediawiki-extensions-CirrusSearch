@@ -37,8 +37,8 @@ require_once( "$IP/maintenance/Maintenance.php" );
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
-	var $from = null;
-	var $to = null;
+	var $fromDate = null;
+	var $toDate = null;
 	var $toId = null;
 	var $indexUpdates;
 	var $limit;
@@ -99,8 +99,8 @@ class ForceSearchIndex extends Maintenance {
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
 			// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
-			$this->from = new MWTimestamp( $this->getOption( 'from', '00' )  );
-			$this->to = new MWTimestamp( $this->getOption( 'to', false ) );
+			$this->fromDate = new MWTimestamp( $this->getOption( 'from', '00' )  );
+			$this->toDate = new MWTimestamp( $this->getOption( 'to', false ) );
 		}
 		$this->toId = $this->getOption( 'toId' );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
@@ -145,7 +145,7 @@ class ForceSearchIndex extends Maintenance {
 		$completed = 0;
 		$rate = 0;
 
-		$minUpdate = $this->from;
+		$minUpdate = $this->fromDate;
 		if ( $this->indexUpdates ) {
 			$minId = $this->getOption( 'fromId', -1 );
 		} else {
@@ -154,13 +154,13 @@ class ForceSearchIndex extends Maintenance {
 		}
 		while ( is_null( $this->limit ) || $this->limit > $completed ) {
 			if ( $this->indexUpdates ) {
-				$updates = $this->findUpdates( $minUpdate, $minId, $this->to );
+				$updates = $this->findUpdates( $minUpdate, $minId, $this->toDate );
 				$size = count( $updates );
 				// Note that we'll strip invalid updates after checking to the loop break condition
 				// because we don't want a batch the contains only invalid updates to cause early
 				// termination of the process....
 			} else {
-				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->to );
+				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
 				$size = count( $deletes );
 			}
 			
@@ -220,7 +220,7 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$completed += $size;
 			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-			if ( is_null( $this->to ) ) {
+			if ( is_null( $this->toDate ) ) {
 				$endingAt = $minId;
 			} else {
 				$endingAt = $minUpdate->getTimestamp( TS_ISO_8601 );

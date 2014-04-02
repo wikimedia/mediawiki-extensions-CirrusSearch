@@ -41,9 +41,9 @@ class OtherIndexes extends Updater {
 	 */
 	public static function getExternalIndexes( Title $title ) {
 		global $wgCirrusSearchExtraIndexes;
-		$ns = $title->getNamespace();
-		return isset( $wgCirrusSearchExtraIndexes[ $ns ] )
-			? $wgCirrusSearchExtraIndexes[ $ns ] : array();
+		$namespace = $title->getNamespace();
+		return isset( $wgCirrusSearchExtraIndexes[ $namespace ] )
+			? $wgCirrusSearchExtraIndexes[ $namespace ] : array();
 	}
 
 	/**
@@ -55,8 +55,8 @@ class OtherIndexes extends Updater {
 		global $wgCirrusSearchExtraIndexes;
 		$extraIndexes = array();
 		if ( $wgCirrusSearchExtraIndexes ) {
-			foreach( $wgCirrusSearchExtraIndexes as $ns => $indexes ) {
-				if ( in_array( $ns, $namespaces ) ) {
+			foreach( $wgCirrusSearchExtraIndexes as $namespace => $indexes ) {
+				if ( in_array( $namespace, $namespaces ) ) {
 					$extraIndexes = array_merge( $extraIndexes, $indexes );
 				}
 			}

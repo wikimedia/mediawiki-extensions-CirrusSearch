@@ -29,8 +29,8 @@ use \JobQueueGroup;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class LinksUpdateJob extends Job {
-	public function __construct( $title, $params, $id = 0 ) {
-		parent::__construct( $title, $params, $id );
+	public function __construct( $title, $params ) {
+		parent::__construct( $title, $params );
 
 		if ( $this->isPrioritized() ) {
 			$this->command .= 'Prioritized';

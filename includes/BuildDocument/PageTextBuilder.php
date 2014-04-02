@@ -54,12 +54,12 @@ class PageTextBuilder extends ParseBuilder {
 	/**
 	 * Get text to index from a ParserOutput assuming the content was wikitext.
 	 *
-	 * @param ParserOutput $po
+	 * @param ParserOutput $parserOutput The parsed wikitext's parser output
 	 * @return formatted text from the provided parser output
 	 */
-	private function formatWikitext( ParserOutput $po ) {
-		$po->setEditSectionTokens( false );
-		$formatter = new HtmlFormatter( $po->getText() );
+	private function formatWikitext( ParserOutput $parserOutput ) {
+		$parserOutput->setEditSectionTokens( false );
+		$formatter = new HtmlFormatter( $parserOutput->getText() );
 		$formatter->remove( array( 'audio', 'video', '#toc', '.thumbcaption' ) );
 		$formatter->filterContent();
 		return $formatter->getText();

@@ -79,14 +79,14 @@ class Hooks {
 	 * @param WikiPage $page The page we're deleting
 	 * @param User $user The user deleting the page
 	 * @param string $reason Reason the page is being deleted
-	 * @param int $id Page id being deleted
+	 * @param int $pageId Page id being deleted
 	 * @return bool
 	 */
-	public static function articleDeleteCompleteHook( $page, $user, $reason, $id ) {
+	public static function articleDeleteCompleteHook( $page, $user, $reason, $pageId ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
-			new DeletePagesJob( $page->getTitle(), array( 'id' => $id ) )
+			new DeletePagesJob( $page->getTitle(), array( 'id' => $pageId ) )
 		);
 		return true;
 	}
@@ -234,15 +234,15 @@ class Hooks {
 
 	/**
 	 * Hooked to delegate prefix searching to Searcher.
-	 * @param int $ns namespace to search
+	 * @param int $namespace namespace to search
 	 * @param string $search search text
 	 * @param int $limit maximum number of titles to return
 	 * @param array(string) $results outbound variable with string versions of titles
 	 * @return bool always false because we are the authoritative prefix search
 	 */
-	public static function prefixSearch( $ns, $search, $limit, &$results ) {
+	public static function prefixSearch( $namespace, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, $limit, $ns, $user );
+		$searcher = new Searcher( 0, $limit, $namespace, $user );
 		$searcher->setResultsType( new TitleResultsType( true, 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
@@ -310,20 +310,20 @@ class Hooks {
 	}
 
 	/**
-	 * Pick $n random entries from $array.
+	 * Pick $num random entries from $array.
 	 * @var $array array array to pick from
-	 * @var $n int number of entries to pick
+	 * @var $num int number of entries to pick
 	 * @return array of entries from $array
 	 */
-	private static function pickFromArray( $array, $n ) {
-		if ( $n > count( $array ) ) {
+	private static function pickFromArray( $array, $num ) {
+		if ( $num > count( $array ) ) {
 			return $array;
 		}
-		if ( $n < 1 ) {
+		if ( $num < 1 ) {
 			return array();
 		}
-		$chosen = array_rand( $array, $n );
-		// If $n === 1 then array_rand will return a key rather than an array of keys.
+		$chosen = array_rand( $array, $num );
+		// If $num === 1 then array_rand will return a key rather than an array of keys.
 		if ( !is_array( $chosen ) ) {
 			return array( $array[ $chosen ] );
 		}

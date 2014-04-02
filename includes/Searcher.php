@@ -496,17 +496,17 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param $id article id to search
+	 * @param $pageId article id to search
 	 * @return Status(ResultSet|null)
 	 */
-	public function moreLikeThisArticle( $id ) {
+	public function moreLikeThisArticle( $pageId ) {
 		global $wgCirrusSearchMoreLikeThisConfig;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
 		// two passes but it doesn't support that at this point
-		$found = $this->get( $id, array( 'text' ) );
+		$found = $this->get( $pageId, array( 'text' ) );
 		if ( !$found->isOk() ) {
 			return $found;
 		}
@@ -522,7 +522,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->query->setLikeText( Sanitizer::stripAllTags( $found->text ) );
 		$this->query->setFields( array( 'text' ) );
 		$idFilter = new \Elastica\Filter\Ids();
-		$idFilter->addId( $id );
+		$idFilter->addId( $pageId );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
 		return $this->search( 'more_like', "$found->namespace:$found->title" );
@@ -530,25 +530,25 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Get the page with $id.
-	 * @param $id int page id
-	 * @param $fields array(string) fields to fetch
+	 * @param int $pageId page id
+	 * @param array(string) $fields fields to fetch
 	 * @return Status containing page data, null if not found, or an error if there was an error
 	 */
-	public function get( $id, $fields ) {
+	public function get( $pageId, $fields ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$searcher = $this;
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$indexBaseName = $this->indexBaseName;
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $searcher, $id, $fields, $indexType, $indexBaseName ) {
+			'doWork' => function() use ( $searcher, $pageId, $fields, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
-					$searcher->start( "get of $indexType.$id" );
+					$searcher->start( "get of $indexType.$pageId" );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
-					return $searcher->success( $pageType->getDocument( $id, array( 'fields' => $fields, ) ) );
+					return $searcher->success( $pageType->getDocument( $pageId, array( 'fields' => $fields, ) ) );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the called to decide if that is and error.
@@ -1229,28 +1229,28 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Get the weight of a namespace.
-	 * @param int $ns the namespace
+	 * @param int $namespace the namespace
 	 * @return float the weight of the namespace
 	 */
-	private function getBoostForNamespace( $ns ) {
+	private function getBoostForNamespace( $namespace ) {
 		global $wgCirrusSearchNamespaceWeights,
 			$wgCirrusSearchDefaultNamespaceWeight,
 			$wgCirrusSearchTalkNamespaceWeight;
 
-		if ( isset( $wgCirrusSearchNamespaceWeights[ $ns ] ) ) {
-			return $wgCirrusSearchNamespaceWeights[ $ns ];
+		if ( isset( $wgCirrusSearchNamespaceWeights[ $namespace ] ) ) {
+			return $wgCirrusSearchNamespaceWeights[ $namespace ];
 		}
-		if ( MWNamespace::isSubject( $ns ) ) {
-			if ( $ns === NS_MAIN ) {
+		if ( MWNamespace::isSubject( $namespace ) ) {
+			if ( $namespace === NS_MAIN ) {
 				return 1;
 			}
 			return $wgCirrusSearchDefaultNamespaceWeight;
 		}
-		$subjectNs = MWNamespace::getSubject( $ns );
+		$subjectNs = MWNamespace::getSubject( $namespace );
 		if ( isset( $wgCirrusSearchNamespaceWeights[ $subjectNs ] ) ) {
 			return $wgCirrusSearchTalkNamespaceWeight * $wgCirrusSearchNamespaceWeights[ $subjectNs ];
 		}
-		if ( $ns === NS_TALK ) {
+		if ( $namespace === NS_TALK ) {
 			return $wgCirrusSearchTalkNamespaceWeight;
 		}
 		return $wgCirrusSearchDefaultNamespaceWeight * $wgCirrusSearchTalkNamespaceWeight;

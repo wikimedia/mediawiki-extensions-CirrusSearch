@@ -49,14 +49,14 @@ class OtherIndexJob extends Job {
 
 	protected function doJob() {
 		$titles = array();
-		foreach ( $this->params[ 'titles' ] as $t ) {
-			list( $namespace, $title ) = $t;
+		foreach ( $this->params[ 'titles' ] as $titleArr ) {
+			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$oi = new OtherIndexes( wfWikiId() );
+		$otherIdx = new OtherIndexes( wfWikiId() );
 
 		return $this->params[ 'existsInLocalIndex' ] ?
-			$oi->addLocalSiteToOtherIndex( $titles ) :
-			$oi->removeLocalSiteFromOtherIndex( $titles );
+			$otherIdx->addLocalSiteToOtherIndex( $titles ) :
+			$otherIdx->removeLocalSiteFromOtherIndex( $titles );
 	}
 }

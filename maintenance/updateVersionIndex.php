@@ -108,7 +108,7 @@ class UpdateVersionIndex extends Maintenance {
 		if ( !$index->exists() ) {
 			$this->output( "{$this->indent}Creating tracking index..." );
 			$index->create( array( 'number_of_shards' => 1,
-				'number_of_replicas' => 1, ), true );
+				'number_of_replicas' => 0, ), true );
 			$mapping = new \Elastica\Type\Mapping();
 			$mapping->setType( $index->getType( 'version' ) );
 			$mapping->setProperties( array(

@@ -36,24 +36,12 @@ class LinksUpdateSecondaryJob extends Job {
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
 		$updater = new Updater();
-		$updater->updateLinkedArticles(
-			$this->loadTitles( $this->params[ 'addedLinks' ] ),
-			$this->loadTitles( $this->params[ 'removedLinks' ] ) );
-	}
+		$updater->updateLinkedArticles( $this->params[ 'addedLinks' ],
+			$this->params[ 'removedLinks' ] );
 
-	/**
-	 * Convert a serialized title to a title ready to be passed to updateLinkedArticles.
-	 * @param Title|string $title Either a Title or a string to be loaded.
-	 * @return array(Title) loaded titles
-	 */
-	private function loadTitles( $titles ) {
-		$result = array();
-		foreach ( $titles as $title ) {
-			$title = Title::newFromDBKey( $title );
-			if ( $title ) {
-				$result[] = $title;
-			}
-		}
-		return $result;
+		// This job really doesn't matter if it fails, even if we could
+		// verify one way or the other, which we can't. If it failed we
+		// already logged further down--just release the job and move on
+		return true;
 	}
 }

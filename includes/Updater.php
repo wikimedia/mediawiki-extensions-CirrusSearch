@@ -338,9 +338,14 @@ class Updater extends ElasticsearchIntermediary {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
 		// We don't do anything different with removed or added pages at this point so merge them.
-		$titles = array_merge( $addedLinks, $removedLinks );
+		$titleKeys = array_merge( $addedLinks, $removedLinks );
 		$pages = array();
-		foreach ( $titles as $title ) {
+		foreach ( $titleKeys as $titleKey ) {
+			$title = Title::newFromDBKey( $titleKey );
+			if ( !$title ) {
+				continue;
+			}
+
 			$page = WikiPage::factory( $title );
 			if ( $page === null || !$page->exists() ) {
 				// Skip link to non-existant page.

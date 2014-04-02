@@ -43,8 +43,8 @@ class InterwikiSearcher extends Searcher {
 		$this->interwiki = $interwiki;
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $this->namespaces !== null ) {
-			$this->namespaces = array_filter( $namespaces, function( $v ) {
-				return $v <= 15;
+			$this->namespaces = array_filter( $namespaces, function( $namespace ) {
+				return $namespace <= 15;
 			} );
 		}
 	}

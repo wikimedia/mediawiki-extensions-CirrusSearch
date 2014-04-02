@@ -38,12 +38,12 @@ abstract class Builder {
 
 	/**
 	 * Constructor
-	 * @param \Elastica\Document $d The document we will be building on
-	 * @param Title $t The title to build a document for
+	 * @param \Elastica\Document $doc The document we will be building on
+	 * @param Title $title The title to build a document for
 	 */
-	public function __construct( $d, $t ) {
-		$this->doc = $d;
-		$this->title = $t;
+	public function __construct( $doc, $title ) {
+		$this->doc = $doc;
+		$this->title = $title;
 	}
 
 	/**
@@ -69,14 +69,14 @@ abstract class ParseBuilder extends Builder {
 
 	/**
 	 * Constructor
-	 * @param \Elastica\Document $d The document we will be building on
-	 * @param Title $t The title to build a document for
-	 * @param Content $c The page content to build a document from
-	 * @param ParserOutput $p The parser output to build a document from
+	 * @param \Elastica\Document $doc The document we will be building on
+	 * @param Title $title The title to build a document for
+	 * @param Content $content The page content to build a document from
+	 * @param ParserOutput $parserOutput The parser output to build a document from
 	 */ 
-	public function __construct( $d, $t, $c, $p ) {
-		parent::__construct( $d, $t );
-		$this->content = $c;
-		$this->parserOutput = $p;
+	public function __construct( $doc, $title, $content, $parserOutput ) {
+		parent::__construct( $doc, $title );
+		$this->content = $content;
+		$this->parserOutput = $parserOutput;
 	}
 }

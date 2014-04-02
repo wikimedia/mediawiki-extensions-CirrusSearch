@@ -22,10 +22,10 @@ use \Job as MWJob;
  * http://www.gnu.org/copyleft/gpl.html
  */
 abstract class Job extends MWJob {
-	public function __construct( $title, $params, $id = 0 ) {
+	public function __construct( $title, $params ) {
 		// eg: DeletePagesJob -> cirrusSearchDeletePages
 		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\', '', str_replace( 'Job', '', get_class( $this ) ) );
-		parent::__construct( $jobName, $title, $params, $id );
+		parent::__construct( $jobName, $title, $params );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it
 		// is ok to remove duplicate _unclaimed_ cirrus jobs.  Once a cirrus job is claimed

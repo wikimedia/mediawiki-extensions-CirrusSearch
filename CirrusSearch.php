@@ -57,6 +57,23 @@ $wgCirrusSearchReplicaCount = array( 'content' => 0, 'general' => 0 );
 // don't contain user information.
 $wgCirrusSearchSlowSearch = 10.0;
 
+// Should CirrusSearch attempt to use the "experimental" highlighter.  It is an
+// Elasticsearch plugin that should produce better snippets for search results.
+// Installation instructions are here:
+// https://github.com/wikimedia/search-highlighter
+// If you have the highlighter installed you can switch this on and off so long
+// as you don't rebuild the index while
+// $wgCirrusSearchOptimizeIndexForExperimentalHighlighter is true.  Setting it
+// to true without the highlighter installed will break search.
+$wgCirrusSearchUseExperimentalHighlighter = false;
+
+// Should CirrusSearch optimize the index for the experimental highlighter.
+// This will speed up indexing, save a ton of space, and speed up highlighting
+// slightly.  This only takes effect if you rebuild the index. The downside is
+// that you can no longer switch $wgCirrusSearchUseExperimentalHighlighter on
+// and off - it has to stay on.
+$wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be

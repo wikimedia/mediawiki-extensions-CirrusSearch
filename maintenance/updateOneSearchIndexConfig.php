@@ -350,9 +350,19 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateMapping() {
+		global $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
+
 		$this->output( $this->indent . "Validating mappings..." );
+		if ( $wgCirrusSearchOptimizeIndexForExperimentalHighlighter &&
+				!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
+			$this->output( "impossible!\n" );
+			$this->error( "wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
+				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
+		}
+
 		$requiredPageMappings = new MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseUseText );
+			$this->prefixSearchStartsWithAny, $this->phraseUseText,
+			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$requiredPageMappings = $requiredPageMappings->buildConfig();
 
 		if ( !$this->checkMapping( $requiredPageMappings ) ) {
@@ -676,6 +686,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function reindexInternal( $children, $childNumber ) {
+		global $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
+
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
@@ -691,7 +703,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
 		}
 		$pageProperties = new MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseUseText );
+			$this->prefixSearchStartsWithAny, $this->phraseUseText,
+			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$pageProperties = $pageProperties->buildConfig();
 		$pageProperties = $pageProperties[ 'properties' ];
 		try {

@@ -41,6 +41,7 @@ require_once( "$IP/extensions/Elastica/Elastica.php" );
 require_once( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
 require_once( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
 require_once( "$IP/extensions/PdfHandler/PdfHandler.php" );
+require_once( "$IP/extensions/Cite/Cite.php" );
 
 // Configuration
 $wgSearchType = 'CirrusSearch';
@@ -67,6 +68,7 @@ $wgJobQueueAggregator = array(
 		'password' => $wgRedisPassword,
 	),
 );
+$wgCiteEnablePopups = true;
 
 // Running a ton of jobs every request helps to make sure all the pages that are created
 // are indexed as fast as possible.

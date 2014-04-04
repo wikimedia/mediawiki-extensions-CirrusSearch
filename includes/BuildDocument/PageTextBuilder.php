@@ -60,7 +60,10 @@ class PageTextBuilder extends ParseBuilder {
 	private function formatWikitext( ParserOutput $parserOutput ) {
 		$parserOutput->setEditSectionTokens( false );
 		$formatter = new HtmlFormatter( $parserOutput->getText() );
-		$formatter->remove( array( 'audio', 'video', '#toc', '.thumbcaption' ) );
+		$formatter->remove( array( 'audio', 'video', '#toc', '.thumbcaption',
+			'sup.reference',        // The [1] for references
+			'.mw-cite-backlink',    // The ↑ next to refenences in the references section
+		) );
 		$formatter->filterContent();
 		return $formatter->getText();
 	}

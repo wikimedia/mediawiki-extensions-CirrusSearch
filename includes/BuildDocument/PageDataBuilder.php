@@ -106,8 +106,18 @@ class PageDataBuilder extends ParseBuilder {
 		$ignoredHeadings = $this->getIgnoredHeadings();
 		foreach ( $this->parserOutput->getSections() as $heading ) {
 			$heading = $heading[ 'line' ];
+			// First strip out things that look like references.  We can't use HTML filtering becase
+			// the references come back as <sup> tags without a class.  To keep from breaking stuff like
+			//  ==Applicability of the strict mass–energy equivalence formula, ''E'' = ''mc''<sup>2</sup>==
+			// we don't remove the whole <sup> tag.  We also don't want to strip the <sup> tag and remove
+			// everything that looks like [2] because, I dunno, maybe there is a band named Word [2] Foo
+			// or something.  Whatever.  So we only strip things that look like <sup> tags wrapping a
+			// refence.  And we do it with regexes because HtmlFormatter doesn't support css selectors.
+			$heading = preg_replace( '/<sup>\s*\[\d+\]\s*<\/sup>/', '', $heading );
+
 			// Strip tags from the heading or else we'll display them (escaped) in search results
-			$heading = Sanitizer::stripAllTags( $heading );
+			$heading = trim( Sanitizer::stripAllTags( $heading ) );
+
 			// Note that we don't take the level of the heading into account - all headings are equal.
 			// Except the ones we ignore.
 			if ( !in_array( $heading, $ignoredHeadings ) ) {

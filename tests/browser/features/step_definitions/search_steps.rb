@@ -92,6 +92,11 @@ Then(/^(.+) is the first suggestion$/) do |title|
     on(SearchPage).one_result.should == title
   end
 end
+Then(/^(.+) is not in the suggestions$/) do |title|
+  on(SearchPage).all_results_elements.each do |result|
+    result.text.should_not == title
+  end
+end
 Then(/^I should be offered to search for (.+)$/) do |term|
   on(SearchPage).search_special.should == "containing...\n" + term
 end

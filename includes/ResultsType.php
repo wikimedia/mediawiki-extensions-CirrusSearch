@@ -95,22 +95,25 @@ class TitleResultsType implements ResultsType {
 			// Now we have to use the highlights to figure out whether it was the title or the redirect
 			// that matched.  It is kind of a shame we can't really give the highlighting to the client
 			// though.
-			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
-				// The match was against a redirect so we should replace the $title with one that
-				// represents the redirect.
-				// The first step is to strip the actual highlighting from the title.
-				$redirectTitle = $highlights[ "redirect.title.$this->matchedAnalyzer" ][ 0 ];
-				$redirectTitle = str_replace( Searcher::HIGHLIGHT_PRE, '', $redirectTitle );
-				$redirectTitle = str_replace( Searcher::HIGHLIGHT_POST, '', $redirectTitle );
+			if ( !isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
+				// The match wasn't against the title, so it better be against a redirect.
+				if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+					// The match was against a redirect so we should replace the $title with one that
+					// represents the redirect.
+					// The first step is to strip the actual highlighting from the title.
+					$redirectTitle = $highlights[ "redirect.title.$this->matchedAnalyzer" ][ 0 ];
+					$redirectTitle = str_replace( Searcher::HIGHLIGHT_PRE, '', $redirectTitle );
+					$redirectTitle = str_replace( Searcher::HIGHLIGHT_POST, '', $redirectTitle );
 
-				// Instead of getting the redirect's real namespace we're going to just use the namespace
-				// of the title.  This is not great but OK given that we can't find cross namespace
-				// redirects properly any way.
-				$title = Title::makeTitle( $r->namespace, $redirectTitle );
-			} else if ( !isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
-				// We're not really sure where the match came from so lets just pretend it was the title?
-				wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
-					"figure out what caused the match:  $r->namespace:$r->title");
+					// Instead of getting the redirect's real namespace we're going to just use the namespace
+					// of the title.  This is not great but OK given that we can't find cross namespace
+					// redirects properly any way.
+					$title = Title::makeTitle( $r->namespace, $redirectTitle );
+				} else {
+					// We're not really sure where the match came from so lets just pretend it was the title.
+					wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
+						"figure out what caused the match:  $r->namespace:$r->title");
+				}
 			}
 			if ( $this->getText ) {
 				$title = $title->getPrefixedText();

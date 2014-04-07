@@ -40,3 +40,10 @@ Feature: Prefix search
     And SEO Redirecttest is the first suggestion
     When I click the search button
     Then I am on a page titled Search Engine Optimization Redirecttest
+
+  @prefix @redirect
+  Scenario: Prefix search includes redirects
+    When I type Redirecttest Y into the search box
+    Then suggestions should appear
+    And Redirecttest Yay is the first suggestion
+   And Redirecttest Yikes is not in the suggestions

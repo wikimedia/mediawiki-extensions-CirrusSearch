@@ -35,12 +35,12 @@ Feature: Highlighting
   @headings @highlighting
   Scenario: Found words are highlighted in headings
     When I search for "i am a heading"
-    Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
+    Then *I am a heading* is the highlighted alttitle of the first search result
 
   @highlighting
   Scenario: Found words are highlighted in headings and text even in large documents
     When I search for "Succession of Umar"
-    Then *Succession* *of* *Umar* is the highlighted alttitle of the first search result
+    Then *Succession of Umar* is the highlighted alttitle of the first search result
     And *Succession of Umar* is in the highlighted text of the first search result
 
   @highlighting
@@ -48,21 +48,20 @@ Feature: Highlighting
     When I search for The Rose Trellis Egg
     Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia is the highlighted text of the first search result
 
-  # Bug 54526
-  # @headings
-  # Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase
-  #   When I search for "i am a" heading
-  #   Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
+  @headings
+  Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase
+    When I search for "i am a" heading
+    Then *I am a* *heading* is the highlighted alttitle of the first search result
 
   @headings @highlighting
   Scenario: Found words are highlighted in headings when searching for a non-strict phrase
     When I search for "i am a heading"~
-    Then *I* *am* a *heading* is the highlighted alttitle of the first search result
+    Then *I am a heading* is the highlighted alttitle of the first search result
 
   @headings @highlighting
   Scenario: Found words are highlighted in headings and text even in large documents when searching in a non-strict phrase
     When I search for "Succession of Umar"~
-    Then *Succession* of *Umar* is the highlighted alttitle of the first search result
+    Then *Succession of Umar* is the highlighted alttitle of the first search result
     And *Succession of Umar* is in the highlighted text of the first search result
 
   @headings @highlighting
@@ -73,7 +72,7 @@ Feature: Highlighting
   @headings @highlighting
   Scenario: HTML comments in headings are not highlighted
     When I search for Heading with html comment
-    And *Heading* with *html* *comment* is the highlighted alttitle of the first search result
+    And *Heading* *with* *html* *comment* is the highlighted alttitle of the first search result
 
   @highlighting
   Scenario: Redirects are highlighted
@@ -128,4 +127,4 @@ Feature: Highlighting
   Scenario: Long redirects are highlighted
     Given a page named Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong exists with contents #REDIRECT [[Main Page]]
     When I search for Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong
-    Then *Joint* *Declaration* of the *Government* of the *United* *Kingdom* of *Great* *Britain* and *Northern* *Ireland* and the *Government* of the *People*'*s* *Republic* of *China* on the *Question* of *Hong* *Kong* is the highlighted alttitle of the first search result
+    Then *Joint* *Declaration* *of* *the* *Government* *of* *the* *United* *Kingdom* *of* *Great* *Britain* *and* *Northern* *Ireland* *and* *the* *Government* *of* *the* *People's* *Republic* *of* *China* *on* *the* *Question* *of* *Hong* *Kong* is the highlighted alttitle of the first search result

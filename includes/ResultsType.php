@@ -62,21 +62,40 @@ class TitleResultsType implements ResultsType {
 	}
 
 	public function getHighlightingConfiguration() {
-		// This is similar to the FullTextResults type but against the near_match and
-		// with the plain highlighter.  Near match because that is how the field is
-		// queried.  Plain highlighter because we don't want to add the FVH's space
-		// overhead for storing extra stuff and we don't need it for combining fields.
-		$entireValue = array(
-			'number_of_fragments' => 0,
-			'type' => 'plain',
-		);
-		$entireValueInListField = array(
-			'number_of_fragments' => 1, // Just one of the values in the list
-			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
-			'type' => 'plain',
-		);
+		global $wgCirrusSearchUseExperimentalHighlighter;
+
+		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
+			// This is much less esoteric then the plain highlighter based
+			// invocation but does the same thing.  The magic is that the none
+			// fragmenter still fragments on multi valued fields.
+			$entireValue = array(
+				'type' => 'experimental',
+				'fragmenter' => 'none',
+				'number_of_fragments' => 1,
+			);
+			$entireValueInListField = array(
+				'type' => 'experimental',
+				'fragmenter' => 'none',
+				'order' => 'score',
+				'number_of_fragments' => 1,
+			);
+		} else {
+			// This is similar to the FullTextResults type but against the near_match and
+			// with the plain highlighter.  Near match because that is how the field is
+			// queried.  Plain highlighter because we don't want to add the FVH's space
+			// overhead for storing extra stuff and we don't need it for combining fields.
+			$entireValue = array(
+				'type' => 'plain',
+				'number_of_fragments' => 0,
+			);
+			$entireValueInListField = array(
+				'type' => 'plain',
+				'fragment_size' => 10000,   // We want the whole value but more than this is crazy
+				'order' => 'score',
+				'number_of_fragments' => 1, // Just one of the values in the list
+			);
+		}
 		return array(
-			'order' => 'score',
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(
@@ -142,27 +161,63 @@ class FullTextResultsType implements ResultsType {
 	 * @return array of highlighting configuration
 	 */
 	public function getHighlightingConfiguration() {
-		$entireValue = array(
-			'number_of_fragments' => 0,
-			'type' => 'fvh',
-		);
-		$entireValueInListField = array(
-			'number_of_fragments' => 1, // Just one of the values in the list
-			'fragment_size' => 10000,   // We want the whole value but more than this is crazy
-			'type' => 'plain',          // TODO switch to fvh when Elasticserach issue 3757 is fixed
-		);
-		$singleFragment = array(
-			'number_of_fragments' => 1, // Just one fragment
-			'fragment_size' => 100,
-			'type' => 'fvh',
-		);
+		global $wgCirrusSearchUseExperimentalHighlighter;
 
-		// If there isn't a match just return a match sized chunk from the beginning of the page.
-		$text = $singleFragment;
-		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
+		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
+			$entireValue = array(
+				'type' => 'experimental',
+				'fragmenter' => 'none',
+				'number_of_fragments' => 1,
+			);
+			$entireValueInListField = array(
+				'type' => 'experimental',
+				'fragmenter' => 'none',
+				'order' => 'score',
+				'number_of_fragments' => 1,
+			);
+			$singleFragment = array(
+				'type' => 'experimental',
+				'number_of_fragments' => 1,
+				'fragmenter' => 'sentence',
+				'options' => array(
+					'locale' => wfGetLangObj()->getCode(),
+					'top_scoring' => true,
+					'boost_before' => array(
+						// Note these values are super arbitrary right now.
+						'20' => 8,
+						'50' => 7,
+						'200' => 4,
+						'1000' => 2,
+					),
+				),
+			);
+			// If there isn't a match just return some of the the first few sentences .
+			$text = $singleFragment;
+			$text[ 'no_match_size' ] = 100;
+		} else {
+			$entireValue = array(
+				'number_of_fragments' => 0,
+				'type' => 'fvh',
+				'order' => 'score',
+			);
+			$entireValueInListField = array(
+				'number_of_fragments' => 1, // Just one of the values in the list
+				'fragment_size' => 10000,   // We want the whole value but more than this is crazy
+				'type' => 'fvh',
+				'order' => 'score',
+			);
+			$singleFragment = array(
+				'number_of_fragments' => 1, // Just one fragment
+				'fragment_size' => 100,
+				'type' => 'fvh',
+				'order' => 'score',
+			);
+			// If there isn't a match just return a match sized chunk from the beginning of the page.
+			$text = $singleFragment;
+			$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
+		}
 
 		return array(
-			'order' => 'score',
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => $this->addMatchedFields( array(
@@ -171,9 +226,6 @@ class FullTextResultsType implements ResultsType {
 				'file_text' => $singleFragment,
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
-				// TODO remove when Elasticsearch issue 3757 is fixed
-				'redirect.title.plain' => $entireValueInListField,
-				'heading.plain' => $entireValueInListField,
 			) ),
 		);
 	}
@@ -184,11 +236,8 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	private function addMatchedFields( $fields ) {
+		$newFields = array();
 		foreach ( $fields as $name => $config ) {
-			// TODO remove when Elasticsearch issue 3757 is fixed
-			if ( $config[ 'type' ] !== 'fvh' ) {
-				continue;
-			}
 			$config[ 'matched_fields' ] = array( $name, "$name.plain" );
 			$fields[ $name ] = $config;
 		}

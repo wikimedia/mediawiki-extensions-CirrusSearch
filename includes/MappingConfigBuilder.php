@@ -25,6 +25,7 @@ class MappingConfigBuilder {
 	const MINIMAL = 0;
 	const ENABLE_NORMS = 1;
 	const COPY_TO_SUGGEST = 2;
+	const SPEED_UP_HIGHLIGHTING = 4;
 
 	/**
 	 * Version number for the core analysis. Increment the major
@@ -32,7 +33,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 0.4;
+	const VERSION = 1.0;
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -47,13 +48,20 @@ class MappingConfigBuilder {
 	private $phraseUseText;
 
 	/**
+	 * @var bool should the index be optimized for the experimental highlighter?
+	 */
+	private $optimizeForExperimentalHighlighter;
+
+	/**
 	 * Constructor
 	 * @param bool $anyWord Prefix search on any word
 	 * @param bool $useText Text uses suggestion analyzer
+	 * @param bool should the index be optimized for the experimental highlighter?
 	 */
-	public function __construct( $anyWord, $useText ) {
+	public function __construct( $anyWord, $useText, $optimizeForExperimentalHighlighter ) {
 		$this->prefixSearchStartsWithAnyWord = $anyWord;
 		$this->phraseUseText = $useText;
+		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 	}
 
 	/**
@@ -79,7 +87,7 @@ class MappingConfigBuilder {
 		}
 
 		$textExtraAnalyzers = array();
-		$textOptions = MappingConfigBuilder::ENABLE_NORMS;
+		$textOptions = MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING;
 		if ( $this->phraseUseText ) {
 			$textExtraAnalyzers[] = $suggestExtra;
 			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
@@ -111,13 +119,14 @@ class MappingConfigBuilder {
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),
+				'heading' => $this->buildStringField( MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
 				'text_bytes' => $this->buildLongField( false ),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField( MappingConfigBuilder::COPY_TO_SUGGEST,
+						'title' => $this->buildStringField(
+							MappingConfigBuilder::COPY_TO_SUGGEST | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING,
 							$titleExtraAnalyzers ),
 					)
 				),
@@ -140,6 +149,8 @@ class MappingConfigBuilder {
 	 *   ENABLE_NORMS: Gnable norms on the field.  Good for text you search against but bad for array fields and useless
 	 *     for fields that don't get involved in the score.
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
+	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
+	 *     strings or fields with many values.
 	 * @return array definition of the field
 	 */
 	public function buildStringField( $options, $extra = array() ) {
@@ -147,15 +158,23 @@ class MappingConfigBuilder {
 		$field = array(
 			'type' => 'string',
 			'analyzer' => 'text',
-			'term_vector' => 'with_positions_offsets',
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
-					'term_vector' => 'with_positions_offsets',
 				),
 			)
 		);
+		if ( $this->optimizeForExperimentalHighlighter ) {
+			if ( $options & MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ) {
+				$field[ 'index_options' ] = 'offsets';
+				$field[ 'fields' ][ 'plain' ][ 'index_options' ] = 'offsets';
+			}
+		} else {
+			// We use the FVH on all fields so turn on term vectors
+			$field[ 'term_vector' ] = 'with_positions_offsets';
+			$field[ 'fields' ][ 'plain' ][ 'term_vector' ] = 'with_positions_offsets';
+		}
 		$disableNorms = ( $options & MappingConfigBuilder::ENABLE_NORMS ) === 0;
 		if ( $disableNorms ) {
 			$disableNorms = array( 'norms' => array( 'enabled' => false ) );

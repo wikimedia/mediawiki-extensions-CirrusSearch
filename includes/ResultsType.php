@@ -178,7 +178,8 @@ class FullTextResultsType implements ResultsType {
 			$singleFragment = array(
 				'type' => 'experimental',
 				'number_of_fragments' => 1,
-				'fragmenter' => 'sentence',
+				'fragmenter' => 'scan',
+				'fragment_size' => 100,
 				'options' => array(
 					'locale' => wfGetLangObj()->getCode(),
 					'top_scoring' => true,

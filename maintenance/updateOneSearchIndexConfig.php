@@ -491,8 +491,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $status->indexExists( $specificAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				Connection::getClient()
-					->getIndex( $this->indexBaseName, $specificAliasName )->delete();
+				Connection::getClient()->getIndex( $specificAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
@@ -857,6 +856,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 			if ( $found ) {
 				$identifier = substr( $found[0], strlen( $typeName ) + 1 );
+				if ( !$identifier ) {
+					// This happens if there is an index named what the alias should be named.
+					// If the script is run with --startOver it should nuke it.
+					$identifier = 'first';
+				}
 			} else {
 				$identifier = 'first';
 			}

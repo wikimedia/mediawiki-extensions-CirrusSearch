@@ -29,7 +29,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 0.2;
+	const VERSION = '0.2';
 
 	/**
 	 * Language code we're building analysis for

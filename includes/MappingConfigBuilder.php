@@ -33,7 +33,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = 1.0;
+	const VERSION = '1.0';
 
 	/**
 	 * Whether to allow prefix searches to match on any word

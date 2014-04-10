@@ -98,9 +98,9 @@ class Searcher extends ElasticsearchIntermediary {
 	private $notFilters = array();
 	private $suggest = null;
 	/**
-	 * @var null|array of rescore configuration as used by elasticsearch.  The query needs to be an Elastica query.
+	 * @var array of rescore configurations as used by elasticsearch.  The query needs to be an Elastica query.
 	 */
-	private $rescore = null;
+	private $rescore = array();
 	/**
 	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
 	 * with time since the last update.
@@ -449,7 +449,7 @@ class Searcher extends ElasticsearchIntermediary {
 					!$this->searchContainedSyntax &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {
-				$this->rescore = array(
+				$this->rescore[] = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
 						'rescore_query' => $this->buildSearchTextQueryForFields( $fields, 
@@ -479,7 +479,7 @@ class Searcher extends ElasticsearchIntermediary {
 					'query' => $queryStringQueryString,
 					'default_operator' => 'AND',
 				) ) );
-				$this->rescore = null; // Not worth trying in this state.
+				$this->rescore = array(); // Not worth trying in this state.
 				$result = $this->search( 'degraded_full_text', $originalTerm );
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
@@ -727,11 +727,15 @@ class Searcher extends ElasticsearchIntermediary {
 		if( $this->limit ) {
 			$query->setSize( $this->limit );
 		}
-		if ( $this->rescore ) {
+		if ( count( $this->rescore ) ) {
 			// rescore_query has to be in array form before we send it to Elasticsearch but it is way easier to work
 			// with if we leave it in query for until now
-			$this->rescore[ 'query' ][ 'rescore_query' ] = $this->rescore[ 'query' ][ 'rescore_query' ]->toArray();
-			$query->setParam( 'rescore', $this->rescore );
+			$modifiedRescore = array();
+			foreach ( $this->rescore as $rescore ) {
+				$rescore[ 'query' ][ 'rescore_query' ] = $rescore[ 'query' ][ 'rescore_query' ]->toArray();
+				$modifiedRescore[] = $rescore;
+			}
+			$query->setParam( 'rescore', $modifiedRescore );
 		}
 
 		$query->addParam( 'stats', $type );
@@ -1166,32 +1170,16 @@ class Searcher extends ElasticsearchIntermediary {
 			return;
 		}
 
-		// Since Elasticsearch doesn't support multiple rescores we have to pick a strategy here....
-		// TODO just use multiple rescores when Elasticsearch supports it (1.x)
-
-		// If there isn't already a rescore then we can just add the boosting as a multiply rescore
-		if ( !$this->rescore ) {
-			$this->rescore = array(
-				'window_size' => $wgCirrusSearchFunctionRescoreWindowSize,
-				'query' => array(
-					'rescore_query' => $functionScore,
-					'query_weight' => 1.0,
-					'rescore_query_weight' => 1.0,
-					'score_mode' => 'multiply',
-				)
-			);
-			return;
-		}
-
-		// Since there is already a rescore we have to wrap _both_ the rescore and the query in our
-		// function score query.  Nothing else really spits out the right numbers.  The problem
-		// with this is that the function score isn't just in the rescore which means that it can
-		// be slow if the main query finds lots of results.
-		$functionScore->setQuery( $this->query );
-		$this->query = new \Elastica\Query\Simple( $functionScore->toArray() );
-
-		$functionScore->setQuery( $this->rescore[ 'query' ][ 'rescore_query' ] );
-		$this->rescore[ 'query' ][ 'rescore_query' ] = $functionScore;
+		// The function score is done as a rescore on top of everything else
+		$this->rescore[] = array(
+			'window_size' => $wgCirrusSearchFunctionRescoreWindowSize,
+			'query' => array(
+				'rescore_query' => $functionScore,
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'multiply',
+			)
+		);
 	}
 
 	private static function getDefaultBoostTemplates() {

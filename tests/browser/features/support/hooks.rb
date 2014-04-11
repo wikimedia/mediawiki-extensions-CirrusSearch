@@ -158,6 +158,15 @@ Before("@highlighting") do
   $highlighting = true
 end
 
+Before("@highlighting", "@references") do
+  if !$highlighting
+    steps %Q{
+      Given a page named References Highlight Test exists with contents @references_highlight_test.txt
+    }
+  end
+  $highlighting = true
+end
+
 Before("@setup_more_like_this") do
   if !$setup_more_like_this
     # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches

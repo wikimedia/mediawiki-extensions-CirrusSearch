@@ -89,6 +89,21 @@ Feature: Highlighting
     When I search for user_talk:test
     Then User talk:*Test* is the highlighted title of the first search result
 
+  @highlighting @references
+  Scenario: References don't appear in highlighted section titles
+    When I search for Reference Section Highlight Test
+    And *Reference* *Section* is the highlighted alttitle of the first search result
+
+  @highlighting @references
+  Scenario: References don't appear in highlighted text
+    When I search for Reference Text Highlight Test
+    And *Reference* Section *Reference* *Text* *References*  foo   baz   bar is the highlighted text of the first search result
+
+  @highlighting @references
+  Scenario: References are highlighted if you search for them
+    When I search for Reference foo bar baz Highlight Test
+    And *Reference* Section *Reference* Text *References*  *foo*   *baz*   *bar* is the highlighted text of the first search result
+
   @programmer_friendly @highlighting
   Scenario: camelCase is highlighted correctly
     When I search for namespace aliases

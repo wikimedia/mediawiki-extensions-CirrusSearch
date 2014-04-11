@@ -163,7 +163,7 @@ $wgCirrusSearchPhraseRescoreWindowSize = 1024;
 $wgCirrusSearchFunctionRescoreWindowSize = 8192;
 
 // If true CirrusSearch asks Elasticsearch to perform searches using a mode that should
-// product more accurate results at the cost of performance. See this for more info:
+// produce more accurate results at the cost of performance. See this for more info:
 // http://www.elasticsearch.org/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch/
 $wgCirrusSearchMoreAccurateScoringMode = true;
 

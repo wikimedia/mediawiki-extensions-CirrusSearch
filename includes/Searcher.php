@@ -45,6 +45,12 @@ class Searcher extends ElasticsearchIntermediary {
 	const MAX_TITLE_SEARCH = 255;
 
 	/**
+	 * Maximum offset depth allowed.  Too deep will cause very slow queries.
+	 * 100,000 feels plenty deep.
+	 */
+	const MAX_OFFSET = 100000;
+
+	/**
 	 * @var integer search offset
 	 */
 	private $offset;
@@ -152,7 +158,7 @@ class Searcher extends ElasticsearchIntermediary {
 		global $wgCirrusSearchSlowSearch;
 
 		parent::__construct( $user, $wgCirrusSearchSlowSearch );
-		$this->offset = $offset;
+		$this->offset = min( $offset, self::MAX_OFFSET );
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: wfWikiId();

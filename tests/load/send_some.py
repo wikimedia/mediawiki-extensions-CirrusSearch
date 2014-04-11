@@ -2,6 +2,7 @@
 
 
 import sys
+import random
 import urllib
 import urllib2
 from multiprocessing import Process, Queue
@@ -17,7 +18,17 @@ def send_line(search, destination):
     print "Fetched " + url
 
 
-def send_lines(every, jobs, destination):
+def hostname(wiki):
+    wiki = wiki.split(":")[1]
+    if wiki == "commonswiki":
+        return "commons.wikimedia.org"
+    if wiki[2:] == "wiki":
+        return wiki[0:2] + ".wikipedia.org"
+    # Not perfect but decent
+    return wiki[0:2] + "." + wiki[2:] + ".org"
+
+
+def send_lines(percent, jobs, destination):
     queue = Queue(jobs)  # Only allow a backlog of one per job
 
     # Spawn jobs.  Note that we just spawn them as daemon because we don't
@@ -28,8 +39,12 @@ def send_lines(every, jobs, destination):
     def work(queue):
         while True:
             try:
-                search = queue.get()
-                send_line(search, destination)
+                (hostname, search) = queue.get()
+                if "%s" in destination:
+                    resolved_destination = destination % hostname
+                else:
+                    resolved_destination = destination
+                send_line(search, resolved_destination)
             except (KeyboardInterrupt, SystemExit):
                 break
             except:
@@ -41,52 +56,43 @@ def send_lines(every, jobs, destination):
 
     # Got to read stdin line by line even on old pythons....
     line = sys.stdin.readline()
-    n = 1
-    last_time = None
-    last_start = time.time()
+    target_lag = None
     while line:
-        if n != every:
-            n += 1
+        if random.uniform(0, 100) > percent:
             line = sys.stdin.readline()
             continue
         s = line.strip().split("\t")
         target_time = calendar.timegm(
             time.strptime(s[1][:-1] + "UTC", "%Y-%m-%dT%H:%M:%S%Z"))
-        if last_time is None:
-            last_time = target_time
-        elif last_time < target_time:
-            now = time.time()
-            time_since_last_time = now - last_start
-            wait_time = target_time - last_time - time_since_last_time
-            lag = last_start - last_time
-            last_time = target_time
-            last_start = now
-            if wait_time > 0:
-                print "Sleeping %s to stay %s behind the logged time." % \
-                    (wait_time, lag)
-                time.sleep(wait_time)
+        lag = time.time() - target_time
+        if target_lag is None:
+            target_lag = time.time() - target_time
+        wait_time = target_lag - lag
+        if wait_time >= 1:
+            print "Sleeping %s to stay %s ahead of the logged time." % \
+                (wait_time, target_lag)
+            time.sleep(wait_time)
         try:
-            queue.put(urllib.unquote(s[3]), False)
+            queue.put((hostname(s[2]), urllib.unquote(s[3])), False)
         except Full:
             print "Couldn't keep up so dropping the request"
-        # send_line(line, destination)
-        n = 1
         line = sys.stdin.readline()
 
 
 if __name__ == "__main__":
     from optparse import OptionParser
     parser = OptionParser(usage="usage: %prog [options] destination")
-    parser.add_option("-n", dest="every", type="int", default=1, metavar="N",
-                      help="send every Nth search")
+    parser.add_option("-p", dest="percent", type="int", default=1, metavar="N",
+                      help="send this percent of search results")
     parser.add_option("-j", "--jobs", type="int", default=1, metavar="JOBS",
                       help="number of processes used to send searches")
     parser.add_option("-d", "--destination", dest="destination", type="string",
                       metavar="DESTINATION",
                       default="http://127.0.0.1:8080/wiki/Special:Search",
-                      help="where to send the searches")
+                      help="Where to send the searches.  Add %s as hostname " +
+                           "to send to hostname based the log line.")
     (options, args) = parser.parse_args()
     try:
-        send_lines(options.every, options.jobs, options.destination)
+        send_lines(options.percent, options.jobs, options.destination)
     except KeyboardInterrupt:
         pass  # This is how we expect to exit anyway

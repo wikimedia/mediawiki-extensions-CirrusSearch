@@ -211,6 +211,7 @@ Before("@programmer_friendly") do
       And a page named PFSC exists with contents snake_case
       And a page named PascalCase exists
       And a page named NumericCase7 exists
+      And a page named this.getInitial exists
     }
     $programmer_friendly = true
   end

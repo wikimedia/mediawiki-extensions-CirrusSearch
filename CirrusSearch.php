@@ -251,10 +251,6 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 	'max_word_len' => 0,
 );
 
-// Should CirrusSearch aggressively split up compound words?  Good for splitting camelCase, snake_case, etc.
-// Changing it requires an in place reindex to take effect.  Currently only available in English.
-$wgCirrusSearchUseAggressiveSplitting = true;
-
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;
 

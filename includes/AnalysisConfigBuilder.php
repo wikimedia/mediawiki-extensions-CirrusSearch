@@ -29,7 +29,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.2';
+	const VERSION = '0.3';
 
 	/**
 	 * Language code we're building analysis for
@@ -38,18 +38,11 @@ class AnalysisConfigBuilder {
 	private $language;
 
 	/**
-	 * Should we use aggressive splitting?
-	 * @var bool
-	 */
-	private $aggressiveSplitting;
-
-	/**
 	 * Constructor
 	 * @param string $langCode The language code to build config for
 	 */
-	public function __construct( $langCode, $aggressiveSplitting ) {
+	public function __construct( $langCode ) {
 		$this->language = $langCode;
-		$this->aggressiveSplitting = $aggressiveSplitting;
 	}
 
 	/**
@@ -120,7 +113,11 @@ class AnalysisConfigBuilder {
 				),
 				'aggressive_splitting' => array(
 					'type' => 'word_delimiter',
-					'stem_english_possessive' => false, // No need
+					'stem_english_possessive' => false,
+					// 'catenate_words' => true, // Might be useful but causes errors on indexing
+					// 'catenate_numbers' => true, // Might be useful but causes errors on indexing
+					// 'catenate_all' => true, // Might be useful but causes errors on indexing
+					'preserve_original' => false // "wi-fi-555" finds "wi-fi-555".  Not needed because of plain analysis.
 				),
 				'prefix_ngram_filter' => array(
 					'type' => 'edgeNGram',
@@ -170,9 +167,7 @@ class AnalysisConfigBuilder {
 			);
 			$filters = array();
 			$filters[] = 'standard';
-			if ( $this->aggressiveSplitting ) {
-				$filters[] = 'aggressive_splitting';
-			}
+			$filters[] = 'aggressive_splitting';
 			$filters[] = 'possessive_english';
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';

@@ -47,7 +47,7 @@ end
 
 def edit_page(title, text, add)
   if text.start_with?("@")
-    text = File.read("features/support/articles/" + text[1..-1])
+    text = File.read("articles/" + text[1..-1])
   end
   require "mediawiki_api"
   client = MediawikiApi::Client.new("#{ENV['MEDIAWIKI_URL']}../w/api.php", false)
@@ -71,7 +71,7 @@ def edit_page(title, text, add)
 end
 
 def upload_file(title, contents, description)
-  contents = "features/support/articles/" + contents
+  contents = "articles/" + contents
   md5 = Digest::MD5.hexdigest(File.read(contents))
   md5_string = "md5: #{md5}"
   visit(ArticlePage, using_params: {page_name: title}) do |page|

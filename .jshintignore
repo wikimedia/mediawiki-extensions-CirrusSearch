@@ -1,2 +1,2 @@
-# @todo FIXME: This file would otherwise block merges.
-tests/browser/features/support/articles/some.js
+# Everything in this directory is just test data.
+tests/browser/articles/*

@@ -73,11 +73,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $langCode;
 
 	/**
-	 * @var bool when to aggressively split
-	 */
-	private $aggressiveSplitting;
-
-	/**
 	 * @var bool prefix search on any term
 	 */
 	private $prefixSearchStartsWithAny;
@@ -160,7 +155,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$wgLanguageCode,
 			$wgCirrusSearchPhraseUseText,
 			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
-			$wgCirrusSearchUseAggressiveSplitting,
 			$wgCirrusSearchMaintenanceTimeout;
 
 		// Make sure we don't flood the pool counter
@@ -181,7 +175,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
 		$this->langCode = $wgLanguageCode;
-		$this->aggressiveSplitting = $wgCirrusSearchUseAggressiveSplitting;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
 		$this->phraseUseText = $wgCirrusSearchPhraseUseText;
 
@@ -320,7 +313,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateAnalyzers() {
 		$this->output( $this->indent . "Validating analyzers..." );
 		$settings = $this->getSettings();
-		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
+		$analysisConfig = new AnalysisConfigBuilder( $this->langCode );
 		$requiredAnalyzers = $analysisConfig->buildConfig();
 		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
@@ -812,7 +805,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
-		$analysisConfig = new AnalysisConfigBuilder( $this->langCode, $this->aggressiveSplitting );
+		$analysisConfig = new AnalysisConfigBuilder( $this->langCode );
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),

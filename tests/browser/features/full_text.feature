@@ -120,6 +120,7 @@ Feature: Full text search
     | $wgNamespaceAliases | $wgNamespaceAliases |
     | namespace_aliases   | $wgNamespaceAliases |
     | NamespaceAliases    | $wgNamespaceAliases |
+    | wgnamespacealiases  | $wgNamespaceAliases |
     | snake case          | PFSC                |
     | snakeCase           | PFSC                |
     | snake_case          | PFSC                |
@@ -128,6 +129,10 @@ Feature: Full text search
     | pascalCase          | PascalCase          |
     | pascal_case         | PascalCase          |
     | PascalCase          | PascalCase          |
+    | pascalcase          | PascalCase          |
+    | numeric 7           | NumericCase7        |
+    | numericcase7        | NumericCase7        |
+    | numericCase         | NumericCase7        |
 
   @stemmer
   Scenario Outline: Stemming works as expected

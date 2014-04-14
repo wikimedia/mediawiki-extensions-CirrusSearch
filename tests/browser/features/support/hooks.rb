@@ -210,6 +210,7 @@ Before("@programmer_friendly") do
       Given a page named $wgNamespaceAliases exists
       And a page named PFSC exists with contents snake_case
       And a page named PascalCase exists
+      And a page named NumericCase7 exists
     }
     $programmer_friendly = true
   end

@@ -133,6 +133,7 @@ Feature: Full text search
     | numeric 7           | NumericCase7        |
     | numericcase7        | NumericCase7        |
     | numericCase         | NumericCase7        |
+    | getInitial          | this.getInitial     |
 
   @stemmer
   Scenario Outline: Stemming works as expected

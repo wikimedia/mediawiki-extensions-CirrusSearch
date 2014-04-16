@@ -57,19 +57,19 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
-		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
+		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Not useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
-			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number with ' .
+			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number ' .
 			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
 			'cover the entire wiki.' , false, true );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
 		$this->addOption( 'maxJobs', 'If there are more than this many index jobs in the queue then pause before adding ' .
 			'more.  This is only checked every ' . self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS . ' seconds.  Not meaningful ' .
 			'without --queue.', false, true );
-		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for the there to be less than this many before ' .
+		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for there to be less than this many before ' .
 			'starting again.  Defaults to the value specified for --maxJobs.  Not meaningful without --queue.', false, true );
 		$this->addOption( 'indexOnSkip', 'When skipping either parsing or links send the document as an index.  ' .
 			'This replaces the contents of the index for that entry with the entry built from a skipped process.' .

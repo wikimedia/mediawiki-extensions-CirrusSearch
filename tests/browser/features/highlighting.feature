@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Highlighting
   Background:
     Given I am at a random page

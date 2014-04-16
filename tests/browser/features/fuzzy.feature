@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Searches that contain fuzzy matches
   Background:
     Given I am at a random page

@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Search backend updates that reference non-existant pages
   @non_existant
   Scenario: Pages that link to non-existant pages still get their search index updated

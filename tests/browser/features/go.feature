@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Go Search
   @go
   Scenario: I can "go" to a page with mixed capital and lower case name by the name all lower cased

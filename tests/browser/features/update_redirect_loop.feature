@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Search backend updates containing redirect loops
   @redirect_loop
   Scenario: Pages that redirect to themself don't throw errors

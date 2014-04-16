@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Searches with the intitle filter
   Background:
     Given I am at a random page

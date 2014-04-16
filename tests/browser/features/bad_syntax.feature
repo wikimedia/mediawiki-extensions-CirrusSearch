@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Searches with syntax errors
   Background:
     Given I am at a random page

@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Search backend updates
   Scenario: Deleted pages are removed from the index
     Given a page named DeleteMe exists

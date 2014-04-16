@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Page updates trigger appropriate weight updates in newly linked and unlinked articles
   # Note that these tests can be a bit flakey if you don't use Redis and checkDelay because they count using
   # Elasticsearch which delays all updates for around a second.  So if the jobs run too fast they won't work.

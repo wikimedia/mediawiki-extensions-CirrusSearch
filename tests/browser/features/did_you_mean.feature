@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Did you mean
   Background:
     Given I am at a random page

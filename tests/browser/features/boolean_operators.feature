@@ -1,4 +1,4 @@
- @clean
+@clean @phantomjs
 Feature: Searches with boolean operators
   Background:
     Given I am at a random page

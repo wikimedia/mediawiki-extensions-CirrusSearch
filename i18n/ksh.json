@@ -1,12 +1,12 @@
 {
-    "@metadata": {
-        "authors": [
-            "Purodha"
-        ]
-    },
-    "cirrussearch-desc": "Söhke em MedijaWikki met \u003Ci lang=\"en\" xml:lang=\"en\"\u003EElasticsearch\u003C/i\u003E dohenger.",
-    "cirrussearch-backend-error": "Mer hatte e problem, wat ävver flök verbei sin sullt. Bes esu jood u versöhg et schpääder norr_ens.",
-    "cirrussearch-now-using": "Heh dat Wikke hädd_en neu Söhkmaschiin. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mieh drövver lässe]])",
-    "cirrussearch-pref-label": "Et neue Söhke",
-    "cirrussearch-pref-desc": "Probeer ons neu Projrammdeil zum Söhke. Et kann met mieh Schprohche ömjonn, brängk flöker un neue Antwoote un kann esujaa Täx em Ennere vun Schablohne fenge."
+	"@metadata": {
+		"authors": [
+			"Purodha"
+		]
+	},
+	"cirrussearch-desc": "Söhke em MedijaWikki met <i lang=\"en\" xml:lang=\"en\">Elasticsearch</i> dohenger.",
+	"cirrussearch-backend-error": "Mer hatte e problem, wat ävver flök verbei sin sullt. Bes esu jood u versöhg et schpääder norr_ens.",
+	"cirrussearch-now-using": "Heh dat Wikke hädd_en neu Söhkmaschiin. ([[mw:Special:MyLanguage/Help:CirrusSearch|Mieh drövver lässe]])",
+	"cirrussearch-pref-label": "Et neue Söhke",
+	"cirrussearch-pref-desc": "Probeer ons neu Projrammdeil zum Söhke. Et kann met mieh Schprohche ömjonn, brängk flöker un neue Antwoote un kann esujaa Täx em Ennere vun Schablohne fenge."
 }

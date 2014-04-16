@@ -279,6 +279,15 @@ $wgCirrusSearchInterwikiCacheTime = 7200;
 // that type and location are required.
 $wgCirrusSearchBackup = array();
 
+// The seconds Elasticsearch will wait to batch index changes before making
+// them available for search.  Lower values make search more real time but put
+// more load on Elasticsearch.  Defaults to 1 second because that is the default
+// in Elasticsearch.  Changing this will immediately effect wait time on
+// secondary (links) update if those allow waiting (basically if you use Redis
+// for the job queue).  For it to effect Elasticsearch you'll have to rebuild
+// the index.
+$wgCirrusSearchRefreshInterval = 1;
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**

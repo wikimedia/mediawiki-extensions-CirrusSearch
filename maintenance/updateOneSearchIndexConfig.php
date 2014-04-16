@@ -628,7 +628,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Dump everything from the live index into the one being worked on.
 	 */
 	private function reindex() {
-		global $wgCirrusSearchMaintenanceTimeout;
+		global $wgCirrusSearchMaintenanceTimeout,
+			$wgCirrusSearchRefreshInterval;
 
 		$settings = $this->getIndex()->getSettings();
 		$settings->set( array(
@@ -672,7 +673,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Revert settings changed just for reindexing
 		$settings->set( array(
-			'refresh_interval' => '1s',
+			'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
 			'merge.policy.merge_factor' => 10,
 		) );
 	}
@@ -805,6 +806,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
+		global $wgCirrusSearchRefreshInterval;
+
 		$analysisConfig = new AnalysisConfigBuilder( $this->langCode );
 		$this->getIndex()->create( array(
 			'settings' => array(
@@ -813,6 +816,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'analysis' => $analysisConfig->buildConfig(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
+				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's'
 			)
 		), $rebuild );
 		$this->closeOk = false;

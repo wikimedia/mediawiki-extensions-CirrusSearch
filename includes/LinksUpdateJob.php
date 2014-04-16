@@ -41,6 +41,8 @@ class LinksUpdateJob extends Job {
 	}
 
 	protected function doJob() {
+		global $wgCirrusSearchRefreshInterval;
+
 		$updater = new Updater();
 		$res = $updater->updateFromTitle( $this->title );
 		if ( $res === false ) {
@@ -59,9 +61,12 @@ class LinksUpdateJob extends Job {
 			$jobQueueGroup = JobQueueGroup::singleton();
 			$jobQueue = $jobQueueGroup->get( 'cirrusSearchLinksUpdateSecondary' );
 			// If possible, delay the job execution by a few seconds so Elasticsearch
-			// can refresh to contain what we just sent it.
+			// can refresh to contain what we just sent it.  The delay should be long
+			// enough for Elasticsearch to complete the refresh cycle, which normally
+			// takes wgCirrusSearchRefreshInterval seconds but we double it and add
+			// one just in case.
 			if ( $jobQueue->delayedJobsEnabled() ) {
-				$params[ 'jobReleaseTimestamp' ] = time() + 3;
+				$params[ 'jobReleaseTimestamp' ] = time() + 2 * $wgCirrusSearchRefreshInterval + 1;
 			}
 			$jobQueueGroup->push(
 				new LinksUpdateSecondaryJob( $this->title, $params ) );

@@ -33,7 +33,7 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function beforeInitializeHook( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
-		self::initializeForUser( $user );
+		self::initializeForUser( $user, $request );
 		return true;
 	}
 
@@ -43,7 +43,7 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function apiBeforeMainHook( $apiMain ) {
-		self::initializeForUser( $apiMain->getUser() );
+		self::initializeForUser( $apiMain->getUser(), $apiMain->getRequest() );
 		return true;
 	}
 
@@ -52,11 +52,12 @@ class Hooks {
 	 * cannot be done in $wgExtensionFunctions.  Specifically this means the beta features check and
 	 * installing the prefix search hook, because it needs information from the beta features check.
 	 */
-	private static function initializeForUser( $user ) {
+	private static function initializeForUser( $user, $request ) {
 		global $wgCirrusSearchEnablePref;
 		global $wgSearchType;
 		global $wgSearchTypeAlternatives;
 		global $wgHooks;
+		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -71,6 +72,12 @@ class Hooks {
 		if ( $wgSearchType === 'CirrusSearch' ) {
 			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
 			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::searchGetNearMatchBeforeHook';
+		}
+
+		// Engage the experimental highlighter if a url parameter requests it
+		if ( !$wgCirrusSearchUseExperimentalHighlighter && $request &&
+				$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
+			$wgCirrusSearchUseExperimentalHighlighter = true;
 		}
 	}
 

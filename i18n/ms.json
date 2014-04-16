@@ -1,10 +1,10 @@
 {
-    "@metadata": {
-        "authors": [
-            "Anakmalaysia"
-        ]
-    },
-    "cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
-    "cirrussearch-backend-error": "Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.",
-    "cirrussearch-parse-error": "Pertanyaan tidak difahami. Sila permudahnya. Pertanyaan itu telah dilogkan untuk menambah baik sistem pencarian."
+	"@metadata": {
+		"authors": [
+			"Anakmalaysia"
+		]
+	},
+	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
+	"cirrussearch-backend-error": "Kami tidak dapat melengkapkan pencarian anda disebabkan masalah yang sementara. Sila cuba lagi nanti.",
+	"cirrussearch-parse-error": "Pertanyaan tidak difahami. Sila permudahnya. Pertanyaan itu telah dilogkan untuk menambah baik sistem pencarian."
 }

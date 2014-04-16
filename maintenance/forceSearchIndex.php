@@ -73,9 +73,9 @@ class ForceSearchIndex extends Maintenance {
 			'starting again.  Defaults to the value specified for --maxJobs.  Not meaningful without --queue.', false, true );
 		$this->addOption( 'indexOnSkip', 'When skipping either parsing or links send the document as an index.  ' .
 			'This replaces the contents of the index for that entry with the entry built from a skipped process.' .
-			'Without this if the entry does not exist then it will be skipped enirely.  Only set this when running ' .
+			'Without this if the entry does not exist then it will be skipped entirely.  Only set this when running ' .
 			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
-		$this->addOption( 'skipParse', 'Skip parsing the page.  This is realy only good for running the second half ' .
+		$this->addOption( 'skipParse', 'Skip parsing the page.  This is really only good for running the second half ' .
 			'of the two phase index build.  If this is specified then the default batch size is actually 50.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );

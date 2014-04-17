@@ -213,3 +213,14 @@ Feature: Full text search
   Scenario: Word count is output in the results
     When I search for Two Words
     Then there are search results with (4 words) in the data
+
+  @accent_squashing
+  Scenario Outline: Searching with accents
+    When I search for "<term>"
+    Then <first_result> is the first search result
+  Examples:
+    | term                   | first_result           |
+    | África                 | África                 |
+    | Africa                 | África                 |
+    | AlphaBeta              | AlphaBeta              |
+    | ÁlphaBeta              | none                   |

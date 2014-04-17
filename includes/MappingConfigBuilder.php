@@ -33,7 +33,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -81,7 +81,7 @@ class MappingConfigBuilder {
 		if ( $this->prefixSearchStartsWithAnyWord ) {
 			$titleExtraAnalyzers[] = array(
 				'index_analyzer' => 'word_prefix',
-				'search_analyzer' => 'plain',
+				'search_analyzer' => 'plain_search',
 				'index_options' => 'docs'
 			);
 		}
@@ -161,7 +161,8 @@ class MappingConfigBuilder {
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
-					'analyzer' => 'plain',
+					'index_analyzer' => 'plain',
+					'search_analyzer' => 'plain_search'
 				),
 			)
 		);

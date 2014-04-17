@@ -29,7 +29,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.3';
+	const VERSION = '0.4';
 
 	/**
 	 * Language code we're building analysis for
@@ -69,6 +69,14 @@ class AnalysisConfigBuilder {
 					// Chinese, Japanese, and Thai as well.
 					// The difference between this and the 'standard'
 					// analyzer is the lack of english stop words.
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => array( 'standard', 'lowercase' ),
+				),
+				'plain_search' => array(
+					// In accent squashing languages this will not contain accent
+					// squashing to allow searches with accents to only find accents
+					// and searches without accents to find both.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' ),
@@ -123,6 +131,10 @@ class AnalysisConfigBuilder {
 					'type' => 'edgeNGram',
 					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
+				'asciifolding' => array(
+					'type' => 'asciifolding',
+					'preserve_original' => true
+				),
 			),
 			'tokenizer' => array(
 				'prefix' => array(
@@ -175,7 +187,7 @@ class AnalysisConfigBuilder {
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding to the the text_plain analyzer as well
+			// Add asciifolding to the the plain analyzer as well (but not plain_search)
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
 			// Add asciifolding to the prefix queries and incategory filters
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';

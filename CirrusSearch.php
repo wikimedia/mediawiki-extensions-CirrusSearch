@@ -192,7 +192,13 @@ $wgCirrusSearchLinkedArticlesToUpdate = 25;
 $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 
 // Weight of fields relative to article text
-$wgCirrusSearchWeights = array( 'title' => 20.0, 'redirect' => 15.0, 'heading' => 5.0, 'file_text' => 0.8 );
+$wgCirrusSearchWeights = array(
+	'title' => 20.0,
+	'redirect' => 15.0,
+	'heading' => 5.0,
+	'auxiliary_text' => 0.8,
+	'file_text' => 0.5,
+);
 
 // Weight of fields that match via "near_match" which is ordered.
 $wgCirrusSearchNearMatchWeight = 2;

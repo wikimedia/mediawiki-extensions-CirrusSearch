@@ -677,11 +677,12 @@ class Searcher extends ElasticsearchIntermediary {
 		$query->setParam( 'fields', $this->resultsType->getFields() );
 
 		$extraIndexes = array();
+		$indexType = $this->pickIndexTypeFromNamespaces();
 		if ( $this->namespaces ) {
-			if ( count( $this->namespaces ) < count( MWNamespace::getValidNamespaces() ) ) {
+			$extraIndexes = $this->getAndFilterExtraIndexes();
+			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
 				$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
 			}
-			$extraIndexes = $this->getAndFilterExtraIndexes();
 		}
 
 		// Wrap $this->query in a filtered query if there are filters.
@@ -779,8 +780,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 
 		// Setup the search
-		$pageType = Connection::getPageType( $this->indexBaseName,
-			$this->pickIndexTypeFromNamespaces() );
+		$pageType = Connection::getPageType( $this->indexBaseName, $indexType );
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
@@ -821,6 +821,26 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		return $result;
+	}
+
+	private function needNsFilter( $extraIndexes, $indexType ) {
+		if ( $extraIndexes ) {
+			// We're reaching into another wiki's indexes and we don't know what is there so be defensive.
+			return true;
+		}
+		$nsCount = count( $this->namespaces );
+		$validNsCount = count( MWNamespace::getValidNamespaces() );
+		if ( $nsCount === $validNsCount ) {
+			// We're only on our wiki and we're searching _everything_.
+			return false;
+		}
+		if ( !$indexType ) {
+			// We're searching less than everything but we're going across indexes.  Back to the defensive.
+			return true;
+		}
+		$namespacesInIndexType = Connection::namespacesInIndexType( $indexType );
+		wfDebugLog( 'CirrusSearch' , "ASDFADSFASDF $nsCount === $namespacesInIndexType");
+		return $nsCount !== $namespacesInIndexType;
 	}
 
 	private function buildSearchTextQuery( $fields, $nearMatchFields, $queryString ) {

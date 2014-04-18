@@ -224,6 +224,7 @@ class FullTextResultsType implements ResultsType {
 			'fields' => $this->addMatchedFields( array(
 				'title' => $entireValue,
 				'text' => $text,
+				'auxiliary_text' => $singleFragment,
 				'file_text' => $singleFragment,
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,

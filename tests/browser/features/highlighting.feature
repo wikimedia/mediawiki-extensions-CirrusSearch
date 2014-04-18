@@ -21,6 +21,8 @@ Feature: Highlighting
     # Verify highlighting on large pages (Bug 52680).  It is neat to see that the stopwords aren't highlighted.
     | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
     | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
+    # Auxiliary text
+    | tallest alborz             | Rashidun Caliphate       | Mount Damavand, Iran's *tallest* mountain is located in *Alborz* mountain range. |
 
   @highlighting
   Scenario: Even stopwords are highlighted
@@ -38,10 +40,14 @@ Feature: Highlighting
     Then *I am a heading* is the highlighted alttitle of the first search result
 
   @highlighting
-  Scenario: Found words are highlighted in headings and text even in large documents
+  Scenario: Found words are highlighted in headings even in large documents
     When I search for "Succession of Umar"
     Then *Succession of Umar* is the highlighted alttitle of the first search result
-    And *Succession of Umar* is in the highlighted text of the first search result
+
+  @highlighting
+  Scenario: Found words are highlighted in text even in large documents
+    When I search for "Allowance to non-Muslims"
+    Then *Allowance to non-Muslims* is in the highlighted text of the first search result
 
   @highlighting
   Scenario: Words are not found in image captions
@@ -59,10 +65,14 @@ Feature: Highlighting
     Then *I am a heading* is the highlighted alttitle of the first search result
 
   @headings @highlighting
-  Scenario: Found words are highlighted in headings and text even in large documents when searching in a non-strict phrase
+  Scenario: Found words are highlighted in headings even in large documents when searching in a non-strict phrase
     When I search for "Succession of Umar"~
     Then *Succession of Umar* is the highlighted alttitle of the first search result
-    And *Succession of Umar* is in the highlighted text of the first search result
+
+  @headings @highlighting
+  Scenario: Found words are highlighted in headings even in large documents when searching in a non-strict phrase
+    When I search for "Allowance to non-Muslims"~
+    Then *Allowance to non-Muslims* is in the highlighted text of the first search result
 
   @headings @highlighting
   Scenario: The highest scoring heading is highlighted AND it doesn't contain html even if the heading on the page does
@@ -95,14 +105,14 @@ Feature: Highlighting
     And *Reference* *Section* is the highlighted alttitle of the first search result
 
   @highlighting @references
-  Scenario: References don't appear in highlighted text
+  Scenario: References ([1]) don't appear in highlighted text
     When I search for Reference Text Highlight Test
-    And *Reference* Section *Reference* *Text* *References*  foo   baz   bar is the highlighted text of the first search result
+    And *Reference* *Text*   foo   baz   bar is the highlighted text of the first search result
 
   @highlighting @references
   Scenario: References are highlighted if you search for them
     When I search for Reference foo bar baz Highlight Test
-    And *Reference* Section *Reference* Text *References*  *foo*   *baz*   *bar* is the highlighted text of the first search result
+    And *Reference* Text   *foo*   *baz*   *bar* is the highlighted text of the first search result
 
   @programmer_friendly @highlighting
   Scenario: camelCase is highlighted correctly

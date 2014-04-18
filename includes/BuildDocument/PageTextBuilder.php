@@ -29,8 +29,9 @@ class PageTextBuilder extends ParseBuilder {
 	}
 
 	public function build() {
-		$text = $this->buildTextToIndex();
+		list( $text, $auxiliary ) = $this->buildTextToIndex();
 		$this->doc->add( 'text', $text );
+		$this->doc->add( 'auxiliary_text', $auxiliary );
 		$this->doc->add( 'text_bytes', strlen( $text ) );
 		return $this->doc;
 	}
@@ -42,13 +43,13 @@ class PageTextBuilder extends ParseBuilder {
 	private function buildTextToIndex() {
 		switch ( $this->content->getModel() ) {
 			case CONTENT_MODEL_WIKITEXT:
-				$text = $this->formatWikitext( $this->parserOutput );
-				break;
+				return $this->formatWikitext( $this->parserOutput );
 			default:
-				$text = $this->content->getTextForSearchIndex();
+				$text = trim( Sanitizer::stripAllTags( $this->content->getTextForSearchIndex() ) );
+				return array( $text, array() );
 		}
 
-		return trim( Sanitizer::stripAllTags( $text ) );
+		return $text;
 	}
 
 	/**
@@ -60,12 +61,47 @@ class PageTextBuilder extends ParseBuilder {
 	private function formatWikitext( ParserOutput $parserOutput ) {
 		$parserOutput->setEditSectionTokens( false );
 		$formatter = new HtmlFormatter( $parserOutput->getText() );
-		$formatter->remove( array( 'audio', 'video', '#toc', '.thumbcaption',
+
+		// Strip elements from the page that we never want in the search text.
+		$formatter->remove( array(
+			'audio', 'video',       // "it looks like you don't have javascript enabled..." do not need to index
+			'#toc',                 // Already indexed as part of the headings.  No need.
 			'sup.reference',        // The [1] for references
 			'.mw-cite-backlink',    // The ↑ next to refenences in the references section
+			'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
+			'h5', 'h6', 'h4',
 		) );
 		$formatter->filterContent();
-		return $formatter->getText();
+
+		// Strip elements from the page that are auxiliary text.  These will still be
+		// searched but matches will be ranked lower and non-auxiliary matches will be
+		// prefered in highlighting.
+		$formatter->remove( array(
+			'.thumbcaption',        // Thumbnail captions aren't really part of the text proper
+			'table',                // Neither are tables
+			'.rellink',             // Common style for "See also:".
+			'.dablink',             // Common style for calling out helpful links at the top of the article.
+			'.catlinks',			// Categories aren't article text.
+			'.searchaux',			// New class users can use to mark stuff as auxiliary to searches.
+		) );
+		$auxiliaryElements = $formatter->filterContent();
+		$text = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+		$auxiliary = array();
+		foreach ( $auxiliaryElements as $auxiliaryElement ) {
+			$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
+		}
+
+		return array( $text, $auxiliary );
 	}
 
+	/**
+	 * Get the unicode paragraph separator character.
+	 */
+	private function paragraphSeparator() {
+		static $paragraphSeparator;
+		if ( $paragraphSeparator === null ) {
+			$paragraphSeparator = json_decode('"\u2029"');
+		}
+		return $paragraphSeparator;
+	}
 }

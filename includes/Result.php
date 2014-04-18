@@ -83,19 +83,7 @@ class Result extends SearchResult {
 			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		}
 
-		if ( isset( $highlights[ 'text' ] ) ) {
-			// This can get skipped if there the page was sent to Elasticsearch without text.
-			// This could be a bug or it could be that the page simply doesn't have any text.
-			$snippet = $highlights[ 'text' ][ 0 ];
-			if ( isset( $highlights[ 'file_text' ] ) ) {
-				$fileTextSnippet = $highlights[ 'file_text' ][ 0 ];
-				if ( !$this->containsMatches( $snippet ) && $this->containsMatches( $fileTextSnippet ) ) {
-					$snippet = $fileTextSnippet;
-					$this->isFileMatch = true;
-				}
-			}
-			$this->textSnippet = $this->escapeHighlightedText( $snippet );
-		}
+		$this->textSnippet = $this->escapeHighlightedText( $this->pickTextSnippet( $highlights ) );
 
 		if ( isset( $highlights[ 'heading' ] ) ) {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
@@ -105,6 +93,33 @@ class Result extends SearchResult {
 		if ( $wgCirrusSearchShowScore && $results->getMaxScore() ) {
 			$this->score = $result->getScore() / $results->getMaxScore();
 		}
+	}
+
+	private function pickTextSnippet( $highlights ) {
+		if ( isset( $highlights[ 'text' ] ) ) {
+			$mainSnippet = $highlights[ 'text' ][ 0 ];
+			if ( $this->containsMatches( $mainSnippet ) ) {
+				return $mainSnippet;
+			}
+		} else {
+			// This can get skipped if there the page was sent to Elasticsearch without text.
+			// This could be a bug or it could be that the page simply doesn't have any text.
+			$mainSnipppet = '';
+		}
+		if ( isset( $highlights[ 'auxiliary_text' ] ) ) {
+			$auxSnippet = $highlights[ 'auxiliary_text' ][ 0 ];
+			if ( $this->containsMatches( $auxSnippet ) ) {
+				return $auxSnippet;
+			}
+		}
+		if ( isset( $highlights[ 'file_text' ] ) ) {
+			$fileSnippet = $highlights[ 'file_text' ][ 0 ];
+			if ( $this->containsMatches( $fileSnippet ) ) {
+				$this->isFileMatch = true;
+				return $fileSnippet;
+			}
+		}
+		return $mainSnippet;
 	}
 
 	/**

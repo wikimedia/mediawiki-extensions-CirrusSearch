@@ -114,6 +114,7 @@ class MappingConfigBuilder {
 						'analyzer' => 'plain',
 					) ) )
 				),
+				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
 				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),

@@ -839,7 +839,6 @@ class Searcher extends ElasticsearchIntermediary {
 			return true;
 		}
 		$namespacesInIndexType = Connection::namespacesInIndexType( $indexType );
-		wfDebugLog( 'CirrusSearch' , "ASDFADSFASDF $nsCount === $namespacesInIndexType");
 		return $nsCount !== $namespacesInIndexType;
 	}
 

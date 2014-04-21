@@ -39,17 +39,14 @@ interface ResultsType {
 }
 
 class TitleResultsType implements ResultsType {
-	private $getText;
 	private $matchedAnalyzer;
 
 	/**
 	 * Build result type.   The matchedAnalyzer is required to detect if the match
 	 * was from the title or a redirect (and is kind of a leaky abstraction.)
-	 * @param boolean $getText should the results be text (true) or titles (false)
 	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 */
-	public function __construct( $getText, $matchedAnalyzer ) {
-		$this->getText = $getText;
+	public function __construct( $matchedAnalyzer ) {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
@@ -73,11 +70,10 @@ class TitleResultsType implements ResultsType {
 				'fragmenter' => 'none',
 				'number_of_fragments' => 1,
 			);
-			$entireValueInListField = array(
+			$manyValues = array(
 				'type' => 'experimental',
 				'fragmenter' => 'none',
 				'order' => 'score',
-				'number_of_fragments' => 1,
 			);
 		} else {
 			// This is similar to the FullTextResults type but against the near_match and
@@ -88,56 +84,64 @@ class TitleResultsType implements ResultsType {
 				'type' => 'plain',
 				'number_of_fragments' => 0,
 			);
-			$entireValueInListField = array(
+			$manyValues = array(
 				'type' => 'plain',
 				'fragment_size' => 10000,   // We want the whole value but more than this is crazy
 				'order' => 'score',
-				'number_of_fragments' => 1, // Just one of the values in the list
 			);
 		}
+		$manyValues[ 'number_of_fragments' ] = 30;
 		return array(
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(
 				"title.$this->matchedAnalyzer" => $entireValue,
-				"redirect.title.$this->matchedAnalyzer" => $entireValueInListField,
+				"redirect.title.$this->matchedAnalyzer" => $manyValues,
 			)
 		);
 	}
+	/**
+	 * Convert the results to titles.
+	 * @return array with optional keys:
+	 *   titleMatch => a title if the title matched
+	 *   redirectMatches => an array of redirect matches, one per matched redirect
+	 */
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-			$result, $searchContainedSyntax ) {
+			$resultSet, $searchContainedSyntax ) {
 		$results = array();
-		foreach( $result->getResults() as $r ) {
+		foreach( $resultSet->getResults() as $r ) {
 			$title = Title::makeTitle( $r->namespace, $r->title );
 			$highlights = $r->getHighlights();
+			$resultForTitle = array();
 
 			// Now we have to use the highlights to figure out whether it was the title or the redirect
 			// that matched.  It is kind of a shame we can't really give the highlighting to the client
 			// though.
-			if ( !isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
-				// The match wasn't against the title, so it better be against a redirect.
-				if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+			if ( isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
+				$resultForTitle[ 'titleMatch' ] = $title;
+			}
+			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+				foreach ( $highlights[ "redirect.title.$this->matchedAnalyzer" ] as $redirectTitle ) {
 					// The match was against a redirect so we should replace the $title with one that
 					// represents the redirect.
 					// The first step is to strip the actual highlighting from the title.
-					$redirectTitle = $highlights[ "redirect.title.$this->matchedAnalyzer" ][ 0 ];
 					$redirectTitle = str_replace( Searcher::HIGHLIGHT_PRE, '', $redirectTitle );
 					$redirectTitle = str_replace( Searcher::HIGHLIGHT_POST, '', $redirectTitle );
 
 					// Instead of getting the redirect's real namespace we're going to just use the namespace
 					// of the title.  This is not great but OK given that we can't find cross namespace
 					// redirects properly any way.
-					$title = Title::makeTitle( $r->namespace, $redirectTitle );
-				} else {
-					// We're not really sure where the match came from so lets just pretend it was the title.
-					wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
-						"figure out what caused the match:  $r->namespace:$r->title");
+					$redirectTitle = Title::makeTitle( $r->namespace, $redirectTitle );
+					$resultForTitle[ 'redirectMatches' ][] = $redirectTitle;
 				}
 			}
-			if ( $this->getText ) {
-				$title = $title->getPrefixedText();
+			if ( count( $resultForTitle ) === 0 ) {
+				// We're not really sure where the match came from so lets just pretend it was the title.
+				wfDebugLog( 'CirrusSearch', "Title search result type hit a match but we can't " .
+					"figure out what caused the match:  $r->namespace:$r->title");
+				$resultForTitle[ 'titleMatch' ] = $title;
 			}
-			$results[] = $title;
+			$results[] = $resultForTitle;
 		}
 		return $results;
 	}

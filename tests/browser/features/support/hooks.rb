@@ -310,6 +310,20 @@ Before("@go", "@options") do
       And a page named Bach Nearmatchflattentest exists with contents #REDIRECT [[Johann Sebastian Bach Nearmatchflattentest]]
       And a page named Bạch Nearmatchflattentest exists with contents Notice the dot under the a.
       And a page named Johann Sebastian Bach Nearmatchflattentest exists
+      And a page named KOAN Nearmatchflattentest exists
+      And a page named Kōan Nearmatchflattentest exists
+      And a page named Koan Nearmatchflattentest exists with contents #REDIRECT [[Kōan Nearmatchflattentest]]
+      And a page named Soñ Redirect Nearmatchflattentest exists
+      And a page named Són Redirect Nearmatchflattentest exists
+      And a page named Son Redirect Nearmatchflattentest exists with contents #REDIRECT [[Soñ Redirect Nearmatchflattentest]]
+      And a page named Són Redirectnotbetter Nearmatchflattentest exists
+      And a page named Soñ Redirectnotbetter Nearmatchflattentest exists with contents #REDIRECT [[Són Redirectnotbetter Nearmatchflattentest]]
+      And a page named Són Redirecttoomany Nearmatchflattentest exists
+      And a page named Soñ Redirecttoomany Nearmatchflattentest exists with contents #REDIRECT [[Són Redirecttoomany Nearmatchflattentest]]
+      And a page named Søn Redirecttoomany Nearmatchflattentest exists
+      And a page named Blah Redirectnoncompete Nearmatchflattentest exists
+      And a page named Soñ Redirectnoncompete Nearmatchflattentest exists with contents #REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]
+      And a page named Søn Redirectnoncompete Nearmatchflattentest exists with contents #REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]
     }
   end
   $go_options = true

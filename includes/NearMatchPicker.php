@@ -40,7 +40,9 @@ class NearMatchPicker {
 	 *
 	 * @param Language $language to use during normalization process
 	 * @param string $term the search term
-	 * @param array(Title) $titles potential near matches
+	 * @param array with optional keys:
+	 *   titleMatch => a title if the title matched
+	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
 	public function __construct( $language, $term, $titles ) {
 		$this->language = $language;
@@ -63,7 +65,14 @@ class NearMatchPicker {
 			return null;
 		}
 		if ( count( $this->titles ) === 1 ) {
-			return $this->titles[ 0 ];
+			if ( isset( $this->titles[ 0 ][ 'titleMatch' ] ) ) {
+				return $this->titles[ 0 ][ 'titleMatch' ];
+			}
+			if ( isset( $this->titles[ 0 ][ 'redirectMatches' ][ 0 ] ) ) {
+				return $this->titles[ 0 ][ 'redirectMatches' ][ 0 ];
+			}
+			wfDebugLog( 'CirrusSearch', 'NearMatchPicker built with busted matches.  Assuming no near match');
+			return null;
 		}
 
 		$transformers = array(
@@ -76,17 +85,17 @@ class NearMatchPicker {
 			$transformedTerm = call_user_func( $transformer, $this->term );
 			$found = null;
 			foreach ( $this->titles as $title ) {
-				$transformedTitle = call_user_func( $transformer, $title->getText() );
-				// wfDebugLog( 'CirrusSearch', "Near match candidates: $transformedTerm  $transformedTitle");
-				if ( $transformedTerm === $transformedTitle ) {
+				$match = $this->checkAllMatches( $transformer, $transformedTerm, $title );
+				if ( $match ) {
 					if ( !$found ) {
-						$found = $title;
+						$found = $match;
 					} else {
 						// Found more than one result so we try another transformer
 						$found = null;
 						break;
 					}
 				}
+
 			}
 			if ( $found ) {
 				return $found;
@@ -95,5 +104,30 @@ class NearMatchPicker {
 
 		// Didn't find anything
 		return null;
+	}
+
+	/**
+	 * Check a single title's worth of matches.  The big thing here is that titles cannot compete with themselves.
+	 * @return null|Title null if no title matches and the actual title (either of the page or of a redirect to the
+	 *       page) if one did match
+	 */
+	private function checkAllMatches( $transformer, $transformedTerm, $allMatchedTitles ) {
+		if ( isset( $allMatchedTitles[ 'titleMatch' ] ) &&
+				$this->checkOneMatch( $transformer, $transformedTerm, $allMatchedTitles[ 'titleMatch' ] ) ) {
+			return $allMatchedTitles[ 'titleMatch' ];
+		}
+		if ( isset( $allMatchedTitles[ 'redirectMatches' ] ) ) {
+			foreach ( $allMatchedTitles[ 'redirectMatches' ] as $redirectMatch ) {
+				if ( $this->checkOneMatch( $transformer, $transformedTerm, $redirectMatch ) ) {
+					return $redirectMatch;
+				}
+			}
+		}
+		return null;
+	}
+
+	private function checkOneMatch( $transformer, $transformedTerm, $matchedTitle ) {
+		$transformedTitle = call_user_func( $transformer, $matchedTitle->getText() );
+		return $transformedTerm === $transformedTitle;
 	}
 }

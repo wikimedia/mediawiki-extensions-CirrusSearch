@@ -4,7 +4,7 @@ namespace CirrusSearch;
 use \Title;
 
 /**
- * Lightweight classes to describe specific result types we can return
+ * Lightweight classes to describe specific result types we can return.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,7 +181,6 @@ class FullTextResultsType implements ResultsType {
 				'fragmenter' => 'scan',
 				'fragment_size' => 100,
 				'options' => array(
-					'locale' => wfGetLangObj()->getCode(),
 					'top_scoring' => true,
 					'boost_before' => array(
 						// Note these values are super arbitrary right now.
@@ -190,6 +189,12 @@ class FullTextResultsType implements ResultsType {
 						'200' => 4,
 						'1000' => 2,
 					),
+					// Since the best fragments are typically at the beginning of the article
+					// any way we can relatively safely stop searching for matches after 50
+					// fragments.  This should help with really crazy documents, say 10MB of
+					// "d d".  Without this we'll scan out all the "d"s on a search for "d".
+					// With it, only the first 50.
+					'max_fragments_scored' => 50,
 				),
 			);
 			// If there isn't a match just return some of the the first few sentences .

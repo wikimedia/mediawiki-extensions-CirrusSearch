@@ -33,6 +33,8 @@ Feature: Go Search
     |      term      |      title      |
     | soñ onlyaccent | Soñ Onlyaccent  |
     | son onlyaccent | Soñ Onlyaccent  |
+    | Søn Redirecttoomany | Søn Redirecttoomany |
+    | Són Redirecttoomany | Són Redirecttoomany |
 
   @go @options
   Scenario Outline: When I near match more than one page but one is exact (case, modulo case, or converted to title case) I go to that page
@@ -55,6 +57,11 @@ Feature: Go Search
     | soñ twoaccents | Soñ Twoaccents  |
     | són twoaccents | Són Twoaccents  |
     | bach           | Johann Sebastian Bach |
+    | koan           | Kōan            |
+    | son redirect   | Soñ Redirect    |
+    | Son Redirectnotbetter | Són Redirectnotbetter |
+    | Søn Redirectnoncompete | Blah Redirectnoncompete |
+    | Soñ Redirectnoncompete | Blah Redirectnoncompete |
 
   @go @options
   Scenario Outline: When I near match more than one page but none of them are exact then I go to the search results page
@@ -64,6 +71,7 @@ Feature: Go Search
     |       term      |
     | son twoaccents  |
     | Son Double      |
+    | Son Redirecttoomany |
 
   @go @redirect
   Scenario: When I near match a redirect and a page then the redirect is chosen if it is a better match

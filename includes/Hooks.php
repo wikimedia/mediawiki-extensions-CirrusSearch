@@ -249,14 +249,23 @@ class Hooks {
 	public static function prefixSearch( $namespace, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
 		$searcher = new Searcher( 0, $limit, $namespace, $user );
-		$searcher->setResultsType( new TitleResultsType( true, 'prefix' ) );
+		$searcher->setResultsType( new TitleResultsType( 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// constrution site to log errors.
 		if ( $status->isOK() ) {
-			$array = $status->getValue();
-			$results = $array;
+			$results = array();
+			foreach ( $status->getValue() as $match ) {
+				if ( isset( $match[ 'titleMatch' ] ) ) {
+					$results[] = $match[ 'titleMatch' ]->getPrefixedText();
+				} else {
+					if ( isset( $match[ 'redirectMatches' ][ 0 ] ) ) {
+						// TODO maybe dig around in the redirect matches and find the best one?
+						$results[] = $match[ 'redirectMatches' ][ 0 ]->getPrefixedText();
+					}
+				}
+			}
 		}
 		return false;
 	}
@@ -280,7 +289,7 @@ class Hooks {
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
 		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
-		$searcher->setResultsType( new TitleResultsType( false, 'near_match' ) );
+		$searcher->setResultsType( new TitleResultsType( 'near_match' ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -292,7 +301,6 @@ class Hooks {
 		$picker = new NearMatchPicker( $wgContLang, $term, $status->getValue() );
 		$best = $picker->pickBest();
 		if ( $best ) {
-			// Found a near match.
 			$titleResult = $best;
 			return false;
 		}

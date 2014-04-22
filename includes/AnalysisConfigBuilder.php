@@ -29,7 +29,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.4';
+	const VERSION = '0.5';
 
 	/**
 	 * Language code we're building analysis for
@@ -238,6 +238,8 @@ class AnalysisConfigBuilder {
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
 		'zh-hans' => 'chinese',
+		'ja' => 'cjk',
+		'ko' => 'cjk',
 		'cs' => 'czech',
 		'da' => 'danish',
 		'nl' => 'dutch',

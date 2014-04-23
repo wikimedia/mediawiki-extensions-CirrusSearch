@@ -477,6 +477,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Validate the alias that is just for this index's type.
 	 */
 	private function validateSpecificAlias() {
+		global $wgCirrusSearchMaintenanceTimeout;
+
 		$this->output( $this->indent . "\tValidating $this->indexType alias..." );
 		$otherIndeciesWithAlias = array();
 		$specificAliasName = $this->getIndexTypeName();
@@ -526,8 +528,21 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				// Optimize the index so it'll be more compact for replication.  Not required
 				// but should be helpful.
 				$this->output( $this->indent . "\tOptimizing..." );
-				$this->getIndex()->optimize( array( 'max_num_segments' => 5 ) );
-				$this->output( "Done\n" );
+				try {
+					// Reset the timeout just in case we lost it somehwere along the line
+					Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+					$this->getIndex()->optimize( array( 'max_num_segments' => 5 ) );
+					$this->output( "Done\n" );
+				} catch ( \Elastica\Exception\Connection\HttpException $e ) {
+					if ( $e->getMessage() === 'Operation timed out' ) {
+						$this->output( "Timed out...Continuing any way\n" );
+						// To continue without blowing up we need to reset the connection.
+						Connection::destroySingleton();
+						Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+					} else {
+						throw $e;
+					}
+				}
 				$this->validateIndexSettings();
 				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
 				$expectedActive = $this->getShardCount() * ( 1 + $this->getReplicaCount() );

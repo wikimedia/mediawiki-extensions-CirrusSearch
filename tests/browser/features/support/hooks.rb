@@ -110,6 +110,8 @@ Before("@suggestions") do
       And a page named Template:Noble Pipe 1 exists with contents pipes are so noble
       And a page named Template:Noble Pipe 2 exists with contents pipes are so noble
       And a page named Template:Noble Pipe 3 exists with contents pipes are so noble
+      And a page named Template:Noble Pipe 4 exists with contents pipes are so noble
+      And a page named Template:Noble Pipe 5 exists with contents pipes are so noble
       And a page named Rrr Word 1 exists with contents #REDIRECT [[Popular Culture]]
       And a page named Rrr Word 2 exists with contents #REDIRECT [[Popular Culture]]
       And a page named Rrr Word 3 exists with contents #REDIRECT [[Noble Somethingelse3]]
@@ -159,12 +161,12 @@ Before("@highlighting") do
 end
 
 Before("@highlighting", "@references") do
-  if !$highlighting
+  if !$highlighting_references
     steps %Q{
       Given a page named References Highlight Test exists with contents @references_highlight_test.txt
     }
   end
-  $highlighting = true
+  $highlighting_references = true
 end
 
 Before("@setup_more_like_this") do

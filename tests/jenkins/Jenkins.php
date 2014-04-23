@@ -1,6 +1,8 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
+use \JobQueueGroup;
+
 /**
  * Sets up configuration required to run the browser tests on Jenkins.
  *
@@ -33,6 +35,8 @@ if ( !isset( $wgRedisPassword ) ) {
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
 $wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
+$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Jenkins\Jenkins::recyclePruneAndUndelayJobs';
+
 
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
@@ -45,6 +49,8 @@ require_once( "$IP/extensions/Cite/Cite.php" );
 
 // Configuration
 $wgSearchType = 'CirrusSearch';
+$wgCirrusSearchUseExperimentalHighlighter = true;
+$wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';
@@ -56,7 +62,6 @@ $wgJobTypeConf['default'] = array(
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
-	'maximumPeriodicTaskSeconds' => 1,
 	'redisConfig' => array(
 		'password' => $wgRedisPassword,
 	),
@@ -88,5 +93,12 @@ class Jenkins {
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes');
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup');
 		return true;
+	}
+
+	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
+		$jobQueue = JobQueueGroup::singleton()->get( 'cirrusSearchLinksUpdateSecondary' );
+		if ( $jobQueue ) {
+			$jobQueue->recyclePruneAndUndelayJobs();
+		}
 	}
 }

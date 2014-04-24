@@ -29,7 +29,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.5';
+	const VERSION = '0.6';
 
 	/**
 	 * Language code we're building analysis for
@@ -40,9 +40,15 @@ class AnalysisConfigBuilder {
 	/**
 	 * Constructor
 	 * @param string $langCode The language code to build config for
+	 * @param array(string) $plugins list of plugins installed in Elasticsearch
 	 */
-	public function __construct( $langCode ) {
+	public function __construct( $langCode, $plugins ) {
 		$this->language = $langCode;
+		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $plugin => $extra ) {
+			if ( in_array( $plugin, $plugins ) ) {
+				$this->elasticsearchLanguageAnalyzers = array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
+			}
+		}
 	}
 
 	/**
@@ -62,6 +68,9 @@ class AnalysisConfigBuilder {
 		return array(
 			'analyzer' => array(
 				'text' => array(
+					'type' => $this->getDefaultTextAnalyzerType(),
+				),
+				'text_search' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
 				),
 				'plain' => array(
@@ -193,10 +202,19 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+
+			// In English text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'tr':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
+		case 'he':
+			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
+			// analyzer for queries.
+			if ( $config[ 'analyzer' ][ 'text_search' ] === 'hebrew' ) {
+				$config[ 'analyzer' ][ 'text_search' ] = 'hebrew_query';
+			}
 		}
 		return $config;
 	}
@@ -207,7 +225,7 @@ class AnalysisConfigBuilder {
 	 * reasonably default in case CirrusSearch isn't customized for the language.
 	 * @return string the analyzer type
 	 */
-	private function getDefaultTextAnalyzerType() {
+	public function getDefaultTextAnalyzerType() {
 		// If we match a language exactly, use it
 		if ( array_key_exists( $this->language, $this->elasticsearchLanguageAnalyzers ) ) {
 			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
@@ -263,5 +281,15 @@ class AnalysisConfigBuilder {
 		'sv' => 'swedish',
 		'tr' => 'turkish',
 		'th' => 'thai',
+	);
+
+	private $elasticsearchLanguageAnalyzersFromPlugins = array(
+		'analysis-stempel' => array( 'pl' => 'polish' ),
+		'analysis-kuromoji' => array( 'ja' => 'kuromoji' ),
+		'analysis-smartcn' => array( 'zh-hans' => 'smart_chinese' ),
+		// This hasn't had a release in a while and seems to not work with the
+		// current version of elasticsearch:
+		'elasticsearch-analysis-hebrew' => array( 'he' => 'hebrew' ),
+		// TODO Hebrew requires some special query handling....
 	);
 }

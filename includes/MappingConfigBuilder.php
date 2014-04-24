@@ -158,12 +158,13 @@ class MappingConfigBuilder {
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
 			'type' => 'string',
-			'analyzer' => 'text',
+			'index_analyzer' => 'text',
+			'search_analyzer' => 'text_search',
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'index_analyzer' => 'plain',
-					'search_analyzer' => 'plain_search'
+					'search_analyzer' => 'plain_search',
 				),
 			)
 		);

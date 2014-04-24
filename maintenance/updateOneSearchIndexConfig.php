@@ -94,6 +94,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexAcceptableCountDeviation;
 
 	/**
+	 * @var the builder for analysis config
+	 */
+	private $analysisConfigBuilder;
+
+	/**
 	 * @var array(String) list of available plugins
 	 */
 	private $availablePlugins;
@@ -194,6 +199,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
+			$this->pickAnalyzer();
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -313,8 +319,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateAnalyzers() {
 		$this->output( $this->indent . "Validating analyzers..." );
 		$settings = $this->getSettings();
-		$analysisConfig = new AnalysisConfigBuilder( $this->langCode );
-		$requiredAnalyzers = $analysisConfig->buildConfig();
+		$requiredAnalyzers = $this->analysisConfigBuilder->buildConfig();
 		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
@@ -823,12 +828,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function createIndex( $rebuild ) {
 		global $wgCirrusSearchRefreshInterval;
 
-		$analysisConfig = new AnalysisConfigBuilder( $this->langCode );
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
 				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
-				'analysis' => $analysisConfig->buildConfig(),
+				'analysis' => $this->analysisConfigBuilder->buildConfig(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
 				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's'
@@ -880,6 +884,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			return $identifier;
 		}
 		return $option;
+	}
+
+	private function pickAnalyzer() {
+		$this->analysisConfigBuilder = new AnalysisConfigBuilder( $this->langCode, $this->availablePlugins );
+		$this->output( $this->indent . 'Picking analyzer...' .
+			$this->analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
 	}
 
 	/**

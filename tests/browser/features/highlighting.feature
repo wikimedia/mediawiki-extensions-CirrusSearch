@@ -18,12 +18,9 @@ Feature: Highlighting
     | template:test pickle       | Template:Template *Test* | *pickles*                                        |
     # Verify highlighting the presence of accent squashing
     | Africa test                | *África*                 | for *testing*                                    |
-    # Verify highlighting on large pages (Bug 52680).
-    # Bug 64259
-    # | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
-    # | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss problems of social and cultural importance*. During the caliphate of |
-    | "discuss problems of social and cultural importance" | Rashidun Caliphate | first Khalifa Rasul Allah (Successor *of* the Messenger *of* God), *and* embarked on campaigns to propagate |
-    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | first Khalifa Rasul Allah (Successor *of* the Messenger *of* God), *and* embarked on campaigns to propagate |
+    # Verify highlighting on large pages.
+    | "discuss problems of social and cultural importance" | Rashidun Caliphate | gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate *of* Umar as many |
+    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate *of* Umar as many |
     # Auxiliary text
     | tallest alborz             | Rashidun Caliphate       | Mount Damavand, Iran's *tallest* mountain is located in *Alborz* mountain range. |
 
@@ -33,9 +30,7 @@ Feature: Highlighting
 
   Scenario: Found words are highlighted even if found by different analyzers
     When I search for "threatening the unity" community
-    # Bug 64259
-    # Then *threatening the unity* and stability of the new *community* is in the highlighted text of the first search result
-    Then *the* is in the highlighted text of the first search result
+    Then *threatening* *the* *unity* and stability of *the* new *community* is in the highlighted text of the first search result
 
   @headings
   Scenario: Found words are highlighted in headings
@@ -48,15 +43,11 @@ Feature: Highlighting
 
   Scenario: Found words are highlighted in text even in large documents
     When I search for Allowance to non-Muslims
-    # Bug 64259
-    # Then *Allowance to non-Muslims* is in the highlighted text of the first search result
-    Then *to* is in the highlighted text of the first search result
+    Then *Allowance* *to* *non*-*Muslims* is in the highlighted text of the first search result
 
   Scenario: Found words are highlighted in text even in large documents
     When I search for "Allowance to non-Muslims"
-    # Bug 64259
-    # Then *Allowance to non-Muslims* is in the highlighted text of the first search result
-    Then *to* is in the highlighted text of the first search result
+    Then *Allowance* *to* *non*-*Muslims* is in the highlighted text of the first search result
 
   Scenario: Words are not found in image captions
     When I search for The Rose Trellis Egg
@@ -79,9 +70,7 @@ Feature: Highlighting
 
   Scenario: Found words are highlighted in headings even in large documents when searching in a non-strict phrase
     When I search for "Allowance to non-Muslims"~
-    # Bug 64259
-    # Then *Allowance to non-Muslims* is in the highlighted text of the first search result
-    Then *to* is in the highlighted text of the first search result
+    Then *Allowance* *to* *non*-*Muslims* is in the highlighted text of the first search result
 
   @headings
   Scenario: The highest scoring heading is highlighted AND it doesn't contain html even if the heading on the page does
@@ -109,7 +98,7 @@ Feature: Highlighting
     When I search for Rashidun Caliphate
     Then Template:History of the Arab States The *Rashidun* *Caliphate* (Template:lang-ar al-khilafat ar-Rāshidīyah) is the highlighted text of the first search result
     When I search for caliphs
-    Then al-khilafat ar-Rāshidīyah), comprising the first four *caliphs* in Islam's history, was founded after Muhammad's is the highlighted text of the first search result
+    Then The first four *caliphs* are called the Rashidun, meaning the Rightly Guided *Caliphs*, because they are is the highlighted text of the first search result
 
   @references
   Scenario: References don't appear in highlighted section titles

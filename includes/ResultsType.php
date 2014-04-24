@@ -188,20 +188,20 @@ class FullTextResultsType implements ResultsType {
 					'top_scoring' => true,
 					'boost_before' => array(
 						// Note these values are super arbitrary right now.
-						'20' => 8,
-						'50' => 7,
-						'200' => 4,
-						'1000' => 2,
+						'20' => 2,
+						'50' => 1.8,
+						'200' => 1.5,
+						'1000' => 1.2,
 					),
-					// Since the best fragments are typically at the beginning of the article
-					// any way we can relatively safely stop searching for matches after 50
-					// fragments.  This should help with really crazy documents, say 10MB of
-					// "d d".  Without this we'll scan out all the "d"s on a search for "d".
-					// With it, only the first 50.
-					'max_fragments_scored' => 50,
+					// We should set a limit on the number of fragments we try because if we
+					// don't then we'll hit really crazy documents, say 10MB of "d d".  This'll
+					// keep us from scanning more then the first couple thousand of them.
+					// Setting this too low (like 50) can bury good snippets if the search
+					// contains common words.
+					'max_fragments_scored' => 5000,
 				),
 			);
-			// If there isn't a match just return some of the the first few sentences .
+			// If there isn't a match just return some of the the first few characters.
 			$text = $singleFragment;
 			$text[ 'no_match_size' ] = 100;
 		} else {

@@ -223,6 +223,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
 
+		$lastQueueSizeForOurJob = PHP_INT_MAX;
 		if ( $this->queue ) {
 			$this->output( "Waiting for jobs to drain from the queue\n" );
 			while ( true ) {
@@ -230,8 +231,15 @@ class ForceSearchIndex extends Maintenance {
 				if ( $queueSizeForOurJob === 0 ) {
 					break;
 				}
+				// We subtract 5 because we some jobs may be added by deletes
+				if ( $queueSizeForOurJob > $lastQueueSizeForOurJob ) {
+					$this->output( "Queue size went up.  Another script is likely adding jobs " .
+						"and it'll wait for them to empty.\n" );
+					break;
+				}
 				$this->output( "$queueSizeForOurJob jobs left on the queue.\n" );
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+				$lastQueueSizeForOurJob = $queueSizeForOurJob;
 			}
 		}
 	}

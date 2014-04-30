@@ -224,6 +224,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
 
 		$lastQueueSizeForOurJob = PHP_INT_MAX;
+		$waitStartTime = microtime( true );
 		if ( $this->queue ) {
 			$this->output( "Waiting for jobs to drain from the queue\n" );
 			while ( true ) {
@@ -237,9 +238,13 @@ class ForceSearchIndex extends Maintenance {
 						"and it'll wait for them to empty.\n" );
 					break;
 				}
+				if ( microtime( true ) - $waitStartTime > 120 ) {
+					// Wait at least two full minutes before we check if the job count went down.
+					// Less then that and we might be seeing lag from redis's counts.
+					$lastQueueSizeForOurJob = $queueSizeForOurJob;
+				}
 				$this->output( "$queueSizeForOurJob jobs left on the queue.\n" );
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-				$lastQueueSizeForOurJob = $queueSizeForOurJob;
 			}
 		}
 	}

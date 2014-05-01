@@ -49,9 +49,9 @@ Feature: Highlighting
     When I search for "Allowance to non-Muslims"
     Then *Allowance* *to* *non*-*Muslims* is in the highlighted text of the first search result
 
-  Scenario: Words are not found in image captions
+  Scenario: Words are not found in image captions unless there are no matches in the page
     When I search for The Rose Trellis Egg
-    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg is the highlighted text of the first search result
+    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia is the highlighted text of the first search result
 
   @headings
   Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase

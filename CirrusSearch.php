@@ -327,6 +327,7 @@ $wgAutoloadClasses['CirrusSearch\Result'] = $includes . 'Result.php';
 $wgAutoloadClasses['CirrusSearch\ResultSet'] = $includes . 'ResultSet.php';
 $wgAutoloadClasses['CirrusSearch\ResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
+$wgAutoloadClasses['CirrusSearch\SearchEscaper'] = $includes . 'SearchEscaper.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
 $wgAutoloadClasses['CirrusSearch\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';

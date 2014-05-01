@@ -147,6 +147,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $highlightQuery = null;
 
 	/**
+	 * @var SearchEscaper escapes queries
+	 */
+	private $escaper;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -155,13 +160,15 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
 	 */
 	public function __construct( $offset, $limit, $namespaces, $user, $index = false ) {
-		global $wgCirrusSearchSlowSearch;
+		global $wgCirrusSearchSlowSearch,
+			$wgLanguageCode;
 
 		parent::__construct( $user, $wgCirrusSearchSlowSearch );
 		$this->offset = min( $offset, self::MAX_OFFSET );
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: wfWikiId();
+		$this->escaper = new SearchEscaper( $wgLanguageCode );
 	}
 
 	/**
@@ -389,12 +396,15 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->boostTemplates = $boostTemplates;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		wfProfileOut( __METHOD__ . '-other-filters' );
+
+		$this->term = $this->escaper->escapeQuotes( $this->term );
+
 		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
-		$query = self::replacePartsOfQuery( $this->term, '/(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $searcher ) {
 				$main = $searcher->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
@@ -1006,32 +1016,11 @@ class Searcher extends ElasticsearchIntermediary {
 				]|
 				\^|     (?# no user supplied boosts at this point, though I cant think why)
 				:|		(?# no specifying your own fields)
-				\\\
+				\\\(?!") (?# the only acceptable escaping is for quotes)
 			)/x', '\\\$1', $string );
 
-		// If the string doesn't have balanced quotes then add a quote on the end so Elasticsearch
-		// can parse it.
-		$inQuote = false;
-		$inEscape = false;
-		$len = strlen( $string );
-		for ( $i = 0; $i < $len; $i++ ) {
-			if ( $inEscape ) {
-				$inEscape = false;
-				continue;
-			}
-			switch ( $string[ $i ] ) {
-			case '"':
-				$inQuote = !$inQuote;
-				break;
-			case '\\':
-				$inEscape = true;
-			}
-		}
-		if ( $inQuote ) {
-			$string = $string . '"';
-		}
-
-		return $string;
+		// Elasticsearch's query strings can't abide unbalanced quotes
+		return $this->escaper->balanceQuotes( $string );
 	}
 
 	/**

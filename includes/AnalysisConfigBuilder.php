@@ -212,8 +212,8 @@ class AnalysisConfigBuilder {
 		case 'he':
 			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
 			// analyzer for queries.
-			if ( $config[ 'analyzer' ][ 'text_search' ] === 'hebrew' ) {
-				$config[ 'analyzer' ][ 'text_search' ] = 'hebrew_query';
+			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
+				$config[ 'analyzer' ][ 'text_search' ][ 'type' ] = 'hebrew_query';
 			}
 		}
 		return $config;

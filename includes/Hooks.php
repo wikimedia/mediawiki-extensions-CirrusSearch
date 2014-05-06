@@ -32,7 +32,7 @@ class Hooks {
 	 * Hooked to call initialize after the user is set up.
 	 * @return bool
 	 */
-	public static function beforeInitializeHook( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
+	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
 		self::initializeForUser( $user, $request );
 		return true;
 	}
@@ -42,7 +42,7 @@ class Hooks {
 	 * @param ApiMain $apiMain The ApiMain instance being used
 	 * @return bool
 	 */
-	public static function apiBeforeMainHook( $apiMain ) {
+	public static function onApiBeforeMain( $apiMain ) {
 		self::initializeForUser( $apiMain->getUser(), $apiMain->getRequest() );
 		return true;
 	}
@@ -71,7 +71,7 @@ class Hooks {
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
 			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
-			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::searchGetNearMatchBeforeHook';
+			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatchBefore';
 		}
 
 		// Engage the experimental highlighter if a url parameter requests it
@@ -89,7 +89,7 @@ class Hooks {
 	 * @param int $pageId Page id being deleted
 	 * @return bool
 	 */
-	public static function articleDeleteCompleteHook( $page, $user, $reason, $pageId ) {
+	public static function onArticleDeleteComplete( $page, $user, $reason, $pageId ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
@@ -141,7 +141,7 @@ class Hooks {
 	 * @param array $software Array of wikitext and version numbers
 	 * @return bool
 	 */
-	public static function softwareInfoHook( $software ) {
+	public static function onSoftwareInfo( $software ) {
 		$searcher = new Searcher( 0, 0, array(), false );
 		$version = $searcher->getElasticsearchVersion();
 		if ( $version->isOk() ) {
@@ -158,7 +158,7 @@ class Hooks {
 	 * @param string $term The term being searched for
 	 * @return bool
 	 */
-	public static function specialSearchResultsPrependHook( $specialSearch, $out, $term ) {
+	public static function onSpecialSearchResultsPrepend( $specialSearch, $out, $term ) {
 		global $wgCirrusSearchShowNowUsing;
 
 		// Prepend our message if needed
@@ -183,7 +183,7 @@ class Hooks {
 	 * @param array $prefs
 	 * @return bool
 	 */
-	public static function getPreferencesHook( $user, &$prefs ) {
+	public static function onGetBetaFeaturePreferences( $user, &$prefs ) {
 		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
 
 		if ( $wgCirrusSearchEnablePref ) {
@@ -208,7 +208,7 @@ class Hooks {
 	 * @param $linksUpdate LinksUpdate source of all links update information
 	 * @return bool
 	 */
-	public static function linksUpdateCompletedHook( $linksUpdate ) {
+	public static function onLinksUpdateCompleted( $linksUpdate ) {
 		global $wgCirrusSearchLinkedArticlesToUpdate;
 		global $wgCirrusSearchUnlinkedArticlesToUpdate;
 
@@ -233,7 +233,7 @@ class Hooks {
 	 * @param array $files containing tests
 	 * @return bool
 	 */
-	public static function getUnitTestsList( &$files ) {
+	public static function onUnitTestsList( &$files ) {
 		$files = array_merge( $files, glob( __DIR__ . '/../tests/unit/*Test.php' ) );
 		return true;
 	}
@@ -276,7 +276,7 @@ class Hooks {
 	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
-	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, &$titleResult ) {
+	public static function onSearchGetNearMatchBefore( $termAndAllLanguageVariants, &$titleResult ) {
 		global $wgContLang;
 
 		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.

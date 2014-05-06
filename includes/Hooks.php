@@ -130,7 +130,8 @@ class Hooks {
 		JobQueueGroup::singleton()->push(
 			new LinksUpdateJob( $title, array(
 				'addedLinks' => array(),
-				'removedLinks' => array()
+				'removedLinks' => array(),
+				'prioritize' => true
 			) )
 		);
 		return true;

@@ -40,6 +40,18 @@ end
 When(/^I go to (.*)$/) do |title|
   visit(ArticlePage, using_params: {page_name: title})
 end
+When(/^I move (.*) to (.*) and (do not )?leave a redirect$/) do |from, to, no_redirect|
+  visit(MovePage, using_params: {page_name: from}) do |page|
+    page.first_heading.should_not eq "No such target page"
+    page.new_title = to
+    if no_redirect then
+      page.uncheck_leave_redirect
+    else
+      page.check_leave_redirect
+    end
+    page.move
+  end
+end
 
 Then(/^there is a software version row for (.+)$/) do |name|
   on(SpecialVersion).software_table_row(name).exists?

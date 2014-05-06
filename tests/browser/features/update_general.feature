@@ -32,3 +32,19 @@ Feature: Search backend updates
     Then within 20 seconds searching for intitle:RevDelTest "delete this revision" yields none as the first result
     When I search for intitle:RevDelTest current revision
     Then RevDelTest is the first search result
+
+  Scenario: Moved pages that leave a redirect are updated in the index
+    Given I am logged in
+    And a page named Move%{epoch} From1 exists with contents move me
+    And within 20 seconds searching for Move%{epoch} From1 yields Move%{epoch} From1 as the first result
+    When I move Move%{epoch} From1 to Move%{epoch} To1 and leave a redirect
+    And within 20 seconds searching for Move%{epoch} From1 yields Move%{epoch} To1 as the first result
+    And within 20 seconds searching for Move%{epoch} To1 yields Move%{epoch} To1 as the first result
+
+  Scenario: Moved pages that leave a redirect are updated in the index
+    Given I am logged in
+    And a page named Move%{epoch} From2 exists with contents move me
+    And within 20 seconds searching for Move%{epoch} From2 yields Move%{epoch} From2 as the first result
+    When I move Move%{epoch} From2 to Move%{epoch} To2 and do not leave a redirect
+    Then within 20 seconds searching for Move%{epoch} From2 yields none as the first result
+    And within 20 seconds searching for Move%{epoch} To2 yields Move%{epoch} To2 as the first result

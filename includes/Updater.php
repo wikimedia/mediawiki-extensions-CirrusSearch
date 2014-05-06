@@ -211,12 +211,12 @@ class Updater extends ElasticsearchIntermediary {
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );
 			$this->start( "sending $documentCount documents to the $indexType index" );
-			// addDocuments (notice plural) is the bulk api
 			$bulk = new \Elastica\Bulk( Connection::getClient() );
 			if ( $shardTimeout ) {
 				$bulk->setShardTimeout( $shardTimeout );
 			}
 			$bulk->setType( $pageType );
+			// addDocuments (notice plural) is the bulk api
 			$bulk->addDocuments( $documents );
 			$bulk->send();
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {

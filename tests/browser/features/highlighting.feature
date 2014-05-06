@@ -19,8 +19,8 @@ Feature: Highlighting
     # Verify highlighting the presence of accent squashing
     | Africa test                | *África*                 | for *testing*                                    |
     # Verify highlighting on large pages.
-    | "discuss problems of social and cultural importance" | Rashidun Caliphate | gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate *of* Umar as many |
-    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate *of* Umar as many |
+    | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of |
+    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of |
     # Auxiliary text
     | tallest alborz             | Rashidun Caliphate       | Mount Damavand, Iran's *tallest* mountain is located in *Alborz* mountain range. |
 
@@ -30,7 +30,7 @@ Feature: Highlighting
 
   Scenario: Found words are highlighted even if found by different analyzers
     When I search for "threatening the unity" community
-    Then *threatening* *the* *unity* and stability of *the* new *community* is in the highlighted text of the first search result
+    Then Abu Bakr's succession, *threatening* *the* *unity* and stability of the new *community* and state. Apostasy had is the highlighted text of the first search result
 
   @headings
   Scenario: Found words are highlighted in headings

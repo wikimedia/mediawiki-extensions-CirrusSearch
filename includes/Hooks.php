@@ -317,13 +317,13 @@ class Hooks {
 	 * @param User $user User who made the move
 	 * @param int $oldid The page id of the old page.
 	 */
-	public static function onTitleMoveComplete( Title &$title, Title &$newtitle, User &$user, $oldid ) {
+	public static function onTitleMoveComplete( Title &$title, Title &$newtitle, &$user, $oldid ) {
 		// If the page exists, update it, it's probably a redirect now.
 		// If not, it was deleted when moved, so make sure to delete it.
 		JobQueueGroup::singleton()->push( $title->exists() ?
 			new LinksUpdateJob( $title, array( 'addedLinks' => array(),
 				'removedLinks' => array(), 'prioritize' => true ) ) :
-			new DeletePagesJob( $page->getTitle(), array( 'id' => $oldid ) )
+			new DeletePagesJob( $title, array( 'id' => $oldid ) )
 		);
 
 		return true;

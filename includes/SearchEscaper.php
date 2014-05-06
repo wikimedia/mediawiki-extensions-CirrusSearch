@@ -43,8 +43,6 @@ class SearchEscaper {
 	}
 
 	public function balanceQuotes( $text ) {
-				wfDebugLog( 'CirrusSearch', "asfasdf   " . $text );
-
 		$profiler = new ProfileSection( __METHOD__ );
 		$inQuote = false;
 		$inEscape = false;

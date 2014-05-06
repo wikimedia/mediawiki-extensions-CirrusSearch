@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Minisarm"
+		]
+	},
+	"cirrussearch-desc": "Funcție de căutare pentru MediaWiki motorizată de elasticsearch",
+	"cirrussearch-backend-error": "Nu v-am putut finaliza căutarea din cauza unei probleme temporare. Încercați din nou mai târziu.",
+	"cirrussearch-parse-error": "Interogarea nu a fot înțeleasă. Simplificați-o. Interogarea a fost înregistrată pentru a îmbunătăți motorul de căutare.",
+	"cirrussearch-now-using": "Acest wiki folosește un nou motor de căutare. ([[mw:Special:MyLanguage/Help:CirrusSearch|Aflați mai multe]])",
+	"cirrussearch-ignored-headings": " #<!-- nu modificați acest rând --> <pre>\n# Titluri de secțiuni care vor fi ignorate de motorul de căutare.\n# Modificările efectuate aici își vor face efectul de îndată ce pagina care conține titlul de secțiune va fi indexată.\n# Puteți forța reindexarea paginii efectuând o modificare vidă.\n# Sintaxa este următoarea:\n#   * Orice rând precedat de caracterul „#” reprezintă un comentariu.\n#   * Orice rând nevid reprezintă exact titlu de secțiune de ignorat.\nReferințe\nLegături externe\nVezi și\n #</pre> <!-- nu modificați acest rând -->",
+	"cirrussearch-pref-label": "Noua funcție de căutare",
+	"cirrussearch-pref-desc": "Încercați noua noastră funcție de căutare, care suportă un număr mai mare de limbi, furnizează rezultate actualizate și poate găsi text chiar și în interiorul formatelor."
+}

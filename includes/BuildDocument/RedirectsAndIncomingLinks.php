@@ -66,8 +66,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$redirectPrefixedDBKeys = array();
 		// $redirectLinks = 0;
 		foreach ( $redirectTitles as $redirect ) {
-			// If the redirect is in main or the same namespace as the article the index it
-			if ( $redirect->getNamespace() === NS_MAIN && $redirect->getNamespace() === $title->getNamespace()) {
+			// If the redirect is in main OR the same namespace as the article the index it
+			if ( $redirect->getNamespace() === NS_MAIN || $redirect->getNamespace() === $title->getNamespace()) {
 				$redirects[] = array(
 					'namespace' => $redirect->getNamespace(),
 					'title' => $redirect->getText()

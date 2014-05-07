@@ -336,10 +336,12 @@ Before("@redirect") do
     steps %Q{
       Given a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
       And a page named Redirecttest Yikes exists with contents #REDIRECT [[Redirecttest Yay]]
+      And a page named User_talk:SEO Redirecttest exists with contents #REDIRECT [[User_talk:Search Engine Optimization Redirecttest]]
       And wait 3 seconds
       And a page named Seo Redirecttest exists
       And a page named Search Engine Optimization Redirecttest exists
       And a page named Redirecttest Yay exists
+      And a page named User_talk:Search Engine Optimization Redirecttest exists
     }
   end
   $go_options = true

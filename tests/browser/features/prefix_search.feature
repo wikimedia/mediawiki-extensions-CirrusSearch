@@ -45,6 +45,14 @@ Feature: Prefix search
     And Redirecttest Yay is the first suggestion
    And Redirecttest Yikes is not in the suggestions
 
+  @redirect
+  Scenario: Prefix search includes redirects for pages outside the main namespace
+    When I type User_talk:SEO Redirecttest into the search box
+    Then suggestions should appear
+    And User talk:SEO Redirecttest is the first suggestion
+    When I click the search button
+    Then I am on a page titled User talk:Search Engine Optimization Redirecttest
+
   @accent_squashing
   Scenario Outline: Search suggestions with accents
     When I type <term> into the search box

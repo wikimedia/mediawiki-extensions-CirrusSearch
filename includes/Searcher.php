@@ -262,7 +262,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchPreferRecentDefaultDecayPortion,
 			$wgCirrusSearchPreferRecentDefaultHalfLife,
 			$wgCirrusSearchNearMatchWeight,
-			$wgCirrusSearchStemmedWeight;
+			$wgCirrusSearchStemmedWeight,
+			$wgCirrusSearchPhraseSlop;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -404,10 +405,14 @@ class Searcher extends ElasticsearchIntermediary {
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
-		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<main>"((?:[^"]|(?:\"))+)"(?:~[0-9]+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<main>"((?:[^"]|(?:\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $searcher ) {
+				global $wgCirrusSearchPhraseSlop;
 				$main = $searcher->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
+					if ( !isset( $matches[ 'slop' ] ) ) {
+						$main = $main . '~' . $wgCirrusSearchPhraseSlop[ 'precise' ];
+					}
 					$main = $searcher->switchSearchToExact( $main );
 				}
 				return array( 'escaped' => $main );
@@ -469,7 +474,7 @@ class Searcher extends ElasticsearchIntermediary {
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
 						'rescore_query' => $this->buildSearchTextQueryForFields( $fields, 
-							'"' . $queryStringQueryString . '"' ),
+							'"' . $queryStringQueryString . '"', $wgCirrusSearchPhraseSlop[ 'boost' ] ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
@@ -853,21 +858,24 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	private function buildSearchTextQuery( $fields, $nearMatchFields, $queryString ) {
+		global $wgCirrusSearchPhraseSlop;
+
 		// Build one query for the full text fields and one for the near match fields so that
 		// the near match analyzer doesn't confuse the full text analyzers.
 		$bool = new \Elastica\Query\Bool();
 		$bool->setMinimumNumberShouldMatch( 1 );
-		$bool->addShould( $this->buildSearchTextQueryForFields( $fields, $queryString ) );
-		$bool->addShould( $this->buildSearchTextQueryForFields( $nearMatchFields, $queryString ) );
+		$bool->addShould( $this->buildSearchTextQueryForFields( $fields, $queryString,
+			$wgCirrusSearchPhraseSlop[ 'default' ] ) );
+		$bool->addShould( $this->buildSearchTextQueryForFields( $nearMatchFields, $queryString,
+			$wgCirrusSearchPhraseSlop[ 'default' ] ) );
 		return $bool;
 	}
 
-	private function buildSearchTextQueryForFields( $fields, $queryString ) {
-		global $wgCirrusSearchPhraseSlop;
+	private function buildSearchTextQueryForFields( $fields, $queryString, $phraseSlop ) {
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
 		$query->setAutoGeneratePhraseQueries( true );
-		$query->setPhraseSlop( $wgCirrusSearchPhraseSlop );
+		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( false );
 		$query->setFuzzyPrefixLength( 2 );

@@ -141,10 +141,13 @@ $wgCirrusSearchMaintenanceTimeout = 3600;
 // since the change.
 $wgCirrusSearchPrefixSearchStartsWithAnyWord = false;
 
-// When searching for a phrase how many words not searched for can be in the phrase
-// before it doesn't match. If I search for "like yellow candy" then phraseSlop of 0
-// won't match "like brownish yellow candy" but phraseSlop of 1 will.
-$wgCirrusSearchPhraseSlop = 1;
+// Phrase slop is how many words not searched for can be in the phrase and it'll still
+// match. If I search for "like yellow candy" then phraseSlop of 0 won't match "like
+// brownish yellow candy" but phraseSlop of 1 will.  The 'precise' key is for matching
+// quoted text.  The 'default' key is for matching quoted text that ends in a ~.
+// The 'boost' key is used for the phrase rescore that boosts phrase matches on queries
+// that don't already contain phrases.
+$wgCirrusSearchPhraseSlop = array( 'precise' => 0, 'default' => 1, 'boost' => 1 );
 
 // If the search doesn't include any phrases (delimited by quotes) then we try wrapping
 // the whole thing in quotes because sometimes that can turn up better results. This is

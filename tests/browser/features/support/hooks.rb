@@ -11,6 +11,10 @@ Before('@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes') 
       And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
+      And a page named वाङ्मय exists
+      And a page named वाङ्‍मय exists
+      And a page named वाङ‍्मय exists
+      And a page named वाङ्‌मय exists
     }
     $setup_main = true
   end

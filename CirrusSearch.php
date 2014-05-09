@@ -45,11 +45,12 @@ $wgCirrusSearchConnectionAttempts = 1;
 // Number of shards for each index
 $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 
-// Number of replicas per shard for each index
-// The default of 0 is fine for single-node setups, but if this is
-// deployed to a multi-node setting you probably at least want these
-// set to 1 for some redundancy, if not 2 for more redundancy.
-$wgCirrusSearchReplicaCount = array( 'content' => 0, 'general' => 0 );
+// Number of replicas Elasticsearch can expand or contract to. This allows for
+// easy development and deployment to a single node (0 replicas) to scale up to
+// higher levels of replication. You if you need more redundancy you could
+// adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
+// disable the behavior entirely. The default should be fine for most people.
+$wgCirrusSearchReplicas = '0-2';
 
 // How many seconds must a search of Elasticsearch be before we consider it
 // slow?  Default value is 10 seconds which should be fine for catching the rare
@@ -80,8 +81,7 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 // mapped to specific index suffixes. The keys are the namespace number, and
 // the value is a string name of what index suffix to use. Changing this setting
 // requires a full reindex (not in-place) of the wiki.  If this setting contains
-// any values then the index names must also exist in $wgCirrusSearchShardCount
-// and $wgCirrusSearchReplicaCount.
+// any values then the index names must also exist in $wgCirrusSearchShardCount.
 $wgCirrusSearchNamespaceMappings = array();
 
 // Extra indexes (if any) you want to search, and for what namespaces?

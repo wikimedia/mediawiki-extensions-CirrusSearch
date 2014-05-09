@@ -305,13 +305,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"validate everything else.", 1 );
 		}
 
-		$this->output( $this->indent . "\tValidating number of replicas..." );
-		$actualReplicaCount = $settings[ 'number_of_replicas' ];
+		$this->output( $this->indent . "\tValidating replica range..." );
+		$actualReplicaCount = isset( $settings[ 'auto_expand_replicas' ] ) ? $settings[ 'auto_expand_replicas' ] : 'false';
 		if ( $actualReplicaCount == $this->getReplicaCount() ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualReplicaCount but should be " . $this->getReplicaCount() . '...' );
-			$this->getIndex()->getSettings()->setNumberOfReplicas( $this->getReplicaCount() );
+			$this->getIndex()->getSettings()->set( array( 'auto_expand_replicas' => $this->getReplicaCount() ) );
 			$this->output( "corrected\n" );
 		}
 	}
@@ -550,7 +550,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				}
 				$this->validateIndexSettings();
 				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
-				$expectedActive = $this->getShardCount() * ( 1 + $this->getReplicaCount() );
+				list( $lower, $upper ) = explode( '-', $this->getReplicaCount() );
 				$indexName = $this->getSpecificIndexName();
 				$path = "_cluster/health/$indexName";
 				$each = 0;
@@ -566,6 +566,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$relocating = $health[ 'relocating_shards' ];
 					$initializing = $health[ 'initializing_shards' ];
 					$unassigned = $health[ 'unassigned_shards' ];
+					$nodes = $health['number_of_nodes'];
+					if ( $nodes < $lower ) {
+						$this->error( "Require $lower replicas but only have $nodes nodes. "
+							. "This is almost always due to misconfiguration, aborting.", 1 );
+					}
+					// If the upper range is all, expect the upper bound to be the number of nodes
+					if ( $upper === 'all' ) {
+						$upper = $nodes;
+					}
+					$expectedReplicas =  min( max( $nodes, $lower ), $upper );
+					$expectedActive = $this->getShardCount() * ( 1 + $expectedReplicas );
 					if ( $each === 0 || $active === $expectedActive ) {
 						$this->output( $this->indent . "\t\tactive:$active/$expectedActive relocating:$relocating " .
 							"initializing:$initializing unassigned:$unassigned\n" );
@@ -831,7 +842,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
-				'number_of_replicas' => $this->reindexAndRemoveOk ? 0 : $this->getReplicaCount(),
+				'auto_expand_replicas' => $this->getReplicaCount(),
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
 				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
 				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
@@ -930,12 +941,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function getReplicaCount() {
-		global $wgCirrusSearchReplicaCount;
-		if ( !isset( $wgCirrusSearchReplicaCount[ $this->indexType ] ) ) {
-			$this->error( 'Could not find a replica count for ' . $this->indexType . '.  Did you add an index to ' .
-				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchReplicaCount?', 1 );
-		}
-		return $wgCirrusSearchReplicaCount[ $this->indexType ];
+		global $wgCirrusSearchReplicas;
+		return $wgCirrusSearchReplicas;
 	}
 
 	private function parsePotentialPercent( $str ) {

@@ -230,7 +230,9 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			// Elasticsearch seems to have trouble extracting the proper terms to highlight
 			// from the default query we make so we feed it exactly the right query to highlight.
-			$this->highlightQuery = $this->buildPrefixQuery( $search );
+			$this->highlightQuery = new \Elastica\Query\MultiMatch();
+			$this->highlightQuery->setQuery( $search );
+			$this->highlightQuery->setFields( array( 'title.prefix', 'redirect.title.prefix' ) );
 			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();
@@ -290,7 +292,9 @@ class Searcher extends ElasticsearchIntermediary {
 				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 				if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
 					$value = str_replace( '_', ' ', $value );
-					$this->filters[] = new \Elastica\Filter\Query( $this->buildPrefixQuery( $value ) );
+					$prefixQuery = new \Elastica\Query\Match();
+					$prefixQuery->setFieldQuery( 'title.prefix', $value );
+					$this->filters[] = new \Elastica\Filter\Query( $prefixQuery );
 				}
 			}
 		}
@@ -981,18 +985,6 @@ class Searcher extends ElasticsearchIntermediary {
 				array( 'local_sites_with_dupe' => wfWikiId() ) );
 		}
 		return $extraIndexes;
-	}
-
-	/**
-	 * Build the query that powers the prefix search and the prefix filter.
-	 * @param string $search prefix search string
-	 * @return \Elastica\AbstractQuery to perform the query
-	 */
-	private function buildPrefixQuery( $search ) {
-		$match = new \Elastica\Query\MultiMatch();
-		$match->setQuery( $search );
-		$match->setFields( array( 'title.prefix', 'redirect.title.prefix' ) );
-		return $match;
 	}
 
 	/**

@@ -64,3 +64,7 @@ Feature: Searches with a prefix filter
     When I search for prefix test prefix:"user_talk:"
     Then User talk:Prefix Test is the first search result
     But Prefix Test is not in the search results
+
+  Scenario: The prefix: filter doesn't find redirects
+    When I search for prefix:Prefix Test Redirec
+    Then there are no search results

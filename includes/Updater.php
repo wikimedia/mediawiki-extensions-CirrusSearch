@@ -292,6 +292,12 @@ class Updater extends ElasticsearchIntermediary {
 				$textBuilder = new PageTextBuilder( $doc, $content, $parserOutput );
 				$doc = $textBuilder->build();
 
+				// If we're a file, build its metadata too
+				if ( $title->getNamespace() === NS_FILE ) {
+					$fileBuilder = new FileDataBuilder( $doc, $title );
+					$doc = $fileBuilder->build();
+				}
+
 				// Then let hooks have a go
 				wfRunHooks( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
 

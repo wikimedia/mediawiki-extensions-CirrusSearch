@@ -32,15 +32,14 @@ class PageDataBuilder extends ParseBuilder {
 				// Don't use parser output here. It's useless and leads
 				// to weird results. Instead, clear everything. See bug 61752.
 				$this->doc->add( 'category', array() );
+				$this->doc->add( 'external_link', array() );
+				$this->doc->add( 'heading', array() );
 				$this->doc->add( 'outgoing_link', array() );
 				$this->doc->add( 'template', array() );
-				$this->doc->add( 'file_text', array() );
-				$this->doc->add( 'heading', array() );
 				break;
 			default:
 				$this->categories();
 				$this->externalLinks();
-				$this->fileText();
 				$this->headings();
 				$this->outgoingLinks();
 				$this->templates();
@@ -85,20 +84,6 @@ class PageDataBuilder extends ParseBuilder {
 			}
 		}
 		$this->doc->add( 'template', $templates );
-	}
-
-	private function fileText() {
-		// Technically this doesn't require the parserOutput but it is heavyweight
-		// so we should only do it on article change.
-		if ( $this->title->getNamespace() == NS_FILE ) {
-			$file = wfLocalFile( $this->title );
-			if ( $file && $file->exists() && $file->getHandler() ) {
-				$fileText = $file->getHandler()->getEntireText( $file );
-				if ( $fileText ) {
-					$this->doc->add( 'file_text', $fileText );
-				}
-			}
-		}
 	}
 
 	private function headings() {

@@ -304,6 +304,7 @@ $buildDocument = $includes . 'BuildDocument/';
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\Builder'] = $buildDocument . 'Builder.php';
+$wgAutoloadClasses['CirrusSearch\BuildDocument\FileDataBuilder'] = $buildDocument . 'FileDataBuilder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\PageDataBuilder'] = $buildDocument . 'PageDataBuilder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\PageTextBuilder'] = $buildDocument . 'PageTextBuilder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\ParseBuilder'] = $buildDocument . 'Builder.php';

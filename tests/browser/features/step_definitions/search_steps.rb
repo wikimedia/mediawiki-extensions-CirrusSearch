@@ -171,6 +171,9 @@ end
 Then(/^there are no search results$/) do
   on(SearchResultsPage).first_result_element.should_not exist
 end
+Then(/^there are (\d+) search results$/) do |results|
+  on(SearchResultsPage).search_results_element.items.should == results.to_i
+end
 Then(/^within (\d+) seconds searching for (.*) yields (.*) as the first result$/) do |seconds, term, title|
   within(seconds) do
     step("I search for " + term)

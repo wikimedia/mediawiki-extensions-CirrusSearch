@@ -225,3 +225,14 @@ Feature: Full text search
     | Africa                 | África                 |
     | AlphaBeta              | AlphaBeta              |
     | ÁlphaBeta              | none                   |
+
+  @unicode_normalization
+  Scenario Outline: Searching for similar unicode characters finds all variants
+    When I search for <term>
+    Then there are 4 search results
+  Examples:
+    | term |
+    | वाङ्मय |
+    | वाङ्‍मय |
+    | वाङ‍्मय |
+    | वाङ्‌मय |

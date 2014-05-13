@@ -29,13 +29,18 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.6';
+	const VERSION = '0.7';
 
 	/**
 	 * Language code we're building analysis for
 	 * @var string
 	 */
 	private $language;
+
+	/**
+	 * @var boolean is the icu plugin available?
+	 */
+	private $icu;
 
 	/**
 	 * Constructor
@@ -49,6 +54,7 @@ class AnalysisConfigBuilder {
 				$this->elasticsearchLanguageAnalyzers = array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
 			}
 		}
+		$this->icu = in_array( 'analysis-icu', $plugins );
 	}
 
 	/**
@@ -65,7 +71,7 @@ class AnalysisConfigBuilder {
 	 * Build an analysis config with sane defaults.
 	 */
 	private function defaults() {
-		return array(
+		$defaults = array(
 			'analyzer' => array(
 				'text' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
@@ -165,6 +171,22 @@ class AnalysisConfigBuilder {
 				),
 			),
 		);
+		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
+			if ( $analyzer[ 'type' ] === 'default' ) {
+				$analyzer = array(
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => array( 'standard', 'lowercase' ),
+				);
+			}
+		}
+		if ( $this->icu ) {
+			$defaults[ 'filter' ][ 'icu_normalizer' ] = array(
+				'type' => 'icu_normalizer',
+				'name' => 'nfkc_cf',
+			);
+		}
+		return $defaults;
 	}
 
 	/**
@@ -214,6 +236,20 @@ class AnalysisConfigBuilder {
 			// analyzer for queries.
 			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
 				$config[ 'analyzer' ][ 'text_search' ][ 'type' ] = 'hebrew_exact';
+			}
+			break;
+		}
+		if ( $this->icu ) {
+			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
+				if ( !isset( $analyzer[ 'filter'  ] ) ) {
+					continue;
+				}
+				$analyzer[ 'filter' ] = array_map( function( $filter ) {
+					if ( $filter === 'lowercase' ) {
+						return 'icu_normalizer';
+					}
+					return $filter;
+				}, $analyzer[ 'filter' ] );
 			}
 		}
 		return $config;

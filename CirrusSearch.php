@@ -297,6 +297,11 @@ $wgCirrusSearchBackup = array();
 // the index.
 $wgCirrusSearchRefreshInterval = 1;
 
+// List of plugins that Cirrus should ignore when it scans for plugins.  This
+// will cause the plugin not to be used by updateSearchIndexConfig.php and
+// friends.
+$wgCirrusSearchBannedPlugins = array();
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**

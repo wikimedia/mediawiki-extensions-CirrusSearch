@@ -71,7 +71,7 @@ def send_lines(percent, jobs, destination):
         if target_lag is None:
             target_lag = time.time() - target_time
         wait_time = target_lag - lag
-        if wait_time >= 1:
+        if wait_time >= 0:
             print "Sleeping %s to stay %s ahead of the logged time." % \
                 (wait_time, target_lag)
             time.sleep(wait_time)

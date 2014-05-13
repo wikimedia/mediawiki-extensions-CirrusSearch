@@ -240,6 +240,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function scanAvailablePlugins() {
+		global $wgCirrusSearchBannedPlugins;
+
 		$this->output( $this->indent . "Scanning available plugins..." );
 		$result = Connection::getClient()->request( '_nodes' );
 		$result = $result->getData();
@@ -259,6 +261,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );
+		if ( count( $wgCirrusSearchBannedPlugins ) ) {
+			$this->availablePlugins = array_diff( $this->availablePlugins, $wgCirrusSearchBannedPlugins );
+		}
 		foreach ( array_chunk( $this->availablePlugins, 5 ) as $pluginChunk ) {
 			$plugins = implode( ', ', $pluginChunk );
 			$this->output( $this->indent . "\t$plugins\n" );

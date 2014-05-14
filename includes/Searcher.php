@@ -334,7 +334,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax ) {
 				$key = $matches['key'];

@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use CirrusSearch\BuildDocument\FileDataBuilder;
 use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
 use \MWTimestamp;

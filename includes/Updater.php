@@ -235,7 +235,7 @@ class Updater extends ElasticsearchIntermediary {
 				return $doc->getId();
 			}, $documents );
 			wfDebugLog( 'CirrusSearchChangeFailed', 'Update for doc ids: ' .
-				implode( ',', $documentIds ) );
+				implode( ',', $documentIds ) . '; error message was: ' . $exception->getMessage() );
 		}
 	}
 
@@ -426,7 +426,7 @@ class Updater extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
 				wfDebugLog( 'CirrusSearchChangeFailed', 'Delete for ids: ' .
-					implode( ',', $ids ) );
+					implode( ',', $ids ) . '; error message was: ' . $e->getMessage() );
 				return false;
 			}
 		}

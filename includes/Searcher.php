@@ -350,7 +350,7 @@ class Searcher extends ElasticsearchIntermediary {
 					case 'boost-templates':
 						$boostTemplates = Searcher::parseBoostTemplates( trim( $value, '"' ) );
 						if ( $boostTemplates === null ) {
-							$boostTemplates = self::getDefaultBoostTemplates();
+							$boostTemplates = Searcher::getDefaultBoostTemplates();
 						}
 						$searchContainedSyntax = true;
 						return '';

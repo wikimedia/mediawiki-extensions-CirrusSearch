@@ -1,11 +1,17 @@
 <?php
 
 namespace CirrusSearch;
+use \ApiMain;
 use \CirrusSearch;
 use \BetaFeatures;
 use \JobQueueGroup;
+use \LinksUpdate;
+use \OutputPage;
+use \SpecialSearch;
 use \Title;
 use \RequestContext;
+use \User;
+use \WebRequest;
 use \WikiPage;
 use \Xml;
 
@@ -51,6 +57,9 @@ class Hooks {
 	 * Initializes the portions of Cirrus that require the $user to be fully initialized and therefore
 	 * cannot be done in $wgExtensionFunctions.  Specifically this means the beta features check and
 	 * installing the prefix search hook, because it needs information from the beta features check.
+	 *
+	 * @param User $user
+	 * @param WebRequest $request
 	 */
 	private static function initializeForUser( $user, $request ) {
 		global $wgCirrusSearchEnablePref;
@@ -206,7 +215,7 @@ class Hooks {
 	/**
 	 * Hooked to update the search index when pages change directly or when templates that
 	 * they include change.
-	 * @param $linksUpdate LinksUpdate source of all links update information
+	 * @param LinksUpdate $linksUpdate source of all links update information
 	 * @return bool
 	 */
 	public static function onLinksUpdateCompleted( $linksUpdate ) {
@@ -313,9 +322,10 @@ class Hooks {
 	 * When we've moved a Title from A to B, update A as appropriate.
 	 * We already update B because of the implicit edit.
 	 * @param Title $title The old title
-	 * @param Title $title The new title
+	 * @param Title $newtitle The new title
 	 * @param User $user User who made the move
 	 * @param int $oldid The page id of the old page.
+	 * @return bool
 	 */
 	public static function onTitleMoveComplete( Title &$title, Title &$newtitle, &$user, $oldid ) {
 		// If the page exists, update it, it's probably a redirect now.
@@ -334,10 +344,14 @@ class Hooks {
 	 * This includes limiting them to $max titles.
 	 * @param array(Title) $titles titles to prepare
 	 * @param int $max maximum number of titles to return
+	 * @return array
 	 */
 	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
 		$titles = self::pickFromArray( $titles, $max );
 		$dBKeys = array();
+		/**
+		 * @var Title $title
+		 */
 		foreach ( $titles as $title ) {
 			$dBKeys[] = $title->getPrefixedDBkey();
 		}

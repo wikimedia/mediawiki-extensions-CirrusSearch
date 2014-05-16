@@ -73,14 +73,13 @@ class UpdateVersionIndex extends Maintenance {
 					"{$data['analysis_maj']}.{$data['analysis_min']}\n" .
 				"{$this->indent}  mapping version: " .
 					"{$data['mapping_maj']}.{$data['mapping_min']}\n" .
-				"{$this->indent}  shards: {$data['shard_count']}\n" .
-				"{$this->indent}  replicas: {$data['replica_count']}\n"
+				"{$this->indent}  shards: {$data['shard_count']}\n"
 			);
 		}
 	}
 
 	private function update( $baseName ) {
-		global $wgCirrusSearchShardCount, $wgCirrusSearchReplicaCount;
+		global $wgCirrusSearchShardCount;
 		$versionType = $this->getType();
 		$this->output( "{$this->indent}Updating tracking indexes..." );
 		$docs = array();
@@ -95,7 +94,6 @@ class UpdateVersionIndex extends Maintenance {
 					'mapping_maj' => $mMaj,
 					'mapping_min' => $mMin,
 					'shard_count' => $wgCirrusSearchShardCount[ $type ],
-					'replica_count' => $wgCirrusSearchReplicaCount[ $type ],
 				)
 			);
 		}
@@ -108,7 +106,7 @@ class UpdateVersionIndex extends Maintenance {
 		if ( !$index->exists() ) {
 			$this->output( "{$this->indent}Creating tracking index..." );
 			$index->create( array( 'number_of_shards' => 1,
-				'number_of_replicas' => 0, ), true );
+				'auto_expand_replicas' => '0-2', ), true );
 			$mapping = new \Elastica\Type\Mapping();
 			$mapping->setType( $index->getType( 'version' ) );
 			$mapping->setProperties( array(
@@ -117,7 +115,6 @@ class UpdateVersionIndex extends Maintenance {
 				'mapping_maj' => array( 'type' => 'long', 'include_in_all' => false ),
 				'mapping_min' => array( 'type' => 'long', 'include_in_all' => false ),
 				'shard_count' => array( 'type' => 'long', 'include_in_all' => false ),
-				'replica_count' => array( 'type' => 'long', 'include_in_all' => false ),
 			) );
 			$mapping->send();
 			$this->output( "done\n" );

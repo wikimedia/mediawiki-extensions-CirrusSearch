@@ -17,8 +17,6 @@ Add this to LocalSettings.php:
 Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:
  $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
-In production setups, you will very likely want to increase the number of replicas using
-$wgCirrusSearchReplicaCount.
 
 Now run this script to generate your elasticsearch index:
  php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/updateSearchIndexConfig.php
@@ -198,15 +196,6 @@ more experience with 1.0.  --Nik
  # Disable ability to shutdown nodes via REST API.
  ##
  action.disable_shutdown: true
-
-
-CirrusSearch
-
-You should change the number of replicas to at least one, two if you want protection from crashes
-during upgrades.  More replicas will help distribute queries across more nodes.  Having more
-replicas than nodes doesn't make sense and Elasticsearch will stay "yellow" if you do that.
-Anyway, you should add this to LocalSettings.php to change it:
- $wgCirrusSearchReplicaCount = array( 'content' => 2, 'general' => 2 );
 
 
 Testing

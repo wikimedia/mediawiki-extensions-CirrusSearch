@@ -573,9 +573,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					}
 					// If the upper range is all, expect the upper bound to be the number of nodes
 					if ( $upper === 'all' ) {
-						$upper = $nodes;
+						$upper = $nodes - 1;
 					}
-					$expectedReplicas =  min( max( $nodes, $lower ), $upper );
+					$expectedReplicas =  min( max( $nodes - 1, $lower ), $upper );
 					$expectedActive = $this->getShardCount() * ( 1 + $expectedReplicas );
 					if ( $each === 0 || $active === $expectedActive ) {
 						$this->output( $this->indent . "\t\tactive:$active/$expectedActive relocating:$relocating " .

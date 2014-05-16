@@ -824,19 +824,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function sendDocuments( $messagePrefix, $documents ) {
 		try {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
-			// if ( rand( 0, 9 ) < 3 ) {
-			// 	throw new \Elastica\Exception\InvalidException();
-			// }
-			wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.\n" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
 				$updateResult = $this->getPageType()->addDocuments( array( $document ) );
-				// if ( rand( 0, 9 ) < 3 ) {
-				// 	throw new \Elastica\Exception\InvalidException();
-				// }
-				wfDebugLog( 'CirrusSearch', 'Update completed in ' . $updateResult->getEngineTime() . ' (engine) millis' );
 			}
 		}
 	}

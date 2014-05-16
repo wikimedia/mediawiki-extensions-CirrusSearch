@@ -684,7 +684,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType();
+			$this->resultsType = new FullTextResultsType( true );
 		}
 		// Default null queries now so the rest of the method can assume it is not null.
 		if ( $this->query === null ) {

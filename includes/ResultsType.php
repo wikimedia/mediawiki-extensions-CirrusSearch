@@ -148,6 +148,12 @@ class TitleResultsType implements ResultsType {
 }
 
 class FullTextResultsType implements ResultsType {
+	private $showTextHighlighting;
+
+	public function __construct( $showTextHighlighting ) {
+		$this->showTextHighlighting = $showTextHighlighting;
+	}
+
 	public function getSourceFiltering() {
 		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
 	}
@@ -227,18 +233,23 @@ class FullTextResultsType implements ResultsType {
 			$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
 		}
 
-		return array(
+		$config =  array(
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => $this->addMatchedFields( array(
 				'title' => $entireValue,
-				'text' => $text,
-				'auxiliary_text' => $singleFragment,
-				'file_text' => $singleFragment,
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
 			) ),
 		);
+		if ( $this->showTextHighlighting ) {
+			$config[ 'fields' ] = array_merge( $config[ 'fields' ], array(
+				'text' => $text,
+				'auxiliary_text' => $singleFragment,
+				'file_text' => $singleFragment,
+			) );
+		}
+		return $config;
 	}
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,

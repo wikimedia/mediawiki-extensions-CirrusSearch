@@ -1,5 +1,6 @@
 <?php
 
+use CirrusSearch\FullTextResultsType;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Searcher;
 
@@ -68,7 +69,8 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		$user = RequestContext::getMain()->getUser();
+		$context = RequestContext::getMain();
+		$user = $context->getUser();
 		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces, $user );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
@@ -96,6 +98,13 @@ class CirrusSearch extends SearchEngine {
 				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
 			}
 		} else {
+			$request = $context->getRequest();
+			if ( $request && $request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
+				$this->showSuggestion = false;
+			}
+			if ( $request && $request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
+				$searcher->setResultsType( new FullTextResultsType( false ) );
+			}
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
 

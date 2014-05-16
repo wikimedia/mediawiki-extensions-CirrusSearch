@@ -96,6 +96,7 @@ class Result extends SearchResult {
 	}
 
 	private function pickTextSnippet( $highlights ) {
+		$mainSnippet = '';
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$mainSnippet = $highlights[ 'text' ][ 0 ];
 			if ( $this->containsMatches( $mainSnippet ) ) {

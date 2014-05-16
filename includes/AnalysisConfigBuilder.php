@@ -228,6 +228,66 @@ class AnalysisConfigBuilder {
 			// In English text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'it':
+			$config[ 'filter' ][ 'italian_elision' ] = array(
+				'type' => 'elision',
+				'articles' => array(
+					'c',
+					'l',
+					'all',
+					'dall',
+					'dell',
+					'nell',
+					'sull',
+					'coll',
+					'pell',
+					'gl',
+					'agl',
+					'dagl',
+					'degl',
+					'negl',
+					'sugl',
+					'un',
+					'm',
+					't',
+					's',
+					'v',
+					'd'
+				),
+			);
+			$config[ 'filter' ][ 'italian_stop' ] = array(
+				'type' => 'stop',
+				'stopwords' => '_italian_',
+			);
+			$config[ 'filter' ][ 'light_italian_stemmer' ] = array(
+				'type' => 'stemmer',
+				'language' => 'light_italian',
+			);
+			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
+			$config[ 'analyzer' ][ 'text' ] = array(
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+			);
+			$filters = array();
+			$filters[] = 'standard';
+			$filters[] = 'italian_elision';
+			$filters[] = 'aggressive_splitting';
+			$filters[] = 'lowercase';
+			$filters[] = 'italian_stop';
+			$filters[] = 'light_italian_stemmer';
+			$filters[] = 'asciifolding';
+			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
+
+			// Add asciifolding to the the plain analyzer as well (but not plain_search)
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding to the prefix queries and incategory filters
+			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+
+			// In Italian text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'tr':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;

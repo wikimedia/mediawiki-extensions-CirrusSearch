@@ -102,9 +102,17 @@ class CirrusSearch extends SearchEngine {
 			if ( $request && $request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
 				$this->showSuggestion = false;
 			}
-			if ( $request && $request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
-				$searcher->setResultsType( new FullTextResultsType( false ) );
+			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
+			if ( $request && $request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_TITLE;
 			}
+			if ( $request && $request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLE;
+			}
+			if ( $request && $request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
+			}
+			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig ) );
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
 

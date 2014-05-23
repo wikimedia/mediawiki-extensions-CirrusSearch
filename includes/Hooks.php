@@ -62,11 +62,11 @@ class Hooks {
 	 * @param WebRequest $request
 	 */
 	private static function initializeForUser( $user, $request ) {
-		global $wgCirrusSearchEnablePref;
-		global $wgSearchType;
-		global $wgSearchTypeAlternatives;
-		global $wgHooks;
-		global $wgCirrusSearchUseExperimentalHighlighter;
+		global $wgSearchType, $wgSearchTypeAlternatives, $wgHooks,
+			$wgCirrusSearchUseExperimentalHighlighter,
+			$wgCirrusSearchEnablePref,
+			$wgCirrusSearchPhraseRescoreWindowSize,
+			$wgCirrusSearchFunctionRescoreWindowSize;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -83,10 +83,20 @@ class Hooks {
 			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatchBefore';
 		}
 
-		// Engage the experimental highlighter if a url parameter requests it
-		if ( !$wgCirrusSearchUseExperimentalHighlighter && $request &&
-				$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
-			$wgCirrusSearchUseExperimentalHighlighter = true;
+		if ( $request ) {
+			// Engage the experimental highlighter if a url parameter requests it
+			if ( !$wgCirrusSearchUseExperimentalHighlighter &&
+					$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
+				$wgCirrusSearchUseExperimentalHighlighter = true;
+			}
+			$phraseRescoreWindowOverride = $request->getVal( 'cirrusPhraseWindow' );
+			if ( $phraseRescoreWindowOverride !== null && is_numeric( $phraseRescoreWindowOverride ) ) {
+				$wgCirrusSearchPhraseRescoreWindowSize = $phraseRescoreWindowOverride;
+			}
+			$functionRescoreWindowOverride = $request->getVal( 'cirrusFunctionWindow' );
+			if ( $functionRescoreWindowOverride !== null && is_numeric( $functionRescoreWindowOverride ) ) {
+				$wgCirrusSearchFunctionRescoreWindowSize = $functionRescoreWindowOverride;
+			}
 		}
 	}
 

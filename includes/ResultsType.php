@@ -147,11 +147,23 @@ class TitleResultsType implements ResultsType {
 	}
 }
 
+/**
+ * Result type for a full text search.
+ */
 class FullTextResultsType implements ResultsType {
-	private $showTextHighlighting;
+	const HIGHLIGHT_NONE = 0;
+	const HIGHLIGHT_TITLE = 1;
+	const HIGHLIGHT_ALT_TITLE = 2;
+	const HIGHLIGHT_SNIPPET = 4;
+	const HIGHLIGHT_ALL = 7;
 
-	public function __construct( $showTextHighlighting ) {
-		$this->showTextHighlighting = $showTextHighlighting;
+	private $highlightingConfig;
+
+	/**
+	 * @param bitmask $highlightingConfig see HIGHLIGHT_* consts
+	 */
+	public function __construct( $highlightingConfig ) {
+		$this->highlightingConfig = $highlightingConfig;
 	}
 
 	public function getSourceFiltering() {
@@ -236,19 +248,25 @@ class FullTextResultsType implements ResultsType {
 		$config =  array(
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
-			'fields' => $this->addMatchedFields( array(
-				'title' => $entireValue,
+			'fields' => array(),
+		);
+		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_TITLE ) {
+			$config[ 'fields' ][ 'title' ] = $entireValue;
+		}
+		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_ALT_TITLE ) {
+			$config[ 'fields' ] = array_merge( $config[ 'fields' ], array(
 				'redirect.title' => $entireValueInListField,
 				'heading' => $entireValueInListField,
-			) ),
-		);
-		if ( $this->showTextHighlighting ) {
+			) );
+		}
+		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_SNIPPET ) {
 			$config[ 'fields' ] = array_merge( $config[ 'fields' ], array(
 				'text' => $text,
 				'auxiliary_text' => $singleFragment,
 				'file_text' => $singleFragment,
 			) );
 		}
+		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );
 		return $config;
 	}
 

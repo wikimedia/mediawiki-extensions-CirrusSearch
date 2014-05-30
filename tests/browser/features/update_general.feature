@@ -7,6 +7,14 @@ Feature: Search backend updates
     When I delete DeleteMe
     Then within 20 seconds searching for DeleteMe yields none as the first result
 
+  Scenario: Deleted redirects are removed from the index
+    Given a page named DeleteMeRedirect exists with contents #REDIRECT [[DeleteMe]]
+    And a page named DeleteMe exists
+    And I am at a random page
+    Then within 20 seconds searching for DeleteMeRedirect yields DeleteMe as the first result
+    When I delete DeleteMeRedirect
+    Then within 20 seconds searching for DeleteMeRedirect yields none as the first result
+
   Scenario: Altered pages are updated in the index
     Given a page named ChangeMe exists with contents foo
     When I edit ChangeMe to add superduperchangedme

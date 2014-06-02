@@ -302,6 +302,15 @@ $wgCirrusSearchRefreshInterval = 1;
 // friends.
 $wgCirrusSearchBannedPlugins = array();
 
+// Number of times to instruct Elasticsearch to retry updates that fail on
+// version conflicts.  While we do have a version for each page in mediawiki
+// (the revision timestamp) using it for versioning is a bit tricky because
+// Cirrus uses two pass indexing the first time and sometimes needs to force
+// updates.  This is simpler but theoretically will put more load on
+// Elasticsearch.  At this point, though, we believe the load not to be
+// substantial.
+$wgCirrusSearchUpdateConflictRetryCount = 5;
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**

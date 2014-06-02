@@ -241,6 +241,8 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	private function buildDocumentsForPages( $pages, $flags ) {
+		global $wgCirrusSearchUpdateConflictRetryCount;
+
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
@@ -276,6 +278,7 @@ class Updater extends ElasticsearchIntermediary {
 			// are objects in both doc and the indexed source.  We're ok with this because all of our fields are either
 			// regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
+			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
 			$documents[] = $doc;
 			wfProfileOut( __METHOD__ . '-basic' );
 

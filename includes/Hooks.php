@@ -2,8 +2,9 @@
 
 namespace CirrusSearch;
 use \ApiMain;
-use \CirrusSearch;
 use \BetaFeatures;
+use \CirrusSearch;
+use \DeferredUpdates;
 use \JobQueueGroup;
 use \LinksUpdate;
 use \OutputPage;
@@ -101,7 +102,35 @@ class Hooks {
 	}
 
 	/**
-	 * Hook to call when an article is deleted
+	 * Hook to call before an article is deleted
+	 * @param WikiPage $page The page we're deleting
+	 * @return bool
+	 */
+	public static function onArticleDelete( $page ) {
+		// We use this to pick up redirects so we can update their targets.
+		// Can't re-use ArticleDeleteComplete because the page info's
+		// already gone
+		//
+		// If we abort or fail deletion it's no big deal because this will
+		// end up being a no-op when it executes.
+		$target = $page->getRedirectTarget();
+		if ( $target ) {
+			// DeferredUpdate so we don't end up racing our own page deletion
+			DeferredUpdates::addCallableUpdate( function() use ( $target ) {
+				JobQueueGroup::singleton()->push(
+					new LinksUpdateJob( $target, array(
+						'addedLinks' => array(),
+						'removedLinks' => array(),
+					) )
+				);
+			} );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Hook to call after an article is deleted
 	 * @param WikiPage $page The page we're deleting
 	 * @param User $user The user deleting the page
 	 * @param string $reason Reason the page is being deleted

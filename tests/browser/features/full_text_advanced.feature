@@ -15,9 +15,6 @@ Feature: Full text search advanced features
     | Content pages          | catapult     | Catapult         |
     | Content pages          | smoosh       | none             |
     | Content pages          | nothingasdf  | none             |
-    | Help and Project pages | catapult     | none             |
-    | Help and Project pages | smoosh       | Help:Smoosh      |
-    | Help and Project pages | nothingasdf  | none             |
     | Multimedia             | catapult     | none             |
     | Multimedia             | smoosh       | none             |
     | Multimedia             | nothingasdf  | File:Nothingasdf |

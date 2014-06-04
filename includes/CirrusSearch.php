@@ -167,7 +167,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return array
 	 */
 	public function getValidSorts() {
-		return array( 'relevance', 'title_asc', 'title_desc' );
+		return array( 'relevance', 'title_asc', 'title_desc', 'random' );
 	}
 
 	/**

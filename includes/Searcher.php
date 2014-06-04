@@ -246,6 +246,20 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Perform a random search
+	 * @param int $seed Seed for the random number generator
+	 * @param Status(mixed) status containing results defined by resultsType on success
+	 */
+	public function randomSearch( $seed ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
+		$this->setResultsType( new TitleResultsType() );
+		$this->sort = 'random';
+
+		return $this->search( 'random', $seed );
+	}
+
+	/**
 	 * @param string $suggestPrefix prefix to be prepended to suggestions
 	 */
 	public function addSuggestPrefix( $suggestPrefix ) {
@@ -785,6 +799,11 @@ class Searcher extends ElasticsearchIntermediary {
 				'order' => 'desc',
 				'missing' => '_last',
 			) ) );
+			break;
+		case 'random':
+			$funcScore = new \Elastica\Query\FunctionScore();
+			$funcScore->setRandomScore( $for );
+			$query->setQuery( $funcScore );
 			break;
 		default:
 			wfLogWarning( "Invalid sort type:  $this->sort" );

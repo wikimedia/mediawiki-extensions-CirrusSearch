@@ -38,7 +38,36 @@ interface ResultsType {
 		$result, $searchContainedSyntax );
 }
 
+/**
+ * Returns titles and makes no effort to figure out how the titles matched.
+ */
 class TitleResultsType implements ResultsType {
+	public function getSourceFiltering() {
+		return array( 'namespace', 'title' );
+	}
+
+	public function getFields() {
+		return false;
+	}
+
+	public function getHighlightingConfiguration() {
+		return false;
+	}
+
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
+		$resultSet, $searchContainedSyntax ) {
+		$results = array();
+		foreach( $resultSet->getResults() as $r ) {
+			$results[] = Title::makeTitle( $r->namespace, $r->title );
+		}
+		return $results;
+	}
+}
+
+/**
+ * Returns titles categorized based on how they matched - redirect or name.
+ */
+class FancyTitleResultsType extends TitleResultsType {
 	private $matchedAnalyzer;
 
 	/**
@@ -48,14 +77,6 @@ class TitleResultsType implements ResultsType {
 	 */
 	public function __construct( $matchedAnalyzer ) {
 		$this->matchedAnalyzer = $matchedAnalyzer;
-	}
-
-	public function getSourceFiltering() {
-		return array( 'namespace', 'title' );
-	}
-
-	public function getFields() {
-		return false;
 	}
 
 	public function getHighlightingConfiguration() {

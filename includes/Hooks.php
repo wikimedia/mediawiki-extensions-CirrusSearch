@@ -298,7 +298,7 @@ class Hooks {
 	public static function prefixSearch( $namespace, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
 		$searcher = new Searcher( 0, $limit, $namespace, $user );
-		$searcher->setResultsType( new TitleResultsType( 'prefix' ) );
+		$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -338,7 +338,7 @@ class Hooks {
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
 		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
-		$searcher->setResultsType( new TitleResultsType( 'near_match' ) );
+		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -374,6 +374,35 @@ class Hooks {
 				'removedLinks' => array(), 'prioritize' => true ) ) :
 			new DeletePagesJob( $title, array( 'id' => $oldid ) )
 		);
+
+		return true;
+	}
+
+	/**
+	 * Get a random page
+	 *
+	 * @param string $randstr A random seed given from MediaWiki.
+	 * @param bool $isRedir Are we wanting a random redirect?
+	 * @param array(int) $namespaces An array of namespaces to pick a page from
+	 * @param array $extra Extra query params for the database-backed random. Unused.
+	 * @param Title $title The title we want to return, if any
+	 * @return bool False if we've set $title, true otherwise
+	 */
+	public static function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ) {
+		// We don't index redirects so don't try to find one.
+		if ( !$isRedir ) {
+			// Remove decimal from seed, we want an int
+			$seed = (int)str_replace( '.', '', $randstr );
+
+			$searcher = new Searcher( 0, 1, $namespaces,
+				RequestContext::getMain()->getUser() );
+			$randSearch = $searcher->randomSearch( $seed );
+			if ( $randSearch->isOk() ) {
+				$results = $randSearch->getValue();
+				$title = $results[ 0 ];
+				return false;
+			}
+		}
 
 		return true;
 	}

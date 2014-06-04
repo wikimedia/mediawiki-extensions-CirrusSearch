@@ -62,11 +62,8 @@ class Result extends SearchResult {
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
 		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
-			$nstext = '';
-			if ( $this->getTitle()->getNamespace() !== 0 ) {
-				// We have to replace the _s because getNsText spits them out....
-				$nstext = str_replace( '_', ' ', $this->getTitle()->getNsText() ) . ':';
-			}
+			$nstext = $this->getTitle()->getNamespace() === 0 ? '' :
+				Util::getNamespaceText( $this->getTitle() ) . ':';
 			$this->titleSnippet = $nstext . $this->escapeHighlightedText( $highlights[ 'title' ][ 0 ] );
 		} elseif ( $this->mTitle->isExternal() ) {
 			// Interwiki searches are weird. They won't have title highlights by design, but

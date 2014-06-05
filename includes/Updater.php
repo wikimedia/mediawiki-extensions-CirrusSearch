@@ -174,15 +174,18 @@ class Updater extends ElasticsearchIntermediary {
 
 		OtherIndexJob::queueIfRequired( $this->pagesToTitles( $pages ), true );
 
-		$allDocuments = array_fill_keys( Connection::getAllIndexTypes(), array() );
+		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			$allDocuments[$suffix][] = $document;
+			$allData[$suffix][] = $this->docToScript( $document );
+			// To quickly switch back to sending doc as upsert instead of script, remove the line above
+			// and switch to the one below:
+			// $allData[$suffix][] = $document;
 		}
 		$count = 0;
-		foreach( $allDocuments as $indexType => $documents ) {
-			$this->sendDocuments( $indexType, $documents, $shardTimeout );
-			$count += count( $documents );
+		foreach( $allData as $indexType => $data ) {
+			$this->sendData( $indexType, $data, $shardTimeout );
+			$count += count( $data );
 		}
 
 		return $count;
@@ -212,16 +215,16 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexType type of index to which to send $documents
-	 * @param array $documents documents to send
+	 * @param string $indexType type of index to which to send $data
+	 * @param array(\Elastica\Script or \Elastica\Document) $data documents to send
 	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
 	 * @return bool True if nothing happened or we successfully indexed, false on failure
 	 */
-	private function sendDocuments( $indexType, $documents, $shardTimeout ) {
-		$documentCount = count( $documents );
+	private function sendData( $indexType, $data, $shardTimeout ) {
+		$documentCount = count( $data );
 		if ( $documentCount === 0 ) {
 			return true;
 		}
@@ -237,8 +240,7 @@ class Updater extends ElasticsearchIntermediary {
 				$bulk->setShardTimeout( $shardTimeout );
 			}
 			$bulk->setType( $pageType );
-			// addDocuments (notice plural) is the bulk api
-			$bulk->addDocuments( $documents );
+			$bulk->addData( $data, 'update' );
 			$bulk->send();
 		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
 			if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e,
@@ -253,9 +255,9 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		} else {
 			$this->failure( $exception );
-			$documentIds = array_map( function( $doc ) {
-				return $doc->getId();
-			}, $documents );
+			$documentIds = array_map( function( $d ) {
+				return $d->getId();
+			}, $data );
 			wfDebugLog( 'CirrusSearchChangeFailed', 'Update for doc ids: ' .
 				implode( ',', $documentIds ) . '; error message was: ' . $exception->getMessage() );
 			return false;
@@ -291,7 +293,6 @@ class Updater extends ElasticsearchIntermediary {
 			) );
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
 			// addLocalSiteToOtherIndex and removeLocalSiteFromOtherIndex.
-			$doc->setOpType( 'update' );
 			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
 			// documents or any documents that we've been explicitly told it is ok to index when they aren't full.
 			// This is typically just done during the first phase of the initial index build.
@@ -300,7 +301,6 @@ class Updater extends ElasticsearchIntermediary {
 			// regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
-			$documents[] = $doc;
 			wfProfileOut( __METHOD__ . '-basic' );
 
 			if ( !$skipParse ) {
@@ -332,11 +332,43 @@ class Updater extends ElasticsearchIntermediary {
 			if ( !$skipLinks ) {
 				wfRunHooks( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
 			}
+
+			$documents[] = $doc;
 		}
 
 		wfRunHooks( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
 
 		return $documents;
+	}
+
+	private function docToScript( $doc ) {
+		$scriptText = <<<MVEL
+changed = false;
+
+MVEL;
+		$params = $doc->getParams();
+		foreach ( $doc->getData() as $key => $value ) {
+			$scriptText .= <<<MVEL
+if ( ctx._source.$key != $key ) {
+	changed = true;
+	ctx._source.$key = $key;
+}
+
+MVEL;
+			$params[ $key ] = $value;
+		}
+		$scriptText .= <<<MVEL
+if ( !changed ) {
+	ctx.op = "none";
+}
+
+MVEL;
+		$script = new \Elastica\Script( $scriptText, $params );
+		if ( $doc->getDocAsUpsert() ) {
+			$script->setUpsert( $doc );
+		}
+
+		return $script;
 	}
 
 	/**

@@ -200,9 +200,15 @@ $wgCirrusSearchWeights = array(
 	'redirect' => 15.0,
 	'category' => 8.0,
 	'heading' => 5.0,
+	'opening_text' => 4.0,
 	'auxiliary_text' => 0.8,
 	'file_text' => 0.5,
 );
+
+// The method Cirrus will use to extract the opening section of the text.  Valid values are:
+// * first_heading - Wikipedia style.  Grab the text before the first heading (h1-h6) tag.
+// * none - Do not extract opening text and do not search it.
+$wgCirrusSearchBoostOpening = 'first_heading';
 
 // Weight of fields that match via "near_match" which is ordered.
 $wgCirrusSearchNearMatchWeight = 2;

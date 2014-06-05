@@ -114,6 +114,8 @@ class MappingConfigBuilder {
 						'analyzer' => 'plain',
 					) ) )
 				),
+				'opening_text' => $this->buildStringField(
+					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
 				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
 				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),

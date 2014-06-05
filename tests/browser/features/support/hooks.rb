@@ -396,8 +396,9 @@ Before("@relevancy") do
       And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
       And a page named Relevancytestviacategory exists with contents Some opening text. [[Category:Relevancytest]]
       And a page named Relevancytestviaheading exists with contents ==Relevancytest==
+      And a page named Relevancytestviaopening exists with contents @Relevancytestviaopening.txt
       And a page named Relevancytestviatext exists with contents Relevancytest
-      And a page named Relevancytestviaauxtext exists with contents [[Dummy|thumb|right|200px|Relevancytest]]
+      And a page named Relevancytestviaauxtext exists with contents @Relevancytestviaauxtext.txt
       And a page named Relevancytwo Wordtest exists
       And a page named Wordtest Relevancytwo exists
       And a page named Relevancynamespacetest exists

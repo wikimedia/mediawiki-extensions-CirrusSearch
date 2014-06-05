@@ -171,8 +171,9 @@ Feature: Full text search
     And Relevancytestviaredirect is the second search result
     And Relevancytestviacategory is the third search result
     And Relevancytestviaheading is the fourth search result
-    And Relevancytestviatext is the fifth search result
-    And Relevancytestviaauxtext is the sixth search result
+    And Relevancytestviaopening is the fifth search result
+    And Relevancytestviatext is the sixth search result
+    And Relevancytestviaauxtext is the seventh search result
 
   @relevancy
   Scenario: Two word searches are sorted in the order we expect

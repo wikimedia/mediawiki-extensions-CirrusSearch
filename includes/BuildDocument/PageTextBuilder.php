@@ -24,13 +24,35 @@ use \Sanitizer;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class PageTextBuilder extends ParseBuilder {
+	/**
+	 * @var array selectors to elements that are excluded entirely from search
+	 */
+	private $excludedElementSelectors = array(
+		'audio', 'video',       // "it looks like you don't have javascript enabled..." do not need to index
+		'sup.reference',        // The [1] for references
+		'.mw-cite-backlink',    // The ↑ next to refenences in the references section
+		'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
+		'h5', 'h6', 'h4',
+	);
+	/**
+	 * @var array selectors to elements that are considered auxiliary to article text for search
+	 */
+	private $auxiliaryElementSelectors = array(
+		'.thumbcaption',        // Thumbnail captions aren't really part of the text proper
+		'table',                // Neither are tables
+		'.rellink',             // Common style for "See also:".
+		'.dablink',             // Common style for calling out helpful links at the top of the article.
+		'.searchaux',           // New class users can use to mark stuff as auxiliary to searches.
+	);
+
 	public function __construct( $doc, $content, $parserOutput ) {
 		parent::__construct( $doc, null, $content, $parserOutput );
 	}
 
 	public function build() {
-		list( $text, $auxiliary ) = $this->buildTextToIndex();
+		list( $text, $opening, $auxiliary ) = $this->buildTextToIndex();
 		$this->doc->add( 'text', $text );
+		$this->doc->add( 'opening_text', $opening );
 		$this->doc->add( 'auxiliary_text', $auxiliary );
 		$this->doc->add( 'text_bytes', strlen( $text ) );
 		$this->doc->add( 'source_text', $this->buildSourceTextToIndex() );
@@ -48,7 +70,7 @@ class PageTextBuilder extends ParseBuilder {
 				return $this->formatWikitext( $this->parserOutput );
 			default:
 				$text = trim( Sanitizer::stripAllTags( $this->content->getTextForSearchIndex() ) );
-				return array( $text, array() );
+				return array( $text, null, array() );
 		}
 
 		return $text;
@@ -71,41 +93,44 @@ class PageTextBuilder extends ParseBuilder {
 	 * Get text to index from a ParserOutput assuming the content was wikitext.
 	 *
 	 * @param ParserOutput $parserOutput The parsed wikitext's parser output
-	 * @return formatted text from the provided parser output
+	 * @return array who's first entry is text and second is opening text, and third is an
+	 *  array of auxiliary text
 	 */
 	private function formatWikitext( ParserOutput $parserOutput ) {
+		global $wgCirrusSearchBoostOpening;
+
 		$parserOutput->setEditSectionTokens( false );
-		$formatter = new HtmlFormatter( $parserOutput->getText() );
+		$parserOutput->setTOCEnabled( false );
+		$text = $parserOutput->getText();
+		$opening = null;
+
+		switch ( $wgCirrusSearchBoostOpening ) {
+		case 'first_heading':
+			$opening = $this->extractHeadingBeforeFirstHeading( $text );
+		case 'none':
+			break;
+		default:
+			wfLogWarning( "Invalid value for \$wgCirrusSearchBoostOpening:  $wgCirrusSearchBoostOpening" );
+		}
+
+		$formatter = new HtmlFormatter( $text );
 
 		// Strip elements from the page that we never want in the search text.
-		$formatter->remove( array(
-			'audio', 'video',       // "it looks like you don't have javascript enabled..." do not need to index
-			'#toc',                 // Already indexed as part of the headings.  No need.
-			'sup.reference',        // The [1] for references
-			'.mw-cite-backlink',    // The ↑ next to refenences in the references section
-			'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
-			'h5', 'h6', 'h4',
-		) );
+		$formatter->remove( $this->excludedElementSelectors );
 		$formatter->filterContent();
 
 		// Strip elements from the page that are auxiliary text.  These will still be
 		// searched but matches will be ranked lower and non-auxiliary matches will be
 		// prefered in highlighting.
-		$formatter->remove( array(
-			'.thumbcaption',        // Thumbnail captions aren't really part of the text proper
-			'table',                // Neither are tables
-			'.rellink',             // Common style for "See also:".
-			'.dablink',             // Common style for calling out helpful links at the top of the article.
-			'.searchaux',           // New class users can use to mark stuff as auxiliary to searches.
-		) );
+		$formatter->remove( $this->auxiliaryElementSelectors );
 		$auxiliaryElements = $formatter->filterContent();
-		$text = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
 		$auxiliary = array();
 		foreach ( $auxiliaryElements as $auxiliaryElement ) {
 			$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
 		}
 
-		return array( $text, $auxiliary );
+		return array( $allText, $opening, $auxiliary );
 	}
 
 	/**
@@ -117,5 +142,34 @@ class PageTextBuilder extends ParseBuilder {
 			$paragraphSeparator = json_decode('"\u2029"');
 		}
 		return $paragraphSeparator;
+	}
+
+	private function extractHeadingBeforeFirstHeading( $text ) {
+		$matches = array();
+		if ( !preg_match( '/<h[123456]>/', $text, $matches, PREG_OFFSET_CAPTURE ) ) {
+			// There isn't a first heading so we interpret this as the article
+			// being entirely without heading.
+			return null;
+		}
+		$text = substr( $text, 0, $matches[ 0 ][ 1 ] );
+		if ( !$text ) {
+			// There isn't any text before the first heading so we declare there isn't
+			// a first heading.
+			return null;
+		}
+
+		$formatter = new HtmlFormatter( $text );
+		$formatter->remove( $this->excludedElementSelectors );
+		$formatter->remove( $this->auxiliaryElementSelectors );
+		$formatter->filterContent();
+		$text = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+
+		if ( !$text ) {
+			// There isn't any text after filtering before the first heading so we declare
+			// that there isn't a first heading.
+			return null;
+		}
+
+		return $text;
 	}
 }

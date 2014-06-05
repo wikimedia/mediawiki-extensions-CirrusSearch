@@ -200,6 +200,9 @@ end
 Then(/there are no errors reported$/) do
   on(SearchResultsPage).error_report_element.should_not exist
 end
+Then(/this error is reported: (.+)$/) do |expected_error|
+  on(SearchResultsPage).error_report_element.text.strip.should == expected_error.strip
+end
 Then(/^the title still exists$/) do
   on(ArticlePage).title_element.should exist
 end

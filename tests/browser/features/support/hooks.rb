@@ -445,3 +445,14 @@ Before("@special_random") do
   end
   $special_random = true
 end
+
+Before("@regex") do
+  if !$regex
+    steps %Q{
+      Given a page named RegexEscapedForwardSlash exists with contents a/b
+      And a page named RegexEscapedBackslash exists with contents a\\b
+      And a page named RegexEscapedDot exists with contents a.b
+    }
+  end
+  $regex = true
+end

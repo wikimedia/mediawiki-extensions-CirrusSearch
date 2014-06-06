@@ -311,6 +311,9 @@ $wgCirrusSearchBannedPlugins = array();
 // substantial.
 $wgCirrusSearchUpdateConflictRetryCount = 5;
 
+// Number of characters to include in article fragments.
+$wgCirrusSearchFragmentSize = 150;
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 /**

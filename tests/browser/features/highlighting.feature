@@ -19,8 +19,8 @@ Feature: Highlighting
     # Verify highlighting the presence of accent squashing
     | Africa test                | *África*                 | for *testing*                                    |
     # Verify highlighting on large pages.
-    | "discuss problems of social and cultural importance" | Rashidun Caliphate | the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of |
-    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of |
+    | "discuss problems of social and cultural importance" | Rashidun Caliphate | community centers as well where the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of Umar as many as four thousand |
+    | "discuss problems of social and cultural importance"~ | Rashidun Caliphate | community centers as well where the faithful gathered to *discuss* *problems* *of* *social* *and* *cultural* *importance*. During the caliphate of Umar as many as four thousand |
     # Auxiliary text
     | tallest alborz             | Rashidun Caliphate       | Mount Damavand, Iran's *tallest* mountain is located in *Alborz* mountain range. |
 
@@ -30,7 +30,7 @@ Feature: Highlighting
 
   Scenario: Found words are highlighted even if found by different analyzers
     When I search for "threatening the unity" community
-    Then Abu Bakr's succession, *threatening* *the* *unity* and stability of the new *community* and state. Apostasy had is the highlighted text of the first search result
+    Then Troubles emerged soon after Abu Bakr's succession, *threatening* *the* *unity* and stability of the new *community* and state. Apostasy had actually begun in the lifetime is the highlighted text of the first search result
 
   @headings
   Scenario: Found words are highlighted in headings
@@ -51,7 +51,7 @@ Feature: Highlighting
 
   Scenario: Words are not found in image captions unless there are no matches in the page
     When I search for The Rose Trellis Egg
-    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia is the highlighted text of the first search result
+    Then *The* *Rose* *Trellis* Faberge *Egg* is a jewelled enameled imperial Easter *egg* made in St. Petersburg, Russia under *the* supervision of *the* jeweler Peter Carl is the highlighted text of the first search result
 
   @headings
   Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase
@@ -96,9 +96,9 @@ Feature: Highlighting
 
   Scenario: Highlighted text prefers the beginning of the article
     When I search for Rashidun Caliphate
-    Then Template:History of the Arab States The *Rashidun* *Caliphate* (Template:lang-ar al-khilafat ar-Rāshidīyah) is the highlighted text of the first search result
+    Then Template:Infobox Former Country Template:History of the Arab States The *Rashidun* *Caliphate* (Template:lang-ar al-khilafat ar-Rāshidīyah), comprising the first is the highlighted text of the first search result
     When I search for caliphs
-    Then The first four *caliphs* are called the Rashidun, meaning the Rightly Guided *Caliphs*, because they are is the highlighted text of the first search result
+    Then collectively named the Ulema. The first four *caliphs* are called the Rashidun, meaning the Rightly Guided *Caliphs*, because they are believed to have followed is the highlighted text of the first search result
 
   @references
   Scenario: References don't appear in highlighted section titles

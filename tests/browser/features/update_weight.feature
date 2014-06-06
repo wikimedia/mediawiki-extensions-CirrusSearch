@@ -3,6 +3,9 @@ Feature: Page updates trigger appropriate weight updates in newly linked and unl
   # Note that these tests can be a bit flakey if you don't use Redis and checkDelay because they count using
   # Elasticsearch which delays all updates for around a second.  So if the jobs run too fast they won't work.
   # Redis and checkDelay fix this by forcing a delay.
+  Background:
+    Given I am at a random page
+
   Scenario: Pages weights are updated when new pages link to them
     Given a page named WeightedLink%{epoch} 1 exists
     And a page named WeightedLink%{epoch} 2/1 exists with contents [[WeightedLink%{epoch} 2]]

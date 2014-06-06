@@ -342,7 +342,7 @@ class ForceSearchIndex extends Maintenance {
 					// are totally possible, as well as fun stuff like redirect loops, we need to use
 					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 					// self redirects.  Great!
-					$page = $updater->traceRedirects( $page->getTitle() );
+					list( $page, ) = $updater->traceRedirects( $page->getTitle() );
 				}
 			}
 			$update = array(

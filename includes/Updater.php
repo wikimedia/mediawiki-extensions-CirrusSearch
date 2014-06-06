@@ -57,15 +57,27 @@ class Updater extends ElasticsearchIntermediary {
 	public function updateFromTitle( $title ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		$page = $this->traceRedirects( $title );
+		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
-			return (bool)$this->updatePages(
+			$success = (bool)$this->updatePages(
 				array( $page ),
 				$wgCirrusSearchUpdateShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout,
 				self::INDEX_EVERYTHING
 			);
+			if ( !$success ) {
+				return false;
+			}
 		}
+
+		if ( count( $redirects ) === 0 ) {
+			return true;
+		}
+		$redirectIds = array();
+		foreach ( $redirects as $redirect ) {
+			$redirectIds[] = $redirect->getId();
+		}
+		return $this->deletePages( array(), $redirectIds, $wgCirrusSearchClientSideUpdateTimeout );
 	}
 
 	/**
@@ -73,30 +85,34 @@ class Updater extends ElasticsearchIntermediary {
 	 * memory of titles updated and detects special pages.
 	 *
 	 * @param Title $title title to trace
-	 * @return WikiPage|null wikipage if the $title either isn't a redirect or resolves to
-	 *    an updateable page that hasn't been updated yet.  Null if the page has been
+	 * @return array(target, redirects)
+	 *    - target is WikiPage|null wikipage if the $title either isn't a redirect or resolves
+	 *    to an updateable page that hasn't been updated yet.  Null if the page has been
 	 *    updated, is a special page, or the redirects enter a loop.
+	 *    - redirects is an array of WikiPages, one per redirect in the chain.  If title isn't
+	 *    a redirect then this will be an empty array
 	 */
 	public function traceRedirects( $title ) {
 		// Loop through redirects until we get to the ultimate target
+		$redirects = array();
 		while ( true ) {
 			$titleText = $title->getFullText();
 			if ( in_array( $titleText, $this->updated ) ) {
 				// Already indexed this article in this process.  This is mostly useful
 				// to catch self redirects but has a storied history of catching strange
 				// behavior.
-				return null;
+				return array( null, $redirects );
 			}
 
 			// Never. Ever. Index. Negative. Namespaces.
 			if ( $title->getNamespace() < 0 ) {
-				return null;
+				return array( null, $redirects );
 			}
 
 			$page = WikiPage::factory( $title );
 			if ( !$page->exists() ) {
 				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );
-				return null;
+				return array( null, $redirects );
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
@@ -106,16 +122,17 @@ class Updater extends ElasticsearchIntermediary {
 			// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
 			$this->updated[] = $titleText;
 			if ( $content->isRedirect() ) {
+				$redirects[] = $page;
 				$target = $content->getUltimateRedirectTarget();
 				if ( $target->equals( $page->getTitle() ) ) {
 					// This doesn't warn about redirect loops longer than one but we'll catch those anyway.
 					wfDebugLog( 'CirrusSearch', "Title redirecting to itself. Skip indexing" );
-					return null;
+					return array( null, $redirects );
 				}
 				$title = $target;
 				continue;
 			} else {
-				return $page;
+				return array( $page, $redirects );
 			}
 		}
 	}
@@ -175,11 +192,12 @@ class Updater extends ElasticsearchIntermediary {
 	 * Delete pages from the elasticsearch index.  $titles and $ids must point to the
 	 * same pages and should point to them in the same order.
 	 *
-	 * @param $titles array(Title) of titles to delete
+	 * @param $titles array(Title) of titles to delete.  If empty then skipped other index
+	 *      maintenance is skipped.
 	 * @param $ids array(integer) of ids to delete
 	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
-	 * @return bool True if nothing happened or we deleted, false on failure
+	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
@@ -199,11 +217,12 @@ class Updater extends ElasticsearchIntermediary {
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
+	 * @return bool True if nothing happened or we successfully indexed, false on failure
 	 */
 	private function sendDocuments( $indexType, $documents, $shardTimeout ) {
 		$documentCount = count( $documents );
 		if ( $documentCount === 0 ) {
-			return;
+			return true;
 		}
 
 		$profiler = new ProfileSection( __METHOD__ );
@@ -230,6 +249,7 @@ class Updater extends ElasticsearchIntermediary {
 		}
 		if ( $exception === null ) {
 			$this->success();
+			return true;
 		} else {
 			$this->failure( $exception );
 			$documentIds = array_map( function( $doc ) {
@@ -237,6 +257,7 @@ class Updater extends ElasticsearchIntermediary {
 			}, $documents );
 			wfDebugLog( 'CirrusSearchChangeFailed', 'Update for doc ids: ' .
 				implode( ',', $documentIds ) . '; error message was: ' . $exception->getMessage() );
+			return false;
 		}
 	}
 

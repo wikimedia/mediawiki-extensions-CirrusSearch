@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Snævar"
+		]
+	},
+	"cirrussearch-desc": "Leit fyrir MediaWiki, knúin af Elasticsearch",
+	"cirrussearch-backend-error": "Við gátum ekki lokið leitinni þinni vegna tímabundinnar villu. Vinsamlegast reyndu aftur síðar.",
+	"cirrussearch-parse-error": "Fyrirspurnin skildist ekki. Vinsamlegast gerðu hana einfaldari. Fyrirspurnin hefur verið skráð til að bæta leitarkerfið.",
+	"cirrussearch-now-using": "Þessi wiki notar nýja leitarvél. ([[mw:Special:MyLanguage/Help:CirrusSearch|Læra meira]])",
+	"cirrussearch-pref-label": "Ný leit"
+}

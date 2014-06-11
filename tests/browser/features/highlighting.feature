@@ -154,3 +154,8 @@ Feature: Highlighting
     Given a page named Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong exists with contents #REDIRECT [[Main Page]]
     When I search for Joint Declaration of the Government of the United Kingdom of Great Britain and Northern Ireland and the Government of the People's Republic of China on the Question of Hong Kong
     Then *Joint* *Declaration* *of* *the* *Government* *of* *the* *United* *Kingdom* *of* *Great* *Britain* *and* *Northern* *Ireland* *and* *the* *Government* *of* *the* *People's* *Republic* *of* *China* *on* *the* *Question* *of* *Hong* *Kong* is the highlighted alttitle of the first search result
+
+  @category
+  Scenario: Category only matches just get a text summary without any highlighting
+    When I search for TemplateTagged
+    Then ffnonesenseword catapult pickles anotherword is the highlighted text of the first search result

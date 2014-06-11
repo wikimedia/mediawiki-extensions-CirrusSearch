@@ -1,5 +1,8 @@
 @clean @phantomjs
 Feature: Search backend updates that reference non-existant pages
+  Background:
+    Given I am at a random page
+
   @non_existant
   Scenario: Pages that link to non-existant pages still get their search index updated
     Given a page named IDontExist doesn't exist

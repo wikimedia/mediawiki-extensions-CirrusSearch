@@ -204,7 +204,8 @@ class FullTextResultsType implements ResultsType {
 	 * @return array of highlighting configuration
 	 */
 	public function getHighlightingConfiguration() {
-		global $wgCirrusSearchUseExperimentalHighlighter;
+		global $wgCirrusSearchUseExperimentalHighlighter,
+			$wgCirrusSearchFragmentSize;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
 			$entireValue = array(
@@ -222,7 +223,7 @@ class FullTextResultsType implements ResultsType {
 				'type' => 'experimental',
 				'number_of_fragments' => 1,
 				'fragmenter' => 'scan',
-				'fragment_size' => 100,
+				'fragment_size' => $wgCirrusSearchFragmentSize,
 				'options' => array(
 					'top_scoring' => true,
 					'boost_before' => array(
@@ -240,9 +241,6 @@ class FullTextResultsType implements ResultsType {
 					'max_fragments_scored' => 5000,
 				),
 			);
-			// If there isn't a match just return some of the the first few characters.
-			$text = $singleFragment;
-			$text[ 'no_match_size' ] = 100;
 		} else {
 			$entireValue = array(
 				'number_of_fragments' => 0,
@@ -257,14 +255,14 @@ class FullTextResultsType implements ResultsType {
 			);
 			$singleFragment = array(
 				'number_of_fragments' => 1, // Just one fragment
-				'fragment_size' => 100,
+				'fragment_size' => $wgCirrusSearchFragmentSize,
 				'type' => 'fvh',
 				'order' => 'score',
 			);
-			// If there isn't a match just return a match sized chunk from the beginning of the page.
-			$text = $singleFragment;
-			$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
 		}
+		// If there isn't a match just return a match sized chunk from the beginning of the page.
+		$text = $singleFragment;
+		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
 
 		$config =  array(
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),

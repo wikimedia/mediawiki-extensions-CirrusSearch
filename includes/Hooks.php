@@ -67,7 +67,8 @@ class Hooks {
 			$wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchEnablePref,
 			$wgCirrusSearchPhraseRescoreWindowSize,
-			$wgCirrusSearchFunctionRescoreWindowSize;
+			$wgCirrusSearchFunctionRescoreWindowSize,
+			$wgCirrusSearchFragmentSize;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -91,12 +92,19 @@ class Hooks {
 				$wgCirrusSearchUseExperimentalHighlighter = true;
 			}
 			$phraseRescoreWindowOverride = $request->getVal( 'cirrusPhraseWindow' );
-			if ( $phraseRescoreWindowOverride !== null && is_numeric( $phraseRescoreWindowOverride ) ) {
+			if ( $phraseRescoreWindowOverride !== null && is_numeric( $phraseRescoreWindowOverride ) &&
+					$phraseRescoreWindowOverride < 10000 ) {
 				$wgCirrusSearchPhraseRescoreWindowSize = $phraseRescoreWindowOverride;
 			}
 			$functionRescoreWindowOverride = $request->getVal( 'cirrusFunctionWindow' );
-			if ( $functionRescoreWindowOverride !== null && is_numeric( $functionRescoreWindowOverride ) ) {
+			if ( $functionRescoreWindowOverride !== null && is_numeric( $functionRescoreWindowOverride &&
+					$functionRescoreWindowOverride < 10000 ) ) {
 				$wgCirrusSearchFunctionRescoreWindowSize = $functionRescoreWindowOverride;
+			}
+			$fragmentSizeOverride = $request->getVal( 'cirrusFragmentSize' );
+			if ( $fragmentSizeOverride !== null && is_numeric( $fragmentSizeOverride ) &&
+					$fragmentSizeOverride < 1000 ) {
+				$wgCirrusSearchFragmentSize = $fragmentSizeOverride;
 			}
 		}
 	}

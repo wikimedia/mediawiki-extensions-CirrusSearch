@@ -549,11 +549,13 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( !$found->isOk() ) {
 			return $found;
 		}
+		// Found always comes back as an array but we just want the first one
 		$found = $found->getValue();
-		if ( $found === null ) {
+		if ( count( $found ) === 0 ) {
 			// If the page doesn't exist we can't find any articles like it
 			return Status::newGood( null );
 		}
+		$found = $found[ 0 ];
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
@@ -568,16 +570,18 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Get the page with $id.
+	 * Get the page with $id.  Note that the result is a status containing _all_ pages found.
+	 * It is possible to find more then one page if the page is in multiple indexes.
 	 * @param int $pageId page id
 	 * @param array(string) $fields fields to fetch
-	 * @return Status containing page data, null if not found, or an error if there was an error
+	 * @return Status containing pages found, containing an empty array if not found,
+	 *    or an error if there was an error
 	 */
 	public function get( $pageId, $fields ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
-		$searcher = $this;
 		$indexType = $this->pickIndexTypeFromNamespaces();
+		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
 			'doWork' => function() use ( $searcher, $pageId, $fields, $indexType, $indexBaseName ) {
@@ -587,11 +591,18 @@ class Searcher extends ElasticsearchIntermediary {
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
-					return $searcher->success( $pageType->getDocument( $pageId, array( 'fields' => $fields, ) ) );
+					// getDocument only works if we know the indexType
+					if ( $indexType ) {
+						return $searcher->success( array( $pageType->getDocument( $pageId, array( 'fields' => $fields, ) ) ) );
+					} else {
+						$query = new \Elastica\Query( new \Elastica\Query\Ids( null, array( $pageId ) ) );
+						$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
+						return $searcher->success( $resultSet->getResults() );
+					}
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the called to decide if that is and error.
-					return $searcher->success( null );
+					return $searcher->success( array() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );
 				}
@@ -602,7 +613,6 @@ class Searcher extends ElasticsearchIntermediary {
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
-
 		return $getWork->execute();
 	}
 

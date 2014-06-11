@@ -313,6 +313,8 @@ $wgCirrusSearchUpdateConflictRetryCount = 5;
 
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
+$sanity = $includes . 'Sanity/';
+
 /**
  * Classes
  */
@@ -336,6 +338,7 @@ $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsTyp
 $wgAutoloadClasses['CirrusSearch\InterwikiResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
+$wgAutoloadClasses['CirrusSearch\MaintenanceChunkBuilder'] = $includes . 'MaintenanceChunkBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MassIndexJob'] = $includes . 'MassIndexJob.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
@@ -345,6 +348,11 @@ $wgAutoloadClasses['CirrusSearch\ReindexForkController'] = $includes . 'ReindexF
 $wgAutoloadClasses['CirrusSearch\Result'] = $includes . 'Result.php';
 $wgAutoloadClasses['CirrusSearch\ResultSet'] = $includes . 'ResultSet.php';
 $wgAutoloadClasses['CirrusSearch\ResultsType'] = $includes . 'ResultsType.php';
+$wgAutoloadClasses['CirrusSearch\Sanity\Checker'] = $sanity . 'Checker.php';
+$wgAutoloadClasses['CirrusSearch\Sanity\NoopRemediator'] = $sanity . 'Remediator.php';
+$wgAutoloadClasses['CirrusSearch\Sanity\PrintingRemediator'] = $sanity . 'Remediator.php';
+$wgAutoloadClasses['CirrusSearch\Sanity\QueueingRemediator'] = $sanity . 'QueueingRemediator.php';
+$wgAutoloadClasses['CirrusSearch\Sanity\Remediator'] = $sanity . 'Remediator.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
 $wgAutoloadClasses['CirrusSearch\SearchEscaper'] = $includes . 'SearchEscaper.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';

@@ -967,18 +967,20 @@ class Searcher extends ElasticsearchIntermediary {
 		global $wgCirrusSearchWeights;
 		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
 		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
-
 		$fields = array();
 		$fields[] = "title${fieldSuffix}^${titleWeight}";
 		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+
 		// Only title and redirect support near_match so skip it for everything else
 		if ( $fieldSuffix !== '.near_match' ) {
 			$categoryWeight = $weight * $wgCirrusSearchWeights[ 'category' ];
 			$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
+			$openingTextWeight = $weight * $wgCirrusSearchWeights[ 'opening_text' ];
 			$auxiliaryTextWeight = $weight * $wgCirrusSearchWeights[ 'auxiliary_text' ];
 			$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
 			$fields[] = "category${fieldSuffix}^${categoryWeight}";
 			$fields[] = "heading${fieldSuffix}^${headingWeight}";
+			$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
 			$fields[] = "text${fieldSuffix}^${weight}";
 			$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";

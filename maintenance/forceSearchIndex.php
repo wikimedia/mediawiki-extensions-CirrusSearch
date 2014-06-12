@@ -86,6 +86,8 @@ class ForceSearchIndex extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgCirrusSearchMaintenanceTimeout;
 
+		$wiki = sprintf( "[%20s]", wfWikiId() );
+
 		// Set the timeout for maintenance actions
 		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
@@ -186,7 +188,7 @@ class ForceSearchIndex extends Maintenance {
 						$queueSize = $this->getUpdatesInQueue();
 						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
 							do {
-								$this->output( "Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
+								$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
 								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 								$queueSize = $this->getUpdatesInQueue();
 							} while ( $this->pauseForJobs < $queueSize );
@@ -219,7 +221,7 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$endingAt = $minUpdate->getTimestamp( TS_ISO_8601 );
 			}
-			$this->output( "$operationName $size pages ending at $endingAt at $rate/second\n" );
+			$this->output( "$wiki $operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
 		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
 
@@ -243,7 +245,7 @@ class ForceSearchIndex extends Maintenance {
 					// Less then that and we might be seeing lag from redis's counts.
 					$lastQueueSizeForOurJob = $queueSizeForOurJob;
 				}
-				$this->output( "$queueSizeForOurJob jobs left on the queue.\n" );
+				$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
@@ -422,26 +424,8 @@ class ForceSearchIndex extends Maintenance {
 		if ( $fromId === $this->toId ) {
 			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
 		}
-		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
-		$buildChunks = intval( $buildChunks );
-		if ( $fixedChunkSize ) {
-			$chunkSize = $buildChunks;
-		} else {
-			$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $buildChunks ) );
-		}
-		for ( $id = $fromId; $id < $this->toId; $id = $id + $chunkSize ) {
-			$chunkToId = min( $this->toId, $id + $chunkSize );
-			$this->output( $this->mSelf );
-			foreach ( $this->mOptions as $optName => $optVal ) {
-				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
-						$optName === 'toId' || $optName === 'buildChunks' ||
-						($optName === 'memory-limit' && $optVal === 'max')) {
-					continue;
-				}
-				$this->output( " --$optName $optVal" );
-			}
-			$this->output( " --fromId $id --toId $chunkToId\n" );
-		}
+		$builder = new MaintenanceChunkBuilder();
+		$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $fromId, $this->toId );
 	}
 
 	/**

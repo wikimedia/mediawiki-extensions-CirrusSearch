@@ -1,8 +1,8 @@
-#ruby=ruby-2.1.1
+#ruby=ruby-2.1.2
 #ruby-gemset=CirrusSearch
 
 source "https://rubygems.org"
 
+gem "mediawiki_api"
 gem "mediawiki_selenium", "~> 0.2.0"
 gem "parallel_tests"
-gem "mediawiki_api"

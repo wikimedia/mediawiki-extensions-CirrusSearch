@@ -198,7 +198,6 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 $wgCirrusSearchWeights = array(
 	'title' => 20.0,
 	'redirect' => 15.0,
-	'category' => 8.0,
 	'heading' => 5.0,
 	'auxiliary_text' => 0.8,
 	'file_text' => 0.5,

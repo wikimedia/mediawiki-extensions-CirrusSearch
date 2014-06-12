@@ -169,10 +169,9 @@ Feature: Full text search
     When I search for Relevancytest
     Then Relevancytest is the first search result
     And Relevancytestviaredirect is the second search result
-    And Relevancytestviacategory is the third search result
-    And Relevancytestviaheading is the fourth search result
-    And Relevancytestviatext is the fifth search result
-    And Relevancytestviaauxtext is the sixth search result
+    And Relevancytestviaheading is the third search result
+    And Relevancytestviatext is the fourth search result
+    And Relevancytestviaauxtext is the fifth search result
 
   @relevancy
   Scenario: Two word searches are sorted in the order we expect

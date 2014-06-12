@@ -33,7 +33,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.3';
+	const VERSION = '1.2';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -117,13 +117,7 @@ class MappingConfigBuilder {
 				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
 				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),
-				'category' => $this->buildStringField( MappingConfigBuilder::MINIMAL, array(
-					array(
-						'analyzer' => 'lowercase_keyword',
-						'norms' => array( 'enabled' => false ),
-						'index_options' => 'docs',
-					) )
-				),
+				'category' => $this->buildLowercaseKeywordField(),
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),

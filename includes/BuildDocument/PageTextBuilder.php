@@ -85,6 +85,7 @@ class PageTextBuilder extends ParseBuilder {
 			'.mw-cite-backlink',    // The ↑ next to refenences in the references section
 			'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
 			'h5', 'h6', 'h4',
+			'.catlinks',            // Categories are already indexed in their own field.
 		) );
 		$formatter->filterContent();
 
@@ -96,7 +97,7 @@ class PageTextBuilder extends ParseBuilder {
 			'table',                // Neither are tables
 			'.rellink',             // Common style for "See also:".
 			'.dablink',             // Common style for calling out helpful links at the top of the article.
-			'.searchaux',           // New class users can use to mark stuff as auxiliary to searches.
+			'.searchaux',			// New class users can use to mark stuff as auxiliary to searches.
 		) );
 		$auxiliaryElements = $formatter->filterContent();
 		$text = trim( Sanitizer::stripAllTags( $formatter->getText() ) );

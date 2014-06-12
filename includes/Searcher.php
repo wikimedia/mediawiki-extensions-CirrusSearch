@@ -387,6 +387,9 @@ class Searcher extends ElasticsearchIntermediary {
 						// Intentional fall through
 					case 'incategory':
 						$queryKey = str_replace( array( 'in', 'has' ), '', $key );
+						if ( $queryKey === 'category' ) {
+							$queryKey .= '.lowercase_keyword';
+						}
 						$queryValue = str_replace( '_', ' ', trim( $value, '"' ) );
 						$match = new \Elastica\Query\Match();
 						$match->setFieldQuery( $queryKey, $queryValue );
@@ -963,21 +966,23 @@ class Searcher extends ElasticsearchIntermediary {
 	public function buildFullTextSearchFields( $weight, $fieldSuffix ) {
 		global $wgCirrusSearchWeights;
 		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
-		$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
-		$auxiliaryTextWeight = $weight * $wgCirrusSearchWeights[ 'auxiliary_text' ];
-		$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
+		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
+
 		$fields = array();
 		$fields[] = "title${fieldSuffix}^${titleWeight}";
+		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
 		// Only title and redirect support near_match so skip it for everything else
 		if ( $fieldSuffix !== '.near_match' ) {
+			$categoryWeight = $weight * $wgCirrusSearchWeights[ 'category' ];
+			$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
+			$auxiliaryTextWeight = $weight * $wgCirrusSearchWeights[ 'auxiliary_text' ];
+			$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
+			$fields[] = "category${fieldSuffix}^${categoryWeight}";
 			$fields[] = "heading${fieldSuffix}^${headingWeight}";
 			$fields[] = "text${fieldSuffix}^${weight}";
 			$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
 		}
-
-		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
-		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
 
 		return $fields;
 	}

@@ -197,9 +197,10 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param $ids array(integer) of ids to delete
 	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
+	 * @param string $indexType index from which to delete
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
-	public function deletePages( $titles, $ids, $clientSideTimeout = null ) {
+	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		OtherIndexJob::queueIfRequired( $titles, false );
@@ -207,7 +208,7 @@ class Updater extends ElasticsearchIntermediary {
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
-		return $this->sendDeletes( $ids );
+		return $this->sendDeletes( $ids, $indexType );
 	}
 
 	/**
@@ -434,17 +435,24 @@ class Updater extends ElasticsearchIntermediary {
 	 * Send delete requests to Elasticsearch.
 	 *
 	 * @param array(int) $ids ids to delete from Elasticsearch
+	 * @param string|null $indexType index from which to delete.  null means all.
 	 * @return bool True if nothing happened or we deleted, false on failure
 	 */
-	private function sendDeletes( $ids ) {
+	private function sendDeletes( $ids, $indexType = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$idCount = count( $ids );
 		if ( $idCount !== 0 ) {
 			try {
-				foreach ( Connection::getAllIndexTypes() as $type ) {
-					$this->start( "deleting $idCount from $type" );
-					Connection::getPageType( wfWikiId(), $type )->deleteIds( $ids );
+				if ( $indexType === null ) {
+					foreach ( Connection::getAllIndexTypes() as $indexType ) {
+						$this->start( "deleting $idCount from $indexType" );
+						Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
+						$this->success();
+					}
+				} else {
+					$this->start( "deleting $idCount from $indexType" );
+					Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {

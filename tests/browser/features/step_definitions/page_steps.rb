@@ -24,6 +24,9 @@ When(/^I delete (?!the second)(.+)$/) do |title|
     result.body.should_not include '{"error":{"code"'
   end
 end
+When(/^I am at a random (.+) page$/) do |namespace|
+  visit(ArticlePage, using_params: {page_name: "Special:Random/#{namespace}"})
+end
 When(/^I edit (.+) to add (.+)$/) do |title, text|
   edit_page(title, text, true)
 end
@@ -55,6 +58,16 @@ end
 
 Then(/^there is a software version row for (.+)$/) do |name|
   on(SpecialVersion).software_table_row(name).exists?
+end
+Then(/^I am on a page titled (.*)$/) do |title|
+  on(ArticlePage).title.should == title
+end
+Then(/^I am on a page in the (.*) namespace$/) do |namespace|
+  if namespace == 'main' then
+    on(ArticlePage).title.index(":").should == nil
+  else
+    on(ArticlePage).title.index("#{namespace}:").should_not == nil
+  end
 end
 
 def edit_page(title, text, add)

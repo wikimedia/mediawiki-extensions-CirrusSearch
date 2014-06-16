@@ -152,6 +152,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $escaper;
 
 	/**
+	 * @var boolean limit the search to the local wiki.  Defaults to false.
+	 */
+	private $limitSearchToLocalWiki = false;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -184,6 +189,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setSort( $sort ) {
 		$this->sort = $sort;
+	}
+
+	/**
+	 * Should this search limit results to the local wiki?  If not called the default is false.
+	 * @param boolean $limitSearchToLocalWiki should the results be limited?
+	 */
+	public function limitSearchToLocalWiki( $limitSearchToLocalWiki ) {
+		$this->limitSearchToLocalWiki = $limitSearchToLocalWiki;
 	}
 
 	/**
@@ -814,8 +827,10 @@ class Searcher extends ElasticsearchIntermediary {
 			) ) );
 			break;
 		case 'random':
+			// Random scoring is funky - you have to wrap the query in a FunctionScore query.
 			$funcScore = new \Elastica\Query\FunctionScore();
 			$funcScore->setRandomScore( $for );
+			$funcScore->setQuery( $this->query );
 			$query->setQuery( $funcScore );
 			break;
 		default:
@@ -1015,6 +1030,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return array(string)
 	 */
 	protected function getAndFilterExtraIndexes() {
+		if ( $this->limitSearchToLocalWiki ) {
+			return array();
+		}
 		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
 		if ( $extraIndexes ) {
 			$this->notFilters[] = new \Elastica\Filter\Term(

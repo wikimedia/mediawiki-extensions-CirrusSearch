@@ -435,3 +435,13 @@ Before("@js_and_css") do
   end
   $js_and_css = true
 end
+
+Before("@special_random") do
+  if !$special_random
+    steps %Q{
+      Given a page named User:Random Test exists
+      And a page named User_talk:Random Test exists
+    }
+  end
+  $special_random = true
+end

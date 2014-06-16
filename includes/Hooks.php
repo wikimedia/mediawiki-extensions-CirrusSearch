@@ -404,6 +404,7 @@ class Hooks {
 
 			$searcher = new Searcher( 0, 1, $namespaces,
 				RequestContext::getMain()->getUser() );
+			$searcher->limitSearchToLocalWiki( true );
 			$randSearch = $searcher->randomSearch( $seed );
 			if ( $randSearch->isOk() ) {
 				$results = $randSearch->getValue();

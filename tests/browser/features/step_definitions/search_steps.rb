@@ -100,9 +100,6 @@ end
 Then(/^I should be offered to search for (.+)$/) do |term|
   on(SearchPage).search_special.should == "containing...\n" + term
 end
-Then(/^I am on a page titled (.*)$/) do |title|
-  on(ArticlePage).title.should == title
-end
 Then(/^there is a search result$/) do
   on(SearchResultsPage).first_result_element.should exist
 end

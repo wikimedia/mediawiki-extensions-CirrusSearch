@@ -37,6 +37,11 @@ Feature: Highlighting
     When I search for "i am a heading"
     Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
 
+  @headings
+  Scenario: References are not included in headings
+    When I search for "Reference in heading"
+    Then *Reference* *in* *heading* is the highlighted alttitle of the first search result
+
   Scenario: Found words are highlighted in headings even in large documents
     When I search for "Succession of Umar"
     Then *Succession* *of* *Umar* is the highlighted alttitle of the first search result

@@ -72,6 +72,7 @@ Before("@headings") do
       Given a page named HasHeadings exists with contents @has_headings.txt
       And a page named HasReferencesInText exists with contents References [[Category:HeadingsTest]]
       And a page named HasHeadingsWithHtmlComment exists with contents @has_headings_with_html_comment.txt
+      And a page named HasHeadingsWithReference exists with contents @has_headings_with_reference.txt
     }
     $headings = true
   end

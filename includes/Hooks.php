@@ -366,22 +366,24 @@ class Hooks {
 	}
 
 	/**
-	 * When we've moved a Title from A to B, update A as appropriate.
-	 * We already update B because of the implicit edit.
+	 * When we've moved a Title from A to B.
 	 * @param Title $title The old title
-	 * @param Title $newtitle The new title
+	 * @param Title $newTitle The new title
 	 * @param User $user User who made the move
-	 * @param int $oldid The page id of the old page.
+	 * @param int $oldId The page id of the old page.
 	 * @return bool
 	 */
-	public static function onTitleMoveComplete( Title &$title, Title &$newtitle, &$user, $oldid ) {
-		// If the page exists, update it, it's probably a redirect now.
-		// If not, it was deleted when moved, so make sure to delete it.
-		JobQueueGroup::singleton()->push( $title->exists() ?
-			new LinksUpdateJob( $title, array( 'addedLinks' => array(),
-				'removedLinks' => array(), 'prioritize' => true ) ) :
-			new DeletePagesJob( $title, array( 'id' => $oldid ) )
-		);
+	public static function onTitleMoveComplete( Title &$title, Title &$newTitle, &$user, $oldId ) {
+		// When a page is moved the update and delete hooks are good enough to catch
+		// almost everything.  The only thing they miss is if a page moves from one
+		// index to another.  That only happens if it switches namespace.
+		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
+			$oldIndexType = Connection::getIndexSuffixForNamespace( $title->getNamespace() );
+			JobQueueGroup::singleton()->push( new DeletePagesJob( $title, array(
+				'indexType' => $oldIndexType,
+				'id' => $oldId
+			) ) );
+		}
 
 		return true;
 	}

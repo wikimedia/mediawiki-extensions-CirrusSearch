@@ -43,9 +43,9 @@ interface Remediator {
 	/**
 	 * An existant page is in more then one index.
 	 * @param WikiPage $page page in too many indexes
-	 * @param array(\Elastica\Result) all results
+	 * @param string $indexType index type that the page is in but shouldn't be in
 	 */
-	public function pageInTooManyIndexes( $page, $fromIndex );
+	public function pageInWrongIndex( $page, $indexType );
 }
 
 /**
@@ -55,7 +55,7 @@ class NoopRemediator implements Remediator {
 	public function redirectInIndex( $page ) {}
 	public function pageNotInIndex( $page ) {}
 	public function ghostPageInIndex( $pageId, $title ) {}
-	public function pageInTooManyIndexes( $page, $fromIndex ) {}
+	public function pageInWrongIndex( $page, $indexType ) {}
 }
 
 /**
@@ -84,9 +84,9 @@ class PrintingRemediator implements Remediator {
 		$this->log( $pageId, $title, 'Deleted page in index' );
 		$this->next->ghostPageInIndex( $pageId, $title );
 	}
-	public function pageInTooManyIndexes( $page, $fromIndex ) {
-		$this->log( $page->getId(), $page->getTitle(), 'Page in more then one index' );
-		$this->next->pageInTooManyIndexes( $page, $fromIndex );
+	public function pageInWrongIndex( $page, $indexType ) {
+		$this->log( $page->getId(), $page->getTitle(), "Page in wrong index: $indexType" );
+		$this->next->pageInWrongIndex( $page, $indexType );
 	}
 	private function log( $pageId, $title, $message ) {
 		printf("%30s %10d %s\n", $message, $pageId, $title );

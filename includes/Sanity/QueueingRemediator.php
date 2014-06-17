@@ -37,11 +37,11 @@ class QueueingRemediator implements Remediator {
 			new DeletePagesJob( $title, array( 'id' => $pageId ) )
 		);
 	}
-	public function pageInTooManyIndexes( $page, $fromIndex ) {
-		// We need to run a delete then a reinsert to fix this so we do the delete in
-		// process and queue the links update for the reinsert.
-		$delete = new DeletePagesJob( $page->getTitle(), array( 'id' => $page->getId() ) );
-		$delete->run();
+	public function pageInWrongIndex( $page, $wrongIndex ) {
+		JobQueueGroup::singleton()->push( new DeletePagesJob( $page->getTitle(), array(
+			'indexType' => $wrongIndex,
+			'id' => $page->getId()
+		) ) );
 		$this->pushLinksUpdateJob( $page );
 	}
 

@@ -3,7 +3,8 @@
 namespace CirrusSearch;
 
 /**
- * Job wrapper around Updater::deletePages.  Used by CirrusSearch.php.
+ * Job wrapper around Updater::deletePages.  If indexType parameter is
+ * specified then only deletes from that type of index.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +35,8 @@ class DeletePagesJob extends Job {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 
 		$updater = new Updater();
-		return $updater->deletePages( array( $this->title ),
-			array( $this->params[ 'id' ] ), $wgCirrusSearchClientSideUpdateTimeout );
+		$indexType = isset( $this->params[ 'indexType' ] ) ? $this->params[ 'indexType' ] : null;
+		return $updater->deletePages( array( $this->title ), array( $this->params[ 'id' ] ),
+			$wgCirrusSearchClientSideUpdateTimeout, $indexType );
 	}
 }

@@ -41,6 +41,7 @@ Feature: Search backend updates
     When I search for intitle:RevDelTest current revision
     Then RevDelTest is the first search result
 
+  @Move
   Scenario: Moved pages that leave a redirect are updated in the index
     Given I am logged in
     And a page named Move%{epoch} From1 exists with contents move me
@@ -49,6 +50,7 @@ Feature: Search backend updates
     And within 20 seconds searching for Move%{epoch} From1 yields Move%{epoch} To1 as the first result
     And within 20 seconds searching for Move%{epoch} To1 yields Move%{epoch} To1 as the first result
 
+  @Move
   Scenario: Moved pages that leave a redirect are updated in the index
     Given I am logged in
     And a page named Move%{epoch} From2 exists with contents move me
@@ -56,3 +58,21 @@ Feature: Search backend updates
     When I move Move%{epoch} From2 to Move%{epoch} To2 and do not leave a redirect
     Then within 20 seconds searching for Move%{epoch} From2 yields none as the first result
     And within 20 seconds searching for Move%{epoch} To2 yields Move%{epoch} To2 as the first result
+
+  @Move
+  Scenario: Moved pages that switch indexes are removed from their old index if they leave a redirect
+    Given I am logged in
+    And a page named Move%{epoch} From3 exists with contents move me
+    And within 20 seconds searching for Move%{epoch} From3 yields Move%{epoch} From3 as the first result
+    When I move Move%{epoch} From3 to User:Move%{epoch} To3 and leave a redirect
+    Then within 20 seconds searching for User:Move%{epoch} To3 yields User:Move%{epoch} To3 as the first result
+    And within 20 seconds searching for Move%{epoch} From3 yields none as the first result
+
+  @Move
+  Scenario: Moved pages that switch indexes are removed from their old index if they don't leave a redirect
+    Given I am logged in
+    And a page named Move%{epoch} From4 exists with contents move me
+    And within 20 seconds searching for Move%{epoch} From4 yields Move%{epoch} From4 as the first result
+    When I move Move%{epoch} From4 to User:Move%{epoch} To4 and do not leave a redirect
+    Then within 20 seconds searching for User:Move%{epoch} To4 yields User:Move%{epoch} To4 as the first result
+    And within 20 seconds searching for Move%{epoch} To4 yields none as the first result

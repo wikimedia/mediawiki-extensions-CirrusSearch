@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\Sanity;
+use \CirrusSearch\Connection;
 use \CirrusSearch\Searcher;
 use \ProfileSection;
 use \Status;
@@ -68,9 +69,21 @@ class Checker {
 				}
 			} else {
 				if ( $inIndex ) {
-					if ( count( $fromIndex ) > 1 ) {
-						$this->remediator->pageInTooManyIndexes( $page, $fromIndex );
-					} else {
+					$foundInsanityInIndex = false;
+					$expectedType = Connection::getIndexSuffixForNamespace( $page->getTitle()->getNamespace() );
+					foreach ( $fromIndex as $indexInfo ) {
+						$matches = array();
+						if ( !preg_match( '/_(.+)_.+$/', $indexInfo->getIndex(), $matches ) ) {
+							return Status::newFatal( "Can't parse index name:  " . $indexInfo->getIndex() );
+						}
+						$type = $matches[ 1 ];
+						if ( $type !== $expectedType ) {
+							// Got to grab the index type from the index name....
+							$this->remediator->pageInWrongIndex( $page, $type );
+							$foundInsanityInIndex = true;
+						}
+					}
+					if ( !$foundInsanityInIndex ) {
 						$this->sane( $pageId, 'Page in index' );
 					}
 				} else {

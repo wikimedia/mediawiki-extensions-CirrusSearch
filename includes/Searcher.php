@@ -302,6 +302,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$searchContainedSyntax = false;
 		$this->term = trim( $term );
 		$this->boostLinks = true;
+		$searchType = 'full_text';
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $this->term, 'prefix:' );
@@ -358,10 +359,65 @@ class Searcher extends ElasticsearchIntermediary {
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
 		$boostTemplates = self::getDefaultBoostTemplates();
+		$this->extractSpecialSyntaxFromTerm(
+			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)?/',
+			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType ) {
+				global $wgLanguageCode;
+
+				$searchContainedSyntax = true;
+				$searchType = 'regex';
+
+				$filterDestination = &$filters;
+				if ( !empty( $matches[ 'not' ] ) ) {
+					$filterDestination = &$notFilters;
+				}
+				$insensitive = !empty( $matches[ 'insensitive' ] );
+
+				// TODO highlighting but
+				//   https://github.com/wikimedia/search-highlighter/issues/2
+
+				// The setAllowMutate call should speed up the execution at the cost of thread safety.
+				// Since scripts are always executed in one thread, we're safe.
+				$script = <<<MVEL
+import org.apache.lucene.util.automaton.*;
+sourceText = _source.get("source_text");
+if (sourceText == null) {
+	false;
+} else {
+	if (automaton == null) {
+		if (insensitive) {
+			locale = new Locale(language);
+			pattern = pattern.toLowerCase(locale);
+		}
+		regexp = new RegExp(pattern, RegExp.ALL ^ RegExp.AUTOMATON);
+		regexp.setAllowMutate(true);
+		automaton = new CharacterRunAutomaton(regexp.toAutomaton());
+	}
+	if (insensitive) {
+		sourceText = sourceText.toLowerCase(locale);
+	}
+	automaton.run(sourceText);
+}
+
+MVEL;
+				$filterDestination[] = new \Elastica\Filter\Script( array(
+					'script' => $script,
+					'params' => array(
+						'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
+						'insensitive' => $insensitive,
+						// This null here creates a slot in which the script will shove
+						// an automaton while executing.
+						'automaton' => null,
+						'locale' => null,
+						'language' => $wgLanguageCode,
+					),
+				) );
+			}
+		);
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,15} keeps this from having horrible performance on big strings
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>(?:"[^"]+")|(?:[^ "]+)) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"[^"]+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax ) {
 				$key = $matches['key'];
@@ -409,12 +465,19 @@ class Searcher extends ElasticsearchIntermediary {
 						$filterDestination[] = new \Elastica\Filter\Query( $match );
 						$searchContainedSyntax = true;
 						return '';
+					case 'insource':
+						$field = 'source_text';
+						$keepText = false;
+						// intentionally fall through
 					case 'intitle':
+						if ( !isset( $field ) ) {
+							$field = 'title';
+						}
 						$query = new \Elastica\Query\QueryString(
 							$searcher->fixupWholeQueryString(
 								$searcher->fixupQueryStringPart( $value )
 							) );
-						$query->setFields( array( 'title' ) );
+						$query->setFields( array( $field ) );
 						$query->setDefaultOperator( 'AND' );
 						$query->setAllowLeadingWildcard( false );
 						$query->setFuzzyPrefixLength( 2 );
@@ -523,7 +586,7 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 			wfProfileOut( __METHOD__ . '-build-query' );
 
-			$result = $this->search( 'full_text', $originalTerm );
+			$result = $this->search( $searchType, $originalTerm );
 
 			if ( !$result->isOK() && $this->isParseError( $result ) ) {
 				wfProfileIn( __METHOD__ . '-degraded-query' );
@@ -542,7 +605,7 @@ class Searcher extends ElasticsearchIntermediary {
 				wfProfileOut( __METHOD__ . '-degraded-query' );
 			}
 		} else {
-			$result = $this->search( 'full_text', $originalTerm );
+			$result = $this->search( $searchType, $originalTerm );
 			// No need to check for a parse error here because we don't actually create a query for
 			// Elasticsearch to parse
 		}
@@ -856,7 +919,11 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Perform the search
 		$searcher = $this;
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+		$poolCounterType = 'CirrusSearch-Search';
+		if ( $type === 'regex' ) {
+			$poolCounterType = 'CirrusSearch-Regex';
+		}
+		$work = new PoolCounterWorkViaCallback( $poolCounterType, "_elasticsearch", array(
 			'doWork' => function() use ( $searcher, $search, $description ) {
 				try {
 					$searcher->start( $description );

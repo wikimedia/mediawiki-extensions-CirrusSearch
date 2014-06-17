@@ -94,25 +94,7 @@ class ElasticsearchIntermediary {
 	 */
 	public function failure( $exception = null ) {
 		$took = $this->finishRequest();
-		$message = '';
-		$status = Status::newFatal( 'cirrussearch-backend-error' );
-		if ( $exception ) {
-			$message = $exception->getMessage();
-			$marker = 'ParseException[Cannot parse ';
-			$markerLocation = strpos( $message, $marker );
-			if ( $markerLocation === false ) {
-				$message = 'Error message:  ' . $message;
-			} else {
-				// The important part of the parse error message comes before the next new line
-				// so lets slurp it up and log it rather than the huge clump of error.
-				$start = $markerLocation + strlen( $marker );
-				$end = strpos( $message, "\n", $start );
-				$parseError = substr( $message, $start, $end - $start );
-				$message = 'Parse error on ' . $parseError;
-				// Finally, return a different fatal status that we can check later on.
-				$status = Status::newFatal( 'cirrussearch-parse-error' );
-			}
-		}
+		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
 		wfLogWarning( "Search backend error during $this->description after $took.  $message" );
 		return $status;
 	}
@@ -179,5 +161,43 @@ class ElasticsearchIntermediary {
 		}
 		$this->requestStart = null;
 		return $took;
+	}
+
+	private function extractMessageAndStatus( $exception ) {
+		if ( !$exception ) {
+			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
+		}
+		// @todo this extraction fails when only some of the shards fail
+		$message = $exception->getResponse()->getError();
+		$marker = 'ParseException[Cannot parse ';
+		$markerLocation = strpos( $message, $marker );
+		if ( $markerLocation !== false ) {
+			// The important part of the parse error message comes before the next new line
+			// so lets slurp it up and log it rather than the huge clump of error.
+			$start = $markerLocation + strlen( $marker );
+			$end = strpos( $message, "\n", $start );
+			$parseError = substr( $message, $start, $end - $start );
+			return array( Status::newFatal( 'cirrussearch-parse-error' ), 'Parse error on ' . $parseError );
+		}
+		$marker = 'IllegalArgumentException[';
+		$markerLocation = strpos( $message, $marker );
+		if ( $markerLocation !== false ) {
+			// This is _probably_ a regex syntax error so lets call it that.
+			// It might not be but thats complicated....
+			$start = $markerLocation + strlen( $marker );
+			$end = strpos( $message, "];", $start );
+			$syntaxError = substr( $message, $start, $end - $start );
+			$errorMessage = 'unknown';
+			$position = 'unknown';
+			$matches = array();
+			if ( preg_match( '/(.+) at position ([0-9]+)/', $syntaxError, $matches ) ) {
+				$errorMessage = $matches[ 1 ];
+				// The 3 below offsets the .*( in front of the user pattern to make it unanchored.
+				$position = $matches[ 2 ] - 3;
+			}
+			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );
+			return array( $status, 'Regex syntax error:  ' . $syntaxError );
+		}
+		return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 	}
 }

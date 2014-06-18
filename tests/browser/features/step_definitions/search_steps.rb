@@ -153,17 +153,10 @@ Then(/^there is not alttitle on the first search result$/) do
   on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
 end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
-  found = false
-  on(SearchResultsPage).results.each do |result|
-    if result.text == title then
-      found = true
-    end
-  end
-  if not_searching then
-    found.should == false
-  else
-    found.should == true
-  end
+  check_all_search_results(title, not_searching, false)
+end
+Then(/^(.+) is( not)? part of a search result$/) do |title, not_searching|
+  check_all_search_results(title, not_searching, true)
 end
 Then(/^there are no search results$/) do
   on(SearchResultsPage).first_result_element.should_not exist
@@ -248,5 +241,23 @@ def check_search_result(wrapper_element, element, title, in_ok)
     else
       element.text.should == title
     end
+  end
+end
+
+def check_all_search_results(title, not_searching, in_ok)
+  found = false
+  on(SearchResultsPage).results.each do |result|
+    begin
+      check_search_result(result.parent, result, title, in_ok)
+      found = true
+      break
+    rescue
+      # Noop
+    end
+  end
+  if not_searching then
+    found.should == false
+  else
+    found.should == true
   end
 end

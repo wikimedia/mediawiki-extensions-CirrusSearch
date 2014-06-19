@@ -7,6 +7,7 @@
 	"cirrussearch-desc": "Elasticsearchi kasutav otsing",
 	"cirrussearch-backend-error": "Sinu otsingut ei õnnestunud ajutise probleemi tõttu lõpule viia. Palun proovi hiljem uuesti.",
 	"cirrussearch-parse-error": "Sinu päring pole arusaadav. Palun tee see lihtsamaks. Päring kanti logisse, et otsisüsteemi täiustada.",
+	"cirrussearch-regex-syntax-error": "Regulaaravaldise süntaksitõrge kohal $2: $1",
 	"cirrussearch-now-using": "See viki kasutab uut otsimootorit. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lisateave]])",
 	"cirrussearch-pref-label": "Uus otsing",
 	"cirrussearch-pref-desc": "Proovi uut otsingut, mis toetab rohkem keeli, näitab ajakohasemaid tulemusi ja leiab isegi mallis oleva teksti."

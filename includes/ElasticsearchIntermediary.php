@@ -168,7 +168,7 @@ class ElasticsearchIntermediary {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}
 		// @todo this extraction fails when only some of the shards fail
-		$message = $exception->getResponse()->getError();
+		$message = $exception->getMessage();
 		$marker = 'ParseException[Cannot parse ';
 		$markerLocation = strpos( $message, $marker );
 		if ( $markerLocation !== false ) {

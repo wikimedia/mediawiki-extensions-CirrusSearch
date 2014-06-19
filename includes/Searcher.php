@@ -544,7 +544,7 @@ MVEL;
 		// Actual text query
 		$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 		if ( $queryStringQueryString !== '' ) {
-			if ( $this->queryStringContainsSyntax( $queryStringQueryString ) ) {
+			if ( preg_match( '/(?:(?<!\\\\)[?*+~"!|-])|AND|OR|NOT/', $queryStringQueryString ) ) {
 				$this->searchContainedSyntax = true;
 				// We're unlikey to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
@@ -1183,17 +1183,6 @@ MVEL;
 			'CirrusSearch\Searcher::lowercaseMatched', $string );
 
 		return $string;
-	}
-
-	/**
-	 * Does $string contain unescaped query string syntax?  Note that we're not
-	 * careful about if the syntax is escaped - that still count.
-	 * @param $string string query string to check
-	 * @return boolean does it contain special syntax?
-	 */
-	private function queryStringContainsSyntax( $string ) {
-		// Matches the upper case syntax and character syntax
-		return preg_match( '/(?:(?<!\\\\)[?*+~"!|-])|AND|OR|NOT/', $string );
 	}
 
 	private static function escapeBadSyntax( $matches ) {

@@ -199,11 +199,11 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onSoftwareInfo( $software ) {
-		$searcher = new Searcher( 0, 0, array(), false );
-		$version = $searcher->getElasticsearchVersion();
-		if ( $version->isOk() ) {
+		$version = new Version;
+		$status = $version->get();
+		if ( $status->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
-			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();
+			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $status->getValue();
 		}
 		return true;
 	}

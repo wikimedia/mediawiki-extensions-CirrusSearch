@@ -370,6 +370,7 @@ $wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/mainten
 $wgAutoloadClasses['CirrusSearch\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
 $wgAutoloadClasses['CirrusSearch\Util'] = $includes . 'Util.php';
+$wgAutoloadClasses['CirrusSearch\Version'] = $includes . 'Version.php';
 
 /**
  * Hooks

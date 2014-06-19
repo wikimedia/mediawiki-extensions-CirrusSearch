@@ -168,6 +168,16 @@ class Updater extends ElasticsearchIntermediary {
 	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
+		// Don't update the same page twice. We shouldn't, but meh
+		$pageIds = array();
+		$pages = array_filter( $pages, function( $page ) use ( &$pageIds ) {
+			if ( !in_array( $page->getId(), $pageIds ) ) {
+				$pageIds[] = $page->getId();
+				return true;
+			}
+			return false;
+		} );
+
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );
 		}
@@ -427,7 +437,7 @@ MVEL;
 				// This is a redirect to a redirect which doesn't count in the search score any way.
 				continue;
 			}
-			if ( in_array( $page->getId(), $this->updated ) ) {
+			if ( in_array( $title->getFullText(), $this->updated ) ) {
 				// We've already updated this page in this proces so there is no need to update it again.
 				continue;
 			}

@@ -51,7 +51,7 @@ class Checker {
 	 * @return Status status of the operation
 	 */
 	public function check( $pageId ) {
-		$fromIndex = $this->searcher->get( $pageId, array( 'namespace', 'title' ) );
+		$fromIndex = $this->searcher->get( array( $pageId ), array( 'namespace', 'title' ) );
 		if ( $fromIndex->isOK() ) {
 			$fromIndex = $fromIndex->getValue();
 		} else {

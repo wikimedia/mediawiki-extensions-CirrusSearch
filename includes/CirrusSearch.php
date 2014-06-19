@@ -91,11 +91,17 @@ class CirrusSearch extends SearchEngine {
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
-			$title = Title::newFromText( $term );
-			if ( !$title ) {
-				$status = Status::newGood( null );
+			$titles = array();
+			foreach ( explode( '|', $term ) as $title ) {
+				$title = Title::newFromText( trim( $title ) );
+				if ( $title ) {
+					$titles[] = $title;
+				}
+			}
+			if ( count( $titles ) ) {
+				$status = $searcher->moreLikeTheseArticles( $titles );
 			} else {
-				$status = $searcher->moreLikeThisArticle( $title->getArticleID() );
+				$status = Status::newGood( null );
 			}
 		} else {
 			$request = $context->getRequest();

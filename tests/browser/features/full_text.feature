@@ -62,17 +62,6 @@ Feature: Full text search
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
 
-  @setup_more_like_this
-  Scenario: Searching for morelike:<page that doesn't exist> returns no results
-    When I search for morelike:IDontExist
-    Then there are no search results
-
-  @setup_more_like_this
-  Scenario: Searching for morelike:<page> returns pages that are "like" that page
-    When I search for morelike:More Like Me 1
-    Then More Like Me is in the first search result
-    But More Like Me 1 is not in the search results
-
   @javascript_injection
   Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
     When I search for Javascript findme

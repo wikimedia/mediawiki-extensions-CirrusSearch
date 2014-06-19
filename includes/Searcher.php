@@ -614,70 +614,74 @@ MVEL;
 	}
 
 	/**
-	 * @param $pageId article id to search
+	 * Find articles that contain similar text to the provided title array.
+	 * @param array(Title) $titles title of articles to search for
 	 * @return Status(ResultSet|null)
 	 */
-	public function moreLikeThisArticle( $pageId ) {
+	public function moreLikeTheseArticles( $titles ) {
 		global $wgCirrusSearchMoreLikeThisConfig;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
 		// two passes but it doesn't support that at this point
-		$found = $this->get( $pageId, array( 'text' ) );
+		$pageIds = array();
+		foreach ( $titles as $title ) {
+			if ( $title->exists() ) {
+				$pageIds[] = $title->getArticleID();
+			}
+		}
+		$found = $this->get( $pageIds, array( 'text' ) );
 		if ( !$found->isOk() ) {
 			return $found;
 		}
-		// Found always comes back as an array but we just want the first one
 		$found = $found->getValue();
 		if ( count( $found ) === 0 ) {
-			// If the page doesn't exist we can't find any articles like it
+			// If none of the pages are in the index we can't find articles like them
 			return Status::newGood( null );
 		}
-		$found = $found[ 0 ];
+
+		$text = array();
+		foreach ( $found as $foundArticle ) {
+			$text[] = $foundArticle->text[ 0 ];
+		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
-		// TODO figure out why we strip tags here and document it.
-		$this->query->setLikeText( Sanitizer::stripAllTags( $found->text ) );
+		$this->query->setLikeText( implode( ' ', $text ) );
 		$this->query->setFields( array( 'text' ) );
-		$idFilter = new \Elastica\Filter\Ids();
-		$idFilter->addId( $pageId );
+		$idFilter = new \Elastica\Filter\Ids( null, $pageIds );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
 
-		return $this->search( 'more_like', "$found->namespace:$found->title" );
+		return $this->search( 'more_like', implode( ', ', $titles ) );
 	}
 
 	/**
 	 * Get the page with $id.  Note that the result is a status containing _all_ pages found.
 	 * It is possible to find more then one page if the page is in multiple indexes.
-	 * @param int $pageId page id
+	 * @param array(int) $pageIds page id
 	 * @param array(string) $fields fields to fetch
 	 * @return Status containing pages found, containing an empty array if not found,
 	 *    or an error if there was an error
 	 */
-	public function get( $pageId, $fields ) {
+	public function get( $pageIds, $fields ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $searcher, $pageId, $fields, $indexType, $indexBaseName ) {
+			'doWork' => function() use ( $searcher, $pageIds, $fields, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
-					$searcher->start( "get of $indexType.$pageId" );
+					$searcher->start( "get of $indexType." . implode( ', ', $pageIds ) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
-					// getDocument only works if we know the indexType
-					if ( $indexType ) {
-						return $searcher->success( array( $pageType->getDocument( $pageId, array( 'fields' => $fields, ) ) ) );
-					} else {
-						$query = new \Elastica\Query( new \Elastica\Query\Ids( null, array( $pageId ) ) );
-						$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
-						return $searcher->success( $resultSet->getResults() );
-					}
+					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
+					$query->setParam( 'fields', $fields );
+					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
+					return $searcher->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the called to decide if that is and error.

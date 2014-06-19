@@ -174,15 +174,25 @@ Before("@highlighting", "@references") do
   $highlighting_references = true
 end
 
-Before("@setup_more_like_this") do
+Before("@more_like_this") do
   if !$setup_more_like_this
     # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches
     steps %Q{
-      Given a page named More Like Me 1 exists with contents MoreLikeMe MoreLikeMe
-      And a page named More Like Me 2 exists with contents MoreLikeMe MoreLikeMe
-      And a page named More Like Me 3 exists with contents MoreLikeMe MoreLikeMe
-      And a page named More Like Me 4 exists with contents MoreLikeMe MoreLikeMe
-      And a page named More Like Me 5 exists with contents MoreLikeMe MoreLikeMe
+      Given a page named More Like Me 1 exists with contents morelikesetone morelikesetone
+      And a page named More Like Me 2 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
+      And a page named More Like Me 3 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
+      And a page named More Like Me 4 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
+      And a page named More Like Me 5 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
+      And a page named More Like Me Set 2 Page 1 exists with contents morelikesettwo morelikesettwo morelikesettwo
+      And a page named More Like Me Set 2 Page 2 exists with contents morelikesettwo morelikesettwo morelikesettwo
+      And a page named More Like Me Set 2 Page 3 exists with contents morelikesettwo morelikesettwo morelikesettwo
+      And a page named More Like Me Set 2 Page 4 exists with contents morelikesettwo morelikesettwo morelikesettwo
+      And a page named More Like Me Set 2 Page 5 exists with contents morelikesettwo morelikesettwo morelikesettwo
+      And a page named More Like Me Set 3 Page 1 exists with contents morelikesetthree morelikesetthree
+      And a page named More Like Me Set 3 Page 2 exists with contents morelikesetthree morelikesetthree
+      And a page named More Like Me Set 3 Page 3 exists with contents morelikesetthree morelikesetthree
+      And a page named More Like Me Set 3 Page 4 exists with contents morelikesetthree morelikesetthree
+      And a page named More Like Me Set 3 Page 5 exists with contents morelikesetthree morelikesetthree
     }
   end
   $setup_more_like_this = true

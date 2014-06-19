@@ -1,14 +1,14 @@
 {
-    "@metadata": {
-        "authors": []
-    },
-    "cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
-    "cirrussearch-backend-error": "We could not complete your search due to a temporary problem. Please try again later.",
-    "cirrussearch-parse-error": "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
-    "cirrussearch-regex-syntax-error": "Regex syntax error at $2: $1",
-    "cirrussearch-now-using": "This wiki is using a new search engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])",
-    "cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Headings that will be ignored by search.\n# Changes to this take effect as soon as the page with the heading is indexed.\n# You can force page reindexing by doing a null edit.\n# Syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the exact title to ignore, case and everything.\nReferences\nExternal links\nSee also\n #</pre> <!-- leave this line exactly as it is -->",
-    "cirrussearch-boost-templates": " #<!-- leave this line exactly as it is --> <pre>\n# If a page contains one of these templates then its search score is multiplied by the configured percentage.\n# Changes to this take effect immediately.\n# Syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the exact template name to boost, namespace, case and everything, followed by a \"|\" character followed by a number followed by a \"%\" character.\n# Examples of good lines:\n# Template:Good|150%\n# Template:Very Very Good|300%\n# Template:Bad|50%\n# Examples of non-working lines:\n# Template:Foo|150.234234% <-- no decimal points allowed!\n# Foo|150% <--- technically works, but for transclusions of the Foo page from the main namespace\n# You can test configuration changes by performing a query prefixed with boost-templates:\"XX\" where XX is all of the templates you want to boost separated by spaces instead of line breaks.\n# Queries that specify boost-templates:\"XX\" ignore the contents of this field.\n #</pre> <!-- leave this line exactly as it is -->",
-    "cirrussearch-pref-label": "New search",
-    "cirrussearch-pref-desc": "Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates."
+	"@metadata": {
+		"authors": []
+	},
+	"cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
+	"cirrussearch-backend-error": "We could not complete your search due to a temporary problem. Please try again later.",
+	"cirrussearch-parse-error": "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
+	"cirrussearch-regex-syntax-error": "Regular expression syntax error at $2: $1",
+	"cirrussearch-now-using": "This wiki is using a new search engine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Learn more]])",
+	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Headings that will be ignored by search.\n# Changes to this take effect as soon as the page with the heading is indexed.\n# You can force page reindexing by doing a null edit.\n# Syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the exact title to ignore, case and everything.\nReferences\nExternal links\nSee also\n #</pre> <!-- leave this line exactly as it is -->",
+	"cirrussearch-boost-templates": " #<!-- leave this line exactly as it is --> <pre>\n# If a page contains one of these templates then its search score is multiplied by the configured percentage.\n# Changes to this take effect immediately.\n# Syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the exact template name to boost, namespace, case and everything, followed by a \"|\" character followed by a number followed by a \"%\" character.\n# Examples of good lines:\n# Template:Good|150%\n# Template:Very Very Good|300%\n# Template:Bad|50%\n# Examples of non-working lines:\n# Template:Foo|150.234234% <-- no decimal points allowed!\n# Foo|150% <--- technically works, but for transclusions of the Foo page from the main namespace\n# You can test configuration changes by performing a query prefixed with boost-templates:\"XX\" where XX is all of the templates you want to boost separated by spaces instead of line breaks.\n# Queries that specify boost-templates:\"XX\" ignore the contents of this field.\n #</pre> <!-- leave this line exactly as it is -->",
+	"cirrussearch-pref-label": "New search",
+	"cirrussearch-pref-desc": "Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates."
 }

@@ -78,4 +78,4 @@ Feature: Searches with the insource filter
   @regex
   Scenario: insource:// reports errors sanely
     When I search for all:insource:/[/
-    Then this error is reported: An error has occurred while searching: Regex syntax error at 4: expected ']'
+    Then this error is reported: An error has occurred while searching: Regular expression syntax error at 4: expected ']'

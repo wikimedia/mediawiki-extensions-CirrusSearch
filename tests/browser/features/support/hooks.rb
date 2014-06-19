@@ -419,6 +419,9 @@ Before("@relevancy") do
       And a page named File talk:Relevancynamespacetest exists
       And a page named User talk:Relevancynamespacetest exists
       And a page named Template:Relevancynamespacetest exists
+      And a page named Relevancylanguagetest/ja exists
+      And a page named Relevancylanguagetest/en exists
+      And a page named Relevancylanguagetest/ar exists
     }
   end
   $relevancy = true

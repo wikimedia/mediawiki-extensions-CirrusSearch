@@ -45,6 +45,10 @@ class PageDataBuilder extends ParseBuilder {
 				$this->templates();
 		}
 
+		// All content types have a language
+		$this->doc->add( 'language',
+			$this->title->getPageLanguage()->getCode() );
+
 		return $this->doc;
 	}
 

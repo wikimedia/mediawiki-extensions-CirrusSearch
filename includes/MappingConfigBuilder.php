@@ -33,7 +33,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.3';
+	const VERSION = '1.4';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -145,7 +145,8 @@ class MappingConfigBuilder {
 				'suggest' => array(
 					'type' => 'string',
 					'analyzer' => 'suggest',
-				)
+				),
+				'language' => $this->buildKeywordField(),
 			),
 		);
 		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );

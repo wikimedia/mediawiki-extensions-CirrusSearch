@@ -36,7 +36,7 @@ $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
 $wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Jenkins\Jenkins::recyclePruneAndUndelayJobs';
-
+$wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage';
 
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
@@ -83,6 +83,9 @@ $wgJobRunRate = 100;
 $wgShowExceptionDetails = true;
 $wgCirrusSearchShowScore = true;
 
+$wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
+$wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
+
 class Jenkins {
 	/**
 	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.
@@ -100,5 +103,19 @@ class Jenkins {
 		if ( $jobQueue ) {
 			$jobQueue->recyclePruneAndUndelayJobs();
 		}
+	}
+
+	/**
+	 * If the page ends in '/<language code>' then set the page's language to that code.
+	 * @param Title @title page title object
+	 * @param string|Language $pageLang the page content language (either an object or a language code)
+	 * @param Language $wgLang the user language
+	 */
+	public static function setLanguage( $title, &$pageLang, $wgLang ) {
+		$matches = array();
+		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
+			$pageLang = substr( $matches[ 0 ], 1 );
+		}
+		return true;
 	}
 }

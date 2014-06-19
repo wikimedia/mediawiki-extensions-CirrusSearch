@@ -6,6 +6,7 @@ use \CirrusSearch;
 use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \ProfileSection;
+use \RequestContext;
 use \Sanitizer;
 use \Status;
 use \Title;
@@ -1197,7 +1198,9 @@ MVEL;
 	 * If there is any boosting to be done munge the the current query to get it right.
 	 */
 	private function installBoosts() {
-		global $wgCirrusSearchFunctionRescoreWindowSize;
+		global $wgCirrusSearchFunctionRescoreWindowSize,
+			$wgCirrusSearchLanguageWeight,
+			$wgLanguageCode;
 
 		// Quick note:  At the moment ".isEmpty()" is _much_ faster then ".empty".  Never
 		// use ".empty".  See https://github.com/elasticsearch/elasticsearch/issues/5086
@@ -1263,6 +1266,26 @@ MVEL;
 					$useFunctionScore = true;
 				}
 			}
+		}
+
+		// Boost pages in a user's language
+		// I suppose using $wgLang would've been more evil than this, but
+		// only marginally so. Find some real context to use here.
+		$userLang = RequestContext::getMain()->getLanguage()->getCode();
+		if ( $wgCirrusSearchLanguageWeight['user'] ) {
+			$functionScore->addBoostFactorFunction(
+				$wgCirrusSearchLanguageWeight['user'],
+				new \Elastica\Filter\Term( array( 'language' => $userLang ) )
+			);
+			$useFunctionScore = true;
+		}
+		// And a wiki's language, if it's different
+		if ( $userLang != $wgLanguageCode && $wgCirrusSearchLanguageWeight['wiki'] ) {
+			$functionScore->addBoostFactorFunction(
+				$wgCirrusSearchLanguageWeight['wiki'],
+				new \Elastica\Filter\Term( array( 'language' => $wgLanguageCode ) )
+			);
+			$useFunctionScore = true;
 		}
 
 		if ( !$useFunctionScore ) {

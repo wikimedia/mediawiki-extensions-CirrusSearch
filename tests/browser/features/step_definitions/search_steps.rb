@@ -51,6 +51,9 @@ When(/^I search for (.+)$/) do |text|
     end
   end
 end
+When(/^I switch the language to (.+)$/) do |language|
+  @browser.goto("#{@browser.url}&uselang=#{language}")
+end
 When(/^I click the (.*) link$/) do |text|
   @browser.link(:text => text).click
 end

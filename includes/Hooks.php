@@ -82,7 +82,7 @@ class Hooks {
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
 			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
-			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatchBefore';
+			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
 		}
 
 		if ( $request ) {
@@ -328,16 +328,14 @@ class Hooks {
 	}
 
 	/**
-	 * Let Elasticsearch take a crack at getting near matches before mediawiki tries all kinds of variants.
-	 * @param array(string) $termAnAllLanguageVariants the original search term and all language variants
+	 * Let Elasticsearch take a crack at getting near matches once mediawiki has tried all kinds of variants.
+	 * @param string $term the original search term and all language variants
 	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
-	public static function onSearchGetNearMatchBefore( $termAndAllLanguageVariants, &$titleResult ) {
+	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgContLang;
 
-		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.
-		$term = $termAndAllLanguageVariants[ 0 ];
 		$title = Title::newFromText( $term );
 		if ( $title === null ) {
 			return false;

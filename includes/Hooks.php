@@ -400,7 +400,7 @@ class Hooks {
 	 */
 	public static function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ) {
 		// We don't index redirects so don't try to find one.
-		if ( !$isRedir ) {
+		if ( !$isRedir && !$extra ) {
 			// Remove decimal from seed, we want an int
 			$seed = (int)str_replace( '.', '', $randstr );
 

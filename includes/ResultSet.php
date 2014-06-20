@@ -100,10 +100,6 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
-	public function hasResults() {
-		return $this->totalHits > 0;
-	}
-
 	public function getTotalHits() {
 		return $this->totalHits;
 	}

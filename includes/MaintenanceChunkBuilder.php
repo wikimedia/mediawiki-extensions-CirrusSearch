@@ -33,7 +33,7 @@ class MaintenanceChunkBuilder {
 		}
 		for ( $id = $from; $id < $to; $id = $id + $chunkSize ) {
 			$chunkToId = min( $to, $id + $chunkSize );
-			print $self;
+			print "php $self";
 			foreach ( $options as $optName => $optVal ) {
 				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
 						$optName === 'toId' || $optName === 'buildChunks' ||

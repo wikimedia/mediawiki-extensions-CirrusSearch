@@ -5,6 +5,7 @@ use \CirrusSearch;
 use \JobQueueGroup;
 use \LinkCache;
 use \Maintenance;
+use \MWContentSerializationException;
 use \MWTimestamp;
 use \ProfileSection;
 use \Title;
@@ -161,7 +162,7 @@ class ForceSearchIndex extends Maintenance {
 				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
 				$size = count( $deletes );
 			}
-			
+
 			if ( $size == 0 ) {
 				break;
 			}
@@ -327,7 +328,14 @@ class ForceSearchIndex extends Maintenance {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
-			$content = $page->getContent();
+
+			try {
+				$content = $page->getContent();
+			} catch ( MWContentSerializationException $ex ) {
+				wfLogWarning( "Error deserializing content, skipping page: $row->page_id\n" );
+				continue;
+			}
+
 			if ( $content === null ) {
 				// Skip pages without content.  Pages have no content because their latest revision
 				// as loaded by the query above doesn't exist.

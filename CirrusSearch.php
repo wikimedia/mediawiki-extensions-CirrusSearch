@@ -124,7 +124,7 @@ $wgCirrusSearchSearchShardTimeout = '20s';
 
 // Client side timeout for searches in seconds.  Best to keep this double the
 // shard timeout to give Elasticsearch a change to timeout the shards and return
-// partial results.  Defaults to 20 seconds.
+// partial results.
 $wgCirrusSearchClientSideSearchTimeout = 40;
 
 // Client side timeout for maintanance operations.  We can't disable the timeout

@@ -46,13 +46,18 @@ abstract class Job extends MWJob {
 
 		// Make sure we don't flood the pool counter.  This is safe since this is only used
 		// to batch update wikis and we don't want to subject those to the pool counter.
-		$backupPoolCounterSearch = $wgPoolCounterConf['CirrusSearch-Search'];
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		$backupPoolCounterSearch = null;
+		if ( isset( $wgPoolCounterConf['CirrusSearch-Search'] ) ) {
+			$backupPoolCounterSearch = $wgPoolCounterConf['CirrusSearch-Search'];
+			unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		}
 
 		$ret = $this->doJob();
 
 		// Restore the pool counter settings in case other jobs need them
-		$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
+		if ( $backupPoolCounterSearch ) {
+			$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
+		}
 
 		return $ret;
 	}

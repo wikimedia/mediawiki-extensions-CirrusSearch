@@ -464,7 +464,7 @@ MVEL;
 				} else {
 					// This is generally not an error but we should log it to see how many we get
 					if ( $log ) {
-						$id = $bulkResponse->getAction()->getDocument()->getId();
+						$id = $bulkResponse->getAction()->getData()->getId();
 						wfDebugLog( 'CirrusSearch', $log . ":  $id" );
 					}
 				}

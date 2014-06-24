@@ -41,7 +41,7 @@ interface Remediator {
 	 */
 	public function ghostPageInIndex( $pageId, $title );
 	/**
-	 * An existant page is in more then one index.
+	 * An existent page is in more then one index.
 	 * @param WikiPage $page page in too many indexes
 	 * @param string $indexType index type that the page is in but shouldn't be in
 	 */

@@ -111,7 +111,7 @@ class Updater extends ElasticsearchIntermediary {
 
 			$page = WikiPage::factory( $title );
 			if ( !$page->exists() ) {
-				wfDebugLog( 'CirrusSearch', "Ignoring an update for a non-existant page: $titleText" );
+				wfDebugLog( 'CirrusSearch', "Ignoring an update for a nonexistent page: $titleText" );
 				return array( null, $redirects );
 			}
 			$content = $page->getContent();
@@ -421,7 +421,7 @@ MVEL;
 
 			$page = WikiPage::factory( $title );
 			if ( $page === null || !$page->exists() ) {
-				// Skip link to non-existant page.
+				// Skip link to nonexistent page.
 				continue;
 			}
 			// Resolve one level of redirects because only one level of redirects is scored.
@@ -429,7 +429,7 @@ MVEL;
 				$target = $page->getRedirectTarget();
 				$page = new WikiPage( $target );
 				if ( !$page->exists() ) {
-					// Skip redirects to non-existant pages
+					// Skip redirects to nonexistent pages
 					continue;
 				}
 			}

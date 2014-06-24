@@ -42,7 +42,13 @@ class MassIndexJob extends Job {
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
 		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {
-			$pageData[] = WikiPage::factory( Title::newFromDBKey( $pageDBKey ) );
+			$title = Title::newFromDBKey( $pageDBKey );
+			// Skip any titles with broken keys.  We can't do anything with them.
+			if ( !$title ) {
+				wfLogWarning( "Skipping invalid DBKey:  $pageDBKey" );
+				continue;
+			}
+			$pageData[] = WikiPage::factory( $title );
 		}
 		// Now invoke the updater!
 		$updater = new Updater();

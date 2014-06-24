@@ -830,6 +830,11 @@ MVEL;
 		if( $this->limit ) {
 			$query->setSize( $this->limit );
 		}
+
+		if ( $this->sort != 'relevance' ) {
+			$this->rescore = array();
+		}
+
 		if ( count( $this->rescore ) ) {
 			// rescore_query has to be in array form before we send it to Elasticsearch but it is way easier to work
 			// with if we leave it in query for until now

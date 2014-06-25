@@ -24,10 +24,10 @@ use \Status;
  */
 class ElasticsearchIntermediary {
 	/**
-	 * @var string|null the name or ip of the user for which we're performing this search or null in the case of
+	 * @var User|null user for which we're performing this search or null in the case of
 	 * requests kicked off by jobs
 	 */
-	private $user = 'nobody';
+	protected $user;
 	/**
 	 * @var float|null start time of current request or null if none is running
 	 */
@@ -58,9 +58,7 @@ class ElasticsearchIntermediary {
 	 * slow.  0 means none count as slow.
 	 */
 	protected function __construct( $user, $slowSeconds ) {
-		if ( $user ) {
-			$this->user = 'User:' . $user->getName(); // name is the ip address of anonymous users
-		}
+		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
 	}
 
@@ -154,9 +152,7 @@ class ElasticsearchIntermediary {
 		// Now log and clear our state.
 		wfDebugLog( 'CirrusSearchRequests', $logMessage );
 		if ( $this->slowMillis && $took >= $this->slowMillis ) {
-			if ( $this->user ) {
-				$logMessage .= " for $this->user";
-			}
+			$logMessage .= $this->user ? ' for ' . $this->user->getName() : '';
 			wfDebugLog( 'CirrusSearchSlowRequests', $logMessage );
 		}
 		$this->requestStart = null;

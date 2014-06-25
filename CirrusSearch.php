@@ -239,6 +239,16 @@ $wgCirrusSearchDefaultNamespaceWeight = 0.2;
 // Default weight of a talk namespace relative to its corresponding non-talk namespace.
 $wgCirrusSearchTalkNamespaceWeight = 0.25;
 
+// Default weight of language field for multilingual wikis.
+// 'user' is the weight given to the user's language
+// 'wiki' is the weight given to the wiki's content language
+// If your wiki is only one language you can leave these at 0, otherwise try setting it
+// to something like 5.0 for 'user' and 2.5 for 'wiki'
+$wgCirrusSearchLanguageWeight = array(
+	'user' => 0.0,
+	'wiki' => 0.0,
+);
+
 // Portion of an article's score that decays with time since it's last update.  Defaults to 0
 // meaning don't decay the score at all unless prefer-recent: prefixes the query.
 $wgCirrusSearchPreferRecentDefaultDecayPortion = 0;

@@ -153,34 +153,6 @@ Feature: Full text search
     When I search for incategory:ManyRedirectsTest Many Redirects Test
     Then Manyredirectstarget is the first search result
 
-  @relevancy
-  Scenario: Results are sorted in the order we expect
-    When I search for Relevancytest
-    Then Relevancytest is the first search result
-    And Relevancytestviaredirect is the second search result
-    And Relevancytestviacategory is the third search result
-    And Relevancytestviaheading is the fourth search result
-    And Relevancytestviaopening is the fifth search result
-    And Relevancytestviatext is the sixth search result
-    And Relevancytestviaauxtext is the seventh search result
-
-  @relevancy
-  Scenario: Two word searches are sorted in the order we expect
-    When I search for Relevancytwo Wordtest
-    Then Relevancytwo Wordtest is the first search result
-    And Wordtest Relevancytwo is the second search result
-
-  @relevancy
-  Scenario: Results are effected by the namespace boost
-    When I search for all:Relevancynamespacetest
-    Then Relevancynamespacetest is the first search result
-    And Talk:Relevancynamespacetest is the second search result
-    And File:Relevancynamespacetest is the third search result
-    And Help:Relevancynamespacetest is the fourth search result
-    And File talk:Relevancynamespacetest is the fifth search result
-    And User talk:Relevancynamespacetest is the sixth search result
-    And Template:Relevancynamespacetest is the seventh search result
-
   @fallback_finder
   Scenario: I can find things that Elasticsearch typically thinks of as word breaks in the title
     When I search for $US

@@ -355,6 +355,16 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
 		wfProfileOut( __METHOD__ . '-prefer-recent' );
 
+		wfProfileIn( __METHOD__ . '-local' );
+		$this->extractSpecialSyntaxFromTerm(
+			'/^\s*local:/',
+			function ( $matches ) use ( $searcher ) {
+				$searcher->limitSearchToLocalWiki( true );
+				return '';
+			}
+		);
+		wfProfileOut( __METHOD__ . '-local' );
+
 		// Handle other filters
 		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;

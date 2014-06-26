@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use Elastica\Exception\ResponseException;
 use \ElasticaConnection;
 use \Status;
 
@@ -163,8 +164,14 @@ class ElasticsearchIntermediary {
 		if ( !$exception ) {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}
-		// @todo this extraction fails when only some of the shards fail
-		$message = $exception->getMessage();
+
+		// Lots of times these are the same as getMessage(), but sometimes
+		// they're not. So get the nested exception so we're sure we get
+		// what we want. I'm looking at you PartialShardFailureException.
+		$message = $exception instanceof ResponseException ?
+			$exception->getElasticsearchException()->getMessage() :
+			$exception->getMessage();
+
 		$marker = 'ParseException[Cannot parse ';
 		$markerLocation = strpos( $message, $marker );
 		if ( $markerLocation !== false ) {
@@ -175,11 +182,14 @@ class ElasticsearchIntermediary {
 			$parseError = substr( $message, $start, $end - $start );
 			return array( Status::newFatal( 'cirrussearch-parse-error' ), 'Parse error on ' . $parseError );
 		}
+
+		// This is _probably_ a regex syntax error so lets call it that. I can't think of
+		// what else would have automatons and illegal argument exceptions. Just looking
+		// for the exception won't suffice because other weird things could cause it.
+		$seemsToUseRegexes = strpos( $message, 'import org.apache.lucene.util.automaton.*' ) !== false;
 		$marker = 'IllegalArgumentException[';
 		$markerLocation = strpos( $message, $marker );
-		if ( $markerLocation !== false ) {
-			// This is _probably_ a regex syntax error so lets call it that.
-			// It might not be but thats complicated....
+		if ( $seemsToUseRegexes && $markerLocation !== false ) {
 			$start = $markerLocation + strlen( $marker );
 			$end = strpos( $message, "];", $start );
 			$syntaxError = substr( $message, $start, $end - $start );

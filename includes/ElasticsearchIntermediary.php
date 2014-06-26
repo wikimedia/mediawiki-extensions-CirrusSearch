@@ -204,6 +204,6 @@ class ElasticsearchIntermediary {
 			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );
 			return array( $status, 'Regex syntax error:  ' . $syntaxError );
 		}
-		return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
+		return array( Status::newFatal( 'cirrussearch-backend-error' ), $message );
 	}
 }

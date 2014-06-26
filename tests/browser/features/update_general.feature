@@ -76,3 +76,8 @@ Feature: Search backend updates
     When I move Move%{epoch} From4 to User:Move%{epoch} To4 and do not leave a redirect
     Then within 20 seconds searching for User:Move%{epoch} To4 yields User:Move%{epoch} To4 as the first result
     And within 20 seconds searching for Move%{epoch} To4 yields none as the first result
+
+  Scenario: Really really long links don't break updates
+    Given I am logged in
+    And a page named ReallyLongLink%{epoch} exists with contents @really_long_link.txt
+    And within 20 seconds searching for ReallyLongLink%{epoch} yields ReallyLongLink%{epoch} as the first result

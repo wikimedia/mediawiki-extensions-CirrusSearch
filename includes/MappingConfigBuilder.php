@@ -28,6 +28,11 @@ class MappingConfigBuilder {
 	const SPEED_UP_HIGHLIGHTING = 4;
 
 	/**
+	 * Maximum number of characters allowed in keyword terms.
+	 */
+	const KEYWORD_IGNORE_ABOVE = 5000;
+
+	/**
 	 * Version number for the core analysis. Increment the major
 	 * version when the analysis changes in an incompatible way,
 	 * and change the minor version when it changes but isn't
@@ -124,6 +129,7 @@ class MappingConfigBuilder {
 						'analyzer' => 'lowercase_keyword',
 						'norms' => array( 'enabled' => false ),
 						'index_options' => 'docs',
+						'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
 					) )
 				),
 				'template' => $this->buildLowercaseKeywordField(),
@@ -224,6 +230,7 @@ class MappingConfigBuilder {
 			'analyzer' => 'lowercase_keyword',
 			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
 			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
+			'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
 		);
 	}
 
@@ -237,6 +244,7 @@ class MappingConfigBuilder {
 			'analyzer' => 'keyword',
 			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
 			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
+			'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
 		);
 	}
 

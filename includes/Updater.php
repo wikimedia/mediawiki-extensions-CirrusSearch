@@ -187,10 +187,12 @@ class Updater extends ElasticsearchIntermediary {
 		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			$allData[$suffix][] = $this->docToScript( $document );
+			// $allData[$suffix][] = $this->docToScript( $document );
 			// To quickly switch back to sending doc as upsert instead of script, remove the line above
 			// and switch to the one below:
-			// $allData[$suffix][] = $document;
+			// -- As you can see we switched back - MVEL was freaking out every once in a while and we
+			// had trouble reproducing it locally.  Faster to just turn it off.
+			$allData[$suffix][] = $document;
 		}
 		$count = 0;
 		foreach( $allData as $indexType => $data ) {

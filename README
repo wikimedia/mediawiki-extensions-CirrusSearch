@@ -6,7 +6,15 @@ Installation
 Get Elasticsearch up and running somewhere.  0.90.10 and above are all fine but 1.0 will be supported
 for longer.
 
-Fetch this plugin plugin into your extensions directory.
+CirrusSearch makes use of the dynamic scripting feature in Elasticsearch for improved performance.
+With Elasticsearch 1.2.0 and higher, dynamic scripting is disabled per default but can and
+needs to be enabled for Cirrus.
+
+In the elasticsearch.yml config, add:
+
+ script.disable_dynamic: false
+
+Then place the CirrusSearch extension in your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:

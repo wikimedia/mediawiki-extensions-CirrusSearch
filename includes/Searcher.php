@@ -158,6 +158,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $limitSearchToLocalWiki = false;
 
 	/**
+	 * @var boolean just return the array that makes up the query instead of searching
+	 */
+	private $returnQuery = false;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -182,6 +187,13 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setResultsType( $resultsType ) {
 		$this->resultsType = $resultsType;
+	}
+
+	/**
+	 * @var boolean just return the array that makes up the query instead of searching
+	 */
+	public function setReturnQuery( $returnQuery ) {
+		$this->returnQuery = $returnQuery;
 	}
 
 	/**
@@ -762,7 +774,7 @@ MVEL;
 
 	/**
 	 * Powers full-text-like searches including prefix search.
-	 * @return Status(ResultSet|null|array(String)) results, no results, or title results
+	 * @return Status(ResultSet|null|array(String),array) results, no results, or title results, or the query
 	 */
 	private function search( $type, $for ) {
 		global $wgCirrusSearchMoreAccurateScoringMode;
@@ -890,13 +902,18 @@ MVEL;
 			wfLogWarning( "Invalid sort type:  $this->sort" );
 		}
 
+
+		if ( $this->returnQuery ) {
+			return Status::newGood( $query->toArray() );
+		}
+
+
 		$queryOptions = array();
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 		$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout;
 		Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
-
 
 		// Setup the search
 		$pageType = Connection::getPageType( $this->indexBaseName, $indexType );

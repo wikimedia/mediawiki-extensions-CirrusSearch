@@ -53,4 +53,35 @@ class Util {
 
 		return strtr( $nsText, '_', ' ' );
 	}
+
+	/**
+	 * Check if too arrays are recursively the same.  Values are compared with != and arrays
+	 * are descended into.
+	 * @param array $lhs one array
+	 * @param array $rhs the other array
+	 * @return are they equal
+	 */
+	public static function recursiveSame( $lhs, $rhs ) {
+		if ( array_keys( $lhs ) != array_keys( $rhs ) ) {
+			return false;
+		}
+		foreach ( $lhs as $key => $value ) {
+			if ( !isset( $rhs[ $key ] ) ) {
+				return false;
+			}
+			if ( is_array( $value ) ) {
+				if ( !is_array( $rhs[ $key ] ) ) {
+					return false;
+				}
+				if ( !self::recursiveSame( $value, $rhs[ $key ] ) ) {
+					return false;
+				}
+			} else {
+				if ( $value != $rhs[ $key ] ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }

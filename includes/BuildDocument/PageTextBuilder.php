@@ -133,17 +133,6 @@ class PageTextBuilder extends ParseBuilder {
 		return array( $allText, $opening, $auxiliary );
 	}
 
-	/**
-	 * Get the unicode paragraph separator character.
-	 */
-	private function paragraphSeparator() {
-		static $paragraphSeparator;
-		if ( $paragraphSeparator === null ) {
-			$paragraphSeparator = json_decode('"\u2029"');
-		}
-		return $paragraphSeparator;
-	}
-
 	private function extractHeadingBeforeFirstHeading( $text ) {
 		$matches = array();
 		if ( !preg_match( '/<h[123456]>/', $text, $matches, PREG_OFFSET_CAPTURE ) ) {

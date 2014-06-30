@@ -64,7 +64,7 @@ class Saneitize extends Maintenance {
 		$this->setFromAndTo();
 		$buildChunks = $this->getOption( 'buildChunks');
 		if ( $buildChunks ) {
-			$builder = new MaintenanceChunkBuilder();
+			$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
 			$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $this->fromId, $this->toId );
 			return;
 		}

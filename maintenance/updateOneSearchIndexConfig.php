@@ -113,7 +113,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @param $maintenance Maintenance
+	 * @param Maintenance $maintenance
 	 */
 	public static function addSharedOptions( $maintenance ) {
 		$maintenance->addOption( 'startOver', 'Blow away the identified index and rebuild it with ' .
@@ -153,6 +153,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'defaults to wiki id', false, true );
 		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
 			'to help debug unexepcted configuration missmatches.' );
+		$maintenance->addOption( 'justCacheWarmers', 'Just validate that the cache warmers are correct ' .
+			'and perform no additional checking.  Use when you need to apply new cache warmers but ' .
+			"want to be sure that you won't apply any other changes at an inopportune time." );
 	}
 
 	public function execute() {
@@ -198,11 +201,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return;
 			}
 
+			if ( $this->getOption( 'justCacheWarmers', false ) ) {
+				$this->validateCacheWarmers();
+				return;
+			}
+
 			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
 			$this->pickAnalyzer();
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
+			$this->validateCacheWarmers();
 			$this->validateAlias();
 			$this->updateVersions();
 
@@ -833,6 +842,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	private function validateCacheWarmers() {
+		$warmers = new \CirrusSearch\Maintenance\CacheWarmers( $this->indexType, $this->getPageType(), $this );
+		$warmers->validate();
+	}
+
 	private function createIndex( $rebuild ) {
 		global $wgCirrusSearchRefreshInterval;
 
@@ -948,6 +962,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			return $result;
 		}
 		return $result / 100;
+	}
+
+	public function output( $message, $channel = null ) {
+		parent::output( $message );
+	}
+
+	public function outputIndented( $message ) {
+		$this->output( $this->indent . $message );
 	}
 }
 

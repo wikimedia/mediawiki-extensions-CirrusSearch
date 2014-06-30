@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
 /**
  * Splits maintenance scripts into chunks and prints out the commands to run
@@ -21,8 +21,7 @@ namespace CirrusSearch;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class MaintenanceChunkBuilder {
-
+class ChunkBuilder {
 	public function build( $self, $options, $buildChunks, $from, $to ) {
 		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
 		$buildChunks = intval( $buildChunks );

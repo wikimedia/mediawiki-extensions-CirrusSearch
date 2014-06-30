@@ -432,7 +432,7 @@ class ForceSearchIndex extends Maintenance {
 		if ( $fromId === $this->toId ) {
 			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
 		}
-		$builder = new MaintenanceChunkBuilder();
+		$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
 		$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $fromId, $this->toId );
 	}
 

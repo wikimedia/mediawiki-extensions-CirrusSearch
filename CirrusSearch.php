@@ -331,8 +331,21 @@ $wgCirrusSearchUpdateConflictRetryCount = 5;
 // Number of characters to include in article fragments.
 $wgCirrusSearchFragmentSize = 150;
 
+// Should we add a cache warmer that searches for the main page to the content
+// namespace?
+// @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
+$wgCirrusSearchMainPageCacheWarmer = true;
+
+// Other cache warmers.  Form is index name => array(searches).  See examples
+// commented out below.
+$wgCirrusSearchCacheWarmers = array();
+// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'foo bar';
+// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
+// $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
+$maintenanceDir = $includes . 'Maintenance/';
 $sanity = $includes . 'Sanity/';
 
 /**
@@ -358,7 +371,8 @@ $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsTyp
 $wgAutoloadClasses['CirrusSearch\InterwikiResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
-$wgAutoloadClasses['CirrusSearch\MaintenanceChunkBuilder'] = $includes . 'MaintenanceChunkBuilder.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\CacheWarmers'] = $maintenanceDir . 'CacheWarmers.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\ChunkBuilder'] = $maintenanceDir . 'ChunkBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MassIndexJob'] = $includes . 'MassIndexJob.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';

@@ -47,6 +47,8 @@ def send_lines(percent, jobs, destination):
                     resolved_destination = destination % hostname
                 else:
                     resolved_destination = destination
+                if hostname == "commons.wikimedia.org":
+                    search = "File:" + search
                 send_line(search, resolved_destination)
             except (KeyboardInterrupt, SystemExit):
                 break

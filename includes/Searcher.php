@@ -279,7 +279,7 @@ class Searcher extends ElasticsearchIntermediary {
 	public function randomSearch( $seed ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
-		$this->setResultsType( new TitleResultsType() );
+		$this->setResultsType( new IdResultsType() );
 		$this->sort = 'random';
 
 		return $this->search( 'random', $seed );

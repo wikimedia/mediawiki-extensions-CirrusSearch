@@ -368,6 +368,7 @@ $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateJob'] = $includes . 'LinksUpdateJob.php';
 $wgAutoloadClasses['CirrusSearch\LinksUpdateSecondaryJob'] = $includes . 'LinksUpdateSecondaryJob.php';
 $wgAutoloadClasses['CirrusSearch\FullTextResultsType'] = $includes . 'ResultsType.php';
+$wgAutoloadClasses['CirrusSearch\IdResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiResultsType'] = $includes . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';

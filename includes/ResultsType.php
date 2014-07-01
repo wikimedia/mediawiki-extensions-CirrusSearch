@@ -304,6 +304,25 @@ class FullTextResultsType implements ResultsType {
 	}
 }
 
+/**
+ * Returns page ids. Less CPU load on Elasticsearch since all we're returning
+ * is an id.
+ */
+class IdResultsType extends TitleResultsType {
+	public function getSourceFiltering() {
+		return false;
+	}
+
+	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
+		$resultSet, $searchContainedSyntax ) {
+		$results = array();
+		foreach( $resultSet->getResults() as $r ) {
+			$results[] = $r->getId();
+		}
+		return $results;
+	}
+}
+
 class InterwikiResultsType implements ResultsType {
 	/**
 	 * @var string interwiki prefix mappings

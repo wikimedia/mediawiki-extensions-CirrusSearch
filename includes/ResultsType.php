@@ -176,7 +176,8 @@ class FullTextResultsType implements ResultsType {
 	const HIGHLIGHT_TITLE = 1;
 	const HIGHLIGHT_ALT_TITLE = 2;
 	const HIGHLIGHT_SNIPPET = 4;
-	const HIGHLIGHT_ALL = 7;
+	const HIGHLIGHT_WITH_DEFAULT_SIMILARITY = 8;
+	const HIGHLIGHT_ALL = 15;
 
 	private $highlightingConfig;
 
@@ -241,6 +242,11 @@ class FullTextResultsType implements ResultsType {
 					'max_fragments_scored' => 5000,
 				),
 			);
+			if ( !( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY ) ) {
+				$entireValue[ 'options' ][ 'default_similarity' ] = false;
+				$entireValueInListField[ 'options' ][ 'default_similarity' ] = false;
+				$singleFragment[ 'options' ][ 'default_similarity' ] = false;
+			}
 		} else {
 			$entireValue = array(
 				'number_of_fragments' => 0,

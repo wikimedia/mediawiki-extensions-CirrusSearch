@@ -399,8 +399,9 @@ class Searcher extends ElasticsearchIntermediary {
 				// TODO highlighting but
 				//   https://github.com/wikimedia/search-highlighter/issues/2
 
-				// The setAllowMutate call should speed up the execution at the cost of thread safety.
-				// Since scripts are always executed in one thread, we're safe.
+				// The setAllowMutate call is documented to speed up operations but be thread unsafe.  You'd think
+				// that is ok because scripts are always executed in a single thread but it isn't ok.  It causes
+				// all operations to unstable, so far as I can tell.
 				$script = <<<MVEL
 import org.apache.lucene.util.automaton.*;
 sourceText = _source.get("source_text");
@@ -413,7 +414,6 @@ if (sourceText == null) {
 			pattern = pattern.toLowerCase(locale);
 		}
 		regexp = new RegExp(pattern, RegExp.ALL ^ RegExp.AUTOMATON);
-		regexp.setAllowMutate(true);
 		automaton = new CharacterRunAutomaton(regexp.toAutomaton());
 	}
 	if (insensitive) {

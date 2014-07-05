@@ -198,7 +198,7 @@ class Hooks {
 	 * @param array $software Array of wikitext and version numbers
 	 * @return bool
 	 */
-	public static function onSoftwareInfo( $software ) {
+	public static function onSoftwareInfo( &$software ) {
 		$version = new Version;
 		$status = $version->get();
 		if ( $status->isOk() ) {

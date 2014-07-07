@@ -1146,6 +1146,8 @@ MVEL;
 				:|		(?# no specifying your own fields)
 				\\\(?!") (?# the only acceptable escaping is for quotes)
 			)/x', '\\\$1', $string );
+		// Forward slash need to be escaped with two back slashes instead of one.  No idea why.
+		$string = str_replace( '\\/', '\\\\/', $string );
 
 		// Elasticsearch's query strings can't abide unbalanced quotes
 		return $this->escaper->balanceQuotes( $string );

@@ -175,3 +175,7 @@ Feature: Searches with syntax errors
     | wildcard |
     | *        |
     | ?        |
+
+  Scenario: Searching with a / doesn't cause a degraded search result
+    When I search for main intitle:/page
+    Then Main Page is the first search result

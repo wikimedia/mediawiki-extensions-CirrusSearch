@@ -15,10 +15,11 @@ def send_line(search, destination):
     # Since requests come in with timestamp resolution we assume they came in
     # at some random point in the second
     time.sleep(random.uniform(0, 1))
+    start = time.time()
     params = "fulltext=Search&srbackend=CirrusSearch"
     url = "%s/%s?%s" % (destination, search, params)
     urllib2.urlopen(url)
-    print "Fetched " + url
+    print "Fetched ({:07.3f}) {}".format(time.time() - start, url)
 
 
 def hostname(wiki):

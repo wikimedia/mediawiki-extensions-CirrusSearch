@@ -351,6 +351,10 @@ $wgCirrusSearchCacheWarmers = array();
 // $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
 // $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
 
+// Whether to boost searches based on link counts. Default is true
+// which most wikis will want. Edge cases will want to turn this off.
+$wgCirrusSearchBoostLinks = true;
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 $maintenanceDir = $includes . 'Maintenance/';

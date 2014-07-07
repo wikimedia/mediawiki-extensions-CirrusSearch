@@ -68,7 +68,8 @@ class Hooks {
 			$wgCirrusSearchEnablePref,
 			$wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchFunctionRescoreWindowSize,
-			$wgCirrusSearchFragmentSize;
+			$wgCirrusSearchFragmentSize,
+			$wgCirrusSearchBoostLinks;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -105,6 +106,14 @@ class Hooks {
 			if ( $fragmentSizeOverride !== null && is_numeric( $fragmentSizeOverride ) &&
 					$fragmentSizeOverride < 1000 ) {
 				$wgCirrusSearchFragmentSize = $fragmentSizeOverride;
+			}
+			$boostLinks = $request->getVal( 'cirrusBoostLinks' );
+			if ( $boostLinks !== null ) {
+				if ( $boostLinks === 'yes' ) {
+					$wgCirrusSearchBoostLinks = true;
+				} elseif ( $boostLinks === 'no' ) {
+					$wgCirrusSearchBoostLinks = false;
+				}
 			}
 		}
 	}

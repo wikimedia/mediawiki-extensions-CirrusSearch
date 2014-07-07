@@ -305,7 +305,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchPreferRecentDefaultHalfLife,
 			$wgCirrusSearchNearMatchWeight,
 			$wgCirrusSearchStemmedWeight,
-			$wgCirrusSearchPhraseSlop;
+			$wgCirrusSearchPhraseSlop,
+			$wgCirrusSearchBoostLinks;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -314,7 +315,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
 		$this->term = trim( $term );
-		$this->boostLinks = true;
+		$this->boostLinks = $wgCirrusSearchBoostLinks;
 		$searchType = 'full_text';
 		// Handle title prefix notation
 		wfProfileIn( __METHOD__ . '-prefix-filter' );

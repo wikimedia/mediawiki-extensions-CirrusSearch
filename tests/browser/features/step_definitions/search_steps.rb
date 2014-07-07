@@ -54,6 +54,9 @@ end
 When(/^I switch the language to (.+)$/) do |language|
   @browser.goto("#{@browser.url}&uselang=#{language}")
 end
+When(/^I disable incoming links in the weighting$/) do
+  @browser.goto("#{@browser.url}&cirrusBoostLinks=no")
+end
 When(/^I click the (.*) link$/) do |text|
   @browser.link(:text => text).click
 end

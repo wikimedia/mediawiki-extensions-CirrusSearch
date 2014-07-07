@@ -50,22 +50,6 @@ Before('@prefix') do
   end
 end
 
-Before("@setup_weight") do
-  if !$setup_weight
-    steps %Q{
-      Given a page named TestWeight Smaller exists with contents TestWeight
-      And a page named TestWeight Smaller/A exists with contents [[TestWeight Smaller]]
-      And a page named TestWeight Smaller/B exists with contents [[TestWeight Smaller]]
-      And a page named TestWeight Larger exists with contents TestWeight
-      And a page named TestWeight Larger/Redirect exists with contents #REDIRECT [[TestWeight Larger]]
-      And a page named TestWeight Larger/A exists with contents [[TestWeight Larger]]
-      And a page named TestWeight Larger/B exists with contents [[TestWeight Larger/Redirect]]
-      And a page named TestWeight Larger/C exists with contents [[TestWeight Larger/Redirect]]
-    }
-    $setup_weight = true
-  end
-end
-
 Before("@headings") do
   if !$headings
     steps %Q{
@@ -422,6 +406,20 @@ Before("@relevancy") do
       And a page named Relevancylanguagetest/ja exists
       And a page named Relevancylanguagetest/en exists
       And a page named Relevancylanguagetest/ar exists
+      And a page named Relevancylinktest Smaller exists
+      And a page named Relevancylinktest Larger Extraword exists
+      And a page named Relevancylinktest Larger/Link A exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancyredirecttest Smaller exists with contents Relevancyredirecttest
+      And a page named Relevancyredirecttest Smaller/A exists with contents [[Relevancyredirecttest Smaller]]
+      And a page named Relevancyredirecttest Smaller/B exists with contents [[Relevancyredirecttest Smaller]]
+      And a page named Relevancyredirecttest Larger exists with contents Relevancyredirecttest
+      And a page named Relevancyredirecttest Larger/Redirect exists with contents #REDIRECT [[Relevancyredirecttest Larger]]
+      And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
+      And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
+      And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
     }
   end
   $relevancy = true

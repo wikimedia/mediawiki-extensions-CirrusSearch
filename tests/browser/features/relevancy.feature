@@ -1,5 +1,5 @@
 @relevancy
-Feature: Result scoring
+Feature: Results are ordered from most relevant to least.
   Background:
     Given I am at a random page
 
@@ -38,3 +38,16 @@ Feature: Result scoring
     Then Relevancylanguagetest/ja is the first search result
     And Relevancylanguagetest/en is the second search result
     And Relevancylanguagetest/ar is the third search result
+
+  Scenario: Incoming links count in page weight
+    When I search for Relevancylinktest -intitle:link
+    Then Relevancylinktest Larger Extraword is the first search result
+    And Relevancylinktest Smaller is the second search result
+    When I disable incoming links in the weighting
+    Then Relevancylinktest Smaller is the first search result
+    And Relevancylinktest Larger Extraword is the second search result
+
+  Scenario: Redirects count as incoming links
+    When I search for Relevancyredirecttest
+    Then Relevancyredirecttest Larger is the first search result
+    And Relevancyredirecttest Smaller is the second search result

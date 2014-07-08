@@ -699,7 +699,7 @@ MVEL;
 					global $wgCirrusSearchClientSideSearchTimeout;
 					$searcher->start( "get of $indexType." . implode( ', ', $pageIds ) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
+					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( 'fields', $fields );
@@ -912,8 +912,16 @@ MVEL;
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
-		$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout;
-		Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
+
+		if ( $type === 'regex' ) {
+			$poolCounterType = 'CirrusSearch-Regex';
+			$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'regex' ];
+			Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'regex' ] );
+		} else {
+			$poolCounterType = 'CirrusSearch-Search';
+			$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'default' ];
+			Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
+		}
 
 		// Setup the search
 		$pageType = Connection::getPageType( $this->indexBaseName, $indexType );
@@ -926,10 +934,6 @@ MVEL;
 
 		// Perform the search
 		$searcher = $this;
-		$poolCounterType = 'CirrusSearch-Search';
-		if ( $type === 'regex' ) {
-			$poolCounterType = 'CirrusSearch-Regex';
-		}
 		$work = new PoolCounterWorkViaCallback( $poolCounterType, "_elasticsearch", array(
 			'doWork' => function() use ( $searcher, $search, $description ) {
 				try {

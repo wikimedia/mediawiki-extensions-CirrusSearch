@@ -118,14 +118,22 @@ $wgCirrusSearchClientSideUpdateTimeout = 5;
 
 // The amount of time Elasticsearch will wait for search shard actions before
 // giving up on them and returning the results from the other shards.  Defaults
-// to 20s which is about twice the slowest queries we see.  Some shard actions
-// are capable of returning partial results and others are just ignored.
-$wgCirrusSearchSearchShardTimeout = '20s';
+// to 20s for regular searches which is about twice the slowest queries we see.
+// Some shard actions are capable of returning partial results and others are
+// just ignored.  Regexes default to 120 seconds because they are known to be
+// slow at this point.
+$wgCirrusSearchSearchShardTimeout = array(
+	'default' => '20s',
+	'regex' => '120s',
+);
 
 // Client side timeout for searches in seconds.  Best to keep this double the
 // shard timeout to give Elasticsearch a change to timeout the shards and return
 // partial results.
-$wgCirrusSearchClientSideSearchTimeout = 40;
+$wgCirrusSearchClientSideSearchTimeout = array(
+	'default' => 40,
+	'regex' => 240,
+);
 
 // Client side timeout for maintanance operations.  We can't disable the timeout
 // all together so we set it to one hour for really long running operations

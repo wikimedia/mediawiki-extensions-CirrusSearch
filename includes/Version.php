@@ -47,7 +47,7 @@ class Version extends ElasticsearchIntermediary {
 				$this->start( 'fetching elasticsearch version' );
 				// If this times out the cluster is in really bad shape but we should still
 				// check it.
-				Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout );
+				Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
 				$result = Connection::getClient()->request( '' );
 				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {

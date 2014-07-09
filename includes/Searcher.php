@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 use Elastica;
 use \CirrusSearch;
+use \CirrusSearch\Search\Filters;
 use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \ProfileSection;
@@ -805,22 +806,10 @@ MVEL;
 			}
 		}
 
-		// Wrap $this->query in a filtered query if there are filters.
-		$filterCount = count( $this->filters );
-		$notFilterCount = count( $this->notFilters );
-		if ( $filterCount > 0 || $notFilterCount > 0 ) {
-			if ( $filterCount > 1 || $notFilterCount > 0 ) {
-				$filter = new \Elastica\Filter\Bool();
-				foreach ( $this->filters as $must ) {
-					$filter->addMust( $must );
-				}
-				foreach ( $this->notFilters as $mustNot ) {
-					$filter->addMustNot( $mustNot );
-				}
-			} else {
-				$filter = $this->filters[ 0 ];
-			}
-			$this->query = new \Elastica\Query\Filtered( $this->query, $filter );
+		// Wrap $this->query in a filtered query if there are any filters
+		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
+		if ( $unifiedFilter !== null ) {
+			$this->query = new \Elastica\Query\Filtered( $this->query, $unifiedFilter );
 		}
 
 		// Call installBoosts right after we're done munging the query to include filters

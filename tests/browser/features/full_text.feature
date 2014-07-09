@@ -46,12 +46,6 @@ Feature: Full text search
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |
 
-  @setup_weight
-  Scenario: Page weight include redirects
-    When I search for TestWeight
-    Then TestWeight Larger is the first search result
-    And TestWeight Smaller is the second search result
-
   @headings
   Scenario: Pages can be found by their headings
     When I search for incategory:HeadingsTest "I am a heading"

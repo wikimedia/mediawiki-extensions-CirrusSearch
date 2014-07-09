@@ -359,6 +359,7 @@ $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 $maintenanceDir = $includes . 'Maintenance/';
 $sanity = $includes . 'Sanity/';
+$search = $includes . 'Search/';
 
 /**
  * Classes
@@ -400,6 +401,7 @@ $wgAutoloadClasses['CirrusSearch\Sanity\NoopRemediator'] = $sanity . 'Remediator
 $wgAutoloadClasses['CirrusSearch\Sanity\PrintingRemediator'] = $sanity . 'Remediator.php';
 $wgAutoloadClasses['CirrusSearch\Sanity\QueueingRemediator'] = $sanity . 'QueueingRemediator.php';
 $wgAutoloadClasses['CirrusSearch\Sanity\Remediator'] = $sanity . 'Remediator.php';
+$wgAutoloadClasses['CirrusSearch\Search\Filters'] = $search . 'Filters.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
 $wgAutoloadClasses['CirrusSearch\SearchEscaper'] = $includes . 'SearchEscaper.php';
 $wgAutoloadClasses['CirrusSearch\TitleResultsType'] = $includes . 'ResultsType.php';

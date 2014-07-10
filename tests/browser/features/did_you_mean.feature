@@ -9,6 +9,12 @@ Feature: Did you mean
     Then popular *culture* is suggested
 
   @suggestions
+  Scenario: No suggestions on pages that are not the first
+    When I search for popular cultur
+    And I jump to offset 20 then
+    Then there is no suggestion
+
+  @suggestions
   Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
     When I search for noble prize
     Then *nobel* prize is suggested

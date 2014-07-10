@@ -603,6 +603,8 @@ MVEL;
 				);
 			}
 
+			$showSuggestion = $showSuggestion && ($this->offset == 0);
+
 			if ( $showSuggestion ) {
 				$this->suggest = array(
 					'text' => $this->term,

@@ -123,6 +123,9 @@ class CirrusSearch extends SearchEngine {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
 				}
 			}
+			if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;
+			}
 			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig ) );
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}

@@ -176,8 +176,12 @@ class FullTextResultsType implements ResultsType {
 	const HIGHLIGHT_TITLE = 1;
 	const HIGHLIGHT_ALT_TITLE = 2;
 	const HIGHLIGHT_SNIPPET = 4;
-	const HIGHLIGHT_WITH_DEFAULT_SIMILARITY = 8;
-	const HIGHLIGHT_ALL = 15;
+	/**
+	 * Should we highlight the file text?  Only used if HIGHLIGHT_SNIPPET is set.
+	 */
+	const HIGHLIGHT_FILE_TEXT = 8;
+	const HIGHLIGHT_WITH_DEFAULT_SIMILARITY = 16;
+	const HIGHLIGHT_ALL = 31;
 
 	private $highlightingConfig;
 
@@ -275,21 +279,19 @@ class FullTextResultsType implements ResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(),
 		);
-		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_TITLE ) {
+		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
 		}
-		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_ALT_TITLE ) {
-			$config[ 'fields' ] = array_merge( $config[ 'fields' ], array(
-				'redirect.title' => $entireValueInListField,
-				'heading' => $entireValueInListField,
-			) );
+		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
+			$config[ 'fields' ][ 'redirect.title' ] = $entireValueInListField;
+			$config[ 'fields' ][ 'heading' ] = $entireValueInListField;
 		}
-		if ( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_SNIPPET ) {
-			$config[ 'fields' ] = array_merge( $config[ 'fields' ], array(
-				'text' => $text,
-				'auxiliary_text' => $singleFragment,
-				'file_text' => $singleFragment,
-			) );
+		if ( $this->highlightingConfig & self::HIGHLIGHT_SNIPPET ) {
+			$config[ 'fields' ][ 'text' ] = $text;
+			$config[ 'fields' ][ 'auxiliary_text' ] = $singleFragment;
+			if ( $this->highlightingConfig & self::HIGHLIGHT_FILE_TEXT ) {
+				$config[ 'fields' ][ 'file_text' ] = $singleFragment;
+			}
 		}
 		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );
 		return $config;

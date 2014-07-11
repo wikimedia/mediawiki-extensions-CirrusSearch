@@ -1068,7 +1068,9 @@ MVEL;
 			$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
 			$fields[] = "text${fieldSuffix}^${weight}";
 			$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
-			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
+			if ( !$this->namespaces || in_array( NS_FILE, $this->namespaces ) ) {
+				$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
+			}
 		}
 
 		return $fields;

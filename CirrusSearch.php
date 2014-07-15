@@ -355,6 +355,11 @@ $wgCirrusSearchCacheWarmers = array();
 // which most wikis will want. Edge cases will want to turn this off.
 $wgCirrusSearchBoostLinks = true;
 
+
+// Should Cirrus power Special:Random?  The result is truely random BUT it is
+// somewhat expensive to generate.
+$wgCirrusSearchPowerSpecialRandom = true;
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 $maintenanceDir = $includes . 'Maintenance/';

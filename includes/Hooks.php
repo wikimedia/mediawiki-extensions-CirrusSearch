@@ -420,8 +420,11 @@ class Hooks {
 				// should almost never happen unless you're developing
 				// on a completely empty wiki with no pages
 				if ( isset( $results[ 0 ] ) ) {
-					$title = WikiPage::newFromID( $results[ 0 ] )->getTitle();
-					return false;
+					$page = WikiPage::newFromID( $results[ 0 ] );
+					if ( $page ) {
+						$title = $page->getTitle();
+						return false;
+					}
 				}
 			}
 		}

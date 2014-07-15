@@ -406,6 +406,11 @@ class Hooks {
 	 * @return bool False if we've set $title, true otherwise
 	 */
 	public static function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ) {
+		global $wgCirrusSearchPowerSpecialRandom;
+
+		if ( !$wgCirrusSearchPowerSpecialRandom ) {
+			return true;
+		}
 		// We don't index redirects so don't try to find one.
 		if ( !$isRedir && !$extra ) {
 			// Remove decimal from seed, we want an int

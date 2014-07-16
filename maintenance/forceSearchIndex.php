@@ -92,6 +92,11 @@ class ForceSearchIndex extends Maintenance {
 		// Set the timeout for maintenance actions
 		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
+		// Make sure we've actually got indicies to populate
+		if ( !$this->simpleCheckIndexes() ) {
+			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
+		}
+
 		$profiler = new ProfileSection( __METHOD__ );
 
 		// Make sure we don't flood the pool counter
@@ -250,6 +255,33 @@ class ForceSearchIndex extends Maintenance {
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
+	}
+
+	/**
+	 * Do some simple sanity checking to make sure we've got indexes to populate.
+	 * Note this isn't nearly as robust as updateSearchIndexConfig is, but it's
+	 * not designed to be.
+	 *
+	 * @return bool
+	 */
+	private function simpleCheckIndexes() {
+		$wiki = wfWikiId();
+		$status = Connection::getClient()->getStatus();
+
+		// Top-level alias needs to exist
+		if ( !Connection::getIndex( $wiki )->exists() ) {
+			return false;
+		}
+
+		// Now check all index types to see if they exist
+		foreach ( Connection::getAllIndexTypes() as $indexType ) {
+			// If the alias for this type doesn't exist, fail
+			if ( !Connection::getIndex( $wiki, $indexType )->exists() ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

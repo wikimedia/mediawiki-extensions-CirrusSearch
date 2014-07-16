@@ -202,16 +202,32 @@ $wgCirrusSearchLinkedArticlesToUpdate = 25;
 // Maximum number of newly unlinked articles to update when an article changes.
 $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 
-// Weight of fields relative to article text
+// Weight of fields.  Must be integers not decimals.  If $wgCirrusSearchAllFields['use']
+// is false this can be changed on the fly.  If it is true then changes to this require
+// an in place reindex to take effect.
 $wgCirrusSearchWeights = array(
-	'title' => 20.0,
-	'redirect' => 15.0,
-	'category' => 8.0,
-	'heading' => 5.0,
-	'opening_text' => 4.0,
-	'auxiliary_text' => 0.8,
-	'file_text' => 0.5,
+	'title' => 40,
+	'redirect' => 30,
+	'category' => 16,
+	'heading' => 10,
+	'opening_text' => 8,
+	'text' => 2,
+	'auxiliary_text' => 1,
+	'file_text' => 1,
 );
+
+// Enable building and using of "all" fields that contain multiple copies of other fields
+// for weighting.  These all fields exist entirely to speed up the full_text query type by
+// baking the weights above into a single field.  This is useful because it drasticly
+// reduces the random io to power the query from 14 term queries per term in the query
+// string to 2.  Each term query is potentially one or two disk random io actions.  The
+// reduction isn't strictly 7:1 because we skip file_text in non file namespace (now 6:1)
+// and the near match fields (title and redirect) also kick it, but only once per query.
+// Also don't forget the io from the phrase rescore - this helps with that, but its even
+// more muddy how much.
+// Note setting 'use' to true without having set 'build' to true and performing an in place
+// reindex will cause all searches to find nothing.
+$wgCirrusSearchAllFields = array( 'build' => false, 'use' => false );
 
 // The method Cirrus will use to extract the opening section of the text.  Valid values are:
 // * first_heading - Wikipedia style.  Grab the text before the first heading (h1-h6) tag.

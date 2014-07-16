@@ -33,12 +33,18 @@ class MappingConfigBuilder {
 	const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
+	 * Distance that lucene places between multiple values of the same field.
+	 * Set pretty high to prevent accidental phrase queries between those values.
+	 */
+	const POSITION_OFFSET_GAP = 10;
+
+	/**
 	 * Version number for the core analysis. Increment the major
 	 * version when the analysis changes in an incompatible way,
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.4';
+	const VERSION = '1.5';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -74,6 +80,9 @@ class MappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig() {
+		global $wgCirrusSearchAllFields,
+			$wgCirrusSearchWeights;
+
 		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is infered anyway.
@@ -155,6 +164,30 @@ class MappingConfigBuilder {
 				'language' => $this->buildKeywordField(),
 			),
 		);
+
+		if ( $wgCirrusSearchAllFields[ 'build' ] ) {
+			$config[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
+			// Now layer all the fields into the all field once per weight.  Querying it isn't strictly the
+			// same as querying each field - in some ways it is better!  In others it is worse....
+
+			// Better because theoretically tf/idf based scoring works better this way.
+			// Worse because we have to analyze each field multiple times....  Bleh!
+			// This field can't be used for the fvh/experimental highlighter for several reasons:
+			//  1. It is built with copy_to and not stored.
+			//  2. The term frequency information is all whoppy compared to the "real" source text.
+			foreach ( $wgCirrusSearchWeights as $field => $weight ) {
+				for ( $r = 0; $r < $weight; $r++ ) {
+					if ( $field === 'redirect' ) {
+						// Redirect is in a funky place
+						$config[ 'properties' ][ 'redirect' ][ 'properties' ][ 'title' ][ 'copy_to' ][] = 'all';
+					} else {
+						$config[ 'properties' ][ $field ][ 'copy_to' ][] = 'all';
+					}
+				}
+			}
+			// TODO would it help to do the all field for near_match?
+		}
+
 		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
 		return $config;
 	}
@@ -176,11 +209,13 @@ class MappingConfigBuilder {
 			'type' => 'string',
 			'index_analyzer' => 'text',
 			'search_analyzer' => 'text_search',
+			'position_offset_gap' => self::POSITION_OFFSET_GAP,
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'index_analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
+					'position_offset_gap' => self::POSITION_OFFSET_GAP,
 				),
 			)
 		);
@@ -211,6 +246,7 @@ class MappingConfigBuilder {
 			}
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'type' => 'string',
+				'position_offset_gap' => self::POSITION_OFFSET_GAP,
 			), $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(

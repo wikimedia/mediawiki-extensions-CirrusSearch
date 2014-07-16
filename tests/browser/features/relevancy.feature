@@ -5,6 +5,7 @@ Feature: Results are ordered from most relevant to least.
 
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
     When I search for Relevancytest
+    And I disable incoming links in the weighting
     Then Relevancytest is the first search result
     And Relevancytestviaredirect is the second search result
     And Relevancytestviacategory is the third search result
@@ -12,6 +13,17 @@ Feature: Results are ordered from most relevant to least.
     And Relevancytestviaopening is the fifth search result
     And Relevancytestviatext is the sixth search result
     And Relevancytestviaauxtext is the seventh search result
+
+  Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
+    When I search for "Relevancytestphrase phrase"
+    And I disable incoming links in the weighting
+    Then Relevancytestphrase phrase is the first search result
+    And Relevancytestphraseviaredirect is the second search result
+    And Relevancytestphraseviacategory is the third search result
+    And Relevancytestphraseviaheading is the fourth search result
+    And Relevancytestphraseviaopening is the fifth search result
+    And Relevancytestphraseviatext is the sixth search result
+    And Relevancytestphraseviaauxtext is the seventh search result
 
   Scenario: Words in order are worth more then words out of order
     When I search for Relevancytwo Wordtest

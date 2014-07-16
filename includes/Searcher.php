@@ -307,7 +307,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchNearMatchWeight,
 			$wgCirrusSearchStemmedWeight,
 			$wgCirrusSearchPhraseSlop,
-			$wgCirrusSearchBoostLinks;
+			$wgCirrusSearchBoostLinks,
+			$wgCirrusSearchAllFields;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -528,14 +529,20 @@ MVEL;
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
 		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<main>"((?:[^"]|(?:\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
-			function ( $matches ) use ( $searcher ) {
+			function ( $matches ) use ( $searcher, &$phrases ) {
 				global $wgCirrusSearchPhraseSlop;
 				$main = $searcher->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
 					if ( !isset( $matches[ 'slop' ] ) ) {
 						$main = $main . '~' . $wgCirrusSearchPhraseSlop[ 'precise' ];
 					}
-					$main = $searcher->switchSearchToExact( $main );
+					// Got to collect phrases that don't use the all field so we can highlight them.
+					// The highlighter locks phrases to the fields that specify them.  It doesn't do
+					// that with terms.
+					return array(
+						'escaped' => $searcher->switchSearchToExact( $main, true ),
+						'nonAll' => $searcher->switchSearchToExact( $main, false ),
+					);
 				}
 				return array( 'escaped' => $main );
 			} );
@@ -547,19 +554,30 @@ MVEL;
 		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/',
 			function ( $matches ) use ( $searcher ) {
 				$term = $searcher->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
-				return array( 'escaped' => $searcher->switchSearchToExact( $term ) );
+				return array(
+					'escaped' => $searcher->switchSearchToExact( $term, true ),
+					'nonAll' => $searcher->switchSearchToExact( $term, false ),
+				);
 			} );
 		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
 		wfProfileIn( __METHOD__ . '-escape' );
 		$escapedQuery = array();
+		$nonAllQuery = array();
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'escaped' ] ) ) {
 				$escapedQuery[] = $queryPart[ 'escaped' ];
+				if ( isset( $queryPart[ 'nonAll' ] ) ) {
+					$nonAllQuery[] = $queryPart[ 'nonAll' ];
+				} else {
+					$nonAllQuery[] = $queryPart[ 'escaped' ];
+				}
 				continue;
 			}
 			if ( isset( $queryPart[ 'raw' ] ) ) {
-				$escapedQuery[] = $this->fixupQueryStringPart( $queryPart[ 'raw' ] );
+				$fixed = $this->fixupQueryStringPart( $queryPart[ 'raw' ] );
+				$escapedQuery[] = $fixed;
+				$nonAllQuery[] = $fixed;
 				continue;
 			}
 			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
@@ -576,10 +594,20 @@ MVEL;
 			}
 			wfProfileIn( __METHOD__ . '-build-query' );
 			$fields = array_merge(
-				$this->buildFullTextSearchFields( 1, '.plain' ),
-				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '' ) );
-			$nearMatchFields = $this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match' );
+				$this->buildFullTextSearchFields( 1, '.plain', true ),
+				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', true ) );
+			$nearMatchFields = $this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match', true );
 			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields, $queryStringQueryString );
+
+			// The highlighter doesn't know about the weightinging from the all fields so we have to send
+			// it a query without the all fields.  This swaps one in. 
+			if ( $wgCirrusSearchAllFields[ 'use' ] ) {
+				$nonAllFields = array_merge(
+					$this->buildFullTextSearchFields( 1, '.plain', false ),
+					$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', false ) );
+				$nonAllQueryString = $this->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1 );
+			}
 
 			// Only do a phrase match rescore if the query doesn't include any quotes and has a space
 			// TODO allow phrases without spaces to support things like words with dashes and languages
@@ -1037,8 +1065,8 @@ MVEL;
 		);
 	}
 
-	public function switchSearchToExact( $term ) {
-		$exact = join( ' OR ', $this->buildFullTextSearchFields( 1, ".plain:$term" ) );
+	public function switchSearchToExact( $term, $allFieldAllowed ) {
+		$exact = join( ' OR ', $this->buildFullTextSearchFields( 1, ".plain:$term", $allFieldAllowed ) );
 		return "($exact)";
 	}
 
@@ -1046,33 +1074,43 @@ MVEL;
 	 * Build fields searched by full text search.
 	 * @param float $weight weight to multiply by all fields
 	 * @param string $fieldSuffix suffux to add to field names
+	 * @param boolean $allFieldAllowed can we use the all field?  False for
+	 *    collecting phrases for the highlighter.
 	 * @return array(string) of fields to query
 	 */
-	public function buildFullTextSearchFields( $weight, $fieldSuffix ) {
-		global $wgCirrusSearchWeights;
+	public function buildFullTextSearchFields( $weight, $fieldSuffix, $allFieldAllowed ) {
+		global $wgCirrusSearchWeights,
+			$wgCirrusSearchAllFields;
 		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
 		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
 		$fields = array();
-		$fields[] = "title${fieldSuffix}^${titleWeight}";
-		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
 
 		// Only title and redirect support near_match so skip it for everything else
-		if ( $fieldSuffix !== '.near_match' ) {
-			$categoryWeight = $weight * $wgCirrusSearchWeights[ 'category' ];
-			$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
-			$openingTextWeight = $weight * $wgCirrusSearchWeights[ 'opening_text' ];
-			$auxiliaryTextWeight = $weight * $wgCirrusSearchWeights[ 'auxiliary_text' ];
-			$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
-			$fields[] = "category${fieldSuffix}^${categoryWeight}";
-			$fields[] = "heading${fieldSuffix}^${headingWeight}";
-			$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
-			$fields[] = "text${fieldSuffix}^${weight}";
-			$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
-			if ( !$this->namespaces || in_array( NS_FILE, $this->namespaces ) ) {
-				$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
-			}
+		if ( $fieldSuffix === '.near_match' ) {
+			$fields[] = "title${fieldSuffix}^${titleWeight}";
+			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+			return $fields;
 		}
-
+		if ( $wgCirrusSearchAllFields[ 'use' ] && $allFieldAllowed ) {
+			$fields[] = "all${fieldSuffix}^${weight}";
+			return $fields;
+		}
+		$fields[] = "title${fieldSuffix}^${titleWeight}";
+		$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
+		$categoryWeight = $weight * $wgCirrusSearchWeights[ 'category' ];
+		$headingWeight = $weight * $wgCirrusSearchWeights[ 'heading' ];
+		$openingTextWeight = $weight * $wgCirrusSearchWeights[ 'opening_text' ];
+		$textWeight = $weight * $wgCirrusSearchWeights[ 'text' ];
+		$auxiliaryTextWeight = $weight * $wgCirrusSearchWeights[ 'auxiliary_text' ];
+		$fields[] = "category${fieldSuffix}^${categoryWeight}";
+		$fields[] = "heading${fieldSuffix}^${headingWeight}";
+		$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
+		$fields[] = "text${fieldSuffix}^${textWeight}";
+		$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
+		if ( !$this->namespaces || in_array( NS_FILE, $this->namespaces ) ) {
+			$fileTextWeight = $weight * $wgCirrusSearchWeights[ 'file_text' ];
+			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
+		}
 		return $fields;
 	}
 

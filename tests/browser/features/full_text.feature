@@ -77,9 +77,9 @@ Feature: Full text search
     Then Rescore Test Words is the first search result
 
   @setup_phrase_rescore
-  Scenario: Searching for an a quoted phrase finds higher scored matches before the whole query interpreted as a phrase
+  Scenario: Searching for a quoted phrase finds higher scored matches before the whole query interpreted as a phrase
     When I search for Rescore "Test Words"
-    Then Test Words Rescore Rescore is the first search result
+    Then Test Words Rescore Rescore Test Words is the first search result
 
   # Note that other tests will catch this situation as well but this test should be pretty specific
   @setup_phrase_rescore
@@ -90,7 +90,7 @@ Feature: Full text search
   @setup_phrase_rescore
   Scenario: Searching with a quoted word just treats the word as though it didn't have quotes
     When I search for "Rescore" Words Test
-    Then Test Words Rescore Rescore is the first search result
+    Then Test Words Rescore Rescore Test Words is the first search result
 
   @programmer_friendly
   Scenario Outline: Programmer friendly searches

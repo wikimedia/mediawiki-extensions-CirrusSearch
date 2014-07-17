@@ -564,6 +564,7 @@ MVEL;
 		wfProfileIn( __METHOD__ . '-escape' );
 		$escapedQuery = array();
 		$nonAllQuery = array();
+		$nearMatchQuery = array();
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'escaped' ] ) ) {
 				$escapedQuery[] = $queryPart[ 'escaped' ];
@@ -578,6 +579,7 @@ MVEL;
 				$fixed = $this->fixupQueryStringPart( $queryPart[ 'raw' ] );
 				$escapedQuery[] = $fixed;
 				$nonAllQuery[] = $fixed;
+				$nearMatchQuery[] = $queryPart[ 'raw' ];
 				continue;
 			}
 			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
@@ -586,6 +588,8 @@ MVEL;
 
 		// Actual text query
 		$queryStringQueryString = $this->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+		// Note that no escaping is required for near_match's match query.
+		$nearMatchQuery = implode( ' ', $nearMatchQuery );
 		if ( $queryStringQueryString !== '' ) {
 			if ( preg_match( '/(?:(?<!\\\\)[?*+~"!|-])|AND|OR|NOT/', $queryStringQueryString ) ) {
 				$this->searchContainedSyntax = true;
@@ -596,8 +600,10 @@ MVEL;
 			$fields = array_merge(
 				$this->buildFullTextSearchFields( 1, '.plain', true ),
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', true ) );
-			$nearMatchFields = $this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight, '.near_match', true );
-			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields, $queryStringQueryString );
+			$nearMatchFields = $this->buildFullTextSearchFields( $wgCirrusSearchNearMatchWeight,
+				'.near_match', true );
+			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields,
+				$queryStringQueryString, $nearMatchQuery );
 
 			// The highlighter doesn't know about the weightinging from the all fields so we have to send
 			// it a query without the all fields.  This swaps one in. 
@@ -1006,18 +1012,24 @@ MVEL;
 		return $nsCount !== $namespacesInIndexType;
 	}
 
-	private function buildSearchTextQuery( $fields, $nearMatchFields, $queryString ) {
+	private function buildSearchTextQuery( $fields, $nearMatchFields, $queryString, $nearMatchQuery ) {
 		global $wgCirrusSearchPhraseSlop;
 
-		// Build one query for the full text fields and one for the near match fields so that
-		// the near match analyzer doesn't confuse the full text analyzers.
-		$bool = new \Elastica\Query\Bool();
-		$bool->setMinimumNumberShouldMatch( 1 );
-		$bool->addShould( $this->buildSearchTextQueryForFields( $fields, $queryString,
-			$wgCirrusSearchPhraseSlop[ 'default' ] ) );
-		$bool->addShould( $this->buildSearchTextQueryForFields( $nearMatchFields, $queryString,
-			$wgCirrusSearchPhraseSlop[ 'default' ] ) );
-		return $bool;
+		$queryForMostFields = $this->buildSearchTextQueryForFields( $fields, $queryString,
+				$wgCirrusSearchPhraseSlop[ 'default' ] );
+		if ( $nearMatchQuery ) {
+			// Build one query for the full text fields and one for the near match fields so that
+			// the near match can run unescaped.
+			$bool = new \Elastica\Query\Bool();
+			$bool->setMinimumNumberShouldMatch( 1 );
+			$bool->addShould( $queryForMostFields );
+			$nearMatch = new \Elastica\Query\MultiMatch();
+			$nearMatch->setFields( $nearMatchFields );
+			$nearMatch->setQuery( $nearMatchQuery );
+			$bool->addShould( $nearMatch );
+			return $bool;
+		}
+		return $queryForMostFields;
 	}
 
 	private function buildSearchTextQueryForFields( $fields, $queryString, $phraseSlop ) {

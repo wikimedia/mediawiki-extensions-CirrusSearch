@@ -156,6 +156,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'justCacheWarmers', 'Just validate that the cache warmers are correct ' .
 			'and perform no additional checking.  Use when you need to apply new cache warmers but ' .
 			"want to be sure that you won't apply any other changes at an inopportune time." );
+		$maintenance->addOption( 'justAllocation', 'Just validate the shard allocation settings.  Use ' .
+			"when you need to apply new cache warmers but want to be sure that you won't apply any other " .
+			'changes at an inopportune time.' );
 	}
 
 	public function execute() {
@@ -203,6 +206,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			if ( $this->getOption( 'justCacheWarmers', false ) ) {
 				$this->validateCacheWarmers();
+				return;
+			}
+
+			if ( $this->getOption( 'justAllocation', false ) ) {
+				$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
+				$shardAllocation->validate();
 				return;
 			}
 

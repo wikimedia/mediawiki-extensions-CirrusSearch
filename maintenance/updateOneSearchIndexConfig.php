@@ -328,6 +328,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndex()->getSettings()->set( array( 'auto_expand_replicas' => $this->getReplicaCount() ) );
 			$this->output( "corrected\n" );
 		}
+
+		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
+		$shardAllocation->validate();
 	}
 
 	private function validateAnalyzers() {

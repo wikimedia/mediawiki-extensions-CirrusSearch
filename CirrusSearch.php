@@ -371,10 +371,29 @@ $wgCirrusSearchCacheWarmers = array();
 // which most wikis will want. Edge cases will want to turn this off.
 $wgCirrusSearchBoostLinks = true;
 
-
 // Should Cirrus power Special:Random?  The result is truely random BUT it is
 // somewhat expensive to generate.
 $wgCirrusSearchPowerSpecialRandom = true;
+
+// Shard allocation settings. The include/exclude/require top level keys are
+// the type of rule to use, the names should be self explanatory. The values
+// are an array of keys and values of different rules to apply to an index.
+//
+// For example: if you wanted to make sure this index was only allocated to
+// servers matching a specific IP block, you'd do this:
+//    $wgCirrusSearchIndexAllocation['require'] = array( '_ip' => '192.168.1.*' );
+// Or let's say you want to keep an index off a given host:
+//    $wgCirrusSearchIndexAllocation['exclude'] = array( '_host' => 'badserver01' );
+//
+// Note that if you use anything other than the magic values of _ip, _name, _id
+// or _host it requires you to configure the host keys/values on your server(s)
+//
+// http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-allocation.html
+$wgCirrusSearchIndexAllocation = array(
+	'include' => array(),
+	'exclude' => array(),
+	'require' => array(),
+);
 
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
@@ -408,6 +427,7 @@ $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSea
 $wgAutoloadClasses['CirrusSearch\Job'] = $includes . 'Job.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\CacheWarmers'] = $maintenanceDir . 'CacheWarmers.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\ChunkBuilder'] = $maintenanceDir . 'ChunkBuilder.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\ShardAllocation'] = $maintenanceDir . 'ShardAllocation.php';
 $wgAutoloadClasses['CirrusSearch\MappingConfigBuilder'] = $includes . 'MappingConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\MassIndexJob'] = $includes . 'MassIndexJob.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
@@ -450,7 +470,6 @@ $wgHooks[ 'SpecialRandomGetRandomTitle' ][] = 'CirrusSearch\Hooks::onSpecialRand
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsPrepend';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
-
 
 /**
  * i18n

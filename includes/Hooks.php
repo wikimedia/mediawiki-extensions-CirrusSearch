@@ -146,7 +146,7 @@ class Hooks {
 			// DeferredUpdate so we don't end up racing our own page deletion
 			DeferredUpdates::addCallableUpdate( function() use ( $target ) {
 				JobQueueGroup::singleton()->push(
-					new LinksUpdateJob( $target, array(
+					new Job\LinksUpdate( $target, array(
 						'addedLinks' => array(),
 						'removedLinks' => array(),
 					) )
@@ -169,7 +169,7 @@ class Hooks {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
-			new DeletePagesJob( $page->getTitle(), array( 'id' => $pageId ) )
+			new Job\DeletePages( $page->getTitle(), array( 'id' => $pageId ) )
 		);
 		return true;
 	}
@@ -184,7 +184,7 @@ class Hooks {
 	 */
 	public static function onAfterImportPage( $title ) {
 		JobQueueGroup::singleton()->push(
-			MassIndexJob::build(
+			Job\MassIndex::build(
 				array( WikiPage::factory( $title ) ),
 				false,
 				Updater::INDEX_EVERYTHING
@@ -204,7 +204,7 @@ class Hooks {
 	 */
 	public static function onRevisionDelete( $title ) {
 		JobQueueGroup::singleton()->push(
-			new LinksUpdateJob( $title, array(
+			new Job\LinksUpdate( $title, array(
 				'addedLinks' => array(),
 				'removedLinks' => array(),
 				'prioritize' => true
@@ -300,7 +300,7 @@ class Hooks {
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
 		}
-		$job = new LinksUpdateJob( $linksUpdate->getTitle(), $params );
+		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}
@@ -397,7 +397,7 @@ class Hooks {
 		// index to another.  That only happens if it switches namespace.
 		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
 			$oldIndexType = Connection::getIndexSuffixForNamespace( $title->getNamespace() );
-			JobQueueGroup::singleton()->push( new DeletePagesJob( $title, array(
+			JobQueueGroup::singleton()->push( new Job\DeletePages( $title, array(
 				'indexType' => $oldIndexType,
 				'id' => $oldId
 			) ) );
@@ -449,7 +449,7 @@ class Hooks {
 	}
 
 	/**
-	 * Take a list of titles either linked or unlinked and prepare them for LinksUpdateJob.
+	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
 	 * This includes limiting them to $max titles.
 	 * @param array(Title) $titles titles to prepare
 	 * @param int $max maximum number of titles to return

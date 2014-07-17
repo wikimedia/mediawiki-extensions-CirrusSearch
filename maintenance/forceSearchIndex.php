@@ -200,7 +200,7 @@ class ForceSearchIndex extends Maintenance {
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
-					JobQueueGroup::singleton()->push( MassIndexJob::build( $pages, $updateFlags ) );
+					JobQueueGroup::singleton()->push( Job\MassIndex::build( $pages, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = new Updater();

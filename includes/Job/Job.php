@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Job;
 use \Job as MWJob;
 
 /**
@@ -23,8 +23,8 @@ use \Job as MWJob;
  */
 abstract class Job extends MWJob {
 	public function __construct( $title, $params ) {
-		// eg: DeletePagesJob -> cirrusSearchDeletePages
-		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\', '', str_replace( 'Job', '', get_class( $this ) ) );
+		// eg: DeletePages -> cirrusSearchDeletePages
+		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', get_class( $this ) );
 		parent::__construct( $jobName, $title, $params );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it

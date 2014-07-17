@@ -1,6 +1,7 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Job;
+use \CirrusSearch\Updater;
 use \Title;
 
 /**
@@ -28,7 +29,7 @@ use \Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LinksUpdateSecondaryJob extends Job {
+class LinksUpdateSecondary extends Job {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 	}

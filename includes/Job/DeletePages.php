@@ -1,6 +1,7 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Job;
+use \CirrusSearch\Updater;
 
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
@@ -21,7 +22,7 @@ namespace CirrusSearch;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class DeletePagesJob extends Job {
+class DeletePages extends Job {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 

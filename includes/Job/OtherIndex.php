@@ -1,6 +1,7 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Job;
+use CirrusSearch\OtherIndexes;
 use \JobQueueGroup;
 use \Title;
 
@@ -22,7 +23,7 @@ use \Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class OtherIndexJob extends Job {
+class OtherIndex extends Job {
 	/**
 	 * Check if we need to make a job and inject one if so.
 	 * @param $titles array(Title) The title we might update

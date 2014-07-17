@@ -1,6 +1,7 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Job;
+use \CirrusSearch\Updater;
 use \JobQueueGroup;
 
 /**
@@ -28,7 +29,7 @@ use \JobQueueGroup;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LinksUpdateJob extends Job {
+class LinksUpdate extends Job {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
 
@@ -69,7 +70,7 @@ class LinksUpdateJob extends Job {
 				$params[ 'jobReleaseTimestamp' ] = time() + 2 * $wgCirrusSearchRefreshInterval + 1;
 			}
 			$jobQueueGroup->push(
-				new LinksUpdateSecondaryJob( $this->title, $params ) );
+				new LinksUpdateSecondary( $this->title, $params ) );
 		}
 
 		// All done

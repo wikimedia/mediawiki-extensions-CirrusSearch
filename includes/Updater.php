@@ -182,7 +182,7 @@ class Updater extends ElasticsearchIntermediary {
 			Connection::setTimeout( $clientSideTimeout );
 		}
 
-		OtherIndexJob::queueIfRequired( $this->pagesToTitles( $pages ), true );
+		Job\OtherIndex::queueIfRequired( $this->pagesToTitles( $pages ), true );
 
 		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
@@ -218,7 +218,7 @@ class Updater extends ElasticsearchIntermediary {
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
-		OtherIndexJob::queueIfRequired( $titles, false );
+		Job\OtherIndex::queueIfRequired( $titles, false );
 
 		if ( $clientSideTimeout !== null ) {
 			Connection::setTimeout( $clientSideTimeout );

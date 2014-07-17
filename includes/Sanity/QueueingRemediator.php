@@ -1,8 +1,8 @@
 <?php
 
 namespace CirrusSearch\Sanity;
-use \CirrusSearch\DeletePagesJob;
-use \CirrusSearch\LinksUpdateJob;
+use \CirrusSearch\Job\DeletePages;
+use \CirrusSearch\Job\LinksUpdate;
 use \JobQueueGroup;
 use \WikiPage;
 
@@ -34,11 +34,11 @@ class QueueingRemediator implements Remediator {
 	}
 	public function ghostPageInIndex( $pageId, $title ) {
 		JobQueueGroup::singleton()->push(
-			new DeletePagesJob( $title, array( 'id' => $pageId ) )
+			new DeletePages( $title, array( 'id' => $pageId ) )
 		);
 	}
 	public function pageInWrongIndex( $page, $wrongIndex ) {
-		JobQueueGroup::singleton()->push( new DeletePagesJob( $page->getTitle(), array(
+		JobQueueGroup::singleton()->push( new DeletePages( $page->getTitle(), array(
 			'indexType' => $wrongIndex,
 			'id' => $page->getId()
 		) ) );
@@ -47,7 +47,7 @@ class QueueingRemediator implements Remediator {
 
 	private function pushLinksUpdateJob( $page ) {
 		JobQueueGroup::singleton()->push(
-			new LinksUpdateJob( $page->getTitle(), array(
+			new LinksUpdate( $page->getTitle(), array(
 				'addedLinks' => array(),
 				'removedLinks' => array(),
 			) )

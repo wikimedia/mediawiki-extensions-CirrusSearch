@@ -131,7 +131,7 @@ MVEL;
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
 				$findIdsClosures[] = function( $id ) use
 						( $scriptSource, $bulk, $otherIndex, $localSite, &$updatesInBulk ) {
-					$script = new \Elastica\Script( $scriptSource, array( 'local_site' => $localSite ) );
+					$script = new \Elastica\Script( $scriptSource, array( 'local_site' => $localSite ), 'mvel' );
 					$script->setId( $id );
 					$script->setParam( '_type', 'page' );
 					$script->setParam( '_index', $otherIndex );

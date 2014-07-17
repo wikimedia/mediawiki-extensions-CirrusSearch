@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 use \ForkController;
 
 /**
@@ -25,6 +25,6 @@ use \ForkController;
 class ReindexForkController extends ForkController {
 	protected function prepareEnvironment() {
 		parent::prepareEnvironment();
-		Connection::destroySingleton();
+		\CirrusSearch\Connection::destroySingleton();
 	}
 }

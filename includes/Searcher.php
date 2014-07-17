@@ -149,7 +149,7 @@ class Searcher extends ElasticsearchIntermediary {
 	private $highlightQuery = null;
 
 	/**
-	 * @var SearchEscaper escapes queries
+	 * @var \CirrusSearch\Search\Escaper escapes queries
 	 */
 	private $escaper;
 
@@ -180,7 +180,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: wfWikiId();
-		$this->escaper = new SearchEscaper( $wgLanguageCode );
+		$this->escaper = new Search\Escaper( $wgLanguageCode );
 	}
 
 	/**

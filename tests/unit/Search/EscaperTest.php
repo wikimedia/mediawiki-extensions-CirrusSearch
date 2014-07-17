@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Search;
 
 use \MediaWikiTestCase;
 
@@ -22,7 +22,7 @@ use \MediaWikiTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class SearchEscaperTest extends MediaWikiTestCase {
+class EscaperTest extends MediaWikiTestCase {
 	/**
 	 * @dataProvider quoteEscapeTestCases
 	 */

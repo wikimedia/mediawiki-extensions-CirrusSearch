@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
 /**
  * Builds elasticsearch mapping configuration arrays.

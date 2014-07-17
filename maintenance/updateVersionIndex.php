@@ -83,8 +83,8 @@ class UpdateVersionIndex extends Maintenance {
 		$versionType = $this->getType();
 		$this->output( "{$this->indent}Updating tracking indexes..." );
 		$docs = array();
-		list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
-		list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
+		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
+		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
 		foreach( Connection::getAllIndexTypes() as $type ) {
 			$docs[] = new \Elastica\Document(
 				Connection::getIndexName( $baseName, $type ),

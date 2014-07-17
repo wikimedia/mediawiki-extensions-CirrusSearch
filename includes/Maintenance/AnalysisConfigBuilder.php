@@ -1,7 +1,8 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
 
+use \CirrusSearch\Searcher;
 use \Language;
 
 /**

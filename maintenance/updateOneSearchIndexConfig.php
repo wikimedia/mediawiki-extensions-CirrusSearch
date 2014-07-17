@@ -384,7 +384,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
 		}
 
-		$requiredPageMappings = new MappingConfigBuilder(
+		$requiredPageMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$requiredPageMappings = $requiredPageMappings->buildConfig();
@@ -695,7 +695,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
-			$fork = new ReindexForkController( $this->reindexProcesses );
+			$fork = new \CirrusSearch\Maintenance\ReindexForkController( $this->reindexProcesses );
 			$forkResult = $fork->start();
 			// Forking clears the timeout so we have to reinstate it.
 			Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
@@ -752,7 +752,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$filter = new Elastica\Filter\Script(
 				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
 		}
-		$pageProperties = new MappingConfigBuilder(
+		$pageProperties = new \CirrusSearch\Maintenance\MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$pageProperties = $pageProperties->buildConfig();
@@ -921,7 +921,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function pickAnalyzer() {
-		$this->analysisConfigBuilder = new AnalysisConfigBuilder( $this->langCode, $this->availablePlugins );
+		$this->analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder(
+			$this->langCode, $this->availablePlugins );
 		$this->output( $this->indent . 'Picking analyzer...' .
 			$this->analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
 	}

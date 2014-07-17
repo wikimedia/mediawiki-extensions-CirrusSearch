@@ -1,7 +1,7 @@
 <?php
 
-use CirrusSearch\FullTextResultsType;
 use CirrusSearch\InterwikiSearcher;
+use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 
 /**
@@ -58,7 +58,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Overridden to delegate prefix searching to Searcher.
 	 * @param string $term text to search
-	 * @return ResultSet|null|Status results, no results, or error respectively
+	 * @return Search\ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
 		global $wgCirrusSearchInterwikiSources;

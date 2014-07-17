@@ -3,7 +3,11 @@
 namespace CirrusSearch;
 use Elastica;
 use \CirrusSearch;
+use \CirrusSearch\Search\Escaper;
 use \CirrusSearch\Search\Filters;
+use \CirrusSearch\Search\FullTextResultsType;
+use \CirrusSearch\Search\IdResultsType;
+use \CirrusSearch\Search\ResultsType;
 use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \ProfileSection;
@@ -149,7 +153,7 @@ class Searcher extends ElasticsearchIntermediary {
 	private $highlightQuery = null;
 
 	/**
-	 * @var \CirrusSearch\Search\Escaper escapes queries
+	 * @var Escaper escapes queries
 	 */
 	private $escaper;
 
@@ -180,7 +184,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: wfWikiId();
-		$this->escaper = new Search\Escaper( $wgLanguageCode );
+		$this->escaper = new Escaper( $wgLanguageCode );
 	}
 
 	/**
@@ -806,7 +810,7 @@ MVEL;
 
 	/**
 	 * Powers full-text-like searches including prefix search.
-	 * @return Status(ResultSet|null|array(String),array) results, no results, or title results, or the query
+	 * @return Status(mixed) results from the query transformed by the resultsType
 	 */
 	private function search( $type, $for ) {
 		global $wgCirrusSearchMoreAccurateScoringMode;

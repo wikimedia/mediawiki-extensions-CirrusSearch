@@ -32,7 +32,7 @@ class MassIndexJob extends Job {
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
-		return new MassIndexJob( Title::newMainPage(), array(
+		return new self( Title::newMainPage(), array(
 			'pageDBKeys' => $pageDBKeys,
 			'updateFlags' => $updateFlags,
 		) );

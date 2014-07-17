@@ -39,7 +39,7 @@ class OtherIndexJob extends Job {
 			// Note that we're updating a bunch of titles but we have to pick one to
 			// attach to the job so we pick the first one.
 			JobQueueGroup::singleton()->push(
-				new OtherIndexJob( $titles[ 0 ], array(
+				new self( $titles[ 0 ], array(
 					'titles' => $titlesToUpdate,
 					'existsInLocalIndex' => $existsInLocalIndex,
 				) )

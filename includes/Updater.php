@@ -375,7 +375,7 @@ if ( !changed ) {
 }
 
 MVEL;
-		$script = new \Elastica\Script( $scriptText, $params );
+		$script = new \Elastica\Script( $scriptText, $params, 'mvel' );
 		if ( $doc->getDocAsUpsert() ) {
 			$script->setUpsert( $doc );
 		}

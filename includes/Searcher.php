@@ -399,8 +399,7 @@ class Searcher extends ElasticsearchIntermediary {
 				}
 				$insensitive = !empty( $matches[ 'insensitive' ] );
 
-				// TODO highlighting but
-				//   https://github.com/wikimedia/search-highlighter/issues/2
+				// TODO highlighting but https://github.com/wikimedia/search-highlighter/issues/2
 
 				// The setAllowMutate call is documented to speed up operations but be thread unsafe.  You'd think
 				// that is ok because scripts are always executed in a single thread but it isn't ok.  It causes
@@ -426,17 +425,18 @@ if (sourceText == null) {
 }
 
 MVEL;
-				$filterDestination[] = new \Elastica\Filter\Script( array(
-					'script' => $script,
-					'params' => array(
+				$filterDestination[] = new \Elastica\Filter\Script( new \Elastica\Script(
+					$script,
+					array(
 						'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
 						'insensitive' => $insensitive,
-						// This null here creates a slot in which the script will shove
+						'language' => $wgLanguageCode,
+						// These null here creates a slot in which the script will shove
 						// an automaton while executing.
 						'automaton' => null,
 						'locale' => null,
-						'language' => $wgLanguageCode,
 					),
+					'mvel'
 				) );
 			}
 		);
@@ -1287,7 +1287,7 @@ MVEL;
 		if ( $this->boostLinks ) {
 			$incomingLinks = "(doc['incoming_links'].isEmpty() ? 0 : doc['incoming_links'].value)";
 			$scoreBoostMvel = "log10($incomingLinks + 2)";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel ) );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel, null, 'mvel' ) );
 			$useFunctionScore = true;
 		}
 
@@ -1304,7 +1304,7 @@ MVEL;
 			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
 			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel ) );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel, null, 'mvel' ) );
 			$useFunctionScore = true;
 		}
 

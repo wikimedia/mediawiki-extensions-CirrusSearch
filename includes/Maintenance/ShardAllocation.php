@@ -41,16 +41,17 @@ class ShardAllocation {
 				$this->out->outputIndented( "\tUpdating '$type' allocations..." );
 				$this->set( $type, $desired );
 				$this->out->output( "done\n" );
-			} elseif( !$desired && isset( $actual[$type] ) ) {
-				$keys = array_filter( array_keys( $actual[$type] ),
-					function( $key ) use ( $actual, $type ) {
-						return $actual[$type][$key] !== '';
+			}
+			if( isset( $actual[$type] ) ) {
+				$undesired = array_filter( array_keys( $actual[$type] ),
+					function( $key ) use ( $actual, $type, $desired ) {
+						return $actual[$type][$key] !== '' && !isset( $desired[$key] );
 					}
 				);
 
-				if ( $keys ) {
-					$this->out->outputIndented( "\tDeleting '$type' allocations..." );
-					$this->set( $type, array_fill_keys( $keys, '' ) );
+				if ( $undesired ) {
+					$this->out->outputIndented( "\tClearing '$type' allocations..." );
+					$this->set( $type, array_fill_keys( $undesired, '' ) );
 					$this->out->output( "done\n" );
 				}
 			}

@@ -1,9 +1,11 @@
 <?php
 
 namespace CirrusSearch;
+
 use \ApiMain;
 use \BetaFeatures;
 use \CirrusSearch;
+use \CirrusSearch\Search\FancyTitleResultsType;
 use \DeferredUpdates;
 use \JobQueueGroup;
 use \LinksUpdate;

@@ -1,6 +1,9 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Search;
+
+use \CirrusSearch\Util;
+use \CirrusSearch\Searcher;
 use \MWTimestamp;
 use \SearchResult;
 use \Title;

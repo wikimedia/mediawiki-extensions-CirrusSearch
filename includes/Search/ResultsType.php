@@ -1,6 +1,8 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Search;
+
+use \CirrusSearch\Searcher;
 use \Title;
 
 /**
@@ -246,7 +248,7 @@ class FullTextResultsType implements ResultsType {
 					'max_fragments_scored' => 5000,
 				),
 			);
-			if ( !( $this->highlightingConfig & FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY ) ) {
+			if ( !( $this->highlightingConfig & self::HIGHLIGHT_WITH_DEFAULT_SIMILARITY ) ) {
 				$entireValue[ 'options' ][ 'default_similarity' ] = false;
 				$entireValueInListField[ 'options' ][ 'default_similarity' ] = false;
 				$singleFragment[ 'options' ][ 'default_similarity' ] = false;

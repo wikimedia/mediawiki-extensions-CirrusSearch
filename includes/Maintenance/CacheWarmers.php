@@ -3,8 +3,8 @@
 namespace CirrusSearch\Maintenance;
 use Elastica;
 use \CirrusSearch\Connection;
-use \CirrusSearch\FullTextResultsType;
 use \CirrusSearch\Util;
+use \CirrusSearch\Search\FullTextResultsType;
 use \CirrusSearch\Searcher;
 use \Title;
 

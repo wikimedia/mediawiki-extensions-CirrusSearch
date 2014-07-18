@@ -223,6 +223,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function nearMatchTitleSearch( $search ) {
+		global $wgCirrusSearchAllFields;
+
 		$profiler = new ProfileSection( __METHOD__ );
 
 		self::checkTitleSearchRequestLength( $search );
@@ -232,7 +234,15 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->highlightQuery = new \Elastica\Query\MultiMatch();
 		$this->highlightQuery->setQuery( $search );
 		$this->highlightQuery->setFields( array( 'title.near_match', 'redirect.title.near_match' ) );
-		$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
+		if ( $wgCirrusSearchAllFields[ 'use' ] ) {
+			// Inseat of using the highlight query we need to make one like it that uses the all_near_match field.
+			$allQuery = new \Elastica\Query\MultiMatch();
+			$allQuery->setQuery( $search );
+			$allQuery->setFields( array( 'all_near_match' ) );
+			$this->filters[] = new \Elastica\Filter\Query( $allQuery );
+		} else {
+			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
+		}
 		$this->boostLinks = ''; // No boost
 
 		return $this->search( 'near_match', $search );
@@ -511,6 +521,7 @@ MVEL;
 						$query->setDefaultOperator( 'AND' );
 						$query->setAllowLeadingWildcard( false );
 						$query->setFuzzyPrefixLength( 2 );
+						$query->setRewrite( 'top_terms_128' );
 						$filterDestination[] = new \Elastica\Filter\Query( $query );
 						$searchContainedSyntax = true;
 						return $keepText ? "$value " : '';
@@ -559,7 +570,7 @@ MVEL;
 			function ( $matches ) use ( $searcher ) {
 				$term = $searcher->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array(
-					'escaped' => $searcher->switchSearchToExact( $term, true ),
+					'escaped' => $searcher->switchSearchToExact( $term, false ),
 					'nonAll' => $searcher->switchSearchToExact( $term, false ),
 				);
 			} );
@@ -1044,6 +1055,7 @@ MVEL;
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( false );
 		$query->setFuzzyPrefixLength( 2 );
+		$query->setRewrite( 'top_terms_128' );
 		return $query;
 	}
 
@@ -1097,18 +1109,24 @@ MVEL;
 	public function buildFullTextSearchFields( $weight, $fieldSuffix, $allFieldAllowed ) {
 		global $wgCirrusSearchWeights,
 			$wgCirrusSearchAllFields;
-		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
-		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
+
+		if ( $wgCirrusSearchAllFields[ 'use' ] && $allFieldAllowed ) {
+			if ( $fieldSuffix === '.near_match' ) {
+				// The near match fields can't shard a root field because field fields nead it -
+				// thus no suffix all.
+				return array( "all_near_match^${weight}" );
+			}
+			return array( "all${fieldSuffix}^${weight}" );
+		}
+
 		$fields = array();
 
 		// Only title and redirect support near_match so skip it for everything else
+		$titleWeight = $weight * $wgCirrusSearchWeights[ 'title' ];
+		$redirectWeight = $weight * $wgCirrusSearchWeights[ 'redirect' ];
 		if ( $fieldSuffix === '.near_match' ) {
 			$fields[] = "title${fieldSuffix}^${titleWeight}";
 			$fields[] = "redirect.title${fieldSuffix}^${redirectWeight}";
-			return $fields;
-		}
-		if ( $wgCirrusSearchAllFields[ 'use' ] && $allFieldAllowed ) {
-			$fields[] = "all${fieldSuffix}^${weight}";
 			return $fields;
 		}
 		$fields[] = "title${fieldSuffix}^${titleWeight}";

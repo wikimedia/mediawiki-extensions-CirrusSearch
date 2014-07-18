@@ -166,7 +166,6 @@ class MappingConfigBuilder {
 		);
 
 		if ( $wgCirrusSearchAllFields[ 'build' ] ) {
-			$config[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
 			// Now layer all the fields into the all field once per weight.  Querying it isn't strictly the
 			// same as querying each field - in some ways it is better!  In others it is worse....
 
@@ -175,20 +174,48 @@ class MappingConfigBuilder {
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
 			//  1. It is built with copy_to and not stored.
 			//  2. The term frequency information is all whoppy compared to the "real" source text.
-			foreach ( $wgCirrusSearchWeights as $field => $weight ) {
-				for ( $r = 0; $r < $weight; $r++ ) {
-					if ( $field === 'redirect' ) {
-						// Redirect is in a funky place
-						$config[ 'properties' ][ 'redirect' ][ 'properties' ][ 'title' ][ 'copy_to' ][] = 'all';
-					} else {
-						$config[ 'properties' ][ $field ][ 'copy_to' ][] = 'all';
-					}
-				}
-			}
-			// TODO would it help to do the all field for near_match?
+			$config[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
+			$config = $this->setupCopyTo( $config, $wgCirrusSearchWeights, 'all' );
+
+			// Now repeat for near_match fields.  The same considerations above apply except near_match
+			// is never used in phrase queries or highlighting.
+			$config[ 'properties' ][ 'all_near_match' ] = array(
+				'type' => 'string',
+				'analyzer' => 'near_match',
+				'index_options' => 'docs',
+				'position_offset_gap' => self::POSITION_OFFSET_GAP,
+				'norms' => array( 'enabled' => false ),
+			);
+			$nearMatchFields = array(
+				'title' => $wgCirrusSearchWeights[ 'title' ],
+				'redirect' => $wgCirrusSearchWeights[ 'redirect' ],
+			);
+			$config = $this->setupCopyTo( $config, $nearMatchFields, 'all_near_match' );
 		}
 
 		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
+		return $config;
+	}
+
+	/**
+	 * Setup copy_to for some fields to $destionation.
+	 * @param array $config to modify
+	 * @param array $fields field name to number of times copied
+	 * @param string $destination destination of the copy
+	 * @return $config modified with the copy_to setup
+	 */
+	private function setupCopyTo( $config, $fields, $destination ) {
+		foreach ( $fields as $field => $weight ) {
+			for ( $r = 0; $r < $weight; $r++ ) {
+				if ( $field === 'redirect' ) {
+					// Redirect is in a funky place
+					$config[ 'properties' ][ 'redirect' ][ 'properties' ][ 'title' ][ 'copy_to' ][] = $destination;
+				} else {
+					$config[ 'properties' ][ $field ][ 'copy_to' ][] = $destination;
+				}
+			}
+		}
+
 		return $config;
 	}
 

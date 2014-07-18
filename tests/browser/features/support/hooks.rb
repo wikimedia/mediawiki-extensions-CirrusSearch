@@ -392,7 +392,7 @@ Before("@relevancy") do
       And a page named Relevancytestviacategory exists with contents Some opening text. [[Category:Relevancytest]]
       And a page named Relevancytestviaheading exists with contents ==Relevancytest==
       And a page named Relevancytestviaopening exists with contents @Relevancytestviaopening.txt
-      And a page named Relevancytestviatext exists with contents Relevancytest
+      And a page named Relevancytestviatext exists with contents [[Relevancytest]]
       And a page named Relevancytestviaauxtext exists with contents @Relevancytestviaauxtext.txt
       And a page named Relevancytestphrase phrase exists with contents not relevant
       And a page named Relevancytestphraseviaredirect exists with contents not relevant
@@ -400,7 +400,7 @@ Before("@relevancy") do
       And a page named Relevancytestphraseviacategory exists with contents not relevant [[Category:Relevancytestphrase phrase category]]
       And a page named Relevancytestphraseviaheading exists with contents ==Relevancytestphrase phrase heading==
       And a page named Relevancytestphraseviaopening exists with contents @Relevancytestphraseviaopening.txt
-      And a page named Relevancytestphraseviatext exists with contents Relevancytestphrase phrase
+      And a page named Relevancytestphraseviatext exists with contents [[Relevancytestphrase phrase]]
       And a page named Relevancytestphraseviaauxtext exists with contents @Relevancytestphraseviaauxtext.txt
       And a page named Relevancytwo Wordtest exists
       And a page named Wordtest Relevancytwo exists

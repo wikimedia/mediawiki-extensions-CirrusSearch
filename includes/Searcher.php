@@ -1205,7 +1205,6 @@ MVEL;
 
 		// Escape characters that can be escaped with \\
 		$string = preg_replace( '/(
-				\/|		(?# no regex searches allowed)
 				\(|     (?# no user supplied groupings)
 				\)|
 				\{|     (?# no exclusive range queries)
@@ -1216,8 +1215,8 @@ MVEL;
 				:|		(?# no specifying your own fields)
 				\\\(?!") (?# the only acceptable escaping is for quotes)
 			)/x', '\\\$1', $string );
-		// Forward slash need to be escaped with two back slashes instead of one.  No idea why.
-		$string = str_replace( '\\/', '\\\\/', $string );
+		// Forward slash escaping doesn't work properly in all environments so we just eat them.   Nom.
+		$string = str_replace( '/', ' ', $string );
 
 		// Elasticsearch's query strings can't abide unbalanced quotes
 		return $this->escaper->balanceQuotes( $string );

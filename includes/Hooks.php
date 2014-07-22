@@ -38,6 +38,11 @@ use \Xml;
  */
 class Hooks {
 	/**
+	 * @var array(string) Destination of titles being moved (the ->getPrefixedDBkey() form).
+	 */
+	private static $movingTitles = array();
+
+	/**
 	 * Hooked to call initialize after the user is set up.
 	 * @return bool
 	 */
@@ -286,8 +291,13 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onLinksUpdateCompleted( $linksUpdate ) {
-		global $wgCirrusSearchLinkedArticlesToUpdate;
-		global $wgCirrusSearchUnlinkedArticlesToUpdate;
+		global $wgCirrusSearchLinkedArticlesToUpdate,
+			$wgCirrusSearchUnlinkedArticlesToUpdate;
+
+		// Titles that are created by a move don't need their own job.
+		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), self::$movingTitles ) ) {
+			return true;
+		}
 
 		$params = array(
 			'addedLinks' => self::prepareTitlesForLinksUpdate(
@@ -380,6 +390,19 @@ class Hooks {
 			return false;
 		}
 		// Didn't find a result so let Mediawiki have a crack at it.
+		return true;
+	}
+
+	/**
+	 * Before we've moved a title from $title to $newTitle.
+	 * @param Title $title old title
+	 * @param Title $newTitle new title
+	 * @param User $user User who made the move
+	 * @return bool should move move actions be precessed (yes)
+	 */
+	public static function onTitleMove( Title $title, Title $newTitle, $user ) {
+		self::$movingTitles[] = $title->getPrefixedDBkey();
+
 		return true;
 	}
 

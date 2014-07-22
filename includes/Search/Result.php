@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use \CirrusSearch\InterwikiSearcher;
 use \CirrusSearch\Util;
 use \CirrusSearch\Searcher;
 use \MWTimestamp;

@@ -196,7 +196,11 @@ class Updater extends ElasticsearchIntermediary {
 		}
 		$count = 0;
 		foreach( $allData as $indexType => $data ) {
-			$this->sendData( $indexType, $data, $shardTimeout );
+			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
+			// the max.  So we chunk it and do them sequentially.
+			foreach( array_chunk( $data, 10 ) as $chunked ) {
+				$this->sendData( $indexType, $chunked, $shardTimeout );
+			}
 			$count += count( $data );
 		}
 

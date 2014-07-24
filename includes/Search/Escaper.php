@@ -42,6 +42,116 @@ class Escaper {
 		return $text;
 	}
 
+	/**
+	 * Make sure the the query string part is well formed by escaping some syntax that we don't
+	 * want users to get direct access to and making sure quotes are balanced.
+	 * These special characters _aren't_ escaped:
+	 * * and ?: Do a wildcard search against the stemmed text which isn't strictly a good
+	 * idea but this is so rarely used that adding extra code to flip prefix searches into
+	 * real prefix searches isn't really worth it.
+	 * ~: Do a fuzzy match against the stemmed text which isn't strictly a good idea but it
+	 * gets the job done and fuzzy matches are a really rarely used feature to be creating an
+	 * extra index for.
+	 * ": Perform a phrase search for the quoted term.  If the "s aren't balanced we insert one
+	 * at the end of the term to make sure elasticsearch doesn't barf at us.
+	 */
+	public function fixupQueryStringPart( $string ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
+		// Escape characters that can be escaped with \\
+		$string = preg_replace( '/(
+				\(|     (?# no user supplied groupings)
+				\)|
+				\{|     (?# no exclusive range queries)
+				}|
+				\[|     (?# no inclusive range queries either)
+				]|
+				\^|     (?# no user supplied boosts at this point, though I cant think why)
+				:|		(?# no specifying your own fields)
+				\\\(?!") (?# the only acceptable escaping is for quotes)
+			)/x', '\\\$1', $string );
+		// Forward slash escaping doesn't work properly in all environments so we just eat them.   Nom.
+		$string = str_replace( '/', ' ', $string );
+
+		// Elasticsearch's query strings can't abide unbalanced quotes
+		return $this->balanceQuotes( $string );
+	}
+
+	/**
+	 * Make sure that all operators and lucene syntax is used correctly in the query string
+	 * and store if this is a fuzzy query.
+	 * If it isn't then the syntax escaped so it becomes part of the query text.
+	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
+	 */
+	public function fixupWholeQueryString( $string ) {
+		$profiler = new ProfileSection( __METHOD__ );
+
+		// Be careful when editing this method because the ordering of the replacements matters.
+
+		// Escape ~ that don't follow a term or a quote
+		$string = preg_replace_callback( '/(?<![\w"])~/',
+			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+
+		// Remove ? and * that don't follow a term.  These are slow so we turned them off and escaping isn't working....
+		$string = preg_replace( '/(?<![\w])([?*])/', '', $string );
+
+		// Reduce token ranges to bare tokens without the < or >
+		$string = preg_replace( '/(?:<|>)([^\s])/', '$1', $string );
+
+		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
+		$fuzzyQuery = false;
+		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/',
+			function ( $matches ) use ( &$fuzzyQuery ) {
+				if ( preg_match( '/^(?:|0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
+					$fuzzyQuery = true;
+					return $matches[ 0 ];
+				} else {
+					return $matches[ 'leading' ] . '\\~' .
+						preg_replace( '/(?<!\\\\)~/', '\~', $matches[ 'trailing' ] );
+				}
+			}, $string );
+
+		// Turn bad proximity searches into searches that contain a ~
+		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {
+			if ( preg_match( '/[0-9]+/', $matches[ 'trailing' ] ) ) {
+				return $matches[ 0 ];
+			} else {
+				return '"\\~' . $matches[ 'trailing' ];
+			}
+		}, $string );
+
+		// Escape +, -, and ! when not immediately followed by a term or when immediately
+		// prefixed with a term.  Catches "foo-bar", "foo- bar", "foo - bar".  The only
+		// acceptable use is "foo -bar" and "-bar foo".
+		$string = preg_replace_callback( '/[+\-!]+(?!\w)/',
+			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+		$string = preg_replace_callback( '/(?<!^|[ \\\\])[+\-!]+/',
+			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+
+		// Escape || when not between terms
+		$string = preg_replace_callback( '/^\s*\|\|/',
+			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+		$string = preg_replace_callback( '/\|\|\s*$/',
+			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+
+		// Lowercase AND and OR when not surrounded on both sides by a term.
+		// Lowercase NOT when it doesn't have a term after it.
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)/',
+			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );
+		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/',
+			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );
+
+		return array( $string, $fuzzyQuery );
+	}
+
+	private static function escapeBadSyntax( $matches ) {
+		return "\\" . implode( "\\", str_split( $matches[ 0 ] ) );
+	}
+
+	private static function lowercaseMatched( $matches ) {
+		return strtolower( $matches[ 0 ] );
+	}
+
 	public function balanceQuotes( $text ) {
 		$profiler = new ProfileSection( __METHOD__ );
 		$inQuote = false;

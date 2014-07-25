@@ -118,6 +118,10 @@ class Updater extends ElasticsearchIntermediary {
 			if ( is_string( $content ) ) {
 				$content = new TextContent( $content );
 			}
+			// If the event that the content is _still_ not usable, we have to give up.
+			if ( !is_object( $content ) ) {
+				return array( null, $redirects );
+			}
 
 			// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
 			$this->updated[] = $titleText;

@@ -188,6 +188,10 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onAfterImportPage( $title ) {
+		// The title can be null if the import failed.  Nothing to do in that case.
+		if ( $title === null ) {
+			return;
+		}
 		JobQueueGroup::singleton()->push(
 			Job\MassIndex::build(
 				array( WikiPage::factory( $title ) ),

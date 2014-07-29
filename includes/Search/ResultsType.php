@@ -293,13 +293,17 @@ class FullTextResultsType implements ResultsType {
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
 			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
+			$config[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
+			$config[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_SNIPPET ) {
 			$config[ 'fields' ][ 'text' ] = $text;
 			$config[ 'fields' ][ 'auxiliary_text' ] = $remainingText;
+			$config[ 'fields' ][ 'auxiliary_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			if ( $this->highlightingConfig & self::HIGHLIGHT_FILE_TEXT ) {
 				$config[ 'fields' ][ 'file_text' ] = $remainingText;
+				$config[ 'fields' ][ 'file_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			}
 		}
 		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );

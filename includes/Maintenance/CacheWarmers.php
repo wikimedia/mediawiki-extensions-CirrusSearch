@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 use Elastica;
+use \Elastica\Exception\ResponseException;
 use \CirrusSearch\Connection;
 use \CirrusSearch\Util;
 use \CirrusSearch\Search\FullTextResultsType;
@@ -108,7 +109,18 @@ class CacheWarmers {
 			$this->out->outputIndented( "\tUpdating $name..." );
 			$name = urlencode( $name );
 			$path = "$type/_warmer/$name";
-			$this->pageType->getIndex()->request( $path, 'PUT', $contents );
+			try {
+				$this->pageType->getIndex()->request( $path, 'PUT', $contents );
+			} catch ( ResponseException $e ) {
+				if ( preg_match( '/dynamic scripting for \\[.*\\] disabled/', $e->getResponse()->getError() ) ) {
+					$this->out->output( "couldn't create dynamic script!\n" );
+					$this->out->error( "Couldn't create the dynamic script required for Cirrus to work properly.  " .
+						"For now, Cirrus requires dynamic scripting.  It'll switch to sandboxed Groovy when it " .
+						"updates to support Elasticsearch 1.3.1 we promise.  For now enable dynamic scripting and " .
+						"keep Elasticsearch safely not accessible to people you don't trust.  You should always " .
+						"do that, but especially when dynamic scripting is enabled.", 1 );
+				}
+			}
 			$this->out->output( "done\n" );
 		}
 	}

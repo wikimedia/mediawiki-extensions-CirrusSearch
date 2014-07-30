@@ -984,6 +984,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	public function outputIndented( $message ) {
 		$this->output( $this->indent . $message );
 	}
+
+	public function error( $err, $die = 0 ) {
+		parent::error( $err, $die );
+	}
 }
 
 $maintClass = "CirrusSearch\UpdateOneSearchIndexConfig";

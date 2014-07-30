@@ -137,7 +137,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"alias to this index, and then remove other index.  You'll have to redo all updates ".
 			"performed during this operation manually.  Defaults to false." );
 		$maintenance->addOption( 'reindexProcesses', 'Number of processess to use in reindex.  ' .
-			'Not supported on Windows.  Defaults to 1 on Windows and 10 otherwise.', false, true );
+			'Not supported on Windows.  Defaults to 1 on Windows and 5 otherwise.', false, true );
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
 			'reindex failure.  Defaults to 5%.', false, true );
@@ -179,7 +179,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 		$this->indent = $this->getOption( 'indent', '' );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
-		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 10 );
+		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
 		$this->reindexAcceptableCountDeviation = $this->parsePotentialPercent(
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );

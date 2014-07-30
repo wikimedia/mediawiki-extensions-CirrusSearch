@@ -425,7 +425,8 @@ MVEL;
 		$pages = array();
 		foreach ( $titleKeys as $titleKey ) {
 			$title = Title::newFromDBKey( $titleKey );
-			if ( !$title ) {
+			// Bad titles and special pages don't get updated
+			if ( !$title || $title->getNamespace() < 0 ) {
 				continue;
 			}
 

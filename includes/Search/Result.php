@@ -35,7 +35,6 @@ class Result extends SearchResult {
 	private $interwiki = '', $interwikiNamespace = '';
 	private $wordCount;
 	private $byteSize;
-	private $score;
 	private $timestamp;
 
 	/**
@@ -46,8 +45,6 @@ class Result extends SearchResult {
 	 * @param $result \Elastic\Result containing information about the result this class should represent
 	 */
 	public function __construct( $results, $result, $interwiki = '' ) {
-		global $wgCirrusSearchShowScore;
-
 		if ( $interwiki ) {
 			$this->setInterwiki( $result, $interwiki );
 		}
@@ -89,10 +86,6 @@ class Result extends SearchResult {
 		if ( isset( $highlights[ 'heading' ] ) ) {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
 			$this->sectionTitle = $this->findSectionTitle();
-		}
-
-		if ( $wgCirrusSearchShowScore && $results->getMaxScore() ) {
-			$this->score = $result->getScore() / $results->getMaxScore();
 		}
 	}
 
@@ -261,10 +254,6 @@ class Result extends SearchResult {
 
 	public function getByteSize() {
 		return $this->byteSize;
-	}
-
-	public function getScore() {
-		return $this->score;
 	}
 
 	public function getTimestamp() {

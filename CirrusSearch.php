@@ -309,9 +309,6 @@ $wgCirrusSearchShowNowUsing = false;
 // their primary search engine.
 $wgCirrusSearchEnablePref = false;
 
-// Should Cirrus show the score?
-$wgCirrusSearchShowScore = false;
-
 // CirrusSearch interwiki searching
 // Keys are the interwiki prefix, values are the index to search
 // Results are cached.

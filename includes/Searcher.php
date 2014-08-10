@@ -495,16 +495,15 @@ MVEL;
 									$title->getDBkey() )->getPrefixedText();
 							}
 						}
-						// Intentional fall through
+						$filterDestination[] = $searcher->matchPage( 'template', $value );
+						$searchContainedSyntax = true;
+						return '';
+					case 'linksto':
+						$filterDestination[] = $searcher->matchPage( 'outgoing_link', $value, true );
+						$searchContainedSyntax = true;
+						return '';
 					case 'incategory':
-						$queryKey = str_replace( array( 'in', 'has' ), '', $key );
-						if ( $queryKey === 'category' ) {
-							$queryKey .= '.lowercase_keyword';
-						}
-						$queryValue = str_replace( '_', ' ', trim( $value, '"' ) );
-						$match = new \Elastica\Query\Match();
-						$match->setFieldQuery( $queryKey, $queryValue );
-						$filterDestination[] = new \Elastica\Filter\Query( $match );
+						$filterDestination[] = $searcher->matchPage( 'category.lowercase_keyword', $value );
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
@@ -690,6 +689,26 @@ MVEL;
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Builds a match query against $field for $title.  $title is munged to make title matching better more
+	 * intuitive for users.
+	 * @param string $field field containing the title
+	 * @param string $title title query text to match against
+	 * @param boolean $underscores true if the field contains underscores instead of spaces.  Defaults to false.
+	 * @return \Elastica\Filter\Query for matching $title to $field
+	 */
+	public function matchPage( $field, $title, $underscores = false ) {
+		$title = trim( $title, '"' );                // Somtimes title is wrapped in quotes - throw them away.
+		if ( $underscores ) {
+			$title = str_replace( ' ', '_', $title );
+		} else {
+			$title = str_replace( '_', ' ', $title );
+		}
+		$match = new \Elastica\Query\Match();
+		$match->setFieldQuery( $field, $title );
+		return new \Elastica\Filter\Query( $match );
 	}
 
 	/**

@@ -476,3 +476,18 @@ Before("@regex") do
   end
   $regex = true
 end
+
+Before("@linksto") do
+  if !$linksto
+    steps %Q{
+      Given a page named LinksToTest Target exists
+      And a page named LinksToTest Plain exists with contents [[LinksToTest Target]]
+      And a page named LinksToTest OtherText exists with contents [[LinksToTest Target]] and more text
+      And a page named LinksToTest No Link exists with contents LinksToTest Target
+      And a page named Template:LinksToTest Template exists with contents [[LinksToTest Target]]
+      And a page named LinksToTest Using Template exists with contents {{LinksToTest Template}}
+      And a page named LinksToTest LinksToTemplate exists with contents [[Template:LinksToTest Template]]
+    }
+    $linksto = true
+  end
+end

@@ -84,6 +84,9 @@ When(/^I click the (.*) label(?:s)?$/) do |text|
     end
   end
 end
+When(/^I dump the cirrus data for (.+)$/) do |title|
+  visit(CirrusDumpPage, using_params: {page_name: title})
+end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|
   if not_appear then

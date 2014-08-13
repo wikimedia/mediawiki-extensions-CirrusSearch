@@ -35,14 +35,14 @@ Feature: Searches that contain quotes
     When I search for "catapult pickle"~
     Then Two Words is the first search result
 
-  Scenario: Adding a ~ to a phrase switches the default slop to 1
+  Scenario: Adding a ~ to a phrase switches the default slop to 0
     When I search for "ffnonesenseword pickle"~
-    Then Two Words is the first search result
-    When I search for "ffnonesenseword pickle"~0
     Then none is the first search result
+    When I search for "ffnonesenseword pickle"~1~
+    Then Two Words is the first search result
 
-  Scenario: Adding a ~ to a phrase stops it from matching stop words
-    When I search for "doesn't actually Contain A Stop Words"~
+  Scenario: Adding a ~ to a phrase stops it from matching stop words so long as there is enough slop
+    When I search for "doesn't actually Contain A Stop Words"~1~
     Then Doesn't Actually Contain Stop Words is the first search result
 
   Scenario: Adding a ~<a number>~ to a phrase keeps stemming enabled

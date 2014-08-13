@@ -87,6 +87,9 @@ end
 When(/^I dump the cirrus data for (.+)$/) do |title|
   visit(CirrusDumpPage, using_params: {page_name: title})
 end
+When(/^I request a dump of the query$/) do
+  @browser.goto("#{@browser.url}&cirrusDumpQuery=yes")
+end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|
   if not_appear then

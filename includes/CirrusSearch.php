@@ -88,6 +88,9 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setSort( $this->getSort() );
 		}
 
+		$request = $context->getRequest();
+		$dumpQuery = $request && $request->getVal( 'cirrusDumpQuery' ) === 'yes';
+		$searcher->setReturnQuery( $dumpQuery );
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
@@ -104,7 +107,6 @@ class CirrusSearch extends SearchEngine {
 				$status = Status::newGood( null );
 			}
 		} else {
-			$request = $context->getRequest();
 			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
 			if ( $request ) {
 				if ( $request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
@@ -128,6 +130,17 @@ class CirrusSearch extends SearchEngine {
 			}
 			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig ) );
 			$status = $searcher->searchText( $term, $this->showSuggestion );
+		}
+		if ( $dumpQuery ) {
+			// When dumping the query we skip _everything_ but echoing the query.
+			$context->getOutput()->disable();
+			$request->response()->header( 'Content-type: application/json; charset=UTF-8' );
+			if ( $status->getValue() === null ) {
+				echo '{}';
+			} else {
+				echo json_encode( $status->getValue() );
+			}
+			exit();
 		}
 
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();

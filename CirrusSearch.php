@@ -191,7 +191,7 @@ $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 // to false is ok and then you can change it back to true so long as you _haven't_
 // done an index rebuild since then.  If you perform an in place index rebuild after
 // changing this to false then you'll see some space savings.
-$wgCirrusSearchPhraseUseText = false;
+$wgCirrusSearchPhraseSuggestUseText = false;
 
 // Maximum number of redirects per target page to index.
 $wgCirrusSearchIndexedRedirects = 1024;
@@ -287,9 +287,6 @@ $wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
 // half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 157 because
 // that approximates the behavior that wikinews has been using for years.
 $wgCirrusSearchPreferRecentDefaultHalfLife = 160;
-
-// How long to cache link counts for (in seconds)
-$wgCirrusSearchLinkCountCacheTime = 0;
 
 // Configuration parameters passed to more_like_this queries.
 $wgCirrusSearchMoreLikeThisConfig = array(
@@ -392,6 +389,67 @@ $wgCirrusSearchIndexAllocation = array(
 	'require' => array(),
 );
 
+// Dumpable config parameters.  These are known not to include any private
+// information and thus safe to include in the config dump.  To disable the
+// config dump entirely add this to your configuration after including:
+// CirrusSearch.php:
+// $wgApiModules['cirrus-config-dump'] = 'ApiDisabled';
+$wgCirrusSearchConfigDumpWhiteList = array(
+	'servers',
+	'connectionAttempts',
+	'shardCount',
+	'replicas',
+	'slowSearch',
+	'useExperimentalHighlighter',
+	'optimizeIndexForExperimentalHighlighter',
+	'namespaceMappings',
+	'extraIndexes',
+	'updateShardTimeout',
+	'clientSideUpdateTimeout',
+	'searchShardTimeout',
+	'clientSizeSearchTimeout',
+	'maintenanceTimeout',
+	'prefixSearchStartsWithAnyWord',
+	'phraseSlop',
+	'phraseRescoreBoost',
+	'phraseRescoreWindowSize',
+	'functionRescoreWindowSize',
+	'moreAccurateScoringMode',
+	'phraseSuggestMaxErrors',
+	'phraseSuggestConfidence',
+	'phraseSuggestUseText',
+	'indexedRedirects',
+	'linkedArticlesToUpdate',
+	'unlikedArticlesToUpdate',
+	'weights',
+	'allFields',
+	'boostOpening',
+	'nearMatchWeight',
+	'stemmedWeight',
+	'namespaceWeights',
+	'defaultNamespaceWeight',
+	'talkeNamespaceWeight',
+	'languageWeight',
+	'preferRecentDefaultDecayPortion',
+	'preferRecentUnspecifiedDecayPortion',
+	'preferRecentDefaultHalfLife',
+	'moreLikeThisConfig',
+	'showNowUsing',
+	'enablePref',
+	'interwikiSources',
+	'interwikiCacheTime',
+	'backup',
+	'refreshInterval',
+	'bannedPlugins',
+	'updateConflictRetryCount',
+	'fragmentSize',
+	'mainPageCacheWarmer',
+	'cacheWarmers',
+	'boostLinks',
+	'powerSpecialRandom',
+	'indexAllocation',
+);
+
 $includes = __DIR__ . "/includes/";
 $buildDocument = $includes . 'BuildDocument/';
 $jobsDir = $includes . 'Job/';
@@ -403,6 +461,7 @@ $search = $includes . 'Search/';
  * Classes
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.php';
+$wgAutoloadClasses['CirrusSearch\ApiConfigDump'] = $includes . 'ApiConfigDump.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\Builder'] = $buildDocument . 'Builder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\FileDataBuilder'] = $buildDocument . 'FileDataBuilder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\PageDataBuilder'] = $buildDocument . 'PageDataBuilder.php';
@@ -491,6 +550,11 @@ $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\Job\OtherIndex';
  * Actions
  */
 $wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
+
+/**
+ * API
+ */
+$wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\ApiConfigDump';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

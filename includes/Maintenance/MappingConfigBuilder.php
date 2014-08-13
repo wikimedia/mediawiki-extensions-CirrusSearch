@@ -56,7 +56,7 @@ class MappingConfigBuilder {
 	 * Whether phrase searches should use the suggestion analyzer
 	 * @var bool
 	 */
-	private $phraseUseText;
+	private $phraseSuggestUseText;
 
 	/**
 	 * @var bool should the index be optimized for the experimental highlighter?
@@ -69,9 +69,9 @@ class MappingConfigBuilder {
 	 * @param bool $useText Text uses suggestion analyzer
 	 * @param bool should the index be optimized for the experimental highlighter?
 	 */
-	public function __construct( $anyWord, $useText, $optimizeForExperimentalHighlighter ) {
+	public function __construct( $anyWord, $phraseSuggestUseText, $optimizeForExperimentalHighlighter ) {
 		$this->prefixSearchStartsWithAnyWord = $anyWord;
-		$this->phraseUseText = $useText;
+		$this->phraseSuggestUseText = $phraseSuggestUseText;
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 	}
 
@@ -102,7 +102,7 @@ class MappingConfigBuilder {
 
 		$textExtraAnalyzers = array();
 		$textOptions = MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING;
-		if ( $this->phraseUseText ) {
+		if ( $this->phraseSuggestUseText ) {
 			$textExtraAnalyzers[] = $suggestExtra;
 			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
 		}

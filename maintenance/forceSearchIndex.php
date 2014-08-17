@@ -38,15 +38,15 @@ require_once( "$IP/maintenance/Maintenance.php" );
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
-	var $fromDate = null;
-	var $toDate = null;
-	var $toId = null;
-	var $indexUpdates;
-	var $limit;
-	var $queue;
-	var $maxJobs;
-	var $pauseForJobs;
-	var $namespace;
+	public $fromDate = null;
+	public $toDate = null;
+	public $toId = null;
+	public $indexUpdates;
+	public $limit;
+	public $queue;
+	public $maxJobs;
+	public $pauseForJobs;
+	public $namespace;
 
 	public function __construct() {
 		parent::__construct();

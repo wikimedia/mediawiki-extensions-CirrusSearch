@@ -220,13 +220,16 @@ class FullTextResultsType implements ResultsType {
 				'fragmenter' => 'none',
 				'number_of_fragments' => 1,
 			);
-			$entireValueInListField = array(
+			$redirectAndHeading = array(
 				'type' => 'experimental',
 				'fragmenter' => 'none',
 				'order' => 'score',
 				'number_of_fragments' => 1,
+				'options' => array(
+					'skip_if_last_matched' => true,
+				)
 			);
-			$singleFragment = array(
+			$remainingText = array(
 				'type' => 'experimental',
 				'number_of_fragments' => 1,
 				'fragmenter' => 'scan',
@@ -246,12 +249,13 @@ class FullTextResultsType implements ResultsType {
 					// Setting this too low (like 50) can bury good snippets if the search
 					// contains common words.
 					'max_fragments_scored' => 5000,
+					'skip_if_last_matched' => true,
 				),
 			);
 			if ( !( $this->highlightingConfig & self::HIGHLIGHT_WITH_DEFAULT_SIMILARITY ) ) {
 				$entireValue[ 'options' ][ 'default_similarity' ] = false;
-				$entireValueInListField[ 'options' ][ 'default_similarity' ] = false;
-				$singleFragment[ 'options' ][ 'default_similarity' ] = false;
+				$redirectAndHeading[ 'options' ][ 'default_similarity' ] = false;
+				$remainingText[ 'options' ][ 'default_similarity' ] = false;
 			}
 		} else {
 			$entireValue = array(
@@ -259,13 +263,13 @@ class FullTextResultsType implements ResultsType {
 				'type' => 'fvh',
 				'order' => 'score',
 			);
-			$entireValueInListField = array(
+			$redirectAndHeading = array(
 				'number_of_fragments' => 1, // Just one of the values in the list
 				'fragment_size' => 10000,   // We want the whole value but more than this is crazy
 				'type' => 'fvh',
 				'order' => 'score',
 			);
-			$singleFragment = array(
+			$remainingText = array(
 				'number_of_fragments' => 1, // Just one fragment
 				'fragment_size' => $wgCirrusSearchFragmentSize,
 				'type' => 'fvh',
@@ -273,8 +277,11 @@ class FullTextResultsType implements ResultsType {
 			);
 		}
 		// If there isn't a match just return a match sized chunk from the beginning of the page.
-		$text = $singleFragment;
+		$text = $remainingText;
 		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
+		if ( isset( $text[ 'options' ][ 'skip_if_last_matched' ] ) ) {
+			unset( $text[ 'options' ][ 'skip_if_last_matched' ] );
+		}
 
 		$config =  array(
 			'pre_tags' => array( Searcher::HIGHLIGHT_PRE ),
@@ -285,14 +292,14 @@ class FullTextResultsType implements ResultsType {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
-			$config[ 'fields' ][ 'redirect.title' ] = $entireValueInListField;
-			$config[ 'fields' ][ 'heading' ] = $entireValueInListField;
+			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
+			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_SNIPPET ) {
 			$config[ 'fields' ][ 'text' ] = $text;
-			$config[ 'fields' ][ 'auxiliary_text' ] = $singleFragment;
+			$config[ 'fields' ][ 'auxiliary_text' ] = $remainingText;
 			if ( $this->highlightingConfig & self::HIGHLIGHT_FILE_TEXT ) {
-				$config[ 'fields' ][ 'file_text' ] = $singleFragment;
+				$config[ 'fields' ][ 'file_text' ] = $remainingText;
 			}
 		}
 		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );

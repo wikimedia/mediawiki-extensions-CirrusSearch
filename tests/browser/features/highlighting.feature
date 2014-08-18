@@ -60,7 +60,7 @@ Feature: Highlighting
 
   @headings
   Scenario: Found words are highlighted in headings even if they contain both a phrase and a non-phrase
-    When I search for "i am a" heading
+    When I search for i "am a heading"
     Then *I* *am* *a* *heading* is the highlighted alttitle of the first search result
 
   @headings
@@ -79,12 +79,12 @@ Feature: Highlighting
 
   @headings
   Scenario: The highest scoring heading is highlighted AND it doesn't contain html even if the heading on the page does
-    When I search for bold heading
+    When I search for "bold heading"
     Then I am a *bold* *heading* is the highlighted alttitle of the first search result
 
   @headings
   Scenario: HTML comments in headings are not highlighted
-    When I search for Heading with html comment
+    When I search for "Heading with html comment"
     And *Heading* *with* *html* *comment* is the highlighted alttitle of the first search result
 
   Scenario: Redirects are highlighted
@@ -107,7 +107,7 @@ Feature: Highlighting
 
   @references
   Scenario: References don't appear in highlighted section titles
-    When I search for Reference Section Highlight Test
+    When I search for "Reference Section"
     And *Reference* *Section* is the highlighted alttitle of the first search result
 
   @references

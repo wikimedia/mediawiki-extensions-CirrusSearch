@@ -3,8 +3,7 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere.  0.90.10 and above are all fine but 1.0 will be supported
-for longer.
+Get Elasticsearch up and running somewhere.  1.2.1 and above are all fine with 1.3.x required soon.
 
 CirrusSearch makes use of the dynamic scripting feature in Elasticsearch for improved performance.
 With Elasticsearch 1.2.0 and higher, dynamic scripting is disabled per default but can and
@@ -235,6 +234,9 @@ until Elasticsearch has appropriately refreshed.  This is an example of configur
 	),
  );
 
+Note: some MediaWiki setups have trouble running the job queue.  It can be finicky.	 The most
+sure fire way to get it to work is also the slowest.  Add this to your LocalSettings.php:
+ $wgRunJobsAsync = false;
 
 Hooks
 -----

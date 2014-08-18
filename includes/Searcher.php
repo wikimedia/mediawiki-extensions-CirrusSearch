@@ -1256,7 +1256,9 @@ MVEL;
 			foreach ( $this->boostTemplates as $name => $boost ) {
 				$match = new \Elastica\Query\Match();
 				$match->setFieldQuery( 'template', $name );
-				$functionScore->addBoostFactorFunction( $boost, new \Elastica\Filter\Query( $match ) );
+				$filterQuery = new \Elastica\Filter\Query( $match );
+				$filterQuery->setCached( true );
+				$functionScore->addBoostFactorFunction( $boost, $filterQuery );
 			}
 			$useFunctionScore = true;
 		}

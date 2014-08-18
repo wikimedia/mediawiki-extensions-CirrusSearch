@@ -155,7 +155,7 @@ $wgCirrusSearchPrefixSearchStartsWithAnyWord = false;
 // quoted text.  The 'default' key is for matching quoted text that ends in a ~.
 // The 'boost' key is used for the phrase rescore that boosts phrase matches on queries
 // that don't already contain phrases.
-$wgCirrusSearchPhraseSlop = array( 'precise' => 0, 'default' => 1, 'boost' => 1 );
+$wgCirrusSearchPhraseSlop = array( 'precise' => 0, 'default' => 0, 'boost' => 1 );
 
 // If the search doesn't include any phrases (delimited by quotes) then we try wrapping
 // the whole thing in quotes because sometimes that can turn up better results. This is

@@ -741,7 +741,7 @@ MVEL;
 
 		$text = array();
 		foreach ( $found as $foundArticle ) {
-			$text[] = $foundArticle->text[ 0 ];
+			$text[] = $foundArticle->text;
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
@@ -758,18 +758,18 @@ MVEL;
 	 * Get the page with $id.  Note that the result is a status containing _all_ pages found.
 	 * It is possible to find more then one page if the page is in multiple indexes.
 	 * @param array(int) $pageIds page id
-	 * @param array(string) $fields fields to fetch
+	 * @param array(string)|true|false $sourceFiltering source filtering to apply
 	 * @return Status containing pages found, containing an empty array if not found,
 	 *    or an error if there was an error
 	 */
-	public function get( $pageIds, $fields ) {
+	public function get( $pageIds, $sourceFiltering ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
 		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
-			'doWork' => function() use ( $searcher, $pageIds, $fields, $indexType, $indexBaseName ) {
+			'doWork' => function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
 					$searcher->start( "get of $indexType." . implode( ', ', $pageIds ) );
@@ -777,7 +777,7 @@ MVEL;
 					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
-					$query->setParam( 'fields', $fields );
+					$query->setParam( '_source', $sourceFiltering );
 					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
 					return $searcher->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {

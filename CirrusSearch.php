@@ -410,6 +410,7 @@ $wgAutoloadClasses['CirrusSearch\BuildDocument\PageTextBuilder'] = $buildDocumen
 $wgAutoloadClasses['CirrusSearch\BuildDocument\ParseBuilder'] = $buildDocument . 'Builder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\RedirectsAndIncomingLinks'] = $buildDocument . 'RedirectsAndIncomingLinks.php';
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
+$wgAutoloadClasses['CirrusSearch\Dump'] = $includes . 'Dump.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
 $wgAutoloadClasses['CirrusSearch\ForceSearchIndex'] = __DIR__ . '/maintenance/forceSearchIndex.php';
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
@@ -485,6 +486,11 @@ $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\Job\LinksU
 $wgJobClasses[ 'cirrusSearchLinksUpdateSecondary' ] = 'CirrusSearch\Job\LinksUpdateSecondary';
 $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\Job\MassIndex';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\Job\OtherIndex';
+
+/**
+ * Actions
+ */
+$wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

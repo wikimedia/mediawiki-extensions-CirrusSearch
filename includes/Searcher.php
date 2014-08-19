@@ -418,7 +418,7 @@ class Searcher extends ElasticsearchIntermediary {
 				// The setAllowMutate call is documented to speed up operations but be thread unsafe.  You'd think
 				// that is ok because scripts are always executed in a single thread but it isn't ok.  It causes
 				// all operations to unstable, so far as I can tell.
-				$script = <<<MVEL
+				$script = <<<GROOVY
 import org.apache.lucene.util.automaton.*;
 sourceText = _source.get("source_text");
 if (sourceText == null) {
@@ -438,7 +438,7 @@ if (sourceText == null) {
 	automaton.run(sourceText);
 }
 
-MVEL;
+GROOVY;
 				$filterDestination[] = new \Elastica\Filter\Script( new \Elastica\Script(
 					$script,
 					array(
@@ -450,7 +450,7 @@ MVEL;
 						'automaton' => null,
 						'locale' => null,
 					),
-					'mvel'
+					'groovy'
 				) );
 			}
 		);
@@ -1229,8 +1229,8 @@ MVEL;
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostLinks ) {
 			$incomingLinks = "(doc['incoming_links'].isEmpty() ? 0 : doc['incoming_links'].value)";
-			$scoreBoostMvel = "log10($incomingLinks + 2)";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostMvel, null, 'mvel' ) );
+			$scoreBoostGroovy = "log10($incomingLinks + 2)";
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostGroovy, null, 'groovy' ) );
 			$useFunctionScore = true;
 		}
 
@@ -1239,15 +1239,15 @@ MVEL;
 			// Convert half life for time in days to decay constant for time in milliseconds.
 			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
 			// e^ct - 1 where t is last modified time - now which is negative
-			$exponentialDecayMvel = "Math.expm1($decayConstant * (doc['timestamp'].value - time()))";
+			$exponentialDecayGroovy = "Math.expm1($decayConstant * (doc['timestamp'].value - Instant.now().getMillis()))";
 			// p(e^ct - 1)
 			if ( $this->preferRecentDecayPortion !== 1.0 ) {
-				$exponentialDecayMvel = "$exponentialDecayMvel * $this->preferRecentDecayPortion";
+				$exponentialDecayGroovy = "$exponentialDecayGroovy * $this->preferRecentDecayPortion";
 			}
 			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
 			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
-			$lastUpdateDecayMvel = "$exponentialDecayMvel + 1";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $lastUpdateDecayMvel, null, 'mvel' ) );
+			$exponentialDecayGroovy = "$exponentialDecayGroovy + 1";
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayGroovy, null, 'groovy' ) );
 			$useFunctionScore = true;
 		}
 

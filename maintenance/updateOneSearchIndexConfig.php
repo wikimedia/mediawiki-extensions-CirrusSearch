@@ -749,8 +749,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$messagePrefix = "[$childNumber] ";
 			$this->output( $this->indent . $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
-			$filter = new Elastica\Filter\Script(
-				"(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber" );
+			$filter = new Elastica\Filter\Script( array(
+				'script' => "(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber",
+				'lang' => 'groovy'
+			) );
 		}
 		$pageProperties = new \CirrusSearch\Maintenance\MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseUseText,

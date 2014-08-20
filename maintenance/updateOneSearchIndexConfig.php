@@ -690,8 +690,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$settings = $this->getIndex()->getSettings();
 		$settings->set( array(
-			'refresh_interval' => -1,           // This is supposed to help with bulk index io load.
-			'merge.policy.merge_factor' => 20,  // This is supposed to help with bulk index io load.
+			'refresh_interval' => -1,                // This is supposed to help with bulk index io load.
+			'merge.policy.segments_per_tier' => 20,  // This is supposed to help with bulk index io load.
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
@@ -731,7 +731,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Revert settings changed just for reindexing
 		$settings->set( array(
 			'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
-			'merge.policy.merge_factor' => 10,
+			'merge.policy.segments_per_tier' => 10,
 		) );
 	}
 

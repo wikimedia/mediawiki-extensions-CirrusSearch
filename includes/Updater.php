@@ -191,12 +191,10 @@ class Updater extends ElasticsearchIntermediary {
 		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			// $allData[$suffix][] = $this->docToScript( $document );
+			$allData[$suffix][] = $this->docToScript( $document );
 			// To quickly switch back to sending doc as upsert instead of script, remove the line above
 			// and switch to the one below:
-			// -- As you can see we switched back - MVEL was freaking out every once in a while and we
-			// had trouble reproducing it locally.  Faster to just turn it off.
-			$allData[$suffix][] = $document;
+			// $allData[$suffix][] = $document;
 		}
 		$count = 0;
 		foreach( $allData as $indexType => $data ) {
@@ -362,30 +360,46 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	private function docToScript( $doc ) {
-		// !!!!!!!!!NOTE!!!!!!!!
-		// This has not been ported to groovy because it is not in active use.  Please port if using.
-		$scriptText = <<<MVEL
+		$scriptText = <<<GROOVY
 changed = false;
 
-MVEL;
+GROOVY;
 		$params = $doc->getParams();
 		foreach ( $doc->getData() as $key => $value ) {
-			$scriptText .= <<<MVEL
-if ( ctx._source.$key != $key ) {
+			if ( $key === 'incoming_links' ) {
+				// incoming links has to be more then 20% incorrect before we update it.
+				$scriptText .= <<<GROOVY
+if ( ctx._source.$key == null ) {
+	thisChanged = true;
+} else if ( $key == 0 ) {
+	thisChanged = ctx._source.$key != 0;
+} else {
+	thisChanged = abs( ctx._source.$key - $key ) / $key > 0.2;
+}
+if ( thisChanged ) {
 	changed = true;
 	ctx._source.$key = $key;
 }
 
-MVEL;
+GROOVY;
+			} else {
+				$scriptText .= <<<GROOVY
+if ( changed || ctx._source.$key != $key ) {
+	changed = true;
+	ctx._source.$key = $key;
+}
+
+GROOVY;
+			}
 			$params[ $key ] = $value;
 		}
-		$scriptText .= <<<MVEL
+		$scriptText .= <<<GROOVY
 if ( !changed ) {
 	ctx.op = "none";
 }
 
-MVEL;
-		$script = new \Elastica\Script( $scriptText, $params, 'mvel' );
+GROOVY;
+		$script = new \Elastica\Script( $scriptText, $params, 'groovy' );
 		if ( $doc->getDocAsUpsert() ) {
 			$script->setUpsert( $doc );
 		}

@@ -41,7 +41,7 @@ class BackupIndexes extends Maintenance {
 		$this->addOption( 'repo', 'Which repository to use.', true, true );
 		$this->addOption( 'mode', "One of 'delete', 'list', 'snapshot', default is 'list'", false, true );
 		$this->addOption( 'baseName', 'Base name of index, defaults to wiki id.', false, true );
-		$this->addOption( 'snapshot', 'Name of the snapshot, otherwise defaults to cirrus-$baseName', false, true );
+		$this->addOption( 'snapshot', 'Name of the snapshot, otherwise defaults to cirrus-$baseName-{timestamp}', false, true );
 	}
 
 	public function execute() {
@@ -122,7 +122,7 @@ class BackupIndexes extends Maintenance {
 
 	private function takeSnapshot() {
 		$baseName = $this->getOption( 'baseName', wfWikiId() );
-		$snapshot = $this->getOption( 'snapshot', "cirrus-$baseName" );
+		$snapshot = $this->getOption( 'snapshot', "cirrus-$baseName-" . time() );
 		$options = array(
 			'ignore_unavailable' => true,
 			'indices' => $baseName,

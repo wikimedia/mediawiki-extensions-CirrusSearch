@@ -362,6 +362,8 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	private function docToScript( $doc ) {
+		// !!!!!!!!!NOTE!!!!!!!!
+		// This has not been ported to groovy because it is not in active use.  Please port if using.
 		$scriptText = <<<MVEL
 changed = false;
 

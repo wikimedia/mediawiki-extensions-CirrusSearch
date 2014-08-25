@@ -80,7 +80,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * @var bool use suggestions on text fields
 	 */
-	private $phraseUseText;
+	private $phraseSuggestUseText;
 
 	/**
 	 * @var bool print config as it is being checked
@@ -164,7 +164,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	public function execute() {
 		global $wgPoolCounterConf,
 			$wgLanguageCode,
-			$wgCirrusSearchPhraseUseText,
+			$wgCirrusSearchPhraseSuggestUseText,
 			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
 			$wgCirrusSearchMaintenanceTimeout;
 
@@ -187,7 +187,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
 		$this->langCode = $wgLanguageCode;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
-		$this->phraseUseText = $wgCirrusSearchPhraseUseText;
+		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
 
 		try{
 			$indexTypes = Connection::getAllIndexTypes();
@@ -385,7 +385,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		$requiredPageMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseUseText,
+			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$requiredPageMappings = $requiredPageMappings->buildConfig();
 
@@ -755,7 +755,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			) );
 		}
 		$pageProperties = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseUseText,
+			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$pageProperties = $pageProperties->buildConfig();
 		$pageProperties = $pageProperties[ 'properties' ];

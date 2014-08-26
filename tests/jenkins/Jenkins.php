@@ -1,6 +1,7 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
+use \JobQueueAggregator;
 use \JobQueueGroup;
 
 /**
@@ -75,10 +76,6 @@ $wgJobQueueAggregator = array(
 );
 $wgCiteEnablePopups = true;
 
-// Running a ton of jobs every request helps to make sure all the pages that are created
-// are indexed as fast as possible.
-$wgJobRunRate = 100;
-
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
 $wgCirrusSearchShowScore = true;
@@ -103,7 +100,11 @@ class Jenkins {
 	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
 		$jobQueue = JobQueueGroup::singleton()->get( 'cirrusSearchLinksUpdateSecondary' );
 		if ( $jobQueue ) {
-			$jobQueue->recyclePruneAndUndelayJobs();
+			$count = $jobQueue->recyclePruneAndUndelayJobs();
+			if ( $count ) {
+				JobQueueAggregator::singleton()->notifyQueueNonEmpty( $jobQueue->getWiki(),
+					'cirrusSearchLinksUpdateSecondary' );
+			}
 		}
 	}
 

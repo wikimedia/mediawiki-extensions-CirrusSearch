@@ -296,7 +296,8 @@ class Hooks {
 	 */
 	public static function onLinksUpdateCompleted( $linksUpdate ) {
 		global $wgCirrusSearchLinkedArticlesToUpdate,
-			$wgCirrusSearchUnlinkedArticlesToUpdate;
+			$wgCirrusSearchUnlinkedArticlesToUpdate,
+			$wgCirrusSearchUpdateDelay;
 
 		// Titles that are created by a move don't need their own job.
 		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), self::$movingTitles ) ) {
@@ -315,6 +316,9 @@ class Hooks {
 			$params[ 'prioritize' ] = true;
 		}
 		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
+		$delay = $wgCirrusSearchUpdateDelay[ $job->isPrioritized() ? 'prioritized' : 'default' ];
+		$job->setDelay( $delay );
+
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}

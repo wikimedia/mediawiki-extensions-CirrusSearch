@@ -332,6 +332,17 @@ $wgCirrusSearchBackup = array();
 // the index.
 $wgCirrusSearchRefreshInterval = 1;
 
+// Delay between when the job is queued for a change and when the job can be
+// unqueued.  The idea is to let the job queue deduplication logic take care
+// of preventing multiple updates for frequently changed pages and to combine
+// many of the secondary changes from template edits into a single update.
+// Note that this does not work with every job queue implementation.  It works
+// with JobQueueRedis but is ignored with JobQueueDB.
+$wgCirrusSearchUpdateDelay = array(
+	'prioritized' => 0,
+	'default' => 0,
+);
+
 // List of plugins that Cirrus should ignore when it scans for plugins.  This
 // will cause the plugin not to be used by updateSearchIndexConfig.php and
 // friends.

@@ -98,13 +98,21 @@ class Jenkins {
 	}
 
 	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
-		$jobQueue = JobQueueGroup::singleton()->get( 'cirrusSearchLinksUpdateSecondary' );
-		if ( $jobQueue ) {
-			$count = $jobQueue->recyclePruneAndUndelayJobs();
-			if ( $count ) {
-				JobQueueAggregator::singleton()->notifyQueueNonEmpty( $jobQueue->getWiki(),
-					'cirrusSearchLinksUpdateSecondary' );
+		$jobsToUndelay = array(
+			'cirrusSearchLinksUpdateSecondary',
+			'cirrusSearchLinksUpdate',
+			'cirrusSearchLinksUpdatePrioritized'
+		);
+		foreach ( $jobsToUndelay as $type ) {
+			$jobQueue = JobQueueGroup::singleton()->get( $type );
+			if ( !$jobQueue ) {
+				continue;
 			}
+			$count = $jobQueue->recyclePruneAndUndelayJobs();
+			if ( !$count ) {
+				continue;
+			}
+			JobQueueAggregator::singleton()->notifyQueueNonEmpty( $jobQueue->getWiki(), $type );
 		}
 	}
 

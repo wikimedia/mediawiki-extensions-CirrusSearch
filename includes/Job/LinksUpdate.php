@@ -55,22 +55,17 @@ class LinksUpdate extends Job {
 		// Trigger LinksUpdateSecondary jobs when links were...updated
 		if ( count( $this->params[ 'addedLinks' ] ) > 0 ||
 				count( $this->params[ 'removedLinks' ] ) > 0 ) {
-			$params = array(
+			$secondary = new LinksUpdateSecondary( $this->title, array(
 				'addedLinks' => $this->params[ 'addedLinks' ],
 				'removedLinks' => $this->params[ 'removedLinks' ],
-			);
-			$jobQueueGroup = JobQueueGroup::singleton();
-			$jobQueue = $jobQueueGroup->get( 'cirrusSearchLinksUpdateSecondary' );
+			) );
 			// If possible, delay the job execution by a few seconds so Elasticsearch
 			// can refresh to contain what we just sent it.  The delay should be long
 			// enough for Elasticsearch to complete the refresh cycle, which normally
 			// takes wgCirrusSearchRefreshInterval seconds but we double it and add
 			// one just in case.
-			if ( $jobQueue->delayedJobsEnabled() ) {
-				$params[ 'jobReleaseTimestamp' ] = time() + 2 * $wgCirrusSearchRefreshInterval + 1;
-			}
-			$jobQueueGroup->push(
-				new LinksUpdateSecondary( $this->title, $params ) );
+			$secondary->setDelay( 2 * $wgCirrusSearchRefreshInterval + 1 );
+			JobQueueGroup::singleton()->push( $secondary );
 		}
 
 		// All done
@@ -80,7 +75,7 @@ class LinksUpdate extends Job {
 	/**
 	 * @return is this job prioritized?
 	 */
-	private function isPrioritized() {
+	public function isPrioritized() {
 		return isset( $this->params[ 'prioritize' ] ) && $this->params[ 'prioritize' ];
 	}
 }

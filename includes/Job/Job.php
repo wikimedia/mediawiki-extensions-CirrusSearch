@@ -1,7 +1,9 @@
 <?php
 
 namespace CirrusSearch\Job;
+
 use \Job as MWJob;
+use \JobQueueGroup;
 
 /**
  * Abstract job class used by all CirrusSearch*Job classes
@@ -60,6 +62,29 @@ abstract class Job extends MWJob {
 		}
 
 		return $ret;
+	}
+
+	/**
+	 * Set a delay for this job.  Note that this might not be possible the JobQueue
+	 * implementation handling this job doesn't support it (JobQueueDB) but is possible
+	 * for the high performance JobQueueRedis.  Note also that delays are minimums -
+	 * at least JobQueueRedis makes no effort to remove the delay as soon as possible
+	 * after it has expired.  By default it only checks every five minutes or so.
+	 * Note yet again that if another delay has been set that is longer then this one
+	 * then the _longer_ delay stays.
+	 * @param int $delay seconds to delay this job if possible
+	 */
+	public function setDelay( $delay ) {
+		$jobQueue = JobQueueGroup::singleton()->get( $this->getType() );
+		if ( !$delay || !$jobQueue->delayedJobsEnabled() ) {
+			return;
+		}
+		$oldTime = $this->getReleaseTimestamp();
+		$newTime = time() + $delay;
+		if ( $oldTime != null && $oldTime >= $newTime ) {
+			return;
+		}
+		$this->params[ 'jobReleaseTimestamp' ] = $newTime;
 	}
 
 	/**

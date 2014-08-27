@@ -1011,7 +1011,9 @@ GROOVY;
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );
+		wfProfileIn( __METHOD__ . '-execute' );
 		$result = $work->execute();
+		wfProfileOut( __METHOD__ . '-execute' );
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,

@@ -83,7 +83,7 @@ $wgCirrusSearchShowScore = true;
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
 
-$wgCirrusSearchAllFields = array( 'build' => true, 'use' => false );
+$wgCirrusSearchAllFields = array( 'build' => true, 'use' => true );
 
 class Jenkins {
 	/**

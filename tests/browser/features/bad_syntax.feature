@@ -4,15 +4,15 @@ Feature: Searches with syntax errors
     Given I am at a random page
 
   @setup_main
-  Scenario: Searching for <text>~<text> treats the tilde like a space (finding a result if the term is correct)
-    When I search for ffnonesenseword~pickles
+  Scenario: Searching for <text>~<text> treats the tilde like a space except that the whole "word" (including tilde) makes a phrase search
+    When I search for ffnonesenseword~catapult
     Then there is no warning
     And Two Words is the first search result
     And there is a link to create a new page from the search result
 
   @setup_main
   Scenario: Searching for <text>~<text> treats the tilde like a space (not finding any results if a fuzzy search was needed)
-    When I search for ffnonesensewor~pickles
+    When I search for ffnonesensewor~catapult
     Then there is no warning
     And there are no search results
     And there is a link to create a new page from the search result
@@ -84,10 +84,10 @@ Feature: Searches with syntax errors
   | !!!! catapult          |
   | ------- catapult       |
   | ++++ catapult ++++     |
-  | ++catapult++++catapult |
+  | ++amazing++++catapult  |
   | catapult ~/            |
   | catapult ~/            |
-  | catapult~◆~catapult    |
+  | amazing~◆~catapult     |
   | ******* catapult       |
 
 

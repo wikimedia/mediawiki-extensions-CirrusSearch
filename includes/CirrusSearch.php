@@ -94,17 +94,40 @@ class CirrusSearch extends SearchEngine {
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
+
+			// Expand titles chasing through redirects
 			$titles = array();
+			$found = array();
 			foreach ( explode( '|', $term ) as $title ) {
 				$title = Title::newFromText( trim( $title ) );
-				if ( $title ) {
-					$titles[] = $title;
+				while ( true ) {
+					if ( !$title ) {
+						continue 2;
+					}
+					$titleText = $title->getFullText();
+					if ( in_array( $titleText, $found ) ) {
+						continue 2;
+					}
+					$found[] = $titleText;
+					if ( !$title->exists() ) {
+						continue 2;
+					}
+					if ( $title->isRedirect() ) {
+						$page = WikiPage::factory( $title );
+						if ( !$page->exists() ) {
+							continue 2;
+						}
+						$title = $page->getRedirectTarget();
+					} else {
+						break;
+					}
 				}
+				$titles[] = $title;
 			}
 			if ( count( $titles ) ) {
 				$status = $searcher->moreLikeTheseArticles( $titles );
 			} else {
-				$status = Status::newGood( null );
+				$status = Status::newGood( new SearchResultSet() /* empty */ );
 			}
 		} else {
 			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;

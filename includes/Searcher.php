@@ -567,7 +567,7 @@ GROOVY;
 		// Find prefix matches and force them to only match against the plain analyzed fields.  This
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
-		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/',
+		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
 			function ( $matches ) use ( $searcher, $escaper ) {
 				$term = $escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array(

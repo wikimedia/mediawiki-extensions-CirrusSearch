@@ -20,6 +20,18 @@ Before('@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes') 
   end
 end
 
+Before('@redirect_loop') do
+  if !$redirect_loop
+    steps %Q{
+      Given a page named Redirect Loop exists with contents #REDIRECT [[Redirect Loop 1]]
+      And a page named Redirect Loop 1 exists with contents #REDIRECT [[Redirect Loop 2]]
+      And a page named Redirect Loop 2 exists with contents #REDIRECT [[Redirect Loop 1]]
+    }
+    $redirect_loop = true
+  end
+end
+
+
 Before('@setup_main, @prefix, @bad_syntax') do
   if !$setup_main2
     steps %Q{
@@ -167,6 +179,7 @@ Before("@more_like_this") do
       And a page named More Like Me 3 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
       And a page named More Like Me 4 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
       And a page named More Like Me 5 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
+      And a page named More Like Me Rdir exists with contents #REDIRECT [[More Like Me 1]]
       And a page named More Like Me Set 2 Page 1 exists with contents morelikesettwo morelikesettwo morelikesettwo
       And a page named More Like Me Set 2 Page 2 exists with contents morelikesettwo morelikesettwo morelikesettwo
       And a page named More Like Me Set 2 Page 3 exists with contents morelikesettwo morelikesettwo morelikesettwo

@@ -13,6 +13,7 @@ use \PoolCounterWorkViaCallback;
 use \ProfileSection;
 use \RequestContext;
 use \Sanitizer;
+use \SearchResultSet;
 use \Status;
 use \Title;
 use \UsageException;
@@ -714,7 +715,7 @@ GROOVY;
 	/**
 	 * Find articles that contain similar text to the provided title array.
 	 * @param array(Title) $titles title of articles to search for
-	 * @return Status(ResultSet|null)
+	 * @return Status(ResultSet)
 	 */
 	public function moreLikeTheseArticles( $titles ) {
 		global $wgCirrusSearchMoreLikeThisConfig;
@@ -725,9 +726,7 @@ GROOVY;
 		// two passes but it doesn't support that at this point
 		$pageIds = array();
 		foreach ( $titles as $title ) {
-			if ( $title->exists() ) {
-				$pageIds[] = $title->getArticleID();
-			}
+			$pageIds[] = $title->getArticleID();
 		}
 		$found = $this->get( $pageIds, array( 'text' ) );
 		if ( !$found->isOk() ) {
@@ -736,7 +735,7 @@ GROOVY;
 		$found = $found->getValue();
 		if ( count( $found ) === 0 ) {
 			// If none of the pages are in the index we can't find articles like them
-			return Status::newGood( null );
+			return Status::newGood( new SearchResultSet() /* empty */ );
 		}
 
 		$text = array();

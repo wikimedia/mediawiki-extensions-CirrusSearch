@@ -126,8 +126,10 @@ class PageTextBuilder extends ParseBuilder {
 		$auxiliaryElements = $formatter->filterContent();
 		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
 		$auxiliary = array();
-		foreach ( $auxiliaryElements as $auxiliaryElement ) {
-			$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
+		if ( is_array( $auxiliaryElements ) ) {
+			foreach ( $auxiliaryElements as $auxiliaryElement ) {
+				$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
+			}
 		}
 
 		return array( $allText, $opening, $auxiliary );

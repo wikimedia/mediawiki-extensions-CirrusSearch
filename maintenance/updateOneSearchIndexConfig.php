@@ -834,7 +834,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					// With the default mximum number of errors (5) this maxes out at 256 seconds.
 					$seconds = rand( 1, pow( 2, 3 + $errors ) );
 					$this->output( $this->indent . $messagePrefix . "Caught an error retrying as singles.  " .
-						"Backing off for $seconds and retrying.\n" );
+						"Backing off for $seconds and retrying.  Error:\n$e" );
 					sleep( $seconds );
 				}
 			} else {
@@ -848,7 +848,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		try {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.\n" );
+			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error:\n$e" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
 				$updateResult = $this->getPageType()->addDocuments( array( $document ) );

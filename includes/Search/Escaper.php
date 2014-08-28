@@ -37,7 +37,7 @@ class Escaper {
 			// character (״), call a Gershayim, which mark acronyms.  Here we guess if the intent
 			// was to mark a phrase, in which case we leave the quotes alone, or to mark an
 			// acronym, in which case we escape them.
-			return preg_replace( '/(\S+)"(\S)/', '\1\\"\2', $text );
+			return preg_replace( '/(\S+)"(\S)/u', '\1\\"\2', $text );
 		}
 		return $text;
 	}
@@ -89,18 +89,18 @@ class Escaper {
 		// Be careful when editing this method because the ordering of the replacements matters.
 
 		// Escape ~ that don't follow a term or a quote
-		$string = preg_replace_callback( '/(?<![\w"])~/',
+		$string = preg_replace_callback( '/(?<![\w"])~/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
 
 		// Remove ? and * that don't follow a term.  These are slow so we turned them off and escaping isn't working....
-		$string = preg_replace( '/(?<![\w])([?*])/', '', $string );
+		$string = preg_replace( '/(?<![\w])([?*])/u', '', $string );
 
 		// Reduce token ranges to bare tokens without the < or >
-		$string = preg_replace( '/(?:<|>)([^\s])/', '$1', $string );
+		$string = preg_replace( '/(?:<|>)([^\s])/u', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$fuzzyQuery = false;
-		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/',
+		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
 			function ( $matches ) use ( &$fuzzyQuery ) {
 				if ( preg_match( '/^(?:|0|(?:0?\.[0-9]+)|(?:1(?:\.0)?))$/', $matches[ 'trailing' ] ) ) {
 					$fuzzyQuery = true;
@@ -112,7 +112,7 @@ class Escaper {
 			}, $string );
 
 		// Turn bad proximity searches into searches that contain a ~
-		$string = preg_replace_callback( '/"~(?<trailing>\S*)/', function ( $matches ) {
+		$string = preg_replace_callback( '/"~(?<trailing>\S*)/u', function ( $matches ) {
 			if ( preg_match( '/[0-9]+/', $matches[ 'trailing' ] ) ) {
 				return $matches[ 0 ];
 			} else {
@@ -123,22 +123,22 @@ class Escaper {
 		// Escape +, -, and ! when not immediately followed by a term or when immediately
 		// prefixed with a term.  Catches "foo-bar", "foo- bar", "foo - bar".  The only
 		// acceptable use is "foo -bar" and "-bar foo".
-		$string = preg_replace_callback( '/[+\-!]+(?!\w)/',
+		$string = preg_replace_callback( '/[+\-!]+(?!\w)/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
-		$string = preg_replace_callback( '/(?<!^|[ \\\\])[+\-!]+/',
+		$string = preg_replace_callback( '/(?<!^|[ \\\\])[+\-!]+/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
 
 		// Escape || when not between terms
-		$string = preg_replace_callback( '/^\s*\|\|/',
+		$string = preg_replace_callback( '/^\s*\|\|/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
-		$string = preg_replace_callback( '/\|\|\s*$/',
+		$string = preg_replace_callback( '/\|\|\s*$/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
 
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
-		$string = preg_replace_callback( '/^\s*(?:AND|OR)/',
+		$string = preg_replace_callback( '/^\s*(?:AND|OR)/u',
 			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );
-		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/',
+		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
 			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );
 
 		return array( $string, $fuzzyQuery );

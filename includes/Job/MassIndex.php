@@ -54,5 +54,6 @@ class MassIndex extends Job {
 		// Now invoke the updater!
 		$updater = new Updater();
 		$count = $updater->updatePages( $pageData, null, null, $this->params[ 'updateFlags' ] );
+		return $count >= 0;
 	}
 }

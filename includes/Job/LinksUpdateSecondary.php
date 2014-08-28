@@ -37,12 +37,10 @@ class LinksUpdateSecondary extends Job {
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
 		$updater = new Updater();
+		// We're intentionally throwing out whether or not this job succeeds.
+		// We're loggging it but we're not retrying.
 		$updater->updateLinkedArticles( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
-
-		// This job really doesn't matter if it fails, even if we could
-		// verify one way or the other, which we can't. If it failed we
-		// already logged further down--just release the job and move on
 		return true;
 	}
 }

@@ -59,13 +59,13 @@ class Updater extends ElasticsearchIntermediary {
 
 		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
-			$success = (bool)$this->updatePages(
+			$updatedCount = $this->updatePages(
 				array( $page ),
 				$wgCirrusSearchUpdateShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout,
 				self::INDEX_EVERYTHING
 			);
-			if ( !$success ) {
+			if ( $updatedCount < 0 ) {
 				return false;
 			}
 		}
@@ -167,7 +167,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param $flags int Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
-	 * @return int Number of documents updated
+	 * @return int Number of documents updated of -1 if there was an error
 	 */
 	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
 		$profiler = new ProfileSection( __METHOD__ );
@@ -201,7 +201,9 @@ class Updater extends ElasticsearchIntermediary {
 			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
 			// the max.  So we chunk it and do them sequentially.
 			foreach( array_chunk( $data, 10 ) as $chunked ) {
-				$this->sendData( $indexType, $chunked, $shardTimeout );
+				if ( !$this->sendData( $indexType, $chunked, $shardTimeout ) ) {
+					return -1;
+				}
 			}
 			$count += count( $data );
 		}
@@ -432,6 +434,7 @@ GROOVY;
 	 * Update the search index for articles linked from this article.  Just updates link counts.
 	 * @param $addedLinks array of Titles added to the page
 	 * @param $removedLinks array of Titles removed from the page
+	 * @return boolean were all pages updated?
 	 */
 	public function updateLinkedArticles( $addedLinks, $removedLinks ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
@@ -472,8 +475,9 @@ GROOVY;
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$this->updatePages( $pages, $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout,
-			self::SKIP_PARSE );
+		$updatedCount = $this->updatePages( $pages, $wgCirrusSearchUpdateShardTimeout,
+			$wgCirrusSearchClientSideUpdateTimeout, self::SKIP_PARSE );
+		return $updatedCount >= 0;
 	}
 
 	/**

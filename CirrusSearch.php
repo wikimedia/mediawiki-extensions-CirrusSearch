@@ -113,8 +113,9 @@ $wgCirrusSearchExtraIndexes = array();
 $wgCirrusSearchUpdateShardTimeout = '1ms';
 
 // Client side timeout for non-maintenance index and delete operations and
-// in seconds.
-$wgCirrusSearchClientSideUpdateTimeout = 5;
+// in seconds.   Set it long enough to account for operations that may be
+// delayed on the Elasticsearch node.
+$wgCirrusSearchClientSideUpdateTimeout = 120;
 
 // The amount of time Elasticsearch will wait for search shard actions before
 // giving up on them and returning the results from the other shards.  Defaults
@@ -128,7 +129,7 @@ $wgCirrusSearchSearchShardTimeout = array(
 );
 
 // Client side timeout for searches in seconds.  Best to keep this double the
-// shard timeout to give Elasticsearch a change to timeout the shards and return
+// shard timeout to give Elasticsearch a chance to timeout the shards and return
 // partial results.
 $wgCirrusSearchClientSideSearchTimeout = array(
 	'default' => 40,

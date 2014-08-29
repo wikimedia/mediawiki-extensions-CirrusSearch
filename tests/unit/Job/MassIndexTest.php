@@ -6,7 +6,7 @@ use \MediaWikiTestCase;
 use \Title;
 
 /**
- * Test for LinksUpdateSecondary job.
+ * Test for MassIndex job.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,24 +23,22 @@ use \Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LinksUpdateSecondaryJobTest extends MediaWikiTestCase {
+class MassIndexTest extends MediaWikiTestCase {
 	/**
 	 * @dataProvider workItemCountTestCases
 	 */
-	public function testWorkItemCount( $addedLinks, $removedLinks, $expected ) {
-		$job = new LinksUpdateSecondary( Title::newMainPage(), array(
-			'addedLinks' => $addedLinks,
-			'removedLinks' => $removedLinks,
+	public function testWorkItemCount( $pageDBKeys, $expected ) {
+		$job = new MassIndex( Title::newMainPage(), array(
+			'pageDBKeys' => $pageDBKeys,
 		) );
 		$this->assertEquals( $expected, $job->workItemCount() );
 	}
 
 	public static function workItemCountTestCases() {
 		return array(
-			array( array(), array(), 0 ),
-			array( array( 'Foo' ), array(), 1 ),
-			array( array(), array( 'Bar' ), 1 ),
-			array( array( 'Cat', 'Cow', 'Puppy' ), array( 'Lorax' ), 4 ),
+			array( array(), 0 ),
+			array( array( 'Foo' ), 1 ),
+			array( array( 'Cat', 'Cow', 'Puppy' ), 3 ),
 		);
 	}
 }

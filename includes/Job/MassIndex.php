@@ -56,4 +56,8 @@ class MassIndex extends Job {
 		$count = $updater->updatePages( $pageData, null, null, $this->params[ 'updateFlags' ] );
 		return $count >= 0;
 	}
+
+	public function workItemCount() {
+		return count( $this->params[ 'pageDBKeys' ] );
+	}
 }

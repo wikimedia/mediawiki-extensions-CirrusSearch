@@ -27,7 +27,7 @@ class EscaperTest extends MediaWikiTestCase {
 	 * @dataProvider quoteEscapeTestCases
 	 */
 	public function testQuoteEscape( $language, $input, $expected ) {
-		$escaper = new SearchEscaper( $language );
+		$escaper = new Escaper( $language );
 		$actual = $escaper->escapeQuotes( $input );
 		$this->assertEquals( $expected, $actual );
 	}
@@ -51,7 +51,7 @@ class EscaperTest extends MediaWikiTestCase {
 	 * @dataProvider balanceQuotesTestCases
 	 */
 	public function testBalanceQuotes( $input, $expected ) {
-		$escaper = new SearchEscaper( 'en' ); // Language doesn't matter here
+		$escaper = new Escaper( 'en' ); // Language doesn't matter here
 		$actual = $escaper->balanceQuotes( $input);
 		$this->assertEquals( $expected, $actual );
 	}

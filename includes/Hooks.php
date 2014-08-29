@@ -12,6 +12,8 @@ use \LinksUpdate;
 use \OutputPage;
 use \SpecialSearch;
 use \Title;
+use \RecursiveDirectoryIterator;
+use \RecursiveIteratorIterator;
 use \RequestContext;
 use \User;
 use \WebRequest;
@@ -330,7 +332,19 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onUnitTestsList( &$files ) {
-		$files = array_merge( $files, glob( __DIR__ . '/../tests/unit/*Test.php' ) );
+		// This is pretty much exactly how the Translate extension declares its
+		// multiple test directories.  There really isn't any excuse for doing
+		// it any other way.
+		$dir = __DIR__ . '/../tests/unit';
+		$directoryIterator = new RecursiveDirectoryIterator( $dir );
+		$fileIterator = new RecursiveIteratorIterator( $directoryIterator );
+
+		foreach ( $fileIterator as $fileInfo ) {
+			if ( substr( $fileInfo->getFilename(), -8 ) === 'Test.php' ) {
+				$files[] = $fileInfo->getPathname();
+			}
+		}
+
 		return true;
 	}
 

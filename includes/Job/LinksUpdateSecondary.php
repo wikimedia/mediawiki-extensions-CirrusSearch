@@ -43,4 +43,9 @@ class LinksUpdateSecondary extends Job {
 			$this->params[ 'removedLinks' ] );
 		return true;
 	}
+
+	public function workItemCount() {
+		return count( $this->params[ 'addedLinks' ] )
+			+ count( $this->params[ 'removedLinks' ] );
+	}
 }

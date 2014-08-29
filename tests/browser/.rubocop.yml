@@ -1,0 +1,6 @@
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/LeadingCommentSpace:
+  Exclude:
+    - Gemfile  # RVM doesn't recognise spaces after the #s

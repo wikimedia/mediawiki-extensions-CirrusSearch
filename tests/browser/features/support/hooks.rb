@@ -1,8 +1,9 @@
 # encoding: utf-8
 
-Before('@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes') do
-  if !$setup_main
-    steps %Q{
+main = false
+Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes") do
+  unless main
+    steps %(
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
       And a page named Catapult/adsf exists with contents catapult subpage [[Catapult]]
       And a page named Links To Catapult exists with contents [[Catapult]]
@@ -15,89 +16,96 @@ Before('@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes') 
       And a page named वाङ्‍मय exists
       And a page named वाङ‍्मय exists
       And a page named वाङ्‌मय exists
-    }
-    $setup_main = true
+        )
+    main = true
   end
 end
 
-Before('@redirect_loop') do
-  if !$redirect_loop
-    steps %Q{
+redirect_loop = false
+Before("@redirect_loop") do
+  unless redirect_loop
+    steps %(
       Given a page named Redirect Loop exists with contents #REDIRECT [[Redirect Loop 1]]
       And a page named Redirect Loop 1 exists with contents #REDIRECT [[Redirect Loop 2]]
       And a page named Redirect Loop 2 exists with contents #REDIRECT [[Redirect Loop 1]]
-    }
-    $redirect_loop = true
+        )
+    redirect_loop = true
   end
 end
 
-
-Before('@setup_main, @prefix, @bad_syntax') do
-  if !$setup_main2
-    steps %Q{
+main2 = false
+Before("@setup_main, @prefix, @bad_syntax") do
+  unless main2
+    steps %(
       Given a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
       And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
       And a page named IHaveASound exists with contents [[File:Serenade for Strings -mvt-1- Elgar.ogg]]
-    }
-    $setup_main2 = true
+        )
+    main2 = true
   end
 end
 
-Before('@setup_main, @prefix, @go, @bad_syntax') do
-  if !$africa
-    steps %Q{
+africa = false
+Before("@setup_main, @prefix, @go, @bad_syntax") do
+  unless africa
+    steps %(
       Given a page named África exists with contents for testing
-    }
-    $africa = true
+        )
+    africa = true
   end
 end
 
-Before('@prefix') do
-  if !$prefix
-    steps %Q{
+prefix = false
+Before("@prefix") do
+  unless prefix
+    steps %(
       Given a page named L'Oréal exists
-    }
-    $prefix = true
+        )
+    prefix = true
   end
 end
 
+headings = false
 Before("@headings") do
-  if !$headings
-    steps %Q{
+  unless headings
+    steps %(
       Given a page named HasHeadings exists with contents @has_headings.txt
       And a page named HasReferencesInText exists with contents References [[Category:HeadingsTest]]
       And a page named HasHeadingsWithHtmlComment exists with contents @has_headings_with_html_comment.txt
       And a page named HasHeadingsWithReference exists with contents @has_headings_with_reference.txt
-    }
-    $headings = true
+        )
+    headings = true
   end
 end
 
+javascript_injection = false
 Before("@javascript_injection") do
-  if !$javascript_injection
-    steps %Q{
+  unless javascript_injection
+    steps %(
       Given a page named Javascript Direct Inclusion exists with contents @javascript.txt
       Given a page named Javascript Pre Tag Inclusion exists with contents @javascript_in_pre.txt
-    }
-    $javascript_injection = true
+        )
+    javascript_injection = true
   end
 end
 
+setup_namespaces = false
 Before("@setup_namespaces") do
-  if !$setup_namespaces
-    steps %Q{
+  unless setup_namespaces
+    steps %(
       Given a page named Talk:Two Words exists with contents why is this page about catapults?
       And a page named Help:Smoosh exists with contents test
       And a page named File:Nothingasdf exists with contents nothingasdf
-    }
-    $setup_namespaces = true
+        )
+    setup_namespaces = true
   end
 end
 
+suggestions = false
 Before("@suggestions") do
-  if !$suggestions
-    steps %Q{
+  unless suggestions
+    steps %(
       Given a page named Popular Culture exists with contents popular culture
       And a page named Nobel Prize exists with contents nobel prize
       And a page named Noble Gasses exists with contents noble gasses
@@ -119,14 +127,15 @@ Before("@suggestions") do
       And a page named Rrr Word 4 exists with contents #REDIRECT [[Noble Somethingelse4]]
       And a page named Rrr Word 5 exists with contents #REDIRECT [[Noble Somethingelse5]]
       And a page named Nobel Gassez exists with contents #REDIRECT [[Noble Gasses]]
-    }
-    $suggestions = true
+        )
+    suggestions = true
   end
 end
 
+suggestions_stemming = false
 Before("@suggestions", "@stemming") do
-  if !$suggestions_stemming
-    steps %Q{
+  unless suggestions_stemming
+    steps %(
       Given a page named Stemming Multiwords exists
       And a page named Stemming Possessive’s exists
       And a page named Stemmingsinglewords exists
@@ -142,38 +151,41 @@ Before("@suggestions", "@stemming") do
       And a page named Stemmingsinglewords Other 10 exists
       And a page named Stemmingsinglewords Other 11 exists
       And a page named Stemmingsinglewords Other 12 exists
-    }
-    $suggestions_stemming = true
+        )
+    suggestions_stemming = true
   end
 end
 
+highlighting = false
 Before("@highlighting") do
-  if !$highlighting
-    steps %Q{
+  unless highlighting
+    steps %(
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
       And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named The Once and Future King exists
       And a page named User_talk:Test exists
       And a page named Rose Trellis Faberge Egg exists with contents @rose_trellis_faberge_egg.txt
-    }
+        )
   end
-  $highlighting = true
+  highlighting = true
 end
 
+highlighting_references = false
 Before("@highlighting", "@references") do
-  if !$highlighting_references
-    steps %Q{
+  unless highlighting_references
+    steps %(
       Given a page named References Highlight Test exists with contents @references_highlight_test.txt
-    }
+        )
   end
-  $highlighting_references = true
+  highlighting_references = true
 end
 
+more_like_this = false
 Before("@more_like_this") do
-  if !$setup_more_like_this
+  unless more_like_this
     # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches
-    steps %Q{
+    steps %(
       Given a page named More Like Me 1 exists with contents morelikesetone morelikesetone
       And a page named More Like Me 2 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
       And a page named More Like Me 3 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
@@ -190,61 +202,66 @@ Before("@more_like_this") do
       And a page named More Like Me Set 3 Page 3 exists with contents morelikesetthree morelikesetthree
       And a page named More Like Me Set 3 Page 4 exists with contents morelikesetthree morelikesetthree
       And a page named More Like Me Set 3 Page 5 exists with contents morelikesetthree morelikesetthree
-    }
+        )
   end
-  $setup_more_like_this = true
+  more_like_this = true
 end
 
+phrase_rescore = false
 Before("@setup_phrase_rescore") do
-  if !$setup_phrase_rescore
-    steps %Q{
+  unless phrase_rescore
+    steps %(
       Given a page named Rescore Test Words exists
       And a page named Test Words Rescore Rescore Test Words exists
       And a page named Rescore Test TextContent exists with contents Chaff
       And a page named Rescore Test HasTextContent exists with contents Rescore Test TextContent
-    }
+        )
   end
-  $setup_phrase_rescore = true
+  phrase_rescore = true
 end
 
+exact_quotes = false
 Before("@exact_quotes") do
-  if !$exact_quotes
-    steps %Q{
+  unless exact_quotes
+    steps %(
       Given a page named Contains A Stop Word exists
       And a page named Doesn't Actually Contain Stop Words exists
       And a page named Pick* exists
-    }
+        )
   end
-  $exact_quotes = true
+  exact_quotes = true
 end
 
+programmer_friendly = false
 Before("@programmer_friendly") do
-  if !$programmer_friendly
-    steps %Q{
+  unless programmer_friendly
+    steps %(
       Given a page named $wgNamespaceAliases exists
       And a page named PFSC exists with contents snake_case
       And a page named PascalCase exists
       And a page named NumericCase7 exists
       And a page named this.getInitial exists
-    }
-    $programmer_friendly = true
+        )
+    programmer_friendly = true
   end
 end
 
+stemmer = false
 Before("@stemmer") do
-  if !$stemmer
-    steps %Q{
+  unless stemmer
+    steps %(
       Given a page named StemmerTest Aliases exists
       And a page named StemmerTest Alias exists
       And a page named StemmerTest Used exists
-    }
+        )
   end
-  $stemmer = true
+  stemmer = true
 end
 
+prefix_filter = false
 Before("@prefix_filter") do
-  if !$prefix_filter
-    steps %Q{
+  unless prefix_filter
+    steps %(
       Given a page named Prefix Test exists
       And a page named Prefix Test Redirect exists with contents #REDIRECT [[Prefix Test]]
       And a page named Foo Prefix Test exists with contents [[Prefix Test]]
@@ -252,62 +269,67 @@ Before("@prefix_filter") do
       And a page named Prefix Test AAAA exists with contents [[Prefix Test]]
       And a page named Talk:Prefix Test exists with contents [[Prefix Test]]
       And a page named User_talk:Prefix Test exists with contents [[Prefix Text]]
-    }
+        )
   end
-  $prefix_filter = true
+  prefix_filter = true
 end
 
+prefer_recent = false
 Before("@prefer_recent") do
-  if !$prefer_recent
+  unless prefer_recent
     # These are updated per process instead of per test because of the 20 second wait
     # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot
-    steps %Q{
+    steps %(
       Given a page named PreferRecent First exists with contents %{epoch}
       And a page named PreferRecent Second Second exists with contents %{epoch}
       And wait 20 seconds
       And a page named PreferRecent Third exists with contents %{epoch}
-    }
+        )
   end
-  $prefer_recent = true
+  prefer_recent = true
 end
 
+hastemplate = false
 Before("@hastemplate") do
-  if !$hastemplate
-    steps %Q{
+  unless hastemplate
+    steps %(
       Given a page named MainNamespaceTemplate exists
       And a page named HasMainNSTemplate exists with contents {{:MainNamespaceTemplate}}
       And a page named Talk:TalkTemplate exists
       And a page named HasTTemplate exists with contents {{Talk:TalkTemplate}}
-    }
+        )
   end
-  $hastemplate = true
+  hastemplate = true
 end
 
+boost_template = false
 Before("@boost_template") do
-  if !$boost_template
-    steps %Q{
+  unless boost_template
+    steps %(
       Given a page named Template:BoostTemplateHigh exists with contents BoostTemplateTest
       And a page named Template:BoostTemplateLow exists with contents BoostTemplateTest
       And a page named NoTemplates BoostTemplateTest exists with contents nothing important
       And a page named HighTemplate exists with contents {{BoostTemplateHigh}}
       And a page named LowTemplate exists with contents {{BoostTemplateLow}}
-    }
+        )
   end
-  $boost_template = true
+  boost_template = true
 end
 
+go = false
 Before("@go") do
-  if !$go
-    steps %Q{
+  unless go
+    steps %(
       Given a page named MixedCapsAndLowerCase exists
-    }
+        )
   end
-  $go = true
+  go = true
 end
 
+go_options = false
 Before("@go", "@options") do
-  if !$go_options
-    steps %Q{
+  unless go_options
+    steps %(
       Given a page named son Nearmatchflattentest exists
       And a page named Son Nearmatchflattentest exists
       And a page named SON Nearmatchflattentest exists
@@ -339,14 +361,15 @@ Before("@go", "@options") do
       And a page named Blah Redirectnoncompete Nearmatchflattentest exists
       And a page named Soñ Redirectnoncompete Nearmatchflattentest exists with contents #REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]
       And a page named Søn Redirectnoncompete Nearmatchflattentest exists with contents #REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]
-    }
+        )
   end
-  $go_options = true
+  go_options = true
 end
 
+redirect = false
 Before("@redirect") do
-  if !$go_options
-    steps %Q{
+  unless redirect
+    steps %(
       Given a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
       And a page named Redirecttest Yikes exists with contents #REDIRECT [[Redirecttest Yay]]
       And a page named User_talk:SEO Redirecttest exists with contents #REDIRECT [[User_talk:Search Engine Optimization Redirecttest]]
@@ -355,32 +378,35 @@ Before("@redirect") do
       And a page named Search Engine Optimization Redirecttest exists
       And a page named Redirecttest Yay exists
       And a page named User_talk:Search Engine Optimization Redirecttest exists
-    }
+        )
   end
-  $go_options = true
+  redirect = true
 end
 
+file_text = false
 Before("@file_text") do
-  if !$file_text
-    steps %Q{
+  unless file_text
+    steps %(
       Given a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
-    }
+        )
   end
-  $file_text = true
+  file_text = true
 end
 
+match_stopwords = false
 Before("@match_stopwords") do
-  if !$match_plain
-    steps %Q{
+  unless match_stopwords
+    steps %(
       Given a page named To exists
-    }
+        )
   end
-  $match_plain = true
+  match_stopwords = true
 end
 
+many_redirects = false
 Before("@many_redirects") do
-  if !$many_redirects
-    steps %Q{
+  unless many_redirects
+    steps %(
       Given a page named Manyredirectstarget exists with contents [[Category:ManyRedirectsTest]]
       And a page named Fewredirectstarget exists with contents [[Category:ManyRedirectsTest]]
       And a page named Many Redirects Test 1 exists with contents #REDIRECT [[Manyredirectstarget]]
@@ -391,14 +417,15 @@ Before("@many_redirects") do
       And a page named Useless redirect to target 4 exists with contents #REDIRECT [[Manyredirectstarget]]
       And a page named Useless redirect to target 5 exists with contents #REDIRECT [[Manyredirectstarget]]
       And a page named Many Redirects Test ToFew exists with contents #REDIRECT [[Fewredirectstarget]]
-    }
+        )
   end
-  $many_redirects = true
+  many_redirects = true
 end
 
+relevancy = false
 Before("@relevancy") do
-  if !$relevancy
-    steps %Q{
+  unless relevancy
+    steps %(
       Given a page named Relevancytest exists with contents not relevant
       And a page named Relevancytestviaredirect exists with contents not relevant
       And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
@@ -441,14 +468,15 @@ Before("@relevancy") do
       And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
       And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
       And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
-    }
+        )
   end
-  $relevancy = true
+  relevancy = true
 end
 
+fallback_finder = false
 Before("@fallback_finder") do
-  if !$fallback_finder
-    steps %Q{
+  unless fallback_finder
+    steps %{
       Given a page named $US exists
       And a page named US exists
       And a page named Uslink exists with contents [[US]]
@@ -456,43 +484,47 @@ Before("@fallback_finder") do
       And a page named ¢ exists with contents #REDIRECT [[Cent (currency)]]
     }
   end
-  $fallback_finder = true
+  fallback_finder = true
 end
 
+js_and_css = false
 Before("@js_and_css") do
-  if !$js_and_css
-    steps %Q{
+  unless js_and_css
+    steps %(
       Given a page named User:Tools/Some.js exists with contents @some.js
       And a page named User:Tools/Some.css exists with contents @some.css
-    }
+        )
   end
-  $js_and_css = true
+  js_and_css = true
 end
 
+special_random = false
 Before("@special_random") do
-  if !$special_random
-    steps %Q{
+  unless special_random
+    steps %(
       Given a page named User:Random Test exists
       And a page named User_talk:Random Test exists
-    }
+        )
   end
-  $special_random = true
+  special_random = true
 end
 
+regex = false
 Before("@regex") do
-  if !$regex
-    steps %Q{
+  unless regex
+    steps %(
       Given a page named RegexEscapedForwardSlash exists with contents a/b
       And a page named RegexEscapedBackslash exists with contents a\\b
       And a page named RegexEscapedDot exists with contents a.b
-    }
+        )
   end
-  $regex = true
+  regex = true
 end
 
+linksto = false
 Before("@linksto") do
-  if !$linksto
-    steps %Q{
+  unless linksto
+    steps %(
       Given a page named LinksToTest Target exists
       And a page named LinksToTest Plain exists with contents [[LinksToTest Target]]
       And a page named LinksToTest OtherText exists with contents [[LinksToTest Target]] and more text
@@ -500,7 +532,7 @@ Before("@linksto") do
       And a page named Template:LinksToTest Template exists with contents [[LinksToTest Target]]
       And a page named LinksToTest Using Template exists with contents {{LinksToTest Template}}
       And a page named LinksToTest LinksToTemplate exists with contents [[Template:LinksToTest Template]]
-    }
-    $linksto = true
+        )
+    linksto = true
   end
 end

@@ -25,5 +25,5 @@ Then(/^(.+) should be the first result$/) do |page_name|
 end
 
 Then(/^the page I arrive on has title (.+)$/) do |title|
- @browser.title.should match Regexp.escape(title)
+  @browser.title.should match Regexp.escape(title)
 end

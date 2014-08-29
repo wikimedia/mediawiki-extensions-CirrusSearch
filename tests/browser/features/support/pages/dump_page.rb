@@ -1,5 +1,6 @@
 require "cgi"
 
+# Dump of data that Cirrus has in its index for the article.
 class CirrusDumpPage
   include PageObject
 

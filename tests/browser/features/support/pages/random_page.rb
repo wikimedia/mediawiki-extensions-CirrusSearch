@@ -1,3 +1,4 @@
+# Page that immediately redirects the user to a random article page.
 class RandomPage
   include PageObject
 

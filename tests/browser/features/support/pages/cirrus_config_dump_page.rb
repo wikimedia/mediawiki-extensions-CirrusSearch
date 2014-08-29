@@ -1,3 +1,4 @@
+# JSON dump of Cirrus' config.
 class CirrusConfigDumpPage
   include PageObject
 

@@ -1,5 +1,6 @@
 require "cgi"
 
+# Page where users complete the process of moving a page.
 class MovePage
   include PageObject
 

@@ -1,3 +1,4 @@
+# Page with all the search options.
 class SearchPage
   include PageObject
 
@@ -6,5 +7,5 @@ class SearchPage
   div(:search_results, class: "suggestions-results")
   div(:search_special, class: "suggestions-special")
   div(:one_result, class: "suggestions-result")
-  links(:all_results, class: "suggestions-result"){ |page| page.search_results_element.link_elements }
+  links(:all_results, class: "suggestions-result") { |page| page.search_results_element.link_elements }
 end

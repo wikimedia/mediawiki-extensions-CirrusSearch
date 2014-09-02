@@ -67,3 +67,22 @@ Feature: Searches that contain quotes
     | 2         | Two Words |
     | 3         | Two Words |
     | 77        | Two Words |
+
+  Scenario Outline: Prefixing a quoted phrase with - or ! or NOT negates it
+    When I search for catapult <negation>"two words"<suffix>
+    Then Catapult is in the search results
+    And Two Words is not in the search results
+  Examples:
+    |    negation    | suffix |
+    | -              |        |
+    | !              |        |
+    | %{exact:NOT }  |        |
+    | -              | ~      |
+    | !              | ~      |
+    | %{exact:NOT }  | ~      |
+    | -              | ~1     |
+    | !              | ~1     |
+    | %{exact:NOT }  | ~1     |
+    | -              | ~7~    |
+    | !              | ~7~    |
+    | %{exact:NOT }  | ~7~    |

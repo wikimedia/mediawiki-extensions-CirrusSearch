@@ -5,6 +5,6 @@ Transform(/%{epoch}/) do |param|
 end
 
 # Allow sending strings with trailing spaces
-Transform(/%{exact:[^}]*}/) do |param|
-  param[8..-2]
+Transform(/%{exact:[^}]*}.*/) do |param|
+  param.gsub(/%{exact:([^}]*)}/, "\\1")
 end

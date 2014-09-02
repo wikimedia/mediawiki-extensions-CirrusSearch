@@ -258,9 +258,9 @@ def check_all_search_results(title, not_searching, in_ok)
   found = on(SearchResultsPage).results.any? do |result|
     begin
       check_search_result(result.parent, result, title, in_ok)
-      return true
+      true
     rescue
-      return false
+      false
     end
   end
   found.should == !not_searching

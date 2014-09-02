@@ -544,10 +544,11 @@ GROOVY;
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
-		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~
-		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<main>"((?:[^"]|(?:\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
+		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
+		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?:\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $searcher, $escaper, &$phrases ) {
 				global $wgCirrusSearchPhraseSlop;
+				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
 				$main = $escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
 					if ( !isset( $matches[ 'slop' ] ) ) {
@@ -557,11 +558,11 @@ GROOVY;
 					// The highlighter locks phrases to the fields that specify them.  It doesn't do
 					// that with terms.
 					return array(
-						'escaped' => $searcher->switchSearchToExact( $main, true ),
-						'nonAll' => $searcher->switchSearchToExact( $main, false ),
+						'escaped' => $negate . $searcher->switchSearchToExact( $main, true ),
+						'nonAll' => $negate . $searcher->switchSearchToExact( $main, false ),
 					);
 				}
-				return array( 'escaped' => $main );
+				return array( 'escaped' => $negate . $main );
 			} );
 		wfProfileOut( __METHOD__ . '-find-phrase-queries' );
 		wfProfileIn( __METHOD__ . '-switch-prefix-to-plain' );

@@ -965,12 +965,6 @@ GROOVY;
 			wfLogWarning( "Invalid sort type:  $this->sort" );
 		}
 
-
-		if ( $this->returnQuery ) {
-			return Status::newGood( $query->toArray() );
-		}
-
-
 		$queryOptions = array();
 		if ( $wgCirrusSearchMoreAccurateScoringMode ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
@@ -994,6 +988,15 @@ GROOVY;
 		}
 
 		$description = "$type search for '$for'";
+
+		if ( $this->returnQuery ) {
+			return Status::newGood( array(
+				'description' => $description,
+				'path' => $search->getPath(),
+				'params' => $search->getOptions(),
+				'query' => $query->toArray(),
+			) );
+		}
 
 		// Perform the search
 		$searcher = $this;

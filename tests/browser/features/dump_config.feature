@@ -1,4 +1,4 @@
-@clean @phantomjs @dumpConfig
+@clean @phantomjs @dump_config
 Feature: You can dump CirrusSearch's configuration
   Scenario: You can dump CirrusSearch's configuration
     When I dump the cirrus config

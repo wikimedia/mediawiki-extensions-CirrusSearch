@@ -183,7 +183,11 @@ class FullTextResultsType implements ResultsType {
 	 */
 	const HIGHLIGHT_FILE_TEXT = 8;
 	const HIGHLIGHT_WITH_DEFAULT_SIMILARITY = 16;
-	const HIGHLIGHT_ALL = 31;
+	/**
+	 * Should the alt title fields (heading and redirect) use postings or be reanalyzed?
+	 */
+	const HIGHLIGHT_ALT_TITLES_WITH_POSTINGS = 32;
+	const HIGHLIGHT_ALL = 63;
 
 	private $highlightingConfig;
 
@@ -256,6 +260,9 @@ class FullTextResultsType implements ResultsType {
 				$entireValue[ 'options' ][ 'default_similarity' ] = false;
 				$redirectAndHeading[ 'options' ][ 'default_similarity' ] = false;
 				$remainingText[ 'options' ][ 'default_similarity' ] = false;
+			}
+			if ( !( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS ) ) {
+				$redirectAndHeading[ 'options' ][ 'hit_source' ] = 'analyze';
 			}
 		} else {
 			$entireValue = array(

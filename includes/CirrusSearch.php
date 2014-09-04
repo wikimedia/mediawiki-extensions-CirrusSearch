@@ -144,8 +144,11 @@ class CirrusSearch extends SearchEngine {
 				if ( $request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
 				}
-				if ( $request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'false' ) {
+				if ( $request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
+				}
+				if ( $request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
+					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
 				}
 			}
 			if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {

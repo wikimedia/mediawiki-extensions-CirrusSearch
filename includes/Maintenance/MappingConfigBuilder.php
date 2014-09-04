@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.5';
+	const VERSION = '1.6';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -128,8 +128,7 @@ class MappingConfigBuilder {
 						'analyzer' => 'plain',
 					) ) )
 				),
-				'opening_text' => $this->buildStringField(
-					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
+				'opening_text' => $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS ),
 				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
 				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),

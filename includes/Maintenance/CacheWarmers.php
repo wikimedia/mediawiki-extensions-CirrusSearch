@@ -82,8 +82,8 @@ class CacheWarmers {
 		$searcher->setReturnQuery( true );
 		$searcher->setResultsType( new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL ) );
 		$searcher->limitSearchToLocalWiki( true );
-		$query = $searcher->searchText( $search, true );
-		return $query->getValue();
+		$query = $searcher->searchText( $search, true )->getValue();
+		return $query[ 'query' ];
 	}
 
 	private function fetchActualWarmers() {

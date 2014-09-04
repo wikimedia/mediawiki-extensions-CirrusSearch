@@ -214,21 +214,21 @@ Cirrus makes heavy use of the job queue.  You can run it without any job queue c
 if you switch the job queue to Redis with checkDelay enabled then Cirrus's results will be more
 correct.  The reason for this is that this configuration allows Cirrus to delay link counts
 until Elasticsearch has appropriately refreshed.  This is an example of configuring it:
- $wgRedisPassword = '<password goes here>';
+ $redisPassword = '<password goes here>';
  $wgJobTypeConf['default'] = array(
 	'class' => 'JobQueueRedis',
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 	),
  );
  $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 	),
  );
 

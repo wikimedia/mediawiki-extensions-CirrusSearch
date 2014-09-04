@@ -28,9 +28,6 @@ use \JobQueueGroup;
 
 // Configuration we have to override before installing Cirrus but only if we're using
 // Jenkins as a prototype for development.
-if ( !isset( $wgRedisPassword ) ) {
-	$wgRedisPassword = 'notsecure';
-}
 
 // Extra Cirrus stuff for Jenkins
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
@@ -64,14 +61,14 @@ $wgJobTypeConf['default'] = array(
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => '',
 	),
 );
 $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => '',
 	),
 );
 $wgCiteEnablePopups = true;

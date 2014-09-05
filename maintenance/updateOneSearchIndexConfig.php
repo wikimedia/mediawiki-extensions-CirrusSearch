@@ -314,6 +314,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndexSettings() {
+		global $wgCirrusSearchMaxShardsPerNode;
+
 		$this->output( $this->indent . "\tValidating number of shards..." );
 		$settings = $this->getSettings();
 		$actualShardCount = $settings[ 'number_of_shards' ];
@@ -340,6 +342,25 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
 		$shardAllocation->validate();
+
+		$this->output( $this->indent . "\tValidating max shards per node..." );
+		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
+		// because that is easier to read.
+		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
+			$settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] : 'unlimited';
+		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
+		$expectedMaxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
+			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		if ( $actualMaxShardsPerNode === $expectedMaxShardsPerNode ) {
+			$this->output( "ok\n" );
+		} else {
+			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
+			$expectedMaxShardsPerNode = $expectedMaxShardsPerNode === 'unlimited' ? -1 : $expectedMaxShardsPerNode;
+			$this->getIndex()->getSettings()->set( array(
+				'routing.allocation.total_shards_per_node' => $expectedMaxShardsPerNode
+			) );
+			$this->output( "corrected\n" );
+		}
 	}
 
 	private function validateAnalyzers() {

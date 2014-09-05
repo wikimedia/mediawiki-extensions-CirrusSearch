@@ -52,6 +52,12 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // disable the behavior entirely. The default should be fine for most people.
 $wgCirrusSearchReplicas = '0-2';
 
+// Number of shards allowed on the same elasticsearch node.  Set this to 1 to
+// prevent two shards from the same high traffic index from being allocated
+// onto the same node.
+$wgCirrusSearchMaxShardsPerNode = array();
+// Example: $wgCirrusSearchMaxShardsPerNode[ 'content' ] = 1;
+
 // How many seconds must a search of Elasticsearch be before we consider it
 // slow?  Default value is 10 seconds which should be fine for catching the rare
 // truely abusive queries.  Use Elasticsearch query more granular logs that

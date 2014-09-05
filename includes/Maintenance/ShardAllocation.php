@@ -32,15 +32,18 @@ class ShardAllocation {
 	public function validate() {
 		global $wgCirrusSearchIndexAllocation;
 
-		$this->out->outputIndented( "Validating shard allocation settings...\n" );
+		$this->out->outputIndented( "\tValidating shard allocation settings..." );
 
 		$actual = $this->fetchActualAllocation();
+		$changed = false;
 		foreach( array( 'include', 'exclude', 'require' ) as $type ) {
 			$desired = $wgCirrusSearchIndexAllocation[$type];
 			if ( $desired ) {
-				$this->out->outputIndented( "\tUpdating '$type' allocations..." );
+				$this->out->output( "\n" );
+				$this->out->outputIndented( "\t\tUpdating '$type' allocations..." );
 				$this->set( $type, $desired );
-				$this->out->output( "done\n" );
+				$this->out->output( "done" );
+				$changed = true;
 			}
 			if( isset( $actual[$type] ) ) {
 				$undesired = array_filter( array_keys( $actual[$type] ),
@@ -50,11 +53,18 @@ class ShardAllocation {
 				);
 
 				if ( $undesired ) {
-					$this->out->outputIndented( "\tClearing '$type' allocations..." );
+					$this->out->output( "\n" );
+					$this->out->outputIndented( "\t\tClearing '$type' allocations..." );
 					$this->set( $type, array_fill_keys( $undesired, '' ) );
-					$this->out->output( "done\n" );
+					$this->out->output( "done" );
+					$changed = true;
 				}
 			}
+		}
+		if ( $changed ) {
+			$this->out->output( "\n" );
+		} else {
+			$this->out->output( "done\n" );
 		}
 	}
 

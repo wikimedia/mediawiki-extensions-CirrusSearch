@@ -87,6 +87,12 @@ end
 When(/^I dump the cirrus config$/) do
   visit(CirrusConfigDumpPage)
 end
+When(/^I dump the cirrus mapping$/) do
+  visit(CirrusMappingDumpPage)
+end
+When(/^I dump the cirrus settings$/) do
+  visit(CirrusSettingsDumpPage)
+end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|
   if not_appear

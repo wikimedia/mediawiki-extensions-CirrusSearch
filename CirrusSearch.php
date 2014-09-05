@@ -469,6 +469,7 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 );
 
 $includes = __DIR__ . "/includes/";
+$apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
 $jobsDir = $includes . 'Job/';
 $maintenanceDir = $includes . 'Maintenance/';
@@ -479,7 +480,9 @@ $search = $includes . 'Search/';
  * Classes
  */
 $wgAutoloadClasses['CirrusSearch'] = $includes . 'CirrusSearch.php';
-$wgAutoloadClasses['CirrusSearch\ApiConfigDump'] = $includes . 'ApiConfigDump.php';
+$wgAutoloadClasses['CirrusSearch\Api\ConfigDump'] = $apiDir . 'ConfigDump.php';
+$wgAutoloadClasses['CirrusSearch\Api\MappingDump'] = $apiDir . 'MappingDump.php';
+$wgAutoloadClasses['CirrusSearch\Api\SettingsDump'] = $apiDir . 'SettingsDump.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\Builder'] = $buildDocument . 'Builder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\FileDataBuilder'] = $buildDocument . 'FileDataBuilder.php';
 $wgAutoloadClasses['CirrusSearch\BuildDocument\PageDataBuilder'] = $buildDocument . 'PageDataBuilder.php';
@@ -572,7 +575,9 @@ $wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
 /**
  * API
  */
-$wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\ApiConfigDump';
+$wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\Api\ConfigDump';
+$wgAPIModules['cirrus-mapping-dump'] = 'CirrusSearch\Api\MappingDump';
+$wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

@@ -43,7 +43,13 @@ class Dump extends FormlessAction {
 
 		$result = array();
 		foreach ( $esSources as $esSource ) {
-			$result[ $esSource->getIndex() ] = $esSource->getData();
+			$result[] = array(
+				'_index' => $esSource->getIndex(),
+				'_type' => $esSource->getType(),
+				'_id' => $esSource->getId(),
+				'_version' => $esSource->getVersion(),
+				'_source' => $esSource->getData(),
+			);
 		}
 		echo json_encode( $result );
 

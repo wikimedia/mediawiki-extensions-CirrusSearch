@@ -79,7 +79,8 @@ class Hooks {
 			$wgCirrusSearchFunctionRescoreWindowSize,
 			$wgCirrusSearchFragmentSize,
 			$wgCirrusSearchBoostLinks,
-			$wgCirrusSearchAllFields;
+			$wgCirrusSearchAllFields,
+			$wgCirrusSearchAllFieldsForRescore;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -132,6 +133,14 @@ class Hooks {
 					$wgCirrusSearchAllFields[ 'use' ] = true;
 				} elseif( $useAllFields = 'no' ) {
 					$wgCirrusSearchAllFields[ 'use' ] = false;
+				}
+			}
+			$useAllFieldsForRescore = $request->getVal( 'cirrusUseAllFieldsForRescore' );
+			if ( $useAllFieldsForRescore !== null ) {
+				if ( $useAllFieldsForRescore === 'yes' ) {
+					$wgCirrusSearchAllFieldsForRescore = true;
+				} elseif( $useAllFieldsForRescore = 'no' ) {
+					$wgCirrusSearchAllFieldsForRescore = false;
 				}
 			}
 		}

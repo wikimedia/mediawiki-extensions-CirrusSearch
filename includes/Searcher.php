@@ -645,10 +645,16 @@ GROOVY;
 					!$this->searchContainedSyntax &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {
+
+				$rescoreFields = $fields;
+				if ( !$wgCirrusSearchAllFieldsForRescore ) {
+					$rescoreFields = $nonAllFields;
+				}
+
 				$this->rescore[] = array(
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
-						'rescore_query' => $this->buildSearchTextQueryForFields( $fields, 
+						'rescore_query' => $this->buildSearchTextQueryForFields( $rescoreFields,
 							'"' . $queryStringQueryString . '"', $wgCirrusSearchPhraseSlop[ 'boost' ] ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,

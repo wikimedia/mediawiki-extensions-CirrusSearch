@@ -11,8 +11,8 @@ Feature: Results are ordered from most relevant to least.
     And Relevancytestviacategory is the third search result
     And Relevancytestviaheading is the fourth search result
     And Relevancytestviaopening is the fifth search result
-    And Relevancytestviatext is the sixth search result
-    And Relevancytestviaauxtext is the seventh search result
+    And Relevancytestviatext is the sixth or seventh search result
+    And Relevancytestviaauxtext is the sixth or seventh search result
 
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
     When I search for "Relevancytestphrase phrase"
@@ -22,8 +22,8 @@ Feature: Results are ordered from most relevant to least.
     And Relevancytestphraseviacategory is the third search result
     And Relevancytestphraseviaheading is the fourth search result
     And Relevancytestphraseviaopening is the fifth search result
-    And Relevancytestphraseviatext is the sixth search result
-    And Relevancytestphraseviaauxtext is the seventh search result
+    And Relevancytestphraseviatext is the sixth or seventh search result
+    And Relevancytestphraseviaauxtext is the sixth or seventh search result
 
   Scenario: Words in order are worth more then words out of order
     When I search for Relevancytwo Wordtest

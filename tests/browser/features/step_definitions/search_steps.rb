@@ -115,13 +115,21 @@ end
 Then(/^there is a search result$/) do
   on(SearchResultsPage).first_result_element.should exist
 end
-Then(/^(.+) is( in)? the ([^ ]+) search result$/) do |title, in_ok, index|
+Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |title, in_ok, indexes|
   on(SearchResultsPage) do |page|
-    check_search_result(
-      page.send("#{index}_result_wrapper_element"),
-      page.send("#{index}_result_element"),
-      title,
-      in_ok)
+    found = indexes.split(/ or /).any? { |index|
+      begin
+        check_search_result(
+          page.send("#{index}_result_wrapper_element"),
+          page.send("#{index}_result_element"),
+          title,
+          in_ok)
+        true
+      rescue
+        false
+      end
+    }
+    found.should == true
   end
 end
 Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|

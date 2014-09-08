@@ -74,7 +74,7 @@ Feature: Full text search
   @setup_phrase_rescore
   Scenario: Searching for an unquoted phrase finds the phrase first
     When I search for Rescore Test Words
-    Then Rescore Test Words is the first search result
+    Then Rescore Test Words Chaff is the first search result
 
   @setup_phrase_rescore
   Scenario: Searching for a quoted phrase finds higher scored matches before the whole query interpreted as a phrase

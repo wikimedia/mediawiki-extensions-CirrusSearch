@@ -213,14 +213,14 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 // is false this can be changed on the fly.  If it is true then changes to this require
 // an in place reindex to take effect.
 $wgCirrusSearchWeights = array(
-	'title' => 40,
-	'redirect' => 30,
-	'category' => 16,
-	'heading' => 10,
-	'opening_text' => 6,
-	'text' => 2,
-	'auxiliary_text' => 1,
-	'file_text' => 1,
+	'title' => 20,
+	'redirect' => 15,
+	'category' => 8,
+	'heading' => 5,
+	'opening_text' => 3,
+	'text' => 1,
+	'auxiliary_text' => 0.5,
+	'file_text' => 0.5,
 );
 
 // Enable building and using of "all" fields that contain multiple copies of other fields

@@ -39,11 +39,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	// Are we going to blow the index away and start from scratch?
 	private $startOver;
 
-	private $closeOk;
-
-	// Is the index currently closed?
-	private $closed = false;
-
 	private $reindexChunkSize;
 	private $reindexRetryAttempts;
 
@@ -120,11 +115,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'no data.' );
 		$maintenance->addOption( 'forceOpen', "Open the index but do nothing else.  Use this if " .
 			"you've stuck the index closed and need it to start working right now." );
-		$maintenance->addOption( 'closeOk', "Allow the script to close the index if decides it has " .
-			"to.  Note that it is never ok to close an index that you just created. Also note " .
-			"that changing analysers might require a reindex for them to take effect so you might " .
-			"be better off using --reindexAndRemoveOk and a new --indexIdentifier to rebuild the " .
-			"entire index. Defaults to false." );
 		$maintenance->addOption( 'indexIdentifier', "Set the identifier of the index to work on.  " .
 			"You'll need this if you have an index in production serving queries and you have " .
 			"to alter some portion of its configuration that cannot safely be done without " .
@@ -175,7 +165,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
-		$this->closeOk = $this->getOption( 'closeOk', false );
 		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 		$this->indent = $this->getOption( 'indent', '' );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
@@ -223,10 +212,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->validateCacheWarmers();
 			$this->validateAlias();
 			$this->updateVersions();
-
-			if ( $this->closed ) {
-				$this->getIndex()->open();
-			}
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
@@ -370,19 +355,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
 			$this->output( "ok\n" );
 		} else {
-			$this->output( "different..." );
-			if ( $this->closeOk ) {
-				$this->getIndex()->close();
-				$this->closed = true;
-				$this->getIndex()->getSettings()->set( $requiredAnalyzers );
-				$this->output( "corrected\n" );
-			} else {
-				$this->output( "cannot correct\n" );
-				$this->error("This script encountered an index difference that requires that the index be\n" .
-					"closed, modified, and then reopened.  To allow this script to close the index run it\n" .
-					"with the --closeOk parameter and it'll close the index for the briefest possible time\n" .
-					"Note that the index will be unusable while closed.", 1 );
-			}
+			$this->output( "cannot correct\n" );
+			$this->error( "This script encountered an index difference that requires that the index be\n" .
+				"copied, indexed to, and then the old index removed. Re-run this script with the\n" .
+				"--reindexAndRemoveOk --indexIdentifier=now parameters to do this.", 1 );
 		}
 	}
 
@@ -895,7 +871,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's'
 			)
 		), $rebuild );
-		$this->closeOk = false;
 		$this->tooFewReplicas = $this->reindexAndRemoveOk;
 	}
 

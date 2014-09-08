@@ -211,7 +211,7 @@ phrase_rescore = false
 Before("@setup_phrase_rescore") do
   unless phrase_rescore
     steps %(
-      Given a page named Rescore Test Words exists
+      Given a page named Rescore Test Words Chaff exists
       And a page named Test Words Rescore Rescore Test Words exists
       And a page named Rescore Test TextContent exists with contents Chaff
       And a page named Rescore Test HasTextContent exists with contents Rescore Test TextContent

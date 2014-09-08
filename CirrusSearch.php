@@ -236,6 +236,10 @@ $wgCirrusSearchWeights = array(
 // reindex will cause all searches to find nothing.
 $wgCirrusSearchAllFields = array( 'build' => false, 'use' => false );
 
+// Should Cirrus use the weighted all fields for the phrase rescore if it is using them
+// for the regular query?
+$wgCirrusSearchAllFieldsForRescore = true;
+
 // The method Cirrus will use to extract the opening section of the text.  Valid values are:
 // * first_heading - Wikipedia style.  Grab the text before the first heading (h1-h6) tag.
 // * none - Do not extract opening text and do not search it.

@@ -80,7 +80,8 @@ class Hooks {
 			$wgCirrusSearchFragmentSize,
 			$wgCirrusSearchBoostLinks,
 			$wgCirrusSearchAllFields,
-			$wgCirrusSearchAllFieldsForRescore;
+			$wgCirrusSearchAllFieldsForRescore,
+			$wgCirrusSearchPhraseSlop;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
@@ -104,44 +105,36 @@ class Hooks {
 					$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
 				$wgCirrusSearchUseExperimentalHighlighter = true;
 			}
-			$phraseRescoreWindowOverride = $request->getVal( 'cirrusPhraseWindow' );
-			if ( $phraseRescoreWindowOverride !== null && is_numeric( $phraseRescoreWindowOverride ) &&
-					$phraseRescoreWindowOverride < 10000 ) {
-				$wgCirrusSearchPhraseRescoreWindowSize = $phraseRescoreWindowOverride;
-			}
-			$functionRescoreWindowOverride = $request->getVal( 'cirrusFunctionWindow' );
-			if ( $functionRescoreWindowOverride !== null && is_numeric( $functionRescoreWindowOverride &&
-					$functionRescoreWindowOverride < 10000 ) ) {
-				$wgCirrusSearchFunctionRescoreWindowSize = $functionRescoreWindowOverride;
-			}
-			$fragmentSizeOverride = $request->getVal( 'cirrusFragmentSize' );
-			if ( $fragmentSizeOverride !== null && is_numeric( $fragmentSizeOverride ) &&
-					$fragmentSizeOverride < 1000 ) {
-				$wgCirrusSearchFragmentSize = $fragmentSizeOverride;
-			}
-			$boostLinks = $request->getVal( 'cirrusBoostLinks' );
-			if ( $boostLinks !== null ) {
-				if ( $boostLinks === 'yes' ) {
-					$wgCirrusSearchBoostLinks = true;
-				} elseif ( $boostLinks === 'no' ) {
-					$wgCirrusSearchBoostLinks = false;
-				}
-			}
-			$useAllFields = $request->getVal( 'cirrusUseAllFields' );
-			if ( $useAllFields !== null ) {
-				if ( $useAllFields === 'yes' ) {
-					$wgCirrusSearchAllFields[ 'use' ] = true;
-				} elseif( $useAllFields === 'no' ) {
-					$wgCirrusSearchAllFields[ 'use' ] = false;
-				}
-			}
-			$useAllFieldsForRescore = $request->getVal( 'cirrusUseAllFieldsForRescore' );
-			if ( $useAllFieldsForRescore !== null ) {
-				if ( $useAllFieldsForRescore === 'yes' ) {
-					$wgCirrusSearchAllFieldsForRescore = true;
-				} elseif( $useAllFieldsForRescore === 'no' ) {
-					$wgCirrusSearchAllFieldsForRescore = false;
-				}
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWinwdow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
+			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );
+			self::overrideYesNo( $wgCirrusSearchBoostLinks, $request, 'cirrusBoostLinks' );
+			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
+			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
+		}
+	}
+
+	/**
+	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit.
+	 */
+	private static function overrideNumeric( &$dest, $request, $name, $limit ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null && is_numeric( $val ) && $val <= $limit ) {
+			$dest = $val;
+		}
+	}
+
+	/**
+	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 */
+	private static function overrideYesNo( &$dest, $request, $name ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$dest = true;
+			} elseif( $val = 'no' ) {
+				$dest = false;
 			}
 		}
 	}

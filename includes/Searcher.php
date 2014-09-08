@@ -634,14 +634,12 @@ GROOVY;
 				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1 );
 			}
 
-			// Only do a phrase match rescore if the query doesn't include any quotes and has a space
-			// TODO allow phrases without spaces to support things like words with dashes and languages
-			// that don't use spaces.  The space check is really only important because it catches an
-			// common class of slow queries: <<-foo>> which it only needs to catch because Elasticsearch
-			// only supports a single rescore.  If it supported multiple rescores it would be worth
-			// trying the phrase rescore because it wouldn't prevent us from having the script score in
-			// a rescore.
+			// Only do a phrase match rescore if the query doesn't include any quotes and has a space.
+			// Queries without spaces are either single term or have a phrase query generated.
+			// Queries with the quote already contain a phrase query and we can't build phrase queries
+			// out of phrase queries at this point.
 			if ( $wgCirrusSearchPhraseRescoreBoost > 1.0 &&
+					$wgCirrusSearchPhraseRescoreWindowSize &&
 					!$this->searchContainedSyntax &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {

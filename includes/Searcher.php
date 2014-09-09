@@ -1004,7 +1004,8 @@ GROOVY;
 
 		// Perform the search
 		$searcher = $this;
-		$work = new PoolCounterWorkViaCallback( $poolCounterType, "_elasticsearch", array(
+		$key = "_elasticsearch";
+		$work = new PoolCounterWorkViaCallback( $poolCounterType, $key, array(
 			'doWork' => function() use ( $searcher, $search, $description ) {
 				try {
 					$searcher->start( $description );
@@ -1013,9 +1014,9 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			'error' => function( $status ) {
+			'error' => function( $status ) use ( $key, $description ) {
 				$status = $status->getErrorsArray();
-				wfLogWarning( 'Pool error searching Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				wfLogWarning( "Elasticsearch pool error on key $key during $description:  " . $status[ 0 ][ 0 ] );
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );

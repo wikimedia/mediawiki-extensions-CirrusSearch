@@ -131,7 +131,7 @@ class Hooks {
 			if ( $useAllFields !== null ) {
 				if ( $useAllFields === 'yes' ) {
 					$wgCirrusSearchAllFields[ 'use' ] = true;
-				} elseif( $useAllFields = 'no' ) {
+				} elseif( $useAllFields === 'no' ) {
 					$wgCirrusSearchAllFields[ 'use' ] = false;
 				}
 			}
@@ -139,7 +139,7 @@ class Hooks {
 			if ( $useAllFieldsForRescore !== null ) {
 				if ( $useAllFieldsForRescore === 'yes' ) {
 					$wgCirrusSearchAllFieldsForRescore = true;
-				} elseif( $useAllFieldsForRescore = 'no' ) {
+				} elseif( $useAllFieldsForRescore === 'no' ) {
 					$wgCirrusSearchAllFieldsForRescore = false;
 				}
 			}

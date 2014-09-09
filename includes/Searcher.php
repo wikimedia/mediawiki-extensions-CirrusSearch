@@ -323,7 +323,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchStemmedWeight,
 			$wgCirrusSearchPhraseSlop,
 			$wgCirrusSearchBoostLinks,
-			$wgCirrusSearchAllFields;
+			$wgCirrusSearchAllFields,
+			$wgCirrusSearchAllFieldsForRescore;
 
 		$profiler = new ProfileSection( __METHOD__ );
 

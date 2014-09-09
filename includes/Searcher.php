@@ -626,13 +626,15 @@ GROOVY;
 				$queryStringQueryString, $nearMatchQuery );
 
 			// The highlighter doesn't know about the weightinging from the all fields so we have to send
-			// it a query without the all fields.  This swaps one in. 
+			// it a query without the all fields.  This swaps one in.
 			if ( $wgCirrusSearchAllFields[ 'use' ] ) {
 				$nonAllFields = array_merge(
 					$this->buildFullTextSearchFields( 1, '.plain', false ),
 					$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', false ) );
 				list( $nonAllQueryString, /*_*/ ) = $escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1 );
+			} else {
+				$nonAllFields = $fields;
 			}
 
 			// Only do a phrase match rescore if the query doesn't include any quotes and has a space.

@@ -40,7 +40,7 @@ Bootstrapping large wikis
 -------------------------
 Since most of the load involved in indexing is parsing the pages in php we provide a few options to split the
 process into multiple processes.  Don't worry too much about the database during this process.  It can generally
-handle more processess indexing then you are likely to be able to spawn.
+handle more indexing processes then you are likely to be able to spawn.
 
 General strategy:
 0.  Make sure you have a good job queue setup.  It'll be doing most of the work.  In fact, Cirrus won't work

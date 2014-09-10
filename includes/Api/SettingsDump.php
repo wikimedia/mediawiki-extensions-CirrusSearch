@@ -1,11 +1,12 @@
 <?php
 
 
-namespace CirrusSearch;
+namespace CirrusSearch\Api;
 use \ApiBase;
+use \CirrusSearch\Connection;
 
 /**
- * Dumps CirrusSearch configuration for easy viewing.
+ * Dumps CirrusSearch mappings for easy viewing.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +23,11 @@ use \ApiBase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ApiConfigDump extends ApiBase {
+class SettingsDump extends ApiBase {
 	public function execute() {
-		global $wgCirrusSearchEnableConfigDumpApi,
-			$wgCirrusSearchConfigDumpWhiteList;
-
-		$prefix = 'wgCirrusSearch';
-		foreach ( $GLOBALS as $key => $value ) {
-			// Only output cirrus configuration
-			if ( strpos( $key, $prefix ) === false ) {
-				continue;
-			}
-			$key = lcfirst( substr( $key, strlen( $prefix ) ) );
-			// Only output the whitelisted cirrus configuration
-			if ( in_array( $key, $wgCirrusSearchConfigDumpWhiteList ) ) {
-				$this->getResult()->addValue( null, $key, $value );
-			}
+		foreach( Connection::getAllIndexTypes() as $index ) {
+			$this->getResult()->addValue( array( $index, 'page' ), 'index',
+				Connection::getIndex( wfWikiId(), $index )->getSettings()->get() );
 		}
 	}
 
@@ -50,6 +40,6 @@ class ApiConfigDump extends ApiBase {
 	}
 
 	public function getDescription() {
-		return 'Dump of CirrusSearch configuration.';
+		return 'Dump of CirrusSearch mapping for this wiki.';
 	}
 }

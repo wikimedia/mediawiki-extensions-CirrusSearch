@@ -234,7 +234,7 @@ $wgCirrusSearchWeights = array(
 // more muddy how much.
 // Note setting 'use' to true without having set 'build' to true and performing an in place
 // reindex will cause all searches to find nothing.
-$wgCirrusSearchAllFields = array( 'build' => false, 'use' => false );
+$wgCirrusSearchAllFields = array( 'build' => true, 'use' => true );
 
 // Should Cirrus use the weighted all fields for the phrase rescore if it is using them
 // for the regular query?

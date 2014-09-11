@@ -866,8 +866,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'number_of_shards' => $this->getShardCount(),
 				'auto_expand_replicas' => $this->getReplicaCount(),
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
-				'translog.flush_threshold_ops' => 50000,   // This is supposed to help with bulk index io load.
-				'index.query.default_field' => 'page.text', // Since the _all field is disabled, we should query something.
+				// Use our weighted all field as the default rather than _all which is disabled.
+				'index.query.default_field' => 'all',
 				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's'
 			)
 		), $rebuild );

@@ -685,10 +685,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		global $wgCirrusSearchMaintenanceTimeout,
 			$wgCirrusSearchRefreshInterval;
 
+		// Set some settings that should help io load during bulk indexing.  We'll have to
+		// optimize after this to consolidate down to a proper number of shards but that is
+		// is worth the price.
 		$settings = $this->getIndex()->getSettings();
 		$settings->set( array(
-			'refresh_interval' => -1,                // This is supposed to help with bulk index io load.
-			'merge.policy.segments_per_tier' => 20,  // This is supposed to help with bulk index io load.
+			'refresh_interval' => -1,
+			'merge.policy.segments_per_tier' => 40,
+			'merge.policy.max_merge_at_once' => 40,
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
@@ -728,7 +732,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Revert settings changed just for reindexing
 		$settings->set( array(
 			'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
-			'merge.policy.segments_per_tier' => 10,
+			'merge.policy' => $this->getMergeSettings(),
 		) );
 	}
 
@@ -868,7 +872,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
 				// Use our weighted all field as the default rather than _all which is disabled.
 				'index.query.default_field' => 'all',
-				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's'
+				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
+				'merge.policy' => $this->getMergeSettings(),
 			)
 		), $rebuild );
 		$this->tooFewReplicas = $this->reindexAndRemoveOk;
@@ -951,6 +956,19 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getPageType() {
 		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
+	}
+
+	/**
+	 * Get the merge settings for this index.
+	 */
+	private function getMergeSettings() {
+		global $wgCirrusSearchMergeSettings;
+
+		if ( isset( $wgCirrusSearchMergeSettings[ $this->indexType ] ) ) {
+			return $wgCirrusSearchMergeSettings[ $this->indexType ];
+		}
+		// If there aren't configured merge settings for this index type default to the content type.
+		return $wgCirrusSearchMergeSettings[ 'content' ];
 	}
 
 	private function getShardCount() {

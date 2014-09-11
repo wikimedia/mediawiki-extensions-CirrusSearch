@@ -477,6 +477,28 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 // just leave this as it is.
 $wgCirrusSearchPoolCounterKey = '_elasticsearch';
 
+// Merge configuration for the indices.  See
+// http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-merge.html
+// for the meanings.
+$wgCirrusSearchMergeSettings = array(
+	'content' => array(
+		// Aggressive settings to try to keep the content index more optimized
+		// because it is searched more frequently.
+		'max_merge_at_once' => 5,
+		'segments_per_tier' => 5,
+		'reclaim_deletes_weight' => 8.0,
+		'max_merged_segment' => '25g',
+	),
+	'general' => array(
+		// The Elasticsearch defaults for this less frequently searched index.
+		'max_merge_at_once' => 10,
+		'segments_per_tier' => 10,
+		'reclaim_deletes_weight' => 2.0,
+		'max_merged_segment' => '5g',
+	),
+);
+
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

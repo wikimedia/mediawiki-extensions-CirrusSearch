@@ -770,12 +770,14 @@ GROOVY;
 	 *    or an error if there was an error
 	 */
 	public function get( $pageIds, $sourceFiltering ) {
+		global $wgCirrusSearchPoolCounterKey;
+
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
-		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', "_elasticsearch", array(
+		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', $wgCirrusSearchPoolCounterKey, array(
 			'doWork' => function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
@@ -859,9 +861,10 @@ GROOVY;
 	 * @return Status(mixed) results from the query transformed by the resultsType
 	 */
 	private function search( $type, $for ) {
-		global $wgCirrusSearchMoreAccurateScoringMode;
-		global $wgCirrusSearchSearchShardTimeout;
-		global $wgCirrusSearchClientSideSearchTimeout;
+		global $wgCirrusSearchMoreAccurateScoringMode,
+			$wgCirrusSearchSearchShardTimeout,
+			$wgCirrusSearchClientSideSearchTimeout,
+			$wgCirrusSearchPoolCounterKey;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -1007,7 +1010,7 @@ GROOVY;
 
 		// Perform the search
 		$searcher = $this;
-		$key = "_elasticsearch";
+		$key = $wgCirrusSearchPoolCounterKey;
 		$work = new PoolCounterWorkViaCallback( $poolCounterType, $key, array(
 			'doWork' => function() use ( $searcher, $search, $description ) {
 				try {

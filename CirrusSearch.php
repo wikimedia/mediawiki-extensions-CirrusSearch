@@ -472,6 +472,11 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'indexAllocation',
 );
 
+// Pool Counter key. If you use the PoolCounter extension, this can help segment your wiki's
+// traffic into separate queues. This has no effect in vanilla MediaWiki and most people can
+// just leave this as it is.
+$wgCirrusSearchPoolCounterKey = '_elasticsearch';
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

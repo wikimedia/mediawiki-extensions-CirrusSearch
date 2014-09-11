@@ -486,7 +486,7 @@ $wgCirrusSearchMergeSettings = array(
 		// because it is searched more frequently.
 		'max_merge_at_once' => 5,
 		'segments_per_tier' => 5,
-		'reclaim_deletes_weight' => 8.0,
+		'reclaim_deletes_weight' => 3.0,
 		'max_merged_segment' => '25g',
 	),
 	'general' => array(

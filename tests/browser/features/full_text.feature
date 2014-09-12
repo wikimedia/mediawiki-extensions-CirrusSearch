@@ -7,8 +7,8 @@ Feature: Full text search
   Scenario Outline: Query string search
     When I search for <term>
     Then I am on a page titled Search results
-    And <first_result> the first search <image?>result
-    But Two Words is <two_words_is_in> the search results
+      And <first_result> the first search <image?>result
+      But Two Words is <two_words_is_in> the search results
   Examples:
     | term                                 | first_result                      | two_words_is_in | image? |
     | catapult                             | Catapult is in                    | in              |        |
@@ -36,8 +36,8 @@ Feature: Full text search
   Scenario Outline: Searching for empty-string like values
     When I search for <term>
     Then I am on a page titled <title>
-    And there are no search results
-    And there are no errors reported
+      And there are no search results
+      And there are no errors reported
   Examples:
     | term                    | title          |
     | the empty string        | Search         |
@@ -122,7 +122,7 @@ Feature: Full text search
   Scenario Outline: Stemming works as expected
     When I search for StemmerTest <term>
     Then <first_result> is the first search result
-    Then <second_result> is the second search result
+      And <second_result> is the second search result
   Examples:
     |   term   |     first_result     |    second_result    |
     | aliases  | StemmerTest Aliases  | StemmerTest Alias   |

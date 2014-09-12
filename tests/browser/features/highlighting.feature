@@ -1,4 +1,4 @@
-@clean @phantomjs @highlighting
+@clean @highlighting @phantomjs
 Feature: Highlighting
   Background:
     Given I am at a random page
@@ -7,8 +7,8 @@ Feature: Highlighting
   Scenario Outline: Found words are highlighted
     When I search for <term>
     Then I am on a page titled Search results
-    And <highlighted_title> is the highlighted title of the first search result
-    And <highlighted_text> is the highlighted text of the first search result
+      And <highlighted_title> is the highlighted title of the first search result
+      And <highlighted_text> is the highlighted text of the first search result
   Examples:
     | term                       | highlighted_title        | highlighted_text                                 |
     | two words                  | *Two* *Words*            | ffnonesenseword catapult pickles anotherword     |
@@ -85,11 +85,11 @@ Feature: Highlighting
   @headings
   Scenario: HTML comments in headings are not highlighted
     When I search for "Heading with html comment"
-    And *Heading* *with* *html* *comment* is the highlighted alttitle of the first search result
+    Then *Heading* *with* *html* *comment* is the highlighted alttitle of the first search result
 
   Scenario: Redirects are highlighted
     When I search for rdir
-    And *Rdir* is the highlighted alttitle of the first search result
+    Then *Rdir* is the highlighted alttitle of the first search result
 
   Scenario: The highest scoring redirect is highlighted
     When I search for crazy rdir
@@ -108,17 +108,17 @@ Feature: Highlighting
   @references
   Scenario: References don't appear in highlighted section titles
     When I search for "Reference Section"
-    And *Reference* *Section* is the highlighted alttitle of the first search result
+    Then *Reference* *Section* is the highlighted alttitle of the first search result
 
   @references
   Scenario: References ([1]) don't appear in highlighted text
     When I search for Reference Text Highlight Test
-    And *Reference* *Text*   foo   baz   bar is the highlighted text of the first search result
+    Then *Reference* *Text*   foo   baz   bar is the highlighted text of the first search result
 
   @references
   Scenario: References are highlighted if you search for them
     When I search for Reference foo bar baz Highlight Test
-    And *Reference* Text   *foo*   *baz*   *bar* is the highlighted text of the first search result
+    Then *Reference* Text   *foo*   *baz*   *bar* is the highlighted text of the first search result
 
   @programmer_friendly
   Scenario: camelCase is highlighted correctly
@@ -129,16 +129,16 @@ Feature: Highlighting
   Scenario: When you search for text that is in a file if there are no matches on the page you get the highlighted text from the file
     When I search for File:debian rhino
     Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
-    And *Debian* is in the highlighted text of the first search result
-    And Arco-*Debian* is in the highlighted text of the first search result
-    And Black*Rhino* is in the highlighted text of the first search result
-    And (matches file content) is the highlighted alttitle of the first search result
+      And *Debian* is in the highlighted text of the first search result
+      And Arco-*Debian* is in the highlighted text of the first search result
+      And Black*Rhino* is in the highlighted text of the first search result
+      And (matches file content) is the highlighted alttitle of the first search result
 
   @file_text
   Scenario: When you search for text that is in a file if there are matches on the page you get those
     When I search for File:debian rhino linux
     Then File:Linux Distribution Timeline text version.pdf is the first search imageresult
-    And *Linux* distribution timeline. is the highlighted text of the first search result
+      And *Linux* distribution timeline. is the highlighted text of the first search result
 
   @redirect
   Scenario: Redirects containing &s are highlighted
@@ -149,8 +149,8 @@ Feature: Highlighting
   @redirect
   Scenario: The best matched redirect is highlighted
     Given a page named Rrrrtest Foorr exists with contents #REDIRECT [[Main Page]]
-    And a page named Rrrrtest Foorr Barr exists with contents #REDIRECT [[Main Page]]
-    And a page named Rrrrtest exists with contents #REDIRECT [[Main Page]]
+      And a page named Rrrrtest Foorr Barr exists with contents #REDIRECT [[Main Page]]
+      And a page named Rrrrtest exists with contents #REDIRECT [[Main Page]]
     When I search for Rrrrtest Foorr Barr
     Then *Rrrrtest* *Foorr* *Barr* is the highlighted alttitle of the first search result
 

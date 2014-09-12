@@ -1,4 +1,4 @@
-@clean @phantomjs @exact_quotes
+@clean @exact_quotes @phantomjs
 Feature: Searches that contain quotes
   Background:
     Given I am at a random page
@@ -7,7 +7,7 @@ Feature: Searches that contain quotes
   Scenario: Searching for a word in quotes disbles stemming (can't find plural with singular)
     When I search for "pickle"
     Then there are no search results
-    And there is no link to create a new page from the search result
+      And there is no link to create a new page from the search result
 
   Scenario: Searching for a word in quotes disbles stemming (can still find plural with exact match)
     When I search for "pickles"
@@ -71,7 +71,7 @@ Feature: Searches that contain quotes
   Scenario Outline: Prefixing a quoted phrase with - or ! or NOT negates it
     When I search for catapult <negation>"two words"<suffix>
     Then Catapult is in the search results
-    And Two Words is not in the search results
+      And Two Words is not in the search results
   Examples:
     |    negation    | suffix |
     | -              |        |

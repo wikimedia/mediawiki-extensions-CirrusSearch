@@ -59,9 +59,6 @@ class Result extends SearchResult {
 		$this->byteSize = $result->text_bytes;
 		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();
-		// TODO remove when Elasticsearch issue 3757 is fixed
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'redirect.title' );
-		$highlights = $this->swapInPlainHighlighting( $highlights, 'heading' );
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = $this->getTitle()->getNamespace() === 0 ? '' :
 				Util::getNamespaceText( $this->getTitle() ) . ':';
@@ -129,20 +126,6 @@ class Result extends SearchResult {
 	 */
 	public function isMissingRevision() {
 		return !$this->mTitle->isKnown();
-	}
-
-	/**
-	 * Swap plain highlighting into the highlighting field if there isn't any normal highlighting.
-	 * TODO remove when Elasticsearch issue 3757 is fixed.
-	 * @var $highlights array of highlighting results
-	 * @var $name string normal field name
-	 * @return $highlights with $name replaced with plain field results if $name isn't in $highlights
-	 */
-	private function swapInPlainHighlighting( $highlights, $name ) {
-		if ( !isset( $highlights[ $name ] ) && isset( $highlights[ "$name.plain" ] ) ) {
-			$highlights[ $name ] = $highlights[ "$name.plain" ];
-		}
-		return $highlights;
 	}
 
 	/**

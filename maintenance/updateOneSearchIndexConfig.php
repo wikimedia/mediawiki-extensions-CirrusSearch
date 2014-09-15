@@ -218,7 +218,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
-			$message = $e->getMessage();
+			$message = ElasticsearchIntermediary::extractMessage( $e );
 			$trace = $e->getTraceAsString();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
@@ -397,7 +397,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->output( "corrected\n" );
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
-				$message = $e->getMessage();
+				$message = ElasticsearchIntermediary::extractMessage( $e );
 				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n", 1 );
 			}
 		}
@@ -815,7 +815,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
-			wfLogWarning( "Search backend error during reindex.  Error message is:  " . $e->getMessage() );
+			$type = get_class( $e );
+			$message = ElasticsearchIntermediary::extractMessage( $e );
+			wfLogWarning( "Search backend error during reindex.  Error type is '$type' and message is:  $message" );
 			die( 1 );
 		}
 	}
@@ -834,8 +836,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					// Random backoff with lowest possible upper bound as 16 seconds.
 					// With the default mximum number of errors (5) this maxes out at 256 seconds.
 					$seconds = rand( 1, pow( 2, 3 + $errors ) );
+					$type = get_class( $e );
+					$message = ElasticsearchIntermediary::extractMessage( $e );
 					$this->output( $this->indent . $messagePrefix . "Caught an error retrying as singles.  " .
-						"Backing off for $seconds and retrying.  Error:\n$e" );
+						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message" );
 					sleep( $seconds );
 				}
 			} else {
@@ -849,7 +853,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		try {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error:\n$e" );
+			$type = get_class( $e );
+			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$type' and message is:  $message" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
 				$updateResult = $this->getPageType()->addDocuments( array( $document ) );

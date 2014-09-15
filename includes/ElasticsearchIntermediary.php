@@ -107,6 +107,17 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Extract an error message from an exception thrown by Elastica.
+	 * @param RuntimeException $exception exception from which to extract a message
+	 * @return message from the exception
+	 */
+	public static function extractMessage( $exception ) {
+		return $exception instanceof ResponseException ?
+			$exception->getElasticsearchException()->getMessage() :
+			$exception->getMessage();
+	}
+
+	/**
 	 * Does this status represent an Elasticsearch parse error?
 	 * @param $status Status to check
 	 * @return boolean is this a parse error?
@@ -168,9 +179,7 @@ class ElasticsearchIntermediary {
 		// Lots of times these are the same as getMessage(), but sometimes
 		// they're not. So get the nested exception so we're sure we get
 		// what we want. I'm looking at you PartialShardFailureException.
-		$message = $exception instanceof ResponseException ?
-			$exception->getElasticsearchException()->getMessage() :
-			$exception->getMessage();
+		$message = self::extractMessage( $exception );
 
 		$marker = 'ParseException[Cannot parse ';
 		$markerLocation = strpos( $message, $marker );

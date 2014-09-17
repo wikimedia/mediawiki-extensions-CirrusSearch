@@ -4,6 +4,6 @@
 source "https://rubygems.org"
 
 gem "mediawiki_api"
-gem "mediawiki_selenium", "~> 0.2.0"
+gem "mediawiki_selenium", "~> 0.3.0"
 gem "parallel_tests"
 gem "rubocop", require: false

@@ -171,10 +171,8 @@ $wgCirrusSearchPhraseSlop = array( 'precise' => 0, 'default' => 0, 'boost' => 1 
 $wgCirrusSearchPhraseRescoreBoost = 10.0;
 
 // Number of documents per shard for which automatic phrase matches are performed if it
-// is enabled.  Note that if both function and phrase rescoring is required then the
-// phrase rescore window is used.  TODO update this once Elasticsearch supports multiple
-// rescore windows.
-$wgCirrusSearchPhraseRescoreWindowSize = 1024;
+// is enabled.
+$wgCirrusSearchPhraseRescoreWindowSize = 512;
 
 // Number of documents per shard for which function scoring is applied.  This is stuff
 // like incoming links boost, prefer-recent decay, and boost-templates.

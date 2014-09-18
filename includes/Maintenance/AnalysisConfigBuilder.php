@@ -229,6 +229,12 @@ class AnalysisConfigBuilder {
 			// In English text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'fr':
+			// Add asciifolding to the prefix queries and incategory filters
+			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
+			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			break;
 		case 'it':
 			$config[ 'filter' ][ 'italian_elision' ] = array(
 				'type' => 'elision',

@@ -35,7 +35,13 @@ interface ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch fields syntax
 	 */
 	function getFields();
-	function getHighlightingConfiguration();
+	/**
+	 * Get the highlighting configuration.
+	 * @param array $highlightSource configuration for how to highlight the source.
+	 *  Empty if source should be ignored.
+	 * @return array highlighting configuration for elasticsearch
+	 */
+	function getHighlightingConfiguration( $highlightSource );
 	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 		$result, $searchContainedSyntax );
 }
@@ -52,7 +58,7 @@ class TitleResultsType implements ResultsType {
 		return false;
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		return false;
 	}
 
@@ -81,7 +87,7 @@ class FancyTitleResultsType extends TitleResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
@@ -214,7 +220,7 @@ class FullTextResultsType implements ResultsType {
 	 * won't be sorted by score.
 	 * @return array of highlighting configuration
 	 */
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchFragmentSize;
 
@@ -295,6 +301,11 @@ class FullTextResultsType implements ResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(),
 		);
+		if ( count( $highlightSource ) ) {
+			$config[ 'fields' ][ 'source_text.plain' ] = $text;
+			$this->configureHighlightingForSource( $config, $highlightSource);
+			return $config;
+		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
 		}
@@ -329,6 +340,44 @@ class FullTextResultsType implements ResultsType {
 			$fields[ $name ] = $config;
 		}
 		return $fields;
+	}
+
+	private function configureHighlightingForSource( &$config, $highlightSource ) {
+		$patterns = array();
+		$locale = null;
+		$caseInsensitive = false;
+		foreach ( $highlightSource as $part ) {
+			if ( isset( $part[ 'pattern' ] ) ) {
+				$patterns[] = $part[ 'pattern' ];
+				$locale = $part[ 'locale' ];
+				$caseInsensitive |= $part[ 'insensitive' ];
+			}
+		}
+		if ( count( $patterns ) ) {
+			$options = array(
+				'regex' => $patterns,
+				'locale' => $locale,
+				'regex_flavor' => 'lucene',
+				'skip_query' => true,
+				'regex_case_insensitive' => (boolean)$caseInsensitive,
+			);
+			$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
+				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ], $options );
+			return;
+		}
+		$queryStrings = array();
+		foreach ( $highlightSource as $part ) {
+			if ( isset( $part[ 'query_string' ] ) ) {
+				$queryStrings[] = $part[ 'query_string' ];
+			}
+		}
+		if ( count( $queryStrings ) ) {
+			$bool = new \Elastica\Query\Bool();
+			foreach ( $queryStrings as $queryString ) {
+				$bool->addShould( $queryString );
+			}
+			$config[ 'fields' ][ 'source_text.plain' ][ 'highlight_query' ] = $bool->toArray();
+		}
 	}
 }
 
@@ -368,7 +417,7 @@ class InterwikiResultsType implements ResultsType {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		return null;
 	}
 

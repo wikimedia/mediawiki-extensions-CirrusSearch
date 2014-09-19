@@ -152,6 +152,10 @@ class Searcher extends ElasticsearchIntermediary {
 	 * query used for selecting.
 	 */
 	private $highlightQuery = null;
+	/**
+	 * @var array configuration for highlighting the article source.  Empty if source is ignored.
+	 */
+	private $highlightSource = array();
 
 	/**
 	 * @var Escaper escapes queries
@@ -401,22 +405,26 @@ class Searcher extends ElasticsearchIntermediary {
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
 		$boostTemplates = self::getDefaultBoostTemplates();
+		$highlightSource = array();
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)?/',
-			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType ) {
+			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
 				global $wgLanguageCode;
 
 				$searchContainedSyntax = true;
 				$searchType = 'regex';
+				$insensitive = !empty( $matches[ 'insensitive' ] );
 
 				$filterDestination = &$filters;
 				if ( !empty( $matches[ 'not' ] ) ) {
 					$filterDestination = &$notFilters;
+				} else {
+					$highlightSource[] = array(
+						'pattern' => $matches[ 'pattern' ],
+						'locale' => $wgLanguageCode,
+						'insensitive' => $insensitive,
+					);
 				}
-				$insensitive = !empty( $matches[ 'insensitive' ] );
-
-				// TODO highlighting but https://github.com/wikimedia/search-highlighter/issues/2
-
 				// The setAllowMutate call is documented to speed up operations but be thread unsafe.  You'd think
 				// that is ok because scripts are always executed in a single thread but it isn't ok.  It causes
 				// all operations to unstable, so far as I can tell.
@@ -463,7 +471,7 @@ GROOVY;
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"[^"]+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
-					&$searchContainedSyntax, &$fuzzyQuery ) {
+					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$filterDestination = &$filters;
@@ -509,7 +517,7 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
-						$field = 'source_text';
+						$field = 'source_text.plain';
 						$keepText = false;
 						// intentionally fall through
 					case 'intitle':
@@ -525,6 +533,9 @@ GROOVY;
 						$query->setFuzzyPrefixLength( 2 );
 						$query->setRewrite( 'top_terms_128' );
 						$filterDestination[] = new \Elastica\Filter\Query( $query );
+						if ( $key === 'insource' ) {
+							$highlightSource[] = array( 'query_string' => $query );
+						}
 						$searchContainedSyntax = true;
 						return $keepText ? "$value " : '';
 					default:
@@ -537,6 +548,7 @@ GROOVY;
 		$this->boostTemplates = $boostTemplates;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->fuzzyQuery = $fuzzyQuery;
+		$this->highlightSource = $highlightSource;
 		wfProfileOut( __METHOD__ . '-other-filters' );
 
 		$this->term = $this->escaper->escapeQuotes( $this->term );
@@ -901,7 +913,7 @@ GROOVY;
 
 		$query->setQuery( $this->query );
 
-		$highlight = $this->resultsType->getHighlightingConfiguration();
+		$highlight = $this->resultsType->getHighlightingConfiguration( $this->highlightSource );
 		if ( $highlight ) {
 			// Fuzzy queries work _terribly_ with the plain highlighter so just drop any field that is forcing
 			// the plain highlighter all together.  Do this here because this works so badly that no

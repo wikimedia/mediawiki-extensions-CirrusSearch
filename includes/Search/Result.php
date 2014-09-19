@@ -111,6 +111,12 @@ class Result extends SearchResult {
 				return $fileSnippet;
 			}
 		}
+		if ( isset( $highlights[ 'source_text.plain' ] ) ) {
+			$sourceSnippet = $highlights[ 'source_text.plain' ][ 0 ];
+			if ( $this->containsMatches( $sourceSnippet ) ) {
+				return $sourceSnippet;
+			}
+		}
 		return $mainSnippet;
 	}
 

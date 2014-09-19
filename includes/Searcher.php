@@ -787,6 +787,7 @@ GROOVY;
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( '_source', $sourceFiltering );
+					$query->addParam( 'stats', 'get' );
 					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
 					return $searcher->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {

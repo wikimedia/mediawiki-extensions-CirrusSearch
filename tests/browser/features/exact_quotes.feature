@@ -86,3 +86,13 @@ Feature: Searches that contain quotes
     | -              | ~7~    |
     | !              | ~7~    |
     | %{exact:NOT }  | ~7~    |
+
+  Scenario: Can combine positive and negative phrase search
+    When I search for catapult "catapult" -"two words" -"some stuff"
+    Then Catapult is in the search results
+      And Two Words is not in the search results
+
+  Scenario: Can combine positive and negative phrase search (backwards)
+    When I search for catapult -"asdf" "two words"
+    Then Two Words is in the search results
+      And Catapult is not in the search results

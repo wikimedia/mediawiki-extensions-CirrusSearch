@@ -59,9 +59,9 @@ Feature: Searches with the insource filter
     Then RegexEscapedDot is the first search result
 
   @regex
-  Scenario: insource:// can find escaped dots
-    When I search for insource:/a\.b/
-    Then RegexEscapedDot is the first search result
+  Scenario: insource:// can contain spaces
+    When I search for RegexSpaces insource:/a b c/
+    Then RegexSpaces is the first search result
 
   @regex
   Scenario: insource:// can a url

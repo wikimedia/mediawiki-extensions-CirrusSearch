@@ -546,7 +546,7 @@ GROOVY;
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
-		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?:\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?:\\\"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $searcher, $escaper, &$phrases ) {
 				global $wgCirrusSearchPhraseSlop;
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';

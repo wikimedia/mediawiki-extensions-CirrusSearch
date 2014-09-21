@@ -1021,9 +1021,15 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			'error' => function( $status ) use ( $key, $description ) {
+			'error' => function( $status ) use ( $type, $key, $description ) {
 				$status = $status->getErrorsArray();
 				wfLogWarning( "Elasticsearch pool error on key $key during $description:  " . $status[ 0 ][ 0 ] );
+				if ( $status[ 0 ][ 0 ] === 'pool-queuefull' ) {
+					if ( $type === 'regex' ) {
+						return Status::newFatal( 'cirrussearch-regex-too-busy-error' );
+					}
+					return Status::newFatal( 'cirrussearch-too-busy-error' );
+				}
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			}
 		) );

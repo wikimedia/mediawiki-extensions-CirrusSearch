@@ -336,7 +336,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
 		$expectedMaxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
 			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
-		if ( $actualMaxShardsPerNode === $expectedMaxShardsPerNode ) {
+		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
@@ -574,22 +574,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->validateIndexSettings();
 				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
 				list( $lower, $upper ) = explode( '-', $this->getReplicaCount() );
-				$indexName = $this->getSpecificIndexName();
-				$path = "_cluster/health/$indexName";
 				$each = 0;
 				while ( true ) {
-					$response = Connection::getClient()->request( $path );
-					if ( $response->hasError() ) {
-						$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
-						sleep( 1 );
-						continue;
-					}
-					$health = $response->getData();
+					$health = $this->getHealth();
 					$active = $health[ 'active_shards' ];
 					$relocating = $health[ 'relocating_shards' ];
 					$initializing = $health[ 'initializing_shards' ];
 					$unassigned = $health[ 'unassigned_shards' ];
-					$nodes = $health['number_of_nodes'];
+					$nodes = $health[ 'number_of_nodes' ];
 					if ( $nodes < $lower ) {
 						$this->error( "Require $lower replicas but only have $nodes nodes. "
 							. "This is almost always due to misconfiguration, aborting.", 1 );
@@ -687,12 +679,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of shards but that is
-		// is worth the price.
+		// is worth the price.  total_shards_per_node will help to make sure that each shard
+		// has as few neighbors as possible.
 		$settings = $this->getIndex()->getSettings();
+		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
 		$settings->set( array(
 			'refresh_interval' => -1,
 			'merge.policy.segments_per_tier' => 40,
 			'merge.policy.max_merge_at_once' => 40,
+			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
@@ -822,6 +817,20 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	private function getHealth() {
+		while ( true ) {
+			$indexName = $this->getSpecificIndexName();
+			$path = "_cluster/health/$indexName";
+			$response = Connection::getClient()->request( $path );
+			if ( $response->hasError() ) {
+				$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
+				sleep( 1 );
+				continue;
+			}
+			return $response->getData();
+		}
+	}
+
 	private function sendDocumentsWithRetry( $messagePrefix, $documents ) {
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -869,8 +878,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
-		global $wgCirrusSearchRefreshInterval;
+		global $wgCirrusSearchRefreshInterval,
+			$wgCirrusSearchMaxShardsPerNode;
 
+		$maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
+			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
@@ -880,6 +893,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'index.query.default_field' => 'all',
 				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
 				'merge.policy' => $this->getMergeSettings(),
+				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)
 		), $rebuild );
 		$this->tooFewReplicas = $this->reindexAndRemoveOk;
@@ -989,6 +1003,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function getReplicaCount() {
 		global $wgCirrusSearchReplicas;
 		return $wgCirrusSearchReplicas;
+	}
+
+	private function getMaxReplicaCount() {
+		$replica = explode( '-', $this->getReplicaCount() );
+		return $replica[ count( $replica ) - 1 ];
+	}
+
+	private function decideMaxShardsPerNodeForReindex() {
+		$health = $this->getHealth();
+		$totalNodes = $health[ 'number_of_nodes' ];
+		$totalShards = $this->getShardCount() * ( $this->getMaxReplicaCount() + 1 );
+		return ceil( 1.0 * $totalShards / $totalNodes );
 	}
 
 	private function parsePotentialPercent( $str ) {

@@ -7,7 +7,7 @@ Feature: Searches with the incategory filter
     When I search for incategory:weaponry
     Then Catapult is in the search results
       And Amazing Catapult is in the search results
-    But Two Words is not in the search results
+      But Two Words is not in the search results
       And there is no link to create a new page from the search result
 
   Scenario: incategory: can be combined with other text

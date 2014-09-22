@@ -516,6 +516,7 @@ Before("@regex") do
       Given a page named RegexEscapedForwardSlash exists with contents a/b
       And a page named RegexEscapedBackslash exists with contents a\\b
       And a page named RegexEscapedDot exists with contents a.b
+      And a page named RegexSpaces exists with contents a b c
         )
   end
   regex = true

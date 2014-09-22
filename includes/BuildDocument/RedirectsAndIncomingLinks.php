@@ -129,6 +129,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
 		$matchAll = new \Elastica\Query\MatchAll();
 		$search->setQuery( new \Elastica\Query\Filtered( $matchAll, $filter ) );
+		$search->getQuery()->addParam( 'stats', 'link_count' );
 		return $search;
 	}
 

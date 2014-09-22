@@ -461,11 +461,12 @@ GROOVY;
 		$escaper = $this->escaper;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"[^"]+"|[^ "]+) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?:\"))+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax, &$fuzzyQuery ) {
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
+				$value = str_replace( '\"', '"', $value );
 				$filterDestination = &$filters;
 				$keepText = true;
 				if ( $key[ 0 ] === '-' ) {

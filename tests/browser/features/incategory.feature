@@ -28,6 +28,10 @@ Feature: Searches with the incategory filter
     When I search for incategory:"Categorywith Twowords"
     Then Two Words is the first search result
 
+  Scenario: incategory can find categories containing quotes if the quote is escaped
+    When I search for incategory:"Categorywith \" Quote"
+    Then Two Words is the first search result
+
   Scenario: incategory works with can find two word categories with spaces
     When I search for incategory:Categorywith_Twowords
     Then Two Words is the first search result

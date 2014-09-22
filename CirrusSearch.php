@@ -258,6 +258,8 @@ $wgCirrusSearchStemmedWeight = 0.5;
 // NS_MAIN can be overriden with this then 1 just represents what NS_MAIN would have been....
 // If you override NS_MAIN here then NS_TALK will still default to:
 //   $wgCirrusSearchNamespaceWeights[ NS_MAIN ] * wgCirrusSearchTalkNamespaceWeight
+// You can specify namespace by number or string.  Strings are converted to numbers using the
+// content language including aliases.
 $wgCirrusSearchNamespaceWeights = array(
 	NS_USER => 0.05,
 	NS_PROJECT => 0.1,

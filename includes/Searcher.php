@@ -8,6 +8,7 @@ use \CirrusSearch\Search\Filters;
 use \CirrusSearch\Search\FullTextResultsType;
 use \CirrusSearch\Search\IdResultsType;
 use \CirrusSearch\Search\ResultsType;
+use \Language;
 use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \ProfileSection;
@@ -71,6 +72,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var array(integer) namespaces in which to search
 	 */
 	protected $namespaces;
+
+	/**
+	 * @var Language language of the wiki
+	 */
+	private $language;
 
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
@@ -169,6 +175,12 @@ class Searcher extends ElasticsearchIntermediary {
 	private $returnQuery = false;
 
 	/**
+	 * @var null|array lazily initialized version of $wgCirrusSearchNamespaceWeights with all string keys
+	 * translated into integer namespace codes using $this->language.
+	 */
+	private $normalizedNamespaceWeights = null;
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -178,13 +190,15 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function __construct( $offset, $limit, $namespaces, $user, $index = false ) {
 		global $wgCirrusSearchSlowSearch,
-			$wgLanguageCode;
+			$wgLanguageCode,
+			$wgContLang;
 
 		parent::__construct( $user, $wgCirrusSearchSlowSearch );
 		$this->offset = min( $offset, self::MAX_OFFSET );
 		$this->limit = $limit;
 		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: wfWikiId();
+		$this->language = $wgContLang;
 		$this->escaper = new Escaper( $wgLanguageCode );
 	}
 
@@ -1386,8 +1400,23 @@ GROOVY;
 			$wgCirrusSearchDefaultNamespaceWeight,
 			$wgCirrusSearchTalkNamespaceWeight;
 
-		if ( isset( $wgCirrusSearchNamespaceWeights[ $namespace ] ) ) {
-			return $wgCirrusSearchNamespaceWeights[ $namespace ];
+		if ( $this->normalizedNamespaceWeights === null ) {
+			$this->normalizedNamespaceWeights = array();
+			foreach ( $wgCirrusSearchNamespaceWeights as $ns => $weight ) {
+				if ( is_string( $ns ) ) {
+					$ns = $this->language->getNsIndex( $ns );
+					// Ignore namespaces that don't exist.
+					if ( $ns === false ) {
+						continue;
+					}
+				}
+				// Now $ns should always be an integer.
+				$this->normalizedNamespaceWeights[ $ns ] = $weight;
+			}
+		}
+
+		if ( isset( $this->normalizedNamespaceWeights[ $namespace ] ) ) {
+			return $this->normalizedNamespaceWeights[ $namespace ];
 		}
 		if ( MWNamespace::isSubject( $namespace ) ) {
 			if ( $namespace === NS_MAIN ) {
@@ -1396,8 +1425,8 @@ GROOVY;
 			return $wgCirrusSearchDefaultNamespaceWeight;
 		}
 		$subjectNs = MWNamespace::getSubject( $namespace );
-		if ( isset( $wgCirrusSearchNamespaceWeights[ $subjectNs ] ) ) {
-			return $wgCirrusSearchTalkNamespaceWeight * $wgCirrusSearchNamespaceWeights[ $subjectNs ];
+		if ( isset( $this->normalizedNamespaceWeights[ $subjectNs ] ) ) {
+			return $wgCirrusSearchTalkNamespaceWeight * $this->normalizedNamespaceWeights[ $subjectNs ];
 		}
 		if ( $namespace === NS_TALK ) {
 			return $wgCirrusSearchTalkNamespaceWeight;

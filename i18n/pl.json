@@ -9,6 +9,7 @@
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
 	"cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
 	"cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
+	"cirrussearch-too-busy-error": "Wyszukiwanie w tej chwili jest przeciążone. Proszę spróbować później.",
 	"cirrussearch-regex-syntax-error": "Błąd składni wyrażeń regularnych w pozycji $2: $1",
 	"cirrussearch-now-using": "Ta wiki wykorzystuje nową wyszukiwarkę. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dowiedz się więcej]])",
 	"cirrussearch-ignored-headings": " #<!-- ten wiersz zostaw bez zmian --> <pre>\n# Umieszczone tutaj nagłówki będą ignorowane podczas wyszukiwania.\n# Zmiany wprowadzone tutaj zostaną zastosowane, gdy strona wykorzystująca odpowiedni nagłówek zostanie zindeksowana.\n# Można wymusić ponowne zindeksowanie strony wykonując na niej null edit.\n# Składnia jest następująca:\n#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.\n#   * Każdy niepusty wiersz wprowadza dokładną treść nagłówka, który należy zignorować, wielkość liter ma znaczenie.\nLinki zewnętrzne\nZobacz też\n #</pre> <!-- ten wiersz zostaw bez zmian -->",

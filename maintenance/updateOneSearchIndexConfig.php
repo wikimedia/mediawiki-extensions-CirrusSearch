@@ -775,12 +775,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( $this->indent . $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
 			$operationStartTime = microtime( true );
 			$completed = 0;
+			$self = $this;
 			while ( true ) {
 				wfProfileIn( __METHOD__ . '::receiveDocs' );
-				$result = $this->getIndex()->search( array(), array(
-					'scroll_id' => $result->getResponse()->getScrollId(),
-					'scroll' => '1h'
-				) );
+				$result = $this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'fetching documents to reindex',
+					function() use ( $self, $result ) {
+						return $self->getIndex()->search( array(), array(
+							'scroll_id' => $result->getResponse()->getScrollId(),
+							'scroll' => '1h'
+						) );
+					} );
 				wfProfileOut( __METHOD__ . '::receiveDocs' );
 				if ( !$result->count() ) {
 					$this->output( $this->indent . $messagePrefix . "All done\n" );
@@ -802,7 +806,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$result->next();
 				}
 				wfProfileOut( __METHOD__ . '::packageDocs' );
-				$this->sendDocumentsWithRetry( $messagePrefix, $documents );
+				$this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'retrying as singles',
+					function() use ( $self, $messagePrefix, $documents ) {
+						$self->sendDocuments( $messagePrefix, $documents );
+					} );
 				$completed += $result->count();
 				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
 				$this->output( $this->indent . $messagePrefix .
@@ -831,15 +838,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function sendDocumentsWithRetry( $messagePrefix, $documents ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
+	private function withRetry( $attempts, $messagePrefix, $description, $func ) {
 		$errors = 0;
 		while ( true ) {
-			if ( $errors < $this->reindexRetryAttempts ) {
+			if ( $errors < $attempts ) {
 				try {
-					$this->sendDocuments( $messagePrefix, $documents );
-					return;
+					return $func();
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					$errors += 1;
 					// Random backoff with lowest possible upper bound as 16 seconds.
@@ -847,13 +851,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$seconds = rand( 1, pow( 2, 3 + $errors ) );
 					$type = get_class( $e );
 					$message = ElasticsearchIntermediary::extractMessage( $e );
-					$this->output( $this->indent . $messagePrefix . "Caught an error retrying as singles.  " .
-						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message" );
+					$this->output( $this->indent . $messagePrefix . "Caught an error $description.  " .
+						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
 					sleep( $seconds );
 				}
 			} else {
-				$this->sendDocuments( $messagePrefix, $documents );
-				return;
+				return $func();
 			}
 		}
 	}

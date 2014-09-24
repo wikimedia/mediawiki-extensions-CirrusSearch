@@ -54,7 +54,7 @@ class PageTextBuilder extends ParseBuilder {
 		$this->doc->add( 'text', $text );
 		$this->doc->add( 'opening_text', $opening );
 		$this->doc->add( 'auxiliary_text', $auxiliary );
-		$this->doc->add( 'text_bytes', strlen( $text ) );
+		$this->doc->add( 'text_bytes', $this->content->getSize() );
 		$this->doc->add( 'source_text', $this->buildSourceTextToIndex() );
 
 		return $this->doc;

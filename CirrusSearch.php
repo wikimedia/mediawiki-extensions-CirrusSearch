@@ -587,7 +587,6 @@ $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
  * i18n
  */
 $wgMessagesDirs['CirrusSearch'] = __DIR__ . '/i18n';
-$wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
 
 /**
  * Jobs

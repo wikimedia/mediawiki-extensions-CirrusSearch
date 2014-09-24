@@ -861,7 +861,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function sendDocuments( $messagePrefix, $documents ) {
+	public function sendDocuments( $messagePrefix, $documents ) {
 		try {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -956,7 +956,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * @return \Elastica\Index being updated
 	 */
-	private function getIndex() {
+	public function getIndex() {
 		return Connection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 

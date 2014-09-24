@@ -431,20 +431,16 @@ GROOVY;
 	}
 
 	/**
-	 * Update the search index for articles linked from this article.  Just updates link counts.
-	 * @param $addedLinks array of Titles added to the page
-	 * @param $removedLinks array of Titles removed from the page
+	 * Update the search index for newly linked or unlinked articles.
+	 * @param array $titles titles to update
 	 * @return boolean were all pages updated?
 	 */
-	public function updateLinkedArticles( $addedLinks, $removedLinks ) {
+	public function updateLinkedArticles( $titles ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		// We don't do anything different with removed or added pages at this point so merge them.
-		$titleKeys = array_merge( $addedLinks, $removedLinks );
 		$pages = array();
-		foreach ( $titleKeys as $titleKey ) {
-			$title = Title::newFromDBKey( $titleKey );
-			// Bad titles and special pages don't get updated
+		foreach ( $titles as $title ) {
+			// Special pages don't get updated
 			if ( !$title || $title->getNamespace() < 0 ) {
 				continue;
 			}

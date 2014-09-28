@@ -5,12 +5,14 @@
 			"Csbotero",
 			"Fitoschido",
 			"Ihojose",
-			"Luis Felipe Schenone"
+			"Luis Felipe Schenone",
+			"Jonathan rrr"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
 	"cirrussearch-backend-error": "No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.",
 	"cirrussearch-parse-error": "La queja no fue entendida. Hágala más sencilla. La queja fue registrada para mejorar el sistema de búsqueda.",
+	"cirrussearch-too-busy-error": "La búsqueda está actualmente ocupada.  Inténtalo de nuevo más tarde.",
 	"cirrussearch-regex-syntax-error": "Error sintáctico de la expresión regular en la posición $2: $1",
 	"cirrussearch-regex-too-busy-error": "Se están ejecutando demasiadas expresiones regulares en este momento. Inténtalo de nuevo más tarde.",
 	"cirrussearch-now-using": "Esta wiki está utilizando un nuevo motor de búsqueda. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ver más información]])",

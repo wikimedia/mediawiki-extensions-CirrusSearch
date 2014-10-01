@@ -124,13 +124,14 @@ Feature: Full text search
     Then <first_result> is the first search result
       And <second_result> is the second search result
   Examples:
-    |   term   |     first_result     |    second_result    |
-    | aliases  | StemmerTest Aliases  | StemmerTest Alias   |
-    | alias    | StemmerTest Alias    | StemmerTest Aliases |
-    | used     | StemmerTest Used     | none                |
-    | uses     | StemmerTest Used     | none                |
-    | use      | StemmerTest Used     | none                |
-    | us       | none                 | none                |
+    |    term    |      first_result      |    second_result    |
+    | aliases    | StemmerTest Aliases    | StemmerTest Alias   |
+    | alias      | StemmerTest Alias      | StemmerTest Aliases |
+    | used       | StemmerTest Used       | none                |
+    | uses       | StemmerTest Used       | none                |
+    | use        | StemmerTest Used       | none                |
+    | us         | none                   | none                |
+    | guideline  | StemmerTest Guidelines | none                |
 
   @file_text
   Scenario: When you search for text that is in a file, you can find it!

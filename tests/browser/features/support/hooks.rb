@@ -244,6 +244,8 @@ Before("@programmer_friendly") do
       And a page named PascalCase exists
       And a page named NumericCase7 exists
       And a page named this.getInitial exists
+      And a page named RefToolbarBase.js exists
+      And a page named PFTest Paren exists with contents this.isCamelCased()
         )
     programmer_friendly = true
   end
@@ -538,5 +540,16 @@ Before("@linksto") do
       And a page named LinksToTest LinksToTemplate exists with contents [[Template:LinksToTest Template]]
         )
     linksto = true
+  end
+end
+
+filenames = false
+Before("@filenames") do
+  unless filenames
+    steps %(
+      Given a file named File:No_SVG.svg exists with contents No_SVG.svg and description [[Category:Red circle with left slash]]
+      And a file named File:Somethingelse_svg_SVG.svg exists with contents Somethingelse_svg_SVG.svg and description [[Category:Red circle with left slash]]
+        )
+    filenames = true
   end
 end

@@ -172,7 +172,7 @@ Feature: Highlighting
 
   @insource @regex
   Scenario: insource:// highlights the source using only the regex
-    When I search for insource:"a" insource:/b c/
+    When I search for insource:"a" insource:/b c/ -rashidun
     Then a *b c* is in the highlighted text of the first search result
 
   # https://github.com/wikimedia/search-highlighter/issues/6

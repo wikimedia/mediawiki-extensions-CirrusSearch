@@ -483,7 +483,7 @@ GROOVY;
 		$escaper = $this->escaper;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?:\"))+"|[^ "]+) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?:\\\"))+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource ) {
 				$key = $matches['key'];

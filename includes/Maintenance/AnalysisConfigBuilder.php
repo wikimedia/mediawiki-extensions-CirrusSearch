@@ -234,6 +234,7 @@ class AnalysisConfigBuilder {
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';
 			$filters[] = 'kstem';
+			$filters[] = 'custom_stem';
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
@@ -246,6 +247,15 @@ class AnalysisConfigBuilder {
 
 			// In English text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+
+			// Setup custom stemmer
+			$config[ 'filter' ][ 'custom_stem' ] = array(
+				'type' => 'stemmer_override',
+				'rules' => <<<STEMMER_RULES
+guidelines => guideline
+STEMMER_RULES
+				,
+			);
 			break;
 		case 'fr':
 			// Add asciifolding to the prefix queries and incategory filters

@@ -258,6 +258,7 @@ Before("@stemmer") do
       Given a page named StemmerTest Aliases exists
       And a page named StemmerTest Alias exists
       And a page named StemmerTest Used exists
+      And a page named StemmerTest Guidelines exists
         )
   end
   stemmer = true

@@ -52,6 +52,7 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';
+$wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
 $wgUseInstantCommons = true;
 $wgEnableUploads = true;
@@ -75,7 +76,6 @@ $wgCiteEnablePopups = true;
 
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
-$wgCirrusSearchShowScore = true;
 
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;

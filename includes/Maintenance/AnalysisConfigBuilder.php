@@ -30,7 +30,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.7';
+	const VERSION = '0.8';
 
 	/**
 	 * Language code we're building analysis for
@@ -76,9 +76,11 @@ class AnalysisConfigBuilder {
 			'analyzer' => array(
 				'text' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'text_search' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'plain' => array(
 					// Surprisingly, the Lucene docs claim this works for
@@ -88,6 +90,7 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' ),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'plain_search' => array(
 					// In accent squashing languages this will not contain accent
@@ -96,6 +99,7 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' ),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'suggest' => array(
 					'type' => 'custom',
@@ -162,12 +166,25 @@ class AnalysisConfigBuilder {
 				),
 			),
 			'char_filter' => array(
-				// Flattens things that are space like to spaces in the near_match style analyzersc
+				// Flattens things that are space like to spaces in the near_match style analyzers
 				'near_space_flattener' => array(
 					'type' => 'mapping',
 					'mappings' => array(
 						"'=>\u0020",
 						'’=>\u0020',
+						'_=>\u0020',
+					),
+				),
+				// Converts things that don't always count as word breaks into spaces which always
+				// count as word breaks.
+				'word_break_helper' => array(
+					'type' => 'mapping',
+					'mappings' => array(
+						'_=>\u0020',
+						// These are more useful for code:
+						'.=>\u0020',
+						'(=>\u0020',
+						')=>\u0020',
 					),
 				),
 			),
@@ -208,6 +225,7 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
+				'char_filter' => array( 'word_break_helper' ),
 			);
 			$filters = array();
 			$filters[] = 'standard';
@@ -274,6 +292,7 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
+				'char_filter' => array( 'word_break_helper' ),
 			);
 			$filters = array();
 			$filters[] = 'standard';

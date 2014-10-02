@@ -19,11 +19,6 @@ Feature: Full text search
     | template:pickles                     | Template:Template Test is         | not in          |        |
     | pickles/                             | Two Words is                      | in              |        |
     | catapult/pickles                     | Two Words is                      | in              |        |
-    # Make sure various ways of searching for a file name work
-    | File:Savepage-greyed.png             | File:Savepage-greyed.png is       | not in          | image  |
-    | File:Savepage                        | File:Savepage-greyed.png is       | not in          | image  |
-    | File:greyed.png                      | File:Savepage-greyed.png is       | not in          | image  |
-    | File:greyed                          | File:Savepage-greyed.png is       | not in          | image  |
     | File:"Screenshot, for test purposes" | File:Savepage-greyed.png is       | not in          | image  |
     # You can't search for text inside a <video> or <audio> tag
     | "JavaScript disabled"                | none is                           | not in          |        |
@@ -97,13 +92,13 @@ Feature: Full text search
     When I search for <term>
     Then <page> is the first search result
   Examples:
-    | term                | page                |
+    |        term         |        page         |
     | namespace aliases   | $wgNamespaceAliases |
     | namespaceAliases    | $wgNamespaceAliases |
     | $wgNamespaceAliases | $wgNamespaceAliases |
     | namespace_aliases   | $wgNamespaceAliases |
     | NamespaceAliases    | $wgNamespaceAliases |
-    | wgnamespacealiases  | $wgNamespaceAliases |
+    | wgnamespacealiases  | $wgNamespaceAliases |    
     | snake case          | PFSC                |
     | snakeCase           | PFSC                |
     | snake_case          | PFSC                |
@@ -117,6 +112,8 @@ Feature: Full text search
     | numericcase7        | NumericCase7        |
     | numericCase         | NumericCase7        |
     | getInitial          | this.getInitial     |
+    | reftoolbarbase js   | RefToolbarBase.js   |
+    | this.iscamelcased   | PFTest Paren        |
 
   @stemmer
   Scenario Outline: Stemming works as expected
@@ -193,3 +190,20 @@ Feature: Full text search
     | वाङ्‍मय |
     | वाङ‍्मय |
     | वाङ्‌मय |
+
+  @setup_main @filenames
+  Scenario Outline: Portions of file names
+    When I search for <term>
+    Then I am on a page titled Search results
+      And <first_result> is the first search imageresult
+  Examples:
+    |            term            |          first_result          |
+    | File:Savepage-greyed.png   | File:Savepage-greyed.png       |
+    | File:Savepage              | File:Savepage-greyed.png       |
+    | File:greyed.png            | File:Savepage-greyed.png       |
+    | File:greyed                | File:Savepage-greyed.png       |
+    | File:Savepage png          | File:Savepage-greyed.png       |
+    | File:No_SVG.svg            | File:No SVG.svg                |
+    | File:No SVG.svg            | File:No SVG.svg                |
+    | File:No svg                | File:No SVG.svg                |
+    | File:svg.svg               | File:Somethingelse svg SVG.svg |

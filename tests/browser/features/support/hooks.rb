@@ -554,3 +554,13 @@ Before("@filenames") do
     filenames = true
   end
 end
+
+removed_text = false
+Before("@removed_text") do
+  unless removed_text
+    steps %(
+      Given a page named Autocollapse Example exists with contents <div class="autocollapse">in autocollapse</div>
+        )
+    removed_text = true
+  end
+end

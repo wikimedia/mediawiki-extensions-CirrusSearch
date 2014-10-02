@@ -33,6 +33,7 @@ class PageTextBuilder extends ParseBuilder {
 		'.mw-cite-backlink',    // The ↑ next to refenences in the references section
 		'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
 		'h5', 'h6', 'h4',
+		'.autocollapse',        // Collapsed fields are hidden by default so we don't want them showing up.
 	);
 	/**
 	 * @var array selectors to elements that are considered auxiliary to article text for search

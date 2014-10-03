@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.6';
+	const VERSION = '1.7';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -81,7 +81,8 @@ class MappingConfigBuilder {
 	 */
 	public function buildConfig() {
 		global $wgCirrusSearchAllFields,
-			$wgCirrusSearchWeights;
+			$wgCirrusSearchWeights,
+			$wgCirrusSearchWikimediaExtraPlugin;
 
 		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
@@ -97,6 +98,14 @@ class MappingConfigBuilder {
 				'index_analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
 				'index_options' => 'docs'
+			);
+		}
+		$sourceExtraAnalyzers = array();
+		if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
+				in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+			$sourceExtraAnalyzers[] = array(
+				'analyzer' => 'trigram',
+				'index_options' => 'docs',
 			);
 		}
 
@@ -131,7 +140,9 @@ class MappingConfigBuilder {
 				'opening_text' => $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS ),
 				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
-				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),
+				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL,
+					$sourceExtraAnalyzers
+				),
 				'category' => $this->buildStringField( MappingConfigBuilder::MINIMAL, array(
 					array(
 						'analyzer' => 'lowercase_keyword',

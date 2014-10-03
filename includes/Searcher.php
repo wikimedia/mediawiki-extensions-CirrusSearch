@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 use Elastica;
 use \CirrusSearch;
+use \CirrusSearch\Extra\Filter\SourceRegex;
 use \CirrusSearch\Search\Escaper;
 use \CirrusSearch\Search\Filters;
 use \CirrusSearch\Search\FullTextResultsType;
@@ -423,7 +424,8 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)?/',
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
-				global $wgLanguageCode;
+				global $wgLanguageCode,
+					$wgCirrusSearchWikimediaExtraPlugin;
 
 				$searchContainedSyntax = true;
 				$searchType = 'regex';
@@ -439,10 +441,21 @@ class Searcher extends ElasticsearchIntermediary {
 						'insensitive' => $insensitive,
 					);
 				}
-				// The setAllowMutate call is documented to speed up operations but be thread unsafe.  You'd think
-				// that is ok because scripts are always executed in a single thread but it isn't ok.  It causes
-				// all operations to unstable, so far as I can tell.
-				$script = <<<GROOVY
+				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
+						in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+					$filter = new SourceRegex( $matches[ 'pattern' ], 'source_text', 'source_text.trigram' );
+					if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] ) ) {
+						$filter->setMaxInspect( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] );
+					} else {
+						$filter->setMaxInspect( 10000 );
+					}
+					$filter->setCaseSensitive( !$insensitive );
+					$filter->setLocale( $wgLanguageCode );
+					$filterDestination[] = $filter;
+				} else {
+					// Without the extra plugin we need to use groovy to attempt the regex.
+					// Its less good but its something.
+					$script = <<<GROOVY
 import org.apache.lucene.util.automaton.*;
 sourceText = _source.get("source_text");
 if (sourceText == null) {
@@ -463,19 +476,20 @@ if (sourceText == null) {
 }
 
 GROOVY;
-				$filterDestination[] = new \Elastica\Filter\Script( new \Elastica\Script(
-					$script,
-					array(
-						'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
-						'insensitive' => $insensitive,
-						'language' => $wgLanguageCode,
-						// These null here creates a slot in which the script will shove
-						// an automaton while executing.
-						'automaton' => null,
-						'locale' => null,
-					),
-					'groovy'
-				) );
+					$filterDestination[] = new \Elastica\Filter\Script( new \Elastica\Script(
+						$script,
+						array(
+							'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
+							'insensitive' => $insensitive,
+							'language' => $wgLanguageCode,
+							// These null here creates a slot in which the script will shove
+							// an automaton while executing.
+							'automaton' => null,
+							'locale' => null,
+						),
+						'groovy'
+					) );
+				}
 			}
 		);
 		// Match filters that look like foobar:thing or foobar:"thing thing"

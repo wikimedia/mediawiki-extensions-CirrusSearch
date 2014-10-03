@@ -64,7 +64,7 @@ Feature: Searches with the insource filter
     Then RegexSpaces is the first search result
 
   @regex
-  Scenario: insource:// can a url
+  Scenario: insource:// can find a url
     When I search for all:insource:/show_bug.cgi\?id=52908/
     Then File:Savepage-greyed.png is the first search imageresult
 
@@ -77,5 +77,5 @@ Feature: Searches with the insource filter
 
   @regex
   Scenario: insource:// reports errors sanely
-    When I search for all:insource:/[/
-    Then this error is reported: An error has occurred while searching: Regular expression syntax error at 4: expected ']'
+    When I search for all:insource:/[ /
+    Then this error is reported: An error has occurred while searching: Regular expression syntax error at 2: expected ']'

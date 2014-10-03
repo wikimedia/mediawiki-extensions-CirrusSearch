@@ -112,6 +112,7 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchBoostLinks, $request, 'cirrusBoostLinks' );
 			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
+			self::overrideUseExtraPluginForRegex( $request );
 		}
 	}
 
@@ -135,6 +136,24 @@ class Hooks {
 				$dest = true;
 			} elseif( $val = 'no' ) {
 				$dest = false;
+			}
+		}
+	}
+
+	private static function overrideUseExtraPluginForRegex( $request ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
+
+		$val = $request->getVal( 'cirrusAccelerateRegex' );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][] = 'use';
+			} elseif( $val = 'no' ) {
+				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+					$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
+					if ( $useLocation !== false ) {
+						unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
+					}
+				}
 			}
 		}
 	}

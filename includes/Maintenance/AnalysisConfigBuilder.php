@@ -221,12 +221,12 @@ class AnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
-		switch ( $this->language ) {
+		switch ( $this->getDefaultTextAnalyzerType() ) {
 		// Please add languages in alphabetical order.
-		case 'el':
+		case 'greek':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
-		case 'en':
+		case 'english':
 			$config[ 'filter' ][ 'possessive_english' ] = array(
 				'type' => 'stemmer',
 				'language' => 'possessive_english',
@@ -267,13 +267,13 @@ STEMMER_RULES
 				,
 			);
 			break;
-		case 'fr':
+		case 'french':
 			// Add asciifolding to the prefix queries and incategory filters
 			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
 			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
 			break;
-		case 'it':
+		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = array(
 				'type' => 'elision',
 				'articles' => array(
@@ -334,10 +334,10 @@ STEMMER_RULES
 			// In Italian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
-		case 'tr':
+		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
-		case 'he':
+		case 'hebrew':
 			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
 			// analyzer for queries.
 			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
@@ -404,6 +404,9 @@ STEMMER_RULES
 		'da' => 'danish',
 		'nl' => 'dutch',
 		'en' => 'english',
+		'en-ca' => 'english',
+		'en-gb' => 'english',
+		'simple' => 'english',
 		'fi' => 'finnish',
 		'fr' => 'french',
 		'gl' => 'galician',

@@ -442,7 +442,7 @@ class Searcher extends ElasticsearchIntermediary {
 					);
 				}
 				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
-						in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+						in_array( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
 					$filter = new SourceRegex( $matches[ 'pattern' ], 'source_text', 'source_text.trigram' );
 					if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] ) ) {
 						$filter->setMaxInspect( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] );

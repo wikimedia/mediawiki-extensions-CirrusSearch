@@ -81,6 +81,21 @@ $wgCirrusSearchUseExperimentalHighlighter = false;
 // and off - it has to stay on.
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 
+// Should CirrusSearch try to use the wikimedia/extra plugin?  An empty array
+// means don't use it at all.
+$wgCirrusSearchWikimediaExtraPlugin = array();
+// Here is an example to enable faster regex matching:
+// $wgCirrusSearchWikimediaExtraPlugin = array(
+// 	'regex' => array( 'build', 'use', 'max_inspect' => 10000 ),
+// );
+// The 'build' value instructs Cirrus to build the index required to speed up
+// regex queries.  The 'use' value instructs Cirrus to use it to power regular
+// expression queries.  If 'use' is added before the index is rebuilt with
+// 'build' in the array then regex will fail to find anything.  The value of
+// the 'max_inspect' key is the maximum number of pages to recheck the regex
+// against.  It defaults to 10000 which seems like a reasonable compromize
+// to keep regexes fast while still producing good results.
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be
@@ -502,6 +517,7 @@ $wgCirrusSearchMergeSettings = array(
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
+$extraFilterDir = $includes . 'Extra/Filter/';
 $jobsDir = $includes . 'Job/';
 $maintenanceDir = $includes . 'Maintenance/';
 $sanity = $includes . 'Sanity/';
@@ -523,6 +539,7 @@ $wgAutoloadClasses['CirrusSearch\BuildDocument\RedirectsAndIncomingLinks'] = $bu
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\Dump'] = $includes . 'Dump.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
+$wgAutoloadClasses['CirrusSearch\Extra\Filter\SourceRegex'] = $extraFilterDir . 'SourceRegex.php';
 $wgAutoloadClasses['CirrusSearch\ForceSearchIndex'] = __DIR__ . '/maintenance/forceSearchIndex.php';
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';

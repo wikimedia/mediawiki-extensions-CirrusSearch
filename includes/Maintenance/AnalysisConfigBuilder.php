@@ -30,7 +30,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.8';
+	const VERSION = '0.9';
 
 	/**
 	 * Language code we're building analysis for
@@ -128,6 +128,11 @@ class AnalysisConfigBuilder {
 					'tokenizer' => 'no_splitting',
 					'filter' => array( 'lowercase' ),
 				),
+				'trigram' => array(
+					'type' => 'custom',
+					'tokenizer' => 'trigram',
+					'filter' => array( 'lowercase' ),
+				),
 			),
 			'filter' => array(
 				'suggest_shingle' => array(
@@ -163,6 +168,11 @@ class AnalysisConfigBuilder {
 				),
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',
+				),
+				'trigram' => array(
+					'type' => 'nGram',
+					'min_gram' => 3,
+					'max_gram' => 3,
 				),
 			),
 			'char_filter' => array(

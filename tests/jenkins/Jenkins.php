@@ -49,6 +49,11 @@ require_once( "$IP/extensions/Cite/Cite.php" );
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
+// TODO enable this when the extra plugin is released
+// $wgCirrusSearchWikimediaExtraPlugin = array(
+// 	'regex' => array( 'build', 'use' ),
+// );
+
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';

@@ -79,3 +79,8 @@ Feature: Searches with the insource filter
   Scenario: insource:// reports errors sanely
     When I search for all:insource:/[ /
     Then this error is reported: An error has occurred while searching: Regular expression syntax error at 2: expected ']'
+
+  @regex
+  Scenario: insource:// doesn't break other clauses
+    When I search for insource:/b c/ insource:/a b c/
+    Then RegexSpaces is the first search result

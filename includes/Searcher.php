@@ -422,7 +422,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$boostTemplates = self::getDefaultBoostTemplates();
 		$highlightSource = array();
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)?/',
+			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
 				global $wgLanguageCode,
 					$wgCirrusSearchWikimediaExtraPlugin;

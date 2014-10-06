@@ -152,13 +152,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgLanguageCode,
 			$wgCirrusSearchPhraseSuggestUseText,
-			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
-			$wgCirrusSearchMaintenanceTimeout;
+			$wgCirrusSearchPrefixSearchStartsWithAnyWord;
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 		// Set the timeout for maintenance actions
-		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+		$this->setConnectionTimeout();
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
@@ -175,7 +174,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
 
 		try{
-			$indexTypes = Connection::getAllIndexTypes();
+			$indexTypes = $this->getAllIndexTypes();
 			if ( !in_array( $this->indexType, $indexTypes ) ) {
 				$this->error( 'indexType option must be one of ' .
 					implode( ', ', $indexTypes ), 1 );
@@ -222,7 +221,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function checkElasticsearchVersion() {
 		$this->outputIndented( 'Fetching Elasticsearch version...' );
-		$result = Connection::getClient()->request( '' );
+		$result = $this->getClient()->request( '' );
 		$result = $result->getData();
 		if ( !isset( $result['version']['number'] ) ) {
 			$this->output( 'unable to determine, aborting.', 1 );
@@ -241,7 +240,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		global $wgCirrusSearchBannedPlugins;
 
 		$this->outputIndented( "Scanning available plugins..." );
-		$result = Connection::getClient()->request( '_nodes' );
+		$result = $this->getClient()->request( '_nodes' );
 		$result = $result->getData();
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
@@ -512,16 +511,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Validate the alias that is just for this index's type.
 	 */
 	private function validateSpecificAlias() {
-		global $wgCirrusSearchMaintenanceTimeout;
-
 		$this->outputIndented( "\tValidating $this->indexType alias..." );
 		$otherIndeciesWithAlias = array();
 		$specificAliasName = $this->getIndexTypeName();
-		$status = Connection::getClient()->getStatus();
+		$status = $this->getClient()->getStatus();
 		if ( $status->indexExists( $specificAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				Connection::getClient()->getIndex( $specificAliasName )->delete();
+				$this->getClient()->getIndex( $specificAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
@@ -561,15 +558,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->outputIndented( "\tOptimizing..." );
 				try {
 					// Reset the timeout just in case we lost it somehwere along the line
-					Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+					$this->setConnectionTimeout();
 					$this->getIndex()->optimize( array( 'max_num_segments' => 5 ) );
 					$this->output( "Done\n" );
 				} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 					if ( $e->getMessage() === 'Operation timed out' ) {
 						$this->output( "Timed out...Continuing any way\n" );
 						// To continue without blowing up we need to reset the connection.
-						Connection::destroySingleton();
-						Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+						$this->destroySingleton();
+						$this->setConnectionTimeout();
 					} else {
 						throw $e;
 					}
@@ -622,12 +619,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function validateAllAlias() {
 		$this->outputIndented( "\tValidating all alias..." );
-		$allAliasName = Connection::getIndexName( $this->indexBaseName );
-		$status = Connection::getClient()->getStatus();
+		$allAliasName = $this->getIndexName();
+		$status = $this->getClient()->getStatus();
 		if ( $status->indexExists( $allAliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
-				Connection::getClient()->getIndex( $allAliasName )->delete();
+				$this->getClient()->getIndex( $allAliasName )->delete();
 				$this->output( "index removed..." );
 			} else {
 				$this->output( "cannot correct!\n" );
@@ -658,7 +655,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$data['action'][] = array( 'remove' => array( 'index' => $oldIndex, 'alias' => $allAliasName ) );
 			}
 		}
-		Connection::getClient()->request( '_aliases', \Elastica\Request::POST, $data );
+		$this->getClient()->request( '_aliases', \Elastica\Request::POST, $data );
 		$this->output( "corrected\n" );
 	}
 
@@ -667,7 +664,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->outputIndented( "\tRemoving old indecies...\n" );
 			foreach ( $this->removeIndecies as $oldIndex ) {
 				$this->outputIndented( "\t\t$oldIndex..." );
-				Connection::getClient()->getIndex( $oldIndex )->delete();
+				$this->getClient()->getIndex( $oldIndex )->delete();
 				$this->output( "done\n" );
 			}
 		}
@@ -677,8 +674,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Dump everything from the live index into the one being worked on.
 	 */
 	private function reindex() {
-		global $wgCirrusSearchMaintenanceTimeout,
-			$wgCirrusSearchRefreshInterval;
+		global $wgCirrusSearchRefreshInterval;
 
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of shards but that is
@@ -697,7 +693,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$fork = new \CirrusSearch\Maintenance\ReindexForkController( $this->reindexProcesses );
 			$forkResult = $fork->start();
 			// Forking clears the timeout so we have to reinstate it.
-			Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+			$this->setConnectionTimeout();
 
 			switch ( $forkResult ) {
 			case 'child':
@@ -712,7 +708,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->outputIndented( "Verifying counts..." );
 			// We can't verify counts are exactly equal because they won't be - we still push updates into
 			// the old index while reindexing the new one.
-			$oldCount = (float) Connection::getPageType( $this->indexBaseName, $this->indexType )->count();
+			$oldCount = (float) $this->getOldPageType()->count();
 			$this->getIndex()->refresh();
 			$newCount = (float) $this->getPageType()->count();
 			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
@@ -766,7 +762,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
-			$result = Connection::getPageType( $this->indexBaseName, $this->indexType )
+			$result = $this->getOldPageType()
 				->search( $query, array(
 					'search_type' => 'scan',
 					'scroll' => '1h',
@@ -831,7 +827,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		while ( true ) {
 			$indexName = $this->getSpecificIndexName();
 			$path = "_cluster/health/$indexName";
-			$response = Connection::getClient()->request( $path );
+			$response = $this->getClient()->request( $path );
 			if ( $response->hasError() ) {
 				$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
 				sleep( 1 );
@@ -923,7 +919,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $option === 'current' ) {
 			$this->outputIndented( 'Infering index identifier...' );
 			$found = array();
-			foreach ( Connection::getClient()->getStatus()->getIndexNames() as $name ) {
+			foreach ( $this->getClient()->getStatus()->getIndexNames() as $name ) {
 				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
 					$found[] = $name;
 				}
@@ -966,29 +962,70 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * @return string name of the index being updated
 	 */
-	private function getSpecificIndexName() {
+	protected function getSpecificIndexName() {
 		return Connection::getIndexName( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index type being updated
 	 */
-	private function getIndexTypeName() {
+	protected function getIndexTypeName() {
 		return Connection::getIndexName( $this->indexBaseName, $this->indexType );
 	}
 
 	/**
-	 * Get the page type being updated by the search config.
+	 * @return string
 	 */
-	private function getPageType() {
+	protected function getIndexName() {
+		return Connection::getIndexName( $this->indexBaseName );
+	}
+
+	/**
+	 * @return Elastica\Client
+	 */
+	protected function getClient() {
+		return Connection::getClient();
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getAllIndexTypes() {
+		return Connection::getAllIndexTypes();
+	}
+
+	/**
+	 * Get the page type being updated by the search config.
+	 *
+	 * @return Elastica\Type
+	 */
+	protected function getPageType() {
 		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
 	}
 
 	/**
 	 * Get the namespace type being updated by the search config.
+	 *
+	 * @return Elastica\Type
 	 */
-	private function getNamespaceType() {
+	protected function getNamespaceType() {
 		return $this->getIndex()->getType( Connection::NAMESPACE_TYPE_NAME );
+	}
+
+	/**
+	 * @return Elastica\Type
+	 */
+	protected function getOldPageType() {
+		return Connection::getPageType( $this->indexBaseName, $this->indexType );
+	}
+
+	protected function setConnectionTimeout() {
+		global $wgCirrusSearchMaintenanceTimeout;
+		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+	}
+
+	protected function destroySingleton() {
+		Connection::destroySingleton();
 	}
 
 	/**

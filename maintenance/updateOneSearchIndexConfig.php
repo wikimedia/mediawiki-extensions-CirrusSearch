@@ -258,6 +258,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 			if ( $first ) {
 				$this->availablePlugins = $plugins;
+				$first = false;
 			} else {
 				$this->availablePlugins = array_intersect( $this->availablePlugins, $plugins );
 			}

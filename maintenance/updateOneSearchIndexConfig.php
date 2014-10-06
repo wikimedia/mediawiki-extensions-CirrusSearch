@@ -209,7 +209,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			$this->checkElasticsearchVersion();
-			$this->scanAvailablePlugins();
+			$this->availablePlugins = $this->scanAvailablePlugins( $this->bannedPlugins );
 
 			if ( $this->getOption( 'justCacheWarmers', false ) ) {
 				$this->validateCacheWarmers();
@@ -217,13 +217,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			}
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
-				$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
-				$shardAllocation->validate();
+				$this->validateShardAllocation();
 				return;
 			}
 
-			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ) );
-			$this->pickAnalyzer();
+			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
+			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -264,10 +263,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function scanAvailablePlugins() {
+	/**
+	 * @param array $bannedPlugins
+	 * @return array
+	 */
+	private function scanAvailablePlugins( array $bannedPlugins = array() ) {
 		$this->outputIndented( "Scanning available plugins..." );
 		$result = $this->getClient()->request( '_nodes' );
 		$result = $result->getData();
+		$availablePlugins = array();
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
 			$plugins = array();
@@ -275,23 +279,25 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$plugins[] = $plugin[ 'name' ];
 			}
 			if ( $first ) {
-				$this->availablePlugins = $plugins;
+				$availablePlugins = $plugins;
 				$first = false;
 			} else {
-				$this->availablePlugins = array_intersect( $this->availablePlugins, $plugins );
+				$availablePlugins = array_intersect( $availablePlugins, $plugins );
 			}
 		}
-		if ( count( $this->availablePlugins ) === 0 ) {
+		if ( count( $availablePlugins ) === 0 ) {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );
-		if ( count( $this->bannedPlugins ) ) {
-			$this->availablePlugins = array_diff( $this->availablePlugins, $this->bannedPlugins );
+		if ( count( $bannedPlugins ) ) {
+			$availablePlugins = array_diff( $availablePlugins, $bannedPlugins );
 		}
-		foreach ( array_chunk( $this->availablePlugins, 5 ) as $pluginChunk ) {
+		foreach ( array_chunk( $availablePlugins, 5 ) as $pluginChunk ) {
 			$plugins = implode( ', ', $pluginChunk );
 			$this->outputIndented( "\t$plugins\n" );
 		}
+
+		return $availablePlugins;
 	}
 
 	private function updateVersions() {
@@ -896,9 +902,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function validateCacheWarmers() {
+	protected function validateCacheWarmers() {
 		$warmers = new \CirrusSearch\Maintenance\CacheWarmers( $this->indexType, $this->getPageType(), $this );
 		$warmers->validate();
+	}
+
+	protected function validateShardAllocation() {
+		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
+		$shardAllocation->validate();
 	}
 
 	private function createIndex( $rebuild ) {
@@ -926,10 +937,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 *          'now'        => current time
 	 *          'current'    => if there is just one index for this type then use its identifier
 	 *          other string => that string back
+	 * @param string $typeName
 	 * @return string index identifier to use
 	 */
-	private function pickIndexIdentifierFromOption( $option ) {
-		$typeName = $this->getIndexTypeName();
+	private function pickIndexIdentifierFromOption( $option, $typeName ) {
 		if ( $option === 'now' ) {
 			$identifier = strval( time() );
 			$this->outputIndented( "Setting index identifier...${typeName}_${identifier}\n" );
@@ -964,11 +975,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		return $option;
 	}
 
-	private function pickAnalyzer() {
-		$this->analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder(
-			$this->langCode, $this->availablePlugins );
+	/**
+	 * @param string $langCode
+	 * @param array $availablePlugins
+	 * @return AnalysisConfigBuilder
+	 */
+	private function pickAnalyzer( $langCode, array $availablePlugins = array() ) {
+		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder( $langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
-			$this->analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
+			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
+		return $analysisConfigBuilder;
 	}
 
 	/**

@@ -175,8 +175,7 @@ Feature: Highlighting
     When I search for insource:"a" insource:/b c/ -rashidun
     Then a *b c* is in the highlighted text of the first search result
 
-  # https://github.com/wikimedia/search-highlighter/issues/6
-  # @insource @regex
-  # Scenario: insource:// works on multi-byte strings
-  #   When I search for insource:"rashidun" insource:/p2 *= Byzantine Empire/
-  #   Then |*p2                     = Byzantine Empire* is in the highlighted text of the first search result
+  @insource @regex
+  Scenario: insource:// works on multi-byte strings
+    When I search for insource:"rashidun" insource:/p2 *= Byzantine Empire/
+    Then |*p2                     = Byzantine Empire* is in the highlighted text of the first search result

@@ -67,3 +67,16 @@ Feature: Prefix search
     | Africa                 | África                 | África                 |
     | AlphaBeta              | AlphaBeta              | AlphaBeta              |
     | ÁlphaBeta              | AlphaBeta              | AlphaBeta              |
+
+  @accent_squashing
+  Scenario Outline: Search suggestions with accents
+    When I type <term> into the search box
+    Then suggestions should appear
+      And <first_suggestion> is the first suggestion
+      And <second_suggestion> is the second suggestion
+  Examples:
+    |      term      | first_suggestion | second_suggestion |
+    | Áccent Sorting | Áccent Sorting   | Accent Sorting    |
+    | áccent Sorting | Áccent Sorting   | Accent Sorting    |
+    | Accent Sorting | Accent Sorting   | Áccent Sorting    |
+    | accent Sorting | Accent Sorting   | Áccent Sorting    |

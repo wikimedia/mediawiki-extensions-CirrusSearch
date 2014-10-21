@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.7';
+	const VERSION = '1.8';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -90,7 +90,9 @@ class MappingConfigBuilder {
 		$titleExtraAnalyzers = array(
 			$suggestExtra,
 			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'index_analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
 			array( 'analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
 			array( 'analyzer' => 'keyword', 'index_options' => 'docs' ),
 		);
 		if ( $this->prefixSearchStartsWithAnyWord ) {
@@ -195,6 +197,15 @@ class MappingConfigBuilder {
 				'index_options' => 'freqs',
 				'position_offset_gap' => self::POSITION_OFFSET_GAP,
 				'norms' => array( 'enabled' => false ),
+				'fields' => array(
+					'asciifolding' => array(
+						'type' => 'string',
+						'analyzer' => 'near_match_asciifolding',
+						'index_options' => 'freqs',
+						'position_offset_gap' => self::POSITION_OFFSET_GAP,
+						'norms' => array( 'enabled' => false ),
+					),
+				),
 			);
 			$nearMatchFields = array(
 				'title' => $wgCirrusSearchWeights[ 'title' ],

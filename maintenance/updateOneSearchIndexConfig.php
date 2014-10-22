@@ -232,6 +232,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->output( $this->indent . 'Fetching Elasticsearch version...' );
 		$result = Connection::getClient()->request( '' );
 		$result = $result->getData();
+		if ( !isset( $result['version']['number'] ) ) {
+			$this->output( 'unable to determine, aborting.', 1 );
+		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
 		if ( !preg_match( '/^(1|2)./', $result ) ) {

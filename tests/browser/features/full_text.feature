@@ -208,3 +208,13 @@ Feature: Full text search
     | File:No SVG.svg            | File:No SVG.svg                |
     | File:No svg                | File:No SVG.svg                |
     | File:svg.svg               | File:Somethingelse svg SVG.svg |
+
+  @accented_namespace
+  Scenario: Searching for an accented namespace without the accent finds things in it
+    When I search for mo:some text
+    Then Mó:Test is the first search result
+
+  @accented_namespace
+  Scenario: If the search started with a namespace it doesn't pick up the accented namespace
+    When I search for file:mo:some text
+    Then Mó:Test is not in the search results

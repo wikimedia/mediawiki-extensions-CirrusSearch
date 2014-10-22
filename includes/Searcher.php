@@ -848,6 +848,35 @@ GROOVY;
 		return $getWork->execute();
 	}
 
+	public function findNamespace( $name ) {
+		global $wgCirrusSearchPoolCounterKey;
+		$searcher = $this;
+		$indexBaseName = $this->indexBaseName;
+		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-NamespaceLookup', $wgCirrusSearchPoolCounterKey, array(
+			'doWork' => function() use ( $searcher, $name, $indexBaseName ) {
+				try {
+					$searcher->start( "lookup namespace for $name" );
+					$pageType = Connection::getNamespaceType( $indexBaseName );
+					$match = new \Elastica\Query\Match();
+					$match->setField( 'name', $name );
+					$query = new \Elastica\Query( $match );
+					$query->setParam( '_source', false );
+					$query->addParam( 'stats', 'namespace' );
+					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
+					return $searcher->success( $resultSet->getResults() );
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					return $searcher->failure( $e );
+				}
+			},
+			'error' => function( $status ) {
+				$status = $status->getErrorsArray();
+				wfLogWarning( 'Pool error performing a namespace lookup against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
+				return Status::newFatal( 'cirrussearch-backend-error' );
+			}
+		) );
+		return $getWork->execute();
+	}
+
 	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
 		$suggestPrefixes = $this->suggestPrefixes;
 		$this->term = preg_replace_callback( $regex,
@@ -1092,6 +1121,10 @@ GROOVY;
 		}
 
 		return $result;
+	}
+
+	public function getNamespaces() {
+		return $this->namespaces;
 	}
 
 	private function needNsFilter( $extraIndexes, $indexType ) {
@@ -1467,5 +1500,29 @@ GROOVY;
 			throw new UsageException( 'Prefix search request was longer longer than the maximum allowed length.' .
 				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 		}
+	}
+
+	/**
+	 * Attempt to suck a leading namespace followed by a colon from the query string.  Reaches out to Elasticsearch to
+	 * perform normalized lookup against the namespaces.  Should be fast but for the network hop.
+	 */
+	public function updateNamespacesFromQuery( &$query ) {
+		$colon = strpos( $query, ':' );
+		if ( $colon === false ) {
+			return;
+		}
+		$namespaceName = substr( $query, 0, $colon );
+		$foundNamespace = $this->findNamespace( $namespaceName );
+		// Failure case is already logged so just handle success case
+		if ( !$foundNamespace->isOK() ) {
+			return;
+		}
+		$foundNamespace = $foundNamespace->getValue();
+		if ( count( $foundNamespace ) == 0 ) {
+			return;
+		}
+		$foundNamespace = $foundNamespace[ 0 ];
+		$query = substr( $query, $colon + 1 );
+		$this->namespaces = array( $foundNamespace->getId() );
 	}
 }

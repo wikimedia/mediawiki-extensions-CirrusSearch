@@ -578,3 +578,13 @@ Before("@accent_squashing") do
     accent_squashing = true
   end
 end
+
+accented_namespace = false
+Before("@accented_namespace") do
+  unless removed_text
+    steps %(
+      Given a page named Mó:Test exists with contents some text
+        )
+    accented_namespace = true
+  end
+end

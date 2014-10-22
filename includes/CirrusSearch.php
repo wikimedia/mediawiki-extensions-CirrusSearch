@@ -81,6 +81,8 @@ class CirrusSearch extends SearchEngine {
 
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
+		} else {
+			$searcher->updateNamespacesFromQuery( $term );
 		}
 		// TODO remove this when we no longer have to support core versions without
 		// Ie946150c6796139201221dfa6f7750c210e97166

@@ -1,7 +1,8 @@
 <?php
 
-namespace CirrusSearch;
-use \Maintenance;
+namespace CirrusSearch\Maintenance;
+
+use \CirrusSearch\Connection;
 
 /**
  * Update and check the CirrusSearch version index.
@@ -27,6 +28,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class UpdateVersionIndex extends Maintenance {
 	public function __construct() {
@@ -36,13 +38,10 @@ class UpdateVersionIndex extends Maintenance {
 		$this->addOption( 'update', 'Update the version index for this wiki' );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
-		$this->addOption( 'indent', 'String used to indent every line output ' .
-			'in this script.', false, true );
 	}
 
 	public function execute() {
 		$baseName = $this->getOption( 'baseName', wfWikiId() );
-		$this->indent = $this->getOption( 'indent', '' );
 		if( $this->hasOption( 'show-all' ) ) {
 			$this->show();
 		} elseif ( $this->hasOption( 'update' ) ) {
@@ -68,20 +67,17 @@ class UpdateVersionIndex extends Maintenance {
 		$res = $this->getType()->getIndex()->search( $query );
 		foreach( $res as $r ) {
 			$data = $r->getData();
-			$this->output( "{$this->indent}index name: " . $r->getId() . "\n" .
-				"{$this->indent}  analysis version: " .
-					"{$data['analysis_maj']}.{$data['analysis_min']}\n" .
-				"{$this->indent}  mapping version: " .
-					"{$data['mapping_maj']}.{$data['mapping_min']}\n" .
-				"{$this->indent}  shards: {$data['shard_count']}\n"
-			);
+			$this->outputIndented( "index name: " . $r->getId() . "\n" );
+			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
+			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
+			$this->outputIndented( "  shards: {$data['shard_count']}\n" );
 		}
 	}
 
 	private function update( $baseName ) {
 		global $wgCirrusSearchShardCount;
 		$versionType = $this->getType();
-		$this->output( "{$this->indent}Updating tracking indexes..." );
+		$this->outputIndented( "Updating tracking indexes..." );
 		$docs = array();
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
@@ -104,7 +100,7 @@ class UpdateVersionIndex extends Maintenance {
 	private function getType() {
 		$index = Connection::getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {
-			$this->output( "{$this->indent}Creating tracking index..." );
+			$this->outputIndented( "Creating tracking index..." );
 			$index->create( array( 'number_of_shards' => 1,
 				'auto_expand_replicas' => '0-2', ), true );
 			$mapping = new \Elastica\Type\Mapping();
@@ -124,5 +120,5 @@ class UpdateVersionIndex extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\UpdateVersionIndex";
+$maintClass = "CirrusSearch\Maintenance\UpdateVersionIndex";
 require_once RUN_MAINTENANCE_IF_MAIN;

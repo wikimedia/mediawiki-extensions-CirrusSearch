@@ -77,6 +77,7 @@ $wgJobQueueAggregator = array(
 	),
 );
 $wgCiteEnablePopups = true;
+$wgExtraNamespaces[ 760 ] = 'Mó';
 
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;

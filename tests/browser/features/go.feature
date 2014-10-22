@@ -12,6 +12,16 @@ Feature: Go Search
     When I go search for africa
     Then I am on a page titled África
 
+  @accented_namespace
+  Scenario: I can "go" to a page in a namespace with an accented character without the accent
+    When I go search for mo:test
+    Then I am on a page titled Mó:Test
+
+  @accented_namespace
+  Scenario: When I "go" to a page with the namespace specified twice I end up on the search results page
+    When I go search for file:mo:test
+    Then I am on a page titled Search results
+
   @from_core
   Scenario: I can "go" to a page with mixed capital and lower case name by the name all lower cased and quoted
     When I go search for "mixedcapsandlowercase"

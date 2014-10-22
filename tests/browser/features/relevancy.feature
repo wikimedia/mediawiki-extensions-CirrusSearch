@@ -63,3 +63,17 @@ Feature: Results are ordered from most relevant to least.
     When I search for Relevancyredirecttest
     Then Relevancyredirecttest Larger is the first search result
       And Relevancyredirecttest Smaller is the second search result
+
+  Scenario: Results are sorted based on how close the match is
+    When I search for Relevancyclosetest Foô
+      And I disable incoming links in the weighting
+    Then Relevancyclosetest Foô is the first search result
+      And Relevancyclosetest Foo is the second search result
+      And Foo Relevancyclosetest is the third search result
+
+  Scenario: Results are sorted based on how close the match is (backwards this time)
+    When I search for Relevancyclosetest Foo
+      And I disable incoming links in the weighting
+    Then Relevancyclosetest Foo is the first search result
+      And Relevancyclosetest Foô is the second search result
+      And Foo Relevancyclosetest is the third search result

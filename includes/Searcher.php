@@ -253,17 +253,19 @@ class Searcher extends ElasticsearchIntermediary {
 		// from the default query we make so we feed it exactly the right query to highlight.
 		$this->highlightQuery = new \Elastica\Query\MultiMatch();
 		$this->highlightQuery->setQuery( $search );
-		$this->highlightQuery->setFields( array( 'title.near_match', 'redirect.title.near_match' ) );
+		$this->highlightQuery->setFields( array(
+			'title.near_match', 'redirect.title.near_match',
+			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
+		) );
 		if ( $wgCirrusSearchAllFields[ 'use' ] ) {
 			// Inseat of using the highlight query we need to make one like it that uses the all_near_match field.
 			$allQuery = new \Elastica\Query\MultiMatch();
 			$allQuery->setQuery( $search );
-			$allQuery->setFields( array( 'all_near_match' ) );
+			$allQuery->setFields( array( 'all_near_match', 'all_near_match.asciifolding' ) );
 			$this->filters[] = new \Elastica\Filter\Query( $allQuery );
 		} else {
 			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
 		}
-		$this->boostLinks = ''; // No boost
 
 		return $this->search( 'near_match', $search );
 	}
@@ -291,17 +293,15 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			// Elasticsearch seems to have trouble extracting the proper terms to highlight
 			// from the default query we make so we feed it exactly the right query to highlight.
-			$this->highlightQuery = new \Elastica\Query\MultiMatch();
-			$this->highlightQuery->setQuery( $search );
-			$this->highlightQuery->setFields( array( 'title.prefix', 'redirect.title.prefix' ) );
-			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
+			$this->query = new \Elastica\Query\MultiMatch();
+			$this->query->setQuery( $search );
+			$this->query->setFields( array(
+				'title.prefix^10', 'redirect.title.prefix^10',
+				'title.prefix_asciifolding', 'redirect.title.prefix_asciifolding'
+			) );
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();
-		// If there aren't any boost templates then we can use a sort for ordering
-		// rather than a boost.
-		if ( count( $this->boostTemplates ) === 0 ) {
-			$this->sort = 'incoming_links_desc';
-		}
+		$this->boostLinks = true;
 
 		return $this->search( 'prefix', $search );
 	}

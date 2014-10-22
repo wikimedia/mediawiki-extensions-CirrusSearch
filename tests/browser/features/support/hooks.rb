@@ -474,6 +474,9 @@ Before("@relevancy") do
       And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
       And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
       And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
+      And a page named Relevancyclosetest Foô exists
+      And a page named Relevancyclosetest Foo exists
+      And a page named Foo Relevancyclosetest exists
         )
   end
   relevancy = true
@@ -562,5 +565,16 @@ Before("@removed_text") do
       Given a page named Autocollapse Example exists with contents <div class="autocollapse">in autocollapse</div>
         )
     removed_text = true
+  end
+end
+
+accent_squashing = false
+Before("@accent_squashing") do
+  unless accent_squashing
+    steps %(
+      Given a page named Áccent Sorting exists
+        And a page named Accent Sorting exists
+        )
+    accent_squashing = true
   end
 end

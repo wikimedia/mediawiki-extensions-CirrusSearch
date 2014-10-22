@@ -125,10 +125,13 @@ class FancyTitleResultsType extends TitleResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(
 				"title.$this->matchedAnalyzer" => $entireValue,
+				"title.{$this->matchedAnalyzer}_asciifolding" => $entireValue,
 				"redirect.title.$this->matchedAnalyzer" => $manyValues,
-			)
+				"redirect.title.{$this->matchedAnalyzer}_asciifolding" => $manyValues,
+			),
 		);
 	}
+
 	/**
 	 * Convert the results to titles.
 	 * @return array with optional keys:
@@ -148,9 +151,20 @@ class FancyTitleResultsType extends TitleResultsType {
 			// though.
 			if ( isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
 				$resultForTitle[ 'titleMatch' ] = $title;
+			} else if ( isset( $highlights[ "title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
+				$resultForTitle[ 'titleMatch' ] = $title;
+			}
+			$redirectHighlights = array();
+
+			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+				$redirectHighlights = $highlights[ "redirect.title.$this->matchedAnalyzer" ];
 			}
 			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
-				foreach ( $highlights[ "redirect.title.$this->matchedAnalyzer" ] as $redirectTitle ) {
+				$redirectHighlights = array_merge( $redirectHighlights,
+					$highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] );
+			}
+			if ( count( $redirectHighlights ) !== 0 ) {
+				foreach ( $redirectHighlights as $redirectTitle ) {
 					// The match was against a redirect so we should replace the $title with one that
 					// represents the redirect.
 					// The first step is to strip the actual highlighting from the title.

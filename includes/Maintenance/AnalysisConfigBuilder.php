@@ -30,7 +30,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.9';
+	const VERSION = '0.10';
 
 	/**
 	 * Language code we're building analysis for
@@ -112,10 +112,22 @@ class AnalysisConfigBuilder {
 					'filter' => array( 'lowercase' ),
 					'char_filter' => array( 'near_space_flattener' ),
 				),
+				'near_match_asciifolding' => array(
+					'type' => 'custom',
+					'tokenizer' => 'no_splitting',
+					'filter' => array( 'lowercase', 'asciifolding' ),
+					'char_filter' => array( 'near_space_flattener' ),
+				),
 				'prefix' => array(
 					'type' => 'custom',
 					'tokenizer' => 'prefix',
 					'filter' => array( 'lowercase' ),
+					'char_filter' => array( 'near_space_flattener' ),
+				),
+				'prefix_asciifolding' => array(
+					'type' => 'custom',
+					'tokenizer' => 'prefix',
+					'filter' => array( 'lowercase', 'asciifolding' ),
 					'char_filter' => array( 'near_space_flattener' ),
 				),
 				'word_prefix' => array(
@@ -157,6 +169,10 @@ class AnalysisConfigBuilder {
 					'max_gram' => Searcher::MAX_TITLE_SEARCH,
 				),
 				'asciifolding' => array(
+					'type' => 'asciifolding',
+					'preserve_original' => false
+				),
+				'asciifolding_preserve' => array(
 					'type' => 'asciifolding',
 					'preserve_original' => true
 				),
@@ -245,15 +261,13 @@ class AnalysisConfigBuilder {
 			$filters[] = 'stop';
 			$filters[] = 'kstem';
 			$filters[] = 'custom_stem';
-			$filters[] = 'asciifolding';
+			$filters[] = 'asciifolding_preserve';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding to the the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+			// Add asciifolding_preserve filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In English text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
@@ -268,10 +282,8 @@ STEMMER_RULES
 			);
 			break;
 		case 'french':
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding_preserve to filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 			break;
 		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = array(
@@ -324,12 +336,10 @@ STEMMER_RULES
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding to the the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+			// Add asciifolding_preserve to filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In Italian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];

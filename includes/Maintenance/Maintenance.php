@@ -36,7 +36,6 @@ abstract class Maintenance extends \Maintenance {
 			// Others get one tab beyond the last
 			Maintenance::$indent = Maintenance::$indent . "\t";
 		}
-		$this->indent = Maintenance::$indent;
 	}
 
 	/**

@@ -45,6 +45,8 @@ class Searcher extends ElasticsearchIntermediary {
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
 	const HIGHLIGHT_REGEX = '/<span class="searchmatch">.*?<\/span>/';
+	const MORE_LIKE_THESE_NONE = 0;
+	const MORE_LIKE_THESE_ONLY_WIKIBASE = 1;
 
 	/**
 	 * Maximum title length that we'll check in prefix and keyword searches.
@@ -764,9 +766,12 @@ GROOVY;
 	/**
 	 * Find articles that contain similar text to the provided title array.
 	 * @param array(Title) $titles title of articles to search for
+	 * @param int $options bitset of options:
+	 *  MORE_LIKE_THESE_NONE
+	 *  MORE_LIKE_THESE_ONLY_WIKIBASE - filter results to only those containing wikibase items
 	 * @return Status(ResultSet)
 	 */
-	public function moreLikeTheseArticles( $titles ) {
+	public function moreLikeTheseArticles( $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		global $wgCirrusSearchMoreLikeThisConfig;
 
 		$profiler = new ProfileSection( __METHOD__ );
@@ -798,6 +803,9 @@ GROOVY;
 		$this->query->setFields( array( 'text' ) );
 		$idFilter = new \Elastica\Filter\Ids( null, $pageIds );
 		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
+		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
+			$this->filters[] = new \Elastica\Filter\Exists( 'wikibase_item' );
+		}
 
 		return $this->search( 'more_like', implode( ', ', $titles ) );
 	}

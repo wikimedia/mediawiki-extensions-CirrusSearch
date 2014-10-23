@@ -43,6 +43,7 @@ class PageDataBuilder extends ParseBuilder {
 				$this->headings();
 				$this->outgoingLinks();
 				$this->templates();
+				$this->wikidataInfo();
 		}
 
 		// All content types have a language
@@ -134,5 +135,15 @@ class PageDataBuilder extends ParseBuilder {
 			}
 		}
 		return $ignoredHeadings;
+	}
+
+	/**
+	 * Add wikidata information to the index if wikibase is installed on this wiki.
+	 */
+	private function wikidataInfo() {
+		$wikibaseItem = $this->parserOutput->getProperty( 'wikibase_item' );
+		if ( $wikibaseItem !== false ) {
+			$this->doc->add( 'wikibase_item', $wikibaseItem );
+		}
 	}
 }

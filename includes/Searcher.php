@@ -833,7 +833,7 @@ GROOVY;
 					return $searcher->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
-					// It is up to the called to decide if that is and error.
+					// It is up to the caller to decide if that is an error.
 					return $searcher->success( array() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );

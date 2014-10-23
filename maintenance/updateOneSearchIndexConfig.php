@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use \CirrusSearch\Connection;
+use \CirrusSearch\ElasticsearchIntermediary;
 use Elastica;
 use \ProfileSection;
 
@@ -283,9 +284,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function indexNamespaces() {
-		$child = $this->runChild( 'CirrusSearch\Maintenance\IndexNamespaces' );
-		$child->execute();
-		$child->done();
+		// Only index namespaces if we're doing the general index
+		if ( $this->indexType === 'general' ) {
+			$child = $this->runChild( 'CirrusSearch\Maintenance\IndexNamespaces' );
+			$child->execute();
+			$child->done();
+		}
 	}
 
 	private function validateIndex() {
@@ -422,7 +426,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function checkMapping( $requiredMappings ) {
 		$actualMappings = $this->getIndex()->getMapping();
-		$this->output( "\n" . $this->indent . "\tValidating mapping..." );
+		$this->output( "\n" );
+		$this->outputIndented( "\tValidating mapping..." );
 		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {
 			$this->output( "ok\n" );
 			return true;
@@ -438,9 +443,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return bool
 	 */
 	private function checkConfig( $actual, $required, $indent = null ) {
-		if ( $indent === null ) {
-			$indent = $this->indent . "\t\t";
-		}
 		foreach( $required as $key => $value ) {
 			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
@@ -558,11 +560,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->reindexAndRemoveOk ) {
 			$this->output( "is taken...\n" );
 			$this->outputIndented( "\tReindexing...\n" );
-			// Muck with $this->indent because reindex is used to running at the top level.
-			$saveIndent = $this->indent;
-			$this->indent = $this->indent . "\t\t";
 			$this->reindex();
-			$this->indent = $saveIndent;
 			if ( $this->tooFewReplicas ) {
 				// Optimize the index so it'll be more compact for replication.  Not required
 				// but should be helpful.
@@ -748,12 +746,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
-			$this->outputIndented( "Starting single process reindex\n" );
+			$this->outputIndented( "\t\tStarting single process reindex\n" );
 		} else {
 			if ( $childNumber >= $children ) {
 				$this->error( "Invalid parameters - childNumber >= children ($childNumber >= $children) ", 1 );
 			}
-			$messagePrefix = "[$childNumber] ";
+			$messagePrefix = "\t\t[$childNumber] ";
 			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
 			$filter = new Elastica\Filter\Script( array(

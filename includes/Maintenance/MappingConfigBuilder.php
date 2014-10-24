@@ -145,7 +145,7 @@ class MappingConfigBuilder {
 				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL,
 					$sourceExtraAnalyzers
 				),
-				'category' => $this->buildStringField( MappingConfigBuilder::MINIMAL, array(
+				'category' => $this->buildStringField( MappingConfigBuilder::SPEED_UP_HIGHLIGHTING, array(
 					array(
 						'analyzer' => 'lowercase_keyword',
 						'norms' => array( 'enabled' => false ),

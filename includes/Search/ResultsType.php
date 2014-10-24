@@ -317,7 +317,7 @@ class FullTextResultsType implements ResultsType {
 		);
 		if ( count( $highlightSource ) ) {
 			$config[ 'fields' ][ 'source_text.plain' ] = $text;
-			$this->configureHighlightingForSource( $config, $highlightSource);
+			$this->configureHighlightingForSource( $config, $highlightSource );
 			return $config;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
@@ -326,6 +326,8 @@ class FullTextResultsType implements ResultsType {
 		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
 			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
 			$config[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$config[ 'fields' ][ 'category' ] = $redirectAndHeading;
+			$config[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
 			$config[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 		}

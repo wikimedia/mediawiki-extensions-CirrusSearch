@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.8';
+	const VERSION = '1.9';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -174,6 +174,7 @@ class MappingConfigBuilder {
 					'analyzer' => 'suggest',
 				),
 				'language' => $this->buildKeywordField(),
+				'wikibase_item' => $this->buildKeywordField(),
 			),
 		);
 

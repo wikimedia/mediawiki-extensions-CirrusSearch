@@ -27,6 +27,7 @@ use CirrusSearch\Searcher;
  */
 class CirrusSearch extends SearchEngine {
 	const MORE_LIKE_THIS_PREFIX = 'morelike:';
+	const MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX = 'morelikewithwikibase:';
 
 	/**
 	 * @var string The last prefix substituted by replacePrefixes.
@@ -96,41 +97,10 @@ class CirrusSearch extends SearchEngine {
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
-
-			// Expand titles chasing through redirects
-			$titles = array();
-			$found = array();
-			foreach ( explode( '|', $term ) as $title ) {
-				$title = Title::newFromText( trim( $title ) );
-				while ( true ) {
-					if ( !$title ) {
-						continue 2;
-					}
-					$titleText = $title->getFullText();
-					if ( in_array( $titleText, $found ) ) {
-						continue 2;
-					}
-					$found[] = $titleText;
-					if ( !$title->exists() ) {
-						continue 2;
-					}
-					if ( $title->isRedirect() ) {
-						$page = WikiPage::factory( $title );
-						if ( !$page->exists() ) {
-							continue 2;
-						}
-						$title = $page->getRedirectTarget();
-					} else {
-						break;
-					}
-				}
-				$titles[] = $title;
-			}
-			if ( count( $titles ) ) {
-				$status = $searcher->moreLikeTheseArticles( $titles );
-			} else {
-				$status = Status::newGood( new SearchResultSet() /* empty */ );
-			}
+			$status = $this->moreLikeThis( $term, $searcher, Searcher::MORE_LIKE_THESE_NONE );
+		} else if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) ) === self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) {
+			$term = substr( $term, strlen( self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) );
+			$status = $this->moreLikeThis( $term, $searcher, Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE );
 		} else {
 			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
 			if ( $request ) {
@@ -194,6 +164,41 @@ class CirrusSearch extends SearchEngine {
 		return $status->isOk() ? $status->getValue() : $status;
 	}
 
+	private function moreLikeThis( $term, $searcher, $options ) {
+		// Expand titles chasing through redirects
+		$titles = array();
+		$found = array();
+		foreach ( explode( '|', $term ) as $title ) {
+			$title = Title::newFromText( trim( $title ) );
+			while ( true ) {
+				if ( !$title ) {
+					continue 2;
+				}
+				$titleText = $title->getFullText();
+				if ( in_array( $titleText, $found ) ) {
+					continue 2;
+				}
+				$found[] = $titleText;
+				if ( !$title->exists() ) {
+					continue 2;
+				}
+				if ( $title->isRedirect() ) {
+					$page = WikiPage::factory( $title );
+					if ( !$page->exists() ) {
+						continue 2;
+					}
+					$title = $page->getRedirectTarget();
+				} else {
+					break;
+				}
+			}
+			$titles[] = $title;
+		}
+		if ( count( $titles ) ) {
+			return $searcher->moreLikeTheseArticles( $titles, $options );
+		}
+		return Status::newGood( new SearchResultSet() /* empty */ );
+	}
 	/**
 	 * Merge the prefix into the query (if any).
 	 * @var string $term search term

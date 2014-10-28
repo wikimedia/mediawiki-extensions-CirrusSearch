@@ -159,7 +159,7 @@ class FancyTitleResultsType extends TitleResultsType {
 			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
 				$redirectHighlights = $highlights[ "redirect.title.$this->matchedAnalyzer" ];
 			}
-			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
+			if ( isset( $highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
 				$redirectHighlights = array_merge( $redirectHighlights,
 					$highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] );
 			}

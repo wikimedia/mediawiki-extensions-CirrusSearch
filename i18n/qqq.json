@@ -17,5 +17,8 @@
 	"cirrussearch-ignored-headings": "Headings that will be ignored by search. You can translate the text, including \"Leave this line exactly as it is\". Some lines of this messages have one (1) leading space.",
 	"cirrussearch-boost-templates": "Templates that if contained on a page will raise or lower the score of the page in search results.  They must be specied Namespace:Template Name|<boost factor>%. You can translate the text, including \"Leave this line exactly as it is\". Some lines of this messages have one (1) leading space. \n\nThis message will be shown with left-to-right direction, so when you are translating to a right-to-left language, you may want to test how it looks in left-to-right and add right-to-left marks as needed.",
 	"cirrussearch-pref-label": "Preference label for option to enable CirrusSearch by default",
-	"cirrussearch-pref-desc": "Description for option to enable CirrusSearch by default"
+	"cirrussearch-pref-desc": "Description for option to enable CirrusSearch by default",
+	"apihelp-cirrus-config-dump-description": "{{doc-apihelp-description|cirrus-config-dump}}",
+	"apihelp-cirrus-mapping-dump-description": "{{doc-apihelp-description|cirrus-mapping-dump}}",
+	"apihelp-cirrus-settings-dump-description": "{{doc-apihelp-description|cirrus-settings-dump}}"
 }

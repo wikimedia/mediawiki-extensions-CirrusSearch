@@ -475,7 +475,6 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'enablePref',
 	'interwikiSources',
 	'interwikiCacheTime',
-	'backup',
 	'refreshInterval',
 	'bannedPlugins',
 	'updateConflictRetryCount',

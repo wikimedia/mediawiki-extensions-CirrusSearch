@@ -310,7 +310,7 @@ $wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
 
 // Default number of days it takes the portion of an article's score that decays with time since
 // last update to half way decay to use if prefer-recent: prefixes query and doesn't specify a
-// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 157 because
+// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 160 because
 // that approximates the behavior that wikinews has been using for years.
 $wgCirrusSearchPreferRecentDefaultHalfLife = 160;
 

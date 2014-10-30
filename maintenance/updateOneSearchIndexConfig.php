@@ -1021,6 +1021,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function getReplicaCount() {
 		global $wgCirrusSearchReplicas;
+		// If $wgCirrusSearchReplicas is an array of index type to number of replicas then respect that
+		if ( isset( $wgCirrusSearchReplicas[ $this->indexType ] ) ) {
+			return $wgCirrusSearchReplicas[ $this->indexType ];
+		}
+		if ( is_array( $wgCirrusSearchReplicas ) ) {
+			$this->error( 'If wgCirrusSearchReplicas is an array it must contain all index types.', 1 );
+		}
+		// Otherwise its just a raw scalar so we should respect that too
 		return $wgCirrusSearchReplicas;
 	}
 

@@ -47,7 +47,7 @@ class CheckIndexes extends Maintenance {
 		}
 		$this->ensureClusterStateFetched();
 		$this->ensureCirrusInfoFetched();
-		$this->checkIndex( 'mw_cirrus_versions', 1, 1 );
+		$this->checkIndex( 'mw_cirrus_versions', 1 );
 		$aliases = array();
 		foreach ( $this->clusterState[ 'metadata' ][ 'indices' ] as $indexName => $data ) {
 			foreach ( $data[ 'aliases' ] as $alias ) {
@@ -56,7 +56,7 @@ class CheckIndexes extends Maintenance {
 		}
 		foreach ( $this->cirrusInfo as $alias => $data ) {
 			foreach ( $aliases[ $alias ] as $indexName ) {
-				$this->checkIndex( $indexName, $data[ 'shard_count'], $data[ 'replica_count' ] );
+				$this->checkIndex( $indexName, $data[ 'shard_count'] );
 			}
 		}
 		$indexCount = count( $this->cirrusInfo );
@@ -77,7 +77,7 @@ class CheckIndexes extends Maintenance {
 		}
 	}
 
-	private function checkIndex( $indexName, $expectedShardCount, $expectedReplicaCount ) {
+	private function checkIndex( $indexName, $expectedShardCount ) {
 		$this->path = array();
 		$metdata = $this->getIndexMetadata( $indexName );
 		$this->in( $indexName );
@@ -92,7 +92,6 @@ class CheckIndexes extends Maintenance {
 		$this->check( 'shard count', $expectedShardCount, count( $routingTable[ 'shards' ] ) );
 		foreach ( $routingTable[ 'shards' ] as $shardIndex => $shardRoutingTable ) {
 			$this->in( "shard $shardIndex" );
-			$this->check( 'replica count', $expectedReplicaCount, count( $shardRoutingTable ) - 1 );
 			foreach ( $shardRoutingTable as $replicaIndex => $replica ) {
 				$this->in( "replica $replicaIndex" );
 				$this->check( 'state', array( 'STARTED', 'RELOCATING' ), $replica[ 'state' ] );
@@ -187,7 +186,6 @@ class CheckIndexes extends Maintenance {
 				$data = $r->getData();
 				$this->cirrusInfo[ $r->getId() ] = array(
 					'shard_count' => $data[ 'shard_count' ],
-					'replica_count' => $data[ 'replica_count' ],
 				);
 			}
 		}

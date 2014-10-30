@@ -1,6 +1,9 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
+use \JobQueueAggregator;
+use \JobQueueGroup;
+
 /**
  * Sets up configuration required to run the browser tests on Jenkins.
  *
@@ -25,14 +28,13 @@ namespace CirrusSearch\Jenkins;
 
 // Configuration we have to override before installing Cirrus but only if we're using
 // Jenkins as a prototype for development.
-if ( !isset( $wgRedisPassword ) ) {
-	$wgRedisPassword = 'notsecure';
-}
 
 // Extra Cirrus stuff for Jenkins
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
 $wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
+$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Jenkins\Jenkins::recyclePruneAndUndelayJobs';
+$wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage';
 
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
@@ -45,9 +47,16 @@ require_once( "$IP/extensions/Cite/Cite.php" );
 
 // Configuration
 $wgSearchType = 'CirrusSearch';
+$wgCirrusSearchUseExperimentalHighlighter = true;
+$wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
+$wgCirrusSearchWikimediaExtraPlugin = array(
+	'regex' => array( 'build', 'use' ),
+);
+
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';
+$wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
 $wgUseInstantCommons = true;
 $wgEnableUploads = true;
@@ -56,27 +65,25 @@ $wgJobTypeConf['default'] = array(
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
-	'maximumPeriodicTaskSeconds' => 1,
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => '',
 	),
 );
 $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => '',
 	),
 );
 $wgCiteEnablePopups = true;
-
-// Running a ton of jobs every request helps to make sure all the pages that are created
-// are indexed as fast as possible.
-$wgJobRunRate = 100;
+$wgExtraNamespaces[ 760 ] = 'Mó';
 
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
-$wgCirrusSearchShowScore = true;
+
+$wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
+$wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
 
 class Jenkins {
 	/**
@@ -87,6 +94,40 @@ class Jenkins {
 	public static function installDatabaseUpdatePostActions( $updater ) {
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes');
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup');
+		return true;
+	}
+
+	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
+		$jobsToUndelay = array(
+			'cirrusSearchIncomingLinkCount',
+			'cirrusSearchLinksUpdateSecondary',
+			'cirrusSearchLinksUpdate',
+			'cirrusSearchLinksUpdatePrioritized'
+		);
+		foreach ( $jobsToUndelay as $type ) {
+			$jobQueue = JobQueueGroup::singleton()->get( $type );
+			if ( !$jobQueue ) {
+				continue;
+			}
+			$count = $jobQueue->recyclePruneAndUndelayJobs();
+			if ( !$count ) {
+				continue;
+			}
+			JobQueueAggregator::singleton()->notifyQueueNonEmpty( $jobQueue->getWiki(), $type );
+		}
+	}
+
+	/**
+	 * If the page ends in '/<language code>' then set the page's language to that code.
+	 * @param Title @title page title object
+	 * @param string|Language $pageLang the page content language (either an object or a language code)
+	 * @param Language $wgLang the user language
+	 */
+	public static function setLanguage( $title, &$pageLang, $wgLang ) {
+		$matches = array();
+		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
+			$pageLang = substr( $matches[ 0 ], 1 );
+		}
 		return true;
 	}
 }

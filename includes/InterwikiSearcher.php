@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use CirrusSearch\Search\InterwikiResultsType;
 
 /**
  * Performs searches using Elasticsearch -- on interwikis! 

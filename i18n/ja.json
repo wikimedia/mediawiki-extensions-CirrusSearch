@@ -1,14 +1,15 @@
 {
-    "@metadata": {
-        "authors": [
-            "Fryed-peach",
-            "Shirayuki"
-        ]
-    },
-    "cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
-    "cirrussearch-backend-error": "一時的な問題により検索を実行できませんでした。後でやり直してください。",
-    "cirrussearch-parse-error": "クエリを理解できませんでした。より単純なものにしてください。検索システムの改善のため、クエリを記録しました。",
-    "cirrussearch-now-using": "このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])",
-    "cirrussearch-pref-label": "新しい検索",
-    "cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用"
+	"@metadata": {
+		"authors": [
+			"Fryed-peach",
+			"Shirayuki"
+		]
+	},
+	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
+	"cirrussearch-backend-error": "一時的な問題により検索を実行できませんでした。後でやり直してください。",
+	"cirrussearch-parse-error": "クエリを理解できませんでした。より単純なものにしてください。検索システムの改善のため、クエリを記録しました。",
+	"cirrussearch-regex-syntax-error": "正規表現エラー ($2): $1",
+	"cirrussearch-now-using": "このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])",
+	"cirrussearch-pref-label": "新しい検索",
+	"cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用"
 }

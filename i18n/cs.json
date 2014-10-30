@@ -1,18 +1,21 @@
 {
-    "@metadata": {
-        "authors": [
-            "Matěj Grabovský",
-            "Mormegil",
-            "Paxt",
-            "Utar"
-        ]
-    },
-    "cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
-    "cirrussearch-backend-error": "Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.",
-    "cirrussearch-parse-error": "Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.",
-    "cirrussearch-now-using": "Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])",
-    "cirrussearch-ignored-headings": " #\u003C!-- tento řádek ponechte beze změny --\u003E \u003Cpre\u003E\n# Zde uvedené nadpisy budou ignorovány vyhledáváním.\n# Změny této stránky se projeví ve chvíli, kdy je stránka používající příslušný nadpis indexována.\n# Přeindexování stránky můžete vynutit prázdnou editací.\n# Syntaxe je taková:\n#   * Cokoli od znaku „#“ do konce řádky je komentář.\n#   * Každá neprázdná řádka je přesný nadpis, který se má ignorovat, včetně velikosti písmen a tak.\nReference\nExterní odkazy\nSouvisející články\nSouvisející stránky\n #\u003C/pre\u003E \u003C!-- tento řádek ponechte beze změny --\u003E",
-    "cirrussearch-boost-templates": " #\u003C!-- tuto řádku ponechte přesně takto --\u003E \u003Cpre\u003E\n# Pokud stránka obsahuje jednu z těchto šablon, je její vyhledávací skóre vynásobeno nastaveným procentem.\n# Změny této stránky se projeví okamžitě.\n# Syntax je následující:\n#   * Všechno od znaku „#“ do konce řádky je komentář.\n#   * Každý neprázdný řádek je přesný název šablony, která se má bonifikovat, včetně jmenného prostoru, přesné velikosti písmen a tak, následovaný znakem „|“ následovaný číslem následovaným znakem „%“.\n# Příklad správných řádek:\n# Šablona:Dobré|150%\n# Šablona:Velmi velmi dobré|300%\n# Šablona:Špatné|50%\n# Příklady nefunkčních řádek:\n# Šablona:Foo|150.234234% \u003C-- desetinná tečka/čárka není dovolena!\n# Foo|150% \u003C--- technicky vzato funguje, ale pro vložení stránky Foo v hlavním jmenném prostoru\n# Změny konfigurace můžete otestovat vyhledávacím dotazem, před který uvedete boost-templates:\"XX\", kde XX je seznam všech šablon, které chcete bonifikovat, oddělené mezerou místo konce řádky.\n# Dotazy uvádějící boost-templates:\"XX\" ignorují obsah tohoto pole.\n#\u003C/pre\u003E \u003C!-- tuto řádku ponechte přesně takto --\u003E",
-    "cirrussearch-pref-label": "Nové hledání",
-    "cirrussearch-pref-desc": "Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon."
+	"@metadata": {
+		"authors": [
+			"Matěj Grabovský",
+			"Mormegil",
+			"Paxt",
+			"Utar"
+		]
+	},
+	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
+	"cirrussearch-backend-error": "Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.",
+	"cirrussearch-parse-error": "Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.",
+	"cirrussearch-too-busy-error": "Vyhledávání je momentálně příliš zaneprázdněno. Zkuste to znovu později.",
+	"cirrussearch-regex-syntax-error": "Regulární výraz obsahuje na pozici $2 syntaktickou chybu: $1",
+	"cirrussearch-regex-too-busy-error": "Momentálně probíhá příliš mnoho vyhledávání pomocí regulárních výrazů. Zkuste to znovu později.",
+	"cirrussearch-now-using": "Tato wiki používá nový vyhledávač. ([[mw:Special:MyLanguage/Help:CirrusSearch|Více informací]])",
+	"cirrussearch-ignored-headings": " #<!-- tento řádek ponechte beze změny --> <pre>\n# Zde uvedené nadpisy budou ignorovány vyhledáváním.\n# Změny této stránky se projeví ve chvíli, kdy je stránka používající příslušný nadpis indexována.\n# Přeindexování stránky můžete vynutit prázdnou editací.\n# Syntaxe je taková:\n#   * Cokoli od znaku „#“ do konce řádky je komentář.\n#   * Každá neprázdná řádka je přesný nadpis, který se má ignorovat, včetně velikosti písmen a tak.\nReference\nExterní odkazy\nSouvisející články\nSouvisející stránky\n #</pre> <!-- tento řádek ponechte beze změny -->",
+	"cirrussearch-boost-templates": " #<!-- tuto řádku ponechte přesně takto --> <pre>\n# Pokud stránka obsahuje jednu z těchto šablon, je její vyhledávací skóre vynásobeno nastaveným procentem.\n# Změny této stránky se projeví okamžitě.\n# Syntax je následující:\n#   * Všechno od znaku „#“ do konce řádky je komentář.\n#   * Každý neprázdný řádek je přesný název šablony, která se má bonifikovat, včetně jmenného prostoru, přesné velikosti písmen a tak, následovaný znakem „|“ následovaný číslem následovaným znakem „%“.\n# Příklad správných řádek:\n# Šablona:Dobré|150%\n# Šablona:Velmi velmi dobré|300%\n# Šablona:Špatné|50%\n# Příklady nefunkčních řádek:\n# Šablona:Foo|150.234234% <-- desetinná tečka/čárka není dovolena!\n# Foo|150% <--- technicky vzato funguje, ale pro vložení stránky Foo v hlavním jmenném prostoru\n# Změny konfigurace můžete otestovat vyhledávacím dotazem, před který uvedete boost-templates:\"XX\", kde XX je seznam všech šablon, které chcete bonifikovat, oddělené mezerou místo konce řádky.\n# Dotazy uvádějící boost-templates:\"XX\" ignorují obsah tohoto pole.\n#</pre> <!-- tuto řádku ponechte přesně takto -->",
+	"cirrussearch-pref-label": "Nové hledání",
+	"cirrussearch-pref-desc": "Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon."
 }

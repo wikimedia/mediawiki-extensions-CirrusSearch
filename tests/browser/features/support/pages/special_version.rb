@@ -1,3 +1,5 @@
+# Page containing MediaWiki version, plugin version, and version of external
+# software like Elasticsearch.
 class SpecialVersion
   include PageObject
 
@@ -6,6 +8,6 @@ class SpecialVersion
   table(:software_table, id: "sv-software")
 
   def software_table_row(name)
-    software_table_element.cell_element(:text => name)
+    software_table_element.cell_element(text: name)
   end
 end

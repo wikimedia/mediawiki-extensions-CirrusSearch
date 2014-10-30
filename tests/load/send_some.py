@@ -12,10 +12,14 @@ import calendar
 
 
 def send_line(search, destination):
+    # Since requests come in with timestamp resolution we assume they came in
+    # at some random point in the second
+    time.sleep(random.uniform(0, 1))
+    start = time.time()
     params = "fulltext=Search&srbackend=CirrusSearch"
     url = "%s/%s?%s" % (destination, search, params)
     urllib2.urlopen(url)
-    print "Fetched " + url
+    print "Fetched ({:07.3f}) {}".format(time.time() - start, url)
 
 
 def hostname(wiki):
@@ -44,6 +48,8 @@ def send_lines(percent, jobs, destination):
                     resolved_destination = destination % hostname
                 else:
                     resolved_destination = destination
+                if hostname == "commons.wikimedia.org":
+                    search = "File:" + search
                 send_line(search, resolved_destination)
             except (KeyboardInterrupt, SystemExit):
                 break
@@ -68,7 +74,7 @@ def send_lines(percent, jobs, destination):
         if target_lag is None:
             target_lag = time.time() - target_time
         wait_time = target_lag - lag
-        if wait_time >= 1:
+        if wait_time >= 0:
             print "Sleeping %s to stay %s ahead of the logged time." % \
                 (wait_time, target_lag)
             time.sleep(wait_time)

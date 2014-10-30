@@ -43,6 +43,12 @@ class Connection extends ElasticaConnection {
 	const PAGE_TYPE_NAME = 'page';
 
 	/**
+	 * Name of the namespace type.
+	 * @var string
+	 */
+	const NAMESPACE_TYPE_NAME = 'namespace';
+
+	/**
 	 * @return array(string)
 	 */
 	public function getServerList() {
@@ -71,6 +77,15 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
+	 * Fetch the Elastica Type for namespaces.
+	 * @param mixed $name basename of index
+	 * @return \Elastica\Type
+	 */
+	public static function getNamespaceType( $name ) {
+		$type = 'general'; // Namespaces are always stored in the 'general' index.
+		return self::getIndex( $name, $type )->getType( self::NAMESPACE_TYPE_NAME );
+	}
+	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *
 	 * @return array(string)
@@ -94,5 +109,27 @@ class Connection extends ElasticaConnection {
 
 		return MWNamespace::isContent( $namespace ) ?
 			self::CONTENT_INDEX_TYPE : self::GENERAL_INDEX_TYPE;
+	}
+
+	/**
+	 * Is there more then one namespace in the provided index type?
+	 * @var string $indexType an index type
+	 * @return false|integer false if the number of indexes is unknown, an integer if it is known
+	 */
+	public static function namespacesInIndexType( $indexType ) {
+		global $wgCirrusSearchNamespaceMappings,
+			$wgContentNamespaces;
+
+		if ( $indexType === self::GENERAL_INDEX_TYPE ) {
+			return false;
+		}
+
+		$count = count( array_keys( $wgCirrusSearchNamespaceMappings, $indexType ) );
+		if ( $indexType === self::CONTENT_INDEX_TYPE ) {
+			// The content namespace includes everything set in the mappings to content (count right now)
+			// Plus everything in wgContentNamespaces that isn't already in namespace mappings
+			$count += count( array_diff( $wgContentNamespaces, array_keys( $wgCirrusSearchNamespaceMappings ) ) );
+		}
+		return $count;
 	}
 }

@@ -1,22 +1,27 @@
 {
-    "@metadata": {
-        "authors": [
-            "Cwek",
-            "Linxue9786",
-            "Liuxinyu970226",
-            "Qiyue2001",
-            "Shizhao",
-            "TianyinLee",
-            "Xiaomingyan",
-            "Yfdyh000"
-        ]
-    },
-    "cirrussearch-desc": "基于Elasticsearch为MediaWiki设计的搜索",
-    "cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。",
-    "cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
-    "cirrussearch-now-using": "这个wiki使用了新的搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|详情]]）",
-    "cirrussearch-ignored-headings": " #<!--请忽略此行因为此行有碍于翻译--> <pre>\n# 搜索时标题将被忽略。\n# 对此更改将很快生效，并将尽快被索引。\n# 您可通过清空编辑强制页面重新索引。\n# 语法如下：\n#   * 一切以“#”符号开头的内容是一个注释\n#   * 任何非空白行是可忽略的\n参考文献\n外部链接\n参见\n #</pre> <!--请忽略此行因为此行有碍于翻译-->",
-    "cirrussearch-boost-templates": " #<!-- 此行绝对保持原状 --> <pre>\n# 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。\n# 更改至此立即生效。\n# 句法如下所示：\n#   *从\"#\"符到行末的所有信息是注释\n#   * 每一非空白行均为确切的模板名称，如加速器，域名空间， 事件以所有信息，接以\"|\"符，再接以数字及\"%\"符。\n# 良好行目示例：\n# 模板：良好|150%\n# 模板：非常非常好|300%\n# 模板：不良|50%\n# 失效行目示例：\n# 模板：Foo|150.234234% <-- 不允许使用小数点!\n# Foo|150% <--- 技术上可行，但不能用于从主域名空间将Foo页面切换插入至其他页面。\n# 你可以通过操作带有加速模板前置\"XX\"的质询来检测配置的变化：XX 是所有你想加速的模板名称，被空格键分开而不是行间隔。\n# 特定加速模板的质询：\"XX\"通常忽略其所涉及的内容。\n #</pre> <!-- 此行绝对保持原状 -->",
-    "cirrussearch-pref-label": "新搜索",
-    "cirrussearch-pref-desc": "试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。"
+	"@metadata": {
+		"authors": [
+			"Cwek",
+			"Linxue9786",
+			"Liuxinyu970226",
+			"Qiyue2001",
+			"Shizhao",
+			"TianyinLee",
+			"Xiaomingyan",
+			"Yfdyh000",
+			"Mywood",
+			"Impersonator 1"
+		]
+	},
+	"cirrussearch-desc": "基于Elasticsearch为MediaWiki设计的搜索",
+	"cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。",
+	"cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
+	"cirrussearch-too-busy-error": "当前搜索工作忙。请稍后重试。",
+	"cirrussearch-regex-syntax-error": "$2的正则表达式语法错误：$1",
+	"cirrussearch-regex-too-busy-error": "当前有太多的正则表达式搜索正在运行。请稍后重试。",
+	"cirrussearch-now-using": "本wiki正在使用新搜索引擎。（[[mw:Special:MyLanguage/Help:CirrusSearch|了解更多]]）",
+	"cirrussearch-ignored-headings": " #<!-- 请将本行保持原样 --> <pre>\n# 会被搜索忽略的标题。\n# 对该表的更改会在表中标题的页面被索引时生效。\n# 你可以通过空编辑强制使页面被重新索引。\n# 句法如下：\n#   * 所有以“#”开头的行都是注释。\n#   * 所有非空白行就是要忽略的标题。\n参考资料\n外部链接\n另请参阅\n #</pre> <!-- 请将本行保持原样 -->",
+	"cirrussearch-boost-templates": " #<!-- 请将本行保持原样 --> <pre>\n# 如果页面中含有这些模板中的任何一个，那么其搜素得分要乘以配置百分比。\n# 更改至此立即生效。\n# 句法如下所示：\n#   *从\"#\"符到行末的所有信息是注释\n#   * 每一非空白行均为确切的模板名称，如加速器，域名空间， 事件以所有信息，接以\"|\"符，再接以数字及\"%\"符。\n# 良好行目示例：\n# 模板:良好|150%\n# 模板:非常非常好|300%\n# 模板:不良|50%\n# 不工作行目示例：\n# 模板:Foo|150.234234% <-- 不允许使用小数点!\n# Foo|150% <--- 技术上可行，但不能用于从主名字空间将Foo页面切换插入至其他页面。\n# 你可以通过操作带有加速模板前置\"XX\"的质询来检测配置的变化：XX 是所有你想加速的模板名称，被空格键分开而不是行间隔。\n# 特定加速模板的质询：\"XX\"通常忽略其所涉及的内容。\n #</pre> <!-- 请将本行保持原样 -->",
+	"cirrussearch-pref-label": "新搜索",
+	"cirrussearch-pref-desc": "试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。"
 }

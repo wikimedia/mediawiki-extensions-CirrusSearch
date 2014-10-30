@@ -1,5 +1,6 @@
 require "cgi"
 
+# Page where you can edit the article.
 class EditPage
   include PageObject
 

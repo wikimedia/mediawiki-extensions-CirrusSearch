@@ -32,19 +32,23 @@ class PageDataBuilder extends ParseBuilder {
 				// Don't use parser output here. It's useless and leads
 				// to weird results. Instead, clear everything. See bug 61752.
 				$this->doc->add( 'category', array() );
+				$this->doc->add( 'external_link', array() );
+				$this->doc->add( 'heading', array() );
 				$this->doc->add( 'outgoing_link', array() );
 				$this->doc->add( 'template', array() );
-				$this->doc->add( 'file_text', array() );
-				$this->doc->add( 'heading', array() );
 				break;
 			default:
 				$this->categories();
 				$this->externalLinks();
-				$this->fileText();
 				$this->headings();
 				$this->outgoingLinks();
 				$this->templates();
+				$this->wikidataInfo();
 		}
+
+		// All content types have a language
+		$this->doc->add( 'language',
+			$this->title->getPageLanguage()->getCode() );
 
 		return $this->doc;
 	}
@@ -87,20 +91,6 @@ class PageDataBuilder extends ParseBuilder {
 		$this->doc->add( 'template', $templates );
 	}
 
-	private function fileText() {
-		// Technically this doesn't require the parserOutput but it is heavyweight
-		// so we should only do it on article change.
-		if ( $this->title->getNamespace() == NS_FILE ) {
-			$file = wfLocalFile( $this->title );
-			if ( $file && $file->exists() && $file->getHandler() ) {
-				$fileText = $file->getHandler()->getEntireText( $file );
-				if ( $fileText ) {
-					$this->doc->add( 'file_text', $fileText );
-				}
-			}
-		}
-	}
-
 	private function headings() {
 		$headings = array();
 		$ignoredHeadings = $this->getIgnoredHeadings();
@@ -113,7 +103,11 @@ class PageDataBuilder extends ParseBuilder {
 			// everything that looks like [2] because, I dunno, maybe there is a band named Word [2] Foo
 			// or something.  Whatever.  So we only strip things that look like <sup> tags wrapping a
 			// refence.  And we do it with regexes because HtmlFormatter doesn't support css selectors.
-			$heading = preg_replace( '/<sup>\s*\[\d+\]\s*<\/sup>/', '', $heading );
+
+			// Some wikis wrap the brackets in a span:
+			// http://en.wikipedia.org/wiki/MediaWiki:Cite_reference_link
+			$heading = preg_replace( '/<\/?span>/', '', $heading );
+			$heading = preg_replace( '/<sup>\s*\[\s*\d+\s*\]\s*<\/sup>/', '', $heading );
 
 			// Strip tags from the heading or else we'll display them (escaped) in search results
 			$heading = trim( Sanitizer::stripAllTags( $heading ) );
@@ -141,5 +135,15 @@ class PageDataBuilder extends ParseBuilder {
 			}
 		}
 		return $ignoredHeadings;
+	}
+
+	/**
+	 * Add wikidata information to the index if wikibase is installed on this wiki.
+	 */
+	private function wikidataInfo() {
+		$wikibaseItem = $this->parserOutput->getProperty( 'wikibase_item' );
+		if ( $wikibaseItem !== false ) {
+			$this->doc->add( 'wikibase_item', $wikibaseItem );
+		}
 	}
 }

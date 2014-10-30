@@ -1,4 +1,4 @@
-@clean
+@clean @phantomjs
 Feature: Full text search
   Background:
     Given I am at a random page
@@ -7,8 +7,8 @@ Feature: Full text search
   Scenario Outline: Query string search
     When I search for <term>
     Then I am on a page titled Search results
-    And <first_result> the first search <image?>result
-    But Two Words is <two_words_is_in> the search results
+      And <first_result> the first search <image?>result
+      But Two Words is <two_words_is_in> the search results
   Examples:
     | term                                 | first_result                      | two_words_is_in | image? |
     | catapult                             | Catapult is in                    | in              |        |
@@ -19,11 +19,6 @@ Feature: Full text search
     | template:pickles                     | Template:Template Test is         | not in          |        |
     | pickles/                             | Two Words is                      | in              |        |
     | catapult/pickles                     | Two Words is                      | in              |        |
-    # Make sure various ways of searching for a file name work
-    | File:Savepage-greyed.png             | File:Savepage-greyed.png is       | not in          | image  |
-    | File:Savepage                        | File:Savepage-greyed.png is       | not in          | image  |
-    | File:greyed.png                      | File:Savepage-greyed.png is       | not in          | image  |
-    | File:greyed                          | File:Savepage-greyed.png is       | not in          | image  |
     | File:"Screenshot, for test purposes" | File:Savepage-greyed.png is       | not in          | image  |
     # You can't search for text inside a <video> or <audio> tag
     | "JavaScript disabled"                | none is                           | not in          |        |
@@ -36,8 +31,8 @@ Feature: Full text search
   Scenario Outline: Searching for empty-string like values
     When I search for <term>
     Then I am on a page titled <title>
-    And there are no search results
-    And there are no errors reported
+      And there are no search results
+      And there are no errors reported
   Examples:
     | term                    | title          |
     | the empty string        | Search         |
@@ -45,12 +40,6 @@ Feature: Full text search
     | %{exact: }              | Search results |
     | %{exact:      }         | Search results |
     | %{exact:              } | Search results |
-
-  @setup_weight
-  Scenario: Page weight include redirects
-    When I search for TestWeight
-    Then TestWeight Larger is the first search result
-    And TestWeight Smaller is the second search result
 
   @headings
   Scenario: Pages can be found by their headings
@@ -61,17 +50,6 @@ Feature: Full text search
   Scenario: Ignored headings aren't searched so text with the same word is wins
     When I search for incategory:HeadingsTest References
     Then HasReferencesInText is the first search result
-
-  @setup_more_like_this
-  Scenario: Searching for morelike:<page that doesn't exist> returns no results
-    When I search for morelike:IDontExist
-    Then there are no search results
-
-  @setup_more_like_this
-  Scenario: Searching for morelike:<page> returns pages that are "like" that page
-    When I search for morelike:More Like Me 1
-    Then More Like Me is in the first search result
-    But More Like Me 1 is not in the search results
 
   @javascript_injection
   Scenario: Searching for a page with javascript doesn't execute it (in this case, removing the page title)
@@ -91,12 +69,12 @@ Feature: Full text search
   @setup_phrase_rescore
   Scenario: Searching for an unquoted phrase finds the phrase first
     When I search for Rescore Test Words
-    Then Rescore Test Words is the first search result
+    Then Rescore Test Words Chaff is the first search result
 
   @setup_phrase_rescore
-  Scenario: Searching for an a quoted phrase finds higher scored matches before the whole query interpreted as a phrase
+  Scenario: Searching for a quoted phrase finds higher scored matches before the whole query interpreted as a phrase
     When I search for Rescore "Test Words"
-    Then Test Words Rescore Rescore is the first search result
+    Then Test Words Rescore Rescore Test Words is the first search result
 
   # Note that other tests will catch this situation as well but this test should be pretty specific
   @setup_phrase_rescore
@@ -107,20 +85,20 @@ Feature: Full text search
   @setup_phrase_rescore
   Scenario: Searching with a quoted word just treats the word as though it didn't have quotes
     When I search for "Rescore" Words Test
-    Then Test Words Rescore Rescore is the first search result
+    Then Test Words Rescore Rescore Test Words is the first search result
 
   @programmer_friendly
   Scenario Outline: Programmer friendly searches
     When I search for <term>
     Then <page> is the first search result
   Examples:
-    | term                | page                |
+    |        term         |        page         |
     | namespace aliases   | $wgNamespaceAliases |
     | namespaceAliases    | $wgNamespaceAliases |
     | $wgNamespaceAliases | $wgNamespaceAliases |
     | namespace_aliases   | $wgNamespaceAliases |
     | NamespaceAliases    | $wgNamespaceAliases |
-    | wgnamespacealiases  | $wgNamespaceAliases |
+    | wgnamespacealiases  | $wgNamespaceAliases |    
     | snake case          | PFSC                |
     | snakeCase           | PFSC                |
     | snake_case          | PFSC                |
@@ -134,20 +112,23 @@ Feature: Full text search
     | numericcase7        | NumericCase7        |
     | numericCase         | NumericCase7        |
     | getInitial          | this.getInitial     |
+    | reftoolbarbase js   | RefToolbarBase.js   |
+    | this.iscamelcased   | PFTest Paren        |
 
   @stemmer
   Scenario Outline: Stemming works as expected
     When I search for StemmerTest <term>
     Then <first_result> is the first search result
-    Then <second_result> is the second search result
+      And <second_result> is the second search result
   Examples:
-    |   term   |     first_result     |    second_result    |
-    | aliases  | StemmerTest Aliases  | StemmerTest Alias   |
-    | alias    | StemmerTest Alias    | StemmerTest Aliases |
-    | used     | StemmerTest Used     | none                |
-    | uses     | StemmerTest Used     | none                |
-    | use      | StemmerTest Used     | none                |
-    | us       | none                 | none                |
+    |    term    |      first_result      |    second_result    |
+    | aliases    | StemmerTest Aliases    | StemmerTest Alias   |
+    | alias      | StemmerTest Alias      | StemmerTest Aliases |
+    | used       | StemmerTest Used       | none                |
+    | uses       | StemmerTest Used       | none                |
+    | use        | StemmerTest Used       | none                |
+    | us         | none                   | none                |
+    | guideline  | StemmerTest Guidelines | none                |
 
   @file_text
   Scenario: When you search for text that is in a file, you can find it!
@@ -163,31 +144,6 @@ Feature: Full text search
   Scenario: When you search for a page by redirects having more unrelated redirects doesn't penalize the score
     When I search for incategory:ManyRedirectsTest Many Redirects Test
     Then Manyredirectstarget is the first search result
-
-  @relevancy
-  Scenario: Results are sorted in the order we expect
-    When I search for Relevancytest
-    Then Relevancytest is the first search result
-    And Relevancytestviaredirect is the second search result
-    And Relevancytestviaheading is the third search result
-    And Relevancytestviatext is the fourth search result
-
-  @relevancy
-  Scenario: Two word searches are sorted in the order we expect
-    When I search for Relevancytwo Wordtest
-    Then Relevancytwo Wordtest is the first search result
-    And Wordtest Relevancytwo is the second search result
-
-  @relevancy
-  Scenario: Results are effected by the namespace boost
-    When I search for all:Relevancynamespacetest
-    Then Relevancynamespacetest is the first search result
-    And Talk:Relevancynamespacetest is the second search result
-    And File:Relevancynamespacetest is the third search result
-    And Help:Relevancynamespacetest is the fourth search result
-    And File talk:Relevancynamespacetest is the fifth search result
-    And User talk:Relevancynamespacetest is the sixth search result
-    And Template:Relevancynamespacetest is the seventh search result
 
   @fallback_finder
   Scenario: I can find things that Elasticsearch typically thinks of as word breaks in the title
@@ -213,3 +169,52 @@ Feature: Full text search
   Scenario: Word count is output in the results
     When I search for Two Words
     Then there are search results with (4 words) in the data
+
+  @accent_squashing
+  Scenario Outline: Searching with accents
+    When I search for "<term>"
+    Then <first_result> is the first search result
+  Examples:
+    | term                   | first_result           |
+    | África                 | África                 |
+    | Africa                 | África                 |
+    | AlphaBeta              | AlphaBeta              |
+    | ÁlphaBeta              | none                   |
+
+  @unicode_normalization
+  Scenario Outline: Searching for similar unicode characters finds all variants
+    When I search for <term>
+    Then there are 4 search results
+  Examples:
+    | term |
+    | वाङ्मय |
+    | वाङ्‍मय |
+    | वाङ‍्मय |
+    | वाङ्‌मय |
+
+  @setup_main @filenames
+  Scenario Outline: Portions of file names
+    When I search for <term>
+    Then I am on a page titled Search results
+      And <first_result> is the first search imageresult
+  Examples:
+    |            term            |          first_result          |
+    | File:Savepage-greyed.png   | File:Savepage-greyed.png       |
+    | File:Savepage              | File:Savepage-greyed.png       |
+    | File:greyed.png            | File:Savepage-greyed.png       |
+    | File:greyed                | File:Savepage-greyed.png       |
+    | File:Savepage png          | File:Savepage-greyed.png       |
+    | File:No_SVG.svg            | File:No SVG.svg                |
+    | File:No SVG.svg            | File:No SVG.svg                |
+    | File:No svg                | File:No SVG.svg                |
+    | File:svg.svg               | File:Somethingelse svg SVG.svg |
+
+  @accented_namespace
+  Scenario: Searching for an accented namespace without the accent finds things in it
+    When I search for mo:some text
+    Then Mó:Test is the first search result
+
+  @accented_namespace
+  Scenario: If the search started with a namespace it doesn't pick up the accented namespace
+    When I search for file:mo:some text
+    Then Mó:Test is not in the search results

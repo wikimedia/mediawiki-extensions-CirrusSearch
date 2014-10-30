@@ -1,17 +1,21 @@
 {
-    "@metadata": {
-        "authors": [
-            "Chrumps",
-            "Tar Lócesilion",
-            "WTM"
-        ]
-    },
-    "cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
-    "cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
-    "cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
-    "cirrussearch-now-using": "Ta wiki wykorzystuje nową wyszukiwarkę. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dowiedz się więcej]])",
-    "cirrussearch-ignored-headings": " #\u003C!-- ten wiersz zostaw bez zmian --\u003E \u003Cpre\u003E\n# Umieszczone tutaj nagłówki będą ignorowane podczas wyszukiwania.\n# Zmiany wprowadzone tutaj zostaną zastosowane, gdy strona wykorzystująca odpowiedni nagłówek zostanie zindeksowana.\n# Można wymusić ponowne zindeksowanie strony wykonując na niej null edit.\n# Składnia jest następująca:\n#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.\n#   * Każdy niepusty wiersz wprowadza dokładną treść nagłówka, który należy zignorować, wielkość liter ma znaczenie.\nLinki zewnętrzne\nZobacz też\n #\u003C/pre\u003E \u003C!-- ten wiersz zostaw bez zmian --\u003E",
-    "cirrussearch-boost-templates": " #\u003C!-- ten wiersz zostaw bez zmian --\u003E \u003Cpre\u003E\n# Jeżeli strona zawiera jeden z następujących szablonów, to jej rezultat wyszukiwania jest mnożony przez ustawioną wartość procentową.\n# Zmiany wprowadzone tutaj zostaną zastosowane natychmiast.\n# Składnia jest następująca:\n#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.\n#   * Każdy niepusty wiersz wprowadza dokładną nazwę premiowanego szablonu, wielkość liter ma znaczenie, po której następuje znak „|”, za nim liczba, a po niej symbol „%”.\n# Przykłady prawidłowych wierszy:\n# Szablon:Dobrze|150%\n# Szablon:Bardzo bardzo dobrze|300%\n# Szablon:Źle|50%\n# Przykłady niedziałających wierszy:\n# Szablon:Foo|150.234234% \u003C-- separator dziesiętny nie jest dozwolony!\n# Foo|150% \u003C--- technicznie zadziała, ale tylko dla transkluzji strony Foo \n# Zmiany konfiguracji można przetestować zadając zadając wyszukiwarce pytanie poprzedzone  boost-szablonem:\"XX\" gdzie XX oznacza zbiór wszystkich szablonów, które chcesz premiować, oddzielonych spacjami.\n# Zapytania wykorzystuujące boost-szablony:\"XX\" ignorują zawartość tego pola.\n #\u003C/pre\u003E \u003C!-- ten wiersz zostaw bez zmian --\u003E",
-    "cirrussearch-pref-label": "Nowe wyszukiwanie",
-    "cirrussearch-pref-desc": "Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów."
+	"@metadata": {
+		"authors": [
+			"Chrumps",
+			"Tar Lócesilion",
+			"WTM",
+			"Darellur"
+		]
+	},
+	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
+	"cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
+	"cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
+	"cirrussearch-too-busy-error": "Wyszukiwanie w tej chwili jest przeciążone. Proszę spróbować później.",
+	"cirrussearch-regex-syntax-error": "Błąd składni wyrażeń regularnych w pozycji $2: $1",
+	"cirrussearch-regex-too-busy-error": "Zbyt wiele wyszukiwań wyrażeń regularnych aktualnie jest uruchomione.  Spróbuj ponownie później.",
+	"cirrussearch-now-using": "Ta wiki wykorzystuje nową wyszukiwarkę. ([[mw:Special:MyLanguage/Help:CirrusSearch|Dowiedz się więcej]])",
+	"cirrussearch-ignored-headings": " #<!-- ten wiersz zostaw bez zmian --> <pre>\n# Umieszczone tutaj nagłówki będą ignorowane podczas wyszukiwania.\n# Zmiany wprowadzone tutaj zostaną zastosowane, gdy strona wykorzystująca odpowiedni nagłówek zostanie zindeksowana.\n# Można wymusić ponowne zindeksowanie strony wykonując na niej null edit.\n# Składnia jest następująca:\n#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.\n#   * Każdy niepusty wiersz wprowadza dokładną treść nagłówka, który należy zignorować, wielkość liter ma znaczenie.\nLinki zewnętrzne\nZobacz też\n #</pre> <!-- ten wiersz zostaw bez zmian -->",
+	"cirrussearch-boost-templates": " #<!-- ten wiersz zostaw bez zmian --> <pre>\n# Jeżeli strona zawiera jeden z następujących szablonów, to jej rezultat wyszukiwania jest mnożony przez ustawioną wartość procentową.\n# Zmiany wprowadzone tutaj zostaną zastosowane natychmiast.\n# Składnia jest następująca:\n#   * Wszystko począwszy od znaku „#” aż do końca wiersza jest komentarzem.\n#   * Każdy niepusty wiersz wprowadza dokładną nazwę premiowanego szablonu, wielkość liter ma znaczenie, po której następuje znak „|”, za nim liczba, a po niej symbol „%”.\n# Przykłady prawidłowych wierszy:\n# Szablon:Dobrze|150%\n# Szablon:Bardzo bardzo dobrze|300%\n# Szablon:Źle|50%\n# Przykłady niedziałających wierszy:\n# Szablon:Foo|150.234234% <-- separator dziesiętny nie jest dozwolony!\n# Foo|150% <--- technicznie zadziała, ale tylko dla transkluzji strony Foo \n# Zmiany konfiguracji można przetestować zadając zadając wyszukiwarce pytanie poprzedzone  boost-szablonem:\"XX\" gdzie XX oznacza zbiór wszystkich szablonów, które chcesz premiować, oddzielonych spacjami.\n# Zapytania wykorzystuujące boost-szablony:\"XX\" ignorują zawartość tego pola.\n #</pre> <!-- ten wiersz zostaw bez zmian -->",
+	"cirrussearch-pref-label": "Nowe wyszukiwanie",
+	"cirrussearch-pref-desc": "Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów."
 }

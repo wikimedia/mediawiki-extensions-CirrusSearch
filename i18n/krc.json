@@ -1,9 +1,10 @@
 {
-    "@metadata": {
-        "authors": [
-            "Iltever"
-        ]
-    },
-    "cirrussearch-pref-label": "Джангы излеу",
-    "cirrussearch-pref-desc": "Джангы излеуню сынагъыз. Ол андан да кёб тилни тутады, андан да джангы эсеблени береди, эмда шаблонланы ичине дери текст табалады."
+	"@metadata": {
+		"authors": [
+			"Iltever"
+		]
+	},
+	"cirrussearch-now-using": "Бу вики джангы излеу механизмни хайырландырады. ([[mw:Special:MyLanguage/Help:CirrusSearch|Толу бил]])",
+	"cirrussearch-pref-label": "Джангы излеу",
+	"cirrussearch-pref-desc": "Джангы излеуню сынагъыз. Ол андан да кёб тилни тутады, андан да джангы эсеблени береди, эмда шаблонланы ичине дери текст табалады."
 }

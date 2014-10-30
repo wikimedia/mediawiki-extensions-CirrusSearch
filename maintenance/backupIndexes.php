@@ -4,7 +4,7 @@ namespace CirrusSearch;
 use \Maintenance;
 
 /**
- * Create backups of your indexes
+ * Create snapshots of your indexes
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,63 +32,104 @@ class BackupIndexes extends Maintenance {
 	/** @var \Elastica\Snapshot */
 	private $snapshot;
 
+	/** @var string */
+	private $repoName;
+
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Backup and restore indexes using the snapshot/restore feature of Elastic";
-		$this->addOption( 'all', 'Backup all indexes, not just the one for this wiki' );
-		$this->addOption( 'baseName', 'Base name of index, defaults to wiki id. Cannot be used with --all', false, true );
-		$this->addOption( 'backupName', 'Name of the backup, otherwise defaults to cirrus-$timestamp', false, true );
-		$this->addOption( 'list', 'List existing backups' );
+		$this->mDescription = "Snapshot and restore indexes using the snapshot/restore feature of Elastic";
+		$this->addOption( 'repo', 'Which repository to use.', true, true );
+		$this->addOption( 'mode', "One of 'delete', 'list', 'snapshot', default is 'list'", false, true );
+		$this->addOption( 'baseName', 'Base name of index, defaults to wiki id.', false, true );
+		$this->addOption( 'snapshot', 'Name of the snapshot, otherwise defaults to cirrus-$baseName-{timestamp}', false, true );
 	}
 
 	public function execute() {
 		global $wgCirrusSearchBackup;
 
 		if ( !$wgCirrusSearchBackup ) {
-			$this->output( "No backups configured, see \$wgCirrusSearchBackup\n" );
-			return;
+			$this->error( "No backups configured, see \$wgCirrusSearchBackup", 1 );
+		}
+
+		$this->repoName = $this->getOption( 'repo' );
+		if ( !isset( $wgCirrusSearchBackup[ $this->repoName ] ) ) {
+			$this->error( "No such repository '{$this->repoName}'", 1 );
 		}
 
 		$this->snapshot = new \Elastica\Snapshot( Connection::getClient() );
-		foreach ( $wgCirrusSearchBackup as $name => $settings ) {
-			$this->createRepositoryIfMissing( $name, $settings );
-			if ( $this->hasOption( 'list' ) ) {
-				$this->listBackups( $name );
-			} else {
-				$this->backup( $name );
-			}
+		$this->createRepositoryIfMissing( $wgCirrusSearchBackup[ $this->repoName ] );
+		switch( $this->getOption( 'mode', 'list' ) ) {
+			case 'delete':
+				$snapshot = $this->getOption( 'snapshot' );
+				if ( !$snapshot ) {
+					$this->error( '--mode=delete requires --snapshot to be set', 1 );
+				}
+				$this->deleteSnapshot( $snapshot, $this->getSnapshots() );
+				break;
+			case 'snapshot':
+				$this->takeSnapshot();
+				break;
+			case 'list':
+			default:
+				$this->listSnapshots( $this->getSnapshots() );
+				break;
 		}
 	}
 
-	private function createRepositoryIfMissing( $name, $settings ) {
+	private function createRepositoryIfMissing( $settings ) {
 		try {
-			$this->snapshot->getRepository( $name );
+			$this->snapshot->getRepository( $this->repoName );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
-			$this->output( "Backup repo '$name' does not exist, creating..." );
+			$this->output( "Snapshot repository '{$this->repoName}' does not exist, creating..." );
 			$type = $settings['type'];
 			unset( $settings['type'] );
-			$this->snapshot->registerRepository( $name, $type, $settings );
+			$this->snapshot->registerRepository( $this->repoName, $type, $settings );
 			$this->output( "done.\n" );
 		}
 	}
 
-	private function listBackups( $name ) {
-		$snapshots = $this->snapshot->getAllSnapshots( $name );
+	private function getSnapshots() {
+		$snaps = array();
+		$snapshots = $this->snapshot->getAllSnapshots( $this->repoName );
 		foreach ( $snapshots['snapshots'] as $shot ) {
-			$this->output( $shot['snapshot'] . "\t" . implode( ',', $shot['indices'] ) . "\n" );
+			$snaps[ $shot['snapshot'] ] = $shot['indices'];
+		}
+		return $snaps;
+	}
+
+	private function deleteSnapshot( $snapshot, $allSnapshots ) {
+		$this->output( "Deleting snapshot '$snapshot' from {$this->repoName}..." );
+
+		if ( !isset( $allSnapshots[ $snapshot ] ) ) {
+			$this->output( "no such snapshot, skipping.\n" );
+			return;
+		}
+
+		$this->snapshot->deleteSnapshot( $this->repoName, $snapshot );
+		$this->output( "done.\n" );
+	}
+
+	private function listSnapshots( $allSnapshots ) {
+		if ( !$allSnapshots ) {
+			$this->output( "Repository {$this->repoName} has no snapshots yet.\n" );
+			return;
+		}
+		$this->output( "Listing snapshots for {$this->repoName}:\n" );
+		foreach ( $allSnapshots as $shot => $indices ) {
+			$this->output( "\t" . $shot . "\t" . implode( ',', $indices ) . "\n" );
 		}
 	}
 
-	private function backup( $name ) {
-		$backupName = $this->getOption( 'backupName', 'cirrus-' . time() );
+	private function takeSnapshot() {
+		$baseName = $this->getOption( 'baseName', wfWikiId() );
+		$snapshot = $this->getOption( 'snapshot', "cirrus-$baseName-" . time() );
 		$options = array(
 			'ignore_unavailable' => true,
+			'indices' => $baseName,
 		);
-		if ( !$this->hasOption( 'all' ) ) {
-			$options['indices'] = $this->getOption( 'baseName', wfWikiId() );
-		}
-		$this->output( "Creating snapshot '$backupName'..." );
-		$this->snapshot->createSnapshot( $name, $backupName, $options, true );
+
+		$this->output( "Creating snapshot '$snapshot'..." );
+		$this->snapshot->createSnapshot( $this->repoName, $snapshot, $options, true );
 		$this->output( "done.\n" );
 	}
 }

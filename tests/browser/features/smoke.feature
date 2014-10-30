@@ -9,7 +9,7 @@
 # CirrusSearch top-level directory and at
 # https://git.wikimedia.org/blob/mediawiki%2Fextensions%2FCirrusSearch/HEAD/CREDITS
 #
-@clean @en.wikipedia.beta.wmflabs.org @test2.wikipedia.org
+@clean @en.wikipedia.beta.wmflabs.org @firefox @test2.wikipedia.org @phantomjs @smoke
 Feature: Smoke test
 
   Scenario: Search suggestions

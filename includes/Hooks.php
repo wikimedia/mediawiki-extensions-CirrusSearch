@@ -1,11 +1,22 @@
 <?php
 
 namespace CirrusSearch;
-use \CirrusSearch;
+
+use \ApiMain;
 use \BetaFeatures;
+use \CirrusSearch;
+use \CirrusSearch\Search\FancyTitleResultsType;
+use \DeferredUpdates;
 use \JobQueueGroup;
+use \LinksUpdate;
+use \OutputPage;
+use \SpecialSearch;
 use \Title;
+use \RecursiveDirectoryIterator;
+use \RecursiveIteratorIterator;
 use \RequestContext;
+use \User;
+use \WebRequest;
 use \WikiPage;
 use \Xml;
 
@@ -29,11 +40,16 @@ use \Xml;
  */
 class Hooks {
 	/**
+	 * @var array(string) Destination of titles being moved (the ->getPrefixedDBkey() form).
+	 */
+	private static $movingTitles = array();
+
+	/**
 	 * Hooked to call initialize after the user is set up.
 	 * @return bool
 	 */
-	public static function beforeInitializeHook( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
-		self::initializeForUser( $user );
+	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
+		self::initializeForUser( $user, $request );
 		return true;
 	}
 
@@ -42,8 +58,8 @@ class Hooks {
 	 * @param ApiMain $apiMain The ApiMain instance being used
 	 * @return bool
 	 */
-	public static function apiBeforeMainHook( $apiMain ) {
-		self::initializeForUser( $apiMain->getUser() );
+	public static function onApiBeforeMain( $apiMain ) {
+		self::initializeForUser( $apiMain->getUser(), $apiMain->getRequest() );
 		return true;
 	}
 
@@ -51,42 +67,139 @@ class Hooks {
 	 * Initializes the portions of Cirrus that require the $user to be fully initialized and therefore
 	 * cannot be done in $wgExtensionFunctions.  Specifically this means the beta features check and
 	 * installing the prefix search hook, because it needs information from the beta features check.
+	 *
+	 * @param User $user
+	 * @param WebRequest $request
 	 */
-	private static function initializeForUser( $user ) {
-		global $wgCirrusSearchEnablePref;
-		global $wgSearchType;
-		global $wgSearchTypeAlternatives;
-		global $wgHooks;
+	private static function initializeForUser( $user, $request ) {
+		global $wgSearchType, $wgSearchTypeAlternatives, $wgHooks,
+			$wgCirrusSearchUseExperimentalHighlighter,
+			$wgCirrusSearchEnablePref,
+			$wgCirrusSearchPhraseRescoreWindowSize,
+			$wgCirrusSearchFunctionRescoreWindowSize,
+			$wgCirrusSearchFragmentSize,
+			$wgCirrusSearchBoostLinks,
+			$wgCirrusSearchAllFields,
+			$wgCirrusSearchAllFieldsForRescore,
+			$wgCirrusSearchPhraseSlop;
 
 		// If the user has the BetaFeature enabled, use Cirrus as default.
 		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
-			&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' )
-		) {
-			// Make the old main search available as an alternative (bug 60439)
+				&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' ) ) {
+			// Make the old search an alternative
 			$wgSearchTypeAlternatives[] = $wgSearchType;
+			// And remove Cirrus as an alternative
+			$wgSearchTypeAlternatives = array_diff( $wgSearchTypeAlternatives, array( 'CirrusSearch' ) );
 			$wgSearchType = 'CirrusSearch';
 		}
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
+			$wgHooks[ 'PrefixSearchExtractNamespace' ][] = 'CirrusSearch\Hooks::prefixSearchExtractNamespace';
 			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
-			$wgHooks[ 'SearchGetNearMatchBefore' ][] = 'CirrusSearch\Hooks::searchGetNearMatchBeforeHook';
+			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
+		}
+
+		if ( $request ) {
+			// Engage the experimental highlighter if a url parameter requests it
+			if ( !$wgCirrusSearchUseExperimentalHighlighter &&
+					$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
+				$wgCirrusSearchUseExperimentalHighlighter = true;
+			}
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWinwdow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
+			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );
+			self::overrideYesNo( $wgCirrusSearchBoostLinks, $request, 'cirrusBoostLinks' );
+			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
+			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
+			self::overrideUseExtraPluginForRegex( $request );
 		}
 	}
 
 	/**
-	 * Hook to call when an article is deleted
+	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit.
+	 */
+	private static function overrideNumeric( &$dest, $request, $name, $limit ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null && is_numeric( $val ) && $val <= $limit ) {
+			$dest = $val;
+		}
+	}
+
+	/**
+	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 */
+	private static function overrideYesNo( &$dest, $request, $name ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$dest = true;
+			} elseif( $val = 'no' ) {
+				$dest = false;
+			}
+		}
+	}
+
+	private static function overrideUseExtraPluginForRegex( $request ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
+
+		$val = $request->getVal( 'cirrusAccelerateRegex' );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][] = 'use';
+			} elseif( $val = 'no' ) {
+				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+					$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
+					if ( $useLocation !== false ) {
+						unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Hook to call before an article is deleted
+	 * @param WikiPage $page The page we're deleting
+	 * @return bool
+	 */
+	public static function onArticleDelete( $page ) {
+		// We use this to pick up redirects so we can update their targets.
+		// Can't re-use ArticleDeleteComplete because the page info's
+		// already gone
+		//
+		// If we abort or fail deletion it's no big deal because this will
+		// end up being a no-op when it executes.
+		$target = $page->getRedirectTarget();
+		if ( $target ) {
+			// DeferredUpdate so we don't end up racing our own page deletion
+			DeferredUpdates::addCallableUpdate( function() use ( $target ) {
+				JobQueueGroup::singleton()->push(
+					new Job\LinksUpdate( $target, array(
+						'addedLinks' => array(),
+						'removedLinks' => array(),
+					) )
+				);
+			} );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Hook to call after an article is deleted
 	 * @param WikiPage $page The page we're deleting
 	 * @param User $user The user deleting the page
 	 * @param string $reason Reason the page is being deleted
 	 * @param int $pageId Page id being deleted
 	 * @return bool
 	 */
-	public static function articleDeleteCompleteHook( $page, $user, $reason, $pageId ) {
+	public static function onArticleDeleteComplete( $page, $user, $reason, $pageId ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
-			new DeletePagesJob( $page->getTitle(), array( 'id' => $pageId ) )
+			new Job\DeletePages( $page->getTitle(), array( 'id' => $pageId ) )
 		);
 		return true;
 	}
@@ -100,8 +213,12 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onAfterImportPage( $title ) {
+		// The title can be null if the import failed.  Nothing to do in that case.
+		if ( $title === null ) {
+			return;
+		}
 		JobQueueGroup::singleton()->push(
-			MassIndexJob::build(
+			Job\MassIndex::build(
 				array( WikiPage::factory( $title ) ),
 				false,
 				Updater::INDEX_EVERYTHING
@@ -121,9 +238,10 @@ class Hooks {
 	 */
 	public static function onRevisionDelete( $title ) {
 		JobQueueGroup::singleton()->push(
-			new LinksUpdateJob( $title, array(
+			new Job\LinksUpdate( $title, array(
 				'addedLinks' => array(),
-				'removedLinks' => array()
+				'removedLinks' => array(),
+				'prioritize' => true
 			) )
 		);
 		return true;
@@ -134,12 +252,12 @@ class Hooks {
 	 * @param array $software Array of wikitext and version numbers
 	 * @return bool
 	 */
-	public static function softwareInfoHook( $software ) {
-		$searcher = new Searcher( 0, 0, array(), false );
-		$version = $searcher->getElasticsearchVersion();
-		if ( $version->isOk() ) {
+	public static function onSoftwareInfo( &$software ) {
+		$version = new Version;
+		$status = $version->get();
+		if ( $status->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
-			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $version->getValue();
+			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $status->getValue();
 		}
 		return true;
 	}
@@ -151,7 +269,7 @@ class Hooks {
 	 * @param string $term The term being searched for
 	 * @return bool
 	 */
-	public static function specialSearchResultsPrependHook( $specialSearch, $out, $term ) {
+	public static function onSpecialSearchResultsPrepend( $specialSearch, $out, $term ) {
 		global $wgCirrusSearchShowNowUsing;
 
 		// Prepend our message if needed
@@ -176,7 +294,7 @@ class Hooks {
 	 * @param array $prefs
 	 * @return bool
 	 */
-	public static function getPreferencesHook( $user, &$prefs ) {
+	public static function onGetBetaFeaturePreferences( $user, &$prefs ) {
 		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
 
 		if ( $wgCirrusSearchEnablePref ) {
@@ -198,12 +316,18 @@ class Hooks {
 	/**
 	 * Hooked to update the search index when pages change directly or when templates that
 	 * they include change.
-	 * @param $linksUpdate LinksUpdate source of all links update information
+	 * @param LinksUpdate $linksUpdate source of all links update information
 	 * @return bool
 	 */
-	public static function linksUpdateCompletedHook( $linksUpdate ) {
-		global $wgCirrusSearchLinkedArticlesToUpdate;
-		global $wgCirrusSearchUnlinkedArticlesToUpdate;
+	public static function onLinksUpdateCompleted( $linksUpdate ) {
+		global $wgCirrusSearchLinkedArticlesToUpdate,
+			$wgCirrusSearchUnlinkedArticlesToUpdate,
+			$wgCirrusSearchUpdateDelay;
+
+		// Titles that are created by a move don't need their own job.
+		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), self::$movingTitles ) ) {
+			return true;
+		}
 
 		$params = array(
 			'addedLinks' => self::prepareTitlesForLinksUpdate(
@@ -216,7 +340,10 @@ class Hooks {
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
 		}
-		$job = new LinksUpdateJob( $linksUpdate->getTitle(), $params );
+		$job = new Job\LinksUpdate( $linksUpdate->getTitle(), $params );
+		$delay = $wgCirrusSearchUpdateDelay[ $job->isPrioritized() ? 'prioritized' : 'default' ];
+		$job->setDelay( $delay );
+
 		JobQueueGroup::singleton()->push( $job );
 		return true;
 	}
@@ -226,9 +353,29 @@ class Hooks {
 	 * @param array $files containing tests
 	 * @return bool
 	 */
-	public static function getUnitTestsList( &$files ) {
-		$files = array_merge( $files, glob( __DIR__ . '/../tests/unit/*Test.php' ) );
+	public static function onUnitTestsList( &$files ) {
+		// This is pretty much exactly how the Translate extension declares its
+		// multiple test directories.  There really isn't any excuse for doing
+		// it any other way.
+		$dir = __DIR__ . '/../tests/unit';
+		$directoryIterator = new RecursiveDirectoryIterator( $dir );
+		$fileIterator = new RecursiveIteratorIterator( $directoryIterator );
+
+		foreach ( $fileIterator as $fileInfo ) {
+			if ( substr( $fileInfo->getFilename(), -8 ) === 'Test.php' ) {
+				$files[] = $fileInfo->getPathname();
+			}
+		}
+
 		return true;
+	}
+
+	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
+		$user = RequestContext::getMain()->getUser();
+		$searcher = new Searcher( 0, 1, $namespaces, $user );
+		$searcher->updateNamespacesFromQuery( $search );
+		$namespaces = $searcher->getNamespaces();
+		return false;
 	}
 
 	/**
@@ -239,32 +386,39 @@ class Hooks {
 	 * @param array(string) $results outbound variable with string versions of titles
 	 * @return bool always false because we are the authoritative prefix search
 	 */
-	public static function prefixSearch( $namespace, $search, $limit, &$results ) {
+	public static function prefixSearch( $namespaces, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, $limit, $namespace, $user );
-		$searcher->setResultsType( new TitleResultsType( true, 'prefix' ) );
+		$searcher = new Searcher( 0, $limit, $namespaces, $user );
+		$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// constrution site to log errors.
 		if ( $status->isOK() ) {
-			$array = $status->getValue();
-			$results = $array;
+			$results = array();
+			foreach ( $status->getValue() as $match ) {
+				if ( isset( $match[ 'titleMatch' ] ) ) {
+					$results[] = $match[ 'titleMatch' ]->getPrefixedText();
+				} else {
+					if ( isset( $match[ 'redirectMatches' ][ 0 ] ) ) {
+						// TODO maybe dig around in the redirect matches and find the best one?
+						$results[] = $match[ 'redirectMatches' ][ 0 ]->getPrefixedText();
+					}
+				}
+			}
 		}
 		return false;
 	}
 
 	/**
-	 * Let Elasticsearch take a crack at getting near matches before mediawiki tries all kinds of variants.
-	 * @param array(string) $termAnAllLanguageVariants the original search term and all language variants
+	 * Let Elasticsearch take a crack at getting near matches once mediawiki has tried all kinds of variants.
+	 * @param string $term the original search term and all language variants
 	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 */
-	public static function searchGetNearMatchBeforeHook( $termAndAllLanguageVariants, &$titleResult ) {
+	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgContLang;
 
-		// Elasticsearch should handle all language variants.  If it doesn't, we'll have to make it do so.
-		$term = $termAndAllLanguageVariants[ 0 ];
 		$title = Title::newFromText( $term );
 		if ( $title === null ) {
 			return false;
@@ -273,7 +427,12 @@ class Hooks {
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
 		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
-		$searcher->setResultsType( new TitleResultsType( false, 'near_match' ) );
+		if ( $title->getNamespace() === NS_MAIN ) {
+			$searcher->updateNamespacesFromQuery( $term );
+		} else {
+			$term = $title->getText();
+		}
+		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
@@ -285,7 +444,6 @@ class Hooks {
 		$picker = new NearMatchPicker( $wgContLang, $term, $status->getValue() );
 		$best = $picker->pickBest();
 		if ( $best ) {
-			// Found a near match.
 			$titleResult = $best;
 			return false;
 		}
@@ -294,14 +452,96 @@ class Hooks {
 	}
 
 	/**
-	 * Take a list of titles either linked or unlinked and prepare them for LinksUpdateJob.
+	 * Before we've moved a title from $title to $newTitle.
+	 * @param Title $title old title
+	 * @param Title $newTitle new title
+	 * @param User $user User who made the move
+	 * @return bool should move move actions be precessed (yes)
+	 */
+	public static function onTitleMove( Title $title, Title $newTitle, $user ) {
+		self::$movingTitles[] = $title->getPrefixedDBkey();
+
+		return true;
+	}
+
+	/**
+	 * When we've moved a Title from A to B.
+	 * @param Title $title The old title
+	 * @param Title $newTitle The new title
+	 * @param User $user User who made the move
+	 * @param int $oldId The page id of the old page.
+	 * @return bool
+	 */
+	public static function onTitleMoveComplete( Title &$title, Title &$newTitle, &$user, $oldId ) {
+		// When a page is moved the update and delete hooks are good enough to catch
+		// almost everything.  The only thing they miss is if a page moves from one
+		// index to another.  That only happens if it switches namespace.
+		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
+			$oldIndexType = Connection::getIndexSuffixForNamespace( $title->getNamespace() );
+			JobQueueGroup::singleton()->push( new Job\DeletePages( $title, array(
+				'indexType' => $oldIndexType,
+				'id' => $oldId
+			) ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get a random page
+	 *
+	 * @param string $randstr A random seed given from MediaWiki.
+	 * @param bool $isRedir Are we wanting a random redirect?
+	 * @param array(int) $namespaces An array of namespaces to pick a page from
+	 * @param array $extra Extra query params for the database-backed random. Unused.
+	 * @param Title $title The title we want to return, if any
+	 * @return bool False if we've set $title, true otherwise
+	 */
+	public static function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ) {
+		global $wgCirrusSearchPowerSpecialRandom;
+
+		if ( !$wgCirrusSearchPowerSpecialRandom ) {
+			return true;
+		}
+		// We don't index redirects so don't try to find one.
+		if ( !$isRedir && !$extra ) {
+			// Remove decimal from seed, we want an int
+			$seed = (int)str_replace( '.', '', $randstr );
+
+			$searcher = new Searcher( 0, 1, $namespaces,
+				RequestContext::getMain()->getUser() );
+			$searcher->limitSearchToLocalWiki( true );
+			$randSearch = $searcher->randomSearch( $seed );
+			if ( $randSearch->isOk() ) {
+				$results = $randSearch->getValue();
+				// should almost never happen unless you're developing
+				// on a completely empty wiki with no pages
+				if ( isset( $results[ 0 ] ) ) {
+					$page = WikiPage::newFromID( $results[ 0 ] );
+					if ( $page ) {
+						$title = $page->getTitle();
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
 	 * This includes limiting them to $max titles.
 	 * @param array(Title) $titles titles to prepare
 	 * @param int $max maximum number of titles to return
+	 * @return array
 	 */
 	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
 		$titles = self::pickFromArray( $titles, $max );
 		$dBKeys = array();
+		/**
+		 * @var Title $title
+		 */
 		foreach ( $titles as $title ) {
 			$dBKeys[] = $title->getPrefixedDBkey();
 		}

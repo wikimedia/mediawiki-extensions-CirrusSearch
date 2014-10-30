@@ -5,6 +5,7 @@ use \CirrusSearch;
 use \JobQueueGroup;
 use \LinkCache;
 use \Maintenance;
+use \MWContentSerializationException;
 use \MWTimestamp;
 use \ProfileSection;
 use \Title;
@@ -37,15 +38,15 @@ require_once( "$IP/maintenance/Maintenance.php" );
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
-	var $fromDate = null;
-	var $toDate = null;
-	var $toId = null;
-	var $indexUpdates;
-	var $limit;
-	var $queue;
-	var $maxJobs;
-	var $pauseForJobs;
-	var $namespace;
+	public $fromDate = null;
+	public $toDate = null;
+	public $toId = null;
+	public $indexUpdates;
+	public $limit;
+	public $queue;
+	public $maxJobs;
+	public $pauseForJobs;
+	public $namespace;
 
 	public function __construct() {
 		parent::__construct();
@@ -57,25 +58,25 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
-		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Note useful with --deletes or --from or --to.', false, true );
+		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Not useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
-			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number with ' .
+			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number ' .
 			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
 			'cover the entire wiki.' , false, true );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
 		$this->addOption( 'maxJobs', 'If there are more than this many index jobs in the queue then pause before adding ' .
 			'more.  This is only checked every ' . self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS . ' seconds.  Not meaningful ' .
 			'without --queue.', false, true );
-		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for the there to be less than this many before ' .
+		$this->addOption( 'pauseForJobs', 'If paused adding jobs then wait for there to be less than this many before ' .
 			'starting again.  Defaults to the value specified for --maxJobs.  Not meaningful without --queue.', false, true );
 		$this->addOption( 'indexOnSkip', 'When skipping either parsing or links send the document as an index.  ' .
 			'This replaces the contents of the index for that entry with the entry built from a skipped process.' .
-			'Without this if the entry does not exist then it will be skipped enirely.  Only set this when running ' .
+			'Without this if the entry does not exist then it will be skipped entirely.  Only set this when running ' .
 			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
-		$this->addOption( 'skipParse', 'Skip parsing the page.  This is realy only good for running the second half ' .
+		$this->addOption( 'skipParse', 'Skip parsing the page.  This is really only good for running the second half ' .
 			'of the two phase index build.  If this is specified then the default batch size is actually 50.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );
@@ -86,8 +87,15 @@ class ForceSearchIndex extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgCirrusSearchMaintenanceTimeout;
 
+		$wiki = sprintf( "[%20s]", wfWikiId() );
+
 		// Set the timeout for maintenance actions
 		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+
+		// Make sure we've actually got indicies to populate
+		if ( !$this->simpleCheckIndexes() ) {
+			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
+		}
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -159,7 +167,7 @@ class ForceSearchIndex extends Maintenance {
 				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
 				$size = count( $deletes );
 			}
-			
+
 			if ( $size == 0 ) {
 				break;
 			}
@@ -186,13 +194,13 @@ class ForceSearchIndex extends Maintenance {
 						$queueSize = $this->getUpdatesInQueue();
 						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
 							do {
-								$this->output( "Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
+								$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
 								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 								$queueSize = $this->getUpdatesInQueue();
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
-					JobQueueGroup::singleton()->push( MassIndexJob::build( $pages, $updateFlags ) );
+					JobQueueGroup::singleton()->push( Job\MassIndex::build( $pages, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = new Updater();
@@ -219,10 +227,12 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$endingAt = $minUpdate->getTimestamp( TS_ISO_8601 );
 			}
-			$this->output( "$operationName $size pages ending at $endingAt at $rate/second\n" );
+			$this->output( "$wiki $operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
 		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
 
+		$lastQueueSizeForOurJob = PHP_INT_MAX;
+		$waitStartTime = microtime( true );
 		if ( $this->queue ) {
 			$this->output( "Waiting for jobs to drain from the queue\n" );
 			while ( true ) {
@@ -230,10 +240,48 @@ class ForceSearchIndex extends Maintenance {
 				if ( $queueSizeForOurJob === 0 ) {
 					break;
 				}
-				$this->output( "$queueSizeForOurJob jobs left on the queue.\n" );
+				// We subtract 5 because we some jobs may be added by deletes
+				if ( $queueSizeForOurJob > $lastQueueSizeForOurJob ) {
+					$this->output( "Queue size went up.  Another script is likely adding jobs " .
+						"and it'll wait for them to empty.\n" );
+					break;
+				}
+				if ( microtime( true ) - $waitStartTime > 120 ) {
+					// Wait at least two full minutes before we check if the job count went down.
+					// Less then that and we might be seeing lag from redis's counts.
+					$lastQueueSizeForOurJob = $queueSizeForOurJob;
+				}
+				$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
+	}
+
+	/**
+	 * Do some simple sanity checking to make sure we've got indexes to populate.
+	 * Note this isn't nearly as robust as updateSearchIndexConfig is, but it's
+	 * not designed to be.
+	 *
+	 * @return bool
+	 */
+	private function simpleCheckIndexes() {
+		$wiki = wfWikiId();
+		$status = Connection::getClient()->getStatus();
+
+		// Top-level alias needs to exist
+		if ( !Connection::getIndex( $wiki )->exists() ) {
+			return false;
+		}
+
+		// Now check all index types to see if they exist
+		foreach ( Connection::getAllIndexTypes() as $indexType ) {
+			// If the alias for this type doesn't exist, fail
+			if ( !Connection::getIndex( $wiki, $indexType )->exists() ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -312,7 +360,14 @@ class ForceSearchIndex extends Maintenance {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because
 			// it is in the database.
 			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
-			$content = $page->getContent();
+
+			try {
+				$content = $page->getContent();
+			} catch ( MWContentSerializationException $ex ) {
+				wfLogWarning( "Error deserializing content, skipping page: $row->page_id\n" );
+				continue;
+			}
+
 			if ( $content === null ) {
 				// Skip pages without content.  Pages have no content because their latest revision
 				// as loaded by the query above doesn't exist.
@@ -329,7 +384,7 @@ class ForceSearchIndex extends Maintenance {
 					// are totally possible, as well as fun stuff like redirect loops, we need to use
 					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 					// self redirects.  Great!
-					$page = $updater->traceRedirects( $page->getTitle() );
+					list( $page, ) = $updater->traceRedirects( $page->getTitle() );
 				}
 			}
 			$update = array(
@@ -409,26 +464,8 @@ class ForceSearchIndex extends Maintenance {
 		if ( $fromId === $this->toId ) {
 			$this->error( "Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1 );
 		}
-		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
-		$buildChunks = intval( $buildChunks );
-		if ( $fixedChunkSize ) {
-			$chunkSize = $buildChunks;
-		} else {
-			$chunkSize = max( 1, ceil( ( $this->toId - $fromId ) / $buildChunks ) );
-		}
-		for ( $id = $fromId; $id < $this->toId; $id = $id + $chunkSize ) {
-			$chunkToId = min( $this->toId, $id + $chunkSize );
-			$this->output( $this->mSelf );
-			foreach ( $this->mOptions as $optName => $optVal ) {
-				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
-						$optName === 'toId' || $optName === 'buildChunks' ||
-						($optName === 'memory-limit' && $optVal === 'max')) {
-					continue;
-				}
-				$this->output( " --$optName $optVal" );
-			}
-			$this->output( " --fromId $id --toId $chunkToId\n" );
-		}
+		$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
+		$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $fromId, $this->toId );
 	}
 
 	/**

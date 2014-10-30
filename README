@@ -3,10 +3,15 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere.  0.90.10 and above are all fine but 1.0 will be supported
-for longer.
+Get Elasticsearch up and running somewhere.  1.3.2 and above are all fine.
 
-Fetch this plugin plugin into your extensions directory.
+Optional: CirrusSearch makes use of sandboxed dynamic scripts in Elasticsearch.  For most
+functions the sandbox is fine but some advanced features (source regular expression search)
+require relaxing the sandbox some.  To do this add the contents of elasticsearch.yml located
+in this directory to the elasticsearch.yml that came with Elasticsearch and restart
+Elasticsearch.
+
+Place the CirrusSearch extension in your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:
@@ -17,8 +22,6 @@ Add this to LocalSettings.php:
 Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:
  $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
-In production setups, you will very likely want to increase the number of replicas using
-$wgCirrusSearchReplicaCount.
 
 Now run this script to generate your elasticsearch index:
  php $MW_INSTALL_PATH/extensions/CirrusSearch/maintenance/updateSearchIndexConfig.php
@@ -37,7 +40,7 @@ Bootstrapping large wikis
 -------------------------
 Since most of the load involved in indexing is parsing the pages in php we provide a few options to split the
 process into multiple processes.  Don't worry too much about the database during this process.  It can generally
-handle more processess indexing then you are likely to be able to spawn.
+handle more indexing processes then you are likely to be able to spawn.
 
 General strategy:
 0.  Make sure you have a good job queue setup.  It'll be doing most of the work.  In fact, Cirrus won't work
@@ -117,13 +120,13 @@ LocalSettings.php like so:
 
 Upgrading
 ---------
-When you upgrade there three possible cases for maintaining the index:
+When you upgrade there four possible cases for maintaining the index:
 1.  You must update the index configuration and reindex from source documents.
 2.  You must update the index configuration and reindex from already indexed documents.
 3.  You must update the index configuration but no reindex is required.
 4.  No changes are required.
 
-If you must do (1) you have three options:
+If you must do (1) you have two options:
 A.  Blow away the search index and rebuild it from scratch.  Marginally faster and uses less disk space on
 in elasticsearch but empties the index entirely and rebuilds it so search will be down for a while:
  php updateSearchIndexConfig.php --startOver
@@ -132,12 +135,6 @@ in elasticsearch but empties the index entirely and rebuilds it so search will b
 B.  Build a copy of the index, reindex to it, and then force a full reindex from source documents.  Uses
 more disk space but search should be up the entire time:
  php updateSearchIndexConfig.php --reindexAndRemoveOk --indexIdentifier now
- php forceSearchIndex.php
-
-C.  Perform an in place index update with a brief close then a full reindex from source documents.  This
-only brings down search for a few seconds _but_ it might be incompatible with some updates.  Safest to
-never use it unless you know for sure:
- php updateSearchIndexConfig.php --closeOk
  php forceSearchIndex.php
 
 If you must do (2) really have only one option:
@@ -151,11 +148,8 @@ or for the Bash inclined:
  php forceSearchIndex.php --from $REINDEX_START --deletes
  php forceSearchIndex.php --from $REINDEX_START
 
-If you must do (3) you have two options:
+If you must do (3) you again only have one option:
 A.  Same as (2.A)
-B.  Perform an in place index update with a brief close. This only brings down search for a few seconds
-_but_ it might be incompatible with some updates.  Safest to never use it unless you know for sure:
- php updateSearchIndexConfig.php --closeOk
 
 4 is easy!
 
@@ -200,15 +194,6 @@ more experience with 1.0.  --Nik
  action.disable_shutdown: true
 
 
-CirrusSearch
-
-You should change the number of replicas to at least one, two if you want protection from crashes
-during upgrades.  More replicas will help distribute queries across more nodes.  Having more
-replicas than nodes doesn't make sense and Elasticsearch will stay "yellow" if you do that.
-Anyway, you should add this to LocalSettings.php to change it:
- $wgCirrusSearchReplicaCount = array( 'content' => 2, 'general' => 2 );
-
-
 Testing
 -------
 See tests/browser/README
@@ -220,24 +205,39 @@ Cirrus makes heavy use of the job queue.  You can run it without any job queue c
 if you switch the job queue to Redis with checkDelay enabled then Cirrus's results will be more
 correct.  The reason for this is that this configuration allows Cirrus to delay link counts
 until Elasticsearch has appropriately refreshed.  This is an example of configuring it:
- $wgRedisPassword = '<password goes here>';
+ $redisPassword = '<password goes here>';
  $wgJobTypeConf['default'] = array(
 	'class' => 'JobQueueRedis',
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 	),
  );
  $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 	),
  );
 
+Note: some MediaWiki setups have trouble running the job queue.  It can be finicky.	 The most
+sure fire way to get it to work is also the slowest.  Add this to your LocalSettings.php:
+ $wgRunJobsAsync = false;
+
+
+Development
+-----------
+The fastest way to get started with CirrusSearch development is to use MediaWiki-Vagrant.
+1.  Follow steps here: https://www.mediawiki.org/wiki/MediaWiki-Vagrant#Quick_start
+2.  Now execute the following:
+vagrant enable-role cirrussearch
+vagrant provision
+
+This can take some time but it produces a clean development environment in a virtual machine
+that has everything required to run Cirrus.
 
 Hooks
 -----
@@ -257,7 +257,11 @@ really been settled.
  $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields
 
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
- &config - multi-dimensional configuration array that contains page metadata
+ &config - multi-dimensional configuration array that contains Elasticsearch document configuration.
+   The 'page' index contains configuration for Elasticsearch documents representing pages.
+   The 'namespace' index contains namespace configuration for Elasticsearch documents representing
+   namespaces.
+
 
 
 Licensing information

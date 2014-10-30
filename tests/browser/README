@@ -93,21 +93,21 @@ And add an Elasticsearch server, for example:
 
 If you want to test with Redis (it is better) add this to LocalSettings.php and
 installl Redis:
- $wgRedisPassword = 'Q6dzak4k9vjYjh341fHS';
+ $redisPassword = 'Q6dzak4k9vjYjh341fHS';
  $wgJobTypeConf['default'] = array(
 	'class' => 'JobQueueRedis',
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 	),
  );
  $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => $wgRedisPassword,
+		'password' => $redisPassword,
 			),
  );
 

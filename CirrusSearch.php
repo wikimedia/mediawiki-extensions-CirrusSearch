@@ -51,6 +51,9 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 // disable the behavior entirely. The default should be fine for most people.
 $wgCirrusSearchReplicas = '0-2';
+// You can also specify this as an array of index type to replica count.  If you
+// do then you must specify all index types.  For example:
+// $wgCirrusSearchReplicas = array( 'content' => '0-3', 'general' => '0-2' );
 
 // Number of shards allowed on the same elasticsearch node.  Set this to 1 to
 // prevent two shards from the same high traffic index from being allocated

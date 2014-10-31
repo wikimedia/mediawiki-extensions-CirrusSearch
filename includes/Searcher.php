@@ -427,7 +427,12 @@ class Searcher extends ElasticsearchIntermediary {
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
 				global $wgLanguageCode,
-					$wgCirrusSearchWikimediaExtraPlugin;
+					$wgCirrusSearchWikimediaExtraPlugin,
+					$wgCirrusSearchEnableRegex;
+
+				if ( !$wgCirrusSearchEnableRegex ) {
+					return;
+				}
 
 				$searchContainedSyntax = true;
 				$searchType = 'regex';

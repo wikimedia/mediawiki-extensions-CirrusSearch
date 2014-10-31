@@ -99,6 +99,11 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // against.  It defaults to 10000 which seems like a reasonable compromize
 // to keep regexes fast while still producing good results.
 
+// Should CirrusSearch try to support regular expressions with insource:?
+// These can be really expensive, but mostly ok, especially if you have the
+// extra plugin installed. Sometimes they still cause issues though.
+$wgCirrusSearchEnableRegex = true;
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be

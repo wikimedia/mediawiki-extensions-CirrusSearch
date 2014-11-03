@@ -53,7 +53,7 @@ Feature: Prefix search
     When I click the search button
     Then I am on a page titled User talk:Search Engine Optimization Redirecttest
 
-  @accent_squashing
+  @accent_squashing @accented_namespace
   Scenario Outline: Search suggestions with accents
     When I type <term> into the search box
     Then suggestions should appear
@@ -67,3 +67,19 @@ Feature: Prefix search
     | Africa                 | África                 | África                 |
     | AlphaBeta              | AlphaBeta              | AlphaBeta              |
     | ÁlphaBeta              | AlphaBeta              | AlphaBeta              |
+    | Mó:Test                | Mó:Test                | Mó:Test                |
+    | Mo:Test                | Mó:Test                | Mó:Test                |
+    | file:Mo:Test           | none                   | Search results         |
+
+  @accent_squashing
+  Scenario Outline: Search suggestions with accents
+    When I type <term> into the search box
+    Then suggestions should appear
+      And <first_suggestion> is the first suggestion
+      And <second_suggestion> is the second suggestion
+  Examples:
+    |      term      | first_suggestion | second_suggestion |
+    | Áccent Sorting | Áccent Sorting   | Accent Sorting    |
+    | áccent Sorting | Áccent Sorting   | Accent Sorting    |
+    | Accent Sorting | Accent Sorting   | Áccent Sorting    |
+    | accent Sorting | Accent Sorting   | Áccent Sorting    |

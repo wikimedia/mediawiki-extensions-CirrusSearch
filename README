@@ -257,7 +257,11 @@ really been settled.
  $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields
 
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
- &config - multi-dimensional configuration array that contains page metadata
+ &config - multi-dimensional configuration array that contains Elasticsearch document configuration.
+   The 'page' index contains configuration for Elasticsearch documents representing pages.
+   The 'namespace' index contains namespace configuration for Elasticsearch documents representing
+   namespaces.
+
 
 
 Licensing information

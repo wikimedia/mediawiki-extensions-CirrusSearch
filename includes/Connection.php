@@ -43,6 +43,12 @@ class Connection extends ElasticaConnection {
 	const PAGE_TYPE_NAME = 'page';
 
 	/**
+	 * Name of the namespace type.
+	 * @var string
+	 */
+	const NAMESPACE_TYPE_NAME = 'namespace';
+
+	/**
 	 * @return array(string)
 	 */
 	public function getServerList() {
@@ -70,6 +76,15 @@ class Connection extends ElasticaConnection {
 		return self::getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
 	}
 
+	/**
+	 * Fetch the Elastica Type for namespaces.
+	 * @param mixed $name basename of index
+	 * @return \Elastica\Type
+	 */
+	public static function getNamespaceType( $name ) {
+		$type = 'general'; // Namespaces are always stored in the 'general' index.
+		return self::getIndex( $name, $type )->getType( self::NAMESPACE_TYPE_NAME );
+	}
 	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *

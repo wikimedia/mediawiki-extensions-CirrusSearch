@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.6';
+	const VERSION = '1.9';
 
 	/**
 	 * Whether to allow prefix searches to match on any word
@@ -81,7 +81,8 @@ class MappingConfigBuilder {
 	 */
 	public function buildConfig() {
 		global $wgCirrusSearchAllFields,
-			$wgCirrusSearchWeights;
+			$wgCirrusSearchWeights,
+			$wgCirrusSearchWikimediaExtraPlugin;
 
 		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
@@ -89,7 +90,9 @@ class MappingConfigBuilder {
 		$titleExtraAnalyzers = array(
 			$suggestExtra,
 			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'index_analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
 			array( 'analyzer' => 'near_match', 'index_options' => 'docs' ),
+			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
 			array( 'analyzer' => 'keyword', 'index_options' => 'docs' ),
 		);
 		if ( $this->prefixSearchStartsWithAnyWord ) {
@@ -97,6 +100,14 @@ class MappingConfigBuilder {
 				'index_analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
 				'index_options' => 'docs'
+			);
+		}
+		$sourceExtraAnalyzers = array();
+		if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
+				in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+			$sourceExtraAnalyzers[] = array(
+				'analyzer' => 'trigram',
+				'index_options' => 'docs',
 			);
 		}
 
@@ -107,7 +118,7 @@ class MappingConfigBuilder {
 			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
 		}
 
-		$config = array(
+		$page = array(
 			'dynamic' => false,
 			'_all' => array( 'enabled' => false ),
 			'properties' => array(
@@ -131,8 +142,10 @@ class MappingConfigBuilder {
 				'opening_text' => $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS ),
 				'auxiliary_text' => $this->buildStringField( $textOptions ),
 				'file_text' => $this->buildStringField( $textOptions ),
-				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL ),
-				'category' => $this->buildStringField( MappingConfigBuilder::MINIMAL, array(
+				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL,
+					$sourceExtraAnalyzers
+				),
+				'category' => $this->buildStringField( MappingConfigBuilder::SPEED_UP_HIGHLIGHTING, array(
 					array(
 						'analyzer' => 'lowercase_keyword',
 						'norms' => array( 'enabled' => false ),
@@ -161,6 +174,7 @@ class MappingConfigBuilder {
 					'analyzer' => 'suggest',
 				),
 				'language' => $this->buildKeywordField(),
+				'wikibase_item' => $this->buildKeywordField(),
 			),
 		);
 
@@ -173,24 +187,48 @@ class MappingConfigBuilder {
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
 			//  1. It is built with copy_to and not stored.
 			//  2. The term frequency information is all whoppy compared to the "real" source text.
-			$config[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
-			$config = $this->setupCopyTo( $config, $wgCirrusSearchWeights, 'all' );
+			$page[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
+			$page = $this->setupCopyTo( $page, $wgCirrusSearchWeights, 'all' );
 
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
 			// is never used in phrase queries or highlighting.
-			$config[ 'properties' ][ 'all_near_match' ] = array(
+			$page[ 'properties' ][ 'all_near_match' ] = array(
 				'type' => 'string',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
 				'position_offset_gap' => self::POSITION_OFFSET_GAP,
 				'norms' => array( 'enabled' => false ),
+				'fields' => array(
+					'asciifolding' => array(
+						'type' => 'string',
+						'analyzer' => 'near_match_asciifolding',
+						'index_options' => 'freqs',
+						'position_offset_gap' => self::POSITION_OFFSET_GAP,
+						'norms' => array( 'enabled' => false ),
+					),
+				),
 			);
 			$nearMatchFields = array(
 				'title' => $wgCirrusSearchWeights[ 'title' ],
 				'redirect' => $wgCirrusSearchWeights[ 'redirect' ],
 			);
-			$config = $this->setupCopyTo( $config, $nearMatchFields, 'all_near_match' );
+			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
+		$config[ 'page' ] = $page;
+
+		$config[ 'namespace' ] = array(
+			'dynamic' => false,
+			'_all' => array( 'enabled' => false ),
+			'properties' => array(
+				'name' => array(
+					'type' => 'string',
+					'analyzer' => 'near_match_asciifolding',
+					'norms' => array( 'enabled' => false ),
+					'index_options' => 'docs',
+					'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
+				),
+			),
+		);
 
 		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
 		return $config;

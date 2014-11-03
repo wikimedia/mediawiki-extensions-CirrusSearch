@@ -1,8 +1,10 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Maintenance;
+
+use \CirrusSearch\Connection;
+use \CirrusSearch\ElasticsearchIntermediary;
 use Elastica;
-use \Maintenance;
 use \ProfileSection;
 
 /**
@@ -29,6 +31,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 /**
  * Update the elasticsearch configuration for this index.
@@ -45,8 +48,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $indexBaseName;
 	private $indexIdentifier;
 	private $reindexAndRemoveOk;
-	// How much should this script indent output?
-	private $indent;
 
 	// Set with the name of any old indecies to remove if any must be during the alias maintenance
 	// steps.
@@ -102,8 +103,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
 		$this->addOption( 'indexType', 'Index to update.  Either content or general.', true, true );
-		$this->addOption( 'indent', 'String used to indent every line output in this script.', false,
-			true);
 		self::addSharedOptions( $this );
 	}
 
@@ -166,7 +165,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
 		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
-		$this->indent = $this->getOption( 'indent', '' );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
 		$this->reindexAcceptableCountDeviation = $this->parsePotentialPercent(
@@ -212,6 +210,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->validateCacheWarmers();
 			$this->validateAlias();
 			$this->updateVersions();
+			$this->indexNamespaces();
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
@@ -229,9 +228,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function checkElasticsearchVersion() {
-		$this->output( $this->indent . 'Fetching Elasticsearch version...' );
+		$this->outputIndented( 'Fetching Elasticsearch version...' );
 		$result = Connection::getClient()->request( '' );
 		$result = $result->getData();
+		if ( !isset( $result['version']['number'] ) ) {
+			$this->output( 'unable to determine, aborting.', 1 );
+		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
 		if ( !preg_match( '/^(1|2)./', $result ) ) {
@@ -245,7 +247,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function scanAvailablePlugins() {
 		global $wgCirrusSearchBannedPlugins;
 
-		$this->output( $this->indent . "Scanning available plugins..." );
+		$this->outputIndented( "Scanning available plugins..." );
 		$result = Connection::getClient()->request( '_nodes' );
 		$result = $result->getData();
 		$first = true;
@@ -269,39 +271,48 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		foreach ( array_chunk( $this->availablePlugins, 5 ) as $pluginChunk ) {
 			$plugins = implode( ', ', $pluginChunk );
-			$this->output( $this->indent . "\t$plugins\n" );
+			$this->outputIndented( "\t$plugins\n" );
 		}
 	}
 
 	private function updateVersions() {
-		$child = $this->runChild( 'CirrusSearch\UpdateVersionIndex' );
+		$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateVersionIndex' );
 		$child->mOptions['baseName'] = $this->indexBaseName;
 		$child->mOptions['update'] = true;
-		$child->mOptions['indent'] = "\t";
 		$child->execute();
+		$child->done();
+	}
+
+	private function indexNamespaces() {
+		// Only index namespaces if we're doing the general index
+		if ( $this->indexType === 'general' ) {
+			$child = $this->runChild( 'CirrusSearch\Maintenance\IndexNamespaces' );
+			$child->execute();
+			$child->done();
+		}
 	}
 
 	private function validateIndex() {
 		if ( $this->startOver ) {
-			$this->output( $this->indent . "Blowing away index to start over..." );
+			$this->outputIndented( "Blowing away index to start over..." );
 			$this->createIndex( true );
 			$this->output( "ok\n" );
 			return;
 		}
 		if ( !$this->getIndex()->exists() ) {
-			$this->output( $this->indent . "Creating index..." );
+			$this->outputIndented( "Creating index..." );
 			$this->createIndex( false );
 			$this->output( "ok\n" );
 			return;
 		}
-		$this->output( $this->indent . "Index exists so validating...\n" );
+		$this->outputIndented( "Index exists so validating...\n" );
 		$this->validateIndexSettings();
 	}
 
 	private function validateIndexSettings() {
 		global $wgCirrusSearchMaxShardsPerNode;
 
-		$this->output( $this->indent . "\tValidating number of shards..." );
+		$this->outputIndented( "\tValidating number of shards..." );
 		$settings = $this->getSettings();
 		$actualShardCount = $settings[ 'number_of_shards' ];
 		if ( $actualShardCount == $this->getShardCount() ) {
@@ -315,7 +326,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"validate everything else.", 1 );
 		}
 
-		$this->output( $this->indent . "\tValidating replica range..." );
+		$this->outputIndented( "\tValidating replica range..." );
 		$actualReplicaCount = isset( $settings[ 'auto_expand_replicas' ] ) ? $settings[ 'auto_expand_replicas' ] : 'false';
 		if ( $actualReplicaCount == $this->getReplicaCount() ) {
 			$this->output( "ok\n" );
@@ -328,7 +339,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
 		$shardAllocation->validate();
 
-		$this->output( $this->indent . "\tValidating max shards per node..." );
+		$this->outputIndented( "\tValidating max shards per node..." );
 		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
 		// because that is easier to read.
 		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
@@ -336,7 +347,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
 		$expectedMaxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
 			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
-		if ( $actualMaxShardsPerNode === $expectedMaxShardsPerNode ) {
+		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
@@ -349,7 +360,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateAnalyzers() {
-		$this->output( $this->indent . "Validating analyzers..." );
+		$this->outputIndented( "Validating analyzers..." );
 		$settings = $this->getSettings();
 		$requiredAnalyzers = $this->analysisConfigBuilder->buildConfig();
 		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
@@ -373,7 +384,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateMapping() {
 		global $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
 
-		$this->output( $this->indent . "Validating mappings..." );
+		$this->outputIndented( "Validating mappings..." );
 		if ( $wgCirrusSearchOptimizeIndexForExperimentalHighlighter &&
 				!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
 			$this->output( "impossible!\n" );
@@ -381,19 +392,24 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
 		}
 
-		$requiredPageMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
+		$requiredMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
-		$requiredPageMappings = $requiredPageMappings->buildConfig();
+		$requiredMappings = $requiredMappings->buildConfig();
 
-		if ( !$this->checkMapping( $requiredPageMappings ) ) {
+		if ( !$this->checkMapping( $requiredMappings ) ) {
 			// TODO Conflict resolution here might leave old portions of mappings
-			$action = new \Elastica\Type\Mapping( $this->getPageType() );
-			foreach ( $requiredPageMappings as $key => $value ) {
-				$action->setParam( $key, $value );
+			$pageAction = new \Elastica\Type\Mapping( $this->getPageType() );
+			foreach ( $requiredMappings[ 'page' ] as $key => $value ) {
+				$pageAction->setParam( $key, $value );
+			}
+			$namespaceAction = new \Elastica\Type\Mapping( $this->getNamespaceType() );
+			foreach ( $requiredMappings[ 'namespace' ] as $key => $value ) {
+				$namespaceAction->setParam( $key, $value );
 			}
 			try {
-				$action->send();
+				$pageAction->send();
+				$namespaceAction->send();
 				$this->output( "corrected\n" );
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
@@ -405,14 +421,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * Check that the mapping returned from Elasticsearch is as we want it.
-	 * @param array $requiredPageMappings the mappings we want
+	 * @param array $requiredMappings the mappings we want
 	 * @return bool is the mapping good enough for us?
 	 */
-	private function checkMapping( $requiredPageMappings ) {
+	private function checkMapping( $requiredMappings ) {
 		$actualMappings = $this->getIndex()->getMapping();
-		$this->output( "\n" . $this->indent . "\tValidating mapping for page type..." );
-		if ( array_key_exists( 'page', $actualMappings ) &&
-				$this->checkConfig( $actualMappings[ 'page' ], $requiredPageMappings ) ) {
+		$this->output( "\n" );
+		$this->outputIndented( "\tValidating mapping..." );
+		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {
 			$this->output( "ok\n" );
 			return true;
 		} else {
@@ -427,9 +443,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return bool
 	 */
 	private function checkConfig( $actual, $required, $indent = null ) {
-		if ( $indent === null ) {
-			$indent = $this->indent . "\t\t";
-		}
 		foreach( $required as $key => $value ) {
 			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
@@ -491,7 +504,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateAlias() {
-		$this->output( $this->indent . "Validating aliases...\n" );
+		$this->outputIndented( "Validating aliases...\n" );
 		// Since validate the specific alias first as that can cause reindexing
 		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
@@ -507,7 +520,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		global $wgCirrusSearchMaintenanceTimeout;
 
-		$this->output( $this->indent . "\tValidating $this->indexType alias..." );
+		$this->outputIndented( "\tValidating $this->indexType alias..." );
 		$otherIndeciesWithAlias = array();
 		$specificAliasName = $this->getIndexTypeName();
 		$status = Connection::getClient()->getStatus();
@@ -546,16 +559,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		if ( $this->reindexAndRemoveOk ) {
 			$this->output( "is taken...\n" );
-			$this->output( $this->indent . "\tReindexing...\n" );
-			// Muck with $this->indent because reindex is used to running at the top level.
-			$saveIndent = $this->indent;
-			$this->indent = $this->indent . "\t\t";
+			$this->outputIndented( "\tReindexing...\n" );
 			$this->reindex();
-			$this->indent = $saveIndent;
 			if ( $this->tooFewReplicas ) {
 				// Optimize the index so it'll be more compact for replication.  Not required
 				// but should be helpful.
-				$this->output( $this->indent . "\tOptimizing..." );
+				$this->outputIndented( "\tOptimizing..." );
 				try {
 					// Reset the timeout just in case we lost it somehwere along the line
 					Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
@@ -572,24 +581,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					}
 				}
 				$this->validateIndexSettings();
-				$this->output( $this->indent . "\tWaiting for all shards to start...\n" );
+				$this->outputIndented( "\tWaiting for all shards to start...\n" );
 				list( $lower, $upper ) = explode( '-', $this->getReplicaCount() );
-				$indexName = $this->getSpecificIndexName();
-				$path = "_cluster/health/$indexName";
 				$each = 0;
 				while ( true ) {
-					$response = Connection::getClient()->request( $path );
-					if ( $response->hasError() ) {
-						$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
-						sleep( 1 );
-						continue;
-					}
-					$health = $response->getData();
+					$health = $this->getHealth();
 					$active = $health[ 'active_shards' ];
 					$relocating = $health[ 'relocating_shards' ];
 					$initializing = $health[ 'initializing_shards' ];
 					$unassigned = $health[ 'unassigned_shards' ];
-					$nodes = $health['number_of_nodes'];
+					$nodes = $health[ 'number_of_nodes' ];
 					if ( $nodes < $lower ) {
 						$this->error( "Require $lower replicas but only have $nodes nodes. "
 							. "This is almost always due to misconfiguration, aborting.", 1 );
@@ -601,7 +602,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$expectedReplicas =  min( max( $nodes - 1, $lower ), $upper );
 					$expectedActive = $this->getShardCount() * ( 1 + $expectedReplicas );
 					if ( $each === 0 || $active === $expectedActive ) {
-						$this->output( $this->indent . "\t\tactive:$active/$expectedActive relocating:$relocating " .
+						$this->outputIndented( "\t\tactive:$active/$expectedActive relocating:$relocating " .
 							"initializing:$initializing unassigned:$unassigned\n" );
 						if ( $active === $expectedActive ) {
 							break;
@@ -611,7 +612,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					sleep( 1 );
 				}
 			}
-			$this->output( $this->indent . "\tSwapping alias...");
+			$this->outputIndented( "\tSwapping alias...");
 			$this->getIndex()->addAlias( $specificAliasName, true );
 			$this->output( "done\n" );
 			$this->removeIndecies = $otherIndeciesWithAlias;
@@ -626,7 +627,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function validateAllAlias() {
-		$this->output( $this->indent . "\tValidating all alias..." );
+		$this->outputIndented( "\tValidating all alias..." );
 		$allAliasName = Connection::getIndexName( $this->indexBaseName );
 		$status = Connection::getClient()->getStatus();
 		if ( $status->indexExists( $allAliasName ) ) {
@@ -669,9 +670,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function removeOldIndeciesIfRequired() {
 		if ( $this->removeIndecies ) {
-			$this->output( $this->indent . "\tRemoving old indecies...\n" );
+			$this->outputIndented( "\tRemoving old indecies...\n" );
 			foreach ( $this->removeIndecies as $oldIndex ) {
-				$this->output( $this->indent . "\t\t$oldIndex..." );
+				$this->outputIndented( "\t\t$oldIndex..." );
 				Connection::getClient()->getIndex( $oldIndex )->delete();
 				$this->output( "done\n" );
 			}
@@ -687,12 +688,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of shards but that is
-		// is worth the price.
+		// is worth the price.  total_shards_per_node will help to make sure that each shard
+		// has as few neighbors as possible.
 		$settings = $this->getIndex()->getSettings();
+		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
 		$settings->set( array(
 			'refresh_interval' => -1,
 			'merge.policy.segments_per_tier' => 40,
 			'merge.policy.max_merge_at_once' => 40,
+			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		) );
 
 		if ( $this->reindexProcesses > 1 ) {
@@ -711,7 +715,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->error( "Unexpected result while forking:  $forkResult", 1 );
 			}
 
-			$this->output( $this->indent . "Verifying counts..." );
+			$this->outputIndented( "Verifying counts..." );
 			// We can't verify counts are exactly equal because they won't be - we still push updates into
 			// the old index while reindexing the new one.
 			$oldCount = (float) Connection::getPageType( $this->indexBaseName, $this->indexType )->count();
@@ -742,13 +746,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
-			$this->output( $this->indent . "Starting single process reindex\n" );
+			$this->outputIndented( "\t\tStarting single process reindex\n" );
 		} else {
 			if ( $childNumber >= $children ) {
 				$this->error( "Invalid parameters - childNumber >= children ($childNumber >= $children) ", 1 );
 			}
-			$messagePrefix = "[$childNumber] ";
-			$this->output( $this->indent . $messagePrefix . "Starting child process reindex\n" );
+			$messagePrefix = "\t\t[$childNumber] ";
+			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
 			$filter = new Elastica\Filter\Script( array(
 				'script' => "(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber",
@@ -759,7 +763,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
 		$pageProperties = $pageProperties->buildConfig();
-		$pageProperties = $pageProperties[ 'properties' ];
+		$pageProperties = $pageProperties[ 'page' ][ 'properties' ];
 		try {
 			$query = new Elastica\Query();
 			$query->setFields( array( '_id', '_source' ) );
@@ -777,18 +781,22 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			);
 			$totalDocsToReindex = $result->getResponse()->getData();
 			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
-			$this->output( $this->indent . $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
+			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
 			$operationStartTime = microtime( true );
 			$completed = 0;
+			$self = $this;
 			while ( true ) {
 				wfProfileIn( __METHOD__ . '::receiveDocs' );
-				$result = $this->getIndex()->search( array(), array(
-					'scroll_id' => $result->getResponse()->getScrollId(),
-					'scroll' => '1h'
-				) );
+				$result = $this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'fetching documents to reindex',
+					function() use ( $self, $result ) {
+						return $self->getIndex()->search( array(), array(
+							'scroll_id' => $result->getResponse()->getScrollId(),
+							'scroll' => '1h'
+						) );
+					} );
 				wfProfileOut( __METHOD__ . '::receiveDocs' );
 				if ( !$result->count() ) {
-					$this->output( $this->indent . $messagePrefix . "All done\n" );
+					$this->outputIndented( $messagePrefix . "All done\n" );
 					break;
 				}
 				wfProfileIn( __METHOD__ . '::packageDocs' );
@@ -807,10 +815,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$result->next();
 				}
 				wfProfileOut( __METHOD__ . '::packageDocs' );
-				$this->sendDocumentsWithRetry( $messagePrefix, $documents );
+				$this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'retrying as singles',
+					function() use ( $self, $messagePrefix, $documents ) {
+						$self->sendDocuments( $messagePrefix, $documents );
+					} );
 				$completed += $result->count();
 				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-				$this->output( $this->indent . $messagePrefix .
+				$this->outputIndented( $messagePrefix .
 					"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -822,15 +833,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	private function sendDocumentsWithRetry( $messagePrefix, $documents ) {
-		$profiler = new ProfileSection( __METHOD__ );
+	private function getHealth() {
+		while ( true ) {
+			$indexName = $this->getSpecificIndexName();
+			$path = "_cluster/health/$indexName";
+			$response = Connection::getClient()->request( $path );
+			if ( $response->hasError() ) {
+				$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
+				sleep( 1 );
+				continue;
+			}
+			return $response->getData();
+		}
+	}
 
+	private function withRetry( $attempts, $messagePrefix, $description, $func ) {
 		$errors = 0;
 		while ( true ) {
-			if ( $errors < $this->reindexRetryAttempts ) {
+			if ( $errors < $attempts ) {
 				try {
-					$this->sendDocuments( $messagePrefix, $documents );
-					return;
+					return $func();
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					$errors += 1;
 					// Random backoff with lowest possible upper bound as 16 seconds.
@@ -838,24 +860,23 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					$seconds = rand( 1, pow( 2, 3 + $errors ) );
 					$type = get_class( $e );
 					$message = ElasticsearchIntermediary::extractMessage( $e );
-					$this->output( $this->indent . $messagePrefix . "Caught an error retrying as singles.  " .
-						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message" );
+					$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
+						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
 					sleep( $seconds );
 				}
 			} else {
-				$this->sendDocuments( $messagePrefix, $documents );
-				return;
+				return $func();
 			}
 		}
 	}
 
-	private function sendDocuments( $messagePrefix, $documents ) {
+	public function sendDocuments( $messagePrefix, $documents ) {
 		try {
 			$updateResult = $this->getPageType()->addDocuments( $documents );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$this->output( $this->indent . $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$type' and message is:  $message" );
+			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$type' and message is:  $message" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
 				$updateResult = $this->getPageType()->addDocuments( array( $document ) );
@@ -869,8 +890,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
-		global $wgCirrusSearchRefreshInterval;
+		global $wgCirrusSearchRefreshInterval,
+			$wgCirrusSearchMaxShardsPerNode;
 
+		$maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
+			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
 		$this->getIndex()->create( array(
 			'settings' => array(
 				'number_of_shards' => $this->getShardCount(),
@@ -880,6 +905,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'index.query.default_field' => 'all',
 				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
 				'merge.policy' => $this->getMergeSettings(),
+				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)
 		), $rebuild );
 		$this->tooFewReplicas = $this->reindexAndRemoveOk;
@@ -897,11 +923,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$typeName = $this->getIndexTypeName();
 		if ( $option === 'now' ) {
 			$identifier = strval( time() );
-			$this->output( $this->indent . "Setting index identifier...${typeName}_${identifier}\n" );
+			$this->outputIndented( "Setting index identifier...${typeName}_${identifier}\n" );
 			return $identifier;
 		}
 		if ( $option === 'current' ) {
-			$this->output( $this->indent . 'Infering index identifier...' );
+			$this->outputIndented( 'Infering index identifier...' );
 			$found = array();
 			foreach ( Connection::getClient()->getStatus()->getIndexNames() as $name ) {
 				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
@@ -932,14 +958,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function pickAnalyzer() {
 		$this->analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder(
 			$this->langCode, $this->availablePlugins );
-		$this->output( $this->indent . 'Picking analyzer...' .
+		$this->outputIndented( 'Picking analyzer...' .
 			$this->analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
 	}
 
 	/**
 	 * @return \Elastica\Index being updated
 	 */
-	private function getIndex() {
+	public function getIndex() {
 		return Connection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
@@ -958,10 +984,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * Get the type being updated by the search config.
+	 * Get the page type being updated by the search config.
 	 */
 	private function getPageType() {
 		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
+	}
+
+	/**
+	 * Get the namespace type being updated by the search config.
+	 */
+	private function getNamespaceType() {
+		return $this->getIndex()->getType( Connection::NAMESPACE_TYPE_NAME );
 	}
 
 	/**
@@ -988,7 +1021,27 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function getReplicaCount() {
 		global $wgCirrusSearchReplicas;
+		// If $wgCirrusSearchReplicas is an array of index type to number of replicas then respect that
+		if ( isset( $wgCirrusSearchReplicas[ $this->indexType ] ) ) {
+			return $wgCirrusSearchReplicas[ $this->indexType ];
+		}
+		if ( is_array( $wgCirrusSearchReplicas ) ) {
+			$this->error( 'If wgCirrusSearchReplicas is an array it must contain all index types.', 1 );
+		}
+		// Otherwise its just a raw scalar so we should respect that too
 		return $wgCirrusSearchReplicas;
+	}
+
+	private function getMaxReplicaCount() {
+		$replica = explode( '-', $this->getReplicaCount() );
+		return $replica[ count( $replica ) - 1 ];
+	}
+
+	private function decideMaxShardsPerNodeForReindex() {
+		$health = $this->getHealth();
+		$totalNodes = $health[ 'number_of_nodes' ];
+		$totalShards = $this->getShardCount() * ( $this->getMaxReplicaCount() + 1 );
+		return ceil( 1.0 * $totalShards / $totalNodes );
 	}
 
 	private function parsePotentialPercent( $str ) {
@@ -998,19 +1051,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 		return $result / 100;
 	}
-
-	public function output( $message, $channel = null ) {
-		parent::output( $message );
-	}
-
-	public function outputIndented( $message ) {
-		$this->output( $this->indent . $message );
-	}
-
-	public function error( $err, $die = 0 ) {
-		parent::error( $err, $die );
-	}
 }
 
-$maintClass = "CirrusSearch\UpdateOneSearchIndexConfig";
+$maintClass = "CirrusSearch\Maintenance\UpdateOneSearchIndexConfig";
 require_once RUN_MAINTENANCE_IF_MAIN;

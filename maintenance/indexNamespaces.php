@@ -3,9 +3,11 @@
 namespace CirrusSearch\Maintenance;
 
 use \CirrusSearch\Connection;
+use \Elastica\Document;
+use \Elastica\Query\MatchAll;
 
 /**
- * Update the search configuration on the search backend.
+ * Index all namespaces for quick lookup.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,29 +32,31 @@ if( $IP === false ) {
 require_once( "$IP/maintenance/Maintenance.php" );
 require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
-/**
- * Update the elasticsearch configuration for this index.
- */
-class UpdateSearchIndexConfig extends Maintenance {
-	public function __construct() {
-		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies." );
-		// Directly require this script so we can include its parameters as maintenance scripts can't use the autoloader
-		// in __construct.  Lame.
-		require_once __DIR__ . '/updateOneSearchIndexConfig.php';
-		UpdateOneSearchIndexConfig::addSharedOptions( $this );
-	}
-
+class IndexNamespaces extends Maintenance {
 	public function execute() {
-		foreach ( Connection::getAllIndexTypes() as $indexType ) {
-			$this->outputIndented( "$indexType index...\n");
-			$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateOneSearchIndexConfig' );
-			$child->mOptions[ 'indexType' ] = $indexType;
-			$child->execute();
-			$child->done();
+		global $wgContLang;
+
+		$type = Connection::getNamespaceType( wfWikiId() );
+
+		$this->outputIndented( "Deleting namespaces..." );
+		$type->deleteByQuery( new MatchAll() );
+		$this->output( "done\n" );
+
+		$this->outputIndented( "Indexing namespaces..." );
+		$namesById = array();
+		foreach ( $wgContLang->getNamespaceIds() as $name => $id ) {
+			if ( $name ) {
+				$namesById[ $id ][] = $name;
+			}
 		}
+		$documents = array();
+		foreach ( $namesById as $id => $names ) {
+			$documents[] = new Document( $id, array( 'name' => $names ) );
+		}
+		$type->addDocuments( $documents );
+		$this->output( "done\n" );
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\UpdateSearchIndexConfig";
+$maintClass = "CirrusSearch\Maintenance\IndexNamespaces";
 require_once RUN_MAINTENANCE_IF_MAIN;

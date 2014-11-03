@@ -21,7 +21,7 @@ Then(/^I should land on Search Results page$/) do
   @browser.url.should match Regexp.escape("&title=Special%3ASearch")
 end
 Then(/^(.+) should be the first result$/) do |page_name|
-  on(SearchPage).one_result.should == page_name
+  on(SearchPage).first_result.should == page_name
 end
 
 Then(/^the page I arrive on has title (.+)$/) do |title|

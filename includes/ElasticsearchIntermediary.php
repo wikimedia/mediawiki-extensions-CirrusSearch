@@ -196,6 +196,8 @@ class ElasticsearchIntermediary {
 		// what else would have automatons and illegal argument exceptions. Just looking
 		// for the exception won't suffice because other weird things could cause it.
 		$seemsToUseRegexes = strpos( $message, 'import org.apache.lucene.util.automaton.*' ) !== false;
+		$usesExtraRegex = strpos( $message, 'org.wikimedia.search.extra.regex.SourceRegexFilter' ) !== false;
+		$seemsToUseRegexes |= $usesExtraRegex;
 		$marker = 'IllegalArgumentException[';
 		$markerLocation = strpos( $message, $marker );
 		if ( $seemsToUseRegexes && $markerLocation !== false ) {
@@ -207,8 +209,14 @@ class ElasticsearchIntermediary {
 			$matches = array();
 			if ( preg_match( '/(.+) at position ([0-9]+)/', $syntaxError, $matches ) ) {
 				$errorMessage = $matches[ 1 ];
-				// The 3 below offsets the .*( in front of the user pattern to make it unanchored.
-				$position = $matches[ 2 ] - 3;
+				$position = $matches[ 2 ];
+				if ( !$usesExtraRegex ) {
+					// The 3 below offsets the .*( in front of the user pattern
+					// to make it unanchored.
+					$position -= 3;
+				}
+			} else if ( $syntaxError === 'unexpected end-of-string' ) {
+				$errorMessage = 'regex too short to be correct';
 			}
 			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );
 			return array( $status, 'Regex syntax error:  ' . $syntaxError );

@@ -7,7 +7,7 @@ Feature: Searches with the incategory filter
     When I search for incategory:weaponry
     Then Catapult is in the search results
       And Amazing Catapult is in the search results
-    But Two Words is not in the search results
+      But Two Words is not in the search results
       And there is no link to create a new page from the search result
 
   Scenario: incategory: can be combined with other text
@@ -26,6 +26,14 @@ Feature: Searches with the incategory filter
 
   Scenario: incategory works with multi word categories
     When I search for incategory:"Categorywith Twowords"
+    Then Two Words is the first search result
+
+  Scenario: incategory can find categories containing quotes if the quote is escaped
+    When I search for incategory:"Categorywith \" Quote"
+    Then Two Words is the first search result
+
+  Scenario: incategory can be repeated
+    When I search for incategory:"Categorywith \" Quote" incategory:"Categorywith Twowords"
     Then Two Words is the first search result
 
   Scenario: incategory works with can find two word categories with spaces

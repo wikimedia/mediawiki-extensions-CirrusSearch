@@ -33,6 +33,7 @@ class PageTextBuilder extends ParseBuilder {
 		'.mw-cite-backlink',    // The ↑ next to refenences in the references section
 		'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
 		'h5', 'h6', 'h4',
+		'.autocollapse',        // Collapsed fields are hidden by default so we don't want them showing up.
 	);
 	/**
 	 * @var array selectors to elements that are considered auxiliary to article text for search
@@ -54,7 +55,7 @@ class PageTextBuilder extends ParseBuilder {
 		$this->doc->add( 'text', $text );
 		$this->doc->add( 'opening_text', $opening );
 		$this->doc->add( 'auxiliary_text', $auxiliary );
-		$this->doc->add( 'text_bytes', strlen( $text ) );
+		$this->doc->add( 'text_bytes', $this->content->getSize() );
 		$this->doc->add( 'source_text', $this->buildSourceTextToIndex() );
 
 		return $this->doc;
@@ -117,16 +118,21 @@ class PageTextBuilder extends ParseBuilder {
 
 		// Strip elements from the page that we never want in the search text.
 		$formatter->remove( $this->excludedElementSelectors );
-		$formatter->filterContent();
-
-		// Strip elements from the page that are auxiliary text.  These will still be
-		// searched but matches will be ranked lower and non-auxiliary matches will be
-		// prefered in highlighting.
-		$formatter->remove( $this->auxiliaryElementSelectors );
-		$auxiliaryElements = $formatter->filterContent();
-		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
-		$auxiliary = array();
-		if ( is_array( $auxiliaryElements ) ) {
+		$filterResult = $formatter->filterContent();
+		if ( $filterResult === null ) {
+			// We're running against Mediawiki < 1.24wm10 which won't support auxiliary text
+			// because it can't extract it using the HtmlFormatter.  We'll just set text to
+			// all the text.
+			$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+			$auxiliary = array();
+		} else {
+			// Strip elements from the page that are auxiliary text.  These will still be
+			// searched but matches will be ranked lower and non-auxiliary matches will be
+			// prefered in highlighting.
+			$formatter->remove( $this->auxiliaryElementSelectors );
+			$auxiliaryElements = $formatter->filterContent();
+			$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+			$auxiliary = array();
 			foreach ( $auxiliaryElements as $auxiliaryElement ) {
 				$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
 			}

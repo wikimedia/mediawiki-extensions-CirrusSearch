@@ -35,7 +35,13 @@ interface ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch fields syntax
 	 */
 	function getFields();
-	function getHighlightingConfiguration();
+	/**
+	 * Get the highlighting configuration.
+	 * @param array $highlightSource configuration for how to highlight the source.
+	 *  Empty if source should be ignored.
+	 * @return array highlighting configuration for elasticsearch
+	 */
+	function getHighlightingConfiguration( $highlightSource );
 	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 		$result, $searchContainedSyntax );
 }
@@ -52,7 +58,7 @@ class TitleResultsType implements ResultsType {
 		return false;
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		return false;
 	}
 
@@ -81,7 +87,7 @@ class FancyTitleResultsType extends TitleResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
@@ -119,10 +125,13 @@ class FancyTitleResultsType extends TitleResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(
 				"title.$this->matchedAnalyzer" => $entireValue,
+				"title.{$this->matchedAnalyzer}_asciifolding" => $entireValue,
 				"redirect.title.$this->matchedAnalyzer" => $manyValues,
-			)
+				"redirect.title.{$this->matchedAnalyzer}_asciifolding" => $manyValues,
+			),
 		);
 	}
+
 	/**
 	 * Convert the results to titles.
 	 * @return array with optional keys:
@@ -142,9 +151,20 @@ class FancyTitleResultsType extends TitleResultsType {
 			// though.
 			if ( isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
 				$resultForTitle[ 'titleMatch' ] = $title;
+			} else if ( isset( $highlights[ "title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
+				$resultForTitle[ 'titleMatch' ] = $title;
 			}
+			$redirectHighlights = array();
+
 			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
-				foreach ( $highlights[ "redirect.title.$this->matchedAnalyzer" ] as $redirectTitle ) {
+				$redirectHighlights = $highlights[ "redirect.title.$this->matchedAnalyzer" ];
+			}
+			if ( isset( $highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
+				$redirectHighlights = array_merge( $redirectHighlights,
+					$highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] );
+			}
+			if ( count( $redirectHighlights ) !== 0 ) {
+				foreach ( $redirectHighlights as $redirectTitle ) {
 					// The match was against a redirect so we should replace the $title with one that
 					// represents the redirect.
 					// The first step is to strip the actual highlighting from the title.
@@ -214,7 +234,7 @@ class FullTextResultsType implements ResultsType {
 	 * won't be sorted by score.
 	 * @return array of highlighting configuration
 	 */
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchFragmentSize;
 
@@ -295,12 +315,19 @@ class FullTextResultsType implements ResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(),
 		);
+		if ( count( $highlightSource ) ) {
+			$config[ 'fields' ][ 'source_text.plain' ] = $text;
+			$this->configureHighlightingForSource( $config, $highlightSource );
+			return $config;
+		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
 			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
 			$config[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$config[ 'fields' ][ 'category' ] = $redirectAndHeading;
+			$config[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
 			$config[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 		}
@@ -329,6 +356,44 @@ class FullTextResultsType implements ResultsType {
 			$fields[ $name ] = $config;
 		}
 		return $fields;
+	}
+
+	private function configureHighlightingForSource( &$config, $highlightSource ) {
+		$patterns = array();
+		$locale = null;
+		$caseInsensitive = false;
+		foreach ( $highlightSource as $part ) {
+			if ( isset( $part[ 'pattern' ] ) ) {
+				$patterns[] = $part[ 'pattern' ];
+				$locale = $part[ 'locale' ];
+				$caseInsensitive |= $part[ 'insensitive' ];
+			}
+		}
+		if ( count( $patterns ) ) {
+			$options = array(
+				'regex' => $patterns,
+				'locale' => $locale,
+				'regex_flavor' => 'lucene',
+				'skip_query' => true,
+				'regex_case_insensitive' => (boolean)$caseInsensitive,
+			);
+			$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
+				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ], $options );
+			return;
+		}
+		$queryStrings = array();
+		foreach ( $highlightSource as $part ) {
+			if ( isset( $part[ 'query_string' ] ) ) {
+				$queryStrings[] = $part[ 'query_string' ];
+			}
+		}
+		if ( count( $queryStrings ) ) {
+			$bool = new \Elastica\Query\Bool();
+			foreach ( $queryStrings as $queryString ) {
+				$bool->addShould( $queryString );
+			}
+			$config[ 'fields' ][ 'source_text.plain' ][ 'highlight_query' ] = $bool->toArray();
+		}
 	}
 }
 
@@ -368,7 +433,7 @@ class InterwikiResultsType implements ResultsType {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
-	public function getHighlightingConfiguration() {
+	public function getHighlightingConfiguration( $highlightSource ) {
 		return null;
 	}
 

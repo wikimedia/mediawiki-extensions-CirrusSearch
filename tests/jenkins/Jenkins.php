@@ -49,9 +49,14 @@ require_once( "$IP/extensions/Cite/Cite.php" );
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
+$wgCirrusSearchWikimediaExtraPlugin = array(
+	'regex' => array( 'build', 'use' ),
+);
+
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';
+$wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
 $wgUseInstantCommons = true;
 $wgEnableUploads = true;
@@ -72,10 +77,10 @@ $wgJobQueueAggregator = array(
 	),
 );
 $wgCiteEnablePopups = true;
+$wgExtraNamespaces[ 760 ] = 'Mó';
 
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
-$wgCirrusSearchShowScore = true;
 
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
@@ -94,6 +99,7 @@ class Jenkins {
 
 	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
 		$jobsToUndelay = array(
+			'cirrusSearchIncomingLinkCount',
 			'cirrusSearchLinksUpdateSecondary',
 			'cirrusSearchLinksUpdate',
 			'cirrusSearchLinksUpdatePrioritized'

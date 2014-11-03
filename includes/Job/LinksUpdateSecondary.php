@@ -1,18 +1,13 @@
 <?php
 
 namespace CirrusSearch\Job;
-use \CirrusSearch\Updater;
+
+use \JobQueueGroup;
 use \Title;
 
 /**
- * Performs the appropriate updates to Elasticsearch after a LinksUpdate is
- * completed.  The page itself is updated first then a second copy of this job
- * is queued to update linked articles if any links change.  The job can be
- * 'prioritized' via the 'prioritize' parameter which will switch it to a
- * different queue then the non-prioritized jobs.  Prioritized jobs will never
- * be deduplicated with non-prioritized jobs which is good because we can't
- * control which job is removed during deduplication.  In our case it'd only be
- * ok to remove the non-prioritized version.
+ * Tombstone job to convert currently queued jobs into the new
+ * IncomingLinkCount job type.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +27,21 @@ use \Title;
 class LinksUpdateSecondary extends Job {
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params );
+		// TODO Remove this job when it has drained from the queues
 	}
 
 	protected function doJob() {
-		// Load the titles and filter out any that no longer exist.
-		$updater = new Updater();
-		// We're intentionally throwing out whether or not this job succeeds.
-		// We're loggging it but we're not retrying.
-		$updater->updateLinkedArticles( $this->params[ 'addedLinks' ],
+		$titleKeys = array_merge( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
-		return true;
-	}
+		foreach ( $titleKeys as $titleKey ) {
+			$title = Title::newFromDBKey( $titleKey );
+			if ( !$title ) {
+				continue;
+			}
+			$linkCount = new IncomingLinkCount( $title, array() );
+			JobQueueGroup::singleton()->push( $linkCount );
+		}
 
-	public function workItemCount() {
-		return count( $this->params[ 'addedLinks' ] )
-			+ count( $this->params[ 'removedLinks' ] );
+		return true;
 	}
 }

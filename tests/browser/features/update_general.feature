@@ -79,4 +79,5 @@ Feature: Search backend updates
 
   Scenario: Really really long links don't break updates
     When a page named ReallyLongLink%{epoch} exists with contents @really_long_link.txt
+      And I am at a random page
     Then within 20 seconds searching for ReallyLongLink%{epoch} yields ReallyLongLink%{epoch} as the first result

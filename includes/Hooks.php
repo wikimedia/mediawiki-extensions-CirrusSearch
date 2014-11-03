@@ -95,6 +95,7 @@ class Hooks {
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
+			$wgHooks[ 'PrefixSearchExtractNamespace' ][] = 'CirrusSearch\Hooks::prefixSearchExtractNamespace';
 			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
 			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
 		}
@@ -112,6 +113,7 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchBoostLinks, $request, 'cirrusBoostLinks' );
 			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
+			self::overrideUseExtraPluginForRegex( $request );
 		}
 	}
 
@@ -135,6 +137,24 @@ class Hooks {
 				$dest = true;
 			} elseif( $val = 'no' ) {
 				$dest = false;
+			}
+		}
+	}
+
+	private static function overrideUseExtraPluginForRegex( $request ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
+
+		$val = $request->getVal( 'cirrusAccelerateRegex' );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][] = 'use';
+			} elseif( $val = 'no' ) {
+				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+					$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
+					if ( $useLocation !== false ) {
+						unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
+					}
+				}
 			}
 		}
 	}
@@ -350,6 +370,14 @@ class Hooks {
 		return true;
 	}
 
+	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
+		$user = RequestContext::getMain()->getUser();
+		$searcher = new Searcher( 0, 1, $namespaces, $user );
+		$searcher->updateNamespacesFromQuery( $search );
+		$namespaces = $searcher->getNamespaces();
+		return false;
+	}
+
 	/**
 	 * Hooked to delegate prefix searching to Searcher.
 	 * @param int $namespace namespace to search
@@ -358,9 +386,9 @@ class Hooks {
 	 * @param array(string) $results outbound variable with string versions of titles
 	 * @return bool always false because we are the authoritative prefix search
 	 */
-	public static function prefixSearch( $namespace, $search, $limit, &$results ) {
+	public static function prefixSearch( $namespaces, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, $limit, $namespace, $user );
+		$searcher = new Searcher( 0, $limit, $namespaces, $user );
 		$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
@@ -399,6 +427,11 @@ class Hooks {
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
 		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
+		if ( $title->getNamespace() === NS_MAIN ) {
+			$searcher->updateNamespacesFromQuery( $term );
+		} else {
+			$term = $title->getText();
+		}
 		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
 		$status = $searcher->nearMatchTitleSearch( $term );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with

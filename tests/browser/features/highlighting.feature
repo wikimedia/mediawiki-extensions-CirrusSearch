@@ -161,6 +161,22 @@ Feature: Highlighting
     Then *Joint* *Declaration* *of* *the* *Government* *of* *the* *United* *Kingdom* *of* *Great* *Britain* *and* *Northern* *Ireland* *and* *the* *Government* *of* *the* *People's* *Republic* *of* *China* *on* *the* *Question* *of* *Hong* *Kong* is the highlighted alttitle of the first search result
 
   @category
-  Scenario: Category only matches just get a text summary without any highlighting
+  Scenario: Category only matches just get a text summary and have the category highlighted in the alttitle
     When I search for TemplateTagged
     Then ffnonesenseword catapult pickles anotherword is the highlighted text of the first search result
+     And (category *TemplateTagged*) is the highlighted alttitle of the first search result
+
+  @insource
+  Scenario: insource:"" highlights the source
+    When I search for insource:"p2 Byzantine Empire"
+    Then |*p2*                     = *Byzantine* *Empire* is in the highlighted text of the first search result
+
+  @insource @regex
+  Scenario: insource:// highlights the source using only the regex
+    When I search for insource:"a" insource:/b c/ -rashidun
+    Then a *b c* is in the highlighted text of the first search result
+
+  @insource @regex
+  Scenario: insource:// works on multi-byte strings
+    When I search for insource:"rashidun" insource:/p2 *= Byzantine Empire/
+    Then |*p2                     = Byzantine Empire* is in the highlighted text of the first search result

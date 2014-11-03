@@ -3,6 +3,10 @@
 namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
+use Elastica\Filter\Terms;
+use Elastica\Search;
+use Elastica\Query\Filtered;
+use Elastica\Query\MatchAll;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -59,12 +63,12 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private function realBuildDocument( $doc, $title ) {
 		global $wgCirrusSearchIndexedRedirects;
 
-		// Handle redirects to this page
+		$outgoingLinksToCount = array( $title->getPrefixedDBKey() );
+
+		// Gather redirects to this page
 		$redirectTitles = $title->getBacklinkCache()
 			->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
 		$redirects = array();
-		$redirectPrefixedDBKeys = array();
-		// $redirectLinks = 0;
 		foreach ( $redirectTitles as $redirect ) {
 			// If the redirect is in main OR the same namespace as the article the index it
 			if ( $redirect->getNamespace() === NS_MAIN || $redirect->getNamespace() === $title->getNamespace()) {
@@ -72,29 +76,26 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 					'namespace' => $redirect->getNamespace(),
 					'title' => $redirect->getText()
 				);
-				$redirectPrefixedDBKeys[] = $redirect->getPrefixedDBKey();
+				$outgoingLinksToCount[] = $redirect->getPrefixedDBKey();
 			}
 		}
 		$doc->add( 'redirect', $redirects );
 
 		// Count links
-		// Incoming links is the sum of the number of linked pages which we count in Elasticsearch
-		// and the number of incoming redirects of which we have a handy list so we count that here.
-		$this->linkCountMultiSearch->addSearch( $this->buildCount(
-			new \Elastica\Filter\Term( array( 'outgoing_link' => $title->getPrefixedDBKey() ) ) ) );
+		// Incoming links is the sum of:
+		//  #1 Number of redirects to the page
+		//  #2 Number of links to the title
+		//  #3 Number of links to all the redirects
+
+		// #1 we have a list of the "first" $wgCirrusSearchIndexedRedirects redirect so we just count it:
 		$redirectCount = count( $redirects );
+
+		// #2 and #3 we count the number of links to the page with Elasticsearch.
+		// Since we only have $wgCirrusSearchIndexedRedirects we only count that many terms.
+		$this->linkCountMultiSearch->addSearch( $this->buildCount( $outgoingLinksToCount ) );
 		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
 			$doc->add( 'incoming_links', $count + $redirectCount );
 		};
-		// If a page doesn't have any redirects then count the links to them.
-		if ( count( $redirectPrefixedDBKeys ) ) {
-			$this->linkCountMultiSearch->addSearch( $this->buildCount(
-				new \Elastica\Filter\Terms( 'outgoing_link', $redirectPrefixedDBKeys ) ) );
-			$this->linkCountClosures[] = function ( $count ) use( $doc ) {
-				$incomingLinks = $doc->has( 'incoming_links' ) ? $doc->get( 'incoming_links' ) : 0;
-				$doc->add( 'incoming_links', $count + $incomingLinks );
-			};
-		}
 	}
 
 	private function realFinishBatch( $pages ) {
@@ -114,22 +115,27 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$pageIds = array_map( function( $page ) {
 					return $page->getId();
 				}, $pages );
-				wfDebugLog( 'CirrusSearchChangeFailed', 'Links for page ids: ' .
-					implode( ',', $pageIds ) );
+				wfDebugLog( 'CirrusSearchChangeFailed', 'Links for page ids: ' . implode( ',', $pageIds ) );
 			}
 		}
 	}
 
-	private function buildCount( $filter ) {
+	/**
+	 * Build a Search that will count all pages that link to $titles.
+	 * @param string $titles title in prefixedDBKey form
+	 * @return Search that counts all pages that link to $titles
+	 */
+	private function buildCount( $titles ) {
+		$filter = new Terms( 'outgoing_link', $titles );
+		$filter->setCached( false ); // We're not going to be redoing this any time soon.
 		$type = Connection::getPageType( wfWikiId() );
-		$search = new \Elastica\Search( $type->getIndex()->getClient() );
+		$search = new Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
-		$search->setOption( \Elastica\Search::OPTION_SEARCH_TYPE,
-			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
-		$matchAll = new \Elastica\Query\MatchAll();
-		$search->setQuery( new \Elastica\Query\Filtered( $matchAll, $filter ) );
+		$search->setOption( Search::OPTION_SEARCH_TYPE, Search::OPTION_SEARCH_TYPE_COUNT );
+		$matchAll = new MatchAll();
+		$search->setQuery( new Filtered( $matchAll, $filter ) );
+		$search->getQuery()->addParam( 'stats', 'link_count' );
 		return $search;
 	}
-
 }

@@ -31,6 +31,7 @@ class Result extends SearchResult {
 	private $titleSnippet = '';
 	private $redirectTitle = null, $redirectSnipppet = '';
 	private $sectionTitle = null, $sectionSnippet = '';
+	private $categorySnippet = '';
 	private $textSnippet = '', $isFileMatch = false;
 	private $interwiki = '', $interwikiNamespace = '';
 	private $wordCount;
@@ -84,6 +85,10 @@ class Result extends SearchResult {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
 			$this->sectionTitle = $this->findSectionTitle();
 		}
+
+		if ( isset( $highlights[ 'category' ] ) ) {
+			$this->categorySnippet = $this->escapeHighlightedText( $highlights[ 'category' ][ 0 ] );
+		}
 	}
 
 	private function pickTextSnippet( $highlights ) {
@@ -109,6 +114,12 @@ class Result extends SearchResult {
 			if ( $this->containsMatches( $fileSnippet ) ) {
 				$this->isFileMatch = true;
 				return $fileSnippet;
+			}
+		}
+		if ( isset( $highlights[ 'source_text.plain' ] ) ) {
+			$sourceSnippet = $highlights[ 'source_text.plain' ][ 0 ];
+			if ( $this->containsMatches( $sourceSnippet ) ) {
+				return $sourceSnippet;
 			}
 		}
 		return $mainSnippet;
@@ -229,6 +240,10 @@ class Result extends SearchResult {
 
 	public function getSectionTitle() {
 		return $this->sectionTitle;
+	}
+
+	public function getCategorySnippet() {
+		return $this->categorySnippet;
 	}
 
 	public function getWordCount() {

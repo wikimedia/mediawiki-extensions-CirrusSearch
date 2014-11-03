@@ -51,6 +51,9 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
 // adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 // disable the behavior entirely. The default should be fine for most people.
 $wgCirrusSearchReplicas = '0-2';
+// You can also specify this as an array of index type to replica count.  If you
+// do then you must specify all index types.  For example:
+// $wgCirrusSearchReplicas = array( 'content' => '0-3', 'general' => '0-2' );
 
 // Number of shards allowed on the same elasticsearch node.  Set this to 1 to
 // prevent two shards from the same high traffic index from being allocated
@@ -80,6 +83,26 @@ $wgCirrusSearchUseExperimentalHighlighter = false;
 // that you can no longer switch $wgCirrusSearchUseExperimentalHighlighter on
 // and off - it has to stay on.
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
+
+// Should CirrusSearch try to use the wikimedia/extra plugin?  An empty array
+// means don't use it at all.
+$wgCirrusSearchWikimediaExtraPlugin = array();
+// Here is an example to enable faster regex matching:
+// $wgCirrusSearchWikimediaExtraPlugin = array(
+// 	'regex' => array( 'build', 'use', 'max_inspect' => 10000 ),
+// );
+// The 'build' value instructs Cirrus to build the index required to speed up
+// regex queries.  The 'use' value instructs Cirrus to use it to power regular
+// expression queries.  If 'use' is added before the index is rebuilt with
+// 'build' in the array then regex will fail to find anything.  The value of
+// the 'max_inspect' key is the maximum number of pages to recheck the regex
+// against.  It defaults to 10000 which seems like a reasonable compromize
+// to keep regexes fast while still producing good results.
+
+// Should CirrusSearch try to support regular expressions with insource:?
+// These can be really expensive, but mostly ok, especially if you have the
+// extra plugin installed. Sometimes they still cause issues though.
+$wgCirrusSearchEnableRegex = true;
 
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
@@ -258,6 +281,8 @@ $wgCirrusSearchStemmedWeight = 0.5;
 // NS_MAIN can be overriden with this then 1 just represents what NS_MAIN would have been....
 // If you override NS_MAIN here then NS_TALK will still default to:
 //   $wgCirrusSearchNamespaceWeights[ NS_MAIN ] * wgCirrusSearchTalkNamespaceWeight
+// You can specify namespace by number or string.  Strings are converted to numbers using the
+// content language including aliases.
 $wgCirrusSearchNamespaceWeights = array(
 	NS_USER => 0.05,
 	NS_PROJECT => 0.1,
@@ -293,7 +318,7 @@ $wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
 
 // Default number of days it takes the portion of an article's score that decays with time since
 // last update to half way decay to use if prefer-recent: prefixes query and doesn't specify a
-// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 157 because
+// half life or $wgCirrusSearchPreferRecentDefaultDecayPortion is non 0.  Default to 160 because
 // that approximates the behavior that wikinews has been using for years.
 $wgCirrusSearchPreferRecentDefaultHalfLife = 160;
 
@@ -458,7 +483,6 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'enablePref',
 	'interwikiSources',
 	'interwikiCacheTime',
-	'backup',
 	'refreshInterval',
 	'bannedPlugins',
 	'updateConflictRetryCount',
@@ -500,6 +524,7 @@ $wgCirrusSearchMergeSettings = array(
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
+$extraFilterDir = $includes . 'Extra/Filter/';
 $jobsDir = $includes . 'Job/';
 $maintenanceDir = $includes . 'Maintenance/';
 $sanity = $includes . 'Sanity/';
@@ -521,11 +546,13 @@ $wgAutoloadClasses['CirrusSearch\BuildDocument\RedirectsAndIncomingLinks'] = $bu
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\Dump'] = $includes . 'Dump.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
+$wgAutoloadClasses['CirrusSearch\Extra\Filter\SourceRegex'] = $extraFilterDir . 'SourceRegex.php';
 $wgAutoloadClasses['CirrusSearch\ForceSearchIndex'] = __DIR__ . '/maintenance/forceSearchIndex.php';
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';
 $wgAutoloadClasses['CirrusSearch\InterwikiSearcher'] = $includes . 'InterwikiSearcher.php';
 $wgAutoloadClasses['CirrusSearch\Job\Job'] = $jobsDir . 'Job.php';
 $wgAutoloadClasses['CirrusSearch\Job\DeletePages'] = $jobsDir . 'DeletePages.php';
+$wgAutoloadClasses['CirrusSearch\Job\IncomingLinkCount'] = $jobsDir . 'IncomingLinkCount.php';
 $wgAutoloadClasses['CirrusSearch\Job\LinksUpdate'] = $jobsDir . 'LinksUpdate.php';
 $wgAutoloadClasses['CirrusSearch\Job\LinksUpdateSecondary'] = $jobsDir . 'LinksUpdateSecondary.php';
 $wgAutoloadClasses['CirrusSearch\Job\MassIndex'] = $jobsDir . 'MassIndex.php';
@@ -533,9 +560,12 @@ $wgAutoloadClasses['CirrusSearch\Job\OtherIndex'] = $jobsDir . 'OtherIndex.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\AnalysisConfigBuilder'] = $maintenanceDir . 'AnalysisConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\CacheWarmers'] = $maintenanceDir . 'CacheWarmers.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\ChunkBuilder'] = $maintenanceDir . 'ChunkBuilder.php';
-$wgAutoloadClasses['CirrusSearch\Maintenance\ReindexForkController'] = $maintenanceDir . 'ReindexForkController.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\IndexNamespaces'] = __DIR__ . '/maintenance/indexNamespaces.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\Maintenance'] = $maintenanceDir . 'Maintenance.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\MappingConfigBuilder'] = $maintenanceDir . 'MappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\ReindexForkController'] = $maintenanceDir . 'ReindexForkController.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\ShardAllocation'] = $maintenanceDir . 'ShardAllocation.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexes'] = $includes . 'OtherIndexes.php';
 $wgAutoloadClasses['CirrusSearch\Sanity\Checker'] = $sanity . 'Checker.php';
@@ -554,8 +584,6 @@ $wgAutoloadClasses['CirrusSearch\Search\ResultSet'] = $search . 'ResultSet.php';
 $wgAutoloadClasses['CirrusSearch\Search\ResultsType'] = $search . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Search\TitleResultsType'] = $search . 'ResultsType.php';
 $wgAutoloadClasses['CirrusSearch\Searcher'] = $includes . 'Searcher.php';
-$wgAutoloadClasses['CirrusSearch\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
-$wgAutoloadClasses['CirrusSearch\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\Updater'] = $includes . 'Updater.php';
 $wgAutoloadClasses['CirrusSearch\Util'] = $includes . 'Util.php';
 $wgAutoloadClasses['CirrusSearch\Version'] = $includes . 'Version.php';
@@ -584,12 +612,12 @@ $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
  * i18n
  */
 $wgMessagesDirs['CirrusSearch'] = __DIR__ . '/i18n';
-$wgExtensionMessagesFiles['CirrusSearch'] = __DIR__ . '/CirrusSearch.i18n.php';
 
 /**
  * Jobs
  */
 $wgJobClasses[ 'cirrusSearchDeletePages' ] = 'CirrusSearch\Job\DeletePages';
+$wgJobClasses[ 'cirrusSearchIncomingLinkCount' ] = 'CirrusSearch\Job\IncomingLinkCount';
 $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearch\Job\LinksUpdate';
 $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\Job\LinksUpdate';
 $wgJobClasses[ 'cirrusSearchLinksUpdateSecondary' ] = 'CirrusSearch\Job\LinksUpdateSecondary';

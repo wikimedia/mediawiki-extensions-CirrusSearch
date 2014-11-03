@@ -30,7 +30,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.7';
+	const VERSION = '0.10';
 
 	/**
 	 * Language code we're building analysis for
@@ -76,9 +76,11 @@ class AnalysisConfigBuilder {
 			'analyzer' => array(
 				'text' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'text_search' => array(
 					'type' => $this->getDefaultTextAnalyzerType(),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'plain' => array(
 					// Surprisingly, the Lucene docs claim this works for
@@ -88,6 +90,7 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' ),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'plain_search' => array(
 					// In accent squashing languages this will not contain accent
@@ -96,6 +99,7 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase' ),
+					'char_filter' => array( 'word_break_helper' ),
 				),
 				'suggest' => array(
 					'type' => 'custom',
@@ -108,10 +112,22 @@ class AnalysisConfigBuilder {
 					'filter' => array( 'lowercase' ),
 					'char_filter' => array( 'near_space_flattener' ),
 				),
+				'near_match_asciifolding' => array(
+					'type' => 'custom',
+					'tokenizer' => 'no_splitting',
+					'filter' => array( 'lowercase', 'asciifolding' ),
+					'char_filter' => array( 'near_space_flattener' ),
+				),
 				'prefix' => array(
 					'type' => 'custom',
 					'tokenizer' => 'prefix',
 					'filter' => array( 'lowercase' ),
+					'char_filter' => array( 'near_space_flattener' ),
+				),
+				'prefix_asciifolding' => array(
+					'type' => 'custom',
+					'tokenizer' => 'prefix',
+					'filter' => array( 'lowercase', 'asciifolding' ),
 					'char_filter' => array( 'near_space_flattener' ),
 				),
 				'word_prefix' => array(
@@ -122,6 +138,11 @@ class AnalysisConfigBuilder {
 				'lowercase_keyword' => array(
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
+					'filter' => array( 'lowercase' ),
+				),
+				'trigram' => array(
+					'type' => 'custom',
+					'tokenizer' => 'trigram',
 					'filter' => array( 'lowercase' ),
 				),
 			),
@@ -149,6 +170,10 @@ class AnalysisConfigBuilder {
 				),
 				'asciifolding' => array(
 					'type' => 'asciifolding',
+					'preserve_original' => false
+				),
+				'asciifolding_preserve' => array(
+					'type' => 'asciifolding',
 					'preserve_original' => true
 				),
 			),
@@ -160,14 +185,32 @@ class AnalysisConfigBuilder {
 				'no_splitting' => array( // Just grab the whole term.
 					'type' => 'keyword',
 				),
+				'trigram' => array(
+					'type' => 'nGram',
+					'min_gram' => 3,
+					'max_gram' => 3,
+				),
 			),
 			'char_filter' => array(
-				// Flattens things that are space like to spaces in the near_match style analyzersc
+				// Flattens things that are space like to spaces in the near_match style analyzers
 				'near_space_flattener' => array(
 					'type' => 'mapping',
 					'mappings' => array(
 						"'=>\u0020",
 						'’=>\u0020',
+						'_=>\u0020',
+					),
+				),
+				// Converts things that don't always count as word breaks into spaces which always
+				// count as word breaks.
+				'word_break_helper' => array(
+					'type' => 'mapping',
+					'mappings' => array(
+						'_=>\u0020',
+						// These are more useful for code:
+						'.=>\u0020',
+						'(=>\u0020',
+						')=>\u0020',
 					),
 				),
 			),
@@ -194,12 +237,12 @@ class AnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 */
 	private function customize( $config ) {
-		switch ( $this->language ) {
+		switch ( $this->getDefaultTextAnalyzerType() ) {
 		// Please add languages in alphabetical order.
-		case 'el':
+		case 'greek':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
-		case 'en':
+		case 'english':
 			$config[ 'filter' ][ 'possessive_english' ] = array(
 				'type' => 'stemmer',
 				'language' => 'possessive_english',
@@ -208,6 +251,7 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
+				'char_filter' => array( 'word_break_helper' ),
 			);
 			$filters = array();
 			$filters[] = 'standard';
@@ -216,26 +260,32 @@ class AnalysisConfigBuilder {
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';
 			$filters[] = 'kstem';
-			$filters[] = 'asciifolding';
+			$filters[] = 'custom_stem';
+			$filters[] = 'asciifolding_preserve';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding to the the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+			// Add asciifolding_preserve filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In English text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+
+			// Setup custom stemmer
+			$config[ 'filter' ][ 'custom_stem' ] = array(
+				'type' => 'stemmer_override',
+				'rules' => <<<STEMMER_RULES
+guidelines => guideline
+STEMMER_RULES
+				,
+			);
 			break;
-		case 'fr':
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+		case 'french':
+			// Add asciifolding_preserve to filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 			break;
-		case 'it':
+		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = array(
 				'type' => 'elision',
 				'articles' => array(
@@ -274,6 +324,7 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text' ] = array(
 				'type' => 'custom',
 				'tokenizer' => 'standard',
+				'char_filter' => array( 'word_break_helper' ),
 			);
 			$filters = array();
 			$filters[] = 'standard';
@@ -285,20 +336,18 @@ class AnalysisConfigBuilder {
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding to the the plain analyzer as well (but not plain_search)
-			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding';
-			// Add asciifolding to the prefix queries and incategory filters
-			$config[ 'analyzer' ][ 'prefix' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding';
-			$config[ 'analyzer' ][ 'near_match' ][ 'filter' ][] = 'asciifolding';
+			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
+			// Add asciifolding_preserve to filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In Italian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
-		case 'tr':
+		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
-		case 'he':
+		case 'hebrew':
 			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
 			// analyzer for queries.
 			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
@@ -365,6 +414,9 @@ class AnalysisConfigBuilder {
 		'da' => 'danish',
 		'nl' => 'dutch',
 		'en' => 'english',
+		'en-ca' => 'english',
+		'en-gb' => 'english',
+		'simple' => 'english',
 		'fi' => 'finnish',
 		'fr' => 'french',
 		'gl' => 'galician',
@@ -373,6 +425,7 @@ class AnalysisConfigBuilder {
 		'hi' => 'hindi',
 		'hu' => 'hungarian',
 		'id' => 'indonesian',
+		'ga' => 'irish',
 		'it' => 'italian',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',
@@ -380,6 +433,7 @@ class AnalysisConfigBuilder {
 		'pt' => 'portuguese',
 		'ro' => 'romanian',
 		'ru' => 'russian',
+		'ckb' => 'sorani',
 		'es' => 'spanish',
 		'sv' => 'swedish',
 		'tr' => 'turkish',

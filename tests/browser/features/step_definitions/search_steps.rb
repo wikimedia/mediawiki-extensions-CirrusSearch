@@ -105,9 +105,16 @@ Then(/^suggestions should( not)? appear$/) do |not_appear|
 end
 Then(/^(.+) is the first suggestion$/) do |title|
   if title == "none"
-    on(SearchPage).one_result_element.should_not be_visible
+    on(SearchPage).first_result_element.should_not be_visible
   else
-    on(SearchPage).one_result.should == title
+    on(SearchPage).first_result.should == title
+  end
+end
+Then(/^(.+) is the second suggestion$/) do |title|
+  if title == "none"
+    on(SearchPage).second_result_element.should_not be_visible
+  else
+    on(SearchPage).second_result.should == title
   end
 end
 Then(/^(.+) is not in the suggestions$/) do |title|

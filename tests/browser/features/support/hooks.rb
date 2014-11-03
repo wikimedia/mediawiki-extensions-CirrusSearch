@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+World(CirrusSearchApiHelper)
+
+
 main = false
 Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes") do
   unless main
@@ -9,7 +12,7 @@ Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes") 
       And a page named Links To Catapult exists with contents [[Catapult]]
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Catapult]] [[Category:Weaponry]]
-      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]]
+      And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith " Quote]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]
       And a page named वाङ्मय exists
@@ -241,6 +244,8 @@ Before("@programmer_friendly") do
       And a page named PascalCase exists
       And a page named NumericCase7 exists
       And a page named this.getInitial exists
+      And a page named RefToolbarBase.js exists
+      And a page named PFTest Paren exists with contents this.isCamelCased()
         )
     programmer_friendly = true
   end
@@ -253,6 +258,7 @@ Before("@stemmer") do
       Given a page named StemmerTest Aliases exists
       And a page named StemmerTest Alias exists
       And a page named StemmerTest Used exists
+      And a page named StemmerTest Guidelines exists
         )
   end
   stemmer = true
@@ -468,6 +474,9 @@ Before("@relevancy") do
       And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
       And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
       And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
+      And a page named Relevancyclosetest Foô exists
+      And a page named Relevancyclosetest Foo exists
+      And a page named Foo Relevancyclosetest exists
         )
   end
   relevancy = true
@@ -535,5 +544,47 @@ Before("@linksto") do
       And a page named LinksToTest LinksToTemplate exists with contents [[Template:LinksToTest Template]]
         )
     linksto = true
+  end
+end
+
+filenames = false
+Before("@filenames") do
+  unless filenames
+    steps %(
+      Given a file named File:No_SVG.svg exists with contents No_SVG.svg and description [[Category:Red circle with left slash]]
+      And a file named File:Somethingelse_svg_SVG.svg exists with contents Somethingelse_svg_SVG.svg and description [[Category:Red circle with left slash]]
+        )
+    filenames = true
+  end
+end
+
+removed_text = false
+Before("@removed_text") do
+  unless removed_text
+    steps %(
+      Given a page named Autocollapse Example exists with contents <div class="autocollapse">in autocollapse</div>
+        )
+    removed_text = true
+  end
+end
+
+accent_squashing = false
+Before("@accent_squashing") do
+  unless accent_squashing
+    steps %(
+      Given a page named Áccent Sorting exists
+        And a page named Accent Sorting exists
+        )
+    accent_squashing = true
+  end
+end
+
+accented_namespace = false
+Before("@accented_namespace") do
+  unless removed_text
+    steps %(
+      Given a page named Mó:Test exists with contents some text
+        )
+    accented_namespace = true
   end
 end

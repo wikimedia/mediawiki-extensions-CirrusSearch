@@ -428,7 +428,8 @@ class Searcher extends ElasticsearchIntermediary {
 			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
 				global $wgLanguageCode,
 					$wgCirrusSearchWikimediaExtraPlugin,
-					$wgCirrusSearchEnableRegex;
+					$wgCirrusSearchEnableRegex,
+					$wgCirrusSearchRegexMaxDeterminizedStates;
 
 				if ( !$wgCirrusSearchEnableRegex ) {
 					return;
@@ -451,10 +452,14 @@ class Searcher extends ElasticsearchIntermediary {
 				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
 						in_array( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
 					$filter = new SourceRegex( $matches[ 'pattern' ], 'source_text', 'source_text.trigram' );
-					if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] ) ) {
-						$filter->setMaxInspect( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect'] );
+					if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect' ] ) ) {
+						$filter->setMaxInspect( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_inspect' ] );
 					} else {
 						$filter->setMaxInspect( 10000 );
+					}
+					$filter->setMaxDeterminizedStates( $wgCirrusSearchRegexMaxDeterminizedStates );
+					if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_ngrams_extracted' ] ) ) {
+						$filter->setMaxNgramExtracted( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ 'max_ngrams_extracted' ] );
 					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $wgLanguageCode );

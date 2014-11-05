@@ -104,6 +104,11 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // extra plugin installed. Sometimes they still cause issues though.
 $wgCirrusSearchEnableRegex = true;
 
+// Maximum complexity of regexes.  Raising this will allow more compelex
+// regexes use the memory that they need to compile in Elasticsearch.  The
+// default allows reasonably complex regexes and doesn't use _too_ much memory.
+$wgCirrusSearchRegexMaxDeterminizedStates = 20000;
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be

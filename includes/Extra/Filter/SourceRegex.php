@@ -114,6 +114,15 @@ class SourceRegex extends AbstractFilter {
     }
 
     /**
+     * @param int $maxDeterminizedStates maximum number of automaton states
+     * that Lucene's regex compilation can expand to (even temporarily)
+     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
+     */
+    public function setMaxDeterminizedStates( $maxDeterminizedStates ) {
+        return $this->setParam( 'max_determinized_states', $maxDeterminizedStates );
+    }
+
+    /**
      * @param bool $caseSensitive is the regex case insensitive?  Defaults to
      * case insensitive if not set.
      * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining

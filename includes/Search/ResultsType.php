@@ -359,6 +359,7 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	private function configureHighlightingForSource( &$config, $highlightSource ) {
+		global $wgCirrusSearchRegexMaxDeterminizedStates;
 		$patterns = array();
 		$locale = null;
 		$caseInsensitive = false;
@@ -376,6 +377,7 @@ class FullTextResultsType implements ResultsType {
 				'regex_flavor' => 'lucene',
 				'skip_query' => true,
 				'regex_case_insensitive' => (boolean)$caseInsensitive,
+				'max_determinized_states' => $wgCirrusSearchRegexMaxDeterminizedStates,
 			);
 			$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
 				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ], $options );

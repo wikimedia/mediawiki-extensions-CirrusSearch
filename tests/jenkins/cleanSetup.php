@@ -31,7 +31,7 @@ require_once( "$IP/maintenance/Maintenance.php" );
 
 class CleanSetup extends Maintenance {
 	public function execute() {
-		$child = $this->runChild( 'CirrusSearch\UpdateSearchIndexConfig' );
+		$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateSearchIndexConfig' );
 		$child->mOptions[ 'startOver' ] = true;
 		$child->execute();
 		$child = $this->runChild( 'CirrusSearch\ForceSearchIndex' );

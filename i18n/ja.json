@@ -11,5 +11,8 @@
 	"cirrussearch-regex-syntax-error": "正規表現エラー ($2): $1",
 	"cirrussearch-now-using": "このウィキでは新しい検索エンジンを使用しています。([[mw:Special:MyLanguage/Help:CirrusSearch|詳細]])",
 	"cirrussearch-pref-label": "新しい検索",
-	"cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用"
+	"cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用",
+	"apihelp-cirrus-config-dump-description": "CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-mapping-dump-description": "このウィキの CirrusSearch のマッピングをダンプします。",
+	"apihelp-cirrus-settings-dump-description": "このウィキの CirrusSearch の設定をダンプします。"
 }

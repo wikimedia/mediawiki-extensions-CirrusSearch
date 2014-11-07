@@ -192,6 +192,14 @@ class ElasticsearchIntermediary {
 			return array( Status::newFatal( 'cirrussearch-parse-error' ), 'Parse error on ' . $parseError );
 		}
 
+		$marker = 'TooComplexToDeterminizeException';
+		$markerLocation = strpos( $message, $marker );
+		if ( $markerLocation !== false ) {
+			$startOfMessage = $markerLocation + strlen( $marker ) + 1;
+			$endOfMessage = strpos( $message, ']; nested', $startOfMessage );
+			$extracted = substr( $message, $startOfMessage, $endOfMessage - $startOfMessage );
+			return array( Status::newFatal( 'cirrussearch-regex-too-complex-error' ), $extracted );
+		}
 		// This is _probably_ a regex syntax error so lets call it that. I can't think of
 		// what else would have automatons and illegal argument exceptions. Just looking
 		// for the exception won't suffice because other weird things could cause it.

@@ -84,3 +84,13 @@ Feature: Searches with the insource filter
   Scenario: insource:// doesn't break other clauses
     When I search for insource:/b c/ insource:/a b c/
     Then RegexSpaces is the first search result
+
+  @regex
+  Scenario: insource:// for some complex regexes fails entirely
+    When I search for all:insource:/[ab]*a[ab]{50,80}/
+    Then this error is reported: An error has occurred while searching: Regular expression is too complex. Learn more about simplifying it here.
+
+  @regex
+  Scenario: insource:// for other complex regexes finds answers and doesn't spin forever
+    When I search for all:insource:/[ab]*a[cd]{50,80}/
+    Then RegexComplexResult is the first search result

@@ -126,7 +126,7 @@ class CacheWarmers {
 	}
 
 	private function deleteWarmers( $warmers ) {
-		foreach ( $warmers as $name => $contents ) {
+		foreach ( array_keys( $warmers ) as $name ) {
 			$this->out->outputIndented( "\tDeleting $name..." );
 			$name = urlencode( $name );
 			$path = "_warmer/$name";

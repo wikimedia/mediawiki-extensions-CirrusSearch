@@ -24,8 +24,7 @@ use \ApiBase;
  */
 class ConfigDump extends ApiBase {
 	public function execute() {
-		global $wgCirrusSearchEnableConfigDumpApi,
-			$wgCirrusSearchConfigDumpWhiteList;
+		global $wgCirrusSearchConfigDumpWhiteList;
 
 		$prefix = 'wgCirrusSearch';
 		foreach ( $GLOBALS as $key => $value ) {

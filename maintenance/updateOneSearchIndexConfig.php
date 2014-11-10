@@ -112,8 +112,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	public static function addSharedOptions( $maintenance ) {
 		$maintenance->addOption( 'startOver', 'Blow away the identified index and rebuild it with ' .
 			'no data.' );
-		$maintenance->addOption( 'forceOpen', "Open the index but do nothing else.  Use this if " .
-			"you've stuck the index closed and need it to start working right now." );
 		$maintenance->addOption( 'indexIdentifier', "Set the identifier of the index to work on.  " .
 			"You'll need this if you have an index in production serving queries and you have " .
 			"to alter some portion of its configuration that cannot safely be done without " .
@@ -185,11 +183,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			$this->checkElasticsearchVersion();
 			$this->scanAvailablePlugins();
-
-			if ( $this->getOption( 'forceOpen', false ) ) {
-				$this->getIndex()->open();
-				return;
-			}
 
 			if ( $this->getOption( 'justCacheWarmers', false ) ) {
 				$this->validateCacheWarmers();

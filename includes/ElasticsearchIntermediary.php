@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use \ElasticaConnection;
 use \Status;
@@ -112,9 +113,18 @@ class ElasticsearchIntermediary {
 	 * @return message from the exception
 	 */
 	public static function extractMessage( $exception ) {
-		return $exception instanceof ResponseException ?
-			$exception->getElasticsearchException()->getMessage() :
-			$exception->getMessage();
+		if ( !( $exception instanceof ResponseException ) ) {
+			return $exception->getMessage();
+		}
+		if ( $exception instanceof PartialShardFailureException ) {
+			$shardStats = $exception->getResponse()->getShardsStatistics();
+			$message = array();
+			foreach ( $shardStats[ 'failures' ] as $failure ) {
+				$message[] = $failure[ 'reason' ];
+			}
+			return 'Partial failure:  ' . implode( ',', $message );
+		}
+		return $exception->getElasticsearchException()->getMessage();
 	}
 
 	/**
@@ -192,11 +202,14 @@ class ElasticsearchIntermediary {
 			return array( Status::newFatal( 'cirrussearch-parse-error' ), 'Parse error on ' . $parseError );
 		}
 
-		$marker = 'TooComplexToDeterminizeException';
+		$marker = 'Determinizing';
 		$markerLocation = strpos( $message, $marker );
 		if ( $markerLocation !== false ) {
-			$startOfMessage = $markerLocation + strlen( $marker ) + 1;
+			$startOfMessage = $markerLocation;
 			$endOfMessage = strpos( $message, ']; nested', $startOfMessage );
+			if ( $endOfMessage === false ) {
+				$endOfMessage = strpos( $message, '; Determinizing', $startOfMessage );
+			}
 			$extracted = substr( $message, $startOfMessage, $endOfMessage - $startOfMessage );
 			return array( Status::newFatal( 'cirrussearch-regex-too-complex-error' ), $extracted );
 		}

@@ -8,6 +8,15 @@ Given(/^a file named (.*) exists with contents (.*) and description (.*)$/) do |
   edit_page(title, description, false)        # Make sure the description is correct
 end
 
+Given(/^there are (\d+) redirects to (.+) of the form (.+)$/) do |count, target, form|
+  count = count.to_i
+  text = '#REDIRECT [[%s]]' % target
+  for i in 1..count do
+    new_tital = form % i
+    edit_page(new_tital, text, false)
+  end
+end
+
 Given(/^a page named (.*) doesn't exist$/) do |title|
   step("I delete #{title}")
 end

@@ -285,16 +285,6 @@ class MappingConfigBuilder {
 				),
 			)
 		);
-		if ( $this->optimizeForExperimentalHighlighter ) {
-			if ( $options & MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ) {
-				$field[ 'index_options' ] = 'offsets';
-				$field[ 'fields' ][ 'plain' ][ 'index_options' ] = 'offsets';
-			}
-		} else {
-			// We use the FVH on all fields so turn on term vectors
-			$field[ 'term_vector' ] = 'with_positions_offsets';
-			$field[ 'fields' ][ 'plain' ][ 'term_vector' ] = 'with_positions_offsets';
-		}
 		$disableNorms = ( $options & MappingConfigBuilder::ENABLE_NORMS ) === 0;
 		if ( $disableNorms ) {
 			$disableNorms = array( 'norms' => array( 'enabled' => false ) );
@@ -317,6 +307,26 @@ class MappingConfigBuilder {
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(
 					$field[ 'fields' ][ $extraName ], $disableNorms );
+			}
+		}
+		if ( $this->optimizeForExperimentalHighlighter ) {
+			if ( $options & MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ) {
+				$field[ 'index_options' ] = 'offsets';
+				$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
+				foreach ( $fieldNames as $fieldName ) {
+					if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
+						$field[ 'fields' ][ $fieldName ][ 'index_options' ] = 'offsets';
+					}
+				}
+			}
+		} else {
+			// We use the FVH on all fields so turn on term vectors
+			$field[ 'term_vector' ] = 'with_positions_offsets';
+			$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
+			foreach ( $fieldNames as $fieldName ) {
+				if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
+					$field[ 'fields' ][ $fieldName ][ 'term_vector' ] = 'with_positions_offsets';
+				}
 			}
 		}
 		return $field;

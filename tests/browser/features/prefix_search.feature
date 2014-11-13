@@ -83,3 +83,11 @@ Feature: Prefix search
     | áccent Sorting | Áccent Sorting   | Accent Sorting    |
     | Accent Sorting | Accent Sorting   | Áccent Sorting    |
     | accent Sorting | Accent Sorting   | Áccent Sorting    |
+
+  # Just take too long to run on a regular basis
+  # @redirect @huge
+  # Scenario: Prefix search on pages with tons of redirects is reasonably fast
+  #   Given a page named IHaveTonsOfRedirects exists
+  #     And there are 1000 redirects to IHaveTonsOfRedirects of the form TonsOfRedirects%s
+  #   When I type TonsOfRedirects into the search box
+  #   Then suggestions should appear

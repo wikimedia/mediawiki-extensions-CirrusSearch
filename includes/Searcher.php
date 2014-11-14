@@ -11,7 +11,6 @@ use \CirrusSearch\Search\IdResultsType;
 use \CirrusSearch\Search\ResultsType;
 use \Language;
 use \MWNamespace;
-use \PoolCounterWorkViaCallback;
 use \ProfileSection;
 use \RequestContext;
 use \Sanitizer;
@@ -829,15 +828,14 @@ GROOVY;
 	 *    or an error if there was an error
 	 */
 	public function get( $pageIds, $sourceFiltering ) {
-		global $wgCirrusSearchPoolCounterKey;
-
 		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
-		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-Search', $wgCirrusSearchPoolCounterKey, array(
-			'doWork' => function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
+		return Util::doPoolCounterWork(
+			'CirrusSearch-Search',
+			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
 					$searcher->start( "get of $indexType." . implode( ', ', $pageIds ) );
@@ -856,22 +854,15 @@ GROOVY;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );
 				}
-			},
-			'error' => function( $status ) {
-				$status = $status->getErrorsArray();
-				wfLogWarning( 'Pool error performing a get against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
-				return Status::newFatal( 'cirrussearch-backend-error' );
-			}
-		) );
-		return $getWork->execute();
+			});
 	}
 
 	public function findNamespace( $name ) {
-		global $wgCirrusSearchPoolCounterKey;
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
-		$getWork = new PoolCounterWorkViaCallback( 'CirrusSearch-NamespaceLookup', $wgCirrusSearchPoolCounterKey, array(
-			'doWork' => function() use ( $searcher, $name, $indexBaseName ) {
+		return Util::doPoolCounterWork(
+			'CirrusSearch-NamespaceLookup',
+			function() use ( $searcher, $name, $indexBaseName ) {
 				try {
 					$searcher->start( "lookup namespace for $name" );
 					$pageType = Connection::getNamespaceType( $indexBaseName );
@@ -885,14 +876,7 @@ GROOVY;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );
 				}
-			},
-			'error' => function( $status ) {
-				$status = $status->getErrorsArray();
-				wfLogWarning( 'Pool error performing a namespace lookup against Elasticsearch:  ' . $status[ 0 ][ 0 ] );
-				return Status::newFatal( 'cirrussearch-backend-error' );
-			}
-		) );
-		return $getWork->execute();
+			});
 	}
 
 	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
@@ -952,8 +936,7 @@ GROOVY;
 	private function search( $type, $for ) {
 		global $wgCirrusSearchMoreAccurateScoringMode,
 			$wgCirrusSearchSearchShardTimeout,
-			$wgCirrusSearchClientSideSearchTimeout,
-			$wgCirrusSearchPoolCounterKey;
+			$wgCirrusSearchClientSideSearchTimeout;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -1099,9 +1082,10 @@ GROOVY;
 
 		// Perform the search
 		$searcher = $this;
-		$key = $wgCirrusSearchPoolCounterKey;
-		$work = new PoolCounterWorkViaCallback( $poolCounterType, $key, array(
-			'doWork' => function() use ( $searcher, $search, $description ) {
+		wfProfileIn( __METHOD__ . '-execute' );
+		$result = Util::doPoolCounterWork(
+			$poolCounterType,
+			function() use ( $searcher, $search, $description ) {
 				try {
 					$searcher->start( $description );
 					return $searcher->success( $search->search() );
@@ -1109,20 +1093,16 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			'error' => function( $status ) use ( $type, $key, $description ) {
-				$status = $status->getErrorsArray();
-				wfLogWarning( "Elasticsearch pool error on key $key during $description:  " . $status[ 0 ][ 0 ] );
-				if ( $status[ 0 ][ 0 ] === 'pool-queuefull' ) {
+			function( $error, $key ) use ( $type, $description ) {
+				wfLogWarning( "Pool error on key $key during $description:  $error" );
+				if ( $error === 'pool-queuefull' ) {
 					if ( $type === 'regex' ) {
 						return Status::newFatal( 'cirrussearch-regex-too-busy-error' );
 					}
 					return Status::newFatal( 'cirrussearch-too-busy-error' );
 				}
 				return Status::newFatal( 'cirrussearch-backend-error' );
-			}
-		) );
-		wfProfileIn( __METHOD__ . '-execute' );
-		$result = $work->execute();
+			});
 		wfProfileOut( __METHOD__ . '-execute' );
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();

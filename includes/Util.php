@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 use \GenderCache;
 use \MWNamespace;
+use \PoolCounterWorkViaCallback;
 use \Title;
 use \User;
 
@@ -83,5 +84,38 @@ class Util {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Wraps the complex pool counter interface to force the single call pattern
+	 * that Cirrus always uses.
+	 * @param $type same as type parameter on PoolCounter::factory
+	 * @param $workCallback callback when pool counter is aquired.  Called with
+	 *   no parameters.
+	 * @param $errorCallback optional callback called on errors.  Called with
+	 *   the error string and the key as parameters.  If left undefined defaults
+	 *   to a function that returns a fatal status and logs an warning.
+	 */
+	public static function doPoolCounterWork( $type, $workCallback, $errorCallback = null ) {
+		global $wgCirrusSearchPoolCounterKey;
+
+		// By default the pool counter allows you to lock the same key with
+		// multiple types.  That might be useful but it isn't how Cirrus thinks.
+		// Instead, all keys are scoped to their type.
+		$key = "$type:$wgCirrusSearchPoolCounterKey";
+		if ( $errorCallback === null ) {
+			$errorCallback = function( $error, $key ) {
+				wfLogWarning( "Pool error on $key:  $error" );
+				return Status::newFatal( 'cirrussearch-backend-error' );
+			};
+		}
+		$work = new PoolCounterWorkViaCallback( $type, $key, array(
+			'doWork' => $workCallback,
+			'error' => function( $status ) use ( $errorCallback, $key ) {
+				$status = $status->getErrorsArray();
+				return $errorCallback( $status[ 0 ][ 0 ], $key );
+			}
+		) );
+		return $work->execute();
 	}
 }

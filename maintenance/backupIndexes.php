@@ -129,7 +129,7 @@ class BackupIndexes extends Maintenance {
 		);
 
 		$this->output( "Creating snapshot '$snapshot'..." );
-		$this->snapshot->createSnapshot( $this->repoName, $snapshot, $options, true );
+		$this->snapshot->createSnapshot( $this->repoName, $snapshot, $options, false );
 		$this->output( "done.\n" );
 	}
 }

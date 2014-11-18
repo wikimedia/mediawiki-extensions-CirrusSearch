@@ -7,7 +7,10 @@
 	"cirrussearch-desc": "Elasticsearch-basert søkemotor for MediaWiki",
 	"cirrussearch-backend-error": "Søket ditt kunne ikke utføres på grunn av et midlertidig problem. Vennligst prøv igjen senere.",
 	"cirrussearch-parse-error": "Spørringen ble ikke forstått. Vennligst forenkle den. Spørringen ble logget for å kunne forbedre søkesystemet.",
+	"cirrussearch-too-busy-error": "Søketjenesten er overbelastet. Prøv igjen senere.",
 	"cirrussearch-regex-syntax-error": "Syntaksfeil i regulært uttrykk ved $2: $1",
+	"cirrussearch-regex-too-busy-error": "Det er for mange søk med regulære uttrykk i gang allerede. Prøv igjen senere.",
+	"cirrussearch-regex-too-complex-error": "Det regulære uttrykket er for komplisert. Du kan finne tips til hvordan du kan forenkle det [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|her]].",
 	"cirrussearch-now-using": "Denne wikien bruker en ny søkemotor. ([[mw:Special:MyLanguage/Help:CirrusSearch|Finn ut mer]])",
 	"cirrussearch-pref-label": "Ny søkemotor",
 	"cirrussearch-pref-desc": "Prøv vår nye søkemotor som støtter flere språk, gir mer oppdaterte resultater, og kan finne tekst inni maler."

@@ -384,6 +384,10 @@ Before("@redirect") do
       And a page named Search Engine Optimization Redirecttest exists
       And a page named Redirecttest Yay exists
       And a page named User_talk:Search Engine Optimization Redirecttest exists
+      And a page named PrefixRedirectRanking 1 exists
+      And a page named LinksToPrefixRedirectRanking 1 exists with contents [[PrefixRedirectRanking 1]]
+      And a page named TargetOfPrefixRedirectRanking 2 exists
+      And a page named PrefixRedirectRanking 2 exists with contents #REDIRECT [[TargetOfPrefixRedirectRanking 2]]
         )
   end
   redirect = true

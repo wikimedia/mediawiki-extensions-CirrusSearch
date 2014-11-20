@@ -53,6 +53,13 @@ Feature: Prefix search
     When I click the search button
     Then I am on a page titled User talk:Search Engine Optimization Redirecttest
 
+  @redirect
+  Scenario: Prefix search ranks redirects under title matches
+    When I type PrefixRedirectRanking into the search box
+    Then suggestions should appear
+      And PrefixRedirectRanking 1 is the first suggestion
+      And PrefixRedirectRanking 2 is the second suggestion
+
   @accent_squashing @accented_namespace
   Scenario Outline: Search suggestions with accents
     When I type <term> into the search box

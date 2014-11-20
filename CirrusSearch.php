@@ -249,6 +249,14 @@ $wgCirrusSearchWeights = array(
 	'file_text' => 0.5,
 );
 
+// Weight of fields in prefix search.  It is safe to change these at any time.
+$wgCirrusSearchPrefixWeights = array(
+	'title' => 10,
+	'redirect' => 1,
+	'title_asciifolding' => 7,
+	'redirect_asciifolding' => 0.7,
+);
+
 // Enable building and using of "all" fields that contain multiple copies of other fields
 // for weighting.  These all fields exist entirely to speed up the full_text query type by
 // baking the weights above into a single field.  This is useful because it drasticly

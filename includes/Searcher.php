@@ -277,7 +277,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
-		global $wgCirrusSearchPrefixSearchStartsWithAnyWord;
+		global $wgCirrusSearchPrefixSearchStartsWithAnyWord,
+			$wgCirrusSearchPrefixWeights;
 
 		$profiler = new ProfileSection( __METHOD__ );
 
@@ -297,8 +298,10 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->query = new \Elastica\Query\MultiMatch();
 			$this->query->setQuery( $search );
 			$this->query->setFields( array(
-				'title.prefix^10', 'redirect.title.prefix^10',
-				'title.prefix_asciifolding', 'redirect.title.prefix_asciifolding'
+				'title.prefix^' . $wgCirrusSearchPrefixWeights[ 'title' ],
+				'redirect.title.prefix^' . $wgCirrusSearchPrefixWeights[ 'redirect' ],
+				'title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'title_asciifolding' ],
+				'redirect.title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'redirect_asciifolding' ],
 			) );
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();

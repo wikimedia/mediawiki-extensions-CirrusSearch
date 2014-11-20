@@ -114,6 +114,9 @@ class PageTextBuilder extends ParseBuilder {
 			wfLogWarning( "Invalid value for \$wgCirrusSearchBoostOpening:  $wgCirrusSearchBoostOpening" );
 		}
 
+		// Add extra spacing around break tags so text crammed together like<br>this doesn't make one word.
+		$text = str_replace( '<br', "\n<br", $text );
+
 		$formatter = new HtmlFormatter( $text );
 
 		// Strip elements from the page that we never want in the search text.

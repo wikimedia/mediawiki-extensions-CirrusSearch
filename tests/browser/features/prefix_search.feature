@@ -25,6 +25,8 @@ Feature: Prefix search
     | L'Oréal                | L'Oréal                | L'Oréal                |
     | L’Oréal                | L'Oréal                | L'Oréal                |
     | L Oréal                | L'Oréal                | L'Oréal                |
+    | Jean-Yves Le Drian     | Jean-Yves Le Drian     | Jean-Yves Le Drian     |
+    | Jean Yves Le Drian     | Jean-Yves Le Drian     | Jean-Yves Le Drian     |
 
   Scenario: Suggestions don't appear when you search for a string that is too long
     When I type 贵州省瞬时速度团头鲂身体c实施ysstsstsg说tyttxy以推销员会同香港推广系统在同他讨厌她团体淘汰赛系统大选于它拥有一天天用于与体育学院国ttxzyttxtxytdttyyyztdsytstsstxtttd天天体育系统的摄像头听到他他偷笑偷笑太阳团体杏眼桃腮他要tttxx y into the search box

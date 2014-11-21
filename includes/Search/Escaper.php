@@ -96,7 +96,7 @@ class Escaper {
 		$string = preg_replace( '/(?<![\w])([?*])/u', '', $string );
 
 		// Reduce token ranges to bare tokens without the < or >
-		$string = preg_replace( '/(?:<|>)([^\s])/u', '$1', $string );
+		$string = preg_replace( '/(?:<|>)+([^\s])/u', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
 		$fuzzyQuery = false;

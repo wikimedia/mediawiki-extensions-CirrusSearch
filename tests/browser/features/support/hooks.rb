@@ -64,6 +64,7 @@ Before("@prefix") do
   unless prefix
     steps %(
       Given a page named L'Oréal exists
+      And a page named Jean-Yves Le Drian exists
         )
     prefix = true
   end

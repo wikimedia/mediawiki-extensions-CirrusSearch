@@ -146,6 +146,10 @@ Feature: Searches with syntax errors
     | <     |
     | >>    |
     | <>    |
+    | <>=   |
+    | >>>   |
+    | <<<   |
+    | <<<~  |
 
   @filters
   Scenario Outline: Empty filters work like terms but aren't in test data so aren't found

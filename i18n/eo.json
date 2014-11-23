@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"KuboF"
+		]
+	},
+	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
+	"cirrussearch-backend-error": "Pro dumtempa problemo ne eblis fini vian serĉo. Bonvolu reprovi postnelonge.",
+	"cirrussearch-now-using": "Tiu ĉi vikio uzas novan serĉilon. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lernu pli]])",
+	"cirrussearch-pref-label": "Nova serĉo"
+}

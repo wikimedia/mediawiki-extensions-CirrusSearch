@@ -4,7 +4,8 @@
 			"Jaideraf",
 			"Dianakc",
 			"Jefersonmoraes",
-			"HenriqueCrang"
+			"HenriqueCrang",
+			"Cainamarques"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
@@ -20,5 +21,5 @@
 	"cirrussearch-pref-desc": "Experimente o nosso novo mecanismo de busca que suporta um maior número de idiomas, fornece resultados mais atualizados e pode encontrar o texto incluído em predefinições.",
 	"apihelp-cirrus-config-dump-description": "Dump das configurações do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento dessa wiki do CirrusSearch.",
-	"apihelp-cirrus-settings-dump-description": "Dump do mapeamento dessa wiki do CirrusSearch."
+	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki."
 }

@@ -354,25 +354,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateAnalyzers() {
-		$this->outputIndented( "Validating analyzers..." );
-		$settings = $this->getSettings();
-		$requiredAnalyzers = $this->analysisConfigBuilder->buildConfig();
-		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
-			$this->output( "ok\n" );
-		} else {
-			$this->output( "cannot correct\n" );
+		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator( $this->getIndex(), $this->analysisConfigBuilder, $this );
+		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
+		$valid = $validator->validate();
+		if ( !$valid ) {
 			$this->error( "This script encountered an index difference that requires that the index be\n" .
 				"copied, indexed to, and then the old index removed. Re-run this script with the\n" .
 				"--reindexAndRemoveOk --indexIdentifier=now parameters to do this.", 1 );
 		}
-	}
-
-	/**
-	 * Load the settings array.  You can't use this to set the settings, use $this->getIndex()->getSettings() for that.
-	 * @return array of settings
-	 */
-	private function getSettings() {
-		return $this->getIndex()->getSettings()->get();
 	}
 
 	private function validateMapping() {
@@ -429,6 +418,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param $actual
 	 * @param $required array
 	 * @return bool
+	 *
+	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
 	 */
 	private function checkConfig( $actual, $required, $indent = null ) {
 		foreach( $required as $key => $value ) {
@@ -475,6 +466,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * for false....
 	 * @param mixed $value config value
 	 * @return mixes value normalized
+	 *
+	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
 	 */
 	private function normalizeConfigValue( $value ) {
 		if ( $value === true ) {
@@ -485,6 +478,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		return $value;
 	}
 
+	/**
+	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
+	 */
 	private function debugCheckConfig( $string ) {
 		if ( $this->printDebugCheckConfig ) {
 			$this->output( $string );

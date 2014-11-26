@@ -334,13 +334,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndexSettings() {
-		$this->outputIndented( "\tValidating number of shards..." );
-		$settings = $this->getSettings();
-		$actualShardCount = $settings[ 'number_of_shards' ];
-		if ( $actualShardCount == $this->getShardCount() ) {
-			$this->output( "ok\n" );
-		} else {
-			$this->output( "is $actualShardCount but should be " . $this->getShardCount() . "...cannot correct!\n" );
+		$validator = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
+		$valid = $validator->validate();
+		if ( !$valid ) {
 			$this->error(
 				"Number of shards is incorrect and cannot be changed without a rebuild. You can solve this\n" .
 				"problem by running this program again with either --startOver or --reindexAndRemoveOk.  Make\n" .
@@ -348,36 +344,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"validate everything else.", 1 );
 		}
 
-		$this->outputIndented( "\tValidating replica range..." );
-		$actualReplicaCount = isset( $settings[ 'auto_expand_replicas' ] ) ? $settings[ 'auto_expand_replicas' ] : 'false';
-		if ( $actualReplicaCount == $this->getReplicaCount() ) {
-			$this->output( "ok\n" );
-		} else {
-			$this->output( "is $actualReplicaCount but should be " . $this->getReplicaCount() . '...' );
-			$this->getIndex()->getSettings()->set( array( 'auto_expand_replicas' => $this->getReplicaCount() ) );
-			$this->output( "corrected\n" );
-		}
+		$validator = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
+		$validator->validate();
 
 		$this->validateShardAllocation();
 
-		$this->outputIndented( "\tValidating max shards per node..." );
-		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
-		// because that is easier to read.
-		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
-			$settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] : 'unlimited';
-		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
-		$expectedMaxShardsPerNode = isset( $this->maxShardsPerNode[ $this->indexType ] ) ?
-			$this->maxShardsPerNode[ $this->indexType ] : 'unlimited';
-		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
-			$this->output( "ok\n" );
-		} else {
-			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
-			$expectedMaxShardsPerNode = $expectedMaxShardsPerNode === 'unlimited' ? -1 : $expectedMaxShardsPerNode;
-			$this->getIndex()->getSettings()->set( array(
-				'routing.allocation.total_shards_per_node' => $expectedMaxShardsPerNode
-			) );
-			$this->output( "corrected\n" );
-		}
+		$validator = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
+		$validator->validate();
 	}
 
 	private function validateAnalyzers() {

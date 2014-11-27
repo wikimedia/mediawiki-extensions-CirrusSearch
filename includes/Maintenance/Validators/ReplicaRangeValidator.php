@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Index;
+use Status;
 
 class ReplicaRangeValidator extends Validator {
 	/**
@@ -28,6 +29,9 @@ class ReplicaRangeValidator extends Validator {
 		$this->replicaCount = $replicaCount;
 	}
 
+	/**
+	 * @return Status
+	 */
 	public function validate() {
 		$this->outputIndented( "\tValidating replica range..." );
 		$settings = $this->index->getSettings()->get();
@@ -40,6 +44,6 @@ class ReplicaRangeValidator extends Validator {
 			$this->output( "corrected\n" );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 }

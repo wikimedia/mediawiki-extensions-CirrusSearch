@@ -5,6 +5,8 @@ namespace CirrusSearch\Maintenance\Validators;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Index;
+use RawMessage;
+use Status;
 
 class AnalyzersValidator extends Validator {
 	/**
@@ -29,6 +31,9 @@ class AnalyzersValidator extends Validator {
 		$this->analysisConfigBuilder = $analysisConfigBuilder;
 	}
 
+	/**
+	 * @return Status
+	 */
 	public function validate() {
 		$this->outputIndented( "Validating analyzers..." );
 		$settings = $this->index->getSettings()->get();
@@ -37,9 +42,12 @@ class AnalyzersValidator extends Validator {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "cannot correct\n" );
-			return false;
+			return Status::newFatal( new RawMessage(
+				"This script encountered an index difference that requires that the index be\n" .
+				"copied, indexed to, and then the old index removed. Re-run this script with the\n" .
+				"--reindexAndRemoveOk --indexIdentifier=now parameters to do this." ) );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 }

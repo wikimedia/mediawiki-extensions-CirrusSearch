@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Index;
+use Status;
 
 class MaxShardsPerNodeValidator extends Validator {
 	/**
@@ -35,6 +36,9 @@ class MaxShardsPerNodeValidator extends Validator {
 		$this->maxShardsPerNode = $maxShardsPerNode;
 	}
 
+	/**
+	 * @return Status
+	 */
 	public function validate() {
 		$this->outputIndented( "\tValidating max shards per node..." );
 		$settings = $this->index->getSettings()->get();
@@ -56,6 +60,6 @@ class MaxShardsPerNodeValidator extends Validator {
 			$this->output( "corrected\n" );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 }

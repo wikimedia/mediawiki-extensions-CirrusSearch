@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Index;
+use Status;
 
 class ShardAllocationValidator extends Validator {
 	/**
@@ -29,7 +30,7 @@ class ShardAllocationValidator extends Validator {
 	}
 
 	/**
-	 * @return bool
+	 * @return Status
 	 */
 	public function validate() {
 		$this->outputIndented( "\tValidating shard allocation settings..." );
@@ -67,7 +68,7 @@ class ShardAllocationValidator extends Validator {
 			$this->output( "done\n" );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 
 	private function fetchActualAllocation() {

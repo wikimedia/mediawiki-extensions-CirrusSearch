@@ -335,32 +335,32 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function validateIndexSettings() {
 		$validator = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
-		$valid = $validator->validate();
-		if ( !$valid ) {
-			$this->error(
-				"Number of shards is incorrect and cannot be changed without a rebuild. You can solve this\n" .
-				"problem by running this program again with either --startOver or --reindexAndRemoveOk.  Make\n" .
-				"sure you understand the consequences of either choice..  This script will now continue to\n" .
-				"validate everything else.", 1 );
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
 		}
 
 		$validator = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
-		$validator->validate();
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
+		}
 
 		$this->validateShardAllocation();
 
 		$validator = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
-		$validator->validate();
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
+		}
 	}
 
 	private function validateAnalyzers() {
 		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator( $this->getIndex(), $this->analysisConfigBuilder, $this );
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
-		$valid = $validator->validate();
-		if ( !$valid ) {
-			$this->error( "This script encountered an index difference that requires that the index be\n" .
-				"copied, indexed to, and then the old index removed. Re-run this script with the\n" .
-				"--reindexAndRemoveOk --indexIdentifier=now parameters to do this.", 1 );
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
 		}
 	}
 
@@ -375,7 +375,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
-		$validator->validate();
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
+		}
 	}
 
 	private function validateAlias() {
@@ -751,13 +754,19 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	protected function validateCacheWarmers() {
 		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $this );
-		$warmers->validate();
+		$status = $warmers->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
+		}
 	}
 
 	protected function validateShardAllocation() {
 		global $wgCirrusSearchIndexAllocation;
 		$shardAllocation = new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
-		$shardAllocation->validate();
+		$status = $shardAllocation->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
+		}
 	}
 
 	private function createIndex( $rebuild ) {

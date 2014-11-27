@@ -8,6 +8,8 @@ use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Type;
 use Elastica\Type\Mapping;
+use RawMessage;
+use Status;
 
 class MappingValidator extends Validator {
 	/**
@@ -62,14 +64,17 @@ class MappingValidator extends Validator {
 		$this->namespaceType = $namespaceType;
 	}
 
+	/**
+	 * @return Status
+	 */
 	public function validate() {
 		$this->outputIndented( "Validating mappings..." );
 		if ( $this->optimizeIndexForExperimentalHighlighter &&
 			!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
 			$this->output( "impossible!\n" );
-			$this->error( "wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
-				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
-			return false;
+			return Status::newFatal( new RawMessage(
+				"wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
+				"'experimental highlighter' plugin is not installed on all hosts." ) );
 		}
 
 		$requiredMappings = $this->mappingConfig;
@@ -90,12 +95,12 @@ class MappingValidator extends Validator {
 			} catch ( ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
 				$message = ElasticsearchIntermediary::extractMessage( $e );
-				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n", 1 );
-				return false;
+				return Status::newFatal( new RawMessage(
+					"Couldn't update mappings.  Here is elasticsearch's error message: $message\n" ) );
 			}
 		}
 
-		return true;
+		return Status::newGood();
 	}
 
 	/**

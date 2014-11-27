@@ -9,6 +9,8 @@ use CirrusSearch\Util;
 use Elastica;
 use Elastica\Exception\ResponseException;
 use Elastica\Type;
+use RawMessage;
+use Status;
 use Title;
 
 class CacheWarmersValidator extends Validator {
@@ -35,7 +37,7 @@ class CacheWarmersValidator extends Validator {
 	}
 
 	/**
-	 * @return bool
+	 * @return Status
 	 */
 	public function validate() {
 		$this->outputIndented( "Validating cache warmers...\n" );
@@ -46,8 +48,11 @@ class CacheWarmersValidator extends Validator {
 		$warmersToUpdate = $this->diff( $expectedWarmers, $actualWarmers );
 		$warmersToDelete = array_diff_key( $actualWarmers, $expectedWarmers );
 
-		return $this->updateWarmers( $warmersToUpdate )
-			&& $this->deleteWarmers( $warmersToDelete );
+		$status = $this->updateWarmers( $warmersToUpdate );
+		$status2 = $this->deleteWarmers( $warmersToDelete );
+
+		$status->merge( $status2 );
+		return $status;
 	}
 
 	private function buildExpectedWarmers() {
@@ -114,18 +119,18 @@ class CacheWarmersValidator extends Validator {
 			} catch ( ResponseException $e ) {
 				if ( preg_match( '/dynamic scripting for \\[.*\\] disabled/', $e->getResponse()->getError() ) ) {
 					$this->output( "couldn't create dynamic script!\n" );
-					$this->error( "Couldn't create the dynamic script required for Cirrus to work properly.  " .
+					return Status::newFatal( new RawMessage(
+						"Couldn't create the dynamic script required for Cirrus to work properly.  " .
 						"For now, Cirrus requires dynamic scripting.  It'll switch to sandboxed Groovy when it " .
 						"updates to support Elasticsearch 1.3.1 we promise.  For now enable dynamic scripting and " .
 						"keep Elasticsearch safely not accessible to people you don't trust.  You should always " .
-						"do that, but especially when dynamic scripting is enabled.", 1 );
-					return false;
+						"do that, but especially when dynamic scripting is enabled." ) );
 				}
 			}
 			$this->output( "done\n" );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 
 	private function deleteWarmers( $warmers ) {
@@ -137,7 +142,7 @@ class CacheWarmersValidator extends Validator {
 			$this->output( "done\n" );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 
 	private function diff( $expectedWarmers, $actualWarmers ) {

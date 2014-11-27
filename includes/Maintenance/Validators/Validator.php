@@ -23,7 +23,7 @@ abstract class Validator {
 	}
 
 	/**
-	 * @return bool True if validation succeeds, false if it fails.
+	 * @return \Status
 	 */
 	abstract public function validate();
 
@@ -120,21 +120,6 @@ abstract class Validator {
 	protected function outputIndented( $message ) {
 		if ( $this->out ) {
 			$this->out->outputIndented( $message );
-		}
-	}
-
-	/**
-	 * @param string $err
-	 * @param int $die
-	 */
-	protected function error( $err, $die = 0 ) {
-		if ( $this->out ) {
-			$this->out->error( $err, $die );
-		}
-
-		$die = intval( $die );
-		if ( $die > 0 ) {
-			die( $die );
 		}
 	}
 }

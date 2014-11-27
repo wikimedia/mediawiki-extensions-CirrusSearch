@@ -4,6 +4,8 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Index;
+use RawMessage;
+use Status;
 
 class NumberOfShardsValidator extends Validator {
 	/**
@@ -28,6 +30,9 @@ class NumberOfShardsValidator extends Validator {
 		$this->shardCount = $shardCount;
 	}
 
+	/**
+	 * @return Status
+	 */
 	public function validate() {
 		$this->outputIndented( "\tValidating number of shards..." );
 		$settings = $this->index->getSettings()->get();
@@ -36,9 +41,13 @@ class NumberOfShardsValidator extends Validator {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualShardCount but should be " . $this->shardCount . "...cannot correct!\n" );
-			return false;
+			return Status::newFatal( new RawMessage(
+				"Number of shards is incorrect and cannot be changed without a rebuild. You can solve this\n" .
+				"problem by running this program again with either --startOver or --reindexAndRemoveOk.  Make\n" .
+				"sure you understand the consequences of either choice..  This script will now continue to\n" .
+				"validate everything else." ) );
 		}
 
-		return true;
+		return Status::newGood();
 	}
 }

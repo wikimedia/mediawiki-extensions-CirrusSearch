@@ -365,126 +365,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateMapping() {
-		$this->outputIndented( "Validating mappings..." );
-		if ( $this->optimizeIndexForExperimentalHighlighter &&
-				!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
-			$this->output( "impossible!\n" );
-			$this->error( "wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
-				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
-		}
-
-		$requiredMappings = $this->getMappingConfig();
-		if ( !$this->checkMapping( $requiredMappings ) ) {
-			// TODO Conflict resolution here might leave old portions of mappings
-			$pageAction = new \Elastica\Type\Mapping( $this->getPageType() );
-			foreach ( $requiredMappings[ 'page' ] as $key => $value ) {
-				$pageAction->setParam( $key, $value );
-			}
-			$namespaceAction = new \Elastica\Type\Mapping( $this->getNamespaceType() );
-			foreach ( $requiredMappings[ 'namespace' ] as $key => $value ) {
-				$namespaceAction->setParam( $key, $value );
-			}
-			try {
-				$pageAction->send();
-				$namespaceAction->send();
-				$this->output( "corrected\n" );
-			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				$this->output( "failed!\n" );
-				$message = ElasticsearchIntermediary::extractMessage( $e );
-				$this->error( "Couldn't update mappings.  Here is elasticsearch's error message: $message\n", 1 );
-			}
-		}
-	}
-
-	/**
-	 * Check that the mapping returned from Elasticsearch is as we want it.
-	 * @param array $requiredMappings the mappings we want
-	 * @return bool is the mapping good enough for us?
-	 */
-	private function checkMapping( $requiredMappings ) {
-		$actualMappings = $this->getIndex()->getMapping();
-		$this->output( "\n" );
-		$this->outputIndented( "\tValidating mapping..." );
-		if ( $this->checkConfig( $actualMappings, $requiredMappings ) ) {
-			$this->output( "ok\n" );
-			return true;
-		} else {
-			$this->output( "different..." );
-			return false;
-		}
-	}
-
-	/**
-	 * @param $actual
-	 * @param $required array
-	 * @return bool
-	 *
-	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
-	 */
-	private function checkConfig( $actual, $required, $indent = null ) {
-		foreach( $required as $key => $value ) {
-			$this->debugCheckConfig( "\n$indent$key: " );
-			if ( !array_key_exists( $key, $actual ) ) {
-				$this->debugCheckConfig( "not found..." );
-				if ( $key === '_all' ) {
-					// The _all field never comes back so we just have to assume it
-					// is set correctly.
-					$this->debugCheckConfig( "was the all field so skipping..." );
-					continue;
-				}
-				return false;
-			}
-			if ( is_array( $value ) ) {
-				$this->debugCheckConfig( "descend..." );
-				if ( !is_array( $actual[ $key ] ) ) {
-					$this->debugCheckConfig( "other not array..." );
-					return false;
-				}
-				if ( !$this->checkConfig( $actual[ $key ], $value, $indent . "\t" ) ) {
-					return false;
-				}
-				continue;
-			}
-
-			$actual[ $key ] = $this->normalizeConfigValue( $actual[ $key ] );
-			$value = $this->normalizeConfigValue( $value );
-			$this->debugCheckConfig( $actual[ $key ] . " ?? $value..." );
-			// Note that I really mean !=, not !==.  Coercion is cool here.
-			// print $actual[ $key ] . "  $value\n";
-			if ( $actual[ $key ] != $value ) {
-				$this->debugCheckConfig( 'different...' );
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Normalize a config value for comparison.  Elasticsearch will accept all kinds
-	 * of config values but it tends to through back 'true' for true and 'false' for
-	 * false so we normalize everything.  Sometimes, oddly, it'll through back false
-	 * for false....
-	 * @param mixed $value config value
-	 * @return mixes value normalized
-	 *
-	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
-	 */
-	private function normalizeConfigValue( $value ) {
-		if ( $value === true ) {
-			return 'true';
-		} else if ( $value === false ) {
-			return 'false';
-		}
-		return $value;
-	}
-
-	/**
-	 * @deprecated Duplicate of CirrusSearch\Maintenance\Validators\Validator - once all callers here have been moved, this'll be removed
-	 */
-	private function debugCheckConfig( $string ) {
-		if ( $this->printDebugCheckConfig ) {
-			$this->output( $string );
-		}
+		$validator = new \CirrusSearch\Maintenance\Validators\MappingValidator(
+			$this->getIndex(),
+			$this->optimizeIndexForExperimentalHighlighter,
+			$this->availablePlugins,
+			$this->getMappingConfig(),
+			$this->getPageType(),
+			$this->getNamespaceType(),
+			$this
+		);
+		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
+		$validator->validate();
 	}
 
 	private function validateAlias() {

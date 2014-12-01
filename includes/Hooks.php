@@ -385,11 +385,12 @@ class Hooks {
 	 * @param string $search search text
 	 * @param int $limit maximum number of titles to return
 	 * @param array(string) $results outbound variable with string versions of titles
+	 * @param int $offset Number of results to offset
 	 * @return bool always false because we are the authoritative prefix search
 	 */
-	public static function prefixSearch( $namespaces, $search, $limit, &$results ) {
+	public static function prefixSearch( $namespaces, $search, $limit, &$results, $offset = 0 ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, $limit, $namespaces, $user );
+		$searcher = new Searcher( $offset, $limit, $namespaces, $user );
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		} else {

@@ -413,13 +413,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"'experimental highlighter' plugin is not installed on all hosts.", 1 );
 		}
 
-		$requiredMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny,
-			$this->phraseSuggestUseText,
-			$this->optimizeIndexForExperimentalHighlighter
-		);
-		$requiredMappings = $requiredMappings->buildConfig();
-
+		$requiredMappings = $this->getMappingConfig();
 		if ( !$this->checkMapping( $requiredMappings ) ) {
 			// TODO Conflict resolution here might leave old portions of mappings
 			$pageAction = new \Elastica\Type\Mapping( $this->getPageType() );
@@ -775,12 +769,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'lang' => 'groovy'
 			) );
 		}
-		$pageProperties = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny,
-			$this->phraseSuggestUseText,
-			$this->optimizeIndexForExperimentalHighlighter
-		);
-		$pageProperties = $pageProperties->buildConfig();
+		$pageProperties = $this->getMappingConfig();
 		$pageProperties = $pageProperties[ 'page' ][ 'properties' ];
 		try {
 			$query = new Elastica\Query();
@@ -985,6 +974,19 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->outputIndented( 'Picking analyzer...' .
 			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
 		return $analysisConfigBuilder;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getMappingConfig() {
+		$builder = new \CirrusSearch\Maintenance\MappingConfigBuilder(
+			$this->prefixSearchStartsWithAny,
+			$this->phraseSuggestUseText,
+			$this->optimizeIndexForExperimentalHighlighter
+		);
+
+		return $builder->buildConfig();
 	}
 
 	/**

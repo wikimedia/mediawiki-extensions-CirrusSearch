@@ -99,6 +99,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private $availablePlugins;
 
+	/**
+	 * @var array
+	 */
+	protected $bannedPlugins;
+
+	/**
+	 * @var bool
+	 */
+	protected $optimizeIndexForExperimentalHighlighter;
+
+	/**
+	 * @var array
+	 */
+	protected $maxShardsPerNode;
+
+	/**
+	 * @var int
+	 */
+	protected $refreshInterval;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index." );
@@ -152,7 +172,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgLanguageCode,
 			$wgCirrusSearchPhraseSuggestUseText,
-			$wgCirrusSearchPrefixSearchStartsWithAnyWord;
+			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
+			$wgCirrusSearchBannedPlugins,
+			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter,
+			$wgCirrusSearchMaxShardsPerNode,
+			$wgCirrusSearchRefreshInterval;
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -172,6 +196,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->langCode = $wgLanguageCode;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
 		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
+		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
+		$this->optimizeIndexForExperimentalHighlighter = $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
+		$this->maxShardsPerNode = $wgCirrusSearchMaxShardsPerNode;
+		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try{
 			$indexTypes = $this->getAllIndexTypes();
@@ -237,8 +265,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function scanAvailablePlugins() {
-		global $wgCirrusSearchBannedPlugins;
-
 		$this->outputIndented( "Scanning available plugins..." );
 		$result = $this->getClient()->request( '_nodes' );
 		$result = $result->getData();
@@ -259,8 +285,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );
-		if ( count( $wgCirrusSearchBannedPlugins ) ) {
-			$this->availablePlugins = array_diff( $this->availablePlugins, $wgCirrusSearchBannedPlugins );
+		if ( count( $this->bannedPlugins ) ) {
+			$this->availablePlugins = array_diff( $this->availablePlugins, $this->bannedPlugins );
 		}
 		foreach ( array_chunk( $this->availablePlugins, 5 ) as $pluginChunk ) {
 			$plugins = implode( ', ', $pluginChunk );
@@ -303,8 +329,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndexSettings() {
-		global $wgCirrusSearchMaxShardsPerNode;
-
 		$this->outputIndented( "\tValidating number of shards..." );
 		$settings = $this->getSettings();
 		$actualShardCount = $settings[ 'number_of_shards' ];
@@ -338,8 +362,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
 			$settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] : 'unlimited';
 		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
-		$expectedMaxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
-			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$expectedMaxShardsPerNode = isset( $this->maxShardsPerNode[ $this->indexType ] ) ?
+			$this->maxShardsPerNode[ $this->indexType ] : 'unlimited';
 		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
 			$this->output( "ok\n" );
 		} else {
@@ -375,10 +399,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateMapping() {
-		global $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
-
 		$this->outputIndented( "Validating mappings..." );
-		if ( $wgCirrusSearchOptimizeIndexForExperimentalHighlighter &&
+		if ( $this->optimizeIndexForExperimentalHighlighter &&
 				!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
 			$this->output( "impossible!\n" );
 			$this->error( "wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
@@ -386,8 +408,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 
 		$requiredMappings = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
-			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
+			$this->prefixSearchStartsWithAny,
+			$this->phraseSuggestUseText,
+			$this->optimizeIndexForExperimentalHighlighter
+		);
 		$requiredMappings = $requiredMappings->buildConfig();
 
 		if ( !$this->checkMapping( $requiredMappings ) ) {
@@ -674,8 +698,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Dump everything from the live index into the one being worked on.
 	 */
 	private function reindex() {
-		global $wgCirrusSearchRefreshInterval;
-
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of shards but that is
 		// is worth the price.  total_shards_per_node will help to make sure that each shard
@@ -725,14 +747,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Revert settings changed just for reindexing
 		$settings->set( array(
-			'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
+			'refresh_interval' => $this->refreshInterval . 's',
 			'merge.policy' => $this->getMergeSettings(),
 		) );
 	}
 
 	private function reindexInternal( $children, $childNumber ) {
-		global $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
-
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
@@ -750,8 +770,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			) );
 		}
 		$pageProperties = new \CirrusSearch\Maintenance\MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny, $this->phraseSuggestUseText,
-			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
+			$this->prefixSearchStartsWithAny,
+			$this->phraseSuggestUseText,
+			$this->optimizeIndexForExperimentalHighlighter
+		);
 		$pageProperties = $pageProperties->buildConfig();
 		$pageProperties = $pageProperties[ 'page' ][ 'properties' ];
 		try {
@@ -880,11 +902,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function createIndex( $rebuild ) {
-		global $wgCirrusSearchRefreshInterval,
-			$wgCirrusSearchMaxShardsPerNode;
-
-		$maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ?
-			$wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$maxShardsPerNode = isset( $this->maxShardsPerNode[ $this->indexType ] ) ?
+			$this->maxShardsPerNode[ $this->indexType ] : 'unlimited';
 		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
 		$this->getIndex()->create( array(
 			'settings' => array(
@@ -893,7 +912,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
 				// Use our weighted all field as the default rather than _all which is disabled.
 				'index.query.default_field' => 'all',
-				'refresh_interval' => $wgCirrusSearchRefreshInterval . 's',
+				'refresh_interval' => $this->refreshInterval . 's',
 				'merge.policy' => $this->getMergeSettings(),
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)

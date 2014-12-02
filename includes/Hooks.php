@@ -6,6 +6,7 @@ use \ApiMain;
 use \BetaFeatures;
 use \CirrusSearch;
 use \CirrusSearch\Search\FancyTitleResultsType;
+use \CirrusSearch\Search\TitleResultsType;
 use \DeferredUpdates;
 use \JobQueueGroup;
 use \LinksUpdate;
@@ -389,12 +390,21 @@ class Hooks {
 	public static function prefixSearch( $namespaces, $search, $limit, &$results ) {
 		$user = RequestContext::getMain()->getUser();
 		$searcher = new Searcher( 0, $limit, $namespaces, $user );
-		$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
+		if ( $search ) {
+			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
+		} else {
+			// Empty searches always find the title.
+			$searcher->setResultsType( new TitleResultsType() );
+		}
 		$status = $searcher->prefixSearch( $search );
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// constrution site to log errors.
 		if ( $status->isOK() ) {
+			if ( !$search ) {
+				// No need to unpack the simple title matches from non-fancy TitleResultsType
+				return $status->getValue();
+			}
 			$results = array();
 			foreach ( $status->getValue() as $match ) {
 				if ( isset( $match[ 'titleMatch' ] ) ) {

@@ -93,6 +93,14 @@ Feature: Prefix search
     | Accent Sorting | Accent Sorting   | Áccent Sorting    |
     | accent Sorting | Accent Sorting   | Áccent Sorting    |
 
+  Scenario: Searching for a bare namespace finds everything in the namespace
+    Given a page named Template talk:Foo exists
+      And within 20 seconds searching for Template talk:Foo yields Template talk:Foo as the first result
+      And I am at a random page
+    When I type template talk: into the search box
+    Then suggestions should appear
+      And Template talk:Foo is in the suggestions
+
   # Just take too long to run on a regular basis
   # @redirect @huge
   # Scenario: Prefix search on pages with tons of redirects is reasonably fast

@@ -117,10 +117,16 @@ Then(/^(.+) is the second suggestion$/) do |title|
     on(SearchPage).second_result.should == title
   end
 end
-Then(/^(.+) is not in the suggestions$/) do |title|
+Then(/^(.+) is( not)? in the suggestions$/) do |title, should_not|
+  found = false
   on(SearchPage).all_results_elements.each do |result|
-    result.text.should_not == title
+    if should_not then
+      result.text.should_not == title
+    else
+      found |= result.text == title
+    end
   end
+  found.should == true unless should_not
 end
 Then(/^I should be offered to search for (.+)$/) do |term|
   on(SearchPage).search_special.should == "containing...\n" + term

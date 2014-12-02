@@ -49,8 +49,10 @@ require_once( "$IP/extensions/Cite/Cite.php" );
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
-$wgCirrusSearchWikimediaExtraPlugin = array(
-	'regex' => array( 'build', 'use' ),
+$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = array( 'build', 'use' );
+$wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
+	'phrase' => array(
+	)
 );
 
 $wgOggThumbLocation = '/usr/bin/oggThumb';

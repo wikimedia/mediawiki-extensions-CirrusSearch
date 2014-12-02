@@ -8,12 +8,21 @@ Given(/^a file named (.*) exists with contents (.*) and description (.*)$/) do |
   edit_page(title, description, false)        # Make sure the description is correct
 end
 
+Given(/^there are (\d+) pages named (.*) with contents (.*)?$/) do |count, title, text|
+  count = count.to_i
+  for i in 1..count do
+    new_title = title % i
+    text = new_title unless text
+    edit_page(new_title, text, false)
+  end
+end
+
 Given(/^there are (\d+) redirects to (.+) of the form (.+)$/) do |count, target, form|
   count = count.to_i
   text = '#REDIRECT [[%s]]' % target
   for i in 1..count do
-    new_tital = form % i
-    edit_page(new_tital, text, false)
+    new_title = form % i
+    edit_page(new_title, text, false)
   end
 end
 

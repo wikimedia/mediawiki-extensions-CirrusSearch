@@ -88,16 +88,21 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 // means don't use it at all.
 $wgCirrusSearchWikimediaExtraPlugin = array();
 // Here is an example to enable faster regex matching:
-// $wgCirrusSearchWikimediaExtraPlugin = array(
-// 	'regex' => array( 'build', 'use', 'max_inspect' => 10000 ),
-// );
+// $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] =
+//     array( 'build', 'use', 'max_inspect' => 10000 );
 // The 'build' value instructs Cirrus to build the index required to speed up
 // regex queries.  The 'use' value instructs Cirrus to use it to power regular
 // expression queries.  If 'use' is added before the index is rebuilt with
 // 'build' in the array then regex will fail to find anything.  The value of
 // the 'max_inspect' key is the maximum number of pages to recheck the regex
-// against.  It defaults to 10000 which seems like a reasonable compromize
-// to keep regexes fast while still producing good results.
+// against.  Its optional and defaults to 10000 which seems like a reasonable
+// compromize to keep regexes fast while still producing good results.
+// This example enables the safer query's phrase processing:
+// $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
+// 	'phrase' => array(
+// 		'max_terms_in_all_queries' => 128,
+// 	)
+// );
 
 // Should CirrusSearch try to support regular expressions with insource:?
 // These can be really expensive, but mostly ok, especially if you have the

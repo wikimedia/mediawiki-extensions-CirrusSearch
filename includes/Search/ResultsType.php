@@ -385,8 +385,8 @@ class FullTextResultsType implements ResultsType {
 		}
 		$queryStrings = array();
 		foreach ( $highlightSource as $part ) {
-			if ( isset( $part[ 'query_string' ] ) ) {
-				$queryStrings[] = $part[ 'query_string' ];
+			if ( isset( $part[ 'query' ] ) ) {
+				$queryStrings[] = $part[ 'query' ];
 			}
 		}
 		if ( count( $queryStrings ) ) {

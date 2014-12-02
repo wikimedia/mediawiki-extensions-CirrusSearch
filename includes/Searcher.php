@@ -575,9 +575,10 @@ GROOVY;
 						$query->setAllowLeadingWildcard( false );
 						$query->setFuzzyPrefixLength( 2 );
 						$query->setRewrite( 'top_terms_128' );
+						$query = $searcher->wrapInSaferIfPossible( $query, false );
 						$filterDestination[] = new \Elastica\Filter\Query( $query );
 						if ( $key === 'insource' ) {
-							$highlightSource[] = array( 'query_string' => $query );
+							$highlightSource[] = array( 'query' => $query );
 						}
 						$searchContainedSyntax = true;
 						return $keepText ? "$value " : '';
@@ -687,7 +688,7 @@ GROOVY;
 					$this->buildFullTextSearchFields( 1, '.plain', false ),
 					$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', false ) );
 				list( $nonAllQueryString, /*_*/ ) = $escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
-				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1 );
+				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false );
 			} else {
 				$nonAllFields = $fields;
 			}
@@ -711,7 +712,7 @@ GROOVY;
 					'window_size' => $wgCirrusSearchPhraseRescoreWindowSize,
 					'query' => array(
 						'rescore_query' => $this->buildSearchTextQueryForFields( $rescoreFields,
-							'"' . $queryStringQueryString . '"', $wgCirrusSearchPhraseSlop[ 'boost' ] ),
+							'"' . $queryStringQueryString . '"', $wgCirrusSearchPhraseSlop[ 'boost' ], true ),
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $wgCirrusSearchPhraseRescoreBoost,
 					)
@@ -1151,7 +1152,7 @@ GROOVY;
 		global $wgCirrusSearchPhraseSlop;
 
 		$queryForMostFields = $this->buildSearchTextQueryForFields( $fields, $queryString,
-				$wgCirrusSearchPhraseSlop[ 'default' ] );
+				$wgCirrusSearchPhraseSlop[ 'default' ], false );
 		if ( $nearMatchQuery ) {
 			// Build one query for the full text fields and one for the near match fields so that
 			// the near match can run unescaped.
@@ -1167,7 +1168,7 @@ GROOVY;
 		return $queryForMostFields;
 	}
 
-	private function buildSearchTextQueryForFields( $fields, $queryString, $phraseSlop ) {
+	private function buildSearchTextQueryForFields( $fields, $queryString, $phraseSlop, $isRescore ) {
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
 		$query->setAutoGeneratePhraseQueries( true );
@@ -1176,7 +1177,20 @@ GROOVY;
 		$query->setAllowLeadingWildcard( false );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_128' );
-		return $query;
+		return $this->wrapInSaferIfPossible( $query, $isRescore );
+	}
+
+	public function wrapInSaferIfPossible( $query, $isRescore ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
+
+		if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] ) ) {
+			return $query;
+		}
+		$saferQuery = $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ];
+		$saferQuery[ 'query' ] = $query->toArray();
+		$tooLargeAction = $isRescore ? 'convert_to_match_all_query' : 'convert_to_term_queries';
+		$saferQuery[ 'phrase' ][ 'phrase_too_large_action' ] = 'convert_to_term_queries';
+		return new \Elastica\Query\Simple( array( 'safer' => $saferQuery ) );
 	}
 
 	/**

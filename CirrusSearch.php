@@ -589,6 +589,7 @@ $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\NumberOfShardsValidator'
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\ReplicaRangeValidator'] = $maintenanceDir . '/Validators/ReplicaRangeValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\AnalyzersValidator'] = $maintenanceDir . '/Validators/AnalyzersValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\MappingValidator'] = $maintenanceDir . '/Validators/MappingValidator.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\Validators\IndexAliasValidator'] = $maintenanceDir . '/Validators/IndexAliasValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';
 $wgAutoloadClasses['CirrusSearch\OtherIndexes'] = $includes . 'OtherIndexes.php';

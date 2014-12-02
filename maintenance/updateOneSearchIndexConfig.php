@@ -503,45 +503,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function validateAllAlias() {
-		$this->outputIndented( "\tValidating all alias..." );
-		$allAliasName = $this->getIndexName();
-		$status = $this->getClient()->getStatus();
-		if ( $status->indexExists( $allAliasName ) ) {
-			$this->output( "is an index..." );
-			if ( $this->startOver ) {
-				$this->getClient()->getIndex( $allAliasName )->delete();
-				$this->output( "index removed..." );
-			} else {
-				$this->output( "cannot correct!\n" );
-				$this->error(
-					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --startOver and it'll remove the index and continue.\n", 1 );
-				return;
-			}
-		} else {
-			foreach ( $status->getIndicesWithAlias( $allAliasName ) as $index ) {
-				if( $index->getName() === $this->getSpecificIndexName() ) {
-					$this->output( "ok\n" );
-					return;
-				}
-			}
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexAliasValidator( $this->getClient(), $this->getIndexName(), $this->getSpecificIndexName(), $this->startOver, $this );
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
 		}
-		$this->output( "alias not already assigned to this index..." );
-		// We'll remove the all alias from the indecies that we're about to delete while
-		// we add it to this index.  Elastica doesn't support this well so we have to
-		// build the request to Elasticsearch ourselves.
-		$data = array(
-			'action' => array(
-				array( 'add' => array( 'index' => $this->getSpecificIndexName(), 'alias' => $allAliasName ) )
-			)
-		);
-		if ( $this->removeIndecies ) {
-			foreach ( $this->removeIndecies as $oldIndex ) {
-				$data['action'][] = array( 'remove' => array( 'index' => $oldIndex, 'alias' => $allAliasName ) );
-			}
+
+		if ( $this->tooFewReplicas ) {
+			$this->validateIndexSettings();
 		}
-		$this->getClient()->request( '_aliases', \Elastica\Request::POST, $data );
-		$this->output( "corrected\n" );
 	}
 
 	public function removeOldIndeciesIfRequired() {

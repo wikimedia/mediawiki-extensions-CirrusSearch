@@ -284,25 +284,29 @@ class Searcher extends ElasticsearchIntermediary {
 
 		self::checkTitleSearchRequestLength( $search );
 
-		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
-			$match = new \Elastica\Query\Match();
-			$match->setField( 'title.word_prefix', array(
-				'query' => $search,
-				'analyzer' => 'plain',
-				'operator' => 'and',
-			) );
-			$this->filters[] = new \Elastica\Filter\Query( $match );
+		if ( $search ) {
+			if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
+				$match = new \Elastica\Query\Match();
+				$match->setField( 'title.word_prefix', array(
+					'query' => $search,
+					'analyzer' => 'plain',
+					'operator' => 'and',
+				) );
+				$this->filters[] = new \Elastica\Filter\Query( $match );
+			} else {
+				// Elasticsearch seems to have trouble extracting the proper terms to highlight
+				// from the default query we make so we feed it exactly the right query to highlight.
+				$this->query = new \Elastica\Query\MultiMatch();
+				$this->query->setQuery( $search );
+				$this->query->setFields( array(
+					'title.prefix^' . $wgCirrusSearchPrefixWeights[ 'title' ],
+					'redirect.title.prefix^' . $wgCirrusSearchPrefixWeights[ 'redirect' ],
+					'title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'title_asciifolding' ],
+					'redirect.title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'redirect_asciifolding' ],
+				) );
+			}
 		} else {
-			// Elasticsearch seems to have trouble extracting the proper terms to highlight
-			// from the default query we make so we feed it exactly the right query to highlight.
-			$this->query = new \Elastica\Query\MultiMatch();
-			$this->query->setQuery( $search );
-			$this->query->setFields( array(
-				'title.prefix^' . $wgCirrusSearchPrefixWeights[ 'title' ],
-				'redirect.title.prefix^' . $wgCirrusSearchPrefixWeights[ 'redirect' ],
-				'title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'title_asciifolding' ],
-				'redirect.title.prefix_asciifolding^' . $wgCirrusSearchPrefixWeights[ 'redirect_asciifolding' ],
-			) );
+			$this->query = new \Elastica\Query\MatchAll();
 		}
 		$this->boostTemplates = self::getDefaultBoostTemplates();
 		$this->boostLinks = true;

@@ -109,12 +109,30 @@ elasticsearch.  You can do this by installing the PoolCounter extension and then
 LocalSettings.php like so:
  require_once( "$IP/extensions/PoolCounter/PoolCounterClient.php");
  $wgPoolCounterConf = array(
-	'CirrusSearch-Search' => array(  // Configuration for all searches
+	'CirrusSearch-Search' => array(  // Configuration for non-prefix non-regex searches
 		'class' => 'PoolCounter_Client',
 		'timeout' => 30,
+		'workers' => 25,
+		'maxqueue' => 10,
+	),
+	'CirrusSearch-Prefix' => array(  // Configuration for prefix searches
+		'class' => 'PoolCounter_Client',
+		'timeout' => 10,
 		'workers' => 50,
 		'maxqueue' => 10,
-	)
+	),
+	'CirrusSearch-Regex' => array(  // Configuration for regex searches
+		'class' => 'PoolCounter_Client',
+		'timeout' => 30,
+		'workers' => 10,
+		'maxqueue' => 0,
+	),
+	'CirrusSearch-NamespaceLookup' => array(  // Configuration for funky namespace lookups
+		'class' => 'PoolCounter_Client',
+		'timeout' => 10,
+		'workers' => 20,
+		'maxqueue' => 20,
+	),
  );
 
 

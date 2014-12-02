@@ -1055,11 +1055,18 @@ GROOVY;
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 
-		if ( $type === 'regex' ) {
+		switch( $type ) {
+		case 'regex':
 			$poolCounterType = 'CirrusSearch-Regex';
 			$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'regex' ];
 			Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'regex' ] );
-		} else {
+			break;
+		case 'prefix':
+			$poolCounterType = 'CirrusSearch-Prefix';
+			$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'default' ];
+			Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
+			break;
+		default:
 			$poolCounterType = 'CirrusSearch-Search';
 			$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'default' ];
 			Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );

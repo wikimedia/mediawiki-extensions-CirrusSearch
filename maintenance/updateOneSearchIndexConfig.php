@@ -359,8 +359,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->output( "corrected\n" );
 		}
 
-		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
-		$shardAllocation->validate();
+		$this->validateShardAllocation();
 
 		$this->outputIndented( "\tValidating max shards per node..." );
 		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
@@ -892,12 +891,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	protected function validateCacheWarmers() {
-		$warmers = new \CirrusSearch\Maintenance\CacheWarmers( $this->indexType, $this->getPageType(), $this );
+		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $this );
 		$warmers->validate();
 	}
 
 	protected function validateShardAllocation() {
-		$shardAllocation = new \CirrusSearch\Maintenance\ShardAllocation( $this->getIndex(), $this );
+		global $wgCirrusSearchIndexAllocation;
+		$shardAllocation = new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
 		$shardAllocation->validate();
 	}
 

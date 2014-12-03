@@ -1,58 +1,58 @@
 <?php
 
-namespace CirrusSearch\Maintenance;
+namespace CirrusSearch\Maintenance\Validators;
+
+use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Searcher;
+use CirrusSearch\Util;
 use Elastica;
-use \Elastica\Exception\ResponseException;
-use \CirrusSearch\Connection;
-use \CirrusSearch\Util;
-use \CirrusSearch\Search\FullTextResultsType;
-use \CirrusSearch\Searcher;
-use \Title;
+use Elastica\Exception\ResponseException;
+use Elastica\Type;
+use Title;
 
-/**
- * Validates cache warmers in an index.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * http://www.gnu.org/copyleft/gpl.html
- */
-class CacheWarmers {
+class CacheWarmersValidator extends Validator {
+	/**
+	 * @var string
+	 */
 	private $indexType;
-	private $pageType;
-	private $out;
 
-	public function __construct( $indexType, $pageType, $out ) {
+	/**
+	 * @var Type
+	 */
+	private $pageType;
+
+	/**
+	 * @param string $indexType
+	 * @param Type $pageType
+	 * @param Maintenance $out
+	 */
+	public function __construct( $indexType, $pageType, Maintenance $out = null ) {
+		parent::__construct( $out );
+
 		$this->indexType = $indexType;
 		$this->pageType = $pageType;
-		$this->out = $out;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function validate() {
-		$this->out->outputIndented( "Validating cache warmers...\n" );
+		$this->outputIndented( "Validating cache warmers...\n" );
+
 		$expectedWarmers = $this->buildExpectedWarmers();
 		$actualWarmers = $this->fetchActualWarmers();
 
 		$warmersToUpdate = $this->diff( $expectedWarmers, $actualWarmers );
 		$warmersToDelete = array_diff_key( $actualWarmers, $expectedWarmers );
 
-		$this->updateWarmers( $warmersToUpdate );
-		$this->deleteWarmers( $warmersToDelete );
+		return $this->updateWarmers( $warmersToUpdate )
+			&& $this->deleteWarmers( $warmersToDelete );
 	}
 
 	private function buildExpectedWarmers() {
 		global $wgCirrusSearchMainPageCacheWarmer,
-			$wgCirrusSearchCacheWarmers;
+			   $wgCirrusSearchCacheWarmers;
 
 		$warmers = array();
 		if ( $wgCirrusSearchMainPageCacheWarmer && $this->indexType === 'content' ) {
@@ -77,7 +77,7 @@ class CacheWarmers {
 			// filters. That is probably OK because most searches don't use one.
 			// It'd be overeager.
 			null
-			// Null user because we won't be logging anything about the user.
+		// Null user because we won't be logging anything about the user.
 		);
 		$searcher->setReturnQuery( true );
 		$searcher->setResultsType( new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL ) );
@@ -106,33 +106,38 @@ class CacheWarmers {
 		$type = $this->pageType->getName();
 		foreach ( $warmers as $name => $contents ) {
 			// The types field comes back on warmers but it can't be sent back in
-			$this->out->outputIndented( "\tUpdating $name..." );
+			$this->outputIndented( "\tUpdating $name..." );
 			$name = urlencode( $name );
 			$path = "$type/_warmer/$name";
 			try {
 				$this->pageType->getIndex()->request( $path, 'PUT', $contents );
 			} catch ( ResponseException $e ) {
 				if ( preg_match( '/dynamic scripting for \\[.*\\] disabled/', $e->getResponse()->getError() ) ) {
-					$this->out->output( "couldn't create dynamic script!\n" );
-					$this->out->error( "Couldn't create the dynamic script required for Cirrus to work properly.  " .
+					$this->output( "couldn't create dynamic script!\n" );
+					$this->error( "Couldn't create the dynamic script required for Cirrus to work properly.  " .
 						"For now, Cirrus requires dynamic scripting.  It'll switch to sandboxed Groovy when it " .
 						"updates to support Elasticsearch 1.3.1 we promise.  For now enable dynamic scripting and " .
 						"keep Elasticsearch safely not accessible to people you don't trust.  You should always " .
 						"do that, but especially when dynamic scripting is enabled.", 1 );
+					return false;
 				}
 			}
-			$this->out->output( "done\n" );
+			$this->output( "done\n" );
 		}
+
+		return true;
 	}
 
 	private function deleteWarmers( $warmers ) {
 		foreach ( array_keys( $warmers ) as $name ) {
-			$this->out->outputIndented( "\tDeleting $name..." );
+			$this->outputIndented( "\tDeleting $name..." );
 			$name = urlencode( $name );
 			$path = "_warmer/$name";
 			$this->pageType->getIndex()->request( $path, 'DELETE' );
-			$this->out->output( "done\n" );
+			$this->output( "done\n" );
 		}
+
+		return true;
 	}
 
 	private function diff( $expectedWarmers, $actualWarmers ) {

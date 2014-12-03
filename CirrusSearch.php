@@ -580,6 +580,7 @@ $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\AnalyzersValidator'] = $
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\MappingValidator'] = $maintenanceDir . '/Validators/MappingValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\IndexAliasValidator'] = $maintenanceDir . '/Validators/IndexAliasValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\IndexAllAliasValidator'] = $maintenanceDir . '/Validators/IndexAllAliasValidator.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\Validators\SpecificAliasValidator'] = $maintenanceDir . '/Validators/SpecificAliasValidator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\UpdateVersionIndex'] = __DIR__ . '/maintenance/updateVersionIndex.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\UpdateSearchIndexConfig'] = __DIR__ . '/maintenance/updateSearchIndexConfig.php';
 $wgAutoloadClasses['CirrusSearch\NearMatchPicker'] = $includes . 'NearMatchPicker.php';

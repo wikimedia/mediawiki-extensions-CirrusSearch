@@ -580,6 +580,7 @@ $wgAutoloadClasses['CirrusSearch\Maintenance\ChunkBuilder'] = $maintenanceDir . 
 $wgAutoloadClasses['CirrusSearch\Maintenance\IndexNamespaces'] = __DIR__ . '/maintenance/indexNamespaces.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Maintenance'] = $maintenanceDir . 'Maintenance.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\MappingConfigBuilder'] = $maintenanceDir . 'MappingConfigBuilder.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\Reindexer'] = $maintenanceDir . 'Reindexer.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\ReindexForkController'] = $maintenanceDir . 'ReindexForkController.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\Validator'] = $maintenanceDir . '/Validators/Validator.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Validators\CacheWarmersValidator'] = $maintenanceDir . '/Validators/CacheWarmersValidator.php';

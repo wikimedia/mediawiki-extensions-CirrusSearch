@@ -109,7 +109,7 @@ class ElasticsearchIntermediary {
 	/**
 	 * Extract an error message from an exception thrown by Elastica.
 	 * @param RuntimeException $exception exception from which to extract a message
-	 * @return message from the exception
+	 * @return string message from the exception
 	 */
 	public static function extractMessage( $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {

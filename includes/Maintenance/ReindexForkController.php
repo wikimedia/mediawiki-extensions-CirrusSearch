@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance;
 use \ForkController;
 
 /**
- * Extensions to ForeController to prepare Elastica and to tell the child
+ * Extensions to ForkController to prepare Elastica and to tell the child
  * process which one it is.
  *
  * This program is free software; you can redistribute it and/or modify

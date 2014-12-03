@@ -369,7 +369,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndex(),
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
-			$this->getMappingConfig(),
+			$this->getMappingConfig()->buildConfig(),
 			$this->getPageType(),
 			$this->getNamespaceType(),
 			$this
@@ -434,59 +434,28 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			return;
 		}
 		if ( $this->reindexAndRemoveOk ) {
+			global $wgCirrusSearchMaintenanceTimeout;
+			$reindexer = new Reindexer(
+				$this->getIndex(),
+				Connection::getSingleton(),
+				$this->getPageType(),
+				$this->getOldPageType(),
+				$this->getShardCount(),
+				$this->getReplicaCount(),
+				$wgCirrusSearchMaintenanceTimeout,
+				$this->getMergeSettings(),
+				$this->getMappingConfig(),
+				$this
+			);
+
 			$this->output( "is taken...\n" );
 			$this->outputIndented( "\tReindexing...\n" );
-			$this->reindex();
+			$reindexer->reindex( $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation);
+
 			if ( $this->tooFewReplicas ) {
-				// Optimize the index so it'll be more compact for replication.  Not required
-				// but should be helpful.
-				$this->outputIndented( "\tOptimizing..." );
-				try {
-					// Reset the timeout just in case we lost it somehwere along the line
-					$this->setConnectionTimeout();
-					$this->getIndex()->optimize( array( 'max_num_segments' => 5 ) );
-					$this->output( "Done\n" );
-				} catch ( \Elastica\Exception\Connection\HttpException $e ) {
-					if ( $e->getMessage() === 'Operation timed out' ) {
-						$this->output( "Timed out...Continuing any way\n" );
-						// To continue without blowing up we need to reset the connection.
-						$this->destroySingleton();
-						$this->setConnectionTimeout();
-					} else {
-						throw $e;
-					}
-				}
+				$reindexer->optimize();
 				$this->validateIndexSettings();
-				$this->outputIndented( "\tWaiting for all shards to start...\n" );
-				list( $lower, $upper ) = explode( '-', $this->getReplicaCount() );
-				$each = 0;
-				while ( true ) {
-					$health = $this->getHealth();
-					$active = $health[ 'active_shards' ];
-					$relocating = $health[ 'relocating_shards' ];
-					$initializing = $health[ 'initializing_shards' ];
-					$unassigned = $health[ 'unassigned_shards' ];
-					$nodes = $health[ 'number_of_nodes' ];
-					if ( $nodes < $lower ) {
-						$this->error( "Require $lower replicas but only have $nodes nodes. "
-							. "This is almost always due to misconfiguration, aborting.", 1 );
-					}
-					// If the upper range is all, expect the upper bound to be the number of nodes
-					if ( $upper === 'all' ) {
-						$upper = $nodes - 1;
-					}
-					$expectedReplicas =  min( max( $nodes - 1, $lower ), $upper );
-					$expectedActive = $this->getShardCount() * ( 1 + $expectedReplicas );
-					if ( $each === 0 || $active === $expectedActive ) {
-						$this->outputIndented( "\t\tactive:$active/$expectedActive relocating:$relocating " .
-							"initializing:$initializing unassigned:$unassigned\n" );
-						if ( $active === $expectedActive ) {
-							break;
-						}
-					}
-					$each = ( $each + 1 ) % 20;
-					sleep( 1 );
-				}
+				$reindexer->waitForShards();
 			}
 			$this->outputIndented( "\tSwapping alias...");
 			$this->getIndex()->addAlias( $specificAliasName, true );
@@ -526,203 +495,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				$this->outputIndented( "\t\t$oldIndex..." );
 				$this->getClient()->getIndex( $oldIndex )->delete();
 				$this->output( "done\n" );
-			}
-		}
-	}
-
-	/**
-	 * Dump everything from the live index into the one being worked on.
-	 */
-	private function reindex() {
-		// Set some settings that should help io load during bulk indexing.  We'll have to
-		// optimize after this to consolidate down to a proper number of shards but that is
-		// is worth the price.  total_shards_per_node will help to make sure that each shard
-		// has as few neighbors as possible.
-		$settings = $this->getIndex()->getSettings();
-		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
-		$settings->set( array(
-			'refresh_interval' => -1,
-			'merge.policy.segments_per_tier' => 40,
-			'merge.policy.max_merge_at_once' => 40,
-			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-		) );
-
-		if ( $this->reindexProcesses > 1 ) {
-			$fork = new \CirrusSearch\Maintenance\ReindexForkController( $this->reindexProcesses );
-			$forkResult = $fork->start();
-			// Forking clears the timeout so we have to reinstate it.
-			$this->setConnectionTimeout();
-
-			switch ( $forkResult ) {
-			case 'child':
-				$this->reindexInternal( $this->reindexProcesses, $fork->getChildNumber() );
-				die( 0 );
-			case 'done':
-				break;
-			default:
-				$this->error( "Unexpected result while forking:  $forkResult", 1 );
-			}
-
-			$this->outputIndented( "Verifying counts..." );
-			// We can't verify counts are exactly equal because they won't be - we still push updates into
-			// the old index while reindexing the new one.
-			$oldCount = (float) $this->getOldPageType()->count();
-			$this->getIndex()->refresh();
-			$newCount = (float) $this->getPageType()->count();
-			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
-			if ( $difference > $this->reindexAcceptableCountDeviation ) {
-				$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
-				$this->error( 'Failed to load index - counts not close enough.  ' .
-					"old=$oldCount new=$newCount difference=$difference.  " .
-					'Check for warnings above.', 1 );
-			}
-			$this->output( "done\n" );
-		} else {
-			$this->reindexInternal( 1, 1 );
-		}
-
-		// Revert settings changed just for reindexing
-		$settings->set( array(
-			'refresh_interval' => $this->refreshInterval . 's',
-			'merge.policy' => $this->getMergeSettings(),
-		) );
-	}
-
-	private function reindexInternal( $children, $childNumber ) {
-		$filter = null;
-		$messagePrefix = "";
-		if ( $childNumber === 1 && $children === 1 ) {
-			$this->outputIndented( "\t\tStarting single process reindex\n" );
-		} else {
-			if ( $childNumber >= $children ) {
-				$this->error( "Invalid parameters - childNumber >= children ($childNumber >= $children) ", 1 );
-			}
-			$messagePrefix = "\t\t[$childNumber] ";
-			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
-			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
-			$filter = new Elastica\Filter\Script( array(
-				'script' => "(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber",
-				'lang' => 'groovy'
-			) );
-		}
-		$pageProperties = $this->getMappingConfig();
-		$pageProperties = $pageProperties[ 'page' ][ 'properties' ];
-		try {
-			$query = new Elastica\Query();
-			$query->setFields( array( '_id', '_source' ) );
-			if ( $filter ) {
-				$query->setFilter( $filter );
-			}
-
-			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
-			$result = $this->getOldPageType()
-				->search( $query, array(
-					'search_type' => 'scan',
-					'scroll' => '1h',
-					'size'=> $this->reindexChunkSize,
-				)
-			);
-			$totalDocsToReindex = $result->getResponse()->getData();
-			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
-			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
-			$operationStartTime = microtime( true );
-			$completed = 0;
-			$self = $this;
-			while ( true ) {
-				wfProfileIn( __METHOD__ . '::receiveDocs' );
-				$result = $this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'fetching documents to reindex',
-					function() use ( $self, $result ) {
-						return $self->getIndex()->search( array(), array(
-							'scroll_id' => $result->getResponse()->getScrollId(),
-							'scroll' => '1h'
-						) );
-					} );
-				wfProfileOut( __METHOD__ . '::receiveDocs' );
-				if ( !$result->count() ) {
-					$this->outputIndented( $messagePrefix . "All done\n" );
-					break;
-				}
-				wfProfileIn( __METHOD__ . '::packageDocs' );
-				$documents = array();
-				while ( $result->current() ) {
-					// Build the new document to just contain keys which have a mapping in the new properties.  To clean
-					// out any old fields that we no longer use.  Note that this filter is only a single level which is
-					// likely ok for us.
-					$document = new \Elastica\Document( $result->current()->getId(),
-						array_intersect_key( $result->current()->getSource(), $pageProperties ) );
-					// Note that while setting the opType to create might improve performance slightly it can cause
-					// trouble if the scroll returns the same id twice.  It can do that if the document is updated
-					// during the scroll process.  I'm unclear on if it will always do that, so you still have to
-					// perform the date based catch up after the reindex.
-					$documents[] = $document;
-					$result->next();
-				}
-				wfProfileOut( __METHOD__ . '::packageDocs' );
-				$this->withRetry( $this->reindexRetryAttempts, $messagePrefix, 'retrying as singles',
-					function() use ( $self, $messagePrefix, $documents ) {
-						$self->sendDocuments( $messagePrefix, $documents );
-					} );
-				$completed += $result->count();
-				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-				$this->outputIndented( $messagePrefix .
-					"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
-			}
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
-			$type = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
-			wfLogWarning( "Search backend error during reindex.  Error type is '$type' and message is:  $message" );
-			die( 1 );
-		}
-	}
-
-	private function getHealth() {
-		while ( true ) {
-			$indexName = $this->getSpecificIndexName();
-			$path = "_cluster/health/$indexName";
-			$response = $this->getClient()->request( $path );
-			if ( $response->hasError() ) {
-				$this->error( 'Error fetching index health but going to retry.  Message: ' + $response->getError() );
-				sleep( 1 );
-				continue;
-			}
-			return $response->getData();
-		}
-	}
-
-	private function withRetry( $attempts, $messagePrefix, $description, $func ) {
-		$errors = 0;
-		while ( true ) {
-			if ( $errors < $attempts ) {
-				try {
-					return $func();
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					$errors += 1;
-					// Random backoff with lowest possible upper bound as 16 seconds.
-					// With the default mximum number of errors (5) this maxes out at 256 seconds.
-					$seconds = rand( 1, pow( 2, 3 + $errors ) );
-					$type = get_class( $e );
-					$message = ElasticsearchIntermediary::extractMessage( $e );
-					$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
-						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
-					sleep( $seconds );
-				}
-			} else {
-				return $func();
-			}
-		}
-	}
-
-	public function sendDocuments( $messagePrefix, $documents ) {
-		try {
-			$updateResult = $this->getPageType()->addDocuments( $documents );
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$type = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$type' and message is:  $message" );
-			foreach ( $documents as $document ) {
-				// Continue using the bulk api because we're used to it.
-				$updateResult = $this->getPageType()->addDocuments( array( $document ) );
 			}
 		}
 	}
@@ -820,16 +592,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @return array
+	 * @return MappingConfigBuilder
 	 */
 	protected function getMappingConfig() {
-		$builder = new \CirrusSearch\Maintenance\MappingConfigBuilder(
+		return new MappingConfigBuilder(
 			$this->prefixSearchStartsWithAny,
 			$this->phraseSuggestUseText,
 			$this->optimizeIndexForExperimentalHighlighter
 		);
-
-		return $builder->buildConfig();
 	}
 
 	/**
@@ -944,18 +714,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Otherwise its just a raw scalar so we should respect that too
 		return $wgCirrusSearchReplicas;
-	}
-
-	private function getMaxReplicaCount() {
-		$replica = explode( '-', $this->getReplicaCount() );
-		return $replica[ count( $replica ) - 1 ];
-	}
-
-	private function decideMaxShardsPerNodeForReindex() {
-		$health = $this->getHealth();
-		$totalNodes = $health[ 'number_of_nodes' ];
-		$totalShards = $this->getShardCount() * ( $this->getMaxReplicaCount() + 1 );
-		return ceil( 1.0 * $totalShards / $totalNodes );
 	}
 
 	private function parsePotentialPercent( $str ) {

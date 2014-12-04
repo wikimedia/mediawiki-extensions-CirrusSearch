@@ -85,7 +85,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexAcceptableCountDeviation;
 
 	/**
-	 * @var the builder for analysis config
+	 * @var AnalysisConfigBuilder the builder for analysis config
 	 */
 	private $analysisConfigBuilder;
 
@@ -313,19 +313,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndex() {
-		if ( $this->startOver ) {
-			$this->outputIndented( "Blowing away index to start over..." );
-			$this->createIndex( true );
-			$this->output( "ok\n" );
-			return;
+		// $this->startOver || !$this->getIndex()->exists() are the conditions
+		// under which a new index will be created
+		$this->tooFewReplicas = ( $this->startOver || !$this->getIndex()->exists() ) && $this->reindexAndRemoveOk;
+
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexValidator(
+			$this->getIndex(),
+			$this->startOver,
+			isset( $this->maxShardsPerNode[ $this->indexType ] ) ? $this->maxShardsPerNode[ $this->indexType ] : 'unlimited',
+			$this->getShardCount(),
+			$this->getReplicaCount(),
+			$this->refreshInterval,
+			$this->analysisConfigBuilder,
+			$this->getMergeSettings(),
+			$this
+		);
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
 		}
-		if ( !$this->getIndex()->exists() ) {
-			$this->outputIndented( "Creating index..." );
-			$this->createIndex( false );
-			$this->output( "ok\n" );
-			return;
-		}
-		$this->outputIndented( "Index exists so validating...\n" );
+
 		$this->validateIndexSettings();
 	}
 
@@ -457,25 +464,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( !$status->isOK() ) {
 			$this->error( $status->getMessage()->text(), 1 );
 		}
-	}
-
-	private function createIndex( $rebuild ) {
-		$maxShardsPerNode = isset( $this->maxShardsPerNode[ $this->indexType ] ) ?
-			$this->maxShardsPerNode[ $this->indexType ] : 'unlimited';
-		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
-		$this->getIndex()->create( array(
-			'settings' => array(
-				'number_of_shards' => $this->getShardCount(),
-				'auto_expand_replicas' => $this->getReplicaCount(),
-				'analysis' => $this->analysisConfigBuilder->buildConfig(),
-				// Use our weighted all field as the default rather than _all which is disabled.
-				'index.query.default_field' => 'all',
-				'refresh_interval' => $this->refreshInterval . 's',
-				'merge.policy' => $this->getMergeSettings(),
-				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-			)
-		), $rebuild );
-		$this->tooFewReplicas = $this->reindexAndRemoveOk;
 	}
 
 	/**

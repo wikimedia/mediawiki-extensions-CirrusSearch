@@ -50,7 +50,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	// Set with the name of any old indecies to remove if any must be during the alias maintenance
 	// steps.
-	private $removeIndecies = false;
+	private $removeIndecies = array();
 
 	/**
 	 * @var boolean are there too few replicas in the index we're making?
@@ -503,7 +503,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function validateAllAlias() {
-		$validator = new \CirrusSearch\Maintenance\Validators\IndexAliasValidator( $this->getClient(), $this->getIndexName(), $this->getSpecificIndexName(), $this->startOver, $this );
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator( $this->getClient(),
+			$this->getIndexName(), $this->getSpecificIndexName(), $this->startOver, $this->getIndexTypeName(), $this );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
 			$this->error( $status->getMessage()->text(), 1 );
@@ -515,6 +516,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function removeOldIndeciesIfRequired() {
+		$client = $this->getClient();
+		$this->removeIndecies = array_filter( $this->removeIndecies, function ( $name ) use ( $client ) {
+			return $client->getIndex( $name )->exists();
+		} );
 		if ( $this->removeIndecies ) {
 			$this->outputIndented( "\tRemoving old indecies...\n" );
 			foreach ( $this->removeIndecies as $oldIndex ) {

@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
-use \ElasticaConnection;
 use \Status;
 
 /**
@@ -161,7 +160,7 @@ class ElasticsearchIntermediary {
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 
 		// Extract the amount of time Elasticsearch reported the last request took if possible.
-		$result = ElasticaConnection::getClient()->getLastResponse();
+		$result = Connection::getClient()->getLastResponse();
 		if ( $result ) {
 			$data = $result->getData();
 			if ( isset( $data[ 'took' ] ) ) {

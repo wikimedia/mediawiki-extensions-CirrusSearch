@@ -7,7 +7,7 @@ use Elastica\Client;
 use RawMessage;
 use Status;
 
-class IndexAliasValidator extends Validator {
+abstract class IndexAliasValidator extends Validator {
 	/**
 	 * @var Client
 	 */
@@ -81,7 +81,7 @@ class IndexAliasValidator extends Validator {
 				if ( $index->getName() === $this->specificIndexName ) {
 					$this->output( "ok\n" );
 					return Status::newGood();
-				} else {
+				} else if ( $this->shouldRemoveFromAlias( $index->getName() ) ) {
 					$remove[] = $index->getName();
 				}
 			}
@@ -91,6 +91,8 @@ class IndexAliasValidator extends Validator {
 
 		return $this->updateIndices( $add, $remove );
 	}
+
+	protected abstract function shouldRemoveFromAlias( $name );
 
 	/**
 	 * @param string[] $add Array of indices to add
@@ -117,6 +119,10 @@ class IndexAliasValidator extends Validator {
 		$this->client->request( '_aliases', \Elastica\Request::POST, $data );
 		$this->output( "corrected\n" );
 
+		$client = $this->client;
+		$remove = array_filter( $remove, function ( $name ) use ( $client ) {
+			return $client->getIndex( $name )->exists();
+		} );
 		if ( $remove ) {
 			$this->outputIndented( "\tRemoving old indices...\n" );
 			foreach ( $remove as $indexName ) {

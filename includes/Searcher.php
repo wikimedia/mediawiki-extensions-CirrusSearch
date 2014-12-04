@@ -830,6 +830,7 @@ GROOVY;
 		$indexBaseName = $this->indexBaseName;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
+			$this->user,
 			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
@@ -857,6 +858,7 @@ GROOVY;
 		$indexBaseName = $this->indexBaseName;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-NamespaceLookup',
+			$this->user,
 			function() use ( $searcher, $name, $indexBaseName ) {
 				try {
 					$searcher->start( "lookup namespace for $name" );
@@ -1083,8 +1085,10 @@ GROOVY;
 		// Perform the search
 		$searcher = $this;
 		wfProfileIn( __METHOD__ . '-execute' );
+		$user = $this->user;
 		$result = Util::doPoolCounterWork(
 			$poolCounterType,
+			$this->user,
 			function() use ( $searcher, $search, $description ) {
 				try {
 					$searcher->start( $description );
@@ -1093,9 +1097,13 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			function( $error, $key ) use ( $type, $description ) {
+			function( $error, $key ) use ( $type, $description, $user ) {
 				wfLogWarning( "Pool error on key $key during $description:  $error" );
 				if ( $error === 'pool-queuefull' ) {
+					if ( strpos( $key, 'CirrusSearch:_per_user' ) === 0 ) {
+						$loggedIn = $user->isLoggedIn() ? 'logged-in' : 'anonymous';
+						return Status::newFatal( "cirrussearch-too-busy-for-you-{$loggedIn}-error" );
+					}
 					if ( $type === 'regex' ) {
 						return Status::newFatal( 'cirrussearch-regex-too-busy-error' );
 					}

@@ -108,26 +108,32 @@ CirrusSearch can leverage the PoolCounter extension to limit the number of concu
 elasticsearch.  You can do this by installing the PoolCounter extension and then configuring it in
 LocalSettings.php like so:
  require_once( "$IP/extensions/PoolCounter/PoolCounterClient.php");
- $wgPoolCounterConf = array(
-	'CirrusSearch-Search' => array(  // Configuration for non-prefix non-regex searches
-		'class' => 'PoolCounter_Client',
-		'timeout' => 30,
-		'workers' => 25,
-		'maxqueue' => 10,
-	),
-	'CirrusSearch-Prefix' => array(  // Configuration for prefix searches
-		'class' => 'PoolCounter_Client',
-		'timeout' => 10,
-		'workers' => 50,
-		'maxqueue' => 10,
-	),
-	'CirrusSearch-Regex' => array(  // Configuration for regex searches
-		'class' => 'PoolCounter_Client',
-		'timeout' => 30,
-		'workers' => 10,
-		'maxqueue' => 0,
-	),
-	'CirrusSearch-NamespaceLookup' => array(  // Configuration for funky namespace lookups
+ // Configuration for standard searches.
+ $wgPoolCounterConf[ 'CirrusSearch-Search' ] = array(
+	'class' => 'PoolCounter_Client',
+	'timeout' => 30,
+	'workers' => 25,
+	'maxqueue' => 50,
+ );
+ // Configuration for prefix searches.  These are usually quite quick and
+ // plentiful.
+ $wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = array(
+	'class' => 'PoolCounter_Client',
+	'timeout' => 10,
+	'workers' => 50,
+	'maxqueue' => 100,
+ );
+ // Configuration for regex searches.  These are slow and use lots of resources
+ // so we only allow a few at a time.
+ $wgPoolCounterConf[ 'CirrusSearch-Regex' ] = array(
+	'class' => 'PoolCounter_Client',
+	'timeout' => 30,
+	'workers' => 10,
+	'maxqueue' => 10,
+ );
+ // Configuration for funky namespace lookups.  These should be reasonably fast
+ // and reasonably rare.
+ $wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = array(
 		'class' => 'PoolCounter_Client',
 		'timeout' => 10,
 		'workers' => 20,
@@ -135,6 +141,15 @@ LocalSettings.php like so:
 	),
  );
 
+If you have a version of the pool counter with Ie282b8486c7bad451fbc5fb9a8274c6e01a728a7
+you can also enable per user request limits:
+ // Each user (or remote IP) can only do 5 concurrent queries.
+ $wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
+	'class' => 'PoolCounter_Client',
+	'timeout' => 0,
+	'workers' => 5,
+	'maxqueue' => 5,
+ );
 
 Upgrading
 ---------
@@ -257,6 +272,7 @@ vagrant provision
 This can take some time but it produces a clean development environment in a virtual machine
 that has everything required to run Cirrus.
 
+
 Hooks
 -----
 CirrusSearch provides hooks that other extensions can make use of to extend the core schema and
@@ -284,5 +300,6 @@ really been settled.
 
 Licensing information
 ---------------------
-CirrusSearch makes use of the Elastica library to connect to elasticsearch <http://elastica.io/>.
-It is Apache licensed and you can read the license Elastica/LICENSE.txt.
+CirrusSearch makes use of the Elastica extension containing the Elastica library to connect
+to Elasticsearch <http://elastica.io/>. It is Apache licensed and you can read the license
+Elastica/LICENSE.txt.

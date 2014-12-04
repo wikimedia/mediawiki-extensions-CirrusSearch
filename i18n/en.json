@@ -6,6 +6,8 @@
 	"cirrussearch-backend-error": "We could not complete your search due to a temporary problem. Please try again later.",
 	"cirrussearch-parse-error": "Query was not understood. Please make it simpler. The query was logged to improve the search system.",
 	"cirrussearch-too-busy-error": "Search is currently too busy.  Please try again later.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "You have too many concurrent searches running.  If you are sharing an IP address with other users you can log in to get your own limits.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "You have too many concurrent searches running.",
 	"cirrussearch-regex-syntax-error": "Regular expression syntax error at $2: $1",
 	"cirrussearch-regex-too-busy-error": "Too many regular expression searches currently running.  Please try again later.",
 	"cirrussearch-regex-too-complex-error": "Regular expression is too complex.  Learn more about simplifying it [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].",

@@ -11,7 +11,6 @@ use \CirrusSearch\Search\IdResultsType;
 use \CirrusSearch\Search\ResultsType;
 use \Language;
 use \MWNamespace;
-use \ProfileSection;
 use \RequestContext;
 use \Sanitizer;
 use \SearchResultSet;
@@ -246,8 +245,6 @@ class Searcher extends ElasticsearchIntermediary {
 	public function nearMatchTitleSearch( $search ) {
 		global $wgCirrusSearchAllFields;
 
-		$profiler = new ProfileSection( __METHOD__ );
-
 		self::checkTitleSearchRequestLength( $search );
 
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
@@ -279,8 +276,6 @@ class Searcher extends ElasticsearchIntermediary {
 	public function prefixSearch( $search ) {
 		global $wgCirrusSearchPrefixSearchStartsWithAnyWord,
 			$wgCirrusSearchPrefixWeights;
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		self::checkTitleSearchRequestLength( $search );
 
@@ -320,8 +315,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param Status(mixed) status containing results defined by resultsType on success
 	 */
 	public function randomSearch( $seed ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		$this->setResultsType( new IdResultsType() );
 		$this->sort = 'random';
 
@@ -352,8 +345,6 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchBoostLinks,
 			$wgCirrusSearchAllFields,
 			$wgCirrusSearchAllFieldsForRescore;
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$searcher = $this;
@@ -791,8 +782,6 @@ GROOVY;
 	public function moreLikeTheseArticles( $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		global $wgCirrusSearchMoreLikeThisConfig;
 
-		$profiler = new ProfileSection( __METHOD__ );
-
 		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
 		// two passes but it doesn't support that at this point
 		$pageIds = array();
@@ -836,8 +825,6 @@ GROOVY;
 	 *    or an error if there was an error
 	 */
 	public function get( $pageIds, $sourceFiltering ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
@@ -945,8 +932,6 @@ GROOVY;
 		global $wgCirrusSearchMoreAccurateScoringMode,
 			$wgCirrusSearchSearchShardTimeout,
 			$wgCirrusSearchClientSideSearchTimeout;
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );

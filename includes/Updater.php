@@ -6,7 +6,6 @@ use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
 use \MWTimestamp;
 use \ParserCache;
-use \ProfileSection;
 use \Sanitizer;
 use \Title;
 use \WikiPage;
@@ -170,8 +169,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
 	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = array();
 		$pages = array_filter( $pages, function( $page ) use ( &$pageIds ) {
@@ -224,8 +221,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		Job\OtherIndex::queueIfRequired( $titles, false );
 
 		if ( $clientSideTimeout !== null ) {
@@ -248,8 +243,6 @@ class Updater extends ElasticsearchIntermediary {
 		if ( $documentCount === 0 ) {
 			return true;
 		}
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		$exception = null;
 		try {
@@ -286,8 +279,6 @@ class Updater extends ElasticsearchIntermediary {
 
 	private function buildDocumentsForPages( $pages, $flags ) {
 		global $wgCirrusSearchUpdateConflictRetryCount;
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
 		$skipParse = $flags & self::SKIP_PARSE;
@@ -508,8 +499,6 @@ GROOVY;
 	 * @return bool True if nothing happened or we deleted, false on failure
 	 */
 	private function sendDeletes( $ids, $indexType = null ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		$idCount = count( $ids );
 		if ( $idCount !== 0 ) {
 			try {

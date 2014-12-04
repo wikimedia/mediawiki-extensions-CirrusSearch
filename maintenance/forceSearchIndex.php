@@ -7,7 +7,6 @@ use \LinkCache;
 use \Maintenance;
 use \MWContentSerializationException;
 use \MWTimestamp;
-use \ProfileSection;
 use \Title;
 use \WikiPage;
 
@@ -96,8 +95,6 @@ class ForceSearchIndex extends Maintenance {
 		if ( !$this->simpleCheckIndexes() ) {
 			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
 		}
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -295,7 +292,6 @@ class ForceSearchIndex extends Maintenance {
 	 *    inputs for this function but should not by synced to the search index.
 	 */
 	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
-		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minId = $dbr->addQuotes( $minId );
 		if ( $maxUpdate === null ) {
@@ -349,8 +345,6 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	private function decodeResults( $res, $maxUpdate ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		$result = array();
 		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
 		// level so those are stored when it is freed.
@@ -412,7 +406,6 @@ class ForceSearchIndex extends Maintenance {
 	 * @return array An array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
-		$profiler = new ProfileSection( __METHOD__ );
 		$dbr = $this->getDB( DB_SLAVE );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
 		$minNamespace = $dbr->addQuotes( $minNamespace );

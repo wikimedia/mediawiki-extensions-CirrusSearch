@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch;
-use \ProfileSection;
 use \Status;
 
 /**
@@ -37,8 +36,6 @@ class Version extends ElasticsearchIntermediary {
 	 */
 	public function get() {
 		global $wgMemc, $wgCirrusSearchClientSideSearchTimeout;
-
-		$profiler = new ProfileSection( __METHOD__ );
 
 		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );
 		$result = $wgMemc->get( $mcKey );

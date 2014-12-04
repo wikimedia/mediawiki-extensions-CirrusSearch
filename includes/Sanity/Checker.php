@@ -3,7 +3,6 @@
 namespace CirrusSearch\Sanity;
 use \CirrusSearch\Connection;
 use \CirrusSearch\Searcher;
-use \ProfileSection;
 use \Status;
 use \Title;
 use \WikiPage;

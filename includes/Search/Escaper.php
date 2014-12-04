@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use \ProfileSection;
-
 /**
  * Escapes queries.
  *
@@ -30,7 +28,6 @@ class Escaper {
 	}
 
 	public function escapeQuotes( $text ) {
-		$profiler = new ProfileSection( __METHOD__ );
 		if ( $this->language === 'he' ) {
 			// Hebrew uses the double quote (") character as a standin for quotation marks (“”)
 			// which delineate phrases.  It also uses double quotes as a standin for another
@@ -56,8 +53,6 @@ class Escaper {
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
 	 */
 	public function fixupQueryStringPart( $string ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		// Escape characters that can be escaped with \\
 		$string = preg_replace( '/(
 				\(|     (?# no user supplied groupings)
@@ -84,8 +79,6 @@ class Escaper {
 	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		// Be careful when editing this method because the ordering of the replacements matters.
 
 		// Escape ~ that don't follow a term or a quote
@@ -153,7 +146,6 @@ class Escaper {
 	}
 
 	public function balanceQuotes( $text ) {
-		$profiler = new ProfileSection( __METHOD__ );
 		$inQuote = false;
 		$inEscape = false;
 		$len = strlen( $text );

@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch;
-use \ProfileSection;
 
 /**
  * Picks the best "near match" title.
@@ -56,8 +55,6 @@ class NearMatchPicker {
 	 * @return Title|null title if there is a near match and null otherwise
 	 */
 	public function pickBest() {
-		$profiler = new ProfileSection( __METHOD__ );
-
 		if ( !$this->titles ) {
 			return null;
 		}

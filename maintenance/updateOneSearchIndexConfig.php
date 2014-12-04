@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use \CirrusSearch\Connection;
 use \CirrusSearch\ElasticsearchIntermediary;
 use Elastica;
-use \ProfileSection;
 
 /**
  * Update the search configuration on the search backend.

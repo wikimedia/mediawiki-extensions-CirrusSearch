@@ -287,12 +287,10 @@ class Updater extends ElasticsearchIntermediary {
 
 		$documents = array();
 		foreach ( $pages as $page ) {
-			wfProfileIn( __METHOD__ . '-basic' );
 			$title = $page->getTitle();
 			if ( !$page->exists() ) {
 				wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: $title" );
-				wfProfileOut( __METHOD__ . '-basic' );
 				continue;	
 			}
 
@@ -312,11 +310,8 @@ class Updater extends ElasticsearchIntermediary {
 			// regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
-			wfProfileOut( __METHOD__ . '-basic' );
 
 			if ( !$skipParse ) {
-				wfProfileIn( __METHOD__ . '-parse' );
-
 				// Get text to index, based on content and parser output
 				list( $content, $parserOutput ) = $this->getContentAndParserOutput( $page );
 
@@ -336,8 +331,6 @@ class Updater extends ElasticsearchIntermediary {
 
 				// Then let hooks have a go
 				wfRunHooks( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
-
-				wfProfileOut( __METHOD__ . '-parse' );
 			}
 
 			if ( !$skipLinks ) {

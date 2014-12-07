@@ -6,6 +6,7 @@
 	},
 	"cirrussearch-backend-error": "একটি সাময়িক সমস্যার কারণে আমরা আপনার অনুসন্ধান সম্পন্ন করতে পারেনি। দয়া করে পরে আবার চেষ্টা করুন।",
 	"cirrussearch-parse-error": "প্রশ্নের বোঝা যায়নি। দয়া করে এটি সহজ করুন। অনুসন্ধান ব্যবস্থা উন্নত করতে প্রশ্ন লগ করা হয়েছিল।",
+	"cirrussearch-too-busy-error": "অনুসন্ধান বর্তমানে খুব ব্যস্ত। দয়া করে পরে আবার চেষ্টা করুন।",
 	"cirrussearch-regex-syntax-error": "$2-এ রেগুলার এক্সপ্রেশন সিনট্যাক্স ত্রুটি:  $1",
 	"cirrussearch-now-using": "এই উইকি একটি নতুন অনুসন্ধান ইঞ্জিন ব্যবহার করছে।([[mw:Special:MyLanguage/Help:CirrusSearch|আরো জানুন]])",
 	"cirrussearch-pref-label": "নতুন অনুসন্ধান",

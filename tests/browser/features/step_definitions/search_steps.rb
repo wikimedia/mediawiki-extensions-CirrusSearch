@@ -120,7 +120,7 @@ end
 Then(/^(.+) is( not)? in the suggestions$/) do |title, should_not|
   found = false
   on(SearchPage).all_results_elements.each do |result|
-    if should_not then
+    if should_not
       result.text.should_not == title
     else
       found |= result.text == title
@@ -136,7 +136,7 @@ Then(/^there is a search result$/) do
 end
 Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |title, in_ok, indexes|
   on(SearchResultsPage) do |page|
-    found = indexes.split(/ or /).any? { |index|
+    found = indexes.split(/ or /).any? do |index|
       begin
         check_search_result(
           page.send("#{index}_result_wrapper_element"),
@@ -147,7 +147,7 @@ Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |titl
       rescue
         false
       end
-    }
+    end
     found.should == true
   end
 end

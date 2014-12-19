@@ -2,7 +2,6 @@
 
 World(CirrusSearchApiHelper)
 
-
 main = false
 Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes") do
   unless main

@@ -10,7 +10,7 @@ end
 
 Given(/^there are (\d+) pages named (.*) with contents (.*)?$/) do |count, title, text|
   count = count.to_i
-  for i in 1..count do
+  (1..count).each do |i|
     new_title = title % i
     text = new_title unless text
     edit_page(new_title, text, false)
@@ -19,8 +19,8 @@ end
 
 Given(/^there are (\d+) redirects to (.+) of the form (.+)$/) do |count, target, form|
   count = count.to_i
-  text = '#REDIRECT [[%s]]' % target
-  for i in 1..count do
+  text = "#REDIRECT [[#{target}]]"
+  (1..count).each do |i|
     new_title = form % i
     edit_page(new_title, text, false)
   end

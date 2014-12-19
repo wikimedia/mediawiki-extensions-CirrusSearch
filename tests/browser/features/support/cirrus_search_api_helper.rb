@@ -1,3 +1,4 @@
+# Common code cirrus' test use when dealing with api.
 module CirrusSearchApiHelper
   def edit_page(title, text, add)
     text = File.read("articles/" + text[1..-1]) if text.start_with?("@")

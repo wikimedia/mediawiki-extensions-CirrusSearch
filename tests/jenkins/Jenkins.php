@@ -94,8 +94,8 @@ class Jenkins {
 	 * @return bool true so we let other extensions install more maintenance actions
 	 */
 	public static function installDatabaseUpdatePostActions( $updater ) {
-		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes');
-		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup');
+		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes' );
+		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup' );
 		return true;
 	}
 

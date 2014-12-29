@@ -499,48 +499,6 @@ class Hooks {
 	}
 
 	/**
-	 * Get a random page
-	 *
-	 * @param string $randstr A random seed given from MediaWiki.
-	 * @param bool $isRedir Are we wanting a random redirect?
-	 * @param array(int) $namespaces An array of namespaces to pick a page from
-	 * @param array $extra Extra query params for the database-backed random. Unused.
-	 * @param Title $title The title we want to return, if any
-	 * @return bool False if we've set $title, true otherwise
-	 */
-	public static function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ) {
-		global $wgCirrusSearchPowerSpecialRandom;
-
-		if ( !$wgCirrusSearchPowerSpecialRandom ) {
-			return true;
-		}
-		// We don't index redirects so don't try to find one.
-		if ( !$isRedir && !$extra ) {
-			// Remove decimal from seed, we want an int
-			$seed = (int)str_replace( '.', '', $randstr );
-
-			$searcher = new Searcher( 0, 1, $namespaces,
-				RequestContext::getMain()->getUser() );
-			$searcher->limitSearchToLocalWiki( true );
-			$randSearch = $searcher->randomSearch( $seed );
-			if ( $randSearch->isOk() ) {
-				$results = $randSearch->getValue();
-				// should almost never happen unless you're developing
-				// on a completely empty wiki with no pages
-				if ( isset( $results[ 0 ] ) ) {
-					$page = WikiPage::newFromID( $results[ 0 ] );
-					if ( $page ) {
-						$title = $page->getTitle();
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
 	 * This includes limiting them to $max titles.
 	 * @param array(Title) $titles titles to prepare

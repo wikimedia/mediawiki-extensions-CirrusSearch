@@ -310,18 +310,6 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Perform a random search
-	 * @param int $seed Seed for the random number generator
-	 * @param Status(mixed) status containing results defined by resultsType on success
-	 */
-	public function randomSearch( $seed ) {
-		$this->setResultsType( new IdResultsType() );
-		$this->sort = 'random';
-
-		return $this->search( 'random', $seed );
-	}
-
-	/**
 	 * @param string $suggestPrefix prefix to be prepended to suggestions
 	 */
 	public function addSuggestPrefix( $suggestPrefix ) {
@@ -1028,13 +1016,6 @@ GROOVY;
 				'order' => 'desc',
 				'missing' => '_last',
 			) ) );
-			break;
-		case 'random':
-			// Random scoring is funky - you have to wrap the query in a FunctionScore query.
-			$funcScore = new \Elastica\Query\FunctionScore();
-			$funcScore->setRandomScore( $for );
-			$funcScore->setQuery( $this->query );
-			$query->setQuery( $funcScore );
 			break;
 		default:
 			wfLogWarning( "Invalid sort type:  $this->sort" );

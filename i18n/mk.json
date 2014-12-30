@@ -8,6 +8,8 @@
 	"cirrussearch-backend-error": "Не можам наполно да го изведам пребарувањето поради привремен проблем. Обидете се подоцна.",
 	"cirrussearch-parse-error": "Не го разбрав барањето. Упростете го. Ова го заведувам за да го подобриме пребарувачкиот систем.",
 	"cirrussearch-too-busy-error": "Пребарувањето во моментов е презафатено. Обидете се подоцна.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Имате премногу тековни пребарувања. Доколку имате заедничка IP-адреса со други корисници, можете да се најавите со ваша сметка за да го добиете вашето следување.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Имате премногу пребарувања во тек.",
 	"cirrussearch-regex-syntax-error": "Синтаксна грешка на регуларниот израз во $2: $1",
 	"cirrussearch-regex-too-busy-error": "Во моментов има премногу пребарувања на регуларни изрази. Обидете се подоцна.",
 	"cirrussearch-regex-too-complex-error": "Регуларниот израз е пресложен. Дознајте повеќе за неговото упростување [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|тука]].",

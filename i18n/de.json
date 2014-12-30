@@ -10,6 +10,8 @@
 	"cirrussearch-backend-error": "Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.",
 	"cirrussearch-parse-error": "Die Suchanfrage wurde nicht verstanden. Bitte mache sie einfacher. Die Anfrage wurde protokolliert, um das Suchsystem zu verbessern.",
 	"cirrussearch-too-busy-error": "Die Suche ist derzeit überlastet. Bitte später erneut versuchen.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Du lässt zu viele Suchanfragen gleichzeitig laufen. Falls du eine IP-Adresse mit anderen Benutzern teilst, kannst du dich anmelden, um deine eigenen Beschränkungen zu erhalten.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Du lässt zu viele Suchanfragen gleichzeitig laufen.",
 	"cirrussearch-regex-syntax-error": "Syntaxfehler des regulären Ausdrucks bei $2: $1",
 	"cirrussearch-regex-too-busy-error": "Es werden derzeit zu viele Suchanfragen mit regulären Ausdrücken ausgeführt. Bitte später erneut versuchen.",
 	"cirrussearch-regex-too-complex-error": "Der reguläre Ausdruck ist zu komplex. Erfahre [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|hier]] mehr über seine Vereinfachung.",

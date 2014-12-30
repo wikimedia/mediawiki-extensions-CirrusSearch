@@ -97,6 +97,9 @@ class CacheWarmersValidator extends Validator {
 		if ( count( $firstKeys ) === 0 ) {
 			return array();
 		}
+		if ( !isset( $data[ $firstKeys[ 0 ] ][ 'warmers' ] ) ) {
+			return array();
+		}
 		$warmers = $data[ $firstKeys[ 0 ] ][ 'warmers' ];
 		foreach ( $warmers as &$warmer ) {
 			// The 'types' field is funky - we can't send it back so we really just pretend it

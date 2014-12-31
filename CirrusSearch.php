@@ -428,10 +428,6 @@ $wgCirrusSearchCacheWarmers = array();
 // which most wikis will want. Edge cases will want to turn this off.
 $wgCirrusSearchBoostLinks = true;
 
-// Should Cirrus power Special:Random?  The result is truely random BUT it is
-// somewhat expensive to generate.
-$wgCirrusSearchPowerSpecialRandom = true;
-
 // Shard allocation settings. The include/exclude/require top level keys are
 // the type of rule to use, the names should be self explanatory. The values
 // are an array of keys and values of different rules to apply to an index.
@@ -508,7 +504,6 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'mainPageCacheWarmer',
 	'cacheWarmers',
 	'boostLinks',
-	'powerSpecialRandom',
 	'indexAllocation',
 );
 
@@ -629,7 +624,6 @@ $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Hooks::onBeforeInitialize';
 $wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::onGetBetaFeaturePreferences';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearch\Hooks::onLinksUpdateCompleted';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch\Hooks::onSoftwareInfo';
-$wgHooks[ 'SpecialRandomGetRandomTitle' ][] = 'CirrusSearch\Hooks::onSpecialRandomGetRandomTitle';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsPrepend';
 $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';

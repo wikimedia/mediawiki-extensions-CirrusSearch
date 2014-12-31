@@ -50,7 +50,7 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
-		self::initializeForUser( $user, $request );
+		self::initializeForRequest( $request );
 		return true;
 	}
 
@@ -60,22 +60,18 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onApiBeforeMain( $apiMain ) {
-		self::initializeForUser( $apiMain->getUser(), $apiMain->getRequest() );
+		self::initializeForRequest( $apiMain->getRequest() );
 		return true;
 	}
 
 	/**
-	 * Initializes the portions of Cirrus that require the $user to be fully initialized and therefore
-	 * cannot be done in $wgExtensionFunctions.  Specifically this means the beta features check and
-	 * installing the prefix search hook, because it needs information from the beta features check.
+	 * Initializes the portions of Cirrus that require the $request to be fully initialized
 	 *
-	 * @param User $user
 	 * @param WebRequest $request
 	 */
-	private static function initializeForUser( $user, $request ) {
-		global $wgSearchType, $wgSearchTypeAlternatives, $wgHooks,
+	private static function initializeForRequest( $request ) {
+		global $wgSearchType, $wgHooks,
 			$wgCirrusSearchUseExperimentalHighlighter,
-			$wgCirrusSearchEnablePref,
 			$wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchFunctionRescoreWindowSize,
 			$wgCirrusSearchFragmentSize,
@@ -83,16 +79,6 @@ class Hooks {
 			$wgCirrusSearchAllFields,
 			$wgCirrusSearchAllFieldsForRescore,
 			$wgCirrusSearchPhraseSlop;
-
-		// If the user has the BetaFeature enabled, use Cirrus as default.
-		if ( $wgCirrusSearchEnablePref && $user->isLoggedIn() && class_exists( 'BetaFeatures' )
-				&& BetaFeatures::isFeatureEnabled( $user, 'cirrussearch-default' ) ) {
-			// Make the old search an alternative
-			$wgSearchTypeAlternatives[] = $wgSearchType;
-			// And remove Cirrus as an alternative
-			$wgSearchTypeAlternatives = array_diff( $wgSearchTypeAlternatives, array( 'CirrusSearch' ) );
-			$wgSearchType = 'CirrusSearch';
-		}
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
@@ -284,31 +270,6 @@ class Hooks {
 		$engine = $specialSearch->getSearchEngine();
 		if ( $engine instanceof CirrusSearch ) {
 			$out->addJsConfigVars( $engine->getLastSearchMetrics() );
-		}
-
-		return true;
-	}
-
-	/**
-	 * Adds using CirrusSearch as default as a BetaFeature
-	 * @param User $user
-	 * @param array $prefs
-	 * @return bool
-	 */
-	public static function onGetBetaFeaturePreferences( $user, &$prefs ) {
-		global $wgCirrusSearchEnablePref, $wgExtensionAssetsPath;
-
-		if ( $wgCirrusSearchEnablePref ) {
-			$prefs['cirrussearch-default'] = array(
-				'label-message' => 'cirrussearch-pref-label',
-				'desc-message' => 'cirrussearch-pref-desc',
-				'info-link' => 'https://www.mediawiki.org/wiki/Search',
-				'discussion-link' => 'https://www.mediawiki.org/wiki/Talk:Search',
-				'screenshot' => array(
-					'ltr' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-ltr.svg",
-					'rtl' => "$wgExtensionAssetsPath/CirrusSearch/cirrus-beta-rtl.svg",
-				),
-			);
 		}
 
 		return true;

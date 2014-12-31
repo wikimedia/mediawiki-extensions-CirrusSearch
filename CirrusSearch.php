@@ -353,11 +353,6 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;
 
-// If Cirrus is enabled as a secondary search, allow users to
-// set a preference with Extension:BetaFeatures to set it as
-// their primary search engine.
-$wgCirrusSearchEnablePref = false;
-
 // CirrusSearch interwiki searching
 // Keys are the interwiki prefix, values are the index to search
 // Results are cached.
@@ -494,7 +489,6 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'preferRecentDefaultHalfLife',
 	'moreLikeThisConfig',
 	'showNowUsing',
-	'enablePref',
 	'interwikiSources',
 	'interwikiCacheTime',
 	'refreshInterval',
@@ -621,7 +615,6 @@ $wgHooks[ 'ArticleDelete' ][] = 'CirrusSearch\Hooks::onArticleDelete';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::onArticleDeleteComplete';
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Hooks::onBeforeInitialize';
-$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::onGetBetaFeaturePreferences';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearch\Hooks::onLinksUpdateCompleted';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch\Hooks::onSoftwareInfo';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsPrepend';

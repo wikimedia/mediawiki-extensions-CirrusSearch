@@ -18,6 +18,7 @@
 	"cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。",
 	"cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
 	"cirrussearch-too-busy-error": "当前搜索工作忙。请稍后重试。",
+	"cirrussearch-too-busy-for-you-logged-in-error": "您正在运行太多的并发搜索。",
 	"cirrussearch-regex-syntax-error": "$2的正则表达式语法错误：$1",
 	"cirrussearch-regex-too-busy-error": "当前有太多的正则表达式搜索正在运行。请稍后重试。",
 	"cirrussearch-regex-too-complex-error": "正则表达式过于复杂。在[[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|此处]]了解关于简化正则表达式的相关内容。",

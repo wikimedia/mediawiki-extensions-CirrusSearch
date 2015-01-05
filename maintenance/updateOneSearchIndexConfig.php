@@ -373,8 +373,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
 			$this->getMappingConfig(),
-			$this->getPageType(),
-			$this->getNamespaceType(),
+			array( 'page' => $this->getPageType(), 'namespace' => $this->getNamespaceType() ),
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );

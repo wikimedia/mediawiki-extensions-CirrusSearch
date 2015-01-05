@@ -33,14 +33,9 @@ class MappingValidator extends Validator {
 	private $mappingConfig;
 
 	/**
-	 * @var Type
+	 * @var Type[]
 	 */
-	private $pageType;
-
-	/**
-	 * @var Type
-	 */
-	private $namespaceType;
+	private $types;
 
 	/**
 	 * @todo: this constructor takes way too much arguments - refactor
@@ -49,19 +44,17 @@ class MappingValidator extends Validator {
 	 * @param bool $optimizeIndexForExperimentalHighlighter
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
-	 * @param Type $pageType
-	 * @param Type $namespaceType
+	 * @param Type[] $types Array with type names as key & type object as value
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $optimizeIndexForExperimentalHighlighter, array $availablePlugins, array $mappingConfig, Type $pageType, Type $namespaceType, Maintenance $out = null ) {
+	public function __construct( Index $index, $optimizeIndexForExperimentalHighlighter, array $availablePlugins, array $mappingConfig, array $types, Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
 		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
 		$this->availablePlugins = $availablePlugins;
 		$this->mappingConfig = $mappingConfig;
-		$this->pageType = $pageType;
-		$this->namespaceType = $namespaceType;
+		$this->types = $types;
 	}
 
 	/**
@@ -79,18 +72,23 @@ class MappingValidator extends Validator {
 
 		$requiredMappings = $this->mappingConfig;
 		if ( !$this->checkMapping( $requiredMappings ) ) {
+			/** @var Mapping[] $actions */
+			$actions = array();
+
 			// TODO Conflict resolution here might leave old portions of mappings
-			$pageAction = new Mapping( $this->pageType );
-			foreach ( $requiredMappings[ 'page' ] as $key => $value ) {
-				$pageAction->setParam( $key, $value );
+			foreach ( $this->types as $typeName => $type ) {
+				$action = new Mapping( $type );
+				foreach ( $requiredMappings[$typeName] as $key => $value ) {
+					$action->setParam( $key, $value );
+				}
+
+				$actions[] = $action;
 			}
-			$namespaceAction = new Mapping( $this->namespaceType );
-			foreach ( $requiredMappings[ 'namespace' ] as $key => $value ) {
-				$namespaceAction->setParam( $key, $value );
-			}
+
 			try {
-				$pageAction->send();
-				$namespaceAction->send();
+				foreach ( $actions as $action ) {
+					$action->send();
+				}
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
 				$this->output( "failed!\n" );

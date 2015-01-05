@@ -193,7 +193,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 		$this->optimizeIndexForExperimentalHighlighter = $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
-		$this->maxShardsPerNode = $wgCirrusSearchMaxShardsPerNode;
+		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try{
@@ -320,7 +320,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator = new \CirrusSearch\Maintenance\Validators\IndexValidator(
 			$this->getIndex(),
 			$this->startOver,
-			isset( $this->maxShardsPerNode[ $this->indexType ] ) ? $this->maxShardsPerNode[ $this->indexType ] : 'unlimited',
+			$this->maxShardsPerNode,
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$this->refreshInterval,

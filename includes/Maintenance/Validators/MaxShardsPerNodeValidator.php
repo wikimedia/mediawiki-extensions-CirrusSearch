@@ -18,17 +18,17 @@ class MaxShardsPerNodeValidator extends Validator {
 	private $indexType;
 
 	/**
-	 * @var array
+	 * @var int|string
 	 */
 	private $maxShardsPerNode;
 
 	/**
 	 * @param Index $index
 	 * @param string $indexType
-	 * @param array $maxShardsPerNode
+	 * @param int|string $maxShardsPerNode
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $indexType, array $maxShardsPerNode, Maintenance $out = null ) {
+	public function __construct( Index $index, $indexType, $maxShardsPerNode, Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
@@ -47,8 +47,7 @@ class MaxShardsPerNodeValidator extends Validator {
 		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
 			$settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] : 'unlimited';
 		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
-		$expectedMaxShardsPerNode = isset( $this->maxShardsPerNode[ $this->indexType ] ) ?
-			$this->maxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$expectedMaxShardsPerNode = $this->maxShardsPerNode;
 		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {
 			$this->output( "ok\n" );
 		} else {

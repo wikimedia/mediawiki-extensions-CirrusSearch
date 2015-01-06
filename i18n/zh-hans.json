@@ -14,10 +14,11 @@
 			"御坂美琴"
 		]
 	},
-	"cirrussearch-desc": "基于Elasticsearch为MediaWiki设计的搜索",
-	"cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成你的搜索。请稍后再试。",
+	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",
+	"cirrussearch-backend-error": "由于出现暂时性的问题，我们未能完成您的搜索。请稍后再试。",
 	"cirrussearch-parse-error": "此查询无法理解。请将其简化。查询已被记录以改进搜索系统。",
-	"cirrussearch-too-busy-error": "当前搜索工作忙。请稍后重试。",
+	"cirrussearch-too-busy-error": "搜索目前过于忙碌。请稍后重试。",
+	"cirrussearch-too-busy-for-you-anonymous-error": "您运行了太多的并发搜索。如果您与其他用户共享使用IP地址，您可以登录以提高限制。",
 	"cirrussearch-too-busy-for-you-logged-in-error": "您正在运行太多的并发搜索。",
 	"cirrussearch-regex-syntax-error": "$2的正则表达式语法错误：$1",
 	"cirrussearch-regex-too-busy-error": "当前有太多的正则表达式搜索正在运行。请稍后重试。",

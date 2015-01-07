@@ -25,15 +25,22 @@ class CacheWarmersValidator extends Validator {
 	private $pageType;
 
 	/**
+	 * @var string[]
+	 */
+	private $cacheWarmers;
+
+	/**
 	 * @param string $indexType
 	 * @param Type $pageType
+	 * @param array $cacheWarmers
 	 * @param Maintenance $out
 	 */
-	public function __construct( $indexType, $pageType, Maintenance $out = null ) {
+	public function __construct( $indexType, $pageType, array $cacheWarmers = array(), Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->indexType = $indexType;
 		$this->pageType = $pageType;
+		$this->cacheWarmers = $cacheWarmers;
 	}
 
 	/**
@@ -56,17 +63,9 @@ class CacheWarmersValidator extends Validator {
 	}
 
 	private function buildExpectedWarmers() {
-		global $wgCirrusSearchMainPageCacheWarmer,
-			   $wgCirrusSearchCacheWarmers;
-
 		$warmers = array();
-		if ( $wgCirrusSearchMainPageCacheWarmer && $this->indexType === 'content' ) {
-			$warmers[ 'Main Page' ] = $this->buildWarmer( Title::newMainPage()->getText() );
-		}
-		if ( isset( $wgCirrusSearchCacheWarmers[ $this->indexType ] ) ) {
-			foreach ( $wgCirrusSearchCacheWarmers[ $this->indexType ] as $search ) {
-				$warmers[ $search ] = $this->buildWarmer( $search );
-			}
+		foreach ( $this->cacheWarmers as $search ) {
+			$warmers[ $search ] = $this->buildWarmer( $search );
 		}
 
 		return $warmers;

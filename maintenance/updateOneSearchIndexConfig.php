@@ -442,7 +442,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	protected function validateCacheWarmers() {
-		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $this );
+		global $wgCirrusSearchMainPageCacheWarmer, $wgCirrusSearchCacheWarmers;
+
+		if ( $wgCirrusSearchMainPageCacheWarmer ) {
+			$wgCirrusSearchCacheWarmers['content'][] = \Title::newMainPage()->getText();
+		}
+		$cacheWarmers = isset( $wgCirrusSearchCacheWarmers[$this->indexType] ) ? $wgCirrusSearchCacheWarmers[$this->indexType] : array();
+
+		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $cacheWarmers, $this );
 		$status = $warmers->validate();
 		if ( !$status->isOK() ) {
 			$this->error( $status->getMessage()->text(), 1 );

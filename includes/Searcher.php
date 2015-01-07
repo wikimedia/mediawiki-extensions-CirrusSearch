@@ -256,7 +256,7 @@ class Searcher extends ElasticsearchIntermediary {
 			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
 		) );
 		if ( $wgCirrusSearchAllFields[ 'use' ] ) {
-			// Inseat of using the highlight query we need to make one like it that uses the all_near_match field.
+			// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
 			$allQuery = new \Elastica\Query\MultiMatch();
 			$allQuery->setQuery( $search );
 			$allQuery->setFields( array( 'all_near_match', 'all_near_match.asciifolding' ) );

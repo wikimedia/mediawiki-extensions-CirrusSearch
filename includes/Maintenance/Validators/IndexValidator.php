@@ -34,6 +34,16 @@ class IndexValidator extends Validator {
 	private $replicaCount;
 
 	/**
+	 * @var int
+	 */
+	private $refreshInterval;
+
+	/**
+	 * @var bool
+	 */
+	private $searchAllFields;
+
+	/**
 	 * @var AnalysisConfigBuilder
 	 */
 	private $analysisConfigBuilder;
@@ -50,11 +60,12 @@ class IndexValidator extends Validator {
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param int $refreshInterval
+	 * @param bool $searchAllFields
 	 * @param AnalysisConfigBuilder $analysisConfigBuilder
 	 * @param array $mergeSettings
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $startOver, $maxShardsPerNode, $shardCount, $replicaCount, $refreshInterval, AnalysisConfigBuilder $analysisConfigBuilder, array $mergeSettings, Maintenance $out = null ) {
+	public function __construct( Index $index, $startOver, $maxShardsPerNode, $shardCount, $replicaCount, $refreshInterval, $searchAllFields, AnalysisConfigBuilder $analysisConfigBuilder, array $mergeSettings, Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
@@ -63,6 +74,7 @@ class IndexValidator extends Validator {
 		$this->shardCount = $shardCount;
 		$this->replicaCount = $replicaCount;
 		$this->refreshInterval = $refreshInterval;
+		$this->searchAllFields = $searchAllFields;
 		$this->analysisConfigBuilder = $analysisConfigBuilder;
 		$this->mergeSettings = $mergeSettings;
 	}
@@ -93,17 +105,22 @@ class IndexValidator extends Validator {
 	 */
 	private function createIndex( $rebuild ) {
 		$maxShardsPerNode = $this->maxShardsPerNode === 'unlimited' ? -1 : $this->maxShardsPerNode;
-		$this->index->create( array(
+		$args = array(
 			'settings' => array(
 				'number_of_shards' => $this->shardCount,
 				'auto_expand_replicas' => $this->replicaCount,
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
-				// Use our weighted all field as the default rather than _all which is disabled.
-				'index.query.default_field' => 'all',
 				'refresh_interval' => $this->refreshInterval . 's',
 				'merge.policy' => $this->mergeSettings,
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)
-		), $rebuild );
+		);
+
+		if ( $this->searchAllFields ) {
+			// Use our weighted all field as the default rather than _all which is disabled.
+			$args['settings']['index.query.default_field'] = 'all';
+		}
+
+		$this->index->create( $args, $rebuild );
 	}
 }

@@ -262,6 +262,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndex() {
+		global $wgCirrusSearchAllFields;
+
 		// $this->startOver || !$this->getIndex()->exists() are the conditions
 		// under which a new index will be created
 		$this->tooFewReplicas = ( $this->startOver || !$this->getIndex()->exists() ) && $this->reindexAndRemoveOk;
@@ -273,6 +275,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$this->refreshInterval,
+			$wgCirrusSearchAllFields['build'],
 			$this->analysisConfigBuilder,
 			$this->getMergeSettings(),
 			$this

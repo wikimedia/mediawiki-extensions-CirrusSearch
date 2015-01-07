@@ -130,15 +130,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'indexIdentifier', "Set the identifier of the index to work on.  " .
 			"You'll need this if you have an index in production serving queries and you have " .
 			"to alter some portion of its configuration that cannot safely be done without " .
-			"rebuilding it.  Once you specify a new indexIdentify for this wiki you'll have to " .
+			"rebuilding it.  Once you specify a new indexIdentifier for this wiki you'll have to " .
 			"run this script with the same identifier each time.  Defaults to 'current' which " .
 			"infers the currently in use identifier.  You can also use 'now' to set the identifier " .
-			"to the current time in seconds which should give you a unique idenfitier.", false, true);
+			"to the current time in seconds which should give you a unique identifier.", false, true);
 		$maintenance->addOption( 'reindexAndRemoveOk', "If the alias is held by another index then " .
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  You'll have to redo all updates ".
 			"performed during this operation manually.  Defaults to false." );
-		$maintenance->addOption( 'reindexProcesses', 'Number of processess to use in reindex.  ' .
+		$maintenance->addOption( 'reindexProcesses', 'Number of processes to use in reindex.  ' .
 			'Not supported on Windows.  Defaults to 1 on Windows and 5 otherwise.', false, true );
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
@@ -154,7 +154,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
-			'to help debug unexepcted configuration missmatches.' );
+			'to help debug unexpected configuration mismatches.' );
 		$maintenance->addOption( 'justCacheWarmers', 'Just validate that the cache warmers are correct ' .
 			'and perform no additional checking.  Use when you need to apply new cache warmers but ' .
 			"want to be sure that you won't apply any other changes at an inopportune time." );

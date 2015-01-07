@@ -47,14 +47,14 @@ class Reindexer {
 	private $specificIndexName;
 
 	/**
-	 * @var Type
+	 * @var Type[]
 	 */
-	private $type;
+	private $types;
 
 	/**
-	 * @var Type
+	 * @var Type[]
 	 */
-	private $oldType;
+	private $oldTypes;
 
 	/**
 	 * @var int
@@ -94,8 +94,8 @@ class Reindexer {
 	/**
 	 * @param Index $index
 	 * @param \ElasticaConnection $connection
-	 * @param Type $type
-	 * @param Type $oldType
+	 * @param Type[] $types
+	 * @param Type[] $oldTypes
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param int $connectionTimeout
@@ -103,14 +103,14 @@ class Reindexer {
 	 * @param array $mappingConfig
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, \ElasticaConnection $connection, Type $type, Type $oldType, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
+	public function __construct( Index $index, \ElasticaConnection $connection, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!
 		$this->index = $index;
 		$this->client = $this->index->getClient();
 		$this->specificIndexName = $this->index->getName();
 		$this->connection = $connection;
-		$this->type = $type;
-		$this->oldType = $oldType;
+		$this->types = $types;
+		$this->oldTypes = $oldTypes;
 		$this->shardCount = $shardCount;
 		$this->replicaCount = $replicaCount;
 		$this->connectionTimeout = $connectionTimeout;
@@ -150,7 +150,10 @@ class Reindexer {
 
 			switch ( $forkResult ) {
 				case 'child':
-					$this->reindexInternal( $processes, $fork->getChildNumber(), $chunkSize, $retryAttempts );
+					foreach ( $this->types as $i => $type ) {
+						$oldType = $this->oldTypes[$i];
+						$this->reindexInternal( $type, $oldType, $processes, $fork->getChildNumber(), $chunkSize, $retryAttempts );
+					}
 					die( 0 );
 				case 'done':
 					break;
@@ -161,19 +164,25 @@ class Reindexer {
 			$this->outputIndented( "Verifying counts..." );
 			// We can't verify counts are exactly equal because they won't be - we still push updates into
 			// the old index while reindexing the new one.
-			$oldCount = (float) $this->oldType->count();
-			$this->index->refresh();
-			$newCount = (float) $this->type->count();
-			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
-			if ( $difference > $acceptableCountDeviation ) {
-				$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
-				$this->error( 'Failed to load index - counts not close enough.  ' .
-					"old=$oldCount new=$newCount difference=$difference.  " .
-					'Check for warnings above.', 1 );
+			foreach ( $this->types as $i => $type ) {
+				$oldType = $this->oldTypes[$i];
+				$oldCount = (float) $oldType->count();
+				$this->index->refresh();
+				$newCount = (float) $type->count();
+				$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
+				if ( $difference > $acceptableCountDeviation ) {
+					$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
+					$this->error( 'Failed to load index - counts not close enough.  ' .
+						"old=$oldCount new=$newCount difference=$difference.  " .
+						'Check for warnings above.', 1 );
+				}
 			}
 			$this->output( "done\n" );
 		} else {
-			$this->reindexInternal( 1, 1, $chunkSize, $retryAttempts );
+			foreach ( $this->types as $i => $type ) {
+				$oldType = $this->oldTypes[$i];
+				$this->reindexInternal( $type, $oldType, 1, 1, $chunkSize, $retryAttempts );
+			}
 		}
 
 		// Revert settings changed just for reindexing
@@ -237,7 +246,7 @@ class Reindexer {
 		}
 	}
 
-	private function reindexInternal( $children, $childNumber, $chunkSize, $retryAttempts ) {
+	private function reindexInternal( Type $type, Type $oldType, $children, $childNumber, $chunkSize, $retryAttempts ) {
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
@@ -254,7 +263,7 @@ class Reindexer {
 				'lang' => 'groovy'
 			) );
 		}
-		$properties = $this->mappingConfig[$this->oldType->getName()]['properties'];
+		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		try {
 			$query = new Query();
 			$query->setFields( array( '_id', '_source' ) );
@@ -263,7 +272,7 @@ class Reindexer {
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
-			$result = $this->oldType
+			$result = $oldType
 				->search( $query, array(
 					'search_type' => 'scan',
 					'scroll' => '1h',
@@ -302,8 +311,8 @@ class Reindexer {
 					$result->next();
 				}
 				$this->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
-					function() use ( $self, $messagePrefix, $documents ) {
-						$self->sendDocuments( $messagePrefix, $documents );
+					function() use ( $self, $type, $messagePrefix, $documents ) {
+						$self->sendDocuments( $type, $messagePrefix, $documents );
 					} );
 				$completed += $result->count();
 				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
@@ -378,16 +387,16 @@ class Reindexer {
 	/**
 	 * This is really private.
 	 */
-	public function sendDocuments( $messagePrefix, $documents ) {
+	public function sendDocuments( Type $type, $messagePrefix, $documents ) {
 		try {
-			$this->type->addDocuments( $documents );
+			$type->addDocuments( $documents );
 		} catch ( ExceptionInterface $e ) {
-			$type = get_class( $e );
+			$errorType = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$type' and message is:  $message" );
+			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$errorType' and message is:  $message" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
-				$this->type->addDocuments( array( $document ) );
+				$type->addDocuments( array( $document ) );
 			}
 		}
 	}

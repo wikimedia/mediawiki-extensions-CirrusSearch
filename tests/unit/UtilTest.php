@@ -45,4 +45,190 @@ class UtilTest extends MediaWikiTestCase {
 			array( false, array( 'candle' => array( 'wax' => 'foo' ) ), array( 'candle' => array( 'wax' => 'bar' ) ) ),
 		);
 	}
+
+	/**
+	 * @dataProvider cleanUnusedFieldsProvider
+	 */
+	public function testCleanUnusedFields( $data, $properties, $expect ) {
+		$result = Util::cleanUnusedFields( $data, $properties );
+		$this->assertArrayEquals( $result, $expect );
+	}
+
+	public static function cleanUnusedFieldsProvider() {
+		return array(
+			// sample
+			array(
+				// data
+				array(
+					'title' => "I'm a title",
+					'useless' => "I'm useless",
+				),
+				// properties
+				array(
+					'title' => 'params-for-title'
+				),
+				// expect
+				array(
+					'title' => "I'm a title",
+				),
+			),
+			// Flow data - untouched
+			array(
+				// data (as seen in https://gerrit.wikimedia.org/r/#/c/195889/1//COMMIT_MSG)
+				array(
+					'namespace' => 1,
+					'namespace_text' => "Talk",
+					'pageid' => 2,
+					'title' => "Main Page",
+					'timestamp' => "2014-02-07T01:42:57Z",
+					'update_timestamp' => "2014-02-25T14:12:40Z",
+					'revisions' => array(
+						array(
+							'id' => "rpvwvywl9po7ih77",
+							'text' => "topic title content",
+							'source_text' => "topic title content",
+							'moderation_state' => "",
+							'timestamp' => "2014-02-07T01:42:57Z",
+							'update_timestamp' => "2014-02-07T01:42:57Z",
+							'type' => "topic"
+						),
+						array(
+							'id' => "ropuzninqgyf19ko",
+							'text' => "reply content",
+							'source_text' => "reply '''content'''",
+							'moderation_state' => "hide",
+							'timestamp' => "2014-02-25T14:12:40Z",
+							'update_timestamp' => "2014-02-25T14:12:40Z",
+							'type' => "post"
+						),
+					)
+				),
+				// properties (as seen in https://gerrit.wikimedia.org/r/#/c/161251/26/includes/Search/maintenance/MappingConfigBuilder.php)
+				array(
+					'namespace' => array( '...' ),
+					'namespace_text' => array( '...' ),
+					'pageid' => array( '...' ),
+					'title' => array( '...' ),
+					'timestamp' => array( '...' ),
+					'update_timestamp' => array( '...' ),
+					'revisions' => array(
+						'properties' => array(
+							'id' => array( '...' ),
+							'text' => array( '...' ),
+							'source_text' => array( '...' ),
+							'moderation_state' => array( '...' ),
+							'timestamp' => array( '...' ),
+							'update_timestamp' => array( '...' ),
+							'type' => array( '...' ),
+						)
+					),
+				),
+				// expect
+				array(
+					'namespace' => 1,
+					'namespace_text' => "Talk",
+					'pageid' => 2,
+					'title' => "Main Page",
+					'timestamp' => "2014-02-07T01:42:57Z",
+					'update_timestamp' => "2014-02-25T14:12:40Z",
+					'revisions' => array(
+						array(
+							'id' => "rpvwvywl9po7ih77",
+							'text' => "topic title content",
+							'source_text' => "topic title content",
+							'moderation_state' => "",
+							'timestamp' => "2014-02-07T01:42:57Z",
+							'update_timestamp' => "2014-02-07T01:42:57Z",
+							'type' => "topic"
+						),
+						array(
+							'id' => "ropuzninqgyf19ko",
+							'text' => "reply content",
+							'source_text' => "reply '''content'''",
+							'moderation_state' => "hide",
+							'timestamp' => "2014-02-25T14:12:40Z",
+							'update_timestamp' => "2014-02-25T14:12:40Z",
+							'type' => "post"
+						),
+					)
+				),
+			),
+			// Flow data - deleted columns in config
+			array(
+				// data (as seen in https://gerrit.wikimedia.org/r/#/c/195889/1//COMMIT_MSG)
+				array(
+					'namespace' => 1,
+					'namespace_text' => "Talk",
+					'pageid' => 2,
+					'title' => "Main Page",
+					'timestamp' => "2014-02-07T01:42:57Z",
+					'update_timestamp' => "2014-02-25T14:12:40Z",
+					'revisions' => array(
+						array(
+							'id' => "rpvwvywl9po7ih77",
+							'text' => "topic title content",
+							'source_text' => "topic title content",
+							'moderation_state' => "",
+							'timestamp' => "2014-02-07T01:42:57Z",
+							'update_timestamp' => "2014-02-07T01:42:57Z",
+							'type' => "topic"
+						),
+						array(
+							'id' => "ropuzninqgyf19ko",
+							'text' => "reply content",
+							'source_text' => "reply '''content'''",
+							'moderation_state' => "hide",
+							'timestamp' => "2014-02-25T14:12:40Z",
+							'update_timestamp' => "2014-02-25T14:12:40Z",
+							'type' => "post"
+						),
+					)
+				),
+				// properties (as seen in https://gerrit.wikimedia.org/r/#/c/161251/26/includes/Search/maintenance/MappingConfigBuilder.php)
+				array(
+					'namespace' => array( '...' ),
+					'namespace_text' => array( '...' ),
+					'pageid' => array( '...' ),
+					'title' => array( '...' ),
+					// deleted timestamp & update_timestamp columns
+					'revisions' => array(
+						'properties' => array(
+							'id' => array( '...' ),
+							'text' => array( '...' ),
+							'source_text' => array( '...' ),
+							'moderation_state' => array( '...' ),
+							// deleted timestamp & update_timestamp columns
+							'type' => array( '...' ),
+						)
+					),
+				),
+				// expect
+				array(
+					'namespace' => 1,
+					'namespace_text' => "Talk",
+					'pageid' => 2,
+					'title' => "Main Page",
+					// deleted timestamp & update_timestamp columns
+					'revisions' => array(
+						array(
+							'id' => "rpvwvywl9po7ih77",
+							'text' => "topic title content",
+							'source_text' => "topic title content",
+							'moderation_state' => "",
+							// deleted timestamp & update_timestamp columns
+							'type' => "topic"
+						),
+						array(
+							'id' => "ropuzninqgyf19ko",
+							'text' => "reply content",
+							'source_text' => "reply '''content'''",
+							'moderation_state' => "hide",
+							// deleted timestamp & update_timestamp columns
+							'type' => "post"
+						),
+					)
+				),
+			),
+		);
+	}
 }

@@ -144,4 +144,46 @@ class Util {
 		}
 		return $result / 100;
 	}
+
+	/**
+	 * Matches $data against $properties to clear keys that no longer exist.
+	 * E.g.:
+	 * $data = array(
+	 *     'title' => "I'm a title",
+	 *     'useless' => "I'm useless",
+	 * );
+	 * $properties = array(
+	 *     'title' => 'params-for-title'
+	 * );
+	 *
+	 * Will return:
+	 * array(
+	 *     'title' => "I'm a title",
+	 * )
+	 * With the no longer existing 'useless' field stripped.
+	 *
+	 * We could just use array_intersect_key for this simple example, but it
+	 * gets more complex with nested data.
+	 *
+	 * @param array $data
+	 * @param array $properties
+	 * @return array
+	 */
+	public static function cleanUnusedFields( array $data, array $properties ) {
+		$data = array_intersect_key( $data, $properties );
+
+		foreach ( $data as $key => $value ) {
+			if ( is_array( $value ) ) {
+				foreach ( $value as $i => $value ) {
+					if ( is_array( $value ) && isset( $properties[$key]['properties'] ) ) {
+						// go recursive to intersect multidimensional values
+						$data[$key][$i] = static::cleanUnusedFields( $value, $properties[$key]['properties'] );
+					}
+
+				}
+			}
+		}
+
+		return $data;
+	}
 }

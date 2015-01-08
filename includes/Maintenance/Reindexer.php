@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Util;
 use Elastica\Document;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\ExceptionInterface;
@@ -299,10 +300,10 @@ class Reindexer {
 				$documents = array();
 				while ( $result->current() ) {
 					// Build the new document to just contain keys which have a mapping in the new properties.  To clean
-					// out any old fields that we no longer use.  Note that this filter is only a single level which is
-					// likely ok for us.
-					$document = new Document( $result->current()->getId(),
-						array_intersect_key( $result->current()->getSource(), $properties ) );
+					// out any old fields that we no longer use.
+					$data = Util::cleanUnusedFields( $result->current()->getSource(), $properties );
+					$document = new Document( $result->current()->getId(), $data );
+
 					// Note that while setting the opType to create might improve performance slightly it can cause
 					// trouble if the scroll returns the same id twice.  It can do that if the document is updated
 					// during the scroll process.  I'm unclear on if it will always do that, so you still have to

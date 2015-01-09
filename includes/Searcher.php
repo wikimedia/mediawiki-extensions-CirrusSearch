@@ -342,7 +342,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->boostLinks = $wgCirrusSearchBoostLinks;
 		$searchType = 'full_text';
 		// Handle title prefix notation
-		wfProfileIn( __METHOD__ . '-prefix-filter' );
 		$prefixPos = strpos( $this->term, 'prefix:' );
 		if ( $prefixPos !== false ) {
 			$value = substr( $this->term, 7 + $prefixPos );
@@ -364,9 +363,7 @@ class Searcher extends ElasticsearchIntermediary {
 				}
 			}
 		}
-		wfProfileOut( __METHOD__ . '-prefix-filter' );
 
-		wfProfileIn( __METHOD__ . '-prefer-recent' );
 		$preferRecentDecayPortion = $wgCirrusSearchPreferRecentDefaultDecayPortion;
 		$preferRecentHalfLife = $wgCirrusSearchPreferRecentDefaultHalfLife;
 		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
@@ -390,9 +387,7 @@ class Searcher extends ElasticsearchIntermediary {
 		);
 		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
-		wfProfileOut( __METHOD__ . '-prefer-recent' );
 
-		wfProfileIn( __METHOD__ . '-local' );
 		$this->extractSpecialSyntaxFromTerm(
 			'/^\s*local:/',
 			function ( $matches ) use ( $searcher ) {
@@ -400,10 +395,8 @@ class Searcher extends ElasticsearchIntermediary {
 				return '';
 			}
 		);
-		wfProfileOut( __METHOD__ . '-local' );
 
 		// Handle other filters
-		wfProfileIn( __METHOD__ . '-other-filters' );
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
 		$boostTemplates = self::getDefaultBoostTemplates();
@@ -576,11 +569,9 @@ GROOVY;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->fuzzyQuery = $fuzzyQuery;
 		$this->highlightSource = $highlightSource;
-		wfProfileOut( __METHOD__ . '-other-filters' );
 
 		$this->term = $this->escaper->escapeQuotes( $this->term );
 
-		wfProfileIn( __METHOD__ . '-find-phrase-queries' );
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
@@ -604,8 +595,6 @@ GROOVY;
 				}
 				return array( 'escaped' => $negate . $main );
 			} );
-		wfProfileOut( __METHOD__ . '-find-phrase-queries' );
-		wfProfileIn( __METHOD__ . '-switch-prefix-to-plain' );
 		// Find prefix matches and force them to only match against the plain analyzed fields.  This
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
@@ -617,9 +606,7 @@ GROOVY;
 					'nonAll' => $searcher->switchSearchToExact( $term, false ),
 				);
 			} );
-		wfProfileOut( __METHOD__ . '-switch-prefix-to-plain' );
 
-		wfProfileIn( __METHOD__ . '-escape' );
 		$escapedQuery = array();
 		$nonAllQuery = array();
 		$nearMatchQuery = array();
@@ -642,7 +629,6 @@ GROOVY;
 			}
 			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
 		}
-		wfProfileOut( __METHOD__ . '-escape' );
 
 		// Actual text query
 		list( $queryStringQueryString, $this->fuzzyQuery ) =
@@ -655,7 +641,6 @@ GROOVY;
 				// We're unlikey to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
 			}
-			wfProfileIn( __METHOD__ . '-build-query' );
 			$fields = array_merge(
 				$this->buildFullTextSearchFields( 1, '.plain', true ),
 				$this->buildFullTextSearchFields( $wgCirrusSearchStemmedWeight, '', true ) );
@@ -710,12 +695,10 @@ GROOVY;
 					'suggest' => $this->buildSuggestConfig( 'suggest' ),
 				);
 			}
-			wfProfileOut( __METHOD__ . '-build-query' );
 
 			$result = $this->search( $searchType, $originalTerm );
 
 			if ( !$result->isOK() && $this->isParseError( $result ) ) {
-				wfProfileIn( __METHOD__ . '-degraded-query' );
 				// Elasticsearch has reported a parse error and we've already logged it when we built the status
 				// so at this point all we can do is retry the query as a simple query string query.
 				$this->query = new \Elastica\Query\Simple( array( 'simple_query_string' => array(
@@ -728,7 +711,6 @@ GROOVY;
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
-				wfProfileOut( __METHOD__ . '-degraded-query' );
 			}
 		} else {
 			$result = $this->search( $searchType, $originalTerm );
@@ -1065,7 +1047,6 @@ GROOVY;
 
 		// Perform the search
 		$searcher = $this;
-		wfProfileIn( __METHOD__ . '-execute' );
 		$user = $this->user;
 		$result = Util::doPoolCounterWork(
 			$poolCounterType,
@@ -1092,7 +1073,6 @@ GROOVY;
 				}
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			});
-		wfProfileOut( __METHOD__ . '-execute' );
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,

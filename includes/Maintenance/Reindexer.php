@@ -277,7 +277,6 @@ class Reindexer {
 			$completed = 0;
 			$self = $this;
 			while ( true ) {
-				wfProfileIn( __METHOD__ . '::receiveDocs' );
 				$result = $this->withRetry( $retryAttempts, $messagePrefix, 'fetching documents to reindex',
 					function() use ( $self, $result ) {
 						return $self->index->search( array(), array(
@@ -285,12 +284,10 @@ class Reindexer {
 							'scroll' => '1h'
 						) );
 					} );
-				wfProfileOut( __METHOD__ . '::receiveDocs' );
 				if ( !$result->count() ) {
 					$this->outputIndented( $messagePrefix . "All done\n" );
 					break;
 				}
-				wfProfileIn( __METHOD__ . '::packageDocs' );
 				$documents = array();
 				while ( $result->current() ) {
 					// Build the new document to just contain keys which have a mapping in the new properties.  To clean
@@ -305,7 +302,6 @@ class Reindexer {
 					$documents[] = $document;
 					$result->next();
 				}
-				wfProfileOut( __METHOD__ . '::packageDocs' );
 				$this->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
 					function() use ( $self, $messagePrefix, $documents ) {
 						$self->sendDocuments( $messagePrefix, $documents );

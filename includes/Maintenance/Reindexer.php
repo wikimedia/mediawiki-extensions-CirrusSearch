@@ -375,7 +375,10 @@ class Reindexer {
 		}
 	}
 
-	private function sendDocuments( $messagePrefix, $documents ) {
+	/**
+	 * This is really private.
+	 */
+	public function sendDocuments( $messagePrefix, $documents ) {
 		try {
 			$this->type->addDocuments( $documents );
 		} catch ( ExceptionInterface $e ) {

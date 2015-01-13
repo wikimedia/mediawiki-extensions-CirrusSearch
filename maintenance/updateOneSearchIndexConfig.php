@@ -48,10 +48,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $indexIdentifier;
 	private $reindexAndRemoveOk;
 
-	// Set with the name of any old indecies to remove if any must be during the alias maintenance
-	// steps.
-	private $removeIndecies = array();
-
 	/**
 	 * @var boolean are there too few replicas in the index we're making?
 	 */
@@ -333,25 +329,25 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->validateIndexSettings();
 	}
 
+	/**
+	 * @return \CirrusSearch\Maintenance\Validators\Validator[]
+	 */
+	private function getIndexSettingsValidators() {
+		$validators = array();
+		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
+		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
+		$validators[] = $this->getShardAllocationValidator();
+		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
+		return $validators;
+	}
+
 	private function validateIndexSettings() {
-		$validator = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
-		}
-
-		$validator = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
-		}
-
-		$this->validateShardAllocation();
-
-		$validator = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+		$validators = $this->getIndexSettingsValidators();
+		foreach ( $validators as $validator ) {
+			$status = $validator->validate();
+			if ( !$status->isOK() ) {
+				$this->error( $status->getMessage()->text(), 1 );
+			}
 		}
 	}
 
@@ -387,88 +383,43 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
 		$this->validateAllAlias();
-		// Note that at this point both the old and the new index can have the all
-		// alias but this should be for a very short time.  Like, under a second.
-		$this->removeOldIndeciesIfRequired();
 	}
 
 	/**
 	 * Validate the alias that is just for this index's type.
 	 */
 	private function validateSpecificAlias() {
-		$this->outputIndented( "\tValidating $this->indexType alias..." );
-		$otherIndeciesWithAlias = array();
-		$specificAliasName = $this->getIndexTypeName();
-		$status = $this->getClient()->getStatus();
-		if ( $status->indexExists( $specificAliasName ) ) {
-			$this->output( "is an index..." );
-			if ( $this->startOver ) {
-				$this->getClient()->getIndex( $specificAliasName )->delete();
-				$this->output( "index removed..." );
-			} else {
-				$this->output( "cannot correct!\n" );
-				$this->error(
-					"There is currently an index with the name of the alias.  Rerun this\n" .
-					"script with --startOver and it'll remove the index and continue.\n", 1 );
-			}
-		} else {
-			foreach ( $status->getIndicesWithAlias( $specificAliasName ) as $index ) {
-				if( $index->getName() === $this->getSpecificIndexName() ) {
-					$this->output( "ok\n" );
-					if ( $this->tooFewReplicas ) {
-						$this->validateIndexSettings();
-					}
-					return;
-				} else {
-					$otherIndeciesWithAlias[] = $index->getName();
-				}
-			}
-		}
-		if ( !$otherIndeciesWithAlias ) {
-			$this->output( "alias is free..." );
-			$this->getIndex()->addAlias( $specificAliasName, false );
-			$this->output( "corrected\n" );
-			if ( $this->tooFewReplicas ) {
-				$this->validateIndexSettings();
-			}
-			return;
-		}
-		if ( $this->reindexAndRemoveOk ) {
-			global $wgCirrusSearchMaintenanceTimeout;
-			$reindexer = new Reindexer(
-				$this->getIndex(),
-				Connection::getSingleton(),
-				$this->getPageType(),
-				$this->getOldPageType(),
-				$this->getShardCount(),
-				$this->getReplicaCount(),
-				$wgCirrusSearchMaintenanceTimeout,
-				$this->getMergeSettings(),
-				$this->getMappingConfig(),
-				$this
-			);
+		global $wgCirrusSearchMaintenanceTimeout;
 
-			$this->output( "is taken...\n" );
-			$this->outputIndented( "\tReindexing...\n" );
-			$reindexer->reindex( $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation);
+		$reindexer = new Reindexer(
+			$this->getIndex(),
+			Connection::getSingleton(),
+			$this->getPageType(),
+			$this->getOldPageType(),
+			$this->getShardCount(),
+			$this->getReplicaCount(),
+			$wgCirrusSearchMaintenanceTimeout,
+			$this->getMergeSettings(),
+			$this->getMappingConfig(),
+			$this
+		);
 
-			if ( $this->tooFewReplicas ) {
-				$reindexer->optimize();
-				$this->validateIndexSettings();
-				$reindexer->waitForShards();
-			}
-			$this->outputIndented( "\tSwapping alias...");
-			$this->getIndex()->addAlias( $specificAliasName, true );
-			$this->output( "done\n" );
-			$this->removeIndecies = $otherIndeciesWithAlias;
-			return;
+		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(
+			$this->getClient(),
+			$this->getIndexTypeName(),
+			$this->getSpecificIndexName(),
+			$this->startOver,
+			$reindexer,
+			array( $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ),
+			$this->getIndexSettingsValidators(),
+			$this->reindexAndRemoveOk,
+			$this->tooFewReplicas,
+			$this
+		);
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( $status->getMessage()->text(), 1 );
 		}
-		$this->output( "cannot correct!\n" );
-		$this->error(
-			"The alias is held by another index which means it might be actively serving\n" .
-			"queries.  You can solve this problem by running this program again with\n" .
-			"--reindexAndRemoveOk.  Make sure you understand the consequences of either\n" .
-			"choice.", 1 );
 	}
 
 	public function validateAllAlias() {
@@ -484,21 +435,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	public function removeOldIndeciesIfRequired() {
-		$client = $this->getClient();
-		$this->removeIndecies = array_filter( $this->removeIndecies, function ( $name ) use ( $client ) {
-			return $client->getIndex( $name )->exists();
-		} );
-		if ( $this->removeIndecies ) {
-			$this->outputIndented( "\tRemoving old indecies...\n" );
-			foreach ( $this->removeIndecies as $oldIndex ) {
-				$this->outputIndented( "\t\t$oldIndex..." );
-				$this->getClient()->getIndex( $oldIndex )->delete();
-				$this->output( "done\n" );
-			}
-		}
-	}
-
 	protected function validateCacheWarmers() {
 		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $this );
 		$status = $warmers->validate();
@@ -507,10 +443,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	protected function validateShardAllocation() {
+	/**
+	 * @return \CirrusSearch\Maintenance\Validators\Validator
+	 */
+	private function getShardAllocationValidator() {
 		global $wgCirrusSearchIndexAllocation;
-		$shardAllocation = new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
-		$status = $shardAllocation->validate();
+		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
+	}
+
+	protected function validateShardAllocation() {
+		$validator = $this->getShardAllocationValidator();
+		$status = $validator->validate();
 		if ( !$status->isOK() ) {
 			$this->error( $status->getMessage()->text(), 1 );
 		}
@@ -672,10 +615,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	protected function setConnectionTimeout() {
 		global $wgCirrusSearchMaintenanceTimeout;
 		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
-	}
-
-	protected function destroySingleton() {
-		Connection::destroySingleton();
 	}
 
 	/**

@@ -81,7 +81,7 @@ abstract class IndexAliasValidator extends Validator {
 				if ( $index->getName() === $this->specificIndexName ) {
 					$this->output( "ok\n" );
 					return Status::newGood();
-				} else if ( $this->shouldRemoveFromAlias( $index->getName() ) ) {
+				} elseif ( $this->shouldRemoveFromAlias( $index->getName() ) ) {
 					$remove[] = $index->getName();
 				}
 			}
@@ -100,25 +100,6 @@ abstract class IndexAliasValidator extends Validator {
 	 * @return Status
 	 */
 	protected function updateIndices( array $add, array $remove ) {
-		$data = array();
-
-		$this->output( "alias not already assigned to this index..." );
-
-		// We'll remove the all alias from the indices that we're about to delete while
-		// we add it to this index.  Elastica doesn't support this well so we have to
-		// build the request to Elasticsearch ourselves.
-
-		foreach ( $add as $indexName ) {
-			$data['action'][] = array( 'add' => array( 'index' => $indexName, 'alias' => $this->aliasName ) );
-		}
-
-		foreach ( $remove as $indexName ) {
-			$data['action'][] = array( 'remove' => array( 'index' => $indexName, 'alias' => $this->aliasName ) );
-		}
-
-		$this->client->request( '_aliases', \Elastica\Request::POST, $data );
-		$this->output( "corrected\n" );
-
 		$client = $this->client;
 		$remove = array_filter( $remove, function ( $name ) use ( $client ) {
 			return $client->getIndex( $name )->exists();

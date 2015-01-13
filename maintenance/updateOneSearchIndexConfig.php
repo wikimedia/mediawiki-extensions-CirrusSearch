@@ -372,7 +372,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndex(),
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
-			$this->getMappingConfig()->buildConfig(),
+			$this->getMappingConfig(),
 			$this->getPageType(),
 			$this->getNamespaceType(),
 			$this
@@ -523,14 +523,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @return MappingConfigBuilder
+	 * @return array
 	 */
 	protected function getMappingConfig() {
-		return new MappingConfigBuilder(
-			$this->prefixSearchStartsWithAny,
-			$this->phraseSuggestUseText,
-			$this->optimizeIndexForExperimentalHighlighter
-		);
+		$builder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter );
+		$configFlags = 0;
+		if ( $this->prefixSearchStartsWithAny ) {
+			$configFlags |= MappingConfigBuilder::PREFIX_START_WITH_ANY;
+		}
+		if ( $this->phraseSuggestUseText ) {
+			$configFlags |= MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT;
+		}
+		return $builder->buildConfig( $configFlags );
 	}
 
 	/**

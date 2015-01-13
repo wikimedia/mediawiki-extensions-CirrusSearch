@@ -27,6 +27,10 @@ class MappingConfigBuilder {
 	const COPY_TO_SUGGEST = 2;
 	const SPEED_UP_HIGHLIGHTING = 4;
 
+	// Bit field parameters for buildConfig
+	const PREFIX_START_WITH_ANY = 1;
+	const PHRASE_SUGGEST_USE_TEXT = 2;
+
 	/**
 	 * Maximum number of characters allowed in keyword terms.
 	 */
@@ -47,39 +51,24 @@ class MappingConfigBuilder {
 	const VERSION = '1.9';
 
 	/**
-	 * Whether to allow prefix searches to match on any word
-	 * @var bool
-	 */
-	private $prefixSearchStartsWithAnyWord;
-
-	/**
-	 * Whether phrase searches should use the suggestion analyzer
-	 * @var bool
-	 */
-	private $phraseSuggestUseText;
-
-	/**
 	 * @var bool should the index be optimized for the experimental highlighter?
 	 */
 	private $optimizeForExperimentalHighlighter;
 
 	/**
 	 * Constructor
-	 * @param bool $anyWord Prefix search on any word
-	 * @param bool $useText Text uses suggestion analyzer
-	 * @param bool should the index be optimized for the experimental highlighter?
+	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
 	 */
-	public function __construct( $anyWord, $phraseSuggestUseText, $optimizeForExperimentalHighlighter ) {
-		$this->prefixSearchStartsWithAnyWord = $anyWord;
-		$this->phraseSuggestUseText = $phraseSuggestUseText;
+	public function __construct( $optimizeForExperimentalHighlighter ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 	}
 
 	/**
 	 * Build the mapping config.
+	 * @param int $flags Flags for building the configuration
 	 * @return array the mapping config
 	 */
-	public function buildConfig() {
+	public function buildConfig( $flags = 0 ) {
 		global $wgCirrusSearchAllFields,
 			$wgCirrusSearchWeights,
 			$wgCirrusSearchWikimediaExtraPlugin;
@@ -95,7 +84,7 @@ class MappingConfigBuilder {
 			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
 			array( 'analyzer' => 'keyword', 'index_options' => 'docs' ),
 		);
-		if ( $this->prefixSearchStartsWithAnyWord ) {
+		if ( $flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = array(
 				'index_analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
@@ -113,7 +102,7 @@ class MappingConfigBuilder {
 
 		$textExtraAnalyzers = array();
 		$textOptions = MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING;
-		if ( $this->phraseSuggestUseText ) {
+		if ( $flags & self::PHRASE_SUGGEST_USE_TEXT ) {
 			$textExtraAnalyzers[] = $suggestExtra;
 			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
 		}

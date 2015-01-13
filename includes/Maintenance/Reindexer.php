@@ -77,7 +77,7 @@ class Reindexer {
 	private $mergeSettings;
 
 	/**
-	 * @var MappingConfigBuilder
+	 * @var array
 	 */
 	private $mappingConfig;
 
@@ -100,10 +100,10 @@ class Reindexer {
 	 * @param string $replicaCount
 	 * @param int $connectionTimeout
 	 * @param array $mergeSettings
-	 * @param MappingConfigBuilder $mappingConfig
+	 * @param array $mappingConfig
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, \ElasticaConnection $connection, Type $type, Type $oldType, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, MappingConfigBuilder $mappingConfig, Maintenance $out = null ) {
+	public function __construct( Index $index, \ElasticaConnection $connection, Type $type, Type $oldType, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!
 		$this->index = $index;
 		$this->client = $this->index->getClient();
@@ -254,8 +254,7 @@ class Reindexer {
 				'lang' => 'groovy'
 			) );
 		}
-		$pageProperties = $this->mappingConfig->buildConfig();
-		$pageProperties = $pageProperties[ 'page' ][ 'properties' ];
+		$pageProperties = $this->mappingConfig['page']['properties'];
 		try {
 			$query = new Query();
 			$query->setFields( array( '_id', '_source' ) );

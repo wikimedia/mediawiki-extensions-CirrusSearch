@@ -5,7 +5,8 @@
 			"Liuxinyu970226",
 			"Cwlin0416",
 			"Cwek",
-			"Waihorace"
+			"Waihorace",
+			"LNDDYL"
 		]
 	},
 	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",
@@ -13,7 +14,7 @@
 	"cirrussearch-parse-error": "無法理解查詢條件，請簡化查詢條件。該查詢會被記錄以改進搜尋系統。",
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",
 	"cirrussearch-too-busy-for-you-anonymous-error": "你同時在執行太多搜索。假如你與其他用戶共享一個IP地址，你可以登入以提高限制。",
-	"cirrussearch-too-busy-for-you-logged-in-error": "你同時在執行太多搜索。",
+	"cirrussearch-too-busy-for-you-logged-in-error": "你同時在執行太多搜尋。",
 	"cirrussearch-regex-syntax-error": "正規表示法語法錯誤於 $2：$1",
 	"cirrussearch-regex-too-busy-error": "太多正規表示法搜尋動作正在進行，請稍候再試。",
 	"cirrussearch-regex-too-complex-error": "正則表達式過於複雜。請前往[[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|此處]]了解如何簡化正則表達式。",

@@ -11,6 +11,8 @@
 	"cirrussearch-backend-error": "Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.",
 	"cirrussearch-parse-error": "Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.",
 	"cirrussearch-too-busy-error": "Vyhledávání je momentálně příliš zaneprázdněno. Zkuste to znovu později.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Běží vám příliš mnoho souběžných vyhledávání. Pokud sdílíte IP adresu s jinými uživateli, můžete se přihlásit, abyste získali vlastní limity.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Běží vám příliš mnoho souběžných vyhledávání.",
 	"cirrussearch-regex-syntax-error": "Regulární výraz obsahuje na pozici $2 syntaktickou chybu: $1",
 	"cirrussearch-regex-too-busy-error": "Momentálně probíhá příliš mnoho vyhledávání pomocí regulárních výrazů. Zkuste to znovu později.",
 	"cirrussearch-regex-too-complex-error": "Regulární výraz je příliš složitý. Podívejte se na [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|návod k jeho zjednodušení]].",

@@ -4,5 +4,10 @@
 			"C.R."
 		]
 	},
-	"cirrussearch-now-using": "Stu pruggetto wiki sta ausanno nu mutore 'e ricerca nuovo. ([[mw:Special:MyLanguage/Help:CirrusSearch|Liegge 'e cchiù]])"
+	"cirrussearch-too-busy-for-you-logged-in-error": "Tenite troppe assaje ricerche 'a vota.",
+	"cirrussearch-regex-syntax-error": "Errore 'e sintasse dint'a n'espressione regolare a $2: $1",
+	"cirrussearch-regex-too-busy-error": "Mo' songo troppe 'e ricerche ch' 'espressiune regolare ca se stanno a esecutà.\nPruvate n'ata vota cchiù tarde.",
+	"cirrussearch-now-using": "Stu pruggetto wiki sta ausanno nu mutore 'e ricerca nuovo. ([[mw:Special:MyLanguage/Help:CirrusSearch|Liegge 'e cchiù]])",
+	"cirrussearch-pref-label": "Ascià n'ata vota",
+	"cirrussearch-pref-desc": "Prova 'a funzione d'ascià nnova, ca suppurtasse nu nummero cchiù gruosso 'e llengue e dà risultate cchiù agghiurnate e se ponno pure truvà 'e teste dint' 'e mudelle."
 }

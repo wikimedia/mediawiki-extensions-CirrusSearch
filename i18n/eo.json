@@ -6,6 +6,7 @@
 	},
 	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
 	"cirrussearch-backend-error": "Pro dumtempa problemo ne eblis fini vian serĉo. Bonvolu reprovi postnelonge.",
+	"cirrussearch-too-busy-error": "Serĉado estas nuntempe tro okupita. Bonvolu reprovi postnelonge.",
 	"cirrussearch-now-using": "Tiu ĉi vikio uzas novan serĉilon. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lernu pli]])",
 	"cirrussearch-pref-label": "Nova serĉo"
 }

@@ -19,5 +19,6 @@
 	"cirrussearch-pref-label": "Neuva arserca",
 	"cirrussearch-pref-desc": "Prové nòstra neuva arserca ch'a manten un pi grand nùmer ëd lenghe, a forniss pi d'arzultà agiornà e a peul fin-a trové dël test ant jë stamp.",
 	"apihelp-cirrus-config-dump-description": "Dësvuidament ëd la configurassion CirrusSearch.",
-	"apihelp-cirrus-mapping-dump-description": "Dësvujdament ëd la corëspondensa CirrusSearch për sa wiki-sì."
+	"apihelp-cirrus-mapping-dump-description": "Dësvujdament ëd la corëspondensa CirrusSearch për sa wiki-sì.",
+	"apihelp-cirrus-settings-dump-description": "Dësvujdament dij paràmeter CirrusSearch për sa wiki-sì."
 }

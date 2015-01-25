@@ -4,6 +4,11 @@
 			"C.R."
 		]
 	},
+	"cirrussearch-desc": "Ricerca fatta ch' Elasticsearch pe' MediaWiki",
+	"cirrussearch-backend-error": "Nun putimmo cumpretà 'a ricerca d' 'a vuosta pe' nu probblema temporaneo. Pe' piacere pruvate n'ata vota cchiù tarde.",
+	"cirrussearch-parse-error": "Nun ce putimmo fà capace d' 'a query. Pe' piacere, facite sta query cchiù semprice. 'A query s'è riggistrata pe' migliurà 'o sistema 'e ricerca.",
+	"cirrussearch-too-busy-error": "Mò mò ncopp' 'a funzione ricerca ce stà tropp'ammuinata. Pe' piacere facite nu poco cchiù tarde.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Avite accummenciato troppe ricerche 'a vota. Si state a ve spartì ll'indirizzo IP cu n'ati utente allora putite trasì (facite log-in) pe' ve piglià 'e lemmete vuoste.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "Tenite troppe assaje ricerche 'a vota.",
 	"cirrussearch-regex-syntax-error": "Errore 'e sintasse dint'a n'espressione regolare a $2: $1",
 	"cirrussearch-regex-too-busy-error": "Mo' songo troppe 'e ricerche ch' 'espressiune regolare ca se stanno a esecutà.\nPruvate n'ata vota cchiù tarde.",

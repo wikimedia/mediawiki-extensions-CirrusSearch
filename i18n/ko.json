@@ -4,10 +4,11 @@
 			"Hym411",
 			"Priviet",
 			"아라",
-			"Revi"
+			"Revi",
+			"IRTC1015"
 		]
 	},
-	"cirrussearch-desc": "미디어위키를 위한 Elasticsearch가 공급하는 검색",
+	"cirrussearch-desc": "미디어위키용 Elasticsearch 검색",
 	"cirrussearch-backend-error": "일시적인 문제 때문에 검색을 완료할 수 없습니다. 나중에 다시 시도하세요.",
 	"cirrussearch-parse-error": "쿼리를 이해할 수 없습니다. 간단하게 만들어 주세요. 쿼리는 검색 시스템을 개선하기 위해 기록이 남습니다.",
 	"cirrussearch-too-busy-error": "검색이 지연되고 있습니다. 잠시 후에 다시 시도해 주세요.",

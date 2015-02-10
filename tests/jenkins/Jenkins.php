@@ -69,14 +69,14 @@ $wgJobTypeConf['default'] = array(
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
 	'redisConfig' => array(
-		'password' => '',
+		'password' => null,
 	),
 );
 $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
 	'redisConfig' => array(
-		'password' => '',
+		'password' => null,
 	),
 );
 $wgCiteEnablePopups = true;

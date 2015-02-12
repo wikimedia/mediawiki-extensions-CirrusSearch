@@ -338,7 +338,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$searcher = $this;
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
-		$this->term = trim( $term );
+		$this->term = trim( str_replace( "\t", ' ', $term ) );
 		$this->boostLinks = $wgCirrusSearchBoostLinks;
 		$searchType = 'full_text';
 		// Handle title prefix notation

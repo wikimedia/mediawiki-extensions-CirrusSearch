@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ahdan"
+			"Ahdan",
+			"Iwan Novirion"
 		]
 	},
-	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti."
+	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",
+	"cirrussearch-now-using": "Wiki ini menggunakan mesin pencari baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Pelajari lebih lanjut]])"
 }

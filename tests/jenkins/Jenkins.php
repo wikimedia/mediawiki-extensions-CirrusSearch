@@ -33,7 +33,6 @@ use \JobQueueGroup;
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
 $wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
-$wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Jenkins\Jenkins::recyclePruneAndUndelayJobs';
 $wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage';
 
 // Dependencies
@@ -138,25 +137,6 @@ class Jenkins {
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\NukeAllIndexes' );
 		$updater->addPostDatabaseUpdateMaintenance( 'CirrusSearch\Jenkins\CleanSetup' );
 		return true;
-	}
-
-	public static function recyclePruneAndUndelayJobs( $special, $subpage ) {
-		$jobsToUndelay = array(
-			'cirrusSearchIncomingLinkCount',
-			'cirrusSearchLinksUpdate',
-			'cirrusSearchLinksUpdatePrioritized'
-		);
-		foreach ( $jobsToUndelay as $type ) {
-			$jobQueue = JobQueueGroup::singleton()->get( $type );
-			if ( !$jobQueue ) {
-				continue;
-			}
-			$count = $jobQueue->recyclePruneAndUndelayJobs();
-			if ( !$count ) {
-				continue;
-			}
-			JobQueueAggregator::singleton()->notifyQueueNonEmpty( $jobQueue->getWiki(), $type );
-		}
 	}
 
 	/**

@@ -64,6 +64,7 @@ $wgUseInstantCommons = true;
 $wgEnableUploads = true;
 $wgJobTypeConf['default'] = array(
 	'class' => 'JobQueueRedis',
+	'daemonized'  => true,
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,

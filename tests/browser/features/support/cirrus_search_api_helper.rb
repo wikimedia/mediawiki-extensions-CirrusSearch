@@ -93,4 +93,12 @@ module CirrusSearchApiHelper
       token_type: "edit"
     )
   end
+
+  # Locate a category id
+  def page_id_of(title)
+    res = api.query(
+      titles: title
+    )
+    res["query"]["pages"].first[1]["pageid"]
+  end
 end

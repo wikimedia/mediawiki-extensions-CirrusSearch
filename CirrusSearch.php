@@ -529,6 +529,8 @@ $wgCirrusSearchMergeSettings = array(
  */
 $wgCirrusSearchEnableSearchLogging = false;
 
+// The maximum number of incategory:a|b|c items to OR together.
+$wgCirrusSearchMaxIncategoryOptions = 100;
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

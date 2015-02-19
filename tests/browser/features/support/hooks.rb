@@ -11,6 +11,7 @@ Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @
       And a page named Links To Catapult exists with contents [[Catapult]]
       And a page named Catapult exists with contents ♙ asdf [[Category:Weaponry]]
       And a page named Amazing Catapult exists with contents test [[Catapult]] [[Category:Weaponry]]
+      And a page named Category:Weaponry exists with contents Weaponry refers to any items designed or used to attack and kill or destroy other people and property.
       And a page named Two Words exists with contents ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith " Quote]]
       And a page named AlphaBeta exists with contents [[Category:Alpha]] [[Category:Beta]]
       And a page named IHaveATwoWordCategory exists with contents [[Category:CategoryWith ASpace]]

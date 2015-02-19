@@ -8,6 +8,8 @@
 	"cirrussearch-backend-error": "Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.",
 	"cirrussearch-parse-error": "Không hiểu rõ truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.",
 	"cirrussearch-too-busy-error": "Công cụ tìm kiếm đang quá bận rộn. Xin vui lòng thử lại sau.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Bạn đang chạy quá nhiều truy vấn cùng lúc. Nếu bạn đang dùng chung một địa chỉ IP với người khác, đăng nhập để được giới hạn riêng.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Bạn đang chạy quá nhiều truy vấn cùng lúc.",
 	"cirrussearch-regex-syntax-error": "Lỗi cú pháp biểu thức chính quy tại vị trí $2: $1",
 	"cirrussearch-regex-too-busy-error": "Quá nhiều truy vấn biểu thức chính quy đang được thực hiện. Xin vui lòng thử lại sau.",
 	"cirrussearch-regex-too-complex-error": "Biểu thức chính quy này quá phức tạp. Tìm hiểu cách làm nó đơn giản hơn [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|tại đây]].",

@@ -6,7 +6,7 @@
 			"Michawiki"
 		]
 	},
-	"cirrussearch-desc": "Ermöglicht eine auf „elasticsearch“ gestütze Suche",
+	"cirrussearch-desc": "Ermöglicht eine auf „elasticsearch“ gestützte Suche",
 	"cirrussearch-backend-error": "Deine Suche konnte aufgrund eines vorübergehenden Problems nicht abgeschlossen werden. Bitte später erneut versuchen.",
 	"cirrussearch-parse-error": "Die Suchanfrage wurde nicht verstanden. Bitte mache sie einfacher. Die Anfrage wurde protokolliert, um das Suchsystem zu verbessern.",
 	"cirrussearch-too-busy-error": "Die Suche ist derzeit überlastet. Bitte später erneut versuchen.",

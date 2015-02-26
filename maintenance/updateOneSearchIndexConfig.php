@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use \CirrusSearch\Connection;
 use \CirrusSearch\ElasticsearchIntermediary;
+use \CirrusSearch\Util;
 use Elastica;
 
 /**
@@ -178,12 +179,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 
+		$utils = new ConfigUtils( $this->getClient(), $this );
+
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
 		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
-		$this->reindexAcceptableCountDeviation = $this->parsePotentialPercent(
+		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$this->reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
@@ -203,8 +206,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 					implode( ', ', $indexTypes ), 1 );
 			}
 
-			$this->checkElasticsearchVersion();
-			$this->availablePlugins = $this->scanAvailablePlugins( $this->bannedPlugins );
+			$utils->checkElasticsearchVersion();
+			$this->availablePlugins = $utils->scanAvailablePlugins( $this->bannedPlugins );
 
 			if ( $this->getOption( 'justCacheWarmers', false ) ) {
 				$this->validateCacheWarmers();
@@ -216,7 +219,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return;
 			}
 
-			$this->indexIdentifier = $this->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
+			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
 			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 			$this->validateIndex();
 			$this->validateAnalyzers();
@@ -239,60 +242,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
-	}
-
-	private function checkElasticsearchVersion() {
-		$this->outputIndented( 'Fetching Elasticsearch version...' );
-		$result = $this->getClient()->request( '' );
-		$result = $result->getData();
-		if ( !isset( $result['version']['number'] ) ) {
-			$this->output( 'unable to determine, aborting.', 1 );
-		}
-		$result = $result[ 'version' ][ 'number' ];
-		$this->output( "$result..." );
-		if ( !preg_match( '/^(1|2)./', $result ) ) {
-			$this->output( "Not supported!\n" );
-			$this->error( "Only Elasticsearch 1.x is supported.  Your version: $result.", 1 );
-		} else {
-			$this->output( "ok\n" );
-		}
-	}
-
-	/**
-	 * @param array $bannedPlugins
-	 * @return array
-	 */
-	private function scanAvailablePlugins( array $bannedPlugins = array() ) {
-		$this->outputIndented( "Scanning available plugins..." );
-		$result = $this->getClient()->request( '_nodes' );
-		$result = $result->getData();
-		$availablePlugins = array();
-		$first = true;
-		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
-			$plugins = array();
-			foreach ( $node[ 'plugins' ] as $plugin ) {
-				$plugins[] = $plugin[ 'name' ];
-			}
-			if ( $first ) {
-				$availablePlugins = $plugins;
-				$first = false;
-			} else {
-				$availablePlugins = array_intersect( $availablePlugins, $plugins );
-			}
-		}
-		if ( count( $availablePlugins ) === 0 ) {
-			$this->output( 'none' );
-		}
-		$this->output( "\n" );
-		if ( count( $bannedPlugins ) ) {
-			$availablePlugins = array_diff( $availablePlugins, $bannedPlugins );
-		}
-		foreach ( array_chunk( $availablePlugins, 5 ) as $pluginChunk ) {
-			$plugins = implode( ', ', $pluginChunk );
-			$this->outputIndented( "\t$plugins\n" );
-		}
-
-		return $availablePlugins;
 	}
 
 	private function updateVersions() {
@@ -473,50 +422,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * Pick the index identifier from the provided command line option.
-	 * @param string $option command line option
-	 *          'now'        => current time
-	 *          'current'    => if there is just one index for this type then use its identifier
-	 *          other string => that string back
-	 * @param string $typeName
-	 * @return string index identifier to use
-	 */
-	private function pickIndexIdentifierFromOption( $option, $typeName ) {
-		if ( $option === 'now' ) {
-			$identifier = strval( time() );
-			$this->outputIndented( "Setting index identifier...${typeName}_${identifier}\n" );
-			return $identifier;
-		}
-		if ( $option === 'current' ) {
-			$this->outputIndented( 'Infering index identifier...' );
-			$found = array();
-			foreach ( $this->getClient()->getStatus()->getIndexNames() as $name ) {
-				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
-					$found[] = $name;
-				}
-			}
-			if ( count( $found ) > 1 ) {
-				$this->output( "error\n" );
-				$this->error( "Looks like the index has more than one identifier. You should delete all\n" .
-					"but the one of them currently active. Here is the list: " .  implode( $found, ',' ), 1 );
-			}
-			if ( $found ) {
-				$identifier = substr( $found[0], strlen( $typeName ) + 1 );
-				if ( !$identifier ) {
-					// This happens if there is an index named what the alias should be named.
-					// If the script is run with --startOver it should nuke it.
-					$identifier = 'first';
-				}
-			} else {
-				$identifier = 'first';
-			}
-			$this->output( "${typeName}_${identifier}\n ");
-			return $identifier;
-		}
-		return $option;
-	}
-
-	/**
 	 * @param string $langCode
 	 * @param array $availablePlugins
 	 * @return AnalysisConfigBuilder
@@ -651,14 +556,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		// Otherwise its just a raw scalar so we should respect that too
 		return $wgCirrusSearchReplicas;
-	}
-
-	private function parsePotentialPercent( $str ) {
-		$result = floatval( $str );
-		if ( strpos( $str, '%' ) === false ) {
-			return $result;
-		}
-		return $result / 100;
 	}
 }
 

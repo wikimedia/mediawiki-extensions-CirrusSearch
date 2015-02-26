@@ -566,6 +566,7 @@ $wgAutoloadClasses['CirrusSearch\Job\MassIndex'] = $jobsDir . 'MassIndex.php';
 $wgAutoloadClasses['CirrusSearch\Job\OtherIndex'] = $jobsDir . 'OtherIndex.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\AnalysisConfigBuilder'] = $maintenanceDir . 'AnalysisConfigBuilder.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\ChunkBuilder'] = $maintenanceDir . 'ChunkBuilder.php';
+$wgAutoloadClasses['CirrusSearch\Maintenance\ConfigUtils'] = $maintenanceDir . 'ConfigUtils.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\IndexNamespaces'] = __DIR__ . '/maintenance/indexNamespaces.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\Maintenance'] = $maintenanceDir . 'Maintenance.php';
 $wgAutoloadClasses['CirrusSearch\Maintenance\MappingConfigBuilder'] = $maintenanceDir . 'MappingConfigBuilder.php';

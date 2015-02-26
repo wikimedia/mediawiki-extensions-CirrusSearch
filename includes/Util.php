@@ -132,4 +132,16 @@ class Util {
 		) );
 		return $work->execute();
 	}
+
+	/**
+	 * @param string $str
+	 * @return number
+	 */
+	public static function parsePotentialPercent( $str ) {
+		$result = floatval( $str );
+		if ( strpos( $str, '%' ) === false ) {
+			return $result;
+		}
+		return $result / 100;
+	}
 }

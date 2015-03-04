@@ -5,152 +5,57 @@ Read https://github.com/wikimedia/mediawiki-selenium for general instructions
 regarding running tests then read the rest of this file for information
 specific to CirrusSearch.
 
+The only supported configuration for running CirrusSearch's integration tests
+is using the CirrusSearch role on MediaWiki Vagrant.  Other configurations are
+bound to be missing dependencies.  Sorry.  Assuming you are using MediaWiki
+Vagrant you should have everything you need in the vagrant machine for the
+tests to pass.  Now you just have to run them.
 
-Setup
------
 
-These are browser based tests for search written using the ruby page-object gem.
-To run them you should first install rvm from rvm.io.  Go through the whole
+Setup the Test Runner
+---------------------
+
+First you have to set up the machine that will run the browser tests.  If you
+want to set up your local machine for that then follow these instructions:
+
+First install rvm from rvm.io or rbenv.  If using rvm go through the whole
 setup including the gnome-terminal instructions if you are using Linux and
 gnome-terminal.
 
-Then you must install the dependencies:
+Then you must install the ruby dependencies:
  cd <this directory>
  gem update --system
  gem install bundler
  bundle install
 
-Some tests have to log in.  The simplest way to get this working is to setup a
-user named 'Selenium_user' with password 'selenium123' in your wiki and give
-them all all permissions.  You can do this by running this script from your
-mediawiki directory:
- php maintenance/createAndPromote.php --force --sysop Selenium_user selenium123
+Finally, you'll need to install the non-ruby dependencies.  That is, xvfb for
+headless Firefox and PhantomJS.  All the CirrusSearch tests work fine in
+PhantomJS and its ever so slightly less resource intensive than Firefox so I
+suggest that.  Its also the default.  Anyway, install it by following the
+instructions at http://phantomjs.org/build.html .  Install xvfb using your
+operating systems package manager.
 
-Back on the machine that will be running the tests you'll have to setup the
-environment variables that contain connection information.  In bash you'd do
-this:
- export MEDIAWIKI_USER=Selenium_user
- export MEDIAWIKI_PASSWORD=selenium123
- export MEDIAWIKI_URL=http://<url>/wiki/
-
-You'll have to install a bunch of plugins and set up the search index for all
-the tests to pass.  In bash you'd do this (assuming your mediawiki install path
-is /srv/mediawiki and you are using debian/ubuntu):
- export MW_INSTALL_PATH=/srv/mediawiki
- pushd $MW_INSTALL_PATH/..
- if [ ! -d Elastica ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/Elastica; fi
- if [ ! -d CirrusSearch ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/CirrusSearch; fi
- if [ ! -d TimedMediaHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/TimedMediaHandler; fi
- if [ ! -d MwEmbedSupport ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/MwEmbedSupport; fi
- if [ ! -d PdfHandler ]; then git clone https://gerrit.wikimedia.org/r/mediawiki/extensions/PdfHandler; fi
- pushd mediawiki/extensions
- if [ ! -d Elastica ]; then ln -s ../../Elastica; fi
- if [ ! -d CirrusSearch ]; then ln -s ../../CirrusSearch; fi
- if [ ! -d TimedMediaHandler ]; then ln -s ../../TimedMediaHandler; fi
- if [ ! -d MwEmbedSupport ]; then ln -s ../../MwEmbedSupport; fi
- if [ ! -d PdfHandler ]; then ln -s ../../PdfHandler; fi
- sudo su -c 'crontab -u www-data -l' > /tmp/www-data-crontab
- echo '* * * * * php /srv/mediawiki/maintenance/runJobs.php --type webVideoTranscode --maxjobs 1 >> /tmp/mw-transcode-log' >> /tmp/www-data-crontab
- echo '0 0 * * * rm /tmp/mw-transcode-log' >> /tmp/www-data-crontab
- sort /tmp/www-data-crontab | uniq | sudo su -c 'crontab -u www-data -'
- rm /tmp/www-data-crontab
- sudo apt-get install -y oggvideotools ffmpeg ffmpeg2theora libav-tools libavcodec-extra-53 imagemagick ghostscript xpdf-utils php5-curl php5-redis
- popd
-Then add this to your LocalSettings.php:
- require( "$IP/extensions/Elastica/Elastica.php" );
- require( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
- require( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
- require( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
- require_once("$IP/extensions/PdfHandler/PdfHandler.php");
- $wgSearchType = 'CirrusSearch';
- $wgOggThumbLocation = '/usr/bin/oggThumb';
- $wgGroupPermissions['*']['deleterevision'] = true;
- $wgFileExtensions[] = 'pdf';
- $wgShowExceptionDetails = true;
- $wgDebugLogFile = '/tmp/mw-log';
- $wgCapitalLinks = false;
-
-Finally, go back to the console:
- php CirrusSearch/maintenance/updateSearchIndexConfig.php
- php CirrusSearch/maintenance/forceSearchIndex.php --skipLinks --indexOnSkip
- php CirrusSearch/maintenance/forceSearchIndex.php --skipParse
- popd
- sudo /etc/init.d/apache2 restart
-
-
-
-Replace:
- $wgUseInstantCommons = false
-with
- $wgUseInstantCommons = true;
-and replace:
- $wgEnableUploads = false
-with
- $wgEnableUploads = true;
-
-And add an Elasticsearch server, for example:
- $wgCirrusSearchServers = array( '10.4.1.52' );
-
-If you want to test with Redis (it is better) add this to LocalSettings.php and
-installl Redis:
- $redisPassword = 'Q6dzak4k9vjYjh341fHS';
- $wgJobTypeConf['default'] = array(
-	'class' => 'JobQueueRedis',
-	'order' => 'fifo',
-	'redisServer' => 'localhost',
-	'checkDelay' => true,
-	'redisConfig' => array(
-		'password' => $redisPassword,
-	),
- );
- $wgJobQueueAggregator = array(
-	'class'       => 'JobQueueAggregatorRedis',
-	'redisServer' => 'localhost',
-	'redisConfig' => array(
-		'password' => $redisPassword,
-			),
- );
-
-
-Running
--------
-If you want to run tests against anything other than
-en.wikipedia.beta.wmflabs.org first do this:
- export MEDIAWIKI_URL=http://your-mediawiki/wiki/
- export MEDIAWIKI_USER=Selenium_user
- export MEDIAWIKI_PASSWORD=selenium123
-
-To run all tests:
+Running tests
+-------------
+For the most part all you have to do is:
+ source selenium_exports_for_vagrant.sh
+before you run anything else.  Then:
  bundle exec cucumber
-To run all tests in a file:
- bundle exec cucumber path/to/file.feature
-To run one test in a file:
- bundle exec cucumber path/to/file.feature:LINE_NUMBER
-To run tests with a tag:
- bundle exec cucumber -t @exact_quotes
 
-By default, the browser will close itself at the end of every scenario. If you
-want the browser to stay open after each scenario:
- export KEEP_BROWSER_OPEN=true
+You can run individual test with this syntax:
+ bundle exec cucumber features/smoke.feature:15
 
-You can also use one browser for all tests like this:
- export REUSE_BROWSER=true
-but doing so cause previous tests to effect one another.  Do this at your own
-risk but this should be safe for search tests and is much faster and it doesn't
-cause the browser to keep stealing your focus.
+Or files with this syntax:
+ bundle exec cucumber features/smoke.feature
 
 
-PhantomJS and Parallel Tests
-----------------------------
-We're starting to get things working on PhantomJS so we can run them in
-parallel and we don't have to worry about Firefox stealing out focus all the
-time.  You can install PhantomJS and then try it!
- export BROWSER=phantomjs
- bundle exec cucumber features/prefix.feature
-Or in parallel:
- export BROWSER=phantomjs
- bundle exec parallel_cucumber -n5 features
+Some tests don't pass!
+----------------------
+Sorry, some of the tests don't pass the first time out of the box.  Its a sad
+thing but I haven't had time to fix it.  Rerun them like this:
+ bundle exec cucumber features/smoke.feature:15 features/otherthing.feature:123
 
+Just grab the list from the failures list.  It sucks and I'm sorry.
 
 Want to Contribute Some Tests?
 ------------------------------

@@ -540,11 +540,15 @@ GROOVY;
 						$keepText = false;
 						// intentionally fall through
 					case 'intitle':
-						if ( !isset( $field ) ) {
-							$field = 'title';
-						}
 						list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 							$escaper->fixupQueryStringPart( $value ) );
+						if ( !isset( $field ) ) {
+							if ( preg_match( '/[?*]/u', $queryString ) ) {
+								$field = 'title.plain';
+							} else {
+								$field = 'title';
+							}
+						}
 						$query = new \Elastica\Query\QueryString( $queryString );
 						$query->setFields( array( $field ) );
 						$query->setDefaultOperator( 'AND' );

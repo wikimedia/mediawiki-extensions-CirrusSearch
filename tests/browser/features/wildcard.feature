@@ -29,3 +29,27 @@ Feature: Searches that contain wildcard matches
     | wildcard |
     | *        |
     | ?k       |
+
+  Scenario Outline: Wildcards in leading intitle: terms match
+    When I search for intitle:functiona<wildcard> intitle:programming
+    Then Functional programming is the first search result
+  Examples:
+    | wildcard |
+    | *        |
+    | ?        |
+
+  Scenario Outline: Wildcard suffixes in trailing intitle: terms match stemmed matches
+    When I search for intitle:functional intitle:programmin<wildcard>
+    Then Functional programming is the first search result
+  Examples:
+    | wildcard |
+    | *        |
+    | ?        |
+
+  Scenario Outline: Wildcards within trailing intitle: terms match stemmed matches
+    When I search for intitle:functional intitle:prog<wildcard>amming
+    Then Functional programming is the first search result
+  Examples:
+    | wildcard |
+    | *        |
+    | ?        |

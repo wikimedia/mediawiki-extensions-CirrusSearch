@@ -536,31 +536,12 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
-						$field = 'source_text.plain';
-						$keepText = false;
-						// intentionally fall through
+						$updateReferences = Filters::insource( $escaper, $searcher, $value );
+						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
+						return '';
 					case 'intitle':
-						list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
-							$escaper->fixupQueryStringPart( $value ) );
-						if ( !isset( $field ) ) {
-							if ( preg_match( '/[?*]/u', $queryString ) ) {
-								$field = 'title.plain';
-							} else {
-								$field = 'title';
-							}
-						}
-						$query = new \Elastica\Query\QueryString( $queryString );
-						$query->setFields( array( $field ) );
-						$query->setDefaultOperator( 'AND' );
-						$query->setAllowLeadingWildcard( false );
-						$query->setFuzzyPrefixLength( 2 );
-						$query->setRewrite( 'top_terms_128' );
-						$query = $searcher->wrapInSaferIfPossible( $query, false );
-						$filterDestination[] = new \Elastica\Filter\Query( $query );
-						if ( $key === 'insource' ) {
-							$highlightSource[] = array( 'query' => $query );
-						}
-						$searchContainedSyntax = true;
+						$updateReferences = Filters::intitle( $escaper, $searcher, $value );
+						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return $keepText ? "$value " : '';
 					default:
 						return $matches[0];

@@ -349,8 +349,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$reindexer = new Reindexer(
 			$this->getIndex(),
 			Connection::getSingleton(),
-			$this->getPageType(),
-			$this->getOldPageType(),
+			array( $this->getPageType() ),
+			array( $this->getOldPageType() ),
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$wgCirrusSearchMaintenanceTimeout,

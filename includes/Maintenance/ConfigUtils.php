@@ -98,7 +98,7 @@ class ConfigUtils {
 			} else {
 				$identifier = 'first';
 			}
-			$this->output( "${typeName}_${identifier}\n ");
+			$this->output( "${typeName}_${identifier}\n");
 			return $identifier;
 		}
 		return $option;

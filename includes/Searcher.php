@@ -186,6 +186,12 @@ class Searcher extends ElasticsearchIntermediary {
 	private $normalizedNamespaceWeights = null;
 
 	/**
+	 * @var array queries that don't use Elastic's "query string" query, for more
+	 * advanced searching (e.g. match_phrase_prefix for regular quoted strings).
+	 */
+	private $nonTextQueries = array();
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -585,6 +591,16 @@ GROOVY;
 				global $wgCirrusSearchPhraseSlop;
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
 				$main = $escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+
+				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
+						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
+					$phraseMatch = new Elastica\Query\Match( );
+					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
+					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
+					$this->nonTextQueries[] = $phraseMatch;
+					return array( );
+				}
+
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
 					if ( !isset( $matches[ 'slop' ] ) ) {
 						$main = $main . '~' . $wgCirrusSearchPhraseSlop[ 'precise' ];
@@ -908,6 +924,17 @@ GROOVY;
 		global $wgCirrusSearchMoreAccurateScoringMode,
 			$wgCirrusSearchSearchShardTimeout,
 			$wgCirrusSearchClientSideSearchTimeout;
+
+		if ( sizeof( $this->nonTextQueries ) > 0 ) {
+			$bool = new \Elastica\Query\Bool();
+			if ( $this->query !== null ) {
+				$bool->addMust( $this->query );
+			}
+			foreach ( $this->nonTextQueries as $nonTextQuery ) {
+				$bool->addMust( $nonTextQuery );
+			}
+			$this->query = $bool;
+		}
 
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );

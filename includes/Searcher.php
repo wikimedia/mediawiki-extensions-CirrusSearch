@@ -1489,7 +1489,7 @@ GROOVY;
 	private function checkTitleSearchRequestLength( $search ) {
 		$requestLength = strlen( $search );
 		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
-			throw new UsageException( 'Prefix search request was longer longer than the maximum allowed length.' .
+			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 		}
 	}

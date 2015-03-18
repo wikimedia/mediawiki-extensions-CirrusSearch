@@ -3,7 +3,7 @@
 World(CirrusSearchApiHelper)
 
 main = false
-Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes") do
+Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @phrase_prefix") do
   unless main
     steps %(
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]

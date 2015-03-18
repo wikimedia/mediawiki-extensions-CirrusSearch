@@ -102,4 +102,62 @@ class Filters {
 		}
 		return $boolFilter;
 	}
+
+  /**
+   * Create a filter for insource: queries.  This was extracted from the big
+   * switch block in Searcher.php.  This function is pure, deferring state
+   * changes to the reference-updating return function.
+   * @param \CirrusSearch\Search\Escaper $escaper
+   * @param \CirrusSearch\Searcher $searcher
+   * @param $value
+   * @return a side-effecting function to update several references
+   */
+	public static function insource( $escaper, $searcher, $value ) {
+		return self::insourceOrIntitle( $escaper, $searcher, $value, function () {
+			return 'source_text.plain';
+		});
+	}
+
+  /**
+   * Create a filter for intitle: queries.  This was extracted from the big
+   * switch block in Searcher.php.  This function is pure, deferring state
+   * changes to the reference-updating return function.
+   * @param \CirrusSearch\Search\Escaper $escaper
+   * @param \CirrusSearch\Searcher $searcher
+   * @param $value
+   * @return a side-effecting function to update several references
+   */
+	public static function intitle( $escaper, $searcher, $value ) {
+		return self::insourceOrIntitle( $escaper, $searcher, $value, function ( $queryString ) {
+			if ( preg_match( '/[?*]/u', $queryString ) ) {
+				return 'title.plain';
+			} else {
+				return 'title';
+			}
+		});
+	}
+
+	private static function insourceOrIntitle( $escaper, $searcher, $value, $fieldF ) {
+		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
+			$escaper->fixupQueryStringPart( $value ) );
+		$field = $fieldF( $queryString );
+		$query = new \Elastica\Query\QueryString( $queryString );
+		$query->setFields( array( $field ) );
+		$query->setDefaultOperator( 'AND' );
+		$query->setAllowLeadingWildcard( false );
+		$query->setFuzzyPrefixLength( 2 );
+		$query->setRewrite( 'top_terms_128' );
+		$wrappedQuery = $searcher->wrapInSaferIfPossible( $query, false );
+
+		$updateReferences =
+			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef ) use ( $fuzzyQuery, $wrappedQuery ) {
+				$fuzzyQueryRef             = $fuzzyQuery;
+				$filterDestinationRef[]    = new \Elastica\Filter\Query( $wrappedQuery );
+				$highlightSourceRef[]      = array( 'query' => $wrappedQuery );
+				$searchContainedSyntaxRef  = true;
+			};
+
+		return $updateReferences;
+	}
+
 }

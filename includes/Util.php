@@ -103,6 +103,11 @@ class Util {
 		// By default the pool counter allows you to lock the same key with
 		// multiple types.  That might be useful but it isn't how Cirrus thinks.
 		// Instead, all keys are scoped to their type.
+
+		if ( !$user ) {
+			// We don't want to even use the pool counter if there isn't a user.
+			return $workCallback();
+		}
 		$perUserKey = md5( $user->getName() );
 		$perUserKey = "nowait:CirrusSearch:_per_user:$perUserKey";
 		$globalKey = "$type:$wgCirrusSearchPoolCounterKey";

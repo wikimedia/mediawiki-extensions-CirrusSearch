@@ -528,6 +528,11 @@ $wgCirrusSearchMergeSettings = array(
 	),
 );
 
+/**
+ * Whether search events should be logged in the client side.
+ */
+$wgCirrusSearchEnableSearchLogging = false;
+
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
@@ -619,7 +624,11 @@ $wgHooks[ 'ArticleDelete' ][] = 'CirrusSearch\Hooks::onArticleDelete';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::onArticleDeleteComplete';
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Hooks::onBeforeInitialize';
+$wgHooks[ 'BeforePageDisplay' ][] = 'CirrusSearch\Hooks::onBeforePageDisplay';
+$wgHooks[ 'EventLoggingRegisterSchemas' ][] = 'CirrusSearch\Hooks::onEventLoggingRegisterSchemas';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearch\Hooks::onLinksUpdateCompleted';
+$wgHooks[ 'ResourceLoaderGetConfigVars' ][] = 'CirrusSearch\Hooks::onResourceLoaderGetConfigVars';
+$wgHooks[ 'ResourceLoaderRegisterModules' ][] = 'CirrusSearch\Hooks::onResourceLoaderRegisterModules';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch\Hooks::onSoftwareInfo';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsPrepend';
 $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';

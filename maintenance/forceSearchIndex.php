@@ -5,7 +5,7 @@ use \CirrusSearch;
 use \JobQueueGroup;
 use \LinkCache;
 use \Maintenance;
-use \MWContentSerializationException;
+use \MWException;
 use \MWTimestamp;
 use \Title;
 use \WikiPage;
@@ -357,7 +357,7 @@ class ForceSearchIndex extends Maintenance {
 
 			try {
 				$content = $page->getContent();
-			} catch ( MWContentSerializationException $ex ) {
+			} catch ( MWException $ex ) {
 				wfLogWarning( "Error deserializing content, skipping page: $row->page_id\n" );
 				continue;
 			}

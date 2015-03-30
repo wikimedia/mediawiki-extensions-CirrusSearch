@@ -4,13 +4,16 @@
 			"Bengt B",
 			"Jopparn",
 			"Lokal Profil",
-			"WikiPhoenix"
+			"WikiPhoenix",
+			"Ainali"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-driven sökning för MediaWiki",
 	"cirrussearch-backend-error": "Vi kunde inte slutföra din sökning på grund av ett tillfälligt problem. Försök igen senare.",
 	"cirrussearch-parse-error": "Frågan kunde inte tolkas. Vänligen gör det enklare. Frågan har loggats för att förbättra söksystemet.",
 	"cirrussearch-too-busy-error": "Söktjänsten är för närvarande för upptagen. Försök igen senare.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Du har för många samtidiga sökningar körandes. Om du delar en IP-adress med andra användare kan du logga in för att få egna begränsningar.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Du har för många samtidiga sökningar körandes.",
 	"cirrussearch-regex-syntax-error": "Syntaxfel i reguljärt uttryck vid $2: $1",
 	"cirrussearch-regex-too-busy-error": "För många sökningar med reguljära uttryck körs för närvarande. Försök igen senare.",
 	"cirrussearch-regex-too-complex-error": "Det reguljära uttryckt är för komplext. Läs mer om att förenkla det [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|här]].",

@@ -113,7 +113,7 @@ class Filters {
    * @return a side-effecting function to update several references
    */
 	public static function insource( $escaper, $searcher, $value ) {
-		return self::insourceOrIntitle( $escaper, $searcher, $value, function () {
+		return self::insourceOrIntitle( $escaper, $searcher, $value, true, function () {
 			return 'source_text.plain';
 		});
 	}
@@ -128,7 +128,7 @@ class Filters {
    * @return a side-effecting function to update several references
    */
 	public static function intitle( $escaper, $searcher, $value ) {
-		return self::insourceOrIntitle( $escaper, $searcher, $value, function ( $queryString ) {
+		return self::insourceOrIntitle( $escaper, $searcher, $value, false, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return 'title.plain';
 			} else {
@@ -137,7 +137,7 @@ class Filters {
 		});
 	}
 
-	private static function insourceOrIntitle( $escaper, $searcher, $value, $fieldF ) {
+	private static function insourceOrIntitle( $escaper, $searcher, $value, $updateHighlightSourceRef, $fieldF ) {
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
@@ -153,7 +153,9 @@ class Filters {
 			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef ) use ( $fuzzyQuery, $wrappedQuery ) {
 				$fuzzyQueryRef             = $fuzzyQuery;
 				$filterDestinationRef[]    = new \Elastica\Filter\Query( $wrappedQuery );
-				$highlightSourceRef[]      = array( 'query' => $wrappedQuery );
+				if ($updateHighlightSourceRef) {
+					$highlightSourceRef[]      = array( 'query' => $wrappedQuery );
+				}
 				$searchContainedSyntaxRef  = true;
 			};
 

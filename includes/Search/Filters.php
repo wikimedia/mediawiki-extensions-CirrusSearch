@@ -150,7 +150,7 @@ class Filters {
 		$wrappedQuery = $searcher->wrapInSaferIfPossible( $query, false );
 
 		$updateReferences =
-			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef ) use ( $fuzzyQuery, $wrappedQuery ) {
+			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef ) use ( $fuzzyQuery, $wrappedQuery, $updateHighlightSourceRef ) {
 				$fuzzyQueryRef             = $fuzzyQuery;
 				$filterDestinationRef[]    = new \Elastica\Filter\Query( $wrappedQuery );
 				if ($updateHighlightSourceRef) {

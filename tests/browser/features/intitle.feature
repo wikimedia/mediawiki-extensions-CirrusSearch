@@ -29,7 +29,7 @@ Feature: Searches with the intitle filter
   @wildcards
   Scenario: intitle: can take a wildcard
     When I search for intitle:catapul*
-    Then Catapult is the first search result
+    Then Catapult is in the search results
 
   @wildcards @setup_main
   Scenario: intitle: can take a wildcard and combine it with a regular wildcard

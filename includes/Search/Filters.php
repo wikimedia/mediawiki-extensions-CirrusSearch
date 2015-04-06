@@ -103,30 +103,30 @@ class Filters {
 		return $boolFilter;
 	}
 
-  /**
-   * Create a filter for insource: queries.  This was extracted from the big
-   * switch block in Searcher.php.  This function is pure, deferring state
-   * changes to the reference-updating return function.
-   * @param \CirrusSearch\Search\Escaper $escaper
-   * @param \CirrusSearch\Searcher $searcher
-   * @param $value
-   * @return a side-effecting function to update several references
-   */
+	/**
+	 * Create a filter for insource: queries.  This was extracted from the big
+	 * switch block in Searcher.php.  This function is pure, deferring state
+	 * changes to the reference-updating return function.
+	 * @param \CirrusSearch\Search\Escaper $escaper
+	 * @param \CirrusSearch\Searcher $searcher
+	 * @param $value
+	 * @return a side-effecting function to update several references
+	 */
 	public static function insource( $escaper, $searcher, $value ) {
 		return self::insourceOrIntitle( $escaper, $searcher, $value, true, function () {
 			return 'source_text.plain';
 		});
 	}
 
-  /**
-   * Create a filter for intitle: queries.  This was extracted from the big
-   * switch block in Searcher.php.  This function is pure, deferring state
-   * changes to the reference-updating return function.
-   * @param \CirrusSearch\Search\Escaper $escaper
-   * @param \CirrusSearch\Searcher $searcher
-   * @param $value
-   * @return a side-effecting function to update several references
-   */
+	/**
+	 * Create a filter for intitle: queries.  This was extracted from the big
+	 * switch block in Searcher.php.  This function is pure, deferring state
+	 * changes to the reference-updating return function.
+	 * @param \CirrusSearch\Search\Escaper $escaper
+	 * @param \CirrusSearch\Searcher $searcher
+	 * @param $value
+	 * @return a side-effecting function to update several references
+	 */
 	public static function intitle( $escaper, $searcher, $value ) {
 		return self::insourceOrIntitle( $escaper, $searcher, $value, false, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
@@ -150,7 +150,8 @@ class Filters {
 		$wrappedQuery = $searcher->wrapInSaferIfPossible( $query, false );
 
 		$updateReferences =
-			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef ) use ( $fuzzyQuery, $wrappedQuery, $updateHighlightSourceRef ) {
+			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef )
+			     use ( $fuzzyQuery, $wrappedQuery, $updateHighlightSourceRef ) {
 				$fuzzyQueryRef             = $fuzzyQuery;
 				$filterDestinationRef[]    = new \Elastica\Filter\Query( $wrappedQuery );
 				if ($updateHighlightSourceRef) {

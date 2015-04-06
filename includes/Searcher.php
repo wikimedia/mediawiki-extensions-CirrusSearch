@@ -1153,7 +1153,7 @@ GROOVY;
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( false );
 		$query->setFuzzyPrefixLength( 2 );
-		$query->setRewrite( 'top_terms_128' );
+		$query->setRewrite( 'top_terms_boost_1024' );
 		return $this->wrapInSaferIfPossible( $query, $isRescore );
 	}
 

@@ -192,6 +192,12 @@ class Searcher extends ElasticsearchIntermediary {
 	private $nonTextQueries = array();
 
 	/**
+	 * @var array queries that don't use Elastic's "query string" query, for more
+	 * advanced highlighting (e.g. match_phrase_prefix for regular quoted strings).
+	 */
+	private $nonTextHighlightQueries = array();
+
+	/**
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
@@ -579,7 +585,13 @@ GROOVY;
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
 					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
 					$this->nonTextQueries[] = $phraseMatch;
-					return array( );
+
+					$phraseHighlightMatch = new Elastica\Query\QueryString( );
+					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
+					$phraseHighlightMatch->setFields( array( 'all.plain' ) );
+					$this->nonTextHighlightQueries[] = $phraseHighlightMatch;
+
+					return array();
 				}
 
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
@@ -959,6 +971,18 @@ GROOVY;
 				$highlight[ 'fields' ] = array_filter( $highlight[ 'fields' ], function( $field ) {
 					return $field[ 'type' ] !== 'plain';
 				});
+			}
+			if ( sizeof( $this->nonTextHighlightQueries ) > 0 ) {
+				// We have some phrase_prefix queries, so let's include them in the
+				// generated highlight_query.
+				$bool = new \Elastica\Query\Bool();
+				if ( $this->highlightQuery ) {
+					$bool->addShould( $this->highlightQuery );
+				}
+				foreach ( $this->nonTextHighlightQueries as $nonTextHighlightQuery ) {
+					$bool->addShould( $nonTextHighlightQuery );
+				}
+				$this->highlightQuery = $bool;
 			}
 			if ( $this->highlightQuery ) {
 				$highlight[ 'highlight_query' ] = $this->highlightQuery->toArray();

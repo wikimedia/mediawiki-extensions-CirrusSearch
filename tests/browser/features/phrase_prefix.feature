@@ -6,3 +6,4 @@ Feature: Searches with a phrase prefix term
   Scenario: Simple quoted prefix phrases get results
     When I search for "functional p*"
     Then Functional programming is the first search result
+      And *Functional* *programming* is referential transparency. is the highlighted text of the first search result

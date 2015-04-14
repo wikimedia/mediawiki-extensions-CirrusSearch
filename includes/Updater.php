@@ -4,7 +4,7 @@ namespace CirrusSearch;
 use CirrusSearch\BuildDocument\FileDataBuilder;
 use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 use \MWTimestamp;
 use \ParserCache;
 use \Sanitizer;
@@ -110,7 +110,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			$page = WikiPage::factory( $title );
-			$logger = MWLoggerFactory::getInstance( 'CirrusSearch' );
+			$logger = LoggerFactory::getInstance( 'CirrusSearch' );
 			if ( !$page->exists() ) {
 				$logger->debug( "Ignoring an update for a nonexistent page: $titleText" );
 				return array( null, $redirects );
@@ -246,7 +246,7 @@ class Updater extends ElasticsearchIntermediary {
 			return true;
 		}
 
-		$failedLog = MWLoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
+		$failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$exception = null;
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );
@@ -520,7 +520,7 @@ GROOVY;
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
-				MWLoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
 					'Delete for ids: ' . implode( ',', $ids ) .
 					'; error message was: ' . $e->getMessage()
 				);

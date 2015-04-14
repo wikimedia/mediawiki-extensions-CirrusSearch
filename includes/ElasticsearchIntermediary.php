@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 use \Status;
 
 /**
@@ -172,10 +172,10 @@ class ElasticsearchIntermediary {
 		}
 
 		// Now log and clear our state.
-		MWLoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );
+		LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );
 		if ( $this->slowMillis && $took >= $this->slowMillis ) {
 			$logMessage .= $this->user ? ' for ' . $this->user->getName() : '';
-			MWLoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage );
+			LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage );
 		}
 		$this->requestStart = null;
 		return $took;

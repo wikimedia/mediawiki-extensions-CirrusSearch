@@ -1,7 +1,7 @@
 <?php
 
 namespace CirrusSearch;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 use \Title;
 
 /**
@@ -189,7 +189,7 @@ GROOVY;
 			$articleIDs = array_map( function( $title ) {
 				return $title->getArticleID();
 			}, $titles );
-			MWLoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
+			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
 				"Other Index $actionName for article ids: " . implode( ',', $articleIDs ) );
 			return false;
 		}

@@ -7,7 +7,7 @@ use Elastica\Filter\Terms;
 use Elastica\Search;
 use Elastica\Query\Filtered;
 use Elastica\Query\MatchAll;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -116,7 +116,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$pageIds = array_map( function( $page ) {
 					return $page->getId();
 				}, $pages );
-				MWLoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
+				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
 					'Links for page ids: ' . implode( ',', $pageIds ) );
 			}
 		}

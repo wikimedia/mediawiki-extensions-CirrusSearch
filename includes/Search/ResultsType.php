@@ -3,7 +3,7 @@
 namespace CirrusSearch\Search;
 
 use \CirrusSearch\Searcher;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 use \Title;
 
 /**
@@ -181,7 +181,7 @@ class FancyTitleResultsType extends TitleResultsType {
 			}
 			if ( count( $resultForTitle ) === 0 ) {
 				// We're not really sure where the match came from so lets just pretend it was the title.
-				MWLoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Title search result type hit a match but we can't " .
 					"figure out what caused the match:  $r->namespace:$r->title"
 				);

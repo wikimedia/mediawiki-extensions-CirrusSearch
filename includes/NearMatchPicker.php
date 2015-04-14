@@ -1,7 +1,7 @@
 <?php
 
 namespace CirrusSearch;
-use \MWLoggerFactory;
+use MediaWiki\Logger\LoggerFactory;
 
 /**
  * Picks the best "near match" title.
@@ -69,7 +69,7 @@ class NearMatchPicker {
 			if ( isset( $this->titles[ 0 ][ 'redirectMatches' ][ 0 ] ) ) {
 				return $this->titles[ 0 ][ 'redirectMatches' ][ 0 ];
 			}
-			MWLoggerFactory::getInstance( 'CirrusSearch' )->info(
+			LoggerFactory::getInstance( 'CirrusSearch' )->info(
 				'NearMatchPicker built with busted matches.  Assuming no near match' );
 			return null;
 		}

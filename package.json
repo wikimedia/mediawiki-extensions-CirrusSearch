@@ -1,0 +1,14 @@
+{
+  "name": "cirrussearch",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Build tools for the CirrusSearch extension.",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-banana-checker": "0.2.1"
+  }
+}

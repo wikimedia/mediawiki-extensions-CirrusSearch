@@ -14,12 +14,8 @@ nodecheck:
 		|| (echo "You need to install Node.JS and npm! See http://nodejs.org/" && \
 		    echo "Or just try `apt-get install nodejs nodejs-legacy npm`" && false)
 
-gruntcheck: nodecheck
-	@which grunt > /dev/null || (echo "grunt-cli not installed, installing now" && \
-		sudo npm install -g grunt-cli)
-
-grunt: gruntcheck
-	@grunt test
+grunt: nodecheck
+	@npm test
 
 phpunit:
 	@${PHP} ${MW_INSTALL_PATH}/tests/phpunit/phpunit.php ${MW_INSTALL_PATH}/extensions/CirrusSearch/tests/unit/

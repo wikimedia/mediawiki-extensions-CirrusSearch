@@ -594,3 +594,9 @@ Before("@accented_namespace") do
     accented_namespace = true
   end
 end
+
+# Prevents api tests from generating fail screenshots.  Must come after all the above hooks
+# because some of them use the browser to set the preconditions necessary for api tests.
+Before("@api") do
+  @browser = false
+end

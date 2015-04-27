@@ -20,6 +20,24 @@ module CirrusSearchApiHelper
     fetched_text.body.strip.force_encoding("utf-8")
   end
 
+  # Search for a particular string using the api
+  def search_for(search)
+    data = api.query(
+      list: "search",
+      srsearch: search
+    )
+    data["query"]
+  end
+
+  # Get suggestions for a particular string using the api
+  def suggestions_for(search)
+    api.action(
+      :opensearch,
+      search: search,
+      token_type: false
+    )
+  end
+
   # Uploads a file if the file's MD5 doesn't match what is already uploaded.
   def upload_file(title, contents, description)
     contents = "articles/" + contents

@@ -16,32 +16,9 @@ Feature: Did you mean
     When I search for noble prize
     Then *nobel* prize is suggested
 
-  Scenario: Uncommon phrases spelled correctly don't get suggestions even if one of the words is very uncommon
-    When I search for nobel prize
-    Then there is no suggestion
-
-  @stemming
-  Scenario: Suggestions do not show up when a full title matches but with stemming
-    When I search for stemmingsingleword
-    Then there is no suggestion
-
-  @stemming
-  Scenario: Suggestions do not show up when a full multi word title matches but with stemming
-    When I search for stemming multiword
-    Then there is no suggestion
-
-  @stemming
-  Scenario: Suggestions do not show up when a full multi word title matches but with apostrophe normalization
-    When I search for stemming possessive's
-    Then there is no suggestion
-
   Scenario: Suggestions can come from redirect titles when redirects are included in search
     When I search for Rrr Worrd
     Then rrr *word* is suggested
-
-  Scenario: Suggestions don't come from redirect titles when it matches an actual title
-    When I search for Noble Gasses
-    Then there is no suggestion
 
   Scenario Outline: Special search syntax is preserved in suggestions (though sometimes moved around)
     When I search for <term>

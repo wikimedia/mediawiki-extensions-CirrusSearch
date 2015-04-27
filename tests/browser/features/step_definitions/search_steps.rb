@@ -4,7 +4,20 @@ end
 When(/^I go search for (.*)$/) do |search|
   visit(SearchResultsPage, using_params: { search: search })
 end
-
+When(/^I api search for (.*)$/) do |search|
+  begin
+    @api_result = search_for(search)
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  end
+end
+When(/^I get api suggestions for (.*)$/) do |search|
+  begin
+    @api_result = suggestions_for(search)
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  end
+end
 When(/^I type (.+) into the search box$/) do |search_term|
   on(SearchPage).search_input = search_term
 end
@@ -110,6 +123,19 @@ Then(/^(.+) is the first suggestion$/) do |title|
     on(SearchPage).first_result.should == title
   end
 end
+Then(/^(.+) is the (.+) api suggestion$/) do |title, position|
+  pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index position
+  if title == "none"
+    if @api_error
+      true
+    else
+      @api_result[1].length.should_be <= index
+    end
+  else
+    @api_result[1].length.should be > pos
+    @api_result[1][pos].should be == title
+  end
+end
 Then(/^(.+) is the second suggestion$/) do |title|
   if title == "none"
     on(SearchPage).second_result_element.should_not be_visible
@@ -124,6 +150,17 @@ Then(/^(.+) is( not)? in the suggestions$/) do |title, should_not|
       result.text.should_not == title
     else
       found |= result.text == title
+    end
+  end
+  found.should == true unless should_not
+end
+Then(/^(.+) is( not)? in the api suggestions$/) do |title, should_not|
+  found = false
+  @api_result[1].each do |result|
+    if should_not
+      result.should_not == title
+    else
+      found |= result == title
     end
   end
   found.should == true unless should_not
@@ -151,6 +188,21 @@ Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |titl
     found.should == true
   end
 end
+Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/) do |title, in_ok, indexes|
+  found = indexes.split(/ or /).any? do |index|
+    begin
+      pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index index
+      check_api_search_result(
+        @api_result["search"].length > pos ? @api_result["search"][pos] : [],
+        title,
+        in_ok)
+      true
+    rescue
+      false
+    end
+  end
+  found.should == true
+end
 Then(/^(.*) is( in)? the first search imageresult$/) do |title, in_ok|
   on(SearchResultsPage) do |page|
     if title == "none"
@@ -177,6 +229,14 @@ Then(/^(.*) is( in)? the highlighted text of the first search result$/) do |high
     on(SearchResultsPage).first_result_highlighted_text.should == highlighted
   end
 end
+Then(/(.*) is( in)? the highlighted text of the first api search result$/) do |highlighted, in_ok|
+  text = @api_result["search"][0]["snippet"].gsub(/<span class="searchmatch">(.*?)<\/span>/, '*\1*')
+  if in_ok
+    text.should include(highlighted)
+  else
+    text.should == highlighted
+  end
+end
 Then(/^(.*) is the highlighted heading of the first search result$/) do |highlighted|
   if highlighted.empty?
     on(SearchResultsPage).first_result_heading_wrapper_element.should_not exist
@@ -194,8 +254,14 @@ end
 Then(/^there is not alttitle on the first search result$/) do
   on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
 end
+Then(/^(.+) is( not)? in the api search results$/) do |title, not_searching|
+  check_all_api_search_results(title, not_searching, false)
+end
 Then(/^(.+) is( not)? in the search results$/) do |title, not_searching|
   check_all_search_results(title, not_searching, false)
+end
+Then(/^(.+) is( not)? part of the api search result$/) do |title, not_searching|
+  check_all_api_search_results(title, not_searching, true)
 end
 Then(/^(.+) is( not)? part of a search result$/) do |title, not_searching|
   check_all_search_results(title, not_searching, true)
@@ -203,13 +269,25 @@ end
 Then(/^there are no search results$/) do
   on(SearchResultsPage).first_result_element.should_not exist
 end
+Then(/^there are no api search results$/) do
+  @api_result["search"].length.should == 0
+end
 Then(/^there are (\d+) search results$/) do |results|
   on(SearchResultsPage).search_results_element.items.should == results.to_i
+end
+Then(/^there are (\d+) api search results$/) do |results|
+  @api_result["search"].length.should == results.to_i
 end
 Then(/^within (\d+) seconds searching for (.*) yields (.*) as the first result$/) do |seconds, term, title|
   within(seconds) do
     step("I search for " + term)
     step("#{title} is the first search result")
+  end
+end
+Then(/^within (\d+) seconds api searching for (.*) yields (.*) as the first result$/) do |seconds, term, title|
+  repeat_within(seconds) do
+    step("I api search for " + term)
+    step("#{title} is the first api search result")
   end
 end
 Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the first suggestion$/) do |seconds, term, title|
@@ -226,8 +304,14 @@ Then(/^there is (no|a)? link to create a new page from the search result$/) do |
     on(SearchResultsPage).create_page_element.should_not exist
   end
 end
+Then(/^(.*) is suggested by api$/) do |text|
+  @api_result["searchinfo"]["suggestion"].should == text
+end
 Then(/^(.*) is suggested$/) do |text|
   on(SearchResultsPage).highlighted_suggestion.should == text
+end
+Then(/^there is no api suggestion$/) do
+  @api_result["searchinfo"]["suggestion"].should be_nil
 end
 Then(/^there is no suggestion$/) do
   on(SearchResultsPage).suggestion_element.should_not exist
@@ -238,6 +322,12 @@ end
 Then(/this error is reported: (.+)$/) do |expected_error|
   on(SearchResultsPage).error_report_element.text.strip.should == expected_error.strip
 end
+Then(/this error is reported by api: (.+)$/) do |expected_error|
+  @api_error.code.should be == "srsearch-error"
+  require "cgi"
+  CGI.unescapeHTML(@api_error.info).should == expected_error.strip
+end
+
 Then(/^the title still exists$/) do
   on(ArticlePage).title_element.should exist
 end
@@ -252,7 +342,17 @@ Then(/^there are( no)? search results with (.+) in the data/) do |should_not_fin
     found.should == true
   end
 end
-
+Then(/^there are( no)? api search results with (.+) in the data/) do |should_not_find, within|
+  found = false
+  @api_result["search"].any? do |result|
+    found ||= result["snippet"].include? within
+  end
+  if should_not_find
+    found.should == false
+  else
+    found.should == true
+  end
+end
 Then(/^there is no warning$/) do
   on(SearchResultsPage).warning.should == ""
 end
@@ -264,6 +364,16 @@ def within(seconds)
   rescue RSpec::Expectations::ExpectationNotMetError => e
     raise e if Time.new > end_time
     @browser.refresh
+    retry
+  end
+end
+# this name sucks
+def repeat_within(seconds, &block)
+  end_time = Time.new + Integer(seconds)
+  begin
+    block.call
+  rescue RSpec::Expectations::ExpectationNotMetError => e
+    raise e if Time.new > end_time
     retry
   end
 end
@@ -281,10 +391,34 @@ def check_search_result(wrapper_element, element, title, in_ok)
   end
 end
 
+def check_api_search_result(search_result, title, in_ok)
+  if title == "none"
+    search_result.length.should == 0
+  else
+    if in_ok
+      search_result["title"].to_s.should include title
+    else
+      search_result["title"].to_s.should == title
+    end
+  end
+end
+
 def check_all_search_results(title, not_searching, in_ok)
   found = on(SearchResultsPage).results.any? do |result|
     begin
       check_search_result(result.parent, result, title, in_ok)
+      true
+    rescue
+      false
+    end
+  end
+  found.should == !not_searching
+end
+
+def check_all_api_search_results(title, not_searching, in_ok)
+  found = @api_result["search"].any? do |result|
+    begin
+      check_api_search_result(result, title, in_ok)
       true
     rescue
       false

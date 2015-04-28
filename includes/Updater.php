@@ -5,6 +5,7 @@ use CirrusSearch\BuildDocument\FileDataBuilder;
 use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
 use MediaWiki\Logger\LoggerFactory;
+use \Hooks;
 use \MWTimestamp;
 use \ParserCache;
 use \Sanitizer;
@@ -341,17 +342,17 @@ class Updater extends ElasticsearchIntermediary {
 				}
 
 				// Then let hooks have a go
-				wfRunHooks( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
+				Hooks::run( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
 			}
 
 			if ( !$skipLinks ) {
-				wfRunHooks( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
+				Hooks::run( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
 			}
 
 			$documents[] = $doc;
 		}
 
-		wfRunHooks( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
+		Hooks::run( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
 
 		return $documents;
 	}

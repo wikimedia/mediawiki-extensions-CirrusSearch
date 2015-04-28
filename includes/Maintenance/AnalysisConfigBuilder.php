@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use \CirrusSearch\Searcher;
+use \Hooks;
 use \Language;
 
 /**
@@ -64,7 +65,7 @@ class AnalysisConfigBuilder {
 	 */
 	public function buildConfig() {
 		$config = $this->customize( $this->defaults() );
-		wfRunHooks( 'CirrusSearchAnalysisConfig', array( &$config ) );
+		Hooks::run( 'CirrusSearchAnalysisConfig', array( &$config ) );
 		return $config;
 	}
 

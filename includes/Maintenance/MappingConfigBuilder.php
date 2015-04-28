@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
+use \Hooks;
 
 /**
  * Builds elasticsearch mapping configuration arrays.
@@ -219,7 +220,7 @@ class MappingConfigBuilder {
 			),
 		);
 
-		wfRunHooks( 'CirrusSearchMappingConfig', array( &$config, $this ) );
+		Hooks::run( 'CirrusSearchMappingConfig', array( &$config, $this ) );
 		return $config;
 	}
 

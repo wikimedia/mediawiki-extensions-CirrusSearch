@@ -521,7 +521,7 @@ class Hooks {
 	 */
 	public static function onEventLoggingRegisterSchemas( &$schemas ) {
 		// @see https://meta.wikimedia.org/wiki/Schema:Search
-		$schemas['Search'] = 11670541;
+		$schemas['Search'] = 12057910;
 
 		return true;
 	}

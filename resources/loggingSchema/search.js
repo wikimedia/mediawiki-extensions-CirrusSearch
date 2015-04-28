@@ -41,6 +41,8 @@
 			} else if ( data.action === 'click-result' ) {
 				loggingData.clickIndex = data.clickIndex;
 				loggingData.numberOfResults = data.numberOfResults;
+			} else if ( data.action === 'submit-form' ) {
+				loggingData.numberOfResults = data.numberOfResults;
 			}
 			loggingData.timeOffsetSinceStart = Math.round( this.timeStamp - sessionStartTime ) ;
 			$.extend( loggingData, defaults );

@@ -4,10 +4,13 @@ MW_INSTALL_PATH ?= ../..
 # fine but crazy slow for commands like phplint
 PHP ?= `command -v php5 || command -v php`
 
-lint: phplint grunt
+lint: phplint grunt rubocop
 
 phplint:
 	@find ./ -type f -iname '*.php' -print0 | xargs -0 -P 12 -L 1 ${PHP} -l
+
+rubocop: bundlecheck
+	@cd tests/browser && bundle exec rubocop
 
 nodecheck:
 	@which npm > /dev/null && npm install \

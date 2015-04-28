@@ -19,3 +19,26 @@ Feature: Searches with the intitle filter
     When I api search for intitle: "amazing catapult"
     Then Amazing Catapult is the first api search result
       And Two Words is not in the api search results
+
+  Scenario: intitle: only includes pages with the title
+    When I api search for intitle:catapult
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+
+  Scenario: -intitle: excludes pages with part of the title
+    When I api search for -intitle:amazing intitle:catapult
+    Then Catapult is the first api search result
+      And Amazing Catapult is not in the api search results
+      
+  Scenario: -intitle: doesn't highlight excluded title
+    When I api search for -intitle:catapult two words
+    Then Two Words is the first api search result
+      And ffnonesenseword catapult pickles anotherword is the highlighted text of the first api search result
+  
+  Scenario: intitle: will accept a space after its :
+    When I api search for intitle: catapult
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+

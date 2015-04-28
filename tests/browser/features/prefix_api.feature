@@ -54,3 +54,9 @@ Feature: Searches with a prefix filter
   Scenario: The prefix: filter doesn't find redirects
     When I api search for prefix:Prefix Test Redirec
     Then there are no api search results
+
+ Scenario: The prefix: filter filters results to those with titles prefixed by value
+    When I api search for prefix prefix:prefix
+    Then Prefix Test is the first api search result
+      But Foo Prefix Test is not in the api search results
+

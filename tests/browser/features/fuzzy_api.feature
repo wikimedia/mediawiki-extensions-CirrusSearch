@@ -11,3 +11,17 @@ Feature: Searches that contain fuzzy matches
   Scenario: Fuzzy search doesn't find terms that don't match the first two characters for performance reasons
     When I api search for fgnonesenseword~
     Then there are no api search results
+
+  Scenario: Searching for <text>~ activates fuzzy search
+    When I api search for ffnonesensewor~
+    Then Two Words is the first api search result
+
+  Scenario Outline: Searching for <text>~<number between 0 and 1> activates fuzzy search
+    When I api search for ffnonesensewor~<number>
+    Then Two Words is the first api search result
+  Examples:
+    | number |
+    | .8     |
+    | 0.8    |
+    | 1      |
+

@@ -19,3 +19,8 @@ Feature: Searches with the hastemplate filter
   Scenario: -hastemplate removes pages with matching templates
     When I api search for -hastemplate:"Template Test" catapult
     Then Two Words is not in the api search results
+
+  Scenario: hastemplate: finds pages with matching templates (when you don't specify a namespace, Template is assumed)
+    When I api search for hastemplate:"Template Test"
+    Then Two Words is the first api search result
+

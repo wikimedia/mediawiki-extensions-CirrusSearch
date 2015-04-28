@@ -1,4 +1,4 @@
-@clean @phantomjs @prefer_recent
+@clean @api @prefer_recent
 Feature: Searches with prefer-recent
   Scenario Outline: Recently updated articles are prefered if prefer-recent: is specified
     When I api search for PreferRecent First OR Second OR Third

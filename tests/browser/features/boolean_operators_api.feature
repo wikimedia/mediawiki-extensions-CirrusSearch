@@ -1,13 +1,9 @@
-@boolean_operators @clean @phantomjs @setup_main
+@boolean_operators @clean @api @setup_main
 Feature: Searches with boolean operators
-  Background:
-    Given I am at a random page
-
   Scenario Outline: -, !, and NOT prohibit words in search results
-    When I search for <query>
-    Then Catapult is the first search result
-      But Amazing Catapult is not in the search results
-      And there is no link to create a new page from the search result
+    When I api search for <query>
+    Then Catapult is the first api search result
+      But Amazing Catapult is not in the api search results
   Examples:
   |        query         |
   | catapult -amazing    |
@@ -18,10 +14,9 @@ Feature: Searches with boolean operators
   | NOT amazing catapult |
 
   Scenario Outline: +, &&, and AND require matches but since that is the default they don't look like they do anything
-    When I search for <query>
-    Then Amazing Catapult is the first search result
-      But Catapult is not in the search results
-      And there is no link to create a new page from the search result
+    When I api search for <query>
+    Then Amazing Catapult is the first api search result
+      But Catapult is not in the api search results
   Examples:
   |         query         |
   | +catapult amazing     |
@@ -30,10 +25,9 @@ Feature: Searches with boolean operators
   | catapult AND amazing  |
 
   Scenario Outline: OR and || matches docs with either set
-    When I search for <query>
-    Then Catapult is in the search results
-      And Two Words is in the search results
-      And there is no link to create a new page from the search result
+    When I api search for <query>
+    Then Catapult is in the api search results
+      And Two Words is in the api search results
   Examples:
   |          query         |
   | catapult OR África     |

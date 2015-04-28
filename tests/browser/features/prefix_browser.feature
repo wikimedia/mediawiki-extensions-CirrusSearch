@@ -8,8 +8,3 @@ Feature: Searches with a prefix filter
     Then Prefix Test is the first search result
       But Foo Prefix Test is not in the search results
 
-  Scenario: The prefix: filter filters results to those with titles prefixed by value
-    When I search for prefix prefix:prefix
-    Then Prefix Test is the first search result
-      But Foo Prefix Test is not in the search results
-      And there is no link to create a new page from the search result

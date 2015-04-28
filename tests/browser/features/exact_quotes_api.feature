@@ -87,3 +87,9 @@ Feature: Searches that contain quotes
     When I api search for catapult -"asdf" "two words"
     Then Two Words is in the api search results
       And Catapult is not in the api search results
+
+  @setup_main 
+  Scenario: Searching for a word in quotes disbles stemming (can't find plural with singular)
+    When I api search for "pickle"
+    Then there are no api search results
+

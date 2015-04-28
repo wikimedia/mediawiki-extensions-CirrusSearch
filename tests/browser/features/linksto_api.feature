@@ -1,5 +1,10 @@
 @clean @filters @linksto @api
 Feature: Searches with the linksto filter
+  Scenario: linksto only includes pages with the links
+    When I api search for linksto:"LinksToTest Target"
+    Then LinksToTest Plain is in the api search results
+      And LinksToTest OtherText is in the api search results
+                                                                      
   Scenario: linksto can be combined with other text
     When I api search for linksto:"LinksToTest Target" text
     Then LinksToTest OtherText is the first api search result

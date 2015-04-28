@@ -171,6 +171,9 @@ end
 Then(/^there is a search result$/) do
   on(SearchResultsPage).first_result_element.should exist
 end
+Then(/^there is an api search result$/) do
+  @api_result["search"].length.should_not == 0
+end
 Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |title, in_ok, indexes|
   on(SearchResultsPage) do |page|
     found = indexes.split(/ or /).any? do |index|

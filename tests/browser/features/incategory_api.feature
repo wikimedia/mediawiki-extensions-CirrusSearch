@@ -31,3 +31,18 @@ Feature: Searches with the incategory filter
   Scenario: incategory: finds a multiword category when it is surrounded by quotes
     When I api search for incategory:"CategoryWith ASpace"
     Then IHaveATwoWordCategory is the first api search result
+
+  Scenario: incategory: can be combined with other text
+    When I api search for incategory:weaponry amazing
+    Then Amazing Catapult is the first api search result
+  
+  Scenario: -incategory: excludes pages with the category
+    When I api search for -incategory:weaponry incategory:twowords
+    Then Two Words is the first api search result
+    
+  Scenario: incategory: can handle a space after the :
+    When I api search for incategory: weaponry
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+

@@ -28,7 +28,9 @@ module CirrusSearchApiHelper
   def search_for(search)
     data = api.query(
       list: "search",
-      srsearch: search
+      srsearch: search,
+      srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
+      formatversion: 2
     )
     data["query"]
   end

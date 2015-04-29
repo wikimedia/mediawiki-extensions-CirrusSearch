@@ -232,14 +232,6 @@ Then(/^(.*) is( in)? the highlighted text of the first search result$/) do |high
     on(SearchResultsPage).first_result_highlighted_text.should == highlighted
   end
 end
-Then(/(.*) is( in)? the highlighted text of the first api search result$/) do |highlighted, in_ok|
-  text = @api_result["search"][0]["snippet"].gsub(/<span class="searchmatch">(.*?)<\/span>/, '*\1*')
-  if in_ok
-    text.should include(highlighted)
-  else
-    text.should == highlighted
-  end
-end
 Then(/^(.*) is the highlighted heading of the first search result$/) do |highlighted|
   if highlighted.empty?
     on(SearchResultsPage).first_result_heading_wrapper_element.should_not exist
@@ -253,6 +245,13 @@ Then(/^(.*) is the highlighted alttitle of the first search result$/) do |highli
   else
     on(SearchResultsPage).first_result_highlighted_alttitle.should == highlighted
   end
+end
+Then(/^(.*) is( in)? the highlighted (.*) of the first api search result$/) do |highlighted, in_ok, key|
+  key = "titlesnippet" if key == "title" && !highlighted.index("*").nil?
+  check_api_highlight(key, 0, highlighted, in_ok)
+end
+Then(/^the first api search result is a match to file content$/) do
+  @api_result["search"][0]["isfilematch"].should be true
 end
 Then(/^there is not alttitle on the first search result$/) do
   on(SearchResultsPage).first_result_alttitle_wrapper_element.should_not exist
@@ -428,4 +427,14 @@ def check_all_api_search_results(title, not_searching, in_ok)
     end
   end
   found.should == !not_searching
+end
+
+def check_api_highlight(key, index, highlighted, in_ok)
+  fail RSpec::Expectations::ExpectationNotMetError unless @api_result["search"][index].key? key
+  text = @api_result["search"][index][key].gsub(/<span class="searchmatch">(.*?)<\/span>/, '*\1*')
+  if in_ok
+    text.should include(highlighted)
+  else
+    text.should == highlighted
+  end
 end

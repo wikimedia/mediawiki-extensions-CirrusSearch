@@ -7,7 +7,7 @@ use \Elastica\Filter\BoolAnd;
 use \Elastica\Filter\BoolNot;
 use \Elastica\Filter\Script;
 use \Elastica\Filter\Term;
-use \MediaWikiTestCase;
+use \PHPUnit_Framework_TestCase;
 
 /**
  * Test for filter utilities.
@@ -27,7 +27,7 @@ use \MediaWikiTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class FiltersTest extends MediaWikiTestCase {
+class FiltersTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider unifyTestCases
 	 */

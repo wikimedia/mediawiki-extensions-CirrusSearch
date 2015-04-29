@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use \MediaWikiTestCase;
+use \PHPUnit_Framework_TestCase;
 
 /**
  * Test escaping search strings.
@@ -22,7 +22,7 @@ use \MediaWikiTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class EscaperTest extends MediaWikiTestCase {
+class EscaperTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider quoteEscapeTestCases
 	 */

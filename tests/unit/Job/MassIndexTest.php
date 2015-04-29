@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Job;
 
-use \MediaWikiTestCase;
+use \PHPUnit_Framework_TestCase;
 use \Title;
 
 /**
@@ -23,7 +23,7 @@ use \Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class MassIndexTest extends MediaWikiTestCase {
+class MassIndexTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider workItemCountTestCases
 	 */

@@ -1,5 +1,12 @@
 @clean @filters @incategory @api
 Feature: Searches with the incategory filter
+
+  Scenario: incategory: only includes pages with the category
+    When I api search for incategory:weaponry
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+
   Scenario: incategory: works on categories from templates
     When I api search for incategory:templatetagged incategory:twowords
     Then Two Words is the first api search result

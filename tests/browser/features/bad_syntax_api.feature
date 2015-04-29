@@ -78,3 +78,8 @@ Feature: Searches with syntax errors
     |      term      |
     | intitle:/page  |
     | Main/Page      |
+
+  @exact_quotes @setup_main
+  Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
+    When I api search for "ffnonesenseword catapult"~anotherword
+      And Two Words is the first api search result

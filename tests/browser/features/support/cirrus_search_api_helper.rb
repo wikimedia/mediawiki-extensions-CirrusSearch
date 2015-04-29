@@ -1,3 +1,7 @@
+require "mimemagic"
+require "faraday"
+require "digest/sha1"
+
 # Common code cirrus' test use when dealing with api.
 module CirrusSearchApiHelper
   def edit_page(title, text, add)
@@ -38,16 +42,38 @@ module CirrusSearchApiHelper
     )
   end
 
-  # Uploads a file if the file's MD5 doesn't match what is already uploaded.
+  def sha1_for_image(title)
+    existing = api.prop(
+      :imageinfo,
+      titles: title,
+      iiprop: "sha1",
+      iilimit: 1
+    )
+    # api will always return 1 item, if non existent it will have the id -1
+    return false if existing.data["pages"].first[0] == "-1"
+    existing.data["pages"].first[1]["imageinfo"][0]["sha1"]
+  end
+
+  # Uploads a file if the file's SHA1 doesn't match what is already uploaded.
   def upload_file(title, contents, description)
     contents = "articles/" + contents
-    md5 = "md5: #{Digest::MD5.hexdigest(File.read(contents))}"
-    visit(ArticlePage, using_params: { page_name: title }) do |page|
-      page.last_file_comment_contains(md5)
-      step "I am logged in" unless page.upload?
-      page.upload
-    end
-    on(UploadFilePage).upload(contents, description, md5)
-    on(UploadFilePage).error_element.should_not exist
+    sha1 = Digest::SHA1.hexdigest(File.read(contents))
+    remote_sha1 = sha1_for_image(title)
+    return if sha1 == remote_sha1
+    do_upload_file(title, contents, description, sha1, remote_sha1 != false)
+  end
+
+  # just uploads the file
+  def do_upload_file(title, contents, description, sha1, ignorewarnings)
+    api.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"]) unless api.logged_in?
+    api.action(
+      :upload,
+      filename: title,
+      file: Faraday::UploadIO.new(contents, MimeMagic.by_path(contents)),
+      text: "#{description}\nsha1: #{sha1}",
+      # must ignorewarnings to upload new version of a file
+      ignorewarnings: ignorewarnings ? 1 : 0,
+      token_type: "edit"
+    )
   end
 end

@@ -47,6 +47,7 @@ GEM
       rspec-expectations (~> 2.14, >= 2.14.4)
       syntax (~> 1.2, >= 1.2.0)
     mime-types (2.3)
+    mimemagic (0.3.0)
     multi_json (1.10.1)
     multi_test (0.1.1)
     multipart-post (2.0.0)
@@ -99,5 +100,6 @@ PLATFORMS
 DEPENDENCIES
   mediawiki_api
   mediawiki_selenium (~> 0.3.0)
+  mimemagic
   parallel_tests
   rubocop

@@ -1,14 +1,21 @@
-@bad_syntax @clean @phantomjs
-Feature: Searches with syntax errors
+@clean @phantomjs @bad_syntax
+Feature: Searches that prompt, or not, for new page creation
   Background:
     Given I am at a random page
 
-  @exact_quotes @setup_main
-  Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
-    When I search for "ffnonesenseword catapult"~anotherword
-    Then there is no warning
-      And Two Words is the first search result
-      And there is no link to create a new page from the search result
+  @incategory @wildcard
+  Scenario Outline: Something something
+    When I search for <query>
+    Then there is <condition> to create a new page from the search result
+  Examples:
+  |               query                                       | condition |
+  | "ffnonsesnseword catapult"~anotherword                    |  no link  |
+  | catapult~~~~....[[\|\|.\|\|\|\|\|\|+\|+\|=\\\\=\\*.$.$.$. |  no link  |
+  | \|\| catapult                                             |  no link  |
+  | *ickle                                                    |   a link  |
+  | incategory:weaponry                                       |  no link  |
+  | catapu?t                                                  |  no link  |
+  | catapul?                                                  |  no link  |
 
   @boolean_operators
   Scenario Outline: boolean operators in bad positions in the query are ignored so you get the option to create a new page
@@ -93,3 +100,4 @@ Feature: Searches with syntax errors
     | wildcard |
     | *        |
     | ?        |
+

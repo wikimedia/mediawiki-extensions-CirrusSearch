@@ -1,4 +1,9 @@
 <?php
+
+namespace CirrusSearch;
+
+use \PHPUnit_Framework_TestCase;
+
 /**
  * Make sure cirrus doens't break any hooks.
  *
@@ -17,7 +22,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class CirrusSearchHooksTest extends MediaWikiTestCase {
+class HooksTest extends PHPUnit_Framework_TestCase {
 	public function testHooksAreArrays() {
 		global $wgHooks;
 

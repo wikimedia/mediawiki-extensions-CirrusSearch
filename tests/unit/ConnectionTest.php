@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use \MediaWikiTestCase;
+use \PHPUnit_Framework_TestCase;
 
 /**
  * Make sure cirrus doens't break any hooks.
@@ -22,7 +22,7 @@ use \MediaWikiTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ConnectionTest extends MediaWikiTestCase {
+class ConnectionTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider provideNamespacesInIndexType
 	 */

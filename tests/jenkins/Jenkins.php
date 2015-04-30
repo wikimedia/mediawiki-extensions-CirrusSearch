@@ -29,6 +29,8 @@ use \JobQueueGroup;
 // Configuration we have to override before installing Cirrus but only if we're using
 // Jenkins as a prototype for development.
 
+require_once( __DIR__ . '/FullyFeaturedConfig.php' );
+
 // Extra Cirrus stuff for Jenkins
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
 $wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
@@ -38,22 +40,12 @@ $wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
 // to require them ourselves.
-require_once( "$IP/extensions/Elastica/Elastica.php" );
 require_once( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
 require_once( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
 require_once( "$IP/extensions/PdfHandler/PdfHandler.php" );
 require_once( "$IP/extensions/Cite/Cite.php" );
 
 // Configuration
-$wgSearchType = 'CirrusSearch';
-$wgCirrusSearchUseExperimentalHighlighter = true;
-$wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
-$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = array( 'build', 'use' );
-$wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
-	'phrase' => array(
-	)
-);
-
 $wgOggThumbLocation = '/usr/bin/oggThumb';
 $wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
 $wgFileExtensions[] = 'pdf';
@@ -86,46 +78,6 @@ $wgShowExceptionDetails = true;
 
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
-
-if ( class_exists( 'PoolCounter_Client' ) ) {
-	// If the pool counter is around set up prod like pool counter settings
-	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = array(
-		'class' => 'PoolCounter_Client',
-		'timeout' => 15,
-		'workers' => 432,
-		'maxqueue' => 600,
-	);
-	// Super common and mostly fast
-	$wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = array(
-		'class' => 'PoolCounter_Client',
-		'timeout' => 15,
-		'workers' => 432,
-		'maxqueue' => 600,
-	);
-	// Regex searches are much heavier then regular searches so we limit the
-	// concurrent number.
-	$wgPoolCounterConf[ 'CirrusSearch-Regex' ] = array(
-		'class' => 'PoolCounter_Client',
-		'timeout' => 60,
-		'workers' => 10,
-		'maxqueue' => 20,
-	);
-	// These should be very very fast and reasonably rare
-	$wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = array(
-		'class' => 'PoolCounter_Client',
-		'timeout' => 5,
-		'workers' => 50,
-		'maxqueue' => 200,
-	);
-	// Can't be enabled until poolcounter gets Ie282b8486c7bad451fbc5fb9a8274c6e01a728a7.
-	// TODO enable this.
-	// $wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
-	// 	'class' => 'PoolCounter_Client',
-	// 	'timeout' => 0,
-	// 	'workers' => 1,
-	// 	'maxqueue' => 1,
-	// );
-}
 
 class Jenkins {
 	/**

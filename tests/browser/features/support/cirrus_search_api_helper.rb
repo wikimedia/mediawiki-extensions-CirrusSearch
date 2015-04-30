@@ -4,13 +4,17 @@ require "digest/sha1"
 
 # Common code cirrus' test use when dealing with api.
 module CirrusSearchApiHelper
+  def log_in_api
+    api.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"]) unless api.logged_in?
+  end
+
   def edit_page(title, text, add)
     text = File.read("articles/" + text[1..-1]) if text.start_with?("@")
     fetched_text = get_page_text(title)
     # Note that the space keeps words from smashing together
     text = fetched_text + " " + text if add
     return if fetched_text.strip == text.strip
-    api.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"]) unless api.logged_in?
+    log_in_api
     result = api.create_page(title, text)
     expect(result.status).to eq 200
     expect(result.warnings?).to eq false
@@ -67,7 +71,7 @@ module CirrusSearchApiHelper
 
   # just uploads the file
   def do_upload_file(title, contents, description, sha1, ignorewarnings)
-    api.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"]) unless api.logged_in?
+    log_in_api
     api.action(
       :upload,
       filename: title,

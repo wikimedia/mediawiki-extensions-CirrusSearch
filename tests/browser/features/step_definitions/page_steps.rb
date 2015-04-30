@@ -58,6 +58,23 @@ When(/^I delete the second most recent revision of (.*)$/) do |title|
     page.change_visibility_of_selected
   end
 end
+When(/^I delete the second most recent revision via api of (.*)$/) do |title|
+  # find the revision id
+  result = api.prop(
+    :revisions,
+    titles: title,
+    rvlimit: 2
+  )
+  second_rev_id = result["query"].values[0].values[0]["revisions"][1]["revid"]
+  # delete its text
+  api.action(
+    :revisiondelete,
+    type: "revision",
+    ids: [second_rev_id],
+    hide: "content",
+    token_type: "edit"
+  )
+end
 When(/^I go to (.*)$/) do |title|
   visit(ArticlePage, using_params: { page_name: title })
 end
@@ -73,7 +90,14 @@ When(/^I move (.*) to (.*) and (do not )?leave a redirect$/) do |from, to, no_re
     page.move
   end
 end
-
+When(/^I move (.*) to (.*) and (do not )?leave a redirect via api$/) do |from, to, no_redirect|
+  api.action(
+    :move,
+    from: from,
+    to: to,
+    noredirect: no_redirect ? 1 : 0
+  )
+end
 Then(/^there is a software version row for (.+)$/) do |name|
   on(SpecialVersion).software_table_row(name).exists?
 end

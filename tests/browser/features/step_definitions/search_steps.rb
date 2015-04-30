@@ -1,5 +1,8 @@
 require "cgi"
 
+Given(/^I am logged in via api$/) do
+  log_in_api
+end
 Given(/^I am at the search results page(?: with the search (.+?)(?: and the prefix (.+))?)?$/) do |search, prefix|
   visit(SearchResultsPage, using_params: { search: search, prefix: prefix })
 end

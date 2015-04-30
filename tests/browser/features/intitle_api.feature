@@ -34,7 +34,7 @@ Feature: Searches with the intitle filter
   Scenario: -intitle: doesn't highlight excluded title
     When I api search for -intitle:catapult two words
     Then Two Words is the first api search result
-      And ffnonesenseword catapult pickles anotherword is the highlighted text of the first api search result
+      And ffnonesenseword catapult pickles anotherword is the highlighted snippet of the first api search result
   
   Scenario: intitle: will accept a space after its :
     When I api search for intitle: catapult

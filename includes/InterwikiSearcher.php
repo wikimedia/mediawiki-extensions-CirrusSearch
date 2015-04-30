@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 use CirrusSearch\Search\InterwikiResultsType;
+use User;
 
 /**
  * Performs searches using Elasticsearch -- on interwikis! 
@@ -34,12 +35,12 @@ class InterwikiSearcher extends Searcher {
 
 	/**
 	 * Constructor
-	 * @param array $namespaces Namespace numbers to search
-	 * @param array $namespaces Namespace numbers to search
+	 * @param int[] $namespaces Namespace numbers to search
+	 * @param User|null $user
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
 	 * @param string $interwiki Interwiki prefix we're searching
 	 */
-	public function __construct( $namespaces, $user, $index, $interwiki ) {
+	public function __construct( array $namespaces, User $user = null, $index, $interwiki ) {
 		parent::__construct( 0, self::MAX_RESULTS, $namespaces, $user, $index );
 		$this->interwiki = $interwiki;
 		// Only allow core namespaces. We can't be sure any others exist

@@ -76,6 +76,7 @@ class Escaper {
 	 * Make sure that all operators and lucene syntax is used correctly in the query string
 	 * and store if this is a fuzzy query.
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
+	 * @param string $string
 	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {

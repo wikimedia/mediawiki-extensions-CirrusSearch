@@ -5,6 +5,7 @@ use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use \Status;
+use User;
 
 /**
  * Base class with useful functions for communicating with Elasticsearch.
@@ -59,7 +60,7 @@ class ElasticsearchIntermediary {
 	 * @param float $slowSeconds how many seconds a request through this intermediary needs to take before it counts as
 	 * slow.  0 means none count as slow.
 	 */
-	protected function __construct( $user, $slowSeconds ) {
+	protected function __construct( User $user = null, $slowSeconds ) {
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
 	}

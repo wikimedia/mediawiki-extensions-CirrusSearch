@@ -38,7 +38,7 @@ class OtherIndexes extends Updater {
 	/**
 	 * Get the external index identifiers for title.
 	 * @param $title Title
-	 * @return array(string) of index identifiers.  empty means none.
+	 * @return string[] array of index identifiers.  empty means none.
 	 */
 	public static function getExternalIndexes( Title $title ) {
 		global $wgCirrusSearchExtraIndexes;
@@ -49,10 +49,10 @@ class OtherIndexes extends Updater {
 
 	/**
 	 * Get any extra indexes to query, if any, based on namespaces
-	 * @param array $namespaces An array of namespace ids
-	 * @return array of indexes
+	 * @param int[] $namespaces An array of namespace ids
+	 * @return string[] array of indexes
 	 */
-	public static function getExtraIndexesForNamespaces( $namespaces ) {
+	public static function getExtraIndexesForNamespaces( array $namespaces ) {
 		global $wgCirrusSearchExtraIndexes;
 		$extraIndexes = array();
 		if ( $wgCirrusSearchExtraIndexes ) {
@@ -65,7 +65,7 @@ class OtherIndexes extends Updater {
 		return $extraIndexes;
 	}
 
-		/**
+	/**
 	 * Add the local wiki to the duplicate tracking list on the indexes of other wikis for $titles.
 	 * @param Array(Title) $titles titles for which to add to the tracking list
 	 */
@@ -85,9 +85,9 @@ GROOVY;
 
 	/**
 	 * Remove the local wiki from the duplicate tracking list on the indexes of other wikis for $titles.
-	 * @param array(Title) $titles titles for which to remove the tracking field
+	 * @param Title[] $titles array of titles for which to remove the tracking field
 	 */
-	public function removeLocalSiteFromOtherIndex( $titles ) {
+	public function removeLocalSiteFromOtherIndex( array $titles ) {
 		// Script is in groovy and is run in a context with local_site set to this wiki's name
 		$script  = <<<GROOVY
 			if (!ctx._source.containsKey("local_sites_with_dupe")) {
@@ -103,7 +103,7 @@ GROOVY;
 	 * Update the indexes for other wiki that also store information about $titles.
 	 * @param string $actionName name of the action to report in logging
 	 * @param string $scriptSource groovy source script for performing the update
-	 * @param array(Title) $titles titles in other indexes to update
+	 * @param Title[] $titles array of titles in other indexes to update
 	 * @return bool false on failure, null otherwise
 	 */
 	private function updateOtherIndex( $actionName, $scriptSource, $titles ) {

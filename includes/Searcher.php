@@ -381,7 +381,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
 		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
 		$this->extractSpecialSyntaxFromTerm(
-			'/prefer-recent:(1|(?:0?(?:\.[0-9]+)?))?(?:,([0-9]*\.?[0-9]+))? ?/',
+			'/prefer-recent:(1|0?(?:\.\d+)?)?(?:,(\d*\.?\d+))? ?/',
 			function ( $matches ) use ( &$preferRecentDecayPortion, &$preferRecentHalfLife,
 					&$searchContainedSyntax ) {
 				global $wgCirrusSearchPreferRecentUnspecifiedDecayPortion;
@@ -500,7 +500,7 @@ GROOVY;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?:(?<=\\\)"))+"|[^ "]+) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?<=\\\)")+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				global $wgCirrusSearchMaxIncategoryOptions;
@@ -585,7 +585,7 @@ GROOVY;
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
-		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?:(?<=\\\)"))+)"(?<slop>~[0-9]+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $searcher, $escaper, &$phrases ) {
 				global $wgCirrusSearchPhraseSlop;
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
@@ -661,7 +661,7 @@ GROOVY;
 		// Note that no escaping is required for near_match's match query.
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
 		if ( $queryStringQueryString !== '' ) {
-			if ( preg_match( '/(?:(?<!\\\\)[?*+~"!|-])|AND|OR|NOT/', $queryStringQueryString ) ) {
+			if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $queryStringQueryString ) ) {
 				$this->searchContainedSyntax = true;
 				// We're unlikey to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
@@ -1593,7 +1593,7 @@ GROOVY;
 	public static function parseBoostTemplates( $text ) {
 		$boostTemplates = array();
 		$templateMatches = array();
-		if ( preg_match_all( '/([^|]+)\|([0-9]+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
+		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
 			foreach ( $templateMatches as $templateMatch ) {
 				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
 			}

@@ -262,7 +262,7 @@ class ElasticsearchIntermediary {
 			$errorMessage = 'unknown';
 			$position = 'unknown';
 			$matches = array();
-			if ( preg_match( '/(.+) at position ([0-9]+)/', $syntaxError, $matches ) ) {
+			if ( preg_match( '/(.+) at position (\d+)/', $syntaxError, $matches ) ) {
 				$errorMessage = $matches[ 1 ];
 				$position = $matches[ 2 ];
 				if ( !$usesExtraRegex ) {

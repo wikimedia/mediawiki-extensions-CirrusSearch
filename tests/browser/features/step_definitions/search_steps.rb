@@ -1,12 +1,14 @@
+require "cgi"
+
 Given(/^I am at the search results page(?: with the search (.+?)(?: and the prefix (.+))?)?$/) do |search, prefix|
   visit(SearchResultsPage, using_params: { search: search, prefix: prefix })
 end
 When(/^I go search for (.*)$/) do |search|
   visit(SearchResultsPage, using_params: { search: search })
 end
-When(/^I api search for (.*)$/) do |search|
+When(/^I api search(?: with offset (\d+))? for (.*)?$/) do |offset, search|
   begin
-    @api_result = search_for(search)
+    @api_result = search_for(search, sroffset: offset)
   rescue MediawikiApi::ApiError => e
     @api_error = e
   end
@@ -307,7 +309,8 @@ Then(/^there is (no|a)? link to create a new page from the search result$/) do |
   end
 end
 Then(/^(.*) is suggested by api$/) do |text|
-  @api_result["searchinfo"]["suggestion"].should == text
+  fixed = @api_result["searchinfo"]["suggestionsnippet"].gsub(/<em>(.*?)<\/em>/, '*\1*')
+  fixed.should == CGI.escapeHTML(text)
 end
 Then(/^(.*) is suggested$/) do |text|
   on(SearchResultsPage).highlighted_suggestion.should == text

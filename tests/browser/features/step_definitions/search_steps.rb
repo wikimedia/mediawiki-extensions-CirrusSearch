@@ -6,9 +6,14 @@ end
 When(/^I go search for (.*)$/) do |search|
   visit(SearchResultsPage, using_params: { search: search })
 end
-When(/^I api search(?: with offset (\d+))? for (.*)?$/) do |offset, search|
+When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)? for (.*)$/) do |incoming_links, offset, lang, search|
   begin
-    @api_result = search_for(search, sroffset: offset)
+    @api_result = search_for(
+      search,
+      sroffset: offset,
+      uselang: lang,
+      cirrusBoostLinks: incoming_links ? "no" : "yes"
+    )
   rescue MediawikiApi::ApiError => e
     @api_error = e
   end
@@ -193,12 +198,19 @@ Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |titl
     found.should == true
   end
 end
-Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/) do |title, in_ok, indexes|
+Then(/^(.+) is( in)? the ([^ ]+) api search result$/) do |title, in_ok, index|
+  pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index index
+  check_api_search_result(
+    @api_result["search"].length > pos ? @api_result["search"][pos] : {},
+    title,
+    in_ok)
+end
+Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)+) api search result$/) do |title, in_ok, indexes|
   found = indexes.split(/ or /).any? do |index|
     begin
       pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index index
       check_api_search_result(
-        @api_result["search"].length > pos ? @api_result["search"][pos] : [],
+        @api_result["search"].length > pos ? @api_result["search"][pos] : {},
         title,
         in_ok)
       true
@@ -379,6 +391,8 @@ def repeat_within(seconds, &block)
     block.call
   rescue RSpec::Expectations::ExpectationNotMetError => e
     raise e if Time.new > end_time
+    # api searches are pretty quick, lets pause a second to not hit it so fast
+    sleep 1
     retry
   end
 end

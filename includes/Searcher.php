@@ -532,13 +532,14 @@ GROOVY;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?<=\\\)")+"|[^ "]+) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?:"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				global $wgCirrusSearchMaxIncategoryOptions;
 				$key = $matches['key'];
-				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
-				$value = str_replace( '\"', '"', $value );
+				$value = $matches['quoted'] !== ''
+					? str_replace( '\"', '"', $matches['quoted'] )
+					: $matches['unquoted'];
 				$filterDestination = &$filters;
 				$keepText = true;
 				if ( $key[ 0 ] === '-' ) {
@@ -548,14 +549,13 @@ GROOVY;
 				}
 				switch ( $key ) {
 					case 'boost-templates':
-						$boostTemplates = Searcher::parseBoostTemplates( trim( $value, '"' ) );
+						$boostTemplates = Searcher::parseBoostTemplates( $value );
 						if ( $boostTemplates === null ) {
 							$boostTemplates = Searcher::getDefaultBoostTemplates();
 						}
 						$searchContainedSyntax = true;
 						return '';
 					case 'hastemplate':
-						$value = trim( $value, '"' );
 						// We emulate template syntax here as best as possible,
 						// so things in NS_MAIN are prefixed with ":" and things
 						// in NS_TEMPLATE don't have a prefix at all. Since we
@@ -916,7 +916,6 @@ GROOVY;
 	 * @return \Elastica\Filter\Query for matching $title to $field
 	 */
 	public function matchPage( $field, $title, $underscores = false ) {
-		$title = trim( $title, '"' );                // Somtimes title is wrapped in quotes - throw them away.
 		if ( $underscores ) {
 			$title = str_replace( ' ', '_', $title );
 		} else {

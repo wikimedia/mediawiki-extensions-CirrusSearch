@@ -25,13 +25,13 @@ module CirrusSearchApiHelper
   end
 
   # Search for a particular string using the api
-  def search_for(search)
-    data = api.query(
+  def search_for(search, options)
+    data = api.query(options.merge(
       list: "search",
       srsearch: search,
       srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
       formatversion: 2
-    )
+    ))
     data["query"]
   end
 

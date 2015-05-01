@@ -133,6 +133,10 @@ Then(/^(.+) is the first suggestion$/) do |title|
     on(SearchPage).first_result.should == title
   end
 end
+Then(/^the api warns (.*)$/) do |warning|
+  @api_error.should_not be nil
+  @api_error.info.should == warning
+end
 Then(/^(.+) is the (.+) api suggestion$/) do |title, position|
   pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index position
   if title == "none"
@@ -347,7 +351,6 @@ Then(/this error is reported: (.+)$/) do |expected_error|
 end
 Then(/this error is reported by api: (.+)$/) do |expected_error|
   @api_error.code.should be == "srsearch-error"
-  require "cgi"
   CGI.unescapeHTML(@api_error.info).should == expected_error.strip
 end
 

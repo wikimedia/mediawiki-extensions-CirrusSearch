@@ -291,6 +291,7 @@ Before("@prefer_recent") do
       And a page named PreferRecent Second Second exists with contents %{epoch}
       And wait 20 seconds
       And a page named PreferRecent Third exists with contents %{epoch}
+      And wait 10 seconds
         )
   end
   prefer_recent = true

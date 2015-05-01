@@ -203,6 +203,7 @@ Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) search result$/) do |titl
 end
 Then(/^(.+) is( in)? the ([^ ]+) api search result$/) do |title, in_ok, index|
   pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index index
+  @api_error.should be nil
   check_api_search_result(
     @api_result["search"].length > pos ? @api_result["search"][pos] : {},
     title,
@@ -212,6 +213,7 @@ Then(/^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)+) api search result$/) do |
   found = indexes.split(/ or /).any? do |index|
     begin
       pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index index
+      @api_error.should be nil
       check_api_search_result(
         @api_result["search"].length > pos ? @api_result["search"][pos] : {},
         title,
@@ -324,7 +326,8 @@ Then(/^there is (no|a)? link to create a new page from the search result$/) do |
   end
 end
 Then(/^(.*) is suggested by api$/) do |text|
-  fixed = @api_result["searchinfo"]["suggestionsnippet"].gsub(/<em>(.*?)<\/em>/, '*\1*')
+  fixed = @api_result["searchinfo"]["suggestionsnippet"]
+  fixed = fixed.gsub(/<em>(.*?)<\/em>/, '*\1*') unless fixed.nil?
   fixed.should == CGI.escapeHTML(text)
 end
 Then(/^(.*) is suggested$/) do |text|

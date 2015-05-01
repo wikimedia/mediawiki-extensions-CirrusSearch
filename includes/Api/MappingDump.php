@@ -28,6 +28,7 @@ class MappingDump extends ApiBase {
 		foreach( Connection::getAllIndexTypes() as $index ) {
 			$this->getResult()->addValue( null, $index,
 				Connection::getPageType( wfWikiId(), $index )->getMapping() );
+			$this->getResult()->addPreserveKeysList( array( $index, 'page' ), '_all' );
 		}
 	}
 

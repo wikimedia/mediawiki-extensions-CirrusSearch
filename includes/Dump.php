@@ -31,7 +31,7 @@ class Dump extends FormlessAction {
 		$response = $this->getRequest()->response();
 		$response->header( 'Content-type: application/json; charset=UTF-8' );
 
-		$searcher = new Searcher( 0, 0, false, $this->getUser() );
+		$searcher = new Searcher( 0, 0, array(), $this->getUser() );
 		$id = $this->getTitle()->getArticleID();
 		$esSources = $searcher->get( array( $id ), true );
 		if ( !$esSources->isOk() ) {

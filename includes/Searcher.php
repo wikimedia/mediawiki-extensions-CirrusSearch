@@ -69,7 +69,7 @@ class Searcher extends ElasticsearchIntermediary {
 	private $limit;
 
 	/**
-	 * @var int[] array of namespaces in which to search
+	 * @var int[]|null array of namespaces in which to search
 	 */
 	protected $namespaces;
 
@@ -200,11 +200,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Constructor
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
-	 * @param int[] $namespaces Array of namespace numbers to search
+	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
 	 */
-	public function __construct( $offset, $limit, array $namespaces, User $user = null, $index = false ) {
+	public function __construct( $offset, $limit, array $namespaces = null, User $user = null, $index = false ) {
 		global $wgCirrusSearchSlowSearch,
 			$wgLanguageCode,
 			$wgContLang;

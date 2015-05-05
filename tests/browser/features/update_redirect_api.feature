@@ -14,4 +14,4 @@ Feature: Updating a page from or to a redirect
     Then within 20 seconds api searching for StartsAsRedirect%{epoch} yields RedirectTaget as the first result
     When a page named StartsAsRedirect%{epoch} exists
     Then within 20 seconds api searching for StartsAsRedirect%{epoch} yields StartsAsRedirect%{epoch} as the first result
-      And RedirectTarget is not in the search results
+      And RedirectTarget is not in the api search results

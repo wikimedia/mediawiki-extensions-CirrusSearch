@@ -161,16 +161,41 @@ class ElasticsearchIntermediary {
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 
-		// Extract the amount of time Elasticsearch reported the last request took if possible.
-		$result = Connection::getClient()->getLastResponse();
+		$client = Connection::getClient();
+		$query = $client->getLastRequest();
+		$result = $client->getLastResponse();
 		if ( $result ) {
-			$data = $result->getData();
-			if ( isset( $data[ 'took' ] ) ) {
-				$elasticTook = $data[ 'took' ];
+			$queryData = $query->getData();
+			$resultData = $result->getData();
+			// Extract the amount of time Elasticsearch reported the last request took if possible.
+			if ( isset( $resultData[ 'took' ] ) ) {
+				$elasticTook = $resultData[ 'took' ];
 				$logMessage .= " and $elasticTook Elasticsearch millis";
 				$this->searchMetrics['wgCirrusElasticTime'] = $elasticTook;
 			}
+			if ( isset( $resultData['hits']['total'] ) ) {
+				$logMessage .= ". Found {$resultData['hits']['total']} total results";
+			}
+			if ( isset( $resultData['hits']['hits'] ) ) {
+				$num = count( $resultData['hits']['hits'] );
+				$offset = isset( $queryData['from'] ) ? $queryData['from'] : 0;
+				$logMessage .= " and returned $num of them starting at $offset";
+			}
+			if ( isset( $queryData['query']['filtered']['filter']['terms']['namespace'] ) ) {
+				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
+				$logMessage .= ' within these namespaces: ' . implode( ', ', $namespaces );
+			}
 		}
+		$request = $client->getLastRequest();
+
+		if ( php_sapi_name() === 'cli' ) {
+			$source = 'cli';
+		} elseif ( defined( 'MW_API' ) ) {
+			$source = 'api';
+		} else {
+			$source = 'web';
+		}
+		$logMessage .= ". Requested via $source.";
 
 		// Now log and clear our state.
 		LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );

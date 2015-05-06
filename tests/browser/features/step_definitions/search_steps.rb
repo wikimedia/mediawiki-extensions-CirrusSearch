@@ -1,5 +1,4 @@
 require "cgi"
-require "debugger"
 
 Given(/^I am logged in via api$/) do
   log_in_api

@@ -34,8 +34,6 @@ Feature: Prefix search via api
     When I get api suggestions for template talk:
     Then Template talk:Foo is in the api suggestions
 
-@clean @api @prefix
-Feature: Prefix search
   Scenario Outline: Search suggestions
     When I get api suggestions for <term>
     Then <first_result> is the first api suggestion

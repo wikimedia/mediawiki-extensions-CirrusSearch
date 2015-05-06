@@ -1,4 +1,5 @@
 require "cgi"
+require "debugger"
 
 Given(/^I am logged in via api$/) do
   log_in_api
@@ -24,6 +25,19 @@ end
 When(/^I get api suggestions for (.*)$/) do |search|
   begin
     @api_result = suggestions_for(search)
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  end
+end
+Then(/^the api should offer to search for pages containing (.*)$/) do |term|
+  @api_result[0].should == term
+end
+When(/^I get api near matches for (.*)$/) do |search|
+  begin
+    @api_result = search_for(
+      search,
+      srwhat: "nearmatch"
+    )
   rescue MediawikiApi::ApiError => e
     @api_error = e
   end
@@ -140,10 +154,10 @@ end
 Then(/^(.+) is the (.+) api suggestion$/) do |title, position|
   pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index position
   if title == "none"
-    if @api_error
+    if @api_error && pos == 1
       true
     else
-      @api_result[1].length.should_be <= index
+      @api_result[1].length.should be <= pos
     end
   else
     @api_result[1].length.should be > pos

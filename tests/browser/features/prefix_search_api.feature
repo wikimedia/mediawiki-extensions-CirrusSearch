@@ -34,3 +34,67 @@ Feature: Prefix search via api
     When I get api suggestions for template talk:
     Then Template talk:Foo is in the api suggestions
 
+@clean @api @prefix
+Feature: Prefix search
+  Scenario Outline: Search suggestions
+    When I get api suggestions for <term>
+    Then <first_result> is the first api suggestion
+      And the api should offer to search for pages containing <term>
+    When I get api near matches for <term>
+      Then <title> is the first api search result
+  Examples:
+    | term                   | first_result           | title                  |
+# Note that there are more links to catapult then to any other page that starts with the
+# word "catapult" so it should be first
+    | catapult               | Catapult               | Catapult               |
+    | catapul                | Catapult               | none                   |
+    | two words              | Two Words              | Two Words              |
+    | ~catapult              | none                   | none                   |
+    | Template:Template Test | Template:Template Test | Template:Template Test |
+    | l'or                   | L'Oréal                | none                   |
+    | l or                   | L'Oréal                | none                   |
+    | L'orea                 | L'Oréal                | none                   |
+    | L'Oréal                | L'Oréal                | L'Oréal                |
+    | L’Oréal                | L'Oréal                | L'Oréal                |
+    | L Oréal                | L'Oréal                | L'Oréal                |
+    | Jean-Yves Le Drian     | Jean-Yves Le Drian     | Jean-Yves Le Drian     |
+    | Jean Yves Le Drian     | Jean-Yves Le Drian     | Jean-Yves Le Drian     |
+
+  @redirect
+  Scenario: Prefix search includes redirects
+    When I get api suggestions for SEO Redirecttest
+    Then SEO Redirecttest is the first api suggestion
+    When I get api near matches for SEO Redirecttest
+    Then SEO Redirecttest is the first api search result
+
+  @redirect
+  Scenario: Prefix search includes redirects for pages outside the main namespace
+    When I get api suggestions for User_talk:SEO Redirecttest
+    Then User talk:SEO Redirecttest is the first api suggestion
+    When I get api near matches for User_talk:SEO Redirecttest
+    Then User talk:SEO Redirecttest is the first api search result
+
+  @accent_squashing @accented_namespace
+  Scenario Outline: Search suggestions with accents
+    When I get api suggestions for <term>
+    Then <first_result> is the first api suggestion
+      And the api should offer to search for pages containing <term>
+    When I get api near matches for <term>
+    Then <title> is the first api search result
+  Examples:
+    | term                   | first_result           | title                  |
+    | África                 | África                 | África                 |
+    | Africa                 | África                 | África                 |
+    | AlphaBeta              | AlphaBeta              | AlphaBeta              |
+    | ÁlphaBeta              | AlphaBeta              | AlphaBeta              |
+    | Mó:Test                | Mó:Test                | Mó:Test                |
+    | Mo:Test                | Mó:Test                | Mó:Test                |
+    | file:Mo:Test           | none                   | none                   |
+
+  # Just take too long to run on a regular basis
+  # @redirect @huge
+  # Scenario: Prefix search on pages with tons of redirects is reasonably fast
+  #   Given a page named IHaveTonsOfRedirects exists
+  #     And there are 1000 redirects to IHaveTonsOfRedirects of the form TonsOfRedirects%s
+  #   When I type TonsOfRedirects into the search box
+  #   Then suggestions should appear

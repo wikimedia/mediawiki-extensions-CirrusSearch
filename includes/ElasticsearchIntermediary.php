@@ -156,7 +156,7 @@ class ElasticsearchIntermediary {
 		// Build the log message
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );
-		$logMessage = "$this->description took $took millis";
+		$logMessage = $this->description;
 
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
@@ -167,7 +167,10 @@ class ElasticsearchIntermediary {
 		if ( $result ) {
 			$queryData = $query->getData();
 			$resultData = $result->getData();
-			// Extract the amount of time Elasticsearch reported the last request took if possible.
+
+			$index = explode( '/', $query->getPath() );
+			$index = $index[ 0 ];
+			$logMessage .= " against $index took $took millis";
 			if ( isset( $resultData[ 'took' ] ) ) {
 				$elasticTook = $resultData[ 'took' ];
 				$logMessage .= " and $elasticTook Elasticsearch millis";

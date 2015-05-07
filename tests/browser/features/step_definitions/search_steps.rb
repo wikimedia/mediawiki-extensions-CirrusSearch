@@ -9,11 +9,13 @@ end
 When(/^I go search for (.*)$/) do |search|
   visit(SearchResultsPage, using_params: { search: search })
 end
-When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)? for (.*)$/) do |incoming_links, offset, lang, search|
+# rubocop:disable LineLength
+When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, offset, lang, namespaces, search|
   begin
     @api_result = search_for(
       search,
       sroffset: offset,
+      srnamespace: (namespaces || "0").split(/ /),
       uselang: lang,
       cirrusBoostLinks: incoming_links ? "no" : "yes"
     )

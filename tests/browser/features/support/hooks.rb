@@ -49,6 +49,18 @@ Before("@setup_main, @prefix, @bad_syntax") do
   end
 end
 
+commons = false
+Before("@setup_main, @commons") do
+  unless commons
+    steps %(
+      Given a file named File:OnCommons.svg exists on commons with contents OnCommons.svg and description File stored on commons for test purposes
+      And a file named File:DuplicatedLocally.svg exists on commons with contents DuplicatedLocally.svg and description File stored on commons and duplicated locally
+      And a file named File:DuplicatedLocally.svg exists with contents DuplicatedLocally.svg and description Locally stored file duplicated on commons
+        )
+    commons = true
+  end
+end
+
 africa = false
 Before("@setup_main, @prefix, @go, @bad_syntax") do
   unless africa

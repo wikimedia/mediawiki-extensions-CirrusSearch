@@ -12,7 +12,7 @@ end
 When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)? for (.*)$/) do |incoming_links, offset, lang, search|
   begin
     @api_result = search_for(
-      search,
+      search.gsub("%idiographic_whitespace%", "\u3000".force_encoding("utf-8")),
       sroffset: offset,
       uselang: lang,
       cirrusBoostLinks: incoming_links ? "no" : "yes"

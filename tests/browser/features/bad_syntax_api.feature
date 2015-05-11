@@ -83,3 +83,7 @@ Feature: Searches with syntax errors
   Scenario: Searching for "<word> <word>"~<not a numer> treats the ~ as a space
     When I api search for "ffnonesenseword catapult"~anotherword
       And Two Words is the first api search result
+
+  Scenario: Searching for idiographic whitespace returns no result
+    When I api search for %idiographic_whitespace%
+    Then the api warns text search is disabled

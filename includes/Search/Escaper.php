@@ -130,7 +130,7 @@ class Escaper {
 
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
-		$string = preg_replace_callback( '/^\s*(?:AND|OR)/u',
+		$string = preg_replace_callback( '/^|(AND|OR|NOT)\s*(?:AND|OR)/u',
 			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
 			'CirrusSearch\Search\Escaper::lowercaseMatched', $string );

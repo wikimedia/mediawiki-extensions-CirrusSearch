@@ -365,6 +365,9 @@ end
 Then(/this error is reported: (.+)$/) do |expected_error|
   on(SearchResultsPage).error_report_element.text.strip.should == expected_error.strip
 end
+Then(/there are no errors reported by the api$/) do
+  @api_error.should be nil
+end
 Then(/this error is reported by api: (.+)$/) do |expected_error|
   @api_error.code.should be == "srsearch-error"
   CGI.unescapeHTML(@api_error.info).should == expected_error.strip

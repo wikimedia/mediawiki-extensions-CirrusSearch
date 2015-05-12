@@ -87,3 +87,12 @@ Feature: Searches with syntax errors
   Scenario: Searching for idiographic whitespace returns no result
     When I api search for %idiographic_whitespace%
     Then the api warns text search is disabled
+
+  @boolean_operators
+  Scenario Outline: ORs and ANDs around phrase prefixes finds the search terms
+    When I api search for "test catapul*" <operator> "test catapul*" <operator> "test catapul*"
+    Then there are no errors reported by the api
+  Examples:
+    | operator |
+    | AND      |
+    | OR       |

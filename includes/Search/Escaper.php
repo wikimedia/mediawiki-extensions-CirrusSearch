@@ -80,14 +80,20 @@ class Escaper {
 	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {
+		global $wgCirrusSearchAllowLeadingWildcard;
+
 		// Be careful when editing this method because the ordering of the replacements matters.
 
 		// Escape ~ that don't follow a term or a quote
 		$string = preg_replace_callback( '/(?<![\w"])~/u',
 			'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
 
-		// Remove ? and * that don't follow a term.  These are slow so we turned them off and escaping isn't working....
-		$string = preg_replace( '/(?<![\w])([?*])/u', '', $string );
+		// When allow leading wildcard is disabled elasticsearch will report an
+		// error if these are unescaped. Escape ? and * that don't follow a term.
+		if ( !$wgCirrusSearchAllowLeadingWildcard ) {
+			$string = preg_replace_callback( '/(?<![\w])([?*])/u',
+				'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
+		}
 
 		// Reduce token ranges to bare tokens without the < or >
 		$string = preg_replace( '/(?:<|>)+([^\s])/u', '$1', $string );

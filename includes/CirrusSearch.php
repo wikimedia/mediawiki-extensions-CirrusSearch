@@ -64,7 +64,10 @@ class CirrusSearch extends SearchEngine {
 	public function searchText( $term ) {
 		global $wgCirrusSearchInterwikiSources;
 
-		$term = trim( $term );
+		// Convert the unicode character 'idiographic whitespace' into standard
+		// whitespace.  Cirrussearch treats them both as normal whitespace, but
+		// the preceding isn't appropriatly trimmed.
+		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
 		// No searching for nothing!  That takes forever!
 		if ( !$term ) {
 			return null;

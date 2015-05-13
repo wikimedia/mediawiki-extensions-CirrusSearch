@@ -18,6 +18,7 @@ use \Title;
 use \RecursiveDirectoryIterator;
 use \RecursiveIteratorIterator;
 use \RequestContext;
+use \UsageException;
 use \User;
 use \WebRequest;
 use \WikiPage;
@@ -360,7 +361,14 @@ class Hooks {
 			// Empty searches always find the title.
 			$searcher->setResultsType( new TitleResultsType() );
 		}
-		$status = $searcher->prefixSearch( $search );
+		try {
+			$status = $searcher->prefixSearch( $search );
+		} catch ( UsageException $e ) {
+			if ( defined( 'MW_API' ) ) {
+				throw $e;
+			}
+			return false;
+		}
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// constrution site to log errors.
@@ -407,7 +415,14 @@ class Hooks {
 			$term = $title->getText();
 		}
 		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
-		$status = $searcher->nearMatchTitleSearch( $term );
+		try {
+			$status = $searcher->nearMatchTitleSearch( $term );
+		} catch ( UsageException $e ) {
+			if ( defined( 'MW_API' ) ) {
+				throw $e;
+			}
+			return true;
+		}
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
 		// constrution site to log errors.

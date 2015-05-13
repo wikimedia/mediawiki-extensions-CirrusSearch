@@ -1210,12 +1210,13 @@ GROOVY;
 	 * @return \Elastica\Query\Simple
 	 */
 	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore ) {
+		global $wgCirrusSearchAllowLeadingWildcard;
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
-		$query->setAllowLeadingWildcard( false );
+		$query->setAllowLeadingWildcard( $wgCirrusSearchAllowLeadingWildcard );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
 		return $this->wrapInSaferIfPossible( $query, $isRescore );

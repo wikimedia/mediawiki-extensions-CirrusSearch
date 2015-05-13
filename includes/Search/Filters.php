@@ -138,13 +138,15 @@ class Filters {
 	}
 
 	private static function insourceOrIntitle( $escaper, $searcher, $value, $updateHighlightSourceRef, $fieldF ) {
+		global $wgCirrusSearchAllowLeadingWildcard;
+
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( array( $field ) );
 		$query->setDefaultOperator( 'AND' );
-		$query->setAllowLeadingWildcard( false );
+		$query->setAllowLeadingWildcard( $wgCirrusSearchAllowLeadingWildcard );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
 		$wrappedQuery = $searcher->wrapInSaferIfPossible( $query, false );

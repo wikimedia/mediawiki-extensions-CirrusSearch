@@ -232,6 +232,11 @@ $wgCirrusSearchPhraseSuggestConfidence = 2.0;
 // changing this to false then you'll see some space savings.
 $wgCirrusSearchPhraseSuggestUseText = false;
 
+// Allow leading wildcard queries.
+// Searching for terms that have a leading ? or * can be very slow. Turn this off to
+// disable it.  Terms with leading wildcards will have the wildcard escaped.
+$wgCirrusSearchAllowLeadingWildcard = true;
+
 // Maximum number of redirects per target page to index.
 $wgCirrusSearchIndexedRedirects = 1024;
 

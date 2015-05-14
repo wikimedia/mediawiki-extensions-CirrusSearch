@@ -156,7 +156,7 @@ class ElasticsearchIntermediary {
 		// Build the log message
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );
-		RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
+		\RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
 		$logMessage = $this->description;
 
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;

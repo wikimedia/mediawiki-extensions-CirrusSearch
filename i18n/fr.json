@@ -4,13 +4,14 @@
 			"Gomoko",
 			"Jean-Frédéric",
 			"Linedwell",
-			"Robby"
+			"Robby",
+			"0x010C"
 		]
 	},
 	"cirrussearch-desc": "Fait effectuer la recherche par Solr",
 	"cirrussearch-backend-error": "Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.",
 	"cirrussearch-parse-error": "La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.",
-	"cirrussearch-too-busy-error": "La recherche est actuellement trop occupée. Veuillez réessayer ultérieurement.",
+	"cirrussearch-too-busy-error": "Le service de recherche est actuellement saturé. Veuillez réessayer ultérieurement.",
 	"cirrussearch-too-busy-for-you-anonymous-error": "Vous avez trop de recherches simultanées en cours. Si vous partagez une adresse IP avec d’autres utilisateurs, vous pouvez vous connecter pour avoir vos propres limites.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "Vous avez trop de recherches simultanées en cours.",
 	"cirrussearch-regex-syntax-error": "Erreur de syntaxe de l’expression régulière en $2 : $1",

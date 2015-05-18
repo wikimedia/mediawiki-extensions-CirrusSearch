@@ -1116,7 +1116,7 @@ GROOVY;
 			function( $error, $key ) use ( $type, $description, $user ) {
 				wfLogWarning( "Pool error on key $key during $description:  $error" );
 				if ( $error === 'pool-queuefull' ) {
-					if ( strpos( $key, 'CirrusSearch:_per_user' ) === 0 ) {
+					if ( strpos( $key, 'nowait:CirrusSearch:_per_user' ) === 0 ) {
 						$loggedIn = $user->isLoggedIn() ? 'logged-in' : 'anonymous';
 						return Status::newFatal( "cirrussearch-too-busy-for-you-{$loggedIn}-error" );
 					}

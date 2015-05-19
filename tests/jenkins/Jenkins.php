@@ -78,6 +78,7 @@ $wgShowExceptionDetails = true;
 
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
+$wgCirrusSearchAllowLeadingWildcard = false;
 
 class Jenkins {
 	/**

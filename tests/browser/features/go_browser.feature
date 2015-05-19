@@ -15,6 +15,6 @@ Feature: Go Search
     | Søn Redirectnoncompete | Blah Redirectnoncompete |
     | Soñ Redirectnoncompete | Blah Redirectnoncompete |
 
-  Scenario Outline: Searching for a string that is a valid mediawiki title but longer than the max prefix search does not fail
+  Scenario: Searching for a string that is a valid mediawiki title but longer than the max prefix search does not fail
     When I go search for vdyējūyeyafqhrqtwtfmvvbv不顾要死不活的姑娘风景如小D3：n t q h ra r n q r n q n r q r n w t n ran s g是否能Z或者 Ru 人也不发达噶分湖人奴嗯也能一年时光啊郭德纲）n蜂蜜犹如的还是创始人发布A大股东
     Then there are no search results

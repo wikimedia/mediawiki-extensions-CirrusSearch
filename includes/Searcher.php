@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 use Elastica;
+use \Category;
 use \CirrusSearch;
 use \CirrusSearch\Extra\Filter\SourceRegex;
 use \CirrusSearch\Search\Escaper;
@@ -497,10 +498,12 @@ GROOVY;
 		// The {7,15} keeps this from having horrible performance on big strings
 		$escaper = $this->escaper;
 		$fuzzyQuery = $this->fuzzyQuery;
+		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?:[^"]|(?:(?<=\\\)"))+"|[^ "]+) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
-					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource ) {
+					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
+				global $wgCirrusSearchMaxIncategoryOptions;
 				$key = $matches['key'];
 				$value = $matches['value'];  // Note that if the user supplied quotes they are not removed
 				$value = str_replace( '\"', '"', $value );
@@ -543,7 +546,13 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'incategory':
-						$filterDestination[] = $searcher->matchPage( 'category.lowercase_keyword', $value );
+						$categories = array_slice( explode( '|', $value ), 0, $wgCirrusSearchMaxIncategoryOptions );
+						$categoryFilters = $searcher->matchPageCategories( $categories );
+						if ( $categoryFilters === null ) {
+							$isEmptyQuery = true;
+						} else {
+							$filterDestination[] = $categoryFilters;
+						}
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
@@ -559,6 +568,9 @@ GROOVY;
 				}
 			}
 		);
+		if ( $isEmptyQuery ) {
+			return Status::newGood( new SearchResultSet( true ) );
+		}
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
 		$this->boostTemplates = $boostTemplates;
@@ -751,6 +763,38 @@ GROOVY;
 		$match = new \Elastica\Query\Match();
 		$match->setFieldQuery( $field, $title );
 		return new \Elastica\Filter\Query( $match );
+	}
+
+	/**
+	 * Builds an or between many categories that the page could be in.
+	 * @param string[] $categories categories to match
+	 * @return \Elastica\Filter\Bool|null A null return value means all values are filtered
+	 *  and an empty result set should be returned.
+	 */
+	public function matchPageCategories( $categories ) {
+		$filter = new \Elastica\Filter\Bool();
+		$ids = array();
+		$names = array();
+		foreach ( $categories as $category ) {
+			if ( substr( $category, 0, 3 ) === 'id:' ) {
+				$id = substr( $category, 3 );
+				if ( ctype_digit( $id ) ) {
+					$ids[] = $id;
+				}
+			} else {
+				$names[] = $category;
+			}
+		}
+		foreach ( Title::newFromIds( $ids ) as $title ) {
+			$names[] = $title->getText();
+		}
+		if ( !$names ) {
+			return null;
+		}
+		foreach( $names as $name ) {
+			$filter->addShould( $this->matchPage( 'category.lowercase_keyword', $name ) );
+		}
+		return $filter;
 	}
 
 	/**

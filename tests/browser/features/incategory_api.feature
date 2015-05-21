@@ -7,6 +7,27 @@ Feature: Searches with the incategory filter
       And Amazing Catapult is in the api search results
       But Two Words is not in the api search results
 
+  Scenario: incategory: splits on | to create an OR query
+    When I api search for incategory:weaponry|nothing
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+
+  Scenario Outline: incategory: does not fail when the category is unknown
+    When I api search for incategory:<category>
+    Then there are no api search results
+  Examples:
+    |          category           |
+    | doesnotexistatleastihopenot |
+    | id:2147483600               |
+
+  Scenario: incategory: finds categories by page id
+    When I locate the page id of Category:Weaponry and store it as %weaponry_id%
+     And I api search for incategory:id:%weaponry_id%
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+
   Scenario: incategory: works on categories from templates
     When I api search for incategory:templatetagged incategory:twowords
     Then Two Words is the first api search result
@@ -42,11 +63,11 @@ Feature: Searches with the incategory filter
   Scenario: incategory: can be combined with other text
     When I api search for incategory:weaponry amazing
     Then Amazing Catapult is the first api search result
-  
+
   Scenario: -incategory: excludes pages with the category
     When I api search for -incategory:weaponry incategory:twowords
     Then Two Words is the first api search result
-    
+
   Scenario: incategory: can handle a space after the :
     When I api search for incategory: weaponry
     Then Catapult is in the api search results

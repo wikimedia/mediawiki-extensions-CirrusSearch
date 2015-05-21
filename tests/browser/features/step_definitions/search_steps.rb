@@ -9,11 +9,19 @@ end
 When(/^I go search for (.*)$/) do |search|
   visit(SearchResultsPage, using_params: { search: search })
 end
+Before do
+  @search_vars = {
+    "idiographic_whitspace" => "u\3000".force_encoding("utf-8")
+  }
+end
+When(/^I locate the page id of (.*) and store it as (%.*%)$/) do |title, varname|
+  @search_vars[varname] = page_id_of title
+end
 # rubocop:disable LineLength
 When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, offset, lang, namespaces, search|
   begin
     @api_result = search_for(
-      search.gsub("%idiographic_whitespace%", "\u3000".force_encoding("utf-8")),
+      search.gsub(/%[^ ]+%/, @search_vars),
       sroffset: offset,
       srnamespace: (namespaces || "0").split(/ /),
       uselang: lang,

@@ -22,5 +22,8 @@
 	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# 在搜尋中要忽略的標題。\n# 更該此檔案以快速對己列入索引的頁面標題生效。\n# 您可以編輯時不變更內容以強制頁面重新索引。\n# 語法如下：\n#   * 任何以 \"#\" 字元開頭的行至結尾會做為註解。\n#   * 任何非空白行代表要忽略的標題。\n參考文獻\n外部連結\n參見\n #</pre> <!-- leave this line exactly as it is -->",
 	"cirrussearch-boost-templates": " #<!-- 請保留此行為原樣 --> <pre>\n# 若頁面使用了下列樣板，則該頁面的搜尋分數會乘上設定的百分比。\n# 更改此處以立即生效。\n# 語法格式如下：\n#   * 任何以 \"#\" 字元開頭的行到結尾做為註解。\n#   * 任何非空白行用來表示加分的樣板名稱，包含命名空間、大小寫與所有東西，後面接著 \"|\" 字元與一組數字，再接著 \"%\" 字元。\n# 良好的範例：\n# Template:Good|150%\n# Template:Very Very Good|300%\n# Template:Bad|50%\n# 不良的範例：\n# Template:Foo|150.234234% <-- 不允許使用小數!\n# Foo|150% <--- 技術上可以運作，但會連結至主要命名空間的 Foo 頁面\n# 你可以在字首加上 boost-templates:\"XX\" 執行查詢，測試您的設定，XX 是所有您要加分的樣板，以空白來代表換行符號。\n# 使用 boost-templates:\"XX\" 的查詢時會忽略此區域的設定內容。\n #</pre> <!-- 請保留此行為原樣 -->",
 	"cirrussearch-pref-label": "新版搜尋",
-	"cirrussearch-pref-desc": "請試用我們新版的搜尋工具，支援更多語言、提供更多即時的結果並且可以搜尋樣板中的文字。"
+	"cirrussearch-pref-desc": "請試用我們新版的搜尋工具，支援更多語言、提供更多即時的結果並且可以搜尋樣板中的文字。",
+	"apihelp-cirrus-config-dump-description": "匯出 CirrusSearch 設定。",
+	"apihelp-cirrus-mapping-dump-description": "匯出 CirrusSearch 於此 Wiki 的對應表。",
+	"apihelp-cirrus-settings-dump-description": "匯出 CirrusSearch 於此 Wiki 的設定。"
 }

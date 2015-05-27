@@ -64,12 +64,12 @@ if ( class_exists( 'PoolCounter_Client' ) ) {
 		'workers' => 50,
 		'maxqueue' => 200,
 	);
-	// Can't be enabled until poolcounter gets Ie282b8486c7bad451fbc5fb9a8274c6e01a728a7.
-	// TODO enable this.
-	// $wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
-	// 	'class' => 'PoolCounter_Client',
-	// 	'timeout' => 0,
-	// 	'workers' => 1,
-	// 	'maxqueue' => 1,
-	// );
+	// Limit users to a single concurent search. Note that this also effects
+	// ip address, so shared ip addresses will run into issues.
+	$wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
+		'class' => 'PoolCounter_Client',
+		'timeout' => 0,
+		'workers' => 5,
+		'maxqueue' => 5,
+	);
 }

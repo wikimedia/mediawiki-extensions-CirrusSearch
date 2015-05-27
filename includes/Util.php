@@ -123,17 +123,27 @@ class Util {
 				return $errorCallback( $status[ 0 ][ 0 ], $key );
 			};
 		};
+		$doPerUserWork = function() use ( $type, $globalKey, $workCallback, $errorHandler ) {
+			// Now that we have the per user lock lets get the operation lock.
+			// Note that this could block, causing the user to wait in line with their lock held.
+			$work = new PoolCounterWorkViaCallback( $type, $globalKey, array(
+				'doWork' => $workCallback,
+				'error' => $errorHandler( $globalKey ),
+			) );
+			return $work->execute();
+		};
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-PerUser', $perUserKey, array(
-			'doWork' => function() use ( $type, $globalKey, $workCallback, $errorHandler ) {
-				// Now that we have the per user lock lets get the operation lock.
-				// Note that this could block, causing the user to wait in line with their lock held.
-				$work = new PoolCounterWorkViaCallback( $type, $globalKey, array(
-					'doWork' => $workCallback,
-					'error' => $errorHandler( $globalKey ),
-				) );
-				return $work->execute();
+			'doWork' => $doPerUserWork,
+			'error' => function( $status ) use( $errorHandler, $perUserKey, $doPerUserWork ) {
+				global $wgCirrusSearchBypassPerUserFailure;
+				$errorCallback = $errorHandler( $perUserKey );
+				$errorResult = $errorCallback( $status );
+				if ( $wgCirrusSearchBypassPerUserFailure ) {
+					return $doPerUserWork();
+				} else {
+					return $errorResult;
+				}
 			},
-			'error' => $errorHandler( $perUserKey ),
 		) );
 		return $work->execute();
 	}

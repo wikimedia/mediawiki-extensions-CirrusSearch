@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 use \CirrusSearch\Searcher;
+use \LinkBatch;
 use \SearchResultSet;
 
 /**
@@ -33,6 +34,7 @@ class ResultSet extends SearchResultSet {
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->interwikiPrefix = $interwiki;
+		$this->preCacheContainedTitles();
 		$suggestion = $this->findSuggestion();
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
@@ -99,6 +101,27 @@ class ResultSet extends SearchResultSet {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Loads the result set into the mediawiki LinkCache via a
+	 * batch query. By pre-caching this we ensure methods such as
+	 * Result::isMissingRevision() don't trigger a query for each and
+	 * every search result.
+	 */
+	private function preCacheContainedTitles() {
+		// We can only pull in information about the local wiki
+		if ( $this->interwikiPrefix !== '' ) {
+			return;
+		}
+		$lb = new LinkBatch;
+		foreach ( $this->result->getResults() as $result ) {
+			$lb->add( $result->namespace, $result->title );
+		}
+		if ( !$lb->isEmpty() ) {
+			$lb->setCaller( __METHOD__ );
+			$lb->execute();
+		}
 	}
 
 	public function getTotalHits() {

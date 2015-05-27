@@ -112,15 +112,21 @@ class Util {
 		$perUserKey = "nowait:CirrusSearch:_per_user:$perUserKey";
 		$globalKey = "$type:$wgCirrusSearchPoolCounterKey";
 		if ( $errorCallback === null ) {
-			$errorCallback = function( $error, $key ) {
-				wfLogWarning( "Pool error on $key:  $error" );
+			$errorCallback = function( $error, $key, $userName ) {
+				$forUserName = $userName ? "for $userName " : '';
+				wfLogWarning( "Pool error {$forUserName}on $key:  $error" );
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			};
 		}
-		$errorHandler = function( $key ) use ( $errorCallback ) {
-			return function( $status ) use ( $errorCallback, $key ) {
+		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
+			return function( $status ) use ( $errorCallback, $key, $user ) {
 				$status = $status->getErrorsArray();
-				return $errorCallback( $status[ 0 ][ 0 ], $key );
+				// anon usernames are needed within the logs to determine if
+				// specific ips (such as large #'s of users behind a proxy)
+				// need to be whitelisted. We do not need this information
+				// for logged in users and do not store it.
+				$userName = $user->isAnon() ? $user->getName() : '';
+				return $errorCallback( $status[ 0 ][ 0 ], $key, $userName );
 			};
 		};
 		$doPerUserWork = function() use ( $type, $globalKey, $workCallback, $errorHandler ) {

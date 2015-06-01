@@ -6,16 +6,25 @@
 			"Breghtje",
 			"Romaine",
 			"Siebrand",
-			"Sjoerddebruin"
+			"Sjoerddebruin",
+			"Esketti"
 		]
 	},
 	"cirrussearch-desc": "Zoeken via Solr",
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd. Als u een IP-adres deelt met andere gebruikers kunt u inloggen om uw eigen grenzen.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd.",
+	"cirrussearch-regex-syntax-error": "Reguliere expressie syntax fout op $2: $1",
+	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie zoekt momenteel worden uitgevoerd. Probeer het later opnieuw.",
+	"cirrussearch-regex-too-complex-error": "Een reguliere expressie is te complex. Meer informatie over de vereenvoudiging van het [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|hier]].",
 	"cirrussearch-now-using": "Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])",
 	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Koppen die worden genegeerd tijdens het zoeken.\n# Wijzigingen worden van kracht als een kop wordt geïndexeerd.\n# U kunt opnieuw indexeren afdwingen door het uitvoeren van een nullbewerking.\n# De syntaxis is al volgt:\n#   * All tekst vanaf het teken \"#\" tot het einde van de regel wordt gezien als een opmerking;\n#   * Iedere niet-lege regel is de precieze te negeren kop, inclusief hoofdlettergebruik en degelijke.\nReferenties\nExterne koppelingen\nZie ook\n #</pre> <!-- leave this line exactly as it is -->",
 	"cirrussearch-boost-templates": "#<!-- laat deze regel precies zoals deze is --> <pre>\n# Als een pagina een van deze sjablonen bevat, dan wordt de zoekscore vermenigvuldigd met het ingestelde percentage.\n# Wijzigingen hierin worden onmiddellijk van kracht.\n# De syntaxis is als volgt:\n# * Alles na een \"#\" teken aan het einde van de regel wordt beschouwd als opmerking;\n# * Iedere niet lege regel is de exacte naam van het sjabloon dat zorgt voor de gewijzigde zoekscore, inclusief naamruimte, hoofdlettergebruik enzovoort, gevolgd door het teken \"|\", een geheel getal, en het teken \"%\".\n# Voorbeelden van correcte regels:\n# Sjabloon:Goed|150%\n# Sjabloon:Zeer goed|300%\n# Sjabloon:Slecht|50%\n# Voorbeelden van regels die niet werken:\n# Sjabloon:Foo|150.234234% <-- decimalen niet toegestaan\n# Voorbeeld|150% <--- technisch gezien in orde, maar gebruikt de pagina \"Voorbeeld\" uit de hoofdnaamruimte\n# U kunt wijzigingen in de instellingen testen door het uitvoeren van een zoekopdracht die begint met boost-templates:\"XX\" waarbij XX staat voor alle sjablonen waarvan u wilt dat die de zoekscore wijzigen, gescheiden door spaties in plaats van regeleindes.\n# Voor zoekopdrachten die boost-templates:\"XX\" gebruiken, wordt de inhoud van deze pagina genegeerd.\n #</pre> <!-- laat deze regel precies zoals deze is -->",
 	"cirrussearch-pref-label": "Nieuwe zoekopdracht",
-	"cirrussearch-pref-desc": "Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden."
+	"cirrussearch-pref-desc": "Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.",
+	"apihelp-cirrus-config-dump-description": "Dump van CirrusSearch configuratie",
+	"apihelp-cirrus-mapping-dump-description": "Dump van CirrusSearch mapping voor deze wiki.",
+	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearch instellingen voor deze wiki."
 }

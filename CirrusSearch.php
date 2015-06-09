@@ -104,6 +104,15 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // 		'max_terms_in_all_queries' => 128,
 // 	)
 // );
+// This turns on noop-detection for updates and is compatible with
+// wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
+// $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
+// This turns on field_value_factors for rankings and is compatible with
+// wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
+// $wgCirrusSearchWikimediaExtraPlugin[ 'field_value_factor_with_default' ] = true;
+// This allows forking on reindexing and is compatible with wikimedia-extra
+// versions 1.3.1, 1.4.2, and 1.5.0
+// $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 
 // Should CirrusSearch try to support regular expressions with insource:?
 // These can be really expensive, but mostly ok, especially if you have the
@@ -565,6 +574,7 @@ $wgAutoloadClasses['CirrusSearch\BuildDocument\RedirectsAndIncomingLinks'] = $bu
 $wgAutoloadClasses['CirrusSearch\Connection'] = $includes . 'Connection.php';
 $wgAutoloadClasses['CirrusSearch\Dump'] = $includes . 'Dump.php';
 $wgAutoloadClasses['CirrusSearch\ElasticsearchIntermediary'] = $includes . 'ElasticsearchIntermediary.php';
+$wgAutoloadClasses['CirrusSearch\Extra\Filter\IdHashMod'] = $extraFilterDir . 'IdHashMod.php';
 $wgAutoloadClasses['CirrusSearch\Extra\Filter\SourceRegex'] = $extraFilterDir . 'SourceRegex.php';
 $wgAutoloadClasses['CirrusSearch\ForceSearchIndex'] = __DIR__ . '/maintenance/forceSearchIndex.php';
 $wgAutoloadClasses['CirrusSearch\Hooks'] = $includes . 'Hooks.php';

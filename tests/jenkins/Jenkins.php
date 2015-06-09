@@ -63,13 +63,7 @@ $wgJobTypeConf['default'] = array(
 		'password' => null,
 	),
 );
-$wgJobQueueAggregator = array(
-	'class'       => 'JobQueueAggregatorRedis',
-	'redisServer' => 'localhost',
-	'redisConfig' => array(
-		'password' => null,
-	),
-);
+
 $wgCiteEnablePopups = true;
 $wgExtraNamespaces[ 760 ] = 'Mó';
 

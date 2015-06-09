@@ -1420,6 +1420,7 @@ GROOVY;
 	 */
 	private function installBoosts() {
 		global $wgCirrusSearchFunctionRescoreWindowSize,
+			$wgCirrusSearchWikimediaExtraPlugin,
 			$wgCirrusSearchLanguageWeight,
 			$wgLanguageCode;
 
@@ -1436,26 +1437,38 @@ GROOVY;
 
 		// Customize score by boosting based on incoming links count
 		if ( $this->boostLinks ) {
-			$incomingLinks = "(doc['incoming_links'].isEmpty() ? 0 : doc['incoming_links'].value)";
-			$scoreBoostGroovy = "log10($incomingLinks + 2)";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostGroovy, null, 'groovy' ) );
 			$useFunctionScore = true;
+			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'field_value_factor_with_default' ] ) &&
+					$wgCirrusSearchWikimediaExtraPlugin[ 'field_value_factor_with_default' ] ) {
+				$functionScore->addFunction( 'field_value_factor_with_default', array(
+					'field' => 'incoming_links',
+					'modifier' => 'log2p',
+					'missing' => 0,
+				) );
+			} else {
+				$scoreBoostExpression = "log10(doc['incoming_links'].value + 2)";
+				$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostExpression, null, 'expression' ) );
+			}
 		}
 
 		// Customize score by decaying a portion by time since last update
 		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {
 			// Convert half life for time in days to decay constant for time in milliseconds.
 			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
-			// e^ct - 1 where t is last modified time - now which is negative
-			$exponentialDecayGroovy = "Math.expm1($decayConstant * (doc['timestamp'].value - Instant.now().getMillis()))";
-			// p(e^ct - 1)
+			$parameters = array(
+				'decayConstant' => $decayConstant,
+				'decayPortion' => $this->preferRecentDecayPortion,
+				'nonDecayPortion' => 1 - $this->preferRecentDecayPortion,
+				'now' => time() * 1000
+			);
+
+			// e^ct where t is last modified time - now which is negative
+			$exponentialDecayExpression = "exp(decayConstant * (doc['timestamp'].value - now))";
 			if ( $this->preferRecentDecayPortion !== 1.0 ) {
-				$exponentialDecayGroovy = "$exponentialDecayGroovy * $this->preferRecentDecayPortion";
+				$exponentialDecayExpression = "$exponentialDecayExpression * decayPortion + nonDecayPortion";
 			}
-			// p(e^ct - 1) + 1 which is easier to calculate than, but reduces to 1 - p + pe^ct
-			// Which breaks the score into an unscaled portion (1 - p) and a scaled portion (p)
-			$exponentialDecayGroovy = "$exponentialDecayGroovy + 1";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayGroovy, null, 'groovy' ) );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayExpression,
+				$parameters, 'expression' ) );
 			$useFunctionScore = true;
 		}
 

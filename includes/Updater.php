@@ -172,8 +172,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
 	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = array();
 		$pages = array_filter( $pages, function( $page ) use ( &$pageIds ) {
@@ -193,11 +191,10 @@ class Updater extends ElasticsearchIntermediary {
 		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) &&
-					$wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) {
-				$document = $this->docToSuperDetectNoopScript( $document );
-			}
-			$allData[$suffix][] = $document;
+			$allData[$suffix][] = $this->docToScript( $document );
+			// To quickly switch back to sending doc as upsert instead of script, remove the line above
+			// and switch to the one below:
+			// $allData[$suffix][] = $document;
 		}
 		$count = 0;
 		foreach( $allData as $indexType => $data ) {
@@ -360,17 +357,47 @@ class Updater extends ElasticsearchIntermediary {
 		return $documents;
 	}
 
-	/**
-	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
-	 */
-	private function docToSuperDetectNoopScript( $doc ) {
-		$params = $doc->getParams();
-		$params[ 'source' ] = $doc->getData();
-		$params[ 'detectors' ] = array(
-			'incoming_links' => 'within 20%',
-		);
+	private function docToScript( $doc ) {
+		$scriptText = <<<GROOVY
+changed = false;
 
-		$script = new \Elastica\Script( 'super_detect_noop', $params, 'native' );
+GROOVY;
+		$params = $doc->getParams();
+		foreach ( $doc->getData() as $key => $value ) {
+			if ( $key === 'incoming_links' ) {
+				// incoming links has to be more then 20% incorrect before we update it.
+				$scriptText .= <<<GROOVY
+if ( ctx._source.$key == null ) {
+	thisChanged = true;
+} else if ( $key == 0 ) {
+	thisChanged = ctx._source.$key != 0;
+} else {
+	thisChanged = abs( ctx._source.$key - $key ) / $key > 0.2;
+}
+if ( thisChanged ) {
+	changed = true;
+	ctx._source.$key = $key;
+}
+
+GROOVY;
+			} else {
+				$scriptText .= <<<GROOVY
+if ( changed || ctx._source.$key != $key ) {
+	changed = true;
+	ctx._source.$key = $key;
+}
+
+GROOVY;
+			}
+			$params[ $key ] = $value;
+		}
+		$scriptText .= <<<GROOVY
+if ( !changed ) {
+	ctx.op = "none";
+}
+
+GROOVY;
+		$script = new \Elastica\Script( $scriptText, $params, 'groovy' );
 		if ( $doc->getDocAsUpsert() ) {
 			$script->setUpsert( $doc );
 		}

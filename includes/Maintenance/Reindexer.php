@@ -7,6 +7,7 @@ use CirrusSearch\Util;
 use Elastica\Document;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\ExceptionInterface;
+use Elastica\Filter\Script;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Type;
@@ -129,8 +130,6 @@ class Reindexer {
 	 * @param float $acceptableCountDeviation
 	 */
 	public function reindex( $processes = 1, $refreshInterval = 1, $retryAttempts = 5, $chunkSize = 100, $acceptableCountDeviation = .05 ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of shards but that is
 		// is worth the price.  total_shards_per_node will help to make sure that each shard
@@ -145,11 +144,6 @@ class Reindexer {
 		) );
 
 		if ( $processes > 1 ) {
-			if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) ||
-					!$wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) {
-				$this->error( "Can't use multiple processes without \$wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true", 1 );
-			}
-
 			$fork = new ReindexForkController( $processes );
 			$forkResult = $fork->start();
 			// Forking clears the timeout so we have to reinstate it.
@@ -265,14 +259,17 @@ class Reindexer {
 			$messagePrefix = "\t\t[$childNumber] ";
 			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
-			$filter = new \CirrusSearch\Extra\Filter\IdHashMod( $children, $childNumber );
+			$filter = new Script( array(
+				'script' => "(doc['_uid'].value.hashCode() & Integer.MAX_VALUE) % $children == $childNumber",
+				'lang' => 'groovy'
+			) );
 		}
 		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		try {
 			$query = new Query();
 			$query->setFields( array( '_id', '_source' ) );
 			if ( $filter ) {
-				$query->setQuery( new \Elastica\Query\Filtered( new \Elastica\Query\MatchAll(), $filter ) );
+				$query->setFilter( $filter );
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType

@@ -11,7 +11,7 @@
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
-	"cirrussearch-backend-error": "No pudimos completar tu búsqueda debido a un problema temporario. Por favor intenta de nuevo más tarde.",
+	"cirrussearch-backend-error": "La búsqueda no se pudo completar debido a un problema temporal. Inténtalo de nuevo en unos instantes.",
 	"cirrussearch-parse-error": "La queja no fue entendida. Hágala más sencilla. La queja fue registrada para mejorar el sistema de búsqueda.",
 	"cirrussearch-too-busy-error": "La búsqueda está actualmente ocupada.  Inténtalo de nuevo más tarde.",
 	"cirrussearch-too-busy-for-you-anonymous-error": "Tienes demasiadas búsquedas abiertas a la vez. Si estás compartiendo tu dirección IP con otros usuarios puedes identificarte para establecer tus propios límites.",

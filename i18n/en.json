@@ -18,5 +18,6 @@
 	"cirrussearch-pref-desc": "Try our new search which supports a greater number of languages, provides more up-to-date results, and can even find text inside of templates.",
 	"apihelp-cirrus-config-dump-description": "Dump of CirrusSearch configuration.",
 	"apihelp-cirrus-mapping-dump-description": "Dump of CirrusSearch mapping for this wiki.",
-	"apihelp-cirrus-settings-dump-description": "Dump of CirrusSearch settings for this wiki."
+	"apihelp-cirrus-settings-dump-description": "Dump of CirrusSearch settings for this wiki.",
+	"cirrussearch-give-feedback": "Give us your feedback"
 }

@@ -540,6 +540,13 @@ $wgCirrusSearchEnableSearchLogging = false;
 // The maximum number of incategory:a|b|c items to OR together.
 $wgCirrusSearchMaxIncategoryOptions = 100;
 
+/**
+ * The URL of a "Give us your feedback" link to append to search results or
+ * something falsy if you don't want to show the link.
+ */
+$wgCirrusSearchFeedbackLink = false;
+
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
@@ -637,6 +644,7 @@ $wgHooks[ 'ResourceLoaderGetConfigVars' ][] = 'CirrusSearch\Hooks::onResourceLoa
 $wgHooks[ 'ResourceLoaderRegisterModules' ][] = 'CirrusSearch\Hooks::onResourceLoaderRegisterModules';
 $wgHooks[ 'SoftwareInfo' ][] = 'CirrusSearch\Hooks::onSoftwareInfo';
 $wgHooks[ 'SpecialSearchResultsPrepend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsPrepend';
+$wgHooks[ 'SpecialSearchResultsAppend' ][] = 'CirrusSearch\Hooks::onSpecialSearchResultsAppend';
 $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';

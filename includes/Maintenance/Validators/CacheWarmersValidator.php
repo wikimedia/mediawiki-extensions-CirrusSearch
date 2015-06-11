@@ -81,7 +81,7 @@ class CacheWarmersValidator extends Validator {
 			// filters. That is probably OK because most searches don't use one.
 			// It'd be overeager.
 			null
-			// Null user because we won't be logging anything about the user.
+		// Null user because we won't be logging anything about the user.
 		);
 		$searcher->setReturnQuery( true );
 		$searcher->setResultsType( new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL ) );

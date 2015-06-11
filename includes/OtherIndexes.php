@@ -70,17 +70,7 @@ class OtherIndexes extends Updater {
 	 * @param Array(Title) $titles titles for which to add to the tracking list
 	 */
 	public function addLocalSiteToOtherIndex( $titles ) {
-		// Script is in groovy and is run in a context with local_site set to this wiki's name
-		$script  = <<<GROOVY
-			if (!ctx._source.containsKey("local_sites_with_dupe")) {
-				ctx._source.local_sites_with_dupe = [local_site]
-			} else if (ctx._source.local_sites_with_dupe.contains(local_site)) {
-				ctx.op = "none"
-			} else {
-				ctx._source.local_sites_with_dupe += local_site
-			}
-GROOVY;
-		$this->updateOtherIndex( 'addLocalSite', $script, $titles );
+		$this->updateOtherIndex( 'addLocalSite', 'add', $titles );
 	}
 
 	/**
@@ -88,25 +78,24 @@ GROOVY;
 	 * @param Title[] $titles array of titles for which to remove the tracking field
 	 */
 	public function removeLocalSiteFromOtherIndex( array $titles ) {
-		// Script is in groovy and is run in a context with local_site set to this wiki's name
-		$script  = <<<GROOVY
-			if (!ctx._source.containsKey("local_sites_with_dupe")) {
-				ctx.op = "none"
-			} else if (!ctx._source.local_sites_with_dupe.remove(local_site)) {
-				ctx.op = "none"
-			}
-GROOVY;
-		$this->updateOtherIndex( 'removeLocalSite', $script, $titles );
+		$this->updateOtherIndex( 'removeLocalSite', 'remove', $titles );
 	}
 
 	/**
 	 * Update the indexes for other wiki that also store information about $titles.
 	 * @param string $actionName name of the action to report in logging
-	 * @param string $scriptSource groovy source script for performing the update
+	 * @param string $setAction Set action to perform with super_detect_noop. Either 'add' or 'remove'
 	 * @param Title[] $titles array of titles in other indexes to update
 	 * @return bool false on failure, null otherwise
 	 */
-	private function updateOtherIndex( $actionName, $scriptSource, $titles ) {
+	private function updateOtherIndex( $actionName, $setAction, $titles ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
+
+		if ( !isset( $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop'] ) ) {
+			$this->logFailure( $actionName, $titles, 'super_detect_noop plugin not enabled' );
+			return;
+		}
+
 		$client = Connection::getClient();
 		$bulk = new \Elastica\Bulk( $client );
 		$updatesInBulk = 0;
@@ -131,8 +120,17 @@ GROOVY;
 				$query->setSize( 1 );
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
 				$findIdsClosures[] = function( $id ) use
-						( $scriptSource, $bulk, $otherIndex, $localSite, &$updatesInBulk ) {
-					$script = new \Elastica\Script( $scriptSource, array( 'local_site' => $localSite ), 'groovy' );
+						( $setAction, $bulk, $otherIndex, $localSite, &$updatesInBulk ) {
+					$script = new \Elastica\Script(
+						'super_detect_noop',
+						array(
+							'source' => array(
+								'local_sites_with_dupe' => array( $setAction => $localSite ),
+							),
+							'handlers' => array( 'local_sites_with_dupe' => 'set' )
+						),
+						'native'
+					);
 					$script->setId( $id );
 					$script->setParam( '_type', 'page' );
 					$script->setParam( '_index', $otherIndex );
@@ -186,12 +184,19 @@ GROOVY;
 			$this->success();
 		} else {
 			$this->failure( $e );
-			$articleIDs = array_map( function( $title ) {
-				return $title->getArticleID();
-			}, $titles );
-			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
-				"Other Index $actionName for article ids: " . implode( ',', $articleIDs ) );
+			$this->logFailure( $actionName, $titles );
 			return false;
 		}
+	}
+
+	private function logFailure( $actionNAme, array $titles, $reason = '' ) {
+		$articleIDs = array_map( function( $title ) {
+			return $title->getArticleID();
+		}, $titles );
+		if ( $reason ) {
+			$reason = " ($reason)";
+		}
+		LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
+			"Other Index $actionName$reason for article ids: " . implode( ',', $articleIDs ) );
 	}
 }

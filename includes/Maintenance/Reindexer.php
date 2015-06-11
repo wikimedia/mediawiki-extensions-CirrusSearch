@@ -30,12 +30,9 @@ use Elastica\Type;
  */
 class Reindexer {
 	/**
-	 * This one's public because it's used in a Closure, where $this is passed
-	 * in as $self (because PHP<5.4 doesn't properly support $this in closures)
-	 *
 	 * @var Index
 	 */
-	public $index;
+	private $index;
 
 	/**
 	 * @var \Elastica\Client
@@ -285,41 +282,27 @@ class Reindexer {
 			$operationStartTime = microtime( true );
 			$completed = 0;
 			$self = $this;
-			while ( true ) {
-				$result = $this->withRetry( $retryAttempts, $messagePrefix, 'fetching documents to reindex',
-					function() use ( $self, $result ) {
-						return $self->index->search( array(), array(
-							'scroll_id' => $result->getResponse()->getScrollId(),
-							'scroll' => '1h'
-						) );
-					} );
-				if ( !$result->count() ) {
-					$this->outputIndented( $messagePrefix . "All done\n" );
-					break;
-				}
-				$documents = array();
-				while ( $result->current() ) {
-					// Build the new document to just contain keys which have a mapping in the new properties.  To clean
-					// out any old fields that we no longer use.
-					$data = Util::cleanUnusedFields( $result->current()->getSource(), $properties );
-					$document = new Document( $result->current()->getId(), $data );
+			Util::iterateOverScroll( $this->index, $result->getResponse()->getScrollId(), '1h',
+				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $self, $type,
+						&$completed, $totalDocsToReindex, $operationStartTime ) {
+					$documents = array();
+					foreach( $results as $result ) {
+						$documents[] = $self->buildNewDocument( $result, $properties );
+					}
+					$self->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
+						function() use ( $self, $type, $messagePrefix, $documents ) {
+							$self->sendDocuments( $type, $messagePrefix, $documents );
+						} );
+					$completed += sizeof( $results );
+					$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+					$this->outputIndented( $messagePrefix .
+						"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
+				}, 0, $retryAttempts,
+				function( $e, $errors ) use ( $self, $messagePrefix ) {
+					$self->sleepOnRetry( $e, $errors, $messagePrefix, 'fetching documents to reindex' );
+				} );
 
-					// Note that while setting the opType to create might improve performance slightly it can cause
-					// trouble if the scroll returns the same id twice.  It can do that if the document is updated
-					// during the scroll process.  I'm unclear on if it will always do that, so you still have to
-					// perform the date based catch up after the reindex.
-					$documents[] = $document;
-					$result->next();
-				}
-				$this->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
-					function() use ( $self, $type, $messagePrefix, $documents ) {
-						$self->sendDocuments( $type, $messagePrefix, $documents );
-					} );
-				$completed += $result->count();
-				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-				$this->outputIndented( $messagePrefix .
-					"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
-			}
+			$this->outputIndented( $messagePrefix . "All done\n" );
 		} catch ( ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			$type = get_class( $e );
@@ -327,6 +310,25 @@ class Reindexer {
 			wfLogWarning( "Search backend error during reindex.  Error type is '$type' and message is:  $message" );
 			die( 1 );
 		}
+	}
+
+	/**
+	 * Build the new document to just contain keys which have a mapping in the new properties.  To clean
+	 * out any old fields that we no longer use.
+	 * @param array() $result original document retrieved from a search
+	 * @param array() $properties mapping properties
+	 * @return Document
+	 */
+	public function buildNewDocument( $result, $properties ) {
+		// Build the new document to just contain keys which have a mapping in the new properties.  To clean
+		// out any old fields that we no longer use.
+		$data = Util::cleanUnusedFields( $result->getSource(), $properties );
+
+		// Note that while setting the opType to create might improve performance slightly it can cause
+		// trouble if the scroll returns the same id twice.  It can do that if the document is updated
+		// during the scroll process.  I'm unclear on if it will always do that, so you still have to
+		// perform the date based catch up after the reindex.
+		return new Document( $result->getId(), $data );
 	}
 
 	private function getHealth() {
@@ -362,27 +364,28 @@ class Reindexer {
 	 * @param callable $func
 	 * @return mixed
 	 */
-	private function withRetry( $attempts, $messagePrefix, $description, $func ) {
-		$errors = 0;
-		while ( true ) {
-			if ( $errors < $attempts ) {
-				try {
-					return $func();
-				} catch ( ExceptionInterface $e ) {
-					$errors += 1;
-					// Random backoff with lowest possible upper bound as 16 seconds.
-					// With the default maximum number of errors (5) this maxes out at 256 seconds.
-					$seconds = rand( 1, pow( 2, 3 + $errors ) );
-					$type = get_class( $e );
-					$message = ElasticsearchIntermediary::extractMessage( $e );
-					$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
-						"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
-					sleep( $seconds );
-				}
-			} else {
-				return $func();
-			}
-		}
+	public function withRetry( $attempts, $messagePrefix, $description, $func) {
+		$self = $this;
+		return Util::withRetry ( $attempts, $func,
+			function( $e, $errors ) use ( $self, $messagePrefix, $description ) {
+				$self->sleepOnRetry( $e, $errors, $messagePrefix, $description );
+			} );
+	}
+
+	/**
+	 * @param \Exception $e exception caught
+	 * @param int $errors number of errors
+	 * @param Maintenance $out
+	 * @param string $messagePrefix
+	 * @param string $description
+	 */
+	public function sleepOnRetry(\Exception $e, $errors, $messagePrefix, $description ) {
+		$type = get_class( $e );
+		$seconds = Util::backoffDelay( $errors );
+		$message = ElasticsearchIntermediary::extractMessage( $e );
+		$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
+			"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
+		sleep( $seconds );
 	}
 
 	/**

@@ -74,3 +74,14 @@ Feature: Searches with the incategory filter
       And Amazing Catapult is in the api search results
       But Two Words is not in the api search results
 
+  Scenario Outline: incategory: can handle multiple spaces between clauses
+    When I api search for incategory:weaponry<spaces>incategory:weaponry
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      And Two Words is not in the api search results
+  Examples:
+    |       spaces       |
+    |%{\u0020}%%{\u0020}%|
+    |%{\u0020}%%{\u0009}%|
+    |%{\u3000}%%{\u3000}%|
+

@@ -350,7 +350,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$searcher = $this;
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
-		$this->term = trim( $term );
+		$this->term = $term;
 		$this->boostLinks = $wgCirrusSearchBoostLinks;
 		$searchType = 'full_text';
 		// Handle title prefix notation
@@ -579,6 +579,7 @@ GROOVY;
 		$this->highlightSource = $highlightSource;
 
 		$this->term = $this->escaper->escapeQuotes( $this->term );
+		$this->term = trim( $this->term );
 
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)

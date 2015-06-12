@@ -88,3 +88,13 @@ Feature: Searches with the insource filter
   Scenario: insource:// for other complex regexes finds answers and doesn't spin forever
     When I api search for all:insource:/[ab]*a[cd]{50,80}/
     Then RegexComplexResult is the first api search result
+
+  @regex
+  Scenario Outline: insource:// accepts multiple spaces between clauses
+    When I api search for insource:/b c/<spaces>insource:/a b c/
+    Then RegexSpaces is the first api search result
+  Examples:
+    |       spaces       |
+    |%{\u0020}%%{\u0020}%|
+    |%{\u0020}%%{\u0009}%|
+    |%{\u3000}%%{\u3000}%|

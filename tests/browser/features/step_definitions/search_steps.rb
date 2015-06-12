@@ -11,7 +11,7 @@ When(/^I go search for (.*)$/) do |search|
 end
 Before do
   @search_vars = {
-    "idiographic_whitspace" => "u\3000".force_encoding("utf-8")
+    "%ideographic_whitespace%" => "\u3000".force_encoding("utf-8")
   }
 end
 When(/^I locate the page id of (.*) and store it as (%.*%)$/) do |title, varname|
@@ -21,7 +21,10 @@ end
 When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, offset, lang, namespaces, search|
   begin
     @api_result = search_for(
-      search.gsub(/%[^ ]+%/, @search_vars),
+      search.gsub(/%[^ {]+%/, @search_vars)
+        .gsub(/%\{\\u([\dA-Fa-f]{4,6})\}%/) do  # replace %{\uXXXX}% with the unicode code point
+          [Regexp.last_match[1].hex].pack("U")
+        end,
       sroffset: offset,
       srnamespace: (namespaces || "0").split(/ /),
       uselang: lang,

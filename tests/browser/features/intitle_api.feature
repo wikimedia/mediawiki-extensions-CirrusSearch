@@ -30,15 +30,25 @@ Feature: Searches with the intitle filter
     When I api search for -intitle:amazing intitle:catapult
     Then Catapult is the first api search result
       And Amazing Catapult is not in the api search results
-      
+
   Scenario: -intitle: doesn't highlight excluded title
     When I api search for -intitle:catapult two words
     Then Two Words is the first api search result
       And ffnonesenseword catapult pickles anotherword is the highlighted snippet of the first api search result
-  
+
   Scenario: intitle: will accept a space after its :
     When I api search for intitle: catapult
     Then Catapult is in the api search results
       And Amazing Catapult is in the api search results
       But Two Words is not in the api search results
 
+  Scenario Outline: intitle: will accept multiple spaces between clauses
+    When I api search for intitle:catapult<spaces>intitle:catapult
+    Then Catapult is in the api search results
+      And Amazing Catapult is in the api search results
+      But Two Words is not in the api search results
+  Examples:
+    |       spaces       |
+    |%{\u0020}%%{\u0020}%|
+    |%{\u0020}%%{\u0009}%|
+    |%{\u3000}%%{\u3000}%|

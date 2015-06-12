@@ -84,9 +84,15 @@ Feature: Searches with syntax errors
     When I api search for "ffnonesenseword catapult"~anotherword
       And Two Words is the first api search result
 
-  Scenario: Searching for idiographic whitespace returns no result
-    When I api search for %idiographic_whitespace%
+  Scenario Outline: Searching for special whitespaces returns no result
+    When I api search for <specialwhitespaces>
     Then the api warns text search is disabled
+  Examples:
+    |     specialwhitespaces     |
+    | %{\u3000}%                 |
+    | %{\u0009}%%{\u3000}%       |
+    | %{\u0009}% %{\u3000}%      |
+    | %ideographic_whitespace%   |
 
   @boolean_operators
   Scenario Outline: ORs and ANDs around phrase prefixes finds the search terms

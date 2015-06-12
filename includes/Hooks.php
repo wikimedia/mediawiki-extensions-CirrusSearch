@@ -23,6 +23,7 @@ use \User;
 use \WebRequest;
 use \WikiPage;
 use \Xml;
+use \Html;
 
 /**
  * All CirrusSearch's external hooks.
@@ -276,6 +277,24 @@ class Hooks {
 		}
 
 		return true;
+	}
+
+	public static function onSpecialSearchResultsAppend( $specialSearch, $out ) {
+		global $wgCirrusSearchFeedbackLink;
+		if ( $wgCirrusSearchFeedbackLink ) {
+			self::addSearchFeedbackLink( $wgCirrusSearchFeedbackLink, $specialSearch, $out );
+		}
+		return true;
+	}
+
+	private static function addSearchFeedbackLink( $link, $specialSearch, $out ) {
+		$anchor = Xml::element(
+			'a',
+			array( 'href' => $link ),
+			$specialSearch->msg( 'cirrussearch-give-feedback' )->text()
+		);
+		$block = Html::rawElement( 'div', array(), $anchor );
+		$out->addHtml( $block );
 	}
 
 	/**
@@ -605,5 +624,4 @@ class Hooks {
 
 		return true;
 	}
-
 }

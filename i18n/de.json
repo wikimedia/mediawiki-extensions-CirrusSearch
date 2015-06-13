@@ -23,5 +23,6 @@
 	"cirrussearch-pref-desc": "Teste unsere neue Suchmaschine, die eine größere Anzahl an Sprachen unterstützt, aktuellere Ergebnisse liefert und auch Text innerhalb Vorlagen finden kann.",
 	"apihelp-cirrus-config-dump-description": "Speicherauszug der CirrusSearch-Konfiguration.",
 	"apihelp-cirrus-mapping-dump-description": "Speicherauszug der CirrusSearch-Zuordnung für dieses Wiki.",
-	"apihelp-cirrus-settings-dump-description": "Speicherauszug der CirrusSearch-Einstellungen für dieses Wiki."
+	"apihelp-cirrus-settings-dump-description": "Speicherauszug der CirrusSearch-Einstellungen für dieses Wiki.",
+	"cirrussearch-give-feedback": "Gib uns deine Rückmeldung"
 }

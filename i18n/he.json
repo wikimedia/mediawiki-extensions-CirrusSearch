@@ -21,5 +21,6 @@
 	"cirrussearch-pref-desc": "נסו את החיפוש החדש שלנו, שתומך ביותר שפות, מספק תוצאות עדכניות יותר ואפילו מוצא טקסט בתוך תבניות.",
 	"apihelp-cirrus-config-dump-description": "היטל של הגדרות CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "היטל של מיפויי CirrusSearch בוויקי הזה.",
-	"apihelp-cirrus-settings-dump-description": "היטל של הגדרות CirrusSearch בוויקי הזה."
+	"apihelp-cirrus-settings-dump-description": "היטל של הגדרות CirrusSearch בוויקי הזה.",
+	"cirrussearch-give-feedback": "תנו לנו את המשוב שלכם"
 }

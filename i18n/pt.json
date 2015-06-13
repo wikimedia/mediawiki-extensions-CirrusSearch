@@ -22,5 +22,6 @@
 	"cirrussearch-pref-desc": "Experimente a nossa nova forma de pesquisa que suporta um maior número de idiomas, fornece resultados mais actualizados e pode ainda encontrar o texto incluído em predefinições.",
 	"apihelp-cirrus-config-dump-description": "Dump da configuração do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento do CirrusSearch para esta wiki.",
-	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki."
+	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki.",
+	"cirrussearch-give-feedback": "Dê-nos a sua opinião"
 }

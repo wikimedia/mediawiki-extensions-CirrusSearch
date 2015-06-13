@@ -30,5 +30,6 @@
 	"cirrussearch-pref-desc": "试试我们的新搜索引擎，它支持更多语言，能提供更多最新的结果，甚至还能找到模板里面的文本。",
 	"apihelp-cirrus-config-dump-description": "CirrusSearch配置的转储。",
 	"apihelp-cirrus-mapping-dump-description": "用于此wiki的CirrusSearch映射转储。",
-	"apihelp-cirrus-settings-dump-description": "用于此wiki的CirrusSearch设置转储。"
+	"apihelp-cirrus-settings-dump-description": "用于此wiki的CirrusSearch设置转储。",
+	"cirrussearch-give-feedback": "告诉我们您的反馈"
 }

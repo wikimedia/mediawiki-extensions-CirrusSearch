@@ -20,5 +20,6 @@
 	"cirrussearch-pref-desc": "Пробајте го нашето ново пребарување кое поддржува поголем број јазици, дава потековни и понавремени резултати, па дури и наоѓа текст во шаблони.",
 	"apihelp-cirrus-config-dump-description": "Резервен склад на поставките на CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Резервен склад на пресликувањата на CirrusSearch за ова вики.",
-	"apihelp-cirrus-settings-dump-description": "Резервен склад на поставките на CirrusSearch за ова вики."
+	"apihelp-cirrus-settings-dump-description": "Резервен склад на поставките на CirrusSearch за ова вики.",
+	"cirrussearch-give-feedback": "Дајте ни ваше мислење"
 }

@@ -7,7 +7,8 @@
 			"Ihojose",
 			"Luis Felipe Schenone",
 			"Jonathan rrr",
-			"Ryo567"
+			"Ryo567",
+			"Macofe"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
@@ -26,5 +27,6 @@
 	"cirrussearch-pref-desc": "Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.",
 	"apihelp-cirrus-config-dump-description": "Volcado de configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Volcado de asignaciones de CirrusSearch para este wiki.",
-	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki."
+	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki.",
+	"cirrussearch-give-feedback": "Danos tu opinión"
 }

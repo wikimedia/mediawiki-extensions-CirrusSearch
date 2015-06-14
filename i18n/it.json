@@ -4,7 +4,8 @@
 			"Beta16",
 			"Rosh",
 			"Lucas2",
-			"Mpiva"
+			"Mpiva",
+			"Alexmar983"
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
@@ -23,5 +24,6 @@
 	"cirrussearch-pref-desc": "Prova la nostra nuova ricerca, che supporta un numero maggiore di lingue, fornisce risultati più aggiornati e può anche trovare il testo all'interno di template.",
 	"apihelp-cirrus-config-dump-description": "Copia della configurazione di CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Copia della mappatura di CirrusSearch di questa wiki.",
-	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch di questa wiki."
+	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch di questa wiki.",
+	"cirrussearch-give-feedback": "Dacci il tuo feedback"
 }

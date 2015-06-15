@@ -6,6 +6,7 @@ use \MWNamespace;
 use \PoolCounterWorkViaCallback;
 use \Title;
 use \User;
+use \Status;
 
 /**
  * Random utility functions that don't have a better home

@@ -5,7 +5,8 @@
 			"Jean-Frédéric",
 			"Linedwell",
 			"Robby",
-			"0x010C"
+			"0x010C",
+			"Mattho69"
 		]
 	},
 	"cirrussearch-desc": "Fait effectuer la recherche par Solr",
@@ -24,5 +25,6 @@
 	"cirrussearch-pref-desc": "Essayer notre nouvelle recherche qui supporte un plus grand nombre de langues, fournit davantage de résultats à jour, et peut même trouver du texte dans les modèles.",
 	"apihelp-cirrus-config-dump-description": "Vidage de la configuration CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Vidage de la correspondance CirrusSearch pour ce wiki.",
-	"apihelp-cirrus-settings-dump-description": "Vidage des paramètres CirrusSearch pour ce wiki."
+	"apihelp-cirrus-settings-dump-description": "Vidage des paramètres CirrusSearch pour ce wiki.",
+	"cirrussearch-give-feedback": "Donnez-nous votre avis"
 }

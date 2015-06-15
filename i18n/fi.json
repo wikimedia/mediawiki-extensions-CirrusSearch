@@ -3,11 +3,13 @@
 		"authors": [
 			"Nike",
 			"Stryn",
-			"MrTapsa"
+			"MrTapsa",
+			"Pxos"
 		]
 	},
 	"cirrussearch-desc": "\"Elasticsearch\"-käyttöinen haku MediaWikille",
 	"cirrussearch-backend-error": "Emme voineet suorittaa hakuasi väliaikaisen ongelman vuoksi. Yritä myöhemmin uudelleen.",
+	"cirrussearch-too-busy-error": "Hakutoiminnossa on nyt ruuhkaa. Yritä myöhemmin uudelleen.",
 	"cirrussearch-too-busy-for-you-anonymous-error": "Sinulla on liian monta yhtäaikaista hakua käynnissä. Jos jaat IP-osoitteesi muiden kanssa, voit kirjautua sisään päästäksesi omiin rajoituksiisi.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "Sinulla on liian monta samanaikaista hakua käynnissä.",
 	"cirrussearch-now-using": "Tämä wiki käyttää uutta hakukonetta. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lue lisää]])",

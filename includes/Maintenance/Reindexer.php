@@ -1,7 +1,7 @@
 <?php
-
 namespace CirrusSearch\Maintenance;
-
+use CirrusSearch\Connection;
+use CirrusSearch\DataSender;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use Elastica\Document;
@@ -140,6 +140,9 @@ class Reindexer {
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		) );
 
+		$sender = new DataSender();
+		$frozenIndexes = Connection::indexToIndexTypes( $this->types );
+		$sender->freezeIndexes( $frozenIndexes );
 		if ( $processes > 1 ) {
 			$fork = new ReindexForkController( $processes );
 			$forkResult = $fork->start();
@@ -188,6 +191,7 @@ class Reindexer {
 			'refresh_interval' => $refreshInterval . 's',
 			'merge.policy' => $this->mergeSettings,
 		) );
+		$sender->thawIndexes( $frozenIndexes );
 	}
 
 	public function optimize() {

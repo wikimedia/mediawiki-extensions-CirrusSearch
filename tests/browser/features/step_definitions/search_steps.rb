@@ -342,6 +342,18 @@ Then(/^within (\d+) seconds api searching for (.*) yields (.*) as the first resu
     step("#{title} is the first api search result")
   end
 end
+Then(/^within (\d+) seconds api searching for (.*) yields no results$/) do |seconds, term|
+  repeat_within(seconds) do
+    step("I api search for " + term)
+    step("there are no api search results")
+  end
+end
+Then(/^within (\d+) seconds api searching (.*) yields (.*) as (the highlighted .* of the first api search result)$/) do |seconds, search, highlight, highlight_suffix|
+  repeat_within(seconds) do
+    step("I api search " + search)
+    step(highlight + " is " + highlight_suffix)
+  end
+end
 Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the first suggestion$/) do |seconds, term, title|
   within(seconds) do
     step("I type #{term} into the search box")
@@ -409,6 +421,22 @@ Then(/^there is no warning$/) do
   on(SearchResultsPage).warning.should == ""
 end
 
+When(/^I globally freeze indexing$/) do
+  api.action(
+    :'cirrus-freeze-writes',
+    token_type: false,
+    formatversion: 2
+  )
+end
+When(/^I globally thaw indexing$/) do
+  api.action(
+    :'cirrus-freeze-writes',
+    token_type: false,
+    formatversion: 2,
+    thaw: 1
+  )
+end
+
 def within(seconds)
   end_time = Time.new + Integer(seconds)
   begin
@@ -459,11 +487,12 @@ def check_all_search_results_internal(found, title, not_searching, in_ok)
 end
 
 def check_api_highlight(key, index, highlighted, in_ok)
-  fail RSpec::Expectations::ExpectationNotMetError unless @api_result["search"][index].key? key
+  expect(@api_result["search"].length).to be > index
+  expect(@api_result["search"][index]).to have_key(key)
   text = @api_result["search"][index][key].gsub(/<span class="searchmatch">(.*?)<\/span>/, '*\1*')
   if in_ok
-    text.should include(highlighted)
+    expect(text).to include(highlighted)
   else
-    text.should == highlighted
+    expect(text).to be == highlighted
   end
 end

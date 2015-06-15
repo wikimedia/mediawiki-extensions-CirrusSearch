@@ -29,7 +29,7 @@ class OtherIndex extends Job {
 	 * @param $titles array(Title) The title we might update
 	 * @param $existsInLocalIndex boolean Do these titles exist in the local index?
 	 */
-	public static function queueIfRequired( $titles, $existsInLocalIndex ) {
+	public static function queueIfRequired( $titles ) {
 		$titlesToUpdate = array();
 		foreach( $titles as $title ) {
 			if ( OtherIndexes::getExternalIndexes( $title ) ) {
@@ -42,7 +42,6 @@ class OtherIndex extends Job {
 			JobQueueGroup::singleton()->push(
 				new self( $titles[ 0 ], array(
 					'titles' => $titlesToUpdate,
-					'existsInLocalIndex' => $existsInLocalIndex,
 				) )
 			);
 		}
@@ -56,8 +55,6 @@ class OtherIndex extends Job {
 		}
 		$otherIdx = new OtherIndexes( wfWikiId() );
 
-		return $this->params[ 'existsInLocalIndex' ] ?
-			$otherIdx->addLocalSiteToOtherIndex( $titles ) :
-			$otherIdx->removeLocalSiteFromOtherIndex( $titles );
+		$otherIdx->updateOtherIndex( $titles );
 	}
 }

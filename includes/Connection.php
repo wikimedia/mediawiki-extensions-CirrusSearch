@@ -29,7 +29,7 @@ class Connection extends ElasticaConnection {
 	 * @var string
 	 */
 	const CONTENT_INDEX_TYPE = 'content';
-	
+
 	/**
 	 * Name of the index that holds non-content articles.
 	 * @var string
@@ -67,6 +67,30 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
+	 * Fetch the Elastica Type used for all wikis in the cluster to track
+	 * frozen indexes that should not be written to.
+	 * @return \Elastica\Index
+	 */
+	public static function getFrozenIndex() {
+		$index = self::getIndex( 'mediawiki_cirrussearch_frozen_indexes' );
+		if ( !$index->exists() ) {
+			$options = array(
+				'number_of_shards' => 1,
+				'auto_expand_replicas' => '0-2',
+			 );
+			$index->create( $options, true );
+		}
+		return $index;
+	}
+
+	/**
+	 * @return \Elastica\Type
+	 */
+	public static function getFrozenIndexNameType() {
+		return self::getFrozenIndex()->getType( 'name' );
+	}
+
+	/**
 	 * Fetch the Elastica Type for pages.
 	 * @param mixed $name basename of index
 	 * @param mixed $type type of index (content or general or false to get all)
@@ -85,6 +109,7 @@ class Connection extends ElasticaConnection {
 		$type = 'general'; // Namespaces are always stored in the 'general' index.
 		return self::getIndex( $name, $type )->getType( self::NAMESPACE_TYPE_NAME );
 	}
+
 	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *
@@ -94,6 +119,44 @@ class Connection extends ElasticaConnection {
 		global $wgCirrusSearchNamespaceMappings;
 		return array_merge( array_values( $wgCirrusSearchNamespaceMappings ),
 			array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ) );
+	}
+
+	/**
+	 * Given a list of Index objects, return the 'type' portion of the name
+	 * of that index. This matches the types as returned from
+	 * self::getAllIndexTypes().
+	 *
+	 * @param \Elastica\Index[] $indexes
+	 * @return string[]
+	 */
+	public static function indexToIndexTypes( array $indexes ) {
+		$allowed = self::getAllIndexTypes();
+		return array_map( function( $type ) use ( $allowed ) {
+			$fullName = $type->getIndex()->getName();
+			$parts = explode( '_', $fullName );
+			// In 99% of cases it should just be the second
+			// piece of a 2 or 3 part name.
+			if ( isset( $parts[1] ) && in_array( $parts[1], $allowed ) ) {
+				return $parts[1];
+			}
+			// the wikiId should be the first part of the name and
+			// not part of our result, strip it
+			if ( $parts[0] === wfWikiId() ) {
+				$parts = array_slice( $parts, 1 );
+			}
+			// there might be a suffix at the end, try stripping it
+			$maybe = implode( '_', array_slice( $parts, 0, -1 ) );
+			if ( in_array( $maybe, $allowed ) ) {
+				return $maybe;
+			}
+			// maybe there wasn't a suffix at the end, try the whole thing
+			$maybe = implode( '_', $parts );
+			if ( in_array( $maybe, $allowed ) ) {
+				return $maybe;
+			}
+			// probably not right, but at least we tried
+			return $fullName;
+		}, $indexes );
 	}
 
 	/**

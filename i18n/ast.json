@@ -20,5 +20,6 @@
 	"cirrussearch-pref-desc": "Pruebe la nuesa gueta nueva que tien sofitu pa más llingües, ufre resultaos más actuales, ya inda pue alcontrar testu dientro de les plantíes.",
 	"apihelp-cirrus-config-dump-description": "Volcáu de la configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Volcáu del mapéu de CirrusSearch pa esta wiki.",
-	"apihelp-cirrus-settings-dump-description": "Volcáu de les preferencies de CirrusSearch pa esta wiki."
+	"apihelp-cirrus-settings-dump-description": "Volcáu de les preferencies de CirrusSearch pa esta wiki.",
+	"cirrussearch-give-feedback": "Unvianos un comentariu"
 }

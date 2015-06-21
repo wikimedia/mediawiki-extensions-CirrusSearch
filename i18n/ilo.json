@@ -7,7 +7,7 @@
 	"cirrussearch-desc": "Pinaandar ti Elasticsearch a panagbiruk para iti MediaWiki",
 	"cirrussearch-backend-error": "Saanmi a makompleto ti panagbirukmo gapu ti temporario a problema. Pangngaasi a padasem manen intono madamdama.",
 	"cirrussearch-parse-error": "Saan a naawatan ti panagusisa. Pangngaasi a palakaem. Ti usisa ket nailista tapno mapasayaat ti sistema ti panagbiruk.",
-	"cirrussearch-too-busy-error": "Agdama makumikom ti panagpiruk. Pangngaasi a padasemn manen intono madamdama.",
+	"cirrussearch-too-busy-error": "Agdama a makumikom ti panagbiruk. Pangngaasi a padasem manen intono madamdama.",
 	"cirrussearch-regex-syntax-error": "Biddut ti eskritu ti kadawyan a panangiyebkas iti $2: $1",
 	"cirrussearch-regex-too-busy-error": "Adu unay ti agtartaray a kadawyan a panagiyebkas a panagbiruk. Pangngaasi a padasemn manen intono madamdama.",
 	"cirrussearch-regex-too-complex-error": "Narikut unay tikadawyan a panangiyebkas.  Agadal pay ti adu a maipanggep ti panangipalaka [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|ditoy]].",

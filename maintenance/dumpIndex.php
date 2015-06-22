@@ -7,10 +7,11 @@ use \CirrusSearch\ElasticsearchIntermediary;
 use \CirrusSearch\Util;
 
 use Elastica;
+use Elastica\Filter;
 use Elastica\Index;
+use Elastica\JSON;
 use Elastica\Query;
 use Elastica\Type;
-use Elastica\Filter;
 
 /**
  * Dump an index to stdout
@@ -83,7 +84,6 @@ class DumpIndex extends Maintenance {
 			'(queryString syntax).', false, true );
 		$this->addOption( 'limit', 'Maximum number of documents to dump, 0 means no limit. Defaults to 0.', false, true );
 		$this->addOption( 'indexIdentifier', 'Force the index identifier, use the alias otherwise.', false, true );
-		$this->addOption( 'escapeUnicode', 'Escape unicode', false, false );
 	}
 
 	public function execute() {
@@ -168,12 +168,10 @@ class DumpIndex extends Maintenance {
 				'_id' => $document['_id']
 			) );
 
-		$this->writeLine( json_encode( $indexOp ) );
-		if ( $this->hasOption( 'escapeUnicode' ) ) {
-			$this->writeLine( json_encode( $document['_source'] ) );
-		} else {
-			$this->writeLine( json_encode( $document['_source'], JSON_UNESCAPED_UNICODE ) );
-		}
+		// We use Elastica wrapper around json_encode.
+		// Depending on PHP version JSON_ESCAPE_UNICODE will be used
+		$this->writeLine( JSON::stringify( $indexOp ) );
+		$this->writeLine( JSON::stringify( $document['_source'] ) );
 	}
 
 	private function writeLine( $data ) {
@@ -223,7 +221,11 @@ class DumpIndex extends Maintenance {
 		}
 	}
 
-	private function outputProgress( $docsDumped, $limit ) {
+	/**
+	 * public because php 5.3 does not support accessing private
+	 * methods in a closure.
+	 */
+	public function outputProgress( $docsDumped, $limit ) {
 		if( $docsDumped <= 0 ) {
 			return;
 		}

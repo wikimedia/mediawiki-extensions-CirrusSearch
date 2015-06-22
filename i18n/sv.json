@@ -24,5 +24,6 @@
 	"cirrussearch-pref-desc": "Prova vår nya sökning som stöder ett större antal språk, ger mer uppdaterade resultat och som även kan hitta text inuti mallar.",
 	"apihelp-cirrus-config-dump-description": "Dumpa av CirrusSearch-konfiguration.",
 	"apihelp-cirrus-mapping-dump-description": "Dumpa av CirrusSearch-mappning för denna wiki.",
-	"apihelp-cirrus-settings-dump-description": "Dumpa av CirrusSearch-inställningar för denna wiki."
+	"apihelp-cirrus-settings-dump-description": "Dumpa av CirrusSearch-inställningar för denna wiki.",
+	"cirrussearch-give-feedback": "Ge oss din återkoppling"
 }

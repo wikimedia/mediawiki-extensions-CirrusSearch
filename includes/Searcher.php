@@ -1158,8 +1158,9 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			function( $error, $key ) use ( $type, $description, $user ) {
-				wfLogWarning( "Pool error on key $key during $description:  $error" );
+			function( $error, $key, $userName ) use ( $type, $description, $user ) {
+				$forUserName = $userName ? "for $userName " : '';
+				wfLogWarning( "Pool error {$forUserName}on key $key during $description:  $error" );
 				if ( $error === 'pool-queuefull' ) {
 					if ( strpos( $key, 'nowait:CirrusSearch:_per_user' ) === 0 ) {
 						$loggedIn = $user->isLoggedIn() ? 'logged-in' : 'anonymous';

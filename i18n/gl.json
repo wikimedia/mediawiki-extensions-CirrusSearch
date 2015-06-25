@@ -23,5 +23,6 @@
 	"cirrussearch-pref-desc": "Probe o noso novo buscador, que soporta un maior número de linguas, proporciona resultados máis actulizados e mesmo pode atopar texto dentro dos modelos.",
 	"apihelp-cirrus-config-dump-description": "Volcado da configuración CirrusSearch",
 	"apihelp-cirrus-mapping-dump-description": "Volcado do mapeo de CirrusSearch para esta wiki.",
-	"apihelp-cirrus-settings-dump-description": "Volcado dos parámetros de CirrusSearch para esta wiki."
+	"apihelp-cirrus-settings-dump-description": "Volcado dos parámetros de CirrusSearch para esta wiki.",
+	"cirrussearch-give-feedback": "Deixenos saber a súa opinión"
 }

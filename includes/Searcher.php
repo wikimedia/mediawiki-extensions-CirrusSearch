@@ -627,8 +627,8 @@ GROOVY;
 			function ( $matches ) use ( $searcher, $escaper ) {
 				$term = $escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array(
-					'escaped' => $searcher->switchSearchToExact( $term, false ),
-					'nonAll' => $searcher->switchSearchToExact( $term, false ),
+					'escaped' => $searcher->switchSearchToExactForWildcards( $term ),
+					'nonAll' => $searcher->switchSearchToExactForWildcards( $term )
 				);
 			} );
 
@@ -1328,6 +1328,33 @@ GROOVY;
 	public function switchSearchToExact( $term, $allFieldAllowed ) {
 		$exact = join( ' OR ', $this->buildFullTextSearchFields( 1, ".plain:$term", $allFieldAllowed ) );
 		return "($exact)";
+	}
+
+	/**
+	 * Expand wildcard queries to the all.plain and title.plain fields if
+	 * wgCirrusSearchAllFields[ 'use' ] is set to true. Fallback to all
+	 * the possible fields otherwize. This prevents applying and compiling
+	 * costly wildcard queries too many times.
+	 * @param string $term
+	 * @return string
+	 */
+	public function switchSearchToExactForWildcards( $term ) {
+		global $wgCirrusSearchWeights,
+			$wgCirrusSearchAllFields;
+
+		// Try to limit the expansion of wildcards to all the subfields
+		// We still need to add title.plain with a high boost otherwise
+		// match in titles be poorly scored (actually it breaks some tests).
+		if( $wgCirrusSearchAllFields[ 'use' ] ) {
+			$titleWeight = $wgCirrusSearchWeights[ 'title' ];
+			$fields = array();
+			$fields[] = "title.plain:$term^${titleWeight}";
+			$fields[] = "all.plain:$term";
+			$exact = join( ' OR ', $fields );
+			return "($exact)";
+		} else {
+			return $this->switchSearchToExact( $term, false );
+		}
 	}
 
 	/**

@@ -357,14 +357,69 @@ $wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
 $wgCirrusSearchPreferRecentDefaultHalfLife = 160;
 
 // Configuration parameters passed to more_like_this queries.
+// Note: these values can be configured at runtime by editing the System
+// message cirrussearch-morelikethis-settings
 $wgCirrusSearchMoreLikeThisConfig = array(
-	'min_doc_freq' => 2,              // Minimum number of documents (per shard) that need a term for it to be considered
+	// Minimum number of documents (per shard) that need a term for it to be considered
+	'min_doc_freq' => 2,
+
+	// Maximum number of documents (per shard) that have a term for it to be considered
+	// Setting a sufficient high value can be usefull to exclude stop words but it depends on the wiki size.
+	'max_doc_freq' => null,
+
+	// This is the max number it will collect from input data to build the query
+	// This value cannot exceed $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit .
 	'max_query_terms' => 25,
+
+	// Minimum TF (number of times the term appears in the input text) for a term to be considered
+	// for small fields (title) tf is usually 1 so setting it to 2 will exclude all terms.
+	// for large fields (text) this value can help to exclude words that are not related to the subject.
 	'min_term_freq' => 2,
-	'percent_terms_to_match' => 0.3,
+
+	// Minimum length for a word to be considered
+	// small words tend to be stop words.
 	'min_word_len' => 0,
+
+	// Maximum length for a word to be considered
+	// Very long "words" tend to be uncommon, excluding them can help recall but it
+	// is highly dependent on the language.
 	'max_word_len' => 0,
+
+	// Percent of terms to match
+	// High value will increase precision but can prevent small docs to match against large ones
+	'percent_terms_to_match' => 0.3,
+
+	// replaces percent_terms_to_match but only supported by elasticsearch 1.5+
+	// @todo: when ES-1.6 is the minimal requirement we have to move to this new parameter
+	// 'minimum_should_match' => '30%',
 );
+
+
+// Hard limit to the max_query_terms parameter of more like this queries.
+// This prevent running too large queries.
+$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit = 100;
+
+// Set the default field used by the More Like This algorithm
+$wgCirrusSearchMoreLikeThisFields = array( 'text' );
+
+// List of fields allowed for the more like this queries.
+$wgCirrusSearchMoreLikeThisAllowedFields = array(
+	'title',
+	'text',
+	'auxiliary_text',
+	'opening_text',
+	'headings',
+	'all'
+);
+
+// When set to false cirrus will use the text content to build the query
+// and search on the field listed in $wgCirrusSearchMoreLikeThisFields
+// Set to true if you want to use field data as input text to build the initial
+// query.
+// Note that if the all field is used then this setting will be forced to true.
+// This is because the all field is not part of the _source and its content cannot
+// be retreived by elasticsearch.
+$wgCirrusSearchMoreLikeThisUseFields = false;
 
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;

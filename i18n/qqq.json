@@ -25,5 +25,6 @@
 	"apihelp-cirrus-config-dump-description": "{{doc-apihelp-description|cirrus-config-dump}}",
 	"apihelp-cirrus-mapping-dump-description": "{{doc-apihelp-description|cirrus-mapping-dump}}",
 	"apihelp-cirrus-settings-dump-description": "{{doc-apihelp-description|cirrus-settings-dump}}",
-	"cirrussearch-give-feedback": "Used as text for an feedback link shown at the end of Special:Search result ([[mw:Extension:CirrusSearch|$wgCirrusSearchFeedbackLink]])"
+	"cirrussearch-give-feedback": "Used as text for an feedback link shown at the end of Special:Search result ([[mw:Extension:CirrusSearch|$wgCirrusSearchFeedbackLink]])",
+	"cirrussearch-morelikethis-settings": "Settings for the More Like This query."
 }

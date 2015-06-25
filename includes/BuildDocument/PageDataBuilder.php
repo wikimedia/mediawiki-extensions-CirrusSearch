@@ -4,6 +4,7 @@ namespace CirrusSearch\BuildDocument;
 use \Category;
 use \Sanitizer;
 use \Title;
+use CirrusSearch\Util;
 
 /**
  * Add everything to a page that doesn't require page text.
@@ -127,10 +128,7 @@ class PageDataBuilder extends ParseBuilder {
 			$source = wfMessage( 'cirrussearch-ignored-headings' )->inContentLanguage();
 			$ignoredHeadings = array();
 			if( !$source->isDisabled() ) {
-				$lines = explode( "\n", $source->plain() );
-				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
-				$lines = array_map( 'trim', $lines );          // Remove extra spaces
-				$lines = array_filter( $lines );               // Remove empty lines
+				$lines = Util::parseSettingsInMessage( $source->plain() );
 				$ignoredHeadings = $lines;               // Now we just have headings!
 			}
 		}

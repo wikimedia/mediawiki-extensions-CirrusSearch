@@ -601,9 +601,12 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
-		global $wgCirrusSearchEnableSearchLogging;
+		global $wgCirrusSearchEnableSearchLogging, $wgCirrusSearchFeedbackLink;
 
-		$vars['wgCirrusSearchEnableSearchLogging'] = $wgCirrusSearchEnableSearchLogging;
+		$vars += array(
+			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
+			'wgCirrusSearchFeedbackLink' => $wgCirrusSearchFeedbackLink,
+		);
 
 		return true;
 	}

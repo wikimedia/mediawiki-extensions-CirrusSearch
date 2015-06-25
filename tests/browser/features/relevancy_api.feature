@@ -19,6 +19,7 @@ Feature: Results are ordered from most relevant to least.
     When I api search for Relevancylanguagetest
     Then Relevancylanguagetest/en is the first api search result
 
+  @expect_failure
   Scenario: Redirects count as incoming links
     When I api search for Relevancyredirecttest
     Then Relevancyredirecttest Larger is the first api search result
@@ -50,6 +51,7 @@ Feature: Results are ordered from most relevant to least.
       And Relevancylanguagetest/en is the second api search result
       And Relevancylanguagetest/ar is the third api search result
 
+  @expect_failure
   Scenario: Incoming links count in page weight
     When I api search for Relevancylinktest -intitle:link
     Then Relevancylinktest Larger Extraword is the first api search result

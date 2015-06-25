@@ -52,10 +52,14 @@ Or files with this syntax:
 Some tests don't pass!
 ----------------------
 Sorry, some of the tests don't pass the first time out of the box.  Its a sad
-thing but I haven't had time to fix it.  Rerun them like this:
- bundle exec cucumber features/smoke.feature:15 features/otherthing.feature:123
+thing but I haven't had time to fix it. Tests that are known to be flakey are
+marked with the @expect_failure tag, they can be excluded from a test run with
 
-Just grab the list from the failures list.  It sucks and I'm sorry.
+ bundle exec cucumber --tags ~@expect_failure
+
+Some of the failing test intermittently fail. Rerun them like this:
+
+ bundle exec cucumber features/smoke.feature:15 features/otherthing.feature:123
 
 Want to Contribute Some Tests?
 ------------------------------

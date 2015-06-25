@@ -41,6 +41,7 @@ Feature: Searches that contain wildcard matches
     | *        |
     | ?        |
 
+  @expect_failure
   Scenario Outline: Searching with a single wildcard finds expected results
     When I api search for catapu<wildcard>
     Then Catapult is the first api search result

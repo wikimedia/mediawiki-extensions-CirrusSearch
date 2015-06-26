@@ -1257,6 +1257,8 @@ GROOVY;
 	 */
 	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore ) {
 		global $wgCirrusSearchAllowLeadingWildcard;
+		global $wgCirrusSearchQueryStringMaxDeterminizedStates;
+
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
 		$query->setAutoGeneratePhraseQueries( true );
@@ -1265,6 +1267,12 @@ GROOVY;
 		$query->setAllowLeadingWildcard( $wgCirrusSearchAllowLeadingWildcard );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
+
+		if ( isset( $wgCirrusSearchQueryStringMaxDeterminizedStates ) ) {
+			# Requires ES 1.4+
+			$query->setParam( 'max_determinized_states', $wgCirrusSearchQueryStringMaxDeterminizedStates );
+		}
+
 		return $this->wrapInSaferIfPossible( $query, $isRescore );
 	}
 

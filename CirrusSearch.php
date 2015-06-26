@@ -115,6 +115,16 @@ $wgCirrusSearchEnableRegex = true;
 // default allows reasonably complex regexes and doesn't use _too_ much memory.
 $wgCirrusSearchRegexMaxDeterminizedStates = 20000;
 
+// Maximum complexity of wildcard queries. Raising this value will allow
+// more wildcards in search terms. 500 will allow about 20 wildcards.
+// Setting a high value here can cause the cluster to consume a lot of memory
+// when compiling complex wildcards queries.
+// This setting requires elasticsearch 1.4+. Comment to disable.
+// With elasticsearch 1.4+ if this setting is disabled the default value is
+// 10000.
+// With elasticsearch 1.3 this setting must be disabled.
+// $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
+
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should
 // suffice for most wikis. This setting allows individual namespaces to be

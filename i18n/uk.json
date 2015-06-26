@@ -22,5 +22,6 @@
 	"cirrussearch-pref-desc": "Спробуйте наш новий пошук, який підтримує більше число мов, надає більше оновлених результатів і навіть може шукати текст всередині шаблону.",
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Дамп відображення CirrusSearch для цієї Вікі.",
-	"apihelp-cirrus-settings-dump-description": "Дамп налаштувань CirrusSearch для цієї Вікі."
+	"apihelp-cirrus-settings-dump-description": "Дамп налаштувань CirrusSearch для цієї Вікі.",
+	"cirrussearch-give-feedback": "Напишіть нам свій відгук"
 }

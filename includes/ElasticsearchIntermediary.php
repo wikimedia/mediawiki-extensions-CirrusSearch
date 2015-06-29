@@ -189,6 +189,10 @@ class ElasticsearchIntermediary {
 				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
 				$logMessage .= ' within these namespaces: ' . implode( ', ', $namespaces );
 			}
+			if ( isset( $resultData[ 'suggest' ][ 'suggest' ][ 0 ][ 'options' ][ 0 ][ 'text' ] ) ) {
+				$logMessage .= ' and suggested \'' .
+					$resultData[ 'suggest' ][ 'suggest' ][ 0 ][ 'options' ][ 0 ][ 'text' ] . '\'';
+			}
 		}
 		$request = $client->getLastRequest();
 

@@ -1,8 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hugo.arg"
+			"Hugo.arg",
+			"Albertas"
 		]
 	},
-	"cirrussearch-now-using": "Ši wiki svetainė naudoja naujovišką paieškos variklį. ([[mw:Special:MyLanguage/Help:CirrusSearch|Plačiau]])"
+	"cirrussearch-now-using": "Ši wiki svetainė naudoja naujovišką paieškos variklį. ([[mw:Special:MyLanguage/Help:CirrusSearch|Plačiau]])",
+	"cirrussearch-pref-label": "Nauja paieška",
+	"cirrussearch-give-feedback": "Pateikite mums savo atsiliepimą"
 }

@@ -165,12 +165,12 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisFields;
 
 		$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
-		if( $source && $source->isDisabled ) {
+		if ( $source && $source->isDisabled() ) {
 			return;
 		}
 		$lines = Util::parseSettingsInMessage( $source->plain() );
 
-		foreach( $lines as $line ) {
+		foreach ( $lines as $line ) {
 			list( $k, $v ) = explode( ':', $line, 2 );
 			switch( $k ) {
 			case 'min_doc_freq':

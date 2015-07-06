@@ -142,6 +142,24 @@ end
 When(/^I dump the cirrus settings$/) do
   visit(CirrusSettingsDumpPage)
 end
+When(/^I set the custom param ([^ ]+) to ([^ ]+)/) do |param, value|
+  @browser.goto("#{@browser.url}&#{param}=#{value}")
+end
+
+When(/^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I search for (.+)$/) do |field, length, search|
+  step("I search for " + search)
+  @browser.goto("#{@browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=#{length}")
+end
+
+When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to ([\.\d]+) and I search for (.+)$/) do |field, percent, search|
+  step("I search for " + search)
+  @browser.goto("#{@browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=0&cirrusMltPercentTermsToMatch=#{percent}")
+end
+
+When(/^I set More Like This Options to bad settings and I search for (.+)$/) do |search|
+  step("I search for " + search)
+  @browser.goto("#{@browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=title&cirrusMltMinTermFreq=100&cirrusMltMinDocFreq=200000&cirrusMltMinWordLength=190&cirrusMltPercentTermsToMatch=1")
+end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|
   if not_appear

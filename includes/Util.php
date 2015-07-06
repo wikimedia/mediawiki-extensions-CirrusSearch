@@ -304,4 +304,18 @@ class Util {
 	public static function backoffDelay( $errorCount ) {
 		return rand( 1, pow( 2, 3 + $errorCount ) );
 	}
+
+	/**
+	 * Parse a message content into an array. This function is generally used to
+	 * parse settings stored as i18n messages (see cirrussearch-boost-templates).
+	 * @param string $message
+	 * @return array of string
+	 */
+	public static function parseSettingsInMessage( $message ) {
+		$lines = explode( "\n", $message );
+		$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
+		$lines = array_map( 'trim', $lines );          // Remove extra spaces
+		$lines = array_filter( $lines );               // Remove empty lines
+		return $lines;
+	}
 }

@@ -807,35 +807,54 @@ GROOVY;
 	 * @return Status(ResultSet)
 	 */
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
-		global $wgCirrusSearchMoreLikeThisConfig;
+		global $wgCirrusSearchMoreLikeThisConfig,
+			$wgCirrusSearchMoreLikeThisUseFields,
+			$wgCirrusSearchMoreLikeThisFields;
 
-		// It'd be better to be able to have Elasticsearch fetch this during the query rather than make
-		// two passes but it doesn't support that at this point
 		$pageIds = array();
 		foreach ( $titles as $title ) {
 			$pageIds[] = $title->getArticleID();
 		}
-		$found = $this->get( $pageIds, array( 'text' ) );
-		if ( !$found->isOk() ) {
-			return $found;
-		}
-		$found = $found->getValue();
-		if ( count( $found ) === 0 ) {
-			// If none of the pages are in the index we can't find articles like them
-			return Status::newGood( new SearchResultSet() /* empty */ );
-		}
 
-		$text = array();
-		foreach ( $found as $foundArticle ) {
-			$text[] = $foundArticle->text;
+		// If no fields has been set we return no results.
+		// This can happen if the user override this setting with field names that
+		// are not allowed in $wgCirrusSearchMoreLikeThisAllowedFields (see Hooks.php)
+		if( !$wgCirrusSearchMoreLikeThisFields ) {
+			return Status::newGood( new SearchResultSet() /* empty */ );
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
-		$this->query->setLikeText( implode( ' ', $text ) );
-		$this->query->setFields( array( 'text' ) );
-		$idFilter = new \Elastica\Filter\Ids( null, $pageIds );
-		$this->filters[] = new \Elastica\Filter\BoolNot( $idFilter );
+		$this->query->setFields( $wgCirrusSearchMoreLikeThisFields );
+
+		// The 'all' field cannot be retrieved from _source
+		// We have to extract the text content before.
+		if( in_array( 'all', $wgCirrusSearchMoreLikeThisFields ) ) {
+			$wgCirrusSearchMoreLikeThisUseFields = false;
+		}
+
+		if ( !$wgCirrusSearchMoreLikeThisUseFields && $wgCirrusSearchMoreLikeThisFields != array( 'text' ) ) {
+			// Run a first pass to extract the text field content because we want to compare it
+			// against other fields.
+			$text = array();
+			$found = $this->get( $pageIds, array( 'text' ) );
+			if ( !$found->isOk() ) {
+				return $found;
+			}
+			$found = $found->getValue();
+			if ( count( $found ) === 0 ) {
+				// If none of the pages are in the index we can't find articles like them
+				return Status::newGood( new SearchResultSet() /* empty */ );
+			}
+			foreach ( $found as $foundArticle ) {
+				$text[] = $foundArticle->text;
+			}
+			$this->query->setLikeText( implode( ' ', $text ) );
+		}
+
+		// @todo: use setIds when T104560 is done
+		$this->query->setParam( 'ids', $pageIds );
+
 		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
 			$this->filters[] = new \Elastica\Filter\Exists( 'wikibase_item' );
 		}
@@ -1574,10 +1593,7 @@ GROOVY;
 			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
 			$defaultBoostTemplates = array();
 			if( !$source->isDisabled() ) {
-				$lines = explode( "\n", $source->plain() );
-				$lines = preg_replace( '/#.*$/', '', $lines ); // Remove comments
-				$lines = array_map( 'trim', $lines );          // Remove extra spaces
-				$lines = array_filter( $lines );               // Remove empty lines
+				$lines = Util::parseSettingsInMessage( $source->plain() );
 				$defaultBoostTemplates = self::parseBoostTemplates(
 					implode( ' ', $lines ) );                  // Now parse the templates
 			}

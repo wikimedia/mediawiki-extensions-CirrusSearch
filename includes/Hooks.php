@@ -91,6 +91,8 @@ class Hooks {
 			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
 		}
 
+		self::overrideMoreLikeThisOptionsFromMessage();
+
 		if ( $request ) {
 			// Engage the experimental highlighter if a url parameter requests it
 			if ( !$wgCirrusSearchUseExperimentalHighlighter &&
@@ -105,15 +107,17 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
 			self::overrideUseExtraPluginForRegex( $request );
+			self::overrideMoreLikeThisOptions( $request );
 		}
 	}
 
 	/**
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit.
 	 */
-	private static function overrideNumeric( &$dest, $request, $name, $limit ) {
+	private static function overrideNumeric( &$dest, $request, $name, $limit = null ) {
 		$val = $request->getVal( $name );
-		if ( $val !== null && is_numeric( $val ) && $val <= $limit ) {
+		if ( $val !== null && is_numeric( $val )
+				&& ( ( isset ( $limit ) && $val <= $limit ) || ( !isset( $limit ) ) ) ) {
 			$dest = $val;
 		}
 	}
@@ -150,6 +154,89 @@ class Hooks {
 		}
 	}
 
+	/**
+	 * Extract more like this settings from the i18n message cirrussearch-morelikethis-settings
+	 */
+	private static function overrideMoreLikeThisOptionsFromMessage() {
+		global $wgCirrusSearchMoreLikeThisConfig,
+			$wgCirrusSearchMoreLikeThisUseFields,
+			$wgCirrusSearchMoreLikeThisAllowedFields,
+			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
+			$wgCirrusSearchMoreLikeThisFields;
+
+		$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
+		if( $source && $source->isDisabled ) {
+			return;
+		}
+		$lines = Util::parseSettingsInMessage( $source->plain() );
+
+		foreach( $lines as $line ) {
+			list( $k, $v ) = explode( ':', $line, 2 );
+			switch( $k ) {
+			case 'min_doc_freq':
+			case 'max_doc_freq':
+			case 'max_query_terms':
+			case 'min_term_freq':
+			case 'min_word_len':
+			case 'max_word_len':
+				if( is_numeric( $v ) && $v >= 0 ) {
+					$wgCirrusSearchMoreLikeThisConfig[$k] = intval( $v );
+				} else if ( $v === 'null' ) {
+					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
+				}
+				break;
+			case 'percent_terms_to_match':
+				if( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
+					$wgCirrusSearchMoreLikeThisConfig[$k] = $v;
+				} else if ($v === 'null' ) {
+					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
+				}
+				break;
+			case 'fields':
+				$wgCirrusSearchMoreLikeThisFields = array_intersect(
+					array_map( 'trim', explode( ',', $v ) ),
+					$wgCirrusSearchMoreLikeThisAllowedFields );
+				break;
+			case 'use_fields':
+				if ( $v === 'true' ) {
+					$wgCirrusSearchMoreLikeThisUseFields = true;
+				} else if ( $v === 'false' ) {
+					$wgCirrusSearchMoreLikeThisUseFields = false;
+				}
+				break;
+			}
+			if ( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'] > $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit ) {
+				$wgCirrusSearchMoreLikeThisConfig['max_query_terms'] = $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit;
+			}
+		}
+	}
+
+	/**
+	 * Override more like this settings from request URI parameters
+	 */
+	private static function overrideMoreLikeThisOptions( $request ) {
+		global $wgCirrusSearchMoreLikeThisConfig,
+			$wgCirrusSearchMoreLikeThisUseFields,
+			$wgCirrusSearchMoreLikeThisAllowedFields,
+			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
+			$wgCirrusSearchMoreLikeThisFields;
+
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_doc_freq'], $request, 'cirrusMltMinDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'], $request, 'cirrusMltMaxDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
+			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'], $request, 'cirrusMltMinTermFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['percent_terms_to_match'], $request, 'cirrusMltPercentTermsToMatch', 1 );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_len'], $request, 'cirrusMltMinWordLength' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_len'], $request, 'cirrusMltMaxWordLength' );
+		self::overrideYesNo( $wgCirrusSearchMoreLikeThisUseFields, $request, 'cirrusMltUseFields' );
+		$fields = $request->getVal( 'cirrusMltFields' );
+		if( isset( $fields ) ) {
+			$wgCirrusSearchMoreLikeThisFields = array_intersect(
+				array_map( 'trim', explode( ',', $fields ) ),
+				$wgCirrusSearchMoreLikeThisAllowedFields );
+		}
+	}
 	/**
 	 * Hook to call before an article is deleted
 	 * @param WikiPage $page The page we're deleting

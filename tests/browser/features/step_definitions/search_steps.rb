@@ -25,13 +25,17 @@ When(/^I set did you mean suggester option (.*) to (.*)$/) do |varname, value|
   @didyoumean_options[varname] = value
 end
 # rubocop:disable LineLength
-When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, offset, lang, namespaces, search|
+# rubocop:disable ParameterLists
+# The plan to fix the line length is to break this into multiple steps that builds an instance variable and another
+# step that triggers the search using the instance variable.
+When(/^I api search( with disabled incoming link weighting)?(?: with now set to (.+Z))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, now, offset, lang, namespaces, search|
   begin
     options = {
       sroffset: offset,
       srnamespace: (namespaces || "0").split(/ /),
       uselang: lang,
-      cirrusBoostLinks: incoming_links ? "no" : "yes"
+      cirrusBoostLinks: incoming_links ? "no" : "yes",
+      now: now
     }
     options = options.merge(@didyoumean_options) if defined?@didyoumean_options
 

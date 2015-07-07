@@ -354,10 +354,11 @@ Then(/^within (\d+) seconds searching for (.*) yields (.*) as the first result$/
     step("#{title} is the first search result")
   end
 end
-Then(/^within (\d+) seconds api searching for (.*) yields (.*) as the first result$/) do |seconds, term, title|
+Then(/^within (\d+) seconds api searching for (.*) yields (.*?) as the first result(?: and (.*?) as the second result)?$/) do |seconds, term, title, title2|
   repeat_within(seconds) do
     step("I api search for " + term)
     step("#{title} is the first api search result")
+    step("#{title2} is the second api search result") if title2
   end
 end
 Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the first suggestion$/) do |seconds, term, title|

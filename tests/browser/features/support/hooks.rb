@@ -485,14 +485,6 @@ Before("@relevancy") do
       And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancyredirecttest Smaller exists with contents Relevancyredirecttest text text text text text text text text text text text text text
-      And a page named Relevancyredirecttest Smaller/A exists with contents [[Relevancyredirecttest Smaller]]
-      And a page named Relevancyredirecttest Smaller/B exists with contents [[Relevancyredirecttest Smaller]]
-      And a page named Relevancyredirecttest Larger exists with contents Relevancyredirecttest text text text text text text text text text text text text text
-      And a page named Relevancyredirecttest Larger/Redirect exists with contents #REDIRECT [[Relevancyredirecttest Larger]]
-      And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
-      And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
-      And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
       And a page named Relevancyclosetest Foô exists
       And a page named Relevancyclosetest Foo exists
       And a page named Foo Relevancyclosetest exists

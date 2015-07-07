@@ -19,11 +19,22 @@ Feature: Results are ordered from most relevant to least.
     When I api search for Relevancylanguagetest
     Then Relevancylanguagetest/en is the first api search result
 
-  @expect_failure
   Scenario: Redirects count as incoming links
-    When I api search for Relevancyredirecttest
-    Then Relevancyredirecttest Larger is the first api search result
-      And Relevancyredirecttest Smaller is the second api search result
+    Given a page named Relevancyredirecttest Smaller exists with contents Relevancyredirecttest A text text text text text text text text text text text text text
+      And a page named Relevancyredirecttest Smaller/A exists with contents [[Relevancyredirecttest Smaller]]
+      And a page named Relevancyredirecttest Smaller/B exists with contents [[Relevancyredirecttest Smaller]]
+      And a page named Relevancyredirecttest Larger exists with contents Relevancyredirecttest B text text text text text text text text text text text text text
+      And a page named Relevancyredirecttest Larger/Redirect exists with contents #REDIRECT [[Relevancyredirecttest Larger]]
+      And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
+      And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
+      And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
+    Then within 20 seconds api searching for Relevancyredirecttest yields Relevancyredirecttest Larger as the first result and Relevancyredirecttest Smaller as the second result
+    # Note that this test can fail spuriously in two ways:
+    # 1. If the required pages are created as part of the hook for @relevancy its quite possible for the large influx
+    # of jobs to cause the counting jobs to not pick up all the counts. I'm not super sure why that is but moving the
+    # creation into its own section makes it pretty consistent.
+    # 2. Its quite possible for the second result to be deeper in the result list for a few seconds after the pages are
+    # created. It gets its position updated by the link counting job which has to wait for refreshing and undelaying.
 
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
     When I api search with disabled incoming link weighting for Relevancytest

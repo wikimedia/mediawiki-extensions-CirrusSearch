@@ -611,6 +611,18 @@ $wgCirrusSearchMaxIncategoryOptions = 100;
  */
 $wgCirrusSearchFeedbackLink = false;
 
+/**
+ * The maximum amount of time jobs delayed due to frozen indexes can remain
+ * in the job queue.
+ */
+$wgCirrusSearchDropDelayedJobsAfter = 60 * 60 * 24 * 2; // 2 days
+
+/**
+ * The initial exponent used when backing off ElasticaWrite jobs. On the first
+ * failure the backoff will be either 2^exp or 2^(exp+1). This exponent will
+ * be increased to a maximum of exp+4 on repeated failures to run the job.
+ */
+$wgCirrusSearchWriteBackoffExponent = 6;
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
@@ -663,6 +675,7 @@ $wgJobClasses[ 'cirrusSearchLinksUpdate' ] = 'CirrusSearch\Job\LinksUpdate';
 $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\Job\LinksUpdate';
 $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\Job\MassIndex';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\Job\OtherIndex';
+$wgJobClasses[ 'cirrusSearchElasticaWrite' ] = 'CirrusSearch\Job\ElasticaWrite';
 
 /**
  * Actions

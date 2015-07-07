@@ -2,6 +2,10 @@
 
 World(CirrusSearchApiHelper)
 
+After("@frozen") do
+  step("I globally thaw indexing")
+end
+
 main = false
 Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @phrase_prefix") do
   unless main

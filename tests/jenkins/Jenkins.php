@@ -80,6 +80,11 @@ $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
 $wgCirrusSearchAllowLeadingWildcard = false;
 
+// Test only API action to expose freezing/thawing writes to the elasticsearch cluster
+$wgAPIModules['cirrus-freeze-writes'] = 'CirrusSearch\Api\FreezeWritesToCluster';
+// Bring the ElasticWrite backoff down to between 2^-1 and 2^3 seconds during browser tests
+$wgCirrusSearchWriteBackoffExponent = -1;
+
 class Jenkins {
 	/**
 	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.

@@ -6,9 +6,11 @@ use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
 use MediaWiki\Logger\LoggerFactory;
 use \Hooks as MWHooks;
+use \JobQueueGroup;
 use \MWTimestamp;
 use \ParserCache;
 use \Sanitizer;
+use \TextContent;
 use \Title;
 use \WikiPage;
 
@@ -182,11 +184,8 @@ class Updater extends ElasticsearchIntermediary {
 			return false;
 		} );
 
-		if ( $clientSideTimeout !== null ) {
-			Connection::setTimeout( $clientSideTimeout );
-		}
-
-		Job\OtherIndex::queueIfRequired( $this->pagesToTitles( $pages ), true );
+		$titles = $this->pagesToTitles( $pages );
+		Job\OtherIndex::queueIfRequired( $titles );
 
 		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
@@ -201,9 +200,15 @@ class Updater extends ElasticsearchIntermediary {
 			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
 			// the max.  So we chunk it and do them sequentially.
 			foreach( array_chunk( $data, 10 ) as $chunked ) {
-				if ( !$this->sendData( $indexType, $chunked, $shardTimeout ) ) {
-					return -1;
-				}
+				$job = new Job\ElasticaWrite(
+$titles[0], array(
+					'clientSideTimeout' => $clientSideTimeout,
+					'method' => 'sendData',
+					'arguments' => array( $indexType, $chunked, $shardTimeout ),
+				) );
+				// This job type will insert itself into the job queue
+				// with a delay if writes to ES are currently paused
+				$job->run();
 			}
 			$count += count( $data );
 		}
@@ -224,71 +229,21 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
-		Job\OtherIndex::queueIfRequired( $titles, false );
-
-		if ( $clientSideTimeout !== null ) {
-			Connection::setTimeout( $clientSideTimeout );
-		}
-		return $this->sendDeletes( $ids, $indexType );
+		Job\OtherIndex::queueIfRequired( $titles );
+		$job = new Job\ElasticaWrite( $titles[0], array(
+			'clientSideTimeout' => $clientSideTimeout,
+			'method' => 'sendDeletes',
+			'arguments' => array( $ids, $indexType ),
+		) );
+		// This job type will insert itself into the job queue
+		// with a delay if writes to ES are currently paused
+		$job->run();
 	}
 
 	/**
-	 * @param string $indexType type of index to which to send $data
-	 * @param array(\Elastica\Script or \Elastica\Document) $data documents to send
-	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
-	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
-	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
-	 *   Elasticsearch's time format.
-	 * @return bool True if nothing happened or we successfully indexed, false on failure
+	 * @param \WikiPage[] $pages
+	 * @param int $flags
 	 */
-	private function sendData( $indexType, $data, $shardTimeout ) {
-		$documentCount = count( $data );
-		if ( $documentCount === 0 ) {
-			return true;
-		}
-
-		$failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
-		$exception = null;
-		try {
-			$pageType = Connection::getPageType( wfWikiId(), $indexType );
-			$this->start( "sending $documentCount documents to the $indexType index" );
-			$bulk = new \Elastica\Bulk( Connection::getClient() );
-			if ( $shardTimeout ) {
-				$bulk->setShardTimeout( $shardTimeout );
-			}
-			$bulk->setType( $pageType );
-			$bulk->addData( $data, 'update' );
-			$bulk->send();
-		} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
-			$missing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function( $id ) use ( $failedLog ) {
-					$failedLog->warning( "Updating a page that doesn't "
-						. " yet exist in Elasticsearch: $id"
-					);
-				}
-			);
-			if ( !$missing ) {
-				$exception = $e;
-			}
-		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-			$exception = $e;
-		}
-		if ( $exception === null ) {
-			$this->success();
-			return true;
-		} else {
-			$this->failure( $exception );
-			$documentIds = array_map( function( $d ) {
-				return $d->getId();
-			}, $data );
-			$failedLog->warning(
-				'Update for doc ids: ' . implode( ',', $documentIds ) .
-				'; error message was: ' . $exception->getMessage()
-			);
-			return false;
-		}
-	}
-
 	private function buildDocumentsForPages( $pages, $flags ) {
 		global $wgCirrusSearchUpdateConflictRetryCount;
 
@@ -303,17 +258,19 @@ class Updater extends ElasticsearchIntermediary {
 			if ( !$page->exists() ) {
 				wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: $title" );
-				continue;	
+				continue;
 			}
 
 			$doc = new \Elastica\Document( $page->getId(), array(
+				'version' => $page->getLatest(),
+				'version_type' => 'external',
 				'namespace' => $title->getNamespace(),
 				'namespace_text' => Util::getNamespaceText( $title ),
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
 			) );
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
-			// addLocalSiteToOtherIndex and removeLocalSiteFromOtherIndex.
+			// OtherIndex::updateOtherIndex.
 			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
 			// documents or any documents that we've been explicitly told it is ok to index when they aren't full.
 			// This is typically just done during the first phase of the initial index build.
@@ -470,66 +427,6 @@ GROOVY;
 		$updatedCount = $this->updatePages( $pages, $wgCirrusSearchUpdateShardTimeout,
 			$wgCirrusSearchClientSideUpdateTimeout, self::SKIP_PARSE );
 		return $updatedCount >= 0;
-	}
-
-	/**
-	 * Check if $exception is a bulk response exception that just contains document is missing failures.
-	 *
-	 * @param \Elastica\Exception\Bulk\ResponseException $exception exception to check
-	 * @param callback|null $logCallback Callback in which to do some logging. Callback will be
-	 *  passed the id of the missing document
-	 */
-	protected function bulkResponseExceptionIsJustDocumentMissing( $exception, $logCallback = null ) {
-		$justDocumentMissing = true;
-		foreach ( $exception->getResponseSet()->getBulkResponses() as $bulkResponse ) {
-			if ( $bulkResponse->hasError() ) {
-				if ( strpos( $bulkResponse->getError(), 'DocumentMissingException' ) === false ) {
-					$justDocumentMissing = false;
-				} else {
-					// This is generally not an error but we should log it to see how many we get
-					if ( $logCallback ) {
-						$id = $bulkResponse->getAction()->getData()->getId();
-						call_user_func( $logCallback, $id );
-					}
-				}
-			}
-		}
-		return $justDocumentMissing;
-	}
-
-	/**
-	 * Send delete requests to Elasticsearch.
-	 *
-	 * @param array(int) $ids ids to delete from Elasticsearch
-	 * @param string|null $indexType index from which to delete.  null means all.
-	 * @return bool True if nothing happened or we deleted, false on failure
-	 */
-	private function sendDeletes( $ids, $indexType = null ) {
-		$idCount = count( $ids );
-		if ( $idCount !== 0 ) {
-			try {
-				if ( $indexType === null ) {
-					foreach ( Connection::getAllIndexTypes() as $indexType ) {
-						$this->start( "deleting $idCount from $indexType" );
-						Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
-						$this->success();
-					}
-				} else {
-					$this->start( "deleting $idCount from $indexType" );
-					Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
-					$this->success();
-				}
-			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				$this->failure( $e );
-				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
-					'Delete for ids: ' . implode( ',', $ids ) .
-					'; error message was: ' . $e->getMessage()
-				);
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

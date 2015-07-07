@@ -63,6 +63,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Sanity\\PrintingRemediator' => __DIR__ . '/includes/Sanity/Remediator.php',
 	'CirrusSearch\\Sanity\\QueueingRemediator' => __DIR__ . '/includes/Sanity/QueueingRemediator.php',
 	'CirrusSearch\\Sanity\\Remediator' => __DIR__ . '/includes/Sanity/Remediator.php',
+	'CirrusSearch\\Search\\EmptyResultSet' => __DIR__ . '/includes/Search/EmptyResultSet.php',
 	'CirrusSearch\\Search\\Escaper' => __DIR__ . '/includes/Search/Escaper.php',
 	'CirrusSearch\\Search\\EscaperTest' => __DIR__ . '/tests/unit/Search/EscaperTest.php',
 	'CirrusSearch\\Search\\FancyTitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',

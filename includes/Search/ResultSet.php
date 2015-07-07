@@ -24,13 +24,32 @@ use \SearchResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ResultSet extends SearchResultSet {
-	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
-	private $searchContainedSyntax;
-	private $interwikiPrefix, $interwikiResults;
+	/**
+	 * Number of hits in this result set, and number of total hits found by
+	 * the query
+	 * @var int
+	 */
+	private $hits, $totalHits = 0;
+
+	/**
+	 * @var string
+	 */
+	private $suggestionQuery, $suggestionSnippet = '';
+
+	/**
+	 * Result wrapper
+	 */
+	private $result;
+
+	/**
+	 * An array of ResultSets for various interwiki searches
+	 * @var array
+	 */
+	private $interwikiResults = array();
 
 	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwiki = '' ) {
 		$this->result = $res;
-		$this->searchContainedSyntax = $searchContainedSyntax;
+		$this->containedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->interwikiPrefix = $interwiki;
@@ -159,9 +178,5 @@ class ResultSet extends SearchResultSet {
 
 	public function getInterwikiResults() {
 		return $this->interwikiResults;
-	}
-
-	public function searchContainedSyntax() {
-		return $this->searchContainedSyntax;
 	}
 }

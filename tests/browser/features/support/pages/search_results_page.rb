@@ -4,7 +4,7 @@ class SearchResultsPage
 
   page_url URL.url("/w/index.php?search=<%=params[:search]%><%if (params[:prefix]) %>&prefix=<%=params[:prefix]%><% end %>")
 
-  text_field(:search, css: "#searchText input")
+  text_field(:search, id: "searchText")
   h1(:title, id: "firstHeading")
   unordered_list(:search_results, class: "mw-search-results")
   li(:first_result_wrapper) { |page| page.search_results_element.list_item_element(index: 0) }
@@ -25,7 +25,7 @@ class SearchResultsPage
   link(:sixth_result) { |page| page.sixth_result_wrapper_element.div_element(class: "mw-search-result-heading").link_element }
   li(:seventh_result_wrapper) { |page| page.search_results_element.list_item_element(index: 6) }
   link(:seventh_result) { |page| page.seventh_result_wrapper_element.div_element(class: "mw-search-result-heading").link_element }
-  button(:simple_search_button, text: "Search")
+  button(:simple_search_button, value: "Search")
   text_field(:search_input, name: "search")
   div(:suggestion_wrapper, class: "searchdidyoumean")
   div(:error_report, class: "error")

@@ -494,12 +494,6 @@ Before("@relevancy") do
       And a page named Relevancylanguagetest/ja exists
       And a page named Relevancylanguagetest/en exists
       And a page named Relevancylanguagetest/ar exists
-      And a page named Relevancylinktest Smaller exists
-      And a page named Relevancylinktest Larger Extraword exists
-      And a page named Relevancylinktest Larger/Link A exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancyclosetest Foô exists
       And a page named Relevancyclosetest Foo exists
       And a page named Foo Relevancyclosetest exists

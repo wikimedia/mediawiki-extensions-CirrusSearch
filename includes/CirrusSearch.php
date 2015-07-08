@@ -1,7 +1,6 @@
 <?php
 
 use CirrusSearch\InterwikiSearcher;
-use CirrusSearch\Search\EmptyResultSet;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 
@@ -201,7 +200,7 @@ class CirrusSearch extends SearchEngine {
 		if ( count( $titles ) ) {
 			return $searcher->moreLikeTheseArticles( $titles, $options );
 		}
-		return Status::newGood( new EmptyResultSet( true ) );
+		return Status::newGood( new SearchResultSet() /* empty */ );
 	}
 	/**
 	 * Merge the prefix into the query (if any).

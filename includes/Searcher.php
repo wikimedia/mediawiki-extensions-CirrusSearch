@@ -12,6 +12,7 @@ use \CirrusSearch\Search\ResultsType;
 use \Language;
 use \MWNamespace;
 use \RequestContext;
+use \SearchResultSet;
 use \Status;
 use \Title;
 use \UsageException;
@@ -568,7 +569,7 @@ GROOVY;
 			}
 		);
 		if ( $isEmptyQuery ) {
-			return Status::newGood( new EmptyResultSet( true ) );
+			return Status::newGood( new SearchResultSet( true ) );
 		}
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
@@ -819,7 +820,7 @@ GROOVY;
 		// This can happen if the user override this setting with field names that
 		// are not allowed in $wgCirrusSearchMoreLikeThisAllowedFields (see Hooks.php)
 		if( !$wgCirrusSearchMoreLikeThisFields ) {
-			return Status::newGood( new EmptyResultSet() );
+			return Status::newGood( new SearchResultSet() /* empty */ );
 		}
 
 		$this->query = new \Elastica\Query\MoreLikeThis();
@@ -843,7 +844,7 @@ GROOVY;
 			$found = $found->getValue();
 			if ( count( $found ) === 0 ) {
 				// If none of the pages are in the index we can't find articles like them
-				return Status::newGood( new EmptyResultSet() );
+				return Status::newGood( new SearchResultSet() /* empty */ );
 			}
 			foreach ( $found as $foundArticle ) {
 				$text[] = $foundArticle->text;

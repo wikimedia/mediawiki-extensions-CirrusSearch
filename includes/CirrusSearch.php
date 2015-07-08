@@ -150,7 +150,8 @@ class CirrusSearch extends SearchEngine {
 		// Add interwiki results, if we have a sane result
 		// Note that we have no way of sending warning back to the user.  In this case all warnings
 		// are logged when they are added to the status object so we just ignore them here....
-		if ( $status->isOK() && $wgCirrusSearchInterwikiSources && $status->getValue() ) {
+		if ( $status->isOK() && $wgCirrusSearchInterwikiSources && $status->getValue() &&
+				method_exists( $status->getValue(), 'addInterwikiResults' ) ) {
 			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
 			// wrote the code but Searcher needs some refactoring first.
 			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {

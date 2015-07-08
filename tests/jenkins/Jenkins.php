@@ -79,6 +79,7 @@ $wgShowExceptionDetails = true;
 $wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
 $wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
 $wgCirrusSearchAllowLeadingWildcard = false;
+// $wgCirrusSearchInterwikiSources[ 'c' ] = 'commonswiki';
 
 // Test only API action to expose freezing/thawing writes to the elasticsearch cluster
 $wgAPIModules['cirrus-freeze-writes'] = 'CirrusSearch\Api\FreezeWritesToCluster';

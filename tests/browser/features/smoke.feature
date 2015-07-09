@@ -18,6 +18,7 @@ Feature: Smoke test
     Then a list of suggested pages should appear
       And Main Page should be the first result
 
+  @expect_failure
   Scenario: Fill in search term and click search
     Given I am at a random page
     When I search for: ma

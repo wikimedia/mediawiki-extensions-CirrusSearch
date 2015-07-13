@@ -51,6 +51,11 @@ class ElasticsearchIntermediary {
 	private $searchMetrics = array();
 
 	/**
+	 * @var string Id identifying this php execution
+	 */
+	static private $executionId;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.  Note that
@@ -63,6 +68,20 @@ class ElasticsearchIntermediary {
 	protected function __construct( User $user = null, $slowSeconds ) {
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
+	}
+
+	/**
+	 * Identifies a specific execution of php.  That might be one web
+	 * request, or multiple jobs run in the same executor. An execution id
+	 * is valid over a brief timespan, perhaps a minute or two for some jobs.
+	 *
+	 * @return integer unique identifier
+	 */
+	private static function getExecutionId() {
+		if ( self::$executionId === null ) {
+			self::$executionId = mt_rand();
+		}
+		return self::$executionId;
 	}
 
 	/**
@@ -203,7 +222,7 @@ class ElasticsearchIntermediary {
 		} else {
 			$source = 'web';
 		}
-		$logMessage .= ". Requested via $source.";
+		$logMessage .= ". Requested via $source by executor " . self::getExecutionId();
 
 		// Now log and clear our state.
 		LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );

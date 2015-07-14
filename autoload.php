@@ -22,6 +22,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\DataSender' => __DIR__ . '/includes/DataSender.php',
 	'CirrusSearch\\Dump' => __DIR__ . '/includes/Dump.php',
 	'CirrusSearch\\ElasticsearchIntermediary' => __DIR__ . '/includes/ElasticsearchIntermediary.php',
+	'CirrusSearch\\Extra\\Filter\\IdHashMod' => __DIR__ . '/includes/Extra/Filter/IdHashMod.php',
 	'CirrusSearch\\Extra\\Filter\\SourceRegex' => __DIR__ . '/includes/Extra/Filter/SourceRegex.php',
 	'CirrusSearch\\ForceSearchIndex' => __DIR__ . '/maintenance/forceSearchIndex.php',
 	'CirrusSearch\\Hooks' => __DIR__ . '/includes/Hooks.php',

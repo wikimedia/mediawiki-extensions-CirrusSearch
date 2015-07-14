@@ -5,7 +5,17 @@
 			"Albertas"
 		]
 	},
+	"cirrussearch-desc": "Elasticsearch-įgalinta MediaWiki paieška",
+	"cirrussearch-backend-error": "Nepavyko atlikti Jūsų paieškos dėl laikino sutrikimo. Prašome vėliau pabandyti dar kartą.",
+	"cirrussearch-parse-error": "Užklausa nebuvo suprasta. Prašome ją supaprastinti. Ši užklausa buvo išsaugota, kad būtų galima patobulinti paieškos sistemą.",
+	"cirrussearch-too-busy-error": "Paieška dabar yra per daug apkrauta. Prašome vėliau pabandyti dar kartą.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Jūs vykdote per daug paieškų tuo pačiu metu. Jeigu Jūs dalinatės IP adresu su kitais naudotojais, galite prisijungti ir gausite savo atskirą limitą.",
+	"cirrussearch-too-busy-for-you-logged-in-error": "Vykdote per daug paieškų vienu metu.",
+	"cirrussearch-regex-syntax-error": "Reguliariosios išraiškos sintaksės klaida čia $2: $1",
+	"cirrussearch-regex-too-busy-error": "Per daug reguliariųjų išraiškų paieškų veikia vienu metu. Prašome vėliau pabandyti dar kartą.",
+	"cirrussearch-regex-too-complex-error": "Per daug sudėtinga reguliarioji išraiška. Apie jos supaprastinimą galite išmokti [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|čia]].",
 	"cirrussearch-now-using": "Ši wiki svetainė naudoja naujovišką paieškos variklį. ([[mw:Special:MyLanguage/Help:CirrusSearch|Plačiau]])",
+	"cirrussearch-ignored-headings": " #<!-- palikite šią eilutę tiksliai tokią, kokia ji yra --> <pre>\n# Antraštės, kurios bus ignoruojamos paieškų.\n# Pakeitimai įsigalios iš karto, kai bus suindeksuota puslapio antraštė.\n# Galite priversti perindeksuoti puslapį atlikdami tuščią pakeitimą.\n# Sintaksė tokia:\n#   * Viskas nuo simbolio \"#\" iki eilutės pabaigos yra komentaras.\n#   * Kiekviena netuščia eilutė yra tikslus pavadinimas, kurį reikia ignoruoti, tipas ir visa kita.\nNuorodos\nIšorinės nuorodos\nTaip pat žr.\n #</pre> <!-- palikite šią eilutę tiksliai tokią, kokia ji yra -->",
 	"cirrussearch-pref-label": "Nauja paieška",
 	"cirrussearch-give-feedback": "Pateikite mums savo atsiliepimą"
 }

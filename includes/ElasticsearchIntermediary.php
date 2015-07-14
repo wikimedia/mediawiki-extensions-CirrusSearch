@@ -251,7 +251,7 @@ class ElasticsearchIntermediary {
 		// what else would have automatons and illegal argument exceptions. Just looking
 		// for the exception won't suffice because other weird things could cause it.
 		$seemsToUseRegexes = strpos( $message, 'import org.apache.lucene.util.automaton.*' ) !== false;
-		$usesExtraRegex = strpos( $message, 'org.wikimedia.search.extra.regex.SourceRegexFilter' ) !== false;
+		$usesExtraRegex = strpos( $message, 'source_text:/' ) !== false;
 		$seemsToUseRegexes |= $usesExtraRegex;
 		$marker = 'IllegalArgumentException[';
 		$markerLocation = strpos( $message, $marker );

@@ -58,6 +58,11 @@ class DumpIndex extends Maintenance {
 	 */
 	private $logToStderr = false;
 
+	/**
+	 * @var int
+	 */
+	 private $lastProgressPrinted;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Dump an index into a 'json' based format stdout. " .
@@ -108,7 +113,7 @@ class DumpIndex extends Maintenance {
 		$this->indexIdentifier = $this->getOption( 'indexIdentifier' );
 
 		$filter = null;
-		if( $this->hasOption( 'filter' ) ) {
+		if ( $this->hasOption( 'filter' ) ) {
 			$filter = new Elastica\Filter\Query(
 				new Elastica\Query\QueryString( $this->getOption( 'filter' ) ) );
 		}
@@ -117,7 +122,7 @@ class DumpIndex extends Maintenance {
 
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );
-		if( $filter ) {
+		if ( $filter ) {
 			$query->setQuery( new \Elastica\Query\Filtered(
 				new \Elastica\Query\MatchAll(), $filter ) );
 		}
@@ -175,7 +180,7 @@ class DumpIndex extends Maintenance {
 	}
 
 	private function writeLine( $data ) {
-		if( !fwrite( STDOUT, $data  . "\n" ) ) {
+		if ( !fwrite( STDOUT, $data  . "\n" ) ) {
 			throw new IndexDumperException( "Cannot write to standard output" );
 		}
 	}
@@ -226,11 +231,15 @@ class DumpIndex extends Maintenance {
 	 * methods in a closure.
 	 */
 	public function outputProgress( $docsDumped, $limit ) {
-		if( $docsDumped <= 0 ) {
+		if ( $docsDumped <= 0 ) {
 			return;
 		}
 		$pctDone = (int) ( ( $docsDumped / $limit ) * 100 );
-		if( ( $pctDone % 2 ) == 0 ) {
+		if ( $this->lastProgressPrinted == $pctDone ) {
+			return;
+		}
+		$this->lastProgressPrinted = $pctDone;
+		if ( ( $pctDone % 2 ) == 0 ) {
 			$this->outputIndented( "$pctDone% done...\n" );
 		}
 	}

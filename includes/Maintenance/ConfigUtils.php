@@ -48,7 +48,7 @@ class ConfigUtils {
 		$result = $this->client->request( '' );
 		$result = $result->getData();
 		if ( !isset( $result['version']['number'] ) ) {
-			$this->output( 'unable to determine, aborting.', 1 );
+			$this->error( 'unable to determine, aborting.', 1 );
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );

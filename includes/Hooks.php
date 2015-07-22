@@ -451,7 +451,7 @@ class Hooks {
 
 	/**
 	 * Hooked to delegate prefix searching to Searcher.
-	 * @param int $namespace namespace to search
+	 * @param int[] $namespaces namespace to search
 	 * @param string $search search text
 	 * @param int $limit maximum number of titles to return
 	 * @param array(string) $results outbound variable with string versions of titles

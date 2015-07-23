@@ -820,9 +820,10 @@ GROOVY;
 		// This can happen if the user override this setting with field names that
 		// are not allowed in $wgCirrusSearchMoreLikeThisAllowedFields (see Hooks.php)
 		if( !$wgCirrusSearchMoreLikeThisFields ) {
-			return Status::newGood( new SearchResultSet() /* empty */ );
+			return Status::newGood( new SearchResultSet( true ) /* empty */ );
 		}
 
+		$this->searchContainedSyntax = true;
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $wgCirrusSearchMoreLikeThisConfig );
 		$this->query->setFields( $wgCirrusSearchMoreLikeThisFields );

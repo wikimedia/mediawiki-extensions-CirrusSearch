@@ -201,7 +201,7 @@ class CirrusSearch extends SearchEngine {
 		if ( count( $titles ) ) {
 			return $searcher->moreLikeTheseArticles( $titles, $options );
 		}
-		return Status::newGood( new SearchResultSet() /* empty */ );
+		return Status::newGood( new SearchResultSet( true ) /* empty */ );
 	}
 	/**
 	 * Merge the prefix into the query (if any).

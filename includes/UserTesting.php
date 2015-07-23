@@ -143,15 +143,6 @@ class UserTesting {
 	}
 
 	/**
-	 * Converts a text string into a probability between 0 and 1
-	 * @param string $string
-	 * @return float Probability between 0 and 1
-	 */
-	static public function stringToProbability( $string ) {
-		return self::hexToProbability( md5( $string ) );
-	}
-
-	/**
 	 * Converts a hex string into a probability between 0 and 1.
 	 * Retains uniform distribution of incoming hash string.
 	 *
@@ -183,12 +174,8 @@ class UserTesting {
 	 * @return bool True for 1 in $sampleRate calls to this method.
 	 */
 	static public function oneIn( $testName, $sampleRate ) {
-		$request = \RequestContext::getMain()->getRequest();
-		$probability = self::stringToProbability( implode( " ", array(
-			$testName,
-			$request->getIP(),
-			$request->getHeader( 'User-Agent' )
-		) ) );
+		$hash = ElasticsearchIntermediary::generateIdentToken( $testName );
+		$probability = self::hexToProbability( $hash );
 		return 1 / $sampleRate > $probability;
 	}
 }

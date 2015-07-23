@@ -286,7 +286,7 @@ class ElasticsearchIntermediary {
 		if ( isset( $context['suggestion'] ) ) {
 			$message .= " and suggested '{suggestion}'";
 		}
-		$message .= ". Requested via {source} by executor {executor}";
+		$message .= ". Requested via {source} for {identity} by executor {executor}";
 
 		return $message;
 	}
@@ -310,6 +310,7 @@ class ElasticsearchIntermediary {
 			'tookMs' => intval( $took ),
 			'source' => self::getExecutionContext(),
 			'executor' => self::getExecutionId(),
+			'identity' => self::generateIdentToken(),
 		);
 
 		if ( $result ) {
@@ -426,6 +427,20 @@ class ElasticsearchIntermediary {
 			return array( $status, 'Regex syntax error:  ' . $syntaxError );
 		}
 		return array( Status::newFatal( 'cirrussearch-backend-error' ), $message );
+	}
+
+	/**
+	 * @param string $extraData Extra information to mix into the hash
+	 * @return string A token that identifies the source of the request
+	 */
+	public static function generateIdentToken( $extraData = '' ) {
+		$request = \RequestContext::getMain()->getRequest();
+		return md5( implode( ':', array(
+			$extraData,
+			$request->getIP(),
+			$request->getHeader( 'X-Forwarded-For' ),
+			$request->getHeader( 'User-Agent' ),
+		) ) );
 	}
 
 	/**

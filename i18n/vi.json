@@ -20,5 +20,6 @@
 	"cirrussearch-pref-desc": "Thử công cụ tìm kiếm mới hỗ trợ nhiều ngôn ngữ hơn, cung cấp kết quả tức thời hơn, có khả năng tìm văn bản được bung từ bản mẫu.",
 	"apihelp-cirrus-config-dump-description": "Cấu hình thô của CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Ánh xạ thô của CirrusSearch tại wiki này.",
-	"apihelp-cirrus-settings-dump-description": "Cấu hình thô của CirrusSearch tại wiki này."
+	"apihelp-cirrus-settings-dump-description": "Cấu hình thô của CirrusSearch tại wiki này.",
+	"cirrussearch-give-feedback": "Hãy gửi cho chúng tôi nhận xét của bạn"
 }

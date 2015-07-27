@@ -137,6 +137,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\NamespacesFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\NestedIndexField' => __DIR__ . '/includes/Search/NestedIndexField.php',
 	'CirrusSearch\\Search\\NumberIndexField' => __DIR__ . '/includes/Search/NumberIndexField.php',
+	'CirrusSearch\\Search\\OpeningTextIndexField' => __DIR__ . '/includes/Search/OpeningTextIndexField.php',
 	'CirrusSearch\\Search\\PreferRecentFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\RescoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\Result' => __DIR__ . '/includes/Search/Result.php',

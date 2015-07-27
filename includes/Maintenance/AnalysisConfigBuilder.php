@@ -33,7 +33,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.10';
+	const VERSION = '0.11';
 
 	/**
 	 * @var string Language code we're building analysis for
@@ -139,6 +139,16 @@ class AnalysisConfigBuilder {
 					'type' => 'custom',
 					'tokenizer' => 'standard',
 					'filter' => array( 'standard', 'lowercase', 'suggest_shingle' ),
+				),
+				'suggest_reverse' => array(
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => array( 'standard', 'lowercase', 'suggest_shingle', 'reverse' ),
+				),
+				'token_reverse' => array(
+					'type' => 'custom',
+					'tokenizer' => 'no_splitting',
+					'filter' => array('reverse')
 				),
 				'near_match' => array(
 					'type' => 'custom',

@@ -319,12 +319,23 @@ $wgCirrusSearchPhraseSuggestPrefixLengthHardLimit = 2;
 // see profiles/PhraseSuggesterProfiles.php
 $wgCirrusSearchPhraseSuggestSettings = $wgCirrusSearchPhraseSuggestProfiles['default'];
 
-// Look for suggestions in the article text?  Changing this from false to true will
-// break search until you perform an in place index rebuild.  Changing it from true
-// to false is ok and then you can change it back to true so long as you _haven't_
-// done an index rebuild since then.  If you perform an in place index rebuild after
-// changing this to false then you'll see some space savings.
+// Use a reverse field to build the did you mean suggestions.
+// This is usefull to workaround the prefix length limitation, by working with a reverse
+// field we can suggest typos correction that appears in the first 2 characters of the word.
+// i.e. Suggesting "search" if the user types "saerch" is possible with the reverse field.
+// Set build to true and reindex before set use to true
+$wgCirrusSearchPhraseSuggestReverseField = array(
+	'build' => false,
+	'use' => false,
+);
+
+// Look for suggestions in the article text?
+// An inplace reindex is needed after any changes to this value.
 $wgCirrusSearchPhraseSuggestUseText = false;
+
+// Look for suggestions in the article opening text?
+// An inplace reindex is needed after any changes to this value.
+$wgCirrusSearchPhraseSuggestUseOpeningText = false;
 
 // Allow leading wildcard queries.
 // Searching for terms that have a leading ? or * can be very slow. Turn this off to
@@ -628,6 +639,7 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'phraseSuggestMaxErrors',
 	'phraseSuggestConfidence',
 	'phraseSuggestUseText',
+	'phraseSuggestUseOpeningText',
 	'indexedRedirects',
 	'linkedArticlesToUpdate',
 	'unlikedArticlesToUpdate',
@@ -1023,6 +1035,15 @@ $wgCirrusSearchFieldTypes = array(
 	SearchIndexField::INDEX_TYPE_DATETIME => \CirrusSearch\Search\DatetimeIndexField::class,
 	SearchIndexField::INDEX_TYPE_BOOL => \CirrusSearch\Search\BooleanIndexField::class,
 	SearchIndexField::INDEX_TYPE_NESTED => \CirrusSearch\Search\NestedIndexField::class,
+);
+
+/**
+ * Customize certain fields with a specific implementation.
+ * Useful to apply CirrusSearch specific config to fields
+ * controlled by MediaWiki core.
+ */
+$wgCirrusSearchFieldTypeOverrides = array(
+	'opening_text' => \CirrusSearch\Search\OpeningTextIndexField::class,
 );
 
 /**

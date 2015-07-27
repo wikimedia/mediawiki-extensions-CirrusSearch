@@ -294,6 +294,18 @@ class FullTextQueryStringQueryBuilder {
 				),
 			),
 		);
+		// Add a second generator with the reverse field
+		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' ) ) {
+			$settings['phrase']['direct_generator'][] = array(
+				'field' => $field . '.reverse',
+				'suggest_mode' => $suggestSettings['mode'],
+				'max_term_freq' => $suggestSettings['max_term_freq'],
+				'min_doc_freq' => $suggestSettings['min_doc_freq'],
+				'prefix_length' => $suggestSettings['prefix_length'],
+				'pre_filter' => 'token_reverse',
+				'post_filter' => 'token_reverse'
+			);
+		}
 		if ( !empty( $suggestSettings['collate'] ) ) {
 			$collateFields = array('title.plain', 'redirect.title.plain');
 			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' )  ) {

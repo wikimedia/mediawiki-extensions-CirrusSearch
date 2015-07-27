@@ -32,8 +32,11 @@ class PhraseSuggesterProfiles {
 			$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit,
 			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit,
 			$wgCirrusSearchPhraseSuggestAllowedMode,
-			$wgCirrusSearchPhraseSuggestAllowedSmoothingModel;
+			$wgCirrusSearchPhraseSuggestAllowedSmoothingModel,
+			$wgCirrusSearchPhraseSuggestReverseField;
 
+		Util::overrideYesNo( $wgCirrusSearchPhraseSuggestReverseField['use'], $request,
+			'cirrusSuggUseReverse' );
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['max_errors'], $request,
 			'cirrusSuggMaxErrors', $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit );
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['confidence'], $request,

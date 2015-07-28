@@ -1319,8 +1319,12 @@ GROOVY;
 	 * @return array[] array of Elastica configuration
 	 */
 	private function buildSuggestConfig( $field ) {
-		global $wgCirrusSearchPhraseSuggestMaxErrors;
-		global $wgCirrusSearchPhraseSuggestConfidence;
+		global $wgCirrusSearchPhraseSuggestMaxErrors,
+			$wgCirrusSearchPhraseSuggestConfidence,
+			$wgCirrusSearchPhraseSuggestMode,
+			$wgCirrusSearchPhraseSuggestMaxTermFreq,
+			$wgCirrusSearchPhraseSuggestMinDocFreq,
+			$wgCirrusSearchPhraseSuggestPrefixLength;
 		return array(
 			'phrase' => array(
 				'field' => $field,
@@ -1330,13 +1334,10 @@ GROOVY;
 				'direct_generator' => array(
 					array(
 						'field' => $field,
-						'suggest_mode' => 'always', // Forces us to generate lots of phrases to try.
-						// If a term appears in more then half the docs then don't try to correct it.  This really
-						// shouldn't kick in much because we're not looking for misspellings.  We're looking for phrases
-						// that can be might off.  Like "noble prize" ->  "nobel prize".  In any case, the default was
-						// 0.01 which way too frequently decided not to correct some terms.
-						'max_term_freq' => 0.5,
-						'prefix_length' => 2,
+						'suggest_mode' => $wgCirrusSearchPhraseSuggestMode,
+						'max_term_freq' => doubleval($wgCirrusSearchPhraseSuggestMaxTermFreq),
+						'min_doc_freq' => $wgCirrusSearchPhraseSuggestMinDocFreq,
+						'prefix_length' => $wgCirrusSearchPhraseSuggestPrefixLength,
 					),
 				),
 				'highlight' => array(

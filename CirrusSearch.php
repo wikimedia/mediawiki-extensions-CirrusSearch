@@ -240,9 +240,61 @@ $wgCirrusSearchMoreAccurateScoringMode = true;
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestMaxErrors = 2;
 
+// Set the hard limit for $wgCirrusSearchPhraseSuggestMaxErrors. This prevents customizing
+// this setting in a way that could hurt the system performances.
+$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit = 2;
+
 // Confidence level required to suggest new phrases.
 // See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 $wgCirrusSearchPhraseSuggestConfidence = 2.0;
+
+// The suggest mode used by the phrase suggester
+// can be :
+//  * missing: Only suggest terms in the suggest text that aren’t in the index.
+//  * popular: Only suggest suggestions that occur in more docs then the original
+//             suggest text term.
+//  * always: Suggest any matching suggestions based on terms in the suggest text.
+$wgCirrusSearchPhraseSuggestMode = 'always';
+
+// List of allowed values for the suggest mode
+$wgCirrusSearchPhraseSuggestAllowedMode = array( 'missing', 'popular', 'always' );
+
+
+// The max term freq used by the phrase suggester.
+// The maximum threshold in number of documents a suggest text token can exist in
+// order to be included. Can be a relative percentage number (e.g 0.4) or an absolute
+// number to represent document frequencies. If an value higher than 1 is specified
+// then fractional can not be specified. Defaults to 0.01f.
+// If a term appears in more then half the docs then don't try to correct it.  This really
+// shouldn't kick in much because we're not looking for misspellings.  We're looking for phrases
+// that can be might off.  Like "noble prize" ->  "nobel prize".  In any case, the default was
+// 0.01 which way too frequently decided not to correct some terms.
+$wgCirrusSearchPhraseSuggestMaxTermFreq = 0.5;
+
+// Set the hard limit for $wgCirrusSearchPhraseMaxTermFreq. This prevents customizing
+// this setting in a way that could hurt the system performances.
+$wgCirrusSearchPhraseSugggestMaxTermFreqHardLimit = 0.6;
+
+// The max doc freq (shard level) used by the phrase suggester
+// The minimal threshold in number of documents a suggestion should appear in.
+// This can be specified as an absolute number or as a relative percentage of
+// number of documents. This can improve quality by only suggesting high frequency
+// terms. Defaults to 0f and is not enabled. If a value higher than 1 is specified
+// then the number cannot be fractional. The shard level document frequencies are
+// used for this option.
+// NOTE: this value is ignored if $wgCirrusSearchPhraseSuggestMode is always
+$wgCirrusSearchPhraseSuggestMinDocFreq = 0.0;
+
+// The prefix length used by the phrase suggester
+// The number of minimal prefix characters that must match in order be a candidate
+// suggestions. Defaults to 1. Increasing this number improves spellcheck performance.
+// Usually misspellings don’t occur in the beginning of terms.
+$wgCirrusSearchPhraseSuggestPrefixLength = 2;
+
+// Set the hard limit for $wgCirrusSearchPhraseSuggestPrefixLength. This prevents customizing
+// this setting in a way that could hurt the system performances.
+// (This is the minimal value)
+$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit = 2;
 
 // Look for suggestions in the article text?  Changing this from false to true will
 // break search until you perform an in place index rebuild.  Changing it from true

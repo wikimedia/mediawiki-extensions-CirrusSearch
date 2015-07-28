@@ -92,6 +92,7 @@ class Hooks {
 		}
 
 		self::overrideMoreLikeThisOptionsFromMessage();
+		self::overridePhraseSuggesterOptionsFromMessage();
 
 		if ( $request ) {
 			// Engage the experimental highlighter if a url parameter requests it
@@ -108,17 +109,24 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
+			self::overridePhraseSuggesterOptions( $request );
 		}
 	}
 
 	/**
-	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit.
+	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
+	 * or => $limit if upperLimit is false.
 	 */
-	private static function overrideNumeric( &$dest, $request, $name, $limit = null ) {
+	private static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
 		$val = $request->getVal( $name );
-		if ( $val !== null && is_numeric( $val )
-				&& ( ( isset ( $limit ) && $val <= $limit ) || ( !isset( $limit ) ) ) ) {
-			$dest = $val;
+		if ( $val !== null && is_numeric( $val ) ) {
+			if ( !isset( $limit ) ) {
+				$dest = $val;
+			} else if ( $upperLimit && $val <= $limit ) {
+				$dest = $val;
+			} else if ( !$upperLimit && $val >= $limit ) {
+				$dest = $val;
+			}
 		}
 	}
 
@@ -237,6 +245,94 @@ class Hooks {
 				$wgCirrusSearchMoreLikeThisAllowedFields );
 		}
 	}
+
+	/**
+	 * Override Phrase suggester options ("Did you mean?" suggestions)
+	 */
+	private static function overridePhraseSuggesterOptions( $request ) {
+		global $wgCirrusSearchPhraseSuggestMaxErrors,
+			$wgCirrusSearchPhraseSuggestConfidence,
+			$wgCirrusSearchPhraseSuggestMode,
+			$wgCirrusSearchPhraseSuggestMaxTermFreq,
+			$wgCirrusSearchPhraseSuggestMinDocFreq,
+			$wgCirrusSearchPhraseSuggestPrefixLength,
+			$wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit,
+			$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit,
+			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit,
+			$wgCirrusSearchPhraseSuggestAllowedMode;
+
+		self::overrideNumeric( $wgCirrusSearchPhraseSuggestMaxErrors, $request, 'cirrusSuggMaxErrors',
+			$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit );
+		self::overrideNumeric( $wgCirrusSearchPhraseSuggestConfidence, $request, 'cirrusSuggConfidence' );
+		self::overrideNumeric( $wgCirrusSearchPhraseSuggestMaxTermFreq, $request, 'cirrusSuggMaxTermFreq',
+			$wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit );
+		self::overrideNumeric( $wgCirrusSearchPhraseSuggestMinDocFreq, $request, 'cirrusSuggMinDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchPhraseSuggestPrefixLength, $request, 'cirrusSuggPrefixLength',
+			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit, false );
+		$mode = $request->getVal( 'cirrusSuggMode' );
+		if( isset( $mode ) && in_array( $mode, $wgCirrusSearchPhraseSuggestAllowedMode ) ) {
+			$wgCirrusSearchPhraseSuggestMode = $mode;
+		}
+	}
+
+	/**
+	 * Override Phrase suggester options ("Did you mean?" suggestions)
+	 */
+	private static function overridePhraseSuggesterOptionsFromMessage( ) {
+		global $wgCirrusSearchPhraseSuggestMaxErrors,
+			$wgCirrusSearchPhraseSuggestConfidence,
+			$wgCirrusSearchPhraseSuggestMode,
+			$wgCirrusSearchPhraseSuggestMaxTermFreq,
+			$wgCirrusSearchPhraseSuggestMinDocFreq,
+			$wgCirrusSearchPhraseSuggestPrefixLength,
+			$wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit,
+			$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit,
+			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit,
+			$wgCirrusSearchPhraseSuggestAllowedMode;
+
+		$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
+		if ( !$source || $source->isDisabled() ) {
+			return;
+		}
+		$lines = Util::parseSettingsInMessage( $source->plain() );
+
+		foreach ( $lines as $line ) {
+			list( $k, $v ) = explode( ':', $line, 2 );
+			switch( $k ) {
+			case 'max_errors' :
+				if ( is_numeric( $v ) && $v >= 1 && $v <= $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit ) {
+					$wgCirrusSearchPhraseSuggestMaxErrors = floatval( $v );
+				}
+				break;
+			case 'confidence' :
+				if ( is_numeric( $v ) && $v >= 0 ) {
+					$wgCirrusSearchPhraseSuggestConfidence = floatval( $v );
+				}
+				break;
+			case 'max_term_freq' :
+				if ( is_numeric( $v ) && $v >= 0 && $v <= $wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit ) {
+					$wgCirrusSearchPhraseSuggestMaxTermFreq = floatval( $v );
+				}
+				break;
+			case 'min_doc_freq' :
+				if ( is_numeric( $v ) && $v >= 0 && $v < 1 ) {
+					$wgCirrusSearchPhraseSuggestMinDocFreq = floatval( $v );
+				}
+				break;
+			case 'prefix_length' :
+				if ( is_numeric( $v ) && $v >= 0 && $v <= $wgCirrusSearchPhraseSuggestPrefixLengthHardLimit ) {
+					$wgCirrusSearchPhraseSuggestPrefixLength = intval( $v );
+				}
+				break;
+			case 'suggest_mode' :
+				if ( in_array( $v, $wgCirrusSearchPhraseSuggestAllowedMode ) ) {
+					$wgCirrusSearchPhraseSuggestMode = $v;
+				}
+				break;
+			}
+		}
+	}
+
 	/**
 	 * Hook to call before an article is deleted
 	 * @param WikiPage $page The page we're deleting

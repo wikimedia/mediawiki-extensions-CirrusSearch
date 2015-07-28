@@ -26,7 +26,8 @@ use \SearchResultSet;
 class ResultSet extends SearchResultSet {
 	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 	private $searchContainedSyntax;
-	private $interwikiPrefix, $interwikiResults;
+	private $interwikiPrefix,$interwikiResults;
+	private $rewrittenQuery;
 
 	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwiki = '' ) {
 		$this->result = $res;
@@ -52,6 +53,15 @@ class ResultSet extends SearchResultSet {
 				$this->suggestionSnippet = $this->suggestionSnippet . htmlspecialchars( $suggestSuffix );
 			}
 		}
+	}
+
+	/**
+	 * @return bool True when rewriting this query is allowed
+	 */
+	public function isQueryRewriteAllowed() {
+		return $this->numRows() === 0 &&
+			count( $this->interwikiResults ) === 0 &&
+			!$this->searchContainedSyntax();
 	}
 
 	private function findSuggestion() {
@@ -163,5 +173,22 @@ class ResultSet extends SearchResultSet {
 
 	public function searchContainedSyntax() {
 		return $this->searchContainedSyntax;
+	}
+
+	public function setRewrittenQuery($newQuery, $newQuerySnippet=null) {
+		$this->rewrittenQuery = $newQuery;
+		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
+	}
+
+	public function hasRewrittenQuery() {
+		return $this->rewrittenQuery !== null;
+	}
+
+	public function getQueryAfterRewrite() {
+		return $this->rewrittenQuery;
+	}
+
+	public function getQueryAfterRewriteSnippet() {
+		return $this->rewrittenQuerySnippet;
 	}
 }

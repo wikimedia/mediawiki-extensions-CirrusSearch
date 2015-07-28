@@ -16,6 +16,8 @@ Feature: Searches that prompt, or not, for new page creation
   | incategory:weaponry                                       |  no link  |
   | catapu?t                                                  |  no link  |
   | catapul?                                                  |  no link  |
+  | morelike:ThisPageDoesNotExist                             |  no link  |
+  | morelike:ChangeMe                                         |  no link  |
 
   @boolean_operators
   Scenario Outline: boolean operators in bad positions in the query are ignored so you get the option to create a new page

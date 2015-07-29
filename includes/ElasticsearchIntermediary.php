@@ -166,19 +166,32 @@ class ElasticsearchIntermediary {
 	 * @return int number of milliseconds it took to complete the request
 	 */
 	private function finishRequest() {
+		global $wgCirrusSearchLogElasticRequests;
+
 		if ( !$this->requestStart ) {
 			wfLogWarning( 'finishRequest called without staring a request' );
 			return;
 		}
-		// No need to check description because it must be set by $this->start.
-
-		// Build the log message
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );
+		if ( $wgCirrusSearchLogElasticRequests ) {
+			$logMessage = $this->buildLogMessage( $this->requestStart, $endTime, $took );
+			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );
+			if ( $this->slowMillis && $took >= $this->slowMillis ) {
+				$logMessage .= $this->user ? ' for ' . $this->user->getName() : '';
+				LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage );
+			}
+		}
+		$this->requestStart = null;
+		return $took;
+	}
+
+	private function buildLogMessage( $startTime, $endTime, $took ) {
 		\RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
+		// No need to check description because it must be set by $this->start.
 		$logMessage = $this->description;
 
-		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
+		$this->searchMetrics['wgCirrusStartTime'] = $startTime;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 
 		$client = Connection::getClient();
@@ -213,7 +226,6 @@ class ElasticsearchIntermediary {
 					$resultData[ 'suggest' ][ 'suggest' ][ 0 ][ 'options' ][ 0 ][ 'text' ] . '\'';
 			}
 		}
-		$request = $client->getLastRequest();
 
 		if ( php_sapi_name() === 'cli' ) {
 			$source = 'cli';
@@ -224,14 +236,7 @@ class ElasticsearchIntermediary {
 		}
 		$logMessage .= ". Requested via $source by executor " . self::getExecutionId();
 
-		// Now log and clear our state.
-		LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );
-		if ( $this->slowMillis && $took >= $this->slowMillis ) {
-			$logMessage .= $this->user ? ' for ' . $this->user->getName() : '';
-			LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage );
-		}
-		$this->requestStart = null;
-		return $took;
+		return $logMessage;
 	}
 
 	private function extractMessageAndStatus( $exception ) {

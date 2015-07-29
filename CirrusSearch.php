@@ -663,6 +663,18 @@ $wgCirrusSearchMergeSettings = array(
  */
 $wgCirrusSearchEnableSearchLogging = false;
 
+/**
+ * Whether elasticsearch queries should be logged on the server side.
+ */
+$wgCirrusSearchLogElasticRequests = true;
+
+/**
+ * When truthy and this value is passed as the cirrusLogElasticRequests query
+ * variable $wgCirrusSearchLogElasticRequests will be set to false for that
+ * request.
+ */
+$wgCirrusSearchLogElasticRequestsSecret = false;
+
 // The maximum number of incategory:a|b|c items to OR together.
 $wgCirrusSearchMaxIncategoryOptions = 100;
 

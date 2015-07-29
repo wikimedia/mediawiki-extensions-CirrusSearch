@@ -47,11 +47,15 @@ class RunSearch extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf;
+		global $wgPoolCounterConf, $wgCirrusSearchLogElasticRequests;
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'],
 			$wgPoolCounterConf['CirrusSearch-PerUser'] );
+
+		// Don't skew the dashboards by logging these requests to
+		// the global request log.
+		$wgCirrusSearchLogElasticRequests = false;
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );

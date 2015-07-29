@@ -82,7 +82,9 @@ class Hooks {
 			$wgCirrusSearchBoostLinks,
 			$wgCirrusSearchAllFields,
 			$wgCirrusSearchAllFieldsForRescore,
-			$wgCirrusSearchPhraseSlop;
+			$wgCirrusSearchPhraseSlop,
+			$wgCirrusSearchLogElasticRequests,
+			$wgCirrusSearchLogElasticRequestsSecret;
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
@@ -110,6 +112,7 @@ class Hooks {
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
 			self::overridePhraseSuggesterOptions( $request );
+			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
 		}
 	}
 
@@ -127,6 +130,15 @@ class Hooks {
 			} else if ( !$upperLimit && $val >= $limit ) {
 				$dest = $val;
 			}
+		}
+	}
+
+	/**
+	 * Set $dest to $value when $request->getVal( $name ) contains $secret
+	 */
+	private static function overrideSecret( &$dest, $secret, $request, $name, $value = true ) {
+		if ( $secret && $secret === $request->getVal( $name ) ) {
+			$dest = $value;
 		}
 	}
 

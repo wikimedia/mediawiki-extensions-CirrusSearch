@@ -633,6 +633,12 @@ $wgCirrusSearchDropDelayedJobsAfter = 60 * 60 * 24 * 2; // 2 days
  */
 $wgCirrusSearchWriteBackoffExponent = 6;
 
+/**
+ * Configuration of individual a/b tests being run. See CirrusSearch\UserTesting
+ * for more information.
+ */
+$wgCirrusSearchUserTesting = array();
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

@@ -79,6 +79,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Search\\TitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Searcher' => __DIR__ . '/includes/Searcher.php',
 	'CirrusSearch\\Updater' => __DIR__ . '/includes/Updater.php',
+	'CirrusSearch\\UserTesting' => __DIR__ . '/includes/UserTesting.php',
 	'CirrusSearch\\Util' => __DIR__ . '/includes/Util.php',
 	'CirrusSearch\\Version' => __DIR__ . '/includes/Version.php',
 );

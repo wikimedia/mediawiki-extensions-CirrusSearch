@@ -17,18 +17,30 @@ end
 When(/^I locate the page id of (.*) and store it as (%.*%)$/) do |title, varname|
   @search_vars[varname] = page_id_of title
 end
+When(/^I reset did you mean suggester options$/) do
+  @didyoumean_options = {}
+end
+When(/^I set did you mean suggester option (.*) to (.*)$/) do |varname, value|
+  @didyoumean_options ||= {}
+  @didyoumean_options[varname] = value
+end
 # rubocop:disable LineLength
 When(/^I api search( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |incoming_links, offset, lang, namespaces, search|
   begin
+    options = {
+      sroffset: offset,
+      srnamespace: (namespaces || "0").split(/ /),
+      uselang: lang,
+      cirrusBoostLinks: incoming_links ? "no" : "yes"
+    }
+    options = options.merge(@didyoumean_options) if defined?@didyoumean_options
+
     @api_result = search_for(
       search.gsub(/%[^ {]+%/, @search_vars)
         .gsub(/%\{\\u([\dA-Fa-f]{4,6})\}%/) do  # replace %{\uXXXX}% with the unicode code point
           [Regexp.last_match[1].hex].pack("U")
         end,
-      sroffset: offset,
-      srnamespace: (namespaces || "0").split(/ /),
-      uselang: lang,
-      cirrusBoostLinks: incoming_links ? "no" : "yes"
+      options
     )
   rescue MediawikiApi::ApiError => e
     @api_error = e

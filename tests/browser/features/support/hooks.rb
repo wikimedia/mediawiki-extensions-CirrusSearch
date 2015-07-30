@@ -148,6 +148,8 @@ Before("@suggestions") do
       And a page named Rrr Word 4 exists with contents #REDIRECT [[Noble Somethingelse4]]
       And a page named Rrr Word 5 exists with contents #REDIRECT [[Noble Somethingelse5]]
       And a page named Nobel Gassez exists with contents #REDIRECT [[Noble Gasses]]
+      And there are 30 pages named Grammy Awards ed. %s with contents grammy awards
+      And there are 14 pages named Grammo Awards ed. %s with contents bogus grammy awards page
         )
     suggestions = true
   end

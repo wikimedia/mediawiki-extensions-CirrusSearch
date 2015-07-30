@@ -54,3 +54,34 @@ Feature: Did you mean
     | boost-templates:"prize\|150%" noble prize | boost-templates:"prize\|150%" *nobel* prize |
     | noble prize prefix:n                      | *nobel* prize prefix:n                      |
 
+  Scenario: Customize prefix length of did you mean suggestions
+    When I set did you mean suggester option cirrusSuggPrefixLength to 5
+    And I api search for noble prize
+    Then there is no api suggestion
+
+  Scenario: Did you mean option suggests
+    And I api search for grammo awards
+  Then there is no api suggestion
+
+  Scenario: Customize max term freq did you mean suggestions
+    When I set did you mean suggester option cirrusSuggMaxTermFreq to 0.4
+    And I set did you mean suggester option cirrusSuggConfidence to 1
+    And I api search for grammo
+  Then *grammy* is suggested by api
+
+  Scenario: Customize max term freq did you mean suggestions
+    When I set did you mean suggester option cirrusSuggMaxTermFreq to 0.0000001
+    And I set did you mean suggester option cirrusSuggConfidence to 1
+    And I api search for grammo
+  Then there is no api suggestion
+
+  Scenario: Customize min doc freq did you mean suggestions
+    When I set did you mean suggester option cirrusSuggMode to popular
+    And I set did you mean suggester option cirrusSuggMinDocFreq to 0.99999999
+    And I api search for noble prize
+   Then there is no api suggestion
+
+  Scenario: Customize prefix length of did you mean suggestions below the hard limit
+    When I set did you mean suggester option cirrusSuggPrefixLength to 1
+    And I api search for nabel prize
+  Then there is no api suggestion

@@ -150,6 +150,15 @@ Before("@suggestions") do
       And a page named Nobel Gassez exists with contents #REDIRECT [[Noble Gasses]]
       And there are 30 pages named Grammy Awards ed. %s with contents grammy awards
       And there are 14 pages named Grammo Awards ed. %s with contents bogus grammy awards page
+      And a page named my suggest1 suggest2 exists with contents list of grammy awards winners
+      And a page named my suggest2 suggest3 exists with contents list of grammy awards winners
+      And a page named my suggest3 suggest4 exists with contents list of grammy awards winners
+      And a page named my suggest4 suggest5 exists with contents list of grammy awards winners
+      And a page named my suggest5 suggest6 exists with contents list of grammy awards winners
+      And a page named my suggest6 suggest1 exists with contents list of grammy awards winners
+      And a page named suggest1 suggest2 suggest3 exists with contents list of grammy awards winners
+      And a page named suggest2 suggest3 suggest4 exists with contents list of grammy awards winners
+      And a page named suggest3 suggest4 suggest5 exists with contents list of grammy awards winners
         )
     suggestions = true
   end

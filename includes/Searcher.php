@@ -1322,23 +1322,30 @@ GROOVY;
 	private function buildSuggestConfig( $field ) {
 		global $wgCirrusSearchPhraseSuggestMaxErrors,
 			$wgCirrusSearchPhraseSuggestConfidence,
-			$wgCirrusSearchPhraseSuggestMode,
-			$wgCirrusSearchPhraseSuggestMaxTermFreq,
-			$wgCirrusSearchPhraseSuggestMinDocFreq,
-			$wgCirrusSearchPhraseSuggestPrefixLength;
-		return array(
+			$wgCirrusSearchPhraseSuggestSettings;
+
+		// check deprecated settings
+		if ( isset ( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
+			$wgCirrusSearchPhraseSuggestSettings['max_errors'] = $wgCirrusSearchPhraseSuggestMaxErrors;
+		}
+		if ( isset ( $wgCirrusSearchPhraseSuggestConfidence ) ) {
+			$wgCirrusSearchPhraseSuggestSettings['confidence'] = $wgCirrusSearchPhraseSuggestConfidence;
+		}
+
+		$settings = array(
 			'phrase' => array(
 				'field' => $field,
 				'size' => 1,
-				'max_errors' => $wgCirrusSearchPhraseSuggestMaxErrors,
-				'confidence' => $wgCirrusSearchPhraseSuggestConfidence,
+				'max_errors' => $wgCirrusSearchPhraseSuggestSettings['max_errors'],
+				'confidence' => $wgCirrusSearchPhraseSuggestSettings['confidence'],
+				'real_word_error_likelihood' => $wgCirrusSearchPhraseSuggestSettings['real_word_error_likelihood'],
 				'direct_generator' => array(
 					array(
 						'field' => $field,
-						'suggest_mode' => $wgCirrusSearchPhraseSuggestMode,
-						'max_term_freq' => doubleval($wgCirrusSearchPhraseSuggestMaxTermFreq),
-						'min_doc_freq' => $wgCirrusSearchPhraseSuggestMinDocFreq,
-						'prefix_length' => $wgCirrusSearchPhraseSuggestPrefixLength,
+						'suggest_mode' => $wgCirrusSearchPhraseSuggestSettings['mode'],
+						'max_term_freq' => $wgCirrusSearchPhraseSuggestSettings['max_term_freq'],
+						'min_doc_freq' => $wgCirrusSearchPhraseSuggestSettings['min_doc_freq'],
+						'prefix_length' => $wgCirrusSearchPhraseSuggestSettings['prefix_length'],
 					),
 				),
 				'highlight' => array(
@@ -1347,6 +1354,27 @@ GROOVY;
 				),
 			),
 		);
+		if ( $wgCirrusSearchPhraseSuggestSettings['collate'] ) {
+			$collateFields = array('title.plain', 'redirect.title.plain');
+			if ( $wgCirrusSearchPhraseSuggestUseText ) {
+				$collateFields[] = 'text.plain';
+			}
+			$settings['phrase']['collate'] = array(
+				'query' => array (
+					'multi_match' => array(
+						'query' => '{{suggestion}}',
+						'operator' => 'or',
+						'minimum_should_match' => $wgCirrusSearchPhraseSuggestSettings['collate_minimum_should_match'],
+						'type' => 'cross_fields',
+						'fields' => $collateFields
+					)
+				)
+			);
+		}
+		if( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model'] ) ) {
+			$settings['phrase']['smoothing'] = $wgCirrusSearchPhraseSuggestSettings['smoothing_model'];
+		}
+		return $settings;
 	}
 
 	/**

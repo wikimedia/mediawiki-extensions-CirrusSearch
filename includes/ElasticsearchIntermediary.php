@@ -32,6 +32,10 @@ class ElasticsearchIntermediary {
 	 */
 	protected $user;
 	/**
+	 * @var UserTesting Reports on this requests participation in tests
+	 */
+	protected $ut;
+	/**
 	 * @var float|null start time of current request or null if none is running
 	 */
 	private $requestStart = null;
@@ -68,6 +72,7 @@ class ElasticsearchIntermediary {
 	protected function __construct( User $user = null, $slowSeconds ) {
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
+		$this->ut = UserTesting::getInstance();
 	}
 
 	/**

@@ -1,8 +1,11 @@
 <?php
 
 namespace CirrusSearch;
+
+use DeferredUpdates;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
+use FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use RequestContext;
 use Status;
@@ -66,6 +69,11 @@ class ElasticsearchIntermediary {
 	static private $executionId;
 
 	/**
+	 * @var array[]|null Result of self::getLogContext for each request in this process
+	 */
+	static private $logContexts;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.  Note that
@@ -93,6 +101,52 @@ class ElasticsearchIntermediary {
 			self::$executionId = mt_rand();
 		}
 		return self::$executionId;
+	}
+
+	/**
+	 * Summarizes all the requests made in this process and reports
+	 * them along with the test they belong to.
+	 * Only public due to php 5.3 not having access from closures
+	 */
+	public static function reportLogContexts() {
+		global $wgRequest;
+
+		if ( !self::$logContexts ) {
+			return;
+		}
+		$ut = UserTesting::getInstance();
+		$tests = array();
+		foreach ( $ut->getActiveTestNames() as $test ) {
+			$tests[$test] = $ut->getBucket( $test );
+		}
+		if ( !$tests ) {
+			return;
+		}
+		$report = array(
+			'wiki' => wfWikiId(),
+			'tests' => $tests,
+			'queries' => array(),
+			'hits' => 0,
+			'source' => self::getExecutionContext(),
+			'ip' => $wgRequest->getIP(),
+			'xff' => $wgRequest->getHeader( 'X-Forwarded-For' ),
+			'userAgent' => $wgRequest->getHeader( 'User-Agent' ),
+		);
+
+		foreach ( self::$logContexts as $context ) {
+			$report['hits'] += isset( $context['hitsTotal'] ) ? $context['hitsTotal'] : 0;
+			$report['queries'][] = array(
+				'queryType' => isset( $context['queryType'] ) ? $context['queryType'] : '',
+				'query' => isset( $context['query'] ) ? $context['query'] : '',
+				'suggest' => isset( $context['suggestion'] ) ? $context['suggestion'] : '',
+				'elasticTook' => isset( $context['elasticTook'] ) ? $context['elasticTook'] : '',
+				'index' => isset( $context['index'] ) ? $context['index'] : '',
+			);
+		}
+
+		$message = FormatJson::encode( $report );
+		LoggerFactory::getInstance( 'CirrusSearchUserTesting' )->debug( $message );
+		self::$logContexts = null;
 	}
 
 	/**
@@ -285,6 +339,14 @@ class ElasticsearchIntermediary {
 				$params['suggestion'] = $resultData['suggest']['suggest'][0]['options'][0]['text'];
 			}
 		}
+
+		if ( self::$logContexts === null ) {
+			DeferredUpdates::addCallableUpdate( function () {
+				ElasticsearchIntermediary::reportLogContexts();
+			} );
+			self::$logContexts = array();
+		}
+		self::$logContexts[] = $params;
 
 		return $params;
 	}

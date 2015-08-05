@@ -881,7 +881,10 @@ GROOVY;
 			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
 				try {
 					global $wgCirrusSearchClientSideSearchTimeout;
-					$searcher->start( "get of $indexType." . implode( ', ', $pageIds ) );
+					$searcher->start( "get of {indexType}.{pageIds}", array(
+						'indexType' => $indexType,
+						'pageIds' => array_map( 'intval', $pageIds ),
+					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
 					$pageType = Connection::getPageType( $indexBaseName, $indexType );
@@ -908,7 +911,9 @@ GROOVY;
 			$this->user,
 			function() use ( $searcher, $name, $indexBaseName ) {
 				try {
-					$searcher->start( "lookup namespace for $name" );
+					$searcher->start( "lookup namespace for {namespaceName}", array(
+						'namespaceName' => $name,
+					) );
 					$pageType = Connection::getNamespaceType( $indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
@@ -1153,7 +1158,11 @@ GROOVY;
 			$search->addIndex( $i );
 		}
 
-		$description = "$type search for '$for'";
+		$description = "{queryType} search for '{query}'";
+		$logContext = array(
+			'queryType' => $type,
+			'query' => $for,
+		);
 
 		if ( $this->returnQuery ) {
 			return Status::newGood( array(
@@ -1170,9 +1179,9 @@ GROOVY;
 		$result = Util::doPoolCounterWork(
 			$poolCounterType,
 			$this->user,
-			function() use ( $searcher, $search, $description ) {
+			function() use ( $searcher, $search, $description, $logContext ) {
 				try {
-					$searcher->start( $description );
+					$searcher->start( $description, $logContext );
 					return $searcher->success( $search->search() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );

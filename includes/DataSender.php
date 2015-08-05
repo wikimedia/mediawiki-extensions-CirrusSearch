@@ -155,7 +155,10 @@ class DataSender extends ElasticsearchIntermediary {
 		$exception = null;
 		try {
 			$pageType = Connection::getPageType( wfWikiId(), $indexType );
-			$this->start( "sending $documentCount documents to the $indexType index" );
+			$this->start( "sending {numBulk} documents to the {indexType} index", array(
+				'numBulk' => $documentCount,
+				'indexType' => $indexType,
+			) );
 			$bulk = new \Elastica\Bulk( Connection::getClient() );
 			if ( $shardTimeout ) {
 				$bulk->setShardTimeout( $shardTimeout );
@@ -217,7 +220,10 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexType ) {
-					$this->start( "deleting $idCount from $indexType" );
+					$this->start( "deleting {numIds} from {indexType}", array(
+						'numIds' => $idCount,
+						'indexType' => $indexType,
+					) );
 					Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
 					$this->success();
 				}
@@ -274,7 +280,9 @@ class DataSender extends ElasticsearchIntermediary {
 			// Execute the bulk update
 			$exception = null;
 			try {
-				$this->start( "updating " . count( $updates ) . " documents in other indexes" );
+				$this->start( "updating {numBulk} documents in other indexes", array(
+					'numBulk' => count( $updates )
+				) );
 				$bulk->send();
 			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {

@@ -88,8 +88,9 @@ class UserTesting {
 			if ( !isset( $testConfig['sampleRate'] ) ) {
 				continue;
 			}
-			if ( call_user_func( $callback, $testName, $testConfig['sampleRate'] ) ) {
-				$this->activateTest( $testName, $testConfig );
+			$bucketProbability = call_user_func( $callback, $testName, $testConfig['sampleRate'] );
+			if ( $bucketProbability > 0 ) {
+				$this->activateTest( $testName, $bucketProbability, $testConfig );
 			}
 		}
 	}
@@ -121,16 +122,17 @@ class UserTesting {
 
 	/**
 	 * @var string $testName Name of the test to activate.
+	 * @var float $bucketProbability Number between 0 and 1 for determining bucket.
 	 * @var array $testConfig Configuration of the test to activate.
 	 */
-	protected function activateTest( $testName, array $testConfig ) {
+	protected function activateTest( $testName, $bucketProbability, array $testConfig ) {
 		$this->tests[$testName] = '';
 		$globals = array();
 		if ( isset( $testConfig['globals'] ) ) {
 			$globals = $testConfig['globals'];
 		}
 		if ( isset( $testConfig['buckets'] ) ) {
-			$bucket = array_rand( $testConfig['buckets'] );
+			$bucket = $this->chooseBucket( $bucketProbability, array_keys( $testConfig['buckets'] ) );
 			$this->tests[$testName] = $bucket;
 			$globals = array_merge( $globals, $testConfig['buckets'][$bucket] );
 		}
@@ -140,6 +142,26 @@ class UserTesting {
 				$GLOBALS[$key] = $value;
 			}
 		}
+	}
+
+	/**
+	 * @var float $probability A number between 0 and 1
+	 * @var string[] $buckets List of buckets to choose from.
+	 * @return string The chosen bucket.
+	 */
+	static public function chooseBucket( $probability, $buckets ) {
+		$num = count( $buckets );
+		$each = 1 / $num;
+		$current = 0;
+		foreach ( $buckets as $bucket ) {
+			$current += $each;
+			if ( $current >= $probability ) {
+				return $bucket;
+			}
+		}
+		// >= should ensure we never get here,
+		// unless probability > 1
+		return end( $buckets );
 	}
 
 	/**
@@ -154,28 +176,29 @@ class UserTesting {
 			throw new \RuntimeException( 'Empty hash provided' );
 		}
 		$len = strlen( $hash );
-		$sum = null;
+		$sum = 0;
 		for ( $i = 0; $i < $len; $i += 4) {
 			$piece = substr( $hash, $i, 4 );
 			$dec = hexdec( $piece );
-			if ( $sum === null ) {
-				$sum = $dec;
-			} else {
-				// exclusive OR will retain the uniform
-				// distribution
-				$sum = $sum ^ $dec;
-			}
+			// xor will retain the uniform distribution
+			$sum = $sum ^ $dec;
 		}
 		return $sum / ((1<<16)-1);
 	}
 
 	/**
 	 * @var integer $sampleRate
-	 * @return bool True for 1 in $sampleRate calls to this method.
+	 * @return float for 1 in $sampleRate calls to this method
+	 *  returns a stable probability between 0 and 1. for all other
+	 *  requests returns 0.
 	 */
 	static public function oneIn( $testName, $sampleRate ) {
 		$hash = ElasticsearchIntermediary::generateIdentToken( $testName );
 		$probability = self::hexToProbability( $hash );
-		return 1 / $sampleRate > $probability;
+		$rateThreshold = 1 / $sampleRate;
+		if ( $rateThreshold >= $probability ) {
+			return $probability / $rateThreshold;
+		}
+		return 0;
 	}
 }

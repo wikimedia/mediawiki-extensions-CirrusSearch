@@ -4,7 +4,8 @@ namespace CirrusSearch;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
-use \Status;
+use RequestContext;
+use Status;
 use User;
 
 /**
@@ -43,6 +44,11 @@ class ElasticsearchIntermediary {
 	 * @var string|null description of the next request to be sent to Elasticsearch or null if not yet decided
 	 */
 	private $description = null;
+	/**
+	 * @var array map of search request stats to log about the current search request
+	 */
+	private $logContext = array();
+
 	/**
 	 * @var int how many millis a request through this intermediary needs to take before it counts as slow.
 	 * 0 means none count as slow.
@@ -93,9 +99,11 @@ class ElasticsearchIntermediary {
 	 * Mark the start of a request to Elasticsearch.  Public so it can be called from pool counter methods.
 	 *
 	 * @param string $description name of the action being started
+	 * @param array $logContext Contextual variables for generating log messages
 	 */
-	public function start( $description ) {
+	public function start( $description, array $logContext = array() ) {
 		$this->description = $description;
+		$this->logContext = $logContext;
 		$this->requestStart = microtime( true );
 	}
 
@@ -179,69 +187,119 @@ class ElasticsearchIntermediary {
 		}
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );
+
+		RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
+		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
+		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
+		$logContext = $this->buildLogContext( $took );
+		if ( isset( $logContext['elasticTook'] ) ) {
+			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTook'];
+		}
 		if ( $wgCirrusSearchLogElasticRequests ) {
-			$logMessage = $this->buildLogMessage( $this->requestStart, $endTime, $took );
-			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage );
+			$logMessage = $this->buildLogMessage( $logContext );
+			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $logContext );
 			if ( $this->slowMillis && $took >= $this->slowMillis ) {
-				$logMessage .= $this->user ? ' for ' . $this->user->getName() : '';
-				LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage );
+				if ( $this->user ) {
+					$logContext['user'] = $this->user->getName();
+					$logMessage .= ' for {user}';
+				}
+				LoggerFactory::getInstance( 'CirrusSearchSlowRequests' )->info( $logMessage, $logContext );
 			}
 		}
 		$this->requestStart = null;
 		return $took;
 	}
 
-	private function buildLogMessage( $startTime, $endTime, $took ) {
-		\RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
+	/**
+	 * @param array $context Request specific log variables from self::buildLogContext()
+	 * @return string a PSR-3 compliant message describing $context
+	 */
+	private function buildLogMessage( $context ) {
 		// No need to check description because it must be set by $this->start.
-		$logMessage = $this->description;
+		$message = $this->description;
+		$message .= " against {index} took {tookMs} millis";
+		if ( isset( $context['elasticTookMs'] ) ) {
+			$message .= " and {elasticTookMs} Elasticsearch millis";
+		}
+		if ( isset( $context['hitsTotal'] ) ){
+			$message .= ". Found {hitsTotal} total results";
+			$message .= " and returned {hitsReturned} of them starting at {hitsOffset}";
+		}
+		if ( isset( $context['namespaces'] ) ) {
+			$namespaces = implode( ', ', $context['namespaces'] );
+			$message .= " within these namespaces: $namespaces";
+		}
+		if ( isset( $context['suggestion'] ) ) {
+			$message .= " and suggested '{suggestion}'";
+		}
+		$message .= ". Requested via {source} by executor {executor}";
 
-		$this->searchMetrics['wgCirrusStartTime'] = $startTime;
-		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
+		return $message;
+	}
 
+	/**
+	 * These values end up serialized into Avro which has strict typing
+	 * requirements. float !== int !== string.
+	 *
+	 * @param float $took Number of milliseconds the request took
+	 * @return array
+	 */
+	private function buildLogContext( $took ) {
 		$client = Connection::getClient();
 		$query = $client->getLastRequest();
 		$result = $client->getLastResponse();
+
+		$params = $this->logContext;
+		$this->logContext = array();
+
+		$params += array(
+			'tookMs' => intval( $took ),
+			'source' => self::getExecutionContext(),
+			'executor' => self::getExecutionId(),
+		);
+
 		if ( $result ) {
 			$queryData = $query->getData();
 			$resultData = $result->getData();
 
 			$index = explode( '/', $query->getPath() );
-			$index = $index[ 0 ];
-			$logMessage .= " against $index took $took millis";
+			$params['index'] = $index[0];
 			if ( isset( $resultData[ 'took' ] ) ) {
 				$elasticTook = $resultData[ 'took' ];
-				$logMessage .= " and $elasticTook Elasticsearch millis";
-				$this->searchMetrics['wgCirrusElasticTime'] = $elasticTook;
+				$params['elasticTookMs'] = intval( $elasticTook );
 			}
 			if ( isset( $resultData['hits']['total'] ) ) {
-				$logMessage .= ". Found {$resultData['hits']['total']} total results";
+				$params['hitsTotal'] = intval( $resultData['hits']['total'] );
 			}
 			if ( isset( $resultData['hits']['hits'] ) ) {
 				$num = count( $resultData['hits']['hits'] );
 				$offset = isset( $queryData['from'] ) ? $queryData['from'] : 0;
-				$logMessage .= " and returned $num of them starting at $offset";
+				$params['hitsReturned'] = $num;
+				$params['hitsOffset'] = intval( $offset );
 			}
 			if ( $this->_isset( $queryData, array( 'query', 'filtered', 'filter', 'terms', 'namespace' ) ) ) {
 				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
-				$logMessage .= ' within these namespaces: ' . implode( ', ', $namespaces );
+				$params['namespaces'] = array_map( 'intval', $namespaces );
 			}
-			if ( isset( $resultData[ 'suggest' ][ 'suggest' ][ 0 ][ 'options' ][ 0 ][ 'text' ] ) ) {
-				$logMessage .= ' and suggested \'' .
-					$resultData[ 'suggest' ][ 'suggest' ][ 0 ][ 'options' ][ 0 ][ 'text' ] . '\'';
+			if ( isset( $resultData['suggest']['suggest'][0]['options'][0]['text'] ) ) {
+				$params['suggestion'] = $resultData['suggest']['suggest'][0]['options'][0]['text'];
 			}
 		}
 
+		return $params;
+	}
+
+	/**
+	 * @return string The context the request is in. Either cli, api or web.
+	 */
+	static public function getExecutionContext() {
 		if ( php_sapi_name() === 'cli' ) {
-			$source = 'cli';
+			return 'cli';
 		} elseif ( defined( 'MW_API' ) ) {
-			$source = 'api';
+			return 'api';
 		} else {
-			$source = 'web';
+			return 'web';
 		}
-		$logMessage .= ". Requested via $source by executor " . self::getExecutionId();
-
-		return $logMessage;
 	}
 
 	private function extractMessageAndStatus( $exception ) {

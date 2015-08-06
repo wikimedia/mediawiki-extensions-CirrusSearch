@@ -104,7 +104,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		if ( $linkCountClosureCount ) {
 			try {
 				$pageCount = count( $pages );
-				$this->start( "counting links to $pageCount pages" );
+				$this->start( "counting links to {pageCount} pages", array(
+					'pageCount' => $pageCount,
+				) );
 				$result = $this->linkCountMultiSearch->search();
 				$this->success();
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {

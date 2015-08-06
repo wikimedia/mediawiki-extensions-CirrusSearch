@@ -59,7 +59,7 @@ class UserTesting {
 	/**
 	 * @var array Map from test name to the bucket the request is in.
 	 */
-	protected $tests;
+	protected $tests = array();
 
 	/**
 	 * Returns a stable instance based on $wgCirrusSearchUserTesting

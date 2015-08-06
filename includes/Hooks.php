@@ -356,8 +356,12 @@ class Hooks {
 		$lines = Util::parseSettingsInMessage( $source->plain() );
 
 		// Keep original alpha or discount settings
-		$laplaceAlpha = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'];
-		$stupidBackoffDiscount = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'];
+		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'] ) ) {
+			$laplaceAlpha = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'];
+		}
+		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'] ) ) {
+			$stupidBackoffDiscount = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'];
+		}
 
 		foreach ( $lines as $line ) {
 			list( $k, $v ) = explode( ':', $line, 2 );

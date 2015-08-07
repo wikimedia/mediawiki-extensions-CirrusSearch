@@ -180,6 +180,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $returnQuery = false;
 
 	/**
+	 * @var boolean return raw Elasticsearch result instead of processing it
+	 */
+	private $returnResult = false;
+
+	/**
 	 * @var null|float[] lazily initialized version of $wgCirrusSearchNamespaceWeights with all string keys
 	 * translated into integer namespace codes using $this->language.
 	 */
@@ -231,6 +236,13 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setReturnQuery( $returnQuery ) {
 		$this->returnQuery = $returnQuery;
+	}
+
+	/**
+	 * @param boolean $dumpResult return raw Elasticsearch result instead of processing it
+	 */
+	public function setDumpResult( $dumpResult ) {
+		$this->returnResult = $dumpResult;
 	}
 
 	/**
@@ -1204,6 +1216,15 @@ GROOVY;
 			});
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();
+
+			if ( $this->returnResult ) {
+				return Status::newGood( array(
+						'description' => $description,
+						'path' => $search->getPath(),
+						'result' => $responseData,
+				) );
+			}
+
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
 			if ( $responseData[ 'timed_out' ] ) {

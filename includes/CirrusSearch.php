@@ -97,6 +97,8 @@ class CirrusSearch extends SearchEngine {
 		$request = $context->getRequest();
 		$dumpQuery = $request && $request->getVal( 'cirrusDumpQuery' ) !== null;
 		$searcher->setReturnQuery( $dumpQuery );
+		$dumpResult = $request && $request->getVal( 'cirrusDumpResult' ) !== null;
+		$searcher->setDumpResult( $dumpResult );
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
@@ -132,7 +134,7 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig ) );
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
-		if ( $dumpQuery ) {
+		if ( $dumpQuery || $dumpResult ) {
 			// When dumping the query we skip _everything_ but echoing the query.
 			$context->getOutput()->disable();
 			$request->response()->header( 'Content-type: application/json; charset=UTF-8' );

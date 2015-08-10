@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+
 use Elastica;
 use Category;
 use CirrusSearch;
@@ -18,6 +19,7 @@ use Status;
 use Title;
 use UsageException;
 use User;
+use Elastica\Request;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -773,6 +775,132 @@ GROOVY;
 	}
 
 	/**
+	 * Produce a set of completion suggestions for text using _suggest
+	 * See https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-suggesters-completion.html
+	 * @param string $text Search term
+	 * @param array $context Context, see https://www.elastic.co/guide/en/elasticsearch/reference/current/suggester-context.html
+	 * @return Status
+	 */
+	public function suggest( $text, $context = null ) {
+		global $wgCirrusSearchCompletionSettings, $wgCirrusSearchSearchShardTimeout;
+
+		$this->term = $text;
+
+		$suggest = array( 'text' => $text );
+		foreach ( $wgCirrusSearchCompletionSettings[ 'fields' ] as $field ) {
+			$suggest[$field] = array(
+				'completion' => array(
+					'field' => $field,
+				)
+			);
+			if ( $context ) {
+				$suggest[$field]['completion']['context'] = $context;
+			}
+
+			if( is_array( $wgCirrusSearchCompletionSettings[ 'fuzzy' ] ) ) {
+				$suggest[$field."-fuzzy"] = array(
+					'completion' => array(
+						'field' => $field,
+						'fuzzy' => $wgCirrusSearchCompletionSettings[ 'fuzzy' ],
+					)
+				);
+				if ( $context ) {
+					$suggest[$field."-fuzzy"]['completion']['context'] = $context;
+				}
+			}
+		}
+
+		$queryOptions = array();
+		$queryOptions[ 'timeout' ] = $wgCirrusSearchSearchShardTimeout[ 'default' ];
+		Connection::setTimeout( $wgCirrusSearchSearchShardTimeout[ 'default' ] );
+
+		$index = Connection::getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
+		$description = "completion suggest query for {query}";
+		$logContext = array(
+			'query' => $text,
+		);
+		$searcher = $this;
+		$result = Util::doPoolCounterWork(
+			'CirrusSearch-Search',
+			$this->user,
+		 	function() use( $searcher, $index, $description, $suggest, $logContext, $queryOptions ) {
+				$searcher->start( $description, $logContext );
+				try {
+					return $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
+				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+					return $searcher->failure( $e );
+				}
+			}
+		);
+		if( $result->isOk() ) {
+			$result = $this->postProcessSuggest( $result, $this->limit );
+			return $this->success( $result );
+		}
+		return $result;
+	}
+
+	/**
+	 * merge top level multi-queries and resolve returned pageIds into Title objects.
+	 *
+	 * @param \Elastica\Response $response Response from elasticsearch _suggest api
+	 * @param int $limit Maximum suggestions to return, -1 for unlimited
+	 * @return Title[] List of suggested titles
+	 */
+	protected function postProcessSuggest( \Elastica\Response $response, $limit = -1 ) {
+		$data = $response->getData();
+		unset( $data['_shards'] );
+
+		$suggestions = array();
+		foreach ( $data as $name => $results  ) {
+			foreach ( $results as $suggested ) {
+				foreach ( $suggested['options'] as $suggest ) {
+					$pageId = $suggest['text'];
+					if ( !isset( $suggestions[$pageId] ) ||
+						$suggest['score'] > $suggestions[$pageId]['score']
+					) {
+						$suggestions[$pageId] = $suggest;
+					}
+				}
+			}
+		}
+
+		// simply sort by existing scores
+		usort( $suggestions, function ( $a, $b ) {
+			return $b['score'] - $a['score'];
+		} );
+
+		if ( $limit > 0 ) {
+			$suggestions = array_slice( $suggestions, 0, $limit );
+		}
+
+		// suggest currently returns page ids, we need to resolve those now
+		$pageIds = array();
+		foreach ( $suggestions as $suggestion ) {
+			$pageIds[] = $suggestion['text'];
+		}
+
+		// doesn't guarantee to maintain order
+		$unsortedTitles = Title::newFromIDs( $pageIds );
+		$byId = array();
+		foreach ( $unsortedTitles as $title ) {
+			$byId[$title->getArticleID()] = $title;
+		}
+
+		$retval = array();
+		foreach ( $suggestions as $suggestion ) {
+			$pageId = $suggestion['text'];
+			if ( isset( $byId[$pageId] ) ) {
+				$retval[] = array(
+					'title' => (string)$byId[$pageId],
+					'score' => $suggestion['score'],
+				);
+			}
+		}
+
+		return $retval;
+	}
+
+	/**
 	 * Builds a match query against $field for $title.  $title is munged to make title matching better more
 	 * intuitive for users.
 	 * @param string $field field containing the title
@@ -1199,6 +1327,7 @@ GROOVY;
 				'path' => $search->getPath(),
 				'params' => $search->getOptions(),
 				'query' => $query->toArray(),
+				'options' => $queryOptions,
 			) );
 		}
 

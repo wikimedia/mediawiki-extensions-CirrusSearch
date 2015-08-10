@@ -785,6 +785,22 @@ $wgCirrusSearchWriteBackoffExponent = 6;
  */
 $wgCirrusSearchUserTesting = array();
 
+/**
+ * Settings for completion suggestion options.
+ * See CirrusSearch\BuildDocument\SuggestBuilder and CirrusSearch\Searcher
+ * fields - set of suggestion fields to use
+ * fuzzy - fuzziness configuration (false for no fuzziness)
+ * See also: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
+ */
+$wgCirrusSearchCompletionSettings = array(
+	"fields" => array(
+		"suggest", "suggest-stop"
+	),
+	"fuzzy" => array(
+		"fuzziness" => 2
+	),
+);
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
@@ -849,6 +865,7 @@ $wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
 $wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\Api\ConfigDump';
 $wgAPIModules['cirrus-mapping-dump'] = 'CirrusSearch\Api\MappingDump';
 $wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
+$wgAPIModules['cirrus-suggest'] = 'CirrusSearch\Api\Suggest';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

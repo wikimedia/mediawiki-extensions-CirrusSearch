@@ -56,6 +56,16 @@ module CirrusSearchApiHelper
     )
   end
 
+  # Get suggestions for a particular string using the new suggestions api
+  def suggestions_for_api(search, limit = nil)
+    req = {}
+    req["limit"] = limit if limit
+    api.action(:'cirrus-suggest', req.merge(
+      text: search,
+      token_type: false
+    ))
+  end
+
   def sha1_for_image(title, current_api = nil)
     current_api ||= api
     existing = current_api.prop(

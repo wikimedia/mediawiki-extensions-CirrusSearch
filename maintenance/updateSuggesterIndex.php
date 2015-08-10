@@ -153,6 +153,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
+		$this->getIndex()->refresh();
 	}
 
 	private function deleteOldIndex() {
@@ -397,5 +398,5 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\UpdateSuggesterIndex";
+$maintClass = 'CirrusSearch\Maintenance\UpdateSuggesterIndex';
 require_once RUN_MAINTENANCE_IF_MAIN;

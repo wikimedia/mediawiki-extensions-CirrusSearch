@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch;
 use CirrusSearch\Searcher;
 use Status;
+use CirrusSearch\Search\ResultSet;
 
 /**
  * Run search queries provided on stdin
@@ -38,7 +39,7 @@ class RunSearch extends Maintenance {
 		parent::__construct();
 		$this->addDescription( "Run one or more searches against the cluster. " .
 			"search queries are read from stdin." );
-		$this->addOption( 'type', 'What type of search to run, prefix or full_text. ' .
+		$this->addOption( 'type', 'What type of search to run, prefix, suggest or full_text. ' .
 			'defaults to full_text.', false, true );
 		$this->addOption( 'options', 'A JSON object mapping from global variable to ' .
 			'its test value' );
@@ -94,9 +95,14 @@ class RunSearch extends Maintenance {
 		$data = array( 'query' => $query );
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {
-			$data['rows'] = $status->getValue()->numRows();
+			$value = $status->getValue();
+			if ( $value instanceof ResultSet ) {
+				$data['rows'] = $value->numRows();
+			} elseif ( is_array ($value ) ) {
+				$data['rows'] = count( $value );
+			}
 		} else {
-			$data['error'] = $resultSet->getMessage()->text();
+			$data['error'] = $status->getMessage()->text();
 		}
 		return json_encode( $data );
 	}
@@ -123,6 +129,15 @@ class RunSearch extends Maintenance {
 		case 'prefix':
 			$searcher = new Searcher( 0, 10 );
 			return $searcher->prefixSearch( $query );
+
+		case 'suggest':
+			$searcher = new Searcher( 0, 10 );
+			$result = $searcher->suggest( $query );
+			if ( $result instanceof Status ) {
+				return $result;
+			} else {
+				return Status::newGood( $result );
+			}
 
 		default:
 			$this->error( "\nERROR: Unknown search type $searchType\n" );

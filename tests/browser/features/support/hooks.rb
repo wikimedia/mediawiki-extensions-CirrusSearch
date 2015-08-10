@@ -616,6 +616,19 @@ Before("@accented_namespace") do
   end
 end
 
+suggest = false
+Before("@suggest") do
+  unless suggest
+    steps %(
+      Given a page named X-Men exists with contents The X-Men are a fictional team of superheroes
+        And a page named Xavier, Charles exists with contents Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]
+        And a page named X-Force exists with contents X-Force is a fictional team of of [[X-Men]]
+        And I reindex suggestions
+    )
+    suggest = true
+  end
+end
+
 # Prevents api tests from generating fail screenshots.  Must come after all the above hooks
 # because some of them use the browser to set the preconditions necessary for api tests.
 Before("@api") do

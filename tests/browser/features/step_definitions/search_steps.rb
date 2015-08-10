@@ -56,6 +56,36 @@ end
 Then(/^the api should offer to search for pages containing (.*)$/) do |term|
   @api_result[0].should == term
 end
+When(/^I ask suggestion API for (.*)$/) do |search|
+  begin
+    @api_result = suggestions_for_api(search)
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  end
+end
+When(/^I ask suggestion API at most (\d+) items? for (.*)$/) do |limit, search|
+  begin
+    @api_result = suggestions_for_api(search, limit)
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  end
+end
+Then(/^the API should produce list containing (.*)/) do |term|
+  found = false
+  @api_result["suggest"].each do |el|
+    found = true if el["title"] == term
+  end
+  found.should == true
+end
+Then(/^the API should produce list starting with (.*)/) do |term|
+  @api_result["suggest"][0]["title"].should == term
+end
+Then(/^the API should produce list of length (\d+)/) do |length|
+  @api_result["suggest"].length.should == length.to_i
+end
+Then(/^the API should produce empty list/) do
+  @api_result["suggest"].should == []
+end
 When(/^I get api near matches for (.*)$/) do |search|
   begin
     @api_result = search_for(
@@ -465,6 +495,12 @@ When(/^I globally thaw indexing$/) do
     token_type: false,
     formatversion: 2,
     thaw: 1
+  )
+end
+When(/^I reindex suggestions$/) do
+  api.action(
+    :'cirrus-suggest-index',
+    token_type: false
   )
 end
 

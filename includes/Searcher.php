@@ -2,20 +2,21 @@
 
 namespace CirrusSearch;
 use Elastica;
-use \Category;
-use \CirrusSearch;
-use \CirrusSearch\Extra\Filter\SourceRegex;
-use \CirrusSearch\Search\Escaper;
-use \CirrusSearch\Search\Filters;
-use \CirrusSearch\Search\FullTextResultsType;
-use \CirrusSearch\Search\ResultsType;
-use \Language;
-use \MWNamespace;
-use \RequestContext;
-use \SearchResultSet;
-use \Status;
-use \Title;
-use \UsageException;
+use Category;
+use CirrusSearch;
+use CirrusSearch\Extra\Filter\SourceRegex;
+use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Filters;
+use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Search\ResultsType;
+use Language;
+use MediaWiki\Logger\LoggerFactory;
+use MWNamespace;
+use RequestContext;
+use SearchResultSet;
+use Status;
+use Title;
+use UsageException;
 use User;
 
 /**
@@ -664,7 +665,10 @@ GROOVY;
 				$nearMatchQuery[] = $queryPart[ 'raw' ];
 				continue;
 			}
-			wfLogWarning( 'Unknown query part:  ' . serialize( $queryPart ) );
+			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				'Unknown query part: {queryPart}',
+				array( 'queryPart' => serialize( $queryPart ) )
+			);
 		}
 
 		// Actual text query
@@ -1138,7 +1142,10 @@ GROOVY;
 			) ) );
 			break;
 		default:
-			wfLogWarning( "Invalid sort type:  $this->sort" );
+			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				"Invalid sort type: {sort}",
+				array( 'sort' => $this->sort )
+			);
 		}
 
 		$queryOptions = array();
@@ -1178,7 +1185,7 @@ GROOVY;
 
 		if ( $this->returnQuery ) {
 			return Status::newGood( array(
-				'description' => $description,
+				'description' => $this->formatDescription( $description, $logContext ),
 				'path' => $search->getPath(),
 				'params' => $search->getOptions(),
 				'query' => $query->toArray(),
@@ -1199,9 +1206,17 @@ GROOVY;
 					return $searcher->failure( $e );
 				}
 			},
-			function( $error, $key, $userName ) use ( $type, $description, $user ) {
-				$forUserName = $userName ? "for $userName " : '';
-				wfLogWarning( "Pool error {$forUserName}on key $key during $description:  $error" );
+			function( $error, $key, $userName ) use ( $type, $description, $user, $logContext ) {
+				$forUserName = $userName ? "for {userName} " : '';
+				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+					"Pool error {$forUserName}on key {key} during $description:  {error}",
+					$logContext + array(
+						'userName' => $userName,
+						'key' => 'key',
+						'error' => $error
+					)
+				);
+
 				if ( $error === 'pool-queuefull' ) {
 					if ( strpos( $key, 'nowait:CirrusSearch:_per_user' ) === 0 ) {
 						$loggedIn = $user->isLoggedIn() ? 'logged-in' : 'anonymous';
@@ -1219,7 +1234,7 @@ GROOVY;
 
 			if ( $this->returnResult ) {
 				return Status::newGood( array(
-						'description' => $description,
+						'description' => $this->formatDescription( $description, $logContext ),
 						'path' => $search->getPath(),
 						'result' => $responseData,
 				) );
@@ -1228,7 +1243,10 @@ GROOVY;
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
 			if ( $responseData[ 'timed_out' ] ) {
-				wfLogWarning( "$description timed out and only returned partial results!" );
+				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+					"$description timed out and only returned partial results!",
+					$logContext
+				);
 				if ( $result->getValue()->numRows() === 0 ) {
 					return Status::newFatal( 'cirrussearch-backend-error' );
 				} else {
@@ -1770,5 +1788,22 @@ GROOVY;
 		$foundNamespace = $foundNamespace[ 0 ];
 		$query = substr( $query, $colon + 1 );
 		$this->namespaces = array( $foundNamespace->getId() );
+	}
+
+	/**
+	 * Perform a quick and dirty replacement for $this->description
+	 * when it's not going through monolog. It replaces {foo} with
+	 * the value from $context['foo'].
+	 *
+	 * @param string $input String to perform replacement on
+	 * @param array $context patterns and their replacements
+	 * @return string $input with replacements from $context performed
+	 */
+	private function formatDescription( $input, $context ) {
+		$pairs = array();
+		foreach ( $context as $key => $value ) {
+			$pairs['{' . $key . '}'] = $value;
+		}
+		return strtr( $input, $pairs );
 	}
 }

@@ -1,9 +1,11 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
-use \HtmlFormatter;
-use \ParserOutput;
-use \Sanitizer;
+
+use HtmlFormatter;
+use MediaWiki\Logger\LoggerFactory;
+use ParserOutput;
+use Sanitizer;
 
 /**
  * Adds fields to the document that require article text.
@@ -111,7 +113,10 @@ class PageTextBuilder extends ParseBuilder {
 		case 'none':
 			break;
 		default:
-			wfLogWarning( "Invalid value for \$wgCirrusSearchBoostOpening:  $wgCirrusSearchBoostOpening" );
+			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				"Invalid value for \$wgCirrusSearchBoostOpening: {wgCirrusSearchBoostOpening}",
+				array( 'wgCirrusSearchBoostOpening' =>  $wgCirrusSearchBoostOpening )
+			);
 		}
 
 		// Add extra spacing around break tags so text crammed together like<br>this doesn't make one word.

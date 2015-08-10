@@ -1,18 +1,19 @@
 <?php
 
 namespace CirrusSearch;
+
 use CirrusSearch\BuildDocument\FileDataBuilder;
 use CirrusSearch\BuildDocument\PageDataBuilder;
 use CirrusSearch\BuildDocument\PageTextBuilder;
+use Hooks as MWHooks;
+use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
-use \Hooks as MWHooks;
-use \JobQueueGroup;
-use \MWTimestamp;
-use \ParserCache;
-use \Sanitizer;
-use \TextContent;
-use \Title;
-use \WikiPage;
+use MWTimestamp;
+use ParserCache;
+use Sanitizer;
+use TextContent;
+use Title;
+use WikiPage;
 
 /**
  * Performs updates and deletes on the Elasticsearch index.  Called by
@@ -259,8 +260,11 @@ $titles[0], array(
 		foreach ( $pages as $page ) {
 			$title = $page->getTitle();
 			if ( !$page->exists() ) {
-				wfLogWarning( 'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
-					"earlier but wasn't.  Page: $title" );
+				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
+					"earlier but wasn't.  Page: {title}",
+					array( 'title' => $title )
+				);
 				continue;
 			}
 

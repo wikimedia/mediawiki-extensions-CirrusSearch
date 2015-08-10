@@ -1,12 +1,14 @@
 <?php
 
 namespace CirrusSearch;
-use \GenderCache;
-use \MWNamespace;
-use \PoolCounterWorkViaCallback;
-use \Title;
-use \User;
-use \Status;
+
+use GenderCache;
+use MediaWiki\Logger\LoggerFactory;
+use MWNamespace;
+use PoolCounterWorkViaCallback;
+use Title;
+use User;
+use Status;
 
 /**
  * Random utility functions that don't have a better home
@@ -114,8 +116,11 @@ class Util {
 		$globalKey = "$type:$wgCirrusSearchPoolCounterKey";
 		if ( $errorCallback === null ) {
 			$errorCallback = function( $error, $key, $userName ) {
-				$forUserName = $userName ? "for $userName " : '';
-				wfLogWarning( "Pool error {$forUserName}on $key:  $error" );
+				$forUserName = $userName ? "for {userName} " : '';
+				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+					"Pool error {$forUserName}on {key}:  {error}",
+					array( 'userName' => $userName, 'key' => $key, 'error' => $error )
+				);
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			};
 		}

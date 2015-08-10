@@ -52,7 +52,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$names = self::indexesToIndexNames( $indexes );
 		}
 
-		$this->log->debug( "Freezing writes to: " . implode( ',', $names ) );
+		$this->log->info( "Freezing writes to: " . implode( ',', $names ) );
 
 		$documents = array();
 		foreach ( $names as $indexName ) {
@@ -97,7 +97,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$names = self::indexesToIndexNames( $indexes );
 		}
 
-		$this->log->debug( "Thawing writes to " . implode( ',', $names ) );
+		$this->log->info( "Thawing writes to " . implode( ',', $names ) );
 
 		Connection::getFrozenIndexNameType()->deleteIds( $names );
 	}

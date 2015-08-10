@@ -10,6 +10,7 @@ use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Type;
+use MediaWiki\Logger\LoggerFactory;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -314,7 +315,10 @@ class Reindexer {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			wfLogWarning( "Search backend error during reindex.  Error type is '$type' and message is:  $message" );
+			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				"Search backend error during reindex.  Error type is '{type}' and message is:  {message}",
+				array( 'type' => $type, 'message' => $message )
+			);
 			die( 1 );
 		}
 	}

@@ -1,6 +1,5 @@
 @clean @dump_quer @phantomjs
 Feature: Can dump the query syntax
-  @expect_failure
   Scenario: Can dump the query syntax
     Given I am at a random page
     When I search for main page

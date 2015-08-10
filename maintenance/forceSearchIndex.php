@@ -1,14 +1,15 @@
 <?php
 
 namespace CirrusSearch;
-use \CirrusSearch;
-use \JobQueueGroup;
-use \LinkCache;
-use \Maintenance;
-use \MWException;
-use \MWTimestamp;
-use \Title;
-use \WikiPage;
+use CirrusSearch;
+use JobQueueGroup;
+use LinkCache;
+use Maintenance;
+use MediaWiki\Logger\LoggerFactory;
+use MWException;
+use MWTimestamp;
+use Title;
+use WikiPage;
 
 /**
  * Force reindexing change to the wiki.
@@ -358,7 +359,10 @@ class ForceSearchIndex extends Maintenance {
 			try {
 				$content = $page->getContent();
 			} catch ( MWException $ex ) {
-				wfLogWarning( "Error deserializing content, skipping page: $row->page_id\n" );
+				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+					"Error deserializing content, skipping page: {pageId}",
+					array( 'pageId' => $row->page_id )
+				);
 				continue;
 			}
 

@@ -180,9 +180,15 @@ class ElasticsearchIntermediary {
 	 * @return \Status representing a backend failure
 	 */
 	public function failure( $exception = null ) {
-		$took = $this->finishRequest();
+		$context = $this->logContext;
+		$context['took'] = $this->finishRequest();
 		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
-		wfLogWarning( "Search backend error during $this->description after $took.  $message" );
+		$context['message'] = $message;
+
+		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+			"Search backend error during {$this->description} after {took}: {message}",
+			$context
+		);
 		return $status;
 	}
 
@@ -236,7 +242,9 @@ class ElasticsearchIntermediary {
 		global $wgCirrusSearchLogElasticRequests;
 
 		if ( !$this->requestStart ) {
-			wfLogWarning( 'finishRequest called without staring a request' );
+			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				'finishRequest called without staring a request'
+			);
 			return;
 		}
 		$endTime = microtime( true );

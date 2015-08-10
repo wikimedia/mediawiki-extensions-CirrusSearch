@@ -54,6 +54,11 @@ class Searcher extends ElasticsearchIntermediary {
 	const MAX_TITLE_SEARCH = 255;
 
 	/**
+	 * Maximum length, in characters, allowed in queries sent to searchText.
+	 */
+	const MAX_TEXT_SEARCH = 300;
+
+	/**
 	 * Maximum offset depth allowed.  Too deep will cause very slow queries.
 	 * 100,000 feels plenty deep.
 	 */
@@ -357,6 +362,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$wgCirrusSearchBoostLinks,
 			$wgCirrusSearchAllFields,
 			$wgCirrusSearchAllFieldsForRescore;
+
+		$checkLengthStatus = self::checkTextSearchRequestLength( $term );
+		if ( !$checkLengthStatus->isOk() ) {
+			return $checkLengthStatus;
+		}
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$searcher = $this;
@@ -1739,11 +1749,23 @@ GROOVY;
 	 * @throws UsageException
 	 */
 	private function checkTitleSearchRequestLength( $search ) {
-		$requestLength = strlen( $search );
+		$requestLength = mb_strlen( $search );
 		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
 			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 		}
+	}
+
+	/**
+	 * @param string $search
+	 * @return Status
+	 */
+	private function checkTextSearchRequestLength( $search ) {
+		$requestLength = mb_strlen( $search );
+		if ( $requestLength > self::MAX_TEXT_SEARCH ) {
+			return Status::newFatal( 'cirrussearch-query-too-long', $this->language->formatNum( $requestLength ), $this->language->formatNum( self::MAX_TEXT_SEARCH ) );
+		}
+		return Status::newGood();
 	}
 
 	/**

@@ -122,6 +122,27 @@ class UserTestingTest extends \MediaWikiTestCase {
 		$this->assertEquals( 'bucket', $GLOBALS['wgCirrusSearchBoostLinks'] );
 	}
 
+	public function providerChooseBucket() {
+		return array(
+			array( 'a', 0, array( 'a', 'b', 'c' ) ),
+			array( 'a', 0, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'a', 0.24, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'a', 0.25, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'b', 0.26, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'b', 0.49, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'b', 0.50, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'c', 0.51, array( 'a', 'b', 'c', 'd' ) ),
+			array( 'd', 1, array( 'a', 'b', 'c', 'd' ) ),
+		);
+	}
+
+	/**
+	 * @dataProvider providerChooseBucket
+	 */
+	public function testChooseBucket( $expect, $probability, array $buckets ) {
+		$this->assertEquals( $expect, UserTesting::chooseBucket( $probability, $buckets ) );
+	}
+
 	protected function config( $testNames, $sampleRate = 10, $globals = array() ) {
 		if ( $globals ) {
 			$globals = array( 'globals' => $globals );
@@ -144,13 +165,13 @@ class UserTestingTest extends \MediaWikiTestCase {
 			// reverse so pop in reverse order
 			$retvals = array_reverse( $callback );
 			$callback = function () use ( &$retvals ) {
-
-				return array_pop( $retvals );
+				$retval = array_pop( $retvals );
+				return $retval ? mt_rand( 0, mt_getrandmax() ) / mt_getrandmax() : 0;
 			};
 		} elseif ( is_bool( $callback ) ) {
 			$retval = $callback;
 			$callback = function () use ( $retval ) {
-				return $retval;
+				return $retval ? mt_rand( 0, mt_getrandmax() ) / mt_getrandmax() : 0;
 			};
 		}
 		return new UserTesting( $config, $callback );

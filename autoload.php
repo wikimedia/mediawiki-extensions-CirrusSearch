@@ -17,6 +17,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\BuildDocument\\PageDataBuilder' => __DIR__ . '/includes/BuildDocument/PageDataBuilder.php',
 	'CirrusSearch\\BuildDocument\\PageTextBuilder' => __DIR__ . '/includes/BuildDocument/PageTextBuilder.php',
 	'CirrusSearch\\BuildDocument\\ParseBuilder' => __DIR__ . '/includes/BuildDocument/Builder.php',
+	'CirrusSearch\\BuildDocument\\QualityScore' => __DIR__ . '/includes/BuildDocument/SuggestScoring.php',
 	'CirrusSearch\\BuildDocument\\RedirectsAndIncomingLinks' => __DIR__ . '/includes/BuildDocument/RedirectsAndIncomingLinks.php',
 	'CirrusSearch\\BuildDocument\\SuggestBuilder' => __DIR__ . '/includes/BuildDocument/SuggestBuilder.php',
 	'CirrusSearch\\BuildDocument\\SuggestScoringMethod' => __DIR__ . '/includes/BuildDocument/SuggestScoring.php',

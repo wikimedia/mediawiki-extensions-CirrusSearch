@@ -24,5 +24,6 @@
 	"apihelp-cirrus-config-dump-description": "Výpis konfigurace CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Výpis mapování CirrusSearch pro tuto wiki.",
 	"apihelp-cirrus-settings-dump-description": "Výpis nastavení CirrusSearch pro tuto wiki.",
-	"cirrussearch-give-feedback": "Sdělte nám svůj názor"
+	"cirrussearch-give-feedback": "Sdělte nám svůj názor",
+	"cirrussearch-query-too-long": "Vyhledávací dotaz je delší než maximální povolená délka. ($1 > $2)"
 }

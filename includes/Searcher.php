@@ -57,7 +57,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Maximum length, in characters, allowed in queries sent to searchText.
 	 */
-	const MAX_TEXT_SEARCH = 300;
+	const MAX_TEXT_SEARCH = 2500;
 
 	/**
 	 * Maximum offset depth allowed.  Too deep will cause very slow queries.

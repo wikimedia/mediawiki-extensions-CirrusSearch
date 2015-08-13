@@ -364,7 +364,14 @@ class Hooks {
 		}
 
 		foreach ( $lines as $line ) {
-			list( $k, $v ) = explode( ':', $line, 2 );
+			$linePieces = explode( ':', $line, 2 );
+			if ( count( $linePieces < 2 ) ) {
+				// Skip improperly formatted lines without a key:value
+				continue;
+			}
+			$k = $linePieces[0];
+			$v = $linePieces[1];
+
 			switch( $k ) {
 			case 'max_errors' :
 				if ( is_numeric( $v ) && $v >= 1 && $v <= $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit ) {

@@ -37,6 +37,12 @@ class Connection extends ElasticaConnection {
 	const GENERAL_INDEX_TYPE = 'general';
 
 	/**
+	 * Name of the index that hosts content title suggestions
+	 * @var string
+	 */
+	const TITLE_SUGGEST_TYPE = 'titlesuggest';
+
+	/**
 	 * Name of the page type.
 	 * @var string
 	 */
@@ -47,6 +53,12 @@ class Connection extends ElasticaConnection {
 	 * @var string
 	 */
 	const NAMESPACE_TYPE_NAME = 'namespace';
+
+	/**
+	 * Name of the title suggest type
+	 * @var string
+	 */
+	const TITLE_SUGGEST_TYPE_NAME = 'titlesuggest';
 
 	/**
 	 * @return array(string)

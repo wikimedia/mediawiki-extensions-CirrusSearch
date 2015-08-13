@@ -44,7 +44,7 @@ $wgCirrusSearchServers = array( 'localhost' );
 $wgCirrusSearchConnectionAttempts = 1;
 
 // Number of shards for each index
-$wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4 );
+$wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4, 'titlesuggest' => 4 );
 
 // Number of replicas Elasticsearch can expand or contract to. This allows for
 // easy development and deployment to a single node (0 replicas) to scale up to

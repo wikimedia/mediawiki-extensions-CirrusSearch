@@ -60,7 +60,7 @@ class UpdateVersionIndex extends Maintenance {
 	private function show( $filter = null ) {
 		$query = new \Elastica\Query();
 		if ( $filter ) {
-			$query->setFilter( $filter );
+			$query->setPostFilter( $filter );
 		}
 		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
 		$query->setSize( 5000 );

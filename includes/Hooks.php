@@ -558,7 +558,7 @@ class Hooks {
 		$status = $version->get();
 		if ( $status->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
-			$software[ '[http://www.elasticsearch.org/ Elasticsearch]' ] = $status->getValue();
+			$software[ '[https://www.elastic.co/products/elasticsearch Elasticsearch]' ] = $status->getValue();
 		}
 		return true;
 	}

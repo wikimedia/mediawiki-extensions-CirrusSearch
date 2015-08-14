@@ -1,5 +1,6 @@
 @clean @api @redirect @update
 Feature: Updating a page from or to a redirect
+  @expect_failure
   Scenario: Turning a page into a redirect removes it from the search index
     Given a page named RedirectTarget exists
     When a page named ToBeRedirect%{epoch} exists

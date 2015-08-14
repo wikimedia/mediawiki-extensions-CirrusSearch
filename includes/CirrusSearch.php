@@ -40,6 +40,15 @@ class CirrusSearch extends SearchEngine {
 	private $lastSearchMetrics;
 
 	/**
+	 * @var string
+	 */
+	private $indexBaseName;
+
+	public function __construct( $baseName = null ) {
+		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
+	}
+
+	/**
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.
@@ -75,7 +84,7 @@ class CirrusSearch extends SearchEngine {
 
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
-		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces, $user );
+		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces, $user, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {

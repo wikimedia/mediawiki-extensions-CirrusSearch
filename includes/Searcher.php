@@ -1690,7 +1690,7 @@ GROOVY;
 		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
 		if ( $extraIndexes ) {
 			$this->notFilters[] = new \Elastica\Filter\Term(
-				array( 'local_sites_with_dupe' => wfWikiId() ) );
+				array( 'local_sites_with_dupe' => $this->indexBaseName ) );
 		}
 		return $extraIndexes;
 	}

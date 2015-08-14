@@ -35,10 +35,14 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class RunSearch extends Maintenance {
 
+	protected $indexBaseName;
+
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Run one or more searches against the cluster. " .
-			"search queries are read from stdin." );
+		$this->addDescription( 'Run one or more searches against the cluster. ' .
+			'search queries are read from stdin.' );
+		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
+			'defaults to wiki id', false, true );
 		$this->addOption( 'type', 'What type of search to run, prefix, suggest or full_text. ' .
 			'defaults to full_text.', false, true );
 		$this->addOption( 'options', 'A JSON object mapping from global variable to ' .
@@ -57,6 +61,8 @@ class RunSearch extends Maintenance {
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
+
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );
@@ -118,7 +124,7 @@ class RunSearch extends Maintenance {
 		$searchType = $this->getOption( 'type', 'full_text' );
 		switch ( $searchType ) {
 		case 'full_text':
-			$engine = new CirrusSearch;
+			$engine = new CirrusSearch( $this->indexBaseName );
 			$result = $engine->searchText( $query );
 			if ( $result instanceof Status ) {
 				return $result;
@@ -127,11 +133,11 @@ class RunSearch extends Maintenance {
 			}
 
 		case 'prefix':
-			$searcher = new Searcher( 0, 10 );
+			$searcher = new Searcher( 0, 10, null, null, $this->indexBaseName );
 			return $searcher->prefixSearch( $query );
 
 		case 'suggest':
-			$searcher = new Searcher( 0, 10 );
+			$searcher = new Searcher( 0, 10, null, null, $this->indexBaseName );
 			$result = $searcher->suggest( $query );
 			if ( $result instanceof Status ) {
 				return $result;

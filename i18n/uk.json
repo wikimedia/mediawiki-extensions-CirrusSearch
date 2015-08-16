@@ -3,7 +3,8 @@
 		"authors": [
 			"Andriykopanytsia",
 			"Ата",
-			"Olion"
+			"Olion",
+			"Base"
 		]
 	},
 	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",
@@ -23,5 +24,8 @@
 	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Дамп відображення CirrusSearch для цієї Вікі.",
 	"apihelp-cirrus-settings-dump-description": "Дамп налаштувань CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-suggest-description": "Підказки завершення пошукового запиту.",
+	"apihelp-cirrus-suggest-param-text": "Пошуковий запит для якого запропонувати завершення.",
+	"apihelp-cirrus-suggest-param-limit": "Скільки результатів повернути.",
 	"cirrussearch-give-feedback": "Напишіть нам свій відгук"
 }

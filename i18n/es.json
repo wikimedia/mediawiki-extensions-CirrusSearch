@@ -28,6 +28,7 @@
 	"apihelp-cirrus-config-dump-description": "Volcado de configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Volcado de asignaciones de CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki.",
+	"apihelp-cirrus-suggest-param-limit": "Cuántos resultados se devolverán.",
 	"cirrussearch-give-feedback": "Danos tu opinión",
 	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)"
 }

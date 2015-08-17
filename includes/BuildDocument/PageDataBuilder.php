@@ -50,6 +50,7 @@ class PageDataBuilder extends ParseBuilder {
 		// All content types have a language
 		$this->doc->add( 'language',
 			$this->title->getPageLanguage()->getCode() );
+		$this->hackTimestamp();
 
 		return $this->doc;
 	}
@@ -143,5 +144,26 @@ class PageDataBuilder extends ParseBuilder {
 		if ( $wikibaseItem !== false ) {
 			$this->doc->add( 'wikibase_item', $wikibaseItem );
 		}
+	}
+
+	/**
+	 * Check the page's text for timestamp hacking requests if they are enabled. Which should only be during testing.
+	 */
+	private function hackTimestamp() {
+		global $wgCirrusSearchAllowTimeHacking;
+
+		if ( !isset( $wgCirrusSearchAllowTimeHacking ) ||
+				!$wgCirrusSearchAllowTimeHacking ) {
+			return;
+		}
+		$text = $this->content->getTextForSearchIndex();
+		if ( !$text ) {
+			return;
+		}
+		$matches = array();
+		if ( !preg_match( '/timehack=(.+?)Z/', $text, $matches ) ) {
+			return;
+		}
+		$this->doc->set( 'timestamp', wfTimestamp( TS_ISO_8601, $matches[ 1 ] ) );
 	}
 }

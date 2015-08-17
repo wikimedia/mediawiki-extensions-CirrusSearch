@@ -312,14 +312,10 @@ end
 prefer_recent = false
 Before("@prefer_recent") do
   unless prefer_recent
-    # These are updated per process instead of per test because of the 20 second wait
-    # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot
     steps %(
-      Given a page named PreferRecent First exists with contents %{epoch}
-      And a page named PreferRecent Second Second exists with contents %{epoch}
-      And wait 20 seconds
-      And a page named PreferRecent Third exists with contents %{epoch}
-      And wait 10 seconds
+      Given a page named PreferRecent First exists with contents timehack=1970-01-01T00:00:00Z
+      And a page named PreferRecent Second Second exists with contents timehack=1970-01-01T00:00:00Z
+      And a page named PreferRecent Third exists with contents timehack=1970-01-01T00:10:00Z
         )
   end
   prefer_recent = true

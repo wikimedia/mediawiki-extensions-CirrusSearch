@@ -29,6 +29,7 @@
 	"apihelp-cirrus-mapping-dump-description": "Vidage de la correspondance CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-settings-dump-description": "Vidage des paramètres CirrusSearch pour ce wiki.",
 	"apihelp-cirrus-suggest-description": "Suggérer des complétions pour le terme recherché.",
+	"apihelp-cirrus-suggest-param-text": "Terme de recherche pour lequel fournir des complétudes.",
 	"apihelp-cirrus-suggest-param-limit": "Combien de résultats à renvoyer.",
 	"apihelp-cirrus-suggest-param-context": "Contexte de recherche limitant la recherch, par exmple  géo ou catégorie.",
 	"cirrussearch-give-feedback": "Donnez-nous votre avis",

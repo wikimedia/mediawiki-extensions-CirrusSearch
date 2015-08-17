@@ -115,37 +115,50 @@ class ElasticsearchIntermediary {
 			return;
 		}
 		$ut = UserTesting::getInstance();
-		$tests = array();
-		foreach ( $ut->getActiveTestNames() as $test ) {
-			$tests[$test] = $ut->getBucket( $test );
-		}
-		if ( !$tests ) {
+		if ( !$ut->getActiveTestNames() ) {
 			return;
 		}
-		$report = array(
-			'wiki' => wfWikiId(),
-			'tests' => $tests,
-			'queries' => array(),
-			'hits' => 0,
-			'source' => self::getExecutionContext(),
-			'ip' => $wgRequest->getIP(),
-			'xff' => $wgRequest->getHeader( 'X-Forwarded-For' ),
-			'userAgent' => $wgRequest->getHeader( 'User-Agent' ),
-		);
-
+		$queries = array();
+		$parameters = array( 'index' => array(), 'queryType' => array() );
+		$elasticTook = 0;
+		$hits = 0;
 		foreach ( self::$logContexts as $context ) {
-			$report['hits'] += isset( $context['hitsTotal'] ) ? $context['hitsTotal'] : 0;
-			$report['queries'][] = array(
-				'queryType' => isset( $context['queryType'] ) ? $context['queryType'] : '',
-				'query' => isset( $context['query'] ) ? $context['query'] : '',
-				'suggest' => isset( $context['suggestion'] ) ? $context['suggestion'] : '',
-				'elasticTook' => isset( $context['elasticTook'] ) ? $context['elasticTook'] : '',
-				'index' => isset( $context['index'] ) ? $context['index'] : '',
-			);
+			$hits += isset( $context['hitsTotal'] ) ? $context['hitsTotal'] : 0;
+			$queries[] = $context['query'];
+			if ( isset( $context['elasticTookMs'] ) ) {
+				$elasticTook += $context['elasticTookMs'];
+			}
+			if ( isset( $context['index'] ) ) {
+				$parameters['index'][] = $context['index'];
+			}
+			if ( isset( $context['queryType'] ) ) {
+				$parameters['queryType'][] = $context['queryType'];
+			}
+
+		}
+		foreach ( array( 'index', 'queryType' ) as $key ) {
+			$parameters[$key] = array_unique( $parameters[$key] );
 		}
 
-		$message = FormatJson::encode( $report );
-		LoggerFactory::getInstance( 'CirrusSearchUserTesting' )->debug( $message );
+		$message = array(
+			wfWikiId(),
+			'',
+			FormatJson::encode( $queries ),
+			$hits,
+			self::getExecutionContext(),
+			$elasticTook,
+			$wgRequest->getIP(),
+			preg_replace( "/[\t\"']/", "", $wgRequest->getHeader( 'User-Agent') ),
+			FormatJson::encode( $parameters ),
+		);
+
+		$tests = array();
+		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
+		foreach ( $ut->getActiveTestNames() as $test ) {
+			$bucket = $ut->getBucket( $test );
+			$message[1] = "{$test}-{$bucket}";
+			$logger->debug( implode( "\t", $message ) );
+		}
 		self::$logContexts = null;
 	}
 

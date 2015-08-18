@@ -777,8 +777,10 @@ GROOVY;
 	/**
 	 * Produce a set of completion suggestions for text using _suggest
 	 * See https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-suggesters-completion.html
+	 *
+	 * WARNING: experimental API
+	 *
 	 * @param string $text Search term
-	 * @param array $context Context, see https://www.elastic.co/guide/en/elasticsearch/reference/current/suggester-context.html
 	 * @return Status
 	 */
 	public function suggest( $text, $context = null ) {
@@ -787,26 +789,32 @@ GROOVY;
 		$this->term = $text;
 
 		$suggest = array( 'text' => $text );
-		foreach ( $wgCirrusSearchCompletionSettings[ 'fields' ] as $field ) {
-			$suggest[$field] = array(
+		$queryLen = mb_strlen( $text );
+		$profile = $wgCirrusSearchCompletionSettings;
+
+		if ( $context != null && isset( $context['geo']['lat'] ) && isset( $context['geo']['lon'] )
+			&& is_numeric( $context['geo']['lat'] ) && is_numeric( $context['geo']['lon'] )
+		) {
+			$profile = $this->prepareGeoContextSuggestProfile( $context );
+			$description = "geo suggest query for {query}";
+		}
+
+		foreach ( $profile as $name => $config ) {
+			if ( $config['min_query_len'] > $queryLen ) {
+				continue;
+			}
+			$field = $config['field'];
+			$suggest[$name] = array(
 				'completion' => array(
 					'field' => $field,
+					'size' => $this->limit * $config['fetch_limit_factor']
 				)
 			);
-			if ( $context ) {
-				$suggest[$field]['completion']['context'] = $context;
+			if ( isset( $config['fuzzy'] ) ) {
+				$suggest[$name]['completion']['fuzzy'] = $config['fuzzy'];
 			}
-
-			if( is_array( $wgCirrusSearchCompletionSettings[ 'fuzzy' ] ) ) {
-				$suggest[$field."-fuzzy"] = array(
-					'completion' => array(
-						'field' => $field,
-						'fuzzy' => $wgCirrusSearchCompletionSettings[ 'fuzzy' ],
-					)
-				);
-				if ( $context ) {
-					$suggest[$field."-fuzzy"]['completion']['context'] = $context;
-				}
+			if ( isset( $config['context'] ) ) {
+				$suggest[$name]['completion']['context'] = $config['context'];
 			}
 		}
 
@@ -815,86 +823,196 @@ GROOVY;
 		Connection::setTimeout( $wgCirrusSearchSearchShardTimeout[ 'default' ] );
 
 		$index = Connection::getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
-		$description = "completion suggest query for {query}";
 		$logContext = array(
 			'query' => $text,
+			'queryType' => 'comp_suggest'
 		);
 		$searcher = $this;
+		$limit = $this->limit;
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
-		 	function() use( $searcher, $index, $description, $suggest, $logContext, $queryOptions ) {
+			function() use( $searcher, $index, $suggest, $logContext, $queryOptions,
+					$profile, $text , $limit ) {
+				$description = "{queryType} search for '{query}'";
 				$searcher->start( $description, $logContext );
 				try {
-					return $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
+					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
+					if( $result->isOk() ) {
+						$result = $searcher->postProcessSuggest( $text, $result,
+							$profile, $limit );
+						return $searcher->success( $result );
+					}
+					return $result;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $searcher->failure( $e );
 				}
 			}
 		);
-		if( $result->isOk() ) {
-			$result = $this->postProcessSuggest( $result, $this->limit );
-			return $this->success( $result );
-		}
 		return $result;
+	}
+
+	/**
+	 * prepare the list of suggest requests used for geo context suggestions
+	 * This method will merge $wgCirrusSearchCompletionSettings and
+	 * $wgCirrusSearchCompletionGeoContextSettings
+	 * @param array $context user's geo context
+	 * @return array of suggest request profiles
+	 */
+	private function prepareGeoContextSuggestProfile( $context ) {
+		global $wgCirrusSearchCompletionSettings,
+			$wgCirrusSearchCompletionGeoContextSettings;
+		$profiles = array();
+		foreach ( $wgCirrusSearchCompletionGeoContextSettings as $geoname => $geoprof ) {
+			foreach ( $wgCirrusSearchCompletionSettings as $sugname => $sugprof ) {
+				if ( !in_array( $sugname, $geoprof['with'] ) ) {
+					continue;
+				}
+				$profile = $sugprof;
+				$profile['field'] .= $geoprof['field_suffix'];
+				$profile['discount'] *= $geoprof['discount'];
+				$profile['context'] = array(
+					'location' => array(
+						'lat' => $context['geo']['lat'],
+						'lon' => $context['geo']['lon'],
+						'precision' => $geoprof['precision']
+					)
+				);
+				$profiles["$sugname-$geoname"] = $profile;
+			}
+		}
+		return $profiles;
 	}
 
 	/**
 	 * merge top level multi-queries and resolve returned pageIds into Title objects.
 	 *
+	 * WARNING: experimental API
+	 *
+	 * @param string $query the user query
 	 * @param \Elastica\Response $response Response from elasticsearch _suggest api
+	 * @param array $profile the suggestion profile
 	 * @param int $limit Maximum suggestions to return, -1 for unlimited
 	 * @return Title[] List of suggested titles
 	 */
-	protected function postProcessSuggest( \Elastica\Response $response, $limit = -1 ) {
+	protected function postProcessSuggest( $query, \Elastica\Response $response, $profile, $limit = -1 ) {
 		$data = $response->getData();
 		unset( $data['_shards'] );
 
 		$suggestions = array();
 		foreach ( $data as $name => $results  ) {
-			foreach ( $results as $suggested ) {
+			$discount = $profile[$name]['discount'];
+			foreach ( $results  as $suggested ) {
 				foreach ( $suggested['options'] as $suggest ) {
-					$pageId = $suggest['text'];
+					$output = explode( ':', $suggest['text'], 3 );
+					if ( sizeof ( $output ) < 2 ) {
+						// Ignore broken output
+						continue;
+					}
+					$pageId = $output[0];
+					$type = $output[1];
+
+					$score = $discount * $suggest['score'];
 					if ( !isset( $suggestions[$pageId] ) ||
-						$suggest['score'] > $suggestions[$pageId]['score']
+						$score > $suggestions[$pageId]['score']
 					) {
-						$suggestions[$pageId] = $suggest;
+						$suggestion = array(
+							'score' => $score,
+							'pageId' => $pageId
+						);
+						// If it's a title suggestion we have the text
+						if ( $type === 't' && sizeof( $output ) == 3 ) {
+								$suggestion['text'] = $output[2];
+						}
+						$suggestions[$pageId] = $suggestion;
 					}
 				}
 			}
 		}
 
 		// simply sort by existing scores
-		usort( $suggestions, function ( $a, $b ) {
+		uasort( $suggestions, function ( $a, $b ) {
 			return $b['score'] - $a['score'];
 		} );
 
+		$this->logContext['hitsTotal'] = count( $suggestions );
+
 		if ( $limit > 0 ) {
-			$suggestions = array_slice( $suggestions, 0, $limit );
+			$suggestions = array_slice( $suggestions, 0, $limit, true );
 		}
 
-		// suggest currently returns page ids, we need to resolve those now
-		$pageIds = array();
-		foreach ( $suggestions as $suggestion ) {
-			$pageIds[] = $suggestion['text'];
+		$this->logContext['hitsReturned'] = count( $suggestions );
+		$this->logContext['hitsOffset'] = 0;
+
+		// we must fetch redirect data for redirect suggestions
+		$missingText = array();
+		foreach ( $suggestions as $id => $suggestion ) {
+			if ( !isset( $suggestion['text'] ) ) {
+				$missingText[] = $id;
+			}
 		}
 
-		// doesn't guarantee to maintain order
-		$unsortedTitles = Title::newFromIDs( $pageIds );
-		$byId = array();
-		foreach ( $unsortedTitles as $title ) {
-			$byId[$title->getArticleID()] = $title;
+		if ( !empty ( $missingText ) ) {
+			// Experimental.
+			//
+			// Second pass query to fetch redirects.
+			// It's not clear if it's the best option, this will slowdown the whole query
+			// when we hit a redirect suggestion.
+			// Other option would be to encode redirects as a payload resulting in a
+			// very big index...
+
+			// XXX: we support only the content index
+			$type = Connection::getPageType( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
+			// NOTE: we are already in a poolCounterWork
+			// Multi get is not supported by elastica
+			$redirResponse = null;
+			try {
+				$redirResponse = $type->request( '_mget', 'GET',
+					array( 'ids' => $missingText ),
+					array( '_source_include' => 'redirect' ) );
+				if ( $redirResponse->isOk() ) {
+					$docs = $redirResponse->getData();
+					$docs = $docs['docs'];
+					foreach ( $docs as $doc ) {
+						$id = $doc['_id'];
+						if ( !isset( $doc['_source']['redirect'] )
+							|| empty( $doc['_source']['redirect'] )
+						) {
+							continue;
+						}
+						$text = Util::chooseBestRedirect( $query, $doc['_source']['redirect'] );
+						$suggestions[$id]['text'] = $text;
+					}
+				} else {
+					LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+						'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
+						array( 'query' => $query,
+							'ids' => serialize( $missingText ),
+							'error' => $redirResponse->getError() ) );
+				}
+			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
+					array( 'query' => $query,
+						'ids' => serialize( $missingText ),
+						'error' => $this->extractMessage( $e ) ) );
+			}
 		}
 
 		$retval = array();
 		foreach ( $suggestions as $suggestion ) {
-			$pageId = $suggestion['text'];
-			if ( isset( $byId[$pageId] ) ) {
-				$retval[] = array(
-					'title' => (string)$byId[$pageId],
-					'score' => $suggestion['score'],
-				);
+			if ( !isset( $suggestion['text'] ) ) {
+				// We were unable to find a text to display
+				// Maybe a page with redirects when we built the suggester index
+				// but now without redirects?
+				continue;
 			}
+			$retval[] = array(
+				// XXX: we run the suggester for namespace 0 for now
+				'title' => Title::makeTitle( 0, $suggestion['text'] ),
+				'pageId' => $suggestion['pageId'],
+				'score' => $suggestion['score'],
+			);
 		}
 
 		return $retval;

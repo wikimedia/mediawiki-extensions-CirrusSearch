@@ -37,7 +37,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			$this->assertGreaterThanOrEqual( 0, $score, "scoreNormL2 cannot produce a score lower than 0" );
 		}
 
-		# Edges
+		// Edges
 		$score = $qs->scoreNorm( 1, 1 );
 		$this->assertLessThanOrEqual( 1, $score, "scoreNorm cannot produce a score greater than 1" );
 		$this->assertGreaterThanOrEqual( 0, $score, "scoreNorm cannot produce a score lower than 0" );
@@ -66,13 +66,13 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			if ( $boost > 1 ) {
 				$this->assertGreaterThan( $score, $res, "With a boost ($boost) greater than 1 the boosted score must be greater than the original." );
 			} else if ( $boost < 1 ) {
-				$this->assertLessThan( $score, $res, "With a boost ($boost) lesser than 1 the boosted score must be lesser than the original." );
+				$this->assertLessThan( $score, $res, "With a boost ($boost) less than 1 the boosted score must be less than the original." );
 			} else {
 				$this->assertEquals( $score, $res, "When boost is 1 the score remains unchanged." );
 			}
 		}
 		for( $i = 1; $i < 1000; $i++ ) {
-			# The same boost value must keep original score ordering
+			// The same boost value must keep original score ordering
 			$score1 = 0.1;
 			$score2 = 0.5;
 
@@ -87,7 +87,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			$this->assertGreaterThan( $res1, $res2, "A boost cannot 'overboost' a score" );
 		}
 
-		# Edges
+		// Edges
 		$res = $qs->boost( 1, 1 );
 		$this->assertEquals( $res, 1, "When boost is 1 the score remains unchanged." );
 		$res = $qs->boost( 1, 0 );
@@ -123,7 +123,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$this->assertGreaterThan( $score, $res, "A good doc gets a better score" );
 
 		$res = $qs->boostTemplates( $badDoc, $score );
-		$this->assertLessThan( $score, $res, "A good doc gets a lower score" );
+		$this->assertLessThan( $score, $res, "A bad doc gets a lower score" );
 
 		$res = $qs->boostTemplates( $mixedDoc, $score );
 		$this->assertEquals( $score, $res, "A mixed doc gets the same score");
@@ -227,7 +227,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ), "Score is always lower than " . QualityScore::SCORE_RANGE );
 		}
 
-		# Edges
+		// Edges
 		$page = array(
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
@@ -251,7 +251,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$page = array();
 		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
 
-		# A very small wiki
+		// A very small wiki
 		$qs = new QualityScore( 1 );
 		$page = array(
 			'incoming_links' => 1,
@@ -263,7 +263,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		);
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
 
-		# The scoring function should not fail with 0 page
+		// The scoring function should not fail with 0 page
 		$qs = new QualityScore( 0 );
 		$page = array(
 			'incoming_links' => 1,

@@ -617,6 +617,10 @@ Before("@suggest") do
       Given a page named X-Men exists with contents The X-Men are a fictional team of superheroes
         And a page named Xavier, Charles exists with contents Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]
         And a page named X-Force exists with contents X-Force is a fictional team of of [[X-Men]]
+        And a page named Magneto exists with contents Magneto is a fictional character appearing in American comic books
+        And a page named Max Eisenhardt exists with contents #REDIRECT [[Magneto]]
+        And a page named Eisenhardt, Max exists with contents #REDIRECT [[Magneto]]
+        And a page named Magnetu exists with contents #REDIRECT [[Magneto]]
         And I reindex suggestions
     )
     suggest = true

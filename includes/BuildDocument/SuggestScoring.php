@@ -72,7 +72,20 @@ class IncomingsLinksScoringMethod implements SuggestScoringMethod {
 }
 
 /**
- * Score that tries to reflect the quality of a page
+ * Score that tries to reflect the quality of a page.
+ * NOTE: Experimental
+ *
+ * This score makes the assumption that bigger is better.
+ *
+ * Small cities/village which have a high number of incoming links because they
+ * link to each others ( see https://en.wikipedia.org/wiki/Villefort,_Loz%C3%A8re )
+ * will be be discounted correctly because others variables are very low.
+ *
+ * On the other hand some pages like List will get sometimes a very high but unjustified
+ * score.
+ *
+ * The boost templates feature might help but it's a System message that is not necessarily
+ * configured by wiki admins.
  */
 class QualityScore implements SuggestScoringMethod {
 	// TODO: move these constants into a cirrus profile
@@ -90,7 +103,7 @@ class QualityScore implements SuggestScoringMethod {
 	const REDIRECT_WEIGHT = 0.1;
 
 	// The final score will be in the range [0, SCORE_RANGE]
-	const SCORE_RANGE = 100000;
+	const SCORE_RANGE = 10000000;
 
 	/**
 	 * Template boosts configured by the mediawiki admin.

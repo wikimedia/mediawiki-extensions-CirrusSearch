@@ -25,10 +25,32 @@ Feature: Suggestion API test
       Then the API should produce empty list
 
   Scenario: Ordering
-  	When I ask suggestion API for x-m
-  	  Then the API should produce list starting with X-Men
+    When I ask suggestion API for x-m
+      Then the API should produce list starting with X-Men
+
+  Scenario: Fuzzy
+    When I ask suggestion API for xmen
+      Then the API should produce list starting with X-Men
+
+  Scenario Outline: Search redirects shows the best redirect
+    When I ask suggestion API for <term>
+      Then the API should produce list containing <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | eise        | Eisenhardt, Max   |
+    | max         | Max Eisenhardt    |
+    | magnetu     | Magneto           |
+
+  Scenario Outline: Search prefers exact match over
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | max         | Max Eisenhardt    |
+    | mai         | Main Page         |
+    | eis         | Eisenhardt, Max   |
 
   Scenario: Ordering & limit
-  	When I ask suggestion API at most 1 item for x-m
-  	  Then the API should produce list starting with X-Men
-  	  And the API should produce list of length 1
+    When I ask suggestion API at most 1 item for x-m
+      Then the API should produce list starting with X-Men
+      And the API should produce list of length 1

@@ -56,15 +56,15 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				),
 				"asciifolding_preserve" => array(
 					"type" => "asciifolding",
-					"preserve_original" => "true",
+					"preserve_original" => "false",
 				),
 				"icu_normalizer" => array(
 					"type" => "icu_normalizer",
 					"name" => "nfkc_cf"
 				),
-				"50_token_limit" => array(
+				"token_limit" => array(
 					"type" => "limit",
-					"max_token_count" => "50"
+					"max_token_count" => "20"
 				)
 			),
 			'analyzer' => array(
@@ -75,21 +75,18 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"lowercase",
 						"stop_filter",
 						"asciifolding_preserve",
-						"50_token_limit"
+						"token_limit"
 					),
 					"tokenizer" => "standard"
 				),
-				// We do not use ascii_folding when searching
-				// Using ascii folding when searching will increase recall
-				// but could be annoying for the user who makes effort to write
-				// diacritics.
 				"stop_analyzer_search" => array(
 					"type" => "custom",
 					"filter" => array(
 						"standard",
 						"lowercase",
 						"stop_filter_search",
-						"50_token_limit"
+						"asciifolding_preserve",
+						"token_limit"
 					),
 					"tokenizer" => "standard"
 				),
@@ -99,7 +96,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"standard",
 						"icu_normalizer",
 						"asciifolding_preserve",
-						"50_token_limit"
+						"token_limit"
 					),
 					"tokenizer" => "standard"
 				),
@@ -108,7 +105,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"filter" => array(
 						"standard",
 						"icu_normalizer",
-						"50_token_limit"
+						"asciifolding_preserve",
+						"token_limit"
 					),
 					"tokenizer" => "standard"
 				)

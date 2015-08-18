@@ -50,7 +50,7 @@ class ElasticsearchIntermediary {
 	/**
 	 * @var array map of search request stats to log about the current search request
 	 */
-	private $logContext = array();
+	protected $logContext = array();
 
 	/**
 	 * @var int how many millis a request through this intermediary needs to take before it counts as slow.

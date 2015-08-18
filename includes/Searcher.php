@@ -1167,7 +1167,7 @@ GROOVY;
 			$wgCirrusSearchSearchShardTimeout,
 			$wgCirrusSearchClientSideSearchTimeout;
 
-		if ( sizeof( $this->nonTextQueries ) > 0 ) {
+		if ( $this->nonTextQueries ) {
 			$bool = new \Elastica\Query\Bool();
 			if ( $this->query !== null ) {
 				$bool->addMust( $this->query );
@@ -1221,7 +1221,7 @@ GROOVY;
 					return $field[ 'type' ] !== 'plain';
 				});
 			}
-			if ( sizeof( $this->nonTextHighlightQueries ) > 0 ) {
+			if ( !empty( $this->nonTextHighlightQueries ) ) {
 				// We have some phrase_prefix queries, so let's include them in the
 				// generated highlight_query.
 				$bool = new \Elastica\Query\Bool();
@@ -1250,10 +1250,11 @@ GROOVY;
 		}
 
 		if ( $this->sort != 'relevance' ) {
+			// Clear rescores if we aren't using relevance as the search sort because they aren't used.
 			$this->rescore = array();
 		}
 
-		if ( count( $this->rescore ) ) {
+		if ( $this->rescore ) {
 			// rescore_query has to be in array form before we send it to Elasticsearch but it is way easier to work
 			// with if we leave it in query for until now
 			$modifiedRescore = array();
@@ -1405,7 +1406,7 @@ GROOVY;
 	}
 
 	/**
-	 * @return int[]
+	 * @return int[]|null
 	 */
 	public function getNamespaces() {
 		return $this->namespaces;
@@ -1765,7 +1766,7 @@ GROOVY;
 		}
 
 		// Add boosts for namespaces
-		$namespacesToBoost = $this->namespaces === null ? MWNamespace::getValidNamespaces() : $this->namespaces;
+		$namespacesToBoost = $this->namespaces ?: MWNamespace::getValidNamespaces();
 		if ( $namespacesToBoost ) {
 			// Group common weights together and build a single filter per weight
 			// to save on filters.
@@ -1940,7 +1941,7 @@ GROOVY;
 			return;
 		}
 		$foundNamespace = $foundNamespace->getValue();
-		if ( count( $foundNamespace ) == 0 ) {
+		if ( !$foundNamespace ) {
 			return;
 		}
 		$foundNamespace = $foundNamespace[ 0 ];

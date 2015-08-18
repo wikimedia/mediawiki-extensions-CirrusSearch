@@ -24,5 +24,9 @@
 	"apihelp-cirrus-config-dump-description": "Volcado da configuración CirrusSearch",
 	"apihelp-cirrus-mapping-dump-description": "Descarga do mapeamento de CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-description": "Descarga dos parámetros de CirrusSearch para este wiki.",
-	"cirrussearch-give-feedback": "Deixenos saber a súa opinión"
+	"apihelp-cirrus-suggest-description": "Suxerir formas de completar o termo de procura.",
+	"apihelp-cirrus-suggest-param-text": "Termo de procura para o que dar formas de completalo.",
+	"apihelp-cirrus-suggest-param-limit": "Número de resultados a devolver.",
+	"cirrussearch-give-feedback": "Deixenos saber a súa opinión",
+	"cirrussearch-query-too-long": "A solicitude de procura é máis longa que a lonxitude máxima permitida ($1 > $2)."
 }

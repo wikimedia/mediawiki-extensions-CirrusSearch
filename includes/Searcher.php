@@ -1484,7 +1484,7 @@ GROOVY;
 		$query->setRewrite( 'top_terms_boost_1024' );
 
 		if ( isset( $wgCirrusSearchQueryStringMaxDeterminizedStates ) ) {
-			# Requires ES 1.4+
+			// Requires ES 1.4+
 			$query->setParam( 'max_determinized_states', $wgCirrusSearchQueryStringMaxDeterminizedStates );
 		}
 
@@ -1825,7 +1825,7 @@ GROOVY;
 	/**
 	 * @return float[]
 	 */
-	private static function getDefaultBoostTemplates() {
+	public static function getDefaultBoostTemplates() {
 		static $defaultBoostTemplates = null;
 		if ( $defaultBoostTemplates === null ) {
 			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();

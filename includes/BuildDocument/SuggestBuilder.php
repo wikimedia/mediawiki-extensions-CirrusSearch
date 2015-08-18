@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
-use SuggestScoringMethod;
 
 /**
  * Build a doc ready for the titlesuggest index.
@@ -22,24 +21,27 @@ use SuggestScoringMethod;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
+/**
+ * Builder used to create suggester docs
+ */
 class SuggestBuilder {
 	const MAX_INPUT_LENGTH = 50;
 
 	/**
-	 * $scoringMethod the scoring function
+	 * @var SuggestScoringMethod the scoring function
 	 */
 	private $scoringMethod;
 
 	/**
-	 * @param SuggestScoringMethod
+	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
 	 */
-	public function __construct( $scoringMethod ) {
+	public function __construct( SuggestScoringMethod $scoringMethod ) {
 		$this->scoringMethod = $scoringMethod;
 	}
 
 	/**
 	 * @param int $id the page id
-	 * @param $inputDoc the page data
+	 * @param array $inputDoc the page data
 	 * @return array a set of suggest documents
 	 */
 	public function build( $id, $inputDoc ) {
@@ -75,11 +77,15 @@ class SuggestBuilder {
 				'context' => $location
 			);
 		}
-
 		return array( $doc );
 	}
 
-	public function buildInputs( $input ) {
+	/**
+	 * @param array $input Document to build inputs for
+	 * @return array list of prepared suggestions that should
+	 *  resolve to the document.
+	 */
+	public function buildInputs( array $input ) {
 		$inputs = array( $this->prepareInput( $input['title'] ) );
 		foreach ( $input['redirect'] as $redir ) {
 			$inputs[] = $this->prepareInput( $redir['title'] );
@@ -87,6 +93,11 @@ class SuggestBuilder {
 		return $inputs;
 	}
 
+	/**
+	 * @param string $input A page title
+	 * @return string A page title short enough to not cause indexing
+	 *  issues.
+	 */
 	public function prepareInput( $input ) {
 		if ( mb_strlen( $input ) > self::MAX_INPUT_LENGTH ) {
 			$input = mb_substr( $input, 0, self::MAX_INPUT_LENGTH );

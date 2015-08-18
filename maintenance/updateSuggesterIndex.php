@@ -51,6 +51,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $indexIdentifier;
 
 	/**
+	 * @var SuggestScoringMethod the score function to use.
+	 */
+	private $scoreMethod;
+
+	/**
 	 * @var old suggester index that will be deleted at the end of the process
 	 */
 	private $oldIndex;
@@ -89,6 +94,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
+		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
+			'Detauls to quality.', false, true );
 	}
 
 	public function execute() {
@@ -195,7 +202,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			'size' => $this->indexChunkSize
 		);
 
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 
 		// TODO: only content index for now ( we'll have to check how it works with commons )
 		$sourceIndex = Connection::getIndex( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
@@ -203,6 +209,10 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalDocsInIndex = $result->getResponse()->getData();
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
 		$totalDocsToDump = $totalDocsInIndex;
+
+		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
+		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName, $totalDocsInIndex );
+		$builder = new SuggestBuilder( $this->scoreMethod );
 
 		$docsDumped = 0;
 		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );

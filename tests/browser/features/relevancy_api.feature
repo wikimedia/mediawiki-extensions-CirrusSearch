@@ -62,14 +62,18 @@ Feature: Results are ordered from most relevant to least.
       And Relevancylanguagetest/en is the second api search result
       And Relevancylanguagetest/ar is the third api search result
 
-  @expect_failure
   Scenario: Incoming links count in page weight
-    When I api search for Relevancylinktest -intitle:link
-    Then Relevancylinktest Larger Extraword is the first api search result
-      And Relevancylinktest Smaller is the second api search result
-    When I api search with disabled incoming link weighting for Relevancylinktest -intitle:link
+    Given a page named Relevancylinktest Smaller exists
+      And a page named Relevancylinktest Larger Extraword exists
+      And a page named Relevancylinktest Larger/Link A exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
+      And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
+    When within 20 seconds api searching for Relevancylinktest -intitle:link yields Relevancylinktest Larger Extraword as the first result and Relevancylinktest Smaller as the second result
+      And I api search with disabled incoming link weighting for Relevancylinktest -intitle:link
     Then Relevancylinktest Smaller is the first api search result
       And Relevancylinktest Larger Extraword is the second api search result
+    # This test can fail spuriously for the same reasons that "Redirects count as incoming links" can fail
 
   Scenario: Results are sorted based on how close the match is
     When I api search with disabled incoming link weighting for Relevancyclosetest Foô

@@ -200,11 +200,55 @@ class ElasticsearchIntermediary {
 		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
 		$context['message'] = $message;
 
+		$stats = RequestContext::getMain()->getStats();
+		$type = self::classifyErrorMessage( $message );
+		$stats->increment( "cirrussearch.backend_failure.$type" );
+
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 			"Search backend error during {$this->description} after {took}: {message}",
 			$context
 		);
 		return $status;
+	}
+
+	/**
+	 * Broadly classify the error message into failures where
+	 * we decided to not serve the query, and failures where
+	 * we just failed to answer
+	 *
+	 * @param string $message Extracted exception message from
+	 *  self::extractMessageAndStatus
+	 * @return string Either 'rejected', 'failed' or 'unknown'
+	 */
+	static public function classifyErrorMessage( $message ) {
+		$rejected = implode( '|', array_map( 'preg_quote', array(
+			'Regex syntax error: ',
+			'Determinizing automaton would ',
+			'Parse error on ',
+			'Failed to parse source ',
+			'SearchParseException',
+			'org.apache.lucene.queryparser.classic.Token',
+			'IllegalArgumentException',
+			'TooManyClauses'
+		) ) );
+		if ( preg_match( "/$rejected/", $message ) ) {
+			return 'rejected';
+		}
+
+		$failed = implode( '|', array_map( 'preg_quote', array(
+			'rejected execution (queue capacity',
+			'Operation timed out',
+			'RemoteTransportException',
+			'Couldn\'t connect to host',
+			'No enabled connection',
+			'SearchContextMissingException',
+			'NullPointerException',
+		) ) );
+		if ( preg_match( "/$failed/", $message ) ) {
+			return 'failed';
+		}
+
+		return "unknown";
 	}
 
 	/**

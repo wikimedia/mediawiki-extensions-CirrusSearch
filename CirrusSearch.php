@@ -719,6 +719,12 @@ $wgCirrusSearchPoolCounterKey = '_elasticsearch';
  */
 $wgCirrusSearchBypassPerUserFailure = false;
 
+/**
+ * List of CIDR a.b.c.d/n ranges for which the per-user pool counter is
+ * always active, regardless of wgCirrusSearchBypassPerUserFailure setting.
+ */
+$wgCirrusSearchForcePerUserPoolCounter = array();
+
 // Merge configuration for the indices.  See
 // http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-merge.html
 // for the meanings.

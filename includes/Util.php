@@ -3,12 +3,14 @@
 namespace CirrusSearch;
 
 use GenderCache;
+use IP;
 use MediaWiki\Logger\LoggerFactory;
 use MWNamespace;
 use PoolCounterWorkViaCallback;
+use RequestContext;
+use Status;
 use Title;
 use User;
-use Status;
 
 /**
  * Random utility functions that don't have a better home
@@ -147,17 +149,30 @@ class Util {
 		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-PerUser', $perUserKey, array(
 			'doWork' => $doPerUserWork,
 			'error' => function( $status ) use( $errorHandler, $perUserKey, $doPerUserWork ) {
-				global $wgCirrusSearchBypassPerUserFailure;
 				$errorCallback = $errorHandler( $perUserKey );
 				$errorResult = $errorCallback( $status );
-				if ( $wgCirrusSearchBypassPerUserFailure ) {
-					return $doPerUserWork();
-				} else {
+				if ( Util::isUserPoolCounterActive() ) {
 					return $errorResult;
+				} else {
+					return $doPerUserWork();
 				}
 			},
 		) );
 		return $work->execute();
+	}
+
+	public static function isUserPoolCounterActive() {
+		global $wgCirrusSearchBypassPerUserFailure,
+			$wgCirrusSearchForcePerUserPoolCounter;
+
+		$ip = RequestContext::getMain()->getRequest()->getIP();
+		if ( IP::isInRanges( $ip, $wgCirrusSearchForcePerUserPoolCounter ) ) {
+			return true;
+		} elseif ( $wgCirrusSearchBypassPerUserFailure ) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**

@@ -67,7 +67,6 @@ $wgJobTypeConf['default'] = array(
 $wgCiteEnablePopups = true;
 $wgExtraNamespaces[ 760 ] = 'Mó';
 
-
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
 
@@ -80,9 +79,6 @@ $wgCirrusSearchAllowLeadingWildcard = false;
 $wgAPIModules['cirrus-freeze-writes'] = 'CirrusSearch\Api\FreezeWritesToCluster';
 // Bring the ElasticWrite backoff down to between 2^-1 and 2^3 seconds during browser tests
 $wgCirrusSearchWriteBackoffExponent = -1;
-
-// Just for testing, allow the page's text to override the timestamp.
-$wgCirrusSearchAllowTimeHacking = true;
 
 class Jenkins {
 	/**

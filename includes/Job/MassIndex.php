@@ -48,7 +48,7 @@ class MassIndex extends Job {
 			$title = Title::newFromDBKey( $pageDBKey );
 			// Skip any titles with broken keys.  We can't do anything with them.
 			if ( !$title ) {
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Skipping invalid DBKey: {pageDBKey}",
 					array( 'pageDBKey' => $pageDBKey )
 				);

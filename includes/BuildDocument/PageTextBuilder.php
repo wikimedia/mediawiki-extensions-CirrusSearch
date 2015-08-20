@@ -113,7 +113,7 @@ class PageTextBuilder extends ParseBuilder {
 		case 'none':
 			break;
 		default:
-			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Invalid value for \$wgCirrusSearchBoostOpening: {wgCirrusSearchBoostOpening}",
 				array( 'wgCirrusSearchBoostOpening' =>  $wgCirrusSearchBoostOpening )
 			);

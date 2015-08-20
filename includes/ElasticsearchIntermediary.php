@@ -257,7 +257,7 @@ class ElasticsearchIntermediary {
 		global $wgCirrusSearchLogElasticRequests;
 
 		if ( !$this->requestStart ) {
-			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'finishRequest called without staring a request'
 			);
 			return;

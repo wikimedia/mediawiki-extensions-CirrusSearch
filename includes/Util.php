@@ -117,7 +117,7 @@ class Util {
 		if ( $errorCallback === null ) {
 			$errorCallback = function( $error, $key, $userName ) {
 				$forUserName = $userName ? "for {userName} " : '';
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Pool error {$forUserName}on {key}:  {error}",
 					array( 'userName' => $userName, 'key' => $key, 'error' => $error )
 				);

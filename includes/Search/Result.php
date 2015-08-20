@@ -184,7 +184,7 @@ class Result extends SearchResult {
 			}
 		}
 		if ( $best === null ) {
-			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Search backend highlighted a redirect ({title}) but didn't return it.",
 				array( 'title' => $title )
 			);

@@ -359,7 +359,7 @@ class ForceSearchIndex extends Maintenance {
 			try {
 				$content = $page->getContent();
 			} catch ( MWException $ex ) {
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Error deserializing content, skipping page: {pageId}",
 					array( 'pageId' => $row->page_id )
 				);

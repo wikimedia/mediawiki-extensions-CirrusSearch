@@ -677,7 +677,7 @@ GROOVY;
 				$nearMatchQuery[] = $queryPart[ 'raw' ];
 				continue;
 			}
-			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'Unknown query part: {queryPart}',
 				array( 'queryPart' => serialize( $queryPart ) )
 			);
@@ -1280,7 +1280,7 @@ GROOVY;
 			) ) );
 			break;
 		default:
-			LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Invalid sort type: {sort}",
 				array( 'sort' => $this->sort )
 			);
@@ -1347,7 +1347,7 @@ GROOVY;
 			},
 			function( $error, $key, $userName ) use ( $type, $description, $user, $logContext ) {
 				$forUserName = $userName ? "for {userName} " : '';
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Pool error {$forUserName}on key {key} during $description:  {error}",
 					$logContext + array(
 						'userName' => $userName,
@@ -1382,7 +1382,7 @@ GROOVY;
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
 			if ( $responseData[ 'timed_out' ] ) {
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"$description timed out and only returned partial results!",
 					$logContext
 				);

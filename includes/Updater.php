@@ -260,7 +260,7 @@ $titles[0], array(
 		foreach ( $pages as $page ) {
 			$title = $page->getTitle();
 			if ( !$page->exists() ) {
-				LoggerFactory::getLogger( 'CirrusSearch' )->warning(
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
 					array( 'title' => $title )

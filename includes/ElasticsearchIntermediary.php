@@ -124,7 +124,9 @@ class ElasticsearchIntermediary {
 		$hits = 0;
 		foreach ( self::$logContexts as $context ) {
 			$hits += isset( $context['hitsTotal'] ) ? $context['hitsTotal'] : 0;
-			$queries[] = $context['query'];
+			if ( isset( $context['query'] ) ) {
+				$queries[] = $context['query'];
+			}
 			if ( isset( $context['elasticTookMs'] ) ) {
 				$elasticTook += $context['elasticTookMs'];
 			}
@@ -134,8 +136,8 @@ class ElasticsearchIntermediary {
 			if ( isset( $context['queryType'] ) ) {
 				$parameters['queryType'][] = $context['queryType'];
 			}
-
 		}
+
 		foreach ( array( 'index', 'queryType' ) as $key ) {
 			$parameters[$key] = array_unique( $parameters[$key] );
 		}

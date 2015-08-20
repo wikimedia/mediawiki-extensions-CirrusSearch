@@ -13,11 +13,9 @@ use CirrusSearch\Search\ResultsType;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MWNamespace;
-use MWTimestamp;
 use RequestContext;
 use SearchResultSet;
 use Status;
-use TimestampException;
 use Title;
 use UsageException;
 use User;
@@ -211,11 +209,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * advanced highlighting (e.g. match_phrase_prefix for regular quoted strings).
 	 */
 	private $nonTextHighlightQueries = array();
-
-	/**
-	 * @var false|string override of the current time
-	 */
-	private $overrideNow = false;
 
 	/**
 	 * Constructor
@@ -1739,7 +1732,7 @@ GROOVY;
 				'decayConstant' => $decayConstant,
 				'decayPortion' => $this->preferRecentDecayPortion,
 				'nonDecayPortion' => 1 - $this->preferRecentDecayPortion,
-				'now' => $this->now(),
+				'now' => time() * 1000
 			);
 
 			// e^ct where t is last modified time - now which is negative
@@ -1963,26 +1956,5 @@ GROOVY;
 			$pairs['{' . $key . '}'] = $value;
 		}
 		return strtr( $input, $pairs );
-	}
-
-	/**
-	 * Now in millseconds since epoch.
-	 */
-	private function now() {
-		try {
-			$t = new MWTimestamp( $this->overrideNow );
-		} catch ( TimestampException $e ) {
-			$t = new MWTimestamp();
-		}
-		// MWTimestamp only has second precision which should be fine.
-		// But Elasticsearch wants to do everything in milliseconds.
-		return intval( $t->getTimestamp() ) * 1000;
-	}
-
-	/**
-	 * Override the current time used in prefer-recent:.
-	 */
-	public function overrideNow( $overrideNow ) {
-		$this->overrideNow = $overrideNow;
 	}
 }

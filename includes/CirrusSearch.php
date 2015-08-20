@@ -136,10 +136,6 @@ class CirrusSearch extends SearchEngine {
 				if ( $request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
 				}
-				$overrideNow = $request->getVal( 'now' );
-				if ( $overrideNow ) {
-					$searcher->overrideNow( $overrideNow );
-				}
 			}
 			if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
 				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;

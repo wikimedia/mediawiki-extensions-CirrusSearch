@@ -1509,7 +1509,8 @@ GROOVY;
 	private function buildSuggestConfig( $field ) {
 		global $wgCirrusSearchPhraseSuggestMaxErrors,
 			$wgCirrusSearchPhraseSuggestConfidence,
-			$wgCirrusSearchPhraseSuggestSettings;
+			$wgCirrusSearchPhraseSuggestSettings,
+			$wgCirrusSearchPhraseSuggestUseText;
 
 		// check deprecated settings
 		if ( isset ( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {

@@ -205,7 +205,7 @@ class Updater extends ElasticsearchIntermediary {
 			// the max.  So we chunk it and do them sequentially.
 			foreach( array_chunk( $data, 10 ) as $chunked ) {
 				$job = new Job\ElasticaWrite(
-$titles[0], array(
+reset( $titles ), array(
 					'clientSideTimeout' => $clientSideTimeout,
 					'method' => 'sendData',
 					'arguments' => array( $indexType, $chunked, $shardTimeout ),
@@ -234,7 +234,7 @@ $titles[0], array(
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles );
-		$job = new Job\ElasticaWrite( $titles[0], array(
+		$job = new Job\ElasticaWrite( reset( $titles ), array(
 			'clientSideTimeout' => $clientSideTimeout,
 			'method' => 'sendDeletes',
 			'arguments' => array( $ids, $indexType ),

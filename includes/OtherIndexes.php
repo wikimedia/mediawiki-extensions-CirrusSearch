@@ -142,7 +142,7 @@ class OtherIndexes extends Updater {
 		// being frozen doesn't block updates to other indexes
 		// in the same update.
 		foreach ( $updates as $indexName => $actions ) {
-			$job = new Job\ElasticaWrite( $titles[0], array(
+			$job = new Job\ElasticaWrite( reset( $titles ), array(
 				'clientSideTimeout' => false,
 				'method' => 'sendOtherIndexUpdates',
 				'arguments' => array( $this->localSite, $indexName, $actions ),

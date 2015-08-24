@@ -666,7 +666,7 @@ class Hooks {
 
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, 1, $namespaces, $user );
+		$searcher = new Searcher( 0, 1, null, $namespaces, $user );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getNamespaces();
 		return false;
@@ -683,7 +683,7 @@ class Hooks {
 	 */
 	public static function prefixSearch( $namespaces, $search, $limit, &$results, $offset = 0 ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( $offset, $limit, $namespaces, $user );
+		$searcher = new Searcher( $offset, $limit, null, $namespaces, $user );
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		} else {
@@ -737,7 +737,7 @@ class Hooks {
 
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
-		$searcher = new Searcher( 0, 50, array( $title->getNamespace() ), $user );
+		$searcher = new Searcher( 0, 50, null, array( $title->getNamespace() ), $user );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$searcher->updateNamespacesFromQuery( $term );
 		} else {

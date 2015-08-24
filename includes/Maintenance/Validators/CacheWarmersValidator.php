@@ -76,6 +76,7 @@ class CacheWarmersValidator extends Validator {
 		$searcher = new Searcher(
 			0, 50,
 			// 0 offset 50 limit is the default for searching so we try it too.
+			null,
 			array(),
 			// array() for namespaces will stop us from eagerly caching the namespace
 			// filters. That is probably OK because most searches don't use one.

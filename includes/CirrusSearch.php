@@ -122,7 +122,7 @@ class CirrusSearch extends SearchEngine {
 
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
-		$searcher = new Searcher( $this->offset, $this->limit, $this->namespaces, $user, $this->indexBaseName );
+		$searcher = new Searcher( $this->offset, $this->limit, null, $this->namespaces, $user, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {

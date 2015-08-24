@@ -28,7 +28,7 @@ class Suggest extends ApiBase {
 	public function execute() {
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
-		$searcher = new Searcher( 0, $this->getParameter( 'limit' ), null, $user );
+		$searcher = new Searcher( 0, $this->getParameter( 'limit' ), null, null, $user );
 
 		$queryText = $this->getParameter( 'text' );
 		if ( !$queryText ) {

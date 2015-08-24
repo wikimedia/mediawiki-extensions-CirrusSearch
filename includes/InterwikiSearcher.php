@@ -5,7 +5,7 @@ use CirrusSearch\Search\InterwikiResultsType;
 use User;
 
 /**
- * Performs searches using Elasticsearch -- on interwikis! 
+ * Performs searches using Elasticsearch -- on interwikis!
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param string $interwiki Interwiki prefix we're searching
 	 */
 	public function __construct( array $namespaces, User $user = null, $index, $interwiki ) {
-		parent::__construct( 0, self::MAX_RESULTS, $namespaces, $user, $index );
+		parent::__construct( 0, self::MAX_RESULTS, null, $namespaces, $user, $index );
 		$this->interwiki = $interwiki;
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $this->namespaces !== null ) {
@@ -82,7 +82,7 @@ class InterwikiSearcher extends Searcher {
 			$results = $this->searchText( $term, false );
 			if ( $results->isOk() ) {
 				$res = $results->getValue();
-				$wgMemc->set( $key, $res, $wgCirrusSearchInterwikiCacheTime );
+				$wgMemc->set( $key, $res, $this->config->get( 'CirrusSearchInterwikiCacheTime' ) );
 			}
 		}
 		return $res;
@@ -93,6 +93,7 @@ class InterwikiSearcher extends Searcher {
 	 * @return string
 	 */
 	public static function getIndexForInterwiki( $interwiki ) {
+		// FIXME: eliminate this global, but $this->config is not accessible to statics...
 		global $wgCirrusSearchInterwikiSources;
 		return isset( $wgCirrusSearchInterwikiSources[ $interwiki ] ) ?
 			$wgCirrusSearchInterwikiSources[ $interwiki ] : null;

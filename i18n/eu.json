@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Subi"
+			"Subi",
+			"Sator"
 		]
 	},
-	"cirrussearch-pref-label": "Bilaketa berria"
+	"cirrussearch-pref-label": "Bilaketa berria",
+	"cirrussearch-give-feedback": "Egiguzu iruzkina"
 }

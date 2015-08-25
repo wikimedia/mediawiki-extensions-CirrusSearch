@@ -3,6 +3,7 @@
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
+use CirrusSearch\Search\ResultSet;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -68,9 +69,46 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Overridden to delegate prefix searching to Searcher.
 	 * @param string $term text to search
-	 * @return Search\ResultSet|null|Status results, no results, or error respectively
+	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
+		$matches = $this->searchTextReal( $term );
+		if (!$matches instanceof ResultSet) {
+			return $matches;
+		}
+		if ( $this->isFeatureEnabled( 'rewrite' ) && $matches->isQueryRewriteAllowed() ) {
+			$matches = $this->searchTextSecondTry( $matches );
+		}
+		return $matches;
+	}
+
+	private function isFeatureEnabled( $feature ) {
+		return isset( $this->features[$feature] ) && $this->features[$feature];
+	}
+
+	private function searchTextSecondTry( ResultSet $zeroResult ) {
+		if ( $zeroResult->hasSuggestion() ) {
+			$rewritten = $zeroResult->getSuggestionQuery();
+			$rewrittenSnippet = $zeroResult->getSuggestionSnippet();
+			$this->showSuggestion = false;
+		} else {
+			// Don't have any other options yet.
+			return $zeroResult;
+		}
+
+		$rewrittenResult = $this->searchTextReal( $rewritten );
+		if (
+			$rewrittenResult instanceof ResultSet
+			&& $rewrittenResult->numRows() > 0
+		) {
+			$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
+			return $rewrittenResult;
+		} else {
+			return $zeroResult;
+		}
+	}
+
+	private function searchTextReal( $term ) {
 		global $wgCirrusSearchInterwikiSources;
 
 		// Convert the unicode character 'idiographic whitespace' into standard

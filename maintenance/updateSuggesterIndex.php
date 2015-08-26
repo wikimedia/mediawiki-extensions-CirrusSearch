@@ -80,6 +80,12 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private $availablePlugins;
 
+
+	/**
+	 * @var boolean index geo contextualized suggestions
+	 */
+	private $withGeo;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Create a new suggester index." );
@@ -94,6 +100,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
+		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
 			'Detauls to quality.', false, true );
 	}
@@ -116,6 +123,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
+		$this->withGeo = $this->getOption( 'with-geo', false );
 
 		$utils = new ConfigUtils( $this->getClient(), $this);
 
@@ -212,7 +220,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName, $totalDocsInIndex );
-		$builder = new SuggestBuilder( $this->scoreMethod );
+		$builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 
 		$docsDumped = 0;
 		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );

@@ -257,4 +257,20 @@ class UtilTest extends MediaWikiTestCase {
 		$this->assertEquals( 6, $calls );
 		$this->assertEquals( 5, $errorCallbackCalls );
 	}
+
+	public function testChooseBestRedirect() {
+		$convert = function( $x ) {
+			$redirect = array();
+			foreach( $x as $t ) {
+				$redirect[] = array( 'title' => $t, 'namespace' => 0 );
+			}
+			return $redirect;
+		};
+		$input = $convert( array( 'Al. Einstein', 'Albert Einstein', 'A. Einstein', 'Einstein, Albert' ) );
+		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'a', $input ) );
+		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'al', $input ) );
+		$this->assertEquals( 'Albert Einstein', Util::chooseBestRedirect( 'albet', $input ) );
+		$this->assertEquals( 'Einstein, Albert', Util::chooseBestRedirect( 'Einstein', $input ) );
+		$this->assertEquals( 'Einstein, Albert', Util::chooseBestRedirect( 'Ens', $input ) );
+	}
 }

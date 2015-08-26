@@ -37,7 +37,7 @@ class SuggesterMappingConfigBuilder {
 		$geoContext = array(
 			'location' => array(
 				'type' => 'geo',
-				'precision' => array('1km', '10km', '100km'),
+				'precision' => array( 6, 4, 3 ), // ~ 1km, 10km, 100km
 				'neighbors' => true,
 			)
 		);

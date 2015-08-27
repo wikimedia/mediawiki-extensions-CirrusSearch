@@ -32,6 +32,7 @@
 	"apihelp-cirrus-mapping-dump-description": "用于此wiki的CirrusSearch映射转储。",
 	"apihelp-cirrus-settings-dump-description": "用于此wiki的CirrusSearch设置转储。",
 	"apihelp-cirrus-suggest-description": "建议完成搜索关键词。",
+	"apihelp-cirrus-suggest-param-text": "要提供完成的搜索关键词。",
 	"apihelp-cirrus-suggest-param-limit": "返回多少结果。",
 	"apihelp-cirrus-suggest-param-context": "限制搜索的搜索环境，例如geo或分类。",
 	"cirrussearch-give-feedback": "告诉我们您的反馈",

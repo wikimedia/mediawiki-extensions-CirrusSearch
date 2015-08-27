@@ -21,5 +21,6 @@
 	"apihelp-cirrus-config-dump-description": "Cấu hình thô của CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Ánh xạ thô của CirrusSearch tại wiki này.",
 	"apihelp-cirrus-settings-dump-description": "Cấu hình thô của CirrusSearch tại wiki này.",
-	"cirrussearch-give-feedback": "Hãy gửi cho chúng tôi nhận xét của bạn"
+	"cirrussearch-give-feedback": "Hãy gửi cho chúng tôi nhận xét của bạn",
+	"cirrussearch-query-too-long": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. ($1 > $2)"
 }

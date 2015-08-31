@@ -2,7 +2,8 @@
 
 namespace CirrusSearch;
 
-use \PHPUnit_Framework_TestCase;
+use ConfigFactory;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Make sure cirrus doens't break any hooks.
@@ -32,7 +33,9 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 
 		$wgContentNamespaces = $contentNamespaces;
 		$wgCirrusSearchNamespaceMappings = $namespaceMappings;
-		$this->assertEquals( $expected, Connection::namespacesInIndexType( $indexType ) );
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$conn = new Connection( $config );
+		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
 	}
 
 	public static function provideNamespacesInIndexType() {

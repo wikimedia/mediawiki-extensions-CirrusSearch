@@ -28,7 +28,7 @@ class IncomingLinkCount extends Job {
 
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
-		$updater = new Updater();
+		$updater = new Updater( $this->connection );
 		// We're intentionally throwing out whether or not this job succeeds.
 		// We're loggging it but we're not retrying.
 		$updater->updateLinkedArticles( array( $this->getTitle() ) );

@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use \CirrusSearch\Connection;
-
 /**
  * Update and check the CirrusSearch version index.
  *
@@ -48,9 +46,9 @@ class UpdateVersionIndex extends Maintenance {
 			$this->update( $baseName );
 		} else {
 			$filter = new \Elastica\Filter\BoolOr();
-			foreach ( Connection::getAllIndexTypes() as $type ) {
+			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {
 				$term = new \Elastica\Filter\Term();
-				$term->setTerm( '_id', Connection::getIndexName( $baseName, $type ) );
+				$term->setTerm( '_id', $this->getConnection()->getIndexName( $baseName, $type ) );
 				$filter->addFilter( $term );
 			}
 			$this->show( $filter );
@@ -81,9 +79,9 @@ class UpdateVersionIndex extends Maintenance {
 		$docs = array();
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
-		foreach( Connection::getAllIndexTypes() as $type ) {
+		foreach( $this->getConnection()->getAllIndexTypes() as $type ) {
 			$docs[] = new \Elastica\Document(
-				Connection::getIndexName( $baseName, $type ),
+				$this->getConnection()->getIndexName( $baseName, $type ),
 				array(
 					'analysis_maj' => $aMaj,
 					'analysis_min' => $aMin,
@@ -98,7 +96,7 @@ class UpdateVersionIndex extends Maintenance {
 	}
 
 	private function getType() {
-		$index = Connection::getIndex( 'mw_cirrus_versions' );
+		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {
 			$this->outputIndented( "Creating tracking index..." );
 			$index->create( array( 'number_of_shards' => 1,

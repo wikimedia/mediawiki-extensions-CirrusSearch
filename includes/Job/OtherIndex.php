@@ -54,7 +54,7 @@ class OtherIndex extends Job {
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
 		$otherIdx = new OtherIndexes( wfWikiId() );
-
+		$otherIdx->setConnection( $this->connection );
 		$otherIdx->updateOtherIndex( $titles );
 	}
 }

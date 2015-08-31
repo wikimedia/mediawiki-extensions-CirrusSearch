@@ -10,6 +10,7 @@ use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Type;
+use ForkController;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -142,8 +143,8 @@ class Reindexer {
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		) );
 
-		$sender = new DataSender();
-		$frozenIndexes = Connection::indexToIndexTypes( $this->types );
+		$sender = new DataSender( $this->connection );
+		$frozenIndexes = $conn->indexToIndexTypes( $this->types );
 		$sender->freezeIndexes( $frozenIndexes );
 		if ( $processes > 1 ) {
 			if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) ||
@@ -151,9 +152,11 @@ class Reindexer {
 				$this->error( "Can't use multiple processes without \$wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true", 1 );
 			}
 
-			$fork = new ReindexForkController( $processes );
+			$fork = new ForkController( $processes );
 			$forkResult = $fork->start();
-			// Forking clears the timeout so we have to reinstate it.
+			// we don't want to share sockets between forks, so destroy the client.
+			$this->connection->destroyClient();
+			// destroying the client resets the timeout so we have to reinstate it.
 			$this->setConnectionTimeout();
 
 			switch ( $forkResult ) {
@@ -417,7 +420,7 @@ class Reindexer {
 	}
 
 	private function setConnectionTimeout() {
-		$this->connection->setTimeout2( $this->connectionTimeout );
+		$this->connection->setTimeout( $this->connectionTimeout );
 	}
 
 	private function destroySingleton() {

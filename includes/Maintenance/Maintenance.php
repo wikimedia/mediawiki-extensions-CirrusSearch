@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Connection;
+use ConfigFactory;
+
 /**
  * Cirrus helpful extensions to Maintenance.
  *
@@ -23,6 +26,19 @@ namespace CirrusSearch\Maintenance;
 abstract class Maintenance extends \Maintenance {
 	// How much should this script indent output?
 	protected static $indent = null;
+
+	/**
+	 * @var Connection|null
+	 */
+	private $connection;
+
+	public function getConnection() {
+		if ( $this->connection === null ) {
+			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$this->connection = new Connection( $config );
+		}
+		return $this->connection;
+	}
 
 	/**
 	 * Execute a callback function at the end of initialisation

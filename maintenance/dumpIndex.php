@@ -2,10 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
-use \CirrusSearch\Connection;
-use \CirrusSearch\ElasticsearchIntermediary;
-use \CirrusSearch\Util;
-
+use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Util;
 use Elastica;
 use Elastica\Filter;
 use Elastica\Index;
@@ -102,13 +100,13 @@ class DumpIndex extends Maintenance {
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
 
-		$indexTypes = $this->getAllIndexTypes();
+		$indexTypes = $this->getConnection()->getAllIndexTypes();
 		if ( !in_array( $this->indexType, $indexTypes ) ) {
 			$this->error( 'indexType option must be one of ' .
 				implode( ', ', $indexTypes ), 1 );
 		}
 
-		$utils = new ConfigUtils( $this->getClient(), $this );
+		$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
 
 		$this->indexIdentifier = $this->getOption( 'indexIdentifier' );
 
@@ -163,7 +161,7 @@ class DumpIndex extends Maintenance {
 
 	private function setConnectionTimeout() {
 		global $wgCirrusSearchMaintenanceTimeout;
-		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
 	public function write( array $document ) {
@@ -186,28 +184,14 @@ class DumpIndex extends Maintenance {
 	}
 
 	/**
-	 * @return Elastica\Client
-	 */
-	private function getClient() {
-		return Connection::getClient();
-	}
-
-	/**
 	 * @return Elastica\Index being updated
 	 */
 	private function getIndex() {
 		if ( $this->indexIdentifier ) {
-			return Connection::getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
 		} else {
-			return Connection::getIndex( $this->indexBaseName, $this->indexType );
+			return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexType );
 		}
-	}
-
-	/**
-	 * @return array
-	 */
-	private function getAllIndexTypes() {
-		return Connection::getAllIndexTypes();
 	}
 
 	public function outputIndented( $message ) {

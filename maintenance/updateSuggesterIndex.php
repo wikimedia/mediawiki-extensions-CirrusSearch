@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Maintenance;
 
-use \CirrusSearch\Connection;
-use \CirrusSearch\ElasticsearchIntermediary;
-use \CirrusSearch\Util;
-use \CirrusSearch\BuildDocument\SuggestBuilder;
-use \CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
+use CirrusSearch\Connection;
+use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Util;
+use CirrusSearch\BuildDocument\SuggestBuilder;
+use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
 use Elastica;
 use Elastica\Query;
 
@@ -115,6 +115,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 
@@ -137,7 +138,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		try {
 			$oldIndexIdentifier = $utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
-			$this->oldIndex = Connection::getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
+			$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
 			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
 
 			$this->availablePlugins = $utils->scanAvailablePlugins( $this->bannedPlugins );
@@ -181,7 +182,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	protected function setConnectionTimeout() {
 		global $wgCirrusSearchMaintenanceTimeout;
-		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
 	private function optimize() {
@@ -212,7 +213,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 
 		// TODO: only content index for now ( we'll have to check how it works with commons )
-		$sourceIndex = Connection::getIndex( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
+		$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
 		$result = $sourceIndex->search( $query, $scrollOptions );
 		$totalDocsInIndex = $result->getResponse()->getData();
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
@@ -251,7 +252,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	public function validateAlias() {
-		$this->getIndex()->addAlias( Connection::getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME ), true );
+		$this->getIndex()->addAlias( $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME ), true );
 	}
 
 	/**
@@ -350,14 +351,14 @@ class UpdateSuggesterIndex extends Maintenance {
 		global $wgCirrusSearchShardCount;
 
 		$this->outputIndented( "Updating tracking indexes..." );
-		$index = Connection::getIndex( 'mw_cirrus_versions' );
+		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {
 			throw new \Exception("mw_cirrus_versions does not exist, you must index your data first");
 		}
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
 		$doc = new \Elastica\Document(
-			Connection::getIndexName( $this->indexBaseName, $this->indexTypeName ),
+			$this->getConnection()->getIndexName( $this->indexBaseName, $this->indexTypeName ),
 			array (
 				'analysis_maj' => $aMaj,
 				'analysis_min' => $aMin,
@@ -394,7 +395,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return \Elastica\Index being updated
 	 */
 	public function getIndex() {
-		return Connection::getIndex( $this->indexBaseName, $this->indexTypeName, $this->indexIdentifier );
+		return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $this->indexIdentifier );
 	}
 
 	public function getType() {
@@ -405,14 +406,14 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return Elastica\Client
 	 */
 	protected function getClient() {
-		return Connection::getClient();
+		return $this->getConnection()->getClient();
 	}
 
 	/**
 	 * @return string name of the index type being updated
 	 */
 	protected function getIndexTypeName() {
-		return Connection::getIndexName( $this->indexBaseName, $this->indexTypeName );
+		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexTypeName );
 	}
 }
 

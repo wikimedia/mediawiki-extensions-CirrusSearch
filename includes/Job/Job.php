@@ -2,8 +2,10 @@
 
 namespace CirrusSearch\Job;
 
-use \Job as MWJob;
-use \JobQueueGroup;
+use CirrusSearch\Connection;
+use ConfigFactory;
+use Job as MWJob;
+use JobQueueGroup;
 
 /**
  * Abstract job class used by all CirrusSearch*Job classes
@@ -24,6 +26,11 @@ use \JobQueueGroup;
  * http://www.gnu.org/copyleft/gpl.html
  */
 abstract class Job extends MWJob {
+	/**
+	 * @var Connection
+	 */
+	protected $connection;
+
 	public function __construct( $title, $params ) {
 		// eg: DeletePages -> cirrusSearchDeletePages
 		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', get_class( $this ) );
@@ -34,6 +41,13 @@ abstract class Job extends MWJob {
 		// it can't be deduplicated or else the search index will end up with out of date
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
+
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->connection = new Connection( $config );
+	}
+
+	public function setConnection( Connection $connection ) {
+		$this->connection = $connection;
 	}
 
 	/**

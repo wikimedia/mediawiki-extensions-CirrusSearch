@@ -227,14 +227,16 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
 	 */
-	public function __construct( $offset, $limit, SearchConfig $config = null, array $namespaces = null,
+	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false ) {
 
 		if ( is_null( $config ) ) {
+			// @todo connection has an embeded config ... reuse that? somehow should
+			// at least ensure they are the same.
 			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 		}
 
-		parent::__construct( $user, $config->get( 'CirrusSearchSlowSearch' ) );
+		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
 		$this->config = $config;
 		$this->offset = min( $offset, self::MAX_OFFSET );
 		$this->limit = $limit;
@@ -386,6 +388,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->suggestSuffixes[] = ' prefix:' . $value;
 				// Suck namespaces out of $value
 				$cirrusSearchEngine = new CirrusSearch();
+				$cirrusSearchEngine->setConnection( $this->connection );
 				$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
 				$this->namespaces = $cirrusSearchEngine->namespaces;
 				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
@@ -814,9 +817,9 @@ GROOVY;
 
 		$queryOptions = array();
 		$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
-		Connection::setTimeout( $queryOptions[ 'timeout' ] );
+		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
-		$index = Connection::getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
+		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
 		$logContext = array(
 			'query' => $text,
 			'queryType' => 'comp_suggest'
@@ -955,7 +958,7 @@ GROOVY;
 			// very big index...
 
 			// XXX: we support only the content index
-			$type = Connection::getPageType( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
+			$type = $this->connection->getPageType( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
 			// NOTE: we are already in a poolCounterWork
 			// Multi get is not supported by elastica
 			$redirResponse = null;
@@ -1138,18 +1141,19 @@ GROOVY;
 		$indexType = $this->pickIndexTypeFromNamespaces();
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
+		$conn = $this->connection;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
-			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName ) {
+			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName, $conn ) {
 				try {
 					$searcher->start( "get of {indexType}.{pageIds}", array(
 						'indexType' => $indexType,
 						'pageIds' => array_map( 'intval', $pageIds ),
 					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					Connection::setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
-					$pageType = Connection::getPageType( $indexBaseName, $indexType );
+					$conn->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
+					$pageType = $conn->getPageType( $indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
@@ -1168,15 +1172,16 @@ GROOVY;
 	public function findNamespace( $name ) {
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
+		$conn = $this->connection;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-NamespaceLookup',
 			$this->user,
-			function() use ( $searcher, $name, $indexBaseName ) {
+			function() use ( $searcher, $name, $indexBaseName, $conn ) {
 				try {
 					$searcher->start( "lookup namespace for {namespaceName}", array(
 						'namespaceName' => $name,
 					) );
-					$pageType = Connection::getNamespaceType( $indexBaseName );
+					$pageType = $conn->getNamespaceType( $indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
 					$query = new \Elastica\Query( $match );
@@ -1409,10 +1414,10 @@ GROOVY;
 			$poolCounterType = 'CirrusSearch-Search';
 			$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
 		}
-		Connection::setTimeout( $queryOptions[ 'timeout' ] );
+		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
 		// Setup the search
-		$pageType = Connection::getPageType( $this->indexBaseName, $indexType );
+		$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
@@ -1527,7 +1532,7 @@ GROOVY;
 			// We're searching less than everything but we're going across indexes.  Back to the defensive.
 			return true;
 		}
-		$namespacesInIndexType = Connection::namespacesInIndexType( $indexType );
+		$namespacesInIndexType = $this->connection->namespacesInIndexType( $indexType );
 		return $nsCount !== $namespacesInIndexType;
 	}
 
@@ -1753,7 +1758,7 @@ GROOVY;
 		$indexTypes = array();
 		foreach ( $this->namespaces as $namespace ) {
 			$indexTypes[] =
-				Connection::getIndexSuffixForNamespace( $namespace );
+				$this->connection->getIndexSuffixForNamespace( $namespace );
 		}
 		$indexTypes = array_unique( $indexTypes );
 		return count( $indexTypes ) > 1 ? false : $indexTypes[0];

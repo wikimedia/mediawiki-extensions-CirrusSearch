@@ -1,5 +1,6 @@
 <?php
 
+use CirrusSearch\Connection;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
@@ -47,8 +48,19 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $indexBaseName;
 
+	/**
+	 * @var Connection
+	 */
+	private $connection;
+
 	public function __construct( $baseName = null ) {
 		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->connection = new Connection( $config );
+	}
+
+	public function setConnection( Connection $connection ) {
+		$this->connection = $connection;
 	}
 
 	/**
@@ -185,7 +197,7 @@ class CirrusSearch extends SearchEngine {
 			$this->indexBaseName = $config->getWikiId();
 		}
 
-		$searcher = new Searcher( $this->offset, $this->limit, $config, $this->namespaces, $user, $this->indexBaseName );
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, $user, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
@@ -268,6 +280,7 @@ class CirrusSearch extends SearchEngine {
 			// wrote the code but Searcher needs some refactoring first.
 			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
 				$iwSearch = new InterwikiSearcher( $this->namespaces, $user, $index, $interwiki );
+				$iwSearch->setConnection( $this->connection );
 				$interwikiResult = $iwSearch->getInterwikiResults( $term );
 				if ( $interwikiResult ) {
 					$status->getValue()->addInterwikiResults( $interwikiResult );

@@ -25,8 +25,8 @@ class Version extends ElasticsearchIntermediary {
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
-		parent::__construct( null, 0 );
+	public function __construct( Connection $conn ) {
+		parent::__construct( $conn, null, 0 );
 	}
 
 	/**
@@ -44,8 +44,8 @@ class Version extends ElasticsearchIntermediary {
 				$this->start( 'fetching elasticsearch version' );
 				// If this times out the cluster is in really bad shape but we should still
 				// check it.
-				Connection::setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
-				$result = Connection::getClient()->request( '' );
+				$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
+				$result = $this->connection->getClient()->request( '' );
 				$this->success();
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				return $this->failure( $e );

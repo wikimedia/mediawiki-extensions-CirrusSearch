@@ -1,11 +1,13 @@
 <?php
 
 namespace CirrusSearch\Sanity;
-use \CirrusSearch\Connection;
-use \CirrusSearch\Searcher;
-use \Status;
-use \Title;
-use \WikiPage;
+
+use CirrusSearch\Connection;
+use CirrusSearch\Searcher;
+use ConfigFactory;
+use Status;
+use Title;
+use WikiPage;
 
 /**
  * Checks if a WikiPage's representation in search index is sane.
@@ -27,6 +29,7 @@ use \WikiPage;
  */
 
 class Checker {
+	private $connection;
 	private $searcher;
 	private $remediator;
 	private $logSane;
@@ -38,7 +41,8 @@ class Checker {
 	 * @param Searcher $searcher searcher to use for fetches
 	 * @param boolean $logSane should we log sane ids
 	 */
-	public function __construct( $remediator, $searcher, $logSane ) {
+	public function __construct( Connection $connection, $remediator, $searcher, $logSane ) {
+		$this->connection = $connection;
 		$this->remediator = $remediator;
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
@@ -69,7 +73,7 @@ class Checker {
 			} else {
 				if ( $inIndex ) {
 					$foundInsanityInIndex = false;
-					$expectedType = Connection::getIndexSuffixForNamespace( $page->getTitle()->getNamespace() );
+					$expectedType = $this->connection->getIndexSuffixForNamespace( $page->getTitle()->getNamespace() );
 					foreach ( $fromIndex as $indexInfo ) {
 						$matches = array();
 						if ( !preg_match( '/_(.+)_.+$/', $indexInfo->getIndex(), $matches ) ) {

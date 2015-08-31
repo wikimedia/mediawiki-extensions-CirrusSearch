@@ -45,7 +45,7 @@ class LinksUpdate extends Job {
 	protected function doJob() {
 		global $wgCirrusSearchRefreshInterval;
 
-		$updater = new Updater();
+		$updater = new Updater( $this->connection );
 		$res = $updater->updateFromTitle( $this->title );
 		if ( $res === false ) {
 			// Couldn't update. Bail early and retry rather than adding an

@@ -1,8 +1,8 @@
 <?php
 
 namespace CirrusSearch\Jenkins;
-use \CirrusSearch\Connection;
-use \Maintenance;
+
+use CirrusSearch\Maintenance\Maintenance;
 
 /**
  * Removes all indexes from the Elasticsearch cluster so Jenkins' Elasticsearch
@@ -29,10 +29,11 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../../includes/Maintenance/Maintenance.php' );
 
 class NukeAllIndexes extends Maintenance {
 	public function execute() {
-		$client = Connection::getClient();
+		$client = $this->getConnection()->getClient();
 		foreach ( $client->getStatus()->getIndexNames() as $index ) {
 			$this->output( "Deleting $index..." );
 			$client->getIndex( $index )->delete();

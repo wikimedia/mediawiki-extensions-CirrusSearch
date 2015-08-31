@@ -4,8 +4,8 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
 use CirrusSearch\Searcher;
-use Status;
 use CirrusSearch\Search\ResultSet;
+use Status;
 
 /**
  * Run search queries provided on stdin
@@ -124,7 +124,9 @@ class RunSearch extends Maintenance {
 		$searchType = $this->getOption( 'type', 'full_text' );
 		switch ( $searchType ) {
 		case 'full_text':
+			// @todo pass through $this->getConnection() ?
 			$engine = new CirrusSearch( $this->indexBaseName );
+			$engine->setConnection( $this->getConnection() );
 			$result = $engine->searchText( $query );
 			if ( $result instanceof Status ) {
 				return $result;
@@ -133,11 +135,11 @@ class RunSearch extends Maintenance {
 			}
 
 		case 'prefix':
-			$searcher = new Searcher( 0, 10, null, null, null, $this->indexBaseName );
+			$searcher = new Searcher( $this->getConnection(), 0, 10, null, null, null, $this->indexBaseName );
 			return $searcher->prefixSearch( $query );
 
 		case 'suggest':
-			$searcher = new Searcher( 0, 10, null, null, null, $this->indexBaseName );
+			$searcher = new Searcher( $this->getConnection(), 0, 10, null, null, null, $this->indexBaseName );
 			$result = $searcher->suggest( $query );
 			if ( $result instanceof Status ) {
 				return $result;

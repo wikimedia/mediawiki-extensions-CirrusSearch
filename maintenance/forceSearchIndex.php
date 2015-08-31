@@ -1,10 +1,11 @@
 <?php
 
 namespace CirrusSearch;
+
 use CirrusSearch;
+use CirrusSearch\Maintenance\Maintenance;
 use JobQueueGroup;
 use LinkCache;
-use Maintenance;
 use MediaWiki\Logger\LoggerFactory;
 use MWException;
 use MWTimestamp;
@@ -35,6 +36,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
@@ -90,7 +92,7 @@ class ForceSearchIndex extends Maintenance {
 		$wiki = sprintf( "[%20s]", wfWikiId() );
 
 		// Set the timeout for maintenance actions
-		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
 		// Make sure we've actually got indicies to populate
 		if ( !$this->simpleCheckIndexes() ) {
@@ -201,7 +203,7 @@ class ForceSearchIndex extends Maintenance {
 					JobQueueGroup::singleton()->push( Job\MassIndex::build( $pages, $updateFlags ) );
 				} else {
 					// Update size with the actual number of updated documents.
-					$updater = new Updater();
+					$updater = new Updater( $this->getConnection() );
 					$size = $updater->updatePages( $pages, null, null, $updateFlags );
 				}
 			} else {
@@ -215,7 +217,7 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $lastDelete[ 'timestamp' ];
 				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
 				$minTitle = $lastDelete[ 'title' ]->getText();
-				$updater = new Updater();
+				$updater = new Updater( $this->getConnection() );
 				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
@@ -264,17 +266,17 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private function simpleCheckIndexes() {
 		$wiki = wfWikiId();
-		$status = Connection::getClient()->getStatus();
+		$status = $this->getConnection()->getClient()->getStatus();
 
 		// Top-level alias needs to exist
-		if ( !Connection::getIndex( $wiki )->exists() ) {
+		if ( !$this->getConnection()->getIndex( $wiki )->exists() ) {
 			return false;
 		}
 
 		// Now check all index types to see if they exist
-		foreach ( Connection::getAllIndexTypes() as $indexType ) {
+		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			// If the alias for this type doesn't exist, fail
-			if ( !Connection::getIndex( $wiki, $indexType )->exists() ) {
+			if ( !$this->getConnection()->getIndex( $wiki, $indexType )->exists() ) {
 				return false;
 			}
 		}
@@ -349,7 +351,7 @@ class ForceSearchIndex extends Maintenance {
 		$result = array();
 		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
 		// level so those are stored when it is freed.
-		$updater = new Updater();
+		$updater = new Updater( $this->getConnection() );
 
 		foreach ( $res as $row ) {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because

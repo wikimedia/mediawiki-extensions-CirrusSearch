@@ -8,7 +8,7 @@ abstract class Validator {
 	/**
 	 * @var Maintenance
 	 */
-	protected $out;
+	protected $maint;
 
 	/**
 	 * @var bool
@@ -16,10 +16,10 @@ abstract class Validator {
 	protected $printDebugCheckConfig = false;
 
 	/**
-	 * @param Maintenance $out Maintenance object, to relay output to.
+	 * @param Maintenance $maint Maintenance object, to relay output to.
 	 */
-	public function __construct( Maintenance $out = null ) {
-		$this->out = $out;
+	public function __construct( Maintenance $maint ) {
+		$this->maint = $maint;
 	}
 
 	/**
@@ -109,8 +109,8 @@ abstract class Validator {
 	 * @param mixed $channel
 	 */
 	protected function output( $message, $channel = null ) {
-		if ( $this->out ) {
-			$this->out->output( $message, $channel );
+		if ( $this->maint ) {
+			$this->maint->output( $message, $channel );
 		}
 	}
 
@@ -118,8 +118,8 @@ abstract class Validator {
 	 * @param string $message
 	 */
 	protected function outputIndented( $message ) {
-		if ( $this->out ) {
-			$this->out->outputIndented( $message );
+		if ( $this->maint ) {
+			$this->maint->outputIndented( $message );
 		}
 	}
 }

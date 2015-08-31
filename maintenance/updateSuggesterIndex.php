@@ -308,8 +308,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		// If $wgCirrusSearchReplicas is an array of index type to number of replicas then respect that
 		if ( is_array( $wgCirrusSearchReplicas ) ) {
-			if ( isset( $wgCirrusSearchReplicas[ $this->indexType ] ) ) {
-				return $wgCirrusSearchReplicas[ $this->indexType ];
+			if ( isset( $wgCirrusSearchReplicas[ $this->indexTypeName ] ) ) {
+				return $wgCirrusSearchReplicas[ $this->indexTypeName ];
 			} else {
 				$this->error( 'If wgCirrusSearchReplicas is an array it must contain all index types.', 1 );
 			}
@@ -340,7 +340,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function getShardCount() {
 		global $wgCirrusSearchShardCount;
 		if ( !isset( $wgCirrusSearchShardCount[ $this->indexTypeName ] ) ) {
-			$this->error( 'Could not find a shard count for ' . $this->indexType . '.  Did you add an index to ' .
+			$this->error( 'Could not find a shard count for ' . $this->indexTypeName . '.  Did you add an index to ' .
 				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchShardCount?', 1 );
 		}
 		return $wgCirrusSearchShardCount[ $this->indexTypeName ];
@@ -378,7 +378,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
 		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
 		$validators[] = $this->getShardAllocationValidator();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
+		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexTypeName, $this->maxShardsPerNode, $this );
 		return $validators;
 	}
 

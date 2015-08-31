@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch\Jenkins;
-use \Maintenance;
+
+use CirrusSearch\Maintenance\Maintenance;
 
 /**
  * Calls maintenance scripts properly to get an empty and configured index and
@@ -28,6 +29,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . "/../../includes/Maintenance/Maintenance.php" );
 
 class CleanSetup extends Maintenance {
 	public function execute() {

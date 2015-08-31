@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use ConfigFactory;
 use DeferredUpdates;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
@@ -30,6 +31,10 @@ use User;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ElasticsearchIntermediary {
+	/**
+	 * @var Connection
+	 */
+	protected $connection;
 	/**
 	 * @var User|null user for which we're performing this search or null in the case of
 	 * requests kicked off by jobs
@@ -83,10 +88,12 @@ class ElasticsearchIntermediary {
 	 * @param float $slowSeconds how many seconds a request through this intermediary needs to take before it counts as
 	 * slow.  0 means none count as slow.
 	 */
-	protected function __construct( User $user = null, $slowSeconds ) {
+	protected function __construct( Connection $connection, User $user = null, $slowSeconds ) {
+		$this->connection = $connection;
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
 		$this->ut = UserTesting::getInstance();
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 	}
 
 	/**
@@ -369,7 +376,7 @@ class ElasticsearchIntermediary {
 	 * @return array
 	 */
 	private function buildLogContext( $took ) {
-		$client = Connection::getClient();
+		$client = $this->connection->getClient();
 		$query = $client->getLastRequest();
 		$result = $client->getLastResponse();
 

@@ -1,7 +1,6 @@
 <?php
 namespace CirrusSearch\Api;
 
-use ApiBase;
 use CirrusSearch\Searcher;
 use RequestContext;
 
@@ -28,7 +27,9 @@ class Suggest extends ApiBase {
 	public function execute() {
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
-		$searcher = new Searcher( 0, $this->getParameter( 'limit' ), null, null, $user );
+		$conn = $this->getCirrusConnection();
+		$searcher = new Searcher( $conn, 0, $this->getParameter( 'limit' ), null, null, $user );
+
 
 		$queryText = $this->getParameter( 'text' );
 		if ( !$queryText ) {

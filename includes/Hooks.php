@@ -2,28 +2,29 @@
 
 namespace CirrusSearch;
 
-use \ApiMain;
-use \BetaFeatures;
-use \CirrusSearch;
-use \CirrusSearch\Search\FancyTitleResultsType;
-use \CirrusSearch\Search\TitleResultsType;
-use \DeferredUpdates;
-use \JobQueueGroup;
-use \LinksUpdate;
-use \OutputPage;
-use \ResourceLoader;
-use \Skin;
-use \SpecialSearch;
-use \Title;
-use \RecursiveDirectoryIterator;
-use \RecursiveIteratorIterator;
-use \RequestContext;
-use \UsageException;
-use \User;
-use \WebRequest;
-use \WikiPage;
-use \Xml;
-use \Html;
+use ApiMain;
+use BetaFeatures;
+use CirrusSearch;
+use CirrusSearch\Search\FancyTitleResultsType;
+use CirrusSearch\Search\TitleResultsType;
+use ConfigFactory;
+use DeferredUpdates;
+use JobQueueGroup;
+use LinksUpdate;
+use OutputPage;
+use ResourceLoader;
+use Skin;
+use SpecialSearch;
+use Title;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RequestContext;
+use UsageException;
+use User;
+use WebRequest;
+use WikiPage;
+use Xml;
+use Html;
 
 /**
  * All CirrusSearch's external hooks.
@@ -556,7 +557,7 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onSoftwareInfo( &$software ) {
-		$version = new Version;
+		$version = new Version( self::getConnection() );
 		$status = $version->get();
 		if ( $status->isOk() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
@@ -668,7 +669,7 @@ class Hooks {
 
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( 0, 1, null, $namespaces, $user );
+		$searcher = new Searcher( self::getConnection(), 0, 1, null, $namespaces, $user );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getNamespaces();
 		return false;
@@ -685,7 +686,7 @@ class Hooks {
 	 */
 	public static function prefixSearch( $namespaces, $search, $limit, &$results, $offset = 0 ) {
 		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( $offset, $limit, null, $namespaces, $user );
+		$searcher = new Searcher( self::getConnection(), $offset, $limit, null, $namespaces, $user );
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		} else {
@@ -739,7 +740,7 @@ class Hooks {
 
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
-		$searcher = new Searcher( 0, 50, null, array( $title->getNamespace() ), $user );
+		$searcher = new Searcher( self::getConnection(), 0, 50, null, array( $title->getNamespace() ), $user );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$searcher->updateNamespacesFromQuery( $term );
 		} else {
@@ -797,7 +798,8 @@ class Hooks {
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.
 		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
-			$oldIndexType = Connection::getIndexSuffixForNamespace( $title->getNamespace() );
+			$conn = self::getConnection();
+			$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
 			JobQueueGroup::singleton()->push( new Job\DeletePages( $title, array(
 				'indexType' => $oldIndexType,
 				'id' => $oldId
@@ -938,5 +940,10 @@ class Hooks {
 		}
 
 		return true;
+	}
+
+	private static function getConnection() {
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		return new Connection( $config );
 	}
 }

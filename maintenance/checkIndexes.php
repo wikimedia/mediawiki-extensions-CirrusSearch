@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch;
-use \Maintenance;
+
+use CirrusSearch\Maintenance\Maintenance;
 
 /**
  * Check that all Cirrus indexes report OK.
@@ -27,6 +28,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class CheckIndexes extends Maintenance {
 	private $errors = array();
@@ -172,14 +174,15 @@ class CheckIndexes extends Maintenance {
 
 	private function ensureClusterStateFetched() {
 		if ( $this->clusterState === null ) {
-			$this->clusterState = Connection::getClient()->request( '_cluster/state' )->getData();
+			$this->clusterState = $this->getConnection()->getClient()
+				->request( '_cluster/state' )->getData();
 		}
 	}
 	private function ensureCirrusInfoFetched() {
 		if ( $this->cirrusInfo === null ) {
 			$query = new \Elastica\Query();
 			$query->setSize( 5000 );
-			$res = Connection::getIndex( 'mw_cirrus_versions' )->getType( 'version' )
+			$res = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )
 				->getIndex()->search( $query );
 			$this->cirrusInfo = array();
 			foreach( $res as $r ) {

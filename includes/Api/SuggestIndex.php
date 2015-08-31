@@ -1,8 +1,6 @@
 <?php
 namespace CirrusSearch\Api;
 
-use ApiBase;
-
 /**
  * Update ElasticSearch suggestion index
  *

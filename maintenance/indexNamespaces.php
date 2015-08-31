@@ -2,9 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
-use \CirrusSearch\Connection;
-use \Elastica\Document;
-use \Elastica\Query\MatchAll;
+use Elastica\Document;
+use Elastica\Query\MatchAll;
 
 /**
  * Index all namespaces for quick lookup.
@@ -36,7 +35,7 @@ class IndexNamespaces extends Maintenance {
 	public function execute() {
 		global $wgContLang;
 
-		$type = Connection::getNamespaceType( wfWikiId() );
+		$type = $this->getConnection()->getNamespaceType( wfWikiId() );
 
 		$this->outputIndented( "Deleting namespaces..." );
 		$type->deleteByQuery( new MatchAll() );

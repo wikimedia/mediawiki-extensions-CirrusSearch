@@ -1,8 +1,7 @@
 <?php
 
-
 namespace CirrusSearch\Api;
-use ApiBase;
+
 use CirrusSearch\DataSender;
 
 /**
@@ -26,7 +25,8 @@ use CirrusSearch\DataSender;
  */
 class FreezeWritesToCluster extends ApiBase {
 	public function execute() {
-		$sender = new DataSender();
+		$sender = new DataSender( $this->getCirrusConnection() );
+
 		if ( $this->getParameter( 'thaw' ) ) {
 			$sender->thawIndexes();
 		} else {

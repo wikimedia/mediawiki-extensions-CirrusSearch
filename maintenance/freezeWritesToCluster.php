@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\DataSender;
-use \Maintenance;
 
 /**
  * Freeze/thaw writes to the elasticsearch cluster. This effects all wikis in a
@@ -30,6 +29,7 @@ if( $IP === false ) {
         $IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class FreezeWritesToCluster extends Maintenance {
 	public function __construct() {
@@ -40,7 +40,7 @@ class FreezeWritesToCluster extends Maintenance {
 	}
 
 	public function execute() {
-		$sender = new DataSender;
+		$sender = new DataSender( $this->getConnection() );
 		if ( $this->hasOption( 'thaw' ) ) {
 			$sender->thawIndexes();
 			$this->output( "Thawed any existing cluster-wide freeze\n\n" );

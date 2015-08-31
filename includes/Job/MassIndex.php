@@ -57,7 +57,7 @@ class MassIndex extends Job {
 			$pageData[] = WikiPage::factory( $title );
 		}
 		// Now invoke the updater!
-		$updater = new Updater();
+		$updater = new Updater( $this->connection );
 		$count = $updater->updatePages( $pageData, null, null, $this->params[ 'updateFlags' ] );
 		return $count >= 0;
 	}

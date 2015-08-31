@@ -1,8 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
+use CirrusSearch\Maintenance\Maintenance;
 use Elastica;
-use \Maintenance;
 
 /**
  * Returns zero status if a Cirrus index needs to be built for this wiki.  If
@@ -29,6 +30,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class CirrusIsSetup extends Maintenance {
 	public function __construct() {
@@ -40,7 +42,7 @@ class CirrusIsSetup extends Maintenance {
 		$end = microtime( true ) + 60;
 		while ( true ) {
 			try {
-				$health = new \Elastica\Cluster\Health ( Connection::getClient() );
+				$health = new \Elastica\Cluster\Health ( $this->getConnection()->getClient() );
 				$status = $health->getStatus();
 				$this->output( "Elasticsearch status:  $status\n" );
 				if ( $status === 'green' ) {
@@ -49,7 +51,7 @@ class CirrusIsSetup extends Maintenance {
 			} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 				if ( $e->getError() === CURLE_COULDNT_CONNECT ) {
 					$this->output( "Elasticsearch not up.\n" );
-					Connection::destroySingleton();
+					$this->getConnection()->destroyClient();
 				} else {
 					// The two exit code here makes puppet fail with an error.
 					$this->error( 'Connection error:  ' . $e->getMessage(), 2 );
@@ -61,9 +63,9 @@ class CirrusIsSetup extends Maintenance {
 			sleep( 1 );
 		}
 
-		foreach ( Connection::getAllIndexTypes() as $indexType ) {
+		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			try {
-				$count = Connection::getPageType( wfWikiId(), $indexType )->count();
+				$count = $this->getConnection()->getPageType( wfWikiId(), $indexType )->count();
 			} catch ( \Elastica\Exception\ResponseException $e ) {
 				$this->output( "$indexType doesn't exist.\n" );
 				$this->error( "true" );

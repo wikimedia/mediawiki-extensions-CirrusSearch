@@ -1,11 +1,12 @@
 <?php
 
 namespace CirrusSearch;
-use \CirrusSearch\Sanity\Checker;
-use \CirrusSearch\Sanity\NoopRemediator;
-use \CirrusSearch\Sanity\PrintingRemediator;
-use \CirrusSearch\Sanity\QueueingRemediator;
-use \Maintenance;
+
+use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Sanity\Checker;
+use CirrusSearch\Sanity\NoopRemediator;
+use CirrusSearch\Sanity\PrintingRemediator;
+use CirrusSearch\Sanity\QueueingRemediator;
 
 /**
  * Make sure the index for the wiki is sane.
@@ -31,6 +32,7 @@ if( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
+require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class Saneitize extends Maintenance {
 	private $fromId;
@@ -55,7 +57,7 @@ class Saneitize extends Maintenance {
 			$wgCirrusSearchClientSideUpdateTimeout;
 
 		// Set the timeout for maintenance actions
-		Connection::setTimeout( $wgCirrusSearchMaintenanceTimeout );
+		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 		$wgCirrusSearchClientSideUpdateTimeout = $wgCirrusSearchMaintenanceTimeout;
 
 		// Make sure we don't flood the pool counter
@@ -116,8 +118,8 @@ class Saneitize extends Maintenance {
 			$this->remediator = new PrintingRemediator( $this->remediator );
 		}
 		// This searcher searches all indexes for the current wiki.
-		$searcher = new Searcher( 0, 0, null, array(), null );
-		$this->checker = new Checker( $this->remediator, $searcher, $this->getOption( 'logSane' ) );
+		$searcher = new Searcher( $this->getConnection(), 0, 0, null, array(), null );
+		$this->checker = new Checker( $this->getConnection(), $this->remediator, $searcher, $this->getOption( 'logSane' ) );
 	}
 }
 

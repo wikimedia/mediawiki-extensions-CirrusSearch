@@ -1,9 +1,6 @@
 <?php
 
-
 namespace CirrusSearch\Api;
-use \ApiBase;
-use \CirrusSearch\Connection;
 
 /**
  * Dumps CirrusSearch mappings for easy viewing.
@@ -25,9 +22,10 @@ use \CirrusSearch\Connection;
  */
 class SettingsDump extends ApiBase {
 	public function execute() {
-		foreach( Connection::getAllIndexTypes() as $index ) {
+		$conn = $this->getCirrusConnection();
+		foreach( $conn->getAllIndexTypes() as $index ) {
 			$this->getResult()->addValue( array( $index, 'page' ), 'index',
-				Connection::getIndex( wfWikiId(), $index )->getSettings()->get() );
+				$conn->getIndex( wfWikiId(), $index )->getSettings()->get() );
 		}
 	}
 

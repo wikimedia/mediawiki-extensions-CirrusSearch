@@ -4,7 +4,8 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
-use \JobQueueGroup;
+use ConfigFactory;
+use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -38,13 +39,14 @@ class ElasticaWrite extends Job {
 		global $wgCirrusSearchDropDelayedJobsAfter;
 
 		if ( $this->params['clientSideTimeout'] ) {
-			Connection::setTimeout( $this->params['clientSideTimeout'] );
+			$this->connection->setTimeout( $this->params['clientSideTimeout'] );
 		}
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running {$this->params['method']} for " . json_encode( $this->params['arguments'] )
 		);
-		$sender = new DataSender();
+		$sender = new DataSender( $this->connection );
+
 		$status = call_user_func_array(
 			array( $sender, $this->params['method'] ),
 			$this->params['arguments']

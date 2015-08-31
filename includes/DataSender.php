@@ -29,8 +29,11 @@ use WikiPage;
 class DataSender extends ElasticsearchIntermediary {
 	const ALL_INDEXES_FROZEN_NAME = 'freeze_everything';
 
-	public function __construct() {
-		parent::__construct( null, null );
+	/**
+	 * @var Connection
+	 */
+	public function __construct( Connection $conn ) {
+		parent::__construct( $conn, null, null );
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 	}
@@ -49,7 +52,7 @@ class DataSender extends ElasticsearchIntermediary {
 		} elseif ( count( $indexes ) === 0 ) {
 			return;
 		} else {
-			$names = self::indexesToIndexNames( $indexes );
+			$names = $this->indexesToIndexNames( $indexes );
 		}
 
 		$this->log->info( "Freezing writes to: " . implode( ',', $names ) );
@@ -64,8 +67,8 @@ class DataSender extends ElasticsearchIntermediary {
 			$documents[] = $doc;
 		}
 
-		$client = Connection::getClient();
-		$type = Connection::getFrozenIndexNameType();
+		$client = $this->connection->getClient();
+		$type = $this->connection->getFrozenIndexNameType();
 		// Elasticsearch has a queue capacity of 50 so if $data
 		// contains 50 documents it could bump up against the max.  So
 		// we chunk it and do them sequentially.
@@ -94,12 +97,12 @@ class DataSender extends ElasticsearchIntermediary {
 		} elseif ( count( $indexes ) === 0 ) {
 			return;
 		} else {
-			$names = self::indexesToIndexNames( $indexes );
+			$names = $this->indexesToIndexNames( $indexes );
 		}
 
 		$this->log->info( "Thawing writes to " . implode( ',', $names ) );
 
-		Connection::getFrozenIndexNameType()->deleteIds( $names );
+		$this->connection->getFrozenIndexNameType()->deleteIds( $names );
 	}
 
 	/**
@@ -117,12 +120,12 @@ class DataSender extends ElasticsearchIntermediary {
 			return true;
 		}
 		if ( !$areIndexesFullyQualified ) {
-			$indexes = self::indexesToIndexNames( $indexes );
+			$indexes = $this->indexesToIndexNames( $indexes );
 		}
 
 		$ids = new \Elastica\Query\Ids( null, $indexes );
 		$ids->addId( self::ALL_INDEXES_FROZEN_NAME );
-		$resp = Connection::getFrozenIndexNameType()->search( $ids );
+		$resp = $this->connection->getFrozenIndexNameType()->search( $ids );
 
 		if ( $resp->count() === 0 ) {
 			$this->log->debug( "Allowed writes to " . implode( ',', $indexes ) );
@@ -154,12 +157,12 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$exception = null;
 		try {
-			$pageType = Connection::getPageType( wfWikiId(), $indexType );
+			$pageType = $this->connection->getPageType( wfWikiId(), $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
 			) );
-			$bulk = new \Elastica\Bulk( Connection::getClient() );
+			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			if ( $shardTimeout ) {
 				$bulk->setShardTimeout( $shardTimeout );
 			}
@@ -207,7 +210,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function sendDeletes( $ids, $indexType = null ) {
 		if ( $indexType === null ) {
-			$indexes = Connection::getAllIndexTypes();
+			$indexes = $this->connection->getAllIndexTypes();
 		} else {
 			$indexes = array( $indexType );
 		}
@@ -224,7 +227,7 @@ class DataSender extends ElasticsearchIntermediary {
 						'numIds' => $idCount,
 						'indexType' => $indexType,
 					) );
-					Connection::getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
+					$this->connection->getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -251,7 +254,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
-		$client = Connection::getClient();
+		$client = $this->connection->getClient();
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, 30 ) as $updates ) {
 			$bulk = new \Elastica\Bulk( $client );
@@ -353,11 +356,11 @@ class DataSender extends ElasticsearchIntermediary {
 		return $justDocumentMissing;
 	}
 
-	public static function indexesToIndexNames( array $indexes ) {
+	public function indexesToIndexNames( array $indexes ) {
 		$names = array();
 		$wikiId = wfWikiId();
 		foreach ( $indexes as $indexType ) {
-			$names[] = Connection::getIndexName( $wikiId, $indexType );
+			$names[] = $this->connection->getIndexName( $wikiId, $indexType );
 		}
 		return $names;
 	}

@@ -49,8 +49,8 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	private $updated = array();
 
-	public function __construct() {
-		parent::__construct( null, null );
+	public function __construct( Connection $conn ) {
+		parent::__construct( $conn, null, null );
 	}
 
 	/**
@@ -190,9 +190,9 @@ class Updater extends ElasticsearchIntermediary {
 		$titles = $this->pagesToTitles( $pages );
 		Job\OtherIndex::queueIfRequired( $titles );
 
-		$allData = array_fill_keys( Connection::getAllIndexTypes(), array() );
+		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
-			$suffix = Connection::getIndexSuffixForNamespace( $document->get( 'namespace' ) );
+			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) &&
 					$wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) {
 				$document = $this->docToSuperDetectNoopScript( $document );
@@ -306,11 +306,11 @@ reset( $titles ), array(
 				}
 
 				// Then let hooks have a go
-				MWHooks::run( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput ) );
+				MWHooks::run( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput, $this->connection ) );
 			}
 
 			if ( !$skipLinks ) {
-				MWHooks::run( 'CirrusSearchBuildDocumentLinks', array( $doc, $title ) );
+				MWHooks::run( 'CirrusSearchBuildDocumentLinks', array( $doc, $title, $this->connection) );
 			}
 
 			$documents[] = $doc;

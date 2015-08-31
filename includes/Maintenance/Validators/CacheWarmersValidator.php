@@ -74,6 +74,7 @@ class CacheWarmersValidator extends Validator {
 	private function buildWarmer( $search ) {
 		// This has a couple of compromises:
 		$searcher = new Searcher(
+			$this->maint->getConnection(),
 			0, 50,
 			// 0 offset 50 limit is the default for searching so we try it too.
 			null,

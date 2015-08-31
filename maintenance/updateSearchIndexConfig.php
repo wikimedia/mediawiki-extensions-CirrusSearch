@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use \CirrusSearch\Connection;
-
 /**
  * Update the search configuration on the search backend.
  *
@@ -44,7 +42,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		foreach ( Connection::getAllIndexTypes() as $indexType ) {
+		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			$this->outputIndented( "$indexType index...\n");
 			$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateOneSearchIndexConfig' );
 			$child->mOptions[ 'indexType' ] = $indexType;

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace CirrusSearch\Api;
-use \ApiBase;
 
 /**
  * Dumps CirrusSearch configuration for easy viewing.

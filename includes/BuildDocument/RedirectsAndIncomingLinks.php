@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
+
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use Elastica\Filter\Terms;
@@ -8,6 +9,7 @@ use Elastica\Search;
 use Elastica\Query\Filtered;
 use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
+use SplObjectStorage;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -37,11 +39,14 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private $linkCountMultiSearch = null;
 	private $linkCountClosures = null;
 
-	public static function buildDocument( $doc, $title ) {
+	public static function buildDocument( $doc, $title, Connection $conn ) {
 		if ( self::$externalLinks === null ) {
-			self::$externalLinks = new self();
+			self::$externalLinks = new SplObjectStorage;
 		}
-		self::$externalLinks->realBuildDocument( $doc, $title );
+		if ( !isset( self::$externalLinks[$conn] ) ) {
+			self::$externalLinks[$conn] = new self( $conn );
+		}
+		self::$externalLinks[$conn]->realBuildDocument( $doc, $title );
 		return true;
 	}
 
@@ -50,14 +55,16 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			// Nothing to do as we haven't set up any actions during the buildDocument phase
 			return;
 		}
-		self::$externalLinks->realFinishBatch( $pages );
+		foreach ( self::$externalLinks as $conn ) {
+			self::$externalLinks[$conn]->realFinishBatch( $pages );
+		}
 		self::$externalLinks = null;
 		return true;
 	}
 
-	protected function __construct() {
-		parent::__construct( null, null );
-		$this->linkCountMultiSearch = new \Elastica\Multi\Search( Connection::getClient() );
+	protected function __construct( Connection $conn ) {
+		parent::__construct( $conn, null, null );
+		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
 		$this->linkCountClosures = array();
 	}
 
@@ -132,7 +139,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private function buildCount( $titles ) {
 		$filter = new Terms( 'outgoing_link', $titles );
 		$filter->setCached( false ); // We're not going to be redoing this any time soon.
-		$type = Connection::getPageType( wfWikiId() );
+		$type = $this->connection->getPageType( wfWikiId() );
 		$search = new Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );

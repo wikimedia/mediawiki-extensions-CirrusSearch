@@ -93,10 +93,19 @@ class InterwikiSearcher extends Searcher {
 	 * @return string
 	 */
 	public static function getIndexForInterwiki( $interwiki ) {
-		// FIXME: eliminate this global, but $this->config is not accessible to statics...
-		global $wgCirrusSearchInterwikiSources;
-		return isset( $wgCirrusSearchInterwikiSources[ $interwiki ] ) ?
-			$wgCirrusSearchInterwikiSources[ $interwiki ] : null;
+		// These settings should be common for all wikis, so globals
+		// are _probably_ OK here.
+		global $wgCirrusSearchInterwikiSources, $wgCirrusSearchWikiToNameMap;
+
+		if ( isset( $wgCirrusSearchInterwikiSources[$interwiki] ) ) {
+			return $wgCirrusSearchInterwikiSources[$interwiki];
+		}
+
+		if ( isset( $wgCirrusSearchWikiToNameMap[$interwiki] ) ) {
+			return $wgCirrusSearchWikiToNameMap[$interwiki];
+		}
+
+		return null;
 	}
 
 	/**

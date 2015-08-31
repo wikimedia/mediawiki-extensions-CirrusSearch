@@ -701,6 +701,34 @@ $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default']
  */
 $wgCirrusSearchCompletionGeoContextSettings = $wgCirrusSearchCompletionGeoContextProfiles['default'];
 
+/**
+ * Enable alternative language search.
+ */
+$wgCirrusSearchEnableAltLanguage = false;
+/**
+ * Map of alternative languages and wikis, for search re-try.
+ * No defaults since we don't know how people call their other language wikis.
+ * Example:
+ * $wgCirrusSearchLanguageToWikiMap = array(
+ *  'ro' => 'ro',
+ *  'de' => 'de',
+ *  'ru' => 'ru',
+ * );
+ * The key is the language name, the value is interwiki link.
+ * You will also need to set:
+ * $wgCirrusSearchWikiToNameMap['ru'] = 'ruwiki';
+ * to link interwiki to the wiki DB name.
+ */
+$wgCirrusSearchLanguageToWikiMap = array();
+
+/**
+ * Map of interwiki link -> wiki name
+ * e.g. $wgCirrusSearchWikiToNameMap['ru'] = 'ruwiki';
+ * FIXME: we really should already have this information, also we're possibly
+ * duplicating $wgCirrusSearchInterwikiSources. This needs to be fixed.
+ */
+$wgCirrusSearchWikiToNameMap = array();
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

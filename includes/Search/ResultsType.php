@@ -213,12 +213,17 @@ class FullTextResultsType implements ResultsType {
 	const HIGHLIGHT_ALL = 63;
 
 	private $highlightingConfig;
+	/**
+	 * @var string interwiki prefix mappings
+	 */
+	private $prefix;
 
 	/**
 	 * @param bitmask $highlightingConfig see HIGHLIGHT_* consts
 	 */
-	public function __construct( $highlightingConfig ) {
+	public function __construct( $highlightingConfig, $interwiki = '' ) {
 		$this->highlightingConfig = $highlightingConfig;
+		$this->prefix = $interwiki;
 	}
 
 	public function getSourceFiltering() {
@@ -349,7 +354,7 @@ class FullTextResultsType implements ResultsType {
 
 	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
 			$result, $searchContainedSyntax ) {
-		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax );
+		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
 	private function addMatchedFields( $fields ) {

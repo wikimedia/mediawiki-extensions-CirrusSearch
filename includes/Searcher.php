@@ -1499,7 +1499,7 @@ GROOVY;
 
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
-			if ( $responseData[ 'timed_out' ] ) {
+			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"$description timed out and only returned partial results!",
 					$logContext

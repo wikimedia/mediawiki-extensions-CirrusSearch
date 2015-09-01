@@ -72,6 +72,49 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
+	public function testEraq() {
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
+		$score = 10;
+		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$doc = array(
+			'title' => 'Iraq',
+			'redirect' => array(
+				array( 'title' => "Eraq", 'namespace' => 0 ),
+				array( 'title' => "Irak", 'namespace' => 0 ),
+			),
+			'incoming_links' => $score
+		);
+
+		$expected = array(
+			array(
+				'suggest' => array(
+					'input' => array( 'Iraq', 'Irak' ),
+					'output' => '1:t:Iraq',
+					'weight' => $score
+				),
+				'suggest-stop' => array(
+					'input' => array( 'Iraq', 'Irak' ),
+					'output' => '1:t:Iraq',
+					'weight' => $score
+				)
+			),
+			array(
+				'suggest' => array(
+					'input' => array( 'Eraq' ),
+					'output' => '1:r',
+					'weight' => $redirScore
+				),
+				'suggest-stop' => array(
+					'input' => array( 'Eraq' ),
+					'output' => '1:r',
+					'weight' => $redirScore
+				)
+			)
+		);
+		$suggestions = $builder->build( 1, $doc );
+		$this->assertSame( $expected, $suggestions );
+	}
+
 	public function testUlm() {
 		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
 		$score = 10;

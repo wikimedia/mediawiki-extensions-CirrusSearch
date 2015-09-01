@@ -313,8 +313,8 @@ class ElasticsearchIntermediary {
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 		$logContext = $this->buildLogContext( $took );
-		if ( isset( $logContext['elasticTook'] ) ) {
-			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTook'];
+		if ( isset( $logContext['elasticTookMs'] ) ) {
+			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTookMs'];
 		}
 		if ( $wgCirrusSearchLogElasticRequests ) {
 			$logMessage = $this->buildLogMessage( $logContext );
@@ -341,6 +341,9 @@ class ElasticsearchIntermediary {
 		$message .= " against {index} took {tookMs} millis";
 		if ( isset( $context['elasticTookMs'] ) ) {
 			$message .= " and {elasticTookMs} Elasticsearch millis";
+			if ( isset( $context['elasticTook2PassMs'] ) ) {
+				$message .= " (with 2nd pass: {elasticTook2PassMs} ms)";
+			}
 		}
 		if ( isset( $context['hitsTotal'] ) ){
 			$message .= ". Found {hitsTotal} total results";

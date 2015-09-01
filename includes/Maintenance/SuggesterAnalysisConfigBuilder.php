@@ -43,16 +43,39 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 */
 	protected function defaults() {
 		$defaults = array(
+			'char_filter' => array(
+				'word_break_helper' => array(
+					'type' => 'mapping',
+					'mappings' => array(
+						'_=>\u0020', // a space for mw
+						',=>\u0020', // useful for "Lastname, Firstname"
+						'"=>\u0020', // " certainly phrase search?
+						'-=>\u0020', // useful for hyphenated names
+						"'=>\u0020",       // Useful for finding names
+						'\u2019=>\u0020',  // Unicode right single quote
+						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
+						// Not sure about ( and )...
+						// very useful to search for :
+						//   "john smith explo" instead of "john smith (expl"
+						// but annoying to search for "(C)"
+						// ')=>\u0020',
+						// '(=>\u0020',
+						// Others are the ones ignored by common search engines
+						':=>\u0020',
+						';=>\u0020',
+						'\\[=>\u0020',
+						'\\]=>\u0020',
+						'{=>\u0020',
+						'}=>\u0020',
+						'\\\\=>\u0020'
+					),
+				),
+			),
 			'filter' => array(
 				"stop_filter" => array(
 					"type" => "stop",
 					"stopwords" => "_none_",
 					"remove_trailing" => "true"
-				),
-				"stop_filter_search" => array(
-					"type" => "stop",
-					"stopwords" => "_none_",
-					"remove_trailing" => "false"
 				),
 				"asciifolding_preserve" => array(
 					"type" => "asciifolding",
@@ -79,12 +102,14 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					),
 					"tokenizer" => "standard"
 				),
+				// We do not remove stop words when searching,
+				// this leads to extremely weird behaviors while
+				// writing "to be or no to be"
 				"stop_analyzer_search" => array(
 					"type" => "custom",
 					"filter" => array(
 						"standard",
 						"lowercase",
-						"stop_filter_search",
 						"asciifolding_preserve",
 						"token_limit"
 					),
@@ -92,23 +117,21 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				),
 				"plain" => array(
 					"type" => "custom",
+					"char_filter" => array( 'word_break_helper' ),
 					"filter" => array(
-						"standard",
-						"icu_normalizer",
-						"asciifolding_preserve",
-						"token_limit"
+						"token_limit",
+						"lowercase"
 					),
-					"tokenizer" => "standard"
+					"tokenizer" => "whitespace"
 				),
 				"plain_search" => array(
 					"type" => "custom",
+					"char_filter" => array( 'word_break_helper' ),
 					"filter" => array(
-						"standard",
-						"icu_normalizer",
-						"asciifolding_preserve",
-						"token_limit"
+						"token_limit",
+						"lowercase"
 					),
-					"tokenizer" => "standard"
+					"tokenizer" => "whitespace"
 				)
 			),
 		);
@@ -118,9 +141,11 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	private function customize( $config ) {
 		$defaultStopSet = $this->getDefaultStopSet( $this->getLanguage() );
 		$config['filter']['stop_filter']['stopwords'] = $defaultStopSet;
-		$config['filter']['stop_filter_search']['stopwords'] = $defaultStopSet;
 		if ( $this->isIcuAvailable() ) {
-			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
+			foreach ( $config[ 'analyzer' ] as $k => &$analyzer ) {
+				if ( $k != "stop_analyzer" && $k != "stop_analyzer_search" ) {
+					continue;
+				}
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
 				}

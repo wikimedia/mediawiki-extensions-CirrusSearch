@@ -42,6 +42,13 @@ class SuggestBuilder {
 	const REDIRECT_DISCOUNT = 0.1;
 
 	/**
+	 * Number of common prefix chars a redirect must share with the title to be
+	 * promoted as a title suggestion.
+	 * This is useful not to promote Eraq as a title suggestion for Iraq
+	 */
+	const REDIRECT_COMMON_PREFIX_LEN = 1;
+
+	/**
 	 * @var SuggestScoringMethod the scoring function
 	 */
 	private $scoringMethod;
@@ -301,6 +308,25 @@ class SuggestBuilder {
 		$a = mb_strtolower( $a );
 		$b = mb_strtolower( $b );
 
+		$aLength = mb_strlen( $a );
+		$bLength = mb_strlen( $b );
+
+		$commonPrefixLen = self::REDIRECT_COMMON_PREFIX_LEN;
+
+		if ( $aLength < $commonPrefixLen ) {
+			$commonPrefixLen = $aLength;
+		}
+		if( $bLength < $commonPrefixLen ) {
+			$commonPrefixLen = $bLength;
+		}
+
+		// check the common prefix
+		if ( mb_substr( $a, 0, $commonPrefixLen ) != mb_substr( $b, 0, $commonPrefixLen ) ) {
+			return PHP_INT_MAX;
+		}
+
+		// TODO: switch to a ratio instead of raw distance would help to group
+		// longer strings
 		return levenshtein( $a, $b );
 	}
 }

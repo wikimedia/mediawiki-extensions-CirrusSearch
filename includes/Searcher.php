@@ -778,7 +778,7 @@ GROOVY;
 		$this->term = $text;
 
 		$suggest = array( 'text' => $text );
-		$queryLen = mb_strlen( $text );
+		$queryLen = mb_strlen( trim( $text ) ); // Avoid cheating with spaces
 		$profile = $this->config->get( 'CirrusSearchCompletionSettings' );
 
 		if ( $context != null && isset( $context['geo']['lat'] ) && isset( $context['geo']['lon'] )
@@ -790,6 +790,9 @@ GROOVY;
 
 		foreach ( $profile as $name => $config ) {
 			if ( $config['min_query_len'] > $queryLen ) {
+				continue;
+			}
+			if ( isset( $config['max_query_len'] ) && $queryLen > $config['max_query_len'] ) {
 				continue;
 			}
 			$field = $config['field'];
@@ -883,6 +886,7 @@ GROOVY;
 	 * @return Title[] List of suggested titles
 	 */
 	protected function postProcessSuggest( $query, \Elastica\Response $response, $profile, $limit = -1 ) {
+		$this->logContext['elasticTookMs'] = intval( $response->getQueryTime() * 1000 );
 		$data = $response->getData();
 		unset( $data['_shards'] );
 
@@ -958,6 +962,7 @@ GROOVY;
 					array( 'ids' => $missingText ),
 					array( '_source_include' => 'redirect' ) );
 				if ( $redirResponse->isOk() ) {
+					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
 					$docs = $redirResponse->getData();
 					$docs = $docs['docs'];
 					foreach ( $docs as $doc ) {

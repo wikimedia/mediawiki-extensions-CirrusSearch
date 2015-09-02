@@ -768,6 +768,11 @@ $wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
 $wgAPIModules['cirrus-suggest'] = 'CirrusSearch\Api\Suggest';
 
 /**
+ * Configs
+ */
+$wgConfigRegistry['CirrusSearch'] = 'CirrusSearch\SearchConfig::newFromGlobals';
+
+/**
  * Jenkins configuration required to get all the browser tests passing cleanly.
  * Note that it is only hooked for browser tests.
  */

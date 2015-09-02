@@ -133,11 +133,11 @@ class RunSearch extends Maintenance {
 			}
 
 		case 'prefix':
-			$searcher = new Searcher( 0, 10, null, null, $this->indexBaseName );
+			$searcher = new Searcher( 0, 10, null, null, null, $this->indexBaseName );
 			return $searcher->prefixSearch( $query );
 
 		case 'suggest':
-			$searcher = new Searcher( 0, 10, null, null, $this->indexBaseName );
+			$searcher = new Searcher( 0, 10, null, null, null, $this->indexBaseName );
 			$result = $searcher->suggest( $query );
 			if ( $result instanceof Status ) {
 				return $result;

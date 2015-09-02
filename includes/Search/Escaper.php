@@ -21,10 +21,18 @@ namespace CirrusSearch\Search;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Escaper {
+
 	private $language;
 
-	public function __construct( $language ) {
+	/**
+	 * Allow leading wildcards?
+	 * @var bool
+	 */
+	private $allowLeadingWildcard;
+
+	public function __construct( $language, $allowLeadingWildcard = true ) {
 		$this->language = $language;
+		$this->allowLeadingWildcard = $allowLeadingWildcard;
 	}
 
 	public function escapeQuotes( $text ) {
@@ -80,8 +88,6 @@ class Escaper {
 	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {
-		global $wgCirrusSearchAllowLeadingWildcard;
-
 		// Be careful when editing this method because the ordering of the replacements matters.
 
 		// Escape ~ that don't follow a term or a quote
@@ -90,7 +96,7 @@ class Escaper {
 
 		// When allow leading wildcard is disabled elasticsearch will report an
 		// error if these are unescaped. Escape ? and * that don't follow a term.
-		if ( !$wgCirrusSearchAllowLeadingWildcard ) {
+		if ( !$this->allowLeadingWildcard ) {
 			$string = preg_replace_callback( '/(?<![\w])([?*])/u',
 				'CirrusSearch\Search\Escaper::escapeBadSyntax', $string );
 		}
@@ -173,5 +179,12 @@ class Escaper {
 			$text = $text . '"';
 		}
 		return $text;
+	}
+
+	/**
+	 * Is leading wildcard allowed?
+	 */
+	public function getAllowLeadingWildcard() {
+		return $this->allowLeadingWildcard;
 	}
 }

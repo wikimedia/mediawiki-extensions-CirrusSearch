@@ -31,6 +31,7 @@
 	"apihelp-cirrus-suggest-description": "Sugerir terminaciones para el término de búsqueda.",
 	"apihelp-cirrus-suggest-param-text": "Término de búsqueda para el que proporcionar terminaciones.",
 	"apihelp-cirrus-suggest-param-limit": "Cuántos resultados se devolverán.",
+	"apihelp-cirrus-suggest-param-context": "Contexto al que limitar la búsqueda. Por ejemplo, <kbd>geo</kbd> o <kbd>category</kbd>.",
 	"cirrussearch-give-feedback": "Danos tu opinión",
 	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)"
 }

@@ -190,7 +190,7 @@ class Result extends SearchResult {
 			);
 			return null;
 		}
-		return Title::makeTitleSafe( $best[ 'namespace' ], $best[ 'title' ] );
+		return Title::makeTitleSafe( $best[ 'namespace' ], $best[ 'title' ], '', $this->interwiki );
 	}
 
 	private function findSectionTitle() {

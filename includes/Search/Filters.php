@@ -1,6 +1,8 @@
 <?php
 
 namespace CirrusSearch\Search;
+
+use CirrusSearch\Searcher;
 use Elastica;
 
 /**
@@ -107,10 +109,10 @@ class Filters {
 	 * Create a filter for insource: queries.  This was extracted from the big
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
-	 * @param \CirrusSearch\Search\Escaper $escaper
-	 * @param \CirrusSearch\Searcher $searcher
-	 * @param $value
-	 * @return a side-effecting function to update several references
+	 * @param Escaper $escaper
+	 * @param Searcher $searcher
+	 * @param string $value
+	 * @return callable a side-effecting function to update several references
 	 */
 	public static function insource( $escaper, $searcher, $value ) {
 		return self::insourceOrIntitle( $escaper, $searcher, $value, true, function () {
@@ -122,10 +124,10 @@ class Filters {
 	 * Create a filter for intitle: queries.  This was extracted from the big
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
-	 * @param \CirrusSearch\Search\Escaper $escaper
-	 * @param \CirrusSearch\Searcher $searcher
-	 * @param $value
-	 * @return a side-effecting function to update several references
+	 * @param Escaper $escaper
+	 * @param Searcher $searcher
+	 * @param string $value
+	 * @return callable a side-effecting function to update several references
 	 */
 	public static function intitle( $escaper, $searcher, $value ) {
 		return self::insourceOrIntitle( $escaper, $searcher, $value, false, function ( $queryString ) {
@@ -137,6 +139,14 @@ class Filters {
 		});
 	}
 
+	/**
+	 * @param Escaper $escaper
+	 * @param Searcher $searcher
+	 * @param string $value
+	 * @param bool $updateHighlightSourceRef
+	 * @param callable $fieldF
+	 * @return callable
+	 */
 	private static function insourceOrIntitle( $escaper, $searcher, $value, $updateHighlightSourceRef, $fieldF ) {
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );

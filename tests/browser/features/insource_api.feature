@@ -15,6 +15,22 @@ Feature: Searches with the insource filter
     Then Two Words is the first api search result
       But Template:Template Test is not in the api search results
 
+  Scenario: insource with quotes performs an exact phrase query
+    When I api search for insource:"catapult Template_Test anotherword"
+    Then Two Words is the first api search result
+
+  Scenario: insource with quotes performs an exact phrase query
+    When I api search for insource:"catapult anotherword"
+    Then Two Words is not in the api search results
+
+  Scenario: insource with quotes performs an exact phrase query even with escaped quotes
+    When I api search for insource:"\"catapult Template_Test anotherword\""
+    Then Two Words is the first api search result
+
+  Scenario: insource with quotes performs an exact phrase query even with escaped quotes
+    When I api search for insource:"\"catapult anotherword\""
+    Then Two Words is not in the api search results
+
   @wildcards
   Scenario: insource: can take a wildcard
     When I api search for all:insource:pickl*

@@ -130,11 +130,6 @@ class CirrusSearch extends SearchEngine {
 			$searcher->addSuggestPrefix( '~' );
 		}
 
-		if ( $this->lastNamespacePrefix ) {
-			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
-		} else {
-			$searcher->updateNamespacesFromQuery( $term );
-		}
 		// TODO remove this when we no longer have to support core versions without
 		// Ie946150c6796139201221dfa6f7750c210e97166
 		if ( method_exists( $this, 'getSort' ) ) {
@@ -154,6 +149,12 @@ class CirrusSearch extends SearchEngine {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) );
 			$status = $this->moreLikeThis( $term, $searcher, Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE );
 		} else {
+			# Namespace lookup should not be done for morelike special syntax (T111244)
+			if ( $this->lastNamespacePrefix ) {
+				$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
+			} else {
+				$searcher->updateNamespacesFromQuery( $term );
+			}
 			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
 			if ( $request ) {
 				if ( $request->getVal( 'cirrusSuppressSuggest' ) !== null ) {

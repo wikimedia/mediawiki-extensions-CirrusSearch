@@ -27,7 +27,7 @@
 	"apihelp-cirrus-suggest-description": "Suxerir formas de completar o termo de procura.",
 	"apihelp-cirrus-suggest-param-text": "Termo de procura para o que dar formas de completalo.",
 	"apihelp-cirrus-suggest-param-limit": "Número de resultados a devolver.",
-	"apihelp-cirrus-suggest-param-context": "Contexto de procura que limita a procura, p.ex. xeo ou categoría.",
+	"apihelp-cirrus-suggest-param-context": "Contexto de procura que limita a procura, p.ex. <kbd>xeo</kbd> ou <kbd>categoría</kbd>.",
 	"cirrussearch-give-feedback": "Deixenos saber a súa opinión",
 	"cirrussearch-query-too-long": "A solicitude de procura é máis longa que a lonxitude máxima permitida ($1 > $2)."
 }

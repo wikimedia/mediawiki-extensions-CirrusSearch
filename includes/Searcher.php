@@ -1990,7 +1990,7 @@ GROOVY;
 		if (
 			$requestLength > self::MAX_TEXT_SEARCH &&
 			// allow category intersections longer than the maximum
-			!preg_match( '/^incategory:[^ ]+$/', $search )
+			strpos( $search, 'incategory:' ) === false
 		) {
 			return Status::newFatal( 'cirrussearch-query-too-long', $this->language->formatNum( $requestLength ), $this->language->formatNum( self::MAX_TEXT_SEARCH ) );
 		}

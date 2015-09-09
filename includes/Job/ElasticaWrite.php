@@ -7,6 +7,7 @@ use CirrusSearch\DataSender;
 use ConfigFactory;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use Status;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an
@@ -28,50 +29,114 @@ use MediaWiki\Logger\LoggerFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ElasticaWrite extends Job {
+	/**
+	 * @param Title $title A mediawiki title related to the job
+	 * @param array $params
+	 */
 	public function __construct( $title, $params ) {
 		parent::__construct( $title, $params + array(
 			'createdAt' => time(),
 			'errorCount' => 0,
+			'cluster' => null,
 		) );
+	}
+
+	protected function decideClusters() {
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		if ( $this->params['cluster'] !== null ) {
+			// parent::__construct initialized the correct connection
+			$name = $this->connection->getClusterName();
+			return array( $name => $this->connection );
+		}
+
+		$clusters = $config->get( 'CirrusSearchClusters' );
+		$connections = array();
+		foreach ( array_keys( $clusters ) as $name ) {
+			$connections[$name] = Connection::getPool( $config, $name );
+		}
+		return $connections;
 	}
 
 	protected function doJob() {
 		global $wgCirrusSearchDropDelayedJobsAfter;
 
-		if ( $this->params['clientSideTimeout'] ) {
-			$this->connection->setTimeout( $this->params['clientSideTimeout'] );
-		}
-
+		$connections = $this->decideClusters();
+		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-			"Running {$this->params['method']} for " . json_encode( $this->params['arguments'] )
+			"Running {method} on cluster $clusterNames {diff}s after insertion",
+			array(
+				'method' => $this->params['method'],
+				'arguments' => $this->params['arguments'],
+				'diff' => time() - $this->params['createdAt'],
+				'clusters' => array_keys( $connections ),
+			)
 		);
-		$sender = new DataSender( $this->connection );
-
-		$status = call_user_func_array(
-			array( $sender, $this->params['method'] ),
-			$this->params['arguments']
-		);
-
-		if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
-			$diff = time() - $this->params['createdAt'];
-			if ( $diff > $wgCirrusSearchDropDelayedJobsAfter ) {
-				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
-					"Dropping delayed job for DataSender::{$this->params['method']} after waiting {$diff}s" );
-			} else {
-				$delay = self::backoffDelay( $this->params['errorCount'] );
-				LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-					"Requeueing job with frozen indexes to be run {$delay}s later");
-				++$this->params['errorCount'];
-				$this->setDelay( $delay );
-				JobQueueGroup::singleton()->push( $this );
+		foreach ( $connections as $clusterName => $conn ) {
+			if ( $this->params['clientSideTimeout'] ) {
+				$conn->setTimeout( $this->params['clientSideTimeout'] );
 			}
 
-		} elseif ( !$status->isOK() ) {
-			// Individual failures should have already logged specific errors,
-			// returning false here will requeue the job to be run at a later time.
-			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-				"Job reported failure, allowing job queue to requeue" );
-			return false;
+			$sender = new DataSender( $conn );
+			try {
+				$status = call_user_func_array(
+					array( $sender, $this->params['method'] ),
+					$this->params['arguments']
+				);
+			} catch ( \Exception $e ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					"Exception thrown while running DataSender::{method} in cluster {cluster}",
+					array(
+						'method' => $this->params['method'],
+						'cluster' => $clusterName,
+						'exception' => $e,
+					)
+				);
+				$status = Status::newFatal( 'cirrussearch-send-failure' );
+			}
+
+			if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
+				$diff = time() - $this->params['createdAt'];
+				if ( $diff > $wgCirrusSearchDropDelayedJobsAfter ) {
+					LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
+						"Dropping delayed job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
+						array(
+							'method' => $this->params['method'],
+							'cluster' => $clusterName,
+							'diff' => $diff,
+						));
+				} else {
+					$delay = self::backoffDelay( $this->params['errorCount'] );
+					LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+						"Requeueing job with frozen indexes to be run {$delay}s later");
+
+					$job = clone $this;
+					$job->params['errorCount']++;
+					$job->params['cluster'] = $clusterName;
+					$job->setDelay( $delay );
+					JobQueueGroup::singleton()->push( $job );
+				}
+
+			} elseif ( !$status->isOK() ) {
+				// Individual failures should have already logged specific errors,
+				if ( count( $connections ) === 1 ) {
+					// returning false here will requeue the job to be run at a later time.
+					LoggerFactory::getInstance( 'CirrusSearch' )->info(
+						"Job reported failure on cluster {cluster}, allowing job queue to requeue",
+						array( 'cluster' => $clusterName ) );
+					return false;
+				} else {
+					// with multiple connections we only want to re-queue the
+					// failed cluster. This does mean these jobs get one more
+					// attempt than usual, as this one doesn't count towards
+					// the threshold.
+					LoggerFactory::getInstance( 'CirrusSearch' )->info(
+						"Job reported failure on cluster {cluster}. Queueing single cluster job.",
+						array( 'cluster' => $clusterName ) );
+					$job = clone $this;
+					$job->params['cluster'] = $clusterName;
+					JobQueueGroup::singleton()->push( $job );
+				}
+			}
 		}
 
 		return true;

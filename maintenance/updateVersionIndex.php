@@ -31,7 +31,7 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class UpdateVersionIndex extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Update and check the CirrusSearch version index.";
+		$this->mDescription = "Update and check the CirrusSearch version index. Always operates on a single cluster.";
 		$this->addOption( 'show-all', 'Show all known versions' );
 		$this->addOption( 'update', 'Update the version index for this wiki' );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .

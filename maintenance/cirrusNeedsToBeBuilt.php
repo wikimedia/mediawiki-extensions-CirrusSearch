@@ -35,7 +35,7 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class CirrusIsSetup extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies." );
+		$this->addDescription( "Update the configuration or contents of all search indecies. Always operates on a single cluster." );
 	}
 
 	public function execute() {

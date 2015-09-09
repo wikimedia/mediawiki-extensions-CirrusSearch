@@ -39,7 +39,7 @@ class RunSearch extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( 'Run one or more searches against the cluster. ' .
+		$this->addDescription( 'Run one or more searches against the specified cluster. ' .
 			'search queries are read from stdin.' );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );

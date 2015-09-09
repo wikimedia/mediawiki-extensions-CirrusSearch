@@ -88,7 +88,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Create a new suggester index." );
+		$this->addDescription( "Create a new suggester index. Always operates on a single cluster." );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 		$this->addOption( 'indexChunkSize', 'Documents per shard to index in a batch.   ' .

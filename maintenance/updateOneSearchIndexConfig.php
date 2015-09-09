@@ -118,7 +118,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of one search index." );
+		$this->addDescription( "Update the configuration or contents of one search index. This always operates on a single cluster." );
 		$this->addOption( 'indexType', 'Index to update.  Either content or general.', true, true );
 		self::addSharedOptions( $this );
 	}

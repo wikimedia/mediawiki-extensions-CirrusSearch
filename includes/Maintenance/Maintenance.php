@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
+use CirrusSearch\SearchConfig;
 use ConfigFactory;
 
 /**
@@ -32,12 +33,33 @@ abstract class Maintenance extends \Maintenance {
 	 */
 	private $connection;
 
+	public function __construct() {
+		parent::__construct();
+		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
+	}
+
 	public function getConnection() {
 		if ( $this->connection === null ) {
 			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-			$this->connection = new Connection( $config );
+			$cluster = $this->decideCluster( $config );
+			$this->connection = Connection::getPool( $config, $cluster );
 		}
 		return $this->connection;
+	}
+
+	private function decideCluster( SearchConfig $config ) {
+		$cluster = $this->getOption( 'cluster', null );
+		if ( $cluster === null ) {
+			return null;
+		}
+		if ( $config->has( 'CirrusSearchServers' ) ) {
+			$this->error( 'Not configured for cluster operations.', 1 );
+		}
+		$hosts = $config->getElement( 'CirrusSearchClusters', $cluster );
+		if ( $hosts === null ) {
+			$this->error( 'Unknown cluster.', 1 );
+		}
+		return $cluster;
 	}
 
 	/**

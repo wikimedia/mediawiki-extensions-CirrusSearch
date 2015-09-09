@@ -39,8 +39,29 @@ $wgExtensionCredits['other'][] = array(
  * Configuration
  */
 
-// ElasticSearch servers
-$wgCirrusSearchServers = array( 'localhost' );
+// Default cluster for read operations. This is an array key
+// mapping into $wgCirrusSearchClusters. When running multiple
+// clusters this should be pointed to the closest cluster, and
+// can be pointed at an alternate cluster during downtime.
+//
+// As a form of backwards compatability the existence of
+// $wgCirrusSearchServers will override all cluster configuration.
+$wgCirrusSearchDefaultCluster = 'default';
+
+// Each key is the name of an elasticsearch cluster. The value is
+// a list of addresses to connect to. If no port is specified it
+// defaults to 9200.
+//
+// All writes will be processed in all configured clusters by the
+// ElasticaWrite job.
+//
+// $wgCirrusSearchClusters = array(
+// 	'eqiad' => array( 'es01.eqiad.wmnet', 'es02.eqiad.wmnet' ),
+// 	'codfw' => array( 'es01.codwf.wmnet', 'es02.codfw.wmnet' ),
+// );
+$wgCirrusSearchClusters = array(
+	'default' => array( 'localhost' ),
+);
 
 // How many times to attempt connecting to a given server
 // If you're behind LVS and everything looks like one server,

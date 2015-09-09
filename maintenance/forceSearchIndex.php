@@ -55,7 +55,8 @@ class ForceSearchIndex extends Maintenance {
 		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from id based indexing to "
 			. "date based indexing which uses less efficient queries and follows redirects.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
-			. "Note 2: Setting fromId and toId use the efficient query so those are ok.";
+			. "Note 2: Setting fromId and toId use the efficient query so those are ok.\n"
+			. "Note 3: Operates on all clusters unless --cluster is provided.\n";
 		$this->setBatchSize( 10 );
 		$this->addOption( 'from', 'Start date of reindex in YYYY-mm-ddTHH:mm:ssZ (exc.  Defaults to 0 epoch.', false, true );
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
@@ -200,10 +201,12 @@ class ForceSearchIndex extends Maintenance {
 							} while ( $this->pauseForJobs < $queueSize );
 						}
 					}
-					JobQueueGroup::singleton()->push( Job\MassIndex::build( $pages, $updateFlags ) );
+					JobQueueGroup::singleton()->push(
+						Job\MassIndex::build( $pages, $updateFlags, $this->getOption( 'cluster' ) )
+					);
 				} else {
 					// Update size with the actual number of updated documents.
-					$updater = new Updater( $this->getConnection() );
+					$updater = $this->createUpdater();
 					$size = $updater->updatePages( $pages, null, null, $updateFlags );
 				}
 			} else {
@@ -217,7 +220,7 @@ class ForceSearchIndex extends Maintenance {
 				$minUpdate = $lastDelete[ 'timestamp' ];
 				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
 				$minTitle = $lastDelete[ 'title' ]->getText();
-				$updater = new Updater( $this->getConnection() );
+				$updater = $this->createUpdater();
 				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
 			$completed += $size;
@@ -351,7 +354,7 @@ class ForceSearchIndex extends Maintenance {
 		$result = array();
 		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
 		// level so those are stored when it is freed.
-		$updater = new Updater( $this->getConnection() );
+		$updater = $this->createUpdater();
 
 		foreach ( $res as $row ) {
 			// No need to call Updater::traceRedirects here because we know this is a valid page because
@@ -473,6 +476,14 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private function getUpdatesInQueue() {
 		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize();
+	}
+
+	private function createUpdater() {
+		$flags = array();
+		if ( $this->hasOption( 'cluster' ) ) {
+			$flags[] = 'same-cluster';
+		}
+		return new Updater( $this->getConnection(), $flags );
 	}
 }
 

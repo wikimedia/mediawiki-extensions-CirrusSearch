@@ -69,7 +69,8 @@ class DumpIndex extends Maintenance {
 			"curl -s -XPOST localhost:9200/{index}/_bulk --data-binary @dump-file\n" .
 			"Note that you need to specify the index in the URL because the bulk commands do not " .
 			"contain the index name. Beware that the bulk import is not meant to import very large " .
-			"files, sweetspot seems to be between 2000 and 5000 documents (see examples below).".
+			"files, sweetspot seems to be between 2000 and 5000 documents (see examples below)." .
+			"\nThis always operates on a single cluster." .
 			"\n\nExamples :\n" .
 			" - Dump a general index :" .
 			"\n\tdumpIndex --indexType general\n" .

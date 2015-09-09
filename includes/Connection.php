@@ -65,15 +65,77 @@ class Connection extends ElasticaConnection {
 	 */
 	protected $config;
 
-	public function __construct( SearchConfig $config ) {
+	/**
+	 * @var string
+	 */
+	protected $cluster;
+
+	/**
+	 * @var Connection[]
+	 */
+	private static $pool = array();
+
+	public static function getPool( SearchConfig $config, $cluster = null ) {
+		if ( $cluster === null ) {
+			$cluster = $config->get( 'CirrusSearchDefaultCluster' );
+		}
+		$wiki = $config->getWikiId();
+		if ( isset( self::$pool[$wiki][$cluster] ) ) {
+			return self::$pool[$wiki][$cluster];
+		} else {
+			return new self( $config, $cluster );
+		}
+	}
+
+	/**
+	 * Pool state must be cleared when forking. Also useful
+	 * in tests.
+	 */
+	public static function clearPool() {
+		self:$pool = array();
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param string|null $cluster Name of cluster to use, or
+	 *  null for the default cluster.
+	 */
+	public function __construct( SearchConfig $config, $cluster = null ) {
 		$this->config = $config;
+		if ( $cluster === null ) {
+			$this->cluster = $config->get( 'CirrusSearchDefaultCluster' );
+		} else {
+			$this->cluster = $cluster;
+		}
+		// overwrites previous connection if it exists, but these
+		// seemed more centralized than having the entry points
+		// all call a static method unnecessarily.
+		self::$pool[$config->getWikiId()][$this->cluster] = $this;
+	}
+
+	public function __sleep() {
+		throw new \RuntimeException( 'Attempting to serialize ES connection' );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getClusterName() {
+		return $this->cluster;
 	}
 
 	/**
 	 * @return array(string)
 	 */
 	public function getServerList() {
-		return $this->config->get( 'CirrusSearchServers' );
+		// This clause provides backwards compatability with previous versions
+		// of CirrusSearch. Once this variable is removed cluster configuration
+		// will work as expected.
+		if ( $this->config->has( 'CirrusSearchServers' ) ) {
+			return $this->config->get( 'CirrusSearchServers' );
+		} else {
+			return $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
+		}
 	}
 
 	/**
@@ -211,5 +273,10 @@ class Connection extends ElasticaConnection {
 			$count += count( array_diff( $contentNamespaces, array_keys( $mappings ) ) );
 		}
 		return $count;
+	}
+
+	public function destroyClient() {
+		self::$pool = array();
+		return parent::destroyClient();
 	}
 }

@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch\Job;
-use \CirrusSearch\Updater;
 
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
@@ -35,7 +34,7 @@ class DeletePages extends Job {
 	protected function doJob() {
 		global $wgCirrusSearchClientSideUpdateTimeout;
 
-		$updater = new Updater( $this->connection );
+		$updater = $this->createUpdater();
 		$indexType = isset( $this->params[ 'indexType' ] ) ? $this->params[ 'indexType' ] : null;
 		return $updater->deletePages( array( $this->title ), array( $this->params[ 'id' ] ),
 			$wgCirrusSearchClientSideUpdateTimeout, $indexType );

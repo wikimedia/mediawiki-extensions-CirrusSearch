@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
+use CirrusSearch\Updater;
 use ConfigFactory;
 use Job as MWJob;
 use JobQueueGroup;
@@ -32,6 +33,7 @@ abstract class Job extends MWJob {
 	protected $connection;
 
 	public function __construct( $title, $params ) {
+		$params += array( 'cluster' => null );
 		// eg: DeletePages -> cirrusSearchDeletePages
 		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', get_class( $this ) );
 		parent::__construct( $jobName, $title, $params );
@@ -43,7 +45,10 @@ abstract class Job extends MWJob {
 		$this->removeDuplicates = true;
 
 		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-		$this->connection = new Connection( $config );
+		// When the 'cluster' parameter is provided the job must only operate on
+		// the specified cluster, take special care to ensure nested jobs get the
+		// correct cluster set.  When set to null all clusters should be written to.
+		$this->connection = Connection::getPool( $config, $params['cluster'] );
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -99,6 +104,20 @@ abstract class Job extends MWJob {
 			return;
 		}
 		$this->params[ 'jobReleaseTimestamp' ] = $newTime;
+	}
+
+	/**
+	 * Create an Updater instance that will respect cluster configuration
+	 * settings of this job.
+	 *
+	 * @return Updater
+	 */
+	protected function createUpdater() {
+		$flags = array();
+		if ( isset( $this->params['cluster'] ) ) {
+			$flags[] = 'same-cluster';
+		}
+		return new Updater( $this->connection, $flags );
 	}
 
 	/**

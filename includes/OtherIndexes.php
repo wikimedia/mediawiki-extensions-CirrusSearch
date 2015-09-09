@@ -29,10 +29,11 @@ class OtherIndexes extends Updater {
 	/**
 	 * Constructor
 	 * @param Connection $connection
+	 * @param array $flags
 	 * @param string $localSite
 	 */
-	public function __construct( Connection $connection, $localSite ) {
-		parent::__construct( $connection );
+	public function __construct( Connection $connection, array $flags, $localSite) {
+		parent::__construct( $connection, $flags );
 		$this->localSite = $localSite;
 	}
 
@@ -147,8 +148,8 @@ class OtherIndexes extends Updater {
 				'clientSideTimeout' => false,
 				'method' => 'sendOtherIndexUpdates',
 				'arguments' => array( $this->localSite, $indexName, $actions ),
+				'cluster' => $this->writeToClusterName,
 			) );
-			$job->setConnection( $this->connection );
 			$job->run();
 		}
 	}

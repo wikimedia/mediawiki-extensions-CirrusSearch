@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch\Job;
-use \CirrusSearch\Updater;
 
 /**
  * Updates link counts to page when it is newly linked or unlinked.
@@ -28,7 +27,7 @@ class IncomingLinkCount extends Job {
 
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
-		$updater = new Updater( $this->connection );
+		$updater = $this->createUpdater();
 		// We're intentionally throwing out whether or not this job succeeds.
 		// We're loggging it but we're not retrying.
 		$updater->updateLinkedArticles( array( $this->getTitle() ) );

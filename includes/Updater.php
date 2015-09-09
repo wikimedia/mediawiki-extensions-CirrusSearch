@@ -49,8 +49,16 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	private $updated = array();
 
-	public function __construct( Connection $conn ) {
+	/**
+	 * @var string|null Name of cluster to write to, or null if none
+	 */
+	protected $writeToClusterName;
+
+	public function __construct( Connection $conn, array $flags = array() ) {
 		parent::__construct( $conn, null, null );
+		if ( in_array( 'same-cluster', $flags ) ) {
+			$this->writeToClusterName = $this->connection->getClusterName();
+		}
 	}
 
 	/**
@@ -188,7 +196,7 @@ class Updater extends ElasticsearchIntermediary {
 		} );
 
 		$titles = $this->pagesToTitles( $pages );
-		Job\OtherIndex::queueIfRequired( $titles );
+		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 
 		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), array() );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
@@ -205,13 +213,16 @@ class Updater extends ElasticsearchIntermediary {
 			// the max.  So we chunk it and do them sequentially.
 			foreach( array_chunk( $data, 10 ) as $chunked ) {
 				$job = new Job\ElasticaWrite(
-reset( $titles ), array(
-					'clientSideTimeout' => $clientSideTimeout,
-					'method' => 'sendData',
-					'arguments' => array( $indexType, $chunked, $shardTimeout ),
-				) );
+					reset( $titles ),
+					array(
+						'clientSideTimeout' => $clientSideTimeout,
+						'method' => 'sendData',
+						'arguments' => array( $indexType, $chunked, $shardTimeout ),
+						'cluster' => $this->writeToClusterName,
+					)
+				);
 				// This job type will insert itself into the job queue
-				// with a delay if writes to ES are currently paused
+				// with a delay if writes to ES are currently unavailable
 				$job->run();
 			}
 			$count += count( $data );
@@ -233,12 +244,16 @@ reset( $titles ), array(
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
-		Job\OtherIndex::queueIfRequired( $titles );
-		$job = new Job\ElasticaWrite( reset( $titles ), array(
-			'clientSideTimeout' => $clientSideTimeout,
-			'method' => 'sendDeletes',
-			'arguments' => array( $ids, $indexType ),
-		) );
+		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
+		$job = new Job\ElasticaWrite(
+			reset( $titles ),
+			array(
+				'clientSideTimeout' => $clientSideTimeout,
+				'method' => 'sendDeletes',
+				'arguments' => array( $ids, $indexType ),
+				'cluster' => $this->writeToClusterName,
+			)
+		);
 		// This job type will insert itself into the job queue
 		// with a delay if writes to ES are currently paused
 		$job->run();

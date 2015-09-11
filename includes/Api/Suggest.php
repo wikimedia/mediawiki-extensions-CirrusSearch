@@ -2,6 +2,7 @@
 namespace CirrusSearch\Api;
 
 use CirrusSearch\Searcher;
+use CirrusSearch;
 use RequestContext;
 
 /**
@@ -27,47 +28,31 @@ class Suggest extends ApiBase {
 	public function execute() {
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
-		$conn = $this->getCirrusConnection();
-		$searcher = new Searcher( $conn, 0, $this->getParameter( 'limit' ), null, null, $user );
+		$cirrus = new CirrusSearch();
+		$cirrus->setNamespaces( array ( NS_MAIN ) );
 
+		$limit = $this->getParameter( 'limit' );
+		$cirrus->setLimitOffset( $limit );
 
 		$queryText = $this->getParameter( 'text' );
 		if ( !$queryText ) {
 			return;
 		}
 
-		$contextString = $this->getParameter( 'context' );
-		if( $contextString ) {
-			$context = @json_decode( $contextString, true );
-			/*
-			 * Validate the context, must be in the form of:
-			 * {
-			 *   name: { foo: bar, baz: qux }
-			 *   name2: { foo: bar, baz: qux }
-			 * }
-			 *
-			 */
-			if( !is_array( $context )) {
-				$context = null;
-			} else {
-				foreach( $context as $name => $ctx ) {
-					if ( !is_array( $ctx ) ) {
-						$this->dieUsage( "Bad context element $name", 'cirrus-badcontext' );
-					}
-				}
-			}
-		} else {
-			$context = null;
-		}
+		$suggestions = $cirrus->searchSuggestions( $queryText );
 
-		// TODO: add passing context here,
-		// see https://www.elastic.co/guide/en/elasticsearch/reference/current/suggester-context.html
-		$result = $searcher->suggest( $queryText, $context );
-		if($result->isOK()) {
-			$this->getResult()->addValue( null, 'suggest', $result->getValue() );
-		} else {
-			$this->getResult()->addValue( null, "error", $result->getErrorsArray());
-		}
+		// Use the same cache options used by OpenSearch
+		$this->getMain()->setCacheMaxAge( $this->getConfig()->get( 'SearchSuggestCacheExpiry' ) );
+		$this->getMain()->setCacheMode( 'public' );
+
+		$this->getResult()->addValue( null, 'suggest',
+			$suggestions->map( function( $sugg ) {
+				return array(
+					'text' => $sugg->getText(),
+					'url' => $sugg->getURL(),
+					'score' => $sugg->getScore(),
+				);
+			} ) );
 	}
 
 	public function getAllowedParams() {
@@ -76,12 +61,11 @@ class Suggest extends ApiBase {
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true,
 			),
-			'context' => array(
-				ApiBase::PARAM_TYPE => 'string',
-			),
 			'limit' => array(
-				ApiBase::PARAM_TYPE => 'integer',
+				ApiBase::PARAM_TYPE => 'limit',
 				ApiBase::PARAM_DFLT => 5,
+				ApiBase::PARAM_MAX => 20,
+				ApiBase::PARAM_MAX2 => 50,
 			),
 		);
 	}

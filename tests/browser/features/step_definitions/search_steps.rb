@@ -82,12 +82,12 @@ end
 Then(/^the API should produce list containing (.*)/) do |term|
   found = false
   @api_result["suggest"].each do |el|
-    found = true if el["title"] == term
+    found = true if el["text"] == term
   end
   found.should == true
 end
 Then(/^the API should produce list starting with (.*)/) do |term|
-  @api_result["suggest"][0]["title"].should == term
+  @api_result["suggest"][0]["text"].should == term
 end
 Then(/^the API should produce list of length (\d+)/) do |length|
   @api_result["suggest"].length.should == length.to_i

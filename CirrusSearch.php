@@ -745,6 +745,16 @@ $wgCirrusSearchUserTesting = array();
 $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default'];
 
 /**
+ * Use the completion suggester as the default implemention for searchSuggestions.
+ * You have to build the completion suggester index with the maintenance script
+ * updateSuggesterIndex.php. The suggester only supports queries to the main
+ * namespace. PrefixSearch will be used in all other cases.
+ *
+ * NOTE: This is an experimental API
+ */
+$wgCirrusSearchUseCompletionSuggester = false;
+
+/**
  * Profile for geo context search as you type suggestion (completion suggestion)
  * (see profiles/SuggestProfiles.php for more details.)
  *
@@ -868,6 +878,9 @@ $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
 $wgHooks[ 'ShowSearchHitTitle' ][] = 'CirrusSearch\Hooks::onShowSearchHitTitle';
+$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::getBetaFeaturePreferences';
+$wgHooks[ 'BeforePageDisplay' ][] = 'CirrusSearch\Hooks::onBeforePageDisplay';
+
 /**
  * i18n
  */
@@ -901,6 +914,24 @@ $wgAPIModules['cirrus-suggest'] = 'CirrusSearch\Api\Suggest';
  * Configs
  */
 $wgConfigRegistry['CirrusSearch'] = 'CirrusSearch\SearchConfig::newFromGlobals';
+
+/**
+ * Completion Suggester Beta Feature
+ */
+$wgResourceModules += array(
+	"ext.cirrus" => array(
+		'scripts' => array(
+			'resources/ext.cirrus.suggest.js'
+		),
+		'dependencies' => array(
+			'mediawiki.searchSuggest'
+		),
+		'styles' => array(),
+		'messages' => array(),
+		'remoteExtPath' => 'CirrusSearch',
+		'localBasePath' => __DIR__,
+	)
+);
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

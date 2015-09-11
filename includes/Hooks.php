@@ -655,7 +655,9 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
-		global $wgCirrusSearchEnableSearchLogging, $wgCirrusSearchFeedbackLink;
+		global $wgCirrusSearchEnableSearchLogging,
+			$wgCirrusSearchFeedbackLink,
+			$wgCirrusSearchUseCompletionSuggester;
 
 		$vars += array(
 			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
@@ -684,5 +686,46 @@ class Hooks {
 		if( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
 			$query["wprov"] = $wgCirrusSearchInterwikiProv;
 		}
+	}
+
+	/**
+	 * Activate Completion Suggester as a Beta Feature if available
+	 * @param User $user
+	 * @param array beta feature prefs
+	 * @return boolean
+	 */
+	public static function getBetaFeaturePreferences( User $user, &$pref ) {
+		global $wgCirrusSearchUseCompletionSuggester,
+			$wgExtensionAssetsPath;
+		if ( !$wgCirrusSearchUseCompletionSuggester ) {
+			return true;
+		}
+		$pref['cirrussearch-completionsuggester'] = array(
+			'label-message' => 'cirrussearch-completionsuggester-pref',
+			'desc-message' => 'cirrussearch-completionsuggester-desc',
+			'info-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester',
+			'discussion-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension_talk:CirrusSearch/CompletionSuggester',
+			'screenshot' => array(
+				'ltr' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-ltr.svg",
+				'rtl' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-ltr.svg",
+			)
+		);
+		return true;
+	}
+
+	/**
+	 * @param \OutputPage $out
+	 * @param \Skin $skin
+	 * @return boolean
+	 */
+	public static function onBeforePageDisplay( \OutputPage &$out, \Skin &$skin ) {
+		global $wgCirrusSearchUseCompletionSuggester;
+		if ( $wgCirrusSearchUseCompletionSuggester &&
+			class_exists( '\BetaFeatures' ) &&
+			\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' ) ) {
+			// We use the js extension only for testing the suggest-api
+			$out->addModules( array( 'ext.cirrus' ) );
+		}
+		return true;
 	}
 }

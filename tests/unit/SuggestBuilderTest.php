@@ -285,4 +285,47 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$coord = $builder->findPrimaryCoordinates( $doc );
 		$this->assertNull( $coord, "No coord if none is on earth." );
 	}
+
+	/**
+	 * @dataProvider provideOutputEncoder
+	 */
+	public function testOutputEncoder( $expected, $encoded ) {
+		$this->assertEquals( $expected, SuggestBuilder::decodeOutput( $encoded ) );
+	}
+
+	public function provideOutputEncoder() {
+		return array(
+			'title' => array(
+				array(
+					'id' => 123,
+					'type' => SuggestBuilder::TITLE_SUGGESTION,
+					'text' => 'This is a title',
+				),
+				SuggestBuilder::encodeTitleOutput( 123, "This is a title" ),
+			),
+			'redirect' => array(
+				array(
+					'id' => 123,
+					'type' => SuggestBuilder::REDIRECT_SUGGESTION,
+				),
+				SuggestBuilder::encodeRedirectOutput( 123 ),
+			),
+			'Garbage' => array(
+				null,
+				'Garbage',
+			),
+			'Broken title' => array(
+				null,
+				'123:t',
+			),
+			'Partial encoding' => array(
+				null,
+				'123:',
+			),
+			'null output' => array(
+				null,
+				null,
+			),
+		);
+	}
 }

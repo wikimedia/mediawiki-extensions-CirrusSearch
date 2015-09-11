@@ -42,6 +42,16 @@ class SuggestBuilder {
 	const REDIRECT_DISCOUNT = 0.1;
 
 	/**
+	 * Redirect suggestion type
+	 */
+	const REDIRECT_SUGGESTION = 'r';
+
+	/**
+	 * Title suggestion type
+	 */
+	const TITLE_SUGGESTION = 't';
+
+	/**
 	 * Number of common prefix chars a redirect must share with the title to be
 	 * promoted as a title suggestion.
 	 * This is useful not to promote Eraq as a title suggestion for Iraq
@@ -131,7 +141,7 @@ class SuggestBuilder {
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
-		$output = $id . ":t:" . $title['text'];
+		$output = self::encodeTitleOutput( $id, $title['text'] );
 		return $this->buildSuggestion( $output, $inputs, $location, $score );
 	}
 
@@ -328,5 +338,63 @@ class SuggestBuilder {
 		// TODO: switch to a ratio instead of raw distance would help to group
 		// longer strings
 		return levenshtein( $a, $b );
+	}
+
+	/**
+	 * Encode a title suggestion output
+	 * @param int $id pageId
+	 * @param string $title
+	 * @return string the encoded output
+	 */
+	public static function encodeTitleOutput( $id, $title ) {
+		return $id . ':'. self::TITLE_SUGGESTION . ':' . $title;
+	}
+
+	/**
+	 * Encode a redirect suggestion output
+	 * @param int $id pageId
+	 * @return string the encoded output
+	 */
+	public static function encodeRedirectOutput( $id ) {
+		return $id . ':' . self::REDIRECT_SUGGESTION;
+	}
+
+	/**
+	 * Decode a suggestion ouput.
+	 * The result is an array whith the following keys:
+	 * id: the pageId
+	 * type: either REDIRECT_SUGGESTION or TITLE_SUGGESTION
+	 * text (optional): if TITLE_SUGGESTION the Title text
+	 * @param string $output text value returned by a suggest query
+	 * @return array mixed or null if the output is not properly encoded
+	 */
+	public static function decodeOutput( $output ) {
+		if ( $output == null ) {
+			return null;
+		}
+		$parts = explode( ':', $output, 3 );
+		if ( sizeof ( $parts ) < 2 ) {
+			// Ignore broken output
+			return null;
+		}
+
+
+		switch( $parts[1] ) {
+		case self::REDIRECT_SUGGESTION:
+			return array(
+				'id' => $parts[0],
+				'type' => self::REDIRECT_SUGGESTION,
+			);
+		case self::TITLE_SUGGESTION:
+			if ( sizeof( $parts ) < 3 ) {
+				return null;
+			}
+			return array(
+				'id' => $parts[0],
+				'type' => self::TITLE_SUGGESTION,
+				'text' => $parts[2]
+			);
+		}
+		return null;
 	}
 }

@@ -28,17 +28,20 @@
 $wgCirrusSearchCompletionProfiles = array(
 	// Default profile
 	'default' => array(
+		// Defines the list of suggest queries to run in the same request.
 		// key is the name of the suggestion request
 		'plain' => array(
 			// Field to request
 			'field' => 'suggest',
-			// Fire the request only if the user query has min_query_len chars
+			// Fire the request only if the user query has min_query_len chars.
+			// See max_query_len to limit on max.
 			'min_query_len' => 0,
 			// Discount result scores for this request
 			// Useful to discount fuzzy request results
 			'discount' => 1.0,
-			// Fetch more result than the limit
-			// It's possible to have the same page multiple times.
+			// Fetch more results than the limit
+			// It's possible to have the same page multiple times
+			// (title and redirect suggestion).
 			// Requesting more than the limit helps to display the correct number
 			// of suggestions
 			'fetch_limit_factor' => 2,

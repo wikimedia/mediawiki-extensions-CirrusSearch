@@ -4,7 +4,10 @@ use CirrusSearch\Connection;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
+use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchSuggestion;
+use CirrusSearch\Search\SearchSuggestionSet;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -343,6 +346,153 @@ class CirrusSearch extends SearchEngine {
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
 		return $status->isOk() ? $status->getValue() : $status;
+	}
+
+	/**
+	 * This implementation will run the completion suggester if it's enabled and if the
+	 * query is for NS_MAIN. Fallback to SearchEngine default implemention otherwise.
+	 *
+	 * @param string $search the user query
+	 * @return SearchSuggestionSet the suggestions
+	 */
+	public function searchSuggestions( $search ) {
+		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$useCompletionSuggester = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
+
+		$context = RequestContext::getMain();
+		$request = $context->getRequest();
+
+		// Allow experimentation with query parameters
+		if ( $request && $request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
+			$useCompletionSuggester = true;
+		}
+
+		if ( !$useCompletionSuggester ) {
+			// Completion suggester is not enabled, fallback to
+			// default implementation
+			return $this->searchSuggestionsPrefixSearchFallback( $search );
+		}
+
+		// We use Title to extract namespace from a Title string
+		// We append a random letter behind just in case the search
+		// string ends with ':'.
+		$title = Title::newFromText( $search . "A" );
+		if ( $title->getNamespace() != NS_MAIN
+				|| count( $this->namespaces ) != 1
+				|| reset( $this->namespaces ) != NS_MAIN ) {
+			// Fallback to prefix search if we are not on content namespace
+			return $this->searchSuggestionsPrefixSearchFallback( $search );
+		}
+
+		$user = $context->getUser();
+		// offset is omitted, searchSuggestion does not support
+		// scrolling results
+		$suggester = new CompletionSuggester( $this->connection, $this->limit,
+			$config, $this->namespaces, $user, $this->indexBaseName );
+
+		$response = $suggester->suggest( $search );
+		$suggestions = SearchSuggestionSet::emptySuggestionSet();
+		if ( $response->isOK() ) {
+			// Errors will be logged, let's try the exact db match
+			$suggestions = $response->getValue();
+		}
+
+		// if the content language has variants, try to retrieve fallback results
+		$fallbackLimit = $this->limit - $suggestions->getSize();;
+
+		// Copied from PrefixSearch
+		// @todo: verify if this is really needed, if variants are
+		// close enough fuzzy suggestions could already cover this
+		// usecase.
+		if ( $fallbackLimit > 0 ) {
+			global $wgContLang;
+
+			$fallbackSearches = $wgContLang->autoConvertToAllVariants( $search );
+			$fallbackSearches = array_diff( array_unique( $fallbackSearches ), array( $search ) );
+
+			$suggester->setLimit( $fallbackLimit );
+			foreach ( $fallbackSearches as $fbs ) {
+				$fallbackResponse = $suggester->suggest( $fbs );
+				if ( !$fallbackResponse->isOK() ) {
+					continue;
+				}
+				$pageIds = $suggestions->map( function( $sugg ) {
+					return $sugg->getSuggestedTitleID();
+				});
+
+				$fallbackSuggestions = $fallbackResponse->getValue();
+				// Same page can be returned (fuzzy suggestions)
+				foreach( $fallbackSuggestions->getSuggestions() as $s ) {
+					if ( !in_array ( $s->getSuggestedTitleID(), $pageIds ) ) {
+						$suggestions->addSuggestion( $s );
+					}
+				}
+
+				$fallbackLimit = $this->limit - $suggestions->getSize();
+
+				if ( $fallbackLimit <= 0 ) {
+					break;
+				}
+			}
+		}
+
+		// preload the titles with LinkBatch
+		$titles = $suggestions->map( function( $sugg ) { return $sugg->getSuggestedTitle(); } );
+		$lb = new LinkBatch( $titles );
+		$lb->setCaller( __METHOD__ );
+		$lb->execute();
+
+		$results = $suggestions->map( function( $sugg ) {
+			return $sugg->getSuggestedTitle()->getPrefixedText();
+		});
+
+		// now we can trim
+		$search = trim( $search );
+
+		// Rescore results with an exact title match
+		$rescorer = new SearchExactMatchRescorer();
+		$rescoredResults = $rescorer->rescore( $search, $this->namespaces, $results, $this->limit );
+
+		if( count( $rescoredResults ) > 0 ) {
+			if ( !in_array( reset( $rescoredResults ), $results ) ) {
+				// If the first result is not in the previous array it
+				// means that we found a new exact match
+				$exactTitle = Title::newFromText( reset( $rescoredResults ) );
+				$exactMatch = new SearchSuggestion();
+				$exactMatch->setText( $exactTitle->getPrefixedText() );
+				$exactMatch->setSuggestedTitle( $exactTitle, true );
+				$exactMatch->setScore( 0 );
+				$suggestions->insertBestSuggestion( $exactMatch );
+				$suggestions->shrink( $this->limit );
+			} else {
+				// if the first result is not the same we need to rescore
+				if( reset( $rescoredResults ) != reset( $results ) ) {
+					$rescoredIndex = array_search( reset( $rescoredResults ), $results );
+					$suggestions->rescore( $rescoredIndex );
+				}
+			}
+		}
+
+		return $suggestions;
+	}
+
+	/**
+	 * PrefixSearch fallback method to searchSuggestion.
+	 * This is needed when:
+	 * - the completion suggester is not enabled
+	 * - the query is for a namespace not covered by the completion suggester
+	 * - the Special: namespace
+	 *
+	 * @param string $search the user query
+	 * @return SearchSuggestionSet the suggestions
+	 */
+	private function searchSuggestionsPrefixSearchFallback( $search ) {
+		$searcher = new TitlePrefixSearch;
+		$titles = $searcher->searchWithVariants( $search, $this->limit, $this->namespaces );
+		if ( !$titles ) {
+			return SearchSuggestionSet::emptySuggestionSet();
+		}
+		return SearchSuggestionSet::fromTitles( $titles );
 	}
 
 	private function moreLikeThis( $term, $searcher, $options ) {

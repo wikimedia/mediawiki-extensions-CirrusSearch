@@ -639,6 +639,11 @@ Before("@suggest") do
         And a page named Max Eisenhardt exists with contents #REDIRECT [[Magneto]]
         And a page named Eisenhardt, Max exists with contents #REDIRECT [[Magneto]]
         And a page named Magnetu exists with contents #REDIRECT [[Magneto]]
+        And a page named Ice exists with contents It's cold.
+        And a page named Iceman exists with contents Iceman (Robert "Bobby" Drake) is a fictional superhero appearing in American comic books published by Marvel Comics and is...
+        And a page named Ice Man (Marvel Comics) exists with contents #REDIRECT [[Iceman]]
+        And a page named Ice-Man (comics books) exists with contents #REDIRECT [[Iceman]]
+        And a page named Ultimate Iceman exists with contents #REDIRECT [[Iceman]]
         And I reindex suggestions
     )
     suggest = true

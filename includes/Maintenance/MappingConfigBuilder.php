@@ -250,13 +250,13 @@ class MappingConfigBuilder {
 
 	/**
 	 * Build a string field that does standard analysis for the language.
-	 * @param array|null $extra Extra analyzers for this field beyond the basic text and plain.
 	 * @param int $options Field options:
-	 *   ENABLE_NORMS: Gnable norms on the field.  Good for text you search against but bad for array fields and useless
+	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but bad for array fields and useless
 	 *     for fields that don't get involved in the score.
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
 	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
 	 *     strings or fields with many values.
+	 * @param array $extra Extra analyzers for this field beyond the basic text and plain.
 	 * @return array definition of the field
 	 */
 	public function buildStringField( $options, $extra = array() ) {

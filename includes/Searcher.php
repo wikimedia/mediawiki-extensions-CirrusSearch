@@ -20,6 +20,7 @@ use Title;
 use UsageException;
 use User;
 use Elastica\Request;
+use Elastica\Exception\ResponseException;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -2039,4 +2040,43 @@ GROOVY;
 		}
 		return strtr( $input, $pairs );
 	}
+
+	/**
+	 * Try to detect language using langdetect plugin
+	 * See: https://github.com/jprante/elasticsearch-langdetect
+	 * @param string $text
+	 * @return string|NULL Language name or null
+	 */
+	public static function detectLanguage( $text ) {
+		$client = Connection::getClient();
+		try {
+			$response = $client->request( "_langdetect", Request::POST, $text );
+		} catch ( ResponseException $e ) {
+			// This happens when language detection is not configured
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Could not connect to language detector: {exception}",
+				array( "exception" => $e->getMessage() )
+			);
+			return null;
+		}
+		if ( $response->isOk() ) {
+			$value = $response->getData();
+			if ( $value && !empty( $value['languages'] ) ) {
+				$langs = $value['languages'];
+				if ( count( $langs ) == 1 ) {
+					// TODO: add minimal threshold
+					return $langs[0]['language'];
+				}
+				// FIXME: here I'm just winging it, should be something
+				// that makes sense for multiple languages
+				if ( count( $langs ) == 2) {
+					if( $langs[0]['probability'] > 2*$langs[1]['probability'] ) {
+						return $langs[0]['language'];
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 }

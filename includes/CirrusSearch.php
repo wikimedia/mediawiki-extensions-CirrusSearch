@@ -4,6 +4,8 @@ use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\InterwikiResultsType;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -72,26 +74,81 @@ class CirrusSearch extends SearchEngine {
 	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
-		$matches = $this->searchTextReal( $term );
+		$config = null;
+		$request = RequestContext::getMain()->getRequest();
+		if ( $request && $request->getVal( 'cirrusLang' ) ) {
+			$config = new SearchConfig( $request->getVal( 'cirrusLang' ) );
+		}
+		$matches = $this->searchTextReal( $term, $config );
 		if (!$matches instanceof ResultSet) {
 			return $matches;
 		}
+
 		if ( $this->isFeatureEnabled( 'rewrite' ) && $matches->isQueryRewriteAllowed() ) {
-			$matches = $this->searchTextSecondTry( $matches );
+			$matches = $this->searchTextSecondTry( $term, $matches );
 		}
 		return $matches;
+	}
+
+	/**
+	 * Check whether we want to try another language.
+	 * @param string $term Search term
+	 * @return array|null Array of (interwiki, dbname) for another wiki to try, or null
+	 */
+	private function hasSecondaryLanguage( $term ) {
+		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'] ) ||
+				empty( $GLOBALS['wgCirrusSearchWikiToNameMap'] ) ) {
+			// map's empty - no need to bother with detection
+			return null;
+		}
+
+		// check whether we have second language functionality enabled
+		if ( !$GLOBALS['wgCirrusSearchEnableAltLanguage'] ) {
+			return null;
+		}
+
+		$lang = Searcher::detectLanguage( $term );
+		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang] ) ) {
+			return null;
+		}
+		$interwiki = $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang];
+
+		if ( empty( $GLOBALS['wgCirrusSearchWikiToNameMap'][$interwiki] ) ) {
+			return null;
+		}
+		$interWikiId = $GLOBALS['wgCirrusSearchWikiToNameMap'][$interwiki];
+		if ( $interWikiId == wfWikiID() ) {
+			// we're back to the same wiki, no use to try again
+			return null;
+		}
+
+		return array( $interwiki, $interWikiId );
 	}
 
 	private function isFeatureEnabled( $feature ) {
 		return isset( $this->features[$feature] ) && $this->features[$feature];
 	}
 
-	private function searchTextSecondTry( ResultSet $zeroResult ) {
+	private function searchTextSecondTry( $term, ResultSet $zeroResult ) {
+		// TODO: figure out who goes first - language or suggestion?
 		if ( $zeroResult->hasSuggestion() ) {
 			$rewritten = $zeroResult->getSuggestionQuery();
 			$rewrittenSnippet = $zeroResult->getSuggestionSnippet();
 			$this->showSuggestion = false;
 		} else {
+			$altWiki = $this->hasSecondaryLanguage( $term );
+			if ( $altWiki ) {
+				try {
+					$config = new SearchConfig( $altWiki[0], $altWiki[1] );
+				} catch ( MWException $e ) {
+					wfDebug( "Failed to get $altWiki config: {$e->getMessage()}");
+					$config = null;
+				}
+				if ( $config ) {
+					$matches = $this->searchTextReal( $term, $config );
+					return $matches;
+				}
+			}
 			// Don't have any other options yet.
 			return $zeroResult;
 		}
@@ -108,7 +165,7 @@ class CirrusSearch extends SearchEngine {
 		}
 	}
 
-	private function searchTextReal( $term ) {
+	private function searchTextReal( $term, SearchConfig $config = null ) {
 		global $wgCirrusSearchInterwikiSources;
 
 		// Convert the unicode character 'idiographic whitespace' into standard
@@ -121,8 +178,14 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		$context = RequestContext::getMain();
+		$request = $context->getRequest();
 		$user = $context->getUser();
-		$searcher = new Searcher( $this->offset, $this->limit, null, $this->namespaces, $user, $this->indexBaseName );
+
+		if ( $config ) {
+			$this->indexBaseName = $config->getWikiId();
+		}
+
+		$searcher = new Searcher( $this->offset, $this->limit, $config, $this->namespaces, $user, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
@@ -136,7 +199,6 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setSort( $this->getSort() );
 		}
 
-		$request = $context->getRequest();
 		$dumpQuery = $request && $request->getVal( 'cirrusDumpQuery' ) !== null;
 		$searcher->setReturnQuery( $dumpQuery );
 		$dumpResult = $request && $request->getVal( 'cirrusDumpResult' ) !== null;
@@ -179,7 +241,8 @@ class CirrusSearch extends SearchEngine {
 			if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
 				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;
 			}
-			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig ) );
+
+			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig, $config ? $config->getWikiCode() : '') );
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
 		if ( $dumpQuery || $dumpResult ) {

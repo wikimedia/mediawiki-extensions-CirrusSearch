@@ -24,15 +24,22 @@ class SearchConfig implements \Config {
 	private $prefix = '';
 
 	/**
-	 * Create new search config
-	 * @param string $overrideWiki Non-default wiki name for override settings
-	 * @param string $overrideSuffix The suffix of the non-default wiki
+	 * Interwiki name for this wiki
+	 * @var string
 	 */
-	public function __construct( $overrideWiki = null, $overrideSuffix = null ) {
-		if ( $overrideWiki ) {
-			$this->wikiId = $overrideSuffix ? "$overrideWiki-$overrideSuffix" : $overrideWiki;
+	private $interwiki;
+
+	/**
+	 * Create new search config for current or other wiki.
+	 * @param string $overrideWiki Interwiki link name for wiki
+	 * @param string $overrideName DB name for the wiki
+	 */
+	public function __construct( $overrideWiki = null, $overrideName = null ) {
+		$this->interwiki = $overrideWiki;
+		if ( $overrideWiki && $overrideName ) {
+			$this->wikiId = $overrideName;
 			if ( $this->wikiId != wfWikiID() ) {
-				$this->source = new \HashConfig( $this->getConfigVars( $overrideWiki, 'wgCirrus' ) );
+				$this->source = new \HashConfig( $this->getConfigVars( $overrideName, 'wgCirrus' ) );
 				$this->prefix = 'wg';
 				// Re-create language object
 				$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
@@ -61,6 +68,8 @@ class SearchConfig implements \Config {
 				}
 		);
 		$cirrusVars[] = 'wgLanguageCode';
+		// Hack to work around https://phabricator.wikimedia.org/T111441
+		putenv( 'REQUEST_METHOD' );
 		return $wgConf->getConfig( $wiki, $cirrusVars );
 	}
 
@@ -99,6 +108,14 @@ class SearchConfig implements \Config {
 		// I suppose using $wgLang would've been more evil than this, but
 		// only marginally so. Find some real context to use here.
 		return RequestContext::getMain()->getLanguage()->getCode();
+	}
+
+	/**
+	 * Get wiki's interwiki code
+	 * @return string
+	 */
+	public function getWikiCode() {
+		return $this->interwiki;
 	}
 
 	/**

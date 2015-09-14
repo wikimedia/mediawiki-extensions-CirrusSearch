@@ -84,7 +84,8 @@ class Hooks {
 			$wgCirrusSearchAllFieldsForRescore,
 			$wgCirrusSearchPhraseSlop,
 			$wgCirrusSearchLogElasticRequests,
-			$wgCirrusSearchLogElasticRequestsSecret;
+			$wgCirrusSearchLogElasticRequestsSecret,
+			$wgCirrusSearchEnableAltLanguage;
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
@@ -113,6 +114,7 @@ class Hooks {
 			self::overrideMoreLikeThisOptions( $request );
 			self::overridePhraseSuggesterOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
+			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
 		}
 	}
 

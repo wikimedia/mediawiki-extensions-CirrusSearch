@@ -59,9 +59,17 @@ class ResultSet extends SearchResultSet {
 	 * @return bool True when rewriting this query is allowed
 	 */
 	public function isQueryRewriteAllowed() {
-		return $this->numRows() === 0 &&
-			count( $this->interwikiResults ) === 0 &&
-			!$this->searchContainedSyntax();
+		if ( $this->numRows() > 0 || $this->searchContainedSyntax() ) {
+			return false;
+		}
+		if ( $this->interwikiResults !== null ) {
+			foreach ( $this->interwikiResults as $resultSet ) {
+				if ( $resultSet->numRows() > 0 ) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private function findSuggestion() {

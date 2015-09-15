@@ -20,6 +20,22 @@ Feature: Searches with the intitle filter
     Then Amazing Catapult is the first api search result
       And Two Words is not in the api search results
 
+  Scenario: intitle: with quoted titles performs an exact phrase search
+    When I api search for intitle:"links to catapult"
+    Then Links To Catapult is the first api search result
+
+  Scenario: intitle: with quoted titles performs an exact phrase search
+    When I api search for intitle:"links catapult"
+    Then Links To Catapult is not in the api search results
+
+  Scenario: intitle: with quoted titles performs an exact phrase search even with escaped quotes
+    When I api search for intitle:"\"links to catapult\""
+    Then Links To Catapult is the first api search result
+
+  Scenario: intitle: with quoted titles performs an exact phrase search even with escaped quote
+    When I api search for intitle:"\"links catapult\""
+    Then Links To Catapult is not in the api search results
+
   Scenario: intitle: only includes pages with the title
     When I api search for intitle:catapult
     Then Catapult is in the api search results

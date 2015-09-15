@@ -518,10 +518,11 @@ GROOVY;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?:"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
+			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
 			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				$key = $matches['key'];
+				$quotedValue = $matches['value'];
 				$value = $matches['quoted'] !== ''
 					? str_replace( '\"', '"', $matches['quoted'] )
 					: $matches['unquoted'];
@@ -573,13 +574,13 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
-						$updateReferences = Filters::insource( $escaper, $searcher, $value );
+						$updateReferences = Filters::insource( $escaper, $searcher, $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return '';
 					case 'intitle':
-						$updateReferences = Filters::intitle( $escaper, $searcher, $value );
+						$updateReferences = Filters::intitle( $escaper, $searcher, $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
-						return $keepText ? "$value " : '';
+						return $keepText ? "$quotedValue " : '';
 					default:
 						return $matches[0];
 				}

@@ -828,8 +828,8 @@ class Hooks {
 
 	/**
 	 * Pick $num random entries from $array.
-	 * @var $array array array to pick from
-	 * @var $num int number of entries to pick
+	 * @param array $array Array to pick from
+	 * @param int $num Number of entries to pick
 	 * @return array of entries from $array
 	 */
 	private static function pickFromArray( $array, $num ) {

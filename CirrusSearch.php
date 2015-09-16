@@ -23,6 +23,7 @@
 
 require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
+require_once __DIR__ . "/profiles/CommonTermsQueryProfiles.php";
 
 $wgExtensionCredits['other'][] = array(
 	'path'           => __FILE__,
@@ -728,6 +729,21 @@ $wgCirrusSearchLanguageToWikiMap = array();
  * duplicating $wgCirrusSearchInterwikiSources. This needs to be fixed.
  */
 $wgCirrusSearchWikiToNameMap = array();
+
+/**
+ * Enable common terms query.
+ * This query is enabled only if the query string does not contain any special
+ * syntax and the number of terms is greater than one defined in the profile
+ * NOTE: CommonTermsQuery can be more restrictive in some cases if the all
+ * field is disabled (see $wgCirrusSearchAllFields).
+ */
+$wgCirrusSearchUseCommonTermsQuery = false;
+
+/**
+ * Set the Common terms query profile to default.
+ * see profiles/CommonTermsQueryProfiles.php for more info.
+ */
+$wgCirrusSearchCommonTermsQueryProfile = $wgCirrusSearchCommonTermsQueryProfiles['default'];
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

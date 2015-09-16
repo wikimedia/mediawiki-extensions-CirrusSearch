@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\Searcher;
 use Elastica;
 
 /**
@@ -110,12 +109,12 @@ class Filters {
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
 	 * @param Escaper $escaper
-	 * @param Searcher $searcher
+	 * @param SearchContext $context
 	 * @param string $value
 	 * @return callable a side-effecting function to update several references
 	 */
-	public static function insource( $escaper, $searcher, $value ) {
-		return self::insourceOrIntitle( $escaper, $searcher, $value, true, function () {
+	public static function insource( $escaper, $context, $value ) {
+		return self::insourceOrIntitle( $escaper, $context, $value, true, function () {
 			return 'source_text.plain';
 		});
 	}
@@ -125,12 +124,12 @@ class Filters {
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
 	 * @param Escaper $escaper
-	 * @param Searcher $searcher
+	 * @param SearchContext $context
 	 * @param string $value
 	 * @return callable a side-effecting function to update several references
 	 */
-	public static function intitle( $escaper, $searcher, $value ) {
-		return self::insourceOrIntitle( $escaper, $searcher, $value, false, function ( $queryString ) {
+	public static function intitle( $escaper, $context, $value ) {
+		return self::insourceOrIntitle( $escaper, $context, $value, false, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return 'title.plain';
 			} else {
@@ -141,13 +140,13 @@ class Filters {
 
 	/**
 	 * @param Escaper $escaper
-	 * @param Searcher $searcher
+	 * @param SearchContext $context
 	 * @param string $value
 	 * @param bool $updateHighlightSourceRef
 	 * @param callable $fieldF
 	 * @return callable
 	 */
-	private static function insourceOrIntitle( $escaper, $searcher, $value, $updateHighlightSourceRef, $fieldF ) {
+	private static function insourceOrIntitle( $escaper, $context, $value, $updateHighlightSourceRef, $fieldF ) {
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
@@ -157,7 +156,7 @@ class Filters {
 		$query->setAllowLeadingWildcard( $escaper->getAllowLeadingWildcard() );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
-		$wrappedQuery = $searcher->wrapInSaferIfPossible( $query, false );
+		$wrappedQuery = $context->wrapInSaferIfPossible( $query, false );
 
 		$updateReferences =
 			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef )

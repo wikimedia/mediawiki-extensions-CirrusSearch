@@ -472,7 +472,7 @@ relevancy = false
 Before("@relevancy") do
   unless relevancy
     steps %(
-      Given a page named Relevancytest exists with contents not relevant
+      Given a page named Relevancytest exists with contents it is not relevant
       And a page named Relevancytestviaredirect exists with contents not relevant
       And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
       And a page named Relevancytestviacategory exists with contents Some opening text. [[Category:Relevancytest]]
@@ -488,8 +488,8 @@ Before("@relevancy") do
       And a page named Relevancytestphraseviaopening exists with contents @Relevancytestphraseviaopening.txt
       And a page named Relevancytestphraseviatext exists with contents [[Relevancytestphrase phrase]]
       And a page named Relevancytestphraseviaauxtext exists with contents @Relevancytestphraseviaauxtext.txt
-      And a page named Relevancytwo Wordtest exists
-      And a page named Wordtest Relevancytwo exists
+      And a page named Relevancytwo Wordtest exists with contents relevance is bliss
+      And a page named Wordtest Relevancytwo exists with contents relevance is cool
       And a page named Relevancynamespacetest exists
       And a page named Talk:Relevancynamespacetest exists
       And a page named File:Relevancynamespacetest exists
@@ -503,6 +503,8 @@ Before("@relevancy") do
       And a page named Relevancyclosetest Foô exists
       And a page named Relevancyclosetest Foo exists
       And a page named Foo Relevancyclosetest exists
+      And a page named William Shakespeare exists
+      And a page named William Shakespeare Works exists with contents To be or not to be is a famous quote from Hamlet
         )
   end
   relevancy = true

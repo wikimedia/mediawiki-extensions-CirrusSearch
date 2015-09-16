@@ -24,6 +24,12 @@ When(/^I set did you mean suggester option (.*) to (.*)$/) do |varname, value|
   @didyoumean_options ||= {}
   @didyoumean_options[varname] = value
 end
+When(/^I activate common terms query with the (.*) profile/) do |profile|
+  @common_terms_option ||= {}
+  @common_terms_option["cirrusUseCommonTermsQuery"] = "yes"
+  @common_terms_option["cirrusCommonTermsQueryProfile"] = profile
+end
+
 # rubocop:disable LineLength
 # rubocop:disable ParameterLists
 When(/^I api search( with rewrites enabled)?( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |enable_rewrites, incoming_links, offset, lang, namespaces, search|
@@ -36,6 +42,7 @@ When(/^I api search( with rewrites enabled)?( with disabled incoming link weight
       enablerewrites: enable_rewrites ? 1 : 0
     }
     options = options.merge(@didyoumean_options) if defined?@didyoumean_options
+    options = options.merge(@common_terms_option) if defined?@common_terms_option
 
     @api_result = search_for(
       search.gsub(/%[^ {]+%/, @search_vars)

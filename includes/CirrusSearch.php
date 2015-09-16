@@ -215,6 +215,9 @@ class CirrusSearch extends SearchEngine {
 		$searcher->setReturnQuery( $dumpQuery );
 		$dumpResult = $request && $request->getVal( 'cirrusDumpResult' ) !== null;
 		$searcher->setDumpResult( $dumpResult );
+		$returnExplain = $request && $request->getVal( 'cirrusExplain' ) !== null;
+		$searcher->setReturnExplain( $returnExplain );
+
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
 		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
 			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );

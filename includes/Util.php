@@ -369,4 +369,50 @@ class Util {
 		}
 		return $best;
 	}
+
+	/**
+	 * Test if $string ends with $suffix
+	 * @param $string string to test
+	 * @param $suffix string the suffix
+	 * @return boolean true if $string ends with $suffix
+	 */
+	public static function endsWith( $string, $suffix ) {
+		$strlen = strlen( $string );
+		$suffixlen = strlen( $suffix );
+		if ( $suffixlen > $strlen ) {
+			return false;
+		}
+		return substr_compare( $string, $suffix, $strlen - $suffixlen, $suffixlen ) === 0;
+	}
+
+	/**
+	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 */
+	public static function overrideYesNo( &$dest, $request, $name ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null ) {
+			if ( $val === 'yes' ) {
+				$dest = true;
+			} elseif( $val = 'no' ) {
+				$dest = false;
+			}
+		}
+	}
+
+	/**
+	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
+	 * or => $limit if upperLimit is false.
+	 */
+	public static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
+		$val = $request->getVal( $name );
+		if ( $val !== null && is_numeric( $val ) ) {
+			if ( !isset( $limit ) ) {
+				$dest = $val;
+			} else if ( $upperLimit && $val <= $limit ) {
+				$dest = $val;
+			} else if ( !$upperLimit && $val >= $limit ) {
+				$dest = $val;
+			}
+		}
+	}
 }

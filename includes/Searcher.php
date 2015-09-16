@@ -10,6 +10,9 @@ use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
+use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchTextQueryBuilderFactory;
+use CirrusSearch\Search\SearchTextQueryBuilder;
 use ConfigFactory;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
@@ -160,10 +163,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $fuzzyQuery = false;
 	/**
-	 * @var boolean did this search contain any special search syntax?
-	 */
-	private $searchContainedSyntax = false;
-	/**
 	 * @var null|\Elastica\AbstractQuery query that should be used for highlighting if different from the
 	 * query used for selecting.
 	 */
@@ -194,6 +193,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private $returnResult = false;
 
 	/**
+	 * @var boolean return explanation with results
+	 */
+	private $returnExplain = false;
+
+	/**
 	 * @var null|float[] lazily initialized version of $wgCirrusSearchNamespaceWeights with all string keys
 	 * translated into integer namespace codes using $this->language.
 	 */
@@ -217,6 +221,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Specified as public because of closures. When we move to non-anicent PHP version, can be made protected.
 	 */
 	public $config;
+
+	/**
+	 * @var SearchContext
+	 */
+	private $searchContext;
 
 	/**
 	 * Constructor
@@ -244,6 +253,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->indexBaseName = $index ?: $config->getWikiId();
 		$this->language = $config->get( 'ContLang' );
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
+		$this->searchContext = new SearchContext( $this->config );
 	}
 
 	/**
@@ -265,6 +275,13 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function setDumpResult( $dumpResult ) {
 		$this->returnResult = $dumpResult;
+	}
+
+	/**
+	 * @param boolean $returnExplain return query explanation
+	 */
+	public function setReturnExplain( $returnExplain ) {
+		$this->returnExplain = $returnExplain;
 	}
 
 	/**
@@ -577,11 +594,11 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
-						$updateReferences = Filters::insource( $escaper, $searcher, $quotedValue );
+						$updateReferences = Filters::insource( $escaper, $searcher->getSearchContext(), $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return '';
 					case 'intitle':
-						$updateReferences = Filters::intitle( $escaper, $searcher, $quotedValue );
+						$updateReferences = Filters::intitle( $escaper, $searcher->getSearchContext(), $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return $keepText ? "$quotedValue " : '';
 					default:
@@ -595,7 +612,7 @@ GROOVY;
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
 		$this->boostTemplates = $boostTemplates;
-		$this->searchContainedSyntax = $searchContainedSyntax;
+		$this->searchContext->setSearchContainedSyntax( $searchContainedSyntax );
 		$this->fuzzyQuery = $fuzzyQuery;
 		$this->highlightSource = $highlightSource;
 
@@ -686,7 +703,7 @@ GROOVY;
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
 		if ( $queryStringQueryString !== '' ) {
 			if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $queryStringQueryString ) ) {
-				$this->searchContainedSyntax = true;
+				$this->searchContext->setSearchContainedSyntax( true );
 				// We're unlikey to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
 			}
@@ -705,7 +722,7 @@ GROOVY;
 					$this->buildFullTextSearchFields( 1, '.plain', false ),
 					$this->buildFullTextSearchFields( $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
 				list( $nonAllQueryString, /*_*/ ) = $escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
-				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false );
+				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false, true );
 			} else {
 				$nonAllFields = $fields;
 			}
@@ -716,7 +733,7 @@ GROOVY;
 			// out of phrase queries at this point.
 			if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 1.0 &&
 					$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-					!$this->searchContainedSyntax &&
+					!$this->searchContext->isSearchContainedSyntax() &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {
 
@@ -1087,7 +1104,7 @@ GROOVY;
 			return Status::newGood( new SearchResultSet( true ) /* empty */ );
 		}
 
-		$this->searchContainedSyntax = true;
+		$this->searchContext->setSearchContainedSyntax( true );
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
 		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );
 		$this->query = new \Elastica\Query\MoreLikeThis();
@@ -1439,6 +1456,10 @@ GROOVY;
 			) );
 		}
 
+		if ( $this->returnExplain && $this->returnResult ) {
+			$query->setExplain( true );
+		}
+
 		// Perform the search
 		$searcher = $this;
 		$user = $this->user;
@@ -1488,7 +1509,7 @@ GROOVY;
 			}
 
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
-				$this->suggestSuffixes, $result->getValue(), $this->searchContainedSyntax ) );
+				$this->suggestSuffixes, $result->getValue(), $this->searchContext->isSearchContainedSyntax() ) );
 			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"$description timed out and only returned partial results!",
@@ -1562,45 +1583,23 @@ GROOVY;
 	}
 
 	/**
+	 * @todo: refactor as we may want to implement many different way to build
+	 *        the main query.
 	 * @param string[] $fields
 	 * @param string $queryString
 	 * @param int $phraseSlop
 	 * @param boolean $isRescore
 	 * @return \Elastica\Query\Simple
 	 */
-	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore ) {
-		$query = new \Elastica\Query\QueryString( $queryString );
-		$query->setFields( $fields );
-		$query->setAutoGeneratePhraseQueries( true );
-		$query->setPhraseSlop( $phraseSlop );
-		$query->setDefaultOperator( 'AND' );
-		$query->setAllowLeadingWildcard( $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
-		$query->setFuzzyPrefixLength( 2 );
-		$query->setRewrite( 'top_terms_boost_1024' );
-
-		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
-		if ( isset( $states ) ) {
-			// Requires ES 1.4+
-			$query->setParam( 'max_determinized_states', $states );
+	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore, $forHighlight = false ) {
+		$searchTextQueryBuilder = $this->searchContext->searchTextQueryBuilder( $queryString );
+		if ( $isRescore ) {
+			return $searchTextQueryBuilder->buildRescoreQuery( $fields, $queryString, $phraseSlop );
+		} else if( $forHighlight ) {
+			return $searchTextQueryBuilder->buildHighlightQuery( $fields, $queryString, $phraseSlop );
+		} else {
+			return $searchTextQueryBuilder->buildMainQuery( $fields, $queryString, $phraseSlop );
 		}
-
-		return $this->wrapInSaferIfPossible( $query, $isRescore );
-	}
-
-	/**
-	 * @param string $query
-	 * @param boolean $isRescore
-	 * @return \Elastica\Query\Simple
-	 */
-	public function wrapInSaferIfPossible( $query, $isRescore ) {
-		$saferQuery = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' );
-		if ( is_null($saferQuery) ) {
-			return $query;
-		}
-		$saferQuery[ 'query' ] = $query->toArray();
-		$tooLargeAction = $isRescore ? 'convert_to_match_all_query' : 'convert_to_term_queries';
-		$saferQuery[ 'phrase' ][ 'phrase_too_large_action' ] = 'convert_to_term_queries';
-		return new \Elastica\Query\Simple( array( 'safer' => $saferQuery ) );
 	}
 
 	/**
@@ -2083,6 +2082,13 @@ GROOVY;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return SearchContext
+	 */
+	public function getSearchContext() {
+		return $this->searchContext;
 	}
 
 }

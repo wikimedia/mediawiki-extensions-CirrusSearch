@@ -16,5 +16,6 @@
 	"cirrussearch-now-using": "See viki kasutab uut otsimootorit. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lisateave]])",
 	"cirrussearch-pref-label": "Uus otsing",
 	"cirrussearch-pref-desc": "Proovi uut otsingut, mis toetab rohkem keeli, näitab ajakohasemaid tulemusi ja leiab isegi mallis oleva teksti.",
+	"cirrussearch-give-feedback": "Anna meile tagasisidet",
 	"cirrussearch-query-too-long": "Päring on pikem kui maksimaalselt lubatud. ($1 > $2)"
 }

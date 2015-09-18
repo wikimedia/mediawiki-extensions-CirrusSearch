@@ -794,6 +794,11 @@ $wgCirrusSearchUseCommonTermsQuery = false;
  */
 $wgCirrusSearchCommonTermsQueryProfile = $wgCirrusSearchCommonTermsQueryProfiles['default'];
 
+/**
+ * If set to non-empty string, interwiki results will have ?wprov=XYZ parameter added.
+ */
+$wgCirrusSearchInterwikiProv = false;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
@@ -827,7 +832,7 @@ $wgHooks[ 'SpecialSearchResultsAppend' ][] = 'CirrusSearch\Hooks::onSpecialSearc
 $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
-
+$wgHooks[ 'ShowSearchHitTitle' ][] = 'CirrusSearch\Hooks::onShowSearchHitTitle';
 /**
  * i18n
  */

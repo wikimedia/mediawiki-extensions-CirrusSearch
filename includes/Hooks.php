@@ -661,4 +661,20 @@ class Hooks {
 		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 		return new Connection( $config );
 	}
+
+	/**
+	 * Add $wgCirrusSearchInterwikiProv to external results.
+	 * @param Title $title
+	 * @param unknown $text
+	 * @param unknown $result
+	 * @param unknown $terms
+	 * @param unknown $page
+	 * @param array $query
+	 */
+	public static function onShowSearchHitTitle( Title &$title, &$text, $result, $terms, $page, &$query = array() ) {
+		global $wgCirrusSearchInterwikiProv;
+		if( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
+			$query["wprov"] = $wgCirrusSearchInterwikiProv;
+		}
+	}
 }

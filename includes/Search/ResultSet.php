@@ -24,7 +24,11 @@ use \SearchResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ResultSet extends SearchResultSet {
-	private $result, $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+	/**
+	 * @var Elastica\ResultSet
+	 */
+	private $result;
+	private $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
 	private $searchContainedSyntax;
 	private $interwikiPrefix,$interwikiResults;
 	private $rewrittenQuery;
@@ -35,7 +39,7 @@ class ResultSet extends SearchResultSet {
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->interwikiPrefix = $interwiki;
-		$this->preCacheContainedTitles();
+		$this->preCacheContainedTitles( $this->result );
 		$suggestion = $this->findSuggestion();
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
@@ -62,11 +66,9 @@ class ResultSet extends SearchResultSet {
 		if ( $this->numRows() > 0 || $this->searchContainedSyntax() ) {
 			return false;
 		}
-		if ( $this->interwikiResults !== null ) {
-			foreach ( $this->interwikiResults as $resultSet ) {
-				if ( $resultSet->numRows() > 0 ) {
-					return false;
-				}
+		foreach ( $this->getInterwikiResults( SearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
+			if ( $resultSet->numRows() > 0 ) {
+				return false;
 			}
 		}
 		return true;
@@ -96,7 +98,7 @@ class ResultSet extends SearchResultSet {
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedSuggestion( $suggestion ) {
-		static $suggestionHighlightPreEscaped = null, 
+		static $suggestionHighlightPreEscaped = null,
 			$suggestionHighlightPostEscaped = null;
 		if ( $suggestionHighlightPreEscaped === null ) {
 			$suggestionHighlightPreEscaped =
@@ -126,14 +128,15 @@ class ResultSet extends SearchResultSet {
 	 * batch query. By pre-caching this we ensure methods such as
 	 * Result::isMissingRevision() don't trigger a query for each and
 	 * every search result.
+	 * @param ResultSet $resultSet Result set from which the titles come
 	 */
-	private function preCacheContainedTitles() {
+	private function preCacheContainedTitles( $resultSet ) {
 		// We can only pull in information about the local wiki
-		if ( $this->interwikiPrefix !== '' ) {
-			return;
-		}
+ 		if ( $this->interwikiPrefix !== '' ) {
+ 			return;
+ 		}
 		$lb = new LinkBatch;
-		foreach ( $this->result->getResults() as $result ) {
+		foreach ( $resultSet->getResults() as $result ) {
 			$lb->add( $result->namespace, $result->title );
 		}
 		if ( !$lb->isEmpty() ) {
@@ -171,12 +174,12 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
-	public function addInterwikiResults( $res ) {
-		$this->interwikiResults[] = $res;
+	public function addInterwikiResults( $res, $type, $interwiki ) {
+		$this->interwikiResults[$type][$interwiki] = $res;
 	}
 
-	public function getInterwikiResults() {
-		return $this->interwikiResults;
+	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
+		return isset($this->interwikiResults[$type])? $this->interwikiResults[$type] : array();
 	}
 
 	public function searchContainedSyntax() {

@@ -2054,11 +2054,12 @@ GROOVY;
 	/**
 	 * Try to detect language using langdetect plugin
 	 * See: https://github.com/jprante/elasticsearch-langdetect
+	 * @param Connection $conn Connection for Elastica
 	 * @param string $text
 	 * @return string|NULL Language name or null
 	 */
-	public static function detectLanguage( $text ) {
-		$client = Connection::getClient();
+	public static function detectLanguage( Connection $conn, $text ) {
+		$client = $conn->getClient();
 		try {
 			$response = $client->request( "_langdetect", Request::POST, $text );
 		} catch ( ResponseException $e ) {

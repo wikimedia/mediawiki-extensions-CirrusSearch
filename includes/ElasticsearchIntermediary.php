@@ -74,9 +74,9 @@ class ElasticsearchIntermediary {
 	static private $executionId;
 
 	/**
-	 * @var array[]|null Result of self::getLogContext for each request in this process
+	 * @var array[] Result of self::getLogContext for each request in this process
 	 */
-	static private $logContexts;
+	static private $logContexts = array();
 
 	/**
 	 * Constructor.
@@ -116,11 +116,80 @@ class ElasticsearchIntermediary {
 	 * Only public due to php 5.3 not having access from closures
 	 */
 	public static function reportLogContexts() {
-		global $wgRequest;
-
 		if ( !self::$logContexts ) {
 			return;
 		}
+		self::buildRequestSetLog();
+		self::buildUserTestingLog();
+		self::$logContexts = array();
+	}
+
+	/**
+	 * Builds and ships a log context that is serialized to an avro
+	 * schema. Avro is very specific that all fields must be defined,
+	 * even if they have a default, and that types must match exactly.
+	 * "5" is not an int as much as php would like it to be.
+	 *
+	 * Avro will happily ignore fields that are present but not used. To
+	 * add new fields to the schema they must first be added here and
+	 * deployed. Then the schema can be updated. Removing goes in reverse,
+	 * adjust the schema to ignore the column, then deploy code no longer
+	 * providing it.
+	 */
+	private static function buildRequestSetLog() {
+		global $wgRequest;
+
+		// for the moment these are still created in the old format to serve
+		// the old log formats, so here we transform the context into the new
+		// request format. At some point the context should just be created in
+		// the correct format.
+		$requests = array();
+		foreach ( self::$logContexts as $context ) {
+			$request = array(
+				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
+				'queryType' => isset( $context['queryType'] ) ? (string) $context['queryType'] : '',
+				// populated below
+				'indices' => array(),
+				'tookMs' => isset( $context['tookMs'] ) ? (int) $context['tookMs'] : -1,
+				'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int) $context['elasticTookMs'] : -1,
+				'limit' => isset( $context['limit'] ) ? (int) $context['limit'] : -1,
+				'hitsTotal' => isset( $context['hitsTotal'] ) ? (int) $context['hitsTotal'] : -1,
+				'hitsReturned' => isset( $context['hitsReturned'] ) ? (int) $context['hitsReturned'] : -1,
+				'hitsOffset' => isset( $context['hitsOffset'] ) ? (int) $context['hitsOffset'] : -1,
+				// populated below
+				'namespaces' => array(),
+				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
+				'suggestionRequested' => isset( $context['suggestion'] )
+			);
+
+			if ( isset( $context['index'] ) ) {
+				$request['indices'][] = $context['index'];
+			}
+			if ( isset( $context['namespaces'] ) ) {
+				foreach ( $context['namespaces'] as $id ) {
+					$request['namespaces'][] = (int) $id;
+				}
+			}
+			$requests[] = $request;
+		}
+
+		$requestSet = array(
+			'timestamp' => time(),
+			'wikiId' => wfWikiId(),
+			'source' => self::getExecutionContext(),
+			'identity' => self::generateIdentToken(),
+			'ip' => $wgRequest->getIP() ?: '',
+			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
+			'backendUserTests' => UserTesting::getInstance()->getActiveTestNames(),
+			'requests' => $requests,
+		);
+
+		LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug( '', $requestSet );
+	}
+
+	private static function buildUserTestingLog() {
+		global $wgRequest;
+
 		$ut = UserTesting::getInstance();
 		if ( !$ut->getActiveTestNames() ) {
 			return;
@@ -161,14 +230,12 @@ class ElasticsearchIntermediary {
 			FormatJson::encode( $parameters ),
 		);
 
-		$tests = array();
 		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
 		foreach ( $ut->getActiveTestNames() as $test ) {
 			$bucket = $ut->getBucket( $test );
 			$message[1] = "{$test}-{$bucket}";
 			$logger->debug( implode( "\t", $message ) );
 		}
-		self::$logContexts = null;
 	}
 
 	/**
@@ -360,7 +427,7 @@ class ElasticsearchIntermediary {
 			$namespaces = implode( ', ', $context['namespaces'] );
 			$message .= " within these namespaces: $namespaces";
 		}
-		if ( isset( $context['suggestion'] ) ) {
+		if ( isset( $context['suggestion'] ) && strlen( $context['suggestion'] ) > 0 ) {
 			$message .= " and suggested '{suggestion}'";
 		}
 		$message .= ". Requested via {source} for {identity} by executor {executor}";
@@ -418,11 +485,10 @@ class ElasticsearchIntermediary {
 			}
 		}
 
-		if ( self::$logContexts === null ) {
+		if ( count( self::$logContexts ) === 0 ) {
 			DeferredUpdates::addCallableUpdate( function () {
 				ElasticsearchIntermediary::reportLogContexts();
 			} );
-			self::$logContexts = array();
 		}
 		self::$logContexts[] = $params;
 

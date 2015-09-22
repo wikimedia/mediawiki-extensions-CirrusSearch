@@ -1427,6 +1427,11 @@ GROOVY;
 		$logContext = array(
 			'queryType' => $type,
 			'query' => $for,
+			'limit' => $this->limit ?: null,
+			// null means not requested, '' means not found. If found
+			// parent::buildLogContext will replace the '' with an
+			// actual suggestion.
+			'suggestion' => $this->suggest ? '' : null,
 		);
 
 		if ( $this->returnQuery ) {

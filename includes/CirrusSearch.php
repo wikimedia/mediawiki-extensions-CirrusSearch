@@ -279,8 +279,7 @@ class CirrusSearch extends SearchEngine {
 			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
 			// wrote the code but Searcher needs some refactoring first.
 			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
-				$iwSearch = new InterwikiSearcher( $this->namespaces, $user, $index, $interwiki );
-				$iwSearch->setConnection( $this->connection );
+				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, $user, $index, $interwiki );
 				$interwikiResult = $iwSearch->getInterwikiResults( $term );
 				if ( $interwikiResult ) {
 					$status->getValue()->addInterwikiResults( $interwikiResult );

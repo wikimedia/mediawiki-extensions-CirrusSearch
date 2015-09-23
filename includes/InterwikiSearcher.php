@@ -40,8 +40,8 @@ class InterwikiSearcher extends Searcher {
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
 	 * @param string $interwiki Interwiki prefix we're searching
 	 */
-	public function __construct( array $namespaces, User $user = null, $index, $interwiki ) {
-		parent::__construct( 0, self::MAX_RESULTS, null, $namespaces, $user, $index );
+	public function __construct( Connection $connection, array $namespaces, User $user = null, $index, $interwiki ) {
+		parent::__construct( $connection, 0, self::MAX_RESULTS, null, $namespaces, $user, $index );
 		$this->interwiki = $interwiki;
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $this->namespaces !== null ) {

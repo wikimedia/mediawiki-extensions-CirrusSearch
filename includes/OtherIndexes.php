@@ -28,10 +28,11 @@ class OtherIndexes extends Updater {
 
 	/**
 	 * Constructor
+	 * @param Connection $connection
 	 * @param string $localSite
 	 */
-	public function __construct( $localSite ) {
-		parent::__construct();
+	public function __construct( Connection $connection, $localSite ) {
+		parent::__construct( $connection );
 		$this->localSite = $localSite;
 	}
 

@@ -1,7 +1,8 @@
 @frozen
 Feature: Mutations to frozen indexes are properly delayed
   Scenario: Updates to frozen indexes are delayed
-   Given a page named FrozenTest exists with contents foobarbaz
+   Given I delete FrozenTest
+     And a page named FrozenTest exists with contents foobarbaz
      And within 20 seconds api searching for foobarbaz yields FrozenTest as the first result
      And I globally freeze indexing
      And a page named FrozenTest exists with contents superduperfrozen

@@ -31,9 +31,11 @@ Given(/^a page named (.*) doesn't exist$/) do |title|
   step("I delete #{title}")
 end
 
-When(/^I delete (?!the second)(.+)$/) do |title|
+When(/^I delete (on commons)?(?!the second)(.+)$/) do |on_commons, title|
   require "mediawiki_api"
-  client = MediawikiApi::Client.new("#{ENV["MEDIAWIKI_URL"]}../w/api.php", false)
+  url = "#{ENV["MEDIAWIKI_URL"]}../w/api.php" unless on_commons
+  url = "#{ENV["MEDIAWIKI_COMMONS_API_URL"]}" if on_commons
+  client = MediawikiApi::Client.new("#{url}", false)
   client.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"])
   begin
     result = client.delete_page(title, "Testing")

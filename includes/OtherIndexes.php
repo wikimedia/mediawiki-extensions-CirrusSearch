@@ -82,14 +82,14 @@ class OtherIndexes extends Updater {
 		$updates = array();
 
 		// Build multisearch to find ids to update
-		$findIdsMultiSearch = new \Elastica\Multi\Search( $this->getConnection()->getClient() );
+		$findIdsMultiSearch = new \Elastica\Multi\Search( $this->connection->getClient() );
 		$findIdsClosures = array();
 		foreach ( $titles as $title ) {
 			foreach ( OtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {
 				if ( $otherIndex === null ) {
 					continue;
 				}
-				$type = $this->getConnection()->getPageType( $otherIndex );
+				$type = $this->connection->getPageType( $otherIndex );
 				$bool = new \Elastica\Filter\Bool();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
 				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
@@ -148,7 +148,7 @@ class OtherIndexes extends Updater {
 				'method' => 'sendOtherIndexUpdates',
 				'arguments' => array( $this->localSite, $indexName, $actions ),
 			) );
-			$job->setConnection( $this->getConnection() );
+			$job->setConnection( $this->connection );
 			$job->run();
 		}
 	}

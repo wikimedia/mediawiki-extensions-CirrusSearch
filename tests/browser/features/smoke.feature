@@ -9,9 +9,10 @@
 # CirrusSearch top-level directory and at
 # https://git.wikimedia.org/blob/mediawiki%2Fextensions%2FCirrusSearch/HEAD/CREDITS
 #
-@clean @en.wikipedia.beta.wmflabs.org @firefox @test2.wikipedia.org @phantomjs @smoke
+@clean @firefox @test2.wikipedia.org @phantomjs @smoke
 Feature: Smoke test
 
+  @en.wikipedia.beta.wmflabs.org
   Scenario: Search suggestions
     Given I am at a random page
     When I search for: main
@@ -25,6 +26,7 @@ Feature: Smoke test
       And I click the search button
     Then I should land on Search Results page
 
+  @en.wikipedia.beta.wmflabs.org
   Scenario: Search with accent yields result page with accent
     Given I am at a random page
     When I search for África

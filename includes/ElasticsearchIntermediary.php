@@ -209,7 +209,7 @@ class ElasticsearchIntermediary {
 
 		$stats = RequestContext::getMain()->getStats();
 		$type = self::classifyErrorMessage( $message );
-		$stats->increment( "cirrussearch.backend_failure.$type" );
+		$stats->increment( "CirrusSearch.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 			"Search backend error during {$this->description} after {took}: {message}",

@@ -25,5 +25,6 @@
 	"apihelp-cirrus-config-dump-description": "Dumpa av CirrusSearch-konfiguration.",
 	"apihelp-cirrus-mapping-dump-description": "Dumpa av CirrusSearch-mappning för denna wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dumpa av CirrusSearch-inställningar för denna wiki.",
+	"apihelp-cirrus-suggest-param-limit": "Antalet resultat att returnera.",
 	"cirrussearch-give-feedback": "Ge oss din återkoppling"
 }

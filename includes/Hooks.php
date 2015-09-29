@@ -368,7 +368,7 @@ class Hooks {
 
 		foreach ( $lines as $line ) {
 			$linePieces = explode( ':', $line, 2 );
-			if ( count( $linePieces < 2 ) ) {
+			if ( count( $linePieces ) < 2 ) {
 				// Skip improperly formatted lines without a key:value
 				continue;
 			}

@@ -170,11 +170,12 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk->addData( $data, 'update' );
 			$bulk->send();
 		} catch ( ResponseException $e ) {
-			$failedLog = $this->failedLog;
+			$cirrusLog = $this->log;
 			$missing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function( $id ) use ( $failedLog ) {
-					$failedLog->warning( "Updating a page that doesn't "
-						. " yet exist in Elasticsearch: $id"
+				function( $id ) use ( $cirrusLog, $e ) {
+					$cirrusLog->info(
+						"Updating a page that doesn't yet exist in Elasticsearch: {id}",
+						array( 'id' => $id )
 					);
 				}
 			);
@@ -194,8 +195,8 @@ class DataSender extends ElasticsearchIntermediary {
 				return $d->getId();
 			}, $data );
 			$this->failedLog->warning(
-				'Update for doc ids: ' . implode( ',', $documentIds ) .
-				'; error message was: ' . $exception->getMessage()
+				'Update for doc ids: ' . implode( ',', $documentIds ),
+				array( 'exception' => $exception )
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}
@@ -233,8 +234,8 @@ class DataSender extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
 				$this->failedLog->warning(
-					'Delete for ids: ' . implode( ',', $ids ) .
-					'; error message was: ' . $e->getMessage()
+					'Delete for ids: ' . implode( ',', $ids ),
+					array( 'exception' => $e )
 				);
 				return Status::newFatal( 'cirrussearch-failed-send-deletes' );
 			}
@@ -299,8 +300,8 @@ class DataSender extends ElasticsearchIntermediary {
 			} else {
 				$this->failure( $e );
 				$this->failedLog->warning(
-					"OtherIndex update for articles: "
-					. implode( ',', $titles )
+					"OtherIndex update for articles: " . implode( ',', $titles ),
+					array( 'exception' => $e )
 				);
 				$status->error( 'cirrussearch-failed-update-otherindex' );
 			}

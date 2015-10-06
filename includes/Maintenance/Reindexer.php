@@ -144,7 +144,7 @@ class Reindexer {
 		) );
 
 		$sender = new DataSender( $this->connection );
-		$frozenIndexes = $conn->indexToIndexTypes( $this->types );
+		$frozenIndexes = $this->connection->indexToIndexTypes( $this->types );
 		$sender->freezeIndexes( $frozenIndexes );
 		if ( $processes > 1 ) {
 			if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) ||

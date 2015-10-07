@@ -351,9 +351,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		global $wgCirrusSearchMaintenanceTimeout;
 
+		$connection = $this->getConnection();
+
 		$reindexer = new Reindexer(
-			$this->getIndex(),
-			$this->getConnection(),
+			$connection,
+			$connection,
 			array( $this->getPageType() ),
 			array( $this->getOldPageType() ),
 			$this->getShardCount(),

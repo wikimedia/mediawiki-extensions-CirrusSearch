@@ -30,20 +30,29 @@ use MediaWiki\Logger\LoggerFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Reindexer {
+	/*** "From" portion ***/
+	/**
+	 * @var Index
+	 */
+	private $oldIndex;
+
+	/**
+	 * @var Connection
+	 */
+	private $oldConnection;
+
+	/*** "To" portion ***/
+
 	/**
 	 * @var Index
 	 */
 	private $index;
 
 	/**
-	 * @var \Elastica\Client
+	 * @var Connection
 	 */
-	private $client;
+	private $connection;
 
-	/**
-	 * @var string
-	 */
-	private $specificIndexName;
 
 	/**
 	 * @var Type[]
@@ -80,10 +89,6 @@ class Reindexer {
 	 */
 	private $mappingConfig;
 
-	/**
-	 * @var \ElasticaConnection
-	 */
-	private $connection;
 
 	/**
 	 * @var Maintenance
@@ -91,8 +96,6 @@ class Reindexer {
 	private $out;
 
 	/**
-	 * @param Index $index
-	 * @param \ElasticaConnection $connection
 	 * @param Type[] $types
 	 * @param Type[] $oldTypes
 	 * @param int $shardCount
@@ -102,12 +105,10 @@ class Reindexer {
 	 * @param array $mappingConfig
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, \ElasticaConnection $connection, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
+	public function __construct( Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!
-		$this->index = $index;
-		$this->client = $this->index->getClient();
-		$this->specificIndexName = $this->index->getName();
-		$this->connection = $connection;
+		$this->oldConnection = $source;
+		$this->connection = $target;
 		$this->types = $types;
 		$this->oldTypes = $oldTypes;
 		$this->shardCount = $shardCount;
@@ -116,6 +117,12 @@ class Reindexer {
 		$this->mergeSettings = $mergeSettings;
 		$this->mappingConfig = $mappingConfig;
 		$this->out = $out;
+
+		if ( empty($types) || empty($oldTypes) ) {
+			throw new \Exception( "Types list should be non-empty" );
+		}
+		$this->index = $types[0]->getIndex();
+		$this->oldIndex = $oldTypes[0]->getIndex();
 	}
 
 	/**
@@ -134,6 +141,7 @@ class Reindexer {
 		// optimize after this to consolidate down to a proper number of shards but that is
 		// is worth the price.  total_shards_per_node will help to make sure that each shard
 		// has as few neighbors as possible.
+		$this->setConnectionTimeout();
 		$settings = $this->index->getSettings();
 		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
 		$settings->set( array(
@@ -143,9 +151,6 @@ class Reindexer {
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		) );
 
-		$sender = new DataSender( $this->connection );
-		$frozenIndexes = $this->connection->indexToIndexTypes( $this->types );
-		$sender->freezeIndexes( $frozenIndexes );
 		if ( $processes > 1 ) {
 			if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) ||
 					!$wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) {
@@ -155,9 +160,7 @@ class Reindexer {
 			$fork = new ForkController( $processes );
 			$forkResult = $fork->start();
 			// we don't want to share sockets between forks, so destroy the client.
-			$this->connection->destroyClient();
-			// destroying the client resets the timeout so we have to reinstate it.
-			$this->setConnectionTimeout();
+			$this->destroyClients();
 
 			switch ( $forkResult ) {
 				case 'child':
@@ -201,7 +204,6 @@ class Reindexer {
 			'refresh_interval' => $refreshInterval . 's',
 			'merge.policy' => $this->mergeSettings,
 		) );
-		$sender->thawIndexes( $frozenIndexes );
 	}
 
 	public function optimize() {
@@ -217,8 +219,7 @@ class Reindexer {
 			if ( $e->getMessage() === 'Operation timed out' ) {
 				$this->output( "Timed out...Continuing any way\n" );
 				// To continue without blowing up we need to reset the connection.
-				$this->destroySingleton();
-				$this->setConnectionTimeout();
+				$this->destroyClients();
 			} else {
 				throw $e;
 			}
@@ -226,6 +227,10 @@ class Reindexer {
 	}
 
 	public function waitForShards() {
+		if( !$this->replicaCount || $this->replicaCount === "false" ) {
+			$this->outputIndented( "\tNo replicas, skipping.\n" );
+			return;
+		}
 		$this->outputIndented( "\tWaiting for all shards to start...\n" );
 		list( $lower, $upper ) = explode( '-', $this->replicaCount );
 		$each = 0;
@@ -293,7 +298,7 @@ class Reindexer {
 			$operationStartTime = microtime( true );
 			$completed = 0;
 			$self = $this;
-			Util::iterateOverScroll( $this->index, $result->getResponse()->getScrollId(), '1h',
+			Util::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
 				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $self, $type,
 						&$completed, $totalDocsToReindex, $operationStartTime ) {
 					$documents = array();
@@ -345,11 +350,15 @@ class Reindexer {
 		return new Document( $result->getId(), $data );
 	}
 
+	/**
+	 * Get health information about the index
+	 * @return array Response data array
+	 */
 	private function getHealth() {
 		while ( true ) {
-			$indexName = $this->specificIndexName;
+			$indexName = $this->index->getName();
 			$path = "_cluster/health/$indexName";
-			$response = $this->client->request( $path );
+			$response = $this->index->getClient()->request( $path );
 			if ( $response->hasError() ) {
 				$this->error( 'Error fetching index health but going to retry.  Message: ' . $response->getError() );
 				sleep( 1 );
@@ -389,7 +398,6 @@ class Reindexer {
 	/**
 	 * @param \Exception $e exception caught
 	 * @param int $errors number of errors
-	 * @param Maintenance $out
 	 * @param string $messagePrefix
 	 * @param string $description
 	 */
@@ -403,7 +411,9 @@ class Reindexer {
 	}
 
 	/**
-	 * This is really private.
+	 * Send documents to type with retry.
+	 * This is really private, marked as public for closure use.
+	 * @access private
 	 */
 	public function sendDocuments( Type $type, $messagePrefix, $documents ) {
 		try {
@@ -419,12 +429,22 @@ class Reindexer {
 		}
 	}
 
+	/**
+	 * Reset connection timeouts
+	 */
 	private function setConnectionTimeout() {
 		$this->connection->setTimeout( $this->connectionTimeout );
+		$this->oldConnection->setTimeout( $this->connectionTimeout );
 	}
 
-	private function destroySingleton() {
+	/**
+	 * Destroy client connections
+	 */
+	private function destroyClients() {
 		$this->connection->destroyClient();
+		$this->oldConnection->destroyClient();
+		// Destroying connections resets timeouts, so we have to reinstate them
+		$this->setConnectionTimeout();
 	}
 
 	/**

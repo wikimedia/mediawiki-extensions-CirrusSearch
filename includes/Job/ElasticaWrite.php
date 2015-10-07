@@ -66,9 +66,16 @@ class ElasticaWrite extends Job {
 			return array( $name => $this->connection );
 		}
 
-		$clusters = $config->get( 'CirrusSearchClusters' );
+		if( $config->has( 'CirrusSearchWriteClusters' ) ) {
+			$clusters = $config->get( 'CirrusSearchWriteClusters' );
+			if( is_null( $clusters ) ) {
+				$clusters = array_keys( $config->get( 'CirrusSearchClusters' ) );
+			}
+		} else {
+			$clusters = array_keys( $config->get( 'CirrusSearchClusters' ) );
+		}
 		$connections = array();
-		foreach ( array_keys( $clusters ) as $name ) {
+		foreach ( $clusters as $name ) {
 			$connections[$name] = Connection::getPool( $config, $name );
 		}
 		return $connections;

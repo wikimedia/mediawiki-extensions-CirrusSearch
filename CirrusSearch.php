@@ -53,7 +53,8 @@ $wgCirrusSearchDefaultCluster = 'default';
 // defaults to 9200.
 //
 // All writes will be processed in all configured clusters by the
-// ElasticaWrite job.
+// ElasticaWrite job, unless $wgCirrusSearchWriteClusters is
+// configured (see below).
 //
 // $wgCirrusSearchClusters = array(
 // 	'eqiad' => array( 'es01.eqiad.wmnet', 'es02.eqiad.wmnet' ),
@@ -62,6 +63,12 @@ $wgCirrusSearchDefaultCluster = 'default';
 $wgCirrusSearchClusters = array(
 	'default' => array( 'localhost' ),
 );
+
+// List of clusters that can be used for writing. Must be a subset of keys
+// from $wgCirrusSearchClusters.
+// By default or when set to null, all keys of $wgCirrusSearchClusters are
+// available for writing.
+$wgCirrusSearchWriteClusters = null;
 
 // How many times to attempt connecting to a given server
 // If you're behind LVS and everything looks like one server,

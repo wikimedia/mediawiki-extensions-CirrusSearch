@@ -38,7 +38,14 @@ abstract class Maintenance extends \Maintenance {
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
 	}
 
-	public function getConnection() {
+	public function getConnection( $cluster = null ) {
+		if( $cluster ) {
+			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
+				$this->error( 'Unknown cluster.', 1 );
+			}
+			return Connection::getPool( $config, $cluster );
+		}
 		if ( $this->connection === null ) {
 			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 			$cluster = $this->decideCluster( $config );

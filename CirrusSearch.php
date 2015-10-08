@@ -69,6 +69,11 @@ $wgCirrusSearchClusters = array(
 $wgCirrusSearchConnectionAttempts = 1;
 
 // Number of shards for each index
+// You can also set this setting for each cluster:
+// $wgCirrusSearchShardCount = array(
+//  'cluster1' => array( 'content' => 2, 'general' => 2 ),
+//  'cluster2' => array( 'content' => 3, 'general' => 3 ),
+//);
 $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4, 'titlesuggest' => 4 );
 
 // Number of replicas Elasticsearch can expand or contract to. This allows for
@@ -76,7 +81,13 @@ $wgCirrusSearchShardCount = array( 'content' => 4, 'general' => 4, 'titlesuggest
 // higher levels of replication. You if you need more redundancy you could
 // adjust this to '0-10' or '0-all' or even 'false' (string, not boolean) to
 // disable the behavior entirely. The default should be fine for most people.
+// You can also set this setting for each cluster:
+// $wgCirrusSearchReplicas = array(
+//  'cluster1' => array( 'content' => '0-1', 'general' => '0-2' ),
+//  'cluster2' => array( 'content' => '0-2', 'general' => '0-3' ),
+//);
 $wgCirrusSearchReplicas = '0-2';
+
 // You can also specify this as an array of index type to replica count.  If you
 // do then you must specify all index types.  For example:
 // $wgCirrusSearchReplicas = array( 'content' => '0-3', 'general' => '0-2' );

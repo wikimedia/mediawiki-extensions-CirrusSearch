@@ -525,28 +525,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function getShardCount() {
-		global $wgCirrusSearchShardCount;
-		if ( !isset( $wgCirrusSearchShardCount[ $this->indexType ] ) ) {
-			$this->error( 'Could not find a shard count for ' . $this->indexType . '.  Did you add an index to ' .
-				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchShardCount?', 1 );
-		}
-		return $wgCirrusSearchShardCount[ $this->indexType ];
+		return $this->getConnection()->getSettings()->getShardCount( $this->indexType );
 	}
 
 	private function getReplicaCount() {
-		global $wgCirrusSearchReplicas;
-
-		// If $wgCirrusSearchReplicas is an array of index type to number of replicas then respect that
-		if ( is_array( $wgCirrusSearchReplicas ) ) {
-			if ( isset( $wgCirrusSearchReplicas[ $this->indexType ] ) ) {
-				return $wgCirrusSearchReplicas[ $this->indexType ];
-			} else {
-				$this->error( 'If wgCirrusSearchReplicas is an array it must contain all index types.', 1 );
-			}
-		}
-
-		// Otherwise its just a raw scalar so we should respect that too
-		return $wgCirrusSearchReplicas;
+		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexType );
 	}
 }
 

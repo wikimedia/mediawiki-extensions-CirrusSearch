@@ -73,12 +73,12 @@ class UpdateVersionIndex extends Maintenance {
 	}
 
 	private function update( $baseName ) {
-		global $wgCirrusSearchShardCount;
 		$versionType = $this->getType();
 		$this->outputIndented( "Updating tracking indexes..." );
 		$docs = array();
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
+		$connSettings = $this->getConnection()->getSettings();
 		foreach( $this->getConnection()->getAllIndexTypes() as $type ) {
 			$docs[] = new \Elastica\Document(
 				$this->getConnection()->getIndexName( $baseName, $type ),
@@ -87,7 +87,7 @@ class UpdateVersionIndex extends Maintenance {
 					'analysis_min' => $aMin,
 					'mapping_maj' => $mMaj,
 					'mapping_min' => $mMin,
-					'shard_count' => $wgCirrusSearchShardCount[ $type ],
+					'shard_count' => $connSettings->getShardCount( $type ),
 				)
 			);
 		}

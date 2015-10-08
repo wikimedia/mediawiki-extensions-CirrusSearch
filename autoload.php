@@ -25,6 +25,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\BuildDocument\\SuggestScoringMethodFactory' => __DIR__ . '/includes/BuildDocument/SuggestScoring.php',
 	'CirrusSearch\\CheckIndexes' => __DIR__ . '/maintenance/checkIndexes.php',
 	'CirrusSearch\\CirrusIsSetup' => __DIR__ . '/maintenance/cirrusNeedsToBeBuilt.php',
+	'CirrusSearch\\ClusterSettings' => __DIR__ . '/includes/ClusterSettings.php',
 	'CirrusSearch\\Connection' => __DIR__ . '/includes/Connection.php',
 	'CirrusSearch\\DataSender' => __DIR__ . '/includes/DataSender.php',
 	'CirrusSearch\\Dump' => __DIR__ . '/includes/Dump.php',

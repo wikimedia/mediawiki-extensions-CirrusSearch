@@ -71,6 +71,11 @@ class Connection extends ElasticaConnection {
 	protected $cluster;
 
 	/**
+	 * @var ClusterSettings|null
+	 */
+	private $clusterSettings;
+
+	/**
 	 * @var Connection[]
 	 */
 	private static $pool = array();
@@ -122,6 +127,16 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getClusterName() {
 		return $this->cluster;
+	}
+
+	/**
+	 * @return ClusterSettings
+	 */
+	public function getSettings() {
+		if ( $this->clusterSettings === null ) {
+			$this->clusterSettings = new ClusterSettings( $this->config, $this->cluster );
+		}
+		return $this->clusterSettings;
 	}
 
 	/**

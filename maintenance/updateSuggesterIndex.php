@@ -305,19 +305,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function getReplicaCount() {
-		global $wgCirrusSearchReplicas;
-
-		// If $wgCirrusSearchReplicas is an array of index type to number of replicas then respect that
-		if ( is_array( $wgCirrusSearchReplicas ) ) {
-			if ( isset( $wgCirrusSearchReplicas[ $this->indexTypeName ] ) ) {
-				return $wgCirrusSearchReplicas[ $this->indexTypeName ];
-			} else {
-				$this->error( 'If wgCirrusSearchReplicas is an array it must contain all index types.', 1 );
-			}
-		}
-
-		// Otherwise its just a raw scalar so we should respect that too
-		return $wgCirrusSearchReplicas;
+		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexTypeName );
 	}
 
 	private function createMapping() {
@@ -339,17 +327,10 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function getShardCount() {
-		global $wgCirrusSearchShardCount;
-		if ( !isset( $wgCirrusSearchShardCount[ $this->indexTypeName ] ) ) {
-			$this->error( 'Could not find a shard count for ' . $this->indexTypeName . '.  Did you add an index to ' .
-				'$wgCirrusSearchNamespaceMappings but forget to add it to $wgCirrusSearchShardCount?', 1 );
-		}
-		return $wgCirrusSearchShardCount[ $this->indexTypeName ];
+		return $this->getConnection()->getSettings()->getShardCount( $this->indexTypeName );
 	}
 
 	private function updateVersions() {
-		global $wgCirrusSearchShardCount;
-
 		$this->outputIndented( "Updating tracking indexes..." );
 		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {
@@ -364,7 +345,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				'analysis_min' => $aMin,
 				'mapping_maj' => $mMaj,
 				'mapping_min' => $mMin,
-				'shard_count' => $wgCirrusSearchShardCount[ $this->indexTypeName ],
+				'shard_count' => $this->getShardCount(),
 			)
 		);
 		$index->getType('version')->addDocument( $doc );

@@ -60,4 +60,15 @@ class ClusterSettings {
 		throw new \Exception( "If \$wgCirrusSearchReplicas is " .
 			"an array it must contain all index types." );
 	}
+
+	public function getDropDelayedJobsAfter() {
+		$timeout = $this->config->get( 'CirrusSearchDropDelayedJobsAfter' );
+		if ( is_int( $timeout ) ) {
+			return $timeout;
+		} elseif ( isset( $timeout[$this->cluster] ) ) {
+			return $timeout[$this->cluster];
+		}
+		throw new \Exception( "If \$wgCirrusSearchDropDelayedJobsAfter is " .
+			"an array it must contain all configured clusters." );
+	}
 }

@@ -78,4 +78,33 @@ class ClusterSettingsTest extends \PHPUnit_Framework_TestCase {
 		$settings = new ClusterSettings( $config, $cluster );
 		$this->assertEquals( $expect, $settings->getReplicaCount( $indexType ) );
 	}
+
+	public static function provideDropDelayedJobsAfter() {
+		return array(
+			'Simple integer timeout is returned directly' => array(
+				60, 'eqiad', 60
+			),
+			'Can set per-cluster timeout' => array(
+				array( 'eqiad' => 99, 'labsearch' => 42 ),
+				'labsearch',
+				42
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider provideDropDelayedJobsAfter()
+	 */
+	public function testDropDelayedJobsAfter( $timeout, $cluster, $expect ) {
+		$config = $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
+			->disableOriginalConstructor()
+			->getMock();
+		$config->expects( $this->any() )
+			->method( 'get' )
+			->with( 'CirrusSearchDropDelayedJobsAfter' )
+			->will( $this->returnValue( $timeout ) );
+
+		$settings = new ClusterSettings( $config, $cluster );
+		$this->assertEquals( $expect, $settings->getDropDelayedJobsAfter() );
+	}
 }

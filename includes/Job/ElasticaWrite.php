@@ -58,7 +58,6 @@ class ElasticaWrite extends Job {
 	}
 
 	protected function doJob() {
-		global $wgCirrusSearchDropDelayedJobsAfter;
 
 		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
@@ -96,7 +95,8 @@ class ElasticaWrite extends Job {
 
 			if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
 				$diff = time() - $this->params['createdAt'];
-				if ( $diff > $wgCirrusSearchDropDelayedJobsAfter ) {
+				$dropTimeout = $conn->getSettings()->getDropDelayedJobsAfter();
+				if ( $diff > $dropTimeout ) {
 					LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
 						"Dropping delayed job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
 						array(

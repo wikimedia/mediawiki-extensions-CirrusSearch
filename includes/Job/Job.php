@@ -32,6 +32,11 @@ abstract class Job extends MWJob {
 	 */
 	protected $connection;
 
+	/**
+	 * @var boolean should we retry if this job failed
+	 */
+	private $allowRetries = true;
+
 	public function __construct( $title, $params ) {
 		$params += array( 'cluster' => null );
 		// eg: DeletePages -> cirrusSearchDeletePages
@@ -124,4 +129,18 @@ abstract class Job extends MWJob {
 	 * Actually perform the labor of the job
 	 */
 	abstract protected function doJob();
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function allowRetries() {
+		return $this->allowRetries;
+	}
+
+	/**
+	 * @param boolena $allowRetries set wether should be retried if it fails
+	 */
+	protected function setAllowRetries( $allowRetries ) {
+		$this->allowRetries = $allowRetries;
+	}
 }

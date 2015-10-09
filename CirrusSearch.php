@@ -212,6 +212,16 @@ $wgCirrusSearchUpdateShardTimeout = '1ms';
 // delayed on the Elasticsearch node.
 $wgCirrusSearchClientSideUpdateTimeout = 120;
 
+// Client side timeout when initializing connections.
+// Useful to fail fast if elasticsearch is unreachable.
+// Set to 0 to use Elastica defaults (300 sec)
+// You can also set this setting for each cluster:
+// $wgCirrusSearchClientSideConnectTimeout = array(
+//   'cluster1' => 10,
+//   'cluster2' => 5,
+// )
+$wgCirrusSearchClientSideConnectTimeout = 5;
+
 // The amount of time Elasticsearch will wait for search shard actions before
 // giving up on them and returning the results from the other shards.  Defaults
 // to 20s for regular searches which is about twice the slowest queries we see.

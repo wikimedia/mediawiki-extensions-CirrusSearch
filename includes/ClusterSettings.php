@@ -73,4 +73,19 @@ class ClusterSettings {
 		throw new \Exception( "If \$wgCirrusSearchDropDelayedJobsAfter is " .
 			"an array it must contain all configured clusters." );
 	}
+
+	/**
+	 * @return integer Connect timeout to use when initializing connection.
+	 * Fallback to 0 (300 sec) if not specified in cirrus config.
+	 */
+	public function getConnectTimeout() {
+		$timeout = $this->config->get( 'CirrusSearchClientSideConnectTimeout' );
+		if ( is_int( $timeout ) ) {
+			return $timeout;
+		} elseif ( isset( $timeout[$this->cluster] ) ) {
+			return $timeout[$this->cluster];
+		}
+		// 0 means no timeout (defaults to 300 sec)
+		return 0;
+	}
 }

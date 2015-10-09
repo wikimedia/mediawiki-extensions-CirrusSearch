@@ -112,6 +112,7 @@ class Connection extends ElasticaConnection {
 		} else {
 			$this->cluster = $cluster;
 		}
+		$this->setConnectTimeout( $this->getSettings()->getConnectTimeout() );
 		// overwrites previous connection if it exists, but these
 		// seemed more centralized than having the entry points
 		// all call a static method unnecessarily.

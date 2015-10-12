@@ -98,7 +98,7 @@ Feature: Searches with the insource filter
   @regex
   Scenario: insource:// for some complex regexes fails entirely
     When I api search for all:insource:/[ab]*a[ab]{50,80}/
-    Then this error is reported by api: Regular expression is too complex.  Learn more about simplifying it [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].
+    Then this error is reported by api: Regular expression is too complex. Learn more about simplifying it [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].
 
   @regex
   Scenario: insource:// for other complex regexes finds answers and doesn't spin forever

@@ -46,7 +46,9 @@ class ClusterSettings {
 
 	/**
 	 * @param string $indexType
-	 * @return string Number of replicas Elasticsearch can expand or contract to.
+	 * @return string Number of replicas Elasticsearch can expand or contract to
+	 *  in the format of '0-2' for the minimum and maximum number of replicas. May
+	 *  also be the string 'false' when replicas are disabled.
 	 */
 	public function getReplicaCount( $indexType ) {
 		$settings = $this->config->get( 'CirrusSearchReplicas' );

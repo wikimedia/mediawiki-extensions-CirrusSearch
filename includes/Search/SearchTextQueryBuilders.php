@@ -2,8 +2,9 @@
 
 namespace CirrusSearch\Search;
 
-use \CirrusSearch\SearchConfig;
-use \CirrusSearch\Util;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Util;
+use RequestContext;
 
 /**
  * Set of builders to construct the full text search query.
@@ -258,6 +259,19 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 		if ( str_word_count( $queryString ) < $this->profile['min_query_terms'] ) {
 			return false;
 		}
+
+		// @fixme throw in a complete hack which will inform javascript that
+		// this query was a common terms query. This should be removed when the
+		// test is over, or a more generic way to report on the query type
+		// should be invented.
+		global $wgOut;
+		$wgOut->addJsConfigVars( 'wgCirrusCommonTermsApplicable', true );
+
+		$request = RequestContext::getMain()->getRequest();
+		if ( $request !== null && $request->getVal( 'cirrusCommonTermsQueryControlGroup' ) === 'yes' ) {
+			return false;
+		}
+
 
 		return true;
 	}

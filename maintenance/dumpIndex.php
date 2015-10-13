@@ -88,6 +88,7 @@ class DumpIndex extends Maintenance {
 			'(queryString syntax).', false, true );
 		$this->addOption( 'limit', 'Maximum number of documents to dump, 0 means no limit. Defaults to 0.', false, true );
 		$this->addOption( 'indexIdentifier', 'Force the index identifier, use the alias otherwise.', false, true );
+		$this->addOption( 'sourceFields', 'List of comma separated source fields to extract.', false, true );
 	}
 
 	public function execute() {
@@ -121,6 +122,10 @@ class DumpIndex extends Maintenance {
 
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );
+		if ( $this->hasOption( 'sourceFields' ) ) {
+			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
+			$query->setSource( array( 'include' => $sourceFields ) );
+		}
 		if ( $filter ) {
 			$query->setQuery( new \Elastica\Query\Filtered(
 				new \Elastica\Query\MatchAll(), $filter ) );

@@ -4,13 +4,15 @@
 			"Chrumps",
 			"Tar Lócesilion",
 			"WTM",
-			"Darellur"
+			"Darellur",
+			"Saper"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
 	"cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
 	"cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
 	"cirrussearch-too-busy-error": "Wyszukiwanie w tej chwili jest przeciążone. Proszę spróbować później.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Wysłałeś zbyt wiele zapytań jednocześnie. Jeśli się zalogujesz, otrzymasz swój własny limit połączeń, niezależny od innych użytkowników korzystających z tego samego adresu IP.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "Masz uruchomionych zbyt wiele jednoczesnych wyszukiwań.",
 	"cirrussearch-regex-syntax-error": "Błąd składni wyrażeń regularnych w pozycji $2: $1",
 	"cirrussearch-regex-too-busy-error": "Zbyt wiele wyszukiwań wyrażeń regularnych aktualnie jest uruchomione.  Spróbuj ponownie później.",

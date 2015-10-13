@@ -43,6 +43,23 @@ class ElasticaWrite extends Job {
 
 	protected function decideClusters() {
 		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		if ( $this->params['cluster'] !== null &&
+				$config->getElement( 'CirrusSearchClusters', $this->params['cluster'] ) === null ) {
+			// Just in case a job is present in the queue but its cluster
+			// has been removed from the config file.
+			$cluster = $this->params['cluster'];
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Received job {method} for unknown cluster {cluster} {diff}s after insertion",
+				array(
+					'method' => $this->params['method'],
+					'arguments' => $this->params['arguments'],
+					'diff' => time() - $this->params['createdAt'],
+					'cluster' =>  $cluster
+				)
+			);
+			$this->setAllowRetries( false );
+			throw new \RuntimeException( "Received job for unknown cluster $cluster." );
+		}
 		if ( $this->params['cluster'] !== null ) {
 			// parent::__construct initialized the correct connection
 			$name = $this->connection->getClusterName();

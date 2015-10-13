@@ -29,6 +29,16 @@ Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @
   end
 end
 
+clean = false
+Before("@clean") do
+  unless clean
+    steps %(
+      Given I delete DeleteMeRedirect
+    )
+    clean = true
+  end
+end
+
 redirect_loop = false
 Before("@redirect_loop") do
   unless redirect_loop

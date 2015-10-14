@@ -93,7 +93,6 @@ class ElasticsearchIntermediary {
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
 		$this->ut = UserTesting::getInstance();
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 	}
 
 	/**
@@ -161,7 +160,6 @@ class ElasticsearchIntermediary {
 			FormatJson::encode( $parameters ),
 		);
 
-		$tests = array();
 		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
 		foreach ( $ut->getActiveTestNames() as $test ) {
 			$bucket = $ut->getBucket( $test );
@@ -302,7 +300,7 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Log the completion of a request to Elasticsearch.
-	 * @return int number of milliseconds it took to complete the request
+	 * @return int|null number of milliseconds it took to complete the request
 	 */
 	private function finishRequest() {
 		global $wgCirrusSearchLogElasticRequests;

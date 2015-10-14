@@ -638,57 +638,6 @@ class Hooks {
 
 
 	/**
-	 * EventLoggingRegisterSchemas hook handler.
-	 *
-	 * Registers our EventLogging schemas so that they can be converted to
-	 * ResourceLoaderSchemaModules by the EventLogging extension.
-	 *
-	 * If the module has already been registered in
-	 * onResourceLoaderRegisterModules, then it is overwritten.
-	 *
-	 * @param array $schemas The schemas currently registered with the EventLogging
-	 *  extension
-	 * @return bool Always true
-	 */
-	public static function onEventLoggingRegisterSchemas( &$schemas ) {
-		// @see https://meta.wikimedia.org/wiki/Schema:Search
-		$schemas['Search'] = 12057910;
-
-		return true;
-	}
-
-	/**
-	 * ResourceLoaderRegisterModules hook handler
-	 *
-	 * Registers the ext.cirrusSearch.loggingSchema module without a dependency on the
-	 * ext.EventLogging module so that calls to the various log functions are
-	 * effectively NOPs.
-	 *
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderRegisterModules
-	 *
-	 * @param ResourceLoader &$resourceLoader
-	 * @return bool Always true
-	 */
-	public static function onResourceLoaderRegisterModules( ResourceLoader &$resourceLoader ) {
-		global $wgResourceModules;
-
-		if ( isset( $wgResourceModules['ext.eventLogging'] ) ) {
-			$wgResourceModules['ext.cirrusSearch.loggingSchema'] = array(
-				'localBasePath' => dirname( __DIR__ ),
-				'remoteExtPath' => 'CirrusSearch',
-				'scripts' => 'resources/loggingSchema/search.js',
-				'dependencies' => array(
-					'jquery.cookie',
-					'json',
-					'mediawiki.user',
-					'schema.Search',
-				),
-			);
-		}
-		return true;
-	}
-
-	/**
 	 * ResourceLoaderGetConfigVars hook handler
 	 * This should be used for variables which vary with the html
 	 * and for variables this should work cross skin
@@ -704,23 +653,6 @@ class Hooks {
 			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
 			'wgCirrusSearchFeedbackLink' => $wgCirrusSearchFeedbackLink,
 		);
-
-		return true;
-	}
-
-	/**
-	 * Load 'ext.cirrusSearch.loggingSchema' if $wgCirrusSearchEnableSearchLogging is True
-	 *
-	 * @param $out
-	 * @param $skin
-	 * @return bool
-	 */
-	public static function onBeforePageDisplay( OutputPage &$out, Skin &$skin ) {
-		global $wgCirrusSearchEnableSearchLogging;
-
-		if ( $wgCirrusSearchEnableSearchLogging ) {
-			$out->addModules( 'ext.cirrusSearch.loggingSchema' );
-		}
 
 		return true;
 	}

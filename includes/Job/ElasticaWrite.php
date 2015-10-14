@@ -29,6 +29,8 @@ use Status;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ElasticaWrite extends Job {
+	const MAX_ERROR_RETRY = 4;
+
 	/**
 	 * @param Title $title A mediawiki title related to the job
 	 * @param array $params
@@ -37,19 +39,38 @@ class ElasticaWrite extends Job {
 		parent::__construct( $title, $params + array(
 			'createdAt' => time(),
 			'errorCount' => 0,
+			'retryCount' => 0,
 			'cluster' => null,
 		) );
 	}
 
+	/**
+	 * This job handles all its own retries internally. These jobs are so
+	 * numerous that if they were to start failing they would possibly
+	 * overflow the job queue and bring down redis in production.
+	 *
+	 * Basically we just can't let these jobs hang out in the abandonded
+	 * queue for a week like retries typically do. If these jobs get
+	 * failed they will log to CirrusSearchChangeFailed which is a signal
+	 * that some point in time arround the failure needs to be reindexed
+	 * manually. See https://wikitech.wikimedia.org/wiki/Search for more
+	 * details.
+	 */
+	public function allowRetries() {
+		return false;
+	}
+
+	/**
+	 * @return Connection[]
+	 */
 	protected function decideClusters() {
 		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-		if ( $this->params['cluster'] !== null &&
-				$config->getElement( 'CirrusSearchClusters', $this->params['cluster'] ) === null ) {
+		if ( $this->params['cluster'] !== null && !$this->canWriteToCluster( $config, $this->params['cluster'] ) ) {
 			// Just in case a job is present in the queue but its cluster
 			// has been removed from the config file.
 			$cluster = $this->params['cluster'];
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Received job {method} for unknown cluster {cluster} {diff}s after insertion",
+				"Received job {method} for unwritable cluster {cluster} {diff}s after insertion",
 				array(
 					'method' => $this->params['method'],
 					'arguments' => $this->params['arguments'],
@@ -57,8 +78,8 @@ class ElasticaWrite extends Job {
 					'cluster' =>  $cluster
 				)
 			);
-			$this->setAllowRetries( false );
-			throw new \RuntimeException( "Received job for unknown cluster $cluster." );
+			// this job does not allow retries so we just need to throw an exception
+			throw new \RuntimeException( "Received job for unwritable cluster $cluster." );
 		}
 		if ( $this->params['cluster'] !== null ) {
 			// parent::__construct initialized the correct connection
@@ -81,6 +102,21 @@ class ElasticaWrite extends Job {
 		return $connections;
 	}
 
+	private function canWriteToCluster( $config, $cluster ) {
+		if ( $config->getElement( 'CirrusSearchClusters', $cluster ) === null ) {
+			// No definition for the cluster
+			return false;
+		}
+		if ( $config->has( 'CirrusSearchWriteClusters' ) ) {
+			$clusters = $config->get( 'CirrusSearchWriteClusters' );
+			if ( !is_null ( $clusters ) ) {
+				// Check if the cluster is allowed for writing
+				return in_array( $cluster, $clusters );
+			}
+		}
+		return true;
+	}
+
 	protected function doJob() {
 
 		$connections = $this->decideClusters();
@@ -94,6 +130,8 @@ class ElasticaWrite extends Job {
 				'clusters' => array_keys( $connections ),
 			)
 		);
+		$retry = array();
+		$error = array();
 		foreach ( $connections as $clusterName => $conn ) {
 			if ( $this->params['clientSideTimeout'] ) {
 				$conn->setTimeout( $this->params['clientSideTimeout'] );
@@ -107,10 +145,11 @@ class ElasticaWrite extends Job {
 				);
 			} catch ( \Exception $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Exception thrown while running DataSender::{method} in cluster {cluster}",
+					"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
 					array(
 						'method' => $this->params['method'],
 						'cluster' => $clusterName,
+						'errorMessage' => $e->getMessage(),
 						'exception' => $e,
 					)
 				);
@@ -118,62 +157,102 @@ class ElasticaWrite extends Job {
 			}
 
 			if ( $status->hasMessage( 'cirrussearch-indexes-frozen' ) ) {
-				$diff = time() - $this->params['createdAt'];
-				$dropTimeout = $conn->getSettings()->getDropDelayedJobsAfter();
-				if ( $diff > $dropTimeout ) {
-					LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
-						"Dropping delayed job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
-						array(
-							'method' => $this->params['method'],
-							'cluster' => $clusterName,
-							'diff' => $diff,
-						));
-				} else {
-					$delay = self::backoffDelay( $this->params['errorCount'] );
-					LoggerFactory::getInstance( 'CirrusSearch' )->debug(
-						"Requeueing job with frozen indexes to be run {$delay}s later");
-
-					$job = clone $this;
-					$job->params['errorCount']++;
-					$job->params['cluster'] = $clusterName;
-					$job->setDelay( $delay );
-					JobQueueGroup::singleton()->push( $job );
-				}
-
+				$retry[] = $conn;
 			} elseif ( !$status->isOK() ) {
-				// Individual failures should have already logged specific errors,
-				if ( count( $connections ) === 1 ) {
-					// returning false here will requeue the job to be run at a later time.
-					LoggerFactory::getInstance( 'CirrusSearch' )->info(
-						"Job reported failure on cluster {cluster}, allowing job queue to requeue",
-						array( 'cluster' => $clusterName ) );
-					return false;
-				} else {
-					// with multiple connections we only want to re-queue the
-					// failed cluster. This does mean these jobs get one more
-					// attempt than usual, as this one doesn't count towards
-					// the threshold.
-					LoggerFactory::getInstance( 'CirrusSearch' )->info(
-						"Job reported failure on cluster {cluster}. Queueing single cluster job.",
-						array( 'cluster' => $clusterName ) );
-					$job = clone $this;
-					$job->params['cluster'] = $clusterName;
-					JobQueueGroup::singleton()->push( $job );
-				}
+				$error[] = $conn;
 			}
+		}
+
+		foreach ( $retry as $conn ) {
+			$this->requeueRetry( $conn );
+		}
+		foreach ( $error as $conn ) {
+			$this->requeueError( $conn );
+		}
+		if ( !empty( $retry ) || !empty( $error ) ) {
+			$this->setLastError( "ElasticaWrite job reported " . count( $error ) . " failure(s) and " . count( $retry ) . " frozen." );
+			return false;
 		}
 
 		return true;
 	}
 
 	/**
-	 * @param int $errorCount The number of times the job has errored out.
+	 * Re-queue job that is frozen, or drop the job if it has
+	 * been frozen for too long.
+	 *
+	 * @param Connection $conn
+	 */
+	private function requeueRetry( Connection $conn ) {
+		$diff = time() - $this->params['createdAt'];
+		$dropTimeout = $conn->getSettings()->getDropDelayedJobsAfter();
+		if ( $diff > $dropTimeout ) {
+			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
+				"Dropping delayed ElasticaWrite job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
+				array(
+					'method' => $this->params['method'],
+					'cluster' => $conn->getClusterName(),
+					'diff' => $diff,
+				)
+			);
+		} else {
+			$delay = self::backoffDelay( $this->params['retryCount'] );
+			$job = clone $this;
+			$job->params['retryCount']++;
+			$job->params['cluster'] = $conn->getClusterName();
+			$job->setDelay( $delay );
+			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
+				"ElasticaWrite job reported frozen on cluster {cluster}. Requeueing job with delay of {delay}s",
+				array(
+					'cluster' => $conn->getClusterName(),
+					'delay' => $delay
+				)
+			);
+			JobQueueGroup::singleton()->push( $job );
+		}
+	}
+
+	/**
+	 * Re-queue job that failed, or drop the job if it has failed
+	 * too many times
+	 *
+	 * @param Connection $conn
+	 */
+	private function requeueError( Connection $conn ) {
+		if ( $this->params['errorCount'] >= self::MAX_ERROR_RETRY ) {
+			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
+				"Dropping failing ElasticaWrite job for DataSender::{method} in cluster {cluster} after repeated failure",
+				array(
+					'method' => $this->params['method'],
+					'cluster' => $conn->getClusterName(),
+				)
+			);
+		} else {
+			$delay = self::backoffDelay( $this->params['errorCount'] );
+			$job = clone $this;
+			$job->params['errorCount']++;
+			$job->params['cluster'] = $conn->getClusterName();
+			$job->setDelay( $delay );
+			// Individual failures should have already logged specific errors,
+			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+				"ElasticaWrite job reported failure on cluster {cluster}. Requeueing job with delay of {delay}.",
+				array(
+					'cluster' => $conn->getClusterName(),
+					'delay' => $delay
+				)
+			);
+			JobQueueGroup::singleton()->push( $job );
+		}
+	}
+
+	/**
+	 * @param int $retryCount The number of times the job has errored out.
 	 * @return int Number of seconds to delay. With the default minimum exponent
 	 *  of 6 the possible return values are  64, 128, 256, 512 and 1024 giving a
 	 *  maximum delay of 17 minutes.
 	 */
-	public static function backoffDelay( $errorCount ) {
+	public static function backoffDelay( $retryCount ) {
 		global $wgCirrusSearchWriteBackoffExponent;
-		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand(0, min( $errorCount, 4 ) ) ) );
+		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand(0, min( $retryCount, 4 ) ) ) );
 	}
 }

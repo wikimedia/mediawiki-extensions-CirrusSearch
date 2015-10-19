@@ -173,7 +173,7 @@ class ElasticsearchIntermediary {
 		}
 
 		$requestSet = array(
-			'timestamp' => time(),
+			'ts' => time(),
 			'wikiId' => wfWikiId(),
 			'source' => self::getExecutionContext(),
 			'identity' => self::generateIdentToken(),

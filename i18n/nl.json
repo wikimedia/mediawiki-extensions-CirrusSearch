@@ -14,7 +14,7 @@
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd. Als u een IP-adres deelt met andere gebruikers kunt u inloggen om uw eigen grenzen.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd. Als u een IP-adres deelt met andere gebruikers kunt u aanmelden om uw eigen beperkingen te krijgen.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd.",
 	"cirrussearch-regex-syntax-error": "Reguliere expressie syntax fout op $2: $1",
 	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie zoekt momenteel worden uitgevoerd. Probeer het later opnieuw.",

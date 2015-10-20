@@ -23,5 +23,6 @@
 	"apihelp-cirrus-config-dump-description": "Dump da configuração do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki.",
+	"apihelp-cirrus-suggest-description": "Sugerir conclusões para o termo pesquisado.",
 	"cirrussearch-give-feedback": "Dê-nos a sua opinião"
 }

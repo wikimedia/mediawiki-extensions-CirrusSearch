@@ -59,6 +59,7 @@ class CopySearchIndex extends Maintenance {
 			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
+		$this->addOption( 'processes', 'Number of processes to copy with. Defaults to 1', false, true );
 	}
 
 	public function execute() {
@@ -70,6 +71,7 @@ class CopySearchIndex extends Maintenance {
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 		$targetCluster = $this->getOption( 'targetCluster' );
+		$processes = $this->getOption( 'processes', 1 );
 
 		$sourceConnection = $this->getConnection();
 		$targetConnection = $this->getConnection( $targetCluster );
@@ -101,7 +103,7 @@ class CopySearchIndex extends Maintenance {
 				$this->getMappingConfig(),
 				$this
 		);
-		$reindexer->reindex( 1, 1, $reindexRetryAttempts, $reindexChunkSize);
+		$reindexer->reindex( $processes, 1, $reindexRetryAttempts, $reindexChunkSize);
 		$reindexer->optimize();
 		$reindexer->waitForShards();
 	}

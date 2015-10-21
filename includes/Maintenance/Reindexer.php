@@ -311,7 +311,7 @@ class Reindexer {
 						} );
 					$completed += sizeof( $results );
 					$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-					$this->outputIndented( $messagePrefix .
+					$self->outputIndented( $messagePrefix .
 						"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
 				}, 0, $retryAttempts,
 				function( $e, $errors ) use ( $self, $messagePrefix ) {
@@ -458,9 +458,11 @@ class Reindexer {
 	}
 
 	/**
+	 * Public for 5.3 compatibility with closures
+	 *
 	 * @param string $message
 	 */
-	protected function outputIndented( $message ) {
+	public function outputIndented( $message ) {
 		if ( $this->out ) {
 			$this->out->outputIndented( $message );
 		}

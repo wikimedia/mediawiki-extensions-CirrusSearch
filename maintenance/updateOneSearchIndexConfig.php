@@ -163,6 +163,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'justAllocation', 'Just validate the shard allocation settings.  Use ' .
 			"when you need to apply new cache warmers but want to be sure that you won't apply any other " .
 			'changes at an inopportune time.' );
+		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
 	}
 
 	public function execute() {
@@ -218,6 +219,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
+				return;
+			}
+
+			if ( $this->getOption( 'justMapping', false ) ) {
+				$this->validateMapping();
 				return;
 			}
 

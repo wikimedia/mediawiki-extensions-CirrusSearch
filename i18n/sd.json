@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mehtab ahmed"
+			"Mehtab ahmed",
+			"Aursani"
 		]
 	},
-	"cirrussearch-too-busy-error": "ڳولا هن وقت تمام مصروف آهي. براءِ مهرباني ڪجهه دير بعد ٻيهر ڪوشس ڪريو."
+	"cirrussearch-too-busy-error": "ڳولا هن وقت هيڪاندي مصروف آهي. براءِ مهرباني ڪجهہ دير کان پوءِ ٻيهر ڪوشس ڪريو."
 }

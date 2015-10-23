@@ -79,6 +79,7 @@ class ForceSearchIndex extends Maintenance {
 			'This replaces the contents of the index for that entry with the entry built from a skipped process.' .
 			'Without this if the entry does not exist then it will be skipped entirely.  Only set this when running ' .
 			'the first pass of building the index.  Otherwise, don\'t tempt fate by indexing half complete documents.' );
+		$this->addOption( 'forceParse', 'Bypass ParserCache and do a fresh parse of pages from the Content.' );
 		$this->addOption( 'skipParse', 'Skip parsing the page.  This is really only good for running the second half ' .
 			'of the two phase index build.  If this is specified then the default batch size is actually 50.' );
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
@@ -133,6 +134,11 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->getOption( 'skipLinks' ) ) {
 			$updateFlags |= Updater::SKIP_LINKS;
 		}
+
+		if ( $this->getOption( 'forceParse' ) ) {
+			$updateFlags |= Updater::FORCE_PARSE;
+		}
+
 		$this->namespace = $this->hasOption( 'namespace' ) ?
 			intval( $this->getOption( 'namespace' ) ) : null;
 

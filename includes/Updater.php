@@ -10,6 +10,7 @@ use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
 use ParserCache;
+use ParserOutput;
 use Sanitizer;
 use TextContent;
 use Title;
@@ -41,6 +42,7 @@ class Updater extends ElasticsearchIntermediary {
 	const INDEX_ON_SKIP = 1;
 	const SKIP_PARSE = 2;
 	const SKIP_LINKS = 4;
+	const FORCE_PARSE = 8;
 
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
@@ -269,6 +271,7 @@ class Updater extends ElasticsearchIntermediary {
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
 		$skipParse = $flags & self::SKIP_PARSE;
 		$skipLinks = $flags & self::SKIP_LINKS;
+		$forceParse = $flags & self::FORCE_PARSE;
 		$fullDocument = !( $skipParse || $skipLinks );
 
 		$documents = array();
@@ -304,7 +307,10 @@ class Updater extends ElasticsearchIntermediary {
 
 			if ( !$skipParse ) {
 				// Get text to index, based on content and parser output
-				list( $content, $parserOutput ) = $this->getContentAndParserOutput( $page );
+				list( $content, $parserOutput ) = $this->getContentAndParserOutput(
+					$page,
+					$forceParse
+				);
 
 				// Build our page data
 				$pageBuilder = new PageDataBuilder( $doc, $title, $content, $parserOutput );
@@ -358,13 +364,18 @@ class Updater extends ElasticsearchIntermediary {
 	 * Fetch page's content and parser output, using the parser cache if we can
 	 *
 	 * @param WikiPage $page The wikipage to get output for
+	 * @param int $forceParse Bypass ParserCache and force a fresh parse.
 	 * @return array(Content,ParserOutput)
 	 */
-	private function getContentAndParserOutput( $page ) {
+	private function getContentAndParserOutput( $page, $forceParse ) {
 		$content = $page->getContent();
 		$parserOptions = $page->makeParserOptions( 'canonical' );
-		$parserOutput = ParserCache::singleton()->get( $page, $parserOptions );
-		if ( !$parserOutput ) {
+
+		if ( !$forceParse ) {
+			$parserOutput = ParserCache::singleton()->get( $page, $parserOptions );
+		}
+
+		if ( !isset( $parserOutput ) || !$parserOutput instanceof ParserOutput ) {
 			// We specify the revision ID here. There might be a newer revision,
 			// but we don't care because (a) we've already got a job somewhere
 			// in the queue to index it, and (b) we want magic words like

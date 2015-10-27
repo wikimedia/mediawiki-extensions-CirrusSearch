@@ -119,7 +119,7 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		$lang = Searcher::detectLanguage( $term );
+		$lang = Searcher::detectLanguage( $this->connection, $term );
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang] ) ) {
 			return null;
 		}
@@ -158,7 +158,9 @@ class CirrusSearch extends SearchEngine {
 				}
 				if ( $config ) {
 					$matches = $this->searchTextReal( $term, $config );
-					return $matches;
+					if( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
+						$zeroResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
+					}
 				}
 			}
 			// Don't have any other options yet.
@@ -177,6 +179,12 @@ class CirrusSearch extends SearchEngine {
 		}
 	}
 
+	/**
+	 * Do the hard part of the searching - actual Searcher invocation
+	 * @param string $term
+	 * @param SearchConfig $config
+	 * @return NULL|Status|ResultSet
+	 */
 	private function searchTextReal( $term, SearchConfig $config = null ) {
 		global $wgCirrusSearchInterwikiSources;
 
@@ -184,7 +192,7 @@ class CirrusSearch extends SearchEngine {
 		// whitespace.  Cirrussearch treats them both as normal whitespace, but
 		// the preceding isn't appropriatly trimmed.
 		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
-		// No searching for nothing!  That takes forever!
+		// No searching for nothing! That takes forever!
 		if ( !$term ) {
 			return null;
 		}
@@ -285,7 +293,7 @@ class CirrusSearch extends SearchEngine {
 				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, $user, $index, $interwiki );
 				$interwikiResult = $iwSearch->getInterwikiResults( $term );
 				if ( $interwikiResult ) {
-					$status->getValue()->addInterwikiResults( $interwikiResult );
+					$status->getValue()->addInterwikiResults( $interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki );
 				}
 			}
 		}

@@ -172,11 +172,18 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
-		if ( $source && $source->isDisabled() ) {
-			return;
-		}
-		$lines = Util::parseSettingsInMessage( $source->plain() );
+		$cache = \ObjectCache::newAccelerator( CACHE_NONE );
+		$lines = $cache->getWithSetCallback(
+			$cache->makeKey( 'cirrussearch-morelikethis-settings' ),
+			600,
+			function () {
+				$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
+				if ( $source && $source->isDisabled() ) {
+					return array();
+				}
+				return Util::parseSettingsInMessage( $source->plain() );
+			}
+		);
 
 		foreach ( $lines as $line ) {
 			list( $k, $v ) = explode( ':', $line, 2 );

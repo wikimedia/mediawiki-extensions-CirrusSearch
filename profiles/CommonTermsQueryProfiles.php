@@ -5,8 +5,6 @@ namespace CirrusSearch;
  * CirrusSearch - List of profiles for CommonsTermQuery
  * see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
  *
- * Set $wgSearchType to 'CirrusSearch'
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -89,7 +87,7 @@ class CommonTermsQueryProfiles {
 			$wgCirrusSearchCommonTermsQueryProfiles;
 
 		Util::overrideYesNo( $wgCirrusSearchUseCommonTermsQuery, $request, 'cirrusUseCommonTermsQuery' );
-		if ( $wgCirrusSearchCommonTermsQueryProfile ) {
+		if ( $wgCirrusSearchUseCommonTermsQuery ) {
 			$profile = $request->getVal( 'cirrusCommonTermsQueryProfile' );
 			if ( $profile !== null && isset ( $wgCirrusSearchCommonTermsQueryProfiles[$profile] ) ) {
 				$wgCirrusSearchCommonTermsQueryProfile = $wgCirrusSearchCommonTermsQueryProfiles[$profile];

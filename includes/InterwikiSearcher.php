@@ -41,14 +41,14 @@ class InterwikiSearcher extends Searcher {
 	 * @param string $interwiki Interwiki prefix we're searching
 	 */
 	public function __construct( Connection $connection, array $namespaces, User $user = null, $index, $interwiki ) {
-		parent::__construct( $connection, 0, self::MAX_RESULTS, null, $namespaces, $user, $index );
-		$this->interwiki = $interwiki;
 		// Only allow core namespaces. We can't be sure any others exist
-		if ( $this->namespaces !== null ) {
-			$this->namespaces = array_filter( $namespaces, function( $namespace ) {
+		if ( $namespaces !== null ) {
+			$namespaces = array_filter( $namespaces, function( $namespace ) {
 				return $namespace <= 15;
 			} );
 		}
+		parent::__construct( $connection, 0, self::MAX_RESULTS, null, $namespaces, $user, $index );
+		$this->interwiki = $interwiki;
 	}
 
 	/**
@@ -64,8 +64,8 @@ class InterwikiSearcher extends Searcher {
 			return;
 		}
 
-		$namespaceKey = $this->namespaces !== null ?
-			implode( ',', $this->namespaces ) : '';
+		$namespaceKey = $this->getNamespaces() !== null ?
+			implode( ',', $this->getNamespaces() ) : '';
 
 		$results = array();
 		$key = wfMemcKey(

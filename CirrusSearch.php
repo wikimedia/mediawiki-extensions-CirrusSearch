@@ -24,6 +24,7 @@
 require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
 require_once __DIR__ . "/profiles/CommonTermsQueryProfiles.php";
+require_once __DIR__ . "/profiles/RescoreProfiles.php";
 
 $wgExtensionCredits['other'][] = array(
 	'path'           => __FILE__,
@@ -798,6 +799,12 @@ $wgCirrusSearchCommonTermsQueryProfile = $wgCirrusSearchCommonTermsQueryProfiles
  * If set to non-empty string, interwiki results will have ?wprov=XYZ parameter added.
  */
 $wgCirrusSearchInterwikiProv = false;
+
+/**
+ * Set the rescore profile to default.
+ * see profile/RescoreProfiles.php for more info
+ */
+$wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

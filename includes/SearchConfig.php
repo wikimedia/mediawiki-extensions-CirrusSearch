@@ -138,4 +138,12 @@ class SearchConfig implements \Config {
 		}
 		return $data;
 	}
+
+	/**
+	 * For Unit tests
+	 * @param Config override source
+	 */
+	protected function setSource( $source ) {
+		$this->source = $source;
+	}
 }

@@ -3,6 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Searcher;
+use CirrusSearch\Util;
 
 /**
  * Scoring methods used by the completion suggester
@@ -124,11 +125,11 @@ class QualityScore implements SuggestScoringMethod {
 	/**
 	 * @param integer $maxDocs the number of docs in the index
 	 * @param array of key values, key is the template name, value the boost factor.
-	 *        Defaults to Searcher::getDefaultBoostTemplates()
+	 *        Defaults to Util::getDefaultBoostTemplates()
 	 */
 	public function __construct( $maxDocs, $boostTemplates = null ) {
 		$this->maxDocs = $maxDocs;
-		$this->boostTemplates = $boostTemplates ?: Searcher::getDefaultBoostTemplates();
+		$this->boostTemplates = $boostTemplates ?: Util::getDefaultBoostTemplates();
 		// We normalize incoming links according to the size of the index
 		$this->incomingLinksNorm = (int) ($maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR);
 		if ( $this->incomingLinksNorm < 1 ) {

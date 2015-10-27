@@ -9,6 +9,7 @@ use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
+use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use ConfigFactory;
 use Language;
@@ -79,11 +80,6 @@ class Searcher extends ElasticsearchIntermediary {
 	private $limit;
 
 	/**
-	 * @var int[]|null array of namespaces in which to search
-	 */
-	protected $namespaces;
-
-	/**
 	 * @var Language language of the wiki
 	 */
 	private $language;
@@ -131,26 +127,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $rescore = array();
 	/**
-	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
-	 * with time since the last update.
-	 */
-	private $preferRecentDecayPortion = 0;
-	/**
-	 * @var float number of days it takes an the portion of an article score that will decay with time
-	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
-	 */
-	private $preferRecentHalfLife = 0;
-	/**
-	 * @var boolean should the query results boost pages with more incoming links.  Default to false.
-	 */
-	private $boostLinks = false;
-	/**
-	 * @var float[] template name to boost multiplier for having a template.  Defaults to none but initialized by
-	 * queries that use it to self::getDefaultBoostTemplates() if they need it.  That is too expensive to do by
-	 * default though.
-	 */
-	private $boostTemplates = array();
-	/**
 	 * @var string index base name to use
 	 */
 	private $indexBaseName;
@@ -193,12 +169,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var boolean return explanation with results
 	 */
 	private $returnExplain = false;
-
-	/**
-	 * @var null|float[] lazily initialized version of $wgCirrusSearchNamespaceWeights with all string keys
-	 * translated into integer namespace codes using $this->language.
-	 */
-	private $normalizedNamespaceWeights = null;
 
 	/**
 	 * @var \Elastica\Query\Match[] queries that don't use Elastic's "query string" query, for more
@@ -246,11 +216,10 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->config = $config;
 		$this->offset = min( $offset, self::MAX_OFFSET );
 		$this->limit = $limit;
-		$this->namespaces = $namespaces;
 		$this->indexBaseName = $index ?: $config->getWikiId();
 		$this->language = $config->get( 'ContLang' );
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
-		$this->searchContext = new SearchContext( $this->config );
+		$this->searchContext = new SearchContext( $this->config, $namespaces );
 	}
 
 	/**
@@ -359,8 +328,8 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->query = new \Elastica\Query\MatchAll();
 		}
-		$this->boostTemplates = self::getDefaultBoostTemplates();
-		$this->boostLinks = true;
+		// @todo: use dedicated rescore profiles for prefix search.
+		$this->searchContext->setBoostLinks( true );
 
 		return $this->search( 'prefix', $search );
 	}
@@ -389,7 +358,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
 		$this->term = $term;
-		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$searchType = 'full_text';
 		// Handle title prefix notation
 		$prefixPos = strpos( $this->term, 'prefix:' );
@@ -404,7 +372,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$cirrusSearchEngine = new CirrusSearch();
 				$cirrusSearchEngine->setConnection( $this->connection );
 				$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
-				$this->namespaces = $cirrusSearchEngine->namespaces;
+				$this->searchContext->setNamespaces( $cirrusSearchEngine->namespaces );
 				// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 				if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
 					$value = str_replace( '_', ' ', $value );
@@ -436,8 +404,7 @@ class Searcher extends ElasticsearchIntermediary {
 				return '';
 			}
 		);
-		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
-		$this->preferRecentHalfLife = $preferRecentHalfLife;
+		$this->searchContext->setPreferRecentOptions( $preferRecentDecayPortion, $preferRecentHalfLife );
 
 		$this->extractSpecialSyntaxFromTerm(
 			'/^\s*local:/',
@@ -450,7 +417,6 @@ class Searcher extends ElasticsearchIntermediary {
 		// Handle other filters
 		$filters = $this->filters;
 		$notFilters = $this->notFilters;
-		$boostTemplates = self::getDefaultBoostTemplates();
 		$highlightSource = array();
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
@@ -536,7 +502,7 @@ GROOVY;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
-			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters, &$boostTemplates,
+			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				$key = $matches['key'];
 				$quotedValue = $matches['value'];
@@ -552,10 +518,8 @@ GROOVY;
 				}
 				switch ( $key ) {
 					case 'boost-templates':
-						$boostTemplates = Searcher::parseBoostTemplates( $value );
-						if ( $boostTemplates === null ) {
-							$boostTemplates = Searcher::getDefaultBoostTemplates();
-						}
+						$boostTemplates = Util::parseBoostTemplates( $value );
+						$searcher->getSearchContext()->setBoostTemplatesFromQuery( $boostTemplates );
 						$searchContainedSyntax = true;
 						return '';
 					case 'hastemplate':
@@ -608,7 +572,6 @@ GROOVY;
 		}
 		$this->filters = $filters;
 		$this->notFilters = $notFilters;
-		$this->boostTemplates = $boostTemplates;
 		$this->searchContext->setSearchContainedSyntax( $searchContainedSyntax );
 		$this->fuzzyQuery = $fuzzyQuery;
 		$this->highlightSource = $highlightSource;
@@ -1308,10 +1271,11 @@ GROOVY;
 
 		$extraIndexes = array();
 		$indexType = $this->pickIndexTypeFromNamespaces();
-		if ( $this->namespaces ) {
+		$namespaces = $this->getNamespaces();
+		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
-				$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $this->namespaces );
+				$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $namespaces );
 			}
 		}
 
@@ -1532,7 +1496,7 @@ GROOVY;
 	 * @return int[]|null
 	 */
 	public function getNamespaces() {
-		return $this->namespaces;
+		return $this->searchContext->getNamespaces();
 	}
 
 	/**
@@ -1545,7 +1509,7 @@ GROOVY;
 			// We're reaching into another wiki's indexes and we don't know what is there so be defensive.
 			return true;
 		}
-		$nsCount = count( $this->namespaces );
+		$nsCount = count( $this->getNamespaces() );
 		$validNsCount = count( MWNamespace::getValidNamespaces() );
 		if ( $nsCount === $validNsCount ) {
 			// We're only on our wiki and we're searching _everything_.
@@ -1740,7 +1704,8 @@ GROOVY;
 		$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
 		$fields[] = "text${fieldSuffix}^${textWeight}";
 		$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
-		if ( !$this->namespaces || in_array( NS_FILE, $this->namespaces ) ) {
+		$namespaces = $this->getNamespaces();
+		if ( !$namespaces || in_array( NS_FILE, $namespaces ) ) {
 			$fileTextWeight = $weight * $searchWeights[ 'file_text' ];
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
 		}
@@ -1752,12 +1717,13 @@ GROOVY;
 	 * @return string|false either an index type or false to use all index types
 	 */
 	private function pickIndexTypeFromNamespaces() {
-		if ( !$this->namespaces ) {
+		$namespaces = $this->getNamespaces();
+		if ( !$namespaces ) {
 			return false; // False selects all index types
 		}
 
 		$indexTypes = array();
-		foreach ( $this->namespaces as $namespace ) {
+		foreach ( $namespaces as $namespace ) {
 			$indexTypes[] =
 				$this->connection->getIndexSuffixForNamespace( $namespace );
 		}
@@ -1776,7 +1742,7 @@ GROOVY;
 		if ( $this->limitSearchToLocalWiki ) {
 			return array();
 		}
-		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->namespaces );
+		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->getNamespaces() );
 		if ( $extraIndexes ) {
 			$this->notFilters[] = new \Elastica\Filter\Term(
 				array( 'local_sites_with_dupe' => $this->indexBaseName ) );
@@ -1796,186 +1762,10 @@ GROOVY;
 			return;
 		}
 
-		$functionScore = new \Elastica\Query\FunctionScore();
-		$useFunctionScore = false;
-
-		// Customize score by boosting based on incoming links count
-		if ( $this->boostLinks ) {
-			$useFunctionScore = true;
-			if ( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'field_value_factor_with_default' ) ) {
-				$functionScore->addFunction( 'field_value_factor_with_default', array(
-					'field' => 'incoming_links',
-					'modifier' => 'log2p',
-					'missing' => 0,
-				) );
-			} else {
-				$scoreBoostExpression = "log10(doc['incoming_links'].value + 2)";
-				$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostExpression, null, 'expression' ) );
-			}
-		}
-
-		// Customize score by decaying a portion by time since last update
-		if ( $this->preferRecentDecayPortion > 0 && $this->preferRecentHalfLife > 0 ) {
-			// Convert half life for time in days to decay constant for time in milliseconds.
-			$decayConstant = log( 2 ) / $this->preferRecentHalfLife / 86400000;
-			$parameters = array(
-				'decayConstant' => $decayConstant,
-				'decayPortion' => $this->preferRecentDecayPortion,
-				'nonDecayPortion' => 1 - $this->preferRecentDecayPortion,
-				'now' => time() * 1000
-			);
-
-			// e^ct where t is last modified time - now which is negative
-			$exponentialDecayExpression = "exp(decayConstant * (doc['timestamp'].value - now))";
-			if ( $this->preferRecentDecayPortion !== 1.0 ) {
-				$exponentialDecayExpression = "$exponentialDecayExpression * decayPortion + nonDecayPortion";
-			}
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayExpression,
-				$parameters, 'expression' ) );
-			$useFunctionScore = true;
-		}
-
-		// Add boosts for pages that contain certain templates
-		if ( $this->boostTemplates ) {
-			foreach ( $this->boostTemplates as $name => $boost ) {
-				$match = new \Elastica\Query\Match();
-				$match->setFieldQuery( 'template', $name );
-				$filterQuery = new \Elastica\Filter\Query( $match );
-				$filterQuery->setCached( true );
-				$functionScore->addBoostFactorFunction( $boost, $filterQuery );
-			}
-			$useFunctionScore = true;
-		}
-
-		// Add boosts for namespaces
-		$namespacesToBoost = $this->namespaces ?: MWNamespace::getValidNamespaces();
-		if ( $namespacesToBoost ) {
-			// Group common weights together and build a single filter per weight
-			// to save on filters.
-			$weightToNs = array();
-			foreach ( $namespacesToBoost as $ns ) {
-				$weight = $this->getBoostForNamespace( $ns );
-				$weightToNs[ (string)$weight ][] = $ns;
-			}
-			if ( count( $weightToNs ) > 1 ) {
-				unset( $weightToNs[ '1' ] );  // That'd be redundant.
-				foreach ( $weightToNs as $weight => $namespaces ) {
-					$filter = new \Elastica\Filter\Terms( 'namespace', $namespaces );
-					$functionScore->addBoostFactorFunction( $weight, $filter );
-					$useFunctionScore = true;
-				}
-			}
-		}
-
-		// Boost pages in a user's language
-		$userLang = $this->config->getUserLanguage();
-		$userWeight = $this->config->getElement( 'CirrusSearchLanguageWeight', 'user' );
-		if ( $userWeight ) {
-			$functionScore->addBoostFactorFunction(
-				$userWeight,
-				new \Elastica\Filter\Term( array( 'language' => $userLang ) )
-			);
-			$useFunctionScore = true;
-		}
-		// And a wiki's language, if it's different
-		$wikiWeight = $this->config->getElement( 'CirrusSearchLanguageWeight', 'wiki' );
-		if ( $userLang != $this->config->get( 'LanguageCode' ) && $wikiWeight ) {
-			$functionScore->addBoostFactorFunction(
-				$wikiWeight,
-				new \Elastica\Filter\Term( array( 'language' => $this->config->get( 'LanguageCode' ) ) )
-			);
-			$useFunctionScore = true;
-		}
-
-		if ( !$useFunctionScore ) {
-			// Nothing to do
-			return;
-		}
-
-		// The function score is done as a rescore on top of everything else
-		$this->rescore[] = array(
-			'window_size' => $this->config->get( 'CirrusSearchFunctionRescoreWindowSize' ),
-			'query' => array(
-				'rescore_query' => $functionScore,
-				'query_weight' => 1.0,
-				'rescore_query_weight' => 1.0,
-				'score_mode' => 'multiply',
-			)
-		);
+		$builder = new RescoreBuilder( $this->searchContext, $this->config->get( 'CirrusSearchRescoreProfile' ) );
+		$this->rescore = array_merge( $this->rescore, $builder->build() );
 	}
 
-	/**
-	 * @return float[]
-	 */
-	public static function getDefaultBoostTemplates() {
-		static $defaultBoostTemplates = null;
-		if ( $defaultBoostTemplates === null ) {
-			$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
-			$defaultBoostTemplates = array();
-			if( !$source->isDisabled() ) {
-				$lines = Util::parseSettingsInMessage( $source->plain() );
-				$defaultBoostTemplates = self::parseBoostTemplates(
-					implode( ' ', $lines ) );                  // Now parse the templates
-			}
-		}
-		return $defaultBoostTemplates;
-	}
-
-	/**
-	 * Parse boosted templates.  Parse failures silently return no boosted templates.
-	 * @param string $text text representation of boosted templates
-	 * @return float[] array of boosted templates.
-	 */
-	public static function parseBoostTemplates( $text ) {
-		$boostTemplates = array();
-		$templateMatches = array();
-		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
-			foreach ( $templateMatches as $templateMatch ) {
-				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
-			}
-		}
-		return $boostTemplates;
-	}
-
-	/**
-	 * Get the weight of a namespace.
-	 * @param int $namespace the namespace
-	 * @return float the weight of the namespace
-	 */
-	private function getBoostForNamespace( $namespace ) {
-		if ( $this->normalizedNamespaceWeights === null ) {
-			$this->normalizedNamespaceWeights = array();
-			foreach ( $this->config->get( 'CirrusSearchNamespaceWeights' ) as $ns => $weight ) {
-				if ( is_string( $ns ) ) {
-					$ns = $this->language->getNsIndex( $ns );
-					// Ignore namespaces that don't exist.
-					if ( $ns === false ) {
-						continue;
-					}
-				}
-				// Now $ns should always be an integer.
-				$this->normalizedNamespaceWeights[ $ns ] = $weight;
-			}
-		}
-
-		if ( isset( $this->normalizedNamespaceWeights[ $namespace ] ) ) {
-			return $this->normalizedNamespaceWeights[ $namespace ];
-		}
-		if ( MWNamespace::isSubject( $namespace ) ) {
-			if ( $namespace === NS_MAIN ) {
-				return 1;
-			}
-			return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' );
-		}
-		$subjectNs = MWNamespace::getSubject( $namespace );
-		if ( isset( $this->normalizedNamespaceWeights[ $subjectNs ] ) ) {
-			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' ) * $this->normalizedNamespaceWeights[ $subjectNs ];
-		}
-		if ( $namespace === NS_TALK ) {
-			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
-		}
-		return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' ) * $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
-	}
 
 	/**
 	 * @param string $search
@@ -2028,7 +1818,7 @@ GROOVY;
 		}
 		$foundNamespace = $foundNamespace[ 0 ];
 		$query = substr( $query, $colon + 1 );
-		$this->namespaces = array( $foundNamespace->getId() );
+		$this->searchContext->setNamespaces( array( $foundNamespace->getId() ) );
 	}
 
 	/**

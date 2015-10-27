@@ -35,6 +35,11 @@ class SearchContext {
 	private $config;
 
 	/**
+	 * @var array of integer (list of namespaces)
+	 */
+	private $namespaces;
+
+	/**
 	 * @var boolean
 	 */
 	private $searchContainedSyntax = false;
@@ -50,11 +55,33 @@ class SearchContext {
 	 */
 	private $searchTextQueryBuilder;
 
+	/**
+	 * @var array list of boost templates extracted from the query string
+	 */
+	private $boostTemplatesFromQuery;
 
+	/**
+	 * @deprecated use rescore profiles instead
+	 * @var boolean do we need to boost links
+	 */
+	private $boostLinks = false;
 
-	public function __construct( SearchConfig $config ) {
+	/**
+	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
+	 * with time since the last update.
+	 */
+	private $preferRecentDecayPortion = 0;
+	/**
+	 * @var float number of days it takes an the portion of an article score that will decay with time
+	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
+	 */
+	private $preferRecentHalfLife = 0;
+
+	public function __construct( SearchConfig $config, $namespaces ) {
 		$this->config = $config;
 		$this->searchTextQueryBuilderFactory = new SearchTextQueryBuilderFactory( $this );
+		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
+		$this->namespaces = $namespaces;
 	}
 
 	/**
@@ -62,6 +89,23 @@ class SearchContext {
 	 */
 	public function getConfig() {
 		return $this->config;
+	}
+
+	/**
+	 * the namespaces being requested.
+	 * NOTE: this value may change during the Searcher process.
+	 * @return array of integer
+	 */
+	public function getNamespaces() {
+		return $this->namespaces;
+	}
+
+	/**
+	 * set the namespaces
+	 * @param array $namespaces array of integer
+	 */
+	public function setNamespaces( $namespaces ) {
+		$this->namespaces = $namespaces;
 	}
 
 	/**
@@ -79,18 +123,26 @@ class SearchContext {
 	}
 
 	/**
-	 * @return true if CommonTermsQuery is allowed
+	 * @return boolean true if CommonTermsQuery is allowed
 	 */
 	public function isUseCommonTermsQuery() {
 		return $this->config->get('CirrusSearchUseCommonTermsQuery' );
 	}
 
 	/**
-	 * @return true if we can use the safer query from the wikimedia extra
+	 * @return boolean true if we can use the safer query from the wikimedia extra
 	 * plugin
 	 */
 	public function isUseSafer() {
 		return ( !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' ) ) );
+	}
+
+	/**
+	 * @return boolean true  if we can use the function score field_value_factor_with_default provided
+	 * by the wikimedia extra plugin
+	 */
+	public function isUseFieldValueFactorWithDefault() {
+		return !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'field_value_factor_with_default' ) );
 	}
 
 	/**
@@ -129,5 +181,72 @@ class SearchContext {
 	 */
 	public function searchTextQueryBuilder( $queryStringQueryString ) {
 		return $this->searchTextQueryBuilderFactory->getBuilder( $queryStringQueryString );
+	}
+
+	/**
+	 * Return the list of boosted templates specified in the user query (special syntax)
+	 * null if not used in the query or an empty array if there was a syntax error.
+	 * Initiliazed after special syntax extraction.
+	 * @return array|null of boosted templates, key is the template value is the weight
+	 */
+	public function getBoostTemplatesFromQuery() {
+		return $this->boostTemplatesFromQuery;
+	}
+
+	/**
+	 * @param array $boostTemplatesFromQuery boosted templates extracted from query
+	 */
+	public function setBoostTemplatesFromQuery( $boostTemplatesFromQuery ) {
+		$this->boostTemplatesFromQuery = $boostTemplatesFromQuery;
+	}
+
+	/**
+	 * @deprecated use rescore profiles
+	 * @param boolean deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
+	 */
+	public function setBoostLinks( $boostLinks ) {
+		$this->boostLinks = $boostLinks;
+	}
+
+	/**
+	 * @deprecated use custom rescore profile
+	 * @return boolean
+	 */
+	public function isBoostLinks() {
+		return $this->boostLinks;
+	}
+
+	/**
+	 * Set prefer recent options
+	 * @param float $preferRecentDecayPortion
+	 * @param float $preferRecentHalfLife
+	 */
+	public function setPreferRecentOptions( $preferRecentDecayPortion, $preferRecentHalfLife ) {
+		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
+		$this->preferRecentHalfLife = $preferRecentHalfLife;
+	}
+
+
+	/**
+	 * @return true if preferRecent options has been set.
+	 */
+	public function hasPreferRecentOptions() {
+		return $this->preferRecentHalfLife > 0 && $this->preferRecentDecayPortion > 0;
+	}
+
+	/**
+	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 * @return float the decay portion for prefer recent
+	 */
+	public function getPreferRecentDecayPortion() {
+		return $this->preferRecentDecayPortion;
+	}
+
+	/**
+	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 * @return float the half life for prefer recent
+	 */
+	public function getPreferRecentHalfLife() {
+		return $this->preferRecentHalfLife;
 	}
 }

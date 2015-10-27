@@ -32,6 +32,11 @@ use User;
  */
 class Util {
 	/**
+	 * Cache getDefaultBoostTemplates()
+	 * @var array boost templates
+	 */
+	private static $defaultBoostTemplates = null;
+	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying
 	 * by gender if need be.
 	 *
@@ -414,5 +419,43 @@ class Util {
 				$dest = $val;
 			}
 		}
+	}
+
+	/**
+	 * Parse boosted templates.  Parse failures silently return no boosted templates.
+	 * @param string $text text representation of boosted templates
+	 * @return array of boosted templates (key is the template, value is a float).
+	 */
+	public static function parseBoostTemplates( $text ) {
+		$boostTemplates = array();
+		$templateMatches = array();
+		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
+			foreach ( $templateMatches as $templateMatch ) {
+				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
+			}
+		}
+		return $boostTemplates;
+	}
+
+	/**
+	 * @return float[]
+	 */
+	public static function getDefaultBoostTemplates() {
+		if ( self::$defaultBoostTemplates === null ) {
+			$cache = \ObjectCache::newAccelerator( CACHE_NONE );
+			self::$defaultBoostTemplates = $cache->getWithSetCallback(
+				$cache->makeKey( 'cirrussearch-boost-templates' ),
+				600,
+				function() {
+					$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
+					if( !$source->isDisabled() ) {
+						$lines = Util::parseSettingsInMessage( $source->plain() );
+						return Util::parseBoostTemplates( implode( ' ', $lines ) );                  // Now parse the templates
+					}
+					return array();
+				}
+			);
+		}
+		return self::$defaultBoostTemplates;
 	}
 }

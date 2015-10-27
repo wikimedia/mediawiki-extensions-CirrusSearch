@@ -179,7 +179,11 @@ class ResultSet extends SearchResultSet {
 	}
 
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return isset($this->interwikiResults[$type])? $this->interwikiResults[$type] : array();
+		return isset($this->interwikiResults[$type]) ? $this->interwikiResults[$type] : array();
+	}
+
+	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
+		return isset($this->interwikiResults[$type]);
 	}
 
 	public function searchContainedSyntax() {

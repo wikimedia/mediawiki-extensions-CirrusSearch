@@ -583,7 +583,7 @@ class Hooks {
 	 * @param int $oldId The page id of the old page.
 	 * @return bool
 	 */
-	public static function onTitleMoveComplete( Title &$title, Title &$newTitle, &$user, $oldId ) {
+	public static function onTitleMoveComplete( Title $title, Title $newTitle, $user, $oldId ) {
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.

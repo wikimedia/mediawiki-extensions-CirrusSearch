@@ -314,7 +314,6 @@ class Hooks {
 		JobQueueGroup::singleton()->push(
 			Job\MassIndex::build(
 				array( WikiPage::factory( $title ) ),
-				false,
 				Updater::INDEX_EVERYTHING
 			)
 		);

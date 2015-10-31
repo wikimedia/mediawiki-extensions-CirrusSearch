@@ -6,7 +6,7 @@
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-įgalinta MediaWiki paieška",
-	"cirrussearch-backend-error": "Nepavyko atlikti Jūsų paieškos dėl laikino sutrikimo. Prašome vėliau pabandyti dar kartą.",
+	"cirrussearch-backend-error": "Nepavyko atlikti jūsų paieškos dėl laikino sutrikimo. Prašome vėliau pabandyti dar kartą.",
 	"cirrussearch-parse-error": "Užklausa nebuvo suprasta. Prašome ją supaprastinti. Ši užklausa buvo išsaugota, kad būtų galima patobulinti paieškos sistemą.",
 	"cirrussearch-too-busy-error": "Paieška dabar yra per daug apkrauta. Prašome vėliau pabandyti dar kartą.",
 	"cirrussearch-too-busy-for-you-anonymous-error": "Jūs vykdote per daug paieškų tuo pačiu metu. Jeigu Jūs dalinatės IP adresu su kitais naudotojais, galite prisijungti ir gausite savo atskirą limitą.",

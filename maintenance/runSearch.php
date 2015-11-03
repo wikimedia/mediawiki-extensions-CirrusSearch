@@ -103,9 +103,34 @@ class RunSearch extends Maintenance {
 		if ( $status->isOK() ) {
 			$value = $status->getValue();
 			if ( $value instanceof ResultSet ) {
-				$data['rows'] = $value->numRows();
+				// these are prefix or full text results
+				$data['totalHits'] = $value->getTotalHits();
+				$data['rows'] = array();
+				$result = $value->next();
+				while ( $result ) {
+					$data['rows'][] = array(
+						'pageId' => $result->getTitle()->getArticleId(),
+						'title' => $result->getTitle()->getPrefixedText(),
+						'snippets' => array(
+							'text' => $result->getTextSnippet( $query ),
+							'title' => $result->getTitleSnippet(),
+							'redirect' => $result->getRedirectSnippet(),
+							'section' => $result->getSectionSnippet(),
+							'category' => $result->getCategorySnippet(),
+						),
+					);
+					$result = $value->next();
+				}
 			} elseif ( is_array ($value ) ) {
-				$data['rows'] = count( $value );
+				// these are suggestion results
+				$data['totalHits'] = count( $value );
+				foreach ( $value as $row ) {
+					$data['rows'][] = array(
+						'pageId' => $row['pageId'],
+						'title' => $row['title']->getPrefixedText(),
+						'snippets' => array(),
+					);
+				}
 			}
 		} else {
 			$data['error'] = $status->getMessage()->text();

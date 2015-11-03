@@ -147,36 +147,34 @@ class CirrusSearch extends SearchEngine {
 			$rewritten = $zeroResult->getSuggestionQuery();
 			$rewrittenSnippet = $zeroResult->getSuggestionSnippet();
 			$this->showSuggestion = false;
-		} else {
-			$altWiki = $this->hasSecondaryLanguage( $term );
-			if ( $altWiki ) {
-				try {
-					$config = new SearchConfig( $altWiki[0], $altWiki[1] );
-				} catch ( MWException $e ) {
-					wfDebug( "Failed to get $altWiki config: {$e->getMessage()}");
-					$config = null;
-				}
-				if ( $config ) {
-					$matches = $this->searchTextReal( $term, $config );
-					if( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
-						$zeroResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
-					}
-				}
+			$rewrittenResult = $this->searchTextReal( $rewritten );
+			if (
+				$rewrittenResult instanceof ResultSet
+				&& $rewrittenResult->numRows() > 0
+			) {
+				$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
+				return $rewrittenResult;
 			}
-			// Don't have any other options yet.
-			return $zeroResult;
 		}
 
-		$rewrittenResult = $this->searchTextReal( $rewritten );
-		if (
-			$rewrittenResult instanceof ResultSet
-			&& $rewrittenResult->numRows() > 0
-		) {
-			$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
-			return $rewrittenResult;
-		} else {
-			return $zeroResult;
+		$altWiki = $this->hasSecondaryLanguage( $term );
+		if ( $altWiki ) {
+			try {
+				$config = new SearchConfig( $altWiki[0], $altWiki[1] );
+			} catch ( MWException $e ) {
+				wfDebug( "Failed to get $altWiki config: {$e->getMessage()}");
+				$config = null;
+			}
+			if ( $config ) {
+				$matches = $this->searchTextReal( $term, $config );
+				if( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
+					$zeroResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
+				}
+			}
 		}
+
+		// Don't have any other options yet.
+		return $zeroResult;
 	}
 
 	/**

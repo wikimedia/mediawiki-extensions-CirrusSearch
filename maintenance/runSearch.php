@@ -46,7 +46,7 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'type', 'What type of search to run, prefix, suggest or full_text. ' .
 			'defaults to full_text.', false, true );
 		$this->addOption( 'options', 'A JSON object mapping from global variable to ' .
-			'its test value' );
+			'its test value', false, true );
 		$this->addOption( 'fork', 'Fork multiple processes to run queries from.' .
 			'defaults to false.', false, true );
 	}

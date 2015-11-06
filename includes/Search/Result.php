@@ -38,6 +38,7 @@ class Result extends SearchResult {
 	private $wordCount;
 	private $byteSize;
 	private $timestamp;
+	private $docId;
 
 	/**
 	 * Build the result.
@@ -50,6 +51,7 @@ class Result extends SearchResult {
 		if ( $interwiki ) {
 			$this->setInterwiki( $result, $interwiki );
 		}
+		$this->docId = $result->getId();
 		$this->mTitle = Title::makeTitle( $result->namespace, $result->title, '', $this->interwiki );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
@@ -272,5 +274,9 @@ class Result extends SearchResult {
 
 	public function getInterwikiNamespaceText() {
 		return $this->interwikiNamespace;
+	}
+
+	public function getDocId() {
+		return $this->docId;
 	}
 }

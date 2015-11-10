@@ -806,6 +806,11 @@ $wgCirrusSearchInterwikiProv = false;
  */
 $wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
 
+/**
+ * If current wiki has less than this number of results, try to search other language wikis.
+ */
+$wgCirrusSearchInterwikiThreshold = 3;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

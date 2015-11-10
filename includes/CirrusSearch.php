@@ -95,7 +95,8 @@ class CirrusSearch extends SearchEngine {
 			return $matches;
 		}
 
-		if ( $this->isFeatureEnabled( 'rewrite' ) && $matches->isQueryRewriteAllowed() ) {
+		if ( $this->isFeatureEnabled( 'rewrite' ) &&
+				$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) ) {
 			$matches = $this->searchTextSecondTry( $term, $matches );
 		}
 		return $matches;
@@ -140,11 +141,11 @@ class CirrusSearch extends SearchEngine {
 		return isset( $this->features[$feature] ) && $this->features[$feature];
 	}
 
-	private function searchTextSecondTry( $term, ResultSet $zeroResult ) {
+	private function searchTextSecondTry( $term, ResultSet $oldResult ) {
 		// TODO: figure out who goes first - language or suggestion?
-		if ( $zeroResult->hasSuggestion() ) {
-			$rewritten = $zeroResult->getSuggestionQuery();
-			$rewrittenSnippet = $zeroResult->getSuggestionSnippet();
+		if ( $oldResult->numRows() == 0 && $oldResult->hasSuggestion() ) {
+			$rewritten = $oldResult->getSuggestionQuery();
+			$rewrittenSnippet = $oldResult->getSuggestionSnippet();
 			$this->showSuggestion = false;
 			$rewrittenResult = $this->searchTextReal( $rewritten );
 			if (
@@ -152,7 +153,12 @@ class CirrusSearch extends SearchEngine {
 				&& $rewrittenResult->numRows() > 0
 			) {
 				$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
-				return $rewrittenResult;
+				if ( $rewrittenResult->numRows() < $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) {
+					// replace the result but still try the alt language
+					$oldResult = $rewrittenResult;
+				} else {
+					return $rewrittenResult;
+				}
 			}
 		}
 
@@ -167,13 +173,13 @@ class CirrusSearch extends SearchEngine {
 			if ( $config ) {
 				$matches = $this->searchTextReal( $term, $config );
 				if( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
-					$zeroResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
+					$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
 				}
 			}
 		}
 
 		// Don't have any other options yet.
-		return $zeroResult;
+		return $oldResult;
 	}
 
 	/**

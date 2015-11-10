@@ -49,3 +49,7 @@ Feature: Searches that contain wildcard matches
     | *        |
     | ?t       |
     | l?       |
+
+  Scenario: Searching with a complex wildcard query fails
+    When I api search for d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*w*i*l*d*c*a*r*d*
+    Then this error is reported by api: Regular expression is too complex. Learn more about simplifying it [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|here]].

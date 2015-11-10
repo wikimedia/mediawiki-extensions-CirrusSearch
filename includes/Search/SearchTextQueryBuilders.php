@@ -181,6 +181,11 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 		$query->setAllowLeadingWildcard( $this->context->isAllowLeadingWildcards() );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
+		$states = $this->context->getConfig()->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
+		if ( isset( $states ) ) {
+			// Requires ES 1.4+
+			$query->setParam( 'max_determinized_states', $states );
+		}
 		return $query;
 	}
 

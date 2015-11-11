@@ -49,6 +49,7 @@ class RunSearch extends Maintenance {
 			'its test value', false, true );
 		$this->addOption( 'fork', 'Fork multiple processes to run queries from.' .
 			'defaults to false.', false, true );
+		$this->addOption( 'decode', 'urldecode() queries before running them', false, false );
 	}
 
 	public function execute() {
@@ -98,6 +99,9 @@ class RunSearch extends Maintenance {
 	 * @return string JSON object
 	 */
 	public function consume( $query ) {
+		if ( $this->getOption( 'decode' ) ) {
+			$query = urldecode( $query );
+		}
 		$data = array( 'query' => $query );
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {

@@ -25,5 +25,6 @@
 	"apihelp-cirrus-config-dump-description": "Copia della configurazione di CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Copia della mappatura di CirrusSearch di questa wiki.",
 	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch di questa wiki.",
+	"apihelp-cirrus-suggest-param-limit": "Quanti risultati restituire.",
 	"cirrussearch-give-feedback": "Dacci il tuo feedback"
 }

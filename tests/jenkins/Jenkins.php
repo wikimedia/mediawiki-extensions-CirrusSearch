@@ -1,9 +1,6 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
-use \JobQueueAggregator;
-use \JobQueueGroup;
-
 /**
  * Sets up configuration required to run the browser tests on Jenkins.
  *

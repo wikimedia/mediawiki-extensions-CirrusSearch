@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use RequestContext;
-use SiteConfiguration;
 
 /**
  * Configuration class encapsulating Searcher environment.

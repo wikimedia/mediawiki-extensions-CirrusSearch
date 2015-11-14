@@ -6,7 +6,6 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Search\InterwikiResultsType;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to

@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use Elastica;
-use Category;
 use CirrusSearch;
 use CirrusSearch\Extra\Filter\SourceRegex;
 use CirrusSearch\Search\Escaper;
@@ -11,8 +10,6 @@ use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\SearchTextQueryBuilderFactory;
-use CirrusSearch\Search\SearchTextQueryBuilder;
 use ConfigFactory;
 use Language;
 use MediaWiki\Logger\LoggerFactory;

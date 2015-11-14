@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use ConfigFactory;
 use DeferredUpdates;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;

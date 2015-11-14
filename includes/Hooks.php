@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use ApiMain;
-use BetaFeatures;
 use CirrusSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
@@ -13,7 +12,6 @@ use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
 use ResourceLoader;
-use Skin;
 use SpecialSearch;
 use Title;
 use RecursiveDirectoryIterator;

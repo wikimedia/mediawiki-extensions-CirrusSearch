@@ -120,6 +120,14 @@ class UserTesting {
 		return array_keys( $this->tests );
 	}
 
+	public function getActiveTestNamesWithBucket() {
+		$result = array();
+		foreach ( $this->tests as $test => $bucket ) {
+			$result[] = "$test:$bucket";
+		}
+		return $result;
+	}
+
 	/**
 	 * @var string $testName Name of the test to activate.
 	 * @var float $bucketProbability Number between 0 and 1 for determining bucket.

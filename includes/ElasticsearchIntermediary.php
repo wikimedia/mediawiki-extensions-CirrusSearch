@@ -179,7 +179,7 @@ class ElasticsearchIntermediary {
 			'identity' => self::generateIdentToken(),
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
-			'backendUserTests' => UserTesting::getInstance()->getActiveTestNames(),
+			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
 			'requests' => $requests,
 		);
 

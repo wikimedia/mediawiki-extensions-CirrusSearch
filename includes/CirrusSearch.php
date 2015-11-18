@@ -156,7 +156,9 @@ class CirrusSearch extends SearchEngine {
 				return $rewrittenResult;
 			}
 		}
-
+		Searcher::appendLastLogContext( array(
+			'langdetect' => true,
+		) );
 		$altWiki = $this->hasSecondaryLanguage( $term );
 		if ( $altWiki ) {
 			try {

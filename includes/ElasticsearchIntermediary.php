@@ -193,7 +193,11 @@ class ElasticsearchIntermediary {
 			return;
 		}
 		$queries = array();
-		$parameters = array( 'index' => array(), 'queryType' => array() );
+		$parameters = array(
+			'index' => array(),
+			'queryType' => array(),
+			'acceptLang' => $GLOBALS['wgRequest']->getHeader( 'Accept-Language' ),
+		);
 		$elasticTook = 0;
 		$hits = 0;
 		foreach ( self::$logContexts as $context ) {
@@ -209,6 +213,9 @@ class ElasticsearchIntermediary {
 			}
 			if ( isset( $context['queryType'] ) ) {
 				$parameters['queryType'][] = $context['queryType'];
+			}
+			if ( !empty( $context['langdetect' ] ) ) {
+				$parameters['langdetect'] = true;
 			}
 		}
 
@@ -491,6 +498,13 @@ class ElasticsearchIntermediary {
 		self::$logContexts[] = $params;
 
 		return $params;
+	}
+
+	static public function appendLastLogContext( array $values ) {
+		$idx = count( self::$logContexts ) - 1;
+		if ( $idx >= 0 ) {
+			self::$logContexts[$idx] += $values;
+		}
 	}
 
 	/**

@@ -161,7 +161,9 @@ class CirrusSearch extends SearchEngine {
 				}
 			}
 		}
-
+		Searcher::appendLastLogContext( array(
+			'langdetect' => true,
+		) );
 		$altWiki = $this->hasSecondaryLanguage( $term );
 		if ( $altWiki ) {
 			try {

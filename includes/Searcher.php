@@ -1839,14 +1839,34 @@ GROOVY;
 	}
 
 	/**
+	 * Try to detect language via Accept-Language header. Takes the
+	 * first accept-language that is not the current content language.
+	 * @return string|null Language name or null
+	 */
+	public static function detectLanguageViaAcceptLang() {
+		$acceptLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
+		$currentShortLang = $GLOBALS['wgContLang']->getCode();
+		foreach ( $acceptLang as $lang ) {
+			list( $shortLang ) = explode( "-", $lang, 2 );
+			if ( $shortLang !== $currentShortLang ) {
+				// return only the primary-tag, stripping the subtag
+				// so the language to wiki map doesn't need all
+				// possible combinations (quite a few).
+				return $shortLang;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Try to detect language using langdetect plugin
 	 * See: https://github.com/jprante/elasticsearch-langdetect
-	 * @param Connection $conn Connection for Elastica
+	 * @param CirrusSearch $cirrus SearchEngine implementation for cirrus
 	 * @param string $text
 	 * @return string|NULL Language name or null
 	 */
-	public static function detectLanguage( Connection $conn, $text ) {
-		$client = $conn->getClient();
+	public static function detectLanguageViaES( CirrusSearch $cirrus, $text ) {
+		$client = $cirrus->getConnection()->getClient();
 		try {
 			$response = $client->request( "_langdetect", Request::POST, $text );
 		} catch ( ResponseException $e ) {

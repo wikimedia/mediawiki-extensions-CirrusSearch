@@ -215,7 +215,7 @@ class ElasticsearchIntermediary {
 				$parameters['queryType'][] = $context['queryType'];
 			}
 			if ( !empty( $context['langdetect' ] ) ) {
-				$parameters['langdetect'] = true;
+				$parameters['langdetect'] = $context['langdetect'];
 			}
 		}
 

@@ -811,6 +811,22 @@ $wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
  */
 $wgCirrusSearchInterwikiThreshold = 3;
 
+/**
+ * List of callbacks to be used as language detectors. They recieve two arguments,
+ * first argument is a CirrusSearch object doing the searching, second argument is
+ * the search term (string). Detectors will be called in the order given until one
+ * returns a non-null result. The array key will, currently, only be logged to the
+ * UserTesting logs. This is intended to be added to CirrusSearchRequestSet payload
+ * as well once schema migration is complete.
+ *
+ * Two options are built in:
+ *
+ * CirrusSearch\Searcher::detectLanguageViaAcceptLang - uses the first language in the
+ *  Accept-Language header that is not the current content language.
+ * CirrusSearch\Searcher::detectLanguageViaES - uses the elasticsearch lang-detect plugin
+ */
+$wgCirrusSearchLanguageDetectors = array();
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

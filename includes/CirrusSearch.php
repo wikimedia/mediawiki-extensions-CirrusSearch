@@ -63,6 +63,13 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
+	 * @return Connection
+	 */
+	public function getConnection() {
+		return $this->connection;
+	}
+
+	/**
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.
@@ -119,7 +126,30 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		$lang = Searcher::detectLanguage( $this->connection, $term );
+		$arguments = array( $this, $term );
+		foreach ( $GLOBALS['wgCirrusSearchLanguageDetectors'] as $name => $callback ) {
+			$lang = call_user_func_array( $callback, $arguments );
+			$wiki = self::wikiForLanguage( $lang );
+			if ( $wiki !== null ) {
+				// it might be more accurate to attach these to the 'next'
+				// log context?
+				Searcher::appendLastLogContext( array(
+					'langdetect' => $name,
+				) );
+				return $wiki;
+			}
+		}
+		Searcher::appendLastLogContext( array(
+			'langdetect' => 'failed',
+		) );
+		return null;
+	}
+
+	/**
+	 * @var string $lang Language code to find wiki for
+	 * @return string|null The wiki related to specified language code
+	 */
+	private function wikiForLanguage( $lang ) {
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang] ) ) {
 			return null;
 		}
@@ -161,9 +191,6 @@ class CirrusSearch extends SearchEngine {
 				}
 			}
 		}
-		Searcher::appendLastLogContext( array(
-			'langdetect' => true,
-		) );
 		$altWiki = $this->hasSecondaryLanguage( $term );
 		if ( $altWiki ) {
 			try {

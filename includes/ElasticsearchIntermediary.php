@@ -157,7 +157,8 @@ class ElasticsearchIntermediary {
 				// populated below
 				'namespaces' => array(),
 				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
-				'suggestionRequested' => isset( $context['suggestion'] )
+				'suggestionRequested' => isset( $context['suggestion'] ),
+				'payload' => array(),
 			);
 
 			if ( isset( $context['index'] ) ) {
@@ -179,6 +180,7 @@ class ElasticsearchIntermediary {
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
+			'payload' => array(),
 			'requests' => $requests,
 		);
 

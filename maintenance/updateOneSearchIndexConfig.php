@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
-use ConfigFactory;
 use Elastica;
 
 /**

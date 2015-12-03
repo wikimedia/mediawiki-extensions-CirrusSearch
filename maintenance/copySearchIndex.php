@@ -3,9 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\Util;
 use ConfigFactory;
-use Elastica;
 use CirrusSearch\ClusterSettings;
 
 /**

@@ -11,7 +11,6 @@ use DeferredUpdates;
 use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
-use ResourceLoader;
 use SpecialSearch;
 use Title;
 use RecursiveDirectoryIterator;

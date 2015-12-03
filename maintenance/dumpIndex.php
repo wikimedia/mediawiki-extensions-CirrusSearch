@@ -2,14 +2,12 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use Elastica;
 use Elastica\Filter;
 use Elastica\Index;
 use Elastica\JSON;
 use Elastica\Query;
-use Elastica\Type;
 
 /**
  * Dump an index to stdout

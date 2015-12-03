@@ -1,7 +1,6 @@
 <?php
 namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
-use CirrusSearch\DataSender;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use Elastica\Document;

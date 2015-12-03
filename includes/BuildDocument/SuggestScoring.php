@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use CirrusSearch\Searcher;
 use CirrusSearch\Util;
 
 /**

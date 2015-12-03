@@ -6,7 +6,6 @@ use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\Maintenance\Reindexer;
 use CirrusSearch\Maintenance\Validators\Validator;
 use Elastica\Client;
-use Elastica\Index;
 use RawMessage;
 use Status;
 

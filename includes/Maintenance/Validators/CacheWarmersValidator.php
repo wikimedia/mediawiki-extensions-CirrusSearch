@@ -11,7 +11,6 @@ use Elastica\Exception\ResponseException;
 use Elastica\Type;
 use RawMessage;
 use Status;
-use Title;
 
 class CacheWarmersValidator extends Validator {
 	/**

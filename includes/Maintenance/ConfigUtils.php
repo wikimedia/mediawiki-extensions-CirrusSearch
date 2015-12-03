@@ -3,9 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
-use Elastica\Index;
-use Elastica\Query;
-use Elastica\Type;
 
 /**
  * This program is free software; you can redistribute it and/or modify

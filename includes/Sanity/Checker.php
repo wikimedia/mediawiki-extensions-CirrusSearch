@@ -4,7 +4,6 @@ namespace CirrusSearch\Sanity;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Searcher;
-use ConfigFactory;
 use Status;
 use Title;
 use WikiPage;

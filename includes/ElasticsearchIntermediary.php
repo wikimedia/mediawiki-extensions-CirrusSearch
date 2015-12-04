@@ -235,6 +235,7 @@ class ElasticsearchIntermediary {
 			$wgRequest->getIP(),
 			preg_replace( "/[\t\"']/", "", $wgRequest->getHeader( 'User-Agent') ),
 			FormatJson::encode( $parameters ),
+			self::generateIdentToken(),
 		);
 
 		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );

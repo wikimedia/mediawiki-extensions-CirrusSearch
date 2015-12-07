@@ -33,7 +33,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	public function testPreferRecent() {
 		$config = new HashSearchConfig( array() );
 		$context = new SearchContext( $config, null );
-		$builder = new PreferRecentFunctionScoreBuilder( $context );
+		$builder = new PreferRecentFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
@@ -55,7 +55,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 			'LanguageCode' => 'de'
 		) );
 		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context );
+		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -72,7 +72,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		) );
 
 		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context );
+		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -85,7 +85,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 			'LanguageCode' => 'de'
 		) );
 		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context );
+		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
@@ -94,13 +94,13 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	public function testBoostTemplates() {
 		$config = new HashSearchConfig( array() );
 		$context = new SearchContext( $config, null );
-		$builder = new BoostTemplatesFunctionScoreBuilder( $context );
+		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		$context->setBoostTemplatesFromQuery( array( 'test' => 3.2 ) );
-		$builder = new BoostTemplatesFunctionScoreBuilder( $context );
+		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 	}
@@ -114,13 +114,28 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 			'modifier' => 'sqrt',
 			'missing' => 1,
 		);
-		$builder = new CustomFieldFunctionScoreBuilder( $context, $profile );
+		$builder = new CustomFieldFunctionScoreBuilder( $context, 1, $profile );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
 		$this->assertTrue( isset( $array['function_score']['functions'][0]['field_value_factor'] ) );
 		$this->assertEquals( $profile, $array['function_score']['functions'][0]['field_value_factor'] );
+	}
+
+	public function testScriptScore() {
+		$config = new HashSearchConfig( array() );
+		$context = new SearchContext( $config, null );
+		$script = "sqrt( doc['incoming_links'].value )";
+		$builder = new ScriptScoreFunctionScoreBuilder( $context, 2, $script );
+		$fScore = new FunctionScoreDecorator();
+		$builder->append( $fScore );
+		$this->assertFalse( $fScore->isEmptyFunction() );
+		$array = $fScore->toArray();
+		$this->assertTrue( isset( $array['function_score']['functions'][0]['script_score'] ) );
+		$this->assertEquals( $script, $array['function_score']['functions'][0]['script_score']['script'] );
+		$this->assertEquals( 'expression', $array['function_score']['functions'][0]['script_score']['lang'] );
+		$this->assertEquals( 2, $array['function_score']['functions'][0]['weight'] );
 	}
 
 	public function testBoostLinks() {
@@ -130,7 +145,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, null );
 		$context->setBoostLinks( true );
-		$builder = new IncomingLinksFunctionScoreBuilder( $context );
+		$builder = new IncomingLinksFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 
 		$builder->append( $fScore );
@@ -149,7 +164,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$settings = array();
 		$config = new HashSearchConfig( array() );
 		$context = new SearchContext( $config, null );
-		$builder = new IncomingLinksFunctionScoreBuilder( $context );
+		$builder = new IncomingLinksFunctionScoreBuilder( $context, 1 );
 		$context->setBoostLinks( true );
 
 		$builder->append( $fScore );
@@ -175,7 +190,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 
 		// 5 namespaces in the query generates 5 filters
 		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context );
+		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -184,13 +199,13 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 
 		// With a single namespace the function score is empty
 		$context->setNamespaces( array( 0 ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context );
+		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		// with 2 namespaces we have 2 functions
 		$context->setNamespaces( array( NS_MAIN, NS_HELP ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context );
+		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -207,7 +222,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		);
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context );
+		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -224,7 +239,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		);
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context );
+		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -249,10 +264,16 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideRescoreProfilesWithFallback() {
-		$defaultChain = array( array( 'type' => 'boostlinks' ) );
+		$defaultChain = array(
+			'functions' => array(
+				array( 'type' => 'boostlinks' )
+			)
+		);
 		$fullChain = array(
-			array( 'type' => 'boostlinks' ),
-			array( 'type' => 'templates' )
+			'functions' => array(
+				array( 'type' => 'boostlinks' ),
+				array( 'type' => 'templates' )
+			)
 		);
 		$profile = array(
 			'CirrusSearchRescoreProfiles' => array(
@@ -320,7 +341,9 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideRescoreProfilesWithWindowSize() {
-		$testChain = array( array( 'type' => 'boostlinks' ) );
+		$testChain = array(
+			'functions' => array( array( 'type' => 'boostlinks' ) )
+		);
 		return array(
 			'Overridden' => array(
 				array(
@@ -481,6 +504,25 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 					)
 				),
 			),
+			"Invalid function chain (none defined)" => array(
+				array(
+					'CirrusSearchRescoreProfiles' => array(
+						'default' => array(
+							'supported_namespaces' => 'all',
+							'rescore' => array(
+								array(
+									'window' => 123,
+									'type' => 'function_score',
+									'function_chain' => 'test',
+								),
+							)
+						),
+					),
+					'CirrusSearchRescoreFunctionScoreChains' => array(
+						'test' => array( )
+					)
+				),
+			),
 			"Invalid function score type" => array(
 				array(
 					'CirrusSearchRescoreProfiles' => array(
@@ -496,7 +538,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 						),
 					),
 					'CirrusSearchRescoreFunctionScoreChains' => array(
-						'test' => array( array( 'type' => 'foobar' ) )
+						'test' => array( 'functions' => array( array( 'type' => 'foobar' ) ) )
 					)
 				),
 			),

@@ -102,6 +102,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Search\\Result' => __DIR__ . '/includes/Search/Result.php',
 	'CirrusSearch\\Search\\ResultSet' => __DIR__ . '/includes/Search/ResultSet.php',
 	'CirrusSearch\\Search\\ResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
+	'CirrusSearch\\Search\\ScriptScoreFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\SearchContext' => __DIR__ . '/includes/Search/SearchContext.php',
 	'CirrusSearch\\Search\\SearchTextBaseQueryBuilder' => __DIR__ . '/includes/Search/SearchTextQueryBuilders.php',
 	'CirrusSearch\\Search\\SearchTextCommonTermsQueryBuilder' => __DIR__ . '/includes/Search/SearchTextQueryBuilders.php',

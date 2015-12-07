@@ -26,6 +26,7 @@ namespace CirrusSearch;
  * NOTE: writing a new custom profile is a complex task, you can use
  * &cirrusDumpResult&cirrusExplain query params to dump score information at
  * runtime.
+ *
  */
 $wgCirrusSearchRescoreProfiles = array(
 	// Default profile which uses an all in one function score chain
@@ -86,91 +87,6 @@ $wgCirrusSearchRescoreProfiles = array(
 			),
 		)
 	),
-
-	// Rescore profile where boostlinks is included in a separate window
-	// and overboosted with a different weight
-	'overboostlinks' => array(
-		'supported_namespaces' => 'all',
-		'rescore' => array(
-			array(
-				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
-				'query_weight' => 1.0,
-				'rescore_query_weight' => 1.0,
-				'score_mode' => 'multiply',
-				'type' => 'function_score',
-				'function_chain' => 'optional_chain'
-			),
-			array(
-				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
-				'query_weight' => 0.7,
-				'rescore_query_weight' => 1.3,
-				'score_mode' => 'multiply',
-				'type' => 'function_score',
-				'function_chain' => 'boostlinks_only'
-			)
-		)
-	),
-
-	// Same as overboostlinks but with a lower weight for boostlinks
-	'underboostlinks' => array(
-		'supported_namespaces' => 'all',
-		'rescore' => array(
-			array(
-				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
-				'query_weight' => 1.0,
-				'rescore_query_weight' => 1.0,
-				'score_mode' => 'multiply',
-				'type' => 'function_score',
-				'function_chain' => 'optional_chain'
-			),
-			array(
-				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
-				'query_weight' => 1.5,
-				'rescore_query_weight' => 0.2,
-				'score_mode' => 'multiply',
-				'type' => 'function_score',
-				'function_chain' => 'boostlinks_only'
-			)
-		)
-	),
-
-
-	// Example profile with custom_field: do not use.
-	// Documents will be ordered from less to most relevant
-	'negativeboostlinks' => array(
-		// Supports only the main namespace
-		'supported_namespaces' => array( 0 ),
-
-		// Fallbacks to default
-		'fallback_profile' => 'default',
-
-		'rescore' => array(
-			// Always include a rescore with optional_chain
-			// otherwize some query special syntax will be
-			// ineffective.
-			array(
-				'window' => 8192,
-				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
-				'query_weight' => 1.0,
-				'rescore_query_weight' => 1.0,
-				'score_mode' => 'multiply',
-				'type' => 'function_score',
-				'function_chain' => 'optional_chain'
-			),
-			array(
-				'window' => 8192,
-				'query_weight' => 0,
-				'rescore_query_weight' => -2.0,
-				'score_mode' => 'total',
-				'type' => 'function_score',
-				'function_chain' => 'custom_incominglinks'
-			)
-		)
-	)
 );
 
 /**
@@ -180,78 +96,108 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 	// Default chain where all the functions are combined
 	// In the same chain.
 	'default_allinone_chain' => array(
-		// Scores documents with log(incoming_link + 2)
-		// Activated if $wgCirrusSearchBoostLinks is set
-		array( 'type' => 'boostlinks' ),
+		'functions' => array(
+			// Scores documents with log(incoming_link + 2)
+			// Activated if $wgCirrusSearchBoostLinks is set
+			array( 'type' => 'boostlinks' ),
 
-		// Scores documents according to their timestamp
-		// Activated if $wgCirrusSearchPreferRecentDefaultDecayPortion
-		// and $wgCirrusSearchPreferRecentDefaultHalfLife are set
-		// can be activated with prefer-recent special syntax
-		array( 'type' => 'recency' ),
+			// Scores documents according to their timestamp
+			// Activated if $wgCirrusSearchPreferRecentDefaultDecayPortion
+			// and $wgCirrusSearchPreferRecentDefaultHalfLife are set
+			// can be activated with prefer-recent special syntax
+			array( 'type' => 'recency' ),
 
-		// Scores documents according to their templates
-		// Templates weights can be defined with special
-		// syntax boost-templates or by setting the
-		// system message cirrus-boost-templates
-		array( 'type' => 'templates' ),
+			// Scores documents according to their templates
+			// Templates weights can be defined with special
+			// syntax boost-templates or by setting the
+			// system message cirrus-boost-templates
+			array( 'type' => 'templates' ),
 
-		// Scores documents according to their namespace.
-		// Activated if the query runs on more than one namespace
-		// See $wgCirrusSearchNamespaceWeights
-		array( 'type' => 'namespaces' ),
+			// Scores documents according to their namespace.
+			// Activated if the query runs on more than one namespace
+			// See $wgCirrusSearchNamespaceWeights
+			array( 'type' => 'namespaces' ),
 
-		// Scores documents according to their language,
-		// See $wgCirrusSearchLanguageWeight
-		array( 'type' => 'language' ),
+			// Scores documents according to their language,
+			// See $wgCirrusSearchLanguageWeight
+			array( 'type' => 'language' ),
+		)
 	),
-
-	// Chain with optionnal functions
+	// Chain with optional functions if default_allinone_chain
+	// or optional_chain is omitted from the rescore profile then some
+	// query features and global config will be ineffective.
 	'optional_chain' => array(
-		array( 'type' => 'recency' ),
-		array( 'type' => 'templates' ),
-		array( 'type' => 'namespaces' ),
-		array( 'type' => 'language' ),
+		'functions' => array(
+			array( 'type' => 'recency' ),
+			array( 'type' => 'templates' ),
+			array( 'type' => 'namespaces' ),
+			array( 'type' => 'language' ),
+		)
 	),
-
 	// Chain with boostlinks only
-	'boostlinks_only' => array(
-		array( 'type' => 'boostlinks' )
+	'boostlinks_only_chain' => array(
+		'functions' => array(
+			array( 'type' => 'boostlinks' )
+		)
 	),
 
-	// Example chain (do not use) with incoming_links to illustrate
-	// the 'custom_field' function score type.
-	// Simulates the behavior of boostlinks by using a custom field.
-	'custom_incominglinks' => array(
-		array(
-			// custom field allows you to use a custom numeric
-			// field with a field_value_factor function score.
-			'type' => 'custom_field',
-
-			// Params used by field_value_factor
-			// see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-			'params' => array(
-				// field name
-				'field' => 'incoming_links',
-
-				// Optional factor to multiply the field value
-				// with, defaults to 1.
-				'factor' => 1,
-
-				// Modifier to apply to the field value, can be
-				// one of: none, log, log1p, log2p, ln, ln1p,
-				// ln2p, square, sqrt, or reciprocal. Defaults
-				// to none.
-				'modifier' => 'log2p',
-
-				// Value used if the document doesn’t have that
-				// field. The modifier and factor are still
-				// applied to it as though it were read from
-				// the document.
-				'missing' => 0,
-			)
-		),
-	),
+//	// Example chain (do not use) with incoming_links to illustrate
+//	// the 'custom_field' function score type.
+//	// Simulates the behavior of boostlinks by using a custom field.
+//	'custom_incominglinks' => array(
+//		// First, each document is scored by the defined functions. The
+//		// parameter score_mode specifies how the computed scores are
+//		// combined. Makes sense only if more than one function are added
+//		// to the chain.
+//		'boost_mode' => 'multiply',
+//		'functions' => array(
+//			array(
+//				// custom field allows you to use a custom numeric
+//				// field with a field_value_factor function score.
+//				'type' => 'custom_field',
+//				// If multiple functions are added to the chain
+//				// weight is a factor applied to the function result.
+//				// If the function produces more than one function
+//				// (templates, namespaces, language) then this weight
+//				// is multiplied to the weight computed by the function
+//				'weight' => 1,
+//
+//				// Params used by field_value_factor
+//				// see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
+//				'params' => array(
+//					// field name
+//					'field' => 'incoming_links',
+//
+//					// Optional factor to multiply the field value
+//					// with, defaults to 1.
+//					'factor' => 1,
+//
+//					// Modifier to apply to the field value, can be
+//					// one of: none, log, log1p, log2p, ln, ln1p,
+//					// ln2p, square, sqrt, or reciprocal. Defaults
+//					// to none.
+//					'modifier' => 'log2p',
+//
+//					// Value used if the document doesn’t have that
+//					// field. The modifier and factor are still
+//					// applied to it as though it were read from
+//					// the document.
+//					'missing' => 0,
+//				),
+//			),
+//		),
+//	),
+//	// Example chain (do not use) with incoming_links to illustrate
+//	// the 'script' function score type.
+//	// Simulates the behavior of boostlinks by using a script.
+//	'custom_incominglinks_script' => array(
+//		'functions' => array(
+//			array(
+//				'type' => 'script',
+//				'script' => "log10( doc['incoming_links'].value + 2)"
+//			),
+//		),
+//	),
 );
 
 /**
@@ -261,11 +207,23 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 class RescoreProfiles {
 	public static function overrideOptions( $request ) {
 		global $wgCirrusSearchRescoreProfile,
+			$wgCirrusSearchPrefixSearchRescoreProfile,
+			$wgCirrusSearchMoreLikeRescoreProfile,
 			$wgCirrusSearchRescoreProfiles;
 
 		$profile = $request->getVal( 'cirrusRescoreProfile' );
 		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
 			$wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
+		}
+
+		$profile = $request->getVal( 'cirrusPrefixSearchRescoreProfile' );
+		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
+			$wgCirrusSearchPrefixSearchRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
+		}
+
+		$profile = $request->getVal( 'cirrusMoreLikeRescoreProfile' );
+		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
+			$wgCirrusSearchMoreLikeRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
 		}
 	}
 }

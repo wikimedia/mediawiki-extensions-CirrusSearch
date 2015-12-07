@@ -897,10 +897,21 @@ $wgConfigRegistry['CirrusSearch'] = 'CirrusSearch\SearchConfig::newFromGlobals';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.
- * Note that it is only hooked for browser tests.
- */
+ *
+ * @todo re-enable the code below if/when browser tests are enabled again
+ * on Jenkins for Cirrus, and ensure the job name check is specific to
+ * CirrusSearch and the entry point is not included for all extension
+ * browser tests that happen to have CirrusSearch as a dependency, but
+ * not all the other things that the below entry point requires.
+ *
+ * For now, browser tests are run via Cindy the browser test bot which
+ * already directly includes the entry point vs using the check below.
+ *
+ * Tests are also run for CirrusSearch on beta, but those don't use
+ * or need the entry point below.
 if ( isset( $wgWikimediaJenkinsCI ) && $wgWikimediaJenkinsCI === true && (
-		PHP_SAPI !== 'cli' ||    // If we're not in the CLI then this is certainly a browser test
-		strpos( getenv( 'JOB_NAME' ), 'browsertests' ) !== false ) ) {
+		PHP_SAPI !== 'cli' && // If we're not in the CLI then this is certainly a browser test
+		strpos( getenv( 'JOB_NAME' ), 'browsertests-CirrusSearch' ) !== false ) ) {
 	require( __DIR__ . '/tests/jenkins/Jenkins.php' );
 }
+*/

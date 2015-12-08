@@ -587,10 +587,14 @@ class Hooks {
 		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
 			$conn = self::getConnection();
 			$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
-			JobQueueGroup::singleton()->push( new Job\DeletePages( $title, array(
+			$job = new Job\DeletePages( $title, array(
 				'indexType' => $oldIndexType,
 				'id' => $oldId
-			) ) );
+			) );
+			// Push the job after DB commit but cancel on rollback
+			wfGetDB( DB_MASTER )->onTransactionIdle( function() use ( $job ) {
+				JobQueueGroup::singleton()->lazyPush( $job );
+			} );
 		}
 
 		return true;

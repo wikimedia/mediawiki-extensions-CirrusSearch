@@ -4,32 +4,20 @@ require "digest/sha1"
 
 # Common code cirrus' test use when dealing with api.
 module CirrusSearchApiHelper
-  def commons_api
-    @_commons_api ||= MediawikiApi::Client.new(ENV["MEDIAWIKI_COMMONS_API_URL"])
-  end
-
-  def log_in_api(current_api = nil)
-    current_api ||= api
-    current_api.log_in(ENV["MEDIAWIKI_USER"], ENV["MEDIAWIKI_PASSWORD"]) unless current_api.logged_in?
-  end
-
-  def edit_page(title, text, add, current_api = nil)
-    current_api ||= api
+  def edit_page(title, text, add)
     text = File.read("articles/" + text[1..-1]) if text.start_with?("@")
-    fetched_text = get_page_text(title, current_api)
+    fetched_text = get_page_text(title)
     # Note that the space keeps words from smashing together
     text = fetched_text + " " + text if add
     return if fetched_text.strip == text.strip
-    log_in_api current_api
-    result = current_api.create_page(title, text)
+    result = api.create_page(title, text)
     expect(result.status).to eq 200
     expect(result.warnings?).to eq false
   end
 
   # Gets page text using the api.
-  def get_page_text(title, current_api = nil)
-    current_api ||= api
-    fetched_text = current_api.get_wikitext(title)
+  def get_page_text(title)
+    fetched_text = api.get_wikitext(title)
     return "" if fetched_text.status == 404
     fetched_text.status.should eq 200
     fetched_text.body.strip.force_encoding("utf-8")
@@ -47,9 +35,8 @@ module CirrusSearchApiHelper
   end
 
   # Get suggestions for a particular string using the api
-  def suggestions_for(search, current_api = nil)
-    current_api ||= api
-    current_api.action(
+  def suggestions_for(search)
+    api.action(
       :opensearch,
       search: search,
       token_type: false
@@ -66,9 +53,8 @@ module CirrusSearchApiHelper
     ))
   end
 
-  def sha1_for_image(title, current_api = nil)
-    current_api ||= api
-    existing = current_api.prop(
+  def sha1_for_image(title)
+    existing = api.prop(
       :imageinfo,
       titles: title,
       iiprop: "sha1",
@@ -80,27 +66,19 @@ module CirrusSearchApiHelper
   end
 
   # Uploads a file if the file's SHA1 doesn't match what is already uploaded.
-  def upload_file(title, contents, description, current_api = nil)
+  def upload_file(title, contents, description)
     contents = "articles/" + contents
     sha1 = Digest::SHA1.hexdigest(File.read(contents))
-    remote_sha1 = sha1_for_image(title, current_api)
+    remote_sha1 = sha1_for_image(title)
     return if sha1 == remote_sha1
-    do_upload_file(title, contents, description, sha1, remote_sha1 != false, current_api)
-  end
-
-  # just uploads the file
-  # rubocop:disable ParameterLists
-  def do_upload_file(title, contents, description, sha1, ignorewarnings, current_api = nil)
-    current_api ||= api
-    log_in_api current_api
-    current_api.action(
+    ignorewarnings = remote_sha1 != false
+    api.action(
       :upload,
       filename: title,
       file: Faraday::UploadIO.new(contents, MimeMagic.by_path(contents)),
       text: "#{description}\nsha1: #{sha1}",
       # must ignorewarnings to upload new version of a file
-      ignorewarnings: ignorewarnings ? 1 : 0,
-      token_type: "edit"
+      ignorewarnings: ignorewarnings ? 1 : 0
     )
   end
 

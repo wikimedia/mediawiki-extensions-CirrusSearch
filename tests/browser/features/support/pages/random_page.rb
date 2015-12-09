@@ -2,7 +2,7 @@
 class RandomPage
   include PageObject
 
-  page_url URL.url("Special:Random")
+  page_url "Special:Random"
 
   # Unfortunately some wikis don't have a button at searchButton and some put it
   # at mw-searchButton so we make both and use whichever one we can.  Yet worse,

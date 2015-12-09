@@ -196,9 +196,10 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Constructor
+	 * @param Connection $conn
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many
-	 * @param SearchConfig Configuration settings
+	 * @param SearchConfig|null $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()

@@ -144,7 +144,7 @@ class SuggestBuilder {
 	 * to make this decision at index time.
 	 *
 	 * @param int $id the page id
-	 * @param array of string $redirects the redirects
+	 * @param string[] $redirects
 	 * @param array $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return array the suggestion document

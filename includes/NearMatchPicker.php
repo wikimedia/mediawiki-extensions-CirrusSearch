@@ -31,7 +31,7 @@ class NearMatchPicker {
 	 */
 	private $term;
 	/**
-	 * @var array(Title) potential near matches
+	 * @var array[] Potential near matches
 	 */
 	private $titles;
 
@@ -40,7 +40,7 @@ class NearMatchPicker {
 	 *
 	 * @param Language $language to use during normalization process
 	 * @param string $term the search term
-	 * @param array with optional keys:
+	 * @param array[] $titles Array of arrays, each with optional keys:
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */

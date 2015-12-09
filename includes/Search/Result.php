@@ -169,7 +169,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
-	 * @param string highlighted redirect snippet
+	 * @param string $snippet Highlighted redirect snippet
 	 * @param array $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
 	 * @return Title object representing the redirect
 	 */

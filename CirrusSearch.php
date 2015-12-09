@@ -827,6 +827,13 @@ $wgCirrusSearchInterwikiThreshold = 3;
  */
 $wgCirrusSearchLanguageDetectors = array();
 
+/**
+ * Overrides the master timeout on cluster wide actions, such as mapping updates.
+ * It may be necessary to increase this on clusters that support a large number
+ * of wiki's.
+ */
+$wgCirrusSearchMasterTimeout = '30s';
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

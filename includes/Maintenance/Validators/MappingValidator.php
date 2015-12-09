@@ -6,6 +6,7 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
+use Elastica\Request;
 use Elastica\Type;
 use Elastica\Type\Mapping;
 use RawMessage;
@@ -16,6 +17,11 @@ class MappingValidator extends Validator {
 	 * @var Index
 	 */
 	private $index;
+
+	/**
+	 * @var string
+	 */
+	private $masterTimeout;
 
 	/**
 	 * @var bool
@@ -41,16 +47,18 @@ class MappingValidator extends Validator {
 	 * @todo: this constructor takes way too much arguments - refactor
 	 *
 	 * @param Index $index
+	 * @param string $masterTimeout
 	 * @param bool $optimizeIndexForExperimentalHighlighter
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
 	 * @param Type[] $types Array with type names as key & type object as value
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $optimizeIndexForExperimentalHighlighter, array $availablePlugins, array $mappingConfig, array $types, Maintenance $out = null ) {
+	public function __construct( Index $index, $masterTimeout, $optimizeIndexForExperimentalHighlighter, array $availablePlugins, array $mappingConfig, array $types, Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
+		$this->masterTimeout = $masterTimeout;
 		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
 		$this->availablePlugins = $availablePlugins;
 		$this->mappingConfig = $mappingConfig;
@@ -86,8 +94,18 @@ class MappingValidator extends Validator {
 			}
 
 			try {
+				// @todo Use $action->send(array('master_timeout' => ...))
+				// after updating to version of Elastica library that supports it.
+				// See https://github.com/ruflin/Elastica/pull/1004
 				foreach ( $actions as $action ) {
-					$action->send();
+					$action->getType()->request(
+						'_mapping',
+						Request::PUT,
+						$action->toArray(),
+						array(
+							'master_timeout' => $this->masterTimeout,
+						)
+					);
 				}
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {

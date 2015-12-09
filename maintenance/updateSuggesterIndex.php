@@ -86,6 +86,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private $withGeo;
 
+	/**
+	 * @var string
+	 */
+	private $masterTimeout;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Create a new suggester index. Always operates on a single cluster." );
@@ -109,8 +114,10 @@ class UpdateSuggesterIndex extends Maintenance {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
 			$wgCirrusSearchRefreshInterval,
-			$wgPoolCounterConf;
+			$wgPoolCounterConf,
+			$wgCirrusSearchMasterTimeout;
 
+		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
 
 		// Make sure we don't flood the pool counter
@@ -313,6 +320,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$mappingConfigBuilder = new SuggesterMappingConfigBuilder();
 		$validator = new \CirrusSearch\Maintenance\Validators\MappingValidator(
 			$this->getIndex(),
+			$this->masterTimeout,
 			false,
 			$this->availablePlugins,
 			$mappingConfigBuilder->buildConfig(),

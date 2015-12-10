@@ -254,7 +254,7 @@ class FunctionScoreDecorator extends FunctionScore {
 
 abstract class FunctionScoreBuilder {
 	/**
-	 * @param SearchContext the search context
+	 * @param SearchContext $context
 	 */
 	protected $context;
 	public function __construct( SearchContext $context ) {
@@ -277,7 +277,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $boostTemplates;
 
 	/**
-	 * @param SearchContext the search context
+	 * @param SearchContext $context
 	 */
 	public function __construct( SearchContext $context ) {
 		parent::__construct( $context );
@@ -321,7 +321,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 
 	/**
-	 * @param SearchContext the search context
+	 * @param SearchContext $context
 	 */
 	public function __construct( SearchContext $context ) {
 		parent::__construct( $context );

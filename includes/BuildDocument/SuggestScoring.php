@@ -123,7 +123,7 @@ class QualityScore implements SuggestScoringMethod {
 
 	/**
 	 * @param integer $maxDocs the number of docs in the index
-	 * @param array of key values, key is the template name, value the boost factor.
+	 * @param float[]|null $boostTemplates Array of key values, key is the template name, value the boost factor.
 	 *        Defaults to Util::getDefaultBoostTemplates()
 	 */
 	public function __construct( $maxDocs, $boostTemplates = null ) {

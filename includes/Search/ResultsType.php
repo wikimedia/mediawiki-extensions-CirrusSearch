@@ -135,7 +135,7 @@ class FancyTitleResultsType extends TitleResultsType {
 
 	/**
 	 * Convert the results to titles.
-	 * @return array with optional keys:
+	 * @return array[] Array of arrays, each with optional keys:
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */

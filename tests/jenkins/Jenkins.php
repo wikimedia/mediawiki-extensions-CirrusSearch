@@ -92,7 +92,7 @@ class Jenkins {
 
 	/**
 	 * If the page ends in '/<language code>' then set the page's language to that code.
-	 * @param Title @title page title object
+	 * @param Title $title page title object
 	 * @param string|Language $pageLang the page content language (either an object or a language code)
 	 * @param Language $wgLang the user language
 	 */

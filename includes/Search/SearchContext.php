@@ -202,7 +202,7 @@ class SearchContext {
 
 	/**
 	 * @deprecated use rescore profiles
-	 * @param boolean deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
+	 * @param boolean $boostLinks Deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
 	 */
 	public function setBoostLinks( $boostLinks ) {
 		$this->boostLinks = $boostLinks;

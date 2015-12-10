@@ -121,28 +121,37 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		// check whether we have second language functionality enabled
-		if ( !$GLOBALS['wgCirrusSearchEnableAltLanguage'] ) {
-			return null;
-		}
-
+		$detected = null;
 		$arguments = array( $this, $term );
 		foreach ( $GLOBALS['wgCirrusSearchLanguageDetectors'] as $name => $callback ) {
 			$lang = call_user_func_array( $callback, $arguments );
 			$wiki = self::wikiForLanguage( $lang );
 			if ( $wiki !== null ) {
 				// it might be more accurate to attach these to the 'next'
-				// log context?
+				// log context? It would be inconsistent with the
+				// langdetect => false condition which does not have a next
+				// request though.
 				Searcher::appendLastLogContext( array(
 					'langdetect' => $name,
 				) );
-				return $wiki;
+				$detected = $wiki;
+				break;
 			}
 		}
-		Searcher::appendLastLogContext( array(
-			'langdetect' => 'failed',
-		) );
-		return null;
+		if ( $detected === null ) {
+			Searcher::appendLastLogContext( array(
+				'langdetect' => 'failed',
+			) );
+		}
+
+		// check whether we have second language functionality enabled.
+		// This comes after the actual detection so we can include the
+		// results of detection in AB test control buckets.
+		if ( !$GLOBALS['wgCirrusSearchEnableAltLanguage'] ) {
+			return null;
+		}
+
+		return $detected;
 	}
 
 	/**

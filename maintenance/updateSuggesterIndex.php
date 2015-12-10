@@ -238,8 +238,11 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$query->setQuery(
 			new Elastica\Query\Filtered(
-				new \Elastica\Query\MatchAll(),
-				new Elastica\Filter\Type( Connection::PAGE_TYPE_NAME )
+				new Elastica\Query\MatchAll(),
+				new Elastica\Filter\BoolAnd( array(
+					new Elastica\Filter\Type( Connection::PAGE_TYPE_NAME ),
+					new Elastica\Filter\Term( array( "namespace" => NS_MAIN ) )
+				) )
 			)
 		);
 

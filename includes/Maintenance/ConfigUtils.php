@@ -176,4 +176,43 @@ class ConfigUtils {
 			die( $die );
 		}
 	}
+
+	/**
+	 * Get index health
+	 * @param string $indexName
+	 * @return array the index health status
+	 */
+	public function getIndexHealth( $indexName ) {
+		$path = "_cluster/health/$indexName";
+		$response = $this->client->request( $path );
+		if ( $response->hasError() ) {
+			throw new \Exception( "Error while fetching index health status: ". $response->getError() );
+		}
+		return $response->getData();
+	}
+
+	/**
+	 * Wait for the index to go green
+	 * @param string $indexName
+	 * @param int $timeout
+	 * @return boolean true if the index is green false otherwise.
+	 */
+	public function waitForGreen( $indexName, $timeout ) {
+		$startTime = time();
+		while( ( $startTime + $timeout ) > time() ) {
+			try {
+				$response = $this->getIndexHealth( $indexName );
+				$status = isset ( $response['status'] ) ? $response['status'] : 'unknown';
+				if ( $status == 'green' ) {
+					$this->outputIndented( "\tGreen!\n" );
+					return true;
+				}
+				$this->outputIndented( "\tIndex is $status retrying...\n" );
+				sleep( 5 );
+			} catch( \Exception $e ) {
+				$this->output( "Error while waiting for green ({$e->getMessage()}), retrying...\n" );
+			}
+		}
+		return false;
+	}
 }

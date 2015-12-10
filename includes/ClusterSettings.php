@@ -39,7 +39,7 @@ class ClusterSettings {
 			return $settings[$indexType];
 		}
 		throw new \Exception( "Could not find a shard count for "
-			. "{$this->indexType}. Did you add an index to "
+			. "{$indexType}. Did you add an index to "
 			. "\$wgCirrusSearchNamespaceMappings but forget to "
 			. "add it to \$wgCirrusSearchShardCount?" );
 	}

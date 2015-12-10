@@ -93,6 +93,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private $masterTimeout;
 
+	/**
+	 * @var ConfigUtils
+	 */
+	 private $utils;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Create a new suggester index. Always operates on a single cluster." );
@@ -112,6 +117,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			'Detauls to quality.', false, true );
 		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
 			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
+		$this->addOption( 'replicationTimeout', 'The amount of time (seconds) to wait for the replica shards to initialize. ' .
+			'Defaults to 3600 seconds.', false, true );
+		$this->addOption( 'allocationIncludeTag', 'Set index.routing.allocation.include.tag on the created index. ' .
+			'Useful if you want to force the suggester index not to be allocated on a specific set of nodes.',
+			false, true );
+		$this->addOption( 'allocationExcludeTag', 'Set index.routing.allocation.exclude.tag on the created index. ' .
+			'Useful if you want to force the suggester index not to be allocated on a specific set of nodes.',
+			false, true );
 	}
 
 	public function execute() {
@@ -123,6 +136,14 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
+
+		// Check that all shards and replicas settings are set
+		try {
+			$this->getShardCount();
+			$this->getReplicaCount();
+		} catch( \Exception $e ) {
+			$this->error( "Failed to get shard count and replica count information: {$e->getMessage()}", 1 );
+		}
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -137,31 +158,30 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
 		$this->withGeo = $this->getOption( 'with-geo', false );
 
-		$utils = new ConfigUtils( $this->getClient(), $this);
+		$this->utils = new ConfigUtils( $this->getClient(), $this);
 
 		$this->langCode = $wgLanguageCode;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 
-		$utils->checkElasticsearchVersion();
+		$this->utils->checkElasticsearchVersion();
 
 		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] : 'unlimited';
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try {
-			$oldIndexIdentifier = $utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
+			$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
 			$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
-			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
+			$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
 
-			$this->availablePlugins = $utils->scanAvailablePlugins( $this->bannedPlugins );
+			$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
 			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 
 			$this->createIndex();
-			$this->validateAnalyzers();
-			$this->createMapping();
 			$this->indexData();
 			if ( $this->optimizeIndex ) {
 				$this->optimize();
 			}
+			$this->enableReplicas();
 			$this->validateAlias();
 			$this->updateVersions();
 			$this->deleteOldIndex();
@@ -325,13 +345,35 @@ class UpdateSuggesterIndex extends Maintenance {
 			throw new \Exception( "Index already exists." );
 		}
 
+		$mappingConfigBuilder = new SuggesterMappingConfigBuilder();
+
+		// We create the index with 0 replicas, this is faster and will
+		// stress less nodes with 4 shards and 2 replicas we would
+		// stress 12 nodes (moreover with the optimize flag)
+		$settings = array(
+			'number_of_shards' => $this->getShardCount(),
+			// hacky but we still use auto_expand_replicas
+			// for convenience on small install.
+			'auto_expand_replicas' => "0-0",
+			'analysis' => $this->analysisConfigBuilder->buildConfig(),
+			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
+		);
+
+		if ( $this->hasOption( 'allocationIncludeTag' ) ) {
+			$this->output( "Using routing.allocation.include.tag: {$this->getOption( 'allocationIncludeTag' )}, " .
+				"the index might be stuck in red if the cluster is not properly configured.\n" );
+			$settings['routing.allocation.include.tag'] = $this->getOption( 'allocationIncludeTag' );
+		}
+
+		if ( $this->hasOption( 'allocationExcludeTag' ) ) {
+			$this->output( "Using routing.allocation.exclude.tag: {$this->getOption( 'allocationExcludeTag' )}, " .
+				"the index might be stuck in red if the cluster is not properly configured.\n" );
+			$settings['routing.allocation.exclude.tag'] = $this->getOption( 'allocationExcludeTag' );
+		}
+
 		$args = array(
-			'settings' => array(
-				'number_of_shards' => $this->getShardCount(),
-				'auto_expand_replicas' => $this->getReplicaCount(),
-				'analysis' => $this->analysisConfigBuilder->buildConfig(),
-				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-			)
+			'settings' => $settings,
+			'mappings' => $mappingConfigBuilder->buildConfig()
 		);
 		// @todo utilize $this->getIndex()->create(...) once it supports setting
 		// the master_timeout parameter.
@@ -342,29 +384,45 @@ class UpdateSuggesterIndex extends Maintenance {
 			array( 'master_timeout' => $this->masterTimeout )
 		);
 
+		// Index create is async, we have to make sure that the index is ready
+		// before sending any docs to it.
+		$this->waitForGreen();
+	}
+
+	private function enableReplicas() {
+		$this->output("Enabling replicas...\n");
+		$args = array(
+			'index' => array(
+				'auto_expand_replicas' => $this->getReplicaCount(),
+			),
+		);
+
+		$path = $this->getIndex()->getName() . "/_settings";
+		$this->getIndex()->getClient()->request(
+			$path,
+			Request::PUT,
+			$args,
+			array( 'master_timeout' => $this->masterTimeout )
+		);
+
+		// The previous call seems to be async, let's wait few sec
+		// otherwise replication won't have time to start.
+		sleep(20);
+
+		// Index will be yellow while replica shards are being allocated.
+		$this->waitForGreen( $this->getOption( 'replicationTimeout', 3600 ) );
+	}
+
+	private function waitForGreen( $timeout = 600 ) {
+		$this->output( "Waiting for the index to go green...\n" );
+		// Wait for the index to go green ( default 10 min)
+		if ( !$this->utils->waitForGreen( $this->getIndex()->getName(), $timeout ) ) {
+			$this->error( "Failed to wait for green... please check config and delete the {$this->getIndex()->getName()} index if it was created.", 1 );
+		}
 	}
 
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexTypeName );
-	}
-
-	private function createMapping() {
-		$type = $this->getType();
-		$mappingConfigBuilder = new SuggesterMappingConfigBuilder();
-		$validator = new \CirrusSearch\Maintenance\Validators\MappingValidator(
-			$this->getIndex(),
-			$this->masterTimeout,
-			false,
-			$this->availablePlugins,
-			$mappingConfigBuilder->buildConfig(),
-			array( Connection::TITLE_SUGGEST_TYPE_NAME => $type ),
-			$this
-		);
-
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
-		}
 	}
 
 	private function getShardCount() {
@@ -403,14 +461,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		$validators[] = $this->getShardAllocationValidator();
 		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexTypeName, $this->maxShardsPerNode, $this );
 		return $validators;
-	}
-
-	private function validateAnalyzers() {
-		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator( $this->getIndex(), $this->analysisConfigBuilder, $this );
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
-		}
 	}
 
 	/**

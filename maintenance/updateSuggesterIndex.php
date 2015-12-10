@@ -9,6 +9,8 @@ use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
 use Elastica;
 use Elastica\Query;
+use Elastica\Request;
+use Elastica\Status;
 
 /**
  * Update the search configuration on the search backend for the title
@@ -108,6 +110,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
 			'Detauls to quality.', false, true );
+		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
+			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
 	}
 
 	public function execute() {
@@ -117,7 +121,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$wgPoolCounterConf,
 			$wgCirrusSearchMasterTimeout;
 
-		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
+		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
 
 		// Make sure we don't flood the pool counter
@@ -182,7 +186,14 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function deleteOldIndex() {
 		if ( $this->oldIndex && $this->oldIndex->exists() ) {
 			$this->output("Deleting " . $this->oldIndex->getName() . " ... ");
-			$this->oldIndex->delete();
+			// @todo Utilize $this->oldIndex->delete(...) once Elastica library is updated
+			// to allow passing the master_timeout
+			$this->oldIndex->request(
+				'',
+				Request::DELETE,
+				array(),
+				array( 'master_timeout' => $this->masterTimeout )
+			);
 			$this->output("ok.\n");
 		}
 	}
@@ -259,7 +270,22 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	public function validateAlias() {
-		$this->getIndex()->addAlias( $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME ), true );
+		// @todo utilize the following once Elastica is updated to support passing
+		// master_timeout. This is a copy of the Elastica\Index::addAlias() method
+		// $this->getIndex()->addAlias( $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME ), true );
+		$index = $this->getIndex();
+		$name = $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME );
+
+		$path = '_aliases';
+		$data = array('actions' => array());
+		$status = new Status($index->getClient());
+		foreach ($status->getIndicesWithAlias($name) as $aliased) {
+			$data['actions'][] = array('remove' => array('index' => $aliased->getName(), 'alias' => $name));
+		}
+
+		$data['actions'][] = array('add' => array('index' => $index->getName(), 'alias' => $name));
+
+		return $index->getClient()->request($path, Request::POST, $data, array( 'master_timeout' => $this->masterTimeout ) );
 	}
 
 	/**
@@ -307,7 +333,14 @@ class UpdateSuggesterIndex extends Maintenance {
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)
 		);
-		$this->getIndex()->create( $args, false );
+		// @todo utilize $this->getIndex()->create(...) once it supports setting
+		// the master_timeout parameter.
+		$this->getIndex()->request(
+			'',
+			Request::PUT,
+			$args,
+			array( 'master_timeout' => $this->masterTimeout )
+		);
 
 	}
 

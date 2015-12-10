@@ -115,6 +115,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	protected $refreshInterval;
 
+	/**
+	 * @var string
+	 */
+	protected $masterTimeout;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Update the configuration or contents of one search index. This always operates on a single cluster." );
@@ -173,7 +178,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$wgCirrusSearchBannedPlugins,
 			$wgCirrusSearchOptimizeIndexForExperimentalHighlighter,
 			$wgCirrusSearchMaxShardsPerNode,
-			$wgCirrusSearchRefreshInterval;
+			$wgCirrusSearchRefreshInterval,
+			$wgCirrusSearchMasterTimeout;
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
@@ -198,6 +204,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->phraseSuggestUseText = $wgCirrusSearchPhraseSuggestUseText;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 		$this->optimizeIndexForExperimentalHighlighter = $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
+		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
 		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
@@ -329,6 +336,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateMapping() {
 		$validator = new \CirrusSearch\Maintenance\Validators\MappingValidator(
 			$this->getIndex(),
+			$this->masterTimeout,
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
 			$this->getMappingConfig(),

@@ -58,17 +58,17 @@ class SearchSuggestion {
 
 	/**
 	 * Construct a new suggestion
+	 * @param float $score the suggestion score
 	 * @param string $text|null the suggestion text
-	 * @param string $url|null the suggestion URL
-	 * @param float|0 the suggestion score
 	 * @param Title|null $suggestedTitle the suggested title
-	 * @param int|null the suggested title ID
+	 * @param int|null $suggestedTitleID the suggested title ID
 	 */
-	public function __construct( $text = null, $url = null, $score = 0, Title $suggestedTitle = null, $suggestedTitleID = null ) {
-		$this->text = $text;
-		$this->url = $url;
+	public function __construct( $score, $text = null, Title $suggestedTitle = null, $suggestedTitleID = null ) {
 		$this->score = $score;
-		$this->suggestedTitle = $suggestedTitle;
+		$this->text = $text;
+		if ( $suggestedTitle ) {
+			$this->setSuggestedTitle( $suggestedTitle  );
+		}
 		$this->suggestedTitleID = $suggestedTitleID;
 	}
 
@@ -81,11 +81,15 @@ class SearchSuggestion {
 	}
 
 	/**
-	 * Set the suggestion text
+	 * Set the suggestion text.
 	 * @param string $text
+	 * @param bool $setTitle Should we also update the title?
 	 */
-	public function setText( $text ) {
+	public function setText( $text, $setTitle = true ) {
 		$this->text = $text;
+		if ( $setTitle && $text ) {
+			$this->setSuggestedTitle( Title::makeTitle( 0, $text ) );
+		}
 	}
 
 	/**
@@ -102,9 +106,9 @@ class SearchSuggestion {
 	 * @param Title|null $title
 	 * @param boolean|false $generateURL set to true to generate the URL based on this Title
 	 */
-	public function setSuggestedTitle( Title $title = null, $generateURL = false ) {
+	public function setSuggestedTitle( Title $title = null ) {
 		$this->suggestedTitle = $title;
-		if ( $title !== null && $generateURL ) {
+		if ( $title !== null ) {
 			$this->url = wfExpandUrl( $title->getFullURL(), PROTO_CURRENT );
 		}
 	}
@@ -158,4 +162,30 @@ class SearchSuggestion {
 	public function setURL( $url ) {
 		$this->url = $url;
 	}
+
+	/**
+	 * Create suggestion from Title
+	 * @param float $score Suggestions score
+	 * @param Title $title
+	 * @return SearchSuggestion
+	 */
+	public static function fromTitle( $score, Title $title ) {
+		return new self( $score, $title->getPrefixedText(), $title, $title->getArticleID() );
+	}
+
+	/**
+	 * Create suggestion from text
+	 * Will also create a title if text if not empty.
+	 * @param float $score Suggestions score
+	 * @param string text
+	 * @return SearchSuggestion
+	 */
+	public static function fromText( $score, $text ) {
+		$suggestion = new self( $score, $text );
+		if ( $text ) {
+			$suggestion->setSuggestedTitle( Title::makeTitle( 0, $text ) );
+		}
+		return $suggestion;
+	}
+
 }

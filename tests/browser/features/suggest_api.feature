@@ -41,7 +41,7 @@ Feature: Suggestion API test
     | max         | Max Eisenhardt    |
     | magnetu     | Magneto           |
 
-  Scenario Outline: Search prefers exact match over fuzzy match
+  Scenario Outline: Search prefers exact match over fuzzy match and ascii folded
     When I ask suggestion API for <term>
       Then the API should produce list starting with <suggested>
   Examples:
@@ -49,6 +49,8 @@ Feature: Suggestion API test
     | max         | Max Eisenhardt    |
     | mai         | Main Page         |
     | eis         | Eisenhardt, Max   |
+    | ele         | Elektra           |
+    | éle         | Électricité       |
 
   Scenario Outline: Search prefers exact db match over partial prefix match
     When I ask suggestion API at most 2 items for <term>

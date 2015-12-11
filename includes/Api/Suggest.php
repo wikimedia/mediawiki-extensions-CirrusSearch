@@ -40,7 +40,6 @@ class Suggest extends ApiBase {
 		}
 
 		$suggestions = $cirrus->searchSuggestions( $queryText );
-
 		// Use the same cache options used by OpenSearch
 		$this->getMain()->setCacheMaxAge( $this->getConfig()->get( 'SearchSuggestCacheExpiry' ) );
 		$this->getMain()->setCacheMode( 'public' );

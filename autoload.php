@@ -117,4 +117,6 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\UserTesting' => __DIR__ . '/includes/UserTesting.php',
 	'CirrusSearch\\Util' => __DIR__ . '/includes/Util.php',
 	'CirrusSearch\\Version' => __DIR__ . '/includes/Version.php',
+	'CirrusSearch\\Test\\HashSearchConfig' => __DIR__ . '/tests/unit/TestUtils.php',
+	'CirrusSearch\\Test\\DummyConnection' => __DIR__ . '/tests/unit/TestUtils.php',
 );

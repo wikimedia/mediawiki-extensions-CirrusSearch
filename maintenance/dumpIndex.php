@@ -40,8 +40,19 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
  */
 class DumpIndex extends Maintenance {
 
+	/**
+	 * @var string
+	 */
 	private $indexType;
+
+	/**
+	 * @var string
+	 */
 	private $indexBaseName;
+
+	/**
+	 * @var string
+	 */
 	private $indexIdentifier;
 
 	/**
@@ -57,7 +68,7 @@ class DumpIndex extends Maintenance {
 	/**
 	 * @var int
 	 */
-	 private $lastProgressPrinted;
+	private $lastProgressPrinted;
 
 	public function __construct() {
 		parent::__construct();
@@ -168,6 +179,9 @@ class DumpIndex extends Maintenance {
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
+	/**
+	 * @param array $document Valid elasticsearch document to write to stdout
+	 */
 	public function write( array $document ) {
 		$indexOp = array (
 			'index' => array (
@@ -181,6 +195,9 @@ class DumpIndex extends Maintenance {
 		$this->writeLine( JSON::stringify( $document['_source'] ) );
 	}
 
+	/**
+	 * @param string $data
+	 */
 	private function writeLine( $data ) {
 		if ( !fwrite( STDOUT, $data  . "\n" ) ) {
 			throw new IndexDumperException( "Cannot write to standard output" );
@@ -198,11 +215,18 @@ class DumpIndex extends Maintenance {
 		}
 	}
 
+	/**
+	 * @param string $message
+	 */
 	public function outputIndented( $message ) {
 		$this->output( "\t$message" );
 	}
 
-	public function output( $message, $channel = NULL ) {
+	/**
+	 * @param string $message
+	 * @param string|null $channel
+	 */
+	public function output( $message, $channel = null ) {
 		if ( $this->mQuiet ) {
 			return;
 		}
@@ -217,6 +241,8 @@ class DumpIndex extends Maintenance {
 	/**
 	 * public because php 5.3 does not support accessing private
 	 * methods in a closure.
+	 * @param int $docsDumped
+	 * @param int $limit
 	 */
 	public function outputProgress( $docsDumped, $limit ) {
 		if ( $docsDumped <= 0 ) {

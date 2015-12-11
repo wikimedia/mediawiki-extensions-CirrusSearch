@@ -32,11 +32,11 @@ class StreamingForkController extends \ForkController {
 	protected $output;
 
 	/**
-	 * @var int $numProcs The number of worker processes to fork
-	 * @var callable $workCallback A callback to call in the child process
+	 * @param int $numProcs The number of worker processes to fork
+	 * @param callable $workCallback A callback to call in the child process
 	 *  once for each line of work to process.
-	 * @var resource $input A socket to read work lines from
-	 * @var resource $output A socket to write the result of work to.
+	 * @param resource $input A socket to read work lines from
+	 * @param resource $output A socket to write the result of work to.
 	 */
 	public function __construct( $numProcs, $workCallback, $input, $output ) {
 		parent::__construct( $numProcs );

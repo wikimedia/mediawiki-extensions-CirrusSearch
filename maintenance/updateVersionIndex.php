@@ -55,6 +55,9 @@ class UpdateVersionIndex extends Maintenance {
 		}
 	}
 
+	/**
+	 * @param array|\Elastica\Filter\AbstractFilter|null $filter
+	 */
 	private function show( $filter = null ) {
 		$query = new \Elastica\Query();
 		if ( $filter ) {
@@ -72,6 +75,9 @@ class UpdateVersionIndex extends Maintenance {
 		}
 	}
 
+	/**
+	 * @param string $baseName
+	 */
 	private function update( $baseName ) {
 		$versionType = $this->getType();
 		$this->outputIndented( "Updating tracking indexes..." );
@@ -95,6 +101,9 @@ class UpdateVersionIndex extends Maintenance {
 		$this->output( "done\n" );
 	}
 
+	/**
+	 * @return \Elastica\Type
+	 */
 	private function getType() {
 		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {

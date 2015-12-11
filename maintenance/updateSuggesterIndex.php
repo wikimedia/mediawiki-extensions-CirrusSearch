@@ -46,11 +46,29 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private $langCode;
 
+	/**
+	 * @var int
+	 */
 	private $indexChunkSize;
+
+	/**
+	 * @var int
+	 */
 	private $indexRetryAttempts;
 
+	/**
+	 * @var string
+	 */
 	private $indexTypeName;
+
+	/**
+	 * @var string
+	 */
 	private $indexBaseName;
+
+	/**
+	 * @var string
+	 */
 	private $indexIdentifier;
 
 	/**
@@ -244,6 +262,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->getIndex()->optimize( array( 'max_num_segments' => 1 ) );
 		$this->output("ok.\n");
 	}
+
 	private function indexData() {
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );
@@ -324,12 +343,14 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$data['actions'][] = array('add' => array('index' => $index->getName(), 'alias' => $name));
 
-		return $index->getClient()->request($path, Request::POST, $data, array( 'master_timeout' => $this->masterTimeout ) );
+		$index->getClient()->request($path, Request::POST, $data, array( 'master_timeout' => $this->masterTimeout ) );
 	}
 
 	/**
 	 * public because php 5.3 does not support accessing private
 	 * methods in a closure.
+	 * @param int $docsDumped
+	 * @param int $limit
 	 */
 	public function outputProgress( $docsDumped, $limit ) {
 		if ( $docsDumped <= 0 ) {
@@ -440,6 +461,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 	}
 
+	/**
+	 * @return string Number of replicas this index should have. May be a range such as '0-2'
+	 */
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexTypeName );
 	}
@@ -489,6 +513,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $this->indexIdentifier );
 	}
 
+	/**
+	 * @return \Elastica\Type
+	 */
 	public function getType() {
 		return $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 	}

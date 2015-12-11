@@ -35,7 +35,14 @@ require_once( "$IP/maintenance/Maintenance.php" );
 require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class Saneitize extends Maintenance {
+	/**
+	 * @var int mediawiki page id
+	 */
 	private $fromId;
+
+	/**
+	 * @var int mediawiki page id
+	 */
 	private $toId;
 
 	public function __construct() {

@@ -138,7 +138,7 @@ class DataSender extends ElasticsearchIntermediary {
 
 	/**
 	 * @param string $indexType type of index to which to send $data
-	 * @param array(\Elastica\Script or \Elastica\Document) $data documents to send
+	 * @param (\Elastica\Script|\Elastica\Document)[] $data documents to send
 	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
@@ -205,7 +205,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * Send delete requests to Elasticsearch.
 	 *
-	 * @param array(int) $ids ids to delete from Elasticsearch
+	 * @param int[] $ids ids to delete from Elasticsearch
 	 * @param string|null $indexType index from which to delete.  null means all.
 	 * @return Status
 	 */
@@ -247,7 +247,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $localSite The wikiId to add/remove from local_sites_with_dupe
 	 * @param string $indexName The name of the index to perform updates to
-	 * @param aray $otherActions A list of arrays each containing the id within elasticsearch ('id') and the article id within $localSite ('articleId')
+	 * @param array $otherActions A list of arrays each containing the id within elasticsearch ('id') and the article id within $localSite ('articleId')
 	 * @return Status
 	 */
 	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions ) {
@@ -333,7 +333,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * document is missing failures.
 	 *
 	 * @param ResponseException $exception exception to check
-	 * @param callback|null $logCallback Callback in which to do some logging.
+	 * @param callable|null $logCallback Callback in which to do some logging.
 	 *   Callback will be passed the id of the missing document.
 	 * @return bool
 	 */
@@ -357,6 +357,10 @@ class DataSender extends ElasticsearchIntermediary {
 		return $justDocumentMissing;
 	}
 
+	/**
+	 * @param string[]
+	 * @return string[]
+	 */
 	public function indexesToIndexNames( array $indexes ) {
 		$names = array();
 		$wikiId = wfWikiId();

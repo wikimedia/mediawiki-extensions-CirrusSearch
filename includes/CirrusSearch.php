@@ -159,7 +159,7 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @var string $lang Language code to find wiki for
+	 * @param string $lang Language code to find wiki for
 	 * @return string|null The wiki related to specified language code
 	 */
 	private function wikiForLanguage( $lang ) {
@@ -180,10 +180,19 @@ class CirrusSearch extends SearchEngine {
 		return array( $interwiki, $interWikiId );
 	}
 
+	/**
+	 * @param string $feature
+	 * @return bool
+	 */
 	private function isFeatureEnabled( $feature ) {
 		return isset( $this->features[$feature] ) && $this->features[$feature];
 	}
 
+	/**
+	 * @param string $term
+	 * @param ResultSet $oldResult
+	 * @return ResultSet
+	 */
 	private function searchTextSecondTry( $term, ResultSet $oldResult ) {
 		// TODO: figure out who goes first - language or suggestion?
 		if ( $oldResult->numRows() == 0 && $oldResult->hasSuggestion() ) {
@@ -235,7 +244,7 @@ class CirrusSearch extends SearchEngine {
 	 * Do the hard part of the searching - actual Searcher invocation
 	 * @param string $term
 	 * @param SearchConfig $config
-	 * @return NULL|Status|ResultSet
+	 * @return null|Status|ResultSet
 	 */
 	private function searchTextReal( $term, SearchConfig $config = null ) {
 		global $wgCirrusSearchInterwikiSources;
@@ -471,6 +480,12 @@ class CirrusSearch extends SearchEngine {
 		return SearchSuggestionSet::fromTitles( $titles );
 	}
 
+	/**
+	 * @param string $term
+	 * @param Searcher $searcher
+	 * @param array $options
+	 * @return Status<SearchResultSet>
+	 */
 	private function moreLikeThis( $term, $searcher, $options ) {
 		// Expand titles chasing through redirects
 		$titles = array();
@@ -506,9 +521,10 @@ class CirrusSearch extends SearchEngine {
 		}
 		return Status::newGood( new SearchResultSet( true ) /* empty */ );
 	}
+
 	/**
 	 * Merge the prefix into the query (if any).
-	 * @var string $term search term
+	 * @param string $term search term
 	 * @return string possibly with a prefix appended
 	 */
 	public function transformSearchTerm( $term ) {
@@ -519,6 +535,10 @@ class CirrusSearch extends SearchEngine {
 		return $term;
 	}
 
+	/**
+	 * @param string $query
+	 * @return string
+	 */
 	public function replacePrefixes( $query ) {
 		$parsed = parent::replacePrefixes( $query );
 		if ( $parsed !== $query ) {
@@ -531,7 +551,7 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Get the sort of sorts we allow
-	 * @return array
+	 * @return string[]
 	 */
 	public function getValidSorts() {
 		return array( 'relevance', 'title_asc', 'title_desc' );

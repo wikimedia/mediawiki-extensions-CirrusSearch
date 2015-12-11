@@ -80,6 +80,11 @@ class Connection extends ElasticaConnection {
 	 */
 	private static $pool = array();
 
+	/**
+	 * @param SearchConfig $config
+	 * @param string|null $cluster
+	 * @return Connection
+	 */
 	public static function getPool( SearchConfig $config, $cluster = null ) {
 		if ( $cluster === null ) {
 			$cluster = $config->get( 'CirrusSearchDefaultCluster' );
@@ -141,7 +146,7 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * @return array(string)
+	 * @return string[]
 	 */
 	public function getServerList() {
 		// This clause provides backwards compatability with previous versions
@@ -210,7 +215,7 @@ class Connection extends ElasticaConnection {
 	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *
-	 * @return array(string)
+	 * @return string[]
 	 */
 	public function getAllIndexTypes() {
 		return array_merge( array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ),
@@ -272,7 +277,7 @@ class Connection extends ElasticaConnection {
 
 	/**
 	 * Is there more then one namespace in the provided index type?
-	 * @var string $indexType an index type
+	 * @param string $indexType an index type
 	 * @return false|integer false if the number of indexes is unknown, an integer if it is known
 	 */
 	public function namespacesInIndexType( $indexType ) {

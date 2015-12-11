@@ -43,7 +43,7 @@ use Html;
  */
 class Hooks {
 	/**
-	 * @var array(string) Destination of titles being moved (the ->getPrefixedDBkey() form).
+	 * @var string[] Destination of titles being moved (the ->getPrefixedDBkey() form).
 	 */
 	private static $movingTitles = array();
 
@@ -603,16 +603,13 @@ class Hooks {
 	/**
 	 * Take a list of titles either linked or unlinked and prepare them for Job\LinksUpdate.
 	 * This includes limiting them to $max titles.
-	 * @param array(Title) $titles titles to prepare
+	 * @param Title[] $titles titles to prepare
 	 * @param int $max maximum number of titles to return
 	 * @return array
 	 */
 	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
 		$titles = self::pickFromArray( $titles, $max );
 		$dBKeys = array();
-		/**
-		 * @var Title $title
-		 */
 		foreach ( $titles as $title ) {
 			$dBKeys[] = $title->getPrefixedDBkey();
 		}
@@ -667,6 +664,9 @@ class Hooks {
 		return true;
 	}
 
+	/**
+	 * @return Connection
+	 */
 	private static function getConnection() {
 		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 		return new Connection( $config );
@@ -675,13 +675,13 @@ class Hooks {
 	/**
 	 * Add $wgCirrusSearchInterwikiProv to external results.
 	 * @param Title $title
-	 * @param unknown $text
-	 * @param unknown $result
-	 * @param unknown $terms
-	 * @param unknown $page
+	 * @param mixed $text
+	 * @param mixed $result
+	 * @param mixed $terms
+	 * @param mixed $page
 	 * @param array $query
 	 */
-	public static function onShowSearchHitTitle( Title &$title, &$text, $result, $terms, $page, &$query = array() ) {
+	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = array() ) {
 		global $wgCirrusSearchInterwikiProv;
 		if( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
 			$query["wprov"] = $wgCirrusSearchInterwikiProv;

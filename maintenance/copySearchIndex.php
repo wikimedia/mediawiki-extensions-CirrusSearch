@@ -36,9 +36,16 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
  * Update the elasticsearch configuration for this index.
  */
 class CopySearchIndex extends Maintenance {
+	/**
+	 * @var string
+	 */
 	private $indexType;
 
+	/**
+	 * @var string
+	 */
 	private $indexBaseName;
+
 	/**
 	 * @var int
 	 */
@@ -108,6 +115,7 @@ class CopySearchIndex extends Maintenance {
 
 	/**
 	 * Get the merge settings for this index.
+	 * @return array
 	 */
 	private function getMergeSettings() {
 		global $wgCirrusSearchMergeSettings;

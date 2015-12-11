@@ -39,7 +39,7 @@ class OtherIndexes extends Updater {
 
 	/**
 	 * Get the external index identifiers for title.
-	 * @param $title Title
+	 * @param Title $title
 	 * @return string[] array of index identifiers.  empty means none.
 	 */
 	public static function getExternalIndexes( Title $title ) {
@@ -154,6 +154,10 @@ class OtherIndexes extends Updater {
 		}
 	}
 
+	/**
+	 * @param Title[] $titles
+	 * @param string $reason
+	 */
 	private function logFailure( array $titles, $reason = '' ) {
 		$articleIDs = array_map( function( $title ) {
 			return $title->getArticleID();

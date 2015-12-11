@@ -33,7 +33,7 @@ use User;
 class Util {
 	/**
 	 * Cache getDefaultBoostTemplates()
-	 * @var array boost templates
+	 * @var array|null boost templates
 	 */
 	private static $defaultBoostTemplates = null;
 	/**
@@ -70,7 +70,7 @@ class Util {
 	 * are descended into.
 	 * @param array $lhs one array
 	 * @param array $rhs the other array
-	 * @return are they equal
+	 * @return bool are they equal
 	 */
 	public static function recursiveSame( $lhs, $rhs ) {
 		if ( array_keys( $lhs ) != array_keys( $rhs ) ) {
@@ -99,13 +99,14 @@ class Util {
 	/**
 	 * Wraps the complex pool counter interface to force the single call pattern
 	 * that Cirrus always uses.
-	 * @param $type same as type parameter on PoolCounter::factory
-	 * @param $user the user
-	 * @param $workCallback callback when pool counter is aquired.  Called with
+	 * @param string $type same as type parameter on PoolCounter::factory
+	 * @param \User $user the user
+	 * @param callable $workCallback callback when pool counter is aquired.  Called with
 	 *   no parameters.
-	 * @param $errorCallback optional callback called on errors.  Called with
+	 * @param callable $errorCallback optional callback called on errors.  Called with
 	 *   the error string and the key as parameters.  If left undefined defaults
 	 *   to a function that returns a fatal status and logs an warning.
+	 * @return mixed
 	 */
 	public static function doPoolCounterWork( $type, $user, $workCallback, $errorCallback = null ) {
 		global $wgCirrusSearchPoolCounterKey;
@@ -166,6 +167,9 @@ class Util {
 		return $work->execute();
 	}
 
+	/**
+	 * @return bool
+	 */
 	public static function isUserPoolCounterActive() {
 		global $wgCirrusSearchBypassPerUserFailure,
 			$wgCirrusSearchForcePerUserPoolCounter;
@@ -334,7 +338,7 @@ class Util {
 	 * Parse a message content into an array. This function is generally used to
 	 * parse settings stored as i18n messages (see cirrussearch-boost-templates).
 	 * @param string $message
-	 * @return array of string
+	 * @return string[]
 	 */
 	public static function parseSettingsInMessage( $message ) {
 		$lines = explode( "\n", $message );
@@ -347,8 +351,8 @@ class Util {
 	/**
 	 * Tries to identify the best redirect by finding the link with the
 	 * smallest edit distance between the title and the user query.
-	 * @param $userQuery string the user query
-	 * @param $redirects array the list of redirects
+	 * @param string $userQuery the user query
+	 * @param array $redirects the list of redirects
 	 * @return string the best redirect text
 	 */
 	public static function chooseBestRedirect( $userQuery, $redirects ) {
@@ -377,8 +381,8 @@ class Util {
 
 	/**
 	 * Test if $string ends with $suffix
-	 * @param $string string to test
-	 * @param $suffix string the suffix
+	 * @param string $string string to test
+	 * @param string $suffix the suffix
 	 * @return boolean true if $string ends with $suffix
 	 */
 	public static function endsWith( $string, $suffix ) {
@@ -392,6 +396,9 @@ class Util {
 
 	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 * @param mixed &$dest
+	 * @param \Request $request
+	 * @param string $name
 	 */
 	public static function overrideYesNo( &$dest, $request, $name ) {
 		$val = $request->getVal( $name );
@@ -407,6 +414,11 @@ class Util {
 	/**
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
 	 * or => $limit if upperLimit is false.
+	 * @param mixed &$dest
+	 * @param \Request $request
+	 * @param string $name
+	 * @param int|null $name
+	 * @param bool $upperLimit
 	 */
 	public static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
 		$val = $request->getVal( $name );
@@ -424,7 +436,7 @@ class Util {
 	/**
 	 * Parse boosted templates.  Parse failures silently return no boosted templates.
 	 * @param string $text text representation of boosted templates
-	 * @return array of boosted templates (key is the template, value is a float).
+	 * @return float[] map of boosted templates (key is the template, value is a float).
 	 */
 	public static function parseBoostTemplates( $text ) {
 		$boostTemplates = array();

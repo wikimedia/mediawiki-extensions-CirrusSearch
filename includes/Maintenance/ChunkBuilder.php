@@ -22,6 +22,12 @@ namespace CirrusSearch\Maintenance;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ChunkBuilder {
+	/**
+	 * @param string $self Name of maintenance script
+	 * @param int $buildChunks
+	 * @param int $from
+	 * @param int $to
+	 */
 	public function build( $self, $options, $buildChunks, $from, $to ) {
 		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
 		$buildChunks = intval( $buildChunks );

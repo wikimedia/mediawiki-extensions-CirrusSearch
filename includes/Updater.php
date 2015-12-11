@@ -44,7 +44,7 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
 	 * of updates.
-	 * @var array(String)
+	 * @var string[]
 	 */
 	private $updated = array();
 
@@ -53,6 +53,10 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	protected $writeToClusterName;
 
+	/**
+	 * @param Connection $conn
+	 * @param string[] $flags
+	 */
 	public function __construct( Connection $conn, array $flags = array() ) {
 		parent::__construct( $conn, null, null );
 		if ( in_array( 'same-cluster', $flags ) ) {
@@ -170,14 +174,14 @@ class Updater extends ElasticsearchIntermediary {
 	 *     can put half created pages in the index.  This is only a good idea during the first
 	 *     half of the two phase index build.
 	 *
-	 * @param $pages array(WikiPage) pages to update
-	 * @param $shardTimeout null|string How long should elaticsearch wait for an offline
+	 * @param WikiPage[] $pages pages to update
+	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
 	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
 	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
 	 *   Elasticsearch's time format.
-	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
+	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
-	 * @param $flags int Bitfield containing instructions about how the document should be built
+	 * @param int $flags Bitfield containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
@@ -234,10 +238,10 @@ class Updater extends ElasticsearchIntermediary {
 	 * Delete pages from the elasticsearch index.  $titles and $ids must point to the
 	 * same pages and should point to them in the same order.
 	 *
-	 * @param $titles array(Title) of titles to delete.  If empty then skipped other index
+	 * @param Title[] $titles List of titles to delete.  If empty then skipped other index
 	 *      maintenance is skipped.
-	 * @param $ids array(integer) of ids to delete
-	 * @param $clientSideTimeout null|int timeout in seconds to update pages or null to not
+	 * @param integer[] $ids List of ids to delete
+	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param string $indexType index from which to delete
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
@@ -341,6 +345,8 @@ class Updater extends ElasticsearchIntermediary {
 
 	/**
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
+	 * @param \Elastica\Document $doc
+	 * @return \Elastica\Script
 	 */
 	private function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();
@@ -432,8 +438,8 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Convert an array of pages to an array of their titles.
 	 *
-	 * @param $pages array(WikiPage)
-	 * @return array(Title)
+	 * @param WikiPage[] $pages
+	 * @return Title[]
 	 */
 	private function pagesToTitles( $pages ) {
 		$titles = array();

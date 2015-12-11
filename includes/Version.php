@@ -24,6 +24,7 @@ use \Status;
 class Version extends ElasticsearchIntermediary {
 	/**
 	 * Constructor
+	 * @param Connection $conn
 	 */
 	public function __construct( Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
@@ -32,7 +33,7 @@ class Version extends ElasticsearchIntermediary {
 	/**
 	 * Get the version of Elasticsearch with which we're communicating.
 	 *
-	 * @return Status(string) version number as a string
+	 * @return Status<string> version number as a string
 	 */
 	public function get() {
 		global $wgMemc, $wgCirrusSearchClientSideSearchTimeout;

@@ -37,16 +37,39 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
  * Update the elasticsearch configuration for this index.
  */
 class UpdateOneSearchIndexConfig extends Maintenance {
+	/**
+	 * @var string
+	 */
 	private $indexType;
 
-	// Are we going to blow the index away and start from scratch?
+	/**
+	 * @var bool  Are we going to blow the index away and start from scratch?
+	 */
 	private $startOver;
 
+	/**
+	 * @var int
+	 */
 	private $reindexChunkSize;
+
+	/**
+	 * @var int
+	 */
 	private $reindexRetryAttempts;
 
+	/**
+	 * @var string
+	 */
 	private $indexBaseName;
+
+	/**
+	 * @var string
+	 */
 	private $indexIdentifier;
+
+	/**
+	 * @var bool
+	 */
 	private $reindexAndRemoveOk;
 
 	/**
@@ -528,6 +551,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * Get the merge settings for this index.
+	 * @return array
 	 */
 	private function getMergeSettings() {
 		global $wgCirrusSearchMergeSettings;
@@ -539,10 +563,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		return $wgCirrusSearchMergeSettings[ 'content' ];
 	}
 
+	/**
+	 * @param int
+	 */
 	private function getShardCount() {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexType );
 	}
 
+	/**
+	 * @param string Number of replicas this index should have. May be a range such as '0-2'
+	 */
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexType );
 	}

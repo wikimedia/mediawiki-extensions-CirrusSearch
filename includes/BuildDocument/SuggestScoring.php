@@ -27,7 +27,7 @@ use CirrusSearch\Util;
 
 class SuggestScoringMethodFactory {
 	/**
-	 * @param $scoringMethods string the name of the scoring method
+	 * @param string $scoringMethods the name of the scoring method
 	 * @return SuggestScoringMethod
 	 */
 	public static function getScoringMethod( $scoringMethod, $maxDocs ) {
@@ -43,7 +43,7 @@ class SuggestScoringMethodFactory {
 
 interface SuggestScoringMethod {
 	/**
-	 * @param $doc array A document from the PAGE type
+	 * @param array $doc A document from the PAGE type
 	 * @return int the weight of the document
 	 */
 	public function score( $doc );

@@ -270,7 +270,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
 	 * @param string $search text by which to search
-	 * @return Status(mixed) status containing results defined by resultsType on success
+	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function nearMatchTitleSearch( $search ) {
 		self::checkTitleSearchRequestLength( $search );
@@ -299,7 +299,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Perform a prefix search.
 	 * @param string $search text by which to search
-	 * @return Status(mixed) status containing results defined by resultsType on success
+	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
 		self::checkTitleSearchRequestLength( $search );
@@ -344,9 +344,9 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Search articles with provided term.
-	 * @param $term string term to search
+	 * @param string $term term to search
 	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
-	 * @return Status(mixed) status containing results defined by resultsType on success
+	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function searchText( $term, $showSuggestion ) {
 		$checkLengthStatus = self::checkTextSearchRequestLength( $term );
@@ -805,7 +805,7 @@ GROOVY;
 	 * @param int $options bitset of options:
 	 *  MORE_LIKE_THESE_NONE
 	 *  MORE_LIKE_THESE_ONLY_WIKIBASE - filter results to only those containing wikibase items
-	 * @return Status(ResultSet)
+	 * @return Status<ResultSet>
 	 */
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		$pageIds = array();
@@ -906,6 +906,10 @@ GROOVY;
 			});
 	}
 
+	/**
+	 * @param string $name
+	 * @return Status
+	 */
 	public function findNamespace( $name ) {
 		$searcher = $this;
 		$indexBaseName = $this->indexBaseName;
@@ -1003,7 +1007,7 @@ GROOVY;
 	 *
 	 * @param string $type
 	 * @param string $for
-	 * @return Status(mixed) results from the query transformed by the resultsType
+	 * @return Status results from the query transformed by the resultsType
 	 */
 	private function search( $type, $for ) {
 		if ( $this->nonTextQueries ) {
@@ -1330,7 +1334,7 @@ GROOVY;
 
 	/**
 	 * Build suggest config for $field.
-	 * @param $field string field to suggest against
+	 * @param string $field field to suggest against
 	 * @return array[] array of Elastica configuration
 	 */
 	private function buildSuggestConfig( $field ) {
@@ -1626,7 +1630,7 @@ GROOVY;
 	 * See: https://github.com/jprante/elasticsearch-langdetect
 	 * @param CirrusSearch $cirrus SearchEngine implementation for cirrus
 	 * @param string $text
-	 * @return string|NULL Language name or null
+	 * @return string|null Language name or null
 	 */
 	public static function detectLanguageViaES( CirrusSearch $cirrus, $text ) {
 		$client = $cirrus->getConnection()->getClient();

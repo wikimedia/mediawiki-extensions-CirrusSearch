@@ -76,6 +76,9 @@ class ResultSet extends SearchResultSet {
 		return true;
 	}
 
+	/**
+	 * @return string|null
+	 */
 	private function findSuggestion() {
 		// TODO some kind of weighting?
 		$suggest = $this->result->getResponse()->getData();
@@ -96,7 +99,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * Escape a highlighted suggestion coming back from Elasticsearch.
-	 * @param $suggestion string suggestion from elasticsearch
+	 * @param string $suggestion suggestion from elasticsearch
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedSuggestion( $suggestion ) {
@@ -113,6 +116,9 @@ class ResultSet extends SearchResultSet {
 			htmlspecialchars( $suggestion ) );
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function resultContainsFullyHighlightedMatch() {
 		foreach ( $this->result->getResults() as $result ) {
 			$highlights = $result->getHighlights();
@@ -147,26 +153,44 @@ class ResultSet extends SearchResultSet {
 		}
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getTotalHits() {
 		return $this->totalHits;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function numRows() {
 		return $this->hits;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasSuggestion() {
 		return $this->suggestionQuery !== null;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getSuggestionQuery() {
 		return $this->suggestionQuery;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getSuggestionSnippet() {
 		return $this->suggestionSnippet;
 	}
 
+	/**
+	 * @return Result|false
+	 */
 	public function next() {
 		$current = $this->result->current();
 		if ( $current ) {
@@ -176,35 +200,64 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
+	/**
+	 * @param Result $res
+	 * @param string $type
+	 * @param string $interwiki
+	 */
 	public function addInterwikiResults( $res, $type, $interwiki ) {
 		$this->interwikiResults[$type][$interwiki] = $res;
 	}
 
+	/**
+	 * @param string $type
+	 * @return Result[]
+	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
 		return isset($this->interwikiResults[$type]) ? $this->interwikiResults[$type] : array();
 	}
 
+	/**
+	 * @param string $type
+	 * @return bool
+	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
 		return isset($this->interwikiResults[$type]);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function searchContainedSyntax() {
 		return $this->searchContainedSyntax;
 	}
 
+	/**
+	 * @param string $newQuery
+	 * @param string|null $newQuerySnippet
+	 */
 	public function setRewrittenQuery($newQuery, $newQuerySnippet=null) {
 		$this->rewrittenQuery = $newQuery;
 		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasRewrittenQuery() {
 		return $this->rewrittenQuery !== null;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getQueryAfterRewrite() {
 		return $this->rewrittenQuery;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getQueryAfterRewriteSnippet() {
 		return $this->rewrittenQuerySnippet;
 	}

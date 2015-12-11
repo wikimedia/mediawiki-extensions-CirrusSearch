@@ -296,9 +296,9 @@ class ForceSearchIndex extends Maintenance {
 	/**
 	 * Find $this->mBatchSize pages that have updates made after (minUpdate,minId) and before maxUpdate.
 	 *
-	 * @param $minUpdate
-	 * @param $minId
-	 * @param $maxUpdate
+	 * @param $minUpdate string|null Minimum mediawiki timestamp
+	 * @param $minId int|null Minimum mediawiki page id
+	 * @param string|null $maxUpdate Maximum mediawiki timestamp
 	 * @return array An array of the last update timestamp, id, and page that was found.
 	 *    Sometimes page is null - those record should be used to determine new
 	 *    inputs for this function but should not by synced to the search index.
@@ -356,6 +356,11 @@ class ForceSearchIndex extends Maintenance {
 		return $this->decodeResults( $res, $maxUpdate );
 	}
 
+	/**
+	 * @param mixed $res Database result
+	 * @param string|null Maximum mediawiki timestamp
+	 * @return array[]
+	 */
 	private function decodeResults( $res, $maxUpdate ) {
 		$result = array();
 		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
@@ -414,10 +419,10 @@ class ForceSearchIndex extends Maintenance {
 	/**
 	 * Find $this->mBatchSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
 	 *
-	 * @param $minUpdate
-	 * @param $minNamespace
-	 * @param $minTitle
-	 * @param $maxUpdate
+	 * @param string $minUpdate
+	 * @param int $minNamespace
+	 * @param string $minTitle
+	 * @param string $maxUpdate
 	 * @return array An array of the last update timestamp and id that were found
 	 */
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
@@ -454,6 +459,9 @@ class ForceSearchIndex extends Maintenance {
 		return $result;
 	}
 
+	/**
+	 * @param int $buildChunks
+	 */
 	private function buildChunks( $buildChunks ) {
 		$dbr = $this->getDB( DB_SLAVE );
 		if ( $this->toId === null ) {
@@ -484,6 +492,9 @@ class ForceSearchIndex extends Maintenance {
 		return JobQueueGroup::singleton()->get( 'cirrusSearchMassIndex' )->getSize();
 	}
 
+	/**
+	 * @return Updater
+	 */
 	private function createUpdater() {
 		$flags = array();
 		if ( $this->hasOption( 'cluster' ) ) {

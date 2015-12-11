@@ -35,8 +35,8 @@ abstract class Validator {
 	}
 
 	/**
-	 * @param $actual
-	 * @param $required array
+	 * @param mixed $actual
+	 * @param array $required
 	 * @param string|null $indent
 	 * @return bool
 	 */

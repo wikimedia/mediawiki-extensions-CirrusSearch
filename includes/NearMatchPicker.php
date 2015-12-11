@@ -107,6 +107,9 @@ class NearMatchPicker {
 
 	/**
 	 * Check a single title's worth of matches.  The big thing here is that titles cannot compete with themselves.
+	 * @param callable $transformer
+	 * @param string $transformedTerm
+	 * @param array $allMatchedTitles
 	 * @return null|Title null if no title matches and the actual title (either of the page or of a redirect to the
 	 *       page) if one did match
 	 */
@@ -125,6 +128,12 @@ class NearMatchPicker {
 		return null;
 	}
 
+	/**
+	 * @param callable $transformer
+	 * @param string $transformedTerm
+	 * @param Title $matchedTitle
+	 * @return bool
+	 */
 	private function checkOneMatch( $transformer, $transformedTerm, $matchedTitle ) {
 		$transformedTitle = call_user_func( $transformer, $matchedTitle->getText() );
 		return $transformedTerm === $transformedTitle;

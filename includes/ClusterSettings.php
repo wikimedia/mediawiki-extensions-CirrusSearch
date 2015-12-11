@@ -63,6 +63,9 @@ class ClusterSettings {
 			"an array it must contain all index types." );
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getDropDelayedJobsAfter() {
 		$timeout = $this->config->get( 'CirrusSearchDropDelayedJobsAfter' );
 		if ( is_int( $timeout ) ) {

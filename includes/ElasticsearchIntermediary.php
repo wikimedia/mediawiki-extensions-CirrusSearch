@@ -80,6 +80,7 @@ class ElasticsearchIntermediary {
 	/**
 	 * Constructor.
 	 *
+	 * @param Connection $connection
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.  Note that
 	 * null isn't for anonymous users - those are still User objects and should be provided if possible.  Null is for
 	 * when the action is being performed in some context where the user that caused it isn't available.  Like when an
@@ -270,7 +271,7 @@ class ElasticsearchIntermediary {
 	 * just ignore the return.  Public so it can be called from pool counter methods.
 	 *
 	 * @param mixed $result result of the request.  defaults to null in case the request doesn't have a result
-	 * @return \Status wrapping $result
+	 * @return Status wrapping $result
 	 */
 	public function success( $result = null ) {
 		$this->finishRequest();
@@ -281,7 +282,7 @@ class ElasticsearchIntermediary {
 	 * Log a failure and return an appropriate status.  Public so it can be called from pool counter methods.
 	 *
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
-	 * @return \Status representing a backend failure
+	 * @return Status representing a backend failure
 	 */
 	public function failure( $exception = null ) {
 		$context = $this->logContext;
@@ -350,10 +351,10 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Extract an error message from an exception thrown by Elastica.
-	 * @param RuntimeException $exception exception from which to extract a message
+	 * @param Exception $exception exception from which to extract a message
 	 * @return string message from the exception
 	 */
-	public static function extractMessage( $exception ) {
+	public static function extractMessage( \Exception $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {
 			return $exception->getMessage();
 		}
@@ -370,7 +371,7 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Does this status represent an Elasticsearch parse error?
-	 * @param $status Status to check
+	 * @param Status $status Status to check
 	 * @return boolean is this a parse error?
 	 */
 	protected function isParseError( $status ) {
@@ -424,7 +425,7 @@ class ElasticsearchIntermediary {
 	 * @param array $context Request specific log variables from self::buildLogContext()
 	 * @return string a PSR-3 compliant message describing $context
 	 */
-	private function buildLogMessage( $context ) {
+	private function buildLogMessage( array $context ) {
 		// No need to check description because it must be set by $this->start.
 		$message = $this->description;
 		$message .= " against {index} took {tookMs} millis";
@@ -510,6 +511,9 @@ class ElasticsearchIntermediary {
 		return $params;
 	}
 
+	/**
+	 * @param array $values
+	 */
 	static public function appendLastLogContext( array $values ) {
 		$idx = count( self::$logContexts ) - 1;
 		if ( $idx >= 0 ) {
@@ -530,7 +534,11 @@ class ElasticsearchIntermediary {
 		}
 	}
 
-	private function extractMessageAndStatus( $exception ) {
+	/**
+	 * @param \Exception $exception
+	 * @return array Two elements, first is Status object, second is string.
+	 */
+	private function extractMessageAndStatus( \Exception $exception ) {
 		if ( !$exception ) {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}

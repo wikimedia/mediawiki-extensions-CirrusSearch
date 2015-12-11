@@ -90,6 +90,7 @@ class InterwikiSearcher extends Searcher {
 
 	/**
 	 * Get the index basename for a given interwiki prefix, if one is defined.
+	 * @param string $interwiki
 	 * @return string
 	 */
 	public static function getIndexForInterwiki( $interwiki ) {
@@ -112,7 +113,7 @@ class InterwikiSearcher extends Searcher {
 	 * We don't support extra indicies when we're doing interwiki searches
 	 *
 	 * @see Searcher::getAndFilterExtraIndexes()
-	 * @return array()
+	 * @return array
 	 */
 	protected function getAndFilterExtraIndexes() {
 		return array();

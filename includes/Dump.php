@@ -41,7 +41,7 @@ class Dump extends FormlessAction {
 		if ( !$esSources->isOk() ) {
 			// Exception has been logged
 			echo '{}';
-			return null;
+			return;
 		}
 		$esSources = $esSources->getValue();
 
@@ -56,18 +56,25 @@ class Dump extends FormlessAction {
 			);
 		}
 		echo json_encode( $result );
-
-		return null;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getName() {
 		return 'cirrusdump';
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function requiresWrite() {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function requiresUnblock() {
 		return false;
 	}

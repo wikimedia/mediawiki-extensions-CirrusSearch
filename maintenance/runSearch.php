@@ -35,6 +35,9 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 
 class RunSearch extends Maintenance {
 
+	/**
+	 * @var string
+	 */
 	protected $indexBaseName;
 
 	public function __construct() {

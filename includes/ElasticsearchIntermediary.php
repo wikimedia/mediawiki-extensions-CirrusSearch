@@ -222,7 +222,7 @@ class ElasticsearchIntermediary {
 		}
 
 		foreach ( array( 'index', 'queryType' ) as $key ) {
-			$parameters[$key] = array_unique( $parameters[$key] );
+			$parameters[$key] = array_values( array_unique( $parameters[$key] ) );
 		}
 
 		$message = array(

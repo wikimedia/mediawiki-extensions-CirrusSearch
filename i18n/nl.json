@@ -26,5 +26,6 @@
 	"cirrussearch-pref-desc": "Probeer de nieuwe zoekfunctie die een groter aantal talen ondersteunt, meer recente zoekresultaten geeft, en zelfs tekst in sjablonen kan vinden.",
 	"apihelp-cirrus-config-dump-description": "Dump van CirrusSearch configuratie",
 	"apihelp-cirrus-mapping-dump-description": "Dump van CirrusSearch mapping voor deze wiki.",
-	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearch instellingen voor deze wiki."
+	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearch instellingen voor deze wiki.",
+	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten"
 }

@@ -208,7 +208,7 @@ class CirrusSearch extends SearchEngine {
 			try {
 				$config = new SearchConfig( $altWiki[0], $altWiki[1] );
 			} catch ( MWException $e ) {
-				wfDebug( "Failed to get $altWiki config: {$e->getMessage()}");
+				wfDebug( "Failed to get config for {$altWiki[0]}:{$altWiki[1]}: {$e->getMessage()}");
 				$config = null;
 			}
 			if ( $config ) {

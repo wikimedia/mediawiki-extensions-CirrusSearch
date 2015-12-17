@@ -62,6 +62,7 @@ class SearchResultsPage
       get_highlighted_text(first_result_alttitle_wrapper_element)
     end
   end
+
   # Note that this is really only useful if Warnings are being echod to the page.  In testing environments they usually are.
   def warning
     text = @browser.text

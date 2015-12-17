@@ -440,7 +440,7 @@ Then(/^there is (no|a)? link to create a new page from the search result$/) do |
 end
 Then(/^(.*) is suggested by api$/) do |text|
   fixed = @api_result["searchinfo"]["suggestionsnippet"]
-  fixed = fixed.gsub(/<em>(.*?)<\/em>/, '*\1*') unless fixed.nil?
+  fixed = fixed.gsub(%r{<em>(.*?)</em>}, '*\1*') unless fixed.nil?
   fixed.should == CGI.escapeHTML(text)
 end
 Then(/^(.*) is suggested$/) do |text|
@@ -523,6 +523,7 @@ def within(seconds)
     retry
   end
 end
+
 # this name sucks
 def repeat_within(seconds, &block)
   end_time = Time.new + Integer(seconds)
@@ -565,7 +566,7 @@ end
 def check_api_highlight(key, index, highlighted, in_ok)
   expect(@api_result["search"].length).to be > index
   expect(@api_result["search"][index]).to have_key(key)
-  text = @api_result["search"][index][key].gsub(/<span class="searchmatch">(.*?)<\/span>/, '*\1*')
+  text = @api_result["search"][index][key].gsub(%r{<span class="searchmatch">(.*?)</span>}, '*\1*')
   if in_ok
     expect(text).to include(highlighted)
   else

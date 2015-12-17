@@ -245,7 +245,7 @@ class Updater extends ElasticsearchIntermediary {
 	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		$job = new Job\ElasticaWrite(
-			reset( $titles ),
+			$titles ? reset( $titles ) : Title::makeTitle( 0, "" ),
 			array(
 				'clientSideTimeout' => $clientSideTimeout,
 				'method' => 'sendDeletes',

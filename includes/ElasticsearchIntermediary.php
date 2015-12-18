@@ -109,6 +109,13 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Unit tests only
+	 */
+	public static function resetExecutionId() {
+		self::$executionId = null;
+	}
+
+	/**
 	 * Summarizes all the requests made in this process and reports
 	 * them along with the test they belong to.
 	 * Only public due to php 5.3 not having access from closures

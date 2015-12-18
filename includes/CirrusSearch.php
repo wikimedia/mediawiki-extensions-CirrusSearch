@@ -390,50 +390,22 @@ class CirrusSearch extends SearchEngine {
 		$suggester = new CompletionSuggester( $this->connection, $this->limit,
 			$config, $this->namespaces, $user, $this->indexBaseName );
 
-		$response = $suggester->suggest( $search );
-		$suggestions = SearchSuggestionSet::emptySuggestionSet();
+		// Not really useful, mostly for testing purpose
+		$variants = $request->getArray( 'cirrusCompletionSuggesterVariant' );
+		if ( empty( $variants ) ) {
+			global $wgContLang;
+			$variants = $wgContLang->autoConvertToAllVariants( $search );
+		} else if ( count( $variants ) > 3 ) {
+			// We should not allow too many variants
+			$variants = array_slice( $variants, 0, 3 );
+		}
+
+		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
 			// Errors will be logged, let's try the exact db match
 			$suggestions = $response->getValue();
-		}
-
-		// if the content language has variants, try to retrieve fallback results
-		$fallbackLimit = $this->limit - $suggestions->getSize();;
-
-		// Copied from PrefixSearch
-		// @todo: verify if this is really needed, if variants are
-		// close enough fuzzy suggestions could already cover this
-		// usecase.
-		if ( $fallbackLimit > 0 ) {
-			global $wgContLang;
-
-			$fallbackSearches = $wgContLang->autoConvertToAllVariants( $search );
-			$fallbackSearches = array_diff( array_unique( $fallbackSearches ), array( $search ) );
-
-			$suggester->setLimit( $fallbackLimit );
-			foreach ( $fallbackSearches as $fbs ) {
-				$fallbackResponse = $suggester->suggest( $fbs );
-				if ( !$fallbackResponse->isOK() ) {
-					continue;
-				}
-				$pageIds = $suggestions->map( function( $sugg ) {
-					return $sugg->getSuggestedTitleID();
-				});
-
-				$fallbackSuggestions = $fallbackResponse->getValue();
-				// Same page can be returned (fuzzy suggestions)
-				foreach( $fallbackSuggestions->getSuggestions() as $s ) {
-					if ( !in_array ( $s->getSuggestedTitleID(), $pageIds ) ) {
-						$suggestions->addSuggestion( $s );
-					}
-				}
-
-				$fallbackLimit = $this->limit - $suggestions->getSize();
-
-				if ( $fallbackLimit <= 0 ) {
-					break;
-				}
-			}
+		} else {
+			$suggestions = SearchSuggestionSet::emptySuggestionSet();
 		}
 
 		// preload the titles with LinkBatch
@@ -454,21 +426,17 @@ class CirrusSearch extends SearchEngine {
 		$rescoredResults = $rescorer->rescore( $search, $this->namespaces, $results, $this->limit );
 
 		if( count( $rescoredResults ) > 0 ) {
-			if ( !in_array( reset( $rescoredResults ), $results ) ) {
+			$found = array_search( $rescoredResults[0], $results );
+			if ( $found === false ) {
 				// If the first result is not in the previous array it
 				// means that we found a new exact match
-				$exactTitle = Title::newFromText( reset( $rescoredResults ) );
-				$exactMatch = new SearchSuggestion();
-				$exactMatch->setText( $exactTitle->getPrefixedText() );
-				$exactMatch->setSuggestedTitle( $exactTitle, true );
-				$exactMatch->setScore( 0 );
-				$suggestions->insertBestSuggestion( $exactMatch );
+				$exactMatch = SearchSuggestion::fromTitle( 0, Title::newFromText( $rescoredResults[0] ) );
+				$suggestions->prepend( $exactMatch );
 				$suggestions->shrink( $this->limit );
 			} else {
 				// if the first result is not the same we need to rescore
-				if( reset( $rescoredResults ) != reset( $results ) ) {
-					$rescoredIndex = array_search( reset( $rescoredResults ), $results );
-					$suggestions->rescore( $rescoredIndex );
+				if( $found > 0 ) {
+					$suggestions->rescore( $found );
 				}
 			}
 		}

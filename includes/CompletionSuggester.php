@@ -13,7 +13,6 @@ use MediaWiki\Logger\LoggerFactory;
 use Title;
 use User;
 use Elastica\Request;
-use Elastica\Exception\ResponseException;
 
 /**
  * Performs search as you type queries using Completion Suggester.
@@ -82,10 +81,23 @@ use Elastica\Exception\ResponseException;
  * some workarounds (https://github.com/elastic/elasticsearch/issues/10746).
  */
 class CompletionSuggester extends ElasticsearchIntermediary {
+	const VARIANT_EXTRA_DISCOUNT = 0.0001;
 	/**
 	 * @var string term to search.
 	 */
 	private $term;
+
+	/**
+	 * @var string[]|null search variants
+	 */
+	private $variants;
+
+	/**
+	 * Currently very limited (see LIMITATIONS) and only works
+	 * for geo context
+	 * @var array|null context for contextualized suggestions
+	 */
+	private $context;
 
 	/**
 	 * @var integer maximum number of result
@@ -103,6 +115,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * Specified as public because of closures. When we move to non-anicent PHP version, can be made protected.
 	 */
 	public $config;
+
+	/**
+	 * @var string Query type (comp_suggest_geo or comp_suggest)
+	 */
+	public $queryType;
 
 	/**
 	 * @var SearchContext
@@ -140,52 +157,16 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * WARNING: experimental API
 	 *
 	 * @param string $text Search term
+	 * @param string[]|null $variants Search term variants
+	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
 	 * @param array $context
 	 * @return Status
 	 */
-	public function suggest( $text, $context = null ) {
-		// Do not remove spaces at the end, the user might tell us he finished writing a word
-		$this->term = ltrim( $text );
+	public function suggest( $text, $variants = null, $context = null ) {
+		$this->setTermAndVariants( $text, $variants );
+		$this->context = $context;
 
-		if ( mb_strlen( $this->term ) > SuggestBuilder::MAX_INPUT_LENGTH ) {
-			// Trim the query otherwise we won't find results
-			$this->term = mb_substr( $this->term, 0, SuggestBuilder::MAX_INPUT_LENGTH );
-		}
-
-		$suggest = array( 'text' => $text );
-		$queryLen = mb_strlen( trim( $text ) ); // Avoid cheating with spaces
-		$queryType = "comp_suggest";
-
-		$profiles = $this->config->get( 'CirrusSearchCompletionSettings' );
-		if ( $context != null && isset( $context['geo']['lat'] ) && isset( $context['geo']['lon'] )
-			&& is_numeric( $context['geo']['lat'] ) && is_numeric( $context['geo']['lon'] )
-		) {
-			$profiles = $this->prepareGeoContextSuggestProfiles( $context );
-			$queryType = "comp_suggest_geo";
-		}
-
-		foreach ( $profiles as $name => $config ) {
-			if ( $config['min_query_len'] > $queryLen ) {
-				continue;
-			}
-			if ( isset( $config['max_query_len'] ) && $queryLen > $config['max_query_len'] ) {
-				continue;
-			}
-			$field = $config['field'];
-			$suggest[$name] = array(
-				'completion' => array(
-					'field' => $field,
-					'size' => $this->limit * $config['fetch_limit_factor']
-				)
-			);
-			if ( isset( $config['fuzzy'] ) ) {
-				$suggest[$name]['completion']['fuzzy'] = $config['fuzzy'];
-			}
-			if ( isset( $config['context'] ) ) {
-				$suggest[$name]['completion']['context'] = $config['context'];
-			}
-		}
-
+		list( $profiles, $suggest ) = $this->buildQuery();
 		$queryOptions = array();
 		$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
@@ -193,7 +174,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
 		$logContext = array(
 			'query' => $text,
-			'queryType' => $queryType,
+			'queryType' => $this->queryType,
 		);
 		$searcher = $this;
 		$limit = $this->limit;
@@ -207,7 +188,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
-						$result = $searcher->postProcessSuggest( $text, $result,
+						$result = $searcher->postProcessSuggest( $result,
 							$profiles, $limit );
 						return $searcher->success( $result );
 					}
@@ -221,13 +202,157 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * protected for tests
+	 */
+	protected function setTermAndVariants( $term, $variants = null ) {
+		$this->term = $term;
+		if ( empty( $variants ) ) {
+			$this->variants = null;
+			return;
+		}
+		$variants = array_diff( array_unique( $variants ), array( $term ) );
+		if ( empty( $variants ) ) {
+			$this->variants = null;
+		} else {
+			$this->variants = $variants;
+		}
+	}
+
+	/**
+	 * Builds the suggest queries and profiles.
+	 * Use with list( $profiles, $suggest ).
+	 * @return array the profiles and suggest queries
+	 */
+	protected function buildQuery() {
+		if ( mb_strlen( $this->term ) > SuggestBuilder::MAX_INPUT_LENGTH ) {
+			// Trim the query otherwise we won't find results
+			$this->term = mb_substr( $this->term, 0, SuggestBuilder::MAX_INPUT_LENGTH );
+		}
+
+		$queryLen = mb_strlen( trim( $this->term ) ); // Avoid cheating with spaces
+		$this->queryType = "comp_suggest";
+
+		$profiles = $this->config->get( 'CirrusSearchCompletionSettings' );
+		if ( $this->context != null && isset( $this->context['geo']['lat'] )
+			&& isset( $this->context['geo']['lon'] ) && is_numeric( $this->context['geo']['lat'] )
+			&& is_numeric( $this->context['geo']['lon'] )
+		) {
+			$profiles = $this->prepareGeoContextSuggestProfiles();
+			$this->queryType = "comp_suggest_geo";
+		}
+
+		$suggest = $this->buildSuggestQueries( $profiles, $this->term, $queryLen );
+
+		// Handle variants, update the set of profiles and suggest queries
+		if ( !empty( $this->variants ) ) {
+			list( $addProfiles, $addSuggest ) = $this->handleVariants( $profiles, $queryLen );
+			$profiles += $addProfiles;
+			$suggest += $addSuggest;
+		}
+		return array( $profiles, $suggest );
+	}
+
+	/**
+	 * Builds a set of suggest query by reading the list of profiles
+	 * @param array $profiles
+	 * @param string $query
+	 * @param int $queryLen the length to use when checking min/max_query_len
+	 * @return array a set of suggest queries ready to for elastic
+	 */
+	protected function buildSuggestQueries( array $profiles, $query, $queryLen ) {
+		$suggest = array();
+		foreach($profiles as $name => $config) {
+			$sugg = $this->buildSuggestQuery( $config, $query, $queryLen );
+			if(!$sugg) {
+				continue;
+			}
+			$suggest[$name] = $sugg;
+		}
+		return $suggest;
+	}
+
+	/**
+	 * Builds a suggest query from a profile
+	 * @param array $config Profile
+	 * @param string $query
+	 * @param int $queryLen the length to use when checking min/max_query_len
+	 * @return array|null suggest query ready to for elastic or null
+	 */
+	protected function buildSuggestQuery( array $config, $query, $queryLen ) {
+		// Do not remove spaces at the end, the user might tell us he finished writing a word
+		$query = ltrim( $query );
+		if ( $config['min_query_len'] > $queryLen ) {
+			return null;
+		}
+		if ( isset( $config['max_query_len'] ) && $queryLen > $config['max_query_len'] ) {
+			return null;
+		}
+		$field = $config['field'];
+		$suggest = array(
+			'text' => $query,
+			'completion' => array(
+				'field' => $field,
+				'size' => $this->limit * $config['fetch_limit_factor']
+			)
+		);
+		if ( isset( $config['fuzzy'] ) ) {
+			$suggest['completion']['fuzzy'] = $config['fuzzy'];
+		}
+		if ( isset( $config['context'] ) ) {
+			$suggest['completion']['context'] = $config['context'];
+		}
+		return $suggest;
+	}
+
+	/**
+	 * Update the suggest queries and return additional profiles flagged the 'fallback' key
+	 * with a discount factor = originalDiscount * 0.0001/(variantIndex+1).
+	 * @param array $profiles the default profiles
+	 * @param array $suggest the current set of suggest queries
+	 * @param string[]|null $variants the list of variant queries
+	 * @param string $search the original query
+	 * @param int $queryLen the original query length
+	 * @return array new variant profiles
+	 */
+	 protected function handleVariants( array $profiles, $queryLen ) {
+		$variantIndex = 0;
+		$allVariantProfiles = array();
+		$allSuggestions = array();
+		foreach( $this->variants as $variant ) {
+			$variantIndex++;
+			foreach ( $profiles as $name => $profile ) {
+				$variantProfName = $name . '-variant-' . $variantIndex;
+				$allVariantProfiles[$variantProfName] = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT/$variantIndex );
+				$allSuggestions[$variantProfName] = $this->buildSuggestQuery(
+							$allVariantProfiles[$variantProfName], $variant, $queryLen
+						);
+			}
+		}
+		return array( $allVariantProfiles, $allSuggestions );
+	}
+
+	/**
+	 * Creates a copy of $profile[$name] with a custom '-variant-SEQ' suffix.
+	 * And applies an extra discount factor of 0.0001.
+	 * The copy is added to the profiles container.
+	 * @param array $profile profile to copy
+	 * @param float $extraDiscount extra discount factor to rank variant suggestion lower.
+	 */
+	protected function buildVariantProfile( array $profile, $extraDiscount = 0.0001 ) {
+		// mark the profile as a fallback query
+		$profile['fallback'] = true;
+		$profile['discount'] *= $extraDiscount;
+		return $profile;
+	}
+
+	/**
 	 * prepare the list of suggest requests used for geo context suggestions
 	 * This method will merge $this->config->get( 'CirrusSearchCompletionSettings and
 	 * $this->config->get( 'CirrusSearchCompletionGeoContextSettings
 	 * @param array $context user's geo context
 	 * @return array of suggest request profiles
 	 */
-	private function prepareGeoContextSuggestProfiles( $context ) {
+	private function prepareGeoContextSuggestProfiles() {
 		$profiles = array();
 		foreach ( $this->config->get( 'CirrusSearchCompletionGeoContextSettings' ) as $geoname => $geoprof ) {
 			foreach ( $this->config->get( 'CirrusSearchCompletionSettings' ) as $sugname => $sugprof ) {
@@ -239,8 +364,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$profile['discount'] *= $geoprof['discount'];
 				$profile['context'] = array(
 					'location' => array(
-						'lat' => $context['geo']['lat'],
-						'lon' => $context['geo']['lon'],
+						'lat' => $this->context['geo']['lat'],
+						'lon' => $this->context['geo']['lon'],
 						'precision' => $geoprof['precision']
 					)
 				);
@@ -261,7 +386,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param int $limit Maximum suggestions to return, -1 for unlimited
 	 * @return SearchSuggestionSet a set of Suggestions
 	 */
-	protected function postProcessSuggest( $query, \Elastica\Response $response, $profiles, $limit = -1 ) {
+	protected function postProcessSuggest( \Elastica\Response $response, $profiles, $limit = -1 ) {
 		$this->logContext['elasticTookMs'] = intval( $response->getQueryTime() * 1000 );
 		$data = $response->getData();
 		unset( $data['_shards'] );
@@ -283,7 +408,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					if ( !isset( $suggestions[$pageId] ) ||
 						$score > $suggestions[$pageId]->getScore()
 					) {
-						$suggestion = new SearchSuggestion( null, null, $score, null, $pageId );
+						$suggestion = new SearchSuggestion( $score, null, null, $pageId );
 						// If it's a title suggestion we have the text
 						if ( $type === SuggestBuilder::TITLE_SUGGESTION ) {
 							$suggestion->setText( $output['text'] );
@@ -337,47 +462,39 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				if ( $redirResponse->isOk() ) {
 					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
 					$docs = $redirResponse->getData();
-					$docs = $docs['docs'];
-					foreach ( $docs as $doc ) {
-						$id = $doc['_id'];
-						if ( !isset( $doc['_source']['redirect'] )
-							|| empty( $doc['_source']['redirect'] )
-						) {
+					foreach ( $docs['docs'] as $doc ) {
+						if ( empty( $doc['_source']['redirect'] ) ) {
 							continue;
 						}
-						$text = Util::chooseBestRedirect( $query, $doc['_source']['redirect'] );
-						$suggestions[$id]->setText( $text );
+						// We use the original query, we should maybe use the variant that generated this result?
+						$text = Util::chooseBestRedirect( $this->term, $doc['_source']['redirect'] );
+						if( !empty( $suggestions[$doc['_id']] ) ) {
+							$suggestions[$doc['_id']]->setText( $text );
+						}
 					}
 				} else {
 					LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 						'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
-						array( 'query' => $query,
+						array( 'query' => $this->term,
 							'ids' => serialize( $missingText ),
 							'error' => $redirResponse->getError() ) );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
-					array( 'query' => $query,
+					array( 'query' => $this->term,
 						'ids' => serialize( $missingText ),
 						'error' => $this->extractMessage( $e ) ) );
 			}
 		}
 
-		$retval = array();
-		foreach ( $suggestions as $suggestion ) {
-			if ( $suggestion->getText() === null ) {
-				// We were unable to find a text to display
-				// Maybe a page with redirects when we built the suggester index
-				// but now without redirects?
-				continue;
+		return new SearchSuggestionSet( array_filter(
+			$suggestions,
+			function ( $suggestion ) {
+				// text should be not empty for suggestions
+				return $suggestion->getText() != null;
 			}
-			// Populate the SearchSuggestion object
-			$suggestion->setSuggestedTitle( Title::makeTitle( 0, $suggestion->getText() ), true );
-			$retval[] = $suggestion;
-		}
-
-		return new SearchSuggestionSet( $retval );
+		) );
 	}
 
 	/**

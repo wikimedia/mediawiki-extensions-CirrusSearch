@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Test\HashSearchConfig;
+
 class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	public function testFunctionScoreDecorator() {
 		$func = new FunctionScoreDecorator();
@@ -501,11 +503,5 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 				),
 			),
 		);
-	}
-}
-
-class HashSearchConfig extends \CirrusSearch\SearchConfig {
-	public function __construct( array $settings ) {
-		$this->setSource( new \HashConfig( $settings ) );
 	}
 }

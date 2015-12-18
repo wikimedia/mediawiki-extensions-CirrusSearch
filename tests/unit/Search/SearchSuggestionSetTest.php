@@ -29,18 +29,18 @@ class SearchSuggestionSetTest extends \PHPUnit_Framework_TestCase {
 	public function testAppend() {
 		$set = SearchSuggestionSet::emptySuggestionSet();
 		$this->assertEquals( 0, $set->getSize() );
-		$set->addSuggestion( new SearchSuggestion( null, null, 3 ) );
+		$set->append( new SearchSuggestion( 3 ) );
 		$this->assertEquals( 3, $set->getWorstScore() );
 		$this->assertEquals( 3, $set->getBestScore() );
 
-		$suggestion = new SearchSuggestion( null, null, 4 );
-		$set->addSuggestion( $suggestion );
+		$suggestion = new SearchSuggestion( 4 );
+		$set->append( $suggestion );
 		$this->assertEquals( 2, $set->getWorstScore() );
 		$this->assertEquals( 3, $set->getBestScore() );
 		$this->assertEquals( 2, $suggestion->getScore() );
 
-		$suggestion = new SearchSuggestion( null, null, 2 );
-		$set->addSuggestion( $suggestion );
+		$suggestion = new SearchSuggestion( 2 );
+		$set->append( $suggestion );
 		$this->assertEquals( 1, $set->getWorstScore() );
 		$this->assertEquals( 3, $set->getBestScore() );
 		$this->assertEquals( 1, $suggestion->getScore() );
@@ -58,24 +58,24 @@ class SearchSuggestionSetTest extends \PHPUnit_Framework_TestCase {
 	public function testInsertBest() {
 		$set = SearchSuggestionSet::emptySuggestionSet();
 		$this->assertEquals( 0, $set->getSize() );
-		$set->insertBestSuggestion( new SearchSuggestion( null, null, 3 ) );
+		$set->prepend( new SearchSuggestion( 3 ) );
 		$this->assertEquals( 3, $set->getWorstScore() );
 		$this->assertEquals( 3, $set->getBestScore() );
 
-		$suggestion = new SearchSuggestion( null, null, 4 );
-		$set->insertBestSuggestion( $suggestion );
+		$suggestion = new SearchSuggestion( 4 );
+		$set->prepend( $suggestion );
 		$this->assertEquals( 3, $set->getWorstScore() );
 		$this->assertEquals( 4, $set->getBestScore() );
 		$this->assertEquals( 4, $suggestion->getScore() );
 
-		$suggestion = new SearchSuggestion( null, null, null );
-		$set->insertBestSuggestion( $suggestion );
+		$suggestion = new SearchSuggestion( 0 );
+		$set->prepend( $suggestion );
 		$this->assertEquals( 3, $set->getWorstScore() );
 		$this->assertEquals( 5, $set->getBestScore() );
 		$this->assertEquals( 5, $suggestion->getScore() );
 
-		$suggestion = new SearchSuggestion( null, null, 2 );
-		$set->insertBestSuggestion( $suggestion );
+		$suggestion = new SearchSuggestion( 2 );
+		$set->prepend( $suggestion );
 		$this->assertEquals( 3, $set->getWorstScore() );
 		$this->assertEquals( 6, $set->getBestScore() );
 		$this->assertEquals( 6, $suggestion->getScore() );
@@ -89,7 +89,7 @@ class SearchSuggestionSetTest extends \PHPUnit_Framework_TestCase {
 	public function testShrink() {
 		$set = SearchSuggestionSet::emptySuggestionSet();
 		for( $i = 0; $i < 100; $i++) {
-			$set->addSuggestion( new SearchSuggestion() );
+			$set->append( new SearchSuggestion( 0 ) );
 		}
 		$set->shrink( 10 );
 		$this->assertEquals( 10, $set->getSize() );
@@ -97,4 +97,6 @@ class SearchSuggestionSetTest extends \PHPUnit_Framework_TestCase {
 		$set->shrink( 0 );
 		$this->assertEquals( 0, $set->getSize() );
 	}
+
+	// TODO: test for fromTitles
 }

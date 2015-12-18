@@ -77,6 +77,13 @@ class UserTesting {
 	}
 
 	/**
+	 * Unit test only
+	 */
+	public static function resetInstance() {
+		self::$instance = null;
+	}
+
+	/**
 	 * @var array $config
 	 * @var callable|null $callback
 	 */

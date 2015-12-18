@@ -644,6 +644,8 @@ Before("@suggest") do
         And a page named Ice Man (Marvel Comics) exists with contents #REDIRECT [[Iceman]]
         And a page named Ice-Man (comics books) exists with contents #REDIRECT [[Iceman]]
         And a page named Ultimate Iceman exists with contents #REDIRECT [[Iceman]]
+        And a page named Électricité exists with contents This is electicity in french.
+        And a page named Elektra exists with contents Elektra is a fictional character appearing in American comic books published by Marvel Comics.
         And I reindex suggestions
     )
     suggest = true

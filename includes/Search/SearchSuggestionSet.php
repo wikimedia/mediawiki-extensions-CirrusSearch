@@ -23,18 +23,26 @@ namespace CirrusSearch\Search;
  */
 
 /**
- * A set of SearchSuggestions
+ * A set of search suggestions.
+ * The set is always ordered by score, with the best match first.
  */
 class SearchSuggestionSet {
 	/**
 	 * @var SearchSuggestion[]
 	 */
-	private $suggestions;
+	private $suggestions = array();
+
+	/**
+	 *
+	 * @var array
+	 */
+	private $pageMap = array();
 
 	/**
 	 * Builds a new set of suggestions.
 	 *
 	 * NOTE: the array should be sorted by score (higher is better),
+	 * in descending order.
 	 * SearchSuggestionSet will not try to re-order this input array.
 	 * Providing an unsorted input array is a mistake and will lead to
 	 * unexpected behaviors.
@@ -42,7 +50,13 @@ class SearchSuggestionSet {
 	 * @param SearchSuggestion[] $suggestions (must be sorted by score)
 	 */
 	public function __construct( array $suggestions ) {
-		$this->suggestions = array_values( $suggestions );
+		foreach ( $suggestions as $suggestion ) {
+			$pageID = $suggestion->getSuggestedTitleID();
+			if ( $pageID && empty( $this->pageMap[$pageID] ) ) {
+				$this->pageMap[$pageID] = true;
+			}
+			$this->suggestions[] = $suggestion;
+		}
 	}
 
 	public function getSuggestions() {
@@ -65,11 +79,18 @@ class SearchSuggestionSet {
 	 *
 	 * @param SearchSuggestion $suggestion
 	 */
-	public function addSuggestion( SearchSuggestion $suggestion ) {
+	public function append( SearchSuggestion $suggestion ) {
+		$pageID = $suggestion->getSuggestedTitleID();
+		if ( $pageID && isset( $this->pageMap[$pageID] ) ) {
+			return;
+		}
 		if ( $this->getSize() > 0 && $suggestion->getScore() >= $this->getWorstScore() ) {
 			$suggestion->setScore( $this->getWorstScore() - 1);
 		}
 		$this->suggestions[] = $suggestion;
+		if ( $pageID ) {
+			$this->pageMap[$pageID] = true;
+		}
 	}
 
 	/**
@@ -77,7 +98,8 @@ class SearchSuggestionSet {
 	 */
 	public function rescore( $key ) {
 		$removed = array_splice( $this->suggestions, $key, 1 );
-		$this->insertBestSuggestion( $removed[0] );
+		unset( $this->pageMap[$removed[0]->getSuggestedTitleID()] );
+		$this->prepend( $removed[0] );
 	}
 
 	/**
@@ -85,11 +107,18 @@ class SearchSuggestionSet {
 	 * is lower than the best one its score will be updated (best + 1)
 	 * @param SearchSuggestion $suggestion
 	 */
-	public function insertBestSuggestion( SearchSuggestion $suggestion ) {
+	public function prepend( SearchSuggestion $suggestion ) {
+		$pageID = $suggestion->getSuggestedTitleID();
+		if ( $pageID && isset( $this->pageMap[$pageID] ) ) {
+			return;
+		}
 		if( $this->getSize() > 0 && $suggestion->getScore() <= $this->getBestScore() ) {
 			$suggestion->setScore( $this->getBestScore() + 1 );
 		}
-		array_unshift( $this->suggestions, $suggestion );
+		array_unshift( $this->suggestions,  $suggestion );
+		if ( $pageID ) {
+			$this->pageMap[$pageID] = true;
+		}
 	}
 
 	/**
@@ -99,7 +128,7 @@ class SearchSuggestionSet {
 		if ( empty( $this->suggestions ) ) {
 			return 0;
 		}
-		return reset( $this->suggestions )->getScore();
+		return $this->suggestions[0]->getScore();
 	}
 
 	/**
@@ -139,11 +168,10 @@ class SearchSuggestionSet {
 	 * @return SearchSuggestionSet
 	 */
 	public static function fromTitles( array $titles ) {
-		$suggestions = array();
 		$score = count( $titles );
-		foreach( $titles as $title ) {
-			$suggestions[] = new SearchSuggestion( $title->getPrefixedText(), wfExpandUrl( $title->getFullURL(), PROTO_CURRENT ), $score--, $title );
-		}
+		$suggestions = array_map( function( $title ) use ( &$score ) {
+			return SearchSuggestion::fromTitle( $score--, $title );
+		}, $titles );
 		return new SearchSuggestionSet( $suggestions );
 	}
 

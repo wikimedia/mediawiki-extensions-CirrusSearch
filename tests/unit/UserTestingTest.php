@@ -23,6 +23,14 @@ use CirrusSearch\UserTesting;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class UserTestingTest extends \MediaWikiTestCase {
+	/**
+	 * @beforeClass
+	 */
+	public static function setUpBeforeClass() {
+		ElasticSearchIntermediary::resetExecutionId();
+		UserTesting::resetInstance();
+	}
+
 	public function testPartitipcationInTest() {
 		$config = $this->config( 'test' );
 		$ut = $this->ut( $config, true );

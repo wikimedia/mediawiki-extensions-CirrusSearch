@@ -169,7 +169,7 @@ class ElasticaWrite extends Job {
 		foreach ( $error as $conn ) {
 			$this->requeueError( $conn );
 		}
-		if ( !empty( $retry ) || !empty( $error ) ) {
+		if ( !empty( $error ) ) {
 			$this->setLastError( "ElasticaWrite job reported " . count( $error ) . " failure(s) and " . count( $retry ) . " frozen." );
 			return false;
 		}

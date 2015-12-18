@@ -1,6 +1,7 @@
 ( function ( $, mw ) {
 	$( function() {
 		// Override default opensearch
+		mw.searchSuggest.type = 'cirrus-suggest';
 		mw.searchSuggest.request = function ( api, query, response, maxRows ) {
 			return api.get( {
 				action: 'cirrus-suggest',

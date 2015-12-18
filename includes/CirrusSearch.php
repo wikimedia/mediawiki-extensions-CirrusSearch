@@ -9,6 +9,7 @@ use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchSuggestion;
 use CirrusSearch\Search\SearchSuggestionSet;
 use CirrusSearch\SearchConfig;
+use MediaWiki\Logger\LoggerFactory;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -208,7 +209,14 @@ class CirrusSearch extends SearchEngine {
 			try {
 				$config = new SearchConfig( $altWiki[0], $altWiki[1] );
 			} catch ( MWException $e ) {
-				wfDebug( "Failed to get config for {$altWiki[0]}:{$altWiki[1]}: {$e->getMessage()}");
+				LoggerFactory::getInstance( 'CirrusSearch' )->info(
+					"Failed to get config for {interwiki}:{dbwiki}",
+					array(
+						"interwiki" => $altWiki[0],
+						"dbwiki" => $altWiki[1],
+						"exception" => $e
+					)
+				);
 				$config = null;
 			}
 			if ( $config ) {

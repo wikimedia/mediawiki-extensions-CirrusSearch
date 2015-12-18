@@ -755,6 +755,17 @@ $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default']
 $wgCirrusSearchUseCompletionSuggester = false;
 
 /**
+ * Try to recycle the completion suggester, if the wiki is small
+ * it's certainly better to not re-create the index from scratch
+ * since index creation is costly. Recycling the index will prevent
+ * elasticsearch from rebalancing shards.
+ * On large wikis it's maybe better to create a new index because
+ * documents are indexed and optimised with replication disabled
+ * reducing the number of disk operation to primary shards only.
+ */
+$wgCirrusSearchRecycleCompletionSuggesterIndex = true;
+
+/**
  * Profile for geo context search as you type suggestion (completion suggestion)
  * (see profiles/SuggestProfiles.php for more details.)
  *

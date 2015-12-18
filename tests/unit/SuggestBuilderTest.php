@@ -68,7 +68,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 			)
 		);
 
-		$suggestions = $builder->build( 1, $doc );
+		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
 	}
 
@@ -111,7 +111,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				)
 			)
 		);
-		$suggestions = $builder->build( 1, $doc );
+		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
 	}
 
@@ -219,7 +219,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				)
 			)
 		);
-		$suggestions = $builder->build( 1, $doc );
+		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
 	}
 
@@ -327,5 +327,13 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				null,
 			),
 		);
+	}
+
+	private function buildSuggestions( $builder, $doc ) {
+		return array_map( function( $x ) {
+				$dat = $x->getData();
+				unset( $dat['batch_id'] );
+				return $dat;
+			}, $builder->build( 1, $doc ) );
 	}
 }

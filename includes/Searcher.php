@@ -22,8 +22,6 @@ use Title;
 use UsageException;
 use RequestContext;
 use User;
-use Elastica\Request;
-use Elastica\Exception\ResponseException;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -1642,65 +1640,6 @@ GROOVY;
 			$pairs['{' . $key . '}'] = $value;
 		}
 		return strtr( $input, $pairs );
-	}
-
-	/**
-	 * Try to detect language via Accept-Language header. Takes the
-	 * first accept-language that is not the current content language.
-	 * @return string|null Language name or null
-	 */
-	public static function detectLanguageViaAcceptLang() {
-		$acceptLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
-		$currentShortLang = $GLOBALS['wgContLang']->getCode();
-		foreach ( $acceptLang as $lang ) {
-			list( $shortLang ) = explode( "-", $lang, 2 );
-			if ( $shortLang !== $currentShortLang ) {
-				// return only the primary-tag, stripping the subtag
-				// so the language to wiki map doesn't need all
-				// possible combinations (quite a few).
-				return $shortLang;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Try to detect language using langdetect plugin
-	 * See: https://github.com/jprante/elasticsearch-langdetect
-	 * @param CirrusSearch $cirrus SearchEngine implementation for cirrus
-	 * @param string $text
-	 * @return string|null Language name or null
-	 */
-	public static function detectLanguageViaES( CirrusSearch $cirrus, $text ) {
-		$client = $cirrus->getConnection()->getClient();
-		try {
-			$response = $client->request( "_langdetect", Request::POST, $text );
-		} catch ( ResponseException $e ) {
-			// This happens when language detection is not configured
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Could not connect to language detector: {exception}",
-				array( "exception" => $e->getMessage() )
-			);
-			return null;
-		}
-		if ( $response->isOk() ) {
-			$value = $response->getData();
-			if ( $value && !empty( $value['languages'] ) ) {
-				$langs = $value['languages'];
-				if ( count( $langs ) == 1 ) {
-					// TODO: add minimal threshold
-					return $langs[0]['language'];
-				}
-				// FIXME: here I'm just winging it, should be something
-				// that makes sense for multiple languages
-				if ( count( $langs ) == 2) {
-					if( $langs[0]['probability'] > 2*$langs[1]['probability'] ) {
-						return $langs[0]['language'];
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

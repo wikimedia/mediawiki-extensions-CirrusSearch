@@ -148,9 +148,30 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		$detected = null;
-		$arguments = array( $this, $term );
-		foreach ( $GLOBALS['wgCirrusSearchLanguageDetectors'] as $name => $callback ) {
-			$lang = call_user_func_array( $callback, $arguments );
+		foreach ( $GLOBALS['wgCirrusSearchLanguageDetectors'] as $name => $klass ) {
+			if ( !class_exists( $klass ) ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->info(
+					"Unknown detector class for {name}: {class}",
+					array(
+						"name" => $name,
+						"class" => $klass,
+					)
+				);
+				continue;
+
+			}
+			$detector = new $klass();
+			if( !( $klass instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->info(
+					"Bad detector class for {name}: {class}",
+					array(
+						"name" => $name,
+						"class" => $klass,
+					)
+				);
+				continue;
+			}
+			$lang = $klass->detect( $this, $term );
 			$wiki = self::wikiForLanguage( $lang );
 			if ( $wiki !== null ) {
 				// it might be more accurate to attach these to the 'next'

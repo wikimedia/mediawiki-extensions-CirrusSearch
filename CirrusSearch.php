@@ -845,20 +845,26 @@ $wgCirrusSearchMoreLikeRescoreProfile = $wgCirrusSearchRescoreProfiles['default'
 $wgCirrusSearchInterwikiThreshold = 3;
 
 /**
- * List of callbacks to be used as language detectors. They recieve two arguments,
- * first argument is a CirrusSearch object doing the searching, second argument is
- * the search term (string). Detectors will be called in the order given until one
+ * List of classes to be used as language detectors, implementing
+ * CirrusSearch\LanguageDetector\Detector interface.
+ * Detectors will be called in the order given until one
  * returns a non-null result. The array key will, currently, only be logged to the
  * UserTesting logs. This is intended to be added to CirrusSearchRequestSet payload
  * as well once schema migration is complete.
  *
  * Two options are built in:
  *
- * CirrusSearch\Searcher::detectLanguageViaAcceptLang - uses the first language in the
+ * CirrusSearch\LanguageDetector\HttpAccept - uses the first language in the
  *  Accept-Language header that is not the current content language.
- * CirrusSearch\Searcher::detectLanguageViaES - uses the elasticsearch lang-detect plugin
+ * CirrusSearch\LanguageDetector\HttpAccept\ElasticSearch - uses the elasticsearch lang-detect plugin
+ * CirrusSearch\LanguageDetector\TextCat - uses TextCat library
  */
 $wgCirrusSearchLanguageDetectors = array();
+
+/**
+ * Directory where TextCat detector should look for language model
+ */
+$wgCirrusSearchTextcatModel = false;
 
 /**
  * Overrides the master timeout on cluster wide actions, such as mapping updates.
@@ -880,6 +886,10 @@ $search = $includes . 'Search/';
  * Classes
  */
 require_once __DIR__ . '/autoload.php';
+
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
 
 /**
  * Hooks

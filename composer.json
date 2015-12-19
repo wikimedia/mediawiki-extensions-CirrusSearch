@@ -1,0 +1,10 @@
+{
+	"name"       : "mediawiki/cirrussearch",
+	"type"       : "mediawiki-extension",
+	"description": "Elasticsearch-powered search for MediaWiki",
+	"license"    : "GPL-2.0+",
+	"minimum-stability": "dev",
+	"require"    : {
+		"wikimedia/textcat": "1.1.1"
+	}
+}

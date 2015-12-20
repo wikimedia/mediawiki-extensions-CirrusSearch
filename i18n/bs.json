@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Srdjan m"
+		]
+	},
+	"cirrussearch-pref-label": "Nova pretraga",
+	"cirrussearch-give-feedback": "Pružite nam povratne informacije",
+	"cirrussearch-completionsuggester-pref": "Predviđanje pretrage",
+	"cirrussearch-completionsuggester-desc": "Novi algoritam za pretraživanje dok pišete. Kad uključite ovu beta mogućnost, kutija za pretragu u gornjem desnom uglu koristit će Predviđanje pretrage."
+}

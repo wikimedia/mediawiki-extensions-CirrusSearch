@@ -7,7 +7,8 @@
 			"Cwek",
 			"Waihorace",
 			"LNDDYL",
-			"Zhxy 519"
+			"Zhxy 519",
+			"Cosine02"
 		]
 	},
 	"cirrussearch-desc": "以 Elasticsearch 為基礎的 MediaWiki 搜尋工具",
@@ -30,5 +31,7 @@
 	"apihelp-cirrus-suggest-description": "自動建議完成搜尋關鍵字。",
 	"apihelp-cirrus-suggest-param-text": "要自動完成的搜尋關鍵字。",
 	"apihelp-cirrus-suggest-param-limit": "要回傳的結果數量。",
-	"cirrussearch-give-feedback": "給我們您的意見回饋"
+	"cirrussearch-give-feedback": "給我們您的意見回饋",
+	"cirrussearch-completionsuggester-pref": "即時搜索",
+	"cirrussearch-completionsuggester-desc": "一種新的搜索算法。啟用後，隨著你在右上角的搜索框裡輸入文字，將同時給出搜索結果，並根據你輸入的關鍵字給出搜索建議。"
 }

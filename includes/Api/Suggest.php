@@ -54,6 +54,14 @@ class Suggest extends ApiBase {
 			} ) );
 	}
 
+	/**
+	 * This API is experimental and not meant for 3rd party use.
+	 * {@inheritDoc}
+	 */
+	public function isInternal() {
+		return true;
+	}
+
 	public function getAllowedParams() {
 		return array(
 			'text' => array(

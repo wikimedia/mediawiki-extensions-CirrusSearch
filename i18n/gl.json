@@ -29,5 +29,7 @@
 	"apihelp-cirrus-suggest-param-limit": "Número de resultados a devolver.",
 	"apihelp-cirrus-suggest-param-context": "Contexto de procura que limita a procura, p.ex. <kbd>xeo</kbd> ou <kbd>categoría</kbd>.",
 	"cirrussearch-give-feedback": "Deixenos saber a súa opinión",
-	"cirrussearch-query-too-long": "A solicitude de procura é máis longa que a lonxitude máxima permitida ($1 > $2)."
+	"cirrussearch-query-too-long": "A solicitude de procura é máis longa que a lonxitude máxima permitida ($1 > $2).",
+	"cirrussearch-completionsuggester-pref": "Suxestións para completar",
+	"cirrussearch-completionsuggester-desc": "Un novo algoritmo para procurar en canto teclea. Unha vez activada, a caixa de buscas na esquina superior dereita, vai a presentar hipóteses de artigos baseados na palabra que tecleou."
 }

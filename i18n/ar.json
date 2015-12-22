@@ -5,7 +5,8 @@
 			"زكريا",
 			"Abanima",
 			"Manhal",
-			"Shbib Al-Subaie"
+			"Shbib Al-Subaie",
+			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"cirrussearch-desc": "عملية البحث مدعومة من قبل Elasticsearch لميدياويكي",
@@ -20,6 +21,6 @@
 	"cirrussearch-pref-label": "بحث جديد",
 	"cirrussearch-pref-desc": "جرب طريقة البحث الجديدة التي تدعم عدد أكبر من اللغات وتوفر نتائج أفضل من ناحية التحديثات. كما يمكنها أيضا البحث لك عن نصوص داخل قوالب.",
 	"cirrussearch-didyoumean-settings": "translatewiki_net-bw_.55c1df9bbfe201.81298463@translatewiki.net",
-	"cirrussearch-completionsuggester-pref": "مقترح الاكمال",
-	"cirrussearch-completionsuggester-desc": "خوارزمية جديدة لاستكمال البحث أثناء الكتابة. بمجرد تفعيلها سيستخدم صندوق البحث في أعلى اليسار ميزة مقترح الاكمال."
+	"cirrussearch-completionsuggester-pref": "مقترح الإكمال",
+	"cirrussearch-completionsuggester-desc": "خوارزمية جديدة لاستكمال البحث أثناء الكتابة. بمجرد تفعيلها سيستخدم صندوق البحث في أعلى اليسار ميزة مقترح الإكمال."
 }

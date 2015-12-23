@@ -32,6 +32,6 @@
 	"apihelp-cirrus-suggest-param-text": "要自動完成的搜尋關鍵字。",
 	"apihelp-cirrus-suggest-param-limit": "要回傳的結果數量。",
 	"cirrussearch-give-feedback": "給我們您的意見回饋",
-	"cirrussearch-completionsuggester-pref": "即時搜索",
-	"cirrussearch-completionsuggester-desc": "一種新的搜索算法。啟用後，隨著你在右上角的搜索框裡輸入文字，將同時給出搜索結果，並根據你輸入的關鍵字給出搜索建議。"
+	"cirrussearch-completionsuggester-pref": "完成建議工具",
+	"cirrussearch-completionsuggester-desc": "一種新的隨打即搜演算法。一旦啟用，右上角的搜尋方塊則會使用「完成建議工具」。"
 }

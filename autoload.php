@@ -113,10 +113,10 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Search\\SearchTextQueryStringBuilder' => __DIR__ . '/includes/Search/SearchTextQueryBuilders.php',
 	'CirrusSearch\\Search\\TitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Searcher' => __DIR__ . '/includes/Searcher.php',
+	'CirrusSearch\\Test\\DummyConnection' => __DIR__ . '/tests/unit/TestUtils.php',
+	'CirrusSearch\\Test\\HashSearchConfig' => __DIR__ . '/tests/unit/TestUtils.php',
 	'CirrusSearch\\Updater' => __DIR__ . '/includes/Updater.php',
 	'CirrusSearch\\UserTesting' => __DIR__ . '/includes/UserTesting.php',
 	'CirrusSearch\\Util' => __DIR__ . '/includes/Util.php',
 	'CirrusSearch\\Version' => __DIR__ . '/includes/Version.php',
-	'CirrusSearch\\Test\\HashSearchConfig' => __DIR__ . '/tests/unit/TestUtils.php',
-	'CirrusSearch\\Test\\DummyConnection' => __DIR__ . '/tests/unit/TestUtils.php',
 );

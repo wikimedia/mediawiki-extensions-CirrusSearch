@@ -11,7 +11,7 @@ function main() {
 	foreach ( glob( $base . '/*.php' ) as $file ) {
 		$generator->readFile( $file );
 	}
-	$generator->readFile( __DIR__ . 'tests/phpunit/TestUtils.php' );
+	$generator->readFile( dirname(__DIR__) . '/tests/unit/TestUtils.php' );
 
 	$generator->generateAutoload( basename( __DIR__ ) . '/' . basename( __FILE__ ) );
 

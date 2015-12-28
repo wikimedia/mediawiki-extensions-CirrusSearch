@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
+use CirrusSearch\DataSender;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\SuggestBuilder;
@@ -169,6 +170,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try {
+			if ( !$this->canWrite() ) {
+				$this->error( 'Index/Cluster is frozen. Giving up.', 1 );
+			}
 			$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
 			$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
 			$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
@@ -202,6 +206,18 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 		$this->getIndex()->refresh();
 	}
+
+	/**
+	 * Check the frozen indices
+	 * @return true if the cluster/index is not frozen, false otherwise.
+	 */
+	private function canWrite() {
+		$name = $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME );
+		// Reuse DataSender even if we don't send anything with it.
+		$sender = new DataSender( $this->getConnection() );
+		return $sender->areIndexesAvailableForWrites( array( $name ) );
+	}
+
 
 	private function deleteOldIndex() {
 		if ( $this->oldIndex && $this->oldIndex->exists() ) {

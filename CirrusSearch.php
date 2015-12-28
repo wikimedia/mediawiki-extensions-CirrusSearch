@@ -815,6 +815,8 @@ $wgCirrusSearchInterwikiProv = false;
  * see profile/RescoreProfiles.php for more info
  */
 $wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
+$wgCirrusSearchPrefixSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
+$wgCirrusSearchMoreLikeRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
 
 /**
  * If current wiki has less than this number of results, try to search other language wikis.

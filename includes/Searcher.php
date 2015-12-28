@@ -1047,7 +1047,7 @@ GROOVY;
 
 		// Call installBoosts right after we're done munging the query to include filters
 		// so any rescores installBoosts adds to the query are done against filtered results.
-		$this->installBoosts();
+		$this->installBoosts( $type );
 
 		$query->setQuery( $this->query );
 
@@ -1513,16 +1513,19 @@ GROOVY;
 	/**
 	 * If there is any boosting to be done munge the the current query to get it right.
 	 */
-	private function installBoosts() {
-		// Quick note:  At the moment ".isEmpty()" is _much_ faster then ".empty".  Never
-		// use ".empty".  See https://github.com/elasticsearch/elasticsearch/issues/5086
-
+	private function installBoosts( $type ) {
 		if ( $this->sort !== 'relevance' ) {
 			// Boosts are irrelevant if you aren't sorting by, well, relevance
 			return;
 		}
 
-		$builder = new RescoreBuilder( $this->searchContext, $this->config->get( 'CirrusSearchRescoreProfile' ) );
+		$profile = $this->config->get( 'CirrusSearchRescoreProfile' );
+		if ( $type === 'prefix' ) {
+			$profile = $this->config->get( 'CirrusSearchPrefixSearchRescoreProfile' );
+		} else if( $type == 'more_like' ) {
+			$profile = $this->config->get( 'CirrusSearchMoreLikeRescoreProfile' );
+		}
+		$builder = new RescoreBuilder( $this->searchContext, $profile );
 		$this->rescore = array_merge( $this->rescore, $builder->build() );
 	}
 

@@ -161,6 +161,20 @@ class RescoreBuilder {
 
 class FunctionScoreChain {
 	/**
+	 * List of allowed function_score param
+	 * we keep boost and boost_mode even if they do not make sense
+	 * here since we do not allow to specify the query param.
+	 * The query will be MatchAll with a score to 1.
+	 */
+	private static $functionScoreParams = array(
+		'boost',
+		'boost_mode',
+		'max_boost',
+		'score_mode',
+		'min_score'
+	);
+
+	/**
 	 * @var SearchContext
 	 */
 	private $context;
@@ -175,12 +189,29 @@ class FunctionScoreChain {
 	 */
 	private $chain;
 
-	public function __construct( SearchContext $context, $chain ) {
+	/**
+	 * @var string the name of the chain
+	 */
+	private $chainName;
+
+	/**
+	 * Builds a new function score chain.
+	 * @param SearchContext $context
+	 * @param string $chainName the name of the chain (must be a valid
+	 * chain in wgCirrusSearchRescoreFunctionScoreChains)
+	 */
+	public function __construct( SearchContext $context, $chainName ) {
+		$this->chainName = $chainName;
 		$this->context = $context;
 		$this->functionScore = new FunctionScoreDecorator();
-		$this->chain = $context->getConfig()->getElement( 'CirrusSearchRescoreFunctionScoreChains', $chain );
+		$this->chain = $context->getConfig()->getElement( 'CirrusSearchRescoreFunctionScoreChains', $chainName );
 		if ( $this->chain === null ) {
-			throw new InvalidRescoreProfileException( "Unknown rescore function chain $chain" );
+			throw new InvalidRescoreProfileException( "Unknown rescore function chain $chainName" );
+		}
+
+		$params = array_intersect_key( $this->chain, array_flip( self::$functionScoreParams ) );
+		foreach( $params as $param => $value ) {
+			$this->functionScore->setParam( $param, $value );
 		}
 	}
 
@@ -189,7 +220,10 @@ class FunctionScoreChain {
 	 * needed.
 	 */
 	public function buildRescoreQuery() {
-		foreach( $this->chain as $func ) {
+		if ( !isset( $this->chain['functions'] ) ) {
+			throw new InvalidRescoreProfileException( "No functions defined in chain {$this->chainName}." );
+		}
+		foreach( $this->chain['functions'] as $func ) {
 			$impl = $this->getImplementation( $func );
 			$impl->append( $this->functionScore );
 		}
@@ -200,19 +234,22 @@ class FunctionScoreChain {
 	}
 
 	private function getImplementation( $func ) {
+		$weight = isset ( $func['weight'] ) ? $func['weight'] : 1;
 		switch( $func['type'] ) {
 		case 'boostlinks':
-			return new IncomingLinksFunctionScoreBuilder( $this->context );
+			return new IncomingLinksFunctionScoreBuilder( $this->context, $weight );
 		case 'recency':
-			return new PreferRecentFunctionScoreBuilder( $this->context );
+			return new PreferRecentFunctionScoreBuilder( $this->context, $weight );
 		case 'templates':
-			return new BoostTemplatesFunctionScoreBuilder( $this->context );
+			return new BoostTemplatesFunctionScoreBuilder( $this->context, $weight );
 		case 'namespaces':
-			return new NamespacesFunctionScoreBuilder( $this->context );
+			return new NamespacesFunctionScoreBuilder( $this->context, $weight );
 		case 'language':
-			return new LangWeightFunctionScoreBuilder( $this->context );
+			return new LangWeightFunctionScoreBuilder( $this->context, $weight );
 		case 'custom_field':
-			return new CustomFieldFunctionScoreBuilder( $this->context, $func['params'] );
+			return new CustomFieldFunctionScoreBuilder( $this->context, $weight, $func['params'] );
+		case 'script':
+			return new ScriptScoreFunctionScoreBuilder( $this->context, $weight, $func['script'] );
 		default:
 			throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 		}
@@ -228,10 +265,11 @@ class FunctionScoreChain {
  * this strong dependency to FunctionScore::addFunction signature.
  */
 class FunctionScoreDecorator extends FunctionScore {
-	private $emptyFunction = true;
+	private $size = 0;
+
 
 	public function addFunction( $functionType, $functionParams, AbstractFilter $filter = null, $weight = null ) {
-		$this->emptyFunction = false;
+		$this->size++;
 		return parent::addFunction( $functionType, $functionParams, $filter, $weight );
 	}
 
@@ -239,7 +277,14 @@ class FunctionScoreDecorator extends FunctionScore {
 	 * @return boolean true if this function score is empty
 	 */
 	public function isEmptyFunction() {
-		return $this->emptyFunction;
+		return $this->size == 0;
+	}
+
+	/**
+	 * @return int the number of added functions.
+	 */
+	public function getSize() {
+		return $this->size;
 	}
 
 	/**
@@ -257,8 +302,18 @@ abstract class FunctionScoreBuilder {
 	 * @param SearchContext $context
 	 */
 	protected $context;
-	public function __construct( SearchContext $context ) {
+	/**
+	 * @var float global weight of this function score builder
+	 */
+	protected $weight;
+
+	/**
+	 * @param SearchContext $context the search context
+	 * @param float $weight the global weight
+	 */
+	public function __construct( SearchContext $context, $weight ) {
 		$this->context = $context;
+		$this->weight = $weight;
 	}
 
 	/**
@@ -278,9 +333,10 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
+	 * @param float $weight
 	 */
-	public function __construct( SearchContext $context ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight ) {
+		parent::__construct( $context, $weight );
 		// Use the boosted template from query string if available
 		$this->boostTemplates = $context->getBoostTemplatesFromQuery();
 		// empty array may be returned here in the case of a syntax error
@@ -301,7 +357,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 			$match->setFieldQuery( 'template', $name );
 			$filterQuery = new \Elastica\Filter\Query( $match );
 			$filterQuery->setCached( true );
-			$functionScore->addWeightFunction( $weight, $filterQuery );
+			$functionScore->addWeightFunction( $weight * $this->weight, $filterQuery );
 		}
 	}
 }
@@ -322,9 +378,10 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
+	 * @param float $weight
 	 */
-	public function __construct( SearchContext $context ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight ) {
+		parent::__construct( $context, $weight );
 		$this->namespacesToBoost = $this->context->getNamespaces() ?: MWNamespace::getValidNamespaces();
 		if ( !$this->namespacesToBoost || count( $this->namespacesToBoost ) == 1 ) {
 			// nothing to boost, no need to initialize anything else.
@@ -343,7 +400,6 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			// Now $ns should always be an integer.
 			$this->normalizedNamespaceWeights[ $ns ] = $weight;
 		}
-
 	}
 
 	/**
@@ -381,7 +437,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 		// single factor function per weight by using a terms filter.
 		$weightToNs = array();
 		foreach( $this->namespacesToBoost as $ns ) {
-			$weight = $this->getBoostForNamespace( $ns );
+			$weight = $this->getBoostForNamespace( $ns ) * $this->weight;
 			$key = (string) $weight;
 			if ( $key == '1' ) {
 				// such weigths would have no effect
@@ -406,8 +462,8 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
  * formula is log( incoming_links + 2 )
  */
 class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
-	public function __construct( SearchContext $context ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight ) {
+		parent::__construct( $context, $weight );
 	}
 
 	public function append( FunctionScore $functionScore ) {
@@ -424,7 +480,7 @@ class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
 			) );
 		} else {
 			$scoreBoostExpression = "log10(doc['incoming_links'].value + 2)";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostExpression, null, 'expression' ) );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostExpression, null, 'expression' ), null, $this->weight );
 		}
 	}
 }
@@ -440,13 +496,13 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
 	 */
 	private $profile;
 
-	public function __construct( SearchContext $context, $profile ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
 		$this->profile = $profile;
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		$functionScore->addFunction( 'field_value_factor', $this->profile );
+		$functionScore->addFunction( 'field_value_factor', $this->profile, null, $this->weight );
 	}
 }
 
@@ -456,8 +512,8 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
  * Can be initialized by config for full text and by special syntax in user query
  */
 class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
-	public function __construct( SearchContext $context ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight ) {
+		parent::__construct( $context, $weight );
 	}
 
 	public function append( FunctionScore $functionScore ) {
@@ -479,7 +535,7 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 			$exponentialDecayExpression = "$exponentialDecayExpression * decayPortion + nonDecayPortion";
 		}
 		$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayExpression,
-			$parameters, 'expression' ) );
+			$parameters, 'expression' ), null, $this->weight );
 	}
 }
 
@@ -506,8 +562,8 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 	 */
 	private $wikiWeight;
 
-	public function __construct( SearchContext $context ) {
-		parent::__construct( $context );
+	public function __construct( SearchContext $context, $weight ) {
+		parent::__construct( $context, $weight );
 		$this->userLang = $this->context->getConfig()->getUserLanguage();
 		$this->userWeight = $this->context->getConfig()->getElement( 'CirrusSearchLanguageWeight', 'user' );
 		$this->wikiLang = $this->context->getConfig()->get( 'LanguageCode' );
@@ -518,7 +574,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		// Boost pages in a user's language
 		if ( $this->userWeight ) {
 			$functionScore->addWeightFunction(
-				$this->userWeight,
+				$this->userWeight * $this->weight,
 				new \Elastica\Filter\Term( array( 'language' => $this->userLang ) )
 			);
 		}
@@ -526,10 +582,33 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		// And a wiki's language, if it's different
 		if ( $this->wikiWeight && $this->userLang != $this->wikiLang ) {
 			$functionScore->addWeightFunction(
-				$this->wikiWeight,
+				$this->wikiWeight * $this->weight,
 				new \Elastica\Filter\Term( array( 'language' => $this->wikiLang ) )
 			);
 		}
+	}
+}
+
+/**
+ * A function score that builds a script_score.
+ * see: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-script-score
+ * NOTE: only lucene expression script engine is supported.
+ */
+class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
+	/**
+	 * @var string the script
+	 */
+	private $script;
+
+	public function __construct( SearchContext $context, $weight, $script ) {
+		parent::__construct( $context, $weight );
+		$this->script = $script;
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		$functionScore->addScriptScoreFunction(
+			new \Elastica\Script( $this->script, null, 'expression' ),
+			null, $this->weight );
 	}
 }
 

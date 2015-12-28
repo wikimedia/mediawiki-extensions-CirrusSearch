@@ -859,6 +859,10 @@ GROOVY;
 			$this->filters[] = new \Elastica\Filter\Exists( 'wikibase_item' );
 		}
 
+		// Morelike is extremely costly, since terms can be completely random
+		// highlight snippets are not great so it's worth running a match all query
+		// to save cpu cycles
+		$this->highlightQuery = new \Elastica\Query\MatchAll();
 		return $this->search( 'more_like', implode( ', ', $titles ) );
 	}
 

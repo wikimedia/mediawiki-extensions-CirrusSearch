@@ -58,7 +58,7 @@ class PageTextBuilder extends ParseBuilder {
 		$this->doc->add( 'opening_text', $opening );
 		$this->doc->add( 'auxiliary_text', $auxiliary );
 		$this->doc->add( 'text_bytes', $this->content->getSize() );
-		$this->doc->add( 'source_text', $this->buildSourceTextToIndex() );
+		$this->doc->add( 'source_text', $this->content->getTextForSearchIndex() );
 
 		return $this->doc;
 	}
@@ -77,19 +77,6 @@ class PageTextBuilder extends ParseBuilder {
 		}
 
 		return $text;
-	}
-
-	/**
-	 * Some sorts of content (basically wikitext) have expanded and
-	 * unexpanded forms.
-	 */
-	private function buildSourceTextToIndex() {
-		switch ( $this->content->getModel() ) {
-			case CONTENT_MODEL_WIKITEXT:
-				return $this->content->getTextForSearchIndex();
-			default:
-				return null;
-		}
 	}
 
 	/**

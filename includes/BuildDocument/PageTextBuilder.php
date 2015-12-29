@@ -65,14 +65,14 @@ class PageTextBuilder extends ParseBuilder {
 
 	/**
 	 * Fetch text to index. If $content is wikitext then render and strip things from it.
-	 * Otherwise delegate to the $content itself. Then trim and sanitize the result.
+	 * Otherwise delegate to the $content itself.
 	 */
 	private function buildTextToIndex() {
 		switch ( $this->content->getModel() ) {
 			case CONTENT_MODEL_WIKITEXT:
 				return $this->formatWikitext( $this->parserOutput );
 			default:
-				$text = trim( Sanitizer::stripAllTags( $this->content->getTextForSearchIndex() ) );
+				$text = $this->content->getTextForSearchIndex();
 				return array( $text, null, array() );
 		}
 

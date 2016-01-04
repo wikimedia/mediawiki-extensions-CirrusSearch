@@ -19,5 +19,6 @@
 	"cirrussearch-pref-desc": "വളരെയധികം ഭാഷകളെ പിന്തുണയ്ക്കുന്ന, കൂടുതൽ പുതിയ ഫലങ്ങൾ നൽകുന്ന, ഫലകങ്ങൾക്കുള്ളിലെ എഴുത്തുകൾ വരെ കണ്ടെത്തുന്ന പുതിയ തിരച്ചിൽ സൗകര്യം പരീക്ഷിക്കുക.",
 	"apihelp-cirrus-config-dump-description": "സിറസ്‌തിരച്ചിൽ ക്രമീകരണം ഒഴിവാക്കുക.",
 	"apihelp-cirrus-mapping-dump-description": "ഈ വിക്കിയിലെ സിറസ്‌തിരച്ചിൽ അടയാളപ്പെടുത്തലുകൾ ഒഴിവാക്കുക.",
-	"apihelp-cirrus-settings-dump-description": "സിറസ്‌തിരച്ചിൽ സജ്ജീകരണങ്ങൾ ഈ വിക്കിയിൽ ഒഴിവാക്കുക."
+	"apihelp-cirrus-settings-dump-description": "സിറസ്‌തിരച്ചിൽ സജ്ജീകരണങ്ങൾ ഈ വിക്കിയിൽ ഒഴിവാക്കുക.",
+	"cirrussearch-completionsuggester-pref": "പൂർത്തിയാക്കൽ നിർദ്ദേശിനി"
 }

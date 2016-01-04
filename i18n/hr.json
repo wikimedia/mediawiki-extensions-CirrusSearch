@@ -6,5 +6,7 @@
 	},
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Novi način pretrage",
-	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka."
+	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
+	"cirrussearch-completionsuggester-pref": "Prijedlozi pretraživanja",
+	"cirrussearch-completionsuggester-desc": "Novi algoritam koji pretražuje dok upisujete pojmove. Kad je omogućen, prozor za pretragu će rabiti prijedloge pretraživanja novog algoritma."
 }

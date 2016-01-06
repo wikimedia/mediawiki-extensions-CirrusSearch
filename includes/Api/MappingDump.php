@@ -40,4 +40,15 @@ class MappingDump extends ApiBase {
 	public function getDescription() {
 		return 'Dump of CirrusSearch mapping for this wiki.';
 	}
+
+	/**
+	 * @see ApiBase::getExamplesMessages
+	 */
+	protected function getExamplesMessages() {
+		return array(
+			'action=cirrus-mapping-dump' =>
+				'apihelp-cirrus-mapping-dump-example'
+		);
+	}
+
 }

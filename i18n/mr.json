@@ -4,5 +4,6 @@
 			"V.narsikar"
 		]
 	},
-	"cirrussearch-pref-label": "नविन शोध"
+	"cirrussearch-pref-label": "नविन शोध",
+	"cirrussearch-completionsuggester-pref": "पूर्णत्व सूचक"
 }

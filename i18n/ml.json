@@ -20,5 +20,12 @@
 	"apihelp-cirrus-config-dump-description": "സിറസ്‌തിരച്ചിൽ ക്രമീകരണം ഒഴിവാക്കുക.",
 	"apihelp-cirrus-mapping-dump-description": "ഈ വിക്കിയിലെ സിറസ്‌തിരച്ചിൽ അടയാളപ്പെടുത്തലുകൾ ഒഴിവാക്കുക.",
 	"apihelp-cirrus-settings-dump-description": "സിറസ്‌തിരച്ചിൽ സജ്ജീകരണങ്ങൾ ഈ വിക്കിയിൽ ഒഴിവാക്കുക.",
-	"cirrussearch-completionsuggester-pref": "പൂർത്തിയാക്കൽ നിർദ്ദേശിനി"
+	"apihelp-cirrus-suggest-description": "തിരയുന്ന പദം പൂർത്തിയാക്കാനുള്ള വിധങ്ങൾ സൂചിപ്പിക്കുക.",
+	"apihelp-cirrus-suggest-param-text": "സൂചനകൾ നൽകേണ്ട തിരച്ചിൽ പദം.",
+	"apihelp-cirrus-suggest-param-limit": "എത്ര ഫലങ്ങളാണ് തിരിച്ച് തരേണ്ടത്.",
+	"apihelp-cirrus-suggest-param-context": "തിരച്ചിൽ പരിമിതപ്പെടുത്തി നിർത്തേണ്ട പരിധി, ഉദാ: <kbd>geo</kbd> അല്ലെങ്കിൽ <kbd>category</kbd>.",
+	"cirrussearch-give-feedback": "അഭിപ്രായങ്ങൾ അറിയിക്കുക",
+	"cirrussearch-query-too-long": "അനുവദിച്ചിട്ടുള്ള നീളത്തിലും കൂടുതലാണ് തിരച്ചിൽ അഭ്യർത്ഥനയുടെ നീളം. ($1 > $2)",
+	"cirrussearch-completionsuggester-pref": "പൂർത്തിയാക്കൽ നിർദ്ദേശിനി",
+	"cirrussearch-completionsuggester-desc": "താങ്കൾ ടൈപ്പ് ചെയ്യുന്നതിനൊപ്പം തിരയുന്നതിനുള്ള പുതിയ അൽഗോരിതം. സജ്ജമാക്കിയാൽ പിന്നെ വലത് മുകളിലുള്ള തിരച്ചിൽ പെട്ടിയിലെ തിരച്ചിലിനുള്ള പുതിയ സൂചനകൾ ലഭ്യമാകുന്നതാണ്."
 }

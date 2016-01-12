@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Muhammad Shuaib"
+		]
+	},
+	"cirrussearch-completionsuggester-pref": "تجویز دہندہ تکمیل",
+	"cirrussearch-completionsuggester-desc": "تلاش کے دوران الفاظ لکھتے ہوئے خودکار تکمیل کے لیے جدید الخوارزمیہ۔ اسے فعال کرنے کے بعد اوپر بائیں جانب موجود خانہ تلاش میں تجویز دہندہ تکمیل کی سہولت زیر استعمال ہوگی۔"
+}

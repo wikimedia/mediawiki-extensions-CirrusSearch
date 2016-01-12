@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Borislav"
+			"Borislav",
+			"Vodnokon4e"
 		]
 	},
-	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])"
+	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])",
+	"cirrussearch-pref-label": "Ново търсене"
 }

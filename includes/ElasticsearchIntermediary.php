@@ -177,7 +177,28 @@ class ElasticsearchIntermediary {
 					$request['namespaces'][] = (int) $id;
 				}
 			}
+			if ( !empty( $context['langdetect' ] ) ) {
+				$request['payload']['langdetect'] = $context['langdetect'];
+			}
 			$requests[] = $request;
+		}
+
+		// Note that this is only accurate for hhvm and php-fpm
+		// since they close the request to the user before running
+		// deferred updates.
+		$timing = \RequestContext::getMain()->getTiming();
+		$startMark = $timing->getEntryByName( 'requestStart' );
+		$endMark  = $timing->getEntryByName( 'requestShutdown' );
+		if ( $startMark && $endMark ) {
+			// should always work, but Timing can return null so
+			// fallbacks are provided.
+			$tookS = $endMark['startTime'] - $startMark['startTime'];
+		} elseif( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
+			// php >= 5.4
+			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'];
+		} else {
+			// php 5.3
+			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME'];
 		}
 
 		$requestSet = array(
@@ -188,7 +209,12 @@ class ElasticsearchIntermediary {
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
-			'payload' => array(),
+			'payload' => array(
+				// may want to promote this to a top level var at some point
+				'tookMs' => intval( 1000 * $tookS ),
+				// useful while we are testing accept-lang based interwiki
+				'acceptLang' => $wgRequest->getHeader( 'Accept-Language' ) ?: '',
+			),
 			'requests' => $requests,
 		);
 

@@ -429,6 +429,8 @@ class ElasticsearchIntermediary {
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 		$logContext = $this->buildLogContext( $took );
+		$type = isset( $logContext['queryType'] ) ? $logContext['queryType'] : 'unknown';
+		RequestContext::getMain()->getStats()->timing( "CirrusSearch.requestTimeMs.$type", $took );
 		if ( isset( $logContext['elasticTookMs'] ) ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTookMs'];
 		}

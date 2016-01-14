@@ -398,7 +398,7 @@ class FullTextResultsType implements ResultsType {
 			}
 		}
 		if ( count( $queryStrings ) ) {
-			$bool = new \Elastica\Query\Bool();
+			$bool = new \Elastica\Query\BoolQuery();
 			foreach ( $queryStrings as $queryString ) {
 				$bool->addShould( $queryString );
 			}

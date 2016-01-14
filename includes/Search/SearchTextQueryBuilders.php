@@ -297,7 +297,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 				$stemFields[] = $fieldInfo;
 			}
 		}
-		$query = new \Elastica\Query\Bool();
+		$query = new \Elastica\Query\BoolQuery();
 		$query->setMinimumNumberShouldMatch( 1 );
 		// We always build a common terms query for the plain field
 		$this->attachCommonTermsClause( $query, $plainFields, $queryString, $this->profile );
@@ -316,14 +316,14 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * terms query if use_common_terms is true for the stems clause or a
 	 * multi match (cross_fields) if false.
 	 *
-	 * @param \Elastica\Query\Bool $query the boolean query to attach the new
+	 * @param \Elastica\Query\BoolQuery $query the boolean query to attach the new
 	 * clause
 	 * @param array $stemFields of boost field
 	 * @param string $queryString the query
 	 */
-	private function attachMultiFieldsStemClause( \Elastica\Query\Bool $query, array $stemFields, $queryString ) {
+	private function attachMultiFieldsStemClause( \Elastica\Query\BoolQuery $query, array $stemFields, $queryString ) {
 		if ( $this->profile['stems_clause']['use_common_terms'] === true ) {
-			$bool = new \Elastica\Query\Bool();
+			$bool = new \Elastica\Query\BoolQuery();
 			$bool->setMinimumNumberShouldMatch( 1 );
 			$this->attachCommonTermsClause( $bool, $stemFields, $queryString,
 				$this->profile['stems_clause'] );
@@ -338,12 +338,12 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * Attach the query for the stem field. Will build a single common
 	 * terms query if use_common_terms is true of a simple match if false.
 	 *
-	 * @param \Elastica\Query\Bool $query the boolean query to attach the
+	 * @param \Elastica\Query\BoolQuery $query the boolean query to attach the
 	 * new clause
 	 * @param array $boostedField the boosted field
 	 * @param string $queryString the query
 	 */
-	private function attachSingleFieldStemClause( \Elastica\Query\Bool $query, array $boostedField, $queryString ) {
+	private function attachSingleFieldStemClause( \Elastica\Query\BoolQuery $query, array $boostedField, $queryString ) {
 		if ( $this->profile['stems_clause']['use_common_terms'] === true ) {
 			$query->addShould( $this->buildOneCommonTermsClause( $boostedField, $queryString,
 				$this->profile['stems_clause'] ) );
@@ -361,12 +361,12 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * QueryString with multiple fields which allows both words to be
 	 * in different fields.
 	 *
-	 * @param \Elastica\Query\Bool $parent
+	 * @param \Elastica\Query\BoolQuery $parent
 	 * @param array $boostedFields of boostedFields
 	 * @param string $queryString the query
 	 * @param array $profile the profile
 	 */
-	private function attachCommonTermsClause( \Elastica\Query\Bool $parent, array $boostedFields, $queryString, $profile ) {
+	private function attachCommonTermsClause( \Elastica\Query\BoolQuery $parent, array $boostedFields, $queryString, $profile ) {
 		foreach( $boostedFields as $boostedField ) {
 			$parent->addShould( $this->buildOneCommonTermsClause( $boostedField, $queryString, $profile ) );
 		}

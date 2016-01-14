@@ -94,7 +94,7 @@ class Filters {
 		if ( $mustFilterCount === 0 && $mustNotFilterCount == 1 ) {
 			return new \Elastica\Filter\BoolNot( $mustNotFilters[ 0 ] );
 		}
-		$boolFilter = new \Elastica\Filter\Bool();
+		$boolFilter = new \Elastica\Filter\BoolFilter();
 		foreach ( $mustFilters as $must ) {
 			$boolFilter->addMust( $must );
 		}

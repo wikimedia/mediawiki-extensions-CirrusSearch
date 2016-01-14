@@ -91,7 +91,7 @@ class OtherIndexes extends Updater {
 					continue;
 				}
 				$type = $this->connection->getPageType( $otherIndex );
-				$bool = new \Elastica\Filter\Bool();
+				$bool = new \Elastica\Filter\BoolFilter();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
 				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
 				$bool->addMust( new \Elastica\Filter\Term( array( 'namespace' => $title->getNamespace() ) ) );

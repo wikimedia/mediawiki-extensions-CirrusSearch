@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Search;
 
-use \Elastica\Filter\Bool;
 use \Elastica\Filter\BoolAnd;
+use \Elastica\Filter\BoolFilter;
 use \Elastica\Filter\BoolNot;
 use \Elastica\Filter\Script;
 use \Elastica\Filter\Term;
@@ -91,13 +91,13 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * Convenient helper for building Bool filters.
+	 * Convenient helper for building bool filters.
 	 * @param AbstractFilter|array(AbstractFilter) $must must filters
 	 * @param AbstractFilter|array(AbstractFilter) $mustNot must not filters
-	 * @return Bool a bool filter containing $must and $mustNot
+	 * @return BoolFilter a bool filter containing $must and $mustNot
 	 */
 	private static function newBool( $must, $mustNot ) {
-		$bool = new Bool();
+		$bool = new BoolFilter();
 		if ( is_array( $must ) ) {
 			foreach ( $must as $m ) {
 				$bool->addMust( $m );

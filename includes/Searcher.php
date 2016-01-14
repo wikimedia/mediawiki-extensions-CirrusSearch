@@ -770,11 +770,11 @@ GROOVY;
 	/**
 	 * Builds an or between many categories that the page could be in.
 	 * @param string[] $categories categories to match
-	 * @return \Elastica\Filter\Bool|null A null return value means all values are filtered
+	 * @return \Elastica\Filter\BoolFilter|null A null return value means all values are filtered
 	 *  and an empty result set should be returned.
 	 */
 	public function matchPageCategories( $categories ) {
-		$filter = new \Elastica\Filter\Bool();
+		$filter = new \Elastica\Filter\BoolFilter();
 		$ids = array();
 		$names = array();
 		foreach ( $categories as $category ) {
@@ -1013,7 +1013,7 @@ GROOVY;
 	 */
 	private function search( $type, $for ) {
 		if ( $this->nonTextQueries ) {
-			$bool = new \Elastica\Query\Bool();
+			$bool = new \Elastica\Query\BoolQuery();
 			if ( $this->query !== null ) {
 				$bool->addMust( $this->query );
 			}
@@ -1070,7 +1070,7 @@ GROOVY;
 			if ( !empty( $this->nonTextHighlightQueries ) ) {
 				// We have some phrase_prefix queries, so let's include them in the
 				// generated highlight_query.
-				$bool = new \Elastica\Query\Bool();
+				$bool = new \Elastica\Query\BoolQuery();
 				if ( $this->highlightQuery ) {
 					$bool->addShould( $this->highlightQuery );
 				}
@@ -1294,7 +1294,7 @@ GROOVY;
 	 * @param string[] $nearMatchFields
 	 * @param string $queryString
 	 * @param string $nearMatchQuery
-	 * @return \Elastica\Query\Simple|\Elastica\Query\Bool
+	 * @return \Elastica\Query\Simple|\Elastica\Query\BoolQuery
 	 */
 	private function buildSearchTextQuery( array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
 		$queryForMostFields = $this->buildSearchTextQueryForFields( $fields, $queryString,
@@ -1302,7 +1302,7 @@ GROOVY;
 		if ( $nearMatchQuery ) {
 			// Build one query for the full text fields and one for the near match fields so that
 			// the near match can run unescaped.
-			$bool = new \Elastica\Query\Bool();
+			$bool = new \Elastica\Query\BoolQuery();
 			$bool->setMinimumNumberShouldMatch( 1 );
 			$bool->addShould( $queryForMostFields );
 			$nearMatch = new \Elastica\Query\MultiMatch();

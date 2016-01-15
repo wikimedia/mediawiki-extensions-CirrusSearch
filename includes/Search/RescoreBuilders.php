@@ -180,7 +180,7 @@ class FunctionScoreChain {
 	private $context;
 
 	/**
-	 * @var \Elastica\Query\FunctionScoreDecorator
+	 * @var FunctionScoreDecorator
 	 */
 	private $functionScore;
 
@@ -373,7 +373,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * translated into integer namespace codes using $this->language.
 	 */
 	private $normalizedNamespaceWeights;
-	private $namespaceToBoost;
+	private $namespacesToBoost;
 
 
 	/**

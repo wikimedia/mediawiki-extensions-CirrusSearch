@@ -24,6 +24,7 @@ namespace CirrusSearch\Maintenance;
 class ChunkBuilder {
 	/**
 	 * @param string $self Name of maintenance script
+	 * @param array $options
 	 * @param int $buildChunks
 	 * @param int $from
 	 * @param int $to

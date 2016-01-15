@@ -229,7 +229,7 @@ class MappingConfigBuilder {
 	 * @param array $config to modify
 	 * @param array $fields field name to number of times copied
 	 * @param string $destination destination of the copy
-	 * @return $config modified with the copy_to setup
+	 * @return array $config modified with the copy_to setup
 	 */
 	private function setupCopyTo( $config, $fields, $destination ) {
 		foreach ( $fields as $field => $weight ) {

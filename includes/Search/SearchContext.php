@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use \CirrusSearch\SearchConfig;
-use \CirrusSearch\Util;
 
 /**
  * The search context, maintains the state of the current search query.
@@ -48,12 +47,6 @@ class SearchContext {
 	 * @var SearchTextQueryBuilderFactory
 	 */
 	private $searchTextQueryBuilderFactory;
-
-	/**
-	 * Builder for the full text query (user query with special syntax extracted)
-	 * @var SearchTextQueryBuilder
-	 */
-	private $searchTextQueryBuilder;
 
 	/**
 	 * @var array list of boost templates extracted from the query string

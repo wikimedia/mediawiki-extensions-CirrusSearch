@@ -1,7 +1,6 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
-use \Hooks;
 
 /**
  * Builds elasticsearch mapping configuration arrays for the suggester index.

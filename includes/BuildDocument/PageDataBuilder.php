@@ -32,11 +32,11 @@ class PageDataBuilder extends ParseBuilder {
 			case CONTENT_MODEL_JAVASCRIPT:
 				// Don't use parser output here. It's useless and leads
 				// to weird results. Instead, clear everything. See bug 61752.
-				$this->doc->add( 'category', array() );
-				$this->doc->add( 'external_link', array() );
-				$this->doc->add( 'heading', array() );
-				$this->doc->add( 'outgoing_link', array() );
-				$this->doc->add( 'template', array() );
+				$this->doc->set( 'category', array() );
+				$this->doc->set( 'external_link', array() );
+				$this->doc->set( 'heading', array() );
+				$this->doc->set( 'outgoing_link', array() );
+				$this->doc->set( 'template', array() );
 				break;
 			default:
 				$this->categories();
@@ -48,7 +48,7 @@ class PageDataBuilder extends ParseBuilder {
 		}
 
 		// All content types have a language
-		$this->doc->add( 'language',
+		$this->doc->set( 'language',
 			$this->title->getPageLanguage()->getCode() );
 
 		return $this->doc;
@@ -59,11 +59,11 @@ class PageDataBuilder extends ParseBuilder {
 		foreach ( array_keys( $this->parserOutput->getCategories() ) as $key ) {
 			$categories[] = Category::newFromName( $key )->getTitle()->getText();
 		}
-		$this->doc->add( 'category', $categories );
+		$this->doc->set( 'category', $categories );
 	}
 
 	private function externalLinks() {
-		$this->doc->add( 'external_link',
+		$this->doc->set( 'external_link',
 			array_keys( $this->parserOutput->getExternalLinks() )
 		);
 	}
@@ -76,7 +76,7 @@ class PageDataBuilder extends ParseBuilder {
 					Title::makeTitle( $linkedNamespace, $linkedDbKey )->getPrefixedDBKey();
 			}
 		}
-		$this->doc->add( 'outgoing_link', $outgoingLinks );
+		$this->doc->set( 'outgoing_link', $outgoingLinks );
 	}
 
 	private function templates() {
@@ -89,7 +89,7 @@ class PageDataBuilder extends ParseBuilder {
 				}
 			}
 		}
-		$this->doc->add( 'template', $templates );
+		$this->doc->set( 'template', $templates );
 	}
 
 	private function headings() {
@@ -119,7 +119,7 @@ class PageDataBuilder extends ParseBuilder {
 				$headings[] = $heading;
 			}
 		}
-		$this->doc->add( 'heading', $headings );
+		$this->doc->set( 'heading', $headings );
 	}
 
 	private function getIgnoredHeadings() {
@@ -141,7 +141,7 @@ class PageDataBuilder extends ParseBuilder {
 	private function wikidataInfo() {
 		$wikibaseItem = $this->parserOutput->getProperty( 'wikibase_item' );
 		if ( $wikibaseItem !== false ) {
-			$this->doc->add( 'wikibase_item', $wikibaseItem );
+			$this->doc->set( 'wikibase_item', $wikibaseItem );
 		}
 	}
 }

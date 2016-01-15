@@ -25,7 +25,7 @@ use \SearchResultSet;
  */
 class ResultSet extends SearchResultSet {
 	/**
-	 * @var Elastica\ResultSet
+	 * @var \Elastica\ResultSet
 	 */
 	private $result;
 	private $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
@@ -136,7 +136,7 @@ class ResultSet extends SearchResultSet {
 	 * batch query. By pre-caching this we ensure methods such as
 	 * Result::isMissingRevision() don't trigger a query for each and
 	 * every search result.
-	 * @param ResultSet $resultSet Result set from which the titles come
+	 * @param \Elastica\ResultSet $resultSet Result set from which the titles come
 	 */
 	private function preCacheContainedTitles( $resultSet ) {
 		// We can only pull in information about the local wiki

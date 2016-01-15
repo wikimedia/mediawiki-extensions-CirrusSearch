@@ -95,6 +95,8 @@ class Reindexer {
 	private $out;
 
 	/**
+	 * @param Connection $source
+	 * @param Connection $target
 	 * @param Type[] $types
 	 * @param Type[] $oldTypes
 	 * @param int $shardCount
@@ -103,6 +105,7 @@ class Reindexer {
 	 * @param array $mergeSettings
 	 * @param array $mappingConfig
 	 * @param Maintenance $out
+	 * @throws \Exception
 	 */
 	public function __construct( Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!

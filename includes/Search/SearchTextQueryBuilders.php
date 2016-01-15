@@ -31,7 +31,7 @@ use RequestContext;
  */
 class SearchTextQueryBuilderFactory {
 	/**
-	 * @var array of SearchTextQueryBuilder
+	 * @var SearchTextQueryBuilder[]
 	 */
 	private $builders = array();
 
@@ -96,9 +96,7 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Check if the query can be built by this builder
-	 * @param array $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
-	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return boolean true if this query can be built by this builder
 	 */
 	public function accept( $queryString );
@@ -393,7 +391,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Builds a multi match query with the cross_field type.
 	 *
-	 * @param array $boostedField of boosted fields
+	 * @param array $boostedFields of boosted fields
 	 * @param string $queryString the query
 	 * @param string $minShouldMatch the MinimumShouldMatch value
 	 * @return \Elastica\Query\MultiMatch

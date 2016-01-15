@@ -1,6 +1,8 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
+use Content;
+use ParserOutput;
 use \Title;
 
 /**

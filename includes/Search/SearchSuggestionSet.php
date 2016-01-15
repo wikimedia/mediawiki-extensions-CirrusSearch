@@ -21,6 +21,7 @@ namespace CirrusSearch\Search;
  * http://www.gnu.org/copyleft/gpl.html
  *
  */
+use Title;
 
 /**
  * A set of search suggestions.

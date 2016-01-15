@@ -7,6 +7,7 @@ use CirrusSearch\Updater;
 use ConfigFactory;
 use Job as MWJob;
 use JobQueueGroup;
+use Title;
 
 /**
  * Abstract job class used by all CirrusSearch*Job classes
@@ -37,6 +38,11 @@ abstract class Job extends MWJob {
 	 */
 	private $allowRetries = true;
 
+	/**
+	 * Job constructor.
+	 * @param Title $title
+	 * @param array $params
+	 */
 	public function __construct( $title, $params ) {
 		$params += array( 'cluster' => null );
 		// eg: DeletePages -> cirrusSearchDeletePages
@@ -138,7 +144,7 @@ abstract class Job extends MWJob {
 	}
 
 	/**
-	 * @param boolena $allowRetries set wether should be retried if it fails
+	 * @param bool $allowRetries Whether this job should be retried if it fails
 	 */
 	protected function setAllowRetries( $allowRetries ) {
 		$this->allowRetries = $allowRetries;

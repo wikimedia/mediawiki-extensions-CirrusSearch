@@ -159,7 +159,7 @@ class OtherIndexes extends Updater {
 	 * @param string $reason
 	 */
 	private function logFailure( array $titles, $reason = '' ) {
-		$articleIDs = array_map( function( $title ) {
+		$articleIDs = array_map( function( Title $title ) {
 			return $title->getArticleID();
 		}, $titles );
 		if ( $reason ) {

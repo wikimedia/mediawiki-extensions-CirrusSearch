@@ -35,6 +35,7 @@ class InterwikiSearcher extends Searcher {
 
 	/**
 	 * Constructor
+	 * @param Connection $connection
 	 * @param int[] $namespaces Namespace numbers to search
 	 * @param User|null $user
 	 * @param string $index Base name for index to search from, defaults to wfWikiId()
@@ -57,17 +58,16 @@ class InterwikiSearcher extends Searcher {
 	 * @return Result
 	 */
 	public function getInterwikiResults( $term ) {
-		global $wgMemc, $wgCirrusSearchInterwikiCacheTime;
+		global $wgMemc;
 
 		// Return early if we can
 		if ( !$term ) {
-			return;
+			return null;
 		}
 
 		$namespaceKey = $this->getNamespaces() !== null ?
 			implode( ',', $this->getNamespaces() ) : '';
 
-		$results = array();
 		$key = wfMemcKey(
 			'cirrus',
 			'interwiki',

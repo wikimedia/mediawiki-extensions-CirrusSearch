@@ -219,7 +219,7 @@ class FullTextResultsType implements ResultsType {
 	private $prefix;
 
 	/**
-	 * @param bitmask $highlightingConfig see HIGHLIGHT_* consts
+	 * @param int $highlightingConfig Bitmask, see HIGHLIGHT_* consts
 	 */
 	public function __construct( $highlightingConfig, $interwiki = '' ) {
 		$this->highlightingConfig = $highlightingConfig;
@@ -358,7 +358,6 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	private function addMatchedFields( $fields ) {
-		$newFields = array();
 		foreach ( $fields as $name => $config ) {
 			$config[ 'matched_fields' ] = array( $name, "$name.plain" );
 			$fields[ $name ] = $config;

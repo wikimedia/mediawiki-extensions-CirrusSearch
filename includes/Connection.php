@@ -102,7 +102,7 @@ class Connection extends ElasticaConnection {
 	 * in tests.
 	 */
 	public static function clearPool() {
-		self:$pool = array();
+		self::$pool = array();
 	}
 
 	/**
@@ -298,6 +298,6 @@ class Connection extends ElasticaConnection {
 
 	public function destroyClient() {
 		self::$pool = array();
-		return parent::destroyClient();
+		parent::destroyClient();
 	}
 }

@@ -232,7 +232,7 @@ class ElasticsearchIntermediary {
 		$parameters = array(
 			'index' => array(),
 			'queryType' => array(),
-			'acceptLang' => $GLOBALS['wgRequest']->getHeader( 'Accept-Language' ),
+			'acceptLang' => $wgRequest->getHeader( 'Accept-Language' ),
 		);
 		$elasticTook = 0;
 		$hits = 0;
@@ -420,7 +420,7 @@ class ElasticsearchIntermediary {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'finishRequest called without staring a request'
 			);
-			return;
+			return null;
 		}
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );

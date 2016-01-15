@@ -29,6 +29,12 @@ class SearchConfig implements \Config {
 	private $interwiki;
 
 	/**
+	 * Wiki id or null for current wiki
+	 * @var string|null
+	 */
+	private $wikiId;
+
+	/**
 	 * Create new search config for current or other wiki.
 	 * @param string|null $overrideWiki Interwiki link name for wiki
 	 * @param string|null $overrideName DB name for the wiki

@@ -190,7 +190,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = array();
-		$pages = array_filter( $pages, function( $page ) use ( &$pageIds ) {
+		$pages = array_filter( $pages, function( WikiPage $page ) use ( &$pageIds ) {
 			if ( !in_array( $page->getId(), $pageIds ) ) {
 				$pageIds[] = $page->getId();
 				return true;
@@ -265,6 +265,7 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * @param \WikiPage[] $pages
 	 * @param int $flags
+	 * @return \Elastica\Document[]
 	 */
 	private function buildDocumentsForPages( $pages, $flags ) {
 		global $wgCirrusSearchUpdateConflictRetryCount;
@@ -391,7 +392,7 @@ class Updater extends ElasticsearchIntermediary {
 
 	/**
 	 * Update the search index for newly linked or unlinked articles.
-	 * @param array $titles titles to update
+	 * @param Title[] $titles titles to update
 	 * @return boolean were all pages updated?
 	 */
 	public function updateLinkedArticles( $titles ) {

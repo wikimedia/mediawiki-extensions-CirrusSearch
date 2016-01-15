@@ -10,7 +10,7 @@ use CirrusSearch\Search\SearchSuggestion;
 use CirrusSearch\Search\SearchSuggestionSet;
 use ConfigFactory;
 use MediaWiki\Logger\LoggerFactory;
-use Title;
+use Status;
 use User;
 use Elastica\Request;
 
@@ -128,11 +128,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * Constructor
+	 * @param Connection $conn
 	 * @param int $limit Limit the results to this many
-	 * @param SearchConfig Configuration settings
+	 * @param SearchConfig $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
+	 * @throws \ConfigException
 	 */
 	public function __construct( Connection $conn, $limit, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false ) {
@@ -308,9 +310,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * Update the suggest queries and return additional profiles flagged the 'fallback' key
 	 * with a discount factor = originalDiscount * 0.0001/(variantIndex+1).
 	 * @param array $profiles the default profiles
-	 * @param array $suggest the current set of suggest queries
-	 * @param string[]|null $variants the list of variant queries
-	 * @param string $search the original query
 	 * @param int $queryLen the original query length
 	 * @return array new variant profiles
 	 */
@@ -337,6 +336,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * The copy is added to the profiles container.
 	 * @param array $profile profile to copy
 	 * @param float $extraDiscount extra discount factor to rank variant suggestion lower.
+	 * @return array
 	 */
 	protected function buildVariantProfile( array $profile, $extraDiscount = 0.0001 ) {
 		// mark the profile as a fallback query
@@ -349,7 +349,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * prepare the list of suggest requests used for geo context suggestions
 	 * This method will merge $this->config->get( 'CirrusSearchCompletionSettings and
 	 * $this->config->get( 'CirrusSearchCompletionGeoContextSettings
-	 * @param array $context user's geo context
 	 * @return array of suggest request profiles
 	 */
 	private function prepareGeoContextSuggestProfiles() {
@@ -380,7 +379,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 *
 	 * WARNING: experimental API
 	 *
-	 * @param string $query the user query
 	 * @param \Elastica\Response $response Response from elasticsearch _suggest api
 	 * @param array $profiles the suggestion profiles
 	 * @param int $limit Maximum suggestions to return, -1 for unlimited
@@ -420,7 +418,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 
 		// simply sort by existing scores
-		uasort( $suggestions, function ( $a, $b ) {
+		uasort( $suggestions, function ( SearchSuggestion $a, SearchSuggestion $b ) {
 			return $b->getScore() - $a->getScore();
 		} );
 
@@ -490,7 +488,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		return new SearchSuggestionSet( array_filter(
 			$suggestions,
-			function ( $suggestion ) {
+			function ( SearchSuggestion $suggestion ) {
 				// text should be not empty for suggestions
 				return $suggestion->getText() != null;
 			}

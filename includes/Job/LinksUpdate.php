@@ -77,7 +77,7 @@ class LinksUpdate extends Job {
 	}
 
 	/**
-	 * @return is this job prioritized?
+	 * @return bool Is this job prioritized?
 	 */
 	public function isPrioritized() {
 		return isset( $this->params[ 'prioritize' ] ) && $this->params[ 'prioritize' ];

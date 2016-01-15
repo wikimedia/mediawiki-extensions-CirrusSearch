@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Exception;
 use GenderCache;
 use IP;
 use MediaWiki\Logger\LoggerFactory;
@@ -11,6 +12,7 @@ use RequestContext;
 use Status;
 use Title;
 use User;
+use WebRequest;
 
 /**
  * Random utility functions that don't have a better home
@@ -133,7 +135,7 @@ class Util {
 			};
 		}
 		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
-			return function( $status ) use ( $errorCallback, $key, $user ) {
+			return function( Status $status ) use ( $errorCallback, $key, $user ) {
 				$status = $status->getErrorsArray();
 				// anon usernames are needed within the logs to determine if
 				// specific ips (such as large #'s of users behind a proxy)
@@ -248,12 +250,12 @@ class Util {
 	 * @param int $retryAttempts the number of times we retry
 	 * @param callable $retryErrorCallback function called before each retries
 	 */
-	public static function iterateOverScroll( \Elastica\Index $index, $scrollId, $scrollTime, $consumer, $limit = 0, $retryAttemps = 0, $retryErrorCallback = null ) {
+	public static function iterateOverScroll( \Elastica\Index $index, $scrollId, $scrollTime, $consumer, $limit = 0, $retryAttempts = 0, $retryErrorCallback = null ) {
 		$clearScroll = true;
 		$fetched = 0;
 
 		while( true ) {
-			$result = static::withRetry( $retryAttemps,
+			$result = static::withRetry( $retryAttempts,
 				function() use ( $index, $scrollId, $scrollTime ) {
 					return $index->search ( array(), array(
 						'scroll_id' => $scrollId,
@@ -309,7 +311,7 @@ class Util {
 			if ( $errors < $attempts ) {
 				try {
 					return $func();
-				} catch ( \Exception $e ) {
+				} catch ( Exception $e ) {
 					$errors += 1;
 					if( $beforeRetry ) {
 						$beforeRetry( $e, $errors );
@@ -397,7 +399,7 @@ class Util {
 	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
 	 * @param mixed &$dest
-	 * @param \Request $request
+	 * @param WebRequest $request
 	 * @param string $name
 	 */
 	public static function overrideYesNo( &$dest, $request, $name ) {
@@ -415,9 +417,9 @@ class Util {
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
 	 * or => $limit if upperLimit is false.
 	 * @param mixed &$dest
-	 * @param \Request $request
+	 * @param WebRequest $request
 	 * @param string $name
-	 * @param int|null $name
+	 * @param int|null $limit
 	 * @param bool $upperLimit
 	 */
 	public static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {

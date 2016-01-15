@@ -205,10 +205,11 @@ class UserTesting {
 	}
 
 	/**
-	 * @param integer $sampleRate
+	 * @param string $testName
+	 * @param int $sampleRate
 	 * @return float for 1 in $sampleRate calls to this method
 	 *  returns a stable probability between 0 and 1. for all other
-	 *  requests returns 0.
+	 * requests returns 0.
 	 */
 	static public function oneIn( $testName, $sampleRate ) {
 		$hash = ElasticsearchIntermediary::generateIdentToken( $testName );

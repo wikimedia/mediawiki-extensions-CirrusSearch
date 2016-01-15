@@ -230,7 +230,7 @@ class CirrusSearch extends SearchEngine {
 			}
 			if ( $config ) {
 				$matches = $this->searchTextReal( $term, $config );
-				if( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
+				if ( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
 					$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
 				}
 			}
@@ -426,12 +426,12 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// preload the titles with LinkBatch
-		$titles = $suggestions->map( function( $sugg ) { return $sugg->getSuggestedTitle(); } );
+		$titles = $suggestions->map( function( SearchSuggestion $sugg ) { return $sugg->getSuggestedTitle(); } );
 		$lb = new LinkBatch( $titles );
 		$lb->setCaller( __METHOD__ );
 		$lb->execute();
 
-		$results = $suggestions->map( function( $sugg ) {
+		$results = $suggestions->map( function( SearchSuggestion $sugg ) {
 			return $sugg->getSuggestedTitle()->getPrefixedText();
 		});
 
@@ -483,7 +483,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * @param string $term
 	 * @param Searcher $searcher
-	 * @param array $options
+	 * @param int $options A bitset of Searcher::MORE_LIKE_THESE_*
 	 * @return Status<SearchResultSet>
 	 */
 	private function moreLikeThis( $term, $searcher, $options ) {

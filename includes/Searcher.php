@@ -136,7 +136,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $fuzzyQuery = false;
 	/**
-	 * @var null|\Elastica\AbstractQuery query that should be used for highlighting if different from the
+	 * @var null|\Elastica\Query\AbstractQuery query that should be used for highlighting if different from the
 	 * query used for selecting.
 	 */
 	private $highlightQuery = null;

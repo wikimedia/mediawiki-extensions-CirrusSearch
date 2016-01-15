@@ -49,6 +49,7 @@ class ForceSearchIndex extends Maintenance {
 	public $maxJobs;
 	public $pauseForJobs;
 	public $namespace;
+	public $excludeContentTypes;
 
 	public function __construct() {
 		parent::__construct();
@@ -85,6 +86,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'skipLinks', 'Skip looking for links to the page (counting and finding redirects).  Use ' .
 			'this with --indexOnSkip for the first half of the two phase index build.' );
 		$this->addOption( 'namespace', 'Only index pages in this given namespace', false, true );
+		$this->addOption( 'excludeContentTypes', 'Exclude pages of the specified content types. These must be a comma separated list of strings such as "wikitext" or "json" matching the CONTENT_MODEL_* constants.', false, true, false );
 	}
 
 	public function execute() {
@@ -142,6 +144,10 @@ class ForceSearchIndex extends Maintenance {
 		$this->namespace = $this->hasOption( 'namespace' ) ?
 			intval( $this->getOption( 'namespace' ) ) : null;
 
+		$this->excludeContentTypes = array_filter( array_map(
+			'trim',
+			explode( ',', $this->getOption( 'excludeContentTypes', '' ) )
+		) );
 		if ( $this->indexUpdates ) {
 			if ( $this->queue ) {
 				$operationName = 'Queued';
@@ -315,6 +321,10 @@ class ForceSearchIndex extends Maintenance {
 			if ( $this->namespace ) {
 				$where['page_namespace'] = $this->namespace;
 			}
+			if ( $this->excludeContentTypes ) {
+				$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
+				$where[] = "page_content_model NOT IN ($list)";
+			}
 
 			// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
 			$res = $dbr->select(
@@ -337,6 +347,10 @@ class ForceSearchIndex extends Maintenance {
 			);
 			if ( $this->namespace ) {
 				$where['page_namespace'] = $this->namespace;
+			}
+			if ( $this->excludeContentTypes ) {
+				$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
+				$where[] = "page_content_model NOT IN ($list)";
 			}
 
 			$res = $dbr->select(

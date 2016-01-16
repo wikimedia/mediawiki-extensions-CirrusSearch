@@ -887,6 +887,7 @@ GROOVY;
 					$searcher->start( "get of {indexType}.{pageIds}", array(
 						'indexType' => $indexType,
 						'pageIds' => array_map( 'intval', $pageIds ),
+						'queryType' => 'get',
 					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					$conn->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );

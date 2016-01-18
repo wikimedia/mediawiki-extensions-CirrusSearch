@@ -113,6 +113,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$pageCount = count( $pages );
 				$this->start( "counting links to {pageCount} pages", array(
 					'pageCount' => $pageCount,
+					'queryType' => 'count_links',
+					'query' => $pageCount,
 				) );
 				$result = $this->linkCountMultiSearch->search();
 				$this->success();

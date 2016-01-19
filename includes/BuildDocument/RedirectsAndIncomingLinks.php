@@ -53,7 +53,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	public static function finishBatch( $pages ) {
 		if ( self::$externalLinks === null ) {
 			// Nothing to do as we haven't set up any actions during the buildDocument phase
-			return;
+			return false;
 		}
 		foreach ( self::$externalLinks as $conn ) {
 			self::$externalLinks[$conn]->realFinishBatch( $pages );

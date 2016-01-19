@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
+use LocalFile;
 
 /**
  * Add file metadata-type stuff to a document
@@ -23,7 +24,7 @@ namespace CirrusSearch\BuildDocument;
 
 class FileDataBuilder extends Builder {
 	/**
-	 * @var File
+	 * @var LocalFile
 	 */
 	private $file;
 

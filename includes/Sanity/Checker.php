@@ -35,6 +35,7 @@ class Checker {
 
 	/**
 	 * Build the checker.
+	 * @param Connection $connection
 	 * @param Remediator $remediator the remediator to which to send titles
 	 *   that are insane
 	 * @param Searcher $searcher searcher to use for fetches

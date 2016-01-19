@@ -54,11 +54,11 @@ class PageTextBuilder extends ParseBuilder {
 
 	public function build() {
 		list( $text, $opening, $auxiliary ) = $this->buildTextToIndex();
-		$this->doc->add( 'text', $text );
-		$this->doc->add( 'opening_text', $opening );
-		$this->doc->add( 'auxiliary_text', $auxiliary );
-		$this->doc->add( 'text_bytes', $this->content->getSize() );
-		$this->doc->add( 'source_text', $this->content->getTextForSearchIndex() );
+		$this->doc->set( 'text', $text );
+		$this->doc->set( 'opening_text', $opening );
+		$this->doc->set( 'auxiliary_text', $auxiliary );
+		$this->doc->set( 'text_bytes', $this->content->getSize() );
+		$this->doc->set( 'source_text', $this->content->getTextForSearchIndex() );
 
 		return $this->doc;
 	}

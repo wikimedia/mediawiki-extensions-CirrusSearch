@@ -104,7 +104,6 @@ class SearchSuggestion {
 	/**
 	 * Set the suggested title
 	 * @param Title|null $title
-	 * @param boolean|false $generateURL set to true to generate the URL based on this Title
 	 */
 	public function setSuggestedTitle( Title $title = null ) {
 		$this->suggestedTitle = $title;
@@ -177,7 +176,7 @@ class SearchSuggestion {
 	 * Create suggestion from text
 	 * Will also create a title if text if not empty.
 	 * @param float $score Suggestions score
-	 * @param string text
+	 * @param string $text
 	 * @return SearchSuggestion
 	 */
 	public static function fromText( $score, $text ) {

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use Elastica;
+use Elastica\Filter\AbstractFilter;
 
 /**
  * Utilities for dealing with filters.
@@ -26,9 +27,9 @@ class Filters {
 	/**
 	 * Merges lists of include/exclude filters into a single filter that
 	 * Elasticsearch will execute efficiently.
-	 * @param array(\Elastica\AbstractFilter) $mustFilters filters that must match all returned documents
-	 * @param array(\Elastica\AbstractFilter) $mustNotFilters filters that must not match all returned documents
-	 * @return null|\Elastica\AbstractFilter null if there are no filters or one that will execute
+	 * @param AbstractFilter[] $mustFilters filters that must match all returned documents
+	 * @param AbstractFilter[] $mustNotFilters filters that must not match all returned documents
+	 * @return null|AbstractFilter null if there are no filters or one that will execute
 	 *     all of the provided filters
 	 */
 	public static function unify( $mustFilters, $mustNotFilters ) {
@@ -77,9 +78,9 @@ class Filters {
 
 	/**
 	 * Unify non-script filters into a single filter.
-	 * @param array(\Elastica\AbstractFilter) $must filters that must be found
-	 * @param array(\Elastica\AbstractFilter) $mustNot filters that must not be found
-	 * @return null|\Elastica\AbstractFilter null if there are no filters or one that will execute
+	 * @param AbstractFilter[] $mustFilters filters that must be found
+	 * @param AbstractFilter[] $mustNotFilters filters that must not be found
+	 * @return null|AbstractFilter null if there are no filters or one that will execute
 	 *     all of the provided filters
 	 */
 	private static function unifyNonScript( $mustFilters, $mustNotFilters ) {

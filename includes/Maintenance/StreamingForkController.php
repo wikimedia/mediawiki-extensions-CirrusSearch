@@ -65,6 +65,7 @@ class StreamingForkController extends \ForkController {
 	protected function forkWorkers( $numProcs ) {
 		$this->prepareEnvironment();
 
+		$childSockets = array();
 		// Create the child processes
 		for ( $i = 0; $i < $numProcs; $i++ ) {
 			$sockets = stream_socket_pair( STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP );

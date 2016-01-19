@@ -1,6 +1,7 @@
 <?php
 namespace CirrusSearch\Api;
 
+use CirrusSearch\Search\SearchSuggestion;
 use CirrusSearch\Searcher;
 use CirrusSearch;
 use RequestContext;
@@ -26,8 +27,6 @@ use RequestContext;
 class Suggest extends ApiBase {
 
 	public function execute() {
-		$context = RequestContext::getMain();
-		$user = $context->getUser();
 		$cirrus = new CirrusSearch();
 		$cirrus->setNamespaces( array ( NS_MAIN ) );
 
@@ -45,7 +44,7 @@ class Suggest extends ApiBase {
 		$this->getMain()->setCacheMode( 'public' );
 
 		$this->getResult()->addValue( null, 'suggest',
-			$suggestions->map( function( $sugg ) {
+			$suggestions->map( function( SearchSuggestion $sugg ) {
 				return array(
 					'text' => $sugg->getText(),
 					'url' => $sugg->getURL(),

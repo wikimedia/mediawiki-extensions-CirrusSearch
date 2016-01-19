@@ -8,6 +8,7 @@ use ConfigFactory;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
+use Title;
 
 /**
  * Performs writes to elasticsearch indexes with requeuing and an

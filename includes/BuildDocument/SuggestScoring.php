@@ -27,7 +27,8 @@ use CirrusSearch\Util;
 
 class SuggestScoringMethodFactory {
 	/**
-	 * @param string $scoringMethods the name of the scoring method
+	 * @param string $scoringMethod the name of the scoring method
+	 * @param int $maxDocs
 	 * @return SuggestScoringMethod
 	 */
 	public static function getScoringMethod( $scoringMethod, $maxDocs ) {

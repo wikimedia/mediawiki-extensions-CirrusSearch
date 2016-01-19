@@ -70,6 +70,7 @@ class SuggestBuilder {
 
 	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
+	 * @param bool $withGeo
 	 */
 	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true ) {
 		$this->scoringMethod = $scoringMethod;

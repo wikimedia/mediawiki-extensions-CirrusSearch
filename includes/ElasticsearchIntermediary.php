@@ -178,7 +178,7 @@ class ElasticsearchIntermediary {
 				}
 			}
 			if ( !empty( $context['langdetect' ] ) ) {
-				$request['payload']['langdetect'] = $context['langdetect'];
+				$request['payload']['langdetect'] = (string) $context['langdetect'];
 			}
 			$requests[] = $request;
 		}
@@ -211,9 +211,9 @@ class ElasticsearchIntermediary {
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
 			'payload' => array(
 				// may want to promote this to a top level var at some point
-				'tookMs' => intval( 1000 * $tookS ),
+				'tookMs' => (string) intval( 1000 * $tookS ),
 				// useful while we are testing accept-lang based interwiki
-				'acceptLang' => $wgRequest->getHeader( 'Accept-Language' ) ?: '',
+				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 			),
 			'requests' => $requests,
 		);

@@ -318,7 +318,8 @@ class ElasticsearchIntermediary {
 
 		$stats = RequestContext::getMain()->getStats();
 		$type = self::classifyErrorMessage( $message );
-		$stats->increment( "CirrusSearch.backend_failure.$type" );
+		$clusterName = $this->connection->getClusterName();
+		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 			"Search backend error during {$this->description} after {took}: {message}",
@@ -424,13 +425,13 @@ class ElasticsearchIntermediary {
 		}
 		$endTime = microtime( true );
 		$took = round( ( $endTime - $this->requestStart ) * 1000 );
-
-		RequestContext::getMain()->getStats()->timing( 'CirrusSearch.requestTime', $took );
+		$clusterName = $this->connection->getClusterName();
+		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTime", $took );
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 		$logContext = $this->buildLogContext( $took );
 		$type = isset( $logContext['queryType'] ) ? $logContext['queryType'] : 'unknown';
-		RequestContext::getMain()->getStats()->timing( "CirrusSearch.requestTimeMs.$type", $took );
+		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $took );
 		if ( isset( $logContext['elasticTookMs'] ) ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTookMs'];
 		}

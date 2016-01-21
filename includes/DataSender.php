@@ -161,7 +161,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
-				'queryType' => 'send_data_write_' . $this->connection->getClusterName(),
+				'queryType' => 'send_data_write',
 			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			if ( $shardTimeout ) {
@@ -228,7 +228,7 @@ class DataSender extends ElasticsearchIntermediary {
 					$this->start( "deleting {numIds} from {indexType}", array(
 						'numIds' => $idCount,
 						'indexType' => $indexType,
-						'queryType' => 'send_deletes_' . $this->connection->getClusterName(),
+						'queryType' => 'send_deletes',
 					) );
 					$this->connection->getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
 					$this->success();
@@ -288,7 +288,7 @@ class DataSender extends ElasticsearchIntermediary {
 			try {
 				$this->start( "updating {numBulk} documents in other indexes", array(
 					'numBulk' => count( $updates ),
-					'queryType' => 'send_data_other_idx_write_' . $this->connection->getClusterName(),
+					'queryType' => 'send_data_other_idx_write',
 				) );
 				$bulk->send();
 			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {

@@ -445,7 +445,10 @@ class Util {
 		$templateMatches = array();
 		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
 			foreach ( $templateMatches as $templateMatch ) {
-				$boostTemplates[ $templateMatch[ 1 ] ] = floatval( $templateMatch[ 2 ] ) / 100;
+				// templates field is populated with Title::getPrefixedText
+				// which will replace _ to ' '. We should do the same here.
+				$tmpl = strtr( $templateMatch[ 1 ], '_', ' ' );
+				$boostTemplates[ $tmpl ] = floatval( $templateMatch[ 2 ] ) / 100;
 			}
 		}
 		return $boostTemplates;

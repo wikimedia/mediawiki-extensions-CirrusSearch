@@ -422,12 +422,15 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function indexData() {
+		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
+		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
+		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
+
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );
-		// Exclude content fields to save bandwidth
 		$query->setSource( array(
-			'exclude' => array( 'text', 'source_text', 'opening_text', 'auxiliary_text' )
-		));
+			'include' => $this->builder->getRequiredFields()
+		) );
 
 		$query->setQuery(
 			new Elastica\Query\Filtered(
@@ -445,17 +448,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			'size' => $this->indexChunkSize
 		);
 
-
 		// TODO: only content index for now ( we'll have to check how it works with commons )
 		$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
 		$result = $sourceIndex->search( $query, $scrollOptions );
 		$totalDocsInIndex = $result->getResponse()->getData();
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
+		$this->scoreMethod->setMaxDocs( $totalDocsInIndex );
 		$totalDocsToDump = $totalDocsInIndex;
 
-		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
-		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName, $totalDocsInIndex );
-		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 
 		$docsDumped = 0;
 		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()}\n" );

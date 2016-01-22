@@ -31,12 +31,14 @@ class SuggestScoringMethodFactory {
 	 * @param int $maxDocs
 	 * @return SuggestScoringMethod
 	 */
-	public static function getScoringMethod( $scoringMethod, $maxDocs ) {
+	public static function getScoringMethod( $scoringMethod ) {
 		switch( $scoringMethod ) {
 		case 'incomingLinks':
-			return new IncomingsLinksScoringMethod( $maxDocs );
+			return new IncomingsLinksScoringMethod();
 		case 'quality':
-			return new QualityScore( $maxDocs );
+			return new QualityScore();
+		case 'popqual':
+			return new PQScore();
 		}
 		throw new \Exception( 'Unknown scoring method ' . $scoringMethod );
 	}
@@ -48,6 +50,19 @@ interface SuggestScoringMethod {
 	 * @return int the weight of the document
 	 */
 	public function score( $doc );
+
+	/**
+	 * The list of fields needed to compute the score.
+	 * @return string[] the list of required fields
+	 */
+	public function getRequiredFields();
+
+	/**
+	 * This method will be called by the indexer script.
+	 * some scoring method may want to normalize values based index size
+	 * @param int $maxDocs the total number of docs in the index
+	 */
+	public function setMaxDocs( $maxDocs );
 }
 
 
@@ -56,20 +71,20 @@ interface SuggestScoringMethod {
  */
 class IncomingsLinksScoringMethod implements SuggestScoringMethod {
 	/**
-	 * Constructor
-	 * @param integer $maxDocs the number of docs in the index
-	 */
-	public function __construct( $maxDocs ) {
-		// This scoring function is very simple and we
-		// don't need to normalize
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function score( $doc ) {
 		return isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getRequiredFields() {
+		return array( 'incoming_links' );
+	}
+
+	public function setMaxDocs( $maxDocs ) {}
 }
 
 /**
@@ -92,13 +107,13 @@ class QualityScore implements SuggestScoringMethod {
 	// TODO: move these constants into a cirrus profile
 	const INCOMING_LINKS_MAX_DOCS_FACTOR = 0.1;
 
-	const EXTERNAL_LINKS_NORM = 1000;
-	const PAGE_SIZE_NORM = 300000;
-	const HEADING_NORM = 50;
-	const REDIRECT_NORM = 100;
+	const EXTERNAL_LINKS_NORM = 20;
+	const PAGE_SIZE_NORM = 50000;
+	const HEADING_NORM = 20;
+	const REDIRECT_NORM = 30;
 
 	const INCOMING_LINKS_WEIGHT = 0.6;
-	const EXTERNAL_LINKS_WEIGHT = 0.3;
+	const EXTERNAL_LINKS_WEIGHT = 0.1;
 	const PAGE_SIZE_WEIGHT = 0.1;
 	const HEADING_WEIGHT = 0.2;
 	const REDIRECT_WEIGHT = 0.1;
@@ -115,7 +130,7 @@ class QualityScore implements SuggestScoringMethod {
 	/**
 	 * @var integer the number of docs in the index
 	 */
-	private $maxDocs;
+	protected $maxDocs;
 
 	/**
 	 * @var integer normalisation factor for incoming links
@@ -127,11 +142,8 @@ class QualityScore implements SuggestScoringMethod {
 	 * @param float[]|null $boostTemplates Array of key values, key is the template name, value the boost factor.
 	 *        Defaults to Util::getDefaultBoostTemplates()
 	 */
-	public function __construct( $maxDocs, $boostTemplates = null ) {
-		$this->maxDocs = $maxDocs;
+	public function __construct( $boostTemplates = null ) {
 		$this->boostTemplates = $boostTemplates ?: Util::getDefaultBoostTemplates();
-		// We normalize incoming links according to the size of the index
-		$this->incomingLinksNorm = (int) ($maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR);
 		if ( $this->incomingLinksNorm < 1 ) {
 			// it's a very small wiki let's force the norm to 1
 			$this->incomingLinksNorm = 1;
@@ -142,9 +154,13 @@ class QualityScore implements SuggestScoringMethod {
 	 * {@inheritDoc}
 	 */
 	public function score( $doc ) {
+		return intval( $this->intermediateScore( $doc ) * self::SCORE_RANGE );
+	}
+
+	protected function intermediateScore( $doc ) {
 		$incLinks = $this->scoreNormL2( isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0, $this->incomingLinksNorm );
-		$extLinks = $this->scoreNormL2( isset( $doc['external_link'] ) ? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
 		$pageSize = $this->scoreNormL2( isset( $doc['text_bytes'] ) ? $doc['text_bytes'] : 0, self::PAGE_SIZE_NORM );
+		$extLinks = $this->scoreNorm( isset( $doc['external_link'] ) ? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
 		$headings = $this->scoreNorm( isset( $doc['heading'] ) ? count( $doc['heading'] ) : 0, self::HEADING_NORM );
 		$redirects = $this->scoreNorm( isset( $doc['redirect'] ) ? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM );
 
@@ -158,9 +174,7 @@ class QualityScore implements SuggestScoringMethod {
 		// We have a standardized composite score between 0 and 1
 		$score /= self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT + self::PAGE_SIZE_WEIGHT + self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
 
-		$score = $this->boostTemplates( $doc, $score );
-
-		return intval( $score * self::SCORE_RANGE );
+		return $this->boostTemplates( $doc, $score );
 	}
 
 	/**
@@ -231,11 +245,62 @@ class QualityScore implements SuggestScoringMethod {
 			return $score;
 		}
 
+		// Transform the boost to a value between -1 and 1
 		$boost = $boost > 1 ? 1 - ( 1 / $boost ) : - ( 1 - $boost );
+		// @todo: the 0.5 ratio is hardcoded we could maybe allow customization
+		// here, this would be a way to increase the impact of template boost
 		if ( $boost > 0 ) {
 			return $score + ( ( ( 1 - $score ) / 2 ) * $boost );
 		} else {
 			return $score + ( ( $score / 2 ) * $boost );
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getRequiredFields() {
+		return array( 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' );
+	}
+
+	public function setMaxDocs( $maxDocs ) {
+		$this->maxDocs = $maxDocs;
+		// We normalize incoming links according to the size of the index
+		$this->incomingLinksNorm = (int) ($maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR);
+	}
+}
+
+
+/**
+ * Score that combines QualityScore and the pageviews statistics (popularity)
+ */
+class PQScore extends QualityScore {
+	const QSCORE_WEIGHT = 1;
+	const POPULARITY_WEIGHT = 0.4;
+	// 0.04% of the total page views is the max we accept
+	// @todo: tested on enwiki values only
+	const POPULARITY_MAX = 0.0004;
+
+	public function __construct( $boostTemplates = null ) {
+		parent::__construct( $boostTemplates );
+	}
+
+	public function getRequiredFields() {
+		return array_merge( parent::getRequiredFields(), array( 'popularity_score' ) );
+	}
+
+	public function score( $doc ) {
+		$score = $this->intermediateScore( $doc ) * self::QSCORE_WEIGHT;
+		$pop = isset( $doc['popularity_score'] ) ? $doc['popularity_score'] : 0;
+		if ( $pop > self::POPULARITY_MAX ) {
+			$pop = 1;
+		} else {
+			// @fixme: rough log scale by using maxDocs...
+			$pop = log ( 1 + ( $pop * $this->maxDocs ), 1 + ( self::POPULARITY_MAX * $this->maxDocs ) );
+		}
+
+		$score += $pop * self::POPULARITY_WEIGHT;
+		$score /= self::QSCORE_WEIGHT + self::POPULARITY_WEIGHT;
+		return intval( $score * self::SCORE_RANGE );
 	}
 }

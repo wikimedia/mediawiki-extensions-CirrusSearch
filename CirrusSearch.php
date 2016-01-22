@@ -509,6 +509,11 @@ $wgCirrusSearchMoreLikeThisAllowedFields = array(
 // be retreived by elasticsearch.
 $wgCirrusSearchMoreLikeThisUseFields = false;
 
+// More like this is a very expensive query. This allows redirecting queries
+// to a separate cluster configured in $wgCirrusSearchClusters. When set
+// to a falsy value $wgCirrusSearchDefaultCluster is used.
+$wgCirrusSearchMoreLikeThisCluster = null;
+
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;
 

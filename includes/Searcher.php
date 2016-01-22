@@ -820,6 +820,14 @@ GROOVY;
 			return Status::newGood( new SearchResultSet( true ) /* empty */ );
 		}
 
+		// more like this queries are quite expensive and are suspected to be
+		// triggering latency spikes. This allows redirecting more like this
+		// queries to a different cluster
+		$cluster = $this->config->get( 'CirrusSearchMoreLikeThisCluster' );
+		if ( $cluster ) {
+			$this->connection = Connection::getPool( $this->config, $cluster );
+		}
+
 		$this->searchContext->setSearchContainedSyntax( true );
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
 		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );

@@ -1,8 +1,7 @@
 <?php
 namespace CirrusSearch\Api;
 
-use CirrusSearch\Search\SearchSuggestion;
-use CirrusSearch\Searcher;
+use SearchSuggestion;
 use CirrusSearch;
 use RequestContext;
 
@@ -27,18 +26,20 @@ use RequestContext;
 class Suggest extends ApiBase {
 
 	public function execute() {
-		$cirrus = new CirrusSearch();
-		$cirrus->setNamespaces( array ( NS_MAIN ) );
-
-		$limit = $this->getParameter( 'limit' );
-		$cirrus->setLimitOffset( $limit );
+		$search = \SearchEngine::create();
+		// Force-enable completion suggester
+		$search->setFeatureData(CirrusSearch::COMPLETION_SUGGESTER_FEATURE, 'enabled' );
+		$search->setNamespaces( array ( NS_MAIN ) );
 
 		$queryText = $this->getParameter( 'text' );
 		if ( !$queryText ) {
 			return;
 		}
 
-		$suggestions = $cirrus->searchSuggestions( $queryText );
+		$limit = $this->getParameter( 'limit' );
+		$search->setLimitOffset( $limit );
+
+		$suggestions = $search->completionSearchWithVariants( $queryText );
 		// Use the same cache options used by OpenSearch
 		$this->getMain()->setCacheMaxAge( $this->getConfig()->get( 'SearchSuggestCacheExpiry' ) );
 		$this->getMain()->setCacheMode( 'public' );

@@ -3,16 +3,17 @@
 namespace CirrusSearch;
 
 use Elastica;
+use Elastica\Request;
 use CirrusSearch;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\SearchSuggestion;
-use CirrusSearch\Search\SearchSuggestionSet;
 use ConfigFactory;
 use MediaWiki\Logger\LoggerFactory;
+use RequestContext;
+use SearchSuggestion;
+use SearchSuggestionSet;
 use Status;
 use User;
-use Elastica\Request;
 
 /**
  * Performs search as you type queries using Completion Suggester.

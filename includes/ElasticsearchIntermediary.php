@@ -90,6 +90,9 @@ class ElasticsearchIntermediary {
 	 */
 	protected function __construct( Connection $connection, User $user = null, $slowSeconds ) {
 		$this->connection = $connection;
+		if ( is_null( $user ) ) {
+			$user = RequestContext::getMain()->getUser();
+		}
 		$this->user = $user;
 		$this->slowMillis = round( 1000 * $slowSeconds );
 		$this->ut = UserTesting::getInstance();

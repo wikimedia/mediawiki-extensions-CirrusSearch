@@ -394,7 +394,7 @@ class CirrusSearch extends SearchEngine {
 		// We append a random letter behind just in case the search
 		// string ends with ':'.
 		$title = Title::newFromText( $search . "A" );
-		if ( $title->getNamespace() != NS_MAIN
+		if ( ( $title && $title->getNamespace() != NS_MAIN )
 				|| count( $this->namespaces ) != 1
 				|| reset( $this->namespaces ) != NS_MAIN ) {
 			// Fallback to prefix search if we are not on content namespace

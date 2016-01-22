@@ -64,6 +64,11 @@ class SuggestBuilder {
 	private $scoringMethod;
 
 	/**
+	 * @var integer batch id
+	 */
+	private $batchId;
+
+	/**
 	 * @var boolean builds geo contextualized suggestions
 	 */
 	private $withGeo;
@@ -75,6 +80,7 @@ class SuggestBuilder {
 	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true ) {
 		$this->scoringMethod = $scoringMethod;
 		$this->withGeo = $withGeo;
+		$this->batchId = time();
 	}
 
 	/**
@@ -143,7 +149,7 @@ class SuggestBuilder {
 			$inputs[] = $this->prepareInput( $variant );
 		}
 		$output = self::encodeTitleOutput( $id, $title['text'] );
-		return $this->buildSuggestion( $output, $inputs, $location, $score );
+		return $this->buildSuggestion( self::TITLE_SUGGESTION . $id, $output, $inputs, $location, $score );
 	}
 
 	/**
@@ -165,9 +171,9 @@ class SuggestBuilder {
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
-		$output = $id . ":r";
+		$output = $id . ":" . self::REDIRECT_SUGGESTION;
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
-		return $this->buildSuggestion( $output, $inputs, $location, $score );
+		return $this->buildSuggestion( self::REDIRECT_SUGGESTION . $id, $output, $inputs, $location, $score );
 	}
 
 	/**
@@ -179,8 +185,9 @@ class SuggestBuilder {
 	 * @param int $score the weight of the suggestion
 	 * @return array a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $output, $inputs, $location, $score ) {
+	private function buildSuggestion( $id, $output, $inputs, $location, $score ) {
 		$doc = array(
+			'batch_id' => $this->batchId,
 			'suggest' => array (
 				'input' => $inputs,
 				'output' => $output,
@@ -207,7 +214,7 @@ class SuggestBuilder {
 				'context' => array( 'location' => $location )
 			);
 		}
-		return $doc;
+		return new \Elastica\Document( $id, $doc );
 	}
 
 	/**
@@ -397,5 +404,12 @@ class SuggestBuilder {
 			);
 		}
 		return null;
+	}
+
+	/**
+	 * @return long the batchId
+	 */
+	public function getBatchId() {
+		return $this->batchId;
 	}
 }

@@ -115,7 +115,13 @@ class UpdateSuggesterIndex extends Maintenance {
 	/**
 	 * @var ConfigUtils
 	 */
-	 private $utils;
+	private $utils;
+
+	/**
+	 * @todo: public (used in closure)
+	 * @var SuggestBuilder
+	 */
+	public $builder;
 
 	public function __construct() {
 		parent::__construct();
@@ -149,7 +155,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	public function execute() {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
-			$wgCirrusSearchRefreshInterval,
 			$wgPoolCounterConf,
 			$wgCirrusSearchMasterTimeout;
 
@@ -185,29 +190,22 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->utils->checkElasticsearchVersion();
 
 		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] : 'unlimited';
-		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try {
+			// If the version does not exist it's certainly because nothing has been indexed.
+			$versionIndex = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
+			if ( !$versionIndex->exists() ) {
+				throw new \Exception("mw_cirrus_versions does not exist, you must index your data first");
+			}
+
 			if ( !$this->canWrite() ) {
 				$this->error( 'Index/Cluster is frozen. Giving up.', 1 );
 			}
-			$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
-			$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
-			$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
-
-			$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
-			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
-
-			$this->createIndex();
-			$this->indexData();
-			if ( $this->optimizeIndex ) {
-				$this->optimize();
+			if ( !$this->canRecycle() ) {
+				$this->rebuild();
+			} else {
+				$this->recycle();
 			}
-			$this->enableReplicas();
-			$this->validateAlias();
-			$this->updateVersions();
-			$this->deleteOldIndex();
-			$this->output("done.\n");
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
@@ -222,7 +220,6 @@ class UpdateSuggesterIndex extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
 		}
-		$this->getIndex()->refresh();
 	}
 
 	/**
@@ -230,12 +227,167 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return true if the cluster/index is not frozen, false otherwise.
 	 */
 	private function canWrite() {
-		$name = $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME );
 		// Reuse DataSender even if we don't send anything with it.
 		$sender = new DataSender( $this->getConnection() );
-		return $sender->areIndexesAvailableForWrites( array( $name ) );
+		return $sender->areIndexesAvailableForWrites( array( $this->getIndexTypeName() ) );
 	}
 
+	private function rebuild() {
+		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
+		$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
+		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
+
+		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
+		$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
+
+		$this->createIndex();
+		$this->indexData();
+		if ( $this->optimizeIndex ) {
+			$this->optimize();
+		}
+		$this->enableReplicas();
+		$this->getIndex()->refresh();
+		$this->validateAlias();
+		$this->updateVersions();
+		$this->deleteOldIndex();
+		$this->output("done.\n");
+	}
+
+	private function canRecycle() {
+		global $wgCirrusSearchRecycleCompletionSuggesterIndex;
+		if ( !$wgCirrusSearchRecycleCompletionSuggesterIndex ) {
+			return false;
+		}
+		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
+		$oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
+		if ( ! $oldIndex->exists() ) {
+			$this->error( 'Index does not exist yet cannot recycle.' );
+			return false;
+		}
+		$refresh = $oldIndex->getSettings()->getRefreshInterval();
+		if ( $refresh != '-1' ) {
+			$this->error( 'Refresh interval is not -1, cannot recycle.' );
+			return false;
+		}
+
+		$shards = $oldIndex->getSettings()->get( 'number_of_shards' );
+		// We check only the number of shards since it cannot be updated.
+		if( $shards != $this->getShardCount() ) {
+			$this->error( 'Number of shards mismatch cannot recycle.' );
+			return false;
+		}
+
+		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
+		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
+
+		$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
+		if ( $versionDoc == null ) {
+			$this->error( 'Index missing in mw_cirrus_versions, cannot recycle.' );
+			return false;
+		}
+
+		if ( $versionDoc->analysis_maj != $aMaj ) {
+			$this->error( 'Analysis config version mismatch, cannot recycle.' );
+			return false;
+		}
+
+		if ( $versionDoc->mapping_maj != $mMaj ) {
+			$this->error( 'Mapping config version mismatch, cannot recycle.' );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Recycle a suggester index:
+	 * 1/ index data (delete docs if it already exists)
+	 * 2/ expunge deleted docs
+	 * 3/ refresh the reader
+	 *    - so we can run a quick delete on remaining docs
+	 *      (the docs that were actually deleted)
+	 *    - drawbacks we load the FST from an un-optimized index
+	 * 4/ delete old docs
+	 * 5/ optimize
+	 * 6/ refresh the reader
+	 *
+	 * Drawbacks: the FST will be read from disk twice in a short
+	 * amount of time.
+	 * This is a tradeoff between cluster operation and disk operation.
+	 * Recreating the index may require less disk operations but causes
+	 * the cluster to rebalance.
+	 * This is certainly the best strategy for small indices (less than 100k docs)
+	 * but needs to be carefully tested on bigger indices with high QPS.
+	 */
+	private function recycle() {
+		$this->output( "Recycling index {$this->getIndex()->getName()}\n");
+		$this->recycle = true;
+		$this->indexData();
+		// This is fragile... hopefully most of the docs will be deleted from the old segments
+		// and will result in a fast operation.
+		// New segments should not be affected.
+		// Unfortunately if a failure causes the process to stop
+		// the FST will maybe contains duplicates as it cannot (elastic 1.7)
+		// filter deleted docs. We will rely on output deduplication
+		// but this will certainly affect performances.
+
+		$this->expungeDeletes();
+		// Refresh the reader so we can scroll over remaining docs.
+		// At this point we may read the new un-optimized FST segments
+		// Old ones should be pretty small after expungeDeletes
+		$this->getIndex()->refresh();
+		$query = new Query();
+		$query->setQuery(
+			new Elastica\Query\Filtered(
+				new Elastica\Query\MatchAll(),
+				new Elastica\Filter\BoolNot(
+					new Elastica\Filter\Term( array( "batch_id" => $this->builder->getBatchId() ) )
+				)
+			)
+		);
+		$query->setFields( array( '_id' ) );
+
+		$scrollOptions = array(
+			'search_type' => 'scan',
+			'scroll' => "15m",
+			'size' => $this->indexChunkSize
+		);
+		$result = $this->getIndex()->search( $query, $scrollOptions );
+
+		$totalDocsInIndex = $result->getResponse()->getData();
+		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
+		$totalDocsToDump = $totalDocsInIndex;
+		$retryAttempts = $this->indexRetryAttempts;
+
+		$this->output( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
+		$self = $this;
+		Util::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
+			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump,
+					$retryAttempts ) {
+				$ids = array();
+				foreach( $results as $result ) {
+					$docsDumped++;
+					$ids[] = $result->getId();
+				}
+				$self->outputProgress( $docsDumped, $totalDocsToDump );
+				Util::withRetry( $retryAttempts,
+					function() use ( $ids, $self ) {
+						$self->getType()->deleteIds( $ids );
+					}
+				);
+			}, 0, $retryAttempts );
+		$this->output( "Done.\n" );
+		// Old docs should be deleted now we can optimize and flush
+		$this->optimize();
+
+		// @todo add support for changing the number of replicas
+		// if the setting was changed in cirrus config.
+		// Workaround is to change the settings directly on the cluster.
+
+		// Refresh the reader so it now uses the optimized FST,
+		// and actually free and delete old segments.
+		$this->getIndex()->refresh();
+	}
 
 	private function deleteOldIndex() {
 		if ( $this->oldIndex && $this->oldIndex->exists() ) {
@@ -260,6 +412,12 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function optimize() {
 		$this->output("Optimizing index...");
 		$this->getIndex()->optimize( array( 'max_num_segments' => 1 ) );
+		$this->output("ok.\n");
+	}
+
+	private function expungeDeletes() {
+		$this->output("Purging deleted docs...");
+		$this->getIndex()->optimize( array( 'only_expunge_deletes' => true, 'flush' => false ) );
 		$this->output("ok.\n");
 	}
 
@@ -297,24 +455,24 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName, $totalDocsInIndex );
-		$builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
+		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 
 		$docsDumped = 0;
-		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
+		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()}\n" );
 		$self = $this;
 
 		$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 		$retryAttempts = $this->indexRetryAttempts;
 
 		Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump, $builder,
+			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump,
 					$destinationType, $retryAttempts ) {
 				$suggestDocs = array();
 				foreach ( $results as $result ) {
 					$docsDumped++;
-					$suggests = $builder->build( $result->getId(), $result->getSource() );
+					$suggests = $self->builder->build( $result->getId(), $result->getSource() );
 					foreach ( $suggests as $suggest ) {
-						$suggestDocs[] = new \Elastica\Document( null, $suggest );
+						$suggestDocs[] = $suggest;
 					}
 				}
 				$self->outputProgress( $docsDumped, $totalDocsToDump );
@@ -330,9 +488,9 @@ class UpdateSuggesterIndex extends Maintenance {
 	public function validateAlias() {
 		// @todo utilize the following once Elastica is updated to support passing
 		// master_timeout. This is a copy of the Elastica\Index::addAlias() method
-		// $this->getIndex()->addAlias( $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME ), true );
+		// $this->getIndex()->addAlias( $this->getIndexTypeName(), true );
 		$index = $this->getIndex();
-		$name = $this->getConnection()->getIndexName( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE_NAME );
+		$name = $this->getIndexTypeName();
 
 		$path = '_aliases';
 		$data = array('actions' => array());
@@ -395,6 +553,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			// hacky but we still use auto_expand_replicas
 			// for convenience on small install.
 			'auto_expand_replicas' => "0-0",
+			'refresh_interval' => -1,
 			'analysis' => $this->analysisConfigBuilder->buildConfig(),
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		);
@@ -447,7 +606,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		// The previous call seems to be async, let's wait few sec
 		// otherwise replication won't have time to start.
-		sleep(20);
+		sleep( 20 );
 
 		// Index will be yellow while replica shards are being allocated.
 		$this->waitForGreen( $this->getOption( 'replicationTimeout', 3600 ) );
@@ -481,7 +640,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
 		$doc = new \Elastica\Document(
-			$this->getConnection()->getIndexName( $this->indexBaseName, $this->indexTypeName ),
+			$this->getIndexTypeName(),
 			array (
 				'analysis_maj' => $aMaj,
 				'analysis_min' => $aMin,

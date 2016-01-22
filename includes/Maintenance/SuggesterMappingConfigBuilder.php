@@ -27,7 +27,7 @@ class SuggesterMappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.1';
+	const VERSION = '1.0';
 
 	public function __construct() {
 	}
@@ -45,6 +45,7 @@ class SuggesterMappingConfigBuilder {
 			'_all' => array( 'enabled' => false ),
 			'_source' => array('enabled' => false ),
 			'properties' => array(
+				'batch_id' => array( 'type' => 'long' ),
 				'suggest' => array(
 					'type' => 'completion',
 					'index_analyzer' => 'plain',

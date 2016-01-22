@@ -128,10 +128,8 @@ class DataSender extends ElasticsearchIntermediary {
 		$resp = $this->connection->getFrozenIndexNameType()->search( $ids );
 
 		if ( $resp->count() === 0 ) {
-			$this->log->debug( "Allowed writes to " . implode( ',', $indexes ) );
 			return true;
 		} else {
-			$this->log->debug( "Denied writes to " . implode( ',', $indexes ) );
 			return false;
 		}
 	}
@@ -265,7 +263,6 @@ class DataSender extends ElasticsearchIntermediary {
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );
-				$this->log->debug( "Performing `$action` for {$update['dbKey']} in ns {$update['ns']} on $localSite against id ${update['id']} in $indexName" );
 				$script = new \Elastica\Script(
 					'super_detect_noop',
 					array(

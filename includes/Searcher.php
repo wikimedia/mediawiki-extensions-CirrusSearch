@@ -15,6 +15,7 @@ use ConfigFactory;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MWNamespace;
+use ObjectCache;
 use SearchResultSet;
 use Status;
 use Title;
@@ -808,6 +809,7 @@ GROOVY;
 	 * @return Status<ResultSet>
 	 */
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
+		sort( $titles, SORT_STRING );
 		$pageIds = array();
 		foreach ( $titles as $title ) {
 			$pageIds[] = $title->getArticleID();
@@ -831,6 +833,7 @@ GROOVY;
 		$this->searchContext->setSearchContainedSyntax( true );
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
 		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );
+		sort( $moreLikeThisFields );
 		$this->query = new \Elastica\Query\MoreLikeThis();
 		$this->query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
 		$this->query->setFields( $moreLikeThisFields );
@@ -857,6 +860,7 @@ GROOVY;
 			foreach ( $found as $foundArticle ) {
 				$text[] = $foundArticle->text;
 			}
+			sort( $text, SORT_STRING );
 			$this->query->setLikeText( implode( ' ', $text ) );
 		}
 
@@ -867,11 +871,15 @@ GROOVY;
 			$this->filters[] = new \Elastica\Filter\Exists( 'wikibase_item' );
 		}
 
-		// Morelike is extremely costly, since terms can be completely random
 		// highlight snippets are not great so it's worth running a match all query
 		// to save cpu cycles
 		$this->highlightQuery = new \Elastica\Query\MatchAll();
-		return $this->search( 'more_like', implode( ', ', $titles ) );
+
+		return $this->search(
+			'more_like',
+			implode( ', ', $titles ),
+			$this->config->get( 'CirrusSearchMoreLikeThisTTL' )
+		);
 	}
 
 	/**
@@ -1018,9 +1026,10 @@ GROOVY;
 	 *
 	 * @param string $type
 	 * @param string $for
+	 * @param int $cacheTTL Cache results into ObjectCache for $cacheTTL seconds
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	private function search( $type, $for ) {
+	private function search( $type, $for, $cacheTTL = 0 ) {
 		if ( $this->nonTextQueries ) {
 			$bool = new \Elastica\Query\BoolQuery();
 			if ( $this->query !== null ) {
@@ -1199,6 +1208,27 @@ GROOVY;
 
 		if ( $this->returnExplain && $this->returnResult ) {
 			$query->setExplain( true );
+			// don't cache debugging queries
+			$cacheTTL = 0;
+		}
+
+		$requestStats = \RequestContext::getMain()->getStats();
+		if ( $cacheTTL > 0 ) {
+			$cache = ObjectCache::getLocalClusterInstance();
+			$key = $cache->makeKey( 'cirrussearch', 'search', md5(
+				$search->getPath() .
+				serialize( $search->getOptions() ) .
+				serialize( $query->toArray() ) .
+				serialize( $this->resultsType )
+			) );
+			$cacheResult = $cache->get( $key );
+			if ( $cacheResult ) {
+				$requestStats->increment("CirrusSearch.query_cache.$type.hit");
+				$this->successViaCache( $description, $logContext );
+				return $cacheResult;
+			} else {
+				$requestStats->increment("CirrusSearch.query_cache.$type.miss");
+			}
 		}
 
 		// Perform the search
@@ -1251,7 +1281,9 @@ GROOVY;
 
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
 				$this->suggestSuffixes, $result->getValue(), $this->searchContext->isSearchContainedSyntax() ) );
+			$isPartialResult = false;
 			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
+				$isPartialResult = true;
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"$description timed out and only returned partial results!",
 					$logContext
@@ -1262,7 +1294,13 @@ GROOVY;
 					$result->warning( 'cirrussearch-timed-out' );
 				}
 			}
+
+			if ( $cacheTTL > 0 && !$isPartialResult ) {
+				$requestStats->increment("CirrusSearch.query_cache.$type.set");
+				$cache->set( $key, $result, $cacheTTL );
+			}
 		}
+
 
 		return $result;
 	}

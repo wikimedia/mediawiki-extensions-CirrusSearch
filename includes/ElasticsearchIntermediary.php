@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use DeferredUpdates;
+use Elastica\Client;
 use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use FormatJson;
@@ -150,6 +151,7 @@ class ElasticsearchIntermediary {
 		// request format. At some point the context should just be created in
 		// the correct format.
 		$requests = array();
+		$allCached = true;
 		foreach ( self::$logContexts as $context ) {
 			$request = array(
 				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
@@ -179,6 +181,11 @@ class ElasticsearchIntermediary {
 			}
 			if ( !empty( $context['langdetect' ] ) ) {
 				$request['payload']['langdetect'] = (string) $context['langdetect'];
+			}
+			if ( isset( $context['cached'] ) && $context['cached'] ) {
+				$request['payload']['cached'] = 'true';
+			} else {
+				$allCached = false;
 			}
 			$requests[] = $request;
 		}
@@ -218,6 +225,9 @@ class ElasticsearchIntermediary {
 			'requests' => $requests,
 		);
 
+		if ( $allCached ) {
+			$requestSet['payload']['cached'] = 'true';
+		}
 		LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug( '', $requestSet );
 	}
 
@@ -302,6 +312,26 @@ class ElasticsearchIntermediary {
 	public function success( $result = null ) {
 		$this->finishRequest();
 		return Status::newGood( $result );
+	}
+
+	/**
+	 * Log a succesful request when the response comes from a cache outside elasticsearch.
+	 * @param string $description name of the action being started
+	 * @param array $logContext Contextual variables for generating log messages
+	 */
+	public function successViaCache( $description, array $logContext = array() ) {
+		global $wgCirrusSearchLogElasticRequests;
+
+		$this->description = $description;
+		$logContext['cached'] = true;
+		$this->logContext = $logContext;
+
+		$logContext = $this->buildLogContext( -1, null );
+		if ( $wgCirrusSearchLogElasticRequests ) {
+			$logMessage = $this->buildLogMessage( $logContext );
+			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $logContext );
+		}
+		$this->requestStart = null;
 	}
 
 	/**
@@ -429,7 +459,7 @@ class ElasticsearchIntermediary {
 		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTime", $took );
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
-		$logContext = $this->buildLogContext( $took );
+		$logContext = $this->buildLogContext( $took, $this->connection->getClient() );
 		$type = isset( $logContext['queryType'] ) ? $logContext['queryType'] : 'unknown';
 		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $took );
 		if ( isset( $logContext['elasticTookMs'] ) ) {
@@ -487,10 +517,14 @@ class ElasticsearchIntermediary {
 	 * @param float $took Number of milliseconds the request took
 	 * @return array
 	 */
-	private function buildLogContext( $took ) {
-		$client = $this->connection->getClient();
-		$query = $client->getLastRequest();
-		$result = $client->getLastResponse();
+	private function buildLogContext( $took, Client $client = null ) {
+		if ( $client ) {
+			$query = $client->getLastRequest();
+			$result = $client->getLastResponse();
+		} else {
+			$query = null;
+			$result = null;
+		}
 
 		$params = $this->logContext;
 		$this->logContext = array();

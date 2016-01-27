@@ -16,7 +16,7 @@
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
 	"cirrussearch-too-busy-for-you-anonymous-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd. Als u een IP-adres deelt met andere gebruikers kunt u aanmelden om uw eigen beperkingen te krijgen.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd.",
-	"cirrussearch-regex-syntax-error": "Reguliere expressie syntax fout op $2: $1",
+	"cirrussearch-regex-syntax-error": "Reguliere expressie-syntaxfout op $2: $1",
 	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie zoekt momenteel worden uitgevoerd. Probeer het later opnieuw.",
 	"cirrussearch-regex-too-complex-error": "Een reguliere expressie is te complex. Meer informatie over de vereenvoudiging van het [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|hier]].",
 	"cirrussearch-now-using": "Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])",
@@ -28,5 +28,6 @@
 	"apihelp-cirrus-mapping-dump-description": "Dump van CirrusSearch mapping voor deze wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearch instellingen voor deze wiki.",
 	"apihelp-cirrus-suggest-param-limit": "Hoeveel resultaten er moeten worden opgehaald.",
+	"cirrussearch-give-feedback": "Geef ons uw mening",
 	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten"
 }

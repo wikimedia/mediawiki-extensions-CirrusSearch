@@ -34,9 +34,6 @@ class Suggest extends ApiBase {
 		$cirrus->setLimitOffset( $limit );
 
 		$queryText = $this->getParameter( 'text' );
-		if ( !$queryText ) {
-			return;
-		}
 
 		$suggestions = $cirrus->searchSuggestions( $queryText );
 		// Use the same cache options used by OpenSearch

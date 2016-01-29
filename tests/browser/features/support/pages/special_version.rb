@@ -3,7 +3,7 @@
 class SpecialVersion
   include PageObject
 
-  page_url URL.url("/wiki/Special:Version")
+  page_url "/wiki/Special:Version"
 
   table(:software_table, id: "sv-software")
 

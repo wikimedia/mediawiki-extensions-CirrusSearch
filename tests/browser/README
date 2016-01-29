@@ -1,7 +1,7 @@
 Browser Tests for Search
 ------------------------
 
-Read https://github.com/wikimedia/mediawiki-selenium for general instructions
+Read https://phabricator.wikimedia.org/diffusion/MSEL/browse/master/README.md for general instructions
 regarding running tests then read the rest of this file for information
 specific to CirrusSearch.
 
@@ -38,8 +38,6 @@ operating systems package manager.
 Running tests
 -------------
 For the most part all you have to do is:
- source selenium_exports_for_vagrant.sh
-before you run anything else.  Then:
  bundle exec cucumber
 
 You can run individual test with this syntax:

@@ -18,12 +18,12 @@ Then(/^a list of suggested pages should appear$/) do
 end
 Then(/^I should land on Search Results page$/) do
   on(SearchResultsPage).search_element.when_present
-  @browser.url.should match Regexp.escape("&title=Special%3ASearch")
+  browser.url.should match Regexp.escape("&title=Special%3ASearch")
 end
 Then(/^(.+) should be the first result$/) do |page_name|
   on(SearchPage).first_result.should == page_name
 end
 
 Then(/^the page I arrive on has title (.+)$/) do |title|
-  @browser.title.should match Regexp.escape(title)
+  browser.title.should match Regexp.escape(title)
 end

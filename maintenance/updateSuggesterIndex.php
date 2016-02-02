@@ -280,8 +280,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
-		$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
-		if ( $versionDoc == null ) {
+		try {
+			$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
+		} catch( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_versions, cannot recycle.' );
 			return false;
 		}

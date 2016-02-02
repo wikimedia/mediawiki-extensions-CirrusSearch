@@ -25,7 +25,7 @@ use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
  */
 class SuggestBuilderTest extends \MediaWikiTestCase {
 	public function testEinstein() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
@@ -73,7 +73,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 	}
 
 	public function testEraq() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
@@ -116,7 +116,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 	}
 
 	public function testUlm() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
@@ -255,7 +255,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 			)
 		);
 
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks', 1 ) );
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$coord = $builder->findPrimaryCoordinates( $doc );
 		$expected = array( 'lat' => 0.70777777777778, 'lon' => -50.089444444444 );
 		$this->assertSame( $expected, $coord );

@@ -24,7 +24,8 @@ use CirrusSearch\BuildDocument\QualityScore;
  */
 class SuggestScoringTest extends \MediaWikiTestCase {
 	public function testQualityScoreNormFunctions() {
-		$qs = new QualityScore( 100000 );
+		$qs = new QualityScore();
+		$qs->setMaxDocs( 10000 );
 		for( $i = 0; $i < 1000; $i++ ) {
 			$value = rand( 0, 1000000 );
 			$norm = rand( 1, 1000000 );
@@ -56,7 +57,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 	}
 
 	public function testQualityScoreBoostFunction() {
-		$qs = new QualityScore( 100000 );
+		$qs = new QualityScore();
 		for( $i = 0; $i < 1000; $i++ ) {
 			$score = (float) rand() / (float) mt_getrandmax();
 			$boost = (float) rand( 0, 10000 ) / rand( 1, 10000 );
@@ -116,7 +117,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			'template' => array( 'Neutral' )
 		);
 
-		$qs = new QualityScore( 100000, array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
 
 		$score = 0.5;
 		$res = $qs->boostTemplates( $goodDoc, $score );
@@ -134,7 +135,8 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 	public function testQualityScoreRanking() {
 		$maxDocs = 10000000;
-		$qs = new QualityScore( $maxDocs, array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs->setMaxDocs( $maxDocs );
 		$veryGoodArticle = array(
 			'incoming_links' => 120340,
 			'external_link' => array_fill( 0, 200, null ),
@@ -212,7 +214,8 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 	public function testQualityScoreWithRandomValues() {
 		$maxDocs = 10000000;
-		$qs = new QualityScore( $maxDocs, array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs->setMaxDocs( $maxDocs );
 
 		for( $i = 0; $i < 1000; $i++ ) {
 			$page = array(
@@ -252,7 +255,8 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
 
 		// A very small wiki
-		$qs = new QualityScore( 1 );
+		$qs = new QualityScore( );
+		$qs->setMaxDocs( 1 );
 		$page = array(
 			'incoming_links' => 1,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
@@ -264,7 +268,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
 
 		// The scoring function should not fail with 0 page
-		$qs = new QualityScore( 0 );
+		$qs = new QualityScore();
 		$page = array(
 			'incoming_links' => 1,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),

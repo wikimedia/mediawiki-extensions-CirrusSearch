@@ -55,8 +55,12 @@ class SuggestBuilder {
 	 * Number of common prefix chars a redirect must share with the title to be
 	 * promoted as a title suggestion.
 	 * This is useful not to promote Eraq as a title suggestion for Iraq
+	 * Less than 3 can lead to weird results like oba => Osama Bin Laden
+	 * @todo: to avoid displaying typos (if the typo is in the 3 chars)
+	 * we could re-work Utils::chooseBestRedirect and display the title
+	 * if the chosen redirect is close enough to the title.
 	 */
-	const REDIRECT_COMMON_PREFIX_LEN = 1;
+	const REDIRECT_COMMON_PREFIX_LEN = 3;
 
 	/**
 	 * @var SuggestScoringMethod the scoring function
@@ -93,6 +97,7 @@ class SuggestBuilder {
 			// Bad doc, nothing to do here.
 			return array();
 		}
+
 		$score = $this->scoringMethod->score( $inputDoc );
 
 		// We support only earth and the primary/first coordinates...
@@ -105,6 +110,19 @@ class SuggestBuilder {
 				$location, $score );
 		}
 		return $docs;
+	}
+
+	/**
+	 * The fields needed to build and score documents.
+	 * @return string[] the list of fields
+	 */
+	public function getRequiredFields() {
+		$fields = $this->scoringMethod->getRequiredFields();
+		$fields = array_merge( $fields, array( 'title', 'redirect' ) );
+		if ( $this->withGeo ) {
+			$fields[] = 'coordinates';
+		}
+		return $fields;
 	}
 
 	/**

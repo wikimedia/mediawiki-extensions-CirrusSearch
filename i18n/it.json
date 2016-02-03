@@ -5,14 +5,15 @@
 			"Rosh",
 			"Lucas2",
 			"Mpiva",
-			"Alexmar983"
+			"Alexmar983",
+			"AndreaBaitelli"
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
 	"cirrussearch-backend-error": "Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.",
 	"cirrussearch-parse-error": "Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.",
-	"cirrussearch-too-busy-error": "Attualmente la ricerca è sovraccarica. Riprova più tardi.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Hai troppe ricerche in corso contemporaneamente. Se stai condividendo un indirizzo IP con altri utenti, puoi effettuare l'accesso per ottenere i tuoi limiti.",
+	"cirrussearch-too-busy-error": "Attualmente il motore di ricerca è sovraccarico. Riprova più tardi.",
+	"cirrussearch-too-busy-for-you-anonymous-error": "Hai troppe ricerche in corso contemporaneamente. Se stai condividendo un indirizzo IP con altri utenti, puoi effettuare l'accesso per operare con i tuoi limiti.",
 	"cirrussearch-too-busy-for-you-logged-in-error": "Hai troppo ricerche contemporaneamente in corso.",
 	"cirrussearch-regex-syntax-error": "Errore di sintassi nell'espressione regolare a $2: $1",
 	"cirrussearch-regex-too-busy-error": "Attualmente troppe ricerche con espressioni regolari in esecuzione. Riprova più tardi.",
@@ -25,6 +26,12 @@
 	"apihelp-cirrus-config-dump-description": "Copia della configurazione di CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Copia della mappatura di CirrusSearch di questa wiki.",
 	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch di questa wiki.",
+	"apihelp-cirrus-suggest-description": "Suggerimento del completamente per il termine di ricerca.",
+	"apihelp-cirrus-suggest-param-text": "Termine di ricerca per cui fornire il suggerimento del completamento.",
 	"apihelp-cirrus-suggest-param-limit": "Quanti risultati restituire.",
-	"cirrussearch-give-feedback": "Dacci il tuo feedback"
+	"apihelp-cirrus-suggest-param-context": "I contesti di ricerca possono circoscrivere la ricerca, come <kbd>geo</kbd> o <kbd>categoria</kbd>.",
+	"cirrussearch-give-feedback": "Dacci il tuo feedback",
+	"cirrussearch-query-too-long": "Il testo della ricerca ha una dimesione maggiore rispetto a quella permessa. ($1 > $2)",
+	"cirrussearch-completionsuggester-pref": "Suggeritore completamento",
+	"cirrussearch-completionsuggester-desc": "E' un nuovo algoritmo per migliorare la ricerca durante la digitazione. Una volta attivata la casella di ricerca nell'angolo in alto a destra, verrà utilizzato questa funzione che suggerisce il possibile completamente della parola che si sta inserendo per la ricerca."
 }

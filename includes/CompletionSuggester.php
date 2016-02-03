@@ -181,7 +181,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$searcher = $this;
 		$limit = $this->limit;
 		$result = Util::doPoolCounterWork(
-			'CirrusSearch-Search',
+			'CirrusSearch-Completion',
 			$this->user,
 			function() use( $searcher, $index, $suggest, $logContext, $queryOptions,
 					$profiles, $text , $limit ) {

@@ -53,10 +53,34 @@ $wgCirrusSearchCompletionProfiles = array(
 			'fetch_limit_factor' => 2,
 		),
 		// Fuzzy query for query length (3 to 4) with prefix len 1
-		'plain_fuzzy_1' => array(
+		'plain_fuzzy_2' => array(
 			'field' => 'suggest',
 			'min_query_len' => 3,
 			'max_query_len' => 4,
+			'discount' => 0.005,
+			'fetch_limit_factor' => 2,
+			'fuzzy' => array(
+				'fuzzyness' => 'AUTO',
+				'prefix_length' => 1,
+				'unicode_aware' => true,
+			)
+		),
+		'plain_stop_fuzzy_2' => array(
+			'field' => 'suggest-stop',
+			'min_query_len' => 3,
+			'max_query_len' => 4,
+			'discount' => 0.0001,
+			'fetch_limit_factor' => 1,
+			'fuzzy' => array(
+				'fuzzyness' => 'AUTO',
+				'prefix_length' => 2,
+				'unicode_aware' => true,
+			)
+		),
+		// Fuzzy query for query length > 5 with prefix len 0
+		'plain_fuzzy_1' => array(
+			'field' => 'suggest',
+			'min_query_len' => 5,
 			'discount' => 0.005,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => array(
@@ -67,36 +91,12 @@ $wgCirrusSearchCompletionProfiles = array(
 		),
 		'plain_stop_fuzzy_1' => array(
 			'field' => 'suggest-stop',
-			'min_query_len' => 3,
-			'max_query_len' => 4,
+			'min_query_len' => 5,
 			'discount' => 0.0001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => array(
 				'fuzzyness' => 'AUTO',
 				'prefix_length' => 1,
-				'unicode_aware' => true,
-			)
-		),
-		// Fuzzy query for query length > 5 with prefix len 0
-		'plain_fuzzy_0' => array(
-			'field' => 'suggest',
-			'min_query_len' => 5,
-			'discount' => 0.005,
-			'fetch_limit_factor' => 1,
-			'fuzzy' => array(
-				'fuzzyness' => 'AUTO',
-				'prefix_length' => 0,
-				'unicode_aware' => true,
-			)
-		),
-		'plain_stop_fuzzy_0' => array(
-			'field' => 'suggest-stop',
-			'min_query_len' => 5,
-			'discount' => 0.0001,
-			'fetch_limit_factor' => 1,
-			'fuzzy' => array(
-				'fuzzyness' => 'AUTO',
-				'prefix_length' => 0,
 				'unicode_aware' => true,
 			)
 		)

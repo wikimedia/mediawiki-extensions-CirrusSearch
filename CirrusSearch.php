@@ -514,6 +514,11 @@ $wgCirrusSearchMoreLikeThisUseFields = false;
 // to a falsy value $wgCirrusSearchDefaultCluster is used.
 $wgCirrusSearchMoreLikeThisCluster = null;
 
+// More like this queries can be quite expensive. Set this to > 0 to cache the
+// results for the specified # of seconds into ObjectCache (memcache, redis, or
+// whatever is configured).
+$wgCirrusSearchMoreLikeThisTTL = 0;
+
 // Show the notification about this wiki using CirrusSearch on the search page.
 $wgCirrusSearchShowNowUsing = false;
 

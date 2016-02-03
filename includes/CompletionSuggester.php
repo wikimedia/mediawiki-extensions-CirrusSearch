@@ -112,9 +112,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * Search environment configuration
 	 * @var SearchConfig
-	 * Specified as public because of closures. When we move to non-anicent PHP version, can be made protected.
 	 */
-	public $config;
+	private $config;
 
 	/**
 	 * @var string Query type (comp_suggest_geo or comp_suggest)
@@ -179,19 +178,18 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			'queryType' => $this->queryType,
 		);
 		$searcher = $this;
-		$limit = $this->limit;
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
 			function() use( $searcher, $index, $suggest, $logContext, $queryOptions,
-					$profiles, $text , $limit ) {
+					$profiles, $text ) {
 				$description = "{queryType} search for '{query}'";
 				$searcher->start( $description, $logContext );
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
 						$result = $searcher->postProcessSuggest( $result,
-							$profiles, $limit );
+							$profiles, $this->limit );
 						return $searcher->success( $result );
 					}
 					return $result;

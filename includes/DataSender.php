@@ -169,10 +169,9 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk->addData( $data, 'update' );
 			$bulk->send();
 		} catch ( ResponseException $e ) {
-			$cirrusLog = $this->log;
 			$missing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function( $id ) use ( $cirrusLog, $e ) {
-					$cirrusLog->info(
+				function( $id ) use ( $e ) {
+					$this->log->info(
 						"Updating a page that doesn't yet exist in Elasticsearch: {id}",
 						array( 'id' => $id )
 					);

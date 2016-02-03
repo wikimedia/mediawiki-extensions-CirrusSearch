@@ -357,25 +357,22 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalDocsInIndex = $result->getResponse()->getData();
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
 		$totalDocsToDump = $totalDocsInIndex;
-		$retryAttempts = $this->indexRetryAttempts;
 
 		$this->output( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
-		$self = $this;
 		Util::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump,
-					$retryAttempts ) {
+			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				$ids = array();
 				foreach( $results as $result ) {
 					$docsDumped++;
 					$ids[] = $result->getId();
 				}
-				$self->outputProgress( $docsDumped, $totalDocsToDump );
-				Util::withRetry( $retryAttempts,
-					function() use ( $ids, $self ) {
-						$self->getType()->deleteIds( $ids );
+				$this->outputProgress( $docsDumped, $totalDocsToDump );
+				Util::withRetry( $this->indexRetryAttempts,
+					function() use ( $ids ) {
+						$this->getType()->deleteIds( $ids );
 					}
 				);
-			}, 0, $retryAttempts );
+			}, 0, $this->indexRetryAttempts );
 		$this->output( "Done.\n" );
 		// Old docs should be deleted now we can optimize and flush
 		$this->optimize();
@@ -459,29 +456,27 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$docsDumped = 0;
 		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()}\n" );
-		$self = $this;
 
 		$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
-		$retryAttempts = $this->indexRetryAttempts;
 
 		Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump,
-					$destinationType, $retryAttempts ) {
+			function( $results ) use ( &$docsDumped, $totalDocsToDump,
+					$destinationType ) {
 				$suggestDocs = array();
 				foreach ( $results as $result ) {
 					$docsDumped++;
-					$suggests = $self->builder->build( $result->getId(), $result->getSource() );
+					$suggests = $this->builder->build( $result->getId(), $result->getSource() );
 					foreach ( $suggests as $suggest ) {
 						$suggestDocs[] = $suggest;
 					}
 				}
-				$self->outputProgress( $docsDumped, $totalDocsToDump );
-				Util::withRetry( $retryAttempts,
+				$this->outputProgress( $docsDumped, $totalDocsToDump );
+				Util::withRetry( $this->indexRetryAttempts,
 					function() use ( $destinationType, $suggestDocs ) {
 						$destinationType->addDocuments( $suggestDocs );
 					}
 				);
-			}, 0, $retryAttempts );
+			}, 0, $this->indexRetryAttempts );
 		$this->output( "Indexing done.\n" );
 	}
 

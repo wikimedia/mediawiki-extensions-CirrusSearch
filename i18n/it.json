@@ -26,12 +26,12 @@
 	"apihelp-cirrus-config-dump-description": "Copia della configurazione di CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Copia della mappatura di CirrusSearch di questa wiki.",
 	"apihelp-cirrus-settings-dump-description": "Copia delle impostazioni di CirrusSearch di questa wiki.",
-	"apihelp-cirrus-suggest-description": "Suggerimento del completamente per il termine di ricerca.",
+	"apihelp-cirrus-suggest-description": "Suggeritore completamento per termini di ricerca.",
 	"apihelp-cirrus-suggest-param-text": "Termine di ricerca per cui fornire il suggerimento del completamento.",
 	"apihelp-cirrus-suggest-param-limit": "Quanti risultati restituire.",
-	"apihelp-cirrus-suggest-param-context": "I contesti di ricerca possono circoscrivere la ricerca, come <kbd>geo</kbd> o <kbd>categoria</kbd>.",
+	"apihelp-cirrus-suggest-param-context": "I contesti di ricerca possono circoscrivere la ricerca, come <kbd>geo</kbd> o <kbd>category</kbd>.",
 	"cirrussearch-give-feedback": "Dacci il tuo feedback",
-	"cirrussearch-query-too-long": "Il testo della ricerca ha una dimesione maggiore rispetto a quella permessa. ($1 > $2)",
+	"cirrussearch-query-too-long": "Il testo della ricerca ha una lunghezza maggiore rispetto a quella permessa. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Suggeritore completamento",
-	"cirrussearch-completionsuggester-desc": "E' un nuovo algoritmo per migliorare la ricerca durante la digitazione. Una volta attivata la casella di ricerca nell'angolo in alto a destra, verrà utilizzato questa funzione che suggerisce il possibile completamente della parola che si sta inserendo per la ricerca."
+	"cirrussearch-completionsuggester-desc": "È un nuovo algoritmo per migliorare la ricerca durante la digitazione. Una volta attivata la casella di ricerca nell'angolo in alto a destra, verrà utilizzata questa funzione che suggerisce il possibile completamente della parola che si sta inserendo per la ricerca."
 }

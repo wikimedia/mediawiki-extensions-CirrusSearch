@@ -47,8 +47,9 @@ module CirrusSearchApiHelper
   def suggestions_for_api(search, limit = nil)
     req = {}
     req["limit"] = limit if limit
-    api.action(:'cirrus-suggest', req.merge(
-      text: search,
+    api.action(:opensearch, req.merge(
+      search: search,
+      cirrusUseCompletionSuggester: "yes",
       token_type: false
     ))
   end

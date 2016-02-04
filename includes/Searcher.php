@@ -20,6 +20,7 @@ use SearchResultSet;
 use Status;
 use Title;
 use UsageException;
+use RequestContext;
 use User;
 use Elastica\Request;
 use Elastica\Exception\ResponseException;

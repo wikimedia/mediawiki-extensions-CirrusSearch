@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use ApiMain;
 use CirrusSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
-use CirrusSearch\Search\TitleResultsType;
 use ConfigFactory;
 use DeferredUpdates;
 use JobQueueGroup;
@@ -88,7 +87,6 @@ class Hooks {
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
 			$wgHooks[ 'PrefixSearchExtractNamespace' ][] = 'CirrusSearch\Hooks::prefixSearchExtractNamespace';
-			$wgHooks[ 'PrefixSearchBackend' ][] = 'CirrusSearch\Hooks::prefixSearch';
 			$wgHooks[ 'SearchGetNearMatch' ][] = 'CirrusSearch\Hooks::onSearchGetNearMatch';
 		}
 
@@ -454,60 +452,16 @@ class Hooks {
 		return true;
 	}
 
+	/**
+	 * Extract namespaces from query string.
+	 * @param array $namespaces
+	 * @param string $search
+	 * @return boolean
+	 */
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
-		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( self::getConnection(), 0, 1, null, $namespaces, $user );
+		$searcher = new Searcher( self::getConnection(), 0, 1, null, $namespaces );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getNamespaces();
-		return false;
-	}
-
-	/**
-	 * Hooked to delegate prefix searching to Searcher.
-	 * @param int[] $namespaces namespace to search
-	 * @param string $search search text
-	 * @param int $limit maximum number of titles to return
-	 * @param array(string) $results outbound variable with string versions of titles
-	 * @param int $offset Number of results to offset
-	 * @return bool always false because we are the authoritative prefix search
-	 */
-	public static function prefixSearch( $namespaces, $search, $limit, &$results, $offset = 0 ) {
-		$user = RequestContext::getMain()->getUser();
-		$searcher = new Searcher( self::getConnection(), $offset, $limit, null, $namespaces, $user );
-		if ( $search ) {
-			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
-		} else {
-			// Empty searches always find the title.
-			$searcher->setResultsType( new TitleResultsType() );
-		}
-		try {
-			$status = $searcher->prefixSearch( $search );
-		} catch ( UsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return false;
-		}
-		// There is no way to send errors or warnings back to the caller here so we have to make do with
-		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
-		if ( $status->isOK() ) {
-			if ( !$search ) {
-				// No need to unpack the simple title matches from non-fancy TitleResultsType
-				return $status->getValue();
-			}
-			$results = array();
-			foreach ( $status->getValue() as $match ) {
-				if ( isset( $match[ 'titleMatch' ] ) ) {
-					$results[] = $match[ 'titleMatch' ]->getPrefixedText();
-				} else {
-					if ( isset( $match[ 'redirectMatches' ][ 0 ] ) ) {
-						// TODO maybe dig around in the redirect matches and find the best one?
-						$results[] = $match[ 'redirectMatches' ][ 0 ]->getPrefixedText();
-					}
-				}
-			}
-		}
 		return false;
 	}
 
@@ -710,22 +664,6 @@ class Hooks {
 				'rtl' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-rtl.svg",
 			)
 		);
-		return true;
-	}
-
-	/**
-	 * @param \OutputPage $out
-	 * @param \Skin $skin
-	 * @return boolean
-	 */
-	public static function onBeforePageDisplay( \OutputPage &$out, \Skin &$skin ) {
-		global $wgCirrusSearchUseCompletionSuggester;
-		if ( $wgCirrusSearchUseCompletionSuggester &&
-			class_exists( '\BetaFeatures' ) &&
-			\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' ) ) {
-			// We use the js extension only for testing the suggest-api
-			$out->addModules( array( 'ext.cirrus' ) );
-		}
 		return true;
 	}
 }

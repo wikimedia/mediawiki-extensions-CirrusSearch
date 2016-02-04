@@ -6,9 +6,9 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Search\ResultSet;
-use CirrusSearch\Search\SearchSuggestion;
-use CirrusSearch\Search\SearchSuggestionSet;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\FancyTitleResultsType;
+use CirrusSearch\Search\TitleResultsType;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -36,6 +36,8 @@ class CirrusSearch extends SearchEngine {
 	const MORE_LIKE_THIS_PREFIX = 'morelike:';
 	const MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX = 'morelikewithwikibase:';
 
+	const COMPLETION_SUGGESTER_FEATURE = 'completionSuggester';
+
 	/**
 	 * @var string The last prefix substituted by replacePrefixes.
 	 */
@@ -56,10 +58,23 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $connection;
 
+	/**
+	 * Search configuration.
+	 * @var SearchConfig
+	 */
+	private $config;
+
+	/**
+	 * Current request.
+	 * @var WebRequest
+	 */
+	private $request;
+
 	public function __construct( $baseName = null ) {
 		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-		$this->connection = new Connection( $config );
+		$this->config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->connection = new Connection( $this->config );
+		$this->request = RequestContext::getMain()->getRequest();
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -71,6 +86,14 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function getConnection() {
 		return $this->connection;
+	}
+
+	/**
+	 * Set search config
+	 * @param SearchConfig $config
+	 */
+	public function setConfig( SearchConfig $config ) {
+		$this->config = $config;
 	}
 
 	/**
@@ -97,9 +120,8 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function searchText( $term ) {
 		$config = null;
-		$request = RequestContext::getMain()->getRequest();
-		if ( $request && $request->getVal( 'cirrusLang' ) ) {
-			$config = new SearchConfig( $request->getVal( 'cirrusLang' ) );
+		if ( $this->request && $this->request->getVal( 'cirrusLang' ) ) {
+			$config = new SearchConfig( $this->request->getVal( 'cirrusLang' ) );
 		}
 		$matches = $this->searchTextReal( $term, $config );
 		if (!$matches instanceof ResultSet) {
@@ -258,15 +280,11 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		$context = RequestContext::getMain();
-		$request = $context->getRequest();
-		$user = $context->getUser();
-
 		if ( $config ) {
 			$this->indexBaseName = $config->getWikiId();
 		}
 
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, $user, $this->indexBaseName );
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' )  {
@@ -280,11 +298,11 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setSort( $this->getSort() );
 		}
 
-		$dumpQuery = $request && $request->getVal( 'cirrusDumpQuery' ) !== null;
+		$dumpQuery = $this->request && $this->request->getVal( 'cirrusDumpQuery' ) !== null;
 		$searcher->setReturnQuery( $dumpQuery );
-		$dumpResult = $request && $request->getVal( 'cirrusDumpResult' ) !== null;
+		$dumpResult = $this->request && $this->request->getVal( 'cirrusDumpResult' ) !== null;
 		$searcher->setDumpResult( $dumpResult );
-		$returnExplain = $request && $request->getVal( 'cirrusExplain' ) !== null;
+		$returnExplain = $this->request && $this->request->getVal( 'cirrusExplain' ) !== null;
 		$searcher->setReturnExplain( $returnExplain );
 
 		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
@@ -302,23 +320,23 @@ class CirrusSearch extends SearchEngine {
 				$searcher->updateNamespacesFromQuery( $term );
 			}
 			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
-			if ( $request ) {
-				if ( $request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
+			if ( $this->request ) {
+				if ( $this->request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
 					$this->showSuggestion = false;
 				}
-				if ( $request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
+				if ( $this->request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_TITLE;
 				}
-				if ( $request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
+				if ( $this->request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLE;
 				}
-				if ( $request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
+				if ( $this->request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
 				}
-				if ( $request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
+				if ( $this->request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
 				}
-				if ( $request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
+				if ( $this->request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
 					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
 				}
 			}
@@ -331,8 +349,8 @@ class CirrusSearch extends SearchEngine {
 		}
 		if ( $dumpQuery || $dumpResult ) {
 			// When dumping the query we skip _everything_ but echoing the query.
-			$context->getOutput()->disable();
-			$request->response()->header( 'Content-type: application/json; charset=UTF-8' );
+			RequestContext::getMain()->getOutput()->disable();
+			$this->request->response()->header( 'Content-type: application/json; charset=UTF-8' );
 			if ( $status->getValue() === null ) {
 				echo '{}';
 			} else {
@@ -351,7 +369,7 @@ class CirrusSearch extends SearchEngine {
 			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
 			// wrote the code but Searcher needs some refactoring first.
 			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
-				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, $user, $index, $interwiki );
+				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, null, $index, $interwiki );
 				$interwikiResult = $iwSearch->getInterwikiResults( $term );
 				if ( $interwikiResult ) {
 					$status->getValue()->addInterwikiResults( $interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki );
@@ -366,56 +384,17 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * This implementation will run the completion suggester if it's enabled and if the
-	 * query is for NS_MAIN. Fallback to SearchEngine default implemention otherwise.
-	 *
-	 * @param string $search the user query
-	 * @return SearchSuggestionSet the suggestions
+	 * Look for suggestions using ES completion suggester.
+	 * @param string $search Search string
+	 * @param string[]|null $variants Search term variants
+	 * @param SearchConfig $config search configuration
+	 * @return SearchSuggestionSet Set of suggested names
 	 */
-	public function searchSuggestions( $search ) {
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-		$useCompletionSuggester = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
-
-		$context = RequestContext::getMain();
-		$request = $context->getRequest();
-
-		// Allow experimentation with query parameters
-		if ( $request && $request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
-			$useCompletionSuggester = true;
-		}
-
-		if ( !$useCompletionSuggester ) {
-			// Completion suggester is not enabled, fallback to
-			// default implementation
-			return $this->searchSuggestionsPrefixSearchFallback( $search );
-		}
-
-		// We use Title to extract namespace from a Title string
-		// We append a random letter behind just in case the search
-		// string ends with ':'.
-		$title = Title::newFromText( $search . "A" );
-		if ( ( $title && $title->getNamespace() != NS_MAIN )
-				|| count( $this->namespaces ) != 1
-				|| reset( $this->namespaces ) != NS_MAIN ) {
-			// Fallback to prefix search if we are not on content namespace
-			return $this->searchSuggestionsPrefixSearchFallback( $search );
-		}
-
-		$user = $context->getUser();
+	protected function getSuggestions( $search, $variants, SearchConfig $config ) {
 		// offset is omitted, searchSuggestion does not support
 		// scrolling results
 		$suggester = new CompletionSuggester( $this->connection, $this->limit,
-			$config, $this->namespaces, $user, $this->indexBaseName );
-
-		// Not really useful, mostly for testing purpose
-		$variants = $request->getArray( 'cirrusCompletionSuggesterVariant' );
-		if ( empty( $variants ) ) {
-			global $wgContLang;
-			$variants = $wgContLang->autoConvertToAllVariants( $search );
-		} else if ( count( $variants ) > 3 ) {
-			// We should not allow too many variants
-			$variants = array_slice( $variants, 0, 3 );
-		}
+				$config, $this->namespaces, null, $this->indexBaseName );
 
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
@@ -425,59 +404,12 @@ class CirrusSearch extends SearchEngine {
 			$suggestions = SearchSuggestionSet::emptySuggestionSet();
 		}
 
-		// preload the titles with LinkBatch
-		$titles = $suggestions->map( function( SearchSuggestion $sugg ) { return $sugg->getSuggestedTitle(); } );
-		$lb = new LinkBatch( $titles );
-		$lb->setCaller( __METHOD__ );
-		$lb->execute();
-
-		$results = $suggestions->map( function( SearchSuggestion $sugg ) {
-			return $sugg->getSuggestedTitle()->getPrefixedText();
-		});
-
-		// now we can trim
-		$search = trim( $search );
-
-		// Rescore results with an exact title match
-		$rescorer = new SearchExactMatchRescorer();
-		$rescoredResults = $rescorer->rescore( $search, $this->namespaces, $results, $this->limit );
-
-		if( count( $rescoredResults ) > 0 ) {
-			$found = array_search( $rescoredResults[0], $results );
-			if ( $found === false ) {
-				// If the first result is not in the previous array it
-				// means that we found a new exact match
-				$exactMatch = SearchSuggestion::fromTitle( 0, Title::newFromText( $rescoredResults[0] ) );
-				$suggestions->prepend( $exactMatch );
-				$suggestions->shrink( $this->limit );
-			} else {
-				// if the first result is not the same we need to rescore
-				if( $found > 0 ) {
-					$suggestions->rescore( $found );
-				}
-			}
-		}
-
-		return $suggestions;
-	}
-
-	/**
-	 * PrefixSearch fallback method to searchSuggestion.
-	 * This is needed when:
-	 * - the completion suggester is not enabled
-	 * - the query is for a namespace not covered by the completion suggester
-	 * - the Special: namespace
-	 *
-	 * @param string $search the user query
-	 * @return SearchSuggestionSet the suggestions
-	 */
-	private function searchSuggestionsPrefixSearchFallback( $search ) {
-		$searcher = new TitlePrefixSearch;
-		$titles = $searcher->searchWithVariants( $search, $this->limit, $this->namespaces );
-		if ( !$titles ) {
+		if ( $response->isOK() ) {
+			// Errors will be logged, let's try the exact db match
+			return $response->getValue();
+		} else {
 			return SearchSuggestionSet::emptySuggestionSet();
 		}
-		return SearchSuggestionSet::fromTitles( $titles );
 	}
 
 	/**
@@ -563,5 +495,125 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function getLastSearchMetrics() {
 		return $this->lastSearchMetrics;
+	}
+
+	protected function completionSuggesterEnabled( SearchConfig $config ) {
+		if( !$config->getElement( 'CirrusSearchUseCompletionSuggester' ) ) {
+			return false;
+		}
+
+		// This way API can force-enable completion suggester
+		if ( $this->isFeatureEnabled( self::COMPLETION_SUGGESTER_FEATURE ) ) {
+			return true;
+		}
+
+		// Allow experimentation with query parameters
+		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
+			return true;
+		}
+
+		return class_exists( '\BetaFeatures' ) &&
+			\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' );
+	}
+
+	/**
+	 * Perform a completion search.
+	 * Does not resolve namespaces and does not check variants.
+	 * We use parent search for:
+	 * - Special: namespace
+	 * We use old prefix search for:
+	 * - Suggester not enabled
+	 * -
+	 * @param string $search
+	 * @return SearchSuggestionSet
+	 */
+	protected function completionSearchBackend( $search ) {
+
+		if ( in_array( NS_SPECIAL, $this->namespaces) ) {
+			// delegate special search to parent
+			return parent::completionSearchBackend( $search );
+		}
+
+		if ( !$this->completionSuggesterEnabled( $this->config ) ) {
+			// Completion suggester is not enabled, fallback to
+			// default implementation
+			return $this->prefixSearch( $search );
+		}
+
+		if ( count( $this->namespaces ) != 1 ||
+		     reset( $this->namespaces ) != NS_MAIN ) {
+			// for now, suggester only works for main namespace
+			return $this->prefixSearch( $search );
+		}
+
+		// Not really useful, mostly for testing purpose
+		$variants = $this->request->getArray( 'cirrusCompletionSuggesterVariant' );
+		if ( empty( $variants ) ) {
+			global $wgContLang;
+			$variants = $wgContLang->autoConvertToAllVariants( $search );
+		} else if ( count( $variants ) > 3 ) {
+			// We should not allow too many variants
+			$variants = array_slice( $variants, 0, 3 );
+		}
+
+		return $this->getSuggestions( $search, $variants, $this->config );
+	}
+
+	/**
+	 * Override variants function because we always do variants
+	 * in the backend.
+	 * @see SearchEngine::completionSearchWithVariants()
+	 */
+	public function completionSearchWithVariants( $search ) {
+		return $this->completionSearch( $search );
+	}
+
+	/**
+	 * Older prefix search.
+	 * @param string $search search text
+	 * @return SearchSuggestionSet
+	 */
+	protected function prefixSearch( $search ) {
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, null, $this->namespaces );
+
+		if ( $search ) {
+			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
+		} else {
+			// Empty searches always find the title.
+			$searcher->setResultsType( new TitleResultsType() );
+		}
+
+		try {
+			$status = $searcher->prefixSearch( $search );
+		} catch ( UsageException $e ) {
+			if ( defined( 'MW_API' ) ) {
+				throw $e;
+			}
+			return SearchSuggestionSet::emptySuggestionSet();
+		}
+
+		// There is no way to send errors or warnings back to the caller here so we have to make do with
+		// only sending results back if there are results and relying on the logging done at the status
+		// constrution site to log errors.
+		if ( $status->isOK() ) {
+			if ( !$search ) {
+				// No need to unpack the simple title matches from non-fancy TitleResultsType
+				return SearchSuggestionSet::fromTitles( $status->getValue() );
+			}
+			$results = array_filter( array_map( function( $match ) {
+				if ( isset( $match[ 'titleMatch' ] ) ) {
+					return $match[ 'titleMatch' ];
+				} else {
+					if ( isset( $match[ 'redirectMatches' ][ 0 ] ) ) {
+						// TODO maybe dig around in the redirect matches and find the best one?
+						return $match[ 'redirectMatches' ][0];
+					}
+				}
+				return false;
+			}, $status->getValue() ) );
+			return SearchSuggestionSet::fromTitles( $results );
+		}
+
+		return SearchSuggestionSet::emptySuggestionSet();
 	}
 }

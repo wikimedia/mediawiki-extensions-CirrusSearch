@@ -99,7 +99,7 @@ class Hooks {
 					$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
 				$wgCirrusSearchUseExperimentalHighlighter = true;
 			}
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWinwdow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWindow', 10000 );
 			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
 			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
 			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );

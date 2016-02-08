@@ -1207,8 +1207,10 @@ GROOVY;
 			) );
 		}
 
-		if ( $this->returnExplain && $this->returnResult ) {
+		if ( $this->returnExplain ) {
 			$query->setExplain( true );
+		}
+		if ( $this->returnResult || $this->returnExplain ) {
 			// don't cache debugging queries
 			$cacheTTL = 0;
 		}

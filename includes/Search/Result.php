@@ -39,6 +39,7 @@ class Result extends SearchResult {
 	private $byteSize;
 	private $timestamp;
 	private $docId;
+	private $explanation;
 
 	/**
 	 * Build the result.
@@ -92,6 +93,7 @@ class Result extends SearchResult {
 		if ( isset( $highlights[ 'category' ] ) ) {
 			$this->categorySnippet = $this->escapeHighlightedText( $highlights[ 'category' ][ 0 ] );
 		}
+		$this->explanation = $result->getExplanation();
 	}
 
 	/**
@@ -331,5 +333,12 @@ class Result extends SearchResult {
 	 */
 	public function getDocId() {
 		return $this->docId;
+	}
+
+	/**
+	 * @return array lucene score explanation
+	 */
+	public function getExplanation() {
+		return $this->explanation;
 	}
 }

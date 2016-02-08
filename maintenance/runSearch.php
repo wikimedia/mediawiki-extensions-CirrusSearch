@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\ResultSet;
+use RequestContext;
 use Status;
 
 /**
@@ -53,6 +54,7 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'fork', 'Fork multiple processes to run queries from.' .
 			'defaults to false.', false, true );
 		$this->addOption( 'decode', 'urldecode() queries before running them', false, false );
+		$this->addOption( 'explain', 'Include lucene explanation in the results', false, false );
 	}
 
 	public function execute() {
@@ -127,6 +129,7 @@ class RunSearch extends Maintenance {
 							'section' => $result->getSectionSnippet(),
 							'category' => $result->getCategorySnippet(),
 						),
+						'explanation' => $result->getExplanation(),
 					);
 					$result = $value->next();
 				}
@@ -156,6 +159,9 @@ class RunSearch extends Maintenance {
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );
+		if ( $this->getOption( 'explain' ) ) {
+			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );
+		}
 		switch ( $searchType ) {
 		case 'full_text':
 			// @todo pass through $this->getConnection() ?

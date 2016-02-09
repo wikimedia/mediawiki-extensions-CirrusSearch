@@ -275,7 +275,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function nearMatchTitleSearch( $search ) {
-		self::checkTitleSearchRequestLength( $search );
+		$this->checkTitleSearchRequestLength( $search );
 
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.
@@ -304,7 +304,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $search ) {
-		self::checkTitleSearchRequestLength( $search );
+		$this->checkTitleSearchRequestLength( $search );
 
 		if ( $search ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
@@ -351,7 +351,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function searchText( $term, $showSuggestion ) {
-		$checkLengthStatus = self::checkTextSearchRequestLength( $term );
+		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
 		if ( !$checkLengthStatus->isOk() ) {
 			return $checkLengthStatus;
 		}

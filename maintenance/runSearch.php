@@ -55,6 +55,7 @@ class RunSearch extends Maintenance {
 			'defaults to false.', false, true );
 		$this->addOption( 'decode', 'urldecode() queries before running them', false, false );
 		$this->addOption( 'explain', 'Include lucene explanation in the results', false, false );
+		$this->addOption( 'limit', 'Set the max number of results returned by query (defaults to 10)', false, true );
 	}
 
 	public function execute() {
@@ -159,6 +160,7 @@ class RunSearch extends Maintenance {
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );
+		$limit = $this->getOption( 'limit', 10 );
 		if ( $this->getOption( 'explain' ) ) {
 			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );
 		}
@@ -167,6 +169,7 @@ class RunSearch extends Maintenance {
 			// @todo pass through $this->getConnection() ?
 			$engine = new CirrusSearch( $this->indexBaseName );
 			$engine->setConnection( $this->getConnection() );
+			$engine->setLimitOffset( $limit );
 			$result = $engine->searchText( $query );
 			if ( $result instanceof Status ) {
 				return $result;
@@ -175,11 +178,11 @@ class RunSearch extends Maintenance {
 			}
 
 		case 'prefix':
-			$searcher = new Searcher( $this->getConnection(), 0, 10, null, null, null, $this->indexBaseName );
+			$searcher = new Searcher( $this->getConnection(), 0, $limit, null, null, null, $this->indexBaseName );
 			return $searcher->prefixSearch( $query );
 
 		case 'suggest':
-			$searcher = new Searcher( $this->getConnection(), 0, 10, null, null, null, $this->indexBaseName );
+			$searcher = new Searcher( $this->getConnection(), 0, $limit, null, null, null, $this->indexBaseName );
 			$result = $searcher->suggest( $query );
 			if ( $result instanceof Status ) {
 				return $result;

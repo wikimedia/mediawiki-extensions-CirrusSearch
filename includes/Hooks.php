@@ -79,6 +79,7 @@ class Hooks {
 			$wgCirrusSearchBoostLinks,
 			$wgCirrusSearchAllFields,
 			$wgCirrusSearchAllFieldsForRescore,
+			$wgCirrusSearchPhraseRescoreBoost,
 			$wgCirrusSearchPhraseSlop,
 			$wgCirrusSearchLogElasticRequests,
 			$wgCirrusSearchLogElasticRequestsSecret,
@@ -100,6 +101,7 @@ class Hooks {
 				$wgCirrusSearchUseExperimentalHighlighter = true;
 			}
 			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost, $request, 'cirrusPhraseBoost' );
 			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
 			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
 			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );

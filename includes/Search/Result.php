@@ -39,6 +39,7 @@ class Result extends SearchResult {
 	private $byteSize;
 	private $timestamp;
 	private $docId;
+	private $score;
 	private $explanation;
 
 	/**
@@ -93,6 +94,7 @@ class Result extends SearchResult {
 		if ( isset( $highlights[ 'category' ] ) ) {
 			$this->categorySnippet = $this->escapeHighlightedText( $highlights[ 'category' ][ 0 ] );
 		}
+		$this->score = $result-getScore();
 		$this->explanation = $result->getExplanation();
 	}
 
@@ -333,6 +335,13 @@ class Result extends SearchResult {
 	 */
 	public function getDocId() {
 		return $this->docId;
+	}
+
+	/**
+	 * @return float the score
+	 */
+	public function getScore() {
+		return $this->score;
 	}
 
 	/**

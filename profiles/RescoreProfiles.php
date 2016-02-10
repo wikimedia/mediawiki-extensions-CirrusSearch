@@ -87,6 +87,12 @@ $wgCirrusSearchRescoreProfiles = array(
 			),
 		)
 	),
+
+	// Useful to debug primary lucene score
+	'empty' => array(
+		'supported_namespaces' => 'all',
+		'rescore' => array(),
+	),
 );
 
 /**

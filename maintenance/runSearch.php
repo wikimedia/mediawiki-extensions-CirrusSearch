@@ -123,6 +123,7 @@ class RunSearch extends Maintenance {
 						// to work when a production index has been imported to a test es instance
 						'pageId' => $result->getDocId(),
 						'title' => $result->getTitle()->getPrefixedText(),
+						'score' => $result->getScore(),
 						'snippets' => array(
 							'text' => $result->getTextSnippet( $query ),
 							'title' => $result->getTitleSnippet(),

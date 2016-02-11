@@ -5,7 +5,7 @@ class SearchResultsPage
   page_url "/w/index.php?search=<%=params[:search]%><%if (params[:prefix]) %>&prefix=<%=params[:prefix]%><% end %>"
 
   text_field(:search, css: "#searchText")
-  h1(:title, id: "firstHeading")
+  h1(:title, class: "firstHeading")
   unordered_list(:search_results, class: "mw-search-results")
   li(:first_result_wrapper) { |page| page.search_results_element.list_item_element(index: 0) }
   link(:first_result) { |page| page.first_result_wrapper_element.div_element(class: "mw-search-result-heading").link_element }

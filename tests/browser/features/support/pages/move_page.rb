@@ -6,7 +6,7 @@ class MovePage
 
   page_url "Special:MovePage/<%=CGI.escape(params[:page_name].gsub(' ', '_'))%>"
 
-  h1(:first_heading, id: "firstHeading")
+  h1(:first_heading, class: "firstHeading")
   text_field(:new_title, id: "wpNewTitleMain")
   checkbox(:leave_redirect, id: "wpLeaveRedirect")
   button(:move, name: "wpMove")

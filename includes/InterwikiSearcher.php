@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 use CirrusSearch\Search\InterwikiResultsType;
+use ObjectCache;
 use User;
 
 /**
@@ -58,7 +59,6 @@ class InterwikiSearcher extends Searcher {
 	 * @return Result
 	 */
 	public function getInterwikiResults( $term ) {
-		global $wgMemc;
 
 		// Return early if we can
 		if ( !$term ) {
@@ -68,24 +68,25 @@ class InterwikiSearcher extends Searcher {
 		$namespaceKey = $this->getNamespaces() !== null ?
 			implode( ',', $this->getNamespaces() ) : '';
 
-		$key = wfMemcKey(
+		$cache = ObjectCache::getLocalClusterInstance();
+		$key = $cache->makeKey(
 			'cirrus',
 			'interwiki',
 			$this->interwiki,
 			$namespaceKey,
 			md5( $term )
 		);
+		$ttl = $this->config->get( 'CirrusSearchInterwikiCacheTime' );
 
-		$res = $wgMemc->get( $key );
-		if ( !$res ) {
+		return $cache->getWithSetCallback( $key, $ttl, function () {
 			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
 			$results = $this->searchText( $term, false );
 			if ( $results->isOk() ) {
-				$res = $results->getValue();
-				$wgMemc->set( $key, $res, $this->config->get( 'CirrusSearchInterwikiCacheTime' ) );
+				return $results->getValue();
+			} else {
+				return false;
 			}
-		}
-		return $res;
+		} );
 	}
 
 	/**

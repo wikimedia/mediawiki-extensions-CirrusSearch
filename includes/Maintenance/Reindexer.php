@@ -299,25 +299,24 @@ class Reindexer {
 			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
 			$operationStartTime = microtime( true );
 			$completed = 0;
-			$self = $this;
 			Util::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
-				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $self, $type,
+				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $type,
 						&$completed, $totalDocsToReindex, $operationStartTime ) {
 					$documents = array();
 					foreach( $results as $result ) {
-						$documents[] = $self->buildNewDocument( $result, $properties );
+						$documents[] = $this->buildNewDocument( $result, $properties );
 					}
-					$self->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
-						function() use ( $self, $type, $messagePrefix, $documents ) {
-							$self->sendDocuments( $type, $messagePrefix, $documents );
+					$this->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
+						function() use ( $type, $messagePrefix, $documents ) {
+							$this->sendDocuments( $type, $messagePrefix, $documents );
 						} );
 					$completed += sizeof( $results );
 					$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-					$self->outputIndented( $messagePrefix .
+					$this->outputIndented( $messagePrefix .
 						"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
 				}, 0, $retryAttempts,
-				function( $e, $errors ) use ( $self, $messagePrefix ) {
-					$self->sleepOnRetry( $e, $errors, $messagePrefix, 'fetching documents to reindex' );
+				function( $e, $errors ) use ( $messagePrefix ) {
+					$this->sleepOnRetry( $e, $errors, $messagePrefix, 'fetching documents to reindex' );
 				} );
 
 			$this->outputIndented( $messagePrefix . "All done\n" );
@@ -340,7 +339,7 @@ class Reindexer {
 	 * @param array() $properties mapping properties
 	 * @return Document
 	 */
-	public function buildNewDocument( $result, $properties ) {
+	private function buildNewDocument( $result, $properties ) {
 		// Build the new document to just contain keys which have a mapping in the new properties.  To clean
 		// out any old fields that we no longer use.
 		$data = Util::cleanUnusedFields( $result->getSource(), $properties );
@@ -389,11 +388,10 @@ class Reindexer {
 	 * @param callable $func
 	 * @return mixed
 	 */
-	public function withRetry( $attempts, $messagePrefix, $description, $func) {
-		$self = $this;
+	private function withRetry( $attempts, $messagePrefix, $description, $func) {
 		return Util::withRetry ( $attempts, $func,
-			function( $e, $errors ) use ( $self, $messagePrefix, $description ) {
-				$self->sleepOnRetry( $e, $errors, $messagePrefix, $description );
+			function( $e, $errors ) use ( $messagePrefix, $description ) {
+				$this->sleepOnRetry( $e, $errors, $messagePrefix, $description );
 			} );
 	}
 
@@ -403,7 +401,7 @@ class Reindexer {
 	 * @param string $messagePrefix
 	 * @param string $description
 	 */
-	public function sleepOnRetry(\Exception $e, $errors, $messagePrefix, $description ) {
+	private function sleepOnRetry(\Exception $e, $errors, $messagePrefix, $description ) {
 		$type = get_class( $e );
 		$seconds = Util::backoffDelay( $errors );
 		$message = ElasticsearchIntermediary::extractMessage( $e );
@@ -414,10 +412,8 @@ class Reindexer {
 
 	/**
 	 * Send documents to type with retry.
-	 * This is really private, marked as public for closure use.
-	 * @access private
 	 */
-	public function sendDocuments( Type $type, $messagePrefix, $documents ) {
+	private function sendDocuments( Type $type, $messagePrefix, $documents ) {
 		try {
 			$type->addDocuments( $documents );
 		} catch ( ExceptionInterface $e ) {
@@ -460,11 +456,9 @@ class Reindexer {
 	}
 
 	/**
-	 * Public for 5.3 compatibility with closures
-	 *
 	 * @param string $message
 	 */
-	public function outputIndented( $message ) {
+	private function outputIndented( $message ) {
 		if ( $this->out ) {
 			$this->out->outputIndented( $message );
 		}

@@ -157,18 +157,17 @@ class DumpIndex extends Maintenance {
 		$this->logToStderr = true;
 		$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
 
-		$self = $this;
 		Util::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( $self, &$docsDumped, $totalDocsToDump ) {
+			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				foreach ( $results as $result ) {
 					$document = array(
 						'_id' => $result->getId(),
 						'_type' => $result->getType(),
 						'_source' => $result->getSource()
 					);
-					$self->write( $document );
+					$this->write( $document );
 					$docsDumped++;
-					$self->outputProgress( $docsDumped, $totalDocsToDump );
+					$this->outputProgress( $docsDumped, $totalDocsToDump );
 				}
 			}, $limit, 5 );
 		$this->output( "Dump done.\n" );

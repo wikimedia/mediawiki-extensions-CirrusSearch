@@ -248,11 +248,10 @@ class UtilTest extends MediaWikiTestCase {
 				throw new InvalidException();
 			}
 		};
-		$self = $this;
 		$errorCallbackCalls = 0;
-		Util::withRetry( 5, $func, function ($e, $errCount) use ( $self, &$errorCallbackCalls ) {
+		Util::withRetry( 5, $func, function ($e, $errCount) use ( &$errorCallbackCalls ) {
 			$errorCallbackCalls++;
-			$self->assertEquals( "Elastica\Exception\InvalidException", get_class( $e ) );
+			$this->assertEquals( "Elastica\Exception\InvalidException", get_class( $e ) );
 		} );
 		$this->assertEquals( 6, $calls );
 		$this->assertEquals( 5, $errorCallbackCalls );

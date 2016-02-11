@@ -187,9 +187,8 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Search environment configuration
 	 * @var SearchConfig
-	 * Specified as public because of closures. When we move to non-anicent PHP version, can be made protected.
 	 */
-	public $config;
+	private $config;
 
 	/**
 	 * @var SearchContext
@@ -357,7 +356,6 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
-		$searcher = $this;
 		$originalTerm = $term;
 		$searchContainedSyntax = false;
 		$this->term = $term;
@@ -411,8 +409,8 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$this->extractSpecialSyntaxFromTerm(
 			'/^\s*local:/',
-			function ( $matches ) use ( $searcher ) {
-				$searcher->limitSearchToLocalWiki( true );
+			function ( $matches ) {
+				$this->limitSearchToLocalWiki( true );
 				return '';
 			}
 		);
@@ -423,9 +421,9 @@ class Searcher extends ElasticsearchIntermediary {
 		$highlightSource = array();
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
-			function ( $matches ) use ( $searcher, &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
+			function ( $matches ) use ( &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
 
-				if ( !$searcher->config->get( 'CirrusSearchEnableRegex' ) ) {
+				if ( !$this->config->get( 'CirrusSearchEnableRegex' ) ) {
 					return;
 				}
 
@@ -439,11 +437,11 @@ class Searcher extends ElasticsearchIntermediary {
 				} else {
 					$highlightSource[] = array(
 						'pattern' => $matches[ 'pattern' ],
-						'locale' => $searcher->config->get( 'LanguageCode' ),
+						'locale' => $this->config->get( 'LanguageCode' ),
 						'insensitive' => $insensitive,
 					);
 				}
-				$regex = $searcher->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
+				$regex = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 				if ( $regex && in_array( 'use', $regex ) ) {
 					$filter = new SourceRegex( $matches[ 'pattern' ], 'source_text', 'source_text.trigram' );
 					if ( isset( $regex[ 'max_inspect' ] ) ) {
@@ -451,7 +449,7 @@ class Searcher extends ElasticsearchIntermediary {
 					} else {
 						$filter->setMaxInspect( 10000 );
 					}
-					$filter->setMaxDeterminizedStates( $searcher->config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );
+					$filter->setMaxDeterminizedStates( $this->config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );
 					if ( isset( $regex[ 'max_ngrams_extracted' ] ) ) {
 						$filter->setMaxNgramExtracted( $regex[ 'max_ngrams_extracted' ] );
 					}
@@ -487,7 +485,7 @@ GROOVY;
 						array(
 							'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
 							'insensitive' => $insensitive,
-							'language' => $searcher->config->get( 'LanguageCode' ),
+							'language' => $this->config->get( 'LanguageCode' ),
 							// These null here creates a slot in which the script will shove
 							// an automaton while executing.
 							'automaton' => null,
@@ -500,12 +498,11 @@ GROOVY;
 		);
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,15} keeps this from having horrible performance on big strings
-		$escaper = $this->escaper;
 		$fuzzyQuery = $this->fuzzyQuery;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
 			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
-			function ( $matches ) use ( $searcher, $escaper, &$filters, &$notFilters,
+			function ( $matches ) use ( &$filters, &$notFilters,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				$key = $matches['key'];
 				$quotedValue = $matches['value'];
@@ -522,7 +519,7 @@ GROOVY;
 				switch ( $key ) {
 					case 'boost-templates':
 						$boostTemplates = Util::parseBoostTemplates( $value );
-						$searcher->getSearchContext()->setBoostTemplatesFromQuery( $boostTemplates );
+						$this->getSearchContext()->setBoostTemplatesFromQuery( $boostTemplates );
 						$searchContainedSyntax = true;
 						return '';
 					case 'hastemplate':
@@ -540,16 +537,16 @@ GROOVY;
 									$title->getDBkey() )->getPrefixedText();
 							}
 						}
-						$filterDestination[] = $searcher->matchPage( 'template', $value );
+						$filterDestination[] = $this->matchPage( 'template', $value );
 						$searchContainedSyntax = true;
 						return '';
 					case 'linksto':
-						$filterDestination[] = $searcher->matchPage( 'outgoing_link', $value, true );
+						$filterDestination[] = $this->matchPage( 'outgoing_link', $value, true );
 						$searchContainedSyntax = true;
 						return '';
 					case 'incategory':
-						$categories = array_slice( explode( '|', $value ), 0, $searcher->config->get( 'CirrusSearchMaxIncategoryOptions' ) );
-						$categoryFilters = $searcher->matchPageCategories( $categories );
+						$categories = array_slice( explode( '|', $value ), 0, $this->config->get( 'CirrusSearchMaxIncategoryOptions' ) );
+						$categoryFilters = $this->matchPageCategories( $categories );
 						if ( $categoryFilters === null ) {
 							$isEmptyQuery = true;
 						} else {
@@ -558,11 +555,11 @@ GROOVY;
 						$searchContainedSyntax = true;
 						return '';
 					case 'insource':
-						$updateReferences = Filters::insource( $escaper, $searcher->getSearchContext(), $quotedValue );
+						$updateReferences = Filters::insource( $this->escaper, $this->getSearchContext(), $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return '';
 					case 'intitle':
-						$updateReferences = Filters::intitle( $escaper, $searcher->getSearchContext(), $quotedValue );
+						$updateReferences = Filters::intitle( $this->escaper, $this->getSearchContext(), $quotedValue );
 						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
 						return $keepText ? "$quotedValue " : '';
 					default:
@@ -588,9 +585,9 @@ GROOVY;
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
 		$slop = $this->config->get('CirrusSearchPhraseSlop');
 		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
-			function ( $matches ) use ( $searcher, $escaper, $slop ) {
+			function ( $matches ) use ( $slop ) {
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
-				$main = $escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+				$main = $this->escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
@@ -615,8 +612,8 @@ GROOVY;
 					// The highlighter locks phrases to the fields that specify them.  It doesn't do
 					// that with terms.
 					return array(
-						'escaped' => $negate . $searcher->switchSearchToExact( $main, true ),
-						'nonAll' => $negate . $searcher->switchSearchToExact( $main, false ),
+						'escaped' => $negate . $this->switchSearchToExact( $main, true ),
+						'nonAll' => $negate . $this->switchSearchToExact( $main, false ),
 					);
 				}
 				return array( 'escaped' => $negate . $main );
@@ -625,11 +622,11 @@ GROOVY;
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
 		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
-			function ( $matches ) use ( $searcher, $escaper ) {
-				$term = $escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+			function ( $matches ) {
+				$term = $this->escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array(
-					'escaped' => $searcher->switchSearchToExactForWildcards( $term ),
-					'nonAll' => $searcher->switchSearchToExactForWildcards( $term )
+						'escaped' => $this->switchSearchToExactForWildcards( $term ),
+					'nonAll' => $this->switchSearchToExactForWildcards( $term )
 				);
 			} );
 
@@ -661,7 +658,7 @@ GROOVY;
 
 		// Actual text query
 		list( $queryStringQueryString, $this->fuzzyQuery ) =
-			$escaper->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+			$this->escaper->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 		// Note that no escaping is required for near_match's match query.
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
 		if ( $queryStringQueryString !== '' ) {
@@ -684,7 +681,7 @@ GROOVY;
 				$nonAllFields = array_merge(
 					$this->buildFullTextSearchFields( 1, '.plain', false ),
 					$this->buildFullTextSearchFields( $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-				list( $nonAllQueryString, /*_*/ ) = $escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+				list( $nonAllQueryString, /*_*/ ) = $this->escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false, true );
 			} else {
 				$nonAllFields = $fields;
@@ -893,33 +890,30 @@ GROOVY;
 	 */
 	public function get( array $pageIds, $sourceFiltering ) {
 		$indexType = $this->pickIndexTypeFromNamespaces();
-		$searcher = $this;
-		$indexBaseName = $this->indexBaseName;
-		$conn = $this->connection;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
-			function() use ( $searcher, $pageIds, $sourceFiltering, $indexType, $indexBaseName, $conn ) {
+			function() use ( $pageIds, $sourceFiltering, $indexType ) {
 				try {
-					$searcher->start( "get of {indexType}.{pageIds}", array(
+					$this->start( "get of {indexType}.{pageIds}", array(
 						'indexType' => $indexType,
 						'pageIds' => array_map( 'intval', $pageIds ),
 						'queryType' => 'get',
 					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$conn->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
-					$pageType = $conn->getPageType( $indexBaseName, $indexType );
+					$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
+					$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
 					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
-					return $searcher->success( $resultSet->getResults() );
+					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the caller to decide if that is an error.
-					return $searcher->success( array() );
+					return $this->success( array() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $searcher->failure( $e );
+					return $this->failure( $e );
 				}
 			});
 	}
@@ -929,29 +923,26 @@ GROOVY;
 	 * @return Status
 	 */
 	public function findNamespace( $name ) {
-		$searcher = $this;
-		$indexBaseName = $this->indexBaseName;
-		$conn = $this->connection;
 		return Util::doPoolCounterWork(
 			'CirrusSearch-NamespaceLookup',
 			$this->user,
-			function() use ( $searcher, $name, $indexBaseName, $conn ) {
+			function() use ( $name ) {
 				try {
-					$searcher->start( "lookup namespace for {namespaceName}", array(
+					$this->start( "lookup namespace for {namespaceName}", array(
 						'namespaceName' => $name,
 						'query' => $name,
 						'queryType' => 'namespace',
 					) );
-					$pageType = $conn->getNamespaceType( $indexBaseName );
+					$pageType = $this->connection->getNamespaceType( $this->indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
 					$query = new \Elastica\Query( $match );
 					$query->setParam( '_source', false );
 					$query->addParam( 'stats', 'namespace' );
 					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
-					return $searcher->success( $resultSet->getResults() );
+					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $searcher->failure( $e );
+					return $this->failure( $e );
 				}
 			});
 	}
@@ -961,18 +952,16 @@ GROOVY;
 	 * @param callable $callback
 	 */
 	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
-		$suggestPrefixes = $this->suggestPrefixes;
 		$this->term = preg_replace_callback( $regex,
-			function ( $matches ) use ( $callback, &$suggestPrefixes ) {
+			function ( $matches ) use ( $callback ) {
 				$result = $callback( $matches );
 				if ( $result === '' ) {
-					$suggestPrefixes[] = $matches[ 0 ];
+					$this->suggestPrefixes[] = $matches[ 0 ];
 				}
 				return $result;
 			},
 			$this->term
 		);
-		$this->suggestPrefixes = $suggestPrefixes;
 	}
 
 	/**
@@ -1235,20 +1224,18 @@ GROOVY;
 		}
 
 		// Perform the search
-		$searcher = $this;
-		$user = $this->user;
 		$result = Util::doPoolCounterWork(
 			$poolCounterType,
 			$this->user,
-			function() use ( $searcher, $search, $description, $logContext ) {
+			function() use ( $search, $description, $logContext ) {
 				try {
-					$searcher->start( $description, $logContext );
-					return $searcher->success( $search->search() );
+					$this->start( $description, $logContext );
+					return $this->success( $search->search() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $searcher->failure( $e );
+					return $this->failure( $e );
 				}
 			},
-			function( $error, $key, $userName ) use ( $type, $description, $user, $logContext ) {
+			function( $error, $key, $userName ) use ( $type, $description, $logContext ) {
 				$forUserName = $userName ? "for {userName} " : '';
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Pool error {$forUserName}on key {key} during $description:  {error}",
@@ -1261,7 +1248,7 @@ GROOVY;
 
 				if ( $error === 'pool-queuefull' ) {
 					if ( strpos( $key, 'nowait:CirrusSearch:_per_user' ) === 0 ) {
-						$loggedIn = $user->isLoggedIn() ? 'logged-in' : 'anonymous';
+						$loggedIn = $this->user->isLoggedIn() ? 'logged-in' : 'anonymous';
 						return Status::newFatal( "cirrussearch-too-busy-for-you-{$loggedIn}-error" );
 					}
 					if ( $type === 'regex' ) {

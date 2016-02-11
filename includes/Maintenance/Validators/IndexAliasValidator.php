@@ -100,9 +100,8 @@ abstract class IndexAliasValidator extends Validator {
 	 * @return Status
 	 */
 	protected function updateIndices( array $add, array $remove ) {
-		$client = $this->client;
-		$remove = array_filter( $remove, function ( $name ) use ( $client ) {
-			return $client->getIndex( $name )->exists();
+		$remove = array_filter( $remove, function ( $name ) {
+			return $this->client->getIndex( $name )->exists();
 		} );
 		if ( $remove ) {
 			$this->outputIndented( "\tRemoving old indices...\n" );

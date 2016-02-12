@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch;
-use \Status;
+use ObjectCache;
+use Status;
 
 /**
  * Fetch the Elasticsearch version
@@ -36,10 +37,11 @@ class Version extends ElasticsearchIntermediary {
 	 * @return Status<string> version number as a string
 	 */
 	public function get() {
-		global $wgMemc, $wgCirrusSearchClientSideSearchTimeout;
+		global $wgCirrusSearchClientSideSearchTimeout;
 
-		$mcKey = wfMemcKey( 'CirrusSearch', 'Elasticsearch', 'version' );
-		$result = $wgMemc->get( $mcKey );
+		$cache = ObjectCache::getLocalClusterInstance();
+		$mcKey = $cache->makeKey( 'CirrusSearch', 'Elasticsearch', 'version' );
+		$result = $cache->get( $mcKey );
 		if ( !$result ) {
 			try {
 				$this->start( 'fetching elasticsearch version',
@@ -54,7 +56,7 @@ class Version extends ElasticsearchIntermediary {
 			}
 			$result = $result->getData();
 			$result = $result[ 'version' ][ 'number' ];
-			$wgMemc->set( $mcKey, $result, 3600 * 12 );
+			$cache->set( $mcKey, $result, 3600 * 12 );
 		}
 
 		return Status::newGood( $result );

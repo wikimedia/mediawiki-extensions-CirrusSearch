@@ -3,7 +3,6 @@ namespace CirrusSearch\Api;
 
 use SearchSuggestion;
 use CirrusSearch;
-use RequestContext;
 
 /**
  * Use ElasticSearch suggestion API

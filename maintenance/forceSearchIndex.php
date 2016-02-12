@@ -235,8 +235,10 @@ class ForceSearchIndex extends Maintenance {
 				$updater = $this->createUpdater();
 				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
+
 			$completed += $size;
-			$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+			$rate = $this->calculateIndexingRate( $completed, $operationStartTime );
+
 			if ( is_null( $this->toDate ) ) {
 				$endingAt = $minId;
 			} else {
@@ -270,6 +272,22 @@ class ForceSearchIndex extends Maintenance {
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
 		}
+	}
+
+	/**
+	 * @param int $completed
+	 * @param double $operationStartTime
+	 *
+	 * @return double
+	 */
+	private function calculateIndexingRate( $completed, $operationStartTime ) {
+		$rate = $completed / ( microtime( true ) - $operationStartTime );
+
+		if ( $rate < 1 ) {
+			return round( $rate, 1 );
+		}
+
+		return round( $rate );
 	}
 
 	/**

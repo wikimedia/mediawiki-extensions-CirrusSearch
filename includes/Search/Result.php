@@ -94,7 +94,7 @@ class Result extends SearchResult {
 		if ( isset( $highlights[ 'category' ] ) ) {
 			$this->categorySnippet = $this->escapeHighlightedText( $highlights[ 'category' ][ 0 ] );
 		}
-		$this->score = $result-getScore();
+		$this->score = $result->getScore();
 		$this->explanation = $result->getExplanation();
 	}
 

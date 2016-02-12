@@ -204,18 +204,100 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 		}
 		return $queries;
 	}
+
+	/**
+	 * @dataProvider provideResponse
+	 */
+	public function testOffsets( \Elastica\Response $resp, $limit, $offset, $first, $last, $size, $hardLimit ) {
+		global $wgCirrusSearchCompletionProfiles;
+		$config = array(
+			'CirrusSearchCompletionSettings' => $wgCirrusSearchCompletionProfiles['default'],
+			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
+		);
+		// Test that we generate at most 4 profiles
+		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), $limit, $offset );
+
+		$suggestions = $completion->testPostProcess( 'Tit', $resp );
+		$this->assertEquals( $size, $suggestions->getSize() );
+		if ( $size > 0 ) {
+			$suggestions = $suggestions->getSuggestions();
+			$firstS = reset( $suggestions );
+			$lastS = end( $suggestions );
+			$this->assertEquals( $first, $firstS->getText() );
+			$this->assertEquals( $last, $lastS->getText() );
+		}
+	}
+
+	public function provideResponse() {
+		$suggestions = array();
+		$max = 200;
+		for( $i = 1; $i <= $max; $i++ ) {
+			$score = $max - $i;
+			$suggestions[] = array(
+				'text'=> "$i:t:Title$i",
+				'score' => $score,
+			);
+		}
+
+		$suggestData = array( array(
+					'text' => 'Tit',
+					'options' => $suggestions
+				) );
+
+		$data = array(
+			'_shards' => array(),
+			'plain' => $suggestData,
+			'plain_fuzzy_2' => $suggestData,
+			'plain_stop' => $suggestData,
+			'plain_stop_fuzzy_2' => $suggestData,
+		);
+		$resp = new \Elastica\Response( $data );
+		return array(
+			'Simple offset 0' => array(
+				$resp,
+				5, 0, 'Title1', 'Title5', 5, 50
+			 ),
+			'Simple offset 5' => array(
+				$resp,
+				5, 5, 'Title6', 'Title10', 5, 50
+			 ),
+			'Reach ES limit' => array(
+				$resp,
+				5, $max-3, 'Title198', 'Title200', 3, 300
+			 ),
+			'Reach Cirrus limit' => array(
+				$resp,
+				5, 47, 'Title48', 'Title50', 3, 50
+			 ),
+			'Out of Cirrus bounds' => array(
+				$resp,
+				5, 67, null, null, 0, 50
+			 ),
+			'Out of elastic results' => array(
+				$resp,
+				5, 200, null, null, 0, 300
+			 ),
+		);
+
+	}
 }
 
 /**
  * No package visibility in with PHP so we have to subclass...
  */
 class MyCompletionSuggester extends CompletionSuggester {
-	public function __construct( SearchConfig $config, $limit ) {
-		parent::__construct( new DummyConnection(), $limit, $config, array( NS_MAIN ), null, "dummy" );
+	public function __construct( SearchConfig $config, $limit, $offset=0 ) {
+		parent::__construct( new DummyConnection(), $limit, $offset, $config, array( NS_MAIN ), null, "dummy" );
 	}
 
 	public function testBuildQuery( $search, $variants ) {
 		$this->setTermAndVariants( $search, $variants );
 		return $this->buildQuery();
+	}
+
+	public function testPostProcess( $search, \Elastica\Response $resp ) {
+		$this->setTermAndVariants( $search );
+		list( $profiles, $suggest ) = $this->buildQuery();
+		return $this->postProcessSuggest( $resp, $profiles );
 	}
 }

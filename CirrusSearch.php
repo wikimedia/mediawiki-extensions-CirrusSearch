@@ -765,6 +765,13 @@ $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default']
 $wgCirrusSearchUseCompletionSuggester = false;
 
 /**
+ * Maximum number of results to ask from the elasticsearch completion
+ * api, note that this value will be multiplied by fetch_limit_factor
+ * set in Completion profiles (default to 2)
+ */
+$wgCirrusSearchCompletionSuggesterHardLimit = 50;
+
+/**
  * Try to recycle the completion suggester, if the wiki is small
  * it's certainly better to not re-create the index from scratch
  * since index creation is costly. Recycling the index will prevent

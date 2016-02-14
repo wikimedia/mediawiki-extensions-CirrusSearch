@@ -9,7 +9,6 @@ use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
 use ConfigFactory;
 use MediaWiki\Logger\LoggerFactory;
-use RequestContext;
 use SearchSuggestion;
 use SearchSuggestionSet;
 use Status;

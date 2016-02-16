@@ -1,16 +1,19 @@
 ( function ( $, mw ) {
 	$( function () {
 		// Override default opensearch
-		mw.searchSuggest.type = 'cirrus-suggest';
 		mw.searchSuggest.request = function ( api, query, response, maxRows ) {
 			return api.get( {
 				action: 'cirrus-suggest',
 				text: query,
 				limit: maxRows
 			} ).done( function ( data ) {
-				response( $.map( data.suggest, function ( suggestion ) {
+				var results = $.map( data.suggest, function ( suggestion ) {
 					return suggestion.text;
-				} ) );
+				} );
+				response( results, {
+					type: "comp_suggest",
+					query: query
+				} );
 			} );
 		};
 	} );

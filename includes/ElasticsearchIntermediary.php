@@ -293,6 +293,22 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Report the types of queries that were issued
+	 * within the current request.
+	 *
+	 * @return string[]
+	 */
+	public static function getQueryTypesUsed() {
+		$types = array();
+		foreach ( self::$logContexts as $context ) {
+			if ( isset( $context['queryType'] ) ) {
+				$types[] = $context['queryType'];
+			}
+		}
+		return array_unique( $types );
+	}
+
+	/**
 	 * Mark the start of a request to Elasticsearch.  Public so it can be called from pool counter methods.
 	 *
 	 * @param string $description name of the action being started

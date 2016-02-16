@@ -186,7 +186,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Search environment configuration
 	 * @var SearchConfig
 	 */
-	private $config;
+	protected $config;
 
 	/**
 	 * @var SearchContext

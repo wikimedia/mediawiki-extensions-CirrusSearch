@@ -161,7 +161,7 @@ class CirrusSearch extends SearchEngine {
 
 			}
 			$detector = new $klass();
-			if( !( $klass instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
+			if( !( $detector instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Bad detector class for {name}: {class}",
 					array(
@@ -171,7 +171,7 @@ class CirrusSearch extends SearchEngine {
 				);
 				continue;
 			}
-			$lang = $klass->detect( $this, $term );
+			$lang = $detector->detect( $this, $term );
 			$wiki = self::wikiForLanguage( $lang );
 			if ( $wiki !== null ) {
 				// it might be more accurate to attach these to the 'next'

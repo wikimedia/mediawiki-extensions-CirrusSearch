@@ -23,7 +23,7 @@ class TextCat implements Detector {
 			);
 		}
 		$textcat = new \TextCat( $wgCirrusSearchTextcatModel );
-		$languages = $textcat->classsify();
+		$languages = $textcat->classify();
 		if( !empty( $languages ) ) {
 			// For now, just return the best option
 			// TODO: thing what else we could do

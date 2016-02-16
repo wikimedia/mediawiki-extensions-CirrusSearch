@@ -856,7 +856,7 @@ $wgCirrusSearchInterwikiThreshold = 3;
  *
  * CirrusSearch\LanguageDetector\HttpAccept - uses the first language in the
  *  Accept-Language header that is not the current content language.
- * CirrusSearch\LanguageDetector\HttpAccept\ElasticSearch - uses the elasticsearch lang-detect plugin
+ * CirrusSearch\LanguageDetector\ElasticSearch - uses the elasticsearch lang-detect plugin
  * CirrusSearch\LanguageDetector\TextCat - uses TextCat library
  */
 $wgCirrusSearchLanguageDetectors = array();

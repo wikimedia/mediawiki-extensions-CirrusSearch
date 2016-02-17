@@ -8,15 +8,35 @@ use CirrusSearch;
  * first accept-language that is not the current content language.
 */
 class HttpAccept implements Detector {
+
+	/**
+	 * Current wiki language
+	 * @var string
+	 */
+	protected $wikiLang;
+
+	/**
+	 * Current HTTP languages
+	 * @var array
+	 */
+	protected $httpLang;
+
+	public function __construct()
+	{
+		$this->wikiLang = $GLOBALS['wgContLang']->getCode();
+		$this->httpLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
+	}
+
 	/* (non-PHPdoc)
 	 * @see \CirrusSearch\LanguageDetector\Detector::detect()
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
-		$acceptLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
-		$currentShortLang = $GLOBALS['wgContLang']->getCode();
-		foreach ( $acceptLang as $lang ) {
+		foreach ( $this->httpLang  as $lang ) {
+			if ( $lang == '*' ) {
+				continue;
+			}
 			list( $shortLang ) = explode( "-", $lang, 2 );
-			if ( $shortLang !== $currentShortLang ) {
+			if ( $shortLang !== $this->wikiLang ) {
 				// return only the primary-tag, stripping the subtag
 				// so the language to wiki map doesn't need all
 				// possible combinations (quite a few).

@@ -105,6 +105,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	private $limit;
 
 	/**
+	 * @var integer offset
+	 */
+	private $offset;
+
+	/**
 	 * @var string index base name to use
 	 */
 	private $indexBaseName;
@@ -129,13 +134,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * Constructor
 	 * @param Connection $conn
 	 * @param int $limit Limit the results to this many
+	 * @param int $offset the offset
 	 * @param SearchConfig $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
 	 * @throws \ConfigException
 	 */
-	public function __construct( Connection $conn, $limit, SearchConfig $config = null, array $namespaces = null,
+	public function __construct( Connection $conn, $limit, $offset = 0, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false ) {
 
 		if ( is_null( $config ) ) {
@@ -147,6 +153,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
 		$this->config = $config;
 		$this->limit = $limit;
+		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->getWikiId();
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
 	}
@@ -188,8 +195,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
-						$result = $searcher->postProcessSuggest( $result,
-							$profiles, $this->limit );
+						$result = $searcher->postProcessSuggest( $result, $profiles );
 						return $searcher->success( $result );
 					}
 					return $result;
@@ -292,7 +298,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			'text' => $query,
 			'completion' => array(
 				'field' => $field,
-				'size' => $this->limit * $config['fetch_limit_factor']
+				'size' => ($this->limit + $this->offset) * $config['fetch_limit_factor']
 			)
 		);
 		if ( isset( $config['fuzzy'] ) ) {
@@ -379,14 +385,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 *
 	 * @param \Elastica\Response $response Response from elasticsearch _suggest api
 	 * @param array $profiles the suggestion profiles
-	 * @param int $limit Maximum suggestions to return, -1 for unlimited
 	 * @return SearchSuggestionSet a set of Suggestions
 	 */
-	protected function postProcessSuggest( \Elastica\Response $response, $profiles, $limit = -1 ) {
+	protected function postProcessSuggest( \Elastica\Response $response, $profiles ) {
 		$this->logContext['elasticTookMs'] = intval( $response->getQueryTime() * 1000 );
 		$data = $response->getData();
 		unset( $data['_shards'] );
 
+		$limit = $this->getHardLimit();
 		$suggestions = array();
 		foreach ( $data as $name => $results  ) {
 			$discount = $profiles[$name]['discount'];
@@ -422,12 +428,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$this->logContext['hitsTotal'] = count( $suggestions );
 
-		if ( $limit > 0 ) {
-			$suggestions = array_slice( $suggestions, 0, $limit, true );
+		if ( $this->offset < $limit ) {
+			$suggestions = array_slice( $suggestions, $this->offset, $limit - $this->offset, true );
+		} else {
+			$suggestions = array();
 		}
 
 		$this->logContext['hitsReturned'] = count( $suggestions );
-		$this->logContext['hitsOffset'] = 0;
+		$this->logContext['hitsOffset'] = $this->offset;
 
 		// we must fetch redirect data for redirect suggestions
 		$missingText = array();
@@ -499,5 +507,34 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	public function setLimit( $limit ) {
 		$this->limit = $limit;
+	}
+
+	/**
+	 * Set the offset
+	 * @param int $offset
+	 */
+	public function setOffset( $offset ) {
+		$this->offset = $offset;
+	}
+
+	/**
+	 * Get the hard limit
+	 * The completion api does not supports offset we have to add a hack
+	 * here to work around this limitation.
+	 * To avoid ridiculously large queris we set also a hard limit.
+	 * Note that this limit will be changed by fetch_limit_factor set to 2 or 1.5
+	 * depending on the profile.
+	 * @return int the number of results to fetch from elastic
+	 */
+	private function getHardLimit() {
+		$limit = $this->limit + $this->offset;
+		$hardLimit = $this->config->get( 'CirrusSearchCompletionSuggesterHardLimit' );
+		if ( $hardLimit === NULL ) {
+			$hardLimit = 50;
+		}
+		if ( $limit > $hardLimit ) {
+			return $hardLimit;
+		}
+		return $limit;
 	}
 }

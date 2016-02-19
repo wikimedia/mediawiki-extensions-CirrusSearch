@@ -415,7 +415,8 @@ class CirrusSearch extends SearchEngine {
 		// offset is omitted, searchSuggestion does not support
 		// scrolling results
 		$suggester = new CompletionSuggester( $this->connection, $this->limit,
-				$config, $this->namespaces, null, $this->indexBaseName );
+				$this->offset, $config, $this->namespaces, null,
+				$this->indexBaseName );
 
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {

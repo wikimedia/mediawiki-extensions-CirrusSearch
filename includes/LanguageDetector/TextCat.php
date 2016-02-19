@@ -12,18 +12,24 @@ class TextCat implements Detector {
 	 * @see \CirrusSearch\LanguageDetector\Detector::detect()
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
-		global $wgCirrusSearchTextcatModel;
-		if( empty( $wgCirrusSearchTextcatModel ) ) {
+		$config = $cirrus->getConfig();
+		if( empty( $config ) ) {
+			// Should not happen
 			return null;
 		}
-		if( !is_dir( $wgCirrusSearchTextcatModel ) ) {
+		$dir = $config->getElement('CirrusSearchTextcatModel');
+		if( !$dir ) {
+			return null;
+		}
+		if( !is_dir( $dir ) ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Bad directory for TextCat model: {dir}",
-				array( "dir" => $wgCirrusSearchTextcatModel )
+				array( "dir" => $dir )
 			);
 		}
-		$textcat = new \TextCat( $wgCirrusSearchTextcatModel );
-		$languages = $textcat->classify( $text );
+
+		$textcat = new \TextCat( $dir );
+		$languages = $textcat->classify( $text, $config->getElement( 'CirrusSearchTextcatLanguages' ) );
 		if( !empty( $languages ) ) {
 			// For now, just return the best option
 			// TODO: thing what else we could do

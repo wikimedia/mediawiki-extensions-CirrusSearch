@@ -41,6 +41,11 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp() {
 		$this->cirrus = new \CirrusSearch();
+		global $wgCirrusSearchTextcatModel;
+		if (empty( $wgCirrusSearchTextcatModel ) ) {
+			$tc = new \ReflectionClass('TextCat');
+			$wgCirrusSearchTextcatModel = dirname($tc->getFileName())."/LM-query/";
+		}
 	}
 
 	/**
@@ -49,19 +54,21 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 	 * @param string $language
 	 */
 	public function testTextCatDetector($text, $language) {
-		global $wgCirrusSearchTextcatModel;
-		if (empty($wgCirrusSearchTextcatModel)) {
-			$tc = new \ReflectionClass( 'TextCat' );
-			$wgCirrusSearchTextcatModel = dirname( $tc->getFileName() )."/LM-query/";
-		}
 		// not really used for anything, but we need to pass it as a parameter
 		$detector = new TextCat();
 		$detect = $detector->detect($this->cirrus, $text);
 		$this->assertEquals($language, $detect);
 	}
 
-	public function getHttpLangs()
-	{
+	public function testTextCatDetectorLimited() {
+		global $wgCirrusSearchTextcatLanguages;
+		$wgCirrusSearchTextcatLanguages = array("en", "ru");
+		$detector = new TextCat();
+		$detect = $detector->detect($this->cirrus, "volviendose malo");
+		$this->assertEquals("en", $detect);
+	}
+
+	public function getHttpLangs() {
 		return array(
 			array("en", array("en"), null),
 			array("en", array("en-UK", "en-US"), null),
@@ -76,7 +83,7 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider getHttpLangs
 	 * @param string $content
-	 * @param array $http
+	 * @param array  $http
 	 * @param string $result
 	 */
 	public function testHttpAcceptDetector($content, $http, $result) {

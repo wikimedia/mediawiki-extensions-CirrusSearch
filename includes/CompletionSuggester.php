@@ -184,23 +184,22 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			'query' => $text,
 			'queryType' => $this->queryType,
 		);
-		$searcher = $this;
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
-			function() use( $searcher, $index, $suggest, $logContext, $queryOptions,
+			function() use( $index, $suggest, $logContext, $queryOptions,
 					$profiles, $text ) {
 				$description = "{queryType} search for '{query}'";
-				$searcher->start( $description, $logContext );
+				$this->start( $description, $logContext );
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
-						$result = $searcher->postProcessSuggest( $result, $profiles );
-						return $searcher->success( $result );
+						$result = $this->postProcessSuggest( $result, $profiles );
+						return $this->success( $result );
 					}
 					return $result;
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $searcher->failure( $e );
+					return $this->failure( $e );
 				}
 			}
 		);

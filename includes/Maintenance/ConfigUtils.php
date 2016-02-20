@@ -74,12 +74,7 @@ class ConfigUtils {
 		}
 		if ( $option === 'current' ) {
 			$this->outputIndented( 'Infering index identifier...' );
-			$found = array();
-			foreach ( $this->client->getStatus()->getIndexNames() as $name ) {
-				if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
-					$found[] = $name;
-				}
-			}
+			$found = $this->getAllIndicesByType( $typeName );
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
 				$this->error( "Looks like the index has more than one identifier. You should delete all\n" .
@@ -99,6 +94,22 @@ class ConfigUtils {
 			return $identifier;
 		}
 		return $option;
+	}
+
+	/**
+	 * Scan the indices and return the ones that match the
+	 * type $typeName
+	 * @param string $typeName the type to filter with
+	 * @return string[] the list of indices
+	 */
+	public function getAllIndicesByType( $typeName ) {
+		$found = array();
+		foreach ( $this->client->getStatus()->getIndexNames() as $name ) {
+			if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
+				$found[] = $name;
+			}
+		}
+		return $found;
 	}
 
 	/**

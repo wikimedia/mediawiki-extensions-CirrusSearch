@@ -201,6 +201,10 @@ class UpdateSuggesterIndex extends Maintenance {
 			if ( !$this->canWrite() ) {
 				$this->error( 'Index/Cluster is frozen. Giving up.', 1 );
 			}
+
+			# check for broken indices and delete them
+			$this->checkAndDeleteBrokenIndices();
+
 			if ( !$this->canRecycle() ) {
 				$this->rebuild();
 			} else {
@@ -230,6 +234,41 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Reuse DataSender even if we don't send anything with it.
 		$sender = new DataSender( $this->getConnection() );
 		return $sender->areIndexesAvailableForWrites( array( $this->getIndexTypeName() ) );
+	}
+
+	/**
+	 * Check for duplicate indices that may have been created
+	 * by a previous update that failed.
+	 */
+	private function checkAndDeleteBrokenIndices() {
+		$indices = $this->utils->getAllIndicesByType( $this->getIndexTypeName() );
+		if ( count( $indices ) < 2 ) {
+			return;
+		}
+		$indexByName = array();
+		foreach( $indices as $idx ) {
+			$indexByName[$idx] = $this->getConnection()->getIndex( $idx );
+		}
+
+		$status = new Status($this->getClient());
+		foreach ( $status->getIndicesWithAlias( $this->getIndexTypeName() ) as $aliased ) {
+			// do not try to delete indices that are used in aliases
+			unset( $indexByName[$aliased->getName()] );
+		}
+		foreach ( $indexByName as $name => $idx ) {
+			# double check with stats
+			$stats = $idx->getStats()->getData();
+			// Extra check: if stats report usages we should not try to fix things
+			// automatically.
+			if ( $stats['_all']['total']['suggest']['total'] == 0 ) {
+				$this->output( "Deleting broken index {$idx->getName()}\n" );
+				$this->deleteIndex( $idx );
+			} else {
+				$this->output( "Broken index {$idx->getName()} appears to be in use, please check and delete.\n" );
+			}
+
+		}
+		# If something went wrong the process will fail when calling pickIndexIdentifierFromOption
 	}
 
 	private function rebuild() {
@@ -400,6 +439,21 @@ class UpdateSuggesterIndex extends Maintenance {
 			);
 			$this->output("ok.\n");
 		}
+	}
+
+	/**
+	 * Delete an index
+	 * @param \Elastica\Index $index
+	 */
+	private function deleteIndex( \Elastica\Index $index ) {
+		// @todo Utilize $this->oldIndex->delete(...) once Elastica library is updated
+		// to allow passing the master_timeout
+		$index->request(
+			'',
+			Request::DELETE,
+			array(),
+			array( 'master_timeout' => $this->masterTimeout )
+		);
 	}
 
 	protected function setConnectionTimeout() {

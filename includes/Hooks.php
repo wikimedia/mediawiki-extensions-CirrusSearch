@@ -3,11 +3,13 @@
 namespace CirrusSearch;
 
 use ApiMain;
+use ApiOpenSearch;
 use CirrusSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
 use ConfigFactory;
 use DeferredUpdates;
 use JobQueueGroup;
+use IContextSource;
 use LinksUpdate;
 use OutputPage;
 use SpecialSearch;
@@ -666,6 +668,19 @@ class Hooks {
 				'rtl' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-rtl.svg",
 			)
 		);
+		return true;
+	}
+
+	public static function onAPIAfterExecute( $module ) {
+		if ( !( $module instanceof ApiOpenSearch ) ) {
+			return true;
+		}
+		$types = ElasticsearchIntermediary::getQueryTypesUsed();
+		if ( !$types ) {
+			return true;
+		}
+		$response = $module->getContext()->getRequest()->response();
+		$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
 		return true;
 	}
 }

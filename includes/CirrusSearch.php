@@ -297,7 +297,7 @@ class CirrusSearch extends SearchEngine {
 		// the preceding isn't appropriatly trimmed.
 		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
 		// No searching for nothing! That takes forever!
-		if ( !$term ) {
+		if ( $term === '' ) {
 			return null;
 		}
 

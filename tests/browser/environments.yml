@@ -16,6 +16,8 @@
 #
 mw-vagrant-host: &default
   browser: phantomjs
+  mediawiki_api_url: http://cirrustest.wiki.local.wmftest.net:8080/w/api.php
+  mediawiki_commons_api_url: http://commons.wiki.local.wmftest.net:8080/w/api.php
   mediawiki_url: http://cirrustest.wiki.local.wmftest.net:8080/wiki/
   mediawiki_url_commons: http://commons.wiki.local.wmftest.net:8080/wiki/
   mediawiki_user: admin
@@ -40,5 +42,17 @@ test2:
 integration:
   user_factory: true
   # mediawiki_url: THIS WILL BE SET BY JENKINS
+
+cindy:
+  browser: phantomjs
+  mediawiki_api_url: http://cirrustest.wiki.local.wmftest.net/w/api.php
+  mediawiki_commons_api_url: http://commons.wiki.local.wmftest.net/w/api.php
+  mediawiki_url: http://cirrustest.wiki.local.wmftest.net/wiki/
+  mediawiki_url_commons: http://commons.wiki.local.wmftest.net/wiki/
+  mediawiki_user: admin
+  mediawiki_password: vagrant
+  reuse_browser: true
+  screenshot_failures: true
+  headless: true
 
 default: *default

@@ -59,7 +59,7 @@ class DeleteBrowserTestPages extends Maintenance {
 
 		$dbw = wfGetDB( DB_MASTER );
 		$user = \User::newFromName( 'Admin' );
-		$it = new \EchoBatchRowIterator( $dbw, 'page', 'page_id', 500 );
+		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
 		$it->setFetchColumns( array( '*' ) );
 		$it = new \RecursiveIteratorIterator( $it );
 		foreach ( $it as $row ) {

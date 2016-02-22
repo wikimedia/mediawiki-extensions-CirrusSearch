@@ -48,4 +48,15 @@ class ConfigDump extends ApiBase {
 	public function getDescription() {
 		return 'Dump of CirrusSearch configuration.';
 	}
+
+	/**
+	 * @see ApiBase::getExamplesMessages
+	 */
+	protected function getExamplesMessages() {
+		return array(
+			'action=cirrus-config-dump' =>
+				'apihelp-cirrus-config-dump-example'
+		);
+	}
+
 }

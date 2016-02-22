@@ -97,6 +97,14 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
+	 * Get search config
+	 * @return SearchConfig
+	 */
+	public function getConfig() {
+		return $this->config;
+	}
+
+	/**
 	 * Override supports to shut off updates to Cirrus via the SearchEngine infrastructure.  Page
 	 * updates and additions are chained on the end of the links update job.  Deletes are noticed
 	 * via the ArticleDeleteComplete hook.

@@ -10,7 +10,6 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Api\\FreezeWritesToCluster' => __DIR__ . '/includes/Api/FreezeWritesToCluster.php',
 	'CirrusSearch\\Api\\MappingDump' => __DIR__ . '/includes/Api/MappingDump.php',
 	'CirrusSearch\\Api\\SettingsDump' => __DIR__ . '/includes/Api/SettingsDump.php',
-	'CirrusSearch\\Api\\Suggest' => __DIR__ . '/includes/Api/Suggest.php',
 	'CirrusSearch\\Api\\SuggestIndex' => __DIR__ . '/includes/Api/SuggestIndex.php',
 	'CirrusSearch\\BuildDocument\\Builder' => __DIR__ . '/includes/BuildDocument/Builder.php',
 	'CirrusSearch\\BuildDocument\\FileDataBuilder' => __DIR__ . '/includes/BuildDocument/FileDataBuilder.php',

@@ -874,6 +874,12 @@ $wgCirrusSearchLanguageDetectors = array();
 $wgCirrusSearchTextcatModel = false;
 
 /**
+ * Limit the set of languages detected by Textcat.
+ * Useful when some languages in the model have very bad precision, e.g.:
+ * $wgCirrusSearchTextcatLanguages = array( 'ar', 'it', 'de' );
+ */
+
+/**
  * Overrides the master timeout on cluster wide actions, such as mapping updates.
  * It may be necessary to increase this on clusters that support a large number
  * of wiki's.

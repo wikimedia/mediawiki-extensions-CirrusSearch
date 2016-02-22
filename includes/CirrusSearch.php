@@ -529,6 +529,11 @@ class CirrusSearch extends SearchEngine {
 			return true;
 		}
 
+		// Allow falling back to prefix search with query param
+		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'no' ) {
+			return false;
+		}
+
 		// Allow experimentation with query parameters
 		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
 			return true;

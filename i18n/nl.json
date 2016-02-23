@@ -27,7 +27,6 @@
 	"apihelp-cirrus-config-dump-description": "Dump van CirrusSearch-configuratie.",
 	"apihelp-cirrus-mapping-dump-description": "Dump van CirrusSearchmapping voor deze wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearchinstellingen voor deze wiki.",
-	"apihelp-cirrus-suggest-param-limit": "Hoeveel resultaten er moeten worden opgehaald.",
 	"cirrussearch-give-feedback": "Geef ons uw mening",
 	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten"
 }

@@ -2,7 +2,8 @@
 Feature: Prefix search via api
   Scenario: Suggestions don't appear when you search for a string that is too long
     When I get api suggestions for 贵州省瞬时速度团头鲂身体c实施ysstsstsg说tyttxy以推销员会同香港推广系统在同他讨厌她团体淘汰>赛系统大选于它拥有一天天用于与体育学院国ttxzyttxtxytdttyyyztdsytstsstxtttd天天体育系统的摄像头听到他他偷笑>偷笑太阳团体杏眼桃腮他要tttxx y贵州省瞬时速度团头鲂身体c实施ysstsstsg说tyttxy以推销员会同香港推广系统在同他讨厌她团体淘汰>赛系统大选于它拥有一天天用于与体育学院国ttxzyttxtxytdttyyyztdsytstsstxtttd天天体育系统的摄像头听到他他偷笑>偷笑太阳团体杏眼桃腮他要tttxx y
-    Then the api warns Prefix search request was longer than the maximum allowed length. (288 > 255)
+#    Then the api warns Prefix search request was longer than the maximum allowed length. (288 > 255)
+	Then the api returns error code 400
 
   @redirect
   Scenario: Prefix search lists page name if both redirect and page name match

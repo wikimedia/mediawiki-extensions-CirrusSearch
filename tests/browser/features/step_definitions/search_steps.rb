@@ -48,12 +48,16 @@ When(/^I api search( with rewrites enabled)?( with disabled incoming link weight
     )
   rescue MediawikiApi::ApiError => e
     @api_error = e
+  rescue MediawikiApi::HttpError => e
+    @api_error = e
   end
 end
 When(/^I get api suggestions for (.*)$/) do |search|
   begin
     @api_result = suggestions_for(search)
   rescue MediawikiApi::ApiError => e
+    @api_error = e
+  rescue MediawikiApi::HttpError => e
     @api_error = e
   end
 end
@@ -226,6 +230,10 @@ end
 Then(/^the api warns (.*)$/) do |warning|
   @api_error.should_not be nil
   @api_error.info.should == warning
+end
+Then(/^the api returns error code (.*)$/) do |code|
+  @api_error.should_not be nil
+  @api_error.status.should == code.to_i
 end
 Then(/^(.+) is the (.+) api suggestion$/) do |title, position|
   pos = %w(first second third fourth fifth sixth seventh eighth ninth tenth).index position

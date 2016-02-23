@@ -954,30 +954,11 @@ $wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
 $wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\Api\ConfigDump';
 $wgAPIModules['cirrus-mapping-dump'] = 'CirrusSearch\Api\MappingDump';
 $wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
-$wgAPIModules['cirrus-suggest'] = 'CirrusSearch\Api\Suggest';
 
 /**
  * Configs
  */
 $wgConfigRegistry['CirrusSearch'] = 'CirrusSearch\SearchConfig::newFromGlobals';
-
-/**
- * Completion Suggester Beta Feature
- */
-$wgResourceModules += array(
-	"ext.cirrus" => array(
-		'scripts' => array(
-			'resources/ext.cirrus.suggest.js'
-		),
-		'dependencies' => array(
-			'mediawiki.searchSuggest'
-		),
-		'styles' => array(),
-		'messages' => array(),
-		'remoteExtPath' => 'CirrusSearch',
-		'localBasePath' => __DIR__,
-	)
-);
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

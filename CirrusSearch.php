@@ -755,6 +755,13 @@ $wgCirrusSearchUserTesting = array();
 $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default'];
 
 /**
+ * Set the default scoring function to be used by maintenance/updateSuggesterIndex.php
+ * @see includes/BuildDocument/SuggestScoring.php for more details about scoring functions
+ * NOTE: if you change the scoring method you'll have to rebuild the suggester index.
+ */
+$wgCirrusSearchCompletionDefaultScore = 'quality';
+
+/**
  * Use the completion suggester as the default implemention for searchSuggestions.
  * You have to build the completion suggester index with the maintenance script
  * updateSuggesterIndex.php. The suggester only supports queries to the main

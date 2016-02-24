@@ -139,7 +139,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
 		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
-			'Detauls to quality.', false, true );
+			'Detauls to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
 		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
 			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
 		$this->addOption( 'replicationTimeout', 'The amount of time (seconds) to wait for the replica shards to initialize. ' .
@@ -474,7 +474,8 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function indexData() {
-		$scoreMethodName = $this->getOption( 'scoringMethod', 'quality' );
+		global $wgCirrusSearchCompletionDefaultScore;
+		$scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
 		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 
@@ -510,7 +511,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 
 		$docsDumped = 0;
-		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()}\n" );
+		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
 
 		$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 

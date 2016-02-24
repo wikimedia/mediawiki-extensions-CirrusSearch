@@ -50,12 +50,15 @@ class RescoreBuilder {
 	private $context;
 
 	/**
-	 * @var array a rescore profile
+	 * @var array|string a rescore profile
 	 */
 	private $profile;
 
 	public function __construct( SearchContext $context, $profile ) {
 		$this->context = $context;
+		if ( is_string( $profile ) ) {
+			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profile );
+		}
 		$this->profile = $this->getSupportedProfile( $profile );
 	}
 

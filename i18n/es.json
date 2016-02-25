@@ -8,7 +8,8 @@
 			"Luis Felipe Schenone",
 			"Jonathan rrr",
 			"Ryo567",
-			"Macofe"
+			"Macofe",
+			"Mgpena"
 		]
 	},
 	"cirrussearch-desc": "Búsqueda con Elasticsearch para MediaWiki",
@@ -27,11 +28,8 @@
 	"cirrussearch-pref-desc": "Prueba nuestra nueva búsqueda que admite un mayor número de idiomas, ofrece resultados más actualizados hasta puede encontrar texto dentro de las plantillas.",
 	"apihelp-cirrus-config-dump-description": "Volcado de configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Volcado de asignaciones de CirrusSearch para este wiki.",
+	"apihelp-cirrus-mapping-dump-example": "Obtener la copia de archivo de la asociacion CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki.",
-	"apihelp-cirrus-suggest-description": "Sugerir terminaciones para el término de búsqueda.",
-	"apihelp-cirrus-suggest-param-text": "Término de búsqueda para el que proporcionar terminaciones.",
-	"apihelp-cirrus-suggest-param-limit": "Cuántos resultados se devolverán.",
-	"apihelp-cirrus-suggest-param-context": "Contexto al que limitar la búsqueda. Por ejemplo, <kbd>geo</kbd> o <kbd>category</kbd>.",
 	"cirrussearch-give-feedback": "Danos tu opinión",
 	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)"
 }

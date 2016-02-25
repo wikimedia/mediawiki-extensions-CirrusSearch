@@ -78,7 +78,7 @@ class InterwikiSearcher extends Searcher {
 		);
 		$ttl = $this->config->get( 'CirrusSearchInterwikiCacheTime' );
 
-		return $cache->getWithSetCallback( $key, $ttl, function () {
+		return $cache->getWithSetCallback( $key, $ttl, function () use ( $term ) {
 			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
 			$results = $this->searchText( $term, false );
 			if ( $results->isOk() ) {

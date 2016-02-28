@@ -16,6 +16,7 @@ use Title;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
+use SearchResultSet;
 use UsageException;
 use User;
 use WebRequest;
@@ -682,5 +683,20 @@ class Hooks {
 		$response = $module->getContext()->getRequest()->response();
 		$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
 		return true;
+	}
+
+	public static function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
+		global $wgOut;
+
+		$wgOut->addModules( 'ext.cirrus.serp' );
+		$wgOut->addJsConfigVars( array(
+			'wgCirrusSearchRequestSetToken' => ElasticsearchIntermediary::getRequestSetToken(),
+		) );
+
+		// This ignores interwiki results for now...not sure what do do with those
+		ElasticsearchIntermediary::setResultPages( array(
+			$titleMatches,
+			$textMatches
+		) );
 	}
 }

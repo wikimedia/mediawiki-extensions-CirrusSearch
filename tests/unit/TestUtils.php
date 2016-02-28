@@ -9,5 +9,10 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 
 class DummyConnection extends \CirrusSearch\Connection {
 	public function __construct() {
+		$this->config = \ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+	}
+	
+	public function getServerList() {
+		return array( 'localhost' );
 	}
 }

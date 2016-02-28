@@ -951,6 +951,7 @@ $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
 $wgHooks[ 'ShowSearchHitTitle' ][] = 'CirrusSearch\Hooks::onShowSearchHitTitle';
 $wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::getBetaFeaturePreferences';
 $wgHooks[ 'APIAfterExecute' ][] = 'CirrusSearch\Hooks::onAPIAfterExecute';
+$wgHooks[ 'SpecialSearchResults' ][] = 'CirrusSearch\Hooks::onSpecialSearchResults';
 
 /**
  * i18n
@@ -984,6 +985,24 @@ $wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
  * Configs
  */
 $wgConfigRegistry['CirrusSearch'] = 'CirrusSearch\SearchConfig::newFromGlobals';
+
+/**
+ * JavaScript served to all SERP's
+ */
+$wgResourceModules += array(
+	"ext.cirrus.serp" => array(
+		'scripts' => array(
+			'resources/ext.cirrus.serp.js',
+		),
+		'dependencies' => array(
+			'mediawiki.Uri'
+		),
+		'styles' => array(),
+		'messages' => array(),
+		'remoteExtPath' => 'CirrusSearch',
+		'localBasePath' => __DIR__,
+	),
+);
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

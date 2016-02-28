@@ -218,6 +218,10 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
+	public function rewind() {
+		$this->result->rewind();
+	}
+
 	/**
 	 * @param Result $res
 	 * @param string $type

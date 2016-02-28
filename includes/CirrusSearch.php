@@ -1,6 +1,7 @@
 <?php
 
 use CirrusSearch\Connection;
+use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
@@ -145,6 +146,8 @@ class CirrusSearch extends SearchEngine {
 			// note these are 0 indexed, so swap second and third
 			$matches->swapResults( 1, 2 );
 		}
+
+		ElasticsearchIntermediary::setResultPages( array( $matches ) );
 
 		return $matches;
 	}

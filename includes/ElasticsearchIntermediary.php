@@ -9,8 +9,11 @@ use Elastica\Exception\ResponseException;
 use FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use RequestContext;
+use SearchResultSet;
 use Status;
+use Title;
 use User;
+use UIDGenerator;
 
 /**
  * Base class with useful functions for communicating with Elasticsearch.
@@ -77,6 +80,11 @@ class ElasticsearchIntermediary {
 	 * @var array[] Result of self::getLogContext for each request in this process
 	 */
 	static private $logContexts = array();
+
+	/**
+	 * @var array[string] Result page ids that were returned to user
+	 */
+	static private $resultTitleStrings = array();
 
 	/**
 	 * Constructor.
@@ -154,6 +162,7 @@ class ElasticsearchIntermediary {
 		// the correct format.
 		$requests = array();
 		$allCached = true;
+		$allHits = array();
 		foreach ( self::$logContexts as $context ) {
 			$request = array(
 				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
@@ -170,9 +179,13 @@ class ElasticsearchIntermediary {
 				'namespaces' => array(),
 				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
 				'suggestionRequested' => isset( $context['suggestion'] ),
+				'maxScore' => isset( $context['maxScore'] ) ? $context['maxScore'] : -1,
 				'payload' => array(),
+				'hits' => isset( $context['hits'] ) ? $context['hits'] : array(),
 			);
-
+			if ( isset( $context['hits'] ) ) {
+				$allHits = array_merge( $allHits, $context['hits'] );
+			}
 			if ( isset( $context['index'] ) ) {
 				$request['indices'][] = $context['index'];
 			}
@@ -210,7 +223,28 @@ class ElasticsearchIntermediary {
 			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME'];
 		}
 
+		// Reindex allHits by page title's. It's maybe not perfect, but it's
+		// hopefully a "close enough" representation of where our final result
+		// set came from. maybe :(
+		$allHitsByTitle = array();
+		foreach ( $allHits as $hit ) {
+			$allHitsByTitle[$hit['title']] = $hit;
+		}
+		$resultHits = array();
+		foreach ( self::$resultTitleStrings as $titleString ) {
+			$resultHits[] = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array(
+				// where did this come from? Who knows ... give it some defaults so avro doesn't bail
+				// This *must* match the names and types of the CirrusSearchHit record in the CirrusSearchRequestSet
+				// logging channel avro schema.
+				'title' => $titleString,
+				'index' => "",
+				'pageId' => -1,
+				'score' => -1,
+			);
+		}
+
 		$requestSet = array(
+			'id' => self::getRequestSetToken(),
 			'ts' => time(),
 			'wikiId' => wfWikiId(),
 			'source' => self::getExecutionContext(),
@@ -218,9 +252,9 @@ class ElasticsearchIntermediary {
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
+			'tookMs' => 1000 * $tookS,
+			'hits' => $resultHits,
 			'payload' => array(
-				// may want to promote this to a top level var at some point
-				'tookMs' => (string) intval( 1000 * $tookS ),
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 			),
@@ -231,6 +265,62 @@ class ElasticsearchIntermediary {
 			$requestSet['payload']['cached'] = 'true';
 		}
 		LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug( '', $requestSet );
+	}
+
+	/**
+	 * This is set externally because we don't have complete control, from the
+	 * SearchEngine interface, of what is actually sent to the user. Instead hooks
+	 * receive the final results that will be sent to the user and set them here.
+	 *
+	 * Accepts two result sets because some places (Special:Search) perform multiple
+	 * searches. This can be called multiple times, but only that last call wins. For
+	 * API's that is correct, for Special:Search a hook catches the final results and
+	 * sets them here.
+	 *
+	 * @param array[Search\ResultSet|null] $matches
+	 */
+	public static function setResultPages( array $matches ) {
+		$titleStrings = array();
+		foreach ( $matches as $resultSet ) {
+			if ( $resultSet !== null ) {
+				$titleStrings = array_merge( $titleStrings, self::extractTitleStrings( $resultSet ) );
+			}
+		}
+		self::$resultTitleStrings = $titleStrings;
+	}
+
+	private static function extractTitleStrings( SearchResultSet $matches ) {
+		$strings = array();
+		$result = $matches->next();
+		while ( $result ) {
+			$strings[] = (string) $result->getTitle();
+			$result = $matches->next();
+		}
+		$matches->rewind();
+		return $strings;
+	}
+
+	/**
+	 * Get a token that (hopefully) uniquely identifies this search. It will be
+	 * added to the search result page js config vars, and put into the url with
+	 * history.replaceState(). This means click through's from supported browsers
+	 * will record this token as part of the referer.
+	 *
+	 * @return string
+	 */
+	public static function getRequestSetToken() {
+		static $token;
+		if ( $token === null ) {
+			// random UID, 70B tokens have a collision probability of 4*10^-16
+			// so should work for marking unique queries.
+			$uuid = UIDGenerator::newUUIDv4();
+			// make it a little shorter by using straight base36
+			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
+				   substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4) .
+				   substr( $uuid, 24 );
+			$token = wfBaseConvert( $hex, 16, 36 );
+		}
+		return $token;
 	}
 
 	private static function buildUserTestingLog() {
@@ -532,6 +622,13 @@ class ElasticsearchIntermediary {
 	 * These values end up serialized into Avro which has strict typing
 	 * requirements. float !== int !== string.
 	 *
+	 * Note that this really only handles the "standard" search response
+	 * format from elasticsearch. The completion suggester is a bit of a
+	 * special snowflake in that it has a completely different response
+	 * format than other searches. The CirrusSearch\CompletionSuggester
+	 * class is responsible for providing any usefull logging data by adding
+	 * directly to $this->logContext.
+	 *
 	 * @param float $took Number of milliseconds the request took
 	 * @return array
 	 */
@@ -569,11 +666,32 @@ class ElasticsearchIntermediary {
 			if ( isset( $resultData['hits']['total'] ) ) {
 				$params['hitsTotal'] = intval( $resultData['hits']['total'] );
 			}
+			if ( isset( $resultData['hits']['max_score'] ) ) {
+				$params['maxScore'] = $resultData['hits']['max_score'];
+			}
 			if ( isset( $resultData['hits']['hits'] ) ) {
 				$num = count( $resultData['hits']['hits'] );
 				$offset = isset( $queryData['from'] ) ? $queryData['from'] : 0;
 				$params['hitsReturned'] = $num;
 				$params['hitsOffset'] = intval( $offset );
+				$params['hits'] = array();
+				foreach ( $resultData['hits']['hits'] as $hit ) {
+					// duplication of work ... this happens in the transformation
+					// stage but we can't see that here...Perhaps we instead attach
+					// this data at a later stage like CompletionSuggester?
+					$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
+					$params['hits'][] = array(
+						// This *must* match the names and types of the CirrusSearchHit
+						// record in the CirrusSearchRequestSet logging channel avro schema.
+						'title' => (string) $title,
+						'index' => isset( $hit['_index'] ) ? $hit['_index'] : "",
+						'pageId' => isset( $hit['_id'] ) ? (int) $hit['_id'] : -1,
+						'score' => isset( $hit['_score'] ) ? (float) $hit['_score'] : -1,
+						// only comp_suggest has profileName, and that is handled
+						// elsewhere
+						'profileName' => "",
+					);
+				}
 			}
 			if ( $this->_isset( $queryData, array( 'query', 'filtered', 'filter', 'terms', 'namespace' ) ) ) {
 				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];

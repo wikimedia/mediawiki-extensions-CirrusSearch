@@ -258,7 +258,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$context = new SearchContext( $config, $namespaces );
 		$context->setBoostLinks( true );
 		$context->setBoostTemplatesFromQuery( array( 'Good' => 1.3 ) );
-		$builder = new RescoreBuilder( $context, $config->getElement( 'CirrusSearchRescoreProfiles', 'full' ) );
+		$builder = new RescoreBuilder( $context, $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
 		$array = $array->toArray();
@@ -278,9 +278,21 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 			)
 		);
 		$profile = array(
+			'ContentNamespaces' => array( 1, 2 ),
 			'CirrusSearchRescoreProfiles' => array(
 				'full' => array(
 					'supported_namespaces' => array( 0, 1 ),
+					'fallback_profile' => 'default',
+					'rescore' => array(
+						array(
+							'window' => 123,
+							'type' => 'function_score',
+							'function_chain' => 'full',
+						)
+					)
+				),
+				'content' => array(
+					'supported_namespaces' => 'content',
 					'fallback_profile' => 'default',
 					'rescore' => array(
 						array(
@@ -308,22 +320,32 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		);
 		return array(
 			'No fallback' => array(
-				$profile,
+				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
 				array( 0 ),
 				2
 			),
 			'No fallback multi namespace' => array(
-				$profile,
+				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
 				array( 0, 1 ),
 				2
 			),
+			'No fallback content ns' => array(
+				$profile + array( 'CirrusSearchRescoreProfile' => 'content' ),
+				array( 1, 2 ),
+				2
+			),
+			'Fallback content ns' => array(
+				$profile + array( 'CirrusSearchRescoreProfile' => 'content' ),
+				array( 0, 2 ),
+				1
+			),
 			'Fallback with multiple namespace' => array(
-				$profile,
+				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
 				array( 0, 2 ),
 				1
 			),
 			'Fallback null ns' => array(
-				$profile,
+				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
 				null,
 				1
 			),

@@ -28,6 +28,7 @@ namespace CirrusSearch;
  * runtime.
  *
  */
+
 $wgCirrusSearchRescoreProfiles = array(
 	// Default profile which uses an all in one function score chain
 	'default' => array(
@@ -176,7 +177,11 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 //
 //					// Optional factor to multiply the field value
 //					// with, defaults to 1.
-//					'factor' => 1,
+//					'factor' => array(
+//						'value' => 1,
+//						'config_override' => 'CirrusSearchBoostLinksFactor',
+//						'uri_param_override' => 'cirrusBoostLinksFactor',
+//					),
 //
 //					// Modifier to apply to the field value, can be
 //					// one of: none, log, log1p, log2p, ln, ln1p,
@@ -191,6 +196,33 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 //					'missing' => 0,
 //				),
 //			),
+//			array(
+//				// Log scale boost,
+//				// Generates a boost factor (min: 1, max: impact)
+//				'type' => 'logscale_boost',
+//				'params' => array(
+//					'field' => 'popularity_score',
+//					// Scale, usually set to the max value
+//					'scale' => array(
+//						'value' => 0.0004,
+//						'uri_param_override' => 'cirrusBoostLinksScale',
+//						'config_override' => 'CirrusSearchBoostLinksScale',
+//					),
+//					// Set the midpoint point where this function generates
+//					// so that a field value of 'midpoint' is at the center
+//					// of the scale
+//					'midpoint' => array(
+//						'value' => 0.0000005,
+//						'uri_param_override' => 'cirrusBoostLinksCenter',
+//						'config_override' => 'CirrusSearchBoostLinksCenter',
+//					),
+//					// Set the impact, a value of one can double the score
+//					'impact' => array(
+//						'value' => 1,
+//						'uri_param_override' => 'cirrusBoostLinksImpact',
+//						'config_override' => 'CirrusSearchBoostLinksImpact',
+//					),
+//				)
 //		),
 //	),
 //	// Example chain (do not use) with incoming_links to illustrate

@@ -3,7 +3,7 @@
 // @codingStandardsIgnoreFile
 global $wgAutoloadClasses;
 
-$wgAutoloadClasses += array(
+$wgAutoloadClasses += [
 	'CirrusSearch' => __DIR__ . '/includes/CirrusSearch.php',
 	'CirrusSearch\\Api\\ApiBase' => __DIR__ . '/includes/Api/ApiBase.php',
 	'CirrusSearch\\Api\\ConfigDump' => __DIR__ . '/includes/Api/ConfigDump.php',
@@ -53,6 +53,7 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Maintenance\\CopySearchIndex' => __DIR__ . '/maintenance/copySearchIndex.php',
 	'CirrusSearch\\Maintenance\\DumpIndex' => __DIR__ . '/maintenance/dumpIndex.php',
 	'CirrusSearch\\Maintenance\\FreezeWritesToCluster' => __DIR__ . '/maintenance/freezeWritesToCluster.php',
+	'CirrusSearch\\Maintenance\\IndexCreator' => __DIR__ . '/includes/Maintenance/IndexCreator.php',
 	'CirrusSearch\\Maintenance\\IndexDumperException' => __DIR__ . '/maintenance/dumpIndex.php',
 	'CirrusSearch\\Maintenance\\IndexNamespaces' => __DIR__ . '/maintenance/indexNamespaces.php',
 	'CirrusSearch\\Maintenance\\Maintenance' => __DIR__ . '/includes/Maintenance/Maintenance.php',
@@ -70,7 +71,6 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\Maintenance\\Validators\\CacheWarmersValidator' => __DIR__ . '/includes/Maintenance/Validators/CacheWarmersValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\IndexAliasValidator' => __DIR__ . '/includes/Maintenance/Validators/IndexAliasValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\IndexAllAliasValidator' => __DIR__ . '/includes/Maintenance/Validators/IndexAllAliasValidator.php',
-	'CirrusSearch\\Maintenance\\Validators\\IndexValidator' => __DIR__ . '/includes/Maintenance/Validators/IndexValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\MappingValidator' => __DIR__ . '/includes/Maintenance/Validators/MappingValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\MaxShardsPerNodeValidator' => __DIR__ . '/includes/Maintenance/Validators/MaxShardsPerNodeValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\NumberOfShardsValidator' => __DIR__ . '/includes/Maintenance/Validators/NumberOfShardsValidator.php',
@@ -122,4 +122,4 @@ $wgAutoloadClasses += array(
 	'CirrusSearch\\UserTesting' => __DIR__ . '/includes/UserTesting.php',
 	'CirrusSearch\\Util' => __DIR__ . '/includes/Util.php',
 	'CirrusSearch\\Version' => __DIR__ . '/includes/Version.php',
-);
+];

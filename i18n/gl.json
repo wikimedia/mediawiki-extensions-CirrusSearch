@@ -22,6 +22,7 @@
 	"cirrussearch-pref-label": "Nova pescuda",
 	"cirrussearch-pref-desc": "Probe o noso novo buscador, que soporta un maior número de linguas, proporciona resultados máis actulizados e mesmo pode atopar texto dentro dos modelos.",
 	"apihelp-cirrus-config-dump-description": "Volcado da configuración CirrusSearch",
+	"apihelp-cirrus-config-dump-example": "Obter un volcado da configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Descarga do mapeamento de CirrusSearch para este wiki.",
 	"apihelp-cirrus-mapping-dump-example": "Obtener un volcado da asociación CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-description": "Descarga dos parámetros de CirrusSearch para este wiki.",

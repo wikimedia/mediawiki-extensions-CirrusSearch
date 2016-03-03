@@ -299,30 +299,48 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateIndex() {
-		global $wgCirrusSearchAllFields;
-
 		// $this->startOver || !$this->getIndex()->exists() are the conditions
 		// under which a new index will be created
 		$this->tooFewReplicas = ( $this->startOver || !$this->getIndex()->exists() ) && $this->reindexAndRemoveOk;
 
-		$validator = new \CirrusSearch\Maintenance\Validators\IndexValidator(
+		if ( $this->startOver ) {
+			$this->createIndex( true, "Blowing away index to start over..." );
+		} else if ( !$this->getIndex()->exists() ) {
+			$this->createIndex( false, "Creating index..." );
+		}
+
+		$this->validateIndexSettings();
+	}
+
+	/**
+	 * @param bool $rebuild
+	 * $param string $msg
+	 */
+	private function createIndex( $rebuild, $msg ) {
+		global $wgCirrusSearchAllFields;
+
+		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
 			$this->getIndex(),
-			$this->startOver,
+			$this->analysisConfigBuilder
+		);
+
+		$this->outputIndented( $msg );
+
+		$status = $indexCreator->createIndex(
+			$rebuild,
 			$this->maxShardsPerNode,
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$this->refreshInterval,
-			$wgCirrusSearchAllFields['build'],
-			$this->analysisConfigBuilder,
 			$this->getMergeSettings(),
-			$this
+			$wgCirrusSearchAllFields['build']
 		);
-		$status = $validator->validate();
+
 		if ( !$status->isOK() ) {
 			$this->error( $status->getMessage()->text(), 1 );
+		} else {
+			$this->output( "ok\n" );
 		}
-
-		$this->validateIndexSettings();
 	}
 
 	/**

@@ -23,13 +23,17 @@ namespace CirrusSearch\Maintenance;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class StreamingForkController extends \ForkController {
+class OrderedStreamingForkController extends \ForkController {
 	// @var callable
 	protected $workCallback;
 	// @var resource
 	protected $input;
 	// @var resource
 	protected $output;
+	// @var int
+	protected $nextOutputId;
+	// @var array<int, string>
+	protected $delayedOutputData = array();
 
 	/**
 	 * @param int $numProcs The number of worker processes to fork
@@ -55,7 +59,7 @@ class StreamingForkController extends \ForkController {
 				$this->consume();
 			}
 		} else {
-			$this->consume();
+			$this->consumeNoFork();
 		}
 	}
 
@@ -105,8 +109,22 @@ class StreamingForkController extends \ForkController {
 		while ( !feof( $this->input ) ) {
 			$line = trim( fgets( $this->input ) );
 			if ( $line ) {
+				list( $id, $data ) = explode( ':', $line, 2 );
+				$result = call_user_func( $this->workCallback, $data );
+				fwrite( $this->output, "$id:$result\n" );
+			}
+		}
+	}
+
+	/**
+	 * Special cased version of self::consume() when no forking occurs
+	 */
+	protected function consumeNoFork() {
+		while ( !feof( $this->input ) ) {
+			$line = trim( fgets( $this->input ) );
+			if ( $line ) {
 				$result = call_user_func( $this->workCallback, $line );
-				fwrite( $this->output, $result . "\n" );
+				fwrite( $this->output, "$result\n" );
 			}
 		}
 	}
@@ -119,18 +137,21 @@ class StreamingForkController extends \ForkController {
 	 */
 	protected function feedChildren( array $sockets ) {
 		$used = array();
+		$id = 0;
+		$this->nextOutputId = 0;
+
 		while ( !feof( $this->input ) ) {
-			$query = fgets( $this->input );
+			$data = fgets( $this->input );
 			if ( $used ) {
 				do {
 					$this->updateAvailableSockets( $sockets, $used, $sockets ? 0 : 5 );
 				} while( !$sockets );
 			}
-			if ( !trim( $query ) ) {
+			if ( !trim( $data ) ) {
 				continue;
 			}
 			$socket = array_pop( $sockets );
-			fputs( $socket, $query );
+			fputs( $socket, $id++ . ':' . $data );
 			$used[] = $socket;
 		}
 		while ( $used ) {
@@ -152,10 +173,26 @@ class StreamingForkController extends \ForkController {
 		$write = $except = array();
 		stream_select( $read, $write, $except, $timeout );
 		foreach ( $read as $socket ) {
-			fwrite( $this->output, fgets( $socket ) );
+			$line = fgets( $socket );
+			list( $id, $data ) = explode( ':', $line, 2 );
+			$this->receive( (int) $id, $data );
 			$sockets[] = $socket;
 			$idx = array_search( $socket, $used );
 			unset( $used[$idx] );
+		}
+	}
+
+	protected function receive( $id, $data ) {
+		if ( $id !== $this->nextOutputId ) {
+			$this->delayedOutputData[$id] = $data;
+			return;
+		}
+		fwrite( $this->output, $data );
+		$this->nextOutputId = $id + 1;
+		while ( isset( $this->delayedOutputData[$this->nextOutputId] ) ) {
+			fwrite( $this->output, $this->delayedOutputData[$this->nextOutputId] );
+			unset( $this->delayedOutputData[$this->nextOutputId] );
+			$this->nextOutputId++;
 		}
 	}
 }

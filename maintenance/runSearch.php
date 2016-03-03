@@ -75,7 +75,7 @@ class RunSearch extends Maintenance {
 		$callback = array( $this, 'consume' );
 		$forks = $this->getOption( 'fork', false );
 		$forks = ctype_digit( $forks ) ? intval( $forks ) : 0;
-		$controller = new StreamingForkController( $forks, $callback, STDIN, STDOUT );
+		$controller = new OrderedStreamingForkController( $forks, $callback, STDIN, STDOUT );
 		$controller->start();
 	}
 

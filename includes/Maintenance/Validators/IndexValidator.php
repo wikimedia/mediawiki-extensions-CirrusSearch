@@ -65,7 +65,18 @@ class IndexValidator extends Validator {
 	 * @param array $mergeSettings
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $startOver, $maxShardsPerNode, $shardCount, $replicaCount, $refreshInterval, $searchAllFields, AnalysisConfigBuilder $analysisConfigBuilder, array $mergeSettings, Maintenance $out = null ) {
+	public function __construct(
+		Index $index,
+		$startOver,
+		$maxShardsPerNode,
+		$shardCount,
+		$replicaCount,
+		$refreshInterval,
+		$searchAllFields,
+		AnalysisConfigBuilder $analysisConfigBuilder,
+		array $mergeSettings,
+		Maintenance $out = null
+	) {
 		parent::__construct( $out );
 
 		$this->index = $index;
@@ -104,6 +115,15 @@ class IndexValidator extends Validator {
 	 * @param bool $rebuild
 	 */
 	private function createIndex( $rebuild ) {
+		$args = $this->buildArgs();
+
+		$this->index->create( $args, $rebuild );
+	}
+
+	/**
+	 * @return array
+	 */
+	private function buildArgs() {
 		$maxShardsPerNode = $this->maxShardsPerNode === 'unlimited' ? -1 : $this->maxShardsPerNode;
 		$args = array(
 			'settings' => array(
@@ -121,6 +141,7 @@ class IndexValidator extends Validator {
 			$args['settings']['index.query.default_field'] = 'all';
 		}
 
-		$this->index->create( $args, $rebuild );
+		return $args;
 	}
+
 }

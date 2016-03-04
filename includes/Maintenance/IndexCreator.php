@@ -57,7 +57,11 @@ class IndexCreator {
 		);
 
 		try {
-			$this->index->create( $args, $rebuild );
+			$response = $this->index->create( $args, $rebuild );
+
+			if ( $response->hasError() === true ) {
+				return Status::newFatal( $response->getError() );
+			}
 		} catch ( \Elastica\Exception\InvalidException $ex ) {
 			return Status::newFatal( $ex->getMessage() );
 		} catch ( \Elastica\Exception\ResponseException $ex ) {

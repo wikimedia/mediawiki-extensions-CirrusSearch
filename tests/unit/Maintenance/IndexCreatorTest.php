@@ -3,6 +3,7 @@
 namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\Maintenance\IndexCreator;
+use Elastica\Response;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -29,8 +30,8 @@ class IndexCreatorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider createIndexProvider
 	 */
-	public function testCreateIndex( $rebuild, $maxShardsPerNode ) {
-		$index = $this->getIndex();
+	public function testCreateIndex( $rebuild, $maxShardsPerNode, Response $response ) {
+		$index = $this->getIndex( $response );
 		$analysisConfigBuilder = $this->getAnalysisConfigBuilder();
 
 		$indexCreator = new IndexCreator( $index, $analysisConfigBuilder );
@@ -49,18 +50,29 @@ class IndexCreatorTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function createIndexProvider() {
+		$successResponse = new Response( array() );
+		$errorResponse = new Response( array( 'error' => 'index creation failed' ) );
+
 		return array(
-			array( true, 'unlimited' ),
-			array( true, 2 ),
-			array( false, 'unlimited' ),
-			array( false, 2 )
+			array( true, 'unlimited', $successResponse ),
+			array( true, 2, $successResponse ),
+			array( true, 2, $errorResponse ),
+			array( false, 'unlimited', $successResponse ),
+			array( false, 2, $successResponse ),
+			array( false, 'unlimited', $errorResponse )
 		);
 	}
 
-	private function getIndex() {
-		return $this->getMockBuilder( 'Elastica\Index' )
+	private function getIndex( $response ) {
+		$index = $this->getMockBuilder( 'Elastica\Index' )
 			->disableOriginalConstructor()
 			->getMock();
+
+		$index->expects( $this->any() )
+			->method( 'create' )
+			->will( $this->returnValue( $response ) );
+
+		return $index;
 	}
 
 	private function getAnalysisConfigBuilder() {

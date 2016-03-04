@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use ConfigFactory;
+use \CirrusSearch\SearchConfig;
 use \CirrusSearch\Searcher;
 use \Hooks;
 use \Language;
@@ -44,12 +46,15 @@ class AnalysisConfigBuilder {
 	 */
 	private $icu;
 
+	private $similarity;
+
 	/**
 	 * Constructor
 	 * @param string $langCode The language code to build config for
 	 * @param array(string) $plugins list of plugins installed in Elasticsearch
+	 * @param SearchConfig $config
 	 */
-	public function __construct( $langCode, $plugins ) {
+	public function __construct( $langCode, $plugins, $config = null ) {
 		$this->language = $langCode;
 		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $plugin => $extra ) {
 			if ( in_array( $plugin, $plugins ) ) {
@@ -57,6 +62,10 @@ class AnalysisConfigBuilder {
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
+		if ( is_null ( $config ) ) {
+			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		}
+		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 	}
 
 	/**
@@ -67,6 +76,16 @@ class AnalysisConfigBuilder {
 		$config = $this->customize( $this->defaults() );
 		Hooks::run( 'CirrusSearchAnalysisConfig', array( &$config ) );
 		return $config;
+	}
+
+	/**
+	 * Build the similarity config
+	 * @return array the similarity config
+	 */
+	public function buildSimilarityConfig() {
+		if ( $this->similarity != null && isset ( $this->similarity['similarity'] ) ) {
+			return $this->similarity['similarity'];
+		}
 	}
 
 	/**
@@ -233,6 +252,7 @@ class AnalysisConfigBuilder {
 				'name' => 'nfkc_cf',
 			);
 		}
+
 		return $defaults;
 	}
 

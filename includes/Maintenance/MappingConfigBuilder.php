@@ -1,6 +1,8 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
+use ConfigFactory;
+use \CirrusSearch\SearchConfig;
 use \Hooks;
 
 /**
@@ -56,12 +58,19 @@ class MappingConfigBuilder {
 	 */
 	private $optimizeForExperimentalHighlighter;
 
+	private $similarity;
+
 	/**
 	 * Constructor
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
+	 * @param SearchConfig $config
 	 */
-	public function __construct( $optimizeForExperimentalHighlighter ) {
+	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
+		if ( is_null ( $config ) ) {
+			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		}
+		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 	}
 
 	/**
@@ -79,11 +88,11 @@ class MappingConfigBuilder {
 		// and is infered anyway.
 		$titleExtraAnalyzers = array(
 			$suggestExtra,
-			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs' ),
-			array( 'index_analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
-			array( 'analyzer' => 'near_match', 'index_options' => 'docs' ),
-			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs' ),
-			array( 'analyzer' => 'keyword', 'index_options' => 'docs' ),
+			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'index_analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 		);
 		if ( $flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = array(
@@ -118,24 +127,24 @@ class MappingConfigBuilder {
 				),
 				'namespace' => $this->buildLongField(),
 				'namespace_text' => $this->buildKeywordField(),
-				'title' => $this->buildStringField(
+				'title' => $this->buildStringField( 'title',
 					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::COPY_TO_SUGGEST,
 					$titleExtraAnalyzers ),
 				'text' => array_merge_recursive(
-					$this->buildStringField( $textOptions, $textExtraAnalyzers ),
+					$this->buildStringField( 'text', $textOptions, $textExtraAnalyzers ),
 					array( 'fields' => array( 'word_count' => array(
 						'type' => 'token_count',
 						'store' => true,
 						'analyzer' => 'plain',
 					) ) )
 				),
-				'opening_text' => $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS ),
-				'auxiliary_text' => $this->buildStringField( $textOptions ),
-				'file_text' => $this->buildStringField( $textOptions ),
-				'source_text' => $this->buildStringField( MappingConfigBuilder::MINIMAL,
+				'opening_text' => $this->buildStringField( 'opening_text', MappingConfigBuilder::ENABLE_NORMS ),
+				'auxiliary_text' => $this->buildStringField( 'auxiliary_text', $textOptions ),
+				'file_text' => $this->buildStringField( 'file_text', $textOptions ),
+				'source_text' => $this->buildStringField( 'source_text', MappingConfigBuilder::MINIMAL,
 					$sourceExtraAnalyzers
 				),
-				'category' => $this->buildStringField( MappingConfigBuilder::SPEED_UP_HIGHLIGHTING, array(
+				'category' => $this->buildStringField( 'category', $textOptions, array(
 					array(
 						'analyzer' => 'lowercase_keyword',
 						'norms' => array( 'enabled' => false ),
@@ -146,14 +155,14 @@ class MappingConfigBuilder {
 				'template' => $this->buildLowercaseKeywordField(),
 				'outgoing_link' => $this->buildKeywordField(),
 				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
+				'heading' => $this->buildStringField( 'heading', MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
 				'text_bytes' => $this->buildLongField( false ),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
 						'namespace' =>  $this->buildLongField(),
-						'title' => $this->buildStringField(
-							MappingConfigBuilder::COPY_TO_SUGGEST | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING,
+						'title' => $this->buildStringField( 'redirect.title',
+							$textOptions | MappingConfigBuilder::COPY_TO_SUGGEST,
 							$titleExtraAnalyzers ),
 					)
 				),
@@ -177,7 +186,7 @@ class MappingConfigBuilder {
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
 			//  1. It is built with copy_to and not stored.
 			//  2. The term frequency information is all whoppy compared to the "real" source text.
-			$page[ 'properties' ][ 'all' ] = $this->buildStringField( MappingConfigBuilder::ENABLE_NORMS );
+			$page[ 'properties' ][ 'all' ] = $this->buildStringField( 'all', MappingConfigBuilder::ENABLE_NORMS );
 			$page = $this->setupCopyTo( $page, $wgCirrusSearchWeights, 'all' );
 
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
@@ -188,6 +197,7 @@ class MappingConfigBuilder {
 				'index_options' => 'freqs',
 				'position_offset_gap' => self::POSITION_OFFSET_GAP,
 				'norms' => array( 'enabled' => false ),
+				'similarity' => $this->getSimilarity( 'all_near_match' ),
 				'fields' => array(
 					'asciifolding' => array(
 						'type' => 'string',
@@ -195,6 +205,7 @@ class MappingConfigBuilder {
 						'index_options' => 'freqs',
 						'position_offset_gap' => self::POSITION_OFFSET_GAP,
 						'norms' => array( 'enabled' => false ),
+						'similarity' => $this->getSimilarity( 'all_near_match', 'asciifolding' ),
 					),
 				),
 			);
@@ -224,6 +235,28 @@ class MappingConfigBuilder {
 		return $config;
 	}
 
+
+	/**
+	 * Get the field similarity
+	 * @param string $field
+	 * @param string $analyzer
+	 */
+	private function getSimilarity( $field, $analyzer = null ) {
+		$fieldSimilaraty = 'default';
+		if ( isset( $this->similarity['fields'] ) ) {
+			if( isset( $this->similarity['fields'][$field] ) ) {
+				$fieldSimilaraty = $this->similarity['fields'][$field];
+			} else if ( $this->similarity['fields']['__default__'] ) {
+				$fieldSimilaraty = $this->similarity['fields']['__default__'];
+			}
+
+			if ( $analyzer != null && isset( $this->similarity['fields']["$field.$analyzer"] ) ) {
+				$fieldSimilaraty = $this->similarity['fields']["$field.$analyzer"];
+			}
+		}
+		return $fieldSimilaraty;
+	}
+
 	/**
 	 * Setup copy_to for some fields to $destination.
 	 * @param array $config to modify
@@ -250,6 +283,7 @@ class MappingConfigBuilder {
 
 	/**
 	 * Build a string field that does standard analysis for the language.
+	 * @param string $fieldName the field name
 	 * @param int $options Field options:
 	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but bad for array fields and useless
 	 *     for fields that don't get involved in the score.
@@ -259,19 +293,21 @@ class MappingConfigBuilder {
 	 * @param array $extra Extra analyzers for this field beyond the basic text and plain.
 	 * @return array definition of the field
 	 */
-	public function buildStringField( $options, $extra = array() ) {
+	public function buildStringField( $fieldName, $options, $extra = array() ) {
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
 			'type' => 'string',
 			'index_analyzer' => 'text',
 			'search_analyzer' => 'text_search',
 			'position_offset_gap' => self::POSITION_OFFSET_GAP,
+			'similarity' => $this->getSimilarity( $fieldName ),
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'index_analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'position_offset_gap' => self::POSITION_OFFSET_GAP,
+					'similarity' => $this->getSimilarity( $fieldName, 'plain' ),
 				),
 			)
 		);
@@ -291,6 +327,7 @@ class MappingConfigBuilder {
 				$extraName = $extraField[ 'index_analyzer' ];
 			}
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
+				'similarity' => $this->getSimilarity( $fieldName, $extraName ),
 				'type' => 'string',
 				'position_offset_gap' => self::POSITION_OFFSET_GAP,
 			), $extraField );

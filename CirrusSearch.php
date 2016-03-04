@@ -25,6 +25,7 @@ require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
 require_once __DIR__ . "/profiles/CommonTermsQueryProfiles.php";
 require_once __DIR__ . "/profiles/RescoreProfiles.php";
+require_once __DIR__ . "/profiles/SimilarityProfiles.php";
 
 $wgExtensionCredits['other'][] = array(
 	'path'           => __FILE__,
@@ -343,6 +344,10 @@ $wgCirrusSearchLinkedArticlesToUpdate = 25;
 
 // Maximum number of newly unlinked articles to update when an article changes.
 $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
+
+// Configure the similarity module
+// see profile/SimilarityProfiles.php for more details
+$wgCirrusSearchSimilarityProfile = $wgCirrusSearchSimilarityProfiles['default'];
 
 // Weight of fields.  Must be integers not decimals.  If $wgCirrusSearchAllFields['use']
 // is false this can be changed on the fly.  If it is true then changes to this require

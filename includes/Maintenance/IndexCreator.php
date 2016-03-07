@@ -100,6 +100,10 @@ class IndexCreator {
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			)
 		);
+		$similarity = $this->analysisConfigBuilder->buildSimilarityConfig();
+		if ( $similarity ) {
+			$args['settings']['similarity'] = $similarity;
+		}
 
 		if ( $searchAllFields ) {
 			// Use our weighted all field as the default rather than _all which is disabled.

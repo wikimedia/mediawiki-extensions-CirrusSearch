@@ -528,7 +528,8 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	protected function completionSuggesterEnabled( SearchConfig $config ) {
-		if( !$config->getElement( 'CirrusSearchUseCompletionSuggester' ) ) {
+		$useCompletion = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
+		if( $useCompletion !== 'yes' && $useCompletion !== 'beta' ) {
 			return false;
 		}
 
@@ -547,8 +548,12 @@ class CirrusSearch extends SearchEngine {
 			return true;
 		}
 
-		return class_exists( '\BetaFeatures' ) &&
-			\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' );
+		if ( $useCompletion === 'beta' ) {
+			return class_exists( '\BetaFeatures' ) &&
+				\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' );
+		}
+
+		return true;
 	}
 
 	/**

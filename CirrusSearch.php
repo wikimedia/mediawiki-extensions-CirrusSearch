@@ -771,10 +771,12 @@ $wgCirrusSearchCompletionDefaultScore = 'quality';
  * You have to build the completion suggester index with the maintenance script
  * updateSuggesterIndex.php. The suggester only supports queries to the main
  * namespace. PrefixSearch will be used in all other cases.
- *
- * NOTE: This is an experimental API
+ * Valid values, all unknown values map to 'no':
+ *   yes  - Use completion suggester as the default
+ *   beta - Allow users to enable completion suggester as a BetaFeature
+ *   no   - Don't use completion suggester
  */
-$wgCirrusSearchUseCompletionSuggester = false;
+$wgCirrusSearchUseCompletionSuggester = 'no';
 
 /**
  * Maximum number of results to ask from the elasticsearch completion

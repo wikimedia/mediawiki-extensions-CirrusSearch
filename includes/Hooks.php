@@ -610,8 +610,7 @@ class Hooks {
 	 */
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
 		global $wgCirrusSearchEnableSearchLogging,
-			$wgCirrusSearchFeedbackLink,
-			$wgCirrusSearchUseCompletionSuggester;
+			$wgCirrusSearchFeedbackLink;
 
 		$vars += array(
 			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
@@ -654,9 +653,11 @@ class Hooks {
 	public static function getBetaFeaturePreferences( User $user, &$pref ) {
 		global $wgCirrusSearchUseCompletionSuggester,
 			$wgExtensionAssetsPath;
-		if ( !$wgCirrusSearchUseCompletionSuggester ) {
+
+		if ( $wgCirrusSearchUseCompletionSuggester !== 'beta' ) {
 			return true;
 		}
+
 		$pref['cirrussearch-completionsuggester'] = array(
 			'label-message' => 'cirrussearch-completionsuggester-pref',
 			'desc-message' => 'cirrussearch-completionsuggester-desc',

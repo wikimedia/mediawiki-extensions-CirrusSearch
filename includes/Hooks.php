@@ -9,7 +9,6 @@ use CirrusSearch\Search\FancyTitleResultsType;
 use ConfigFactory;
 use DeferredUpdates;
 use JobQueueGroup;
-use IContextSource;
 use LinksUpdate;
 use OutputPage;
 use SpecialSearch;

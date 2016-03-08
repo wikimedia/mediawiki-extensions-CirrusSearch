@@ -536,6 +536,8 @@ class ElasticsearchIntermediary {
 	 * @return array
 	 */
 	private function buildLogContext( $took, Client $client = null ) {
+		global $wgCirrusSearchLogElasticRequests;
+
 		if ( $client ) {
 			$query = $client->getLastRequest();
 			$result = $client->getLastResponse();
@@ -582,12 +584,14 @@ class ElasticsearchIntermediary {
 			}
 		}
 
-		if ( count( self::$logContexts ) === 0 ) {
-			DeferredUpdates::addCallableUpdate( function () {
-				ElasticsearchIntermediary::reportLogContexts();
-			} );
+		if ( $wgCirrusSearchLogElasticRequests ) {
+			if ( count( self::$logContexts ) === 0 ) {
+				DeferredUpdates::addCallableUpdate( function () {
+					ElasticsearchIntermediary::reportLogContexts();
+				} );
+			}
+			self::$logContexts[] = $params;
 		}
-		self::$logContexts[] = $params;
 
 		return $params;
 	}

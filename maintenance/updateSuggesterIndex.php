@@ -281,6 +281,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->createIndex();
 		$this->indexData();
+		$this->indexData( Connection::GENERAL_INDEX_TYPE );
 		if ( $this->optimizeIndex ) {
 			$this->optimize();
 		}
@@ -363,6 +364,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->output( "Recycling index {$this->getIndex()->getName()}\n");
 		$this->recycle = true;
 		$this->indexData();
+		$this->indexData( Connection::GENERAL_INDEX_TYPE );
 		// This is fragile... hopefully most of the docs will be deleted from the old segments
 		// and will result in a fast operation.
 		// New segments should not be affected.
@@ -473,7 +475,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->output("ok.\n");
 	}
 
-	private function indexData() {
+	private function indexData( $sourceIndexType = Connection::CONTENT_INDEX_TYPE ) {
 		global $wgCirrusSearchCompletionDefaultScore;
 		$scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
@@ -490,7 +492,10 @@ class UpdateSuggesterIndex extends Maintenance {
 				new Elastica\Query\MatchAll(),
 				new Elastica\Filter\BoolAnd( array(
 					new Elastica\Filter\Type( Connection::PAGE_TYPE_NAME ),
-					new Elastica\Filter\Term( array( "namespace" => NS_MAIN ) )
+					new Elastica\Filter\BoolOr( array(
+						new Elastica\Filter\Term( array( "namespace" => NS_MAIN ) ),
+						new Elastica\Filter\Term( array( "redirect.namespace" => NS_MAIN ) ),
+					) )
 				) )
 			)
 		);
@@ -502,7 +507,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		);
 
 		// TODO: only content index for now ( we'll have to check how it works with commons )
-		$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
+		$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
 		$result = $sourceIndex->search( $query, $scrollOptions );
 		$totalDocsInIndex = $result->getResponse()->getData();
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
@@ -511,7 +516,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 
 		$docsDumped = 0;
-		$this->output( "Indexing $totalDocsToDump documents ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
+		$this->output( "Indexing $totalDocsToDump documents from $sourceIndexType ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
 
 		$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 
@@ -519,13 +524,16 @@ class UpdateSuggesterIndex extends Maintenance {
 			function( $results ) use ( &$docsDumped, $totalDocsToDump,
 					$destinationType ) {
 				$suggestDocs = array();
+				$inputDocs = array();
 				foreach ( $results as $result ) {
 					$docsDumped++;
-					$suggests = $this->builder->build( $result->getId(), $result->getSource() );
-					foreach ( $suggests as $suggest ) {
-						$suggestDocs[] = $suggest;
-					}
+					$inputDocs[] = array(
+						'id' => $result->getId(),
+						'source' => $result->getSource()
+					);
 				}
+
+				$suggestDocs = $this->builder->build( $inputDocs );
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				Util::withRetry( $this->indexRetryAttempts,
 					function() use ( $destinationType, $suggestDocs ) {
@@ -533,7 +541,7 @@ class UpdateSuggesterIndex extends Maintenance {
 					}
 				);
 			}, 0, $this->indexRetryAttempts );
-		$this->output( "Indexing done.\n" );
+		$this->output( "Indexing from $sourceIndexType index done.\n" );
 	}
 
 	public function validateAlias() {

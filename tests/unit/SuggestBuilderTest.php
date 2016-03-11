@@ -30,6 +30,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
 			'title' => 'Albert Einstein',
+			'namespace' => 0,
 			'redirect' => array(
 				array( 'title' => "Albert Enstein", 'namespace' => 0 ),
 				array( 'title' => "Albert Einsten", 'namespace' => 0 ),
@@ -78,6 +79,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
 			'title' => 'Iraq',
+			'namespace' => 0,
 			'redirect' => array(
 				array( 'title' => "Eraq", 'namespace' => 0 ),
 				array( 'title' => "Irak", 'namespace' => 0 ),
@@ -115,17 +117,63 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
+	public function testCrossNSRedirects() {
+		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$score = 10;
+		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$doc = array(
+			'title' => 'Navigation',
+			'namespace' => 12,
+			'redirect' => array(
+				array( 'title' => 'WP:HN', 'namespace' => 0 ),
+				array( 'title' => 'WP:NAV', 'namespace' => 0 ),
+			),
+			'incoming_links' => $score
+		);
+
+		$expected = array(
+			array(
+				'suggest' => array(
+					'input' => array( 'WP:HN' ),
+					'output' => '0:t:WP:HN', // LinkBatch will set 0...
+					'weight' => $score
+				),
+				'suggest-stop' => array(
+					'input' => array( 'WP:HN' ),
+					'output' => '0:t:WP:HN',
+					'weight' => $score
+				),
+			),
+			array(
+				'suggest' => array(
+					'input' => array( 'WP:NAV' ),
+					'output' => '0:t:WP:NAV',
+					'weight' => $score
+				),
+				'suggest-stop' => array(
+					'input' => array( 'WP:NAV' ),
+					'output' => '0:t:WP:NAV',
+					'weight' => $score
+				),
+			)
+		);
+		$suggestions = $this->buildSuggestions( $builder, $doc );
+		$this->assertSame( $expected, $suggestions );
+	}
+
 	public function testUlm() {
 		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
 			'title' => 'Ulm',
+			'namespace' => 0,
 			'redirect' => array(
 				array( 'title' => 'UN/LOCODE:DEULM', 'namespace' => 0 ),
 				array( 'title'=> 'Ulm, Germany', 'namespace' => 0 ),
 				array( 'title' => "Ulm displaced persons camp", 'namespace' => 0 ),
 				array( 'title' => "Söflingen", 'namespace' => 0 ),
+				array( 'title' => "Should be ignored", 'namespace' => 1 ),
 			),
 			'coordinates' => array(
 				array(
@@ -334,6 +382,6 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				$dat = $x->getData();
 				unset( $dat['batch_id'] );
 				return $dat;
-			}, $builder->build( 1, $doc ) );
+			}, $builder->build( array( array( 'id' => 1, 'source' => $doc ) ) ) );
 	}
 }

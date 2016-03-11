@@ -27,7 +27,7 @@ use \Language;
  */
 
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
-	const VERSION = "0.1";
+	const VERSION = "1.1";
 
 	/**
 	 * Constructor
@@ -60,8 +60,12 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						// but annoying to search for "(C)"
 						// ')=>\u0020',
 						// '(=>\u0020',
+						// Ignoring : can be misleading for expert users
+						// Because we will return unrelated pages when the user
+						// search for "magic keywords" like WP:WP which are sometimes
+						// pages in the main namespace that redirect to other namespace
+						// ':=>\u0020',
 						// Others are the ones ignored by common search engines
-						':=>\u0020',
 						';=>\u0020',
 						'\\[=>\u0020',
 						'\\]=>\u0020',

@@ -689,7 +689,7 @@ GROOVY;
 			// Queries without spaces are either single term or have a phrase query generated.
 			// Queries with the quote already contain a phrase query and we can't build phrase queries
 			// out of phrase queries at this point.
-			if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 1.0 &&
+			if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
 					$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
 					!$this->searchContext->isSearchContainedSyntax() &&
 					strpos( $queryStringQueryString, '"' ) === false &&

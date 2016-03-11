@@ -109,9 +109,9 @@ class OrderedStreamingForkController extends \ForkController {
 		while ( !feof( $this->input ) ) {
 			$line = trim( fgets( $this->input ) );
 			if ( $line ) {
-				list( $id, $data ) = explode( ':', $line, 2 );
+				list( $id, $data ) = json_decode( $line );
 				$result = call_user_func( $this->workCallback, $data );
-				fwrite( $this->output, "$id:$result\n" );
+				fwrite( $this->output, json_encode( array( $id, $result ) ) . "\n" );
 			}
 		}
 	}
@@ -147,11 +147,12 @@ class OrderedStreamingForkController extends \ForkController {
 					$this->updateAvailableSockets( $sockets, $used, $sockets ? 0 : 5 );
 				} while( !$sockets );
 			}
-			if ( !trim( $data ) ) {
+			$data = trim( $data );
+			if ( !$data ) {
 				continue;
 			}
 			$socket = array_pop( $sockets );
-			fputs( $socket, $id++ . ':' . $data );
+			fwrite( $socket, json_encode( array( $id++, $data ) ) . "\n" );
 			$used[] = $socket;
 		}
 		while ( $used ) {
@@ -174,7 +175,7 @@ class OrderedStreamingForkController extends \ForkController {
 		stream_select( $read, $write, $except, $timeout );
 		foreach ( $read as $socket ) {
 			$line = fgets( $socket );
-			list( $id, $data ) = explode( ':', $line, 2 );
+			list( $id, $data ) = json_decode( trim( $line ) );
 			$this->receive( (int) $id, $data );
 			$sockets[] = $socket;
 			$idx = array_search( $socket, $used );
@@ -187,10 +188,10 @@ class OrderedStreamingForkController extends \ForkController {
 			$this->delayedOutputData[$id] = $data;
 			return;
 		}
-		fwrite( $this->output, $data );
+		fwrite( $this->output, $data . "\n" );
 		$this->nextOutputId = $id + 1;
 		while ( isset( $this->delayedOutputData[$this->nextOutputId] ) ) {
-			fwrite( $this->output, $this->delayedOutputData[$this->nextOutputId] );
+			fwrite( $this->output, $this->delayedOutputData[$this->nextOutputId] . "\n" );
 			unset( $this->delayedOutputData[$this->nextOutputId] );
 			$this->nextOutputId++;
 		}

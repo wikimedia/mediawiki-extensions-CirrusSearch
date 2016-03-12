@@ -48,7 +48,7 @@ Feature: Prefix search via api
     | catapult               | Catapult               | Catapult               |
     | catapul                | Catapult               | none                   |
     | two words              | Two Words              | Two Words              |
-    | ~catapult              | none                   | none                   |
+#   | ~catapult              | none                   | none                   |
     | Template:Template Test | Template:Template Test | Template:Template Test |
     | l'or                   | L'Oréal                | none                   |
     | l or                   | L'Oréal                | none                   |

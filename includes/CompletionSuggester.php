@@ -12,6 +12,7 @@ use MediaWiki\Logger\LoggerFactory;
 use SearchSuggestion;
 use SearchSuggestionSet;
 use Status;
+use UsageException;
 use User;
 
 /**
@@ -159,6 +160,18 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * @param string $search
+	 * @throws UsageException
+	 */
+	private function checkRequestLength( $search ) {
+		$requestLength = mb_strlen( $search );
+		if ( $requestLength > Searcher::MAX_TITLE_SEARCH ) {
+			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
+					" ($requestLength > " . Searcher::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+		}
+	}
+
+	/**
 	 * Produce a set of completion suggestions for text using _suggest
 	 * See https://www.elastic.co/guide/en/elasticsearch/reference/1.6/search-suggesters-completion.html
 	 *
@@ -171,6 +184,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function suggest( $text, $variants = null, $context = null ) {
+		$this->checkRequestLength( $text );
 		$this->setTermAndVariants( $text, $variants );
 		$this->context = $context;
 

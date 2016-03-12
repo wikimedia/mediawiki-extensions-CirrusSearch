@@ -77,6 +77,7 @@ $wgAPIModules['cirrus-freeze-writes'] = 'CirrusSearch\Api\FreezeWritesToCluster'
 $wgAPIModules['cirrus-suggest-index'] = 'CirrusSearch\Api\SuggestIndex';
 // Bring the ElasticWrite backoff down to between 2^-1 and 2^3 seconds during browser tests
 $wgCirrusSearchWriteBackoffExponent = -1;
+$wgCirrusSearchUseCompletionSuggester = "yes";
 
 class Jenkins {
 	/**

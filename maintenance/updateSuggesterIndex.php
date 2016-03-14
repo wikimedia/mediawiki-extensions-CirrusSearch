@@ -8,6 +8,7 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
+use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use Elastica;
 use Elastica\Query;
 use Elastica\Request;
@@ -187,6 +188,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->langCode = $wgLanguageCode;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 
+		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
+		$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
+
 		$this->utils->checkElasticsearchVersion();
 
 		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] : 'unlimited';
@@ -276,9 +280,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
 		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
 
-		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
-		$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
-
 		$this->createIndex();
 		$this->indexData();
 		$this->indexData( Connection::GENERAL_INDEX_TYPE );
@@ -334,6 +335,13 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		if ( $versionDoc->mapping_maj != $mMaj ) {
 			$this->error( 'Mapping config version mismatch, cannot recycle.' );
+			return false;
+		}
+
+		$validator = new AnalyzersValidator( $oldIndex, $this->analysisConfigBuilder, $this );
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->error( 'Analysis config differs, cannot recycle.' );
 			return false;
 		}
 

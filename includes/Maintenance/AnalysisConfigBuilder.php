@@ -49,6 +49,11 @@ class AnalysisConfigBuilder {
 	private $similarity;
 
 	/**
+	 * @var SearchConfig cirrus config
+	 */
+	protected $config;
+
+	/**
 	 * Constructor
 	 * @param string $langCode The language code to build config for
 	 * @param array(string) $plugins list of plugins installed in Elasticsearch
@@ -66,6 +71,7 @@ class AnalysisConfigBuilder {
 			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
 		}
 		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
+		$this->config = $config;
 	}
 
 	/**

@@ -42,4 +42,4 @@ Feature: Mutations to frozen indexes are properly delayed
      And Locally stored file also on commons for *frozen* tests is the highlighted snippet of the first api search result
     When I globally thaw indexing
      And I wait 10 seconds
-    Then I api search in namespace 6 for frozen yields *frozen* reupload of locally stored file as the highlighted snippet of the first api search result
+    Then within 20 seconds api searching in namespace 6 for frozen yields *frozen* reupload of locally stored file as the highlighted snippet of the first api search result

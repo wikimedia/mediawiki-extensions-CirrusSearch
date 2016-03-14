@@ -760,6 +760,17 @@ $wgCirrusSearchUserTesting = array();
 $wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default'];
 
 /**
+ * Enable ICU Folding instead of the default ASCII Folding.
+ * It allows to cover a wider range of characters when squashing diacritics.
+ * see https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu-folding.html
+ * Currently this settings is only used by the CompletionSuggester.
+ * Requires the ICU plugin installed.
+ * Set to true to enable, false to use the default ASCII Folding
+ * NOTE: Experimental
+ */
+$wgCirrusSearchUseIcuFolding = false;
+
+/**
  * Set the default scoring function to be used by maintenance/updateSuggesterIndex.php
  * @see includes/BuildDocument/SuggestScoring.php for more details about scoring functions
  * NOTE: if you change the scoring method you'll have to rebuild the suggester index.

@@ -34,14 +34,20 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @param string $langCode The language code to build config for
 	 * @param array(string) $plugins list of plugins installed in Elasticsearch
 	 */
-	public function __construct( $langCode, $plugins ) {
-		parent::__construct( $langCode, $plugins );
+	public function __construct( $langCode, $plugins, $config = null ) {
+		parent::__construct( $langCode, $plugins, $config );
 	}
 
 	/**
 	 * Build and analysis config with sane defaults
 	 */
 	protected function defaults() {
+		// Use the default Lucene ASCII filter
+		$folding_type = 'asciifolding';
+		if ( $this->isIcuAvailable() && $this->config->get( 'CirrusSearchUseIcuFolding' ) === true ) {
+			// Use ICU Folding if the plugin is available and activated in the config
+			$folding_type = 'icu_folding';
+		}
 		$defaults = array(
 			'char_filter' => array(
 				'word_break_helper' => array(
@@ -81,9 +87,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"stopwords" => "_none_",
 					"remove_trailing" => "true"
 				),
-				"asciifolding_preserve" => array(
-					"type" => "asciifolding",
-					"preserve_original" => "false",
+				"asciifolding" => array(
+					"type" => $folding_type,
 				),
 				"icu_normalizer" => array(
 					"type" => "icu_normalizer",
@@ -101,7 +106,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"standard",
 						"lowercase",
 						"stop_filter",
-						"asciifolding_preserve",
+						"asciifolding",
 						"token_limit"
 					),
 					"tokenizer" => "standard"
@@ -114,7 +119,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"filter" => array(
 						"standard",
 						"lowercase",
-						"asciifolding_preserve",
+						"asciifolding",
 						"token_limit"
 					),
 					"tokenizer" => "standard"

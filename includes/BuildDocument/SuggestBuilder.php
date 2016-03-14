@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use \Title;
+use \LinkBatch;
+
 /**
  * Build a doc ready for the titlesuggest index.
  *
@@ -78,6 +81,13 @@ class SuggestBuilder {
 	private $withGeo;
 
 	/**
+	 * NOTE: Currently a fixed value because the completion suggester does not support
+	 * multi namespace suggestion.
+	 * @var int $targetNamespace
+	 */
+	private $targetNamespace = NS_MAIN;
+
+	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
 	 * @param bool $withGeo
 	 */
@@ -88,12 +98,89 @@ class SuggestBuilder {
 	}
 
 	/**
-	 * @param int $id the page id
-	 * @param array $inputDoc the page data
+	 * @param array $inputDocs a batch of docs to build
 	 * @return array a set of suggest documents
 	 */
-	public function build( $id, $inputDoc ) {
-		if( !isset( $inputDoc['title'] ) ) {
+	public function build( $inputDocs ) {
+		// Cross namespace titles
+		$crossNsTitles = array();
+		$docs = array();
+		foreach ( $inputDocs as $sourceDoc ) {
+			$inputDoc = $sourceDoc['source'];
+			$id = $sourceDoc['id'];
+			if ( !isset( $inputDoc['namespace'] ) ) {
+				// Bad doc, nothing to do here.
+				continue;
+			}
+			if( $inputDoc['namespace'] != NS_MAIN ) {
+				if ( !isset( $inputDoc['redirect'] ) ) {
+					// Bad doc, nothing to do here.
+					continue;
+				}
+
+				$score = $this->scoringMethod->score( $inputDoc );
+				$location = $this->findPrimaryCoordinates( $inputDoc );
+				foreach ( $inputDoc['redirect'] as $redir ) {
+					if ( !isset( $redir['namespace'] ) || !isset( $redir['title'] ) ) {
+						continue;
+					}
+					if ( $redir['namespace'] != $this->targetNamespace ) {
+						continue;
+					}
+					// Should we discount the score?
+					$score = $this->scoringMethod->score( $inputDoc );
+					// We support only earth and the primary/first coordinates...
+					$location = $this->findPrimaryCoordinates( $inputDoc );
+
+					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
+					$crossNsTitles[$redir['title']] = array(
+						'title' => $title,
+						'score' => $score,
+						'location' => $location
+					);
+				}
+			} else {
+				if ( !isset( $inputDoc['title'] ) ) {
+					// Bad doc, nothing to do here.
+					continue;
+				}
+				$docs = array_merge( $docs, $this->buildNormalSuggestions( $id, $inputDoc ) );
+			}
+		}
+
+		// Build cross ns suggestions
+		if ( !empty ( $crossNsTitles ) ) {
+			$titles = array();
+			foreach( $crossNsTitles as $text => $data ) {
+				$titles[] = $data['title'];
+			}
+			$lb = new LinkBatch( $titles );
+			$lb->setCaller( __METHOD__ );
+			$lb->execute();
+			// This is far from perfect:
+			// - we won't try to group similar redirects since we don't know which one
+			//   is the official one
+			// - we will certainly suggest multiple times the same pages
+			// - we must not run a second pass at query time: no redirect suggestion
+			foreach ( $crossNsTitles as $text => $data ) {
+				$suggestion = array(
+					'text' => $text,
+					'variants' => array()
+				);
+				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['location'], $data['score'] );
+			}
+		}
+		return $docs;
+	}
+
+	/**
+	 * Build classic suggestion
+	 * @param int $id
+	 * @param array $inputDoc
+	 * @return array a set of suggest documents
+	 */
+	private function buildNormalSuggestions( $id, $inputDoc ) {
+		if ( !isset( $inputDoc['title'] ) ) {
 			// Bad doc, nothing to do here.
 			return array();
 		}
@@ -118,7 +205,7 @@ class SuggestBuilder {
 	 */
 	public function getRequiredFields() {
 		$fields = $this->scoringMethod->getRequiredFields();
-		$fields = array_merge( $fields, array( 'title', 'redirect' ) );
+		$fields = array_merge( $fields, array( 'title', 'redirect', 'namespace' ) );
 		if ( $this->withGeo ) {
 			$fields[] = 'coordinates';
 		}
@@ -286,7 +373,11 @@ class SuggestBuilder {
 		$redirects = array();
 		if ( isset( $doc['redirect'] ) ) {
 			foreach( $doc['redirect'] as $redir ) {
-				$redirects[] = $redir['title'];
+				// Avoid suggesting/displaying non existent titles
+				// in the target namespace
+				if( $redir['namespace'] == $this->targetNamespace ) {
+					$redirects[] = $redir['title'];
+				}
 			}
 		}
 		return $this->extractSimilars( $doc['title'], $redirects, true );

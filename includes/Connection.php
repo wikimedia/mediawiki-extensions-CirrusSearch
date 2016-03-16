@@ -154,9 +154,23 @@ class Connection extends ElasticaConnection {
 		// will work as expected.
 		if ( $this->config->has( 'CirrusSearchServers' ) ) {
 			return $this->config->get( 'CirrusSearchServers' );
-		} else {
-			return $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
 		}
+		$config = $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
+
+		// Elastica will only create transports from within it's own
+		// namespace. To use the CirrusSearch PooledHttp(s) this
+		// clause is necessary.
+		foreach ( $config as $idx => $server ) {
+			if (
+				isset( $server['transport'] ) &&
+				class_exists( $server['transport'] )
+			) {
+				$transportClass = $server['transport'];
+				$config[$idx]['transport'] = new $transportClass;
+			}
+		}
+
+		return $config;
 	}
 
 	/**

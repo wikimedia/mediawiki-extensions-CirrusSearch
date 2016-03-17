@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-es_server_prefix=elastic20
-es_server_suffix=.codfw.wmnet
-first_server_index=1
-nb_of_servers_in_cluster=24
+es_server_prefix=elastic10
+es_server_suffix=.eqiad.wmnet
+first_server_index=7
+nb_of_servers_in_cluster=31
 
 for i in $(seq -w ${first_server_index} ${nb_of_servers_in_cluster}); do
     server="${es_server_prefix}${i}${es_server_suffix}"
@@ -17,7 +17,10 @@ for i in $(seq -w ${first_server_index} ${nb_of_servers_in_cluster}); do
     read
 
     echo "disabling replication"
-    ssh ${server} es-tool stop-replication
+    until ssh ${server} es-tool stop-replication
+    do
+        echo "failed to stop replication, trying again"
+    done
     echo "flushing markers"
     ssh ${server} curl -s -XPOST '127.0.0.1:9200/_flush/synced?pretty'
 
@@ -39,9 +42,12 @@ for i in $(seq -w ${first_server_index} ${nb_of_servers_in_cluster}); do
     echo "elasticsearch is started"
 
     echo "enabling replication"
-    ssh ${server} es-tool start-replication
+    until ssh ${server} es-tool start-replication
+    do
+        echo "failed to start replication, trying again"
+    done
 
-    echo "waiting for server recovery"
+    echo "waiting for cluster recovery"
     ssh ${server} "until curl -s 127.0.0.1:9200/_cat/health | grep green; do echo -n .; sleep 10; done"
 
     echo "${server} upgraded, please test"

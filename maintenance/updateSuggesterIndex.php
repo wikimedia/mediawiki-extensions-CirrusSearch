@@ -486,8 +486,12 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function indexData( $sourceIndexType = Connection::CONTENT_INDEX_TYPE ) {
 		global $wgCirrusSearchCompletionDefaultScore;
 		$scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
-		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
-		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
+		if ( $this->scoreMethod == null ) {
+			$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
+		}
+		if ( $this->builder == null ) {
+			$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
+		}
 
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );

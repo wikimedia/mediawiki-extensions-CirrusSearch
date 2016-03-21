@@ -646,6 +646,12 @@ Before("@suggest") do
         And a page named Ultimate Iceman exists with contents #REDIRECT [[Iceman]]
         And a page named Électricité exists with contents This is electicity in french.
         And a page named Elektra exists with contents Elektra is a fictional character appearing in American comic books published by Marvel Comics.
+        And a page named Help:Navigation exists with contents When viewing any page on MediaWiki...
+        And a page named V:N exists with contents #REDIRECT [[Help:Navigation]]
+        And a page named Z:Navigation exists with contents #REDIRECT [[Help:Navigation]]
+        And a page named Venom exists with contents Venom, or the Venom Symbiote, is a fictional supervillain appearing in American comic books published by Marvel Comics
+        And a page named Sam Wilson exists with contents Warren Kenneth Worthington III, originally known as Angel and later as Archangel, is a fictional superhero appearing in American comic books published by Marvel Comics like [[Venom]].
+        And a page named Zam Wilson exists with contents #REDIRECT [[Sam Wilson]]
         And I reindex suggestions
     )
     suggest = true

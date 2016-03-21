@@ -73,3 +73,13 @@ Feature: Suggestion API test
     |   term      |    suggested        |
     | Special:    | Special:ActiveUsers |
     | Special:Act | Special:ActiveUsers |
+
+  Scenario Outline: Search prefers main namespace over crossns redirects
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | V           | Venom             |
+    | V:          | V:N               |
+    | Z           | Zam Wilson        |
+    | Z:          | Z:Navigation      |

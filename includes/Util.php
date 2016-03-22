@@ -99,6 +99,38 @@ class Util {
 	}
 
 	/**
+	 * @param string $type The pool counter type, such as CirrusSearch-Search
+	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
+	 * @return string The key used for collecting timing stats about this pool counter request
+	 */
+	private static function getPoolStatsKey( $type, $isSuccess ) {
+		$pos = strpos( $type, '-' );
+		if ( $pos !== false ) {
+			$type = substr( $type, $pos + 1 );
+		}
+		$postfix = $isSuccess ? 'successMs' : 'failureMs';
+		return "CirrusSearch.poolCounter.$type.$postfix";
+	}
+
+	/**
+	 * @param float $startPoolWork The time this pool request started, from microtime( true )
+	 * @param string $type The pool counter type, such as CirrusSearch-Search
+	 * @param bool $isSuccess If the pool counter gave a success, or failed the request
+	 * @param callable $callback The function to wrap
+	 * @return callable The original callback wrapped to collect pool counter stats
+	 */
+	private static function wrapWithPoolStats( $startPoolWork, $type, $isSuccess, $callback ) {
+		return function () use ( $type, $isSuccess, $callback, $startPoolWork ) {
+			RequestContext::getMain()->getStats()->timing(
+				self::getPoolStatsKey( $type, $isSuccess ),
+				intval( 1000 * (microtime( true ) - $startPoolWork) )
+			);
+
+			return call_user_func_array( $callback, func_get_args() );
+		};
+	}
+
+	/**
 	 * Wraps the complex pool counter interface to force the single call pattern
 	 * that Cirrus always uses.
 	 * @param string $type same as type parameter on PoolCounter::factory
@@ -134,6 +166,11 @@ class Util {
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			};
 		}
+		// wrap some stats collection on the success/failure handlers
+		$startPoolWork = microtime( true );
+		$workCallback = self::wrapWithPoolStats( $startPoolWork, $type, true, $workCallback );
+		$errorCallback = self::wrapWithPoolStats( $startPoolWork, $type, false, $errorCallback );
+
 		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
 			return function( Status $status ) use ( $errorCallback, $key, $user ) {
 				$status = $status->getErrorsArray();

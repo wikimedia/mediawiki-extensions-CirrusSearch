@@ -4,6 +4,7 @@ namespace CirrusSearch\Elastica;
 
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
+use RequestContext;
 
 /**
  * Implements cross-request connection pooling via hhvm's built in
@@ -66,7 +67,10 @@ class PooledHttp extends Http {
 			// up to curl.namedPools.$pool.connGetTimeout ms, defaulting
 			// to 5000. If the timeout is reached hhvm will raise a fatal
 			// error.
+			$start = microtime( true );
 			$ch = curl_init_pooled( $pool );
+			$this->reportTiming( microtime( true ) - $start );
+
 			if ( $ch === null ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Elastic connection pool cannot init: Unknown pool {pool}. Did you configure curl.namedPools?",
@@ -80,5 +84,20 @@ class PooledHttp extends Http {
 		}
 
 		return $ch;
+	}
+
+	/**
+	 * @param float $tookS The number of seconds taken to get the pooled handle
+	 */
+	protected function reportTiming( $tookS ) {
+		// Should this in some way collect stats about requests that take longer than normal,
+		// or just allow standard p95 or p99 to collect them? With thousands of requests per
+		// second i wonder if a couple servers having issues with their pools will by lost in
+		// the noise. Another option could be recording per-server stats and including gethostname()
+		// in the key?
+		RequestContext::getMain()->getStats()->timing(
+			'CirrusSearch.connectionPool.initMs',
+			intval( 1000 * $tookS )
+		);
 	}
 }

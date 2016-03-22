@@ -27,6 +27,7 @@ Feature: Mutations to frozen indexes are properly delayed
     Then I api search for bazbarfoo yields no results
 
   @commons
+  @expect_failure
   Scenario: Updates to OtherIndex are delayed
    Given I delete on commons File:Frozen.svg
       And I delete File:Frozen.svg

@@ -32,6 +32,7 @@ class ResultSet extends SearchResultSet {
 	private $searchContainedSyntax;
 	private $interwikiPrefix,$interwikiResults;
 	private $rewrittenQuery;
+	private $swappedResultIter;
 
 	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwiki = '' ) {
 		$this->result = $res;
@@ -189,12 +190,29 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
+	 * @param integer $first 0-indexed result to swap with $second
+	 * @param integer $second 0-indexed result to swap with $first
+	 */
+	public function swapResults( $first, $second ) {
+		$iter = $this->swappedResultIter ?: $this->result;
+		if ( $iter->count() <= max( $first, $second ) ) {
+			return;
+		}
+		$results = iterator_to_array( $iter );
+		$firstElem = $results[$first];
+		$results[$first] = $results[$second];
+		$results[$second] = $firstElem;
+		$this->swappedResultIter = new \ArrayIterator( $results );
+	}
+
+	/**
 	 * @return Result|false
 	 */
 	public function next() {
-		$current = $this->result->current();
+		$iter = $this->swappedResultIter ?: $this->result;
+		$current = $iter->current();
 		if ( $current ) {
-			$this->result->next();
+			$iter->next();
 			return new Result( $this->result, $current, $this->interwikiPrefix );
 		}
 		return false;

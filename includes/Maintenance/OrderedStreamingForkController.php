@@ -59,8 +59,10 @@ class OrderedStreamingForkController extends \ForkController {
 				$this->consume();
 			}
 		} else {
+			$status = 'parent';
 			$this->consumeNoFork();
 		}
+		return $status;
 	}
 
 	/**
@@ -96,7 +98,11 @@ class OrderedStreamingForkController extends \ForkController {
 		}
 		$this->feedChildren( $childSockets );
 		foreach ( $childSockets as $socket ) {
-			fclose( $socket );
+			// if a child has already shutdown the sockets will be closed,
+			// closing a second time would raise a warning.
+			if ( is_resource( $socket ) ) {
+				fclose( $socket );
+			}
 		}
 		return 'parent';
 	}

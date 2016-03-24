@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Янмурза Баки"
+			"Янмурза Баки",
+			"Lizalizaufa"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch базаһында MediaWiki өсөн эҙләү",
@@ -9,6 +10,7 @@
 	"cirrussearch-regex-syntax-error": "Даими әйтемдәр синтаксисында хата $2: $1",
 	"cirrussearch-regex-too-complex-error": "Даими әйтем бик ҡатмарлы. Нисек ябайлаштырыуҙы яҡшыраҡ белегеҙ. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|бында]].",
 	"cirrussearch-now-using": "Был вики яңы эҙләү шыуҙырғысын файҙалана. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ентекләберәк]])",
+	"cirrussearch-pref-label": "Яңынан эҙләү",
 	"apihelp-cirrus-config-dump-description": "CirrusSearch конфигурацияһы дампы.",
 	"apihelp-cirrus-config-dump-example": "CirrusSearch конфигурацияһы дампын алырға.",
 	"apihelp-cirrus-mapping-dump-description": "Был викиға CirrusSearch маппинганың дампы.",

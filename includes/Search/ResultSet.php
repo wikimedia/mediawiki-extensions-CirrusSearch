@@ -76,11 +76,6 @@ class ResultSet extends SearchResultSet {
 	private $rewrittenQuerySnippet;
 
 	/**
-	 * @var \Iterator|null
-	 */
-	private $swappedResultIter;
-
-	/**
 	 * @param string[] $suggestPrefixes
 	 * @param string[] $suggestSuffixes
 	 * @param \Elastica\ResultSet $res
@@ -246,40 +241,19 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param int $first 0-indexed result to swap with $second
-	 * @param int $second 0-indexed result to swap with $first
-	 */
-	public function swapResults( $first, $second ) {
-		$iter = $this->swappedResultIter ?: $this->result;
-		if ( $iter->count() <= max( $first, $second ) ) {
-			return;
-		}
-		$results = iterator_to_array( $iter );
-		$firstElem = $results[$first];
-		$results[$first] = $results[$second];
-		$results[$second] = $firstElem;
-		$this->swappedResultIter = new \ArrayIterator( $results );
-	}
-
-	/**
 	 * @return Result|false
 	 */
 	public function next() {
-		$iter = $this->swappedResultIter ?: $this->result;
-		$current = $iter->current();
+		$current = $this->result->current();
 		if ( $current ) {
-			$iter->next();
+			$this->result->next();
 			return new Result( $this->result, $current, $this->interwikiPrefix );
 		}
 		return false;
 	}
 
 	public function rewind() {
-		if ( $this->swappedResultIter ) {
-			$this->swappedResultIter->rewind();
-		} else {
-			$this->result->rewind();
-		}
+		$this->result->rewind();
 	}
 
 	/**

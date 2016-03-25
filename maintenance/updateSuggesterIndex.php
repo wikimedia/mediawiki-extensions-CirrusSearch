@@ -216,13 +216,13 @@ class UpdateSuggesterIndex extends Maintenance {
 			}
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
-			$this->output( "\nUnexpected Elasticsearch failure.\n" );
+			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
 			$trace = $e->getTraceAsString();
-			$this->output( "\nUnexpected Elasticsearch failure.\n" );
+			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
@@ -265,10 +265,10 @@ class UpdateSuggesterIndex extends Maintenance {
 			// Extra check: if stats report usages we should not try to fix things
 			// automatically.
 			if ( $stats['_all']['total']['suggest']['total'] == 0 ) {
-				$this->output( "Deleting broken index {$idx->getName()}\n" );
+				$this->log( "Deleting broken index {$idx->getName()}\n" );
 				$this->deleteIndex( $idx );
 			} else {
-				$this->output( "Broken index {$idx->getName()} appears to be in use, please check and delete.\n" );
+				$this->log( "Broken index {$idx->getName()} appears to be in use, please check and delete.\n" );
 			}
 
 		}
@@ -282,7 +282,6 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->createIndex();
 		$this->indexData();
-		$this->indexData( Connection::GENERAL_INDEX_TYPE );
 		if ( $this->optimizeIndex ) {
 			$this->optimize();
 		}
@@ -291,7 +290,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->validateAlias();
 		$this->updateVersions();
 		$this->deleteOldIndex();
-		$this->output("done.\n");
+		$this->log("Done.\n");
 	}
 
 	private function canRecycle() {
@@ -369,10 +368,9 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * but needs to be carefully tested on bigger indices with high QPS.
 	 */
 	private function recycle() {
-		$this->output( "Recycling index {$this->getIndex()->getName()}\n");
+		$this->log( "Recycling index {$this->getIndex()->getName()}\n");
 		$this->recycle = true;
 		$this->indexData();
-		$this->indexData( Connection::GENERAL_INDEX_TYPE );
 		// This is fragile... hopefully most of the docs will be deleted from the old segments
 		// and will result in a fast operation.
 		// New segments should not be affected.
@@ -408,7 +406,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
 		$totalDocsToDump = $totalDocsInIndex;
 
-		$this->output( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
+		$this->log( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
 		Util::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
 			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				$ids = array();
@@ -423,7 +421,7 @@ class UpdateSuggesterIndex extends Maintenance {
 					}
 				);
 			}, 0, $this->indexRetryAttempts );
-		$this->output( "Done.\n" );
+		$this->log( "Done.\n" );
 		// Old docs should be deleted now we can optimize and flush
 		$this->optimize();
 
@@ -438,7 +436,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function deleteOldIndex() {
 		if ( $this->oldIndex && $this->oldIndex->exists() ) {
-			$this->output("Deleting " . $this->oldIndex->getName() . " ... ");
+			$this->log("Deleting " . $this->oldIndex->getName() . " ... ");
 			// @todo Utilize $this->oldIndex->delete(...) once Elastica library is updated
 			// to allow passing the master_timeout
 			$this->oldIndex->request(
@@ -472,26 +470,40 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function optimize() {
-		$this->output("Optimizing index...");
+		$this->log("Optimizing index...");
 		$this->getIndex()->optimize( array( 'max_num_segments' => 1 ) );
 		$this->output("ok.\n");
 	}
 
 	private function expungeDeletes() {
-		$this->output("Purging deleted docs...");
+		$this->log("Purging deleted docs...");
 		$this->getIndex()->optimize( array( 'only_expunge_deletes' => true, 'flush' => false ) );
 		$this->output("ok.\n");
 	}
 
-	private function indexData( $sourceIndexType = Connection::CONTENT_INDEX_TYPE ) {
+	private function indexData() {
 		global $wgCirrusSearchCompletionDefaultScore;
 		$scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
 		if ( $this->scoreMethod == null ) {
 			$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
 		}
 		if ( $this->builder == null ) {
+			// NOTE: the builder stores a batchId value to flag
+			// documents indexed by this builder. Make sure to
+			// reuse the same instance when building docs otherwize
+			// the batchId might be regenerated and can cause data
+			// loss when recycling the index.
 			$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 		}
+
+		// We build the suggestions by reading CONTENT and GENERAL indices.
+		// This does not support extra indices like FILES on commons.
+		$sourceIndexTypes = array( Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE );
+
+		// Indices to use for counting max_docs used by scoring functions
+		// Since we work mostly on the content namespace it seems OK to count
+		// only docs in the CONTENT index.
+		$countIndices = array( Connection::CONTENT_INDEX_TYPE );
 
 		$query = new Query();
 		$query->setFields( array( '_id', '_type', '_source' ) );
@@ -512,48 +524,66 @@ class UpdateSuggesterIndex extends Maintenance {
 			)
 		);
 
-		$scrollOptions = array(
-			'search_type' => 'scan',
-			'scroll' => "15m",
-			'size' => $this->indexChunkSize
-		);
+		// Run a first query to count the number of docs.
+		// This is needed for the scoring methods that need
+		// to normalize values against wiki size.
+		$mSearch = new \Elastica\Multi\Search( $this->getClient() );
+		foreach ( $countIndices as $sourceIndexType ) {
+			$search = new \Elastica\Search( $this->getClient() );
+			$search->addIndex( $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType ) );
+			$search->setOption( \Elastica\Search::OPTION_SEARCH_TYPE, \Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
+			$mSearch->addSearch( $search );
+		}
 
-		// TODO: only content index for now ( we'll have to check how it works with commons )
-		$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
-		$result = $sourceIndex->search( $query, $scrollOptions );
-		$totalDocsInIndex = $result->getResponse()->getData();
-		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
-		$this->scoreMethod->setMaxDocs( $totalDocsInIndex );
-		$totalDocsToDump = $totalDocsInIndex;
+		$mSearchRes = $mSearch->search();
+		$total = 0;
+		foreach( $mSearchRes as $res ) {
+			$total += $res->getTotalHits();
+		}
+		$this->log( "Setting max_docs to $total\n" );
+		$this->scoreMethod->setMaxDocs( $total );
 
+		foreach( $sourceIndexTypes as $sourceIndexType ) {
+			$scrollOptions = array(
+				'search_type' => 'scan',
+				'scroll' => "15m",
+				'size' => $this->indexChunkSize
+			);
 
-		$docsDumped = 0;
-		$this->output( "Indexing $totalDocsToDump documents from $sourceIndexType ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
+			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
+			$result = $sourceIndex->search( $query, $scrollOptions );
+			$totalDocsInIndex = $result->getResponse()->getData();
+			$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
+			$totalDocsToDump = $totalDocsInIndex;
 
-		$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
+			$docsDumped = 0;
+			$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
 
-		Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( &$docsDumped, $totalDocsToDump,
-					$destinationType ) {
-				$suggestDocs = array();
-				$inputDocs = array();
-				foreach ( $results as $result ) {
-					$docsDumped++;
-					$inputDocs[] = array(
-						'id' => $result->getId(),
-						'source' => $result->getSource()
-					);
-				}
+			$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 
-				$suggestDocs = $this->builder->build( $inputDocs );
-				$this->outputProgress( $docsDumped, $totalDocsToDump );
-				Util::withRetry( $this->indexRetryAttempts,
-					function() use ( $destinationType, $suggestDocs ) {
-						$destinationType->addDocuments( $suggestDocs );
+			Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
+				function( $results ) use ( &$docsDumped, $totalDocsToDump,
+						$destinationType ) {
+					$suggestDocs = array();
+					$inputDocs = array();
+					foreach ( $results as $result ) {
+						$docsDumped++;
+						$inputDocs[] = array(
+							'id' => $result->getId(),
+							'source' => $result->getSource()
+						);
 					}
-				);
-			}, 0, $this->indexRetryAttempts );
-		$this->output( "Indexing from $sourceIndexType index done.\n" );
+
+					$suggestDocs = $this->builder->build( $inputDocs );
+					$this->outputProgress( $docsDumped, $totalDocsToDump );
+					Util::withRetry( $this->indexRetryAttempts,
+						function() use ( $destinationType, $suggestDocs ) {
+							$destinationType->addDocuments( $suggestDocs );
+						}
+					);
+				}, 0, $this->indexRetryAttempts );
+			$this->log( "Indexing from $sourceIndexType index done.\n" );
+		}
 	}
 
 	public function validateAlias() {
@@ -593,6 +623,11 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( ( $pctDone % 2 ) == 0 ) {
 			$this->outputIndented( "\t$pctDone% done...\n" );
 		}
+	}
+
+	public function log( $message, $channel = NULL ) {
+		$date = new \DateTime();
+		parent::output( $date->format('Y-m-d H:i:s') . " " . $message, $channel );
 	}
 
 	/**
@@ -660,7 +695,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function enableReplicas() {
-		$this->output("Enabling replicas...\n");
+		$this->log("Enabling replicas...\n");
 		$args = array(
 			'index' => array(
 				'auto_expand_replicas' => $this->getReplicaCount(),
@@ -684,7 +719,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function waitForGreen( $timeout = 600 ) {
-		$this->output( "Waiting for the index to go green...\n" );
+		$this->log( "Waiting for the index to go green...\n" );
 		// Wait for the index to go green ( default 10 min)
 		if ( !$this->utils->waitForGreen( $this->getIndex()->getName(), $timeout ) ) {
 			$this->error( "Failed to wait for green... please check config and delete the {$this->getIndex()->getName()} index if it was created.", 1 );
@@ -703,7 +738,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function updateVersions() {
-		$this->outputIndented( "Updating tracking indexes..." );
+		$this->log( "Updating tracking indexes..." );
 		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
 		if ( !$index->exists() ) {
 			throw new \Exception("mw_cirrus_versions does not exist, you must index your data first");

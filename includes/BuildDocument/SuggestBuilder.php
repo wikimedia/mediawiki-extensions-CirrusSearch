@@ -45,6 +45,11 @@ class SuggestBuilder {
 	const REDIRECT_DISCOUNT = 0.1;
 
 	/**
+	 * Discount suggestions based on crossnamespace redirects
+	 */
+	const CROSSNS_DISCOUNT = 0.005;
+
+	/**
 	 * Redirect suggestion type
 	 */
 	const REDIRECT_SUGGESTION = 'r';
@@ -112,7 +117,13 @@ class SuggestBuilder {
 				// Bad doc, nothing to do here.
 				continue;
 			}
-			if( $inputDoc['namespace'] != NS_MAIN ) {
+			if( $inputDoc['namespace'] == NS_MAIN ) {
+				if ( !isset( $inputDoc['title'] ) ) {
+					// Bad doc, nothing to do here.
+					continue;
+				}
+				$docs = array_merge( $docs, $this->buildNormalSuggestions( $id, $inputDoc ) );
+			} else {
 				if ( !isset( $inputDoc['redirect'] ) ) {
 					// Bad doc, nothing to do here.
 					continue;
@@ -127,8 +138,9 @@ class SuggestBuilder {
 					if ( $redir['namespace'] != $this->targetNamespace ) {
 						continue;
 					}
-					// Should we discount the score?
 					$score = $this->scoringMethod->score( $inputDoc );
+					// Discount the score of these suggestions.
+					$score = (int) ($score * self::CROSSNS_DISCOUNT);
 					// We support only earth and the primary/first coordinates...
 					$location = $this->findPrimaryCoordinates( $inputDoc );
 
@@ -139,12 +151,6 @@ class SuggestBuilder {
 						'location' => $location
 					);
 				}
-			} else {
-				if ( !isset( $inputDoc['title'] ) ) {
-					// Bad doc, nothing to do here.
-					continue;
-				}
-				$docs = array_merge( $docs, $this->buildNormalSuggestions( $id, $inputDoc ) );
 			}
 		}
 

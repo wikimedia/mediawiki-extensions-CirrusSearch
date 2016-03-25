@@ -131,6 +131,8 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 			'incoming_links' => $score
 		);
 
+		$score = (int) (SuggestBuilder::CROSSNS_DISCOUNT * $score);
+
 		$expected = array(
 			array(
 				'suggest' => array(

@@ -116,13 +116,18 @@ class RescoreBuilder {
 	 * @return array the supported rescore profile.
 	 */
 	private function getSupportedProfile( $profile ) {
-		if ( !is_array( $profile['supported_namespaces'] ) &&
-			$profile['supported_namespaces'] === 'all' ) {
-			return $profile;
-		}
-
 		if ( !is_array( $profile['supported_namespaces'] ) ) {
-			throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces should be 'all' or an array of namespaces" );
+			switch ( $profile['supported_namespaces'] ) {
+			case 'all':
+				return $profile;
+			case 'content':
+				$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
+				break;
+			default:
+				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces should be 'all', 'content' or an array of namespaces" );
+			}
+		} else {
+			$profileNs = $profile['supported_namespaces'];
 		}
 
 		if ( ! isset( $profile['fallback_profile'] ) ) {
@@ -139,7 +144,7 @@ class RescoreBuilder {
 		}
 
 		foreach( $queryNs as $ns ) {
-			if ( !in_array( $ns, $profile['supported_namespaces'] ) ) {
+			if ( !in_array( $ns, $profileNs ) ) {
 				return $this->getFallbackProfile( $profile['fallback_profile'] );
 			}
 		}
@@ -253,6 +258,14 @@ class FunctionScoreChain {
 			return new CustomFieldFunctionScoreBuilder( $this->context, $weight, $func['params'] );
 		case 'script':
 			return new ScriptScoreFunctionScoreBuilder( $this->context, $weight, $func['script'] );
+		case 'logscale_boost':
+			return new LogScaleBoostFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+		case 'satu':
+			return new SatuFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+		case 'log_multi':
+			return new LogMultFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+		case 'geomean':
+			return new GeoMeanFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
 		default:
 			throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 		}
@@ -316,7 +329,7 @@ abstract class FunctionScoreBuilder {
 	 */
 	public function __construct( SearchContext $context, $weight ) {
 		$this->context = $context;
-		$this->weight = $weight;
+		$this->weight = $this->getOverriddenFactor( $weight );
 	}
 
 	/**
@@ -324,6 +337,39 @@ abstract class FunctionScoreBuilder {
 	 * @param FunctionScore $container
 	 */
 	public abstract function append( FunctionScore $container );
+
+	/**
+	 * Utility method to extract a factor (float) that can
+	 * be overridden by a config value or an URI param
+	 */
+	protected function getOverriddenFactor( $value ) {
+		if ( is_array( $value ) ) {
+			$returnValue = (float) $value['value'];
+
+			if ( isset( $value['config_override'] ) ) {
+				// Override factor with config
+				$fromConfig = $this->context->getConfig()->get( $value['config_override'] );
+				if ( $fromConfig !== null ) {
+					$returnValue = (float) $fromConfig;
+				}
+			}
+
+			if ( isset( $value['uri_param_override'] ) ) {
+				// Override factor with uri param
+				$uriParam = $value['uri_param_override'];
+				$request = \RequestContext::getMain()->getRequest();
+				if ( $request ) {
+					$fromUri = $request->getVal( $uriParam );
+					if ( $fromUri !== null && is_numeric( $fromUri ) ) {
+						$returnValue = (float) $fromUri;
+					}
+				}
+			}
+			return $returnValue;
+		} else {
+			return (float) $value;
+		}
+	}
 }
 
 /**
@@ -443,7 +489,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			$weight = $this->getBoostForNamespace( $ns ) * $this->weight;
 			$key = (string) $weight;
 			if ( $key == '1' ) {
-				// such weigths would have no effect
+				// such weights would have no effect
 				// we can ignore them.
 				continue;
 			}
@@ -501,11 +547,288 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
+		if ( isset ( $profile['factor'] ) ) {
+			$profile['factor'] = $this->getOverriddenFactor( $profile['factor'] );
+		}
 		$this->profile = $profile;
 	}
 
 	public function append( FunctionScore $functionScore ) {
+		if ( isset( $this->profile['factor'] ) && $this->profile['factor'] === 0.0 ) {
+			// If factor is 0 this function score will have no impact.
+			return;
+		}
 		$functionScore->addFunction( 'field_value_factor', $this->profile, null, $this->weight );
+	}
+}
+
+/**
+ * Normalize values in the [0,1] range
+ * Allows to set:
+ * - a scale
+ * - midpoint
+ * It will generate a log scale factor where :
+ * - f(0) = 0
+ * - f(scale) = 1
+ * - f(midpoint) = 0.5
+ *
+ * Based on log10( a . x + 1 ) / log10( a . M + 1 )
+ * a: a factor used to adjust the midpoint
+ * M: the max value used to scale
+ *
+ */
+class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
+	private $field;
+	private $impact;
+	private $midpoint;
+	private $scale;
+
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
+
+		if ( isset( $profile['midpoint'] ) ) {
+			$this->midpoint = $this->getOverriddenFactor( $profile['midpoint'] );
+		} else {
+			throw new InvalidRescoreProfileException( 'midpoint is mandatory' );
+		}
+
+		if ( isset ( $profile['scale'] ) ) {
+			$this->scale = $this->getOverriddenFactor( $profile['scale'] );
+		} else {
+			throw new InvalidRescoreProfileException( 'scale is mandatory' );
+		}
+
+		if ( isset ( $profile['field' ] ) ) {
+			$this->field = $profile['field'];
+		} else {
+			throw new InvalidRescoreProfileException( 'field is mandatory' );
+		}
+	}
+
+	/**
+	 * find the factor to adjust the scale center,
+	 * it's like finding the log base to have f(N) = 0.5
+	 */
+	private function findCenterFactor( $M, $N ) {
+		// Neutral point is found by resolving
+		// log10( x . N + 1 ) / log10( x . M + 1 ) = 0.5
+		// it's equivalent to resolving:
+		// N²x² + (2N - M)x + 1 = 0
+		// so we we use the quadratic formula:
+		// (-(2N-M) + sqrt((2N-M)²-4N²)) / 2N²
+		if ( 4*$N >= $M ) {
+			throw new InvalidRescoreProfileException( 'The midpoint point cannot be higher than scale/4' );
+		}
+		return ( -( 2*$N - $M ) + sqrt( (2 * $N - $M) * (2 * $N - $M) - 4 * $N * $N ) ) / (2 * $N * $N);
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		if( $this->impact == 0 ) {
+			return;
+		}
+		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+	}
+
+	public function getScript() {
+		$midFactor = $this->findCenterFactor( $this->scale, $this->midpoint );
+		$formula = "log10($midFactor * min(doc['{$this->field}'].value,{$this->scale}) + 1)";
+		$formula .= "/log10($midFactor * {$this->scale} + 1)";
+		return $formula;
+	}
+}
+
+/**
+ * Saturation function based on x/(k+x), k is a parameter
+ * to control how fast the function saturates.
+ * NOTE: that satu is always 0.5 when x == k.
+ * Parameter a is added to form a sigmoid : x^a/(k^a+x^a)
+ * Based on http://research.microsoft.com/pubs/65239/craswell_sigir05.pdf
+ * This function is suited to apply a new factor in a weighted sum.
+ */
+class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
+	private $k;
+	private $a;
+	private $field;
+
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
+		if ( isset( $profile['k'] ) ) {
+			$this->k = $this->getOverriddenFactor( $profile['k'] );
+			if ( $this->k <= 0 ) {
+				throw new InvalidRescoreProfileException( 'Param k must be > 0' );
+			}
+		} else {
+			throw new InvalidRescoreProfileException( 'Param k is mandatory' );
+		}
+
+		if ( isset( $profile['a'] ) ) {
+			$this->a = $this->getOverriddenFactor( $profile['a'] );
+			if ( $this->a <= 0 ) {
+				throw new InvalidRescoreProfileException( 'Param a must be > 0' );
+			}
+		} else {
+			$this->a = 1;
+		}
+
+		if ( isset( $profile['field'] ) ) {
+			$this->field = $profile['field'];
+		} else {
+			throw new InvalidRescoreProfileException( 'Param field is mandatory' );
+		}
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		$formula = $this->getScript();
+		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+	}
+
+	public function getScript() {
+		$formula = "pow(doc['{$this->field}'].value , {$this->a}) / ";
+		$formula .= "( pow(doc['{$this->field}'].value, {$this->a}) + ";
+		$formula .= "pow({$this->k},{$this->a}))";
+		return $formula;
+	}
+}
+
+/**
+ * simple log(factor*field+2)^impact
+ * Useful to control the impact when applied in a multiplication.
+ */
+class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
+	private $impact;
+	private $factor;
+	private $field;
+
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
+		if ( isset( $profile['impact'] ) ) {
+			$this->impact = $this->getOverriddenFactor( $profile['impact'] );
+			if ( $this->impact <= 0 ) {
+				throw new InvalidRescoreProfileException( 'Param impact must be > 0' );
+			}
+		} else {
+			throw new InvalidRescoreProfileException( 'Param impact is mandatory' );
+		}
+
+		if ( isset( $profile['factor'] ) ) {
+			$this->factor = $this->getOverriddenFactor( $profile['factor'] );
+			if ( $this->factor <= 0 ) {
+				throw new InvalidRescoreProfileException( 'Param factor must be > 0' );
+			}
+		} else {
+			$this->factor = 1;
+		}
+
+		if ( isset( $profile['field'] ) ) {
+			$this->field = $profile['field'];
+		} else {
+			throw new InvalidRescoreProfileException( 'Param field is mandatory' );
+		}
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		$formula = "pow(log10({$this->factor} * doc['{$this->field}'].value + 2), {$this->impact})";
+		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+	}
+}
+
+/**
+ * Utility function to compute a weighted geometric mean.
+ * According to https://en.wikipedia.org/wiki/Weighted_geometric_mean
+ * this is equivalent to exp ( w1*ln(value1)+w2*ln(value2) / (w1 + w2) ) ^ impact
+ * impact is applied as a power factor because this function is applied in a
+ * multiplication.
+ * Members can use only LogScaleBoostFunctionScoreBuilder or SatuFunctionScoreBuilder
+ * these are the only functions that normalize the value in the [0,1] range.
+ */
+class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
+	private $impact;
+	private $scriptFunctions = array();
+	private $epsilon = 0.0000001;
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
+
+		if ( isset( $profile['impact'] ) ) {
+			$this->impact = $this->getOverriddenFactor( $profile['impact'] );
+			if ( $this->impact <= 0 ) {
+				throw new InvalidRescoreProfileException( 'Param impact must be > 0' );
+			}
+		} else {
+			throw new InvalidRescoreProfileException( 'Param impact is mandatory' );
+		}
+
+		if ( isset( $profile['epsilon'] ) ) {
+			$this->epsilon = $this->getOverriddenFactor( $profile['epsilon'] );
+		}
+
+		if ( !isset( $profile['members'] ) || !is_array( $profile['members'] ) ) {
+			throw new InvalidRescoreProfileException( 'members must be an array of arrays' );
+		}
+		foreach( $profile['members'] as $member ) {
+			if ( !is_array( $member ) ) {
+				throw new InvalidRescoreProfileException( "members must be an array of arrays" );
+			}
+			if ( !isset( $member['weight'] ) ) {
+				$weight = 1;
+			} else {
+				$weight = $this->getOverriddenFactor( $member['weight'] );
+			}
+			$function = array( 'weight' => $weight );
+			switch( $member['type'] ) {
+			case 'satu':
+				$function['script'] = new SatuFunctionScoreBuilder( $this->context, 1, $member['params'] );
+				break;
+			case 'logscale_boost':
+				$function['script'] = new LogScaleBoostFunctionScoreBuilder( $this->context, 1, $member['params'] );
+				break;
+			default:
+				throw new InvalidRescoreProfileException( "Unsupported function in {$member['type']}." );
+			}
+			$this->scriptFunctions[] = $function;
+		}
+		if ( count( $this->scriptFunctions ) < 2 ) {
+			throw new InvalidRescoreProfileException( "At least 2 members are needed to compute a geometric mean." );
+		}
+	}
+
+	/**
+	 * Build a weighted geometric mean using a logarithmic arithmetic mean.
+	 * exp(w1*ln(value1)+w2*ln(value2) / (w1+w2))
+	 * NOTE: We need to use an epsilon value in case value is 0.
+	 * @return the script
+	 */
+	public function getScript() {
+		$formula = "pow(";
+		$formula .= "exp((";
+		$first = true;
+		$sumWeight = 0;
+		foreach( $this->scriptFunctions as $func ) {
+			if ( $first ) {
+				$first = false;
+			} else {
+				$formula .= " + ";
+			}
+			$sumWeight += $func['weight'];
+			$formula .= "{$func['weight']}*ln(max(";
+
+			$formula .= $func['script']->getScript();
+
+			$formula .= ", {$this->epsilon}))";
+		}
+		if ( $sumWeight == 0 ) {
+			return null;
+		}
+		$formula .= ")";
+		$formula .= "/ $sumWeight )";
+		$formula .= ", {$this->impact})"; // pow(
+		return $formula;
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		$formula = $this->getScript();
+		if ( $formula != null ) {
+			$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+		}
 	}
 }
 

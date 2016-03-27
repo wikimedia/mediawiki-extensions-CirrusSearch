@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hindustanilanguage"
+			"Hindustanilanguage",
+			"Sfic"
 		]
 	},
-	"cirrussearch-pref-label": "नई खोज"
+	"cirrussearch-desc": "मीडियाविकि इलास्टिक-सर्च द्वारा कार्य करती है।",
+	"cirrussearch-backend-error": "अस्थाई परेशानी के कारण हम आपके खोज को पूरा नहीं कर सके। कृपया थोड़ी देर बाद प्रयास करें।",
+	"cirrussearch-pref-label": "नई खोज",
+	"cirrussearch-give-feedback": "अपनी प्रतिक्रिया दें"
 }

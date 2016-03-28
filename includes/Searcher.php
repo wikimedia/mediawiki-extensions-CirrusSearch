@@ -1091,7 +1091,16 @@ GROOVY;
 			$query->setHighlight( $highlight );
 		}
 		if ( $this->suggest ) {
-			$query->setParam( 'suggest', $this->suggest );
+			if ( interface_exists( 'Elastica\\ArrayableInterface' ) ) {
+				// Elastica 2.3.x.  For some reason it unwraps our suggest
+				// query when we don't want it to, so wrap it one more time
+				// to make the unwrap do nothing.
+				$query->setParam( 'suggest', array(
+					'suggest' => $this->suggest,
+				) );
+			} else {
+				$query->setParam( 'suggest', $this->suggest );
+			}
 			$query->addParam( 'stats', 'suggest' );
 		}
 		if( $this->offset ) {

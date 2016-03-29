@@ -219,7 +219,11 @@ class ResultSet extends SearchResultSet {
 	}
 
 	public function rewind() {
-		$this->result->rewind();
+		if ( $this->swappedResultIter ) {
+			$this->swappedResultIter->rewind();
+		} else {
+			$this->result->rewind();
+		}
 	}
 
 	/**

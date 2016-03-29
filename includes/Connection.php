@@ -146,7 +146,9 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * @return string[]
+	 * @return string[]|array[] Either a list of hostnames, for default
+	 *  connection configuration or an array of arrays giving full connection
+	 *  specifications.
 	 */
 	public function getServerList() {
 		// This clause provides backwards compatability with previous versions

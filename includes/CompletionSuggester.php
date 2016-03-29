@@ -364,8 +364,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * prepare the list of suggest requests used for geo context suggestions
-	 * This method will merge $this->config->get( 'CirrusSearchCompletionSettings and
-	 * $this->config->get( 'CirrusSearchCompletionGeoContextSettings
+	 * This method will merge $this->config->get( 'CirrusSearchCompletionSettings' )
+	 * and $this->config->get( 'CirrusSearchCompletionGeoContextSettings' )
 	 * @return array of suggest request profiles
 	 */
 	private function prepareGeoContextSuggestProfiles() {
@@ -429,6 +429,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 							$suggestion->setText( $output['text'] );
 						}
 						$suggestions[$pageId] = $suggestion;
+						$suggestionProfile[$pageId] = $name;
 					}
 				}
 			}
@@ -505,13 +506,34 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			}
 		}
 
-		return new SearchSuggestionSet( array_filter(
+		$finalResults = array_filter(
 			$suggestions,
 			function ( SearchSuggestion $suggestion ) {
 				// text should be not empty for suggestions
 				return $suggestion->getText() != null;
 			}
-		) );
+		);
+
+		$this->logContext['hits'] = array();
+		$indexName = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE )->getName();
+		$maxScore = 0;
+		foreach ( $finalResults as $suggestion ) {
+			$title = $suggestion->getSuggestedTitle();
+			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
+			$maxScore = max( $maxScore, $suggestion->getScore() );
+			$this->logContext['hits'][] = array(
+				// This *must* match the names and types of the CirrusSearchHit
+				// record in the CirrusSearchRequestSet logging channel avro schema.
+				'title' => $title ? (string) $title : $suggestion->getText(),
+				'index' => $indexName,
+				'pageId' => (int) $pageId,
+				'profileName' => isset( $suggestionProfile[$pageId] ) ? $suggestionProfile[$pageId] : "",
+				'score' => $suggestion->getScore(),
+			);
+		}
+		$this->logContext['maxScore'] = $maxScore;
+
+		return new SearchSuggestionSet( $finalResults );
 	}
 
 	/**

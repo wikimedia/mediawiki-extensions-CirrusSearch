@@ -676,6 +676,13 @@ class ElasticsearchIntermediary {
 				$params['hitsOffset'] = intval( $offset );
 				$params['hits'] = array();
 				foreach ( $resultData['hits']['hits'] as $hit ) {
+					// @fixme: temporary plug
+					if ( !isset( $hit['_source']['namespace'] )
+						|| !isset( $hit['_source']['title'] )
+					) {
+						wfDebugLog( 'AdHocDebug', 'Unexpected search hit: ' . print_r( $hit, true ) );
+						continue;
+					}
 					// duplication of work ... this happens in the transformation
 					// stage but we can't see that here...Perhaps we instead attach
 					// this data at a later stage like CompletionSuggester?

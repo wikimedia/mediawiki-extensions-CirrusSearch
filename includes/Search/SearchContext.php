@@ -73,6 +73,11 @@ class SearchContext {
 	private $preferRecentHalfLife = 0;
 
 	/**
+	 * @var string rescore profile to use
+	 */
+	private $rescoreProfile;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -81,6 +86,7 @@ class SearchContext {
 		$this->searchTextQueryBuilderFactory = new SearchTextQueryBuilderFactory( $this );
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->namespaces = $namespaces;
+		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
 	}
 
 	/**
@@ -204,5 +210,19 @@ class SearchContext {
 	 */
 	public function getPreferRecentHalfLife() {
 		return $this->preferRecentHalfLife;
+	}
+
+	/**
+	 * @return string the rescore profile to use
+	 */
+	public function getRescoreProfile() {
+		return $this->rescoreProfile;
+	}
+
+	/**
+	 * @param string the rescore profile to use
+	 */
+	public function setRescoreProfile( $rescoreProfile ) {
+		$this->rescoreProfile = $rescoreProfile;
 	}
 }

@@ -56,10 +56,13 @@ class RescoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param string $profile
+	 * @param string|null $profile
 	 */
-	public function __construct( SearchContext $context, $profile ) {
+	public function __construct( SearchContext $context, $profile = null ) {
 		$this->context = $context;
+		if ( $profile === null ) {
+			$profile = $context->getRescoreProfile();
+		}
 		if ( is_string( $profile ) ) {
 			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profile );
 		}

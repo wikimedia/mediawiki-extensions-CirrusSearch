@@ -61,9 +61,17 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 			)
 		);
 
+		$profile = array(
+			'simple' => $simpleProfile,
+			'fuzzy' => $simpleFuzzy,
+		);
+
 		return array(
 			"simple" => array(
-				array( 'CirrusSearchCompletionSettings' => $simpleProfile ),
+				array(
+					'CirrusSearchCompletionSettings' => 'simple',
+					'CirrusSearchCompletionProfiles' => $profile,
+				),
 				10,
 				' complete me ',
 				null,
@@ -79,7 +87,10 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 				),
 			),
 			"simple with fuzzy" => array(
-				array( 'CirrusSearchCompletionSettings' => $simpleFuzzy ),
+				array(
+					'CirrusSearchCompletionSettings' => 'fuzzy',
+					'CirrusSearchCompletionProfiles' => $profile,
+				),
 				10,
 				' complete me ',
 				null,
@@ -108,7 +119,10 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 				),
 			),
 			"simple with variants" => array(
-				array( 'CirrusSearchCompletionSettings' => $simpleProfile ),
+				array(
+					'CirrusSearchCompletionSettings' => 'simple',
+					'CirrusSearchCompletionProfiles' => $profile,
+				),
 				10,
 				' complete me ',
 				array( ' variant1 ', ' complete me ', ' variant2 ' ),
@@ -163,12 +177,15 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testMinMaxDefaultProfile( $len, $query ) {
 		global $wgCirrusSearchCompletionProfiles;
-		$config = array( 'CirrusSearchCompletionSettings' => $wgCirrusSearchCompletionProfiles['default'] );
+		$config = array(
+			'CirrusSearchCompletionSettings' => 'fuzzy',
+			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
+		);
 		// Test that we generate at most 4 profiles
 		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), 1 );
 		list( $profiles, $suggest ) = $completion->testBuildQuery( $query, array() );
 		// Unused profiles are kept
-		$this->assertEquals( count( $wgCirrusSearchCompletionProfiles['default'] ), count( $profiles ) );
+		$this->assertEquals( count( $wgCirrusSearchCompletionProfiles['fuzzy'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertTrue( count( $suggest ) <= 4 );
 		// small queries
@@ -211,7 +228,8 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	public function testOffsets( \Elastica\Response $resp, $limit, $offset, $first, $last, $size, $hardLimit ) {
 		global $wgCirrusSearchCompletionProfiles;
 		$config = array(
-			'CirrusSearchCompletionSettings' => $wgCirrusSearchCompletionProfiles['default'],
+			'CirrusSearchCompletionSettings' => 'fuzzy',
+			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
 			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
 		);
 		// Test that we generate at most 4 profiles

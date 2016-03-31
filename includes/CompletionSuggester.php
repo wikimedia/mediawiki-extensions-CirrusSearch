@@ -131,6 +131,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	private $searchContext;
 
+	private $settings;
+
 	/**
 	 * Constructor
 	 * @param Connection $conn
@@ -140,10 +142,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
+	 * @param string|null $settings completion settings to use (see profiles/SuggestProfiles.php)
 	 * @throws \ConfigException
 	 */
 	public function __construct( Connection $conn, $limit, $offset = 0, SearchConfig $config = null, array $namespaces = null,
-		User $user = null, $index = false ) {
+		User $user = null, $index = false, $profileName = null ) {
 
 		if ( is_null( $config ) ) {
 			// @todo connection has an embedded config ... reuse that? somehow should
@@ -159,6 +162,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->offset = $offset;
 		$this->indexBaseName = $index ?: $config->getWikiId();
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
+
+		if ( $profileName == null ) {
+			$profileName = $this->config->get( 'CirrusSearchCompletionSettings' );
+		}
+		$this->settings = $this->config->getElement( 'CirrusSearchCompletionProfiles', $profileName );
 	}
 
 	/**
@@ -256,7 +264,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$queryLen = mb_strlen( trim( $this->term ) ); // Avoid cheating with spaces
 		$this->queryType = "comp_suggest";
 
-		$profiles = $this->config->get( 'CirrusSearchCompletionSettings' );
+		$profiles = $this->settings;
 		if ( $this->context != null && isset( $this->context['geo']['lat'] )
 			&& isset( $this->context['geo']['lon'] ) && is_numeric( $this->context['geo']['lat'] )
 			&& is_numeric( $this->context['geo']['lon'] )
@@ -369,14 +377,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * prepare the list of suggest requests used for geo context suggestions
-	 * This method will merge $this->config->get( 'CirrusSearchCompletionSettings' )
-	 * and $this->config->get( 'CirrusSearchCompletionGeoContextSettings' )
+	 * This method will merge completion settings with
+	 * $this->config->get( 'CirrusSearchCompletionGeoContextSettings' )
 	 * @return array of suggest request profiles
 	 */
 	private function prepareGeoContextSuggestProfiles() {
 		$profiles = array();
 		foreach ( $this->config->get( 'CirrusSearchCompletionGeoContextSettings' ) as $geoname => $geoprof ) {
-			foreach ( $this->config->get( 'CirrusSearchCompletionSettings' ) as $sugname => $sugprof ) {
+			foreach ( $this->settings as $sugname => $sugprof ) {
 				if ( !in_array( $sugname, $geoprof['with'] ) ) {
 					continue;
 				}

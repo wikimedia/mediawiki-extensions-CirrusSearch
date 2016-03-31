@@ -676,11 +676,11 @@ class ElasticsearchIntermediary {
 				$params['hitsOffset'] = intval( $offset );
 				$params['hits'] = array();
 				foreach ( $resultData['hits']['hits'] as $hit ) {
-					// @fixme: temporary plug
 					if ( !isset( $hit['_source']['namespace'] )
 						|| !isset( $hit['_source']['title'] )
 					) {
-						wfDebugLog( 'AdHocDebug', 'Unexpected search hit: ' . print_r( $hit, true ) );
+						// This is probably a query that does not return pages
+						// like geo or namespace queries
 						continue;
 					}
 					// duplication of work ... this happens in the transformation

@@ -775,4 +775,35 @@ class CirrusSearch extends SearchEngine {
 	public function setDumpAndDie( $dumpAndDie ) {
 		$this->dumpAndDie = $dumpAndDie;
 	}
+
+	/**
+	 * Perform a title search in the article archive.
+	 *
+	 * @param string $term Raw search term
+	 * @return Status<Title[]>
+	 */
+	public function searchArchiveTitle ( $term ) {
+
+		if ( !$this->config->get( 'CirrusSearchEnableArchive' ) ) {
+			return Status::newGood( [] );
+		}
+
+		$term = trim( $term );
+
+		if ( empty( $term ) ) {
+			return Status::newGood( [] );
+		}
+
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces,
+				null, $this->indexBaseName );
+		$searcher->setOptionsFromRequest( $this->request );
+
+		$status = $searcher->searchArchive( $term );
+		if ( $status->isOK() && $searcher->isReturnRaw() ) {
+			$status->setResult( true,
+				$searcher->processRawReturn( $status->getValue(), $this->request, $this->dumpAndDie ) );
+		}
+		return $status;
+	}
+
 }

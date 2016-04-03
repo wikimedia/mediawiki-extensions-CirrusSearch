@@ -4,12 +4,15 @@ namespace CirrusSearch;
 
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Elastica\Exception\RuntimeException;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\MultiMatch;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -122,6 +125,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var SearchContext
 	 */
 	protected $searchContext;
+
+	/**
+	 * Indexing type we'll be using.
+	 * @var string|\Elastica\Type
+	 */
+	private $pageType;
 
 	/**
 	 * Constructor
@@ -559,6 +568,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$query->addParam( 'stats', $syntax );
 		}
 		switch ( $this->sort ) {
+		case 'just_match':
+			// Use just matching scores, without any rescoring, and default sort.
 		case 'relevance':
 			break;  // The default
 		case 'title_asc':
@@ -579,6 +590,9 @@ class Searcher extends ElasticsearchIntermediary {
 				'missing' => '_last',
 			] ] );
 			break;
+		case 'none':
+			$query->setSort( [ '_doc' ] );
+			break;
 		default:
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Invalid sort type: {sort}",
@@ -595,8 +609,12 @@ class Searcher extends ElasticsearchIntermediary {
 			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
-		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
-		$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+		if ( $this->pageType ) {
+			$pageType = $this->pageType;
+		} else {
+			$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
+			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+		}
 
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
@@ -1070,4 +1088,48 @@ class Searcher extends ElasticsearchIntermediary {
 
 		return $result;
 	}
+
+	/**
+	 * Search titles in archive
+	 * @param string $term
+	 * @return Status<Title[]>
+	 */
+	public function searchArchive( $term ) {
+		list( $term, $fuzzyUnused ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
+		$this->setResultsType( new TitleResultsType( $this->config ) );
+
+		$this->pageType = $this->connection->getArchiveType( $this->indexBaseName );
+
+		// Setup the search query
+		$query = new BoolQuery();
+
+		$multi = new MultiMatch();
+		$multi->setType( 'best_fields' );
+		$multi->setTieBreaker( 0 );
+		$multi->setQuery( $term );
+		$multi->setFields( [
+			'title.near_match^100',
+			'title.near_match_asciifolding^75',
+			'title.plain^50',
+			'title^25'
+		] );
+		$multi->setOperator( 'AND' );
+
+		$fuzzy = new \Elastica\Query\Match();
+		$fuzzy->setFieldQuery( 'title.plain', $term );
+		$fuzzy->setFieldFuzziness( 'title.plain', 'AUTO' );
+		$fuzzy->setFieldOperator( 'title.plain', 'AND' );
+
+		$query->addShould( $multi );
+		$query->addShould( $fuzzy );
+		$query->setMinimumShouldMatch( 1 );
+
+		$this->sort = 'just_match';
+
+		$this->searchContext->setMainQuery( $query );
+		$this->searchContext->addSyntaxUsed( 'archive' );
+
+		return $this->searchOne();
+	}
+
 }

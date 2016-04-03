@@ -43,8 +43,20 @@ class DeletePages extends Job {
 	}
 
 	protected function doJob() {
+		global $wgCirrusSearchIndexDeletes;
 		$updater = $this->createUpdater();
 		$indexType = isset( $this->params[ 'indexType' ] ) ? $this->params[ 'indexType' ] : null;
-		return $updater->deletePages( [ $this->title ], [ $this->params[ 'docId' ] ], $indexType );
+		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
+
+		if ( $wgCirrusSearchIndexDeletes ) {
+			$success = $updater->archivePages( [
+				[
+					'title' => $this->title,
+					'page' => $this->params['docId'],
+				],
+			] );
+		}
+
+		return true;
 	}
 }

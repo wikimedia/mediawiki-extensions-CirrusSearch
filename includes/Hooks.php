@@ -826,4 +826,29 @@ class Hooks {
 		);
 		return true;
 	}
+
+
+	/**
+	 * When article is undeleted - check the archive for other instances of the title,
+	 * if not there - drop it from the archive.
+	 * @param Title $title
+	 * @param bool $create
+	 * @param string $comment
+	 * @param string $oldPageId
+	 * @param array $restoredPages
+	 * @return bool
+	 */
+	public static function onArticleUndelete( Title $title, $create, $comment, $oldPageId, $restoredPages ) {
+		global $wgCirrusSearchIndexDeletes;
+		if ( !$wgCirrusSearchIndexDeletes ) {
+			// Not indexing, thus nothing to remove here.
+			return true;
+		}
+		JobQueueGroup::singleton()->push(
+			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
+		);
+		return true;
+
+	}
+
 }

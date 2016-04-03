@@ -379,7 +379,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
 			$this->getMappingConfig(),
-			[ 'page' => $this->getPageType(), 'namespace' => $this->getNamespaceType() ],
+			[
+				'page' => $this->getPageType(),
+				'namespace' => $this->getNamespaceType(),
+				'archive' => $this->getArchiveType()
+			],
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
@@ -534,6 +538,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	protected function getNamespaceType() {
 		return $this->getIndex()->getType( Connection::NAMESPACE_TYPE_NAME );
+	}
+
+	/**
+	 * Get the namespace type being updated by the search config.
+	 *
+	 * @return Elastica\Type
+	 */
+	protected function getArchiveType() {
+		return $this->getIndex()->getType( Connection::ARCHIVE_TYPE_NAME );
 	}
 
 	/**

@@ -1474,3 +1474,17 @@ Example:
         'search.slowlog.threshold.fetch.info' => '1s',
         'search.slowlog.threshold.fetch.info' => '800ms',
     ];
+
+; $wgCirrusSearchEnableArchive
+Default:
+    $wgCirrusSearchEnableArchive = false;
+
+Enable searching for deleted pages in the ElasticSearch indexed archive.
+
+; $wgCirrusSearchIndexDeletes
+
+Default:
+    $wgCirrusSearchIndexDeletes = false;
+
+Whether deletes are indexed for archive search when page is deleted. Note that searching
+for archived pages can be done by manually indexing them too.

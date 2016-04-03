@@ -59,6 +59,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Iterator\\CallbackIterator' => __DIR__ . '/includes/iterator/CallbackIterator.php',
 	'CirrusSearch\\Iterator\\IteratorDecorator' => __DIR__ . '/includes/iterator/IteratorDecorator.php',
 	'CirrusSearch\\Job\\CheckerJob' => __DIR__ . '/includes/Job/CheckerJob.php',
+	'CirrusSearch\\Job\\DeleteArchive' => __DIR__ . '/includes/Job/DeleteArchive.php',
 	'CirrusSearch\\Job\\DeletePages' => __DIR__ . '/includes/Job/DeletePages.php',
 	'CirrusSearch\\Job\\ElasticaWrite' => __DIR__ . '/includes/Job/ElasticaWrite.php',
 	'CirrusSearch\\Job\\IncomingLinkCount' => __DIR__ . '/includes/Job/IncomingLinkCount.php',

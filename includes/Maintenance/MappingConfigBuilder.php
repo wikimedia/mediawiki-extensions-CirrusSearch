@@ -270,6 +270,18 @@ class MappingConfigBuilder {
 			],
 		];
 
+		$config[ 'archive' ] = [
+			'dynamic' => false,
+			'_all' => [ 'enabled' => false ],
+			'properties' => [
+				'namespace' => $page['properties']['namespace'],
+				'title' => $page['properties']['title'],
+				'wiki' => $page['properties']['wiki'],
+			],
+		];
+		// Do not use copy settings for archive
+		unset( $config['archive']['properties']['title']['copy_to'] );
+
 		Hooks::run( 'CirrusSearchMappingConfig', [ &$config, $this ] );
 
 		return $config;

@@ -159,6 +159,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $indexType type of index to which to send $data
 	 * @param (\Elastica\Script|\Elastica\Document)[] $data documents to send
+	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
 	public function sendData( $indexType, $data, $elasticType = Connection::PAGE_TYPE_NAME ) {
@@ -259,6 +260,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 *
 	 * @param string[] $docIds elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
+	 * @param string|null $elasticType Mapping type to use for the document. null means all types.
 	 * @return Status
 	 */
 	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {

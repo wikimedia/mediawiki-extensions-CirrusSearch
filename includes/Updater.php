@@ -233,25 +233,83 @@ class Updater extends ElasticsearchIntermediary {
 	 *
 	 * @param Title[] $titles List of titles to delete.  If empty then skipped other index
 	 *      maintenance is skipped.
-	 * @param integer[] $docIds List of elasticsearch document ids to delete
-	 * @param string $indexType index from which to delete
-	 * @return bool True if nothing happened or we successfully deleted, false on failure
+	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
+	 * @param string|null $indexType index from which to delete.  null means all.
+	 * @param string $elasticType Mapping type to use for the document
+	 * @return bool Always returns true.
 	 */
-	public function deletePages( $titles, $docIds, $indexType = null ) {
+	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		$job = new Job\ElasticaWrite(
 			$titles ? reset( $titles ) : Title::makeTitle( 0, "" ),
 			[
 				'method' => 'sendDeletes',
-				'arguments' => [ $docIds, $indexType ],
+				'arguments' => [ $docIds, $indexType, $elasticType ],
 				'cluster' => $this->writeToClusterName,
 			]
 		);
 		// This job type will insert itself into the job queue
 		// with a delay if writes to ES are currently paused
 		$job->run();
+
+		return true;
 	}
 
+	/**
+	 * Add documents to archive index.
+	 * @param array $archived
+	 * @return bool
+	 */
+	public function archivePages( $archived ) {
+		if ( !$this->searchConfig->getElement( 'CirrusSearchIndexDeletes' ) ) {
+			// Disabled by config - don't do anything
+			return true;
+		}
+		$docs = $this->buildArchiveDocuments( $archived );
+		$head = reset( $archived );
+		foreach ( array_chunk( $docs, 10 ) as $chunked ) {
+			$job = new Job\ElasticaWrite(
+				$head['title'],
+				[
+					'method' => 'sendData',
+					'arguments' => [ Connection::GENERAL_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
+					'cluster' => $this->writeToClusterName
+				]
+			);
+			$job->run();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Build Elastica documents for archived pages.
+	 * @param array $archived
+	 * @return \Elastica\Document[]
+	 */
+	private function buildArchiveDocuments( array $archived ) {
+		$docs = [];
+		foreach ( $archived as $delete ) {
+			if ( !isset( $delete['title'] ) ) {
+				// These come from pages that still exist, but are redirects.
+				// This is non-obvious and we probably need a better way...
+				continue;
+			}
+			/** @var Title $title */
+			$title = $delete['title'];
+			$doc = new \Elastica\Document( $delete['page'], [
+				'namespace' => $title->getNamespace(),
+				'title' => $title->getText(),
+				'wiki' => wfWikiId(),
+			] );
+			$doc->setDocAsUpsert( true );
+			$doc->setRetryOnConflict( $this->searchConfig->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );
+
+			$docs[] = $doc;
+		}
+
+		return $docs;
+	}
 	/**
 	 * @param \WikiPage[] $pages
 	 * @param int $flags

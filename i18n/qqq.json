@@ -39,8 +39,12 @@
 	"cirrussearch-completion-profile-strict": "Strict profile for completion (search as you type).",
 	"cirrussearch-completion-profile-classic": "Classic profile for completion (search as you type).",
 	"cirrussearch-completion-profile-normal": "Normal profile for completion (search as you type).",
+	"cirrussearch-completion-profile-normal-subphrases": "Normal profile with subphrases for completion (search as you type).",
 	"cirrussearch-completion-profile-fuzzy": "Fuzzy profile for completion (search as you type).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Fuzzy profile with subphrases for completion (search as you type).",
 	"cirrussearch-qi-profile-classic": "Classic query independent search profile (affects fulltext search ranking algorithm).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classic query independent search profile without boost links (affects fulltext search ranking algorithm).",
-	"cirrussearch-qi-profile-empty": "Empty query independent search profile (affects fulltext search ranking algorithm)."
+	"cirrussearch-qi-profile-empty": "Empty query independent search profile (affects fulltext search ranking algorithm).",
+	"cirrussearch-pref-completion-profile-help": "Help message for completion profile settings in the user preferences.",
+	"prefs-completion": "Section name for completion settings in the user preferences."
 }

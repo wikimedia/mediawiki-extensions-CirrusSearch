@@ -806,4 +806,30 @@ class Hooks {
 			$textMatches
 		] );
 	}
+
+	public static function onGetPreferences( $user, &$preferences ) {
+		$search = new CirrusSearch();
+		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
+		if ( !empty( $profiles ) ) {
+			$options = [];
+			foreach( $profiles as $prof ) {
+				$options[wfMessage( $prof['desc-message'] )->text()] = $prof['name'];
+			}
+			$preferences['cirrussearch-pref-completion-profile'] = array(
+				'type' => 'radio',
+				'section' => 'searchoptions/completion',
+				'options' => $options,
+				'help-message' => 'cirrussearch-pref-completion-profile-help',
+			);
+		}
+		return true;
+	}
+
+	public static function onUserGetDefaultOptions( &$defaultOptions ) {
+		$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
+		$defaultOptions['cirrussearch-pref-completion-profile'] = $config->get( 'CirrusSearchCompletionSettings' );
+		return true;
+	}
 }

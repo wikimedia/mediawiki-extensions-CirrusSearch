@@ -141,9 +141,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBoostLinks() {
-		$settings = array(
-			'CirrusSearchWikimediaExtraPlugin' => array ( 'field_value_factor_with_default' => true )
-		);
+		$settings = array();
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, null );
 		$context->setBoostLinks( true );
@@ -155,27 +153,12 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$array = $fScore->toArray();
 		$this->assertTrue( isset( $array['function_score']['functions'][0] ) );
 		$array = $array['function_score']['functions'][0];
-		$this->assertTrue( isset( $array['field_value_factor_with_default'] ) );
+		$this->assertTrue( isset( $array['field_value_factor'] ) );
 
 		$context->setBoostLinks( false );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
-
-		// test without wikimedia extra plugin
-		$settings = array();
-		$config = new HashSearchConfig( array() );
-		$context = new SearchContext( $config, null );
-		$builder = new IncomingLinksFunctionScoreBuilder( $context, 1 );
-		$context->setBoostLinks( true );
-
-		$builder->append( $fScore );
-		$this->assertFalse( $fScore->isEmptyFunction() );
-
-		$array = $fScore->toArray();
-		$this->assertTrue( isset( $array['function_score']['functions'][0] ) );
-		$array = $array['function_score']['functions'][0];
-		$this->assertTrue( isset( $array['script_score'] ) );
 	}
 
 	public function testNamespacesBoost() {

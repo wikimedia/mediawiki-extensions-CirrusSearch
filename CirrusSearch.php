@@ -152,9 +152,6 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // This turns on noop-detection for updates and is compatible with
 // wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
-// This turns on field_value_factors for rankings and is compatible with
-// wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
-// $wgCirrusSearchWikimediaExtraPlugin[ 'field_value_factor_with_default' ] = true;
 // This allows forking on reindexing and is compatible with wikimedia-extra
 // versions 1.3.1, 1.4.2, and 1.5.0
 // $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;

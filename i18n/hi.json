@@ -19,5 +19,6 @@
 	"apihelp-cirrus-settings-dump-description": "इस विकि हेतु सर्कसखोज का डंप",
 	"apihelp-cirrus-settings-dump-example": "इस विकि हेतु सर्कसखोज डंप हासिल करें",
 	"cirrussearch-give-feedback": "अपनी प्रतिक्रिया दें",
+	"cirrussearch-query-too-long": "खोज का शब्द अनुमति की सीमा से बाहर है। ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "सुझाव पूर्ण करने वाला"
 }

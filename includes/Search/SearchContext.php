@@ -131,14 +131,6 @@ class SearchContext {
 	}
 
 	/**
-	 * @return boolean true  if we can use the function score field_value_factor_with_default provided
-	 * by the wikimedia extra plugin
-	 */
-	public function isUseFieldValueFactorWithDefault() {
-		return !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'field_value_factor_with_default' ) );
-	}
-
-	/**
 	 * @param string $query
 	 * @param boolean $isRescore
 	 * @return \Elastica\Query\Simple

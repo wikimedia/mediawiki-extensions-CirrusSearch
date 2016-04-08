@@ -521,16 +521,11 @@ class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
 		if( !$this->context->isBoostLinks() ) {
 			return;
 		}
-		if( $this->context->isUseFieldValueFactorWithDefault() ) {
-			$functionScore->addFunction( 'field_value_factor_with_default', array(
-				'field' => 'incoming_links',
-				'modifier' => 'log2p',
-				'missing' => 0,
-			) );
-		} else {
-			$scoreBoostExpression = "log10(doc['incoming_links'].value + 2)";
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $scoreBoostExpression, null, 'expression' ), null, $this->weight );
-		}
+		$functionScore->addFunction( 'field_value_factor', array(
+			'field' => 'incoming_links',
+			'modifier' => 'log2p',
+			'missing' => 0,
+		) );
 	}
 }
 

@@ -34,7 +34,6 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
 
 $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
 $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
-$wgCirrusSearchWikimediaExtraPlugin[ 'field_value_factor_with_default' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 
 $wgCirrusSearchUseCompletionSuggester = 'yes';

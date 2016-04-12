@@ -158,6 +158,9 @@ class Connection extends ElasticaConnection {
 			return $this->config->get( 'CirrusSearchServers' );
 		}
 		$config = $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
+		if ( $config === null ) {
+			throw new \RuntimeException( "No configuration available for cluster: {$this->cluster}" );
+		}
 
 		// Elastica will only create transports from within it's own
 		// namespace. To use the CirrusSearch PooledHttp(s) this

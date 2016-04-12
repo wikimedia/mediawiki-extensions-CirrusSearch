@@ -113,24 +113,17 @@ class PageTextBuilder extends ParseBuilder {
 
 		// Strip elements from the page that we never want in the search text.
 		$formatter->remove( $this->excludedElementSelectors );
-		$filterResult = $formatter->filterContent();
-		if ( $filterResult === null ) {
-			// We're running against Mediawiki < 1.24wm10 which won't support auxiliary text
-			// because it can't extract it using the HtmlFormatter.  We'll just set text to
-			// all the text.
-			$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
-			$auxiliary = array();
-		} else {
-			// Strip elements from the page that are auxiliary text.  These will still be
-			// searched but matches will be ranked lower and non-auxiliary matches will be
-			// prefered in highlighting.
-			$formatter->remove( $this->auxiliaryElementSelectors );
-			$auxiliaryElements = $formatter->filterContent();
-			$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
-			$auxiliary = array();
-			foreach ( $auxiliaryElements as $auxiliaryElement ) {
-				$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
-			}
+		$formatter->filterContent();
+
+		// Strip elements from the page that are auxiliary text.  These will still be
+		// searched but matches will be ranked lower and non-auxiliary matches will be
+		// prefered in highlighting.
+		$formatter->remove( $this->auxiliaryElementSelectors );
+		$auxiliaryElements = $formatter->filterContent();
+		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
+		$auxiliary = array();
+		foreach ( $auxiliaryElements as $auxiliaryElement ) {
+			$auxiliary[] = trim( Sanitizer::stripAllTags( $formatter->getText( $auxiliaryElement ) ) );
 		}
 
 		return array( $allText, $opening, $auxiliary );

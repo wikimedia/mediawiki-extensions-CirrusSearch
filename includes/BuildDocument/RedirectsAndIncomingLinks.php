@@ -5,7 +5,6 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use Elastica\Filter\Terms;
-use Elastica\Search;
 use Elastica\Query\Filtered;
 use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
@@ -32,12 +31,19 @@ use SplObjectStorage;
  */
 class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	/**
-	 * @var static copy of this class kept during batches
+	 * @var SplObjectStorage|null copy of this class kept during batches
 	 */
 	private static $externalLinks = null;
 
-	private $linkCountMultiSearch = null;
-	private $linkCountClosures = null;
+	/**
+	 * @var \Elastica\Multi\Search
+	 */
+	private $linkCountMultiSearch;
+
+	/**
+	 * @var callable[]
+	 */
+	private $linkCountClosures = array();
 
 	public static function buildDocument( $doc, $title, Connection $conn ) {
 		if ( self::$externalLinks === null ) {
@@ -65,7 +71,6 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	protected function __construct( Connection $conn ) {
 		parent::__construct( $conn, null, null );
 		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
-		$this->linkCountClosures = array();
 	}
 
 	private function realBuildDocument( $doc, $title ) {
@@ -135,17 +140,20 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 
 	/**
 	 * Build a Search that will count all pages that link to $titles.
-	 * @param string $titles title in prefixedDBKey form
-	 * @return Search that counts all pages that link to $titles
+	 * @param string[] $titles title in prefixedDBKey form
+	 * @return \Elastica\Search that counts all pages that link to $titles
 	 */
-	private function buildCount( $titles ) {
+	private function buildCount( array $titles ) {
 		$filter = new Terms( 'outgoing_link', $titles );
 		$filter->setCached( false ); // We're not going to be redoing this any time soon.
 		$type = $this->connection->getPageType( wfWikiId() );
-		$search = new Search( $type->getIndex()->getClient() );
+		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
-		$search->setOption( Search::OPTION_SEARCH_TYPE, Search::OPTION_SEARCH_TYPE_COUNT );
+		$search->setOption(
+			\Elastica\Search::OPTION_SEARCH_TYPE,
+			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT
+		);
 		$matchAll = new MatchAll();
 		$search->setQuery( new Filtered( $matchAll, $filter ) );
 		$search->getQuery()->addParam( 'stats', 'link_count' );

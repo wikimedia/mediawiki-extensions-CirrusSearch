@@ -49,7 +49,7 @@ interface SuggestScoringMethod {
 	 * @param array $doc A document from the PAGE type
 	 * @return int the weight of the document
 	 */
-	public function score( $doc );
+	public function score( array $doc );
 
 	/**
 	 * The list of fields needed to compute the score.
@@ -73,7 +73,7 @@ class IncomingsLinksScoringMethod implements SuggestScoringMethod {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function score( $doc ) {
+	public function score( array $doc ) {
 		return isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0;
 	}
 
@@ -84,6 +84,9 @@ class IncomingsLinksScoringMethod implements SuggestScoringMethod {
 		return array( 'incoming_links' );
 	}
 
+	/**
+	 * @param int $maxDocs
+	 */
 	public function setMaxDocs( $maxDocs ) {}
 }
 
@@ -149,11 +152,11 @@ class QualityScore implements SuggestScoringMethod {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function score( $doc ) {
+	public function score( array $doc ) {
 		return intval( $this->intermediateScore( $doc ) * self::SCORE_RANGE );
 	}
 
-	protected function intermediateScore( $doc ) {
+	protected function intermediateScore( array $doc ) {
 		$incLinks = $this->scoreNormL2( isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0, $this->incomingLinksNorm );
 		$pageSize = $this->scoreNormL2( isset( $doc['text_bytes'] ) ? $doc['text_bytes'] : 0, self::PAGE_SIZE_NORM );
 		$extLinks = $this->scoreNorm( isset( $doc['external_link'] ) ? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
@@ -259,6 +262,9 @@ class QualityScore implements SuggestScoringMethod {
 		return array( 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' );
 	}
 
+	/**
+	 * @param int $maxDocs
+	 */
 	public function setMaxDocs( $maxDocs ) {
 		$this->maxDocs = $maxDocs;
 		// We normalize incoming links according to the size of the index
@@ -289,7 +295,7 @@ class PQScore extends QualityScore {
 		return array_merge( parent::getRequiredFields(), array( 'popularity_score' ) );
 	}
 
-	public function score( $doc ) {
+	public function score( array $doc ) {
 		$score = $this->intermediateScore( $doc ) * self::QSCORE_WEIGHT;
 		$pop = isset( $doc['popularity_score'] ) ? $doc['popularity_score'] : 0;
 		if ( $pop > self::POPULARITY_MAX ) {

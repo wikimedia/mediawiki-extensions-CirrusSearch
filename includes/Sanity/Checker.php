@@ -28,9 +28,24 @@ use WikiPage;
  */
 
 class Checker {
+	/**
+	 * @var Connection
+	 */
 	private $connection;
+
+	/**
+	 * @var Searcher Used for fetching data, so we can check the content.
+	 */
 	private $searcher;
+
+	/**
+	 * @var Remediator Do something with the problems we found
+	 */
 	private $remediator;
+
+	/**
+	 * @var bool Should we log id's that are found to have no problems
+	 */
 	private $logSane;
 
 	/**
@@ -39,9 +54,9 @@ class Checker {
 	 * @param Remediator $remediator the remediator to which to send titles
 	 *   that are insane
 	 * @param Searcher $searcher searcher to use for fetches
-	 * @param boolean $logSane should we log sane ids
+	 * @param bool $logSane should we log sane ids
 	 */
-	public function __construct( Connection $connection, $remediator, $searcher, $logSane ) {
+	public function __construct( Connection $connection, Remediator $remediator, Searcher $searcher, $logSane ) {
 		$this->connection = $connection;
 		$this->remediator = $remediator;
 		$this->searcher = $searcher;
@@ -50,6 +65,7 @@ class Checker {
 
 	/**
 	 * Check if a title is insane.
+	 *
 	 * @param int $pageId page to check
 	 * @return Status status of the operation
 	 */

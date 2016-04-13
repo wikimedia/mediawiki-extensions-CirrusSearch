@@ -8,8 +8,10 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
+use CirrusSearch\BuildDocument\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use Elastica;
+use Elastica\Index;
 use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
@@ -78,7 +80,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $scoreMethod;
 
 	/**
-	 * @var old suggester index that will be deleted at the end of the process
+	 * @var Index old suggester index that will be deleted at the end of the process
 	 */
 	private $oldIndex;
 
@@ -124,6 +126,21 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	public $builder;
 
+	/**
+	 * @var AnalysisConfigBuilder
+	 */
+	private $analysisConfigBuilder;
+
+	/**
+	 * @var bool
+	 */
+	private $recycle = false;
+
+	/**
+	 * @var string[]
+	 */
+	private $bannedPlugins;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Create a new suggester index. Always operates on a single cluster." );
@@ -157,7 +174,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
 			$wgPoolCounterConf,
-			$wgCirrusSearchMasterTimeout;
+			$wgCirrusSearchMasterTimeout,
+			$wgCirrusSearchMaxShardsPerNode;
 
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
@@ -769,6 +787,14 @@ class UpdateSuggesterIndex extends Maintenance {
 		$validators[] = $this->getShardAllocationValidator();
 		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexTypeName, $this->maxShardsPerNode, $this );
 		return $validators;
+	}
+
+	/**
+	 * @return \CirrusSearch\Maintenance\Validators\ShardAllocationValidator
+	 */
+	private function getShardAllocationValidator() {
+		global $wgCirrusSearchIndexAllocation;
+		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
 	}
 
 	/**

@@ -460,7 +460,7 @@ class ForceSearchIndex extends Maintenance {
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
 		$dbr = $this->getDB( DB_SLAVE );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
-		$minNamespace = $dbr->addQuotes( $minNamespace );
+		$minNamespace = $dbr->addQuotes( (string) $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$where = array(

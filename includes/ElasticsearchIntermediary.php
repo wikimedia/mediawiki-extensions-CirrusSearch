@@ -232,14 +232,14 @@ class ElasticsearchIntermediary {
 		}
 		$resultHits = array();
 		foreach ( self::$resultTitleStrings as $titleString ) {
-			$resultHits[] = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array(
-				// where did this come from? Who knows ... give it some defaults so avro doesn't bail
-				// This *must* match the names and types of the CirrusSearchHit record in the CirrusSearchRequestSet
-				// logging channel avro schema.
+			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array();
+			// Apply defaults to ensure all properties are accounted for.
+			$resultHits[] = $hit + array(
 				'title' => $titleString,
 				'index' => "",
 				'pageId' => -1,
 				'score' => -1,
+				'profileName' => ""
 			);
 		}
 

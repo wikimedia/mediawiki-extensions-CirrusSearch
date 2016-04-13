@@ -21,14 +21,16 @@ class HttpAccept implements Detector {
 	 */
 	protected $httpLang;
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->wikiLang = $GLOBALS['wgContLang']->getCode();
 		$this->httpLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
 	}
 
-	/* (non-PHPdoc)
-	 * @see \CirrusSearch\LanguageDetector\Detector::detect()
+	/**
+	 * Detect language
+	 * @param CirrusSearch $cirrus Searching class
+	 * @param string $text Text to detect language
+	 * @return string|null Preferred language, or null if none found
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
 		foreach ( $this->httpLang  as $lang ) {

@@ -8,8 +8,11 @@ use MediaWiki\Logger\LoggerFactory;
  * Try to detect language with TextCat text categorizer
  */
 class TextCat implements Detector {
-	/* (non-PHPdoc)
-	 * @see \CirrusSearch\LanguageDetector\Detector::detect()
+	/**
+	 * Detect language
+	 * @param CirrusSearch $cirrus Searching class
+	 * @param string $text Text to detect language
+	 * @return string|null Preferred language, or null if none found
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
 		$config = $cirrus->getConfig();

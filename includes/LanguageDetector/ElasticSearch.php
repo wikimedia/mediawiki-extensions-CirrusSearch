@@ -11,8 +11,11 @@ use MediaWiki\Logger\LoggerFactory;
  * See: https://github.com/jprante/elasticsearch-langdetect
  */
 class ElasticSearch implements Detector {
-	/* (non-PHPdoc)
-	 * @see \CirrusSearch\LanguageDetector\Detector::detect()
+	/**
+	 * Detect language
+	 * @param CirrusSearch $cirrus Searching class
+	 * @param string $text Text to detect language
+	 * @return string|null Preferred language, or null if none found
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
 		$client = $cirrus->getConnection()->getClient();

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use HtmlFormatter;
+use HtmlFormatter\HtmlFormatter;
 use MediaWiki\Logger\LoggerFactory;
 use ParserOutput;
 use Sanitizer;

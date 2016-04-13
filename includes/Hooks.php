@@ -172,7 +172,7 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		$cache = \ObjectCache::newAccelerator( CACHE_NONE );
+		$cache = \ObjectCache::getLocalServerInstance();
 		$lines = $cache->getWithSetCallback(
 			$cache->makeKey( 'cirrussearch-morelikethis-settings' ),
 			600,

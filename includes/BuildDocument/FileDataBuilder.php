@@ -41,7 +41,7 @@ class FileDataBuilder extends Builder {
 		if ( $this->file->getHandler() ) {
 			$fileText = $this->file->getHandler()->getEntireText( $this->file );
 			if ( $fileText ) {
-				$this->doc->add( 'file_text', $fileText );
+				$this->doc->set( 'file_text', $fileText );
 			}
 		}
 	}

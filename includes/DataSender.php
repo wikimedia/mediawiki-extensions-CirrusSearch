@@ -29,6 +29,12 @@ use WikiPage;
 class DataSender extends ElasticsearchIntermediary {
 	const ALL_INDEXES_FROZEN_NAME = 'freeze_everything';
 
+	/** @var \Psr\Log\LoggerInterface */
+	private $log;
+
+	/** @var \Psr\Log\LoggerInterface */
+	private $failedLog;
+
 	/**
 	 * @var Connection
 	 */

@@ -11,9 +11,9 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
-use ConfigFactory;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MWNamespace;
 use ObjectCache;
 use SearchResultSet;
@@ -209,7 +209,9 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( is_null( $config ) ) {
 			// @todo connection has an embeded config ... reuse that? somehow should
 			// at least ensure they are the same.
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );

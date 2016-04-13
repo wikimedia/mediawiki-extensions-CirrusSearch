@@ -1,9 +1,9 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
-use ConfigFactory;
-use \CirrusSearch\SearchConfig;
-use \Hooks;
+use CirrusSearch\SearchConfig;
+use Hooks;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Builds elasticsearch mapping configuration arrays.
@@ -68,7 +68,9 @@ class MappingConfigBuilder {
 	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
 		if ( is_null ( $config ) ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 	}

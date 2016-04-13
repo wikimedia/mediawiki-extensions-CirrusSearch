@@ -6,11 +6,11 @@ use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
-use ConfigFactory;
 use DeferredUpdates;
 use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
+use MediaWiki\MediaWikiServices;
 use SpecialSearch;
 use Title;
 use RecursiveDirectoryIterator;
@@ -625,7 +625,9 @@ class Hooks {
 	 * @return Connection
 	 */
 	private static function getConnection() {
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		return new Connection( $config );
 	}
 

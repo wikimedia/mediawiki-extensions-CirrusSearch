@@ -139,4 +139,13 @@ class SourceRegex extends AbstractFilter {
     public function setLocale( $locale ) {
         return $this->setParam( 'locale', $locale );
     }
+
+	/**
+	 * @param int $maxNgrams The maximum number of ngrams to extracted from the 
+	 *  regex. If more could be extracted from the regex tey are ignored.
+	 * @return $this
+	 */
+	public function setMaxNgramsExtracted( $maxNgrams ) {
+		return $this->setParam( 'max_ngrams_extracted', $maxNgrams );
+	}
 }

@@ -257,6 +257,9 @@ class ElasticsearchIntermediary {
 			'payload' => array(
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
+				// Helps to track down what actually caused the request. Will promote to full
+				// param if it proves usefull
+				'queryString' => http_build_query( $_GET ),
 			),
 			'requests' => $requests,
 		);

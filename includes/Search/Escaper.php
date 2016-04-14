@@ -22,6 +22,9 @@ namespace CirrusSearch\Search;
  */
 class Escaper {
 
+	/**
+	 * @var string MediaWiki language code
+	 */
 	private $language;
 
 	/**
@@ -30,11 +33,19 @@ class Escaper {
 	 */
 	private $allowLeadingWildcard;
 
+	/**
+	 * @param string $language MediaWiki language code
+	 * @param bool $allowLeadingWildcard
+	 */
 	public function __construct( $language, $allowLeadingWildcard = true ) {
 		$this->language = $language;
 		$this->allowLeadingWildcard = $allowLeadingWildcard;
 	}
 
+	/**
+	 * @param string $text
+	 * @return string
+	 */
 	public function escapeQuotes( $text ) {
 		if ( $this->language === 'he' ) {
 			// Hebrew uses the double quote (") character as a standin for quotation marks (“”)
@@ -59,6 +70,9 @@ class Escaper {
 	 * extra index for.
 	 * ": Perform a phrase search for the quoted term.  If the "s aren't balanced we insert one
 	 * at the end of the term to make sure elasticsearch doesn't barf at us.
+	 *
+	 * @param string $string
+	 * @return string
 	 */
 	public function fixupQueryStringPart( $string ) {
 		// Escape characters that can be escaped with \\
@@ -84,6 +98,7 @@ class Escaper {
 	 * Make sure that all operators and lucene syntax is used correctly in the query string
 	 * and store if this is a fuzzy query.
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
+	 *
 	 * @param string $string
 	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
 	 */
@@ -150,14 +165,26 @@ class Escaper {
 		return array( $string, $fuzzyQuery );
 	}
 
+	/**
+	 * @param string[] $matches
+	 * @return string
+	 */
 	private static function escapeBadSyntax( $matches ) {
 		return "\\" . implode( "\\", str_split( $matches[ 0 ] ) );
 	}
 
+	/**
+	 * @param string[] $matches
+	 * @return string
+	 */
 	private static function lowercaseMatched( $matches ) {
 		return strtolower( $matches[ 0 ] );
 	}
 
+	/**
+	 * @param string $text
+	 * @return string
+	 */
 	public function balanceQuotes( $text ) {
 		$inQuote = false;
 		$inEscape = false;
@@ -183,6 +210,8 @@ class Escaper {
 
 	/**
 	 * Is leading wildcard allowed?
+	 *
+	 * @return bool
 	 */
 	public function getAllowLeadingWildcard() {
 		return $this->allowLeadingWildcard;

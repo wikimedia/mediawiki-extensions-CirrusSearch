@@ -64,6 +64,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Build the result.
+	 *
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param string $interwiki Interwiki prefix, if any
@@ -172,6 +173,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Escape highlighted text coming back from Elasticsearch.
+	 *
 	 * @param string $snippet highlighted snippet returned from elasticsearch
 	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
@@ -188,6 +190,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Checks if a snippet contains matches by looking for HIGHLIGHT_PRE.
+	 *
 	 * @param string $snippet highlighted snippet returned from elasticsearch
 	 * @return boolean true if $snippet contains matches, false otherwise
 	 */
@@ -197,6 +200,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
+	 *
 	 * @param string $snippet Highlighted redirect snippet
 	 * @param array[]|null $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
 	 * @return Title|null object representing the redirect
@@ -246,6 +250,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Set interwiki and interwikiNamespace properties
+	 *
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param string $interwiki Interwiki prefix, if any
 	 */

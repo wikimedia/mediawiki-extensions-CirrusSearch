@@ -7,8 +7,6 @@ use Elastica\Query\FunctionScore;
 use Elastica\Filter\AbstractFilter;
 use MWNamespace;
 
-
-
 /**
  * Set of rescore builders
  *
@@ -35,6 +33,8 @@ class RescoreBuilder {
 	/**
 	 * List of allowed rescore params
 	 * @todo: refactor to const with php 5.6
+	 *
+	 * @var string[] $rescoreMainParams
 	 */
 	private static $rescoreMainParams = array(
 		'query_weight',
@@ -54,6 +54,10 @@ class RescoreBuilder {
 	 */
 	private $profile;
 
+	/**
+	 * @param SearchContext $context
+	 * @param string $profile
+	 */
 	public function __construct( SearchContext $context, $profile ) {
 		$this->context = $context;
 		if ( is_string( $profile ) ) {
@@ -86,9 +90,11 @@ class RescoreBuilder {
 
 	/**
 	 * builds the 'query' attribute by reading type
-	 * @return array the rescore query
+	 *
+	 * @param array $rescoreDef
+	 * @return FunctionScore|null the rescore query
 	 */
-	private function buildRescoreQuery( $rescoreDef ) {
+	private function buildRescoreQuery( array $rescoreDef ) {
 		switch( $rescoreDef['type'] ) {
 		case self::FUNCTION_SCORE_TYPE:
 			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
@@ -98,10 +104,11 @@ class RescoreBuilder {
 	}
 
 	/**
+	 * @param array $rescore
 	 * @return integer the window size defined in the profile
 	 * or the value from config if window_size_override is set.
 	 */
-	private function windowSize( $rescore ) {
+	private function windowSize( array $rescore ) {
 		if ( isset( $rescore['window_size_override'] ) ) {
 			$windowSize = $this->context->getConfig()->get( $rescore['window_size_override'] );
 			if ( $windowSize !== null ) {
@@ -113,9 +120,11 @@ class RescoreBuilder {
 
 	/**
 	 * Inspect requested namespaces and return the supported profile
+	 *
+	 * @param array $profile
 	 * @return array the supported rescore profile.
 	 */
-	private function getSupportedProfile( $profile ) {
+	private function getSupportedProfile( array $profile ) {
 		if ( !is_array( $profile['supported_namespaces'] ) ) {
 			switch ( $profile['supported_namespaces'] ) {
 			case 'all':
@@ -173,6 +182,8 @@ class FunctionScoreChain {
 	 * we keep boost and boost_mode even if they do not make sense
 	 * here since we do not allow to specify the query param.
 	 * The query will be MatchAll with a score to 1.
+	 *
+	 * @var string[]
 	 */
 	private static $functionScoreParams = array(
 		'boost',
@@ -204,9 +215,10 @@ class FunctionScoreChain {
 
 	/**
 	 * Builds a new function score chain.
+	 *
 	 * @param SearchContext $context
 	 * @param string $chainName the name of the chain (must be a valid
-	 * chain in wgCirrusSearchRescoreFunctionScoreChains)
+	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
 	 */
 	public function __construct( SearchContext $context, $chainName ) {
 		$this->chainName = $chainName;
@@ -225,7 +237,7 @@ class FunctionScoreChain {
 
 	/**
 	 * @return FunctionScore|null the rescore query or null none of functions were
-	 * needed.
+	 *  needed.
 	 */
 	public function buildRescoreQuery() {
 		if ( !isset( $this->chain['functions'] ) ) {
@@ -241,6 +253,10 @@ class FunctionScoreChain {
 		return null;
 	}
 
+	/**
+	 * @param array $func
+	 * @return FunctionScoreBuilder
+	 */
 	private function getImplementation( $func ) {
 		$weight = isset ( $func['weight'] ) ? $func['weight'] : 1;
 		switch( $func['type'] ) {
@@ -281,9 +297,16 @@ class FunctionScoreChain {
  * this strong dependency to FunctionScore::addFunction signature.
  */
 class FunctionScoreDecorator extends FunctionScore {
+	/** @var int */
 	private $size = 0;
 
-
+	/**
+	 * @param string $functionType
+	 * @param array|float $functionParams
+	 * @param AbstractFilter|null $filter
+	 * @param float|null $weight
+	 * @return $this
+	 */
 	public function addFunction( $functionType, $functionParams, AbstractFilter $filter = null, $weight = null ) {
 		$this->size++;
 		return parent::addFunction( $functionType, $functionParams, $filter, $weight );
@@ -307,6 +330,8 @@ class FunctionScoreDecorator extends FunctionScore {
 	 * Default elastica behaviour is to use class name
 	 * as property name. We must override this function
 	 * to force the name to function_score
+	 *
+	 * @return string
 	 */
 	protected function _getBaseName() {
 		return "function_score";
@@ -318,6 +343,7 @@ abstract class FunctionScoreBuilder {
 	 * @param SearchContext $context
 	 */
 	protected $context;
+
 	/**
 	 * @var float global weight of this function score builder
 	 */
@@ -334,6 +360,7 @@ abstract class FunctionScoreBuilder {
 
 	/**
 	 * Append functions to the function score $container
+	 *
 	 * @param FunctionScore $container
 	 */
 	public abstract function append( FunctionScore $container );
@@ -341,6 +368,9 @@ abstract class FunctionScoreBuilder {
 	/**
 	 * Utility method to extract a factor (float) that can
 	 * be overridden by a config value or an URI param
+	 *
+	 * @param float|array $value
+	 * @return float
 	 */
 	protected function getOverriddenFactor( $value ) {
 		if ( is_array( $value ) ) {
@@ -378,6 +408,9 @@ abstract class FunctionScoreBuilder {
  * The list of boosted templates is read from SearchContext
  */
 class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
+	/**
+	 * @var float[] Template boost values keyed by template name
+	 */
 	private $boostTemplates;
 
 	/**
@@ -422,8 +455,11 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * translated into integer namespace codes using $this->language.
 	 */
 	private $normalizedNamespaceWeights;
-	private $namespacesToBoost;
 
+	/**
+	 * @var int[] List of namespace id's
+	 */
+	private $namespacesToBoost;
 
 	/**
 	 * @param SearchContext $context
@@ -453,6 +489,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * Get the weight of a namespace.
+	 *
 	 * @param int $namespace the namespace
 	 * @return float the weight of the namespace
 	 */
@@ -511,6 +548,10 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
  * formula is log( incoming_links + 2 )
  */
 class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 */
 	public function __construct( SearchContext $context, $weight ) {
 		parent::__construct( $context, $weight );
 	}
@@ -540,6 +581,11 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
 	 */
 	private $profile;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
 		if ( isset ( $profile['factor'] ) ) {
@@ -573,11 +619,20 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
  *
  */
 class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
+	/** @var string */
 	private $field;
+	/** @var int */
 	private $impact;
+	/** @var float */
 	private $midpoint;
+	/** @var float */
 	private $scale;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
 
@@ -603,6 +658,10 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	/**
 	 * find the factor to adjust the scale center,
 	 * it's like finding the log base to have f(N) = 0.5
+	 *
+	 * @param float $M
+	 * @param float $N
+	 * @return float
 	 */
 	private function findCenterFactor( $M, $N ) {
 		// Neutral point is found by resolving
@@ -624,6 +683,9 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getScript() {
 		$midFactor = $this->findCenterFactor( $this->scale, $this->midpoint );
 		$formula = "log10($midFactor * min(doc['{$this->field}'].value,{$this->scale}) + 1)";
@@ -641,10 +703,18 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
  * This function is suited to apply a new factor in a weighted sum.
  */
 class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
+	/** @var float */
 	private $k;
+	/** @var float */
 	private $a;
+	/** @var string */
 	private $field;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
 		if ( isset( $profile['k'] ) ) {
@@ -677,6 +747,9 @@ class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
 		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getScript() {
 		$formula = "pow(doc['{$this->field}'].value , {$this->a}) / ";
 		$formula .= "( pow(doc['{$this->field}'].value, {$this->a}) + ";
@@ -690,10 +763,18 @@ class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
  * Useful to control the impact when applied in a multiplication.
  */
 class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
+	/** @var float */
 	private $impact;
+	/** @var float */
 	private $factor;
+	/** @var string */
 	private $field;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
 		if ( isset( $profile['impact'] ) ) {
@@ -737,9 +818,18 @@ class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
  * these are the only functions that normalize the value in the [0,1] range.
  */
 class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
+	/** @var float */
 	private $impact;
+	/** @var array[] */
 	private $scriptFunctions = array();
+	/** @var float */
 	private $epsilon = 0.0000001;
+
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
 
@@ -790,7 +880,8 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * Build a weighted geometric mean using a logarithmic arithmetic mean.
 	 * exp(w1*ln(value1)+w2*ln(value2) / (w1+w2))
 	 * NOTE: We need to use an epsilon value in case value is 0.
-	 * @return the script
+	 *
+	 * @return string|null the script
 	 */
 	public function getScript() {
 		$formula = "pow(";
@@ -833,10 +924,6 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
  * Can be initialized by config for full text and by special syntax in user query
  */
 class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
-	public function __construct( SearchContext $context, $weight ) {
-		parent::__construct( $context, $weight );
-	}
-
 	public function append( FunctionScore $functionScore ) {
 		if ( !$this->context->hasPreferRecentOptions() ) {
 			return;
@@ -870,19 +957,26 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * @var string user language
 	 */
 	private $userLang;
+
 	/**
 	 * @var float user language weight
 	 */
 	private $userWeight;
+
 	/**
 	 * @var string wiki language
 	 */
 	private $wikiLang;
+
 	/**
 	 * @var float wiki language weight
 	 */
 	private $wikiWeight;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 */
 	public function __construct( SearchContext $context, $weight ) {
 		parent::__construct( $context, $weight );
 		$this->userLang = $this->context->getConfig()->getUserLanguage();
@@ -921,6 +1015,11 @@ class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
 	 */
 	private $script;
 
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param string $script
+	 */
 	public function __construct( SearchContext $context, $weight, $script ) {
 		parent::__construct( $context, $weight );
 		$this->script = $script;
@@ -937,7 +1036,4 @@ class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
  * Exception thrown if an error has been detected in the rescore profiles
  */
 class InvalidRescoreProfileException extends \Exception {
-	public function __construct( $message ) {
-		parent::__construct( $message );
-	}
 }

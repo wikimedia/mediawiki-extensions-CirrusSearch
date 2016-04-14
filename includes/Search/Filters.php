@@ -27,6 +27,7 @@ class Filters {
 	/**
 	 * Merges lists of include/exclude filters into a single filter that
 	 * Elasticsearch will execute efficiently.
+	 *
 	 * @param AbstractFilter[] $mustFilters filters that must match all returned documents
 	 * @param AbstractFilter[] $mustNotFilters filters that must not match all returned documents
 	 * @return null|AbstractFilter null if there are no filters or one that will execute
@@ -78,6 +79,7 @@ class Filters {
 
 	/**
 	 * Unify non-script filters into a single filter.
+	 *
 	 * @param AbstractFilter[] $mustFilters filters that must be found
 	 * @param AbstractFilter[] $mustNotFilters filters that must not be found
 	 * @return null|AbstractFilter null if there are no filters or one that will execute
@@ -109,12 +111,13 @@ class Filters {
 	 * Create a filter for insource: queries.  This was extracted from the big
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
+	 *
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
 	 * @param string $value
 	 * @return callable a side-effecting function to update several references
 	 */
-	public static function insource( $escaper, $context, $value ) {
+	public static function insource( Escaper $escaper, SearchContext $context, $value ) {
 		return self::insourceOrIntitle( $escaper, $context, $value, true, function () {
 			return 'source_text.plain';
 		});
@@ -124,12 +127,13 @@ class Filters {
 	 * Create a filter for intitle: queries.  This was extracted from the big
 	 * switch block in Searcher.php.  This function is pure, deferring state
 	 * changes to the reference-updating return function.
+	 *
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
 	 * @param string $value
 	 * @return callable a side-effecting function to update several references
 	 */
-	public static function intitle( $escaper, $context, $value ) {
+	public static function intitle( Escaper $escaper, SearchContext $context, $value ) {
 		return self::insourceOrIntitle( $escaper, $context, $value, false, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return 'title.plain';
@@ -147,7 +151,7 @@ class Filters {
 	 * @param callable $fieldF
 	 * @return callable
 	 */
-	private static function insourceOrIntitle( $escaper, $context, $value, $updateHighlightSourceRef, $fieldF ) {
+	private static function insourceOrIntitle( Escaper $escaper, SearchContext $context, $value, $updateHighlightSourceRef, $fieldF ) {
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );

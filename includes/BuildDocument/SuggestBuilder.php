@@ -222,7 +222,7 @@ class SuggestBuilder {
 	 * Inspects the 'coordinates' index and return the first coordinates flagged as 'primary'
 	 * or the first coordinates if no primaries are found.
 	 * @param array $inputDoc the input doc
-	 * @return array with 'lat' and 'lon' or null
+	 * @return array|null with 'lat' and 'lon' or null
 	 */
 	public function findPrimaryCoordinates( $inputDoc ) {
 		if ( !isset( $inputDoc['coordinates'] ) || !is_array( $inputDoc['coordinates'] ) ) {
@@ -252,7 +252,7 @@ class SuggestBuilder {
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
 	 * @param array $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
-	 * @return array the suggestion document
+	 * @return \Elastica\Document the suggestion document
 	 */
 	private function buildTitleSuggestion( $id, $title, $location, $score ) {
 		$inputs = array( $this->prepareInput( $title['text'] ) );
@@ -260,7 +260,13 @@ class SuggestBuilder {
 			$inputs[] = $this->prepareInput( $variant );
 		}
 		$output = self::encodeTitleOutput( $id, $title['text'] );
-		return $this->buildSuggestion( self::TITLE_SUGGESTION . $id, $output, $inputs, $location, $score );
+		return $this->buildSuggestion(
+			self::TITLE_SUGGESTION . $id,
+			$output,
+			$inputs,
+			$location,
+			$score
+		);
 	}
 
 	/**
@@ -275,7 +281,7 @@ class SuggestBuilder {
 	 * @param string[] $redirects
 	 * @param array $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
-	 * @return array the suggestion document
+	 * @return \Elastica\Document the suggestion document
 	 */
 	private function buildRedirectsSuggestion( $id, $redirects, $location, $score ) {
 		$inputs = array();
@@ -290,11 +296,12 @@ class SuggestBuilder {
 	/**
 	 * Builds a suggestion document.
 	 *
+	 * @param string $id The document id
 	 * @param string $output the suggestion output
-	 * @param string $inputs the suggestion inputs
+	 * @param string[] $inputs the suggestion inputs
 	 * @param array $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
-	 * @return array a doc ready to be indexed in the completion suggester
+	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
 	private function buildSuggestion( $id, $output, $inputs, $location, $score ) {
 		$doc = array(
@@ -489,7 +496,7 @@ class SuggestBuilder {
 	 * type: either REDIRECT_SUGGESTION or TITLE_SUGGESTION
 	 * text (optional): if TITLE_SUGGESTION the Title text
 	 * @param string $output text value returned by a suggest query
-	 * @return array mixed or null if the output is not properly encoded
+	 * @return array|null mixed or null if the output is not properly encoded
 	 */
 	public static function decodeOutput( $output ) {
 		if ( $output == null ) {
@@ -522,7 +529,7 @@ class SuggestBuilder {
 	}
 
 	/**
-	 * @return long the batchId
+	 * @return int the batchId
 	 */
 	public function getBatchId() {
 		return $this->batchId;

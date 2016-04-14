@@ -35,9 +35,11 @@ use WebRequest;
 class Util {
 	/**
 	 * Cache getDefaultBoostTemplates()
+	 *
 	 * @var array|null boost templates
 	 */
 	private static $defaultBoostTemplates = null;
+
 	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying
 	 * by gender if need be.
@@ -70,6 +72,7 @@ class Util {
 	/**
 	 * Check if too arrays are recursively the same.  Values are compared with != and arrays
 	 * are descended into.
+	 *
 	 * @param array $lhs one array
 	 * @param array $rhs the other array
 	 * @return bool are they equal
@@ -133,13 +136,14 @@ class Util {
 	/**
 	 * Wraps the complex pool counter interface to force the single call pattern
 	 * that Cirrus always uses.
+	 *
 	 * @param string $type same as type parameter on PoolCounter::factory
 	 * @param \User $user the user
 	 * @param callable $workCallback callback when pool counter is acquired.  Called with
 	 *  no parameters.
 	 * @param callable $errorCallback optional callback called on errors.  Called with
-	 *   the error string and the key as parameters.  If left undefined defaults
-	 *   to a function that returns a fatal status and logs an warning.
+	 *  the error string and the key as parameters.  If left undefined defaults
+	 *  to a function that returns a fatal status and logs an warning.
 	 * @return mixed
 	 */
 	public static function doPoolCounterWork( $type, $user, $workCallback, $errorCallback = null ) {
@@ -279,6 +283,7 @@ class Util {
 
 	/**
 	 * Iterate over a scroll.
+	 *
 	 * @param \Elastica\Index $index
 	 * @param string $scrollId the initial $scrollId
 	 * @param string $scrollTime the scroll timeout
@@ -366,6 +371,7 @@ class Util {
 	/**
 	 * Backoff with lowest possible upper bound as 16 seconds.
 	 * With the default maximum number of errors (5) this maxes out at 256 seconds.
+	 *
 	 * @param int $errorCount
 	 * @return int
 	 */
@@ -376,6 +382,7 @@ class Util {
 	/**
 	 * Parse a message content into an array. This function is generally used to
 	 * parse settings stored as i18n messages (see cirrussearch-boost-templates).
+	 *
 	 * @param string $message
 	 * @return string[]
 	 */
@@ -390,6 +397,7 @@ class Util {
 	/**
 	 * Tries to identify the best redirect by finding the link with the
 	 * smallest edit distance between the title and the user query.
+	 *
 	 * @param string $userQuery the user query
 	 * @param array $redirects the list of redirects
 	 * @return string the best redirect text
@@ -420,6 +428,7 @@ class Util {
 
 	/**
 	 * Test if $string ends with $suffix
+	 *
 	 * @param string $string string to test
 	 * @param string $suffix the suffix
 	 * @return boolean true if $string ends with $suffix
@@ -435,6 +444,7 @@ class Util {
 
 	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 *
 	 * @param mixed &$dest
 	 * @param WebRequest $request
 	 * @param string $name
@@ -453,6 +463,7 @@ class Util {
 	/**
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
 	 * or => $limit if upperLimit is false.
+	 *
 	 * @param mixed &$dest
 	 * @param WebRequest $request
 	 * @param string $name
@@ -474,6 +485,7 @@ class Util {
 
 	/**
 	 * Parse boosted templates.  Parse failures silently return no boosted templates.
+	 *
 	 * @param string $text text representation of boosted templates
 	 * @return float[] map of boosted templates (key is the template, value is a float).
 	 */

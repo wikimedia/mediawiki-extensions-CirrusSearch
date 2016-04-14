@@ -25,12 +25,12 @@ use Elastica\Filter\AbstractFilter;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class IdHashMod extends AbstractFilter {
-    /**
-     * @param int $mod modulus to use. Number of chunks to cut the data into.
-     * @param int $match value to match. Must be less than $mod. Its the
-     *     current chunk number.
-     */
-    public function __construct( $mod, $match ) {
-        $this->setParam( 'mod', $mod )->setParam( 'match', $match );
-    }
+	/**
+	 * @param int $mod modulus to use. Number of chunks to cut the data into.
+	 * @param int $match value to match. Must be less than $mod. Its the
+	 *  current chunk number.
+	 */
+	public function __construct( $mod, $match ) {
+		$this->setParam( 'mod', $mod )->setParam( 'match', $match );
+	}
 }

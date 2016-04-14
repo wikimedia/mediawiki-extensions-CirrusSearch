@@ -28,13 +28,65 @@ class ResultSet extends SearchResultSet {
 	 * @var \Elastica\ResultSet
 	 */
 	private $result;
-	private $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+
+	/**
+	 * @var int
+	 */
+	private $hits;
+
+	/**
+	 * @var int
+	 */
+	private $totalHits;
+
+	/**
+	 * @var string|null
+	 */
+	private $suggestionQuery;
+
+	/**
+	 * @var string
+	 */
+	private $suggestionSnippet;
+
+	/**
+	 * @var bool
+	 */
 	private $searchContainedSyntax;
-	private $interwikiPrefix,$interwikiResults;
+
+	/**
+	 * @var string
+	 */
+	private $interwikiPrefix;
+
+	/**
+	 * @var array
+	 */
+	private $interwikiResults = array();
+
+	/**
+	 * @var string|null
+	 */
 	private $rewrittenQuery;
+
+	/**
+	 * @var string|null
+	 */
+	private $rewrittenQuerySnippet;
+
+	/**
+	 * @var \Iterator|null
+	 */
 	private $swappedResultIter;
 
-	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwiki = '' ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $res
+	 * @param bool $searchContainedSyntax
+	 * @param string $interwiki
+	 */
+	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax, $interwiki = '' ) {
 		$this->result = $res;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
@@ -227,8 +279,8 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param Result $res
-	 * @param string $type
+	 * @param ResultSet $res
+	 * @param int $type One of SearchResultSet::* constants
 	 * @param string $interwiki
 	 */
 	public function addInterwikiResults( $res, $type, $interwiki ) {
@@ -237,7 +289,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * @param string $type
-	 * @return Result[]
+	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
 		return isset($this->interwikiResults[$type]) ? $this->interwikiResults[$type] : array();

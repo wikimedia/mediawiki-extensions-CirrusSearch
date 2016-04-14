@@ -29,17 +29,37 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
+	/** @var string */
 	private $titleSnippet = '';
-	private $redirectTitle = null, $redirectSnipppet = '';
-	private $sectionTitle = null, $sectionSnippet = '';
+	/** @var Title|null */
+	private $redirectTitle = null;
+	/** @var string */
+	private $redirectSnipppet = '';
+	/** @var Title|null */
+	private $sectionTitle = null;
+	/** @var string */
+	private $sectionSnippet = '';
+	/** @var string */
 	private $categorySnippet = '';
-	private $textSnippet = '', $isFileMatch = false;
-	private $interwiki = '', $interwikiNamespace = '';
+	/** @var string */
+	private $textSnippet;
+	/** @var bool */
+	private $isFileMatch = false;
+	/* @var string */
+	private $interwiki = '';
+	/** @var string */
+	private $interwikiNamespace = '';
+	/** @var int */
 	private $wordCount;
+	/** @var int */
 	private $byteSize;
+	/** @var string */
 	private $timestamp;
+	/** @var string */
 	private $docId;
+	/** @var float */
 	private $score;
+	/** @var array */
 	private $explanation;
 
 	/**
@@ -47,7 +67,7 @@ class Result extends SearchResult {
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param string $interwiki Interwiki prefix, if any
-	 * @param \Elastic\Result $result containing information about the result this class should represent
+	 * @param \Elastica\Result $result containing information about the result this class should represent
 	 */
 	public function __construct( $results, $result, $interwiki = '' ) {
 		if ( $interwiki ) {
@@ -178,8 +198,8 @@ class Result extends SearchResult {
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
 	 * @param string $snippet Highlighted redirect snippet
-	 * @param array[] $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
-	 * @return Title object representing the redirect
+	 * @param array[]|null $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
+	 * @return Title|null object representing the redirect
 	 */
 	private function findRedirectTitle( $snippet, $redirects ) {
 		$title = $this->stripHighlighting( $snippet );
@@ -261,7 +281,8 @@ class Result extends SearchResult {
 	}
 
 	/**
-	 * @return Title|null
+	 * @param array
+	 * @return string|null
 	 */
 	public function getTextSnippet( $terms ) {
 		return $this->textSnippet;
@@ -331,7 +352,7 @@ class Result extends SearchResult {
 	}
 
 	/**
-	 * @return int
+	 * @return string
 	 */
 	public function getDocId() {
 		return $this->docId;

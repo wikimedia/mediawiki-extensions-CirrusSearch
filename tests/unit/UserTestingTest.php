@@ -27,7 +27,7 @@ class UserTestingTest extends \MediaWikiTestCase {
 	 * @beforeClass
 	 */
 	public static function setUpBeforeClass() {
-		ElasticSearchIntermediary::resetExecutionId();
+		ElasticsearchIntermediary::resetExecutionId();
 		UserTesting::resetInstance();
 	}
 

@@ -24,7 +24,7 @@ class MappingDump extends ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
 		foreach( $conn->getAllIndexTypes() as $index ) {
-			$mapping = $conn->getPageType( wfWikiId(), $index )->getMapping();
+			$mapping = $conn->getPageType( wfWikiID(), $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
 			$this->getResult()->addPreserveKeysList( array( $index, 'page' ), '_all' );
 		}

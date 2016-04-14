@@ -254,7 +254,7 @@ class ElasticsearchIntermediary {
 		$requestSet = array(
 			'id' => self::getRequestSetToken(),
 			'ts' => time(),
-			'wikiId' => wfWikiId(),
+			'wikiId' => wfWikiID(),
 			'source' => self::getExecutionContext(),
 			'identity' => self::generateIdentToken(),
 			'ip' => $wgRequest->getIP() ?: '',
@@ -381,7 +381,7 @@ class ElasticsearchIntermediary {
 		}
 
 		$message = array(
-			wfWikiId(),
+			wfWikiID(),
 			'',
 			FormatJson::encode( $queries ),
 			$hits,
@@ -559,7 +559,7 @@ class ElasticsearchIntermediary {
 	 * @return boolean is this a parse error?
 	 */
 	protected function isParseError( $status ) {
-		foreach ( $status->getErrorsArray() as $errorMessage ) {
+		foreach ( $status->getErrorsArray( 'message' ) as $errorMessage ) {
 			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
 				return true;
 			}

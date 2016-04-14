@@ -73,7 +73,7 @@ class PageDataBuilder extends ParseBuilder {
 		foreach ( $this->parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
 			foreach ( array_keys( $namespaceLinks ) as $linkedDbKey ) {
 				$outgoingLinks[] =
-					Title::makeTitle( $linkedNamespace, $linkedDbKey )->getPrefixedDBKey();
+					Title::makeTitle( $linkedNamespace, $linkedDbKey )->getPrefixedDBkey();
 			}
 		}
 		$this->doc->set( 'outgoing_link', $outgoingLinks );

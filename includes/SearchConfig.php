@@ -52,7 +52,7 @@ class SearchConfig implements \Config {
 			}
 		}
 		$this->source = new \GlobalVarConfig();
-		$this->wikiId = wfWikiId();
+		$this->wikiId = wfWikiID();
 	}
 
 	/**

@@ -35,7 +35,7 @@ class IndexNamespaces extends Maintenance {
 	public function execute() {
 		global $wgContLang;
 
-		$type = $this->getConnection()->getNamespaceType( wfWikiId() );
+		$type = $this->getConnection()->getNamespaceType( wfWikiID() );
 
 		$this->outputIndented( "Deleting namespaces..." );
 		$type->deleteByQuery( new MatchAll() );

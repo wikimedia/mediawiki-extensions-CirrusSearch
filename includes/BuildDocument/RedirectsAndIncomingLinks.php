@@ -146,7 +146,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private function buildCount( array $titles ) {
 		$filter = new Terms( 'outgoing_link', $titles );
 		$filter->setCached( false ); // We're not going to be redoing this any time soon.
-		$type = $this->connection->getPageType( wfWikiId() );
+		$type = $this->connection->getPageType( wfWikiID() );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );

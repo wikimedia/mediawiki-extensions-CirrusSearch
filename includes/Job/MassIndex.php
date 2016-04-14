@@ -45,7 +45,7 @@ class MassIndex extends Job {
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
 		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {
-			$title = Title::newFromDBKey( $pageDBKey );
+			$title = Title::newFromDBkey( $pageDBKey );
 			// Skip any titles with broken keys.  We can't do anything with them.
 			if ( !$title ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(

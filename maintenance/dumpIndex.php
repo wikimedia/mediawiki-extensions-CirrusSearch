@@ -109,7 +109,7 @@ class DumpIndex extends Maintenance {
 		$this->setConnectionTimeout();
 
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 
 		$indexTypes = $this->getConnection()->getAllIndexTypes();
 		if ( !in_array( $this->indexType, $indexTypes ) ) {

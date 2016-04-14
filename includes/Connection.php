@@ -261,7 +261,7 @@ class Connection extends ElasticaConnection {
 			}
 			// the wikiId should be the first part of the name and
 			// not part of our result, strip it
-			if ( $parts[0] === wfWikiId() ) {
+			if ( $parts[0] === wfWikiID() ) {
 				$parts = array_slice( $parts, 1 );
 			}
 			// there might be a suffix at the end, try stripping it

@@ -61,7 +61,7 @@ class Checker {
 			return $fromIndex;
 		}
 		$inIndex = count( $fromIndex ) > 0;
-		$page = WikiPage::newFromId( $pageId );
+		$page = WikiPage::newFromID( $pageId );
 
 		if ( $page !== null && $page->exists() ) {
 			if ( $page->isRedirect() ) {

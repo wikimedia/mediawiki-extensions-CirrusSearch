@@ -351,7 +351,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function searchText( $term, $showSuggestion ) {
 		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
-		if ( !$checkLengthStatus->isOk() ) {
+		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}
 
@@ -786,7 +786,7 @@ GROOVY;
 				$names[] = $category;
 			}
 		}
-		foreach ( Title::newFromIds( $ids ) as $title ) {
+		foreach ( Title::newFromIDs( $ids ) as $title ) {
 			$names[] = $title->getText();
 		}
 		if ( !$names ) {
@@ -847,7 +847,7 @@ GROOVY;
 			// against other fields.
 			$text = array();
 			$found = $this->get( $pageIds, array( 'text' ) );
-			if ( !$found->isOk() ) {
+			if ( !$found->isOK() ) {
 				return $found;
 			}
 			$found = $found->getValue();

@@ -161,7 +161,7 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$exception = null;
 		try {
-			$pageType = $this->connection->getPageType( wfWikiId(), $indexType );
+			$pageType = $this->connection->getPageType( wfWikiID(), $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
@@ -233,7 +233,7 @@ class DataSender extends ElasticsearchIntermediary {
 						'indexType' => $indexType,
 						'queryType' => 'send_deletes',
 					) );
-					$this->connection->getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
+					$this->connection->getPageType( wfWikiID(), $indexType )->deleteIds( $ids );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -368,7 +368,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function indexesToIndexNames( array $indexes ) {
 		$names = array();
-		$wikiId = wfWikiId();
+		$wikiId = wfWikiID();
 		foreach ( $indexes as $indexType ) {
 			$names[] = $this->connection->getIndexName( $wikiId, $indexType );
 		}

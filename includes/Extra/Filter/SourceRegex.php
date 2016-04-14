@@ -40,7 +40,7 @@ class SourceRegex extends AbstractFilter {
             $this->setField( $field );
         }
         if ( $ngramField ) {
-            $this->setNgramField( $ngramField );
+            $this->setNGramField( $ngramField );
         }
     }
 

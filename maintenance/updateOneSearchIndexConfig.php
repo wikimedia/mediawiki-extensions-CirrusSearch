@@ -214,7 +214,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
 		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(

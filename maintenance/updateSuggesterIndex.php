@@ -176,7 +176,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 100 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 

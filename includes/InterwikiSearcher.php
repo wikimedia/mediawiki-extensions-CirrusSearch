@@ -81,7 +81,7 @@ class InterwikiSearcher extends Searcher {
 		return $cache->getWithSetCallback( $key, $ttl, function () use ( $term ) {
 			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
 			$results = $this->searchText( $term, false );
-			if ( $results->isOk() ) {
+			if ( $results->isOK() ) {
 				return $results->getValue();
 			} else {
 				return false;

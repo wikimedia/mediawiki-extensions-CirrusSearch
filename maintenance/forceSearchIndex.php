@@ -93,7 +93,7 @@ class ForceSearchIndex extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgCirrusSearchMaintenanceTimeout;
 
-		$wiki = sprintf( "[%20s]", wfWikiId() );
+		$wiki = sprintf( "[%20s]", wfWikiID() );
 
 		// Set the timeout for maintenance actions
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
@@ -298,7 +298,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return bool
 	 */
 	private function simpleCheckIndexes() {
-		$wiki = wfWikiId();
+		$wiki = wfWikiID();
 		$status = $this->getConnection()->getClient()->getStatus();
 
 		// Top-level alias needs to exist

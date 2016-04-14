@@ -1,10 +1,11 @@
 <?php
 
 namespace CirrusSearch\Sanity;
-use \CirrusSearch\Job\DeletePages;
-use \CirrusSearch\Job\LinksUpdate;
-use \JobQueueGroup;
-use \WikiPage;
+use CirrusSearch\Job\DeletePages;
+use CirrusSearch\Job\LinksUpdate;
+use JobQueueGroup;
+use Title;
+use WikiPage;
 
 /**
  * Remediator implementation that queues jobs to fix the index.
@@ -35,13 +36,18 @@ class QueueingRemediator implements Remediator {
 	public function __construct( $cluster ) {
 		$this->cluster = $cluster;
 	}
-	public function redirectInIndex( $page ) {
+	public function redirectInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
-	public function pageNotInIndex( $page ) {
+	public function pageNotInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
-	public function ghostPageInIndex( $pageId, $title ) {
+
+	/**
+	 * @param int $pageId
+	 * @param Title $title
+	 */
+	public function ghostPageInIndex( $pageId, Title $title ) {
 		JobQueueGroup::singleton()->push(
 			new DeletePages( $title, array(
 				'id' => $pageId,
@@ -49,7 +55,12 @@ class QueueingRemediator implements Remediator {
 			) )
 		);
 	}
-	public function pageInWrongIndex( $page, $wrongIndex ) {
+
+	/**
+	 * @param WikiPage $page
+	 * @param string $wrongIndex
+	 */
+	public function pageInWrongIndex( WikiPage $page, $wrongIndex ) {
 		JobQueueGroup::singleton()->push(
 			new DeletePages( $page->getTitle(), array(
 				'indexType' => $wrongIndex,
@@ -60,7 +71,7 @@ class QueueingRemediator implements Remediator {
 		$this->pushLinksUpdateJob( $page );
 	}
 
-	private function pushLinksUpdateJob( $page ) {
+	private function pushLinksUpdateJob( WikiPage $page ) {
 		JobQueueGroup::singleton()->push(
 			new LinksUpdate( $page->getTitle(), array(
 				'addedLinks' => array(),

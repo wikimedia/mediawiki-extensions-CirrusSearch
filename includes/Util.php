@@ -173,7 +173,7 @@ class Util {
 
 		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
 			return function( Status $status ) use ( $errorCallback, $key, $user ) {
-				$status = $status->getErrorsArray();
+				$status = $status->getStatusArray( 'error' );
 				// anon usernames are needed within the logs to determine if
 				// specific ips (such as large #'s of users behind a proxy)
 				// need to be whitelisted. We do not need this information
@@ -225,12 +225,12 @@ class Util {
 
 	/**
 	 * @param string $str
-	 * @return number
+	 * @return float
 	 */
 	public static function parsePotentialPercent( $str ) {
 		$result = floatval( $str );
 		if ( strpos( $str, '%' ) === false ) {
-			return $result;
+			return (float) $result;
 		}
 		return $result / 100;
 	}
@@ -370,7 +370,7 @@ class Util {
 	 * @return int
 	 */
 	public static function backoffDelay( $errorCount ) {
-		return rand( 1, pow( 2, 3 + $errorCount ) );
+		return rand( 1, (int) pow( 2, 3 + $errorCount ) );
 	}
 
 	/**
@@ -496,7 +496,7 @@ class Util {
 	 */
 	public static function getDefaultBoostTemplates() {
 		if ( self::$defaultBoostTemplates === null ) {
-			$cache = \ObjectCache::newAccelerator( CACHE_NONE );
+			$cache = \ObjectCache::getLocalServerInstance();
 			self::$defaultBoostTemplates = $cache->getWithSetCallback(
 				$cache->makeKey( 'cirrussearch-boost-templates' ),
 				600,

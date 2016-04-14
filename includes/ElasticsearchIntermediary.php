@@ -103,7 +103,7 @@ class ElasticsearchIntermediary {
 			$user = RequestContext::getMain()->getUser();
 		}
 		$this->user = $user;
-		$this->slowMillis = round( 1000 * $slowSeconds );
+		$this->slowMillis = (int) ( 1000 * $slowSeconds );
 		$this->ut = UserTesting::getInstance();
 	}
 
@@ -112,7 +112,7 @@ class ElasticsearchIntermediary {
 	 * request, or multiple jobs run in the same executor. An execution id
 	 * is valid over a brief timespan, perhaps a minute or two for some jobs.
 	 *
-	 * @return integer unique identifier
+	 * @return string unique identifier
 	 */
 	private static function getExecutionId() {
 		if ( self::$executionId === null ) {
@@ -321,7 +321,7 @@ class ElasticsearchIntermediary {
 			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
 				   substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4) .
 				   substr( $uuid, 24 );
-			$token = wfBaseConvert( $hex, 16, 36 );
+			$token = \Wikimedia\base_convert( $hex, 16, 36 );
 		}
 		return $token;
 	}
@@ -543,7 +543,7 @@ class ElasticsearchIntermediary {
 	 * @return boolean is this a parse error?
 	 */
 	protected function isParseError( $status ) {
-		foreach ( $status->getErrorsArray() as $errorMessage ) {
+		foreach ( $status->getStatusArray( 'error' ) as $errorMessage ) {
 			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
 				return true;
 			}
@@ -565,7 +565,7 @@ class ElasticsearchIntermediary {
 			return null;
 		}
 		$endTime = microtime( true );
-		$took = round( ( $endTime - $this->requestStart ) * 1000 );
+		$took = (int) ( ( $endTime - $this->requestStart ) * 1000 );
 		$clusterName = $this->connection->getClusterName();
 		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTime", $took );
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;

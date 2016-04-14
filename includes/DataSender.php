@@ -355,7 +355,11 @@ class DataSender extends ElasticsearchIntermediary {
 			} elseif ( $logCallback ) {
 				// This is generally not an error but we should
 				// log it to see how many we get
-				$id = $bulkResponse->getAction()->getData()->getId();
+				$action = $bulkResponse->getAction();
+				$id = 'missing';
+				if ( $action instanceof \Elastica\Bulk\Action\AbstractDocument ) {
+					$id = $action->getData()->getId();
+				}
 				call_user_func( $logCallback, $id );
 			}
 		}

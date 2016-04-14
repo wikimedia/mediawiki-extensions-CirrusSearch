@@ -231,7 +231,15 @@ class ElasticsearchIntermediary {
 			$allHitsByTitle[$hit['title']] = $hit;
 		}
 		$resultHits = array();
+		// FIXME: temporary hack to investigate why SpecialSearch can display results
+		// that do not come from cirrus.
+		$bogusResult = null;
 		foreach ( self::$resultTitleStrings as $titleString ) {
+			// Track only the first missing title.
+			if ( $bogusResult === null && !isset( $allHitsByTitle[$titleString] ) ) {
+				$bogusResult = $titleString;
+			}
+
 			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array();
 			// Apply defaults to ensure all properties are accounted for.
 			$resultHits[] = $hit + array(
@@ -263,6 +271,14 @@ class ElasticsearchIntermediary {
 			),
 			'requests' => $requests,
 		);
+
+		if ( $bogusResult !== null ) {
+			if ( is_string( $bogusResult ) ) {
+				$requestSet['payload']['bogusResult'] = $bogusResult;
+			} else {
+				$requestSet['payload']['bogusResult'] = 'NOT_A_STRING?: ' . gettype( $bogusResult );
+			}
+		}
 
 		if ( $allCached ) {
 			$requestSet['payload']['cached'] = 'true';

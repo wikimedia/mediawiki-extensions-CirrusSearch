@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\LanguageDetector;
+
 use CirrusSearch;
 use Elastica\Request;
 use Elastica\Exception\ResponseException;
@@ -13,6 +14,7 @@ use MediaWiki\Logger\LoggerFactory;
 class ElasticSearch implements Detector {
 	/**
 	 * Detect language
+	 *
 	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found

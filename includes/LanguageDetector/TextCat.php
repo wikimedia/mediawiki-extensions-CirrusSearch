@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\LanguageDetector;
+
 use CirrusSearch;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -10,6 +11,7 @@ use MediaWiki\Logger\LoggerFactory;
 class TextCat implements Detector {
 	/**
 	 * Detect language
+	 *
 	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found

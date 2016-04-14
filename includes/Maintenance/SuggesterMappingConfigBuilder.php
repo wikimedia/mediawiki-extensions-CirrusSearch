@@ -29,9 +29,9 @@ class SuggesterMappingConfigBuilder {
 	 */
 	const VERSION = '1.0';
 
-	public function __construct() {
-	}
-
+	/**
+	 * @return array[]
+	 */
 	public function buildConfig() {
 		$geoContext = array(
 			'location' => array(

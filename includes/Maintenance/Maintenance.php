@@ -25,7 +25,9 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 abstract class Maintenance extends \Maintenance {
-	// How much should this script indent output?
+	/**
+	 * @var string The string to indent output with
+	 */
 	protected static $indent = null;
 
 	/**
@@ -38,6 +40,10 @@ abstract class Maintenance extends \Maintenance {
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
 	}
 
+	/**
+	 * @param string|null $cluster
+	 * @return Connection
+	 */
 	public function getConnection( $cluster = null ) {
 		if( $cluster ) {
 			$config = MediaWikiServices::getInstance()
@@ -58,6 +64,10 @@ abstract class Maintenance extends \Maintenance {
 		return $this->connection;
 	}
 
+	/**
+	 * @param SearchConfig $config
+	 * @return string|null
+	 */
 	private function decideCluster( SearchConfig $config ) {
 		$cluster = $this->getOption( 'cluster', null );
 		if ( $cluster === null ) {

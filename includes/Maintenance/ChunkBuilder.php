@@ -29,7 +29,7 @@ class ChunkBuilder {
 	 * @param int $from
 	 * @param int $to
 	 */
-	public function build( $self, $options, $buildChunks, $from, $to ) {
+	public function build( $self, array $options, $buildChunks, $from, $to ) {
 		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
 		$buildChunks = intval( $buildChunks );
 		if ( $fixedChunkSize ) {

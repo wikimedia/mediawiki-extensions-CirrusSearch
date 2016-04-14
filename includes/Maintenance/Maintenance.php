@@ -43,10 +43,16 @@ abstract class Maintenance extends \Maintenance {
 			$config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
-			if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
-				$this->error( 'Unknown cluster.', 1 );
+			if ( $config instanceof SearchConfig ) {
+				if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
+					$this->error( 'Unknown cluster.', 1 );
+				}
+				return Connection::getPool( $config, $cluster );
+			} else {
+				// We shouldn't ever get here ... but the makeConfig type signature returns the parent class of SearchConfig
+				// so just being extra careful...
+				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $config ) );
 			}
-			return Connection::getPool( $config, $cluster );
 		}
 		if ( $this->connection === null ) {
 			$config = MediaWikiServices::getInstance()

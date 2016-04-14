@@ -4,6 +4,7 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
+use CirrusSearch\SearchConfig;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -105,7 +106,12 @@ class ElasticaWrite extends Job {
 		return $connections;
 	}
 
-	private function canWriteToCluster( $config, $cluster ) {
+	/**
+	 * @param SearchConfig $config
+	 * @param string $cluster
+	 * @return bool True is cluster is writable
+	 */
+	private function canWriteToCluster( SearchConfig $config, $cluster ) {
 		if ( $config->getElement( 'CirrusSearchClusters', $cluster ) === null ) {
 			// No definition for the cluster
 			return false;

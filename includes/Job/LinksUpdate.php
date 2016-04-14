@@ -1,8 +1,9 @@
 <?php
 
 namespace CirrusSearch\Job;
-use \JobQueueGroup;
-use \Title;
+
+use JobQueueGroup;
+use Title;
 
 /**
  * Performs the appropriate updates to Elasticsearch after a LinksUpdate is

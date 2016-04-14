@@ -62,6 +62,9 @@ class MassIndex extends Job {
 		return $count >= 0;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function workItemCount() {
 		return count( $this->params[ 'pageDBKeys' ] );
 	}

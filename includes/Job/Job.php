@@ -34,12 +34,13 @@ abstract class Job extends MWJob {
 	protected $connection;
 
 	/**
-	 * @var boolean should we retry if this job failed
+	 * @var bool should we retry if this job failed
 	 */
 	private $allowRetries = true;
 
 	/**
 	 * Job constructor.
+	 *
 	 * @param Title $title
 	 * @param array $params
 	 */
@@ -104,6 +105,7 @@ abstract class Job extends MWJob {
 	 * after it has expired.  By default it only checks every five minutes or so.
 	 * Note yet again that if another delay has been set that is longer then this one
 	 * then the _longer_ delay stays.
+	 *
 	 * @param int $delay seconds to delay this job if possible
 	 */
 	public function setDelay( $delay ) {

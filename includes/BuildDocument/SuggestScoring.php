@@ -28,7 +28,6 @@ use CirrusSearch\Util;
 class SuggestScoringMethodFactory {
 	/**
 	 * @param string $scoringMethod the name of the scoring method
-	 * @param int $maxDocs
 	 * @return SuggestScoringMethod
 	 */
 	public static function getScoringMethod( $scoringMethod ) {
@@ -53,6 +52,7 @@ interface SuggestScoringMethod {
 
 	/**
 	 * The list of fields needed to compute the score.
+	 *
 	 * @return string[] the list of required fields
 	 */
 	public function getRequiredFields();
@@ -60,6 +60,7 @@ interface SuggestScoringMethod {
 	/**
 	 * This method will be called by the indexer script.
 	 * some scoring method may want to normalize values based index size
+	 *
 	 * @param int $maxDocs the total number of docs in the index
 	 */
 	public function setMaxDocs( $maxDocs );
@@ -126,22 +127,22 @@ class QualityScore implements SuggestScoringMethod {
 
 	/**
 	 * Template boosts configured by the mediawiki admin.
-	 * @var array of key values, key is the template and value is a float
+	 *
+	 * @var float[] array of key values, key is the template and value is a float
 	 */
 	private $boostTemplates;
 
 	/**
-	 * @var integer the number of docs in the index
+	 * @var int the number of docs in the index
 	 */
 	protected $maxDocs;
 
 	/**
-	 * @var integer normalisation factor for incoming links
+	 * @var int normalisation factor for incoming links
 	 */
 	private $incomingLinksNorm;
 
 	/**
-	 * @param integer $maxDocs the number of docs in the index
 	 * @param float[]|null $boostTemplates Array of key values, key is the template name, value the boost factor.
 	 *        Defaults to Util::getDefaultBoostTemplates()
 	 */
@@ -206,7 +207,7 @@ class QualityScore implements SuggestScoringMethod {
 	 * @param float $score Current score between 0 and 1
 	 * @return float Score after boosting templates
 	 */
-	public function boostTemplates( $doc, $score ) {
+	public function boostTemplates( array $doc, $score ) {
 		if ( !isset( $doc['template'] ) ) {
 			return $score;
 		}
@@ -287,14 +288,17 @@ class PQScore extends QualityScore {
 	// @todo: tested on enwiki values only
 	const POPULARITY_MAX = 0.0004;
 
-	public function __construct( $boostTemplates = null ) {
-		parent::__construct( $boostTemplates );
-	}
-
+	/**
+	 * @return string[]
+	 */
 	public function getRequiredFields() {
 		return array_merge( parent::getRequiredFields(), array( 'popularity_score' ) );
 	}
 
+	/**
+	 * @param array $doc
+	 * @return int
+	 */
 	public function score( array $doc ) {
 		$score = $this->intermediateScore( $doc ) * self::QSCORE_WEIGHT;
 		$pop = isset( $doc['popularity_score'] ) ? $doc['popularity_score'] : 0;

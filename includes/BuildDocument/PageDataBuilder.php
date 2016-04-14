@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
-use \Category;
-use \Sanitizer;
-use \Title;
+
+use Category;
+use Sanitizer;
+use Title;
 use CirrusSearch\Util;
 
 /**
@@ -26,6 +27,9 @@ use CirrusSearch\Util;
  */
 
 class PageDataBuilder extends ParseBuilder {
+	/**
+	 * @return \Elastica\Document
+	 */
 	public function build() {
 		switch ( $this->content->getModel() ) {
 			case CONTENT_MODEL_CSS:
@@ -126,6 +130,9 @@ class PageDataBuilder extends ParseBuilder {
 		$this->doc->set( 'heading', $headings );
 	}
 
+	/**
+	 * @return string[]
+	 */
 	private function getIgnoredHeadings() {
 		static $ignoredHeadings = null;
 		if ( $ignoredHeadings === null ) {

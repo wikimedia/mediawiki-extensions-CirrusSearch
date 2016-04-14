@@ -9,6 +9,8 @@ use Elastica\Query\Filtered;
 use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
 use SplObjectStorage;
+use Title;
+use WikiPage;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -45,7 +47,13 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	 */
 	private $linkCountClosures = array();
 
-	public static function buildDocument( $doc, $title, Connection $conn ) {
+	/**
+	 * @param \Elastica\Document $doc
+	 * @param Title $title
+	 * @param Connection $conn
+	 * @return bool
+	 */
+	public static function buildDocument( \Elastica\Document $doc, Title $title, Connection $conn ) {
 		if ( self::$externalLinks === null ) {
 			self::$externalLinks = new SplObjectStorage;
 		}
@@ -56,6 +64,10 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		return true;
 	}
 
+	/**
+	 * @param WikiPage[]
+	 * @return bool
+	 */
 	public static function finishBatch( $pages ) {
 		if ( self::$externalLinks === null ) {
 			// Nothing to do as we haven't set up any actions during the buildDocument phase
@@ -73,7 +85,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
 	}
 
-	private function realBuildDocument( $doc, $title ) {
+	private function realBuildDocument( \Elastica\Document $doc, Title $title ) {
 		global $wgCirrusSearchIndexedRedirects;
 
 		$outgoingLinksToCount = array( $title->getPrefixedDBKey() );
@@ -92,7 +104,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$outgoingLinksToCount[] = $redirect->getPrefixedDBKey();
 			}
 		}
-		$doc->add( 'redirect', $redirects );
+		$doc->set( 'redirect', $redirects );
 
 		// Count links
 		// Incoming links is the sum of:
@@ -107,10 +119,13 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		// Since we only have $wgCirrusSearchIndexedRedirects we only count that many terms.
 		$this->linkCountMultiSearch->addSearch( $this->buildCount( $outgoingLinksToCount ) );
 		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
-			$doc->add( 'incoming_links', $count + $redirectCount );
+			$doc->set( 'incoming_links', $count + $redirectCount );
 		};
 	}
 
+	/**
+	 * @param WikiPage[]
+	 */
 	private function realFinishBatch( $pages ) {
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		if ( $linkCountClosureCount ) {
@@ -140,6 +155,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 
 	/**
 	 * Build a Search that will count all pages that link to $titles.
+	 *
 	 * @param string[] $titles title in prefixedDBKey form
 	 * @return \Elastica\Search that counts all pages that link to $titles
 	 */

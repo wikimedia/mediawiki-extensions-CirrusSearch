@@ -163,7 +163,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @return true if the query contains special syntax
+	 * @param bool $searchContainedSyntax true if the query contains special syntax
 	 */
 	public function setSearchContainedSyntax( $searchContainedSyntax ) {
 		$this->searchContainedSyntax = $searchContainedSyntax;

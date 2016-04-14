@@ -70,7 +70,7 @@ interface SearchTextQueryBuilder {
 	/**
 	 * Builds the main query
 	 *
-	 * @param array $fields of string encoded as field_name^boost_value
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -80,7 +80,7 @@ interface SearchTextQueryBuilder {
 	/**
 	 * Builds the query used in the rescore phase
 	 *
-	 * @param array $fields of string encoded as field_name^boost_value
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -90,7 +90,7 @@ interface SearchTextQueryBuilder {
 	/**
 	 * Builds the query for highlighting
 	 *
-	 * @param array $fields of string encoded as field_name^boost_value
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -133,14 +133,19 @@ abstract class SearchTextBaseQueryBuilder implements SearchTextQueryBuilder {
 class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * This builder will always return true.
-	 * {@inheritDoc}
+	 *
+	 * @param string $queryString
+	 * @return bool
 	 */
 	public function accept( $queryString ) {
 		return true;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildMainQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -149,7 +154,10 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -158,7 +166,10 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -169,7 +180,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Builds a query based on QueryString syntax
 	 *
-	 * @param array $fields the fields
+	 * @param string[] $fields the fields
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop phrase slop
 	 * @param string $defaultOperator the default operator AND or OR
@@ -242,7 +253,9 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * The query is accepted if the number of words in the query
 	 * is greater or equal than min_query_terms defined in the
 	 * CirrusSearchCommonTerm.
-	 * {@inheritDoc}
+	 *
+	 * @param string $queryString
+	 * @return bool
 	 */
 	public function accept( $queryString ) {
 		if ( !$this->context->isUseCommonTermsQuery() ) {
@@ -287,7 +300,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildMainQuery( array $fields, $queryString, $phraseSlop ) {
 		$plainFields = array();
@@ -399,7 +415,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Builds a multi match query with the cross_field type.
 	 *
-	 * @param array $boostedFields of boosted fields
+	 * @param array[] $boostedFields Each nested array must contain a 'field' and 'boost' key.
 	 * @param string $queryString the query
 	 * @param string $minShouldMatch the MinimumShouldMatch value
 	 * @return \Elastica\Query\MultiMatch
@@ -438,7 +454,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Use a SearchTextQueryStringBuilder with a default OR.
 	 *
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -449,7 +468,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Use a SearchTextQueryStringBuilder.
 	 *
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
 		// already wrapped in safer

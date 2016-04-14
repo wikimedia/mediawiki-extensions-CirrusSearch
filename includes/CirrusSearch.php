@@ -158,7 +158,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Check whether we want to try another language.
 	 * @param string $term Search term
-	 * @return array|null Array of (interwiki, dbname) for another wiki to try, or null
+	 * @return string[]|null Array of (interwiki, dbname) for another wiki to try, or null
 	 */
 	private function hasSecondaryLanguage( $term ) {
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'] ) ||
@@ -223,9 +223,9 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * @param string $lang Language code to find wiki for
-	 * @return string|null The wiki related to specified language code
+	 * @return string[]|null Array of (interwiki, dbname) for wiki related to specified language code
 	 */
-	private function wikiForLanguage( $lang ) {
+	private static function wikiForLanguage( $lang ) {
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang] ) ) {
 			return null;
 		}
@@ -608,6 +608,8 @@ class CirrusSearch extends SearchEngine {
 	 * Override variants function because we always do variants
 	 * in the backend.
 	 * @see SearchEngine::completionSearchWithVariants()
+	 * @param string $search
+	 * @return SearchSuggestionSet
 	 */
 	public function completionSearchWithVariants( $search ) {
 		return $this->completionSearch( $search );

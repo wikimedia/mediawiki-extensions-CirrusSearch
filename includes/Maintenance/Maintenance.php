@@ -111,6 +111,10 @@ abstract class Maintenance extends \Maintenance {
 		Maintenance::$indent = substr( Maintenance::$indent, 1 );
 	}
 
+	/**
+	 * @param string $message
+	 * @param string|null $channel
+	 */
 	public function output( $message, $channel = null ) {
 		parent::output( $message );
 	}
@@ -119,6 +123,10 @@ abstract class Maintenance extends \Maintenance {
 		$this->output( Maintenance::$indent . $message );
 	}
 
+	/**
+	 * @param string $err
+	 * @param int $die
+	 */
 	public function error( $err, $die = 0 ) {
 		parent::error( $err, $die );
 	}

@@ -66,7 +66,8 @@ class OrderedStreamingForkController extends \ForkController {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param int $numProcs
+	 * @return string
 	 */
 	protected function forkWorkers( $numProcs ) {
 		$this->prepareEnvironment();

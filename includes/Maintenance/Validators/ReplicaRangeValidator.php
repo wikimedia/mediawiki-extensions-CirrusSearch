@@ -13,13 +13,13 @@ class ReplicaRangeValidator extends Validator {
 	private $index;
 
 	/**
-	 * @var int
+	 * @var string
 	 */
 	protected $replicaCount;
 
 	/**
 	 * @param Index $index
-	 * @param int $replicaCount
+	 * @param string $replicaCount
 	 * @param Maintenance $out
 	 */
 	public function __construct( Index $index, $replicaCount, Maintenance $out = null ) {

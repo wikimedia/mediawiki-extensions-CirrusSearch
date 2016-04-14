@@ -57,7 +57,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Fetch search results, from caches, if there's any
 	 * @param string $term Search term to look for
-	 * @return Result
+	 * @return Result|null
 	 */
 	public function getInterwikiResults( $term ) {
 
@@ -93,7 +93,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Get the index basename for a given interwiki prefix, if one is defined.
 	 * @param string $interwiki
-	 * @return string
+	 * @return string|null
 	 */
 	public static function getIndexForInterwiki( $interwiki ) {
 		// These settings should be common for all wikis, so globals

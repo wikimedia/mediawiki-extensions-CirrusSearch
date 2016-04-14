@@ -467,7 +467,7 @@ class ElasticsearchIntermediary {
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
 	 * @return Status representing a backend failure
 	 */
-	public function failure( $exception = null ) {
+	public function failure( \Elastica\Exception\ExceptionInterface $exception = null ) {
 		$context = $this->logContext;
 		$context['took'] = $this->finishRequest();
 		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
@@ -535,10 +535,10 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Extract an error message from an exception thrown by Elastica.
-	 * @param Exception $exception exception from which to extract a message
+	 * @param \Elastica\Exception\ExceptionInterface $exception exception from which to extract a message
 	 * @return string message from the exception
 	 */
-	public static function extractMessage( \Exception $exception ) {
+	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {
 			return $exception->getMessage();
 		}
@@ -764,10 +764,10 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param \Exception $exception
+	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return array Two elements, first is Status object, second is string.
 	 */
-	private function extractMessageAndStatus( \Exception $exception ) {
+	private function extractMessageAndStatus( \Elastica\Exception\ExceptionInterface $exception = null ) {
 		if ( !$exception ) {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}

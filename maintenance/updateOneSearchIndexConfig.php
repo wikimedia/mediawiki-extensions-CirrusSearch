@@ -272,7 +272,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$trace = $e->getTraceAsString();
+			$trace = $this->getExceptionTraceAsString( $e );
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
@@ -281,6 +281,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	/**
+	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
+	 *  access mOptions because its protected. That would be true but this
+	 *  class shares the hierarchy that contains mOptions so php allows it.
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	private function updateVersions() {
 		$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateVersionIndex' );
 		$child->mOptions['baseName'] = $this->indexBaseName;
@@ -289,6 +298,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$child->done();
 	}
 
+	/**
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	private function indexNamespaces() {
 		// Only index namespaces if we're doing the general index
 		if ( $this->indexType === 'general' ) {

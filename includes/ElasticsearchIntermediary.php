@@ -537,6 +537,8 @@ class ElasticsearchIntermediary {
 	 * Extract an error message from an exception thrown by Elastica.
 	 * @param Exception $exception exception from which to extract a message
 	 * @return string message from the exception
+	 * @suppress PhanUndeclaredMethod ExceptionInterface doesn't declare any methods
+	 *  so we have to suppress those warnings.
 	 */
 	public static function extractMessage( \Exception $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {

@@ -22,7 +22,7 @@ class ElasticSearch implements Detector {
 	public function detect( CirrusSearch $cirrus, $text ) {
 		$client = $cirrus->getConnection()->getClient();
 		try {
-			$response = $client->request( "_langdetect", Request::POST, $text );
+			$response = $this->request( $client, $text );
 		} catch ( ResponseException $e ) {
 			// This happens when language detection is not configured
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -49,5 +49,16 @@ class ElasticSearch implements Detector {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param \Elastica\Client $client
+	 * @param string $text
+	 * @return \Elastica\Response
+	 * @suppress PhanTypeMismatchArgument The third parameter is typically
+	 *  an array, but langdetect is special and takes a string instead.
+	 */
+	private function request( \Elastica\Client $client, $text ) {
+		return $client->request( "_langdetect", Request::POST, $text );
 	}
 }

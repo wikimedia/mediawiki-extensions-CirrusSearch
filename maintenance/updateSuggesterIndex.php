@@ -221,7 +221,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$trace = $e->getTraceAsString();
+			$trace = $this->getExceptionTraceAsString( $e );
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .

@@ -41,6 +41,15 @@ class UpdateSearchIndexConfig extends Maintenance {
 		UpdateOneSearchIndexConfig::addSharedOptions( $this );
 	}
 
+	/**
+	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
+	 *  access mOptions because its protected. That would be true but this
+	 *  class shares the hierarchy that contains mOptions so php allows it.
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	public function execute() {
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			$this->outputIndented( "$indexType index...\n");

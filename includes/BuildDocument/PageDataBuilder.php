@@ -103,12 +103,16 @@ class PageDataBuilder extends ParseBuilder {
 			// we don't remove the whole <sup> tag.  We also don't want to strip the <sup> tag and remove
 			// everything that looks like [2] because, I dunno, maybe there is a band named Word [2] Foo
 			// or something.  Whatever.  So we only strip things that look like <sup> tags wrapping a
-			// refence.  And we do it with regexes because HtmlFormatter doesn't support css selectors.
+			// reference.  And since the data looks like:
+			//      Reference in heading <sup>&#91;1&#93;</sup><sup>&#91;2&#93;</sup>
+			// we can not really use HtmlFormatter as we have no suitable selector.
 
 			// Some wikis wrap the brackets in a span:
 			// http://en.wikipedia.org/wiki/MediaWiki:Cite_reference_link
 			$heading = preg_replace( '/<\/?span>/', '', $heading );
-			$heading = preg_replace( '/<sup>\s*\[\s*\d+\s*\]\s*<\/sup>/', '', $heading );
+			// Normalize [] so the following regexp would work.
+			$heading = preg_replace( [ '/&#91;/', '/&#93;/' ], [ '[', ']' ], $heading );
+			$heading = preg_replace( '/<sup>\s*\[\s*\d+\s*\]\s*<\/sup>/is', '', $heading );
 
 			// Strip tags from the heading or else we'll display them (escaped) in search results
 			$heading = trim( Sanitizer::stripAllTags( $heading ) );

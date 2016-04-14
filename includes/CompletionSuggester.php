@@ -7,7 +7,7 @@ use Elastica\Request;
 use CirrusSearch;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Logger\LoggerFactory;
 use SearchSuggestion;
 use SearchSuggestionSet;
@@ -148,7 +148,9 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		if ( is_null( $config ) ) {
 			// @todo connection has an embeded config ... reuse that? somehow should
 			// at least ensure they are the same.
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );

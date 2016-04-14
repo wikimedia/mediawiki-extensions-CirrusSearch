@@ -11,6 +11,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -73,7 +74,9 @@ class CirrusSearch extends SearchEngine {
 
 	public function __construct( $baseName = null ) {
 		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
-		$this->config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
 	}

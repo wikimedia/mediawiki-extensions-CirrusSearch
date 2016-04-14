@@ -4,9 +4,9 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
-use ConfigFactory;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
 
@@ -65,7 +65,9 @@ class ElasticaWrite extends Job {
 	 * @return Connection[]
 	 */
 	protected function decideClusters() {
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		if ( $this->params['cluster'] !== null && !$this->canWriteToCluster( $config, $this->params['cluster'] ) ) {
 			// Just in case a job is present in the queue but its cluster
 			// has been removed from the config file.

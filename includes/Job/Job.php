@@ -4,9 +4,9 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
-use ConfigFactory;
 use Job as MWJob;
 use JobQueueGroup;
+use MediaWiki\MediaWikiServices;
 use Title;
 
 /**
@@ -55,7 +55,9 @@ abstract class Job extends MWJob {
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
 
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		// When the 'cluster' parameter is provided the job must only operate on
 		// the specified cluster, take special care to ensure nested jobs get the
 		// correct cluster set.  When set to null all clusters should be written to.

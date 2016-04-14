@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Cirrus helpful extensions to Maintenance.
@@ -40,14 +40,18 @@ abstract class Maintenance extends \Maintenance {
 
 	public function getConnection( $cluster = null ) {
 		if( $cluster ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 			if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
 				$this->error( 'Unknown cluster.', 1 );
 			}
 			return Connection::getPool( $config, $cluster );
 		}
 		if ( $this->connection === null ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 			$cluster = $this->decideCluster( $config );
 			$this->connection = Connection::getPool( $config, $cluster );
 		}

@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Maintenance;
 
-use ConfigFactory;
-use \CirrusSearch\SearchConfig;
-use \CirrusSearch\Searcher;
-use \Hooks;
-use \Language;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Searcher;
+use Hooks;
+use Language;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Builds elasticsearch analysis config arrays.
@@ -68,7 +68,9 @@ class AnalysisConfigBuilder {
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
 		if ( is_null ( $config ) ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 		$this->config = $config;

@@ -173,7 +173,7 @@ class Util {
 
 		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
 			return function( Status $status ) use ( $errorCallback, $key, $user ) {
-				$status = $status->getStatusArray( 'error' );
+				$status = $status->getErrorsArray();
 				// anon usernames are needed within the logs to determine if
 				// specific ips (such as large #'s of users behind a proxy)
 				// need to be whitelisted. We do not need this information

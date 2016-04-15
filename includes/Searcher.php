@@ -450,8 +450,8 @@ class Searcher extends ElasticsearchIntermediary {
 						$filter->setMaxInspect( 10000 );
 					}
 					$filter->setMaxDeterminizedStates( $this->config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );
-					if ( isset( $regex[ 'max_ngrams_extracted' ] ) ) {
-						$filter->setMaxNgramExtracted( $regex[ 'max_ngrams_extracted' ] );
+					if ( isset( $regex['max_ngrams_extracted'] ) ) {
+						$filter->setMaxNgramsExtracted( $regex['max_ngrams_extracted'] );
 					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $this->config->get( 'LanguageCode' ) );

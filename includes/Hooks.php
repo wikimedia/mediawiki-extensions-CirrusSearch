@@ -186,6 +186,9 @@ class Hooks {
 		);
 
 		foreach ( $lines as $line ) {
+			if ( false === strpos( $line, ':' ) ) {
+				continue;
+			}
 			list( $k, $v ) = explode( ':', $line, 2 );
 			switch( $k ) {
 			case 'min_doc_freq':

@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\LanguageDetector;
+
 use CirrusSearch;
 
 /**
@@ -28,6 +29,7 @@ class HttpAccept implements Detector {
 
 	/**
 	 * Detect language
+	 *
 	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found

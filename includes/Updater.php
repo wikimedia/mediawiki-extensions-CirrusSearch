@@ -132,7 +132,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
-				$content = new TextContent( $content );
+				$content = new TextContent( (string) $content );
 			}
 			// If the event that the content is _still_ not usable, we have to give up.
 			if ( !is_object( $content ) ) {

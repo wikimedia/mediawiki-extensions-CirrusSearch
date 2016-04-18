@@ -264,10 +264,10 @@ class Util {
 
 		foreach ( $data as $key => $value ) {
 			if ( is_array( $value ) ) {
-				foreach ( $value as $i => $value ) {
-					if ( is_array( $value ) && isset( $properties[$key]['properties'] ) ) {
+				foreach ( $value as $i => $innerValue ) {
+					if ( is_array( $innerValue ) && isset( $properties[$key]['properties'] ) ) {
 						// go recursive to intersect multidimensional values
-						$data[$key][$i] = static::cleanUnusedFields( $value, $properties[$key]['properties'] );
+						$data[$key][$i] = static::cleanUnusedFields( $innerValue, $properties[$key]['properties'] );
 					}
 
 				}

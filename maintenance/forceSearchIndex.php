@@ -140,6 +140,11 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->getOption( 'forceParse' ) ) {
 			$updateFlags |= Updater::FORCE_PARSE;
 		}
+		if ( !$this->getOption( 'batch-size' ) &&
+			( $this->getOption( 'queue' ) || $this->getOption( 'deletes' ) )
+		) {
+			$this->setBatchSize( 100 );
+		}
 
 		$this->namespace = $this->hasOption( 'namespace' ) ?
 			intval( $this->getOption( 'namespace' ) ) : null;

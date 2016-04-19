@@ -1,6 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
+use WebRequest;
+
 /**
  * CirrusSearch - List of profiles for function score rescores.
  *
@@ -243,7 +246,10 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
  * Used by includes/Hooks.php
  */
 class RescoreProfiles {
-	public static function overrideOptions( $request ) {
+	/**
+	 * @param WebRequest $request
+	 */
+	public static function overrideOptions( WebRequest $request ) {
 		global $wgCirrusSearchRescoreProfile,
 			$wgCirrusSearchPrefixSearchRescoreProfile,
 			$wgCirrusSearchMoreLikeRescoreProfile,

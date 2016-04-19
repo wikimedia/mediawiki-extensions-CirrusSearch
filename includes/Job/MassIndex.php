@@ -26,7 +26,13 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class MassIndex extends Job {
-	public static function build( $pages, $updateFlags, $cluster = null ) {
+	/**
+	 * @param WikiPage[] $pages
+	 * @param int $updateFlags
+	 * @param string|null $cluster
+	 * @return MassIndex
+	 */
+	public static function build( array $pages, $updateFlags, $cluster = null ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();
 		foreach ( $pages as $page ) {
@@ -41,6 +47,10 @@ class MassIndex extends Job {
 		) );
 	}
 
+	/**
+	 * @return bool
+	 * @throws \MWException
+	 */
 	protected function doJob() {
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();

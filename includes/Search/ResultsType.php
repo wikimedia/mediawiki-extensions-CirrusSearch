@@ -40,11 +40,19 @@ interface ResultsType {
 	 * Get the highlighting configuration.
 	 * @param array $highlightSource configuration for how to highlight the source.
 	 *  Empty if source should be ignored.
-	 * @return array highlighting configuration for elasticsearch
+	 * @return array|null highlighting configuration for elasticsearch
 	 */
-	function getHighlightingConfiguration( $highlightSource );
-	function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-		$result, $searchContainedSyntax );
+	function getHighlightingConfiguration( array $highlightSource );
+
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $result
+	 * @param bool $searchContainedSyntax
+	 * @return mixed Set of search results, the types of which vary by implementation.
+	 */
+	function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
+		\Elastica\ResultSet $result, $searchContainedSyntax );
 }
 
 /**
@@ -59,12 +67,23 @@ class TitleResultsType implements ResultsType {
 		return false;
 	}
 
-	public function getHighlightingConfiguration( $highlightSource ) {
-		return false;
+	/**
+	 * @param array $highlightSource
+	 * @return array|null
+	 */
+	public function getHighlightingConfiguration( array $highlightSource ) {
+		return null;
 	}
 
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-		$resultSet, $searchContainedSyntax ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $resultSet
+	 * @param bool $searchContainedSyntax
+	 * @return array
+	 */
+	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
+		\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$results[] = Title::makeTitle( $r->namespace, $r->title );
@@ -88,7 +107,11 @@ class FancyTitleResultsType extends TitleResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
-	public function getHighlightingConfiguration( $highlightSource ) {
+	/**
+	 * @param array $highlightSource
+	 * @return array|null
+	 */
+	public function getHighlightingConfiguration( array $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
@@ -135,12 +158,16 @@ class FancyTitleResultsType extends TitleResultsType {
 
 	/**
 	 * Convert the results to titles.
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $resultSet
+	 * @param bool $searchContainedSyntax
 	 * @return array[] Array of arrays, each with optional keys:
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-			$resultSet, $searchContainedSyntax ) {
+	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
+			\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$title = Title::makeTitle( $r->namespace, $r->title );
@@ -240,9 +267,11 @@ class FullTextResultsType implements ResultsType {
 	 * Get just one fragment from the text because that is all we will display.
 	 * Get one fragment from redirect title and heading each or else they
 	 * won't be sorted by score.
-	 * @return array of highlighting configuration
+	 *
+	 * @param array $highlightSource
+	 * @return array|null of highlighting configuration
 	 */
-	public function getHighlightingConfiguration( $highlightSource ) {
+	public function getHighlightingConfiguration( array $highlightSource ) {
 		global $wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchFragmentSize;
 
@@ -352,8 +381,15 @@ class FullTextResultsType implements ResultsType {
 		return $config;
 	}
 
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-			$result, $searchContainedSyntax ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param ResultSet $result
+	 * @param bool $searchContainedSyntax
+	 * @return ResultSet
+	 */
+	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
+			\Elastica\ResultSet $result, $searchContainedSyntax ) {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
@@ -415,8 +451,15 @@ class IdResultsType extends TitleResultsType {
 		return false;
 	}
 
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes,
-		$resultSet, $searchContainedSyntax ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $resultSet
+	 * @param bool $searchContainedSyntax
+	 * @return string[]
+	 */
+	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
+		\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$results[] = $r->getId();
@@ -438,11 +481,18 @@ class InterwikiResultsType implements ResultsType {
 		$this->prefix = $interwiki;
 	}
 
-	public function transformElasticsearchResult( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $result
+	 * @param bool $searchContainedSyntax
+	 * @return ResultSet
+	 */
+	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $result, $searchContainedSyntax ) {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
-	public function getHighlightingConfiguration( $highlightSource ) {
+	public function getHighlightingConfiguration( array $highlightSource ) {
 		return null;
 	}
 

@@ -12,6 +12,7 @@ Feature: Page updates trigger appropriate weight updates in newly linked and unl
       And a page named WeightedLink%{epoch} 1/2 exists with contents [[WeightedLink%{epoch} 1]]
     Then within 20 seconds api searching for WeightedLink%{epoch} yields WeightedLink%{epoch} 1 as the first result
 
+  @expect_failure
   Scenario: Pages weights are updated when links are removed from them
     Given a page named WeightedLinkRemoveUpdate%{epoch} 1/1 exists with contents [[WeightedLinkRemoveUpdate%{epoch} 1]]
       And a page named WeightedLinkRemoveUpdate%{epoch} 1/2 exists with contents [[WeightedLinkRemoveUpdate%{epoch} 1]]
@@ -34,6 +35,7 @@ Feature: Page updates trigger appropriate weight updates in newly linked and unl
       And a page named WeightedLinkRdir%{epoch} 1/2 exists with contents [[WeightedLinkRdir%{epoch} 1/Redirect]]
     Then within 20 seconds api searching for WeightedLinkRdir%{epoch} yields WeightedLinkRdir%{epoch} 1 as the first result
 
+  @expect_failure
   Scenario: Pages weights are updated when links are removed from their redirects
     Given a page named WLRURdir%{epoch} 1/1 exists with contents [[WLRURdir%{epoch} 1/Redirect]]
       And a page named WLRURdir%{epoch} 1/2 exists with contents [[WLRURdir%{epoch} 1/Redirect]]

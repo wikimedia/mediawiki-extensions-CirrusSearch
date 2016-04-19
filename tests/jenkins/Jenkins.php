@@ -96,6 +96,7 @@ class Jenkins {
 	 * @param Title $title page title object
 	 * @param string|Language $pageLang the page content language (either an object or a language code)
 	 * @param Language $wgLang the user language
+	 * @return bool
 	 */
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
 		$matches = array();

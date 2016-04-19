@@ -582,14 +582,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @param int
+	 * @return int Number of shards this index should have
 	 */
 	private function getShardCount() {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexType );
 	}
 
 	/**
-	 * @param string Number of replicas this index should have. May be a range such as '0-2'
+	 * @return string Number of replicas this index should have. May be a range such as '0-2'
 	 */
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexType );

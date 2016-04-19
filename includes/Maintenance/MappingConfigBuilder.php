@@ -243,6 +243,7 @@ class MappingConfigBuilder {
 	 * Get the field similarity
 	 * @param string $field
 	 * @param string $analyzer
+	 * @return string
 	 */
 	private function getSimilarity( $field, $analyzer = null ) {
 		$fieldSimilaraty = 'default';

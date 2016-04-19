@@ -367,7 +367,7 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string[]
+	 * @param string[] $indexes
 	 * @return string[]
 	 */
 	public function indexesToIndexNames( array $indexes ) {

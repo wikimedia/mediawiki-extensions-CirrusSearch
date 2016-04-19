@@ -1376,7 +1376,8 @@ GROOVY;
 	 * @param string[] $fields
 	 * @param string $queryString
 	 * @param int $phraseSlop
-	 * @param boolean $isRescore
+	 * @param bool $isRescore
+	 * @param bool $forHighlight
 	 * @return \Elastica\Query\Simple
 	 */
 	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore, $forHighlight = false ) {
@@ -1574,6 +1575,8 @@ GROOVY;
 
 	/**
 	 * If there is any boosting to be done munge the the current query to get it right.
+	 *
+	 * @param string $type
 	 */
 	private function installBoosts( $type ) {
 		if ( $this->sort !== 'relevance' ) {

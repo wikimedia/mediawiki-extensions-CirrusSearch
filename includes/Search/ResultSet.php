@@ -292,7 +292,7 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param string $type
+	 * @param int $type
 	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
@@ -300,7 +300,7 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param string $type
+	 * @param int $type
 	 * @return bool
 	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {

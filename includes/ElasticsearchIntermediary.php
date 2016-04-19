@@ -651,6 +651,7 @@ class ElasticsearchIntermediary {
 	 * directly to $this->logContext.
 	 *
 	 * @param float $took Number of milliseconds the request took
+	 * @param Client|null $client
 	 * @return array
 	 */
 	private function buildLogContext( $took, Client $client = null ) {

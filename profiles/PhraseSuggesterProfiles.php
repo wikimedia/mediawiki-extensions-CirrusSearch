@@ -132,6 +132,8 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 class PhraseSuggesterProfiles {
 	/**
 	 * Override Phrase suggester options ("Did you mean?" suggestions)
+	 *
+	 * @param \WebRequest $request
 	 */
 	public static function overrideOptions( $request ) {
 		global $wgCirrusSearchPhraseSuggestMaxErrors,

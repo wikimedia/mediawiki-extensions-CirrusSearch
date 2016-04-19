@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\InterwikiResultsType;
+use CirrusSearch\Search\ResultSet;
 use ObjectCache;
 use User;
 
@@ -57,7 +58,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Fetch search results, from caches, if there's any
 	 * @param string $term Search term to look for
-	 * @return Result|null
+	 * @return ResultSet|null
 	 */
 	public function getInterwikiResults( $term ) {
 

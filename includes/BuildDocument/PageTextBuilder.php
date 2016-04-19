@@ -50,9 +50,9 @@ class PageTextBuilder extends ParseBuilder {
 	);
 
 	/**
-	 * @param \Elastica\Document
-	 * @param Content
-	 * @param ParserOutput
+	 * @param \Elastica\Document $doc
+	 * @param Content $content
+	 * @param ParserOutput $parserOutput
 	 */
 	public function __construct( \Elastica\Document $doc, Content $content, ParserOutput $parserOutput ) {
 		parent::__construct( $doc, null, $content, $parserOutput );

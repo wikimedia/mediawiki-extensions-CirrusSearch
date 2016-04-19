@@ -329,7 +329,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * @param bool $rebuild
-	 * $param string $msg
+	 * @param string $msg
 	 */
 	private function createIndex( $rebuild, $msg ) {
 		global $wgCirrusSearchAllFields;

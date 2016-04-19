@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\Maintenance\Reindexer;
-use CirrusSearch\Maintenance\Validators\Validator;
 use Elastica\Client;
 use RawMessage;
 use Status;

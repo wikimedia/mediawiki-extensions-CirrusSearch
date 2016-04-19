@@ -3,9 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Searcher;
-use Hooks;
-use Language;
 
 /**
  * Builds elasticsearch analysis config arrays for the completion suggester

@@ -16,7 +16,6 @@ use Title;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
-use SearchResultSet;
 use UsageException;
 use User;
 use WebRequest;

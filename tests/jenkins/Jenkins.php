@@ -1,6 +1,10 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
+use DatabaseUpdater;
+use Language;
+use Title;
+
 /**
  * Sets up configuration required to run the browser tests on Jenkins.
  *

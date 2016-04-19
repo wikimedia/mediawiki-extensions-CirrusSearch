@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
+
 use CirrusSearch\SearchConfig;
 use Hooks;
 use MediaWiki\MediaWikiServices;

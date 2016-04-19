@@ -40,7 +40,7 @@ abstract class Validator {
 	 * @param string|null $indent
 	 * @return bool
 	 */
-	protected function checkConfig( $actual, $required, $indent = null ) {
+	protected function checkConfig( $actual, array $required, $indent = null ) {
 		foreach( $required as $key => $value ) {
 			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
@@ -83,6 +83,7 @@ abstract class Validator {
 	 * of config values but it tends to through back 'true' for true and 'false' for
 	 * false so we normalize everything.  Sometimes, oddly, it'll through back false
 	 * for false....
+	 *
 	 * @param mixed $value config value
 	 * @return mixed value normalized
 	 */

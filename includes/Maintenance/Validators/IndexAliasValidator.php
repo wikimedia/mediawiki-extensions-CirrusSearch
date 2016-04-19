@@ -92,6 +92,10 @@ abstract class IndexAliasValidator extends Validator {
 		return $this->updateIndices( $add, $remove );
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	protected abstract function shouldRemoveFromAlias( $name );
 
 	/**

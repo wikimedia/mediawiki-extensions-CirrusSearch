@@ -2,8 +2,8 @@
 
 namespace CirrusSearch;
 
-use \MediaWikiTestCase;
-use \Elastica\Exception\InvalidException;
+use MediaWikiTestCase;
+use Elastica\Exception\InvalidException;
 
 /**
  * Test Util functions.

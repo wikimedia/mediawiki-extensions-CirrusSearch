@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Job;
 
-use \PHPUnit_Framework_TestCase;
-use \Title;
+use PHPUnit_Framework_TestCase;
+use Title;
 
 /**
  * Test for MassIndex job.

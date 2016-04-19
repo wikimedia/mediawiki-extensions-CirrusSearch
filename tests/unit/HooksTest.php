@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use \PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Make sure cirrus doens't break any hooks.

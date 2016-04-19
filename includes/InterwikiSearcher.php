@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+
 use CirrusSearch\Search\InterwikiResultsType;
 use ObjectCache;
 use User;

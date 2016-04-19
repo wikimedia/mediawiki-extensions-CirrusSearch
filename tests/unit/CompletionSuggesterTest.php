@@ -2,9 +2,9 @@
 
 namespace CirrusSearch;
 
-use \CirrusSearch\Test\HashSearchConfig;
-use \CirrusSearch\Test\DummyConnection;
-use \CirrusSearch\BuildDocument\SuggestBuilder;
+use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\Test\DummyConnection;
+use CirrusSearch\BuildDocument\SuggestBuilder;
 
 /**
  * Completion Suggester Tests

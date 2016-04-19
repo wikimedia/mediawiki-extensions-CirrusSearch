@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use \PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Test escaping search strings.

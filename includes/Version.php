@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+
 use ObjectCache;
 use Status;
 

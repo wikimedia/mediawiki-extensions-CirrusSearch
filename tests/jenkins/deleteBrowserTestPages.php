@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch\Jenkins;
-use \Maintenance;
+
+use Maintenance;
 
 /**
  * Deletes pages created by the browser test suite. cleanSetup.php

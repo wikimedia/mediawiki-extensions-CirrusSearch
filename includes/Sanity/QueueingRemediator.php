@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\Sanity;
+
 use CirrusSearch\Job\DeletePages;
 use CirrusSearch\Job\LinksUpdate;
 use JobQueueGroup;

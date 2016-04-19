@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\Sanity;
+
 use Title;
 use WikiPage;
 

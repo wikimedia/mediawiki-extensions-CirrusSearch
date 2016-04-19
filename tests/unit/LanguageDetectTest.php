@@ -25,6 +25,11 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  */
 class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * @var \CirrusSearch
+	 */
+	private $cirrus;
+
 	public function getLanguageTexts() {
 		return array(
 			// simple cases

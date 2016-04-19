@@ -157,7 +157,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
 		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
-			'Detauls to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
+			'Defaults to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
 		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
 			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
 		$this->addOption( 'replicationTimeout', 'The amount of time (seconds) to wait for the replica shards to initialize. ' .
@@ -379,7 +379,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 *
 	 * Drawbacks: the FST will be read from disk twice in a short
 	 * amount of time.
-	 * This is a tradeoff between cluster operation and disk operation.
+	 * This is a trade off between cluster operation and disk operation.
 	 * Recreating the index may require less disk operations but causes
 	 * the cluster to rebalance.
 	 * This is certainly the best strategy for small indices (less than 100k docs)
@@ -508,7 +508,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $this->builder == null ) {
 			// NOTE: the builder stores a batchId value to flag
 			// documents indexed by this builder. Make sure to
-			// reuse the same instance when building docs otherwize
+			// reuse the same instance when building docs otherwise
 			// the batchId might be regenerated and can cause data
 			// loss when recycling the index.
 			$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );

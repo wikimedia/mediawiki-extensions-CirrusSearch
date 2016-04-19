@@ -266,7 +266,7 @@ class ElasticsearchIntermediary {
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 				// Helps to track down what actually caused the request. Will promote to full
-				// param if it proves usefull
+				// param if it proves useful
 				'queryString' => http_build_query( $_GET ),
 			),
 			'requests' => $requests,
@@ -323,7 +323,7 @@ class ElasticsearchIntermediary {
 	 * Get a token that (hopefully) uniquely identifies this search. It will be
 	 * added to the search result page js config vars, and put into the url with
 	 * history.replaceState(). This means click through's from supported browsers
-	 * will record this token as part of the referer.
+	 * will record this token as part of the referrer.
 	 *
 	 * @return string
 	 */
@@ -442,7 +442,7 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Log a succesful request when the response comes from a cache outside elasticsearch.
+	 * Log a successful request when the response comes from a cache outside elasticsearch.
 	 * @param string $description name of the action being started
 	 * @param array $logContext Contextual variables for generating log messages
 	 */
@@ -645,7 +645,7 @@ class ElasticsearchIntermediary {
 	 * format from elasticsearch. The completion suggester is a bit of a
 	 * special snowflake in that it has a completely different response
 	 * format than other searches. The CirrusSearch\CompletionSuggester
-	 * class is responsible for providing any usefull logging data by adding
+	 * class is responsible for providing any useful logging data by adding
 	 * directly to $this->logContext.
 	 *
 	 * @param float $took Number of milliseconds the request took

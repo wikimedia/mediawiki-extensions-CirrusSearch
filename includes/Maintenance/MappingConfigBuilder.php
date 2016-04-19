@@ -88,7 +88,7 @@ class MappingConfigBuilder {
 
 		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
-		// and is infered anyway.
+		// and is inferred anyway.
 		$titleExtraAnalyzers = array(
 			$suggestExtra,
 			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
@@ -245,19 +245,19 @@ class MappingConfigBuilder {
 	 * @param string $analyzer
 	 */
 	private function getSimilarity( $field, $analyzer = null ) {
-		$fieldSimilaraty = 'default';
+		$fieldSimilarity = 'default';
 		if ( isset( $this->similarity['fields'] ) ) {
 			if( isset( $this->similarity['fields'][$field] ) ) {
-				$fieldSimilaraty = $this->similarity['fields'][$field];
+				$fieldSimilarity = $this->similarity['fields'][$field];
 			} else if ( $this->similarity['fields']['__default__'] ) {
-				$fieldSimilaraty = $this->similarity['fields']['__default__'];
+				$fieldSimilarity = $this->similarity['fields']['__default__'];
 			}
 
 			if ( $analyzer != null && isset( $this->similarity['fields']["$field.$analyzer"] ) ) {
-				$fieldSimilaraty = $this->similarity['fields']["$field.$analyzer"];
+				$fieldSimilarity = $this->similarity['fields']["$field.$analyzer"];
 			}
 		}
-		return $fieldSimilaraty;
+		return $fieldSimilarity;
 	}
 
 	/**

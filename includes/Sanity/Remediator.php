@@ -79,7 +79,7 @@ class PrintingRemediator implements Remediator {
 
 	/**
 	 * Build the remediator.
-	 * @param Remediator $next the rememediator that this one decorates
+	 * @param Remediator $next the remediator that this one decorates
 	 */
 	public function __construct( Remediator $next ) {
 		$this->next = $next;

@@ -213,7 +213,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
  * This is not necessarily the case for all queries: e.g. 'interesting facts
  * about kennedy assassination'. In this case the most important words are
  * certainly 'kennedy' and 'assassination'.  But it appears that 'interesting'
- * has a lower docFreq than 'kennedy' on english wikipedia, so if the cutoff is
+ * has a lower docFreq than 'kennedy' on english Wikipedia, so if the cutoff is
  * not properly set 'kennedy' might be considered as high freq while
  * 'interesting' will be a low freq.
  */
@@ -249,7 +249,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 			return false;
 		}
 
-		// the Searcher class relies heavely on the QueryString syntax and
+		// the Searcher class relies heavily on the QueryString syntax and
 		// can generate QueryString syntax (i.e wildcards)
 		// This builder cannot understand such syntax.
 		if ( $this->context->isSearchContainedSyntax() ) {

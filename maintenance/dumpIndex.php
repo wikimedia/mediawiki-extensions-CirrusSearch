@@ -78,7 +78,7 @@ class DumpIndex extends Maintenance {
 			"curl -s -XPOST localhost:9200/{index}/_bulk --data-binary @dump-file\n" .
 			"Note that you need to specify the index in the URL because the bulk commands do not " .
 			"contain the index name. Beware that the bulk import is not meant to import very large " .
-			"files, sweetspot seems to be between 2000 and 5000 documents (see examples below)." .
+			"files, sweet spot seems to be between 2000 and 5000 documents (see examples below)." .
 			"\nThis always operates on a single cluster." .
 			"\n\nExamples :\n" .
 			" - Dump a general index :" .
@@ -87,7 +87,7 @@ class DumpIndex extends Maintenance {
 			"\n\tdumpIndex --indexType content | split -d -a 9 -l 100000  --filter 'gzip -c > \$FILE.txt.gz' - \"\" \n" .
 			"\nYou can import the data with the following commands :\n" .
 			" - Import chunks of 2000 documents :" .
-			"\n\tcat dump | split -l 4000 --filter 'curl -s http://elastic:9200/{indexName}/_bulk --data-binarya @- > /dev/null'\n" .
+			"\n\tcat dump | split -l 4000 --filter 'curl -s http://elastic:9200/{indexName}/_bulk --data-binary @- > /dev/null'\n" .
 			" - Import 3 chunks of 2000 documents in parallel :" .
 			"\n\tcat dump | parallel --pipe -L 2 -N 2000 -j3 'curl -s http://elastic:9200/{indexName}/_bulk --data-binary @- > /dev/null'");
 		$this->addOption( 'indexType', 'Index to dump. Either content or general.', true, true );

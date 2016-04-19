@@ -151,7 +151,7 @@ class Connection extends ElasticaConnection {
 	 *  specifications.
 	 */
 	public function getServerList() {
-		// This clause provides backwards compatability with previous versions
+		// This clause provides backwards compatibility with previous versions
 		// of CirrusSearch. Once this variable is removed cluster configuration
 		// will work as expected.
 		if ( $this->config->has( 'CirrusSearchServers' ) ) {

@@ -234,7 +234,7 @@ class AnalysisConfigBuilder {
 						'\u2019=>\u0020',  // Unicode right single quote
 						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
 						'_=>\u0020',       // Mediawiki loves _ and people are used to it but it usually means space
-						'-=>\u0020',       // Useful for finding hypenated names unhypenated
+						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
 					),
 				),
 				// Converts things that don't always count as word breaks into spaces which always

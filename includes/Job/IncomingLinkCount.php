@@ -29,7 +29,7 @@ class IncomingLinkCount extends Job {
 		// Load the titles and filter out any that no longer exist.
 		$updater = $this->createUpdater();
 		// We're intentionally throwing out whether or not this job succeeds.
-		// We're loggging it but we're not retrying.
+		// We're logging it but we're not retrying.
 		$updater->updateLinkedArticles( array( $this->getTitle() ) );
 		return true;
 	}

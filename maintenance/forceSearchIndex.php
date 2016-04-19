@@ -98,7 +98,7 @@ class ForceSearchIndex extends Maintenance {
 		// Set the timeout for maintenance actions
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
-		// Make sure we've actually got indicies to populate
+		// Make sure we've actually got indices to populate
 		if ( !$this->simpleCheckIndexes() ) {
 			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
 		}

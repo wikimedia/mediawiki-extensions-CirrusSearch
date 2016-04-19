@@ -70,10 +70,10 @@ class SourceRegex extends AbstractFilter {
     }
 
     /**
-     * @param int $gramSize size of the ngrams extracted for acccelerating
-     * the regex.  Defaults to 3 if not set.  That gram size must have been
-     * produced by analyzing the ngramField.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
+     * @param int $gramSize size of the ngrams extracted for accelerating
+     *  the regex.  Defaults to 3 if not set.  That gram size must have been
+     *  produced by analyzing the ngramField.
+     * @return $this
      */
     public function setGramSize( $gramSize ) {
         return $this->setParam( 'gram_size', $gramSize );
@@ -132,9 +132,9 @@ class SourceRegex extends AbstractFilter {
     }
 
     /**
-     * @param bool $locale locale used for case conversions.  Its imporant that
-     * this matches the locale used for lowercasing in the ngram index.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
+     * @param bool $locale locale used for case conversions.  Its important that
+     *  this matches the locale used for lowercasing in the ngram index.
+     * @return $this
      */
     public function setLocale( $locale ) {
         return $this->setParam( 'locale', $locale );

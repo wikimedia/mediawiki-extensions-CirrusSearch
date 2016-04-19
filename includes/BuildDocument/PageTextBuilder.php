@@ -32,7 +32,7 @@ class PageTextBuilder extends ParseBuilder {
 	private $excludedElementSelectors = array(
 		'audio', 'video',       // "it looks like you don't have javascript enabled..." do not need to index
 		'sup.reference',        // The [1] for references
-		'.mw-cite-backlink',    // The ↑ next to refenences in the references section
+		'.mw-cite-backlink',    // The ↑ next to references in the references section
 		'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
 		'h5', 'h6', 'h4',
 		'.autocollapse',        // Collapsed fields are hidden by default so we don't want them showing up.
@@ -117,7 +117,7 @@ class PageTextBuilder extends ParseBuilder {
 
 		// Strip elements from the page that are auxiliary text.  These will still be
 		// searched but matches will be ranked lower and non-auxiliary matches will be
-		// prefered in highlighting.
+		// preferred in highlighting.
 		$formatter->remove( $this->auxiliaryElementSelectors );
 		$auxiliaryElements = $formatter->filterContent();
 		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );

@@ -100,7 +100,7 @@ class Escaper {
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
 	 *
 	 * @param string $string
-	 * @return array(string, boolean) (fixedup query string, is this a fuzzy query?)
+	 * @return array(string, boolean) (fixed up query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {
 		// Be careful when editing this method because the ordering of the replacements matters.

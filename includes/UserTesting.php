@@ -3,14 +3,14 @@
 namespace CirrusSearch;
 
 /**
- * Handles decisions arround if the current request is a member of any
+ * Handles decisions around if the current request is a member of any
  * test currently being run. This initial implementation is per-request
  * but could be extended to keep the same user in the same test/bucket
  * over multiple requests.
  *
  * $wgCirrusSearchUserTesting = array(
  *     'someTest' => array(
- *         'sampleRate' => 100, // sample 1 in 100 occurances
+ *         'sampleRate' => 100, // sample 1 in 100 occurrences
  *         'buckets' => array(
  *             'a' => array(
  *                 // control bucket, retain defaults

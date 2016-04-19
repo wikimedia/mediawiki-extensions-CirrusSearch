@@ -289,7 +289,7 @@ class FunctionScoreChain {
 }
 
 /**
- * This is usefull to check if the function score is empty
+ * This is useful to check if the function score is empty
  * Function score builders may not add any function if some
  * criteria are not met. If there's no function we should not
  * not build the rescore query.
@@ -403,7 +403,7 @@ abstract class FunctionScoreBuilder {
 }
 
 /**
- * Buils a set of functions with boosted templates
+ * Builds a set of functions with boosted templates
  * Uses a weight function with a filter for each template.
  * The list of boosted templates is read from SearchContext
  */
@@ -425,7 +425,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		// @todo: verify that this is what we want: in case of a syntax error
 		// we disable default boost templates.
 		if ( $this->boostTemplates === null ) {
-			// Fallback to default otherwize
+			// Fallback to default otherwise
 			$this->boostTemplates = Util::getDefaultBoostTemplates();
 		}
 	}

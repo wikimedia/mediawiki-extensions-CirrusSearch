@@ -49,7 +49,7 @@ $wgCirrusSearchRescoreProfiles = array(
 				// the rescore window size
 				'window' => 8192,
 
-				// The window size can be overiden by a config a value if set
+				// The window size can be overridden by a config a value if set
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 
 				// relative importance of the original query

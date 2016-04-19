@@ -73,7 +73,7 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	public function __construct( $baseName = null ) {
-		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
+		$this->indexBaseName = $baseName === null ? wfWikiID() : $baseName;
 		$this->config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
@@ -421,7 +421,7 @@ class CirrusSearch extends SearchEngine {
 		// For historical reasons all callers of searchText interpret any Status return as an error
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
-		return $status->isOk() ? $status->getValue() : $status;
+		return $status->isOK() ? $status->getValue() : $status;
 	}
 
 	/**

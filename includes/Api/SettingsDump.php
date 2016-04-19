@@ -25,7 +25,7 @@ class SettingsDump extends ApiBase {
 		$conn = $this->getCirrusConnection();
 		foreach( $conn->getAllIndexTypes() as $index ) {
 			$this->getResult()->addValue( array( $index, 'page' ), 'index',
-				$conn->getIndex( wfWikiId(), $index )->getSettings()->get() );
+				$conn->getIndex( wfWikiID(), $index )->getSettings()->get() );
 		}
 	}
 

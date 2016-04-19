@@ -57,7 +57,7 @@ class LinksUpdate extends Job {
 		$titleKeys = array_merge( $this->params[ 'addedLinks' ],
 			$this->params[ 'removedLinks' ] );
 		foreach ( $titleKeys as $titleKey ) {
-			$title = Title::newFromDBKey( $titleKey );
+			$title = Title::newFromDBkey( $titleKey );
 			if ( !$title ) {
 				continue;
 			}

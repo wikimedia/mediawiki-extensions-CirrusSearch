@@ -69,7 +69,7 @@ class RunSearch extends Maintenance {
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
 
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );

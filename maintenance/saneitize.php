@@ -88,7 +88,7 @@ class Saneitize extends Maintenance {
 				$this->error( $status->getWikiText(), 1 );
 			}
 			if ( ( $pageId - $this->fromId ) % 100 === 0 ) {
-				$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiId(), $pageId,
+				$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), $pageId,
 					$this->toId ) );
 			}
 		}

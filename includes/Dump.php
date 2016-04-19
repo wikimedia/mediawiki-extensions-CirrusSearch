@@ -40,7 +40,7 @@ class Dump extends FormlessAction {
 
 		$id = $this->getTitle()->getArticleID();
 		$esSources = $searcher->get( array( $id ), true );
-		if ( !$esSources->isOk() ) {
+		if ( !$esSources->isOK() ) {
 			// Exception has been logged
 			echo '{}';
 			return;

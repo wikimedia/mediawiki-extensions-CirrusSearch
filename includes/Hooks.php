@@ -351,7 +351,7 @@ class Hooks {
 	public static function onSoftwareInfo( &$software ) {
 		$version = new Version( self::getConnection() );
 		$status = $version->get();
-		if ( $status->isOk() ) {
+		if ( $status->isOK() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
 			$software[ '[https://www.elastic.co/products/elasticsearch Elasticsearch]' ] = $status->getValue();
 		}
@@ -370,7 +370,7 @@ class Hooks {
 
 		// Prepend our message if needed
 		if ( $wgCirrusSearchShowNowUsing ) {
-			$out->addHtml( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
+			$out->addHTML( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
 				$specialSearch->msg( 'cirrussearch-now-using' )->parse() .
 				Xml::closeElement( 'div' ) );
 		}

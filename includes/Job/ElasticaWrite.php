@@ -51,10 +51,10 @@ class ElasticaWrite extends Job {
 	 * numerous that if they were to start failing they would possibly
 	 * overflow the job queue and bring down redis in production.
 	 *
-	 * Basically we just can't let these jobs hang out in the abandonded
+	 * Basically we just can't let these jobs hang out in the abandoned
 	 * queue for a week like retries typically do. If these jobs get
 	 * failed they will log to CirrusSearchChangeFailed which is a signal
-	 * that some point in time arround the failure needs to be reindexed
+	 * that some point in time around the failure needs to be reindexed
 	 * manually. See https://wikitech.wikimedia.org/wiki/Search for more
 	 * details.
 	 */

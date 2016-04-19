@@ -97,7 +97,7 @@ class PageDataBuilder extends ParseBuilder {
 		$ignoredHeadings = $this->getIgnoredHeadings();
 		foreach ( $this->parserOutput->getSections() as $heading ) {
 			$heading = $heading[ 'line' ];
-			// First strip out things that look like references.  We can't use HTML filtering becase
+			// First strip out things that look like references.  We can't use HTML filtering because
 			// the references come back as <sup> tags without a class.  To keep from breaking stuff like
 			//  ==Applicability of the strict mass–energy equivalence formula, ''E'' = ''mc''<sup>2</sup>==
 			// we don't remove the whole <sup> tag.  We also don't want to strip the <sup> tag and remove

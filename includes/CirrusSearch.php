@@ -312,7 +312,7 @@ class CirrusSearch extends SearchEngine {
 	private function searchTextReal( $term, SearchConfig $config = null ) {
 		global $wgCirrusSearchInterwikiSources;
 
-		// Convert the unicode character 'idiographic whitespace' into standard
+		// Convert the unicode character 'ideographic whitespace' into standard
 		// whitespace.  Cirrussearch treats them both as normal whitespace, but
 		// the preceding isn't appropriately trimmed.
 		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
@@ -646,7 +646,7 @@ class CirrusSearch extends SearchEngine {
 
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
+		// construction site to log errors.
 		if ( $status->isOK() ) {
 			if ( !$search ) {
 				// No need to unpack the simple title matches from non-fancy TitleResultsType

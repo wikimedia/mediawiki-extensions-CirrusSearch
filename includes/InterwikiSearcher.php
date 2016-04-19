@@ -111,7 +111,7 @@ class InterwikiSearcher extends Searcher {
 	}
 
 	/**
-	 * We don't support extra indicies when we're doing interwiki searches
+	 * We don't support extra indices when we're doing interwiki searches
 	 *
 	 * @see Searcher::getAndFilterExtraIndexes()
 	 * @return array

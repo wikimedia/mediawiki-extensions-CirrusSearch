@@ -34,7 +34,7 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class UpdateSearchIndexConfig extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies. This always operates on a single cluster." );
+		$this->addDescription( "Update the configuration or contents of all search indices. This always operates on a single cluster." );
 		// Directly require this script so we can include its parameters as maintenance scripts can't use the autoloader
 		// in __construct.  Lame.
 		require_once __DIR__ . '/updateOneSearchIndexConfig.php';

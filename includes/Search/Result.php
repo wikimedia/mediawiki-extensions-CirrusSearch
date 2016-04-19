@@ -34,7 +34,7 @@ class Result extends SearchResult {
 	/** @var Title|null */
 	private $redirectTitle = null;
 	/** @var string */
-	private $redirectSnipppet = '';
+	private $redirectSnippet = '';
 	/** @var Title|null */
 	private $sectionTitle = null;
 	/** @var string */
@@ -102,7 +102,7 @@ class Result extends SearchResult {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
 			$redirects = $result->redirect;
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
-			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
+			$this->redirectSnippet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		}
 
 		$this->textSnippet = $this->escapeHighlightedText( $this->pickTextSnippet( $highlights ) );
@@ -282,7 +282,7 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	public function getRedirectSnippet() {
-		return $this->redirectSnipppet;
+		return $this->redirectSnippet;
 	}
 
 	/**

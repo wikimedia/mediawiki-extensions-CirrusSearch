@@ -28,7 +28,7 @@ interface ResultsType {
 	/**
 	 * Get the source filtering to be used loading the result.
 	 *
-	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	function getSourceFiltering();
 
@@ -65,7 +65,7 @@ interface ResultsType {
  */
 class TitleResultsType implements ResultsType {
 	/**
-	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return array( 'namespace', 'title' );
@@ -273,7 +273,7 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	/**
-	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
@@ -480,7 +480,7 @@ class FullTextResultsType implements ResultsType {
  */
 class IdResultsType extends TitleResultsType {
 	/**
-	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return false;
@@ -538,7 +538,7 @@ class InterwikiResultsType implements ResultsType {
 	}
 
 	/**
-	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return array( 'namespace', 'namespace_text', 'title' );

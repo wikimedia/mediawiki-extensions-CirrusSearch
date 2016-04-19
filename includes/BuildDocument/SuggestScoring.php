@@ -34,7 +34,7 @@ class SuggestScoringMethodFactory {
 	public static function getScoringMethod( $scoringMethod ) {
 		switch( $scoringMethod ) {
 		case 'incomingLinks':
-			return new IncomingsLinksScoringMethod();
+			return new IncomingLinksScoringMethod();
 		case 'quality':
 			return new QualityScore();
 		case 'popqual':
@@ -69,7 +69,7 @@ interface SuggestScoringMethod {
 /**
  * Very simple scoring method based on incoming links
  */
-class IncomingsLinksScoringMethod implements SuggestScoringMethod {
+class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	/**
 	 * {@inheritDoc}
 	 */

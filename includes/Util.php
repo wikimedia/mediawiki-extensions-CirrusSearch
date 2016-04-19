@@ -135,8 +135,8 @@ class Util {
 	 * that Cirrus always uses.
 	 * @param string $type same as type parameter on PoolCounter::factory
 	 * @param \User $user the user
-	 * @param callable $workCallback callback when pool counter is aquired.  Called with
-	 *   no parameters.
+	 * @param callable $workCallback callback when pool counter is acquired.  Called with
+	 *  no parameters.
 	 * @param callable $errorCallback optional callback called on errors.  Called with
 	 *   the error string and the key as parameters.  If left undefined defaults
 	 *   to a function that returns a fatal status and logs an warning.
@@ -484,8 +484,8 @@ class Util {
 			foreach ( $templateMatches as $templateMatch ) {
 				// templates field is populated with Title::getPrefixedText
 				// which will replace _ to ' '. We should do the same here.
-				$tmpl = strtr( $templateMatch[ 1 ], '_', ' ' );
-				$boostTemplates[ $tmpl ] = floatval( $templateMatch[ 2 ] ) / 100;
+				$template = strtr( $templateMatch[ 1 ], '_', ' ' );
+				$boostTemplates[ $template ] = floatval( $templateMatch[ 2 ] ) / 100;
 			}
 		}
 		return $boostTemplates;

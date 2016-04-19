@@ -74,7 +74,7 @@ class ConfigUtils {
 			return $identifier;
 		}
 		if ( $option === 'current' ) {
-			$this->outputIndented( 'Infering index identifier...' );
+			$this->outputIndented( 'Inferring index identifier...' );
 			$found = $this->getAllIndicesByType( $typeName );
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );

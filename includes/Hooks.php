@@ -505,7 +505,7 @@ class Hooks {
 		}
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
+		// construction site to log errors.
 		if ( !$status->isOK() ) {
 			return true;
 		}

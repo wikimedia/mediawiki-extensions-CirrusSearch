@@ -45,7 +45,7 @@ class SuggestBuilder {
 	const REDIRECT_DISCOUNT = 0.1;
 
 	/**
-	 * Discount suggestions based on crossnamespace redirects
+	 * Discount suggestions based on cross namespace redirects
 	 */
 	const CROSSNS_DISCOUNT = 0.005;
 
@@ -490,8 +490,8 @@ class SuggestBuilder {
 	}
 
 	/**
-	 * Decode a suggestion ouput.
-	 * The result is an array whith the following keys:
+	 * Decode a suggestion output.
+	 * The result is an array with the following keys:
 	 * id: the pageId
 	 * type: either REDIRECT_SUGGESTION or TITLE_SUGGESTION
 	 * text (optional): if TITLE_SUGGESTION the Title text

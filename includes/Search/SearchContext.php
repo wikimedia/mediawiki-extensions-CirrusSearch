@@ -179,7 +179,7 @@ class SearchContext {
 	/**
 	 * Return the list of boosted templates specified in the user query (special syntax)
 	 * null if not used in the query or an empty array if there was a syntax error.
-	 * Initiliazed after special syntax extraction.
+	 * Initialized after special syntax extraction.
 	 *
 	 * @return array|null of boosted templates, key is the template value is the weight
 	 */

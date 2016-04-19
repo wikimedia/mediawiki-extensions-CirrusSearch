@@ -85,7 +85,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk->send();
 		}
 
-		// Ensure our freeze is immediatly seen (mostly for testing
+		// Ensure our freeze is immediately seen (mostly for testing
 		// purposes)
 		$type->getIndex()->refresh();
 	}

@@ -27,17 +27,22 @@ use \Title;
 interface ResultsType {
 	/**
 	 * Get the source filtering to be used loading the result.
+	 *
 	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
 	 */
 	function getSourceFiltering();
+
 	/**
 	 * Get the fields to load.  Most of the time we'll use source filtering instead but
 	 * some fields aren't part of the source.
+	 *
 	 * @return false|string|array corresponding to Elasticsearch fields syntax
 	 */
 	function getFields();
+
 	/**
 	 * Get the highlighting configuration.
+	 *
 	 * @param array $highlightSource configuration for how to highlight the source.
 	 *  Empty if source should be ignored.
 	 * @return array|null highlighting configuration for elasticsearch
@@ -59,10 +64,16 @@ interface ResultsType {
  * Returns titles and makes no effort to figure out how the titles matched.
  */
 class TitleResultsType implements ResultsType {
+	/**
+	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 */
 	public function getSourceFiltering() {
 		return array( 'namespace', 'title' );
 	}
 
+	/**
+	 * @return false|string|array corresponding to Elasticsearch fields syntax
+	 */
 	public function getFields() {
 		return false;
 	}
@@ -96,11 +107,13 @@ class TitleResultsType implements ResultsType {
  * Returns titles categorized based on how they matched - redirect or name.
  */
 class FancyTitleResultsType extends TitleResultsType {
+	/** @var string */
 	private $matchedAnalyzer;
 
 	/**
 	 * Build result type.   The matchedAnalyzer is required to detect if the match
 	 * was from the title or a redirect (and is kind of a leaky abstraction.)
+	 *
 	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 */
 	public function __construct( $matchedAnalyzer ) {
@@ -158,6 +171,7 @@ class FancyTitleResultsType extends TitleResultsType {
 
 	/**
 	 * Convert the results to titles.
+	 *
 	 * @param string[] $suggestPrefixes
 	 * @param string[] $suggestSuffixes
 	 * @param \Elastica\ResultSet $resultSet
@@ -239,7 +253,11 @@ class FullTextResultsType implements ResultsType {
 	const HIGHLIGHT_ALT_TITLES_WITH_POSTINGS = 32;
 	const HIGHLIGHT_ALL = 63;
 
+	/**
+	 * @param int Bitmask, see HIGHLIGHT_* consts
+	 */
 	private $highlightingConfig;
+
 	/**
 	 * @var string interwiki prefix mappings
 	 */
@@ -247,16 +265,23 @@ class FullTextResultsType implements ResultsType {
 
 	/**
 	 * @param int $highlightingConfig Bitmask, see HIGHLIGHT_* consts
+	 * @param string $interwiki
 	 */
 	public function __construct( $highlightingConfig, $interwiki = '' ) {
 		$this->highlightingConfig = $highlightingConfig;
 		$this->prefix = $interwiki;
 	}
 
+	/**
+	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 */
 	public function getSourceFiltering() {
 		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getFields() {
 		return "text.word_count"; // word_count is only a stored field and isn't part of the source.
 	}
@@ -393,14 +418,21 @@ class FullTextResultsType implements ResultsType {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
+	/**
+	 * @param array[] $fields
+	 * @return array[]
+	 */
 	private function addMatchedFields( $fields ) {
-		foreach ( $fields as $name => $config ) {
-			$config[ 'matched_fields' ] = array( $name, "$name.plain" );
-			$fields[ $name ] = $config;
+		foreach ( array_keys( $fields ) as $name ) {
+			$fields[$name]['matched_fields'] =  array( $name, "$name.plain" );
 		}
 		return $fields;
 	}
 
+	/**
+	 * @param array &$config
+	 * @param array $highlightSource
+	 */
 	private function configureHighlightingForSource( &$config, $highlightSource ) {
 		global $wgCirrusSearchRegexMaxDeterminizedStates;
 		$patterns = array();
@@ -447,6 +479,9 @@ class FullTextResultsType implements ResultsType {
  * is an id.
  */
 class IdResultsType extends TitleResultsType {
+	/**
+	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 */
 	public function getSourceFiltering() {
 		return false;
 	}
@@ -476,6 +511,8 @@ class InterwikiResultsType implements ResultsType {
 
 	/**
 	 * Constructor
+	 *
+	 * @param string $interwiki
 	 */
 	public function __construct( $interwiki ) {
 		$this->prefix = $interwiki;
@@ -492,14 +529,24 @@ class InterwikiResultsType implements ResultsType {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
 	}
 
+	/**
+	 * @param array $highlightSource
+	 * @return null
+	 */
 	public function getHighlightingConfiguration( array $highlightSource ) {
 		return null;
 	}
 
+	/**
+	 * @return false|string|array corresonding to Elasticsearch source filtering syntax
+	 */
 	public function getSourceFiltering() {
 		return array( 'namespace', 'namespace_text', 'title' );
 	}
 
+	/**
+	 * @return false
+	 */
 	public function getFields() {
 		return false;
 	}

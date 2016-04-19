@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\Search;
-use \CirrusSearch\Searcher;
-use \LinkBatch;
-use \SearchResultSet;
+
+use CirrusSearch\Searcher;
+use LinkBatch;
+use SearchResultSet;
 
 /**
  * A set of results from Elasticsearch.
@@ -114,6 +115,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * Is rewriting this query OK?
+	 *
 	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.
 	 * @return bool True when rewriting this query is allowed
 	 */
@@ -152,6 +154,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * Escape a highlighted suggestion coming back from Elasticsearch.
+	 *
 	 * @param string $suggestion suggestion from elasticsearch
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
@@ -189,9 +192,10 @@ class ResultSet extends SearchResultSet {
 	 * batch query. By pre-caching this we ensure methods such as
 	 * Result::isMissingRevision() don't trigger a query for each and
 	 * every search result.
+	 *
 	 * @param \Elastica\ResultSet $resultSet Result set from which the titles come
 	 */
-	private function preCacheContainedTitles( $resultSet ) {
+	private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
 		// We can only pull in information about the local wiki
  		if ( $this->interwikiPrefix !== '' ) {
  			return;
@@ -242,8 +246,8 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param integer $first 0-indexed result to swap with $second
-	 * @param integer $second 0-indexed result to swap with $first
+	 * @param int $first 0-indexed result to swap with $second
+	 * @param int $second 0-indexed result to swap with $first
 	 */
 	public function swapResults( $first, $second ) {
 		$iter = $this->swappedResultIter ?: $this->result;
@@ -283,7 +287,7 @@ class ResultSet extends SearchResultSet {
 	 * @param int $type One of SearchResultSet::* constants
 	 * @param string $interwiki
 	 */
-	public function addInterwikiResults( $res, $type, $interwiki ) {
+	public function addInterwikiResults( ResultSet $res, $type, $interwiki ) {
 		$this->interwikiResults[$type][$interwiki] = $res;
 	}
 

@@ -48,6 +48,7 @@ class SearchTextQueryBuilderFactory {
 
 	/**
 	 * Returns the best builder for this query.
+	 *
 	 * @param string $queryString the query without special syntax
 	 * @return SearchTextQueryBuilder
 	 */
@@ -68,6 +69,7 @@ class SearchTextQueryBuilderFactory {
 interface SearchTextQueryBuilder {
 	/**
 	 * Builds the main query
+	 *
 	 * @param array $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
@@ -77,6 +79,7 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Builds the query used in the rescore phase
+	 *
 	 * @param array $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
@@ -86,6 +89,7 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Builds the query for highlighting
+	 *
 	 * @param array $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
@@ -96,6 +100,7 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Check if the query can be built by this builder
+	 *
 	 * @param string $queryString the query
 	 * @return boolean true if this query can be built by this builder
 	 */
@@ -163,6 +168,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 
 	/**
 	 * Builds a query based on QueryString syntax
+	 *
 	 * @param array $fields the fields
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop phrase slop
@@ -214,12 +220,14 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * The builder used for rescore and highlight query.
+	 *
 	 * @var SearchTextBaseQueryBuilder
 	 */
 	private $queryStringBuilder;
 
 	/**
 	 * The profile used to configure the queries
+	 *
 	 * @var array
 	 */
 	private $profile;
@@ -417,7 +425,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @param string $minShouldMatch the MinimumShouldMatch value
 	 * @return \Elastica\Query\Match
 	 */
-	private function buildSimpleMatch( $boostedField, $queryString, $minShouldMatch ) {
+	private function buildSimpleMatch( array $boostedField, $queryString, $minShouldMatch ) {
 		$match = new \Elastica\Query\Match();
 		$match->setField( $boostedField['field'], array(
 			'query' => $queryString,

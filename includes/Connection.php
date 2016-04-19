@@ -242,44 +242,6 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * Given a list of Index objects, return the 'type' portion of the name
-	 * of that index. This matches the types as returned from
-	 * self::getAllIndexTypes().
-	 *
-	 * @param \Elastica\Index[] $indexes
-	 * @return string[]
-	 */
-	public function indexToIndexTypes( array $indexes ) {
-		$allowed = $this->getAllIndexTypes();
-		return array_map( function( $type ) use ( $allowed ) {
-			$fullName = $type->getIndex()->getName();
-			$parts = explode( '_', $fullName );
-			// In 99% of cases it should just be the second
-			// piece of a 2 or 3 part name.
-			if ( isset( $parts[1] ) && in_array( $parts[1], $allowed ) ) {
-				return $parts[1];
-			}
-			// the wikiId should be the first part of the name and
-			// not part of our result, strip it
-			if ( $parts[0] === wfWikiID() ) {
-				$parts = array_slice( $parts, 1 );
-			}
-			// there might be a suffix at the end, try stripping it
-			$maybe = implode( '_', array_slice( $parts, 0, -1 ) );
-			if ( in_array( $maybe, $allowed ) ) {
-				return $maybe;
-			}
-			// maybe there wasn't a suffix at the end, try the whole thing
-			$maybe = implode( '_', $parts );
-			if ( in_array( $maybe, $allowed ) ) {
-				return $maybe;
-			}
-			// probably not right, but at least we tried
-			return $fullName;
-		}, $indexes );
-	}
-
-	/**
 	 * Get the index suffix for a given namespace
 	 * @param int $namespace A namespace id
 	 * @return string

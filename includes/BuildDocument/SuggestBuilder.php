@@ -129,8 +129,6 @@ class SuggestBuilder {
 					continue;
 				}
 
-				$score = $this->scoringMethod->score( $inputDoc );
-				$location = $this->findPrimaryCoordinates( $inputDoc );
 				foreach ( $inputDoc['redirect'] as $redir ) {
 					if ( !isset( $redir['namespace'] ) || !isset( $redir['title'] ) ) {
 						continue;

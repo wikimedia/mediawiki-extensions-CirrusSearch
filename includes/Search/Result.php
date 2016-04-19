@@ -124,16 +124,14 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	private function pickTextSnippet( $highlights ) {
+		// This can get skipped if there the page was sent to Elasticsearch without text.
+		// This could be a bug or it could be that the page simply doesn't have any text.
 		$mainSnippet = '';
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$mainSnippet = $highlights[ 'text' ][ 0 ];
 			if ( $this->containsMatches( $mainSnippet ) ) {
 				return $mainSnippet;
 			}
-		} else {
-			// This can get skipped if there the page was sent to Elasticsearch without text.
-			// This could be a bug or it could be that the page simply doesn't have any text.
-			$mainSnipppet = '';
 		}
 		if ( isset( $highlights[ 'auxiliary_text' ] ) ) {
 			$auxSnippet = $highlights[ 'auxiliary_text' ][ 0 ];

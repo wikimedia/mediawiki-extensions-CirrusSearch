@@ -264,7 +264,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, 30 ) as $updates ) {
 			$bulk = new \Elastica\Bulk( $client );
-			$articleIDs = array();
+			$titles = array();
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );

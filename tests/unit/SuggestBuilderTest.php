@@ -120,7 +120,6 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 	public function testCrossNSRedirects() {
 		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
 		$score = 10;
-		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = array(
 			'title' => 'Navigation',
 			'namespace' => 12,

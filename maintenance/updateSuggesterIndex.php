@@ -778,26 +778,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	/**
-	 * @return \CirrusSearch\Maintenance\Validators\Validator[]
-	 */
-	private function getIndexSettingsValidators() {
-		$validators = array();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
-		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
-		$validators[] = $this->getShardAllocationValidator();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexTypeName, $this->maxShardsPerNode, $this );
-		return $validators;
-	}
-
-	/**
-	 * @return \CirrusSearch\Maintenance\Validators\ShardAllocationValidator
-	 */
-	private function getShardAllocationValidator() {
-		global $wgCirrusSearchIndexAllocation;
-		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
-	}
-
-	/**
 	 * @return \Elastica\Index being updated
 	 */
 	public function getIndex() {

@@ -130,4 +130,16 @@ abstract class Maintenance extends \Maintenance {
 	public function error( $err, $die = 0 ) {
 		parent::error( $err, $die );
 	}
+
+	/**
+	 * Tiny method to restrict phan suppression to this method call.
+	 *
+	 * @param \Elastica\Exception\ExceptionInterface $e
+	 * @return string
+	 * @suppress PhanUndeclaredMethod ExceptionInterface has no methods
+	 */
+	protected function getExceptionTraceAsString( \Elastica\Exception\ExceptionInterface $e ) {
+		return $e->getTraceAsString();
+	}
+
 }

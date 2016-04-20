@@ -330,10 +330,20 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->query = new \Elastica\Query\MatchAll();
 		}
-		// @todo: use dedicated rescore profiles for prefix search.
-		$this->searchContext->setBoostLinks( true );
+
+		$this->setBoostLinks();
 
 		return $this->search( 'prefix', $search );
+	}
+
+	/**
+	 * Tiny function to restrict warning suppression
+	 * @todo: use dedicated rescore profiles for prefix search.
+	 *
+	 * @suppress PhanDeprecatedFunction
+	 */
+	private function setBoostLinks() {
+		$this->searchContext->setBoostLinks( true );
 	}
 
 	/**

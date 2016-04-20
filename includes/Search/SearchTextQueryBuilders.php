@@ -401,6 +401,9 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @param string $queryString the query
 	 * @param array $profile the profile used by the common terms query
 	 * @return \Elastica\Query\Common the common terms query.
+	 * @suppress PhanTypeMismatchArgument minimum_should_match can be applied
+	 *  for low and high frequency terms, but the type signature hasn't been
+	 *  updated to match
 	 */
 	private function buildOneCommonTermsClause( array $boostedField, $queryString, array $profile ) {
 		$common = new \Elastica\Query\Common( $boostedField['field'], $queryString, $profile['cutoff_freq'] );

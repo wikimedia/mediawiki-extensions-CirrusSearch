@@ -335,8 +335,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
-		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
+		list( $mMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
+		list( $aMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
 			$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
@@ -582,7 +582,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
 				function( $results ) use ( &$docsDumped, $totalDocsToDump,
 						$destinationType ) {
-					$suggestDocs = array();
 					$inputDocs = array();
 					foreach ( $results as $result ) {
 						$docsDumped++;

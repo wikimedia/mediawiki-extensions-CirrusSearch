@@ -117,8 +117,6 @@ class DumpIndex extends Maintenance {
 				implode( ', ', $indexTypes ), 1 );
 		}
 
-		$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
-
 		$this->indexIdentifier = $this->getOption( 'indexIdentifier' );
 
 		$filter = null;

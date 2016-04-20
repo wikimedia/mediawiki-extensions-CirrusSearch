@@ -299,7 +299,6 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private function simpleCheckIndexes() {
 		$wiki = wfWikiID();
-		$status = $this->getConnection()->getClient()->getStatus();
 
 		// Top-level alias needs to exist
 		if ( !$this->getConnection()->getIndex( $wiki )->exists() ) {

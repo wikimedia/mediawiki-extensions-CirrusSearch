@@ -441,13 +441,6 @@ class CirrusSearch extends SearchEngine {
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
 			// Errors will be logged, let's try the exact db match
-			$suggestions = $response->getValue();
-		} else {
-			$suggestions = SearchSuggestionSet::emptySuggestionSet();
-		}
-
-		if ( $response->isOK() ) {
-			// Errors will be logged, let's try the exact db match
 			return $response->getValue();
 		} else {
 			return SearchSuggestionSet::emptySuggestionSet();

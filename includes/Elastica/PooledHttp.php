@@ -36,12 +36,6 @@ use RequestContext;
  * your entire cluster using a single ip or domain name.
  */
 class PooledHttp extends Http {
-
-	/**
-	 * Map from pool name to active connection
-	 */
-	private $_curlPoolConnections = array();
-
 	/**
 	 * @param bool $persistent
 	 * @return resource Curl handle

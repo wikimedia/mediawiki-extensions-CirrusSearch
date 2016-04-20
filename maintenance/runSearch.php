@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
-use CirrusSearch\Searcher;
 use CirrusSearch\Search\ResultSet;
 use RequestContext;
 use SearchSuggestionSet;

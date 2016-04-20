@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use Elastica\Index;
 use Status;
 

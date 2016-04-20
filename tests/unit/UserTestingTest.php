@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\UserTesting;
-
 /**
  * Make sure cirrus doens't break any hooks.
  *

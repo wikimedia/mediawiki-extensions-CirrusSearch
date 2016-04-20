@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -33,7 +33,9 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 
 		$wgContentNamespaces = $contentNamespaces;
 		$wgCirrusSearchNamespaceMappings = $namespaceMappings;
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		$conn = new Connection( $config );
 		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
 	}

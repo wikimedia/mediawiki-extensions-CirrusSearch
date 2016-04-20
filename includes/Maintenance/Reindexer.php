@@ -412,12 +412,12 @@ class Reindexer {
 	}
 
 	/**
-	 * @param \Exception $e exception caught
+	 * @param ExceptionInterface $e exception caught
 	 * @param int $errors number of errors
 	 * @param string $messagePrefix
 	 * @param string $description
 	 */
-	private function sleepOnRetry(\Exception $e, $errors, $messagePrefix, $description ) {
+	private function sleepOnRetry( ExceptionInterface $e, $errors, $messagePrefix, $description ) {
 		$type = get_class( $e );
 		$seconds = Util::backoffDelay( $errors );
 		$message = ElasticsearchIntermediary::extractMessage( $e );

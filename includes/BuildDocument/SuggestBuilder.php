@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\BuildDocument;
 
-use \Title;
-use \LinkBatch;
+use Title;
+use LinkBatch;
 
 /**
  * Build a doc ready for the titlesuggest index.
@@ -88,6 +88,7 @@ class SuggestBuilder {
 	/**
 	 * NOTE: Currently a fixed value because the completion suggester does not support
 	 * multi namespace suggestion.
+	 *
 	 * @var int $targetNamespace
 	 */
 	private $targetNamespace = NS_MAIN;
@@ -103,8 +104,8 @@ class SuggestBuilder {
 	}
 
 	/**
-	 * @param array $inputDocs a batch of docs to build
-	 * @return array a set of suggest documents
+	 * @param array[] $inputDocs a batch of docs to build
+	 * @return \Elastica\Document[] a set of suggest documents
 	 */
 	public function build( $inputDocs ) {
 		// Cross namespace titles
@@ -181,11 +182,12 @@ class SuggestBuilder {
 
 	/**
 	 * Build classic suggestion
+	 *
 	 * @param int $id
 	 * @param array $inputDoc
-	 * @return array a set of suggest documents
+	 * @return \Elastica\Document[] a set of suggest documents
 	 */
-	private function buildNormalSuggestions( $id, $inputDoc ) {
+	private function buildNormalSuggestions( $id, array $inputDoc ) {
 		if ( !isset( $inputDoc['title'] ) ) {
 			// Bad doc, nothing to do here.
 			return array();
@@ -207,6 +209,7 @@ class SuggestBuilder {
 
 	/**
 	 * The fields needed to build and score documents.
+	 *
 	 * @return string[] the list of fields
 	 */
 	public function getRequiredFields() {
@@ -221,10 +224,11 @@ class SuggestBuilder {
 	/**
 	 * Inspects the 'coordinates' index and return the first coordinates flagged as 'primary'
 	 * or the first coordinates if no primaries are found.
+	 *
 	 * @param array $inputDoc the input doc
 	 * @return array|null with 'lat' and 'lon' or null
 	 */
-	public function findPrimaryCoordinates( $inputDoc ) {
+	public function findPrimaryCoordinates( array $inputDoc ) {
 		if ( !isset( $inputDoc['coordinates'] ) || !is_array( $inputDoc['coordinates'] ) ) {
 			return null;
 		}
@@ -250,11 +254,11 @@ class SuggestBuilder {
 	 *
 	 * @param int $id the page id
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
-	 * @param array $location the geo coordinates or null if unavailable
+	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildTitleSuggestion( $id, $title, $location, $score ) {
+	private function buildTitleSuggestion( $id, array $title, array $location = null, $score ) {
 		$inputs = array( $this->prepareInput( $title['text'] ) );
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
@@ -279,11 +283,11 @@ class SuggestBuilder {
 	 *
 	 * @param int $id the page id
 	 * @param string[] $redirects
-	 * @param array $location the geo coordinates or null if unavailable
+	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildRedirectsSuggestion( $id, $redirects, $location, $score ) {
+	private function buildRedirectsSuggestion( $id, array $redirects, array $location = null, $score ) {
 		$inputs = array();
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
@@ -299,11 +303,11 @@ class SuggestBuilder {
 	 * @param string $id The document id
 	 * @param string $output the suggestion output
 	 * @param string[] $inputs the suggestion inputs
-	 * @param array $location the geo coordinates or null if unavailable
+	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $id, $output, $inputs, $location, $score ) {
+	private function buildSuggestion( $id, $output, array $inputs, array $location = null, $score ) {
 		$doc = array(
 			'batch_id' => $this->batchId,
 			'suggest' => array (
@@ -340,7 +344,7 @@ class SuggestBuilder {
 	 * @return array list of prepared suggestions that should
 	 *  resolve to the document.
 	 */
-	public function buildInputs( $input ) {
+	public function buildInputs( array $input ) {
 		$inputs = array( $this->prepareInput( $input['text'] ) );
 		foreach ( $input['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
@@ -378,11 +382,12 @@ class SuggestBuilder {
 	 * which redirect is a typo and this technique would simply take the first
 	 * redirect in the list.
 	 *
+	 * @param array $doc
 	 * @return array mixed 'group' key contains the group with the
 	 *         lead and its variants and 'candidates' contains the remaining
 	 *         candidates that were not close enough to $groupHead.
 	 */
-	public function extractTitleAndSimilarRedirects( $doc ) {
+	public function extractTitleAndSimilarRedirects( array $doc ) {
 		$redirects = array();
 		if ( isset( $doc['redirect'] ) ) {
 			foreach( $doc['redirect'] as $redir ) {
@@ -400,13 +405,13 @@ class SuggestBuilder {
 	 * Extracts from $candidates the values that are "similar" to $groupHead
 	 *
 	 * @param string $groupHead string the group "head"
-	 * @param array $candidates array of string the candidates
+	 * @param string[] $candidates array of string the candidates
 	 * @param boolean $checkVariants if the candidate does not match the groupHead try to match a variant
 	 * @return array 'group' key contains the group with the
 	 *         head and its variants and 'candidates' contains the remaining
 	 *         candidates that were not close enough to $groupHead.
 	 */
-	private function extractSimilars( $groupHead, $candidates, $checkVariants = false ) {
+	private function extractSimilars( $groupHead, array $candidates, $checkVariants = false ) {
 		$group = array(
 			'text' => $groupHead,
 			'variants' => array()
@@ -438,6 +443,7 @@ class SuggestBuilder {
 
 	/**
 	 * Computes the edit distance between $a and $b.
+	 *
 	 * @param string $a
 	 * @param string $b
 	 * @return integer the edit distance between a and b
@@ -472,6 +478,7 @@ class SuggestBuilder {
 
 	/**
 	 * Encode a title suggestion output
+	 *
 	 * @param int $id pageId
 	 * @param string $title
 	 * @return string the encoded output
@@ -482,6 +489,7 @@ class SuggestBuilder {
 
 	/**
 	 * Encode a redirect suggestion output
+	 *
 	 * @param int $id pageId
 	 * @return string the encoded output
 	 */
@@ -495,6 +503,7 @@ class SuggestBuilder {
 	 * id: the pageId
 	 * type: either REDIRECT_SUGGESTION or TITLE_SUGGESTION
 	 * text (optional): if TITLE_SUGGESTION the Title text
+	 *
 	 * @param string $output text value returned by a suggest query
 	 * @return array|null mixed or null if the output is not properly encoded
 	 */

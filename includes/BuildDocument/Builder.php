@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
+
 use Content;
 use ParserOutput;
-use \Title;
+use Title;
 
 /**
  * Build documents!
@@ -40,16 +41,18 @@ abstract class Builder {
 
 	/**
 	 * Constructor
+	 *
 	 * @param \Elastica\Document $doc The document we will be building on
-	 * @param Title $title The title to build a document for
+	 * @param Title|null $title The title to build a document for
 	 */
-	public function __construct( $doc, $title ) {
+	public function __construct( \Elastica\Document $doc, Title $title = null ) {
 		$this->doc = $doc;
 		$this->title = $title;
 	}
 
 	/**
 	 * Build a document
+	 *
 	 * @return \Elastica\Document
 	 */
 	abstract public function build();
@@ -71,12 +74,13 @@ abstract class ParseBuilder extends Builder {
 
 	/**
 	 * Constructor
+	 *
 	 * @param \Elastica\Document $doc The document we will be building on
-	 * @param Title $title The title to build a document for
+	 * @param Title|null $title The title to build a document for
 	 * @param Content $content The page content to build a document from
 	 * @param ParserOutput $parserOutput The parser output to build a document from
 	 */ 
-	public function __construct( $doc, $title, $content, $parserOutput ) {
+	public function __construct( \Elastica\Document $doc, Title $title = null, Content $content, ParserOutput $parserOutput ) {
 		parent::__construct( $doc, $title );
 		$this->content = $content;
 		$this->parserOutput = $parserOutput;

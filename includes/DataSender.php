@@ -303,10 +303,10 @@ class DataSender extends ElasticsearchIntermediary {
 			if ( $exception === null ) {
 				$this->success();
 			} else {
-				$this->failure( $e );
+				$this->failure( $exception );
 				$this->failedLog->warning(
 					"OtherIndex update for articles: " . implode( ',', $titles ),
-					array( 'exception' => $e )
+					array( 'exception' => $exception )
 				);
 				$status->error( 'cirrussearch-failed-update-otherindex' );
 			}

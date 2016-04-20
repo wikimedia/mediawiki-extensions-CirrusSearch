@@ -1,8 +1,9 @@
 <?php
 
 namespace CirrusSearch;
-use \ElasticaConnection;
-use \MWNamespace;
+
+use ElasticaConnection;
+use MWNamespace;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects

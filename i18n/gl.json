@@ -25,7 +25,7 @@
 	"apihelp-cirrus-config-dump-description": "Volcado da configuración CirrusSearch",
 	"apihelp-cirrus-config-dump-example": "Obter un volcado da configuración de CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Descarga do mapeamento de CirrusSearch para este wiki.",
-	"apihelp-cirrus-mapping-dump-example": "Obter un volcado da asociación CirrusSearch para este wiki.",
+	"apihelp-cirrus-mapping-dump-example": "Obter un volcado da correspondencia CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-description": "Descarga dos parámetros de CirrusSearch para este wiki.",
 	"apihelp-cirrus-settings-dump-example": "Obter un volcado da configuración CirrusSearch para este wiki.",
 	"cirrussearch-give-feedback": "Deixenos saber a súa opinión",

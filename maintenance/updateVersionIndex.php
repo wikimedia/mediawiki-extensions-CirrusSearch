@@ -39,7 +39,7 @@ class UpdateVersionIndex extends Maintenance {
 	}
 
 	public function execute() {
-		$baseName = $this->getOption( 'baseName', wfWikiId() );
+		$baseName = $this->getOption( 'baseName', wfWikiID() );
 		if( $this->hasOption( 'show-all' ) ) {
 			$this->show();
 		} elseif ( $this->hasOption( 'update' ) ) {

@@ -1,8 +1,9 @@
 <?php
 
 namespace CirrusSearch;
-use \ElasticaConnection;
-use \MWNamespace;
+
+use ElasticaConnection;
+use MWNamespace;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
@@ -151,7 +152,7 @@ class Connection extends ElasticaConnection {
 	 *  specifications.
 	 */
 	public function getServerList() {
-		// This clause provides backwards compatability with previous versions
+		// This clause provides backwards compatibility with previous versions
 		// of CirrusSearch. Once this variable is removed cluster configuration
 		// will work as expected.
 		if ( $this->config->has( 'CirrusSearchServers' ) ) {
@@ -239,44 +240,6 @@ class Connection extends ElasticaConnection {
 	public function getAllIndexTypes() {
 		return array_merge( array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ),
 			array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ) );
-	}
-
-	/**
-	 * Given a list of Index objects, return the 'type' portion of the name
-	 * of that index. This matches the types as returned from
-	 * self::getAllIndexTypes().
-	 *
-	 * @param \Elastica\Index[] $indexes
-	 * @return string[]
-	 */
-	public function indexToIndexTypes( array $indexes ) {
-		$allowed = $this->getAllIndexTypes();
-		return array_map( function( $type ) use ( $allowed ) {
-			$fullName = $type->getIndex()->getName();
-			$parts = explode( '_', $fullName );
-			// In 99% of cases it should just be the second
-			// piece of a 2 or 3 part name.
-			if ( isset( $parts[1] ) && in_array( $parts[1], $allowed ) ) {
-				return $parts[1];
-			}
-			// the wikiId should be the first part of the name and
-			// not part of our result, strip it
-			if ( $parts[0] === wfWikiId() ) {
-				$parts = array_slice( $parts, 1 );
-			}
-			// there might be a suffix at the end, try stripping it
-			$maybe = implode( '_', array_slice( $parts, 0, -1 ) );
-			if ( in_array( $maybe, $allowed ) ) {
-				return $maybe;
-			}
-			// maybe there wasn't a suffix at the end, try the whole thing
-			$maybe = implode( '_', $parts );
-			if ( in_array( $maybe, $allowed ) ) {
-				return $maybe;
-			}
-			// probably not right, but at least we tried
-			return $fullName;
-		}, $indexes );
 	}
 
 	/**

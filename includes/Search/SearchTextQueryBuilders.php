@@ -48,6 +48,7 @@ class SearchTextQueryBuilderFactory {
 
 	/**
 	 * Returns the best builder for this query.
+	 *
 	 * @param string $queryString the query without special syntax
 	 * @return SearchTextQueryBuilder
 	 */
@@ -68,7 +69,8 @@ class SearchTextQueryBuilderFactory {
 interface SearchTextQueryBuilder {
 	/**
 	 * Builds the main query
-	 * @param array $fields of string encoded as field_name^boost_value
+	 *
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -77,7 +79,8 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Builds the query used in the rescore phase
-	 * @param array $fields of string encoded as field_name^boost_value
+	 *
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -86,7 +89,8 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Builds the query for highlighting
-	 * @param array $fields of string encoded as field_name^boost_value
+	 *
+	 * @param string[] $fields of string encoded as field_name^boost_value
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop the phrase slop to use for phrase queries
 	 * @return \Elastica\Query\AbstractQuery the query
@@ -96,6 +100,7 @@ interface SearchTextQueryBuilder {
 
 	/**
 	 * Check if the query can be built by this builder
+	 *
 	 * @param string $queryString the query
 	 * @return boolean true if this query can be built by this builder
 	 */
@@ -128,14 +133,19 @@ abstract class SearchTextBaseQueryBuilder implements SearchTextQueryBuilder {
 class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * This builder will always return true.
-	 * {@inheritDoc}
+	 *
+	 * @param string $queryString
+	 * @return bool
 	 */
 	public function accept( $queryString ) {
 		return true;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildMainQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -144,7 +154,10 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -153,7 +166,10 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -163,7 +179,8 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 
 	/**
 	 * Builds a query based on QueryString syntax
-	 * @param array $fields the fields
+	 *
+	 * @param string[] $fields the fields
 	 * @param string $queryString the query
 	 * @param integer $phraseSlop phrase slop
 	 * @param string $defaultOperator the default operator AND or OR
@@ -207,19 +224,21 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
  * This is not necessarily the case for all queries: e.g. 'interesting facts
  * about kennedy assassination'. In this case the most important words are
  * certainly 'kennedy' and 'assassination'.  But it appears that 'interesting'
- * has a lower docFreq than 'kennedy' on english wikipedia, so if the cutoff is
+ * has a lower docFreq than 'kennedy' on english Wikipedia, so if the cutoff is
  * not properly set 'kennedy' might be considered as high freq while
  * 'interesting' will be a low freq.
  */
 class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * The builder used for rescore and highlight query.
+	 *
 	 * @var SearchTextBaseQueryBuilder
 	 */
 	private $queryStringBuilder;
 
 	/**
 	 * The profile used to configure the queries
+	 *
 	 * @var array
 	 */
 	private $profile;
@@ -234,14 +253,16 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * The query is accepted if the number of words in the query
 	 * is greater or equal than min_query_terms defined in the
 	 * CirrusSearchCommonTerm.
-	 * {@inheritDoc}
+	 *
+	 * @param string $queryString
+	 * @return bool
 	 */
 	public function accept( $queryString ) {
 		if ( !$this->context->isUseCommonTermsQuery() ) {
 			return false;
 		}
 
-		// the Searcher class relies heavely on the QueryString syntax and
+		// the Searcher class relies heavily on the QueryString syntax and
 		// can generate QueryString syntax (i.e wildcards)
 		// This builder cannot understand such syntax.
 		if ( $this->context->isSearchContainedSyntax() ) {
@@ -279,7 +300,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildMainQuery( array $fields, $queryString, $phraseSlop ) {
 		$plainFields = array();
@@ -377,6 +401,9 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @param string $queryString the query
 	 * @param array $profile the profile used by the common terms query
 	 * @return \Elastica\Query\Common the common terms query.
+	 * @suppress PhanTypeMismatchArgument minimum_should_match can be applied
+	 *  for low and high frequency terms, but the type signature hasn't been
+	 *  updated to match
 	 */
 	private function buildOneCommonTermsClause( array $boostedField, $queryString, array $profile ) {
 		$common = new \Elastica\Query\Common( $boostedField['field'], $queryString, $profile['cutoff_freq'] );
@@ -391,7 +418,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Builds a multi match query with the cross_field type.
 	 *
-	 * @param array $boostedFields of boosted fields
+	 * @param array[] $boostedFields Each nested array must contain a 'field' and 'boost' key.
 	 * @param string $queryString the query
 	 * @param string $minShouldMatch the MinimumShouldMatch value
 	 * @return \Elastica\Query\MultiMatch
@@ -417,7 +444,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @param string $minShouldMatch the MinimumShouldMatch value
 	 * @return \Elastica\Query\Match
 	 */
-	private function buildSimpleMatch( $boostedField, $queryString, $minShouldMatch ) {
+	private function buildSimpleMatch( array $boostedField, $queryString, $minShouldMatch ) {
 		$match = new \Elastica\Query\Match();
 		$match->setField( $boostedField['field'], array(
 			'query' => $queryString,
@@ -430,7 +457,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Use a SearchTextQueryStringBuilder with a default OR.
 	 *
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
 		return $this->context->wrapInSaferIfPossible(
@@ -441,7 +471,10 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	/**
 	 * Use a SearchTextQueryStringBuilder.
 	 *
-	 * {@inheritDoc}
+	 * @param string[] $fields
+	 * @param string $queryString
+	 * @param int $phraseSlop
+	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
 		// already wrapped in safer

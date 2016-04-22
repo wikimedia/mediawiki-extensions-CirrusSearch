@@ -1,7 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
 use CirrusSearch\Search\InterwikiResultsType;
+use CirrusSearch\Search\ResultSet;
 use ObjectCache;
 use User;
 
@@ -56,7 +58,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Fetch search results, from caches, if there's any
 	 * @param string $term Search term to look for
-	 * @return Result
+	 * @return ResultSet|null
 	 */
 	public function getInterwikiResults( $term ) {
 
@@ -81,7 +83,7 @@ class InterwikiSearcher extends Searcher {
 		return $cache->getWithSetCallback( $key, $ttl, function () use ( $term ) {
 			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
 			$results = $this->searchText( $term, false );
-			if ( $results->isOk() ) {
+			if ( $results->isOK() ) {
 				return $results->getValue();
 			} else {
 				return false;
@@ -92,7 +94,7 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Get the index basename for a given interwiki prefix, if one is defined.
 	 * @param string $interwiki
-	 * @return string
+	 * @return string|null
 	 */
 	public static function getIndexForInterwiki( $interwiki ) {
 		// These settings should be common for all wikis, so globals
@@ -111,7 +113,7 @@ class InterwikiSearcher extends Searcher {
 	}
 
 	/**
-	 * We don't support extra indicies when we're doing interwiki searches
+	 * We don't support extra indices when we're doing interwiki searches
 	 *
 	 * @see Searcher::getAndFilterExtraIndexes()
 	 * @return array

@@ -11,6 +11,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * SearchEngine implementation for CirrusSearch.  Delegates to
@@ -72,8 +73,10 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	public function __construct( $baseName = null ) {
-		$this->indexBaseName = $baseName === null ? wfWikiId() : $baseName;
-		$this->config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->indexBaseName = $baseName === null ? wfWikiID() : $baseName;
+		$this->config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
 	}
@@ -155,7 +158,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Check whether we want to try another language.
 	 * @param string $term Search term
-	 * @return array|null Array of (interwiki, dbname) for another wiki to try, or null
+	 * @return string[]|null Array of (interwiki, dbname) for another wiki to try, or null
 	 */
 	private function hasSecondaryLanguage( $term ) {
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'] ) ||
@@ -220,9 +223,9 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * @param string $lang Language code to find wiki for
-	 * @return string|null The wiki related to specified language code
+	 * @return string[]|null Array of (interwiki, dbname) for wiki related to specified language code
 	 */
-	private function wikiForLanguage( $lang ) {
+	private static function wikiForLanguage( $lang ) {
 		if ( empty( $GLOBALS['wgCirrusSearchLanguageToWikiMap'][$lang] ) ) {
 			return null;
 		}
@@ -309,7 +312,7 @@ class CirrusSearch extends SearchEngine {
 	private function searchTextReal( $term, SearchConfig $config = null ) {
 		global $wgCirrusSearchInterwikiSources;
 
-		// Convert the unicode character 'idiographic whitespace' into standard
+		// Convert the unicode character 'ideographic whitespace' into standard
 		// whitespace.  Cirrussearch treats them both as normal whitespace, but
 		// the preceding isn't appropriately trimmed.
 		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
@@ -418,7 +421,7 @@ class CirrusSearch extends SearchEngine {
 		// For historical reasons all callers of searchText interpret any Status return as an error
 		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
 		// since that is interpreted as no results.
-		return $status->isOk() ? $status->getValue() : $status;
+		return $status->isOK() ? $status->getValue() : $status;
 	}
 
 	/**
@@ -436,13 +439,6 @@ class CirrusSearch extends SearchEngine {
 				$this->indexBaseName );
 
 		$response = $suggester->suggest( $search, $variants );
-		if ( $response->isOK() ) {
-			// Errors will be logged, let's try the exact db match
-			$suggestions = $response->getValue();
-		} else {
-			$suggestions = SearchSuggestionSet::emptySuggestionSet();
-		}
-
 		if ( $response->isOK() ) {
 			// Errors will be logged, let's try the exact db match
 			return $response->getValue();
@@ -612,6 +608,8 @@ class CirrusSearch extends SearchEngine {
 	 * Override variants function because we always do variants
 	 * in the backend.
 	 * @see SearchEngine::completionSearchWithVariants()
+	 * @param string $search
+	 * @return SearchSuggestionSet
 	 */
 	public function completionSearchWithVariants( $search ) {
 		return $this->completionSearch( $search );
@@ -643,7 +641,7 @@ class CirrusSearch extends SearchEngine {
 
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
+		// construction site to log errors.
 		if ( $status->isOK() ) {
 			if ( !$search ) {
 				// No need to unpack the simple title matches from non-fancy TitleResultsType

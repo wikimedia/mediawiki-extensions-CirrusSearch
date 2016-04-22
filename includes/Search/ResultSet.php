@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\Search;
-use \CirrusSearch\Searcher;
-use \LinkBatch;
-use \SearchResultSet;
+
+use CirrusSearch\Searcher;
+use LinkBatch;
+use SearchResultSet;
 
 /**
  * A set of results from Elasticsearch.
@@ -28,13 +29,65 @@ class ResultSet extends SearchResultSet {
 	 * @var \Elastica\ResultSet
 	 */
 	private $result;
-	private $hits, $totalHits, $suggestionQuery, $suggestionSnippet;
+
+	/**
+	 * @var int
+	 */
+	private $hits;
+
+	/**
+	 * @var int
+	 */
+	private $totalHits;
+
+	/**
+	 * @var string|null
+	 */
+	private $suggestionQuery;
+
+	/**
+	 * @var string
+	 */
+	private $suggestionSnippet;
+
+	/**
+	 * @var bool
+	 */
 	private $searchContainedSyntax;
-	private $interwikiPrefix,$interwikiResults;
+
+	/**
+	 * @var string
+	 */
+	private $interwikiPrefix;
+
+	/**
+	 * @var array
+	 */
+	private $interwikiResults = array();
+
+	/**
+	 * @var string|null
+	 */
 	private $rewrittenQuery;
+
+	/**
+	 * @var string|null
+	 */
+	private $rewrittenQuerySnippet;
+
+	/**
+	 * @var \Iterator|null
+	 */
 	private $swappedResultIter;
 
-	public function __construct( $suggestPrefixes, $suggestSuffixes, $res, $searchContainedSyntax, $interwiki = '' ) {
+	/**
+	 * @param string[] $suggestPrefixes
+	 * @param string[] $suggestSuffixes
+	 * @param \Elastica\ResultSet $res
+	 * @param bool $searchContainedSyntax
+	 * @param string $interwiki
+	 */
+	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax, $interwiki = '' ) {
 		$this->result = $res;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
@@ -62,6 +115,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * Is rewriting this query OK?
+	 *
 	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.
 	 * @return bool True when rewriting this query is allowed
 	 */
@@ -100,6 +154,7 @@ class ResultSet extends SearchResultSet {
 
 	/**
 	 * Escape a highlighted suggestion coming back from Elasticsearch.
+	 *
 	 * @param string $suggestion suggestion from elasticsearch
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
@@ -137,9 +192,10 @@ class ResultSet extends SearchResultSet {
 	 * batch query. By pre-caching this we ensure methods such as
 	 * Result::isMissingRevision() don't trigger a query for each and
 	 * every search result.
+	 *
 	 * @param \Elastica\ResultSet $resultSet Result set from which the titles come
 	 */
-	private function preCacheContainedTitles( $resultSet ) {
+	private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
 		// We can only pull in information about the local wiki
  		if ( $this->interwikiPrefix !== '' ) {
  			return;
@@ -190,8 +246,8 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param integer $first 0-indexed result to swap with $second
-	 * @param integer $second 0-indexed result to swap with $first
+	 * @param int $first 0-indexed result to swap with $second
+	 * @param int $second 0-indexed result to swap with $first
 	 */
 	public function swapResults( $first, $second ) {
 		$iter = $this->swappedResultIter ?: $this->result;
@@ -227,24 +283,24 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @param Result $res
-	 * @param string $type
+	 * @param ResultSet $res
+	 * @param int $type One of SearchResultSet::* constants
 	 * @param string $interwiki
 	 */
-	public function addInterwikiResults( $res, $type, $interwiki ) {
+	public function addInterwikiResults( ResultSet $res, $type, $interwiki ) {
 		$this->interwikiResults[$type][$interwiki] = $res;
 	}
 
 	/**
-	 * @param string $type
-	 * @return Result[]
+	 * @param int $type
+	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
 		return isset($this->interwikiResults[$type]) ? $this->interwikiResults[$type] : array();
 	}
 
 	/**
-	 * @param string $type
+	 * @param int $type
 	 * @return bool
 	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {

@@ -1,5 +1,8 @@
 <?php
+
 namespace CirrusSearch\Test;
+
+use MediaWiki\MediaWikiServices;
 
 class HashSearchConfig extends \CirrusSearch\SearchConfig {
 	public function __construct( array $settings ) {
@@ -9,7 +12,9 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 
 class DummyConnection extends \CirrusSearch\Connection {
 	public function __construct() {
-		$this->config = \ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$this->config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 	}
 	
 	public function getServerList() {

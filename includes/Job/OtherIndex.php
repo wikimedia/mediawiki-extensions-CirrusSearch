@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\Job;
+
 use CirrusSearch\OtherIndexes;
-use \JobQueueGroup;
-use \Title;
+use JobQueueGroup;
+use Title;
 
 /**
  * Job wrapper around OtherIndexes. Used during page updates.
@@ -26,11 +27,12 @@ use \Title;
 class OtherIndex extends Job {
 	/**
 	 * Check if we need to make a job and inject one if so.
+	 *
 	 * @param Title[] $titles The title we might update
 	 * @param string|null $cluster The name of the cluster to write
 	 *  to, or null for all clusters.
 	 */
-	public static function queueIfRequired( $titles, $cluster ) {
+	public static function queueIfRequired( array $titles, $cluster ) {
 		$titlesToUpdate = array();
 		foreach( $titles as $title ) {
 			if ( OtherIndexes::getExternalIndexes( $title ) ) {
@@ -59,7 +61,7 @@ class OtherIndex extends Job {
 		if ( $this->params['cluster'] ) {
 			$flags[] = 'same-cluster';
 		}
-		$otherIdx = new OtherIndexes( $this->connection, $flags, wfWikiId() );
+		$otherIdx = new OtherIndexes( $this->connection, $flags, wfWikiID() );
 		$otherIdx->updateOtherIndex( $titles );
 	}
 }

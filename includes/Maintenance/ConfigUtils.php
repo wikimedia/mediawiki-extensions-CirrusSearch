@@ -59,6 +59,7 @@ class ConfigUtils {
 
 	/**
 	 * Pick the index identifier from the provided command line option.
+	 *
 	 * @param string $option command line option
 	 *          'now'        => current time
 	 *          'current'    => if there is just one index for this type then use its identifier
@@ -73,7 +74,7 @@ class ConfigUtils {
 			return $identifier;
 		}
 		if ( $option === 'current' ) {
-			$this->outputIndented( 'Infering index identifier...' );
+			$this->outputIndented( 'Inferring index identifier...' );
 			$found = $this->getAllIndicesByType( $typeName );
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
@@ -99,6 +100,7 @@ class ConfigUtils {
 	/**
 	 * Scan the indices and return the ones that match the
 	 * type $typeName
+	 *
 	 * @param string $typeName the type to filter with
 	 * @return string[] the list of indices
 	 */
@@ -113,8 +115,8 @@ class ConfigUtils {
 	}
 
 	/**
-	 * @param array $bannedPlugins
-	 * @return array
+	 * @param string[] $bannedPlugins
+	 * @return string[]
 	 */
 	public function scanAvailablePlugins( array $bannedPlugins = array() ) {
 		$this->outputIndented( "Scanning available plugins..." );
@@ -190,6 +192,7 @@ class ConfigUtils {
 
 	/**
 	 * Get index health
+	 *
 	 * @param string $indexName
 	 * @return array the index health status
 	 */
@@ -204,6 +207,7 @@ class ConfigUtils {
 
 	/**
 	 * Wait for the index to go green
+	 *
 	 * @param string $indexName
 	 * @param int $timeout
 	 * @return boolean true if the index is green false otherwise.

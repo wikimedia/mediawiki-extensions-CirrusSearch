@@ -1,8 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
 use MediaWiki\Logger\LoggerFactory;
-use \Title;
+use Title;
 
 /**
  * Tracks whether a Title is known on other indexes.

@@ -46,7 +46,7 @@ $wgExtensionCredits['other'][] = array(
 // clusters this should be pointed to the closest cluster, and
 // can be pointed at an alternate cluster during downtime.
 //
-// As a form of backwards compatability the existence of
+// As a form of backwards compatibility the existence of
 // $wgCirrusSearchServers will override all cluster configuration.
 $wgCirrusSearchDefaultCluster = 'default';
 
@@ -60,7 +60,7 @@ $wgCirrusSearchDefaultCluster = 'default';
 //
 // $wgCirrusSearchClusters = array(
 // 	'eqiad' => array( 'es01.eqiad.wmnet', 'es02.eqiad.wmnet' ),
-// 	'codfw' => array( 'es01.codwf.wmnet', 'es02.codfw.wmnet' ),
+// 	'codfw' => array( 'es01.codfw.wmnet', 'es02.codfw.wmnet' ),
 // );
 $wgCirrusSearchClusters = array(
 	'default' => array( 'localhost' ),
@@ -109,7 +109,7 @@ $wgCirrusSearchMaxShardsPerNode = array();
 
 // How many seconds must a search of Elasticsearch be before we consider it
 // slow?  Default value is 10 seconds which should be fine for catching the rare
-// truely abusive queries.  Use Elasticsearch query more granular logs that
+// truly abusive queries.  Use Elasticsearch query more granular logs that
 // don't contain user information.
 $wgCirrusSearchSlowSearch = 10.0;
 
@@ -142,7 +142,7 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // 'build' in the array then regex will fail to find anything.  The value of
 // the 'max_inspect' key is the maximum number of pages to recheck the regex
 // against.  Its optional and defaults to 10000 which seems like a reasonable
-// compromize to keep regexes fast while still producing good results.
+// compromise to keep regexes fast while still producing good results.
 // This example enables the safer query's phrase processing:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
 // 	'phrase' => array(
@@ -161,7 +161,7 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // extra plugin installed. Sometimes they still cause issues though.
 $wgCirrusSearchEnableRegex = true;
 
-// Maximum complexity of regexes.  Raising this will allow more compelex
+// Maximum complexity of regexes.  Raising this will allow more complex
 // regexes use the memory that they need to compile in Elasticsearch.  The
 // default allows reasonably complex regexes and doesn't use _too_ much memory.
 $wgCirrusSearchRegexMaxDeterminizedStates = 20000;
@@ -247,13 +247,13 @@ $wgCirrusSearchClientSideSearchTimeout = array(
 	'regex' => 240,
 );
 
-// Client side timeout for maintanance operations.  We can't disable the timeout
+// Client side timeout for maintenance operations.  We can't disable the timeout
 // all together so we set it to one hour for really long running operations
 // like optimize.
 $wgCirrusSearchMaintenanceTimeout = 3600;
 
 // Is it ok if the prefix starts on any word in the title or just the first word?
-// Defaults to false (first word only) because that is the wikipedia behavior and so
+// Defaults to false (first word only) because that is the Wikipedia behavior and so
 // what we expect users to expect.  Does not effect the prefix: search filter or
 // url parameter - that always starts with the first word.  false -> true will break
 // prefix searching until an in place reindex is complete.  true -> false is fine
@@ -304,7 +304,7 @@ $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit = 2;
 
 // Set the hard limit for $wgCirrusSearchPhraseMaxTermFreq. This prevents customizing
 // this setting in a way that could hurt the system performances.
-$wgCirrusSearchPhraseSugggestMaxTermFreqHardLimit = 0.6;
+$wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit = 0.6;
 
 // List of allowed values for the suggest mode
 $wgCirrusSearchPhraseSuggestAllowedMode = array( 'missing', 'popular', 'always' );
@@ -370,7 +370,7 @@ $wgCirrusSearchPrefixWeights = array(
 
 // Enable building and using of "all" fields that contain multiple copies of other fields
 // for weighting.  These all fields exist entirely to speed up the full_text query type by
-// baking the weights above into a single field.  This is useful because it drasticly
+// baking the weights above into a single field.  This is useful because it drastically
 // reduces the random io to power the query from 14 term queries per term in the query
 // string to 2.  Each term query is potentially one or two disk random io actions.  The
 // reduction isn't strictly 7:1 because we skip file_text in non file namespace (now 6:1)
@@ -399,10 +399,10 @@ $wgCirrusSearchNearMatchWeight = 2;
 $wgCirrusSearchStemmedWeight = 0.5;
 
 // Weight of each namespace relative to NS_MAIN.  If not specified non-talk namespaces default to
-// $wgCirrusSearchDefaultNamespaceWeight.  If not specified talk namspaces default to:
+// $wgCirrusSearchDefaultNamespaceWeight.  If not specified talk namespaces default to:
 //   $wgCirrusSearchTalkNamespaceWeight * weightOfCorrespondingNonTalkNamespace
 // The default values below inspired by the configuration used for lsearchd.  Note that _technically_
-// NS_MAIN can be overriden with this then 1 just represents what NS_MAIN would have been....
+// NS_MAIN can be overridden with this then 1 just represents what NS_MAIN would have been....
 // If you override NS_MAIN here then NS_TALK will still default to:
 //   $wgCirrusSearchNamespaceWeights[ NS_MAIN ] * wgCirrusSearchTalkNamespaceWeight
 // You can specify namespace by number or string.  Strings are converted to numbers using the
@@ -454,7 +454,7 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 	'min_doc_freq' => 2,
 
 	// Maximum number of documents (per shard) that have a term for it to be considered
-	// Setting a sufficient high value can be usefull to exclude stop words but it depends on the wiki size.
+	// Setting a sufficient high value can be useful to exclude stop words but it depends on the wiki size.
 	'max_doc_freq' => null,
 
 	// This is the max number it will collect from input data to build the query
@@ -508,7 +508,7 @@ $wgCirrusSearchMoreLikeThisAllowedFields = array(
 // query.
 // Note that if the all field is used then this setting will be forced to true.
 // This is because the all field is not part of the _source and its content cannot
-// be retreived by elasticsearch.
+// be retrieved by elasticsearch.
 $wgCirrusSearchMoreLikeThisUseFields = false;
 
 // More like this is a very expensive query. This allows redirecting queries
@@ -644,7 +644,7 @@ $wgCirrusSearchConfigDumpWhiteList = array(
 	'stemmedWeight',
 	'namespaceWeights',
 	'defaultNamespaceWeight',
-	'talkeNamespaceWeight',
+	'talkNamespaceWeight',
 	'languageWeight',
 	'preferRecentDefaultDecayPortion',
 	'preferRecentUnspecifiedDecayPortion',
@@ -775,7 +775,7 @@ $wgCirrusSearchUseIcuFolding = false;
 $wgCirrusSearchCompletionDefaultScore = 'quality';
 
 /**
- * Use the completion suggester as the default implemention for searchSuggestions.
+ * Use the completion suggester as the default implementation for searchSuggestions.
  * You have to build the completion suggester index with the maintenance script
  * updateSuggesterIndex.php. The suggester only supports queries to the main
  * namespace. PrefixSearch will be used in all other cases.

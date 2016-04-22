@@ -26,7 +26,13 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class MassIndex extends Job {
-	public static function build( $pages, $updateFlags, $cluster = null ) {
+	/**
+	 * @param WikiPage[] $pages
+	 * @param int $updateFlags
+	 * @param string|null $cluster
+	 * @return MassIndex
+	 */
+	public static function build( array $pages, $updateFlags, $cluster = null ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
 		$pageDBKeys = array();
 		foreach ( $pages as $page ) {
@@ -41,11 +47,15 @@ class MassIndex extends Job {
 		) );
 	}
 
+	/**
+	 * @return bool
+	 * @throws \MWException
+	 */
 	protected function doJob() {
 		// Reload pages from pageIds to throw into the updater
 		$pageData = array();
 		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {
-			$title = Title::newFromDBKey( $pageDBKey );
+			$title = Title::newFromDBkey( $pageDBKey );
 			// Skip any titles with broken keys.  We can't do anything with them.
 			if ( !$title ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -62,6 +72,9 @@ class MassIndex extends Job {
 		return $count >= 0;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function workItemCount() {
 		return count( $this->params[ 'pageDBKeys' ] );
 	}

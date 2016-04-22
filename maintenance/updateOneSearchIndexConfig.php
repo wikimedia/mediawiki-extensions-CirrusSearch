@@ -214,7 +214,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
 		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(
@@ -272,7 +272,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$trace = $e->getTraceAsString();
+			$trace = $this->getExceptionTraceAsString( $e );
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
@@ -281,6 +281,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
+	/**
+	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
+	 *  access mOptions because its protected. That would be true but this
+	 *  class shares the hierarchy that contains mOptions so php allows it.
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	private function updateVersions() {
 		$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateVersionIndex' );
 		$child->mOptions['baseName'] = $this->indexBaseName;
@@ -289,6 +298,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$child->done();
 	}
 
+	/**
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	private function indexNamespaces() {
 		// Only index namespaces if we're doing the general index
 		if ( $this->indexType === 'general' ) {
@@ -314,7 +329,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * @param bool $rebuild
-	 * $param string $msg
+	 * @param string $msg
 	 */
 	private function createIndex( $rebuild, $msg ) {
 		global $wgCirrusSearchAllFields;
@@ -582,14 +597,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @param int
+	 * @return int Number of shards this index should have
 	 */
 	private function getShardCount() {
 		return $this->getConnection()->getSettings()->getShardCount( $this->indexType );
 	}
 
 	/**
-	 * @param string Number of replicas this index should have. May be a range such as '0-2'
+	 * @return string Number of replicas this index should have. May be a range such as '0-2'
 	 */
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexType );

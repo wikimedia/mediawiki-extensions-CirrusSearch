@@ -1,9 +1,10 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
-use \Category;
-use \Sanitizer;
-use \Title;
+
+use Category;
+use Sanitizer;
+use Title;
 use CirrusSearch\Util;
 
 /**
@@ -26,6 +27,9 @@ use CirrusSearch\Util;
  */
 
 class PageDataBuilder extends ParseBuilder {
+	/**
+	 * @return \Elastica\Document
+	 */
 	public function build() {
 		switch ( $this->content->getModel() ) {
 			case CONTENT_MODEL_CSS:
@@ -73,7 +77,7 @@ class PageDataBuilder extends ParseBuilder {
 		foreach ( $this->parserOutput->getLinks() as $linkedNamespace => $namespaceLinks ) {
 			foreach ( array_keys( $namespaceLinks ) as $linkedDbKey ) {
 				$outgoingLinks[] =
-					Title::makeTitle( $linkedNamespace, $linkedDbKey )->getPrefixedDBKey();
+					Title::makeTitle( $linkedNamespace, $linkedDbKey )->getPrefixedDBkey();
 			}
 		}
 		$this->doc->set( 'outgoing_link', $outgoingLinks );
@@ -97,18 +101,22 @@ class PageDataBuilder extends ParseBuilder {
 		$ignoredHeadings = $this->getIgnoredHeadings();
 		foreach ( $this->parserOutput->getSections() as $heading ) {
 			$heading = $heading[ 'line' ];
-			// First strip out things that look like references.  We can't use HTML filtering becase
+			// First strip out things that look like references.  We can't use HTML filtering because
 			// the references come back as <sup> tags without a class.  To keep from breaking stuff like
 			//  ==Applicability of the strict mass–energy equivalence formula, ''E'' = ''mc''<sup>2</sup>==
 			// we don't remove the whole <sup> tag.  We also don't want to strip the <sup> tag and remove
 			// everything that looks like [2] because, I dunno, maybe there is a band named Word [2] Foo
 			// or something.  Whatever.  So we only strip things that look like <sup> tags wrapping a
-			// refence.  And we do it with regexes because HtmlFormatter doesn't support css selectors.
+			// reference.  And since the data looks like:
+			//      Reference in heading <sup>&#91;1&#93;</sup><sup>&#91;2&#93;</sup>
+			// we can not really use HtmlFormatter as we have no suitable selector.
 
 			// Some wikis wrap the brackets in a span:
 			// http://en.wikipedia.org/wiki/MediaWiki:Cite_reference_link
 			$heading = preg_replace( '/<\/?span>/', '', $heading );
-			$heading = preg_replace( '/<sup>\s*\[\s*\d+\s*\]\s*<\/sup>/', '', $heading );
+			// Normalize [] so the following regexp would work.
+			$heading = preg_replace( [ '/&#91;/', '/&#93;/' ], [ '[', ']' ], $heading );
+			$heading = preg_replace( '/<sup>\s*\[\s*\d+\s*\]\s*<\/sup>/is', '', $heading );
 
 			// Strip tags from the heading or else we'll display them (escaped) in search results
 			$heading = trim( Sanitizer::stripAllTags( $heading ) );
@@ -122,6 +130,9 @@ class PageDataBuilder extends ParseBuilder {
 		$this->doc->set( 'heading', $headings );
 	}
 
+	/**
+	 * @return string[]
+	 */
 	private function getIgnoredHeadings() {
 		static $ignoredHeadings = null;
 		if ( $ignoredHeadings === null ) {

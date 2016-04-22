@@ -184,7 +184,6 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 
 		// With a single namespace the function score is empty
 		$context->setNamespaces( array( 0 ) );
-		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$this->assertTrue( $fScore->isEmptyFunction() );
 

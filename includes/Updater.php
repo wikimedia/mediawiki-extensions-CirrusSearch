@@ -102,7 +102,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param Title $title title to trace
 	 * @return array(target, redirects)
 	 *    - target is WikiPage|null wikipage if the $title either isn't a redirect or resolves
-	 *    to an updateable page that hasn't been updated yet.  Null if the page has been
+	 *    to an updatable page that hasn't been updated yet.  Null if the page has been
 	 *    updated, is a special page, or the redirects enter a loop.
 	 *    - redirects is an array of WikiPages, one per redirect in the chain.  If title isn't
 	 *    a redirect then this will be an empty array
@@ -132,7 +132,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
-				$content = new TextContent( $content );
+				$content = new TextContent( (string) $content );
 			}
 			// If the event that the content is _still_ not usable, we have to give up.
 			if ( !is_object( $content ) ) {
@@ -181,7 +181,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *   Elasticsearch's time format.
 	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
-	 * @param int $flags Bitfield containing instructions about how the document should be built
+	 * @param int $flags Bit field containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
@@ -424,7 +424,7 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 			if ( in_array( $title->getFullText(), $this->updated ) ) {
-				// We've already updated this page in this proces so there is no need to update it again.
+				// We've already updated this page in this process so there is no need to update it again.
 				continue;
 			}
 			// Note that we don't add this page to the list of updated pages because this update isn't

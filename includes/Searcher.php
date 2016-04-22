@@ -11,9 +11,9 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
-use ConfigFactory;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MWNamespace;
 use ObjectCache;
 use SearchResultSet;
@@ -104,7 +104,7 @@ class Searcher extends ElasticsearchIntermediary {
 	private $suggestSuffixes = array();
 
 
-	// These fields are filled in by the particule search methods
+	// These fields are filled in by the particular search methods
 	/**
 	 * @var string term to search.
 	 */
@@ -207,9 +207,11 @@ class Searcher extends ElasticsearchIntermediary {
 		User $user = null, $index = false ) {
 
 		if ( is_null( $config ) ) {
-			// @todo connection has an embeded config ... reuse that? somehow should
+			// @todo connection has an embedded config ... reuse that? somehow should
 			// at least ensure they are the same.
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
@@ -328,10 +330,20 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->query = new \Elastica\Query\MatchAll();
 		}
-		// @todo: use dedicated rescore profiles for prefix search.
-		$this->searchContext->setBoostLinks( true );
+
+		$this->setBoostLinks();
 
 		return $this->search( 'prefix', $search );
+	}
+
+	/**
+	 * Tiny function to restrict warning suppression
+	 * @todo: use dedicated rescore profiles for prefix search.
+	 *
+	 * @suppress PhanDeprecatedFunction
+	 */
+	private function setBoostLinks() {
+		$this->searchContext->setBoostLinks( true );
 	}
 
 	/**
@@ -349,7 +361,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function searchText( $term, $showSuggestion ) {
 		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
-		if ( !$checkLengthStatus->isOk() ) {
+		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}
 
@@ -407,7 +419,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$this->extractSpecialSyntaxFromTerm(
 			'/^\s*local:/',
-			function ( $matches ) {
+			function () {
 				$this->limitSearchToLocalWiki( true );
 				return '';
 			}
@@ -448,8 +460,8 @@ class Searcher extends ElasticsearchIntermediary {
 						$filter->setMaxInspect( 10000 );
 					}
 					$filter->setMaxDeterminizedStates( $this->config->get( 'CirrusSearchRegexMaxDeterminizedStates' ) );
-					if ( isset( $regex[ 'max_ngrams_extracted' ] ) ) {
-						$filter->setMaxNgramExtracted( $regex[ 'max_ngrams_extracted' ] );
+					if ( isset( $regex['max_ngrams_extracted'] ) ) {
+						$filter->setMaxNgramsExtracted( $regex['max_ngrams_extracted'] );
 					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $this->config->get( 'LanguageCode' ) );
@@ -662,7 +674,7 @@ GROOVY;
 		if ( $queryStringQueryString !== '' ) {
 			if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $queryStringQueryString ) ) {
 				$this->searchContext->setSearchContainedSyntax( true );
-				// We're unlikey to make good suggestions for query string with special syntax in them....
+				// We're unlikely to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
 			}
 			$fields = array_merge(
@@ -673,7 +685,7 @@ GROOVY;
 			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields,
 				$queryStringQueryString, $nearMatchQuery );
 
-			// The highlighter doesn't know about the weightinging from the all fields so we have to send
+			// The highlighter doesn't know about the weighting from the all fields so we have to send
 			// it a query without the all fields.  This swaps one in.
 			if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 				$nonAllFields = array_merge(
@@ -784,7 +796,7 @@ GROOVY;
 				$names[] = $category;
 			}
 		}
-		foreach ( Title::newFromIds( $ids ) as $title ) {
+		foreach ( Title::newFromIDs( $ids ) as $title ) {
 			$names[] = $title->getText();
 		}
 		if ( !$names ) {
@@ -845,7 +857,7 @@ GROOVY;
 			// against other fields.
 			$text = array();
 			$found = $this->get( $pageIds, array( 'text' ) );
-			if ( !$found->isOk() ) {
+			if ( !$found->isOK() ) {
 				return $found;
 			}
 			$found = $found->getValue();
@@ -1364,7 +1376,8 @@ GROOVY;
 	 * @param string[] $fields
 	 * @param string $queryString
 	 * @param int $phraseSlop
-	 * @param boolean $isRescore
+	 * @param bool $isRescore
+	 * @param bool $forHighlight
 	 * @return \Elastica\Query\Simple
 	 */
 	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore, $forHighlight = false ) {
@@ -1453,7 +1466,7 @@ GROOVY;
 	/**
 	 * Expand wildcard queries to the all.plain and title.plain fields if
 	 * wgCirrusSearchAllFields[ 'use' ] is set to true. Fallback to all
-	 * the possible fields otherwize. This prevents applying and compiling
+	 * the possible fields otherwise. This prevents applying and compiling
 	 * costly wildcard queries too many times.
 	 * @param string $term
 	 * @return string
@@ -1477,7 +1490,7 @@ GROOVY;
 	/**
 	 * Build fields searched by full text search.
 	 * @param float $weight weight to multiply by all fields
-	 * @param string $fieldSuffix suffux to add to field names
+	 * @param string $fieldSuffix suffix to add to field names
 	 * @param boolean $allFieldAllowed can we use the all field?  False for
 	 *    collecting phrases for the highlighter.
 	 * @return string[] array of fields to query
@@ -1485,7 +1498,7 @@ GROOVY;
 	public function buildFullTextSearchFields( $weight, $fieldSuffix, $allFieldAllowed ) {
 		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) && $allFieldAllowed ) {
 			if ( $fieldSuffix === '.near_match' ) {
-				// The near match fields can't shard a root field because field fields nead it -
+				// The near match fields can't shard a root field because field fields need it -
 				// thus no suffix all.
 				return array( "all_near_match^${weight}" );
 			}
@@ -1562,6 +1575,8 @@ GROOVY;
 
 	/**
 	 * If there is any boosting to be done munge the the current query to get it right.
+	 *
+	 * @param string $type
 	 */
 	private function installBoosts( $type ) {
 		if ( $this->sort !== 'relevance' ) {
@@ -1620,12 +1635,12 @@ GROOVY;
 			return;
 		}
 		$namespaceName = substr( $query, 0, $colon );
-		$foundNamespace = $this->findNamespace( $namespaceName );
+		$status = $this->findNamespace( $namespaceName );
 		// Failure case is already logged so just handle success case
-		if ( !$foundNamespace->isOK() ) {
+		if ( !$status->isOK() ) {
 			return;
 		}
-		$foundNamespace = $foundNamespace->getValue();
+		$foundNamespace = $status->getValue();
 		if ( !$foundNamespace ) {
 			return;
 		}

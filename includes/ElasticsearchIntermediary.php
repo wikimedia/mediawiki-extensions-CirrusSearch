@@ -103,7 +103,7 @@ class ElasticsearchIntermediary {
 			$user = RequestContext::getMain()->getUser();
 		}
 		$this->user = $user;
-		$this->slowMillis = round( 1000 * $slowSeconds );
+		$this->slowMillis = (int) ( 1000 * $slowSeconds );
 		$this->ut = UserTesting::getInstance();
 	}
 
@@ -112,7 +112,7 @@ class ElasticsearchIntermediary {
 	 * request, or multiple jobs run in the same executor. An execution id
 	 * is valid over a brief timespan, perhaps a minute or two for some jobs.
 	 *
-	 * @return integer unique identifier
+	 * @return string unique identifier
 	 */
 	private static function getExecutionId() {
 		if ( self::$executionId === null ) {
@@ -231,22 +231,30 @@ class ElasticsearchIntermediary {
 			$allHitsByTitle[$hit['title']] = $hit;
 		}
 		$resultHits = array();
+		// FIXME: temporary hack to investigate why SpecialSearch can display results
+		// that do not come from cirrus.
+		$bogusResult = null;
 		foreach ( self::$resultTitleStrings as $titleString ) {
-			$resultHits[] = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array(
-				// where did this come from? Who knows ... give it some defaults so avro doesn't bail
-				// This *must* match the names and types of the CirrusSearchHit record in the CirrusSearchRequestSet
-				// logging channel avro schema.
+			// Track only the first missing title.
+			if ( $bogusResult === null && !isset( $allHitsByTitle[$titleString] ) ) {
+				$bogusResult = $titleString;
+			}
+
+			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array();
+			// Apply defaults to ensure all properties are accounted for.
+			$resultHits[] = $hit + array(
 				'title' => $titleString,
 				'index' => "",
 				'pageId' => -1,
 				'score' => -1,
+				'profileName' => ""
 			);
 		}
 
 		$requestSet = array(
 			'id' => self::getRequestSetToken(),
 			'ts' => time(),
-			'wikiId' => wfWikiId(),
+			'wikiId' => wfWikiID(),
 			'source' => self::getExecutionContext(),
 			'identity' => self::generateIdentToken(),
 			'ip' => $wgRequest->getIP() ?: '',
@@ -258,11 +266,19 @@ class ElasticsearchIntermediary {
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 				// Helps to track down what actually caused the request. Will promote to full
-				// param if it proves usefull
+				// param if it proves useful
 				'queryString' => http_build_query( $_GET ),
 			),
 			'requests' => $requests,
 		);
+
+		if ( $bogusResult !== null ) {
+			if ( is_string( $bogusResult ) ) {
+				$requestSet['payload']['bogusResult'] = $bogusResult;
+			} else {
+				$requestSet['payload']['bogusResult'] = 'NOT_A_STRING?: ' . gettype( $bogusResult );
+			}
+		}
 
 		if ( $allCached ) {
 			$requestSet['payload']['cached'] = 'true';
@@ -307,7 +323,7 @@ class ElasticsearchIntermediary {
 	 * Get a token that (hopefully) uniquely identifies this search. It will be
 	 * added to the search result page js config vars, and put into the url with
 	 * history.replaceState(). This means click through's from supported browsers
-	 * will record this token as part of the referer.
+	 * will record this token as part of the referrer.
 	 *
 	 * @return string
 	 */
@@ -321,7 +337,7 @@ class ElasticsearchIntermediary {
 			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
 				   substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4) .
 				   substr( $uuid, 24 );
-			$token = wfBaseConvert( $hex, 16, 36 );
+			$token = \Wikimedia\base_convert( $hex, 16, 36 );
 		}
 		return $token;
 	}
@@ -365,7 +381,7 @@ class ElasticsearchIntermediary {
 		}
 
 		$message = array(
-			wfWikiId(),
+			wfWikiID(),
 			'',
 			FormatJson::encode( $queries ),
 			$hits,
@@ -426,7 +442,7 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Log a succesful request when the response comes from a cache outside elasticsearch.
+	 * Log a successful request when the response comes from a cache outside elasticsearch.
 	 * @param string $description name of the action being started
 	 * @param array $logContext Contextual variables for generating log messages
 	 */
@@ -451,7 +467,7 @@ class ElasticsearchIntermediary {
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
 	 * @return Status representing a backend failure
 	 */
-	public function failure( $exception = null ) {
+	public function failure( \Elastica\Exception\ExceptionInterface $exception = null ) {
 		$context = $this->logContext;
 		$context['took'] = $this->finishRequest();
 		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
@@ -519,10 +535,12 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Extract an error message from an exception thrown by Elastica.
-	 * @param Exception $exception exception from which to extract a message
+	 * @param \Elastica\Exception\ExceptionInterface $exception exception from which to extract a message
 	 * @return string message from the exception
+	 * @suppress PhanUndeclaredMethod ExceptionInterface doesn't declare any methods
+	 *  so we have to suppress those warnings.
 	 */
-	public static function extractMessage( \Exception $exception ) {
+	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {
 			return $exception->getMessage();
 		}
@@ -565,7 +583,7 @@ class ElasticsearchIntermediary {
 			return null;
 		}
 		$endTime = microtime( true );
-		$took = round( ( $endTime - $this->requestStart ) * 1000 );
+		$took = (int) ( ( $endTime - $this->requestStart ) * 1000 );
 		$clusterName = $this->connection->getClusterName();
 		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTime", $took );
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
@@ -629,10 +647,11 @@ class ElasticsearchIntermediary {
 	 * format from elasticsearch. The completion suggester is a bit of a
 	 * special snowflake in that it has a completely different response
 	 * format than other searches. The CirrusSearch\CompletionSuggester
-	 * class is responsible for providing any usefull logging data by adding
+	 * class is responsible for providing any useful logging data by adding
 	 * directly to $this->logContext.
 	 *
 	 * @param float $took Number of milliseconds the request took
+	 * @param Client|null $client
 	 * @return array
 	 */
 	private function buildLogContext( $took, Client $client = null ) {
@@ -748,10 +767,10 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param \Exception $exception
+	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return array Two elements, first is Status object, second is string.
 	 */
-	private function extractMessageAndStatus( \Exception $exception ) {
+	private function extractMessageAndStatus( \Elastica\Exception\ExceptionInterface $exception = null ) {
 		if ( !$exception ) {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}

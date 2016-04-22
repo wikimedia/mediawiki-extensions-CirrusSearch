@@ -1,6 +1,10 @@
 <?php
 namespace CirrusSearch\Jenkins;
 
+use DatabaseUpdater;
+use Language;
+use Title;
+
 /**
  * Sets up configuration required to run the browser tests on Jenkins.
  *
@@ -96,6 +100,7 @@ class Jenkins {
 	 * @param Title $title page title object
 	 * @param string|Language $pageLang the page content language (either an object or a language code)
 	 * @param Language $wgLang the user language
+	 * @return bool
 	 */
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
 		$matches = array();

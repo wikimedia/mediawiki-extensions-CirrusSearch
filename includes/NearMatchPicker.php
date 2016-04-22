@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use Title;

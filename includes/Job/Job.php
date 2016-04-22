@@ -4,9 +4,9 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
-use ConfigFactory;
 use Job as MWJob;
 use JobQueueGroup;
+use MediaWiki\MediaWikiServices;
 use Title;
 
 /**
@@ -34,12 +34,13 @@ abstract class Job extends MWJob {
 	protected $connection;
 
 	/**
-	 * @var boolean should we retry if this job failed
+	 * @var bool should we retry if this job failed
 	 */
 	private $allowRetries = true;
 
 	/**
 	 * Job constructor.
+	 *
 	 * @param Title $title
 	 * @param array $params
 	 */
@@ -55,7 +56,9 @@ abstract class Job extends MWJob {
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
 
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		// When the 'cluster' parameter is provided the job must only operate on
 		// the specified cluster, take special care to ensure nested jobs get the
 		// correct cluster set.  When set to null all clusters should be written to.
@@ -102,6 +105,7 @@ abstract class Job extends MWJob {
 	 * after it has expired.  By default it only checks every five minutes or so.
 	 * Note yet again that if another delay has been set that is longer then this one
 	 * then the _longer_ delay stays.
+	 *
 	 * @param int $delay seconds to delay this job if possible
 	 */
 	public function setDelay( $delay ) {

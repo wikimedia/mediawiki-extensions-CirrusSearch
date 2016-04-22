@@ -8,8 +8,10 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
+use CirrusSearch\BuildDocument\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use Elastica;
+use Elastica\Index;
 use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
@@ -78,7 +80,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $scoreMethod;
 
 	/**
-	 * @var old suggester index that will be deleted at the end of the process
+	 * @var Index old suggester index that will be deleted at the end of the process
 	 */
 	private $oldIndex;
 
@@ -124,6 +126,21 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	public $builder;
 
+	/**
+	 * @var AnalysisConfigBuilder
+	 */
+	private $analysisConfigBuilder;
+
+	/**
+	 * @var bool
+	 */
+	private $recycle = false;
+
+	/**
+	 * @var string[]
+	 */
+	private $bannedPlugins;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "Create a new suggester index. Always operates on a single cluster." );
@@ -140,7 +157,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
 		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
-			'Detauls to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
+			'Defaults to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
 		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
 			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
 		$this->addOption( 'replicationTimeout', 'The amount of time (seconds) to wait for the replica shards to initialize. ' .
@@ -157,7 +174,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
 			$wgPoolCounterConf,
-			$wgCirrusSearchMasterTimeout;
+			$wgCirrusSearchMasterTimeout,
+			$wgCirrusSearchMaxShardsPerNode;
 
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
@@ -176,7 +194,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 100 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
@@ -221,7 +239,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$trace = $e->getTraceAsString();
+			$trace = $this->getExceptionTraceAsString( $e );
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
@@ -317,8 +335,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
-		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
+		list( $mMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
+		list( $aMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
 			$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
@@ -361,7 +379,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 *
 	 * Drawbacks: the FST will be read from disk twice in a short
 	 * amount of time.
-	 * This is a tradeoff between cluster operation and disk operation.
+	 * This is a trade off between cluster operation and disk operation.
 	 * Recreating the index may require less disk operations but causes
 	 * the cluster to rebalance.
 	 * This is certainly the best strategy for small indices (less than 100k docs)
@@ -490,7 +508,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $this->builder == null ) {
 			// NOTE: the builder stores a batchId value to flag
 			// documents indexed by this builder. Make sure to
-			// reuse the same instance when building docs otherwize
+			// reuse the same instance when building docs otherwise
 			// the batchId might be regenerated and can cause data
 			// loss when recycling the index.
 			$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
@@ -564,7 +582,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
 				function( $results ) use ( &$docsDumped, $totalDocsToDump,
 						$destinationType ) {
-					$suggestDocs = array();
 					$inputDocs = array();
 					foreach ( $results as $result ) {
 						$docsDumped++;
@@ -757,18 +774,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		);
 		$index->getType('version')->addDocument( $doc );
 		$this->output("ok.\n");
-	}
-
-	/**
-	 * @return \CirrusSearch\Maintenance\Validators\Validator[]
-	 */
-	private function getIndexSettingsValidators() {
-		$validators = array();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
-		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
-		$validators[] = $this->getShardAllocationValidator();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexTypeName, $this->maxShardsPerNode, $this );
-		return $validators;
 	}
 
 	/**

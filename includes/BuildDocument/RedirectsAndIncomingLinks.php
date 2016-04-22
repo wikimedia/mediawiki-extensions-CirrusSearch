@@ -5,11 +5,12 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use Elastica\Filter\Terms;
-use Elastica\Search;
 use Elastica\Query\Filtered;
 use Elastica\Query\MatchAll;
 use MediaWiki\Logger\LoggerFactory;
 use SplObjectStorage;
+use Title;
+use WikiPage;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -32,24 +33,43 @@ use SplObjectStorage;
  */
 class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	/**
-	 * @var static copy of this class kept during batches
+	 * @var SplObjectStorage|null copy of this class kept during batches
 	 */
 	private static $externalLinks = null;
 
-	private $linkCountMultiSearch = null;
-	private $linkCountClosures = null;
+	/**
+	 * @var \Elastica\Multi\Search
+	 */
+	private $linkCountMultiSearch;
 
-	public static function buildDocument( $doc, $title, Connection $conn ) {
+	/**
+	 * @var callable[]
+	 */
+	private $linkCountClosures = array();
+
+	/**
+	 * @param \Elastica\Document $doc
+	 * @param Title $title
+	 * @param Connection $conn
+	 * @return bool
+	 */
+	public static function buildDocument( \Elastica\Document $doc, Title $title, Connection $conn ) {
 		if ( self::$externalLinks === null ) {
 			self::$externalLinks = new SplObjectStorage;
 		}
 		if ( !isset( self::$externalLinks[$conn] ) ) {
 			self::$externalLinks[$conn] = new self( $conn );
 		}
-		self::$externalLinks[$conn]->realBuildDocument( $doc, $title );
+		/** @var self $externalLink */
+		$externalLink = self::$externalLinks[$conn];
+		$externalLink->realBuildDocument( $doc, $title );
 		return true;
 	}
 
+	/**
+	 * @param WikiPage[]
+	 * @return bool
+	 */
 	public static function finishBatch( $pages ) {
 		if ( self::$externalLinks === null ) {
 			// Nothing to do as we haven't set up any actions during the buildDocument phase
@@ -65,13 +85,12 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	protected function __construct( Connection $conn ) {
 		parent::__construct( $conn, null, null );
 		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
-		$this->linkCountClosures = array();
 	}
 
-	private function realBuildDocument( $doc, $title ) {
+	private function realBuildDocument( \Elastica\Document $doc, Title $title ) {
 		global $wgCirrusSearchIndexedRedirects;
 
-		$outgoingLinksToCount = array( $title->getPrefixedDBKey() );
+		$outgoingLinksToCount = array( $title->getPrefixedDBkey() );
 
 		// Gather redirects to this page
 		$redirectTitles = $title->getBacklinkCache()
@@ -87,7 +106,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$outgoingLinksToCount[] = $redirect->getPrefixedDBKey();
 			}
 		}
-		$doc->add( 'redirect', $redirects );
+		$doc->set( 'redirect', $redirects );
 
 		// Count links
 		// Incoming links is the sum of:
@@ -102,11 +121,14 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		// Since we only have $wgCirrusSearchIndexedRedirects we only count that many terms.
 		$this->linkCountMultiSearch->addSearch( $this->buildCount( $outgoingLinksToCount ) );
 		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
-			$doc->add( 'incoming_links', $count + $redirectCount );
+			$doc->set( 'incoming_links', $count + $redirectCount );
 		};
 	}
 
-	private function realFinishBatch( $pages ) {
+	/**
+	 * @param WikiPage[] $pages
+	 */
+	private function realFinishBatch( array $pages ) {
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		if ( $linkCountClosureCount ) {
 			try {
@@ -124,7 +146,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
 				$this->failure( $e );
-				$pageIds = array_map( function( $page ) {
+				$pageIds = array_map( function( WikiPage $page ) {
 					return $page->getId();
 				}, $pages );
 				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
@@ -135,17 +157,21 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 
 	/**
 	 * Build a Search that will count all pages that link to $titles.
-	 * @param string $titles title in prefixedDBKey form
-	 * @return Search that counts all pages that link to $titles
+	 *
+	 * @param string[] $titles title in prefixedDBKey form
+	 * @return \Elastica\Search that counts all pages that link to $titles
 	 */
-	private function buildCount( $titles ) {
+	private function buildCount( array $titles ) {
 		$filter = new Terms( 'outgoing_link', $titles );
 		$filter->setCached( false ); // We're not going to be redoing this any time soon.
-		$type = $this->connection->getPageType( wfWikiId() );
-		$search = new Search( $type->getIndex()->getClient() );
+		$type = $this->connection->getPageType( wfWikiID() );
+		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
-		$search->setOption( Search::OPTION_SEARCH_TYPE, Search::OPTION_SEARCH_TYPE_COUNT );
+		$search->setOption(
+			\Elastica\Search::OPTION_SEARCH_TYPE,
+			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT
+		);
 		$matchAll = new MatchAll();
 		$search->setQuery( new Filtered( $matchAll, $filter ) );
 		$search->getQuery()->addParam( 'stats', 'link_count' );

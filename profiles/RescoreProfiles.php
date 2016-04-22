@@ -1,6 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
+use WebRequest;
+
 /**
  * CirrusSearch - List of profiles for function score rescores.
  *
@@ -49,7 +52,7 @@ $wgCirrusSearchRescoreProfiles = array(
 				// the rescore window size
 				'window' => 8192,
 
-				// The window size can be overiden by a config a value if set
+				// The window size can be overridden by a config a value if set
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 
 				// relative importance of the original query
@@ -243,7 +246,10 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
  * Used by includes/Hooks.php
  */
 class RescoreProfiles {
-	public static function overrideOptions( $request ) {
+	/**
+	 * @param WebRequest $request
+	 */
+	public static function overrideOptions( WebRequest $request ) {
 		global $wgCirrusSearchRescoreProfile,
 			$wgCirrusSearchPrefixSearchRescoreProfile,
 			$wgCirrusSearchMoreLikeRescoreProfile,

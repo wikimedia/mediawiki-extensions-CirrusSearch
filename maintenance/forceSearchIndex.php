@@ -93,12 +93,12 @@ class ForceSearchIndex extends Maintenance {
 		global $wgPoolCounterConf,
 			$wgCirrusSearchMaintenanceTimeout;
 
-		$wiki = sprintf( "[%20s]", wfWikiId() );
+		$wiki = sprintf( "[%20s]", wfWikiID() );
 
 		// Set the timeout for maintenance actions
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
-		// Make sure we've actually got indicies to populate
+		// Make sure we've actually got indices to populate
 		if ( !$this->simpleCheckIndexes() ) {
 			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
 		}
@@ -139,6 +139,11 @@ class ForceSearchIndex extends Maintenance {
 
 		if ( $this->getOption( 'forceParse' ) ) {
 			$updateFlags |= Updater::FORCE_PARSE;
+		}
+		if ( !$this->getOption( 'batch-size' ) &&
+			( $this->getOption( 'queue' ) || $this->getOption( 'deletes' ) )
+		) {
+			$this->setBatchSize( 100 );
 		}
 
 		$this->namespace = $this->hasOption( 'namespace' ) ?
@@ -298,8 +303,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return bool
 	 */
 	private function simpleCheckIndexes() {
-		$wiki = wfWikiId();
-		$status = $this->getConnection()->getClient()->getStatus();
+		$wiki = wfWikiID();
 
 		// Top-level alias needs to exist
 		if ( !$this->getConnection()->getIndex( $wiki )->exists() ) {
@@ -460,7 +464,7 @@ class ForceSearchIndex extends Maintenance {
 	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
 		$dbr = $this->getDB( DB_SLAVE );
 		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
-		$minNamespace = $dbr->addQuotes( $minNamespace );
+		$minNamespace = $dbr->addQuotes( (string) $minNamespace );
 		$minTitle = $dbr->addQuotes( $minTitle );
 		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
 		$where = array(
@@ -492,7 +496,10 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	/**
-	 * @param int $buildChunks
+	 * @param string|int $buildChunks If specified as a number then chunks no
+	 *  larger than that size are spat out.  If specified as a number followed
+	 *  by the word "total" without a space between them then that many chunks
+	 *  will be spat out sized to cover the entire wiki.
 	 */
 	private function buildChunks( $buildChunks ) {
 		$dbr = $this->getDB( DB_SLAVE );

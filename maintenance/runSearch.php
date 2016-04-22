@@ -3,9 +3,9 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
-use CirrusSearch\Searcher;
 use CirrusSearch\Search\ResultSet;
 use RequestContext;
+use SearchSuggestionSet;
 use Status;
 
 /**
@@ -69,7 +69,7 @@ class RunSearch extends Maintenance {
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
 
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );
@@ -135,16 +135,21 @@ class RunSearch extends Maintenance {
 					);
 					$result = $value->next();
 				}
-			} elseif ( is_array ($value ) ) {
+			} elseif ( $value instanceof SearchSuggestionSet ) {
 				// these are suggestion results
-				$data['totalHits'] = count( $value );
-				foreach ( $value as $row ) {
+				$data['totalHits'] = $value->getSize();
+				foreach ( $value->getSuggestions() as $suggestion ) {
 					$data['rows'][] = array(
-						'pageId' => $row['pageId'],
-						'title' => $row['title']->getPrefixedText(),
+						'pageId' => $suggestion->getSuggestedTitleID(),
+						'title' => $suggestion->getSuggestedTitle()->getPrefixedText(),
 						'snippets' => array(),
 					);
 				}
+			} else {
+				throw new \RuntimeException(
+					"Unknown result type: "
+					. is_object( $value ) ? get_class( $value ) : gettype( $value )
+				);
 			}
 		} else {
 			$data['error'] = $status->getMessage()->text();
@@ -165,12 +170,14 @@ class RunSearch extends Maintenance {
 		if ( $this->getOption( 'explain' ) ) {
 			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );
 		}
+
+		$engine = new CirrusSearch( $this->indexBaseName );
+		$engine->setConnection( $this->getConnection() );
+		$engine->setLimitOffset( $limit );
+
 		switch ( $searchType ) {
 		case 'full_text':
 			// @todo pass through $this->getConnection() ?
-			$engine = new CirrusSearch( $this->indexBaseName );
-			$engine->setConnection( $this->getConnection() );
-			$engine->setLimitOffset( $limit );
 			$result = $engine->searchText( $query );
 			if ( $result instanceof Status ) {
 				return $result;
@@ -179,12 +186,13 @@ class RunSearch extends Maintenance {
 			}
 
 		case 'prefix':
-			$searcher = new Searcher( $this->getConnection(), 0, $limit, null, null, null, $this->indexBaseName );
-			return $searcher->prefixSearch( $query );
+			$titles = $engine->defaultPrefixSearch( $query );
+			$resultSet = SearchSuggestionSet::fromTitles( $titles );
+			return Status::newGood( $resultSet );
 
 		case 'suggest':
-			$searcher = new Searcher( $this->getConnection(), 0, $limit, null, null, null, $this->indexBaseName );
-			$result = $searcher->suggest( $query );
+			$engine->setFeatureData( CirrusSearch::COMPLETION_SUGGESTER_FEATURE, true );
+			$result = $engine->completionSearch( $query );
 			if ( $result instanceof Status ) {
 				return $result;
 			} else {

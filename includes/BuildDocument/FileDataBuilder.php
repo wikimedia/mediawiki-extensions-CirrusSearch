@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch\BuildDocument;
+
 use LocalFile;
 
 /**
@@ -28,6 +29,9 @@ class FileDataBuilder extends Builder {
 	 */
 	private $file;
 
+	/**
+	 * @return \Elastica\Document
+	 */
 	public function build() {
 		$this->file = wfLocalFile( $this->title );
 		if ( $this->file && $this->file->exists() ) {
@@ -41,7 +45,7 @@ class FileDataBuilder extends Builder {
 		if ( $this->file->getHandler() ) {
 			$fileText = $this->file->getHandler()->getEntireText( $this->file );
 			if ( $fileText ) {
-				$this->doc->add( 'file_text', $fileText );
+				$this->doc->set( 'file_text', $fileText );
 			}
 		}
 	}

@@ -7,7 +7,7 @@ use Elastica\Request;
 use CirrusSearch;
 use CirrusSearch\BuildDocument\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Logger\LoggerFactory;
 use SearchSuggestion;
 use SearchSuggestionSet;
@@ -146,9 +146,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		User $user = null, $index = false ) {
 
 		if ( is_null( $config ) ) {
-			// @todo connection has an embeded config ... reuse that? somehow should
+			// @todo connection has an embedded config ... reuse that? somehow should
 			// at least ensure they are the same.
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
@@ -222,8 +224,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * protected for tests
+	 *
+	 * @param string $term
+	 * @param string[]|null $variants
 	 */
-	protected function setTermAndVariants( $term, $variants = null ) {
+	protected function setTermAndVariants( $term, array $variants = null ) {
 		$this->term = $term;
 		if ( empty( $variants ) ) {
 			$this->variants = null;
@@ -556,7 +561,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * Get the hard limit
 	 * The completion api does not supports offset we have to add a hack
 	 * here to work around this limitation.
-	 * To avoid ridiculously large queris we set also a hard limit.
+	 * To avoid ridiculously large queries we set also a hard limit.
 	 * Note that this limit will be changed by fetch_limit_factor set to 2 or 1.5
 	 * depending on the profile.
 	 * @return int the number of results to fetch from elastic

@@ -4,7 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Cirrus helpful extensions to Maintenance.
@@ -25,7 +25,9 @@ use ConfigFactory;
  * http://www.gnu.org/copyleft/gpl.html
  */
 abstract class Maintenance extends \Maintenance {
-	// How much should this script indent output?
+	/**
+	 * @var string The string to indent output with
+	 */
 	protected static $indent = null;
 
 	/**
@@ -38,22 +40,40 @@ abstract class Maintenance extends \Maintenance {
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
 	}
 
+	/**
+	 * @param string|null $cluster
+	 * @return Connection
+	 */
 	public function getConnection( $cluster = null ) {
 		if( $cluster ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
-			if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
-				$this->error( 'Unknown cluster.', 1 );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
+			if ( $config instanceof SearchConfig ) {
+				if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
+					$this->error( 'Unknown cluster.', 1 );
+				}
+				return Connection::getPool( $config, $cluster );
+			} else {
+				// We shouldn't ever get here ... but the makeConfig type signature returns the parent class of SearchConfig
+				// so just being extra careful...
+				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $config ) );
 			}
-			return Connection::getPool( $config, $cluster );
 		}
 		if ( $this->connection === null ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 			$cluster = $this->decideCluster( $config );
 			$this->connection = Connection::getPool( $config, $cluster );
 		}
 		return $this->connection;
 	}
 
+	/**
+	 * @param SearchConfig $config
+	 * @return string|null
+	 */
 	private function decideCluster( SearchConfig $config ) {
 		$cluster = $this->getOption( 'cluster', null );
 		if ( $cluster === null ) {
@@ -91,6 +111,10 @@ abstract class Maintenance extends \Maintenance {
 		Maintenance::$indent = substr( Maintenance::$indent, 1 );
 	}
 
+	/**
+	 * @param string $message
+	 * @param string|null $channel
+	 */
 	public function output( $message, $channel = null ) {
 		parent::output( $message );
 	}
@@ -99,7 +123,23 @@ abstract class Maintenance extends \Maintenance {
 		$this->output( Maintenance::$indent . $message );
 	}
 
+	/**
+	 * @param string $err
+	 * @param int $die
+	 */
 	public function error( $err, $die = 0 ) {
 		parent::error( $err, $die );
 	}
+
+	/**
+	 * Tiny method to restrict phan suppression to this method call.
+	 *
+	 * @param \Elastica\Exception\ExceptionInterface $e
+	 * @return string
+	 * @suppress PhanUndeclaredMethod ExceptionInterface has no methods
+	 */
+	protected function getExceptionTraceAsString( \Elastica\Exception\ExceptionInterface $e ) {
+		return $e->getTraceAsString();
+	}
+
 }

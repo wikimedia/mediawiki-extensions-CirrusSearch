@@ -29,25 +29,46 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
+	/** @var string */
 	private $titleSnippet = '';
-	private $redirectTitle = null, $redirectSnipppet = '';
-	private $sectionTitle = null, $sectionSnippet = '';
+	/** @var Title|null */
+	private $redirectTitle = null;
+	/** @var string */
+	private $redirectSnippet = '';
+	/** @var Title|null */
+	private $sectionTitle = null;
+	/** @var string */
+	private $sectionSnippet = '';
+	/** @var string */
 	private $categorySnippet = '';
-	private $textSnippet = '', $isFileMatch = false;
-	private $interwiki = '', $interwikiNamespace = '';
+	/** @var string */
+	private $textSnippet;
+	/** @var bool */
+	private $isFileMatch = false;
+	/* @var string */
+	private $interwiki = '';
+	/** @var string */
+	private $interwikiNamespace = '';
+	/** @var int */
 	private $wordCount;
+	/** @var int */
 	private $byteSize;
+	/** @var string */
 	private $timestamp;
+	/** @var string */
 	private $docId;
+	/** @var float */
 	private $score;
+	/** @var array */
 	private $explanation;
 
 	/**
 	 * Build the result.
+	 *
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param string $interwiki Interwiki prefix, if any
-	 * @param \Elastic\Result $result containing information about the result this class should represent
+	 * @param \Elastica\Result $result containing information about the result this class should represent
 	 */
 	public function __construct( $results, $result, $interwiki = '' ) {
 		if ( $interwiki ) {
@@ -81,7 +102,7 @@ class Result extends SearchResult {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
 			$redirects = $result->redirect;
 			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
-			$this->redirectSnipppet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
+			$this->redirectSnippet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		}
 
 		$this->textSnippet = $this->escapeHighlightedText( $this->pickTextSnippet( $highlights ) );
@@ -103,16 +124,14 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	private function pickTextSnippet( $highlights ) {
+		// This can get skipped if there the page was sent to Elasticsearch without text.
+		// This could be a bug or it could be that the page simply doesn't have any text.
 		$mainSnippet = '';
 		if ( isset( $highlights[ 'text' ] ) ) {
 			$mainSnippet = $highlights[ 'text' ][ 0 ];
 			if ( $this->containsMatches( $mainSnippet ) ) {
 				return $mainSnippet;
 			}
-		} else {
-			// This can get skipped if there the page was sent to Elasticsearch without text.
-			// This could be a bug or it could be that the page simply doesn't have any text.
-			$mainSnipppet = '';
 		}
 		if ( isset( $highlights[ 'auxiliary_text' ] ) ) {
 			$auxSnippet = $highlights[ 'auxiliary_text' ][ 0 ];
@@ -152,6 +171,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Escape highlighted text coming back from Elasticsearch.
+	 *
 	 * @param string $snippet highlighted snippet returned from elasticsearch
 	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
@@ -168,6 +188,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Checks if a snippet contains matches by looking for HIGHLIGHT_PRE.
+	 *
 	 * @param string $snippet highlighted snippet returned from elasticsearch
 	 * @return boolean true if $snippet contains matches, false otherwise
 	 */
@@ -177,9 +198,10 @@ class Result extends SearchResult {
 
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
+	 *
 	 * @param string $snippet Highlighted redirect snippet
-	 * @param array[] $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
-	 * @return Title object representing the redirect
+	 * @param array[]|null $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
+	 * @return Title|null object representing the redirect
 	 */
 	private function findRedirectTitle( $snippet, $redirects ) {
 		$title = $this->stripHighlighting( $snippet );
@@ -226,6 +248,7 @@ class Result extends SearchResult {
 
 	/**
 	 * Set interwiki and interwikiNamespace properties
+	 *
 	 * @param \Elastica\Result $result containing the given search result
 	 * @param string $interwiki Interwiki prefix, if any
 	 */
@@ -257,11 +280,12 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	public function getRedirectSnippet() {
-		return $this->redirectSnipppet;
+		return $this->redirectSnippet;
 	}
 
 	/**
-	 * @return Title|null
+	 * @param array
+	 * @return string|null
 	 */
 	public function getTextSnippet( $terms ) {
 		return $this->textSnippet;
@@ -331,7 +355,7 @@ class Result extends SearchResult {
 	}
 
 	/**
-	 * @return int
+	 * @return string
 	 */
 	public function getDocId() {
 		return $this->docId;

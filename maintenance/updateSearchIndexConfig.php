@@ -34,13 +34,22 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class UpdateSearchIndexConfig extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies. This always operates on a single cluster." );
+		$this->addDescription( "Update the configuration or contents of all search indices. This always operates on a single cluster." );
 		// Directly require this script so we can include its parameters as maintenance scripts can't use the autoloader
 		// in __construct.  Lame.
 		require_once __DIR__ . '/updateOneSearchIndexConfig.php';
 		UpdateOneSearchIndexConfig::addSharedOptions( $this );
 	}
 
+	/**
+	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
+	 *  access mOptions because its protected. That would be true but this
+	 *  class shares the hierarchy that contains mOptions so php allows it.
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	public function execute() {
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			$this->outputIndented( "$indexType index...\n");

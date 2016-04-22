@@ -3,8 +3,8 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use ConfigFactory;
 use CirrusSearch\ClusterSettings;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Copy search index from one cluster to another.
@@ -71,7 +71,7 @@ class CopySearchIndex extends Maintenance {
 		global $wgCirrusSearchMaintenanceTimeout;
 
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiId() );
+		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
 
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
@@ -84,7 +84,9 @@ class CopySearchIndex extends Maintenance {
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
 			$this->error("Target cluster should be different from current cluster.", 1);
 		}
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		$clusterSettings = new ClusterSettings( $config, $targetConnection->getClusterName() );
 
 		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexType );

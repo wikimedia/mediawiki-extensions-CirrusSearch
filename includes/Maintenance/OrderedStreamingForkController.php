@@ -24,15 +24,15 @@ namespace CirrusSearch\Maintenance;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class OrderedStreamingForkController extends \ForkController {
-	// @var callable
+	/** @var callable */
 	protected $workCallback;
-	// @var resource
+	/** @var resource */
 	protected $input;
-	// @var resource
+	/** @var resource */
 	protected $output;
-	// @var int
+	/** @var int */
 	protected $nextOutputId;
-	// @var array<int, string>
+	/** @var string[] Int key indicates order, value is data */
 	protected $delayedOutputData = array();
 
 	/**
@@ -66,7 +66,8 @@ class OrderedStreamingForkController extends \ForkController {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param int $numProcs
+	 * @return string
 	 */
 	protected function forkWorkers( $numProcs ) {
 		$this->prepareEnvironment();
@@ -189,6 +190,10 @@ class OrderedStreamingForkController extends \ForkController {
 		}
 	}
 
+	/**
+	 * @param int $id
+	 * @param string $data
+	 */
 	protected function receive( $id, $data ) {
 		if ( $id !== $this->nextOutputId ) {
 			$this->delayedOutputData[$id] = $data;

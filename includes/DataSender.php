@@ -29,6 +29,12 @@ use WikiPage;
 class DataSender extends ElasticsearchIntermediary {
 	const ALL_INDEXES_FROZEN_NAME = 'freeze_everything';
 
+	/** @var \Psr\Log\LoggerInterface */
+	private $log;
+
+	/** @var \Psr\Log\LoggerInterface */
+	private $failedLog;
+
 	/**
 	 * @var Connection
 	 */
@@ -79,7 +85,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk->send();
 		}
 
-		// Ensure our freeze is immediatly seen (mostly for testing
+		// Ensure our freeze is immediately seen (mostly for testing
 		// purposes)
 		$type->getIndex()->refresh();
 	}
@@ -155,7 +161,7 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$exception = null;
 		try {
-			$pageType = $this->connection->getPageType( wfWikiId(), $indexType );
+			$pageType = $this->connection->getPageType( wfWikiID(), $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
@@ -227,7 +233,7 @@ class DataSender extends ElasticsearchIntermediary {
 						'indexType' => $indexType,
 						'queryType' => 'send_deletes',
 					) );
-					$this->connection->getPageType( wfWikiId(), $indexType )->deleteIds( $ids );
+					$this->connection->getPageType( wfWikiID(), $indexType )->deleteIds( $ids );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -258,7 +264,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, 30 ) as $updates ) {
 			$bulk = new \Elastica\Bulk( $client );
-			$articleIDs = array();
+			$titles = array();
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );
@@ -297,10 +303,10 @@ class DataSender extends ElasticsearchIntermediary {
 			if ( $exception === null ) {
 				$this->success();
 			} else {
-				$this->failure( $e );
+				$this->failure( $exception );
 				$this->failedLog->warning(
 					"OtherIndex update for articles: " . implode( ',', $titles ),
-					array( 'exception' => $e )
+					array( 'exception' => $exception )
 				);
 				$status->error( 'cirrussearch-failed-update-otherindex' );
 			}
@@ -349,7 +355,11 @@ class DataSender extends ElasticsearchIntermediary {
 			} elseif ( $logCallback ) {
 				// This is generally not an error but we should
 				// log it to see how many we get
-				$id = $bulkResponse->getAction()->getData()->getId();
+				$action = $bulkResponse->getAction();
+				$id = 'missing';
+				if ( $action instanceof \Elastica\Bulk\Action\AbstractDocument ) {
+					$id = $action->getData()->getId();
+				}
 				call_user_func( $logCallback, $id );
 			}
 		}
@@ -357,12 +367,12 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string[]
+	 * @param string[] $indexes
 	 * @return string[]
 	 */
 	public function indexesToIndexNames( array $indexes ) {
 		$names = array();
-		$wikiId = wfWikiId();
+		$wikiId = wfWikiID();
 		foreach ( $indexes as $indexType ) {
 			$names[] = $this->connection->getIndexName( $wikiId, $indexType );
 		}

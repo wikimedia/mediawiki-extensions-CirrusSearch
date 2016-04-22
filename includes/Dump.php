@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use ConfigFactory;
+use MediaWiki\MediaWikiServices;
 use FormlessAction;
 
 /**
@@ -32,13 +32,15 @@ class Dump extends FormlessAction {
 		$response = $this->getRequest()->response();
 		$response->header( 'Content-type: application/json; charset=UTF-8' );
 
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		$conn = new Connection( $config );
 		$searcher = new Searcher( $conn, 0, 0, null, array(), $this->getUser() );
 
 		$id = $this->getTitle()->getArticleID();
 		$esSources = $searcher->get( array( $id ), true );
-		if ( !$esSources->isOk() ) {
+		if ( !$esSources->isOK() ) {
 			// Exception has been logged
 			echo '{}';
 			return;

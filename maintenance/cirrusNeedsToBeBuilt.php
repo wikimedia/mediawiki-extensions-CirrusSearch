@@ -35,7 +35,7 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class CirrusIsSetup extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of all search indecies. Always operates on a single cluster." );
+		$this->addDescription( "Update the configuration or contents of all search indices. Always operates on a single cluster." );
 	}
 
 	public function execute() {
@@ -65,7 +65,7 @@ class CirrusIsSetup extends Maintenance {
 
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			try {
-				$count = $this->getConnection()->getPageType( wfWikiId(), $indexType )->count();
+				$count = $this->getConnection()->getPageType( wfWikiID(), $indexType )->count();
 			} catch ( \Elastica\Exception\ResponseException $e ) {
 				$this->output( "$indexType doesn't exist.\n" );
 				$this->error( "true" );

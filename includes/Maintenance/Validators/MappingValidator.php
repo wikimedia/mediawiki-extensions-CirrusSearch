@@ -125,7 +125,7 @@ class MappingValidator extends Validator {
 	 * @param array $requiredMappings the mappings we want
 	 * @return bool is the mapping good enough for us?
 	 */
-	private function checkMapping( $requiredMappings ) {
+	private function checkMapping( array $requiredMappings ) {
 		$actualMappings = $this->index->getMapping();
 		$this->output( "\n" );
 		$this->outputIndented( "\tValidating mapping..." );

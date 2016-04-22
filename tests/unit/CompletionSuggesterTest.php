@@ -2,9 +2,9 @@
 
 namespace CirrusSearch;
 
-use \CirrusSearch\Test\HashSearchConfig;
-use \CirrusSearch\Test\DummyConnection;
-use \CirrusSearch\BuildDocument\SuggestBuilder;
+use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\Test\DummyConnection;
+use CirrusSearch\BuildDocument\SuggestBuilder;
 
 /**
  * Completion Suggester Tests
@@ -297,7 +297,7 @@ class MyCompletionSuggester extends CompletionSuggester {
 
 	public function testPostProcess( $search, \Elastica\Response $resp ) {
 		$this->setTermAndVariants( $search );
-		list( $profiles, $suggest ) = $this->buildQuery();
+		list( $profiles ) = $this->buildQuery();
 		return $this->postProcessSuggest( $resp, $profiles );
 	}
 }

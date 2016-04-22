@@ -25,8 +25,8 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	}
 
 	/**
-	 * @param array $add
-	 * @param array $remove
+	 * @param string[] $add
+	 * @param string[] $remove
 	 * @return \Status
 	 */
 	protected function updateIndices( array $add, array $remove ) {
@@ -52,6 +52,10 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 		return parent::updateIndices($add, $remove);
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	protected function shouldRemoveFromAlias( $name ) {
 		// Only if the name starts with the type being processed otherwise we'd
 		// remove the content index from the all alias.

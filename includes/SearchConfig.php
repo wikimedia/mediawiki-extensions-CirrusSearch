@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Config;
 use RequestContext;
 
 /**
@@ -12,7 +13,7 @@ use RequestContext;
 class SearchConfig implements \Config {
 	/**
 	 * Override settings
-	 * @var array
+	 * @var Config
 	 */
 	private $source;
 
@@ -52,7 +53,7 @@ class SearchConfig implements \Config {
 			}
 		}
 		$this->source = new \GlobalVarConfig();
-		$this->wikiId = wfWikiId();
+		$this->wikiId = wfWikiID();
 	}
 
 	/**
@@ -155,9 +156,9 @@ class SearchConfig implements \Config {
 
 	/**
 	 * For Unit tests
-	 * @param array $source Config override source
+	 * @param Config $source Config override source
 	 */
-	protected function setSource( $source ) {
+	protected function setSource( Config $source ) {
 		$this->source = $source;
 	}
 }

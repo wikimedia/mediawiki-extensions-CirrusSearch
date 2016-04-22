@@ -2,7 +2,8 @@
 
 namespace CirrusSearch\Search;
 
-use \CirrusSearch\SearchConfig;
+use CirrusSearch\SearchConfig;
+use Elastica\Query\AbstractQuery;
 
 /**
  * The search context, maintains the state of the current search query.
@@ -34,7 +35,7 @@ class SearchContext {
 	private $config;
 
 	/**
-	 * @var array of integer (list of namespaces)
+	 * @var int[]|null list of namespaces
 	 */
 	private $namespaces;
 
@@ -55,22 +56,27 @@ class SearchContext {
 
 	/**
 	 * @deprecated use rescore profiles instead
-	 * @var boolean do we need to boost links
+	 * @var bool do we need to boost links
 	 */
 	private $boostLinks = false;
 
 	/**
 	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
-	 * with time since the last update.
+	 *  with time since the last update.
 	 */
 	private $preferRecentDecayPortion = 0;
+
 	/**
 	 * @var float number of days it takes an the portion of an article score that will decay with time
-	 * since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
+	 *  since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
 	 */
 	private $preferRecentHalfLife = 0;
 
-	public function __construct( SearchConfig $config, $namespaces ) {
+	/**
+	 * @param SearchConfig $config
+	 * @param int[]|null $namespaces
+	 */
+	public function __construct( SearchConfig $config, array $namespaces = null ) {
 		$this->config = $config;
 		$this->searchTextQueryBuilderFactory = new SearchTextQueryBuilderFactory( $this );
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
@@ -87,7 +93,8 @@ class SearchContext {
 	/**
 	 * the namespaces being requested.
 	 * NOTE: this value may change during the Searcher process.
-	 * @return array of integer
+	 *
+	 * @return int[]|null
 	 */
 	public function getNamespaces() {
 		return $this->namespaces;
@@ -95,17 +102,18 @@ class SearchContext {
 
 	/**
 	 * set the namespaces
-	 * @param array $namespaces array of integer
+	 *
+	 * @param int[]|null $namespaces array of integer
 	 */
 	public function setNamespaces( $namespaces ) {
 		$this->namespaces = $namespaces;
 	}
 
 	/**
-	 * @return boolean true if leading wildcards are allowed
+	 * @return bool true if leading wildcards are allowed
 	 */
 	public function isAllowLeadingWildcards() {
-		return $this->config->get( 'CirrusSearchAllowLeadingWildcard' );
+		return (bool) $this->config->get( 'CirrusSearchAllowLeadingWildcard' );
 	}
 
 	/**
@@ -116,26 +124,26 @@ class SearchContext {
 	}
 
 	/**
-	 * @return boolean true if CommonTermsQuery is allowed
+	 * @return bool true if CommonTermsQuery is allowed
 	 */
 	public function isUseCommonTermsQuery() {
-		return $this->config->get('CirrusSearchUseCommonTermsQuery' );
+		return (bool) $this->config->get('CirrusSearchUseCommonTermsQuery' );
 	}
 
 	/**
-	 * @return boolean true if we can use the safer query from the wikimedia extra
-	 * plugin
+	 * @return bool true if we can use the safer query from the wikimedia extra
+	 *  plugin
 	 */
 	public function isUseSafer() {
-		return ( !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' ) ) );
+		return !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' ) );
 	}
 
 	/**
-	 * @param string $query
+	 * @param AbstractQuery $query
 	 * @param boolean $isRescore
 	 * @return \Elastica\Query\Simple
 	 */
-	public function wrapInSaferIfPossible( $query, $isRescore ) {
+	public function wrapInSaferIfPossible( AbstractQuery $query, $isRescore ) {
 		// @todo: move this code to a common base class when Filters is refactored as non-static
 		$saferQuery = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' );
 		if ( is_null( $saferQuery ) ) {
@@ -155,13 +163,14 @@ class SearchContext {
 	}
 
 	/**
-	 * @return true if the query contains special syntax
+	 * @param bool $searchContainedSyntax true if the query contains special syntax
 	 */
 	public function setSearchContainedSyntax( $searchContainedSyntax ) {
 		$this->searchContainedSyntax = $searchContainedSyntax;
 	}
 
 	/**
+	 * @param string $queryStringQueryString
 	 * @return SearchTextQueryBuilder
 	 */
 	public function searchTextQueryBuilder( $queryStringQueryString ) {
@@ -171,7 +180,8 @@ class SearchContext {
 	/**
 	 * Return the list of boosted templates specified in the user query (special syntax)
 	 * null if not used in the query or an empty array if there was a syntax error.
-	 * Initiliazed after special syntax extraction.
+	 * Initialized after special syntax extraction.
+	 *
 	 * @return array|null of boosted templates, key is the template value is the weight
 	 */
 	public function getBoostTemplatesFromQuery() {
@@ -187,7 +197,7 @@ class SearchContext {
 
 	/**
 	 * @deprecated use rescore profiles
-	 * @param boolean $boostLinks Deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
+	 * @param bool $boostLinks Deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
 	 */
 	public function setBoostLinks( $boostLinks ) {
 		$this->boostLinks = $boostLinks;
@@ -195,7 +205,7 @@ class SearchContext {
 
 	/**
 	 * @deprecated use custom rescore profile
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isBoostLinks() {
 		return $this->boostLinks;
@@ -213,7 +223,7 @@ class SearchContext {
 
 
 	/**
-	 * @return true if preferRecent options has been set.
+	 * @return bool true if preferRecent options has been set.
 	 */
 	public function hasPreferRecentOptions() {
 		return $this->preferRecentHalfLife > 0 && $this->preferRecentDecayPortion > 0;

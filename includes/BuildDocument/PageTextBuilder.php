@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\BuildDocument;
 
+use Content;
 use HtmlFormatter\HtmlFormatter;
 use MediaWiki\Logger\LoggerFactory;
 use ParserOutput;
@@ -27,18 +28,18 @@ use Sanitizer;
  */
 class PageTextBuilder extends ParseBuilder {
 	/**
-	 * @var array selectors to elements that are excluded entirely from search
+	 * @var string[] selectors to elements that are excluded entirely from search
 	 */
 	private $excludedElementSelectors = array(
 		'audio', 'video',       // "it looks like you don't have javascript enabled..." do not need to index
 		'sup.reference',        // The [1] for references
-		'.mw-cite-backlink',    // The ↑ next to refenences in the references section
+		'.mw-cite-backlink',    // The ↑ next to references in the references section
 		'h1', 'h2', 'h3',       // Headings are already indexed in their own field.
 		'h5', 'h6', 'h4',
 		'.autocollapse',        // Collapsed fields are hidden by default so we don't want them showing up.
 	);
 	/**
-	 * @var array selectors to elements that are considered auxiliary to article text for search
+	 * @var string[] selectors to elements that are considered auxiliary to article text for search
 	 */
 	private $auxiliaryElementSelectors = array(
 		'.thumbcaption',        // Thumbnail captions aren't really part of the text proper
@@ -48,10 +49,18 @@ class PageTextBuilder extends ParseBuilder {
 		'.searchaux',           // New class users can use to mark stuff as auxiliary to searches.
 	);
 
-	public function __construct( $doc, $content, $parserOutput ) {
+	/**
+	 * @param \Elastica\Document $doc
+	 * @param Content $content
+	 * @param ParserOutput $parserOutput
+	 */
+	public function __construct( \Elastica\Document $doc, Content $content, ParserOutput $parserOutput ) {
 		parent::__construct( $doc, null, $content, $parserOutput );
 	}
 
+	/**
+	 * @return \Elastica\Document
+	 */
 	public function build() {
 		list( $text, $opening, $auxiliary ) = $this->buildTextToIndex();
 		$this->doc->set( 'text', $text );
@@ -66,6 +75,9 @@ class PageTextBuilder extends ParseBuilder {
 	/**
 	 * Fetch text to index. If $content is wikitext then render and strip things from it.
 	 * Otherwise delegate to the $content itself.
+	 *
+	 * @return array Three tuple of (text, opening, auxiliary). Text is always string. Opening
+	 *  is string or null. Auxiliary is string[].
 	 */
 	private function buildTextToIndex() {
 		switch ( $this->content->getModel() ) {
@@ -75,8 +87,6 @@ class PageTextBuilder extends ParseBuilder {
 				$text = $this->content->getTextForSearchIndex();
 				return array( $text, null, array() );
 		}
-
-		return $text;
 	}
 
 	/**
@@ -97,6 +107,7 @@ class PageTextBuilder extends ParseBuilder {
 		switch ( $wgCirrusSearchBoostOpening ) {
 		case 'first_heading':
 			$opening = $this->extractHeadingBeforeFirstHeading( $text );
+			break;
 		case 'none':
 			break;
 		default:
@@ -117,7 +128,7 @@ class PageTextBuilder extends ParseBuilder {
 
 		// Strip elements from the page that are auxiliary text.  These will still be
 		// searched but matches will be ranked lower and non-auxiliary matches will be
-		// prefered in highlighting.
+		// preferred in highlighting.
 		$formatter->remove( $this->auxiliaryElementSelectors );
 		$auxiliaryElements = $formatter->filterContent();
 		$allText = trim( Sanitizer::stripAllTags( $formatter->getText() ) );
@@ -129,6 +140,10 @@ class PageTextBuilder extends ParseBuilder {
 		return array( $allText, $opening, $auxiliary );
 	}
 
+	/**
+	 * @param string $text
+	 * @return string|null
+	 */
 	private function extractHeadingBeforeFirstHeading( $text ) {
 		$matches = array();
 		if ( !preg_match( '/<h[123456]>/', $text, $matches, PREG_OFFSET_CAPTURE ) ) {

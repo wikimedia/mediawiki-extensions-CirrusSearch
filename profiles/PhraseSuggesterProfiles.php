@@ -72,7 +72,7 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 		// The prefix length used by the phrase suggester The number of
 		// minimal prefix characters that must match in order be a
 		// candidate suggestions. Defaults to 1. Increasing this number
-		// improves spellcheck performance.  Usually misspellings don’t
+		// improves spell check performance.  Usually misspellings don’t
 		// occur in the beginning of terms.
 		'prefix_length' => 2,
 
@@ -132,6 +132,8 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 class PhraseSuggesterProfiles {
 	/**
 	 * Override Phrase suggester options ("Did you mean?" suggestions)
+	 *
+	 * @param \WebRequest $request
 	 */
 	public static function overrideOptions( $request ) {
 		global $wgCirrusSearchPhraseSuggestMaxErrors,

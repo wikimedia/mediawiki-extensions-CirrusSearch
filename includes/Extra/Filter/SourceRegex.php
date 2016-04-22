@@ -26,117 +26,126 @@ use Elastica\Filter\AbstractFilter;
  */
 
 class SourceRegex extends AbstractFilter {
-    /**
-     * @param null|string $regex optional regex to match against field
-     * @param null|string $field optional field who's source to check with the regex
-     * @param null|string $ngramField optional field that is indexed with ngrams to
-     * accelerate regex matching
-     */
-    public function __construct( $regex = null, $field = null, $ngramField = null ) {
-        if ( $regex ) {
-            $this->setRegex( $regex );
-        }
-        if ( $field ) {
-            $this->setField( $field );
-        }
-        if ( $ngramField ) {
-            $this->setNgramField( $ngramField );
-        }
-    }
+	/**
+	 * @param null|string $regex optional regex to match against field
+	 * @param null|string $field optional field who's source to check with the regex
+	 * @param null|string $ngramField optional field that is indexed with ngrams to
+	 *  accelerate regex matching
+	 */
+	public function __construct( $regex = null, $field = null, $ngramField = null ) {
+		if ( $regex ) {
+			$this->setRegex( $regex );
+		}
+		if ( $field ) {
+			$this->setField( $field );
+		}
+		if ( $ngramField ) {
+			$this->setNGramField( $ngramField );
+		}
+	}
+
+	/**
+	 * @param string $regex regex to match against field
+	 * @return $this
+	 */
+	public function setRegex( $regex ) {
+		return $this->setParam( 'regex', $regex );
+	}
+
+	/**
+	 * @param string $field field who's source to check with the regex
+	 * @return $this
+	 */
+	public function setField( $field ) {
+		return $this->setParam( 'field', $field );
+	}
+
+	/**
+	 * @param string $ngramField field that is indexed with ngrams to
+	 *  accelerate regex matching
+	 * @return $this
+	 */
+	public function setNGramField( $ngramField ) {
+		return $this->setParam( 'ngram_field', $ngramField );
+	}
 
     /**
-     * @param string $regex regex to match against field
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setRegex( $regex ) {
-        return $this->setParam( 'regex', $regex );
-    }
-
-    /**
-     * @param string $field field who's source to check with the regex
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setField( $field ) {
-        return $this->setParam( 'field', $field );
-    }
-
-    /**
-     * @param string $ngramField field that is indexed with ngrams to
-     * accelerate regex matching
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setNGramField( $ngramField ) {
-        return $this->setParam( 'ngram_field', $ngramField );
-    }
-
-    /**
-     * @param int $gramSize size of the ngrams extracted for acccelerating
-     * the regex.  Defaults to 3 if not set.  That gram size must have been
-     * produced by analyzing the ngramField.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
+     * @param int $gramSize size of the ngrams extracted for accelerating
+     *  the regex.  Defaults to 3 if not set.  That gram size must have been
+     *  produced by analyzing the ngramField.
+     * @return $this
      */
     public function setGramSize( $gramSize ) {
         return $this->setParam( 'gram_size', $gramSize );
     }
 
-    /**
-     * @param int $maxExpand maximum range before outgoing automaton arcs are
-     * ignored. Roughly corresponds to the maximum number of characters in a
-     * character class ([abcd]) before it is treated as . for purposes of
-     * acceleration. Defaults to 4.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setMaxExpand( $maxExpand ) {
-        return $this->setParam( 'max_expand', $maxExpand );
-    }
+	/**
+	 * @param int $maxExpand maximum range before outgoing automaton arcs are
+	 *  ignored. Roughly corresponds to the maximum number of characters in a
+	 *  character class ([abcd]) before it is treated as . for purposes of
+	 *  acceleration. Defaults to 4.
+	 * @return $this
+	 */
+	public function setMaxExpand( $maxExpand ) {
+		return $this->setParam( 'max_expand', $maxExpand );
+	}
+
+	/**
+	 * @param int $maxStatesTraced maximum number of automaton states that can
+	 *  be traced before the algorithm gives up and assumes the regex is too
+	 *  complex and throws an error back to the user. Defaults to 10000 which
+	 *  handily covers all regexes I cared to test.
+	 * @return $this
+	 */
+	public function setMaxStatesTraced( $maxStatesTraced ) {
+		return $this->setParam( 'max_states_traced', $maxStatesTraced );
+	}
+
+	/**
+	 * @param int $maxInspect maximum number of source field to run the regex
+	 *  against before giving up and just declaring all remaining fields not
+	 *  matching by fiat. Defaults to MAX_INT. Set this to 10000 or something
+	 *  nice and low to prevent regular expressions that cannot be sped up from
+	 *  taking up too many resources.
+	 * @return $this
+	 */
+	public function setMaxInspect( $maxInspect ) {
+		return $this->setParam( 'max_inspect', $maxInspect );
+	}
+
+	/**
+	 * @param int $maxDeterminizedStates maximum number of automaton states
+	 *  that Lucene's regex compilation can expand to (even temporarily)
+	 * @return $this
+	 */
+	public function setMaxDeterminizedStates( $maxDeterminizedStates ) {
+		return $this->setParam( 'max_determinized_states', $maxDeterminizedStates );
+	}
+
+	/**
+	 * @param bool $caseSensitive is the regex case insensitive?  Defaults to
+	 *  case insensitive if not set.
+	 * @return $this
+	 */
+	public function setCaseSensitive( $caseSensitive ) {
+		return $this->setParam( 'case_sensitive', $caseSensitive );
+	}
 
     /**
-     * @param int $maxStatesTraced maximum number of automaton states that can
-     * be traced before the algorithm gives up and assumes the regex is too
-     * complex and throws an error back to the user. Defaults to 10000 which
-     * handily covers all regexes I cared to test.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setMaxStatesTraced( $maxStatesTraced ) {
-        return $this->setParam( 'max_states_traced', $maxStatesTraced );
-    }
-
-    /**
-     * @param int $maxInspect maximum number of source field to run the regex
-     * against before giving up and just declaring all remaining fields not
-     * matching by fiat. Defaults to MAX_INT. Set this to 10000 or something
-     * nice and low to prevent regular expressions that cannot be sped up from
-     * taking up too many resources.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setMaxInspect( $maxInspect ) {
-        return $this->setParam( 'max_inspect', $maxInspect );
-    }
-
-    /**
-     * @param int $maxDeterminizedStates maximum number of automaton states
-     * that Lucene's regex compilation can expand to (even temporarily)
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setMaxDeterminizedStates( $maxDeterminizedStates ) {
-        return $this->setParam( 'max_determinized_states', $maxDeterminizedStates );
-    }
-
-    /**
-     * @param bool $caseSensitive is the regex case insensitive?  Defaults to
-     * case insensitive if not set.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
-     */
-    public function setCaseSensitive( $caseSensitive ) {
-        return $this->setParam( 'case_sensitive', $caseSensitive );
-    }
-
-    /**
-     * @param bool $locale locale used for case conversions.  Its imporant that
-     * this matches the locale used for lowercasing in the ngram index.
-     * @return \CirrusSearch\Extra\Filter\SourceRegex this for chaining
+     * @param bool $locale locale used for case conversions.  Its important that
+     *  this matches the locale used for lowercasing in the ngram index.
+     * @return $this
      */
     public function setLocale( $locale ) {
         return $this->setParam( 'locale', $locale );
     }
+
+	/**
+	 * @param int $maxNgrams The maximum number of ngrams to extracted from the
+	 *  regex. If more could be extracted from the regex tey are ignored.
+	 * @return $this
+	 */
+	public function setMaxNgramsExtracted( $maxNgrams ) {
+		return $this->setParam( 'max_ngrams_extracted', $maxNgrams );
+	}
 }

@@ -45,6 +45,13 @@ class Saneitize extends Maintenance {
 	 */
 	private $toId;
 
+	/**
+	 * @var Checker Checks is the index is insane, and calls on a Remediator
+	 *  instance to do something about it. The remediator may fix the issue,
+	 *  log about it, or do a combination.
+	 */
+	private $checker;
+
 	public function __construct() {
 		parent::__construct();
 		$this->mDescription = "Make the index sane. Always operates on a single cluster.";
@@ -88,7 +95,7 @@ class Saneitize extends Maintenance {
 				$this->error( $status->getWikiText(), 1 );
 			}
 			if ( ( $pageId - $this->fromId ) % 100 === 0 ) {
-				$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiId(), $pageId,
+				$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), $pageId,
 					$this->toId ) );
 			}
 		}
@@ -117,16 +124,21 @@ class Saneitize extends Maintenance {
 
 	private function buildChecker() {
 		if ( $this->getOption( 'noop' ) ) {
-			$this->remediator = new NoopRemediator();
+			$remediator = new NoopRemediator();
 		} else {
-			$this->remediator = new QueueingRemediator( $this->getOption( 'cluster' ) );
+			$remediator = new QueueingRemediator( $this->getOption( 'cluster' ) );
 		}
 		if ( !$this->isQuiet() ) {
-			$this->remediator = new PrintingRemediator( $this->remediator );
+			$remediator = new PrintingRemediator( $remediator );
 		}
 		// This searcher searches all indexes for the current wiki.
 		$searcher = new Searcher( $this->getConnection(), 0, 0, null, array(), null );
-		$this->checker = new Checker( $this->getConnection(), $this->remediator, $searcher, $this->getOption( 'logSane' ) );
+		$this->checker = new Checker(
+			$this->getConnection(),
+			$remediator,
+			$searcher,
+			$this->getOption( 'logSane' )
+		);
 	}
 }
 

@@ -34,7 +34,7 @@ class CheckIndexes extends Maintenance {
 	/**
 	 * @var array[] Nested array of arrays containing error strings. Individual
 	 *  errors are nested based on the keys in self::$path at the time the error
-	 *  occured.
+	 *  occurred.
 	 */
 	private $errors = array();
 	/**
@@ -58,7 +58,7 @@ class CheckIndexes extends Maintenance {
 
 	public function execute() {
 		if ( $this->hasOption( 'nagios' ) ) {
-			// Force silent running mode so we can match Nagio's expected output.
+			// Force silent running mode so we can match Nagios expected output.
 			$this->mQuiet = true;
 		}
 		$this->ensureClusterStateFetched();
@@ -99,13 +99,13 @@ class CheckIndexes extends Maintenance {
 	 */
 	private function checkIndex( $indexName, $expectedShardCount ) {
 		$this->path = array();
-		$metdata = $this->getIndexMetadata( $indexName );
+		$metadata = $this->getIndexMetadata( $indexName );
 		$this->in( $indexName );
-		if ( $metdata === null ) {
+		if ( $metadata === null ) {
 			$this->err( "does not exist" );
 			return;
 		}
-		$this->check( 'state', 'open', $metdata[ 'state' ] );
+		$this->check( 'state', 'open', $metadata[ 'state' ] );
 		// TODO check aliases
 
 		$routingTable = $this->getIndexRoutingTable( $indexName );

@@ -1,7 +1,8 @@
 <?php
 
 namespace CirrusSearch\Jenkins;
-use \Maintenance;
+
+use Maintenance;
 
 /**
  * Deletes pages created by the browser test suite. cleanSetup.php
@@ -58,7 +59,6 @@ class DeleteBrowserTestPages extends Maintenance {
 		$pattern = "/$pattern/";
 
 		$dbw = wfGetDB( DB_MASTER );
-		$user = \User::newFromName( 'Admin' );
 		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
 		$it->setFetchColumns( array( '*' ) );
 		$it = new \RecursiveIteratorIterator( $it );

@@ -6,17 +6,16 @@ use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
 use CirrusSearch\Search\FancyTitleResultsType;
-use ConfigFactory;
 use DeferredUpdates;
 use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
+use MediaWiki\MediaWikiServices;
 use SpecialSearch;
 use Title;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
-use SearchResultSet;
 use UsageException;
 use User;
 use WebRequest;
@@ -50,6 +49,13 @@ class Hooks {
 
 	/**
 	 * Hooked to call initialize after the user is set up.
+	 *
+	 * @param Title $title
+	 * @param \Article $unused
+	 * @param OutputPage $outputPage
+	 * @param User $user
+	 * @param \WebRequest $request
+	 * @param \MediaWiki $mediaWiki
 	 * @return bool
 	 */
 	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
@@ -72,7 +78,7 @@ class Hooks {
 	 *
 	 * @param WebRequest $request
 	 */
-	private static function initializeForRequest( $request ) {
+	private static function initializeForRequest( WebRequest $request ) {
 		global $wgSearchType, $wgHooks,
 			$wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchPhraseRescoreWindowSize,
@@ -123,15 +129,27 @@ class Hooks {
 	/**
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
 	 * or => $limit if upperLimit is false.
+	 *
+	 * @param mixed &$dest
+	 * @param WebRequest $request
+	 * @param string $name
+	 * @param int|null $limit
+	 * @param bool $upperLimit
 	 */
-	private static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
+	private static function overrideNumeric( &$dest, WebRequest $request, $name, $limit = null, $upperLimit = true ) {
 		Util::overrideNumeric( $dest, $request, $name, $limit, $upperLimit );
 	}
 
 	/**
 	 * Set $dest to $value when $request->getVal( $name ) contains $secret
+	 *
+	 * @param mixed &$dest
+	 * @param string $secret
+	 * @param WebRequest $request
+	 * @param string $name
+	 * @param mixed $value
 	 */
-	private static function overrideSecret( &$dest, $secret, $request, $name, $value = true ) {
+	private static function overrideSecret( &$dest, $secret, WebRequest $request, $name, $value = true ) {
 		if ( $secret && $secret === $request->getVal( $name ) ) {
 			$dest = $value;
 		}
@@ -139,12 +157,19 @@ class Hooks {
 
 	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 *
+	 * @param mixed &$dest
+	 * @param WebRequest $request
+	 * @param string $name
 	 */
-	private static function overrideYesNo( &$dest, $request, $name ) {
+	private static function overrideYesNo( &$dest, WebRequest $request, $name ) {
 		Util::overrideYesNo( $dest, $request, $name );
 	}
 
-	private static function overrideUseExtraPluginForRegex( $request ) {
+	/**
+	 * @param WebRequest $request
+	 */
+	private static function overrideUseExtraPluginForRegex( WebRequest $request ) {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
 		$val = $request->getVal( 'cirrusAccelerateRegex' );
@@ -172,7 +197,7 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		$cache = \ObjectCache::newAccelerator( CACHE_NONE );
+		$cache = \ObjectCache::getLocalServerInstance();
 		$lines = $cache->getWithSetCallback(
 			$cache->makeKey( 'cirrussearch-morelikethis-settings' ),
 			600,
@@ -186,6 +211,9 @@ class Hooks {
 		);
 
 		foreach ( $lines as $line ) {
+			if ( false === strpos( $line, ':' ) ) {
+				continue;
+			}
 			list( $k, $v ) = explode( ':', $line, 2 );
 			switch( $k ) {
 			case 'min_doc_freq':
@@ -228,8 +256,10 @@ class Hooks {
 
 	/**
 	 * Override more like this settings from request URI parameters
+	 *
+	 * @param WebRequest $request
 	 */
-	private static function overrideMoreLikeThisOptions( $request ) {
+	private static function overrideMoreLikeThisOptions( WebRequest $request ) {
 		global $wgCirrusSearchMoreLikeThisConfig,
 			$wgCirrusSearchMoreLikeThisUseFields,
 			$wgCirrusSearchMoreLikeThisAllowedFields,
@@ -348,7 +378,7 @@ class Hooks {
 	public static function onSoftwareInfo( &$software ) {
 		$version = new Version( self::getConnection() );
 		$status = $version->get();
-		if ( $status->isOk() ) {
+		if ( $status->isOK() ) {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
 			$software[ '[https://www.elastic.co/products/elasticsearch Elasticsearch]' ] = $status->getValue();
 		}
@@ -367,7 +397,7 @@ class Hooks {
 
 		// Prepend our message if needed
 		if ( $wgCirrusSearchShowNowUsing ) {
-			$out->addHtml( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
+			$out->addHTML( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
 				$specialSearch->msg( 'cirrussearch-now-using' )->parse() .
 				Xml::closeElement( 'div' ) );
 		}
@@ -389,14 +419,19 @@ class Hooks {
 		return true;
 	}
 
-	private static function addSearchFeedbackLink( $link, $specialSearch, $out ) {
+	/**
+	 * @param string $link
+	 * @param SpecialSearch $specialSearch
+	 * @param OutputPage $out
+	 */
+	private static function addSearchFeedbackLink( $link, SpecialSearch $specialSearch, OutputPage $out ) {
 		$anchor = Xml::element(
 			'a',
 			array( 'href' => $link ),
 			$specialSearch->msg( 'cirrussearch-give-feedback' )->text()
 		);
 		$block = Html::rawElement( 'div', array(), $anchor );
-		$out->addHtml( $block );
+		$out->addHTML( $block );
 	}
 
 	/**
@@ -502,7 +537,7 @@ class Hooks {
 		}
 		// There is no way to send errors or warnings back to the caller here so we have to make do with
 		// only sending results back if there are results and relying on the logging done at the status
-		// constrution site to log errors.
+		// construction site to log errors.
 		if ( !$status->isOK() ) {
 			return true;
 		}
@@ -625,7 +660,9 @@ class Hooks {
 	 * @return Connection
 	 */
 	private static function getConnection() {
-		$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+		$config = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		return new Connection( $config );
 	}
 
@@ -648,7 +685,7 @@ class Hooks {
 	/**
 	 * Activate Completion Suggester as a Beta Feature if available
 	 * @param User $user
-	 * @param array beta feature prefs
+	 * @param array &$pref beta feature prefs
 	 * @return boolean
 	 */
 	public static function getBetaFeaturePreferences( User $user, &$pref ) {
@@ -685,6 +722,11 @@ class Hooks {
 		return true;
 	}
 
+	/**
+	 * @param string $term
+	 * @param \SearchResultSet &$titleMatches
+	 * @param \SearchResultSet &$textMatches
+	 */
 	public static function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
 		global $wgOut;
 

@@ -1,5 +1,7 @@
 <?php
+
 namespace CirrusSearch\Maintenance;
+
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
@@ -52,7 +54,6 @@ class Reindexer {
 	 */
 	private $connection;
 
-
 	/**
 	 * @var Type[]
 	 */
@@ -87,7 +88,6 @@ class Reindexer {
 	 * @var array
 	 */
 	private $mappingConfig;
-
 
 	/**
 	 * @var Maintenance
@@ -265,6 +265,14 @@ class Reindexer {
 		}
 	}
 
+	/**
+	 * @param Type $type
+	 * @param Type $oldType
+	 * @param int $children
+	 * @param int $childNumber
+	 * @param int|string $chunkSize
+	 * @param int $retryAttempts
+	 */
 	private function reindexInternal( Type $type, Type $oldType, $children, $childNumber, $chunkSize, $retryAttempts ) {
 		$filter = null;
 		$messagePrefix = "";
@@ -335,11 +343,12 @@ class Reindexer {
 	/**
 	 * Build the new document to just contain keys which have a mapping in the new properties.  To clean
 	 * out any old fields that we no longer use.
-	 * @param array() $result original document retrieved from a search
-	 * @param array() $properties mapping properties
+	 *
+	 * @param \Elastica\Result $result original document retrieved from a search
+	 * @param array $properties mapping properties
 	 * @return Document
 	 */
-	private function buildNewDocument( $result, $properties ) {
+	private function buildNewDocument( \Elastica\Result $result, array $properties ) {
 		// Build the new document to just contain keys which have a mapping in the new properties.  To clean
 		// out any old fields that we no longer use.
 		$data = Util::cleanUnusedFields( $result->getSource(), $properties );
@@ -353,6 +362,7 @@ class Reindexer {
 
 	/**
 	 * Get health information about the index
+	 *
 	 * @return array Response data array
 	 */
 	private function getHealth() {
@@ -369,16 +379,22 @@ class Reindexer {
 		}
 	}
 
+	/**
+	 * @return int
+	 */
 	private function decideMaxShardsPerNodeForReindex() {
 		$health = $this->getHealth();
 		$totalNodes = $health[ 'number_of_nodes' ];
 		$totalShards = $this->shardCount * ( $this->getMaxReplicaCount() + 1 );
-		return ceil( 1.0 * $totalShards / $totalNodes );
+		return (int) ceil( 1.0 * $totalShards / $totalNodes );
 	}
 
+	/**
+	 * @return int
+	 */
 	private function getMaxReplicaCount() {
 		$replica = explode( '-', $this->replicaCount );
-		return $replica[ count( $replica ) - 1 ];
+		return (int) $replica[ count( $replica ) - 1 ];
 	}
 
 	/**
@@ -396,12 +412,12 @@ class Reindexer {
 	}
 
 	/**
-	 * @param \Exception $e exception caught
+	 * @param ExceptionInterface $e exception caught
 	 * @param int $errors number of errors
 	 * @param string $messagePrefix
 	 * @param string $description
 	 */
-	private function sleepOnRetry(\Exception $e, $errors, $messagePrefix, $description ) {
+	private function sleepOnRetry( ExceptionInterface $e, $errors, $messagePrefix, $description ) {
 		$type = get_class( $e );
 		$seconds = Util::backoffDelay( $errors );
 		$message = ElasticsearchIntermediary::extractMessage( $e );
@@ -412,8 +428,12 @@ class Reindexer {
 
 	/**
 	 * Send documents to type with retry.
+	 *
+	 * @param Type $type
+	 * @param string $messagePrefix
+	 * @param Elastica\Document[]
 	 */
-	private function sendDocuments( Type $type, $messagePrefix, $documents ) {
+	private function sendDocuments( Type $type, $messagePrefix, array $documents ) {
 		try {
 			$type->addDocuments( $documents );
 		} catch ( ExceptionInterface $e ) {

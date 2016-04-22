@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Maintenance;
 
-use ConfigFactory;
-use \CirrusSearch\SearchConfig;
-use \CirrusSearch\Searcher;
-use \Hooks;
-use \Language;
+use CirrusSearch\SearchConfig;
+use CirrusSearch\Searcher;
+use Hooks;
+use Language;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Builds elasticsearch analysis config arrays.
@@ -36,8 +36,7 @@ class AnalysisConfigBuilder {
 	const VERSION = '0.10';
 
 	/**
-	 * Language code we're building analysis for
-	 * @var string
+	 * @var string Language code we're building analysis for
 	 */
 	private $language;
 
@@ -46,6 +45,9 @@ class AnalysisConfigBuilder {
 	 */
 	private $icu;
 
+	/**
+	 * @var array Similarity algo (tf/idf, bm25, etc) configuration
+	 */
 	private $similarity;
 
 	/**
@@ -54,12 +56,11 @@ class AnalysisConfigBuilder {
 	protected $config;
 
 	/**
-	 * Constructor
 	 * @param string $langCode The language code to build config for
-	 * @param array(string) $plugins list of plugins installed in Elasticsearch
+	 * @param string[] $plugins list of plugins installed in Elasticsearch
 	 * @param SearchConfig $config
 	 */
-	public function __construct( $langCode, $plugins, $config = null ) {
+	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
 		$this->language = $langCode;
 		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $plugin => $extra ) {
 			if ( in_array( $plugin, $plugins ) ) {
@@ -68,7 +69,9 @@ class AnalysisConfigBuilder {
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
 		if ( is_null ( $config ) ) {
-			$config = ConfigFactory::getDefaultInstance()->makeConfig( 'CirrusSearch' );
+			$config = MediaWikiServices::getInstance()
+				->getConfigFactory()
+				->makeConfig( 'CirrusSearch' );
 		}
 		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 		$this->config = $config;
@@ -76,6 +79,7 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Build the analysis config.
+	 *
 	 * @return array the analysis config
 	 */
 	public function buildConfig() {
@@ -86,16 +90,20 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Build the similarity config
-	 * @return array the similarity config
+	 *
+	 * @return array|null the similarity config
 	 */
 	public function buildSimilarityConfig() {
 		if ( $this->similarity != null && isset ( $this->similarity['similarity'] ) ) {
 			return $this->similarity['similarity'];
 		}
+		return null;
 	}
 
 	/**
 	 * Build an analysis config with sane defaults.
+	 *
+	 * @return array
 	 */
 	private function defaults() {
 		$defaults = array(
@@ -226,7 +234,7 @@ class AnalysisConfigBuilder {
 						'\u2019=>\u0020',  // Unicode right single quote
 						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
 						'_=>\u0020',       // Mediawiki loves _ and people are used to it but it usually means space
-						'-=>\u0020',       // Useful for finding hypenated names unhypenated
+						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
 					),
 				),
 				// Converts things that don't always count as word breaks into spaces which always
@@ -264,6 +272,9 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Customize the default config for the language.
+	 *
+	 * @param array $config
+	 * @return array
 	 */
 	private function customize( $config ) {
 		switch ( $this->getDefaultTextAnalyzerType() ) {
@@ -404,6 +415,7 @@ STEMMER_RULES
 	 * Pick the appropriate default analyzer based on the language.  Rather than think of
 	 * this as per language customization you should think of this as an effort to pick a
 	 * reasonably default in case CirrusSearch isn't customized for the language.
+	 *
 	 * @return string the analyzer type
 	 */
 	public function getDefaultTextAnalyzerType() {
@@ -435,6 +447,8 @@ STEMMER_RULES
 	 * other languages default to the default analyzer which isn't too good.  Note
 	 * that this array is sorted alphabetically by value and sourced from
 	 * http://www.elasticsearch.org/guide/reference/index-modules/analysis/lang-analyzer/
+	 *
+	 * @var string[]
 	 */
 	private $elasticsearchLanguageAnalyzers = array(
 		'ar' => 'arabic',
@@ -476,6 +490,10 @@ STEMMER_RULES
 		'th' => 'thai',
 	);
 
+
+	/**
+	 * @var array[]
+	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = array(
 		'analysis-stempel' => array( 'pl' => 'polish' ),
 		'analysis-kuromoji' => array( 'ja' => 'kuromoji' ),
@@ -486,6 +504,9 @@ STEMMER_RULES
 		// TODO Hebrew requires some special query handling....
 	);
 
+	/**
+	 * @return string MediaWiki language code
+	 */
 	public function getLanguage() {
 		return $this->language;
 	}

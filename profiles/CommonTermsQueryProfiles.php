@@ -1,6 +1,9 @@
 <?php
 
 namespace CirrusSearch;
+
+use WebRequest;
+
 /**
  * CirrusSearch - List of profiles for CommonsTermQuery
  * see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
@@ -81,7 +84,10 @@ $wgCirrusSearchCommonTermsQueryProfiles = array(
 );
 
 class CommonTermsQueryProfiles {
-	public static function overrideOptions( $request ) {
+	/**
+	 * @param WebRequest $request
+	 */
+	public static function overrideOptions( WebRequest $request ) {
 		global $wgCirrusSearchUseCommonTermsQuery,
 			$wgCirrusSearchCommonTermsQueryProfile,
 			$wgCirrusSearchCommonTermsQueryProfiles;

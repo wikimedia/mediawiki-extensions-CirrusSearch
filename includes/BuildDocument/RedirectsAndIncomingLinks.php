@@ -5,8 +5,7 @@ namespace CirrusSearch\BuildDocument;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use Elastica\Filter\Terms;
-use Elastica\Query\Filtered;
-use Elastica\Query\MatchAll;
+use Elastica\Query\BoolQuery;
 use MediaWiki\Logger\LoggerFactory;
 use SplObjectStorage;
 use Title;
@@ -164,6 +163,10 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private function buildCount( array $titles ) {
 		$filter = new Terms( 'outgoing_link', $titles );
 		$filter->setCached( false ); // We're not going to be redoing this any time soon.
+
+		$bool = new BoolQuery();
+		$bool->addFilter( $filter );
+
 		$type = $this->connection->getPageType( wfWikiID() );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
@@ -172,9 +175,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			\Elastica\Search::OPTION_SEARCH_TYPE,
 			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT
 		);
-		$matchAll = new MatchAll();
-		$search->setQuery( new Filtered( $matchAll, $filter ) );
+		$search->setQuery( $bool );
 		$search->getQuery()->addParam( 'stats', 'link_count' );
+
 		return $search;
 	}
 }

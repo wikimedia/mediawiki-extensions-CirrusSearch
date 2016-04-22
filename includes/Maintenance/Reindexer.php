@@ -292,7 +292,9 @@ class Reindexer {
 			$query = new Query();
 			$query->setFields( array( '_id', '_source' ) );
 			if ( $filter ) {
-				$query->setQuery( new \Elastica\Query\Filtered( new \Elastica\Query\MatchAll(), $filter ) );
+				$bool = new \Elastica\Query\BoolQuery();
+				$bool->addFilter( $filter );
+				$query->setQuery( $bool );
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType

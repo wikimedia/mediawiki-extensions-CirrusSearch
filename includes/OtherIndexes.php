@@ -92,14 +92,19 @@ class OtherIndexes extends Updater {
 					continue;
 				}
 				$type = $this->connection->getPageType( $otherIndex );
+
 				$bool = new \Elastica\Filter\BoolFilter();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
 				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
 				$bool->addMust( new \Elastica\Filter\Term( array( 'namespace' => $title->getNamespace() ) ) );
-				$filtered = new \Elastica\Query\Filtered( new \Elastica\Query\MatchAll(), $bool );
-				$query = new \Elastica\Query( $filtered );
+
+				$boolQuery = new \Elastica\Query\BoolQuery();
+				$boolQuery->addFilter( $bool );
+
+				$query = new \Elastica\Query( $boolQuery );
 				$query->setFields( array() ); // We only need the _id so don't load the _source
 				$query->setSize( 1 );
+
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
 				$findIdsClosures[] = function( $id ) use
 						( $otherIndex, &$updates, $title ) {

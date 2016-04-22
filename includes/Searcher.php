@@ -1066,7 +1066,10 @@ GROOVY;
 		// Wrap $this->query in a filtered query if there are any filters
 		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
 		if ( $unifiedFilter !== null ) {
-			$this->query = new \Elastica\Query\Filtered( $this->query, $unifiedFilter );
+			$bool = new \Elastica\Query\BoolQuery();
+			$bool->addMust( $this->query );
+			$bool->addFilter( $unifiedFilter );
+			$this->query = $bool;
 		}
 
 		// Call installBoosts right after we're done munging the query to include filters

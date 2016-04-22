@@ -134,8 +134,9 @@ class DumpIndex extends Maintenance {
 			$query->setSource( array( 'include' => $sourceFields ) );
 		}
 		if ( $filter ) {
-			$query->setQuery( new \Elastica\Query\Filtered(
-				new \Elastica\Query\MatchAll(), $filter ) );
+			$bool = new \Elastica\Query\BoolQuery();
+			$bool->addFilter( $filter );
+			$query->setQuery( $bool );
 		}
 
 		$scrollOptions = array(

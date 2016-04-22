@@ -44,7 +44,7 @@ class MappingConfigBuilder {
 	 * Distance that lucene places between multiple values of the same field.
 	 * Set pretty high to prevent accidental phrase queries between those values.
 	 */
-	const POSITION_OFFSET_GAP = 10;
+	const POSITION_INCREMENT_GAP = 10;
 
 	/**
 	 * Version number for the core analysis. Increment the major
@@ -198,7 +198,7 @@ class MappingConfigBuilder {
 				'type' => 'string',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
-				'position_offset_gap' => self::POSITION_OFFSET_GAP,
+				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 				'norms' => array( 'enabled' => false ),
 				'similarity' => $this->getSimilarity( 'all_near_match' ),
 				'fields' => array(
@@ -206,7 +206,7 @@ class MappingConfigBuilder {
 						'type' => 'string',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
-						'position_offset_gap' => self::POSITION_OFFSET_GAP,
+						'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 						'norms' => array( 'enabled' => false ),
 						'similarity' => $this->getSimilarity( 'all_near_match', 'asciifolding' ),
 					),
@@ -303,14 +303,14 @@ class MappingConfigBuilder {
 			'type' => 'string',
 			'index_analyzer' => 'text',
 			'search_analyzer' => 'text_search',
-			'position_offset_gap' => self::POSITION_OFFSET_GAP,
+			'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			'similarity' => $this->getSimilarity( $fieldName ),
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'index_analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
-					'position_offset_gap' => self::POSITION_OFFSET_GAP,
+					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 					'similarity' => $this->getSimilarity( $fieldName, 'plain' ),
 				),
 			)
@@ -333,7 +333,7 @@ class MappingConfigBuilder {
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'similarity' => $this->getSimilarity( $fieldName, $extraName ),
 				'type' => 'string',
-				'position_offset_gap' => self::POSITION_OFFSET_GAP,
+				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			), $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(

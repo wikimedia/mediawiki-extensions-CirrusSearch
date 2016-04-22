@@ -49,6 +49,13 @@ class Hooks {
 
 	/**
 	 * Hooked to call initialize after the user is set up.
+	 *
+	 * @param Title $title
+	 * @param \Article $unused
+	 * @param OutputPage $outputPage
+	 * @param User $user
+	 * @param \WebRequest $request
+	 * @param \MediaWiki $mediaWiki
 	 * @return bool
 	 */
 	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
@@ -122,6 +129,12 @@ class Hooks {
 	/**
 	 * Set $dest to the numeric value from $request->getVal( $name ) if it is <= $limit
 	 * or => $limit if upperLimit is false.
+	 *
+	 * @param mixed &$dest
+	 * @param WebRequest $request
+	 * @param string $name
+	 * @param int|null $limit
+	 * @param bool $upperLimit
 	 */
 	private static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
 		Util::overrideNumeric( $dest, $request, $name, $limit, $upperLimit );
@@ -129,6 +142,12 @@ class Hooks {
 
 	/**
 	 * Set $dest to $value when $request->getVal( $name ) contains $secret
+	 *
+	 * @param mixed &$dest
+	 * @param string $secret
+	 * @param WebRequest $request
+	 * @param string $name
+	 * @param mixed $value
 	 */
 	private static function overrideSecret( &$dest, $secret, $request, $name, $value = true ) {
 		if ( $secret && $secret === $request->getVal( $name ) ) {
@@ -138,6 +157,10 @@ class Hooks {
 
 	/**
 	 * Set $dest to the true/false from $request->getVal( $name ) if yes/no.
+	 *
+	 * @param mixed &$dest
+	 * @param WebRequest $request
+	 * @param string $name
 	 */
 	private static function overrideYesNo( &$dest, $request, $name ) {
 		Util::overrideYesNo( $dest, $request, $name );
@@ -230,6 +253,8 @@ class Hooks {
 
 	/**
 	 * Override more like this settings from request URI parameters
+	 *
+	 * @param WebRequest $request
 	 */
 	private static function overrideMoreLikeThisOptions( $request ) {
 		global $wgCirrusSearchMoreLikeThisConfig,
@@ -652,7 +677,7 @@ class Hooks {
 	/**
 	 * Activate Completion Suggester as a Beta Feature if available
 	 * @param User $user
-	 * @param array beta feature prefs
+	 * @param array &$pref beta feature prefs
 	 * @return boolean
 	 */
 	public static function getBetaFeaturePreferences( User $user, &$pref ) {

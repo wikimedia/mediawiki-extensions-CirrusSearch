@@ -254,7 +254,7 @@ class FullTextResultsType implements ResultsType {
 	const HIGHLIGHT_ALL = 63;
 
 	/**
-	 * @param int Bitmask, see HIGHLIGHT_* consts
+	 * @var int Bitmask, see HIGHLIGHT_* consts
 	 */
 	private $highlightingConfig;
 
@@ -409,7 +409,7 @@ class FullTextResultsType implements ResultsType {
 	/**
 	 * @param string[] $suggestPrefixes
 	 * @param string[] $suggestSuffixes
-	 * @param ResultSet $result
+	 * @param \Elastica\ResultSet $result
 	 * @param bool $searchContainedSyntax
 	 * @return ResultSet
 	 */

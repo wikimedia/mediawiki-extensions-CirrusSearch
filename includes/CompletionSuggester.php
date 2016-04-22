@@ -224,8 +224,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * protected for tests
+	 *
+	 * @param string $term
+	 * @param string[]|null $variants
 	 */
-	protected function setTermAndVariants( $term, $variants = null ) {
+	protected function setTermAndVariants( $term, array $variants = null ) {
 		$this->term = $term;
 		if ( empty( $variants ) ) {
 			$this->variants = null;

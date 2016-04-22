@@ -170,6 +170,7 @@ class SearchContext {
 	}
 
 	/**
+	 * @param string $queryStringQueryString
 	 * @return SearchTextQueryBuilder
 	 */
 	public function searchTextQueryBuilder( $queryStringQueryString ) {

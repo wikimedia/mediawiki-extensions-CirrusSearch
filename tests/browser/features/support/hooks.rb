@@ -24,6 +24,7 @@ Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @
       And a page named वाङ्‍मय exists
       And a page named वाङ‍्मय exists
       And a page named वाङ्‌मय exists
+      And a page named ChangeMe exists with contents foo
         )
     main = true
   end

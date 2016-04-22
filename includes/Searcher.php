@@ -823,8 +823,10 @@ GROOVY;
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		sort( $titles, SORT_STRING );
 		$pageIds = array();
+		$likeDocs = array();
 		foreach ( $titles as $title ) {
 			$pageIds[] = $title->getArticleID();
+			$likeDocs[] = array( '_id' => $title->getArticleID() );
 		}
 
 		// If no fields has been set we return no results.
@@ -873,11 +875,10 @@ GROOVY;
 				$text[] = $foundArticle->text;
 			}
 			sort( $text, SORT_STRING );
-			$this->query->setLikeText( implode( ' ', $text ) );
+			$likeDocs = array_merge( $likeDocs, $text );
 		}
 
-		// @todo: use setIds when T104560 is done
-		$this->query->setParam( 'ids', $pageIds );
+		$this->query->setLike( $likeDocs );
 
 		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
 			$this->filters[] = new \Elastica\Query\Exists( 'wikibase_item' );

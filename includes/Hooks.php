@@ -141,6 +141,18 @@ class Hooks {
 	}
 
 	/**
+	 * @param mixed &$dest
+	 * @param WebRequest $request
+	 * @param string $name
+	 */
+	private static function overrideMinimumShouldMatch( &$dest, WebRequest $request, $name ) {
+		$val = $request->getVal( $name );
+		if ( self::isMinimumShouldMatch( $val ) ) {
+			$dest = $val;
+		}
+	}
+
+	/**
 	 * Set $dest to $value when $request->getVal( $name ) contains $secret
 	 *
 	 * @param mixed &$dest
@@ -224,14 +236,23 @@ class Hooks {
 			case 'max_word_len':
 				if( is_numeric( $v ) && $v >= 0 ) {
 					$wgCirrusSearchMoreLikeThisConfig[$k] = intval( $v );
-				} else if ( $v === 'null' ) {
+				} elseif ( $v === 'null' ) {
 					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
 				}
 				break;
 			case 'percent_terms_to_match':
-				if( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
+				// @deprecated Use minimum_should_match now
+				$k = 'minimum_should_match';
+				if ( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
+					$v = ((int) ($v * 100)) . '%';
+				} else {
+					break;
+				}
+				// intentional fall-through
+			case 'minimum_should_match':
+				if ( self::isMinimumShouldMatch( $v ) ) {
 					$wgCirrusSearchMoreLikeThisConfig[$k] = $v;
-				} else if ($v === 'null' ) {
+				} elseif ($v === 'null' ) {
 					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
 				}
 				break;
@@ -243,7 +264,7 @@ class Hooks {
 			case 'use_fields':
 				if ( $v === 'true' ) {
 					$wgCirrusSearchMoreLikeThisUseFields = true;
-				} else if ( $v === 'false' ) {
+				} elseif ( $v === 'false' ) {
 					$wgCirrusSearchMoreLikeThisUseFields = false;
 				}
 				break;
@@ -252,6 +273,27 @@ class Hooks {
 				$wgCirrusSearchMoreLikeThisConfig['max_query_terms'] = $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit;
 			}
 		}
+	}
+
+	/**
+	 * @param string $v The value to check
+	 * @return bool True if $v is an integer percentage in the domain -100 <= $v <= 100, $v != 0
+	 * @todo minimum_should_match also supports combinations (3<90%) and multiple combinations
+	 */
+	private static function isMinimumShouldMatch( $v ) {
+		// specific integer count > 0
+		if ( ctype_digit( $v ) && $v != 0 ) {
+			return true;
+		}
+		// percentage 0 < x <= 100
+		if ( substr( $v, -1 ) !== '%' ) {
+			return false;
+		}
+		$v = substr( $v, 0, -1 );
+		if ( substr( $v, 0, 1 ) === '-' ) {
+			$v = substr( $v, 1 );
+		}
+		return ctype_digit( $v ) && $v > 0 && $v <= 100;
 	}
 
 	/**
@@ -271,7 +313,7 @@ class Hooks {
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
 			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'], $request, 'cirrusMltMinTermFreq' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['percent_terms_to_match'], $request, 'cirrusMltPercentTermsToMatch', 1 );
+		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'], $request, 'cirrusMltMinimumShouldMatch' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_len'], $request, 'cirrusMltMinWordLength' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_len'], $request, 'cirrusMltMaxWordLength' );
 		self::overrideYesNo( $wgCirrusSearchMoreLikeThisUseFields, $request, 'cirrusMltUseFields' );

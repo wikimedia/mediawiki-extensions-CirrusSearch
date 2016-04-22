@@ -474,11 +474,7 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 
 	// Percent of terms to match
 	// High value will increase precision but can prevent small docs to match against large ones
-	'percent_terms_to_match' => 0.3,
-
-	// replaces percent_terms_to_match but only supported by elasticsearch 1.5+
-	// @todo: when ES-1.6 is the minimal requirement we have to move to this new parameter
-	// 'minimum_should_match' => '30%',
+	'minimum_should_match' => '30%',
 );
 
 

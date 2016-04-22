@@ -70,12 +70,12 @@ class Checker {
 	 * @return Status status of the operation
 	 */
 	public function check( $pageId ) {
-		$fromIndex = $this->searcher->get( array( $pageId ), array( 'namespace', 'title' ) );
-		if ( $fromIndex->isOK() ) {
-			$fromIndex = $fromIndex->getValue();
-		} else {
-			return $fromIndex;
+		$status = $this->searcher->get( array( $pageId ), array( 'namespace', 'title' ) );
+		if ( !$status->isOK() ) {
+			return $status;
 		}
+		$fromIndex = $status->getValue();
+
 		$inIndex = count( $fromIndex ) > 0;
 		$page = WikiPage::newFromID( $pageId );
 

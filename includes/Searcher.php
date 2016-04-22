@@ -419,7 +419,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$this->extractSpecialSyntaxFromTerm(
 			'/^\s*local:/',
-			function ( $matches ) {
+			function () {
 				$this->limitSearchToLocalWiki( true );
 				return '';
 			}
@@ -1635,12 +1635,12 @@ GROOVY;
 			return;
 		}
 		$namespaceName = substr( $query, 0, $colon );
-		$foundNamespace = $this->findNamespace( $namespaceName );
+		$status = $this->findNamespace( $namespaceName );
 		// Failure case is already logged so just handle success case
-		if ( !$foundNamespace->isOK() ) {
+		if ( !$status->isOK() ) {
 			return;
 		}
-		$foundNamespace = $foundNamespace->getValue();
+		$foundNamespace = $status->getValue();
 		if ( !$foundNamespace ) {
 			return;
 		}

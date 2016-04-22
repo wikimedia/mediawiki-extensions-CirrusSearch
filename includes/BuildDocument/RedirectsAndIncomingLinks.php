@@ -88,7 +88,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private function realBuildDocument( \Elastica\Document $doc, Title $title ) {
 		global $wgCirrusSearchIndexedRedirects;
 
-		$outgoingLinksToCount = array( $title->getPrefixedDBKey() );
+		$outgoingLinksToCount = array( $title->getPrefixedDBkey() );
 
 		// Gather redirects to this page
 		$redirectTitles = $title->getBacklinkCache()
@@ -124,9 +124,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param WikiPage[]
+	 * @param WikiPage[] $pages
 	 */
-	private function realFinishBatch( $pages ) {
+	private function realFinishBatch( array $pages ) {
 		$linkCountClosureCount = count( $this->linkCountClosures );
 		if ( $linkCountClosureCount ) {
 			try {
@@ -144,7 +144,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
 				$this->failure( $e );
-				$pageIds = array_map( function( $page ) {
+				$pageIds = array_map( function( WikiPage $page ) {
 					return $page->getId();
 				}, $pages );
 				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(

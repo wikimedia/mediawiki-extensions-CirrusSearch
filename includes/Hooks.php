@@ -78,7 +78,7 @@ class Hooks {
 	 *
 	 * @param WebRequest $request
 	 */
-	private static function initializeForRequest( $request ) {
+	private static function initializeForRequest( WebRequest $request ) {
 		global $wgSearchType, $wgHooks,
 			$wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchPhraseRescoreWindowSize,
@@ -136,7 +136,7 @@ class Hooks {
 	 * @param int|null $limit
 	 * @param bool $upperLimit
 	 */
-	private static function overrideNumeric( &$dest, $request, $name, $limit = null, $upperLimit = true ) {
+	private static function overrideNumeric( &$dest, WebRequest $request, $name, $limit = null, $upperLimit = true ) {
 		Util::overrideNumeric( $dest, $request, $name, $limit, $upperLimit );
 	}
 
@@ -149,7 +149,7 @@ class Hooks {
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	private static function overrideSecret( &$dest, $secret, $request, $name, $value = true ) {
+	private static function overrideSecret( &$dest, $secret, WebRequest $request, $name, $value = true ) {
 		if ( $secret && $secret === $request->getVal( $name ) ) {
 			$dest = $value;
 		}
@@ -162,11 +162,14 @@ class Hooks {
 	 * @param WebRequest $request
 	 * @param string $name
 	 */
-	private static function overrideYesNo( &$dest, $request, $name ) {
+	private static function overrideYesNo( &$dest, WebRequest $request, $name ) {
 		Util::overrideYesNo( $dest, $request, $name );
 	}
 
-	private static function overrideUseExtraPluginForRegex( $request ) {
+	/**
+	 * @param WebRequest $request
+	 */
+	private static function overrideUseExtraPluginForRegex( WebRequest $request ) {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
 		$val = $request->getVal( 'cirrusAccelerateRegex' );
@@ -256,7 +259,7 @@ class Hooks {
 	 *
 	 * @param WebRequest $request
 	 */
-	private static function overrideMoreLikeThisOptions( $request ) {
+	private static function overrideMoreLikeThisOptions( WebRequest $request ) {
 		global $wgCirrusSearchMoreLikeThisConfig,
 			$wgCirrusSearchMoreLikeThisUseFields,
 			$wgCirrusSearchMoreLikeThisAllowedFields,
@@ -416,14 +419,19 @@ class Hooks {
 		return true;
 	}
 
-	private static function addSearchFeedbackLink( $link, $specialSearch, $out ) {
+	/**
+	 * @param string $link
+	 * @param SpecialSearch $specialSearch
+	 * @param OutputPage $out
+	 */
+	private static function addSearchFeedbackLink( $link, SpecialSearch $specialSearch, OutputPage $out ) {
 		$anchor = Xml::element(
 			'a',
 			array( 'href' => $link ),
 			$specialSearch->msg( 'cirrussearch-give-feedback' )->text()
 		);
 		$block = Html::rawElement( 'div', array(), $anchor );
-		$out->addHtml( $block );
+		$out->addHTML( $block );
 	}
 
 	/**
@@ -714,6 +722,11 @@ class Hooks {
 		return true;
 	}
 
+	/**
+	 * @param string $term
+	 * @param SearchResultSet &$titleMatches
+	 * @param SearchResultSet &$textMatches
+	 */
 	public static function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
 		global $wgOut;
 

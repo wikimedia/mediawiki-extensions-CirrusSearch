@@ -268,7 +268,7 @@ class DataSender extends ElasticsearchIntermediary {
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );
-				$script = new \Elastica\Script(
+				$script = new \Elastica\Script\Script(
 					'super_detect_noop',
 					array(
 						'source' => array(

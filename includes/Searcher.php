@@ -493,7 +493,7 @@ if (sourceText == null) {
 }
 
 GROOVY;
-					$filterDestination[] = new \Elastica\Query\Script( new \Elastica\Script(
+					$filterDestination[] = new \Elastica\Query\Script( new \Elastica\Script\Script(
 						$script,
 						array(
 							'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',

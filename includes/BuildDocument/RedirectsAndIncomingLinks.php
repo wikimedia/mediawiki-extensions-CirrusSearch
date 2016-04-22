@@ -60,7 +60,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		if ( !isset( self::$externalLinks[$conn] ) ) {
 			self::$externalLinks[$conn] = new self( $conn );
 		}
-		self::$externalLinks[$conn]->realBuildDocument( $doc, $title );
+		/** @var self $externalLink */
+		$externalLink = self::$externalLinks[$conn];
+		$externalLink->realBuildDocument( $doc, $title );
 		return true;
 	}
 

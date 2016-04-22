@@ -90,6 +90,7 @@ class Checker {
 				if ( $inIndex ) {
 					$foundInsanityInIndex = false;
 					$expectedType = $this->connection->getIndexSuffixForNamespace( $page->getTitle()->getNamespace() );
+					/** @var IndexInfo $indexInfo */
 					foreach ( $fromIndex as $indexInfo ) {
 						$matches = array();
 						if ( !preg_match( '/_(.+)_.+$/', $indexInfo->getIndex(), $matches ) ) {

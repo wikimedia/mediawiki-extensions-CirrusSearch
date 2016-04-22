@@ -107,6 +107,7 @@ class PageTextBuilder extends ParseBuilder {
 		switch ( $wgCirrusSearchBoostOpening ) {
 		case 'first_heading':
 			$opening = $this->extractHeadingBeforeFirstHeading( $text );
+			break;
 		case 'none':
 			break;
 		default:

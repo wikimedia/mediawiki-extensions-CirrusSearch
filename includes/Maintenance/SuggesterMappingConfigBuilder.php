@@ -48,13 +48,13 @@ class SuggesterMappingConfigBuilder {
 				'batch_id' => array( 'type' => 'long' ),
 				'suggest' => array(
 					'type' => 'completion',
-					'index_analyzer' => 'plain',
+					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'payloads' => false
 				),
 				'suggest-stop' => array(
 					'type' => 'completion',
-					'index_analyzer' => 'stop_analyzer',
+					'analyzer' => 'stop_analyzer',
 					'search_analyzer' => 'stop_analyzer_search',
 					'preserve_separators' => false,
 					'preserve_position_increments' => false,
@@ -62,14 +62,14 @@ class SuggesterMappingConfigBuilder {
 				),
 				'suggest-geo' => array(
 					'type' => 'completion',
-					'index_analyzer' => 'plain',
+					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'payloads' => false,
 					'context' => $geoContext
 				),
 				'suggest-stop-geo' => array(
 					'type' => 'completion',
-					'index_analyzer' => 'stop_analyzer',
+					'analyzer' => 'stop_analyzer',
 					'search_analyzer' => 'stop_analyzer_search',
 					'preserve_separators' => false,
 					'preserve_position_increments' => false,

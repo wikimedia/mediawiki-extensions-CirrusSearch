@@ -91,15 +91,15 @@ class MappingConfigBuilder {
 		// and is inferred anyway.
 		$titleExtraAnalyzers = array(
 			$suggestExtra,
-			array( 'index_analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-			array( 'index_analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
+			array( 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 		);
 		if ( $flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = array(
-				'index_analyzer' => 'word_prefix',
+				'analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
 				'index_options' => 'docs'
 			);
@@ -301,14 +301,14 @@ class MappingConfigBuilder {
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
 		$field = array(
 			'type' => 'string',
-			'index_analyzer' => 'text',
+			'analyzer' => 'text',
 			'search_analyzer' => 'text_search',
 			'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			'similarity' => $this->getSimilarity( $fieldName ),
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
-					'index_analyzer' => 'plain',
+					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 					'similarity' => $this->getSimilarity( $fieldName, 'plain' ),
@@ -325,11 +325,7 @@ class MappingConfigBuilder {
 			$field[ 'copy_to' ] = array( 'suggest' );
 		}
 		foreach ( $extra as $extraField ) {
-			if ( isset( $extraField[ 'analyzer' ] ) ) {
-				$extraName = $extraField[ 'analyzer' ];
-			} else {
-				$extraName = $extraField[ 'index_analyzer' ];
-			}
+			$extraName = $extraField[ 'analyzer' ];
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
 				'similarity' => $this->getSimilarity( $fieldName, $extraName ),
 				'type' => 'string',
@@ -337,7 +333,9 @@ class MappingConfigBuilder {
 			), $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(
-					$field[ 'fields' ][ $extraName ], $disableNorms );
+					$field[ 'fields' ][ $extraName ],
+					$disableNorms
+				);
 			}
 		}
 		if ( $this->optimizeForExperimentalHighlighter ) {

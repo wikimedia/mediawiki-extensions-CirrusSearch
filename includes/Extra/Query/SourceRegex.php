@@ -1,8 +1,8 @@
 <?php
 
-namespace CirrusSearch\Extra\Filter;
+namespace CirrusSearch\Extra\Query;
 
-use Elastica\Filter\AbstractFilter;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Source regex filter for trigram accelerated regex matching.
@@ -25,7 +25,7 @@ use Elastica\Filter\AbstractFilter;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-class SourceRegex extends AbstractFilter {
+class SourceRegex extends AbstractQuery {
 	/**
 	 * @param null|string $regex optional regex to match against field
 	 * @param null|string $field optional field who's source to check with the regex

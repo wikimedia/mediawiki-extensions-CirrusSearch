@@ -285,7 +285,7 @@ class Reindexer {
 			$messagePrefix = "\t\t[$childNumber] ";
 			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
-			$filter = new \CirrusSearch\Extra\Filter\IdHashMod( $children, $childNumber );
+			$filter = new \CirrusSearch\Extra\Query\IdHashMod( $children, $childNumber );
 		}
 		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		try {

@@ -2,12 +2,10 @@
 
 namespace CirrusSearch\Search;
 
-use Elastica\Filter\AbstractFilter;
-use Elastica\Filter\BoolAnd;
-use Elastica\Filter\BoolFilter;
-use Elastica\Filter\BoolNot;
-use Elastica\Filter\Script;
-use Elastica\Filter\Term;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\Script;
+use Elastica\Query\Term;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -49,28 +47,36 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 		$foo = new Term( array( 'test' => 'foo' ) );
 		$bar = new Term( array( 'test' => 'bar' ) );
 		$baz = new Term( array( 'test' => 'baz' ) );
+
+		$notScriptOne = new BoolQuery();
+		$notScriptOne->addMustNot( $scriptOne );
+		$notScriptThree = new BoolQuery();
+		$notScriptThree->addMustNot( $scriptThree );
+		$notFoo = new BoolQuery();
+		$notFoo->addMustNot( $foo );
+
 		return array(
-			array( null, array(), array() ),
-			array( $scriptOne, $scriptOne, array() ),
-			array( new BoolNot( $scriptOne ), array(), $scriptOne ),
-			array( $foo, $foo, array() ),
-			array( new BoolNot( $foo ), array(), $foo ),
-			array(
+			'empty input gives empty output' => array( null, array(), array() ),
+			'a single must script returns itself' => array( $scriptOne, $scriptOne, array() ),
+			'a single must not script returns bool mustNot' => array( $notScriptOne, array(), $scriptOne ),
+			'a single must query returns itself' => array( $foo, $foo, array() ),
+			'a single must not query return bool mustNot' => array( $notFoo, array(), $foo ),
+			'multiple must return bool must' => array(
 				self::newBool( array( $foo, $bar ), array() ),
 				array( $foo, $bar ),
 				array()
 			),
-			array(
+			'multiple must not' => array(
 				self::newBool( array(), array( $foo, $bar ) ),
 				array(),
 				array( $foo, $bar ),
 			),
-			array(
+			'must and multiple must not' => array(
 				self::newBool( array( $baz ), array( $foo, $bar ) ),
 				array( $baz ),
 				array( $foo, $bar ),
 			),
-			array(
+			'must and multiple must not with a filtered script' => array(
 				self::newAnd(
 					self::newBool( array( $baz ), array( $foo, $bar ) ),
 					$scriptOne
@@ -78,12 +84,12 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 				array( $scriptOne, $baz ),
 				array( $foo, $bar ),
 			),
-			array(
+			'must and multiple must not with multiple filtered scripts' => array(
 				self::newAnd(
 					self::newBool( array( $baz ), array( $foo, $bar ) ),
 					$scriptOne,
 					$scriptTwo,
-					new BoolNot( $scriptThree )
+					$notScriptThree
 				),
 				array( $scriptOne, $baz, $scriptTwo ),
 				array( $foo, $scriptThree, $bar ),
@@ -93,12 +99,12 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * Convenient helper for building bool filters.
-	 * @param AbstractFilter|AbstractFilter[] $must must filters
-	 * @param AbstractFilter|AbstractFilter[] $mustNot must not filters
-	 * @return BoolFilter a bool filter containing $must and $mustNot
+	 * @param AbstractQuery|AbstractQuery[] $must must filters
+	 * @param AbstractQuery|AbstractQuery[] $mustNot must not filters
+	 * @return BoolQuery a bool filter containing $must and $mustNot
 	 */
 	private static function newBool( $must, $mustNot ) {
-		$bool = new BoolFilter();
+		$bool = new BoolQuery();
 		if ( is_array( $must ) ) {
 			foreach ( $must as $m ) {
 				$bool->addMust( $m );
@@ -118,8 +124,10 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 	}
 
 	private static function newAnd( /* args */ ) {
-		$and = new BoolAnd();
-		$and->setFilters( func_get_args() );
+		$and = new BoolQuery();
+		foreach ( func_get_args() as $query ) {
+			$and->addFilter( $query );
+		}
 		return $and;
 	}
 }

@@ -93,13 +93,10 @@ class OtherIndexes extends Updater {
 				}
 				$type = $this->connection->getPageType( $otherIndex );
 
-				$bool = new \Elastica\Filter\BoolFilter();
+				$bool = new \Elastica\Query\BoolQuery();
 				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
-				$bool->addMust( new \Elastica\Filter\Term( array( 'title.keyword' => $title->getText() ) ) );
-				$bool->addMust( new \Elastica\Filter\Term( array( 'namespace' => $title->getNamespace() ) ) );
-
-				$boolQuery = new \Elastica\Query\BoolQuery();
-				$boolQuery->addFilter( $bool );
+				$bool->addFilter( new \Elastica\Query\Term( array( 'title.keyword' => $title->getText() ) ) );
+				$bool->addFilter( new \Elastica\Query\Term( array( 'namespace' => $title->getNamespace() ) ) );
 
 				$query = new \Elastica\Query( $boolQuery );
 				$query->setFields( array() ); // We only need the _id so don't load the _source

@@ -45,9 +45,9 @@ class UpdateVersionIndex extends Maintenance {
 		} elseif ( $this->hasOption( 'update' ) ) {
 			$this->update( $baseName );
 		} else {
-			$filter = new \Elastica\Filter\BoolOr();
+			$filter = new \Elastica\Query\BoolQuery();
 			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {
-				$term = new \Elastica\Filter\Term();
+				$term = new \Elastica\Query\Term();
 				$term->setTerm( '_id', $this->getConnection()->getIndexName( $baseName, $type ) );
 				$filter->addFilter( $term );
 			}
@@ -56,7 +56,7 @@ class UpdateVersionIndex extends Maintenance {
 	}
 
 	/**
-	 * @param array|\Elastica\Filter\AbstractFilter|null $filter
+	 * @param array|\Elastica\Query\AbstractQuery|null $filter
 	 */
 	private function show( $filter = null ) {
 		$query = new \Elastica\Query();

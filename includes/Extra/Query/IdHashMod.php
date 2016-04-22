@@ -1,8 +1,8 @@
 <?php
 
-namespace CirrusSearch\Extra\Filter;
+namespace CirrusSearch\Extra\Query;
 
-use Elastica\Filter\AbstractFilter;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Creates an IdHashMod filter.
@@ -24,7 +24,7 @@ use Elastica\Filter\AbstractFilter;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class IdHashMod extends AbstractFilter {
+class IdHashMod extends AbstractQuery {
 	/**
 	 * @param int $mod modulus to use. Number of chunks to cut the data into.
 	 * @param int $match value to match. Must be less than $mod. Its the

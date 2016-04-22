@@ -121,8 +121,7 @@ class DumpIndex extends Maintenance {
 
 		$filter = null;
 		if ( $this->hasOption( 'filter' ) ) {
-			$filter = new Elastica\Filter\Query(
-				new Elastica\Query\QueryString( $this->getOption( 'filter' ) ) );
+			$filter = new Elastica\Query\QueryString( $this->getOption( 'filter' ) );
 		}
 
 		$limit = (int) $this->getOption( 'limit', 0 );

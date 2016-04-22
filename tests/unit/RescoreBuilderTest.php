@@ -9,7 +9,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );
 
-		$func->addWeightFunction( 2.0, new \Elastica\Filter\MatchAll() );
+		$func->addWeightFunction( 2.0, new \Elastica\Query\MatchAll() );
 		$this->assertFalse( $func->isEmptyFunction() );
 
 		$array = $func->toArray();

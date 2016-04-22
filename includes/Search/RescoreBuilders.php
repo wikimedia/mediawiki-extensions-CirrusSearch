@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
-use Elastica\Filter\AbstractFilter;
+use Elastica\Query\AbstractQuery;
 use MWNamespace;
 
 /**
@@ -303,11 +303,11 @@ class FunctionScoreDecorator extends FunctionScore {
 	/**
 	 * @param string $functionType
 	 * @param array|float $functionParams
-	 * @param AbstractFilter|null $filter
+	 * @param AbstractQuery|null $filter
 	 * @param float|null $weight
 	 * @return $this
 	 */
-	public function addFunction( $functionType, $functionParams, AbstractFilter $filter = null, $weight = null ) {
+	public function addFunction( $functionType, $functionParams, $filter = null, $weight = null ) {
 		$this->size++;
 		return parent::addFunction( $functionType, $functionParams, $filter, $weight );
 	}
@@ -437,9 +437,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		foreach ( $this->boostTemplates as $name => $weight ) {
 			$match = new \Elastica\Query\Match();
 			$match->setFieldQuery( 'template', $name );
-			$filterQuery = new \Elastica\Filter\Query( $match );
-			$filterQuery->setCached( true );
-			$functionScore->addWeightFunction( $weight * $this->weight, $filterQuery );
+			$functionScore->addWeightFunction( $weight * $this->weight, $match );
 		}
 	}
 }
@@ -537,7 +535,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			}
 		}
 		foreach( $weightToNs as $weight => $namespaces ) {
-			$filter = new \Elastica\Filter\Terms( 'namespace', $namespaces );
+			$filter = new \Elastica\Query\Terms( 'namespace', $namespaces );
 			$functionScore->addWeightFunction( $weight, $filter );
 		}
 	}
@@ -990,7 +988,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $this->userWeight ) {
 			$functionScore->addWeightFunction(
 				$this->userWeight * $this->weight,
-				new \Elastica\Filter\Term( array( 'language' => $this->userLang ) )
+				new \Elastica\Query\Term( array( 'language' => $this->userLang ) )
 			);
 		}
 
@@ -998,7 +996,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $this->wikiWeight && $this->userLang != $this->wikiLang ) {
 			$functionScore->addWeightFunction(
 				$this->wikiWeight * $this->weight,
-				new \Elastica\Filter\Term( array( 'language' => $this->wikiLang ) )
+				new \Elastica\Query\Term( array( 'language' => $this->wikiLang ) )
 			);
 		}
 	}

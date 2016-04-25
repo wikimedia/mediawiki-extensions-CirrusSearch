@@ -1444,14 +1444,16 @@ GROOVY;
 			}
 			$settings['phrase']['collate'] = array(
 				'query' => array (
-					'multi_match' => array(
-						'query' => '{{suggestion}}',
-						'operator' => 'or',
-						'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
-						'type' => 'cross_fields',
-						'fields' => $collateFields
-					)
-				)
+					'inline' => array(
+						'multi_match' => array(
+							'query' => '{{suggestion}}',
+							'operator' => 'or',
+							'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
+							'type' => 'cross_fields',
+							'fields' => $collateFields
+						),
+					),
+				),
 			);
 		}
 		if( isset( $suggestSettings['smoothing_model'] ) ) {

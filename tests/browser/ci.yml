@@ -6,6 +6,3 @@ MEDIAWIKI_ENVIRONMENT:
 
 PLATFORM:
   - Linux
-
-VERSION:
-  - ''

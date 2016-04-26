@@ -148,9 +148,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildMainQuery( array $fields, $queryString, $phraseSlop ) {
-		return $this->context->wrapInSaferIfPossible(
-			$this->buildQueryString( $fields, $queryString, $phraseSlop ),
-			false );
+		return $this->buildQueryString( $fields, $queryString, $phraseSlop );
 	}
 
 	/**
@@ -160,9 +158,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
-		return $this->context->wrapInSaferIfPossible(
-			$this->buildQueryString( $fields, $queryString, $phraseSlop ),
-			false );
+		return $this->buildQueryString( $fields, $queryString, $phraseSlop );
 	}
 
 	/**
@@ -172,9 +168,7 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
-		return $this->context->wrapInSaferIfPossible(
-			$this->buildQueryString( $fields, $queryString, $phraseSlop ),
-			true );
+		return $this->buildQueryString( $fields, $queryString, $phraseSlop );
 	}
 
 	/**
@@ -463,9 +457,7 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildHighlightQuery( array $fields, $queryString, $phraseSlop ) {
-		return $this->context->wrapInSaferIfPossible(
-			$this->queryStringBuilder->buildQueryString( $fields, $queryString, $phraseSlop, 'OR' ),
-			false );
+		return $this->queryStringBuilder->buildQueryString( $fields, $queryString, $phraseSlop, 'OR' );
 	}
 
 	/**
@@ -477,7 +469,6 @@ class SearchTextCommonTermsQueryBuilder extends SearchTextBaseQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	public function buildRescoreQuery( array $fields, $queryString, $phraseSlop ) {
-		// already wrapped in safer
 		return $this->queryStringBuilder->buildRescoreQuery( $fields, $queryString, $phraseSlop );
 	}
 }

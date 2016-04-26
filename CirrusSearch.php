@@ -132,7 +132,7 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 
 // Should CirrusSearch try to use the wikimedia/extra plugin?  An empty array
 // means don't use it at all.
-$wgCirrusSearchWikimediaExtraPlugin = array();
+//
 // Here is an example to enable faster regex matching:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] =
 //     array( 'build', 'use', 'max_inspect' => 10000 );
@@ -143,18 +143,15 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // the 'max_inspect' key is the maximum number of pages to recheck the regex
 // against.  Its optional and defaults to 10000 which seems like a reasonable
 // compromise to keep regexes fast while still producing good results.
-// This example enables the safer query's phrase processing:
-// $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
-// 	'phrase' => array(
-// 		'max_terms_in_all_queries' => 128,
-// 	)
-// );
+//
 // This turns on noop-detection for updates and is compatible with
-// wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
+// wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
+//
 // This allows forking on reindexing and is compatible with wikimedia-extra
-// versions 1.3.1, 1.4.2, and 1.5.0
+// versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
+$wgCirrusSearchWikimediaExtraPlugin = array();
 
 // Should CirrusSearch try to support regular expressions with insource:?
 // These can be really expensive, but mostly ok, especially if you have the

@@ -163,15 +163,14 @@ class Filters {
 		$query->setAllowLeadingWildcard( $escaper->getAllowLeadingWildcard() );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
-		$wrappedQuery = $context->wrapInSaferIfPossible( $query, false );
 
 		$updateReferences =
 			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef )
-			     use ( $fuzzyQuery, $wrappedQuery, $updateHighlightSourceRef ) {
+			     use ( $fuzzyQuery, $query, $updateHighlightSourceRef ) {
 				$fuzzyQueryRef             = $fuzzyQuery;
-				$filterDestinationRef[]    = $wrappedQuery;
+				$filterDestinationRef[]    = $query;
 				if ($updateHighlightSourceRef) {
-					$highlightSourceRef[]      = array( 'query' => $wrappedQuery );
+					$highlightSourceRef[]      = array( 'query' => $query );
 				}
 				$searchContainedSyntaxRef  = true;
 			};

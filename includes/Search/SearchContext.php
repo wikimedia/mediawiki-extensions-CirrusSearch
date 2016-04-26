@@ -131,31 +131,6 @@ class SearchContext {
 	}
 
 	/**
-	 * @return bool true if we can use the safer query from the wikimedia extra
-	 *  plugin
-	 */
-	public function isUseSafer() {
-		return !is_null( $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' ) );
-	}
-
-	/**
-	 * @param AbstractQuery $query
-	 * @param boolean $isRescore
-	 * @return \Elastica\Query\Simple
-	 */
-	public function wrapInSaferIfPossible( AbstractQuery $query, $isRescore ) {
-		// @todo: move this code to a common base class when Filters is refactored as non-static
-		$saferQuery = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'safer' );
-		if ( is_null( $saferQuery ) ) {
-			return $query;
-		}
-		$saferQuery[ 'query' ] = $query->toArray();
-		$tooLargeAction = $isRescore ? 'convert_to_match_all_query' : 'convert_to_term_queries';
-		$saferQuery[ 'phrase' ][ 'phrase_too_large_action' ] = $tooLargeAction;
-		return new \Elastica\Query\Simple( array( 'safer' => $saferQuery ) );
-	}
-
-	/**
 	 * @return true if the query contains special syntax
 	 */
 	public function isSearchContainedSyntax() {

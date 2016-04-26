@@ -71,11 +71,11 @@ class MappingValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "Validating mappings..." );
 		if ( $this->optimizeIndexForExperimentalHighlighter &&
-			!in_array( 'experimental highlighter', $this->availablePlugins ) ) {
+			!in_array( 'experimental-highlighter', $this->availablePlugins ) ) {
 			$this->output( "impossible!\n" );
 			return Status::newFatal( new RawMessage(
 				"wgCirrusSearchOptimizeIndexForExperimentalHighlighter is set to true but the " .
-				"'experimental highlighter' plugin is not installed on all hosts." ) );
+				"'experimental-highlighter' plugin is not installed on all hosts." ) );
 		}
 
 		$requiredMappings = $this->mappingConfig;

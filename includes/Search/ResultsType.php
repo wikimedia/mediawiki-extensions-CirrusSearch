@@ -377,33 +377,65 @@ class FullTextResultsType implements ResultsType {
 			'post_tags' => array( Searcher::HIGHLIGHT_POST ),
 			'fields' => array(),
 		);
+
 		if ( count( $highlightSource ) ) {
+			if ( !$wgCirrusSearchUseExperimentalHighlighter ) {
+				throw new \RuntimeException( 'regex is only supported with $wgCirrusSearchUseExperimentalHighlighter = true' );
+			}
 			$config[ 'fields' ][ 'source_text.plain' ] = $text;
 			$this->configureHighlightingForSource( $config, $highlightSource );
 			return $config;
 		}
+		$experimental = array();
 		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
 			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
-			$config[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$experimental[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			$config[ 'fields' ][ 'category' ] = $redirectAndHeading;
-			$config[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$experimental[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
-			$config[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$experimental[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 		}
 		if ( $this->highlightingConfig & self::HIGHLIGHT_SNIPPET ) {
 			$config[ 'fields' ][ 'text' ] = $text;
 			$config[ 'fields' ][ 'auxiliary_text' ] = $remainingText;
-			$config[ 'fields' ][ 'auxiliary_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+			$experimental[ 'fields' ][ 'auxiliary_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			if ( $this->highlightingConfig & self::HIGHLIGHT_FILE_TEXT ) {
 				$config[ 'fields' ][ 'file_text' ] = $remainingText;
-				$config[ 'fields' ][ 'file_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+				$experimental[ 'fields' ][ 'file_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 			}
 		}
 		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );
+
+		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
+			$config = $this->arrayMergeRecursive( $config, $experimental );
+		}
+
 		return $config;
+	}
+
+
+	/**
+	 * Behaves like array_merge with recursive descent. Unlike array_merge_recursive,
+	 * but just like array_merge, this does not convert non-arrays into arrays.
+	 *
+	 * @param array $source
+	 * @param array $overrides
+	 * @return array
+	 */
+	private function arrayMergeRecursive( array $source, array $overrides ) {
+		foreach ( $source as $k => $v ) {
+			if ( isset( $overrides[$k] ) ) {
+				if ( is_array( $overrides[$k] ) ) {
+					$source[$k] = $this->arrayMergeRecursive( $v, $overrides[$k] );
+				} else {
+					$source[$k] = $overrides[$k];
+				}
+			}
+		}
+		return $source;
 	}
 
 	/**
@@ -433,7 +465,7 @@ class FullTextResultsType implements ResultsType {
 	 * @param array &$config
 	 * @param array $highlightSource
 	 */
-	private function configureHighlightingForSource( &$config, $highlightSource ) {
+	private function configureHighlightingForSource( array &$config, array $highlightSource ) {
 		global $wgCirrusSearchRegexMaxDeterminizedStates;
 		$patterns = array();
 		$locale = null;
@@ -454,22 +486,28 @@ class FullTextResultsType implements ResultsType {
 				'regex_case_insensitive' => (boolean)$caseInsensitive,
 				'max_determinized_states' => $wgCirrusSearchRegexMaxDeterminizedStates,
 			);
-			$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
-				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ], $options );
-			return;
-		}
-		$queryStrings = array();
-		foreach ( $highlightSource as $part ) {
-			if ( isset( $part[ 'query' ] ) ) {
-				$queryStrings[] = $part[ 'query' ];
+			if ( isset( $config['fields']['source_text.plain']['options'] ) ) {
+				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
+					$config[ 'fields' ][ 'source_text.plain' ][ 'options' ],
+					$options
+				);
+			} else {
+				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = $options;
 			}
-		}
-		if ( count( $queryStrings ) ) {
-			$bool = new \Elastica\Query\BoolQuery();
-			foreach ( $queryStrings as $queryString ) {
-				$bool->addShould( $queryString );
+		} else {
+			$queryStrings = array();
+			foreach ( $highlightSource as $part ) {
+				if ( isset( $part[ 'query' ] ) ) {
+					$queryStrings[] = $part[ 'query' ];
+				}
 			}
-			$config[ 'fields' ][ 'source_text.plain' ][ 'highlight_query' ] = $bool->toArray();
+			if ( count( $queryStrings ) ) {
+				$bool = new \Elastica\Query\BoolQuery();
+				foreach ( $queryStrings as $queryString ) {
+					$bool->addShould( $queryString );
+				}
+				$config[ 'fields' ][ 'source_text.plain' ][ 'highlight_query' ] = $bool->toArray();
+			}
 		}
 	}
 }

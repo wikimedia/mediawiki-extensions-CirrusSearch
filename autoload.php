@@ -33,6 +33,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Elastica\\PooledHttp' => __DIR__ . '/includes/Elastica/PooledHttp.php',
 	'CirrusSearch\\Elastica\\PooledHttps' => __DIR__ . '/includes/Elastica/PooledHttps.php',
 	'CirrusSearch\\ElasticsearchIntermediary' => __DIR__ . '/includes/ElasticsearchIntermediary.php',
+	'CirrusSearch\\ExplainPrinter' => __DIR__ . '/includes/ExplainPrinter.php',
 	'CirrusSearch\\Extra\\Filter\\IdHashMod' => __DIR__ . '/includes/Extra/Filter/IdHashMod.php',
 	'CirrusSearch\\Extra\\Filter\\SourceRegex' => __DIR__ . '/includes/Extra/Filter/SourceRegex.php',
 	'CirrusSearch\\ForceSearchIndex' => __DIR__ . '/maintenance/forceSearchIndex.php',

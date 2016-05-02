@@ -678,7 +678,7 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 		if( $this->impact == 0 ) {
 			return;
 		}
-		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 
 	/**
@@ -742,7 +742,7 @@ class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	public function append( FunctionScore $functionScore ) {
 		$formula = $this->getScript();
-		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 
 	/**
@@ -802,7 +802,7 @@ class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	public function append( FunctionScore $functionScore ) {
 		$formula = "pow(log10({$this->factor} * doc['{$this->field}'].value + 2), {$this->impact})";
-		$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 }
 
@@ -911,7 +911,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 	public function append( FunctionScore $functionScore ) {
 		$formula = $this->getScript();
 		if ( $formula != null ) {
-			$functionScore->addScriptScoreFunction( new \Elastica\Script( $formula, null, 'expression' ), null, $this->weight );
+			$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null, 'expression' ), null, $this->weight );
 		}
 	}
 }
@@ -940,7 +940,7 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $this->context->getPreferRecentDecayPortion() !== 1.0 ) {
 			$exponentialDecayExpression = "$exponentialDecayExpression * decayPortion + nonDecayPortion";
 		}
-		$functionScore->addScriptScoreFunction( new \Elastica\Script( $exponentialDecayExpression,
+		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $exponentialDecayExpression,
 			$parameters, 'expression' ), null, $this->weight );
 	}
 }
@@ -1025,7 +1025,7 @@ class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	public function append( FunctionScore $functionScore ) {
 		$functionScore->addScriptScoreFunction(
-			new \Elastica\Script( $this->script, null, 'expression' ),
+			new \Elastica\Script\Script( $this->script, null, 'expression' ),
 			null, $this->weight );
 	}
 }

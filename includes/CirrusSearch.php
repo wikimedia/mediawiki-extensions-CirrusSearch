@@ -144,12 +144,6 @@ class CirrusSearch extends SearchEngine {
 				$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) ) {
 			$matches = $this->searchTextSecondTry( $term, $matches );
 		}
-
-		if ( $this->request && $this->request->getVal( 'cirrusSRTest' ) === 'yes' ) {
-			// note these are 0 indexed, so swap second and third
-			$matches->swapResults( 1, 2 );
-		}
-
 		ElasticsearchIntermediary::setResultPages( array( $matches ) );
 
 		return $matches;
@@ -391,11 +385,16 @@ class CirrusSearch extends SearchEngine {
 		if ( $dumpQuery || $dumpResult ) {
 			// When dumping the query we skip _everything_ but echoing the query.
 			RequestContext::getMain()->getOutput()->disable();
-			$this->request->response()->header( 'Content-type: application/json; charset=UTF-8' );
-			if ( $status->getValue() === null ) {
-				echo '{}';
+			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
+				$printer = new CirrusSearch\ExplainPrinter();
+				echo $printer->format( $status->getValue() );
 			} else {
-				echo json_encode( $status->getValue() );
+				$this->request->response()->header( 'Content-type: application/json; charset=UTF-8' );
+				if ( $status->getValue() === null ) {
+					echo '{}';
+				} else {
+					echo json_encode( $status->getValue() );
+				}
 			}
 			exit();
 		}

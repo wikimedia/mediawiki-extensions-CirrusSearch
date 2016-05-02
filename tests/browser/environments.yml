@@ -55,4 +55,17 @@ cindy:
   screenshot_failures: true
   headless: true
 
+searchdemo:
+  browser: phantomjs
+  mediawiki_api_url: http://cirrustest-searchdemo.wmflabs.org/w/api.php
+  mediawiki_commons_api_url: http://commons-searchdemo.wmflabs.org/w/api.php
+  mediawiki_url: http://cirrustest-searchdemo.wmflabs.org/wiki/
+  mediawiki_url_commons: http://commons-searchdemo.wmflabs.org/wiki/
+  mediawiki_user: admin
+  mediawiki_password: vagrant
+  reuse_browser: true
+  # screenshot_failures: true
+  headless: true
+
+
 default: *default

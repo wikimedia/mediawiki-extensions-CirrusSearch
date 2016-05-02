@@ -678,6 +678,8 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 		if( $this->impact == 0 ) {
 			return;
 		}
+		$formula = $this->getScript();
+
 		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null, 'expression' ), null, $this->weight );
 	}
 

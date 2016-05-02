@@ -920,7 +920,7 @@ GROOVY;
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
-					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
+					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_then_fetch' ) );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
@@ -953,7 +953,7 @@ GROOVY;
 					$query = new \Elastica\Query( $match );
 					$query->setParam( '_source', false );
 					$query->addParam( 'stats', 'namespace' );
-					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_and_fetch' ) );
+					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_then_fetch' ) );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );

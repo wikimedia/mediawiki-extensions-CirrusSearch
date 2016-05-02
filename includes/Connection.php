@@ -194,13 +194,17 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Index
 	 */
 	public function getFrozenIndex() {
+		global $wgCirrusSearchCreateFrozenIndex;
+
 		$index = $this->getIndex( 'mediawiki_cirrussearch_frozen_indexes' );
-		if ( !$index->exists() ) {
-			$options = array(
-				'number_of_shards' => 1,
-				'auto_expand_replicas' => '0-2',
-			 );
-			$index->create( $options, true );
+		if ( $wgCirrusSearchCreateFrozenIndex ) {
+			if ( !$index->exists() ) {
+				$options = array(
+					'number_of_shards' => 1,
+					'auto_expand_replicas' => '0-2',
+				 );
+				$index->create( $options, true );
+			}
 		}
 		return $index;
 	}

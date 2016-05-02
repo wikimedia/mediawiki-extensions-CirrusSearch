@@ -908,6 +908,13 @@ $wgCirrusSearchTextcatModel = false;
  */
 $wgCirrusSearchMasterTimeout = '30s';
 
+/**
+ * Allow runtime creation of the frozen index. This can cause race conditions if many
+ * things are writing in parallel and is not suggested. This is a temporary fix and
+ * will be removed post-haste.
+ */
+$wgCirrusSearchCreateFrozenIndex = true;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

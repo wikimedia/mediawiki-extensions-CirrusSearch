@@ -64,7 +64,7 @@ Feature: Results are ordered from most relevant to least.
 
   Scenario: Incoming links count in page weight
     Given a page named Relevancylinktest Smaller exists
-      And a page named Relevancylinktest Larger Extraword exists
+      And a page named Relevancylinktest Larger Extraword exists with contents Relevancylinktest needs 5 extra words
       And a page named Relevancylinktest Larger/Link A exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
@@ -74,6 +74,23 @@ Feature: Results are ordered from most relevant to least.
     Then Relevancylinktest Smaller is the first api search result
       And Relevancylinktest Larger Extraword is the second api search result
     # This test can fail spuriously for the same reasons that "Redirects count as incoming links" can fail
+    # With the allfield Relevancylinktest Smaller will get 21 freq for the term Relevancylinktest and a
+    # length norm of 0.125 for the all.plain (title is copied to the text field if no text is set)
+    # Relevancylinktest Larger Extraword will get 21 freq for the same term (content being set we re-add
+    # "Relevancylinktest" in the content to match the 21 freq of Relevancylinktest Smaller)
+    # We add extra words to decrease the length norm to 0.109375.
+    # freq 21 is explained by the copy_to features which will copy title words 20 times to the all.plain
+    # add one occurrence for the term in the text field and you'll get 21.
+    # for norms: Relevancylinktest Smaller will have a term length of 40 + 2 -> 42 which will be computed as
+    # 1/sqrt(42) => 0.154 and then encoded as 0.125 (precision reduction)
+    # Relevancylinktest Larger Extraword will be 60 + 5 => 65 computed as 0.124 but encoded as 0.109
+    # Small java test case to understand:
+    # int termCount = 65;
+    # TFIDFSimilarity sim = new ClassicSimilarity();
+    # FieldInvertState fiv = new FieldInvertState("test", 0, termCount, 0, 0, 1f);
+    # System.out.println("computed: " + sim.lengthNorm(fiv));
+    # System.out.println("encoded: " + sim.decodeNormValue(sim.computeNorm(fiv)));
+
 
   Scenario: Results are sorted based on how close the match is
     When I api search with disabled incoming link weighting for Relevancyclosetest Foô

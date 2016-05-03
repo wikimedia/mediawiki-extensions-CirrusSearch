@@ -52,9 +52,10 @@ When(/^I api search( with rewrites enabled)?( with disabled incoming link weight
     @api_error = e
   end
 end
-When(/^I get api suggestions for (.*)$/) do |search|
+When(/^I get api suggestions for (.*?)(?: using the (.*) profile)?$/) do |search, profile|
   begin
-    @api_result = suggestions_for(search)
+    profile = profile ? profile : "fuzzy"
+    @api_result = suggestions_with_profile(search, profile)
   rescue MediawikiApi::ApiError => e
     @api_error = e
   rescue MediawikiApi::HttpError => e

@@ -43,6 +43,17 @@ module CirrusSearchApiHelper
     )
   end
 
+  # Get suggestions for a particular string using the api
+  def suggestions_with_profile(search, profile)
+    api.action(
+      :opensearch,
+      search: search,
+      # TODO: support new profile API param when added.
+      cirrusUseCompletionSuggester: profile == "classic" ? "no" : "yes",
+      token_type: false
+    )
+  end
+
   # Get suggestions for a particular string using the new suggestions api
   def suggestions_for_api(search, limit = nil)
     req = {}

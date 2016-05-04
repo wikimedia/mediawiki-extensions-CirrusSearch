@@ -202,14 +202,14 @@ When(/^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I
   browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=#{length}")
 end
 
-When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to ([\.\d]+) and I search for (.+)$/) do |field, percent, search|
+When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (\d+%) and I search for (.+)$/) do |field, percent, search|
   step("I search for " + search)
-  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=0&cirrusMltPercentTermsToMatch=#{percent}")
+  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=0&cirrusMltMinimumShouldMatch=#{percent}")
 end
 
 When(/^I set More Like This Options to bad settings and I search for (.+)$/) do |search|
   step("I search for " + search)
-  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=title&cirrusMltMinTermFreq=100&cirrusMltMinDocFreq=200000&cirrusMltMinWordLength=190&cirrusMltPercentTermsToMatch=1")
+  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=title&cirrusMltMinTermFreq=100&cirrusMltMinDocFreq=200000&cirrusMltMinWordLength=190&cirrusMltMinimumShouldMatch=100%")
 end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|

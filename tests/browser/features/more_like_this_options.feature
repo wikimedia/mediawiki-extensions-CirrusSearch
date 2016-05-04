@@ -15,7 +15,7 @@ Feature: More like this queries with custom settings
       And ChangeMe is not in the search results
 
   Scenario: Searching for morelike:<page> with the title field and filtering with the percent terms to match
-    When I set More Like This Options to title field, percent terms to match to 0.7 and I search for morelike:More Like Me 1
+    When I set More Like This Options to title field, percent terms to match to 70% and I search for morelike:More Like Me 1
     Then More Like Me 2 is in the search results
       And More Like Me 3 is in the search results
       And More Like Me 4 is in the search results

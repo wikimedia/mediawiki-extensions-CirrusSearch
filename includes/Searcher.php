@@ -466,6 +466,9 @@ class Searcher extends ElasticsearchIntermediary {
 					if ( isset( $regex['max_ngrams_extracted'] ) ) {
 						$filter->setMaxNgramsExtracted( $regex['max_ngrams_extracted'] );
 					}
+					if ( isset( $regex['max_ngram_clauses'] ) && is_numeric( $regex['max_ngram_clauses'] ) ) {
+						$filter->setMaxNgramClauses( (int) $regex['max_ngram_clauses'] );
+					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $this->config->get( 'LanguageCode' ) );
 					$filterDestination[] = $filter;

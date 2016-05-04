@@ -72,11 +72,12 @@ Before("@setup_main, @commons") do
       Given I delete on commons File:OnCommons.svg
       And I delete on commons File:DuplicatedLocally.svg
       And I delete File:DuplicatedLocally.svg
+      And I wait 5 seconds
       And a file named File:OnCommons.svg exists on commons with contents OnCommons.svg and description File stored on commons for test purposes
       And a file named File:DuplicatedLocally.svg exists on commons with contents DuplicatedLocally.svg and description File stored on commons and duplicated locally
-      And I wait 2 seconds
+      And I wait 5 seconds
       And a file named File:DuplicatedLocally.svg exists with contents DuplicatedLocally.svg and description Locally stored file duplicated on commons
-      And I wait 2 seconds
+      And I wait 5 seconds
         )
     commons = true
   end

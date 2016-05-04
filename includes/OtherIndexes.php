@@ -98,7 +98,7 @@ class OtherIndexes extends Updater {
 				$bool->addFilter( new \Elastica\Query\Term( array( 'title.keyword' => $title->getText() ) ) );
 				$bool->addFilter( new \Elastica\Query\Term( array( 'namespace' => $title->getNamespace() ) ) );
 
-				$query = new \Elastica\Query( $boolQuery );
+				$query = new \Elastica\Query( $bool );
 				$query->setFields( array() ); // We only need the _id so don't load the _source
 				$query->setSize( 1 );
 

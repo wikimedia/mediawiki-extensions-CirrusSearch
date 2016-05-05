@@ -117,20 +117,6 @@ class SearchContext {
 	}
 
 	/**
-	 * @return array the CommonTermsQuery profile
-	 */
-	public function getCommonTermsQueryProfile() {
-		return $this->config->getElement( 'CirrusSearchCommonTermsQueryProfile' );
-	}
-
-	/**
-	 * @return bool true if CommonTermsQuery is allowed
-	 */
-	public function isUseCommonTermsQuery() {
-		return (bool) $this->config->get('CirrusSearchUseCommonTermsQuery' );
-	}
-
-	/**
 	 * @return true if the query contains special syntax
 	 */
 	public function isSearchContainedSyntax() {

@@ -333,10 +333,14 @@ class Reindexer {
 		} catch ( ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			$type = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$error = ElasticsearchIntermediary::extractFullError( $e );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Search backend error during reindex.  Error type is '{type}' and message is:  {message}",
-				array( 'type' => $type, 'message' => $message )
+				"Search backend error during reindex.  Error type is '{type}' ({error_type}) and message is:  {error_reason}",
+				array(
+					'type' => $type,
+					'error_type' => $error['type'],
+					'error_reason' => $error['reason'],
+				)
 			);
 			die( 1 );
 		}

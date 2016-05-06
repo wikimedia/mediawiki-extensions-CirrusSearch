@@ -349,8 +349,8 @@ class DataSender extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$pos = strpos( $bulkResponse->getError(), 'DocumentMissingException' );
-			if ( $pos === false ) {
+			$error = $bulkResponse->getFullError();
+			if ( $error['type'] !== 'document_missing_exception' ) {
 				$justDocumentMissing = false;
 			} elseif ( $logCallback ) {
 				// This is generally not an error but we should

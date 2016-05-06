@@ -23,6 +23,31 @@ use PHPUnit_Framework_TestCase;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class EscaperTest extends PHPUnit_Framework_TestCase {
+
+	/**
+	 * @dataProvider fuzzyEscapeTestCases
+	 */
+	public function testFuzzyEscape( $input, $expected, $isFuzzy ) {
+		$escaper = new Escaper( 'unittest' );
+		$actual = $escaper->fixupWholeQueryString( $input );
+		$this->assertEquals( array( $expected, $isFuzzy), $actual );
+	}
+
+	public static function fuzzyEscapeTestCases() {
+		return array(
+			'Default fuzziness is allowed' => array( 'fuzzy~', 'fuzzy~', true ),
+			'No fuzziness is allowed' => array( 'fuzzy~0', 'fuzzy~0', true ),
+			'One char edit distance is allowed' => array( 'fuzzy~1', 'fuzzy~1', true ),
+			'Two char edit distance is allowed' => array( 'fuzzy~2', 'fuzzy~2', true ),
+			'Three char edit distance is disallowed' => array( 'fuzzy~3', 'fuzzy\\~3', false ),
+			'non-integer edit distance is disallowed' => array( 'fuzzy~1.0', 'fuzzy\\~1.0', false ),
+			'Larger edit distances are disallowed' => array( 'fuzzy~10', 'fuzzy\\~10', false ),
+			'Proximity searches are allowed' => array( '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10', false ),
+			'Float fuzziness with leading 0 is disallowed' => array( 'fuzzy~0.8', 'fuzzy\\~0.8', false ),
+			'Float fuzziness is disallowed' => array( 'fuzzy~.8', 'fuzzy\\~.8', false ),
+		);
+	}
+
 	/**
 	 * @dataProvider quoteEscapeTestCases
 	 */

@@ -16,12 +16,11 @@ Feature: Searches that contain fuzzy matches
     When I api search for ffnonesensewor~
     Then Two Words is the first api search result
 
-  Scenario Outline: Searching for <text>~<number between 0 and 1> activates fuzzy search
+  Scenario Outline: Searching for <text>~<number> activates fuzzy search
     When I api search for ffnonesensewor~<number>
     Then Two Words is the first api search result
   Examples:
     | number |
-    | .8     |
-    | 0.8    |
     | 1      |
+    | 2      |
 

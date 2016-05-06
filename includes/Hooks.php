@@ -119,7 +119,6 @@ class Hooks {
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
 			PhraseSuggesterProfiles::overrideOptions( $request );
-			CommonTermsQueryProfiles::overrideOptions( $request );
 			RescoreProfiles::overrideOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
 			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );

@@ -6,6 +6,7 @@ use Exception;
 use GenderCache;
 use IP;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MWNamespace;
 use PoolCounterWorkViaCallback;
 use RequestContext;
@@ -124,7 +125,7 @@ class Util {
 	 */
 	private static function wrapWithPoolStats( $startPoolWork, $type, $isSuccess, $callback ) {
 		return function () use ( $type, $isSuccess, $callback, $startPoolWork ) {
-			RequestContext::getMain()->getStats()->timing(
+			MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
 				self::getPoolStatsKey( $type, $isSuccess ),
 				intval( 1000 * (microtime( true ) - $startPoolWork) )
 			);

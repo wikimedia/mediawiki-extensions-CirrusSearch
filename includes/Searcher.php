@@ -1223,7 +1223,7 @@ GROOVY;
 			$cacheTTL = 0;
 		}
 
-		$requestStats = \RequestContext::getMain()->getStats();
+		$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		if ( $cacheTTL > 0 ) {
 			$cache = ObjectCache::getLocalClusterInstance();
 			$key = $cache->makeKey( 'cirrussearch', 'search', md5(

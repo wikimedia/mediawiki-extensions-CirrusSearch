@@ -46,9 +46,15 @@ class CirrusSearch extends SearchEngine {
 	private $lastNamespacePrefix;
 
 	/**
-	 * @var array metrics about the last thing we searched
+	 * @var array metrics about the last thing we searched sourced from the
+	 *  Searcher instance
 	 */
-	private $lastSearchMetrics;
+	private $lastSearchMetrics = array();
+
+	/**
+	 * @var array additional metrics about the search sourced within this class
+	 */
+	private $extraSearchMetrics = array();
 
 	/**
 	 * @var string
@@ -203,13 +209,9 @@ class CirrusSearch extends SearchEngine {
 			Searcher::appendLastLogContext( array(
 				'langdetect' => 'failed',
 			) );
-		}
-
-		// check whether we have second language functionality enabled.
-		// This comes after the actual detection so we can include the
-		// results of detection in AB test control buckets.
-		if ( !$GLOBALS['wgCirrusSearchEnableAltLanguage'] ) {
-			return null;
+		} else {
+			// Report language detection with search metrics
+			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;
 		}
 
 		return $detected;
@@ -287,8 +289,16 @@ class CirrusSearch extends SearchEngine {
 			}
 			if ( $config ) {
 				$matches = $this->searchTextReal( $term, $config );
-				if ( $matches instanceof ResultSet && $matches->numRows() > 0 ) {
-					$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
+				if ( $matches instanceof ResultSet ) {
+					$numRows = $matches->numRows();
+					$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
+					// check whether we have second language functionality enabled.
+					// This comes after the actual query is run so we can collect metrics about
+					// users in the control buckets, and provide them the same latency as users
+					// in the test bucket.
+					if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0) {
+						$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWiki[1] );
+					}
 				}
 			}
 		}
@@ -528,7 +538,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return array
 	 */
 	public function getLastSearchMetrics() {
-		return $this->lastSearchMetrics;
+		return $this->lastSearchMetrics + $this->extraSearchMetrics;
 	}
 
 	protected function completionSuggesterEnabled( SearchConfig $config ) {

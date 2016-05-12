@@ -552,6 +552,14 @@ class ElasticsearchIntermediary {
 			}
 			return 'Partial failure:  ' . implode( ',', $message );
 		}
+
+		// We must be talking to an es2.x cluster. Don't do anything particularly
+		// fancy, encode the error so it can be logged as a generic unknown error.
+		$error = $exception->getResponse()->getError();
+		if ( is_array( $error ) ) {
+			return json_encode( $error );
+		}
+
 		return $exception->getElasticsearchException()->getMessage();
 	}
 

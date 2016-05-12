@@ -4,6 +4,7 @@ namespace CirrusSearch\Elastica;
 
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use RequestContext;
 
 /**
@@ -89,7 +90,7 @@ class PooledHttp extends Http {
 		// second i wonder if a couple servers having issues with their pools will by lost in
 		// the noise. Another option could be recording per-server stats and including gethostname()
 		// in the key?
-		RequestContext::getMain()->getStats()->timing(
+		MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
 			'CirrusSearch.connectionPool.initMs',
 			intval( 1000 * $tookS )
 		);

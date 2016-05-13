@@ -751,4 +751,19 @@ class CirrusSearch extends SearchEngine {
 		}
 		return null;
 	}
+
+	/**
+	 * Create a search field definition
+	 * @param string $name
+	 * @param int    $type
+	 * @return SearchIndexField
+	 */
+	public function makeSearchFieldMapping( $name, $type ) {
+		$mappings = $this->config->get( 'CirrusSearchFieldTypes' );
+		if ( !isset( $mappings[$type] ) ) {
+			return new NullIndexField();
+		}
+		$klass = $mappings[$type];
+		return new $klass( $name, $type, $this->config );
+	}
 }

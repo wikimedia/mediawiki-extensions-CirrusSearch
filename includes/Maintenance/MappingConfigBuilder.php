@@ -2,9 +2,14 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Search\CirrusIndexField;
+use CirrusSearch\Search\IntegerIndexField;
+use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\TextIndexField;
 use Hooks;
 use MediaWiki\MediaWikiServices;
+use SearchIndexField;
 
 /**
  * Builds elasticsearch mapping configuration arrays.
@@ -25,26 +30,10 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class MappingConfigBuilder {
-	// Bit field parameters for buildStringField.
-	const MINIMAL = 0;
-	const ENABLE_NORMS = 1;
-	const COPY_TO_SUGGEST = 2;
-	const SPEED_UP_HIGHLIGHTING = 4;
-
 	// Bit field parameters for buildConfig
 	const PREFIX_START_WITH_ANY = 1;
 	const PHRASE_SUGGEST_USE_TEXT = 2;
-
-	/**
-	 * Maximum number of characters allowed in keyword terms.
-	 */
-	const KEYWORD_IGNORE_ABOVE = 5000;
-
-	/**
-	 * Distance that lucene places between multiple values of the same field.
-	 * Set pretty high to prevent accidental phrase queries between those values.
-	 */
-	const POSITION_INCREMENT_GAP = 10;
+	const OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER = 4;
 
 	/**
 	 * Version number for the core analysis. Increment the major
@@ -59,7 +48,15 @@ class MappingConfigBuilder {
 	 */
 	private $optimizeForExperimentalHighlighter;
 
-	private $similarity;
+	/**
+	 * @var SearchConfig
+	 */
+	private $config;
+
+	/**
+	 * @var \CirrusSearch
+	 */
+	private $engine;
 
 	/**
 	 * Constructor
@@ -68,29 +65,28 @@ class MappingConfigBuilder {
 	 */
 	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
-		if ( is_null ( $config ) ) {
-			$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+		if ( is_null( $config ) ) {
+			$config =
+				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		}
-		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
+		$this->config = $config;
+		$this->engine = new \CirrusSearch();
+		$this->engine->setConfig( $config );
 	}
 
 	/**
-	 * Build the mapping config.
-	 * @param int $flags Flags for building the configuration
-	 * @return array the mapping config
+	 * Get definitions for default index fields.
+	 * These fields are always present in the index.
+	 * @param int $flags
+	 * @return array
 	 */
-	public function buildConfig( $flags = 0 ) {
-		global $wgCirrusSearchAllFields,
-			$wgCirrusSearchWeights,
-			$wgCirrusSearchWikimediaExtraPlugin;
+	private function getDefaultFields( $flags ) {
+		global $wgCirrusSearchWikimediaExtraPlugin;
 
-		$suggestExtra = array( 'analyzer' => 'suggest' );
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = array(
-			$suggestExtra,
+			array( 'analyzer' => 'suggest' ),
 			array( 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
@@ -104,23 +100,17 @@ class MappingConfigBuilder {
 				'index_options' => 'docs'
 			);
 		}
+
 		$sourceExtraAnalyzers = array();
 		if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
-				in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+		     in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
 			$sourceExtraAnalyzers[] = array(
 				'analyzer' => 'trigram',
 				'index_options' => 'docs',
 			);
 		}
 
-		$textExtraAnalyzers = array();
-		$textOptions = MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::SPEED_UP_HIGHLIGHTING;
-		if ( $flags & self::PHRASE_SUGGEST_USE_TEXT ) {
-			$textExtraAnalyzers[] = $suggestExtra;
-			$textOptions |= MappingConfigBuilder::COPY_TO_SUGGEST;
-		}
-
-		$page = array(
+		$page = [
 			'dynamic' => false,
 			'_all' => array( 'enabled' => false ),
 			'properties' => array(
@@ -128,58 +118,85 @@ class MappingConfigBuilder {
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
 				),
-				'wiki' => $this->buildKeywordField(),
-				'namespace' => $this->buildLongField(),
-				'namespace_text' => $this->buildKeywordField(),
+				'wiki' => $this->buildKeywordField( 'wiki' )->getMapping( $this->engine ),
+				'namespace' => $this->buildLongField( 'namespace' )->getMapping( $this->engine ),
+				'namespace_text' => $this->buildKeywordField( 'namespace_text' )
+					->getMapping( $this->engine ),
 				'title' => $this->buildStringField( 'title',
-					MappingConfigBuilder::ENABLE_NORMS | MappingConfigBuilder::COPY_TO_SUGGEST,
-					$titleExtraAnalyzers ),
-				'text' => array_merge_recursive(
-					$this->buildStringField( 'text', $textOptions, $textExtraAnalyzers ),
-					array( 'fields' => array( 'word_count' => array(
-						'type' => 'token_count',
-						'store' => true,
-						'analyzer' => 'plain',
-					) ) )
-				),
-				'opening_text' => $this->buildStringField( 'opening_text', MappingConfigBuilder::ENABLE_NORMS ),
-				'auxiliary_text' => $this->buildStringField( 'auxiliary_text', $textOptions ),
-				'file_text' => $this->buildStringField( 'file_text', $textOptions ),
-				'source_text' => $this->buildStringField( 'source_text', MappingConfigBuilder::MINIMAL,
+					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST,
+					$titleExtraAnalyzers )->setMappingFlags( $flags )->getMapping( $this->engine ),
+				'text' => array_merge_recursive( $this->buildStringField( 'text', null,
+					( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : [ ] )
+					->setMappingFlags( $flags )->getMapping( $this->engine ), array(
+						'fields' => array(
+							'word_count' => array(
+								'type' => 'token_count',
+								'store' => true,
+								'analyzer' => 'plain',
+							)
+						)
+					) ),
+				'text_bytes' => $this->buildLongField( 'text_bytes' )
+					->setFlag( SearchIndexField::FLAG_NO_INDEX )
+					->getMapping( $this->engine ),
+				'source_text' => $this->buildStringField( 'source_text', 0,
 					$sourceExtraAnalyzers
-				),
-				'category' => $this->buildStringField( 'category', $textOptions, array(
-					array(
-						'analyzer' => 'lowercase_keyword',
-						'norms' => array( 'enabled' => false ),
-						'index_options' => 'docs',
-						'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
-					) )
-				),
-				'template' => $this->buildLowercaseKeywordField(),
-				'outgoing_link' => $this->buildKeywordField(),
-				'external_link' => $this->buildKeywordField(),
-				'heading' => $this->buildStringField( 'heading', MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ),
-				'text_bytes' => $this->buildLongField( false ),
+				)->setMappingFlags( $flags )->getMapping( $this->engine ),
 				'redirect' => array(
 					'dynamic' => false,
 					'properties' => array(
-						'namespace' =>  $this->buildLongField(),
+						'namespace' => $this->buildLongField( 'namespace' )
+							->getMapping( $this->engine ),
 						'title' => $this->buildStringField( 'redirect.title',
-							$textOptions | MappingConfigBuilder::COPY_TO_SUGGEST,
-							$titleExtraAnalyzers ),
+							TextIndexField::ENABLE_NORMS | TextIndexField::SPEED_UP_HIGHLIGHTING |
+							TextIndexField::COPY_TO_SUGGEST, $titleExtraAnalyzers )
+							->setMappingFlags( $flags )
+							->getMapping( $this->engine ),
 					)
 				),
-				'incoming_links' => $this->buildLongField(),
-				'local_sites_with_dupe' => $this->buildLowercaseKeywordField(),
+				'incoming_links' => $this->buildLongField( 'incoming_links' )
+					->getMapping( $this->engine ),
+				'local_sites_with_dupe' => $this->buildKeywordField( 'local_sites_with_dupe' )
+					->setFlag( SearchIndexField::FLAG_CASEFOLD )
+					->getMapping( $this->engine ),
 				'suggest' => array(
 					'type' => 'string',
 					'analyzer' => 'suggest',
 				),
-				'language' => $this->buildKeywordField(),
-				'wikibase_item' => $this->buildKeywordField(),
-			),
-		);
+				// FIXME: this should be moved to Wikibase Client
+				'wikibase_item' => $this->buildKeywordField( 'wikibase_item' )
+					->getMapping( $this->engine ),
+			)
+		];
+
+		return $page;
+	}
+
+	/**
+	 * Build the mapping config.
+	 * @param int $flags Flags for building the configuration
+	 * @return array the mapping config
+	 */
+	public function buildConfig( $flags = 0 ) {
+		global $wgCirrusSearchAllFields,
+		              $wgCirrusSearchWeights;
+
+		if ( $this->optimizeForExperimentalHighlighter ) {
+			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
+		}
+		$page = $this->getDefaultFields( $flags );
+
+		$fields = $this->engine->getSearchIndexFields();
+
+		foreach ( $fields as $fieldName => $field ) {
+			if ( $field instanceof CirrusIndexField ) {
+				$field->setMappingFlags( $flags );
+			}
+			$config = $field->getMapping( $this->engine );
+			if ( $config ) {
+				$page['properties'][$fieldName] = $config;
+			}
+		}
 
 		if ( $wgCirrusSearchAllFields[ 'build' ] ) {
 			// Now layer all the fields into the all field once per weight.  Querying it isn't strictly the
@@ -190,7 +207,9 @@ class MappingConfigBuilder {
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
 			//  1. It is built with copy_to and not stored.
 			//  2. The term frequency information is all whoppy compared to the "real" source text.
-			$page[ 'properties' ][ 'all' ] = $this->buildStringField( 'all', MappingConfigBuilder::ENABLE_NORMS );
+			$allField = $this->buildStringField( 'all', TextIndexField::ENABLE_NORMS );
+			$page['properties']['all'] =
+				$allField->setMappingFlags( $flags )->getMapping( $this->engine );
 			$page = $this->setupCopyTo( $page, $wgCirrusSearchWeights, 'all' );
 
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
@@ -199,17 +218,17 @@ class MappingConfigBuilder {
 				'type' => 'string',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
-				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
+				'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 				'norms' => array( 'enabled' => false ),
-				'similarity' => $this->getSimilarity( 'all_near_match' ),
+				'similarity' => $allField->getSimilarity( 'all_near_match' ),
 				'fields' => array(
 					'asciifolding' => array(
 						'type' => 'string',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
-						'position_increment_gap' => self::POSITION_INCREMENT_GAP,
+						'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 						'norms' => array( 'enabled' => false ),
-						'similarity' => $this->getSimilarity( 'all_near_match', 'asciifolding' ),
+						'similarity' => $allField->getSimilarity( 'all_near_match', 'asciifolding' ),
 					),
 				),
 			);
@@ -219,6 +238,7 @@ class MappingConfigBuilder {
 			);
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
+
 		$config[ 'page' ] = $page;
 
 		$config[ 'namespace' ] = array(
@@ -230,36 +250,14 @@ class MappingConfigBuilder {
 					'analyzer' => 'near_match_asciifolding',
 					'norms' => array( 'enabled' => false ),
 					'index_options' => 'docs',
-					'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
+					'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 				),
 			),
 		);
 
 		Hooks::run( 'CirrusSearchMappingConfig', array( &$config, $this ) );
+
 		return $config;
-	}
-
-
-	/**
-	 * Get the field similarity
-	 * @param string $field
-	 * @param string $analyzer
-	 * @return string
-	 */
-	private function getSimilarity( $field, $analyzer = null ) {
-		$fieldSimilarity = 'default';
-		if ( isset( $this->similarity['fields'] ) ) {
-			if( isset( $this->similarity['fields'][$field] ) ) {
-				$fieldSimilarity = $this->similarity['fields'][$field];
-			} else if ( $this->similarity['fields']['__default__'] ) {
-				$fieldSimilarity = $this->similarity['fields']['__default__'];
-			}
-
-			if ( $analyzer != null && isset( $this->similarity['fields']["$field.$analyzer"] ) ) {
-				$fieldSimilarity = $this->similarity['fields']["$field.$analyzer"];
-			}
-		}
-		return $fieldSimilarity;
 	}
 
 	/**
@@ -296,112 +294,32 @@ class MappingConfigBuilder {
 	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
 	 *     strings or fields with many values.
 	 * @param array $extra Extra analyzers for this field beyond the basic text and plain.
-	 * @return array definition of the field
+	 * @return TextIndexField definition of the field
 	 */
-	public function buildStringField( $fieldName, $options, $extra = array() ) {
-		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
-		$field = array(
-			'type' => 'string',
-			'analyzer' => 'text',
-			'search_analyzer' => 'text_search',
-			'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-			'similarity' => $this->getSimilarity( $fieldName ),
-			'fields' => array(
-				'plain' => array(
-					'type' => 'string',
-					'analyzer' => 'plain',
-					'search_analyzer' => 'plain_search',
-					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-					'similarity' => $this->getSimilarity( $fieldName, 'plain' ),
-				),
-			)
-		);
-		$disableNorms = ( $options & MappingConfigBuilder::ENABLE_NORMS ) === 0;
-		if ( $disableNorms ) {
-			$disableNorms = array( 'norms' => array( 'enabled' => false ) );
-			$field = array_merge( $field, $disableNorms );
-			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
-		}
-		if ( $options & MappingConfigBuilder::COPY_TO_SUGGEST ) {
-			$field[ 'copy_to' ] = array( 'suggest' );
-		}
-		foreach ( $extra as $extraField ) {
-			$extraName = $extraField[ 'analyzer' ];
-			$field[ 'fields' ][ $extraName ] = array_merge( array(
-				'similarity' => $this->getSimilarity( $fieldName, $extraName ),
-				'type' => 'string',
-				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-			), $extraField );
-			if ( $disableNorms ) {
-				$field[ 'fields' ][ $extraName ] = array_merge(
-					$field[ 'fields' ][ $extraName ],
-					$disableNorms
-				);
-			}
-		}
-		if ( $this->optimizeForExperimentalHighlighter ) {
-			if ( $options & MappingConfigBuilder::SPEED_UP_HIGHLIGHTING ) {
-				$field[ 'index_options' ] = 'offsets';
-				$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
-				foreach ( $fieldNames as $fieldName ) {
-					if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
-						$field[ 'fields' ][ $fieldName ][ 'index_options' ] = 'offsets';
-					}
-				}
-			}
-		} else {
-			// We use the FVH on all fields so turn on term vectors
-			$field[ 'term_vector' ] = 'with_positions_offsets';
-			$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
-			foreach ( $fieldNames as $fieldName ) {
-				if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
-					$field[ 'fields' ][ $fieldName ][ 'term_vector' ] = 'with_positions_offsets';
-				}
-			}
-		}
+	public function buildStringField( $fieldName, $options = null, $extra = [] ) {
+		$field =
+			new TextIndexField( $fieldName, SearchIndexField::INDEX_TYPE_TEXT, $this->config,
+				$extra );
+		$field->setTextOptions( $options );
 		return $field;
 	}
 
 	/**
-	 * Create a string field that only lower cases and does ascii folding (if enabled) for the language.
-	 * @return array definition of the field
+	 * Create a long field.
+	 * @param string $name Field name
+	 * @return IntegerIndexField
 	 */
-	public function buildLowercaseKeywordField() {
-		return array(
-			'type' => 'string',
-			'analyzer' => 'lowercase_keyword',
-			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
-			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
-			'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
-		);
-	}
-
-	/**
-	 * Create a string field that does no analyzing whatsoever.
-	 * @return array definition of the field
-	 */
-	public function buildKeywordField() {
-		return array(
-			'type' => 'string',
-			'analyzer' => 'keyword',
-			'norms' => array( 'enabled' => false ),  // Omit the length norm because there is only even one token
-			'index_options' => 'docs', // Omit the frequency and position information because neither are useful
-			'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
-		);
+	public function buildLongField( $name ) {
+		return new IntegerIndexField( $name, SearchIndexField::INDEX_TYPE_INTEGER, $this->config );
 	}
 
 	/**
 	 * Create a long field.
-	 * @param boolean $index should this be indexed
-	 * @return array definition of the field
+	 * @param string $name Field name
+	 * @return KeywordIndexField
 	 */
-	public function buildLongField( $index = true ) {
-		$config = array(
-			'type' => 'long',
-		);
-		if ( !$index ) {
-			$config[ 'index' ] = 'no';
-		}
-		return $config;
+	public function buildKeywordField( $name ) {
+		return new KeywordIndexField( $name, SearchIndexField::INDEX_TYPE_KEYWORD, $this->config );
 	}
 }
+

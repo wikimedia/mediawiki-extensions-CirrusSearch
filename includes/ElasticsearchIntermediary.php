@@ -576,7 +576,7 @@ class ElasticsearchIntermediary {
 	 * @return string
 	 */
 	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
-		$error = $this->extractFullError( $exception );
+		$error = self::extractFullError( $exception );
 
 		return $error['type'] . ': ' .$error['reason'];
 	}

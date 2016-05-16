@@ -474,7 +474,7 @@ class ElasticsearchIntermediary {
 		$context['message'] = $message;
 
 		$stats = RequestContext::getMain()->getStats();
-		$type = self::classifyErrorMessage( $message );
+		$type = self::classifyError( $exception );
 		$clusterName = $this->connection->getClusterName();
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
@@ -490,38 +490,59 @@ class ElasticsearchIntermediary {
 	 * we decided to not serve the query, and failures where
 	 * we just failed to answer
 	 *
-	 * @param string $message Extracted exception message from
-	 *  self::extractMessageAndStatus
+	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return string Either 'rejected', 'failed' or 'unknown'
 	 */
-	static public function classifyErrorMessage( $message ) {
-		$rejected = implode( '|', array_map( 'preg_quote', array(
-			'Regex syntax error: ',
-			'Determinizing automaton would ',
-			'Parse error on ',
-			'Failed to parse source ',
-			'SearchParseException',
-			'org.apache.lucene.queryparser.classic.Token',
-			'IllegalArgumentException',
-			'TooManyClauses'
-		) ) );
-		if ( preg_match( "/$rejected/", $message ) ) {
-			return 'rejected';
+	static public function classifyError( \Elastica\Exception\ExceptionInterface $exception = null ) {
+		if ( $exception === null ) {
+			return 'unknown';
+		}
+		$error = self::extractFullError( $exception );
+		if ( isset( $error['root_cause'][0]['type'] ) ) {
+			$error = reset( $error['root_cause'] );
+		} else if ( ! ( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
+			return 'unknown';
 		}
 
-		$failed = implode( '|', array_map( 'preg_quote', array(
-			'rejected execution (queue capacity',
-			'Operation timed out',
-			'RemoteTransportException',
-			'Couldn\'t connect to host',
-			'No enabled connection',
-			'SearchContextMissingException',
-			'NullPointerException',
-		) ) );
-		if ( preg_match( "/$failed/", $message ) ) {
-			return 'failed';
+		$heuristics = array(
+			'rejected' => array (
+				'type_regexes' => array(
+					'(^|_)regex_',
+					'^too_complex_to_determinize_exception$',
+					'^elasticsearch_parse_exception$',
+					'^search_parse_exception$',
+					'^query_parsing_exception$',
+					'^illegal_argument_exception$',
+					'^too_many_clauses$'
+				),
+				'msg_regexes' => array(),
+			),
+			'failed' => array(
+				'type_regexes' => array(
+					'^es_rejected_execution_exception$',
+					'^remote_transport_exception$',
+					'^search_context_missing_exception$',
+					'^null_pointer_exception$',
+					'^elasticsearch_timeout_exception$'
+				),
+				// These are exceptions thrown by elastica itself
+				'msg_regexes' => array(
+					'^Couldn\'t connect to host',
+					'^No enabled connection',
+					'^Operation timed out',
+				),
+			),
+		);
+		foreach( $heuristics as $type => $heuristic ) {
+			$regex = implode( '|', $heuristic['type_regexes'] );
+			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
+				return $type;
+			}
+			$regex = implode( '|', $heuristic['msg_regexes'] );
+			if ( $regex && preg_match( "/$regex/", $error['reason'] ) ) {
+				return $type;
+			}
 		}
-
 		return "unknown";
 	}
 

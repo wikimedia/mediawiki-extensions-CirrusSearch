@@ -8,6 +8,7 @@ use IP;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWNamespace;
+use MWElasticUtils;
 use PoolCounterWorkViaCallback;
 use RequestContext;
 use Status;
@@ -283,101 +284,27 @@ class Util {
 	}
 
 	/**
-	 * Iterate over a scroll.
-	 *
-	 * @param \Elastica\Index $index
-	 * @param string $scrollId the initial $scrollId
-	 * @param string $scrollTime the scroll timeout
-	 * @param callable $consumer function that receives the results
-	 * @param int $limit the max number of results to fetch (0: no limit)
-	 * @param int $retryAttempts the number of times we retry
-	 * @param callable $retryErrorCallback function called before each retries
+	 * @deprecated use MWElasticUtils::iterateOverScroll directly
 	 */
-	public static function iterateOverScroll( \Elastica\Index $index, $scrollId, $scrollTime, $consumer, $limit = 0, $retryAttempts = 0, $retryErrorCallback = null ) {
-		$clearScroll = true;
-		$fetched = 0;
-
-		while( true ) {
-			$result = static::withRetry( $retryAttempts,
-				function() use ( $index, $scrollId, $scrollTime ) {
-					return $index->search ( array(), array(
-						'scroll_id' => $scrollId,
-						'scroll' => $scrollTime
-					) );
-				}, $retryErrorCallback );
-
-			$scrollId = $result->getResponse()->getScrollId();
-
-			if( !$result->count() ) {
-				// No need to clear scroll on the last call
-				$clearScroll = false;
-				break;
-			}
-
-			$fetched += $result->count();
-			$results =  $result->getResults();
-
-			if( $limit > 0 && $fetched > $limit ) {
-				$results = array_slice( $results, 0, sizeof( $results ) - ( $fetched - $limit ) );
-			}
-			$consumer( $results );
-
-			if( $limit > 0 && $fetched >= $limit ) {
-				break;
-			}
-		}
-		// @todo: catch errors and clear the scroll, it'd be easy with a finally block ...
-
-		if( $clearScroll ) {
-			try {
-				$index->getClient()->request( "_search/scroll/".$scrollId, \Elastica\Request::DELETE );
-			} catch ( Exception $e ) {}
-		}
+	public static function iterateOverScroll( \Elastica\Index $index,
+			$scrollId, $scrollTime, $consumer, $limit = 0, $retryAttempts = 0,
+			$retryErrorCallback = null ) {
+		MWElasticUtils::iterateOverScroll( $index, $scrollId, $scrollTime, $consumer,
+			$limit, $retryAttempts, $retryErrorCallback );
 	}
 
 	/**
-	 * A function that retries callback $func if it throws an exception.
-	 * The $beforeRetry is called before a retry and receives the underlying
-	 * ExceptionInterface object and the number of failed attempts.
-	 * It's generally used to log and sleep between retries. Default behaviour
-	 * is to sleep with a random backoff.
-	 * @see Util::backoffDelay
-	 *
-	 * @param int $attempts the number of times we retry
-	 * @param callable $func
-	 * @param callable $beforeRetry function called before each retry
-	 * @return mixed
+	 * @deprecated use MWElasticUtils::withRetry
 	 */
 	public static function withRetry( $attempts, $func, $beforeRetry = null ) {
-		$errors = 0;
-		while ( true ) {
-			if ( $errors < $attempts ) {
-				try {
-					return $func();
-				} catch ( Exception $e ) {
-					$errors += 1;
-					if( $beforeRetry ) {
-						$beforeRetry( $e, $errors );
-					} else {
-						$seconds = static::backoffDelay( $errors );
-						sleep( $seconds );
-					}
-				}
-			} else {
-				return $func();
-			}
-		}
+		MWElasticUtils::withRetry( $attempts, $func, $beforeRetry );
 	}
 
 	/**
-	 * Backoff with lowest possible upper bound as 16 seconds.
-	 * With the default maximum number of errors (5) this maxes out at 256 seconds.
-	 *
-	 * @param int $errorCount
-	 * @return int
+	 * @deprecated use MWElasticUtils::backoffDelay
 	 */
 	public static function backoffDelay( $errorCount ) {
-		return rand( 1, (int) pow( 2, 3 + $errorCount ) );
+		return MWElasticUtils::backoffDelay( $errorCount );
 	}
 
 	/**

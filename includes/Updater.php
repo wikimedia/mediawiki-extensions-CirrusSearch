@@ -277,6 +277,7 @@ class Updater extends ElasticsearchIntermediary {
 		$fullDocument = !( $skipParse || $skipLinks );
 
 		$documents = array();
+		$engine = new \CirrusSearch();
 		foreach ( $pages as $page ) {
 			$title = $page->getTitle();
 			if ( !$page->exists() ) {
@@ -309,28 +310,23 @@ class Updater extends ElasticsearchIntermediary {
 			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
 
 			if ( !$skipParse ) {
-				// Get text to index, based on content and parser output
-				list( $content, $parserOutput ) = $this->getContentAndParserOutput(
-					$page,
-					$forceParse
-				);
+				$contentHandler = $page->getContentHandler();
+				$output = $contentHandler->getParserOutputForIndexing( $page,
+						$forceParse ? null : ParserCache::singleton() );
 
-				// Build our page data
-				$pageBuilder = new PageDataBuilder( $doc, $title, $content, $parserOutput );
-				$doc = $pageBuilder->build();
-
-				// And build the page text itself
-				$textBuilder = new PageTextBuilder( $doc, $content, $parserOutput );
-				$doc = $textBuilder->build();
-
-				// If we're a file, build its metadata too
-				if ( $title->getNamespace() === NS_FILE ) {
-					$fileBuilder = new FileDataBuilder( $doc, $title );
-					$doc = $fileBuilder->build();
+				foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as
+					$field => $fieldData ) {
+					$doc->set( $field, $fieldData );
 				}
 
 				// Then let hooks have a go
-				MWHooks::run( 'CirrusSearchBuildDocumentParse', array( $doc, $title, $content, $parserOutput, $this->connection ) );
+				MWHooks::run( 'CirrusSearchBuildDocumentParse', [
+					$doc,
+					$title,
+					$page->getContent(),
+					$output,
+					$this->connection
+				] );
 			}
 
 			if ( !$skipLinks ) {
@@ -348,7 +344,7 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
 	 * @param \Elastica\Document $doc
-	 * @return \Elastica\Script
+	 * @return \Elastica\Script\Script
 	 */
 	private function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();

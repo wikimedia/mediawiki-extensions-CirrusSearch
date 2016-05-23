@@ -21,10 +21,8 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class UserTestingTest extends \MediaWikiTestCase {
-	/**
-	 * @beforeClass
-	 */
-	public static function setUpBeforeClass() {
+	public function setUp() {
+		parent::setUp();
 		ElasticsearchIntermediary::resetExecutionId();
 		UserTesting::resetInstance();
 	}
@@ -121,8 +119,8 @@ class UserTestingTest extends \MediaWikiTestCase {
 		$config = $this->config( 'test', 10, array(
 			'wgCirrusSearchBoostLinks' => 'test',
 		) );
-		$config['test']['buckets']['a']['wgCirrusSearchBoostLinks'] = 'bucket';
-		$config['test']['buckets']['b']['wgCirrusSearchBoostLinks'] = 'bucket';
+		$config['test']['buckets']['a']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
+		$config['test']['buckets']['b']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
 
 		$ut = $this->ut( $config, true );
 		$this->assertEquals( 'bucket', $GLOBALS['wgCirrusSearchBoostLinks'] );
@@ -147,6 +145,32 @@ class UserTestingTest extends \MediaWikiTestCase {
 	 */
 	public function testChooseBucket( $expect, $probability, array $buckets ) {
 		$this->assertEquals( $expect, UserTesting::chooseBucket( $probability, $buckets ) );
+	}
+
+	public function testTrigger() {
+		$config = array(
+			'someTest' => array(
+				'buckets' => array(
+					'a' => array(
+						'trigger' => 'hi there',
+					),
+					'b' => array(
+						'trigger' =>  'or this one',
+					),
+				),
+			),
+		);
+
+		$req = new \FauxRequest( array( 'cirrusUserTesting' => 'hi there' ) );
+		$this->setMwGlobals( 'wgCirrusSearchUserTesting', $config );
+		\RequestContext::getMain()->setRequest( $req );
+		$this->assertEquals( array( 'someTest:a' ), UserTesting::getInstance()->getActiveTestNamesWithBucket() );
+
+		$ut = new UserTesting( $config, null, 'hi there' );
+		$this->assertEquals( array( 'someTest:a' ), $ut->getActiveTestNamesWithBucket() );
+
+		$ut = new UserTesting( $config, null, 'or this one' );
+		$this->assertEquals( array( 'someTest:b' ), $ut->getActiveTestNamesWithBucket() );
 	}
 
 	protected function config( $testNames, $sampleRate = 10, $globals = array() ) {

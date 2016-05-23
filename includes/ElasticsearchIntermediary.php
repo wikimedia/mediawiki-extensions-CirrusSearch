@@ -8,6 +8,7 @@ use Elastica\Exception\PartialShardFailureException;
 use Elastica\Exception\ResponseException;
 use FormatJson;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use RequestContext;
 use SearchResultSet;
 use Status;
@@ -473,7 +474,7 @@ class ElasticsearchIntermediary {
 		list( $status, $message ) = $this->extractMessageAndStatus( $exception );
 		$context['message'] = $message;
 
-		$stats = RequestContext::getMain()->getStats();
+		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$type = self::classifyError( $exception );
 		$clusterName = $this->connection->getClusterName();
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
@@ -632,12 +633,13 @@ class ElasticsearchIntermediary {
 		$endTime = microtime( true );
 		$took = (int) ( ( $endTime - $this->requestStart ) * 1000 );
 		$clusterName = $this->connection->getClusterName();
-		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTime", $took );
+		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$stats->timing( "CirrusSearch.$clusterName.requestTime", $took );
 		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
 		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
 		$logContext = $this->buildLogContext( $took, $this->connection->getClient() );
 		$type = isset( $logContext['queryType'] ) ? $logContext['queryType'] : 'unknown';
-		RequestContext::getMain()->getStats()->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $took );
+		$stats->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $took );
 		if ( isset( $logContext['elasticTookMs'] ) ) {
 			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTookMs'];
 		}

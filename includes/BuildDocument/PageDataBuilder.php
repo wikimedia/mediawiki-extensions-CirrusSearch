@@ -48,7 +48,7 @@ class PageDataBuilder extends ParseBuilder {
 				$this->headings();
 				$this->outgoingLinks();
 				$this->templates();
-				$this->wikidataInfo();
+				$this->setWikibaseItemId();
 		}
 
 		// All content types have a language
@@ -147,9 +147,11 @@ class PageDataBuilder extends ParseBuilder {
 	}
 
 	/**
-	 * Add wikidata information to the index if wikibase is installed on this wiki.
+	 * Add item id of a page's connected Wikibase item (if available)
+	 *
+	 * @todo move this to Wikibase
 	 */
-	private function wikidataInfo() {
+	private function setWikibaseItemId() {
 		$wikibaseItem = $this->parserOutput->getProperty( 'wikibase_item' );
 		if ( $wikibaseItem !== false ) {
 			$this->doc->set( 'wikibase_item', $wikibaseItem );

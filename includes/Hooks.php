@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
@@ -11,6 +12,7 @@ use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
 use MediaWiki\MediaWikiServices;
+use SearchResultSet;
 use SpecialSearch;
 use Title;
 use RecursiveDirectoryIterator;
@@ -183,16 +185,13 @@ class Hooks {
 	private static function overrideUseExtraPluginForRegex( WebRequest $request ) {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
-		$val = $request->getVal( 'cirrusAccelerateRegex' );
-		if ( $val !== null ) {
-			if ( $val === 'yes' ) {
+		if ( $request->getCheck( 'cirrusAccelerateRegex' ) ) {
+			if ( $request->getFuzzyBool( 'cirrusAccelerateRegex' ) ) {
 				$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][] = 'use';
-			} elseif( $val = 'no' ) {
-				if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
-					$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
-					if ( $useLocation !== false ) {
-						unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
-					}
+			} elseif ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
+				$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
+				if ( $useLocation !== false ) {
+					unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
 				}
 			}
 		}
@@ -452,8 +451,15 @@ class Hooks {
 		return true;
 	}
 
-	public static function onSpecialSearchResultsAppend( $specialSearch, $out ) {
+	/**
+	 * @param SpecialSearch $specialSearch
+	 * @param OutputPage $out
+	 * @param string $term
+	 * @return bool
+	 */
+	public static function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
 		global $wgCirrusSearchFeedbackLink;
+
 		if ( $wgCirrusSearchFeedbackLink ) {
 			self::addSearchFeedbackLink( $wgCirrusSearchFeedbackLink, $specialSearch, $out );
 		}
@@ -750,14 +756,20 @@ class Hooks {
 		return true;
 	}
 
+	/**
+	 * @param ApiBase $module
+	 * @return bool
+	 */
 	public static function onAPIAfterExecute( $module ) {
 		if ( !( $module instanceof ApiOpenSearch ) ) {
 			return true;
 		}
+
 		$types = ElasticsearchIntermediary::getQueryTypesUsed();
 		if ( !$types ) {
 			return true;
 		}
+
 		$response = $module->getContext()->getRequest()->response();
 		$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
 		return true;
@@ -765,8 +777,8 @@ class Hooks {
 
 	/**
 	 * @param string $term
-	 * @param \SearchResultSet &$titleMatches
-	 * @param \SearchResultSet &$textMatches
+	 * @param SearchResultSet|null &$titleMatches
+	 * @param SearchResultSet|null &$textMatches
 	 */
 	public static function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
 		global $wgOut;

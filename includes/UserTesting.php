@@ -5,8 +5,8 @@ namespace CirrusSearch;
 /**
  * Handles decisions around if the current request is a member of any
  * test currently being run. This initial implementation is per-request
- * but could be extended to keep the same user in the same test/bucket
- * over multiple requests.
+ * with a consistent bucketing scheme that keeps the user in the same
+ * test over multiple requests when no trigger is provided.
  *
  * $wgCirrusSearchUserTesting = array(
  *     'someTest' => array(
@@ -16,7 +16,9 @@ namespace CirrusSearch;
  *                 // control bucket, retain defaults
  *             ),
  *             'b' => array(
- *                 'wgCirrusSearchBoostLinks' => 42,
+ *                 'globals' => array(
+ *                     'wgCirrusSearchBoostLinks' => 42,
+ *                 ),
  *             ),
  *             ...
  *         ),
@@ -27,12 +29,19 @@ namespace CirrusSearch;
  * Per test configuration options:
  *
  * * sampleRate - A number >= 1 that specifies the sampling rate of the tests.
- *                1 in sampleRate requests will participate in the test.
+ *                1 in sampleRate requests will participate in the test. If a trigger
+ *                is provided by the request this will not be checked. A sampleRate of
+ *                0 can be provided to allow only triggered inclusion.
  * * globals    - A map from global variable name to value to set for all requests
  *                participating in the test.
- * * buckets    - A map from bucket name to map from global variable name to value
- *                to set for all requests that are a member of the chosen bucket.
- *                Per-bucket variables override per-test global variables.
+ * * buckets    - A map from bucket name to bucket configuration.
+ *
+ * Per bucket configuration options:
+ *
+ * * globals    - A map from global variable name to value to set for all requests
+ *                in this bucket. Per-bucket globals override per-test globals.
+ * * trigger    - Provide this value to allow inclusion in the bucket based on the
+ *                cirrusUserTesting query parameter.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +72,7 @@ class UserTesting {
 
 	/**
 	 * Returns a stable instance based on $wgCirrusSearchUserTesting
-	 * global configuration.
+	 * global configuration and the trigger from the main request context.
 	 *
 	 * @param callable|null $callback
 	 * @return self
@@ -71,7 +80,9 @@ class UserTesting {
 	public static function getInstance( $callback = null ) {
 		global $wgCirrusSearchUserTesting;
 		if ( self::$instance === null ) {
-			self::$instance = new self( $wgCirrusSearchUserTesting, $callback );
+			$trigger = \RequestContext::getMain()->getRequest()
+				->getVal( 'cirrusUserTesting' );
+			self::$instance = new self( $wgCirrusSearchUserTesting, $callback, $trigger );
 		}
 		return self::$instance;
 	}
@@ -86,18 +97,25 @@ class UserTesting {
 	/**
 	 * @param array $config
 	 * @param callable|null $callback
+	 * @param string|null $trigger Value to manually trigger a test.
 	 */
-	public function __construct( array $config, $callback = null ) {
+	public function __construct( array $config, $callback = null, $trigger = '' ) {
 		if ( $callback === null ) {
 			$callback = array( __CLASS__, 'oneIn' );
 		}
 		foreach ( $config as $testName => $testConfig ) {
-			if ( !isset( $testConfig['sampleRate'] ) ) {
-				continue;
-			}
-			$bucketProbability = call_user_func( $callback, $testName, $testConfig['sampleRate'] );
-			if ( $bucketProbability > 0 ) {
-				$this->activateTest( $testName, $bucketProbability, $testConfig );
+			if ( $trigger ) {
+				foreach ( $testConfig['buckets'] as $bucket => $bucketConfig ) {
+					if ( isset( $bucketConfig['trigger'] ) && $bucketConfig['trigger'] === $trigger ) {
+						$this->activateTest( $testName, $bucket, $testConfig );
+						break;
+					}
+				}
+			} elseif ( $testConfig['sampleRate'] > 0 ) {
+				$bucketProbability = call_user_func( $callback, $testName, $testConfig['sampleRate'] );
+				if ( $bucketProbability > 0 ) {
+					$this->activateTest( $testName, $bucketProbability, $testConfig );
+				}
 			}
 		}
 	}
@@ -140,19 +158,24 @@ class UserTesting {
 
 	/**
 	 * @param string $testName Name of the test to activate.
-	 * @param float $bucketProbability Number between 0 and 1 for determining bucket.
+	 * @param float|string $bucket Either the name of a bucket, or a number
+	 *  between 0 and 1 for determining bucket.
 	 * @param array $testConfig Configuration of the test to activate.
 	 */
-	protected function activateTest( $testName, $bucketProbability, array $testConfig ) {
+	protected function activateTest( $testName, $bucket, array $testConfig ) {
 		$this->tests[$testName] = '';
 		$globals = array();
 		if ( isset( $testConfig['globals'] ) ) {
 			$globals = $testConfig['globals'];
 		}
 		if ( isset( $testConfig['buckets'] ) ) {
-			$bucket = $this->chooseBucket( $bucketProbability, array_keys( $testConfig['buckets'] ) );
+			if ( !is_string( $bucket ) ) {
+				$bucket = $this->chooseBucket( $bucket, array_keys( $testConfig['buckets'] ) );
+			}
 			$this->tests[$testName] = $bucket;
-			$globals = array_merge( $globals, $testConfig['buckets'][$bucket] );
+			if ( isset( $testConfig['buckets'][$bucket]['globals'] ) ) {
+				$globals = array_merge( $globals, $testConfig['buckets'][$bucket]['globals'] );
+			}
 		}
 
 		foreach ( $globals as $key => $value ) {
@@ -209,7 +232,7 @@ class UserTesting {
 	 * @param int $sampleRate
 	 * @return float for 1 in $sampleRate calls to this method
 	 *  returns a stable probability between 0 and 1. for all other
-	 * requests returns 0.
+	 *  requests returns 0.
 	 */
 	static public function oneIn( $testName, $sampleRate ) {
 		$hash = ElasticsearchIntermediary::generateIdentToken( $testName );

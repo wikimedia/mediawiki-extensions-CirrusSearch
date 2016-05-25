@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "mediawiki_selenium", "~> 1.7"
+gem "mediawiki_selenium", "~> 1.7", ">= 1.7.1"
 gem "mimemagic", "~> 0.3.0"
 gem "parallel_tests", "~> 1.7.0"
 gem "rake", "~> 10.4", ">= 10.4.2"

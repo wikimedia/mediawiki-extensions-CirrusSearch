@@ -402,15 +402,16 @@ class UpdateSuggesterIndex extends Maintenance {
 		// At this point we may read the new un-optimized FST segments
 		// Old ones should be pretty small after expungeDeletes
 		$this->getIndex()->refresh();
-		$query = new Query();
-		$query->setQuery(
-			new Elastica\Query\Filtered(
-				new Elastica\Query\MatchAll(),
-				new Elastica\Filter\BoolNot(
-					new Elastica\Filter\Term( array( "batch_id" => $this->builder->getBatchId() ) )
-				)
-			)
+
+		$boolNot = new Elastica\Query\BoolQuery();
+		$boolNot->addMustNot(
+			new Elastica\Query\Term( array( "batch_id" => $this->builder->getBatchId() ) )
 		);
+		$bool = new Elastica\Query\BoolQuery();
+		$bool->addFilter( $boolNot );
+
+		$query = new Elastica\Query();
+		$query->setQuery( $bool );
 		$query->setFields( array( '_id' ) );
 
 		$scrollOptions = array(
@@ -529,18 +530,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			'include' => $this->builder->getRequiredFields()
 		) );
 
-		$query->setQuery(
-			new Elastica\Query\Filtered(
-				new Elastica\Query\MatchAll(),
-				new Elastica\Filter\BoolAnd( array(
-					new Elastica\Filter\Type( Connection::PAGE_TYPE_NAME ),
-					new Elastica\Filter\BoolOr( array(
-						new Elastica\Filter\Term( array( "namespace" => NS_MAIN ) ),
-						new Elastica\Filter\Term( array( "redirect.namespace" => NS_MAIN ) ),
-					) )
-				) )
-			)
-		);
+		$pageAndNs = new Elastica\Query\BoolQuery();
+		$pageAndNs->addShould( new Elastica\Query\Term( array( "namespace" => NS_MAIN ) ) );
+		$pageAndNs->addShould( new Elastica\Query\Term( array( "redirect.namespace" => NS_MAIN ) ) );
+		$pageAndNs->addMust( new Elastica\Query\Type( Connection::PAGE_TYPE_NAME ) );
+		$bool = new Elastica\Query\BoolQuery();
+		$bool->addFilter( $pageAndNs );
+
+		$query->setQuery( $bool );
 
 		// Run a first query to count the number of docs.
 		// This is needed for the scoring methods that need

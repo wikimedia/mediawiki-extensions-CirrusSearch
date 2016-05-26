@@ -23,7 +23,6 @@
 
 require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
-require_once __DIR__ . "/profiles/CommonTermsQueryProfiles.php";
 require_once __DIR__ . "/profiles/RescoreProfiles.php";
 require_once __DIR__ . "/profiles/SimilarityProfiles.php";
 
@@ -132,7 +131,7 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 
 // Should CirrusSearch try to use the wikimedia/extra plugin?  An empty array
 // means don't use it at all.
-$wgCirrusSearchWikimediaExtraPlugin = array();
+//
 // Here is an example to enable faster regex matching:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] =
 //     array( 'build', 'use', 'max_inspect' => 10000 );
@@ -143,18 +142,15 @@ $wgCirrusSearchWikimediaExtraPlugin = array();
 // the 'max_inspect' key is the maximum number of pages to recheck the regex
 // against.  Its optional and defaults to 10000 which seems like a reasonable
 // compromise to keep regexes fast while still producing good results.
-// This example enables the safer query's phrase processing:
-// $wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
-// 	'phrase' => array(
-// 		'max_terms_in_all_queries' => 128,
-// 	)
-// );
+//
 // This turns on noop-detection for updates and is compatible with
-// wikimedia-extra versions 1.3.1, 1.4.2, and 1.5.0:
+// wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
+//
 // This allows forking on reindexing and is compatible with wikimedia-extra
-// versions 1.3.1, 1.4.2, and 1.5.0
+// versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
+$wgCirrusSearchWikimediaExtraPlugin = array();
 
 // Should CirrusSearch try to support regular expressions with insource:?
 // These can be really expensive, but mostly ok, especially if you have the
@@ -477,11 +473,7 @@ $wgCirrusSearchMoreLikeThisConfig = array(
 
 	// Percent of terms to match
 	// High value will increase precision but can prevent small docs to match against large ones
-	'percent_terms_to_match' => 0.3,
-
-	// replaces percent_terms_to_match but only supported by elasticsearch 1.5+
-	// @todo: when ES-1.6 is the minimal requirement we have to move to this new parameter
-	// 'minimum_should_match' => '30%',
+	'minimum_should_match' => '30%',
 );
 
 
@@ -839,21 +831,6 @@ $wgCirrusSearchLanguageToWikiMap = array();
  * duplicating $wgCirrusSearchInterwikiSources. This needs to be fixed.
  */
 $wgCirrusSearchWikiToNameMap = array();
-
-/**
- * Enable common terms query.
- * This query is enabled only if the query string does not contain any special
- * syntax and the number of terms is greater than one defined in the profile
- * NOTE: CommonTermsQuery can be more restrictive in some cases if the all
- * field is disabled (see $wgCirrusSearchAllFields).
- */
-$wgCirrusSearchUseCommonTermsQuery = false;
-
-/**
- * Set the Common terms query profile to default.
- * see profiles/CommonTermsQueryProfiles.php for more info.
- */
-$wgCirrusSearchCommonTermsQueryProfile = $wgCirrusSearchCommonTermsQueryProfiles['default'];
 
 /**
  * If set to non-empty string, interwiki results will have ?wprov=XYZ parameter added.

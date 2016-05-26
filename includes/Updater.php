@@ -356,7 +356,7 @@ class Updater extends ElasticsearchIntermediary {
 			'incoming_links' => 'within 20%',
 		);
 
-		$script = new \Elastica\Script( 'super_detect_noop', $params, 'native' );
+		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
 		if ( $doc->getDocAsUpsert() ) {
 			$script->setUpsert( $doc );
 		}

@@ -27,10 +27,6 @@ $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = array( 'build', 'use' );
-$wgCirrusSearchWikimediaExtraPlugin[ 'safer' ] = array(
-	'phrase' => array(
-	)
-);
 
 $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
 $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;

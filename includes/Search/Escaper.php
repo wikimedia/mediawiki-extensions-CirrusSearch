@@ -123,7 +123,7 @@ class Escaper {
 		$fuzzyQuery = false;
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
 			function ( $matches ) use ( &$fuzzyQuery ) {
-				if ( preg_match( '/^(?:|0|0?\.\d+|1(?:\.0)?)$/', $matches[ 'trailing' ] ) ) {
+				if ( preg_match( '/^(|[0-2])$/', $matches[ 'trailing' ] ) ) {
 					$fuzzyQuery = true;
 					return $matches[ 0 ];
 				} else {

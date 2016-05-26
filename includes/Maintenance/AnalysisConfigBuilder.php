@@ -497,7 +497,7 @@ STEMMER_RULES
 	private $elasticsearchLanguageAnalyzersFromPlugins = array(
 		'analysis-stempel' => array( 'pl' => 'polish' ),
 		'analysis-kuromoji' => array( 'ja' => 'kuromoji' ),
-		'analysis-smartcn' => array( 'zh-hans' => 'smart_chinese' ),
+		'analysis-smartcn' => array( 'zh-hans' => 'smartcn' ),
 		// This hasn't had a release in a while and seems to not work with the
 		// current version of elasticsearch:
 		'elasticsearch-analysis-hebrew' => array( 'he' => 'hebrew' ),

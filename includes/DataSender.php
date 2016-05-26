@@ -268,7 +268,7 @@ class DataSender extends ElasticsearchIntermediary {
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );
-				$script = new \Elastica\Script(
+				$script = new \Elastica\Script\Script(
 					'super_detect_noop',
 					array(
 						'source' => array(
@@ -349,10 +349,11 @@ class DataSender extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$error = $bulkResponse->getError();
+			$error = $bulkResponse->getFullError();
 			if ( is_string( $error ) ) {
-				// es 1.x cluster
-				if ( false === strpos( $error, 'DocumentMissingException' ) ) {
+				// es 1.7 cluster
+				$message = $e->getError();
+				if ( false === strpos( $message, 'DocumentMissingException' ) ) {
 					$justDocumentMissing = false;
 					continue;
 				}

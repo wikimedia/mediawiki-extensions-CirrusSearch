@@ -503,11 +503,16 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 							'error' => $redirResponse->getError() ) );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+				$error = self::extractFullError( $e );
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
-					array( 'query' => $this->term,
+					'Unable to fetch redirects for suggestion {query} with results {ids}. {error_type}: {error_reason}',
+					array(
+						'query' => $this->term,
 						'ids' => serialize( $missingText ),
-						'error' => $this->extractMessage( $e ) ) );
+						'error_type' => $error['type'],
+						'error_reason' => $error['reason'],
+					)
+				);
 			}
 		}
 

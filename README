@@ -358,7 +358,7 @@ index 549104a..c81a22f 100644
 -        version => '1.6.0',
 +        version => '1.7.0',
      }
-     ## Trigram accelerated regular expressions, "safer" query, and friends
+     ## Trigram accelerated regular expressions, and friends
      elasticsearch::plugin { 'extra':
          group   => 'org.wikimedia.search',
          name    => 'extra',

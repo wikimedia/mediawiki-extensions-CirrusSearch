@@ -21,11 +21,6 @@ When(/^I set did you mean suggester option (.*) to (.*)$/) do |varname, value|
   @didyoumean_options ||= {}
   @didyoumean_options[varname] = value
 end
-When(/^I activate common terms query with the (.*) profile/) do |profile|
-  @common_terms_option ||= {}
-  @common_terms_option["cirrusUseCommonTermsQuery"] = "yes"
-  @common_terms_option["cirrusCommonTermsQueryProfile"] = profile
-end
 
 When(/^I api search( with rewrites enabled)?( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |enable_rewrites, incoming_links, offset, lang, namespaces, search|
   begin
@@ -37,7 +32,6 @@ When(/^I api search( with rewrites enabled)?( with disabled incoming link weight
       enablerewrites: enable_rewrites ? 1 : 0
     }
     options = options.merge(@didyoumean_options) if defined?@didyoumean_options
-    options = options.merge(@common_terms_option) if defined?@common_terms_option
 
     @api_result = search_for(
       search.gsub(/%[^ {]+%/, @search_vars)
@@ -52,9 +46,10 @@ When(/^I api search( with rewrites enabled)?( with disabled incoming link weight
     @api_error = e
   end
 end
-When(/^I get api suggestions for (.*)$/) do |search|
+When(/^I get api suggestions for (.*?)(?: using the (.*) profile)?$/) do |search, profile|
   begin
-    @api_result = suggestions_for(search)
+    profile = profile ? profile : "fuzzy"
+    @api_result = suggestions_with_profile(search, profile)
   rescue MediawikiApi::ApiError => e
     @api_error = e
   rescue MediawikiApi::HttpError => e
@@ -201,14 +196,14 @@ When(/^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I
   browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=#{length}")
 end
 
-When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to ([\.\d]+) and I search for (.+)$/) do |field, percent, search|
+When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (\d+%) and I search for (.+)$/) do |field, percent, search|
   step("I search for " + search)
-  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=0&cirrusMltPercentTermsToMatch=#{percent}")
+  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=#{field}&cirrusMltMinTermFreq=1&cirrusMltMinDocFreq=1&cirrusMltMinWordLength=0&cirrusMltMinimumShouldMatch=#{percent}")
 end
 
 When(/^I set More Like This Options to bad settings and I search for (.+)$/) do |search|
   step("I search for " + search)
-  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=title&cirrusMltMinTermFreq=100&cirrusMltMinDocFreq=200000&cirrusMltMinWordLength=190&cirrusMltPercentTermsToMatch=1")
+  browser.goto("#{browser.url}&cirrusMtlUseFields=yes&cirrusMltFields=title&cirrusMltMinTermFreq=100&cirrusMltMinDocFreq=200000&cirrusMltMinWordLength=190&cirrusMltMinimumShouldMatch=100%")
 end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|

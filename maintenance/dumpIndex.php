@@ -121,8 +121,7 @@ class DumpIndex extends Maintenance {
 
 		$filter = null;
 		if ( $this->hasOption( 'filter' ) ) {
-			$filter = new Elastica\Filter\Query(
-				new Elastica\Query\QueryString( $this->getOption( 'filter' ) ) );
+			$filter = new Elastica\Query\QueryString( $this->getOption( 'filter' ) );
 		}
 
 		$limit = (int) $this->getOption( 'limit', 0 );
@@ -134,8 +133,9 @@ class DumpIndex extends Maintenance {
 			$query->setSource( array( 'include' => $sourceFields ) );
 		}
 		if ( $filter ) {
-			$query->setQuery( new \Elastica\Query\Filtered(
-				new \Elastica\Query\MatchAll(), $filter ) );
+			$bool = new \Elastica\Query\BoolQuery();
+			$bool->addFilter( $filter );
+			$query->setQuery( $bool );
 		}
 
 		$scrollOptions = array(

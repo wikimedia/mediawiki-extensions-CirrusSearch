@@ -285,14 +285,16 @@ class Reindexer {
 			$messagePrefix = "\t\t[$childNumber] ";
 			$this->outputIndented( $messagePrefix . "Starting child process reindex\n" );
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
-			$filter = new \CirrusSearch\Extra\Filter\IdHashMod( $children, $childNumber );
+			$filter = new \CirrusSearch\Extra\Query\IdHashMod( $children, $childNumber );
 		}
 		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		try {
 			$query = new Query();
 			$query->setFields( array( '_id', '_source' ) );
 			if ( $filter ) {
-				$query->setQuery( new \Elastica\Query\Filtered( new \Elastica\Query\MatchAll(), $filter ) );
+				$bool = new \Elastica\Query\BoolQuery();
+				$bool->addFilter( $filter );
+				$query->setQuery( $bool );
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
@@ -331,10 +333,14 @@ class Reindexer {
 		} catch ( ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			$type = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$error = ElasticsearchIntermediary::extractFullError( $e );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Search backend error during reindex.  Error type is '{type}' and message is:  {message}",
-				array( 'type' => $type, 'message' => $message )
+				"Search backend error during reindex.  Error type is '{type}' ({error_type}) and message is:  {error_reason}",
+				array(
+					'type' => $type,
+					'error_type' => $error['type'],
+					'error_reason' => $error['reason'],
+				)
 			);
 			die( 1 );
 		}

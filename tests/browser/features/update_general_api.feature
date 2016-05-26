@@ -14,8 +14,7 @@ Feature: Search backend updates
     Then within 20 seconds api searching for DeleteMeRedirect yields none as the first result
 
   Scenario: Altered pages are updated in the index
-    Given a page named ChangeMe exists with contents foo
-    When I edit ChangeMe to add superduperchangedme
+   Given I edit ChangeMe to add superduperchangedme
     Then within 20 seconds api searching for superduperchangedme yields ChangeMe as the first result
 
   Scenario: Pages containing altered template are updated in the index

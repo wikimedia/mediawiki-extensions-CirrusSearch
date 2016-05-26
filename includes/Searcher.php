@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use Elastica;
 use CirrusSearch;
-use CirrusSearch\Extra\Filter\SourceRegex;
+use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\FullTextResultsType;
@@ -114,13 +114,16 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	private $query = null;
 	/**
-	 * @var \Elastica\Filter\AbstractFilter[] filters that MUST hold true of all results
+	 * @var \Elastica\Query\AbstractQuery[] filters that MUST hold true of all results
 	 */
 	private $filters = array();
 	/**
-	 * @var \Elastica\Filter\AbstractFilter[] filters that MUST NOT hold true of all results
+	 * @var \Elastica\Query\AbstractQuery[] filters that MUST NOT hold true of all results
 	 */
 	private $notFilters = array();
+	/**
+	 * @var array
+	 */
 	private $suggest = null;
 	/**
 	 * @var array[] of rescore configurations as used by elasticsearch.  The query needs to be an Elastica query.
@@ -289,9 +292,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$allQuery = new \Elastica\Query\MultiMatch();
 			$allQuery->setQuery( $search );
 			$allQuery->setFields( array( 'all_near_match', 'all_near_match.asciifolding' ) );
-			$this->filters[] = new \Elastica\Filter\Query( $allQuery );
+			$this->filters[] = $allQuery;
 		} else {
-			$this->filters[] = new \Elastica\Filter\Query( $this->highlightQuery );
+			$this->filters[] = $this->highlightQuery;
 		}
 
 		return $this->search( 'near_match', $search );
@@ -313,7 +316,7 @@ class Searcher extends ElasticsearchIntermediary {
 					'analyzer' => 'plain',
 					'operator' => 'and',
 				) );
-				$this->filters[] = new \Elastica\Filter\Query( $match );
+				$this->filters[] = $match;
 			} else {
 				// Elasticsearch seems to have trouble extracting the proper terms to highlight
 				// from the default query we make so we feed it exactly the right query to highlight.
@@ -389,7 +392,7 @@ class Searcher extends ElasticsearchIntermediary {
 					$value = str_replace( '_', ' ', $value );
 					$prefixQuery = new \Elastica\Query\Match();
 					$prefixQuery->setFieldQuery( 'title.prefix', $value );
-					$this->filters[] = new \Elastica\Filter\Query( $prefixQuery );
+					$this->filters[] = $prefixQuery;
 				}
 			}
 		}
@@ -463,6 +466,9 @@ class Searcher extends ElasticsearchIntermediary {
 					if ( isset( $regex['max_ngrams_extracted'] ) ) {
 						$filter->setMaxNgramsExtracted( $regex['max_ngrams_extracted'] );
 					}
+					if ( isset( $regex['max_ngram_clauses'] ) && is_numeric( $regex['max_ngram_clauses'] ) ) {
+						$filter->setMaxNgramClauses( (int) $regex['max_ngram_clauses'] );
+					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $this->config->get( 'LanguageCode' ) );
 					$filterDestination[] = $filter;
@@ -490,7 +496,7 @@ if (sourceText == null) {
 }
 
 GROOVY;
-					$filterDestination[] = new \Elastica\Filter\Script( new \Elastica\Script(
+					$filterDestination[] = new \Elastica\Query\Script( new \Elastica\Script\Script(
 						$script,
 						array(
 							'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
@@ -763,7 +769,7 @@ GROOVY;
 	 * @param string $field field containing the title
 	 * @param string $title title query text to match against
 	 * @param boolean $underscores true if the field contains underscores instead of spaces.  Defaults to false.
-	 * @return \Elastica\Filter\Query for matching $title to $field
+	 * @return \Elastica\Query\Match for matching $title to $field
 	 */
 	public function matchPage( $field, $title, $underscores = false ) {
 		if ( $underscores ) {
@@ -773,17 +779,18 @@ GROOVY;
 		}
 		$match = new \Elastica\Query\Match();
 		$match->setFieldQuery( $field, $title );
-		return new \Elastica\Filter\Query( $match );
+
+		return $match;
 	}
 
 	/**
 	 * Builds an or between many categories that the page could be in.
 	 * @param string[] $categories categories to match
-	 * @return \Elastica\Filter\BoolFilter|null A null return value means all values are filtered
+	 * @return \Elastica\Query\BoolQuery|null A null return value means all values are filtered
 	 *  and an empty result set should be returned.
 	 */
 	public function matchPageCategories( $categories ) {
-		$filter = new \Elastica\Filter\BoolFilter();
+		$filter = new \Elastica\Query\BoolQuery();
 		$ids = array();
 		$names = array();
 		foreach ( $categories as $category ) {
@@ -819,8 +826,10 @@ GROOVY;
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		sort( $titles, SORT_STRING );
 		$pageIds = array();
+		$likeDocs = array();
 		foreach ( $titles as $title ) {
 			$pageIds[] = $title->getArticleID();
+			$likeDocs[] = array( '_id' => $title->getArticleID() );
 		}
 
 		// If no fields has been set we return no results.
@@ -869,14 +878,13 @@ GROOVY;
 				$text[] = $foundArticle->text;
 			}
 			sort( $text, SORT_STRING );
-			$this->query->setLikeText( implode( ' ', $text ) );
+			$likeDocs = array_merge( $likeDocs, $text );
 		}
 
-		// @todo: use setIds when T104560 is done
-		$this->query->setParam( 'ids', $pageIds );
+		$this->query->setLike( $likeDocs );
 
 		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
-			$this->filters[] = new \Elastica\Filter\Exists( 'wikibase_item' );
+			$this->filters[] = new \Elastica\Query\Exists( 'wikibase_item' );
 		}
 
 		// highlight snippets are not great so it's worth running a match all query
@@ -1059,14 +1067,21 @@ GROOVY;
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
-				$this->filters[] = new \Elastica\Filter\Terms( 'namespace', $namespaces );
+				$this->filters[] = new \Elastica\Query\Terms( 'namespace', $namespaces );
 			}
 		}
 
 		// Wrap $this->query in a filtered query if there are any filters
 		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
 		if ( $unifiedFilter !== null ) {
-			$this->query = new \Elastica\Query\Filtered( $this->query, $unifiedFilter );
+			if ( $this->query instanceof \Elastica\Query\BoolQuery ) {
+				$bool = $this->query;
+			} else {
+				$bool = new \Elastica\Query\BoolQuery();
+				$bool->addMust( $this->query );
+				$this->query = $bool;
+			}
+			$bool->addFilter( $unifiedFilter );
 		}
 
 		// Call installBoosts right after we're done munging the query to include filters
@@ -1437,14 +1452,16 @@ GROOVY;
 			}
 			$settings['phrase']['collate'] = array(
 				'query' => array (
-					'multi_match' => array(
-						'query' => '{{suggestion}}',
-						'operator' => 'or',
-						'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
-						'type' => 'cross_fields',
-						'fields' => $collateFields
-					)
-				)
+					'inline' => array(
+						'multi_match' => array(
+							'query' => '{{suggestion}}',
+							'operator' => 'or',
+							'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
+							'type' => 'cross_fields',
+							'fields' => $collateFields
+						),
+					),
+				),
 			);
 		}
 		if( isset( $suggestSettings['smoothing_model'] ) ) {
@@ -1567,7 +1584,7 @@ GROOVY;
 		}
 		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->getNamespaces() );
 		if ( $extraIndexes ) {
-			$this->notFilters[] = new \Elastica\Filter\Term(
+			$this->notFilters[] = new \Elastica\Query\Term(
 				array( 'local_sites_with_dupe' => $this->indexBaseName ) );
 		}
 		return $extraIndexes;

@@ -475,7 +475,7 @@ class ElasticsearchIntermediary {
 		$context['message'] = $message;
 
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		$type = self::classifyErrorMessage( $message );
+		$type = self::classifyError( $exception );
 		$clusterName = $this->connection->getClusterName();
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
@@ -491,38 +491,59 @@ class ElasticsearchIntermediary {
 	 * we decided to not serve the query, and failures where
 	 * we just failed to answer
 	 *
-	 * @param string $message Extracted exception message from
-	 *  self::extractMessageAndStatus
+	 * @param \Elastica\Exception\ExceptionInterface|null $exception
 	 * @return string Either 'rejected', 'failed' or 'unknown'
 	 */
-	static public function classifyErrorMessage( $message ) {
-		$rejected = implode( '|', array_map( 'preg_quote', array(
-			'Regex syntax error: ',
-			'Determinizing automaton would ',
-			'Parse error on ',
-			'Failed to parse source ',
-			'SearchParseException',
-			'org.apache.lucene.queryparser.classic.Token',
-			'IllegalArgumentException',
-			'TooManyClauses'
-		) ) );
-		if ( preg_match( "/$rejected/", $message ) ) {
-			return 'rejected';
+	static public function classifyError( \Elastica\Exception\ExceptionInterface $exception = null ) {
+		if ( $exception === null ) {
+			return 'unknown';
+		}
+		$error = self::extractFullError( $exception );
+		if ( isset( $error['root_cause'][0]['type'] ) ) {
+			$error = reset( $error['root_cause'] );
+		} else if ( ! ( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
+			return 'unknown';
 		}
 
-		$failed = implode( '|', array_map( 'preg_quote', array(
-			'rejected execution (queue capacity',
-			'Operation timed out',
-			'RemoteTransportException',
-			'Couldn\'t connect to host',
-			'No enabled connection',
-			'SearchContextMissingException',
-			'NullPointerException',
-		) ) );
-		if ( preg_match( "/$failed/", $message ) ) {
-			return 'failed';
+		$heuristics = array(
+			'rejected' => array (
+				'type_regexes' => array(
+					'(^|_)regex_',
+					'^too_complex_to_determinize_exception$',
+					'^elasticsearch_parse_exception$',
+					'^search_parse_exception$',
+					'^query_parsing_exception$',
+					'^illegal_argument_exception$',
+					'^too_many_clauses$'
+				),
+				'msg_regexes' => array(),
+			),
+			'failed' => array(
+				'type_regexes' => array(
+					'^es_rejected_execution_exception$',
+					'^remote_transport_exception$',
+					'^search_context_missing_exception$',
+					'^null_pointer_exception$',
+					'^elasticsearch_timeout_exception$'
+				),
+				// These are exceptions thrown by elastica itself
+				'msg_regexes' => array(
+					'^Couldn\'t connect to host',
+					'^No enabled connection',
+					'^Operation timed out',
+				),
+			),
+		);
+		foreach( $heuristics as $type => $heuristic ) {
+			$regex = implode( '|', $heuristic['type_regexes'] );
+			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
+				return $type;
+			}
+			$regex = implode( '|', $heuristic['msg_regexes'] );
+			if ( $regex && preg_match( "/$regex/", $error['reason'] ) ) {
+				return $type;
+			}
 		}
-
 		return "unknown";
 	}
 
@@ -537,31 +558,49 @@ class ElasticsearchIntermediary {
 	/**
 	 * Extract an error message from an exception thrown by Elastica.
 	 * @param \Elastica\Exception\ExceptionInterface $exception exception from which to extract a message
-	 * @return string message from the exception
+	 * @return array structuerd error from the exception
 	 * @suppress PhanUndeclaredMethod ExceptionInterface doesn't declare any methods
 	 *  so we have to suppress those warnings.
 	 */
-	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
+	public static function extractFullError( \Elastica\Exception\ExceptionInterface $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {
-			return $exception->getMessage();
+			// simulate the basic full error structure
+			return array(
+				'type' => 'unknown',
+				'reason' => $exception->getMessage()
+			);
 		}
 		if ( $exception instanceof PartialShardFailureException ) {
+			// @todo still needs to be fixed, need a way to trigger this
+			// failure
 			$shardStats = $exception->getResponse()->getShardsStatistics();
 			$message = array();
+			$type = null;
 			foreach ( $shardStats[ 'failures' ] as $failure ) {
-				$message[] = $failure[ 'reason' ];
+				$message[] = $failure['reason']['reason'];
+				if ( $type === null ) {
+					$type = $failure['reason']['type'];
+				}
 			}
-			return 'Partial failure:  ' . implode( ',', $message );
+
+			return array(
+				'type' => $type,
+				'reason' => 'Partial failure:  ' . implode( ',', $message ),
+				'partial' => true
+			);
 		}
 
-		// We must be talking to an es2.x cluster. Don't do anything particularly
-		// fancy, encode the error so it can be logged as a generic unknown error.
-		$error = $exception->getResponse()->getError();
-		if ( is_array( $error ) ) {
-			return json_encode( $error );
-		}
+		return $exception->getResponse()->getFullError();
+	}
 
-		return $exception->getElasticsearchException()->getMessage();
+	/**
+	 * @param Elastica\Exception\ExceptionInterface $exception
+	 * @return string
+	 */
+	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
+		$error = self::extractFullError( $exception );
+
+		return $error['type'] . ': ' .$error['reason'];
 	}
 
 	/**
@@ -785,63 +824,79 @@ class ElasticsearchIntermediary {
 			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
 		}
 
-		// Lots of times these are the same as getMessage(), but sometimes
-		// they're not. So get the nested exception so we're sure we get
-		// what we want. I'm looking at you PartialShardFailureException.
-		$message = self::extractMessage( $exception );
+		// Lots of times these are the same as getFullError(), but sometimes
+		// they're not. I'm looking at you PartialShardFailureException.
+		$error = self::extractFullError( $exception );
 
-		$marker = 'ParseException[Cannot parse ';
-		$markerLocation = strpos( $message, $marker );
-		if ( $markerLocation !== false ) {
-			// The important part of the parse error message comes before the next new line
-			// so lets slurp it up and log it rather than the huge clump of error.
-			$start = $markerLocation + strlen( $marker );
-			$end = strpos( $message, "\n", $start );
-			$parseError = substr( $message, $start, $end - $start );
-			return array( Status::newFatal( 'cirrussearch-parse-error' ), 'Parse error on ' . $parseError );
+		// These can be top level errors, or exceptions that don't extend from
+		// ResponseException like PartialShardFailureException or errors
+		// contacting the cluster.
+		if ( !isset( $error['root_cause'][0]['type'] ) ) {
+			return array(
+				Status::newFatal( 'cirrussearch-backend-error' ),
+				$error['type'] . ': ' . $error['reason']
+			);
 		}
 
-		$marker = 'Determinizing';
-		$markerLocation = strpos( $message, $marker );
-		if ( $markerLocation !== false ) {
-			$startOfMessage = $markerLocation;
-			$endOfMessage = strpos( $message, ']; nested', $startOfMessage );
-			if ( $endOfMessage === false ) {
-				$endOfMessage = strpos( $message, '; Determinizing', $startOfMessage );
-			}
-			$extracted = substr( $message, $startOfMessage, $endOfMessage - $startOfMessage );
-			return array( Status::newFatal( 'cirrussearch-regex-too-complex-error' ), $extracted );
+		// We can have multiple root causes if the error is not the
+		// same on different shards. Errors will be deduplicated based
+		// on their type. Currently we display only the first one if
+		// it happens.
+		$cause = reset( $error['root_cause'] );
+
+		if ( $cause['type'] === 'query_parsing_exception' ) {
+			// The important part of the parse error message is embedded a few levels down
+			// and comes before the next new line so lets slurp it up and log it rather than
+			// the huge clump of error.
+			$shardFailure = reset( $error['failed_shards'] );
+			$message = $shardFailure['reason']['caused_by']['reason'];
+			$end = strpos( $message, "\n", 0 );
+			$parseError = substr( $message, 0, $end );
+
+			return array(
+				Status::newFatal( 'cirrussearch-parse-error' ),
+				'Parse error on ' . $parseError
+			);
 		}
-		// This is _probably_ a regex syntax error so lets call it that. I can't think of
-		// what else would have automatons and illegal argument exceptions. Just looking
-		// for the exception won't suffice because other weird things could cause it.
-		$seemsToUseRegexes = strpos( $message, 'import org.apache.lucene.util.automaton.*' ) !== false;
-		$usesExtraRegex = strpos( $message, 'source_text:/' ) !== false;
-		$seemsToUseRegexes |= $usesExtraRegex;
-		$marker = 'IllegalArgumentException[';
-		$markerLocation = strpos( $message, $marker );
-		if ( $seemsToUseRegexes && $markerLocation !== false ) {
-			$start = $markerLocation + strlen( $marker );
-			$end = strpos( $message, "];", $start );
-			$syntaxError = substr( $message, $start, $end - $start );
+
+		if ( $cause['type'] === 'too_complex_to_determinize_exception' ) {
+			return array( Status::newFatal(
+				'cirrussearch-regex-too-complex-error' ),
+				$cause['reason']
+			);
+		}
+
+		if ( preg_match( '/(^|_)regex_/', $cause['type'] ) ) {
+			$syntaxError = $cause['reason'];
 			$errorMessage = 'unknown';
 			$position = 'unknown';
+			// Note: we support only error coming from the extra plugin
+			// In the case Cirrus is installed without the plugin and
+			// is using the Groovy script to do regex then a generic backend error
+			// will be displayed.
+
 			$matches = array();
-			if ( preg_match( '/(.+) at position (\d+)/', $syntaxError, $matches ) ) {
+			// In some cases elastic will serialize the exception by adding
+			// an extra message prefix with the exception type.
+			// If the exception is serialized through Transport:
+			//   invalid_regex_exception: expected ']' at position 2
+			// Or if the exception is thrown locally by the node receiving the query:
+			//   expected ']' at position 2
+			if ( preg_match( '/(?:[a-z_]+: )?(.+) at position (\d+)/', $syntaxError, $matches ) ) {
 				$errorMessage = $matches[ 1 ];
 				$position = $matches[ 2 ];
-				if ( !$usesExtraRegex ) {
-					// The 3 below offsets the .*( in front of the user pattern
-					// to make it unanchored.
-					$position -= 3;
-				}
 			} else if ( $syntaxError === 'unexpected end-of-string' ) {
 				$errorMessage = 'regex too short to be correct';
 			}
 			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );
+
 			return array( $status, 'Regex syntax error:  ' . $syntaxError );
 		}
-		return array( Status::newFatal( 'cirrussearch-backend-error' ), $message );
+
+		return array(
+			Status::newFatal( 'cirrussearch-backend-error' ),
+			$cause['type'] . ': ' . $cause['reason']
+		);
 	}
 
 	/**

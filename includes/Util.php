@@ -58,8 +58,9 @@ class Util {
 		// then vary the namespace on gender like we should.
 		$nsText = '';
 		if ( MWNamespace::hasGenderDistinction( $ns ) && $wgContLang->needsGenderDistinction() ) {
-			$nsText = $wgContLang->getGenderNsText( $ns,
-				GenderCache::singleton()->getGenderOf(
+			$nsText = $wgContLang->getGenderNsText(
+				$ns,
+				MediaWikiServices::getInstance()->getGenderCache()->getGenderOf(
 					User::newFromName( $title->getText() ),
 					__METHOD__
 				)
@@ -282,30 +283,6 @@ class Util {
 		}
 
 		return $data;
-	}
-
-	/**
-	 * @deprecated use MWElasticUtils::iterateOverScroll directly
-	 */
-	public static function iterateOverScroll( \Elastica\Index $index,
-			$scrollId, $scrollTime, $consumer, $limit = 0, $retryAttempts = 0,
-			$retryErrorCallback = null ) {
-		MWElasticUtils::iterateOverScroll( $index, $scrollId, $scrollTime, $consumer,
-			$limit, $retryAttempts, $retryErrorCallback );
-	}
-
-	/**
-	 * @deprecated use MWElasticUtils::withRetry
-	 */
-	public static function withRetry( $attempts, $func, $beforeRetry = null ) {
-		MWElasticUtils::withRetry( $attempts, $func, $beforeRetry );
-	}
-
-	/**
-	 * @deprecated use MWElasticUtils::backoffDelay
-	 */
-	public static function backoffDelay( $errorCount ) {
-		return MWElasticUtils::backoffDelay( $errorCount );
 	}
 
 	/**

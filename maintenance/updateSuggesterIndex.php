@@ -15,6 +15,7 @@ use Elastica\Index;
 use Elastica\Query;
 use Elastica\Request;
 use Elastica\Status;
+use MWElasticUtils;
 
 /**
  * Update the search configuration on the search backend for the title
@@ -427,7 +428,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$totalDocsToDump = $totalDocsInIndex;
 
 		$this->log( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
-		Util::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
+		MWElasticUtils::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
 			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				$ids = array();
 				foreach( $results as $result ) {
@@ -435,7 +436,7 @@ class UpdateSuggesterIndex extends Maintenance {
 					$ids[] = $result->getId();
 				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
-				Util::withRetry( $this->indexRetryAttempts,
+				MWElasticUtils::withRetry( $this->indexRetryAttempts,
 					function() use ( $ids ) {
 						$this->getType()->deleteIds( $ids );
 					}
@@ -577,7 +578,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 			$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 
-			Util::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
+			MWElasticUtils::iterateOverScroll( $sourceIndex, $result->getResponse()->getScrollId(), '15m',
 				function( $results ) use ( &$docsDumped, $totalDocsToDump,
 						$destinationType ) {
 					$inputDocs = array();
@@ -591,7 +592,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 					$suggestDocs = $this->builder->build( $inputDocs );
 					$this->outputProgress( $docsDumped, $totalDocsToDump );
-					Util::withRetry( $this->indexRetryAttempts,
+					MWElasticUtils::withRetry( $this->indexRetryAttempts,
 						function() use ( $destinationType, $suggestDocs ) {
 							$destinationType->addDocuments( $suggestDocs );
 						}

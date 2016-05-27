@@ -1341,7 +1341,7 @@ GROOVY;
 	 * @param string $indexType
 	 * @return boolean
 	 */
-	private function needNsFilter( array $extraIndexes, $indexType ) {
+	protected function needNsFilter( array $extraIndexes, $indexType ) {
 		if ( $extraIndexes ) {
 			// We're reaching into another wiki's indexes and we don't know what is there so be defensive.
 			return true;

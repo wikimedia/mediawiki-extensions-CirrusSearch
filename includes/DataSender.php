@@ -55,9 +55,10 @@ class DataSender extends ElasticsearchIntermediary {
 
 		if ( $indexes === null ) {
 			$names = array( self::ALL_INDEXES_FROZEN_NAME );
-		} elseif ( count( $indexes ) === 0 ) {
-			return;
 		} else {
+			if ( count( $indexes ) === 0 ) {
+				return;
+			}
 			$names = $this->indexesToIndexNames( $indexes );
 		}
 
@@ -100,14 +101,14 @@ class DataSender extends ElasticsearchIntermediary {
 	public function thawIndexes( array $indexes = null ) {
 		if ( $indexes === null ) {
 			$names = array( self::ALL_INDEXES_FROZEN_NAME );
-		} elseif ( count( $indexes ) === 0 ) {
-			return;
 		} else {
+			if ( count( $indexes ) === 0 ) {
+				return;
+			}
 			$names = $this->indexesToIndexNames( $indexes );
 		}
 
 		$this->log->info( "Thawing writes to " . implode( ',', $names ) );
-
 		$this->connection->getFrozenIndexNameType()->deleteIds( $names );
 	}
 

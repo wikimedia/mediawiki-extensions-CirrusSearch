@@ -387,6 +387,7 @@ class Updater extends ElasticsearchIntermediary {
 			$revId = $page->getRevision()->getId();
 			$parserOutput = $content->getParserOutput( $page->getTitle(), $revId );
 		}
+		/** @suppress PhanUndeclaredVariable */
 		return array( $content, $parserOutput );
 	}
 

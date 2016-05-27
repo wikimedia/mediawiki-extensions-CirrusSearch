@@ -609,6 +609,7 @@ class ElasticsearchIntermediary {
 	 * @return boolean is this a parse error?
 	 */
 	protected function isParseError( $status ) {
+		/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
 		foreach ( $status->getErrorsArray() as $errorMessage ) {
 			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
 				return true;

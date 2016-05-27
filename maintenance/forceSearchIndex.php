@@ -176,12 +176,14 @@ class ForceSearchIndex extends Maintenance {
 		}
 		while ( is_null( $this->limit ) || $this->limit > $completed ) {
 			if ( $this->indexUpdates ) {
+				/** @suppress PhanUndeclaredVariable */
 				$updates = $this->findUpdates( $minUpdate, $minId, $this->toDate );
 				$size = count( $updates );
 				// Note that we'll strip invalid updates after checking to the loop break condition
 				// because we don't want a batch the contains only invalid updates to cause early
 				// termination of the process....
 			} else {
+				/** @suppress PhanUndeclaredVariable */
 				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
 				$size = count( $deletes );
 			}
@@ -190,6 +192,7 @@ class ForceSearchIndex extends Maintenance {
 				break;
 			}
 			if ( $this->indexUpdates ) {
+				/** @suppress PhanUndeclaredVariable */
 				$last = $updates[ $size - 1 ];
 				// We make sure to set this if we need it but don't bother when we don't because
 				// it requires loading the revision.
@@ -200,6 +203,7 @@ class ForceSearchIndex extends Maintenance {
 
 				// Strip updates down to just pages
 				$pages = array();
+				/** @suppress PhanUndeclaredVariable */
 				foreach ( $updates as $update ) {
 					if ( isset( $update[ 'page' ] ) ) {
 						$pages[] = $update[ 'page' ];
@@ -229,6 +233,7 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$titlesToDelete = array();
 				$idsToDelete = array();
+				/** @suppress PhanUndeclaredVariable */
 				foreach( $deletes as $delete ) {
 					$titlesToDelete[] = $delete[ 'title' ];
 					$idsToDelete[] = $delete[ 'page' ];
@@ -245,6 +250,7 @@ class ForceSearchIndex extends Maintenance {
 			$rate = $this->calculateIndexingRate( $completed, $operationStartTime );
 
 			if ( is_null( $this->toDate ) ) {
+				/** @suppress PhanUndeclaredVariable */
 				$endingAt = $minId;
 			} else {
 				$endingAt = $minUpdate->getTimestamp( TS_ISO_8601 );

@@ -237,6 +237,8 @@ class PhraseSuggesterProfiles {
 			$stupidBackoffDiscount = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'];
 		}
 
+		$laplaceAlpha = null;
+		$stupidBackoffDiscount = null;
 		foreach ( $lines as $line ) {
 			$linePieces = explode( ':', $line, 2 );
 			if ( count( $linePieces ) ) {

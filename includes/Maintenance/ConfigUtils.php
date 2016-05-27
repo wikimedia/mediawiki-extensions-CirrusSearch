@@ -79,7 +79,7 @@ class ConfigUtils {
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
 				$this->error( "Looks like the index has more than one identifier. You should delete all\n" .
-					"but the one of them currently active. Here is the list: " .  implode( $found, ',' ), 1 );
+					"but the one of them currently active. Here is the list: " .  implode( ',', $found ), 1 );
 			}
 			if ( $found ) {
 				$identifier = substr( $found[0], strlen( $typeName ) + 1 );

@@ -83,16 +83,3 @@ Feature: Did you mean
     When I set did you mean suggester option cirrusSuggCollate to yes
     And I api search for awards suggest1 suggest4
     Then there is no api suggestion
-
-  @expect_failure
-  Scenario: When I use the laplace smoothing model with alpha value 0.000001 the suggestions are not complete
-    When I set did you mean suggester option cirrusSuggSmoothing to laplace
-    And I set did you mean suggester option cirrusSuggAlpha to 0.1
-    And I api search for grammo awards suggest1 suggest4 suggest4
-    Then grammo awards suggest1 *suggest2 suggest3* is suggested by api
-
-  Scenario: When I use the laplace smoothing model with alpha value 0.9 there is no suggestion
-    When I set did you mean suggester option cirrusSuggSmoothing to laplace
-    And I set did you mean suggester option cirrusSuggAlpha to 0.9999
-    And I api search for grammo awards suggest1 suggest4 suggest4
-    Then there is no api suggestion

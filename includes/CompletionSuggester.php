@@ -412,6 +412,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$limit = $this->getHardLimit();
 		$suggestions = array();
+		$suggestionProfile = array();
 		foreach ( $data as $name => $results  ) {
 			$discount = $profiles[$name]['discount'];
 			foreach ( $results  as $suggested ) {

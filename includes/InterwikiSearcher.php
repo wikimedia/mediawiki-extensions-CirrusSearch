@@ -122,6 +122,11 @@ class InterwikiSearcher extends Searcher {
 		return array();
 	}
 
+	/**
+	 * @param array $extraIndexes
+	 * @param string $indexType
+	 * @return bool
+	 */
 	protected function needNsFilter( array $extraIndexes, $indexType ) {
 		// We need to be defensive here, the parent class is not aware
 		// that we plan to search on another wiki. Since we support only

@@ -334,19 +334,10 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->query = new \Elastica\Query\MatchAll();
 		}
 
-		$this->setBoostLinks();
+		/** @suppress PhanDeprecatedFunction */
+		$this->searchContext->setBoostLinks( true );
 
 		return $this->search( 'prefix', $search );
-	}
-
-	/**
-	 * Tiny function to restrict warning suppression
-	 * @todo: use dedicated rescore profiles for prefix search.
-	 *
-	 * @suppress PhanDeprecatedFunction
-	 */
-	private function setBoostLinks() {
-		$this->searchContext->setBoostLinks( true );
 	}
 
 	/**
@@ -881,6 +872,7 @@ GROOVY;
 			$likeDocs = array_merge( $likeDocs, $text );
 		}
 
+		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
 		$this->query->setLike( $likeDocs );
 
 		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
@@ -1272,6 +1264,7 @@ GROOVY;
 			function( $error, $key, $userName ) use ( $type, $description, $logContext ) {
 				$forUserName = $userName ? "for {userName} " : '';
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					/** @suppress PhanTypeMismatchArgument phan doesn't understand array addition */
 					"Pool error {$forUserName}on key {key} during $description:  {error}",
 					$logContext + array(
 						'userName' => $userName,
@@ -1321,6 +1314,7 @@ GROOVY;
 
 			if ( $cacheTTL > 0 && !$isPartialResult ) {
 				$requestStats->increment("CirrusSearch.query_cache.$type.set");
+				/** @suppress PhanUndeclaredVariable */
 				$cache->set( $key, $result, $cacheTTL );
 			}
 		}

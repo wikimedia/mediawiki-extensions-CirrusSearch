@@ -71,6 +71,7 @@ docker run \
 	--exclude-directory-list "$SKIP_ANALYSIS" \
 	--output "php://stdout" \
 	| sed "s/\/mnt\/src/$SED_PATTERN/" \
+	| php $(dirname $0)/postprocess-phan.php \
 	> /tmp/phan.out
 
 

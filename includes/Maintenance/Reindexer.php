@@ -13,6 +13,7 @@ use Elastica\Query;
 use Elastica\Type;
 use ForkController;
 use MediaWiki\Logger\LoggerFactory;
+use MWElasticUtils;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -309,7 +310,7 @@ class Reindexer {
 			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
 			$operationStartTime = microtime( true );
 			$completed = 0;
-			Util::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
+			MWElasticUtils::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
 				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $type,
 						&$completed, $totalDocsToReindex, $operationStartTime ) {
 					$documents = array();
@@ -411,7 +412,7 @@ class Reindexer {
 	 * @return mixed
 	 */
 	private function withRetry( $attempts, $messagePrefix, $description, $func) {
-		return Util::withRetry ( $attempts, $func,
+		return MWElasticUtils::withRetry ( $attempts, $func,
 			function( $e, $errors ) use ( $messagePrefix, $description ) {
 				$this->sleepOnRetry( $e, $errors, $messagePrefix, $description );
 			} );
@@ -425,7 +426,7 @@ class Reindexer {
 	 */
 	private function sleepOnRetry( ExceptionInterface $e, $errors, $messagePrefix, $description ) {
 		$type = get_class( $e );
-		$seconds = Util::backoffDelay( $errors );
+		$seconds = MWElasticUtils::backoffDelay( $errors );
 		$message = ElasticsearchIntermediary::extractMessage( $e );
 		$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
 			"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );

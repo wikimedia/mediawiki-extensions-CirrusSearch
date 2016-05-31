@@ -8,6 +8,7 @@ use Elastica\Filter;
 use Elastica\Index;
 use Elastica\JSON;
 use Elastica\Query;
+use MWElasticUtils;
 
 /**
  * Dump an index to stdout
@@ -155,7 +156,7 @@ class DumpIndex extends Maintenance {
 		$this->logToStderr = true;
 		$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
 
-		Util::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
+		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
 			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				foreach ( $results as $result ) {
 					$document = array(

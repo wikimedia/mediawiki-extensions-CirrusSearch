@@ -44,32 +44,13 @@ class Util {
 
 	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying
-	 * by gender if need be.
+	 * by gender if need be (using Title::getNsText()).
 	 *
 	 * @param Title $title The page title to use
 	 * @return string
 	 */
 	public static function getNamespaceText( Title $title ) {
-		global $wgContLang;
-
-		$ns = $title->getNamespace();
-
-		// If we're in NS_USER(_TALK) and we're in a gender-distinct language
-		// then vary the namespace on gender like we should.
-		$nsText = '';
-		if ( MWNamespace::hasGenderDistinction( $ns ) && $wgContLang->needsGenderDistinction() ) {
-			$nsText = $wgContLang->getGenderNsText(
-				$ns,
-				MediaWikiServices::getInstance()->getGenderCache()->getGenderOf(
-					User::newFromName( $title->getText() ),
-					__METHOD__
-				)
-			);
-		} elseif ( $nsText !== NS_MAIN ) {
-			$nsText = $wgContLang->getNsText( $ns );
-		}
-
-		return strtr( $nsText, '_', ' ' );
+		return strtr( $title->getNsText(), '_', ' ' );
 	}
 
 	/**

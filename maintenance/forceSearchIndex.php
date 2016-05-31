@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use CirrusSearch;
 use CirrusSearch\Maintenance\Maintenance;
 use JobQueueGroup;
-use LinkCache;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWException;
@@ -453,8 +452,6 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$result[] = $update;
 		}
-		// Clear the LinkCache to prevent its memory use from growing without bounds.
-		MediaWikiServices::getInstance()->getLinkCache()->clear();
 
 		return $result;
 	}

@@ -51,6 +51,23 @@ class ForceSearchIndex extends Maintenance {
 	public $namespace;
 	public $excludeContentTypes;
 
+	/**
+	 * @var int number of completed jobs
+	 */
+	private $completed;
+
+	/**
+	 * @var boolean true if the script is run with --ids
+	 */
+	private $runWithIds;
+
+	/**
+	 * @var int[][] chunks of ids to reindex when --ids is used, chunk size
+	 * is controlled by mBatchSize
+	 */
+	private $ids;
+
+
 	public function __construct() {
 		parent::__construct();
 		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from id based indexing to "
@@ -63,6 +80,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Not useful with --deletes or --from or --to.', false, true );
+		$this->addOption( 'ids', 'List of ids (comma separated) to reindex. Not allowed with deletes/from/to/fromId/toId/limit.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
@@ -105,6 +123,30 @@ class ForceSearchIndex extends Maintenance {
 
 		// Make sure we don't flood the pool counter
 		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+
+		// We need to check ids options early otherwize hasOption may return
+		// true even if the user did not set the option on the commandline
+		if ( $this->hasOption( 'ids' ) ) {
+			if ( $this->getOption( 'deletes' ) || $this->hasOption( 'limit' )
+				|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
+				|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
+			) {
+				$this->error( '--ids cannot be used with deletes/from/to/fromId/toId/limit', 1 );
+			}
+
+
+			$this->runWithIds = true;
+			$ids = array_map( function( $id ) {
+					$id = trim( $id );
+					if ( !ctype_digit( $id ) ) {
+						$this->error( "Invalid id provided in --ids, got '$id', expected a positive integer", 1 );
+					}
+					return intval( $id );
+				},
+				explode( ',', $this->getOption( 'ids' ) ) );
+			$ids = array_unique( $ids, SORT_REGULAR );
+			$this->ids = array_chunk( $ids, $this->mBatchSize );
+		}
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
 			// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
@@ -164,7 +206,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$operationStartTime = microtime( true );
 		$lastJobQueueCheckTime = 0;
-		$completed = 0;
+		$this->completed = 0;
 		$rate = 0;
 
 		$minUpdate = $this->fromDate;
@@ -174,10 +216,16 @@ class ForceSearchIndex extends Maintenance {
 			$minNamespace = -100000000;
 			$minTitle = '';
 		}
-		while ( is_null( $this->limit ) || $this->limit > $completed ) {
+
+		while ( $this->jobsTodo() ) {
+			$size = 0;
 			if ( $this->indexUpdates ) {
-				/** @suppress PhanUndeclaredVariable */
-				$updates = $this->findUpdates( $minUpdate, $minId, $this->toDate );
+				if ( $this->runWithIds ) {
+					$updates = $this->findUpdatesByIds( array_shift( $this->ids ) );
+				} else {
+					/** @suppress PhanUndeclaredVariable */
+					$updates = $this->findUpdates( $minUpdate, $minId, $this->toDate );
+				}
 				$size = count( $updates );
 				// Note that we'll strip invalid updates after checking to the loop break condition
 				// because we don't want a batch the contains only invalid updates to cause early
@@ -186,6 +234,10 @@ class ForceSearchIndex extends Maintenance {
 				/** @suppress PhanUndeclaredVariable */
 				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
 				$size = count( $deletes );
+				// @todo: add --ids support with --deletes
+				// instead of inspecting the archive table we could maybe create Titles, try
+				// to fetch them with LinkBatch then send deletes only on those where
+				// $title->exists() === false
 			}
 
 			if ( $size == 0 ) {
@@ -246,8 +298,8 @@ class ForceSearchIndex extends Maintenance {
 				$updater->deletePages( $titlesToDelete, $idsToDelete );
 			}
 
-			$completed += $size;
-			$rate = $this->calculateIndexingRate( $completed, $operationStartTime );
+			$this->completed += $size;
+			$rate = $this->calculateIndexingRate( $this->completed, $operationStartTime );
 
 			if ( is_null( $this->toDate ) ) {
 				/** @suppress PhanUndeclaredVariable */
@@ -257,7 +309,7 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$this->output( "$wiki $operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
-		$this->output( "$operationName a total of $completed pages at $rate/second\n" );
+		$this->output( "$operationName a total of {$this->completed} pages at $rate/second\n" );
 
 		$lastQueueSizeForOurJob = PHP_INT_MAX;
 		$waitStartTime = microtime( true );
@@ -282,6 +334,14 @@ class ForceSearchIndex extends Maintenance {
 				$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
 				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 			}
+		}
+	}
+
+	private function jobsTodo() {
+		if ( $this->runWithIds ) {
+			return !empty( $this->ids );
+		} else {
+			return is_null( $this->limit ) || $this->limit > $this->completed;
 		}
 	}
 
@@ -396,6 +456,39 @@ class ForceSearchIndex extends Maintenance {
 		}
 
 		return $this->decodeResults( $res, $maxUpdate );
+	}
+
+	/**
+	 * Find $this->mBatchSize pages that have updates made after (minUpdate,minId) and before maxUpdate.
+	 *
+	 * @param $ids int[] list of ids
+	 * @return array An array of the last update timestamp, id, and page that was found.
+	 *    Sometimes page is null - those record should be used to determine new
+	 *    inputs for this function but should not by synced to the search index.
+	 */
+	private function findUpdatesByIds( array $ids ) {
+		$dbr = $this->getDB( DB_SLAVE );
+		$where = array();
+		$where[] = 'page_id IN (' . $dbr->makeList( $ids ) . ')';
+		if ( $this->namespace ) {
+			$where['page_namespace'] = $this->namespace;
+		}
+		if ( $this->excludeContentTypes ) {
+			$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
+			$where[] = "page_content_model NOT IN ($list)";
+		}
+
+		// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
+		$res = $dbr->select(
+			array( 'page' ),
+			WikiPage::selectFields(),
+			$where,
+			__METHOD__,
+			array( 'ORDER BY' => 'page_id',
+			       'LIMIT' => $this->mBatchSize )
+		);
+
+		return $this->decodeResults( $res, null );
 	}
 
 	/**

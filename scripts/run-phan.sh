@@ -72,6 +72,7 @@ docker run \
 	--output "php://stdout" \
 	| sed "s/\/mnt\/src/$SED_PATTERN/" \
 	| php $(dirname $0)/postprocess-phan.php \
+	| sed "s/$SED_PATTERN//" \
 	> /tmp/phan.out
 
 

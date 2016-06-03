@@ -7,9 +7,9 @@ After("@frozen") do
 end
 
 main = false
-Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @phrase_prefix") do
+setup_main = lambda do |world|
   unless main
-    steps %(
+    world.steps %(
       Given a page named Template:Template Test exists with contents pickles [[Category:TemplateTagged]]
       And a page named Catapult/adsf exists with contents catapult subpage [[Catapult]]
       And a page named Links To Catapult exists with contents [[Catapult]]
@@ -31,9 +31,9 @@ Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @
 end
 
 clean = false
-Before("@clean") do
+setup_clean = lambda do |world|
   unless clean
-    steps %(
+    world.steps %(
       Given I delete DeleteMeRedirect
     )
     clean = true
@@ -41,9 +41,9 @@ Before("@clean") do
 end
 
 redirect_loop = false
-Before("@redirect_loop") do
+setup_redirect_loop = lambda do |world|
   unless redirect_loop
-    steps %(
+    world.steps %(
       Given a page named Redirect Loop exists with contents #REDIRECT [[Redirect Loop 1]]
       And a page named Redirect Loop 1 exists with contents #REDIRECT [[Redirect Loop 2]]
       And a page named Redirect Loop 2 exists with contents #REDIRECT [[Redirect Loop 1]]
@@ -53,9 +53,9 @@ Before("@redirect_loop") do
 end
 
 main2 = false
-Before("@setup_main, @prefix, @bad_syntax") do
+setup_main2 = lambda do |world|
   unless main2
-    steps %(
+    world.steps %(
       Given a page named Rdir exists with contents #REDIRECT [[Two Words]]
       And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
       And a page named IHaveAVideo exists with contents [[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]
@@ -66,9 +66,9 @@ Before("@setup_main, @prefix, @bad_syntax") do
 end
 
 commons = false
-Before("@setup_main, @commons") do
+setup_commons = lambda do |world|
   unless commons
-    steps %(
+    world.steps %(
 
       Given I delete on commons File:OnCommons.svg
       And I delete on commons File:DuplicatedLocally.svg
@@ -85,9 +85,9 @@ Before("@setup_main, @commons") do
 end
 
 africa = false
-Before("@setup_main, @prefix, @go, @bad_syntax") do
+setup_africa = lambda do |world|
   unless africa
-    steps %(
+    world.steps %(
       Given a page named África exists with contents for testing
         )
     africa = true
@@ -95,9 +95,9 @@ Before("@setup_main, @prefix, @go, @bad_syntax") do
 end
 
 prefix = false
-Before("@prefix") do
+setup_prefix = lambda do |world|
   unless prefix
-    steps %(
+    world.steps %(
       Given a page named L'Oréal exists
       And a page named Jean-Yves Le Drian exists
         )
@@ -106,9 +106,9 @@ Before("@prefix") do
 end
 
 headings = false
-Before("@headings") do
+setup_headings = lambda do |world|
   unless headings
-    steps %(
+    world.steps %(
       Given a page named HasHeadings exists with contents @has_headings.txt
       And a page named HasReferencesInText exists with contents References [[Category:HeadingsTest]]
       And a page named HasHeadingsWithHtmlComment exists with contents @has_headings_with_html_comment.txt
@@ -119,9 +119,9 @@ Before("@headings") do
 end
 
 javascript_injection = false
-Before("@javascript_injection") do
+setup_javascript_injection = lambda do |world|
   unless javascript_injection
-    steps %(
+    world.steps %(
       Given a page named Javascript Direct Inclusion exists with contents @javascript.txt
       Given a page named Javascript Pre Tag Inclusion exists with contents @javascript_in_pre.txt
         )
@@ -130,9 +130,9 @@ Before("@javascript_injection") do
 end
 
 setup_namespaces = false
-Before("@setup_namespaces") do
+setup_setup_namespaces = lambda do |world|
   unless setup_namespaces
-    steps %(
+    world.steps %(
       Given a page named Talk:Two Words exists with contents why is this page about catapults?
       And a page named Help:Smoosh exists with contents test
       And a page named File:Nothingasdf exists with contents nothingasdf
@@ -142,9 +142,9 @@ Before("@setup_namespaces") do
 end
 
 suggestions = false
-Before("@suggestions") do
+setup_suggestions = lambda do |world|
   unless suggestions
-    steps %(
+    world.steps %(
       Given a page named Popular Culture exists with contents popular culture
       And a page named Nobel Prize exists with contents nobel prize
       And a page named Noble Gasses exists with contents noble gasses
@@ -183,9 +183,9 @@ Before("@suggestions") do
 end
 
 suggestions_stemming = false
-Before("@suggestions", "@stemming") do
+setup_suggestions_stemming = lambda do |world|
   unless suggestions_stemming
-    steps %(
+    world.steps %(
       Given a page named Stemming Multiwords exists
       And a page named Stemming Possessive’s exists
       And a page named Stemmingsinglewords exists
@@ -207,9 +207,9 @@ Before("@suggestions", "@stemming") do
 end
 
 highlighting = false
-Before("@highlighting") do
+setup_highlighting = lambda do |world|
   unless highlighting
-    steps %(
+    world.steps %(
       Given a page named Rashidun Caliphate exists with contents @rashidun_caliphate.txt
       And a page named Crazy Rdir exists with contents #REDIRECT [[Two Words]]
       And a page named Insane Rdir exists with contents #REDIRECT [[Two Words]]
@@ -222,9 +222,9 @@ Before("@highlighting") do
 end
 
 highlighting_references = false
-Before("@highlighting", "@references") do
+setup_highlighting_references = lambda do |world|
   unless highlighting_references
-    steps %(
+    world.steps %(
       Given a page named References Highlight Test exists with contents @references_highlight_test.txt
         )
   end
@@ -232,10 +232,10 @@ Before("@highlighting", "@references") do
 end
 
 more_like_this = false
-Before("@more_like_this") do
+setup_more_like_this = lambda do |world|
   unless more_like_this
     # The MoreLikeMe term must appear in "a bunch" of pages for it to be used in morelike: searches
-    steps %(
+    world.steps %(
       Given a page named More Like Me 1 exists with contents morelikesetone morelikesetone
       And a page named More Like Me 2 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
       And a page named More Like Me 3 exists with contents morelikesetone morelikesetone morelikesetone morelikesetone
@@ -258,9 +258,9 @@ Before("@more_like_this") do
 end
 
 phrase_rescore = false
-Before("@setup_phrase_rescore") do
+setup_phrase_rescore = lambda do |world|
   unless phrase_rescore
-    steps %(
+    world.steps %(
       Given a page named Rescore Test Words Chaff exists
       And a page named Test Words Rescore Rescore Test Words exists
       And a page named Rescore Test TextContent exists with contents Chaff
@@ -271,9 +271,9 @@ Before("@setup_phrase_rescore") do
 end
 
 exact_quotes = false
-Before("@exact_quotes") do
+setup_exact_quotes = lambda do |world|
   unless exact_quotes
-    steps %(
+    world.steps %(
       Given a page named Contains A Stop Word exists
       And a page named Doesn't Actually Contain Stop Words exists
       And a page named Pick* exists
@@ -283,9 +283,9 @@ Before("@exact_quotes") do
 end
 
 programmer_friendly = false
-Before("@programmer_friendly") do
+setup_programmer_friendly = lambda do |world|
   unless programmer_friendly
-    steps %(
+    world.steps %(
       Given a page named $wgNamespaceAliases exists
       And a page named PFSC exists with contents snake_case
       And a page named PascalCase exists
@@ -299,9 +299,9 @@ Before("@programmer_friendly") do
 end
 
 stemmer = false
-Before("@stemmer") do
+setup_stemmer = lambda do |world|
   unless stemmer
-    steps %(
+    world.steps %(
       Given a page named StemmerTest Aliases exists
       And a page named StemmerTest Alias exists
       And a page named StemmerTest Used exists
@@ -312,9 +312,9 @@ Before("@stemmer") do
 end
 
 prefix_filter = false
-Before("@prefix_filter") do
+setup_prefix_filter = lambda do |world|
   unless prefix_filter
-    steps %(
+    world.steps %(
       Given a page named Prefix Test exists
       And a page named Prefix Test Redirect exists with contents #REDIRECT [[Prefix Test]]
       And a page named Foo Prefix Test exists with contents [[Prefix Test]]
@@ -328,11 +328,11 @@ Before("@prefix_filter") do
 end
 
 prefer_recent = false
-Before("@prefer_recent") do
+setup_prefer_recent = lambda do |world|
   unless prefer_recent
     # These are updated per process instead of per test because of the 20 second wait
     # Note that the scores have to be close together because 20 seconds doesn't mean a whole lot
-    steps %(
+    world.steps %(
       Given a page named PreferRecent First exists with contents %{epoch}
       And a page named PreferRecent Second Second exists with contents %{epoch}
       And wait 20 seconds
@@ -344,9 +344,9 @@ Before("@prefer_recent") do
 end
 
 hastemplate = false
-Before("@hastemplate") do
+setup_hastemplate = lambda do |world|
   unless hastemplate
-    steps %(
+    world.steps %(
       Given a page named MainNamespaceTemplate exists
       And a page named HasMainNSTemplate exists with contents {{:MainNamespaceTemplate}}
       And a page named Talk:TalkTemplate exists
@@ -357,9 +357,9 @@ Before("@hastemplate") do
 end
 
 boost_template = false
-Before("@boost_template") do
+setup_boost_template = lambda do |world|
   unless boost_template
-    steps %(
+    world.steps %(
       Given a page named Template:BoostTemplateHigh exists with contents BoostTemplateTest
       And a page named Template:BoostTemplateLow exists with contents BoostTemplateTest
       And a page named NoTemplates BoostTemplateTest exists with contents nothing important
@@ -371,9 +371,9 @@ Before("@boost_template") do
 end
 
 go = false
-Before("@go") do
+setup_go = lambda do |world|
   unless go
-    steps %(
+    world.steps %(
       Given a page named MixedCapsAndLowerCase exists
         )
   end
@@ -381,9 +381,9 @@ Before("@go") do
 end
 
 go_options = false
-Before("@go", "@options") do
+setup_go_options = lambda do |world|
   unless go_options
-    steps %(
+    world.steps %(
       Given a page named son Nearmatchflattentest exists
       And a page named Son Nearmatchflattentest exists
       And a page named SON Nearmatchflattentest exists
@@ -421,9 +421,9 @@ Before("@go", "@options") do
 end
 
 redirect = false
-Before("@redirect") do
+setup_redirect = lambda do |world|
   unless redirect
-    steps %(
+    world.steps %(
       Given a page named SEO Redirecttest exists with contents #REDIRECT [[Search Engine Optimization Redirecttest]]
       And a page named Redirecttest Yikes exists with contents #REDIRECT [[Redirecttest Yay]]
       And a page named User_talk:SEO Redirecttest exists with contents #REDIRECT [[User_talk:Search Engine Optimization Redirecttest]]
@@ -442,9 +442,9 @@ Before("@redirect") do
 end
 
 file_text = false
-Before("@file_text") do
+setup_file_text = lambda do |world|
   unless file_text
-    steps %(
+    world.steps %(
       Given a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
         )
   end
@@ -452,9 +452,9 @@ Before("@file_text") do
 end
 
 match_stopwords = false
-Before("@match_stopwords") do
+setup_stopwords = lambda do |world|
   unless match_stopwords
-    steps %(
+    world.steps %(
       Given a page named To exists
         )
   end
@@ -462,9 +462,9 @@ Before("@match_stopwords") do
 end
 
 many_redirects = false
-Before("@many_redirects") do
+setup_many_redirects = lambda do |world|
   unless many_redirects
-    steps %(
+    world.steps %(
       Given a page named Manyredirectstarget exists with contents [[Category:ManyRedirectsTest]]
       And a page named Fewredirectstarget exists with contents [[Category:ManyRedirectsTest]]
       And a page named Many Redirects Test 1 exists with contents #REDIRECT [[Manyredirectstarget]]
@@ -481,9 +481,9 @@ Before("@many_redirects") do
 end
 
 relevancy = false
-Before("@relevancy") do
+setup_relevancy = lambda do |world|
   unless relevancy
-    steps %(
+    world.steps %(
       Given a page named Relevancytest exists with contents it is not relevant
       And a page named Relevancytestviaredirect exists with contents not relevant
       And a page named Relevancytest Redirect exists with contents #REDIRECT [[Relevancytestviaredirect]]
@@ -523,9 +523,9 @@ Before("@relevancy") do
 end
 
 fallback_finder = false
-Before("@fallback_finder") do
+setup_fallback_finder = lambda do |world|
   unless fallback_finder
-    steps %{
+    world.steps %{
       Given a page named $US exists
       And a page named US exists
       And a page named Uslink exists with contents [[US]]
@@ -537,9 +537,9 @@ Before("@fallback_finder") do
 end
 
 js_and_css = false
-Before("@js_and_css") do
+setup_js_and_css = lambda do |world|
   unless js_and_css
-    steps %(
+    world.steps %(
       Given a page named User:Tools/Some.js exists with contents @some.js
       And a page named User:Tools/Some.css exists with contents @some.css
         )
@@ -548,9 +548,9 @@ Before("@js_and_css") do
 end
 
 special_random = false
-Before("@special_random") do
+setup_special_random = lambda do |world|
   unless special_random
-    steps %(
+    world.steps %(
       Given a page named User:Random Test exists
       And a page named User_talk:Random Test exists
         )
@@ -559,9 +559,9 @@ Before("@special_random") do
 end
 
 regex = false
-Before("@regex") do
+setup_regex = lambda do |world|
   unless regex
-    steps %(
+    world.steps %(
       Given a page named RegexEscapedForwardSlash exists with contents a/b
       And a page named RegexEscapedBackslash exists with contents a\\b
       And a page named RegexEscapedDot exists with contents a.b
@@ -573,9 +573,9 @@ Before("@regex") do
 end
 
 linksto = false
-Before("@linksto") do
+setup_linksto = lambda do |world|
   unless linksto
-    steps %(
+    world.steps %(
       Given a page named LinksToTest Target exists
       And a page named LinksToTest Plain exists with contents [[LinksToTest Target]]
       And a page named LinksToTest OtherText exists with contents [[LinksToTest Target]] and more text
@@ -589,9 +589,9 @@ Before("@linksto") do
 end
 
 filenames = false
-Before("@filenames") do
+setup_filenames = lambda do |world|
   unless filenames
-    steps %(
+    world.steps %(
       Given a file named File:No_SVG.svg exists with contents No_SVG.svg and description [[Category:Red circle with left slash]]
       And a file named File:Somethingelse_svg_SVG.svg exists with contents Somethingelse_svg_SVG.svg and description [[Category:Red circle with left slash]]
         )
@@ -600,9 +600,9 @@ Before("@filenames") do
 end
 
 removed_text = false
-Before("@removed_text") do
+setup_removed_text = lambda do |world|
   unless removed_text
-    steps %(
+    world.steps %(
       Given a page named Autocollapse Example exists with contents <div class="autocollapse">in autocollapse</div>
         )
     removed_text = true
@@ -610,9 +610,9 @@ Before("@removed_text") do
 end
 
 accent_squashing = false
-Before("@accent_squashing") do
+setup_accent_squashing = lambda do |world|
   unless accent_squashing
-    steps %(
+    world.steps %(
       Given a page named Áccent Sorting exists
         And a page named Accent Sorting exists
         )
@@ -621,9 +621,9 @@ Before("@accent_squashing") do
 end
 
 accented_namespace = false
-Before("@accented_namespace") do
+setup_accented_namespace = lambda do |world|
   unless removed_text
-    steps %(
+    world.steps %(
       Given a page named Mó:Test exists with contents some text
         )
     accented_namespace = true
@@ -631,9 +631,9 @@ Before("@accented_namespace") do
 end
 
 suggest = false
-Before("@suggest") do
+setup_suggest = lambda do |world|
   unless suggest
-    steps %(
+    world.steps %(
       Given a page named X-Men exists with contents The X-Men are a fictional team of superheroes
         And a page named Xavier, Charles exists with contents Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]
         And a page named X-Force exists with contents X-Force is a fictional team of of [[X-Men]]
@@ -658,4 +658,241 @@ Before("@suggest") do
     )
     suggest = true
   end
+end
+
+# Optimization for parallel runners so only one does the setup, Makes the bold
+# assumption parallel runner is going to run everything.
+lock_file_path = "/tmp/parallel_cucumber.lock"
+AfterConfiguration do
+  next unless Object.const_defined?("ParallelTests")
+
+  if ParallelTests.first_process?
+    fh = File.open(lock_file_path, File::CREAT)
+    fh.flock(File::LOCK_EX)
+
+    setup_main.call(self)
+    setup_clean.call(self)
+    setup_redirect_loop.call(self)
+    setup_main2.call(self)
+    setup_commons.call(self)
+    setup_africa.call(self)
+    setup_prefix.call(self)
+    setup_headings.call(self)
+    setup_javascript_injection.call(self)
+    setup_setup_namespaces.call(self)
+    setup_suggestions.call(self)
+    setup_suggestions_stemming.call(self)
+    setup_highlighting.call(self)
+    setup_highlighting_references.call(self)
+    setup_more_like_this.call(self)
+    setup_phrase_rescore.call(self)
+    setup_exact_quotes.call(self)
+    setup_programmer_friendly.call(self)
+    setup_stemmer.call(self)
+    setup_prefix_filter.call(self)
+    setup_prefer_recent.call(self)
+    setup_hastemplate.call(self)
+    setup_boost_template.call(self)
+    setup_go.call(self)
+    setup_go_options.call(self)
+    setup_redirect.call(self)
+    setup_file_text.call(self)
+    setup_stopwords.call(self)
+    setup_many_redirects.call(self)
+    setup_relevancy.call(self)
+    setup_fallback_finder.call(self)
+    setup_js_and_css.call(self)
+    setup_special_random.call(self)
+    setup_regex.call(self)
+    setup_linksto.call(self)
+    setup_filenames.call(self)
+    setup_removed_text.call(self)
+    setup_accent_squashing.call(self)
+    setup_accented_namespace.call(self)
+    setup_suggest.call(self)
+
+  else
+    # Horrible hack...but whatever. Try and guarantee first
+    # process has the lock already
+    sleep(1) until File.exists?(lock_file_path)
+    fh = File.open(lock_file_path, File::CREAT)
+    # Wait for lock to be released
+    fh.flock(File::LOCK_SH)
+
+    main = true
+    clean = true
+    redirect_loop = true
+    main2 = true
+    commons = true
+    africa = true
+    prefix = true
+    headings = true
+    javascript_injection = true
+    setup_namespaces = true
+    suggestions = true
+    suggestions_stemming = true
+    highlighting = true
+    highlighting_references = true
+    more_like_this = true
+    phrase_rescore = true
+    exact_quotes = true
+    programmer_friendly = true
+    stemmer = true
+    prefix_filter = true
+    prefer_recent = true
+    hastemplate = true
+    boost_template = true
+    go = true
+    go_options = true
+    redirect = true
+    file_text = true
+    match_stopwords = true
+    many_redirects = true
+    relevancy = true
+    fallback_finder = true
+    js_and_css = true
+    special_random = true
+    regex = true
+    linksto = true
+    filenames = true
+    removed_text = true
+    accent_squashing = true
+    accented_namespace = true
+    suggest = true
+
+  end
+  fh.flock(File::LOCK_UN)
+end
+
+at_exit do
+  next unless Object.const_defined?("ParallelTests")
+  next unless ParallelTests.first_process?
+  ParallelTests.wait_for_other_processes_to_finish
+  begin
+    File.delete(lock_file_path)
+  # rubocop:disable HandleExceptions
+  rescue
+    # -
+  end
+end
+
+Before("@setup_main, @filters, @prefix, @bad_syntax, @wildcard, @exact_quotes, @phrase_prefix") do
+  setup_main.call(self)
+end
+Before("@clean") do
+  setup_clean.call(self)
+end
+Before("@redirect_loop") do
+  setup_redirect_loop.call(self)
+end
+Before("@setup_main, @prefix, @bad_syntax") do
+  setup_main2.call(self)
+end
+Before("@setup_main, @commons") do
+  setup_commons.call(self)
+end
+Before("@setup_main, @prefix, @go, @bad_syntax") do
+  setup_africa.call(self)
+end
+Before("@prefix") do
+  setup_prefix.call(self)
+end
+Before("@headings") do
+  setup_headings.call(self)
+end
+Before("@javascript_injection") do
+  setup_javascript_injection.call(self)
+end
+Before("@setup_namespaces") do
+  setup_setup_namespaces.call(self)
+end
+Before("@suggestions") do
+  setup_suggestions.call(self)
+end
+Before("@suggestions", "@stemming") do
+  setup_suggestions_stemming.call(self)
+end
+Before("@highlighting") do
+  setup_highlighting.call(self)
+end
+Before("@highlighting", "@references") do
+  setup_highlighting_references.call(self)
+end
+Before("@more_like_this") do
+  setup_more_like_this.call(self)
+end
+Before("@setup_phrase_rescore") do
+  setup_phrase_rescore.call(self)
+end
+Before("@exact_quotes") do
+  setup_exact_quotes.call(self)
+end
+Before("@programmer_friendly") do
+  setup_programmer_friendly.call(self)
+end
+Before("@stemmer") do
+  setup_stemmer.call(self)
+end
+Before("@prefix_filter") do
+  setup_prefix_filter.call(self)
+end
+Before("@prefer_recent") do
+  setup_prefer_recent.call(self)
+end
+Before("@hastemplate") do
+  setup_hastemplate.call(self)
+end
+Before("@boost_template") do
+  setup_boost_template.call(self)
+end
+Before("@go") do
+  setup_go.call(self)
+end
+Before("@go", "@options") do
+  setup_go_options.call(self)
+end
+Before("@redirect") do
+  setup_redirect.call(self)
+end
+Before("@file_text") do
+  setup_file_text.call(self)
+end
+Before("@match_stopwords") do
+  setup_stopwords.call(self)
+end
+Before("@many_redirects") do
+  setup_many_redirects.call(self)
+end
+Before("@relevancy") do
+  setup_relevancy.call(self)
+end
+Before("@fallback_finder") do
+  setup_fallback_finder.call(self)
+end
+Before("@js_and_css") do
+  setup_js_and_css.call(self)
+end
+Before("@special_random") do
+  setup_special_random.call(self)
+end
+Before("@regex") do
+  setup_regex.call(self)
+end
+Before("@linksto") do
+  setup_linksto.call(self)
+end
+Before("@filenames") do
+  setup_filenames.call(self)
+end
+Before("@removed_text") do
+  setup_removed_text.call(self)
+end
+Before("@accent_squashing") do
+  setup_accent_squashing.call(self)
+end
+Before("@accented_namespace") do
+  setup_accented_namespace.call(self)
+end
+Before("@suggest") do
+  setup_suggest.call(self)
 end

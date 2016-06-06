@@ -76,6 +76,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $indexIdentifier;
 
 	/**
+	 * @var string the score method name to use.
+	 */
+	private $scoreMethodName;
+
+	/**
 	 * @var SuggestScoringMethod the score function to use.
 	 */
 	private $scoreMethod;
@@ -176,7 +181,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			$wgCirrusSearchBannedPlugins,
 			$wgPoolCounterConf,
 			$wgCirrusSearchMasterTimeout,
-			$wgCirrusSearchMaxShardsPerNode;
+			$wgCirrusSearchMaxShardsPerNode,
+			$wgCirrusSearchCompletionDefaultScore;
 
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
@@ -213,6 +219,10 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->utils->checkElasticsearchVersion();
 
 		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] : 'unlimited';
+
+		$this->scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
+		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
+		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
 
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
@@ -503,20 +513,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function indexData() {
-		global $wgCirrusSearchCompletionDefaultScore;
-		$scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
-		if ( $this->scoreMethod == null ) {
-			$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $scoreMethodName );
-		}
-		if ( $this->builder == null ) {
-			// NOTE: the builder stores a batchId value to flag
-			// documents indexed by this builder. Make sure to
-			// reuse the same instance when building docs otherwise
-			// the batchId might be regenerated and can cause data
-			// loss when recycling the index.
-			$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
-		}
-
 		// We build the suggestions by reading CONTENT and GENERAL indices.
 		// This does not support extra indices like FILES on commons.
 		$sourceIndexTypes = array( Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE );
@@ -574,7 +570,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$totalDocsToDump = $totalDocsInIndex;
 
 			$docsDumped = 0;
-			$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: $scoreMethodName\n" );
+			$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType ($totalDocsInIndex in the index) with batchId: {$this->builder->getBatchId()} and scoring method: {$this->scoreMethodName}\n" );
 
 			$destinationType = $this->getIndex()->getType( Connection::TITLE_SUGGEST_TYPE_NAME );
 

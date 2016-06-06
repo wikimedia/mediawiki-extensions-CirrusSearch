@@ -2,7 +2,9 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\BuildDocument\IncomingLinksScoringMethod;
 use CirrusSearch\BuildDocument\QualityScore;
+use CirrusSearch\BuildDocument\PQScore;
 
 /**
  * test suggest scoring functions.
@@ -27,8 +29,8 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$qs = new QualityScore();
 		$qs->setMaxDocs( 10000 );
 		for( $i = 0; $i < 1000; $i++ ) {
-			$value = rand( 0, 1000000 );
-			$norm = rand( 1, 1000000 );
+			$value = mt_rand( 0, 1000000 );
+			$norm = mt_rand( 1, 1000000 );
 			$score = $qs->scoreNorm( $value, $norm );
 			$this->assertLessThanOrEqual( 1, $score, "scoreNorm cannot produce a score greater than 1" );
 			$this->assertGreaterThanOrEqual( 0, $score, "scoreNorm cannot produce a score lower than 0" );
@@ -59,8 +61,8 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 	public function testQualityScoreBoostFunction() {
 		$qs = new QualityScore();
 		for( $i = 0; $i < 1000; $i++ ) {
-			$score = (float) rand() / (float) mt_getrandmax();
-			$boost = (float) rand( 0, 10000 ) / rand( 1, 10000 );
+			$score = (float) mt_rand() / (float) mt_getrandmax();
+			$boost = (float) mt_rand( 0, 10000 ) / mt_rand( 1, 10000 );
 			$res = $qs->boost( $score, $boost );
 			$this->assertLessThanOrEqual( 1, $score, "boost cannot produce a score greater than 1" );
 			$this->assertGreaterThanOrEqual( 0, $score, "boost cannot produce a score lower than 0" );
@@ -219,12 +221,12 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 		for( $i = 0; $i < 1000; $i++ ) {
 			$page = array(
-				'incoming_links' => rand( 0, 2^31-1 ),
-				'external_link' => array_fill( 0, rand( 1, 2000 ), null ),
-				'text_bytes' => rand( 1, 400000 ),
-				'heading' => array_fill( 0, rand( 1, 1000 ), null ),
-				'redirect' => array_fill( 0, rand( 1, 1000 ), null ),
-				'template' => rand( 0, 1 ) == 1 ? array( 'Good' ) : array('Bad')
+				'incoming_links' => mt_rand( 0, 2^31-1 ),
+				'external_link' => array_fill( 0, mt_rand( 1, 2000 ), null ),
+				'text_bytes' => mt_rand( 1, 400000 ),
+				'heading' => array_fill( 0, mt_rand( 1, 1000 ), null ),
+				'redirect' => array_fill( 0, mt_rand( 1, 1000 ), null ),
+				'template' => mt_rand( 0, 1 ) == 1 ? array( 'Good' ) : array('Bad')
 			);
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ), "Score is always lower than " . QualityScore::SCORE_RANGE );
@@ -278,5 +280,55 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 			'template' => array()
 		);
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
+	}
+
+	public function testRobustness() {
+		$templates =  array( 'Good' => 2, 'Bad' => 0.5 );
+		$all_templates = array_keys( $templates );
+		$all_templates += array( 'Foo', 'Bar' );
+		for ( $i = 0; $i < 5000; $i++ ) {
+			$scorers = array();
+			$scorers[] = new PQScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+			$scorers[] = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+			$scorers[] = new IncomingLinksScoringMethod();
+			$tmpl = array();
+			for ( $j = mt_rand( 0, count( $all_templates ) - 1 ); $j >= 0; $j-- ) {
+				$tmpl[] = $all_templates[$j];
+			}
+			$page = array();
+			$page['incoming_links'] = mt_rand( 0, 1 ) ? mt_rand( 0, 200 ) : null;
+			$page['external_link'] = $this->randomArray( 200 );
+			$page['text_bytes'] = mt_rand( 0, 1 ) ? (string) mt_rand( 0, 230000 ) : null;
+			$page['heading'] = $this->randomArray( 30 );
+			$page['redirect'] = $this->randomArray( 100 );
+			$page['popularity_score'] = mt_rand( 0, 1 ) ? 1 / mt_rand( 1, 1800000 ) : null;
+			$page['templates'] = mt_rand( 0, 1 ) ? $tmpl : null;
+
+			$maxDocs = mt_rand( 0, 100 );
+			foreach( $scorers as $scorer ) {
+				$scorer->setMaxDocs( $maxDocs );
+				$score = $scorer->score( $page );
+				$pagedebug = print_r( $page, true );
+
+				$this->assertTrue( is_int( $score ), "Score is always an integer for " . get_class( $scorer ) . " with these values $pagedebug" );
+				$this->assertTrue( $score >= 0, "Score is always positive " . get_class( $scorer ) . " with these values $pagedebug" );
+				$this->assertTrue( $score <= QualityScore::SCORE_RANGE, "Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) . " with these values $pagedebug" );
+			}
+		}
+	}
+
+	/**
+	 * @param $max integer max element in the array
+	 * @return array|null randomly null or an array of size [0, $max]
+	 */
+	private function randomArray( $max ) {
+		if ( mt_rand( 0, 1 ) ) {
+			$size = mt_rand( 0, $max );
+			if ( $size === 0 ) {
+				return array();
+			}
+			return array_fill( 0, $size, null );
+		}
+		return null;
 	}
 }

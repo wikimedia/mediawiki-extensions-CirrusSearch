@@ -305,8 +305,14 @@ class PQScore extends QualityScore {
 		if ( $pop > self::POPULARITY_MAX ) {
 			$pop = 1;
 		} else {
-			// @fixme: rough log scale by using maxDocs...
-			$pop = log ( 1 + ( $pop * $this->maxDocs ), 1 + ( self::POPULARITY_MAX * $this->maxDocs ) );
+			$logBase = 1 + self::POPULARITY_MAX * $this->maxDocs;
+			// log₁(x) is undefined
+			if ( $logBase > 1 ) {
+				// @fixme: rough log scale by using maxDocs...
+				$pop = log ( 1 + ( $pop * $this->maxDocs ), $logBase );
+			} else {
+				$pop = 0;
+			}
 		}
 
 		$score += $pop * self::POPULARITY_WEIGHT;

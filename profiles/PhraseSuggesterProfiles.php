@@ -223,11 +223,18 @@ class PhraseSuggesterProfiles {
 			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit,
 			$wgCirrusSearchPhraseSuggestAllowedMode;
 
-		$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
-		if ( !$source || $source->isDisabled() ) {
-			return;
-		}
-		$lines = Util::parseSettingsInMessage( $source->plain() );
+		$cache = \ObjectCache::getLocalServerInstance();
+		$lines = $cache->getWithSetCallback(
+			$cache->makeKey( 'cirrussearch-didyoumean-settings' ),
+			600,
+			function () {
+				$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
+				if ( !$source || $source->isDisabled() ) {
+					return array();
+				}
+				return Util::parseSettingsInMessage( $source->plain() );
+			}
+		);
 
 		// Keep original alpha or discount settings
 		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'] ) ) {

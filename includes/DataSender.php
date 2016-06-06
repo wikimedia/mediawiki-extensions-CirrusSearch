@@ -161,6 +161,7 @@ class DataSender extends ElasticsearchIntermediary {
 		}
 
 		$exception = null;
+		$responseSet = null;
 		try {
 			$pageType = $this->connection->getPageType( wfWikiID(), $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
@@ -174,7 +175,7 @@ class DataSender extends ElasticsearchIntermediary {
 			}
 			$bulk->setType( $pageType );
 			$bulk->addData( $data, 'update' );
-			$bulk->send();
+			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$missing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
 				function( $id ) use ( $e ) {
@@ -191,7 +192,9 @@ class DataSender extends ElasticsearchIntermediary {
 			$exception = $e;
 		}
 
-		if ( $exception === null ) {
+		if ( $exception === null &&
+			$responseSet !== null && count( $responseSet->getBulkResponses() ) > 0
+		) {
 			$this->success();
 			return Status::newGood();
 		} else {
@@ -201,7 +204,7 @@ class DataSender extends ElasticsearchIntermediary {
 			}, $data );
 			$this->failedLog->warning(
 				'Update for doc ids: ' . implode( ',', $documentIds ),
-				array( 'exception' => $exception )
+				$exception ? array( 'exception' => $exception ) : array()
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}

@@ -186,6 +186,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function suggest( $text, $variants = null, $context = null ) {
+		// If the offset requested is greater than the hard limit
+		// allowed we will always return an empty set so let's do it
+		// asap.
+		if ( $this->offset >= $this->getHardLimit() ) {
+			return Status::newGood( SearchSuggestionSet::emptySuggestionSet() );
+		}
+
 		$this->checkRequestLength( $text );
 		$this->setTermAndVariants( $text, $variants );
 		$this->context = $context;
@@ -312,11 +319,12 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			return null;
 		}
 		$field = $config['field'];
+		$limit = $this->getHardLimit();
 		$suggest = array(
 			'text' => $query,
 			'completion' => array(
 				'field' => $field,
-				'size' => ($this->limit + $this->offset) * $config['fetch_limit_factor']
+				'size' => $limit * $config['fetch_limit_factor']
 			)
 		);
 		if ( isset( $config['fuzzy'] ) ) {

@@ -654,6 +654,7 @@ setup_suggest = lambda do |world|
         And a page named Venom exists with contents Venom, or the Venom Symbiote, is a fictional supervillain appearing in American comic books published by Marvel Comics
         And a page named Sam Wilson exists with contents Warren Kenneth Worthington III, originally known as Angel and later as Archangel, is a fictional superhero appearing in American comic books published by Marvel Comics like [[Venom]].
         And a page named Zam Wilson exists with contents #REDIRECT [[Sam Wilson]]
+        And a page named The Doors exists with contents The Doors were an American rock band formed in 1965 in Los Angeles.
         And I reindex suggestions
     )
     suggest = true

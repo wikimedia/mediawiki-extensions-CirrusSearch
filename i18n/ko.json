@@ -7,7 +7,8 @@
 			"Revi",
 			"IRTC1015",
 			"Alex00728",
-			"Ykhwong"
+			"Ykhwong",
+			"Jonghaya"
 		]
 	},
 	"cirrussearch-desc": "미디어위키용 Elasticsearch 검색",
@@ -23,5 +24,12 @@
 	"cirrussearch-pref-desc": "언어의 더 많은 수를 지원하고, 더 최신의 결과를 제공하고, 심지어 틀의 안쪽의 텍스트를 찾을 수 있는 우리의 새 검색을 시도합니다.",
 	"cirrussearch-give-feedback": "의견을 주세요",
 	"cirrussearch-completionsuggester-pref": "완성 제안 기능",
-	"cirrussearch-completionsuggester-desc": "새로운 검색 제안 알고리즘. 이 기능을 사용하면 우측 상단에 검색 제안 창이 나타납니다."
+	"cirrussearch-completionsuggester-desc": "새로운 검색 제안 알고리즘. 이 기능을 사용하면 우측 상단에 검색 제안 창이 나타납니다.",
+	"cirrussearch-completion-profile-strict": "깐깐한 프로파일에서는 일부 문장기호들이 삭제되지만, 발음기호나 강세기호들은 보존합니다.",
+	"cirrussearch-completion-profile-classic": "고전 어미와 일부 문장기호들 그리고 발음기호들이 삭제됨.",
+	"cirrussearch-completion-profile-normal": "약간의 문장부호, 서너개의 발음기호와 불용어 삭제함.",
+	"cirrussearch-completion-profile-fuzzy": "오타가 수정된 일반 문서와 유사(두가지 오타를 지원)",
+	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 템플릿, 기사의 언어 그리고 최신정도에 기반한 순위(템플릿, 언어, 최신성은 이 위키에서 활성화되지 않을 수 있습니다.)",
+	"cirrussearch-qi-profile-classic-noboostlinks": "위키가 활성화 할 때  일부 템플릿들과 기사의 언어, 신규 정도에 따른 순위",
+	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위(디버그에만)"
 }

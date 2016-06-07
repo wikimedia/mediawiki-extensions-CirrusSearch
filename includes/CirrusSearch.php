@@ -40,6 +40,9 @@ class CirrusSearch extends SearchEngine {
 
 	const COMPLETION_SUGGESTER_FEATURE = 'completionSuggester';
 
+	/** @const string name of the prefixsearch fallback profile */
+	const COMPLETION_PREFIX_FALLBACK_PROFILE = 'classic';
+
 	/**
 	 * @var string The last prefix substituted by replacePrefixes.
 	 */
@@ -343,6 +346,13 @@ class CirrusSearch extends SearchEngine {
 			$searcher->setSort( $this->getSort() );
 		}
 
+		if ( isset( $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE] ) ) {
+			$profile = $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE];
+			if ( $this->config->getElement( 'CirrusSearchRescoreProfiles', $profile ) !== null ) {
+				$searcher->getSearchContext()->setRescoreProfile( $profile );
+			}
+		}
+
 		$dumpQuery = $this->request && $this->request->getVal( 'cirrusDumpQuery' ) !== null;
 		$searcher->setReturnQuery( $dumpQuery );
 		$dumpResult = $this->request && $this->request->getVal( 'cirrusDumpResult' ) !== null;
@@ -441,11 +451,16 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchSuggestionSet Set of suggested names
 	 */
 	protected function getSuggestions( $search, $variants, SearchConfig $config ) {
+		// Inspect features to check if the user selected a specific profile
+		$profile = null;
+		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
+			$profile = $this->features[SearchEngine::COMPLETION_PROFILE_TYPE];
+		}
 		// offset is omitted, searchSuggestion does not support
 		// scrolling results
 		$suggester = new CompletionSuggester( $this->connection, $this->limit,
 				$this->offset, $config, $this->namespaces, null,
-				$this->indexBaseName );
+				$this->indexBaseName, $profile );
 
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
@@ -584,7 +599,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	protected function completionSearchBackend( $search ) {
 
-		if ( in_array( NS_SPECIAL, $this->namespaces) ) {
+		if ( in_array( NS_SPECIAL, $this->namespaces ) ) {
 			// delegate special search to parent
 			return parent::completionSearchBackend( $search );
 		}
@@ -599,6 +614,13 @@ class CirrusSearch extends SearchEngine {
 		     reset( $this->namespaces ) != NS_MAIN ) {
 			// for now, suggester only works for main namespace
 			return $this->prefixSearch( $search );
+		}
+
+		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
+			// Fallback to prefixsearch if the classic profile was selected.
+			if ( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] == self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
+				return $this->prefixSearch( $search );
+			}
 		}
 
 		// Not really useful, mostly for testing purpose
@@ -672,5 +694,59 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		return SearchSuggestionSet::emptySuggestionSet();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getProfiles( $profileType ) {
+		switch( $profileType ) {
+		case SearchEngine::COMPLETION_PROFILE_TYPE:
+			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
+				// No profile selection if completion suggester is disabled.
+				return array();
+			}
+			$profiles = array();
+			foreach( array_keys( $this->config->get( 'CirrusSearchCompletionProfiles' ) ) as $name ) {
+				$profiles[] = array(
+					'name' => $name,
+					'desc-message' => 'cirrussearch-completion-profile-' . $name,
+					'default' => $this->config->get( 'CirrusSearchCompletionSettings' ) == $name,
+				);
+			}
+			// Add fallback to prefixsearch
+			$profiles[] = array(
+				'name' => self::COMPLETION_PREFIX_FALLBACK_PROFILE,
+				'desc-message' => 'cirrussearch-completion-profile-' . self::COMPLETION_PREFIX_FALLBACK_PROFILE,
+				'default' => false,
+			);
+			return $profiles;
+		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
+			$profiles = array();
+			// The Hook should run profiles/RescoreProfiles.php before
+			// any consumer call to getProfiles, so that the default
+			// will be properly set when the curstom request param
+			// cirrusRescoreProfile=profile is set.
+			$cirrusDefault = $this->config->get( 'CirrusSearchRescoreProfile' );
+			$defaultFound = false;
+			foreach( $this->config->get( 'CirrusSearchRescoreProfiles' ) as $name => $profile ) {
+				$default = $cirrusDefault === $name;
+				$defaultFound |= $default;
+				$profiles[] = array(
+					'name' => $name,
+					// @todo: decide what to with profiles we declare
+					// in wmf-config with no i18n messages.
+					// Do we want to expose them anyway, or simply
+					// hide them but still allow Api to pass them to us.
+					// It may require a change in core since ApiBase is
+					// strict and won't allow unknown values to be set
+					// here.
+					'desc-message' => isset ( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
+					'default' => $default,
+				);
+			}
+			return $profiles;
+		}
+		return null;
 	}
 }

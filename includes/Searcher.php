@@ -1595,13 +1595,7 @@ GROOVY;
 			return;
 		}
 
-		$profile = $this->config->get( 'CirrusSearchRescoreProfile' );
-		if ( $type === 'prefix' ) {
-			$profile = $this->config->get( 'CirrusSearchPrefixSearchRescoreProfile' );
-		} else if( $type == 'more_like' ) {
-			$profile = $this->config->get( 'CirrusSearchMoreLikeRescoreProfile' );
-		}
-		$builder = new RescoreBuilder( $this->searchContext, $profile );
+		$builder = new RescoreBuilder( $this->searchContext );
 		$this->rescore = array_merge( $this->rescore, $builder->build() );
 	}
 

@@ -743,10 +743,8 @@ $wgCirrusSearchUserTesting = array();
 /**
  * Profile for search as you type suggestion (completion suggestion)
  * (see profiles/SuggestProfiles.php for more details.)
- *
- * NOTE: This is an experimental API
  */
-$wgCirrusSearchCompletionSettings = $wgCirrusSearchCompletionProfiles['default'];
+$wgCirrusSearchCompletionSettings = 'fuzzy';
 
 /**
  * Enable ICU Folding instead of the default ASCII Folding.
@@ -841,9 +839,7 @@ $wgCirrusSearchInterwikiProv = false;
  * Set the rescore profile to default.
  * see profile/RescoreProfiles.php for more info
  */
-$wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
-$wgCirrusSearchPrefixSearchRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
-$wgCirrusSearchMoreLikeRescoreProfile = $wgCirrusSearchRescoreProfiles['default'];
+$wgCirrusSearchRescoreProfile = 'classic';
 
 /**
  * If current wiki has less than this number of results, try to search other language wikis.

@@ -34,7 +34,9 @@ use WebRequest;
 
 $wgCirrusSearchRescoreProfiles = array(
 	// Default profile which uses an all in one function score chain
-	'default' => array(
+	'classic' => array(
+		// i18n description for this profile.
+		'i18n_msg' => 'cirrussearch-qi-profile-classic',
 		// use 'all' if this rescore profile supports all namespaces
 		// or an array of integer to limit
 		'supported_namespaces' => 'all',
@@ -71,13 +73,14 @@ $wgCirrusSearchRescoreProfiles = array(
 
 				// name of the function score chains, must be
 				// defined in $wgCirrusSearchRescoreFunctionScoreChains
-				'function_chain' => 'default_allinone_chain'
+				'function_chain' => 'classic_allinone_chain'
 			)
 		)
 	),
 
 	// Default rescore without boostlinks
-	'default_noboostlinks' => array(
+	'classic_noboostlinks' => array(
+		'i18n_msg' => 'cirrussearch-qi-profile-classic-noboostlinks',
 		'supported_namespaces' => 'all',
 		'rescore' => array(
 			array(
@@ -94,6 +97,7 @@ $wgCirrusSearchRescoreProfiles = array(
 
 	// Useful to debug primary lucene score
 	'empty' => array(
+		'i18n_msg' => 'cirrussearch-qi-profile-empty',
 		'supported_namespaces' => 'all',
 		'rescore' => array(),
 	),
@@ -105,7 +109,7 @@ $wgCirrusSearchRescoreProfiles = array(
 $wgCirrusSearchRescoreFunctionScoreChains = array(
 	// Default chain where all the functions are combined
 	// In the same chain.
-	'default_allinone_chain' => array(
+	'classic_allinone_chain' => array(
 		'functions' => array(
 			// Scores documents with log(incoming_link + 2)
 			// Activated if $wgCirrusSearchBoostLinks is set
@@ -133,7 +137,7 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 			array( 'type' => 'language' ),
 		)
 	),
-	// Chain with optional functions if default_allinone_chain
+	// Chain with optional functions if classic_allinone_chain
 	// or optional_chain is omitted from the rescore profile then some
 	// query features and global config will be ineffective.
 	'optional_chain' => array(
@@ -251,23 +255,11 @@ class RescoreProfiles {
 	 */
 	public static function overrideOptions( WebRequest $request ) {
 		global $wgCirrusSearchRescoreProfile,
-			$wgCirrusSearchPrefixSearchRescoreProfile,
-			$wgCirrusSearchMoreLikeRescoreProfile,
 			$wgCirrusSearchRescoreProfiles;
 
 		$profile = $request->getVal( 'cirrusRescoreProfile' );
 		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
-			$wgCirrusSearchRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
-		}
-
-		$profile = $request->getVal( 'cirrusPrefixSearchRescoreProfile' );
-		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
-			$wgCirrusSearchPrefixSearchRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
-		}
-
-		$profile = $request->getVal( 'cirrusMoreLikeRescoreProfile' );
-		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
-			$wgCirrusSearchMoreLikeRescoreProfile = $wgCirrusSearchRescoreProfiles[$profile];
+			$wgCirrusSearchRescoreProfile = $profile;
 		}
 	}
 }

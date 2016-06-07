@@ -24,10 +24,37 @@
  *
  * See CirrusSearch\BuildDocument\SuggestBuilder and CirrusSearch\Searcher
  * See also: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
+ *
+ * If you add new profiles you may want to add the corresponding i18n messages with the following name:
+ * cirrussearch-completion-profile-profilename
  */
 $wgCirrusSearchCompletionProfiles = array(
+	// Strict profile (no accent squasing)
+	'strict' => array(
+		'plain-strict' => array(
+			'field' => 'suggest',
+			'min_query_len' => 0,
+			'discount' => 1.0,
+			'fetch_limit_factor' => 2,
+		),
+	),
+	// Accent squashing and stopwords filtering
+	'normal' => array(
+		'plain-normal' => array(
+			'field' => 'suggest',
+			'min_query_len' => 0,
+			'discount' => 1.0,
+			'fetch_limit_factor' => 2,
+		),
+		'plain-stop-normal' => array(
+			'field' => 'suggest-stop',
+			'min_query_len' => 0,
+			'discount' => 0.001,
+			'fetch_limit_factor' => 2,
+		),
+	),
 	// Default profile
-	'default' => array(
+	'fuzzy' => array(
 		// Defines the list of suggest queries to run in the same request.
 		// key is the name of the suggestion request
 		'plain' => array(
@@ -100,7 +127,7 @@ $wgCirrusSearchCompletionProfiles = array(
 				'unicode_aware' => true,
 			)
 		)
-	)
+	),
 );
 
 /**

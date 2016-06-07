@@ -2,9 +2,13 @@
 	"@metadata": {
 		"authors": [
 			"Ahdan",
-			"Iwan Novirion"
+			"Iwan Novirion",
+			"Rachmat.Wahidi"
 		]
 	},
 	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",
-	"cirrussearch-now-using": "Wiki ini menggunakan mesin pencari baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Pelajari lebih lanjut]])"
+	"cirrussearch-now-using": "Wiki ini menggunakan mesin pencari baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Pelajari lebih lanjut]])",
+	"cirrussearch-completion-profile-classic": "Awalan klasik, beberapa karakter pemisah dan diakritik dihapus.",
+	"cirrussearch-completion-profile-normal": "Beberapa karakter pemisah, diakritik dan kata henti dihapus.",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Peringkat menurut beberapa templat, bahasa artikel dan kebaruan ketika diaktifkan di wiki ini."
 }

@@ -282,6 +282,26 @@ class Connection extends ElasticaConnection {
 		return $count;
 	}
 
+	/**
+	 * @param int[]|null $namespaces List of namespaces to check
+	 * @return string|false The suffix to use (e.g. content or general) to
+	 *  query the namespaces, or false if both need to be queried.
+	 */
+	public function pickIndexTypeForNamespaces( array $namespaces = null ) {
+		$indexTypes = array();
+		if ( $namespaces ) {
+			foreach ( $namespaces as $namespace ) {
+				$indexTypes[] = $this->getIndexSuffixForNamespace( $namespace );
+			}
+			$indexTypes = array_unique( $indexTypes );
+		}
+		if ( count( $indexTypes ) === 1 ) {
+			return $indexTypes[0];
+		} else {
+			return false;
+		}
+	}
+
 	public function destroyClient() {
 		self::$pool = array();
 		parent::destroyClient();

@@ -36,6 +36,11 @@ use UIDGenerator;
  */
 class ElasticsearchIntermediary {
 	/**
+	 * @const int max number of results to store in CirrusSearchRequestSet logs (per request)
+	 */
+	const LOG_MAX_RESULTS = 50;
+
+	/**
 	 * @var Connection
 	 */
 	protected $connection;
@@ -182,7 +187,7 @@ class ElasticsearchIntermediary {
 				'suggestionRequested' => isset( $context['suggestion'] ),
 				'maxScore' => isset( $context['maxScore'] ) ? $context['maxScore'] : -1,
 				'payload' => array(),
-				'hits' => isset( $context['hits'] ) ? $context['hits'] : array(),
+				'hits' => isset( $context['hits'] ) ? array_slice( $context['hits'], 0, self::LOG_MAX_RESULTS ) : array(),
 			);
 			if ( isset( $context['hits'] ) ) {
 				$allHits = array_merge( $allHits, $context['hits'] );
@@ -262,7 +267,7 @@ class ElasticsearchIntermediary {
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
 			'tookMs' => 1000 * $tookS,
-			'hits' => $resultHits,
+			'hits' => array_slice( $resultHits, 0, self::LOG_MAX_RESULTS ),
 			'payload' => array(
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),

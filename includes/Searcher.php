@@ -899,7 +899,9 @@ GROOVY;
 	 *    or an error if there was an error
 	 */
 	public function get( array $pageIds, $sourceFiltering ) {
-		$indexType = $this->pickIndexTypeFromNamespaces();
+		$indexType = $this->connection->pickIndexTypeForNamespaces(
+			$this->getNamespaces()
+		);
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
@@ -1054,8 +1056,8 @@ GROOVY;
 		$query->setParam( 'fields', $this->resultsType->getFields() );
 
 		$extraIndexes = array();
-		$indexType = $this->pickIndexTypeFromNamespaces();
 		$namespaces = $this->getNamespaces();
+		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
@@ -1544,25 +1546,6 @@ GROOVY;
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
 		}
 		return $fields;
-	}
-
-	/**
-	 * Pick the index type to search based on the list of namespaces to search.
-	 * @return string|false either an index type or false to use all index types
-	 */
-	private function pickIndexTypeFromNamespaces() {
-		$namespaces = $this->getNamespaces();
-		if ( !$namespaces ) {
-			return false; // False selects all index types
-		}
-
-		$indexTypes = array();
-		foreach ( $namespaces as $namespace ) {
-			$indexTypes[] =
-				$this->connection->getIndexSuffixForNamespace( $namespace );
-		}
-		$indexTypes = array_unique( $indexTypes );
-		return count( $indexTypes ) > 1 ? false : $indexTypes[0];
 	}
 
 	/**

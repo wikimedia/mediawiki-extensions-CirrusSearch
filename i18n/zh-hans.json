@@ -42,5 +42,12 @@
 	"cirrussearch-didyoumean-settings": "  #<!-- 请保留此行为原样 --> <pre>\n# 此消息允许您配置“您是不是要找”建议的设置。\n# 参见https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# 对此的更改将立刻生效。\n# 语法如下：\n#  * 任何以“#”开头到结尾的行是一条注释。\n#  * 任何非空行是设置名称，然后是“:”字符，之后是设置值\n# 设置如下：\n#  * max_errors（整数）：为了改正，将被考虑作拼写错误的最大词汇数量。1或2。\n#  * confidence（浮点数）：一个因素应用在输入词组分数的可信度定义，它被用作其他建议候选的阀值。只有分数高于阀值的候选将被包含在结果中。例如1.0的可信度将只返回分数高于输入词组的建议。如果设置为0.0，就会返回最佳候选。\n#  * min_doc_freq（浮点数0到1）：应出现建议的文档数量中的最小阀值。\n#                  高频词汇通常都是“停用词”。\n#  * max_term_freq（浮点数0到1）：应出现建议的文档数量中的最大阀值。\n#  * prefix_length（整数）：为作为建议，必须匹配词汇的前缀字符的最小数量。\n#  * suggest_mode（missing、popular、always）：建议模式控制建议包含的方式。\n# 良好行的示例：\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- 请保留此行为原样 -->",
 	"cirrussearch-query-too-long": "搜索请求超过最大允许长度。（$1 > $2）",
 	"cirrussearch-completionsuggester-pref": "完整搜索建议工具",
-	"cirrussearch-completionsuggester-desc": "这是一种新的“所搜即所得”算法。启用此功能后，在右上角的搜索框中输入关键字时，将出现搜索结果，并根据您输入的关键字提供搜索建议。"
+	"cirrussearch-completionsuggester-desc": "这是一种新的“所搜即所得”算法。启用此功能后，在右上角的搜索框中输入关键字时，将出现搜索结果，并根据您输入的关键字提供搜索建议。",
+	"cirrussearch-completion-profile-strict": "少量标点符号被移除，但保留变音符号和轻重音标记的严格配置文件。",
+	"cirrussearch-completion-profile-classic": "传统前缀，少数标点符号和一些变音符号被移除。",
+	"cirrussearch-completion-profile-normal": "少量标点符号、一些变音符号和停用词被移除。",
+	"cirrussearch-completion-profile-fuzzy": "与正常模式类似，带错别字改正（支持两个错别字）。",
+	"cirrussearch-qi-profile-classic": "基于传入链接、一些模板、条目语言和新近程度的排名（模板/语言/新近程度可能不会在此wiki激活）。",
+	"cirrussearch-qi-profile-classic-noboostlinks": "基于一些模板、条目语言和新近程度的排名，当在此wiki激活时。",
+	"cirrussearch-qi-profile-empty": "完全基于查询相关特性的排名（仅用于调试）。"
 }

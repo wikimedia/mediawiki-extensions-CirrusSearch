@@ -20,7 +20,6 @@ use SearchResultSet;
 use Status;
 use Title;
 use UsageException;
-use RequestContext;
 use User;
 
 /**

@@ -54,6 +54,7 @@ class Saneitize extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
+		$this->setBatchSize( 10 );
 		$this->mDescription = "Make the index sane. Always operates on a single cluster.";
 		$this->addOption( 'fromId', 'Start sanitizing at a specific page_id.  Default to 0.', false, true );
 		$this->addOption( 'toId', 'Stop sanitizing at a specific page_id.  Default to the maximum id in the db + 100.', false, true );
@@ -75,6 +76,15 @@ class Saneitize extends Maintenance {
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 		$wgCirrusSearchClientSideUpdateTimeout = $wgCirrusSearchMaintenanceTimeout;
 
+		if ( $this->hasOption( 'batch-size' ) ) {
+			$this->setBatchSize( $this->getOption( 'batch-size' ) );
+			if ( $this->mBatchSize > 5000 ) {
+				$this->error( "--batch-size too high!", 1 );
+			} elseif ( $this->mBatchSize <= 0 ) {
+				$this->error( "--batch-size must be > 0!", 1 );
+			}
+
+		}
 		$this->setFromAndTo();
 		$buildChunks = $this->getOption( 'buildChunks');
 		if ( $buildChunks ) {
@@ -83,20 +93,31 @@ class Saneitize extends Maintenance {
 			return;
 		}
 		$this->buildChecker();
-		$this->check();
+		$updated = $this->check();
+		$this->output( "Fixed $updated page(s) (" . ( $this->toId - $this->fromId ) . " checked)" );
 	}
 
+	/**
+	 * @return int the number of pages corrected
+	 */
 	private function check() {
-		for ( $pageId = $this->fromId; $pageId <= $this->toId; $pageId++ ) {
-			$status = $this->checker->check( $pageId );
-			if ( !$status->isOK() ) {
-				$this->error( $status->getWikiText(), 1 );
-			}
-			if ( ( $pageId - $this->fromId ) % 100 === 0 ) {
-				$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), $pageId,
-					$this->toId ) );
-			}
+		$updated = 0;
+		for ( $pageId = $this->fromId; $pageId <= $this->toId; $pageId += $this->mBatchSize ) {
+			$max = min( $this->toId, $pageId + $this->mBatchSize - 1 );
+			$updated += $this->checkChunk( range( $pageId, $max ) );
 		}
+		return $updated;
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return int number of pages corrected
+	 */
+	private function checkChunk( array $ids ) {
+		$updated = $this->checker->check( $ids );
+		$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), end( $ids ),
+			$this->toId ) );
+		return $updated;
 	}
 
 	private function setFromAndTo() {

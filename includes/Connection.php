@@ -302,6 +302,23 @@ class Connection extends ElasticaConnection {
 		}
 	}
 
+	/**
+	 * @param int[]|null $namespaces List of namespaces to check
+	 * @return string[] the list of all index suffixes mathing the namespaces
+	 */
+	public function getAllIndexSuffixesForNamespaces( $namespaces = null ) {
+		if ( $namespaces ) {
+			foreach ( $namespaces as $namespace ) {
+				$indexTypes[] = $this->getIndexSuffixForNamespace( $namespace );
+			}
+			return array_unique( $indexTypes );
+		}
+		// If no namespaces provided all indices are needed
+		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
+		return array_merge( array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ),
+			array_values( $mappings ) );
+	}
+
 	public function destroyClient() {
 		self::$pool = array();
 		parent::destroyClient();

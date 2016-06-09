@@ -901,10 +901,17 @@ GROOVY;
 		$indexType = $this->connection->pickIndexTypeForNamespaces(
 			$this->getNamespaces()
 		);
+
+		// The worst case would be to have all ids duplicated in all available indices.
+		// We set the limit accordingly
+		$size = count ( $this->connection->getAllIndexSuffixesForNamespaces(
+			$this->getNamespaces()
+		));
+		$size *= count( $pageIds );
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
-			function() use ( $pageIds, $sourceFiltering, $indexType ) {
+			function() use ( $pageIds, $sourceFiltering, $indexType, $size ) {
 				try {
 					$this->start( "get of {indexType}.{pageIds}", array(
 						'indexType' => $indexType,
@@ -913,10 +920,18 @@ GROOVY;
 					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
+					// We use a search query instead of _get/_mget, these methods are
+					// theorically well suited for this kind of job but they are not
+					// supported on aliases with multiple indices (content/general)
 					$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
+					// We ignore limits provided to the searcher
+					// otherwize we could return fewer results than
+					// the ids requested.
+					$query->setFrom( 0 );
+					$query->setSize( $size );
 					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_then_fetch' ) );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {

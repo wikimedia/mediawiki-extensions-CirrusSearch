@@ -115,6 +115,33 @@ Feature: Prefix search via api
     | Mo:Test                | Mó:Test                | Mó:Test                |
     | file:Mo:Test           | none                   | none                   |
 
+  Scenario Outline: Search suggestions with various profiles
+    When I get api suggestions for <term> using the <profile> profile
+    Then <result>
+      And the api should offer to search for pages containing <term>
+  Examples:
+    | term      | profile | result                                  |
+    | África    | strict  | África is the first api suggestion      |
+    | Africa    | strict  | the API should produce list of length 0 |
+    | Agrica    | strict  | the API should produce list of length 0 |
+    | África    | normal  | África is the first api suggestion      |
+    | Africa    | normal  | África is the first api suggestion      |
+    | Agrica    | normal  | the API should produce list of length 0 |
+    | África    | classic | África is the first api suggestion      |
+    | Africa    | classic | África is the first api suggestion      |
+    | Agrica    | classic | the API should produce list of length 0 |
+    | África    | fuzzy   | África is the first api suggestion      |
+    | Africa    | fuzzy   | África is the first api suggestion      |
+    | Agrica    | fuzzy   | África is the first api suggestion      |
+    | doors     | strict  | the API should produce list of length 0 |
+    | doors     | classic | the API should produce list of length 0 |
+    | doors     | normal  | The Doors is the first api suggestion   |
+    | the doors | normal  | The Doors is the first api suggestion   |
+    | thedoors  | normal  | the API should produce list of length 0 |
+    | doors     | fuzzy   | The Doors is the first api suggestion   |
+    | the doors | fuzzy   | The Doors is the first api suggestion   |
+    | thedoors  | fuzzy   | The Doors is the first api suggestion   |
+
   # Just take too long to run on a regular basis
   # @redirect @huge
   # Scenario: Prefix search on pages with tons of redirects is reasonably fast

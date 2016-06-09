@@ -48,8 +48,7 @@ module CirrusSearchApiHelper
     api.action(
       :opensearch,
       search: search,
-      # TODO: support new profile API param when added.
-      cirrusUseCompletionSuggester: profile == "classic" ? "no" : "yes",
+      profile: profile,
       token_type: false
     )
   end

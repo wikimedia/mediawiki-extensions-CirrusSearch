@@ -22,15 +22,15 @@ When(/^I set did you mean suggester option (.*) to (.*)$/) do |varname, value|
   @didyoumean_options[varname] = value
 end
 
-When(/^I api search( with rewrites enabled)?( with disabled incoming link weighting)?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |enable_rewrites, incoming_links, offset, lang, namespaces, search|
+When(/^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/) do |enable_rewrites, qiprofile, offset, lang, namespaces, search|
   begin
     options = {
       sroffset: offset,
       srnamespace: (namespaces || "0").split(/ /),
       uselang: lang,
-      cirrusBoostLinks: incoming_links ? "no" : "yes",
       enablerewrites: enable_rewrites ? 1 : 0
     }
+    options["srqiprofile"] = qiprofile if qiprofile
     options = options.merge(@didyoumean_options) if defined?@didyoumean_options
 
     @api_result = search_for(

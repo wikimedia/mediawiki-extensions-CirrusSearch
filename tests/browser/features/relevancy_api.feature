@@ -37,7 +37,7 @@ Feature: Results are ordered from most relevant to least.
     # created. It gets its position updated by the link counting job which has to wait for refreshing and undelaying.
 
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
-    When I api search with disabled incoming link weighting for Relevancytest
+    When I api search with query independent profile classic_noboostlinks for Relevancytest
     Then Relevancytest is the first api search result
       And Relevancytestviaredirect is the second api search result
       And Relevancytestviacategory is the third api search result
@@ -47,7 +47,7 @@ Feature: Results are ordered from most relevant to least.
       And Relevancytestviaauxtext is the sixth or seventh api search result
 
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
-    When I api search with disabled incoming link weighting for "Relevancytestphrase phrase"
+    When I api search with query independent profile classic_noboostlinks for "Relevancytestphrase phrase"
     Then Relevancytestphrase phrase is the first api search result
       And Relevancytestphraseviaredirect is the second api search result
       And Relevancytestphraseviacategory is the third api search result
@@ -70,7 +70,7 @@ Feature: Results are ordered from most relevant to least.
       And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
       And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
     When within 20 seconds api searching for Relevancylinktest -intitle:link yields Relevancylinktest Larger Extraword as the first result and Relevancylinktest Smaller as the second result
-      And I api search with disabled incoming link weighting for Relevancylinktest -intitle:link
+      And I api search with query independent profile classic_noboostlinks for Relevancylinktest -intitle:link
     Then Relevancylinktest Smaller is the first api search result
       And Relevancylinktest Larger Extraword is the second api search result
     # This test can fail spuriously for the same reasons that "Redirects count as incoming links" can fail
@@ -93,13 +93,13 @@ Feature: Results are ordered from most relevant to least.
 
 
   Scenario: Results are sorted based on how close the match is
-    When I api search with disabled incoming link weighting for Relevancyclosetest Foô
+    When I api search with query independent profile classic_noboostlinks for Relevancyclosetest Foô
     Then Relevancyclosetest Foô is the first api search result
       And Relevancyclosetest Foo is the second api search result
       And Foo Relevancyclosetest is the third api search result
 
   Scenario: Results are sorted based on how close the match is (backwards this time)
-    When I api search with disabled incoming link weighting for Relevancyclosetest Foo
+    When I api search with query independent profile classic_noboostlinks for Relevancyclosetest Foo
     Then Relevancyclosetest Foo is the first api search result
       And Relevancyclosetest Foô is the second api search result
       And Foo Relevancyclosetest is the third api search result

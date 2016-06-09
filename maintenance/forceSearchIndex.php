@@ -108,9 +108,9 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf,
-			$wgCirrusSearchMaintenanceTimeout;
+		global $wgCirrusSearchMaintenanceTimeout;
 
+		$this->disablePoolCountersAndLogging();
 		$wiki = sprintf( "[%20s]", wfWikiID() );
 
 		// Set the timeout for maintenance actions
@@ -120,9 +120,6 @@ class ForceSearchIndex extends Maintenance {
 		if ( !$this->simpleCheckIndexes() ) {
 			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
 		}
-
-		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		// We need to check ids options early otherwize hasOption may return
 		// true even if the user did not set the option on the commandline

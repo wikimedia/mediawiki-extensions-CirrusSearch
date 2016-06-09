@@ -194,8 +194,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf,
-			$wgLanguageCode,
+		global $wgLanguageCode,
 			$wgCirrusSearchPhraseSuggestUseText,
 			$wgCirrusSearchPrefixSearchStartsWithAnyWord,
 			$wgCirrusSearchBannedPlugins,
@@ -204,8 +203,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$wgCirrusSearchRefreshInterval,
 			$wgCirrusSearchMasterTimeout;
 
-		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		$this->disablePoolCountersAndLogging();
 
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();

@@ -130,4 +130,25 @@ abstract class Maintenance extends \Maintenance {
 	public function error( $err, $die = 0 ) {
 		parent::error( $err, $die );
 	}
+
+	/**
+	 * Disable all pool counters and cirrus query logs.
+	 * Only useful for maint scripts
+	 *
+	 * Ideally this method could be run in the constructor
+	 * but apparently globals are reset just before the
+	 * call to execute()
+	 */
+	protected function disablePoolCountersAndLogging() {
+		global $wgPoolCounterConf, $wgCirrusSearchLogElasticRequests;
+
+		// Make sure we don't flood the pool counter
+		$wgPoolCounterConf = array();
+		unset( $wgPoolCounterConf['CirrusSearch-Search'],
+			$wgPoolCounterConf['CirrusSearch-PerUser'] );
+
+		// Don't skew the dashboards by logging these requests to
+		// the global request log.
+		$wgCirrusSearchLogElasticRequests = false;
+	}
 }

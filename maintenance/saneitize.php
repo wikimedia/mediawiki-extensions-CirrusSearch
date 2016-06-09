@@ -66,16 +66,14 @@ class Saneitize extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf,
-			$wgCirrusSearchMaintenanceTimeout,
+		global $wgCirrusSearchMaintenanceTimeout,
 			$wgCirrusSearchClientSideUpdateTimeout;
+
+		$this->disablePoolCountersAndLogging();
 
 		// Set the timeout for maintenance actions
 		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 		$wgCirrusSearchClientSideUpdateTimeout = $wgCirrusSearchMaintenanceTimeout;
-
-		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		$this->setFromAndTo();
 		$buildChunks = $this->getOption( 'buildChunks');

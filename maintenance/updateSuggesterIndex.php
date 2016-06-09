@@ -179,11 +179,11 @@ class UpdateSuggesterIndex extends Maintenance {
 	public function execute() {
 		global $wgLanguageCode,
 			$wgCirrusSearchBannedPlugins,
-			$wgPoolCounterConf,
 			$wgCirrusSearchMasterTimeout,
 			$wgCirrusSearchMaxShardsPerNode,
 			$wgCirrusSearchCompletionDefaultScore;
 
+		$this->disablePoolCountersAndLogging();
 		$this->masterTimeout = $this->getOption( 'masterTimeout', $wgCirrusSearchMasterTimeout );
 		$this->indexTypeName = Connection::TITLE_SUGGEST_TYPE;
 
@@ -194,9 +194,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch( \Exception $e ) {
 			$this->error( "Failed to get shard count and replica count information: {$e->getMessage()}", 1 );
 		}
-
-		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();

@@ -102,10 +102,7 @@ class DumpIndex extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgPoolCounterConf;
-
-		// Make sure we don't flood the pool counter
-		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
+		$this->disablePoolCountersAndLogging();
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 

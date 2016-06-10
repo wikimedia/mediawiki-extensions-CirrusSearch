@@ -34,6 +34,7 @@
 	"cirrussearch-query-too-long": "A solicitude de procura é máis longa que a lonxitude máxima permitida ($1 > $2).",
 	"cirrussearch-completionsuggester-pref": "Suxestións para completar",
 	"cirrussearch-completionsuggester-desc": "Un novo algoritmo para procurar en canto teclea. Unha vez activada, a caixa de buscas na esquina superior dereita, vai a presentar hipóteses de artigos baseados na palabra que tecleou.",
+	"cirrussearch-completion-profile-strict": "Perfil estrito con algúns caracteres de puntuación eliminados pero mantendo os diacríticos e os acentos.",
 	"cirrussearch-completion-profile-classic": "Prefixo clásico, elimináronse algúns signos de puntuación e signos diacríticos.",
 	"cirrussearch-completion-profile-normal": "Elimináronse algúns caracteres de puntuación, algúns diacríticos e algúns conectores de texto.",
 	"cirrussearch-completion-profile-fuzzy": "Similar a normal con corrección de erros ortográficos (dous erros aceptados).",

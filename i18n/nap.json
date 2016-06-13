@@ -33,5 +33,7 @@
 	"cirrussearch-completionsuggester-desc": "Algoritmo nuovo pe' puté ascià pe' tramente ca scrivite. Quanno sarrà appicciato 'a casciulella 'e cerca ncopp' 'a deritta ausarrà 'o Cumpleta Suggerimiente.",
 	"cirrussearch-completion-profile-strict": "Profilo base stretto cu poche carattere 'e puntuazione luvate ma diacritice e nzegne 'accente fossero astipate.",
 	"cirrussearch-completion-profile-classic": "Prefisso classeco, poche nzegne 'e puntuaziona e nu poch' 'e diacritice luvate.",
-	"cirrussearch-completion-profile-normal": "Poche carattere 'e puntuaziona, nu poch' 'e diacritice e parole 'e pausa luvate."
+	"cirrussearch-completion-profile-normal": "Poche carattere 'e puntuaziona, nu poch' 'e diacritice e parole 'e pausa luvate.",
+	"cirrussearch-completion-profile-fuzzy": "Simmele a 'o normale cu n'accunciamento tipografico (se suppuortano dduje).",
+	"cirrussearch-qi-profile-empty": "Ranking cu' bbase 'e caratteristiche dipendente (sulo pe' debug)."
 }

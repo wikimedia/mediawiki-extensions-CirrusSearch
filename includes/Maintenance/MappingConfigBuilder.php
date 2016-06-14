@@ -298,9 +298,8 @@ class MappingConfigBuilder {
 	 * @param array $extra Extra analyzers for this field beyond the basic text and plain.
 	 * @return TextIndexField definition of the field
 	 */
-	public function buildStringField( $fieldName, $options = null, $extra = [] ) {
-		$field =
-			new TextIndexField( $fieldName, SearchIndexField::INDEX_TYPE_TEXT, $this->config,
+	protected function buildStringField( $fieldName, $options = null, $extra = [] ) {
+		$field = new TextIndexField( $fieldName, SearchIndexField::INDEX_TYPE_TEXT, $this->config,
 				$extra );
 		$field->setTextOptions( $options );
 		return $field;
@@ -311,7 +310,7 @@ class MappingConfigBuilder {
 	 * @param string $name Field name
 	 * @return IntegerIndexField
 	 */
-	public function buildLongField( $name ) {
+	protected function buildLongField( $name ) {
 		return new IntegerIndexField( $name, SearchIndexField::INDEX_TYPE_INTEGER, $this->config );
 	}
 
@@ -320,7 +319,7 @@ class MappingConfigBuilder {
 	 * @param string $name Field name
 	 * @return KeywordIndexField
 	 */
-	public function buildKeywordField( $name ) {
+	protected function buildKeywordField( $name ) {
 		return new KeywordIndexField( $name, SearchIndexField::INDEX_TYPE_KEYWORD, $this->config );
 	}
 }

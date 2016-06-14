@@ -2,9 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\BuildDocument\FileDataBuilder;
-use CirrusSearch\BuildDocument\PageDataBuilder;
-use CirrusSearch\BuildDocument\PageTextBuilder;
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use ParserCache;
@@ -359,33 +356,6 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		return $script;
-	}
-
-	/**
-	 * Fetch page's content and parser output, using the parser cache if we can
-	 *
-	 * @param WikiPage $page The wikipage to get output for
-	 * @param int $forceParse Bypass ParserCache and force a fresh parse.
-	 * @return array(Content,ParserOutput)
-	 */
-	private function getContentAndParserOutput( $page, $forceParse ) {
-		$content = $page->getContent();
-		$parserOptions = $page->makeParserOptions( 'canonical' );
-
-		if ( !$forceParse ) {
-			$parserOutput = ParserCache::singleton()->get( $page, $parserOptions );
-		}
-
-		if ( !isset( $parserOutput ) || !$parserOutput instanceof ParserOutput ) {
-			// We specify the revision ID here. There might be a newer revision,
-			// but we don't care because (a) we've already got a job somewhere
-			// in the queue to index it, and (b) we want magic words like
-			// {{REVISIONUSER}} to be accurate
-			$revId = $page->getRevision()->getId();
-			$parserOutput = $content->getParserOutput( $page->getTitle(), $revId );
-		}
-		/** @suppress PhanUndeclaredVariable */
-		return array( $content, $parserOutput );
 	}
 
 	/**

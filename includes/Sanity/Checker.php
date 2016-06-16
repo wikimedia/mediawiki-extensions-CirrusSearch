@@ -50,6 +50,12 @@ class Checker {
 	private $logSane;
 
 	/**
+	 * @var bool inspect WikiPage::isRedirect() instead of WikiPage::getContent()->isRedirect()
+	 * Faster since it does not need to fetch the content but inconsistent in some cases.
+	 */
+	private $fastRedirectCheck;
+
+	/**
 	 * Build the checker.
 	 * @param Connection $connection
 	 * @param Remediator $remediator the remediator to which to send titles
@@ -57,11 +63,12 @@ class Checker {
 	 * @param Searcher $searcher searcher to use for fetches
 	 * @param bool $logSane should we log sane ids
 	 */
-	public function __construct( Connection $connection, Remediator $remediator, Searcher $searcher, $logSane ) {
+	public function __construct( Connection $connection, Remediator $remediator, Searcher $searcher, $logSane, $fastRedirectCheck ) {
 		$this->connection = $connection;
 		$this->remediator = $remediator;
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
+		$this->fastRedirectCheck = $fastRedirectCheck;
 	}
 
 	/**
@@ -111,7 +118,7 @@ class Checker {
 	 */
 	private function checkExisitingPage( $pageId, $page, $fromIndex ) {
 		$inIndex = count( $fromIndex ) > 0;
-		if ( $page->isRedirect() ) {
+		if ( $this->checkIfRedirect( $page ) ) {
 			if ( $inIndex ) {
 				$this->remediator->redirectInIndex( $page );
 				return true;
@@ -124,6 +131,26 @@ class Checker {
 		}
 		$this->remediator->pageNotInIndex( $page );
 		return true;
+	}
+
+	/**
+	 * Check if the page is a redirect
+	 * @param WikiPage $page the page
+	 * @return bool true if $page is a redirect
+	 */
+	private function checkIfRedirect( $page ) {
+		if ( $this->fastRedirectCheck ) {
+			return $page->isRedirect();
+		}
+
+		$content = $page->getContent();
+		if ( $content == null ) {
+			return false;
+		}
+		if( is_object ( $content ) ) {
+			return $content->isRedirect();
+		}
+		return false;
 	}
 
 	/**
@@ -197,7 +224,7 @@ class Checker {
 			__METHOD__
 		);
 		foreach ( $res as $row ) {
-			$page = WikiPage::newFromRow( $row, $dbr );
+			$page = WikiPage::newFromRow( $row );
 			$pages[$page->getId()] = $page;
 		}
 		return $pages;
@@ -213,7 +240,7 @@ class Checker {
 		if ( !$status->isOK() ) {
 			throw new \Exception( 'Cannot fetch ids from index' );
 		}
-		/** @var \Elastica\ResultSet $indexInfo */
+		/** @var \Elastica\ResultSet $dataFromIndex */
 		$dataFromIndex = $status->getValue();
 
 		$indexedPages = array();

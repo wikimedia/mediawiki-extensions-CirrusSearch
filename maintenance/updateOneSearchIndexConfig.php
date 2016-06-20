@@ -290,9 +290,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 *  maint class is being created
 	 */
 	private function updateVersions() {
-		$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateVersionIndex' );
-		$child->mOptions['baseName'] = $this->indexBaseName;
-		$child->mOptions['update'] = true;
+		$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+		$child->mOptions['index-version-basename'] = $this->indexBaseName;
+		$child->mOptions['update-index-version'] = true;
 		$child->execute();
 		$child->done();
 	}

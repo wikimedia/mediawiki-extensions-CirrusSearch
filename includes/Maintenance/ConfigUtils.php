@@ -115,27 +115,36 @@ class ConfigUtils {
 	}
 
 	/**
+	 * @param string $what generally plugins or modules
+	 * @return string[] list of modules or plugins
+	 */
+	private function scanModulesOrPlugins( $what ) {
+		$result = $this->client->request( '_nodes' );
+		$result = $result->getData();
+		$availables = array();
+		$first = true;
+		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
+			$plugins = array();
+			foreach ( $node[ $what ] as $plugin ) {
+				$plugins[] = $plugin[ 'name' ];
+			}
+			if ( $first ) {
+				$availables = $plugins;
+				$first = false;
+			} else {
+				$availables = array_intersect( $availables, $plugins );
+			}
+		}
+		return $availables;
+	}
+
+	/**
 	 * @param string[] $bannedPlugins
 	 * @return string[]
 	 */
 	public function scanAvailablePlugins( array $bannedPlugins = array() ) {
 		$this->outputIndented( "Scanning available plugins..." );
-		$result = $this->client->request( '_nodes' );
-		$result = $result->getData();
-		$availablePlugins = array();
-		$first = true;
-		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
-			$plugins = array();
-			foreach ( $node[ 'plugins' ] as $plugin ) {
-				$plugins[] = $plugin[ 'name' ];
-			}
-			if ( $first ) {
-				$availablePlugins = $plugins;
-				$first = false;
-			} else {
-				$availablePlugins = array_intersect( $availablePlugins, $plugins );
-			}
-		}
+		$availablePlugins = $this->scanModulesOrPlugins( 'plugins' );
 		if ( count( $availablePlugins ) === 0 ) {
 			$this->output( 'none' );
 		}
@@ -149,6 +158,26 @@ class ConfigUtils {
 		}
 
 		return $availablePlugins;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function scanAvailableModules() {
+		$this->outputIndented( "Scanning available modules..." );
+		$result = $this->client->request( '_nodes' );
+		$result = $result->getData();
+		$availableModules = $this->scanModulesOrPlugins( 'modules' );
+		if ( count( $availableModules ) === 0 ) {
+			$this->output( 'none' );
+		}
+		$this->output( "\n" );
+		foreach ( array_chunk( $availableModules, 5 ) as $moduleChunk ) {
+			$modules = implode( ', ', $moduleChunk );
+			$this->outputIndented( "\t$modules\n" );
+		}
+
+		return $availableModules;
 	}
 
 	// @todo: bring below options together in some abstract class where Validator & Reindexer also extend from

@@ -31,99 +31,46 @@ require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
 class UpdateVersionIndex extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Update and check the CirrusSearch version index. Always operates on a single cluster.";
+		$this->mDescription = "*** DEPRECATED *** use metastore.php.";
 		$this->addOption( 'show-all', 'Show all known versions' );
 		$this->addOption( 'update', 'Update the version index for this wiki' );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 	}
 
+	/**
+	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
+	 *  access mOptions because its protected. That would be true but this
+	 *  class shares the hierarchy that contains mOptions so php allows it.
+	 * @suppress PhanUndeclaredMethod runChild technically returns a
+	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
+	 *  classes have the done method. Just allow it since we know what type of
+	 *  maint class is being created
+	 */
 	public function execute() {
 		$baseName = $this->getOption( 'baseName', wfWikiID() );
 		if( $this->hasOption( 'show-all' ) ) {
-			$this->show();
+			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-all-index-versions instead.\n" );
+			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child->mOptions[ 'show-all-index-versions' ] = true;
+			$child->mOptions[ 'index-version-basename' ] = $baseName;
+			$child->execute();
+			$child->done();
 		} elseif ( $this->hasOption( 'update' ) ) {
-			$this->update( $baseName );
+			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --update-index-version instead.\n" );
+			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child->mOptions[ 'update-index-version' ] = true;
+			$child->mOptions[ 'index-version-basename' ] = $baseName;
+			$child->execute();
+			$child->done();
 		} else {
-			$filter = new \Elastica\Query\BoolQuery();
-			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {
-				$term = new \Elastica\Query\Term();
-				$term->setTerm( '_id', $this->getConnection()->getIndexName( $baseName, $type ) );
-				$filter->addFilter( $term );
-			}
-			$this->show( $filter );
+			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-index-version instead.\n" );
+			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child->mOptions[ 'show-index-version' ] = true;
+			$child->mOptions[ 'index-version-basename' ] = $baseName;
+			$child->execute();
+			$child->done();
 		}
-	}
-
-	/**
-	 * @param array|\Elastica\Query\AbstractQuery|null $filter
-	 */
-	private function show( $filter = null ) {
-		$query = new \Elastica\Query();
-		if ( $filter ) {
-			$query->setPostFilter( $filter );
-		}
-		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
-		$query->setSize( 5000 );
-		$res = $this->getType()->getIndex()->search( $query );
-		foreach( $res as $r ) {
-			$data = $r->getData();
-			$this->outputIndented( "index name: " . $r->getId() . "\n" );
-			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
-			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
-			$this->outputIndented( "  shards: {$data['shard_count']}\n" );
-		}
-	}
-
-	/**
-	 * @param string $baseName
-	 */
-	private function update( $baseName ) {
-		$versionType = $this->getType();
-		$this->outputIndented( "Updating tracking indexes..." );
-		$docs = array();
-		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
-		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
-		$connSettings = $this->getConnection()->getSettings();
-		foreach( $this->getConnection()->getAllIndexTypes() as $type ) {
-			$docs[] = new \Elastica\Document(
-				$this->getConnection()->getIndexName( $baseName, $type ),
-				array(
-					'analysis_maj' => $aMaj,
-					'analysis_min' => $aMin,
-					'mapping_maj' => $mMaj,
-					'mapping_min' => $mMin,
-					'shard_count' => $connSettings->getShardCount( $type ),
-				)
-			);
-		}
-		$versionType->addDocuments( $docs );
-		$this->output( "done\n" );
-	}
-
-	/**
-	 * @return \Elastica\Type
-	 */
-	private function getType() {
-		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
-		if ( !$index->exists() ) {
-			$this->outputIndented( "Creating tracking index..." );
-			$index->create( array( 'number_of_shards' => 1,
-				'auto_expand_replicas' => '0-2', ), true );
-			$mapping = new \Elastica\Type\Mapping();
-			$mapping->setType( $index->getType( 'version' ) );
-			$mapping->setProperties( array(
-				'analysis_maj' => array( 'type' => 'long', 'include_in_all' => false ),
-				'analysis_min' => array( 'type' => 'long', 'include_in_all' => false ),
-				'mapping_maj' => array( 'type' => 'long', 'include_in_all' => false ),
-				'mapping_min' => array( 'type' => 'long', 'include_in_all' => false ),
-				'shard_count' => array( 'type' => 'long', 'include_in_all' => false ),
-			) );
-			$mapping->send();
-			$this->output( "done\n" );
-		}
-
-		return $index->getType( 'version' );
 	}
 }
 

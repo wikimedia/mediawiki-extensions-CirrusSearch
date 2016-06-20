@@ -223,9 +223,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
-			$versionIndex = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
-			if ( !$versionIndex->exists() ) {
-				throw new \Exception("mw_cirrus_versions does not exist, you must index your data first");
+			if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
+				throw new \Exception("Cirrus meta sotre does not exist, you must index your data first");
 			}
 
 			if ( !$this->canWrite() ) {
@@ -348,9 +347,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		list( $aMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
-			$versionDoc = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )->getDocument( $this->getIndexTypeName() );
+			$versionDoc = MetaStoreIndex::getVersionType( $this->getConnection() )->getDocument( $this->getIndexTypeName() );
 		} catch( \Elastica\Exception\NotFoundException $nfe ) {
-			$this->error( 'Index missing in mw_cirrus_versions, cannot recycle.' );
+			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
 		}
 
@@ -748,9 +747,9 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function updateVersions() {
 		$this->log( "Updating tracking indexes..." );
-		$index = $this->getConnection()->getIndex( 'mw_cirrus_versions' );
+		$index = MetaStoreIndex::getVersionType( $this->getConnection() );
 		if ( !$index->exists() ) {
-			throw new \Exception("mw_cirrus_versions does not exist, you must index your data first");
+			throw new \Exception("meta store does not exist, you must index your data first");
 		}
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
@@ -764,7 +763,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				'shard_count' => $this->getShardCount(),
 			)
 		);
-		$index->getType('version')->addDocument( $doc );
+		$index->addDocument( $doc );
 		$this->output("ok.\n");
 	}
 

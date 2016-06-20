@@ -63,6 +63,7 @@ class CheckIndexes extends Maintenance {
 		}
 		$this->ensureClusterStateFetched();
 		$this->ensureCirrusInfoFetched();
+		// @todo: use MetaStoreIndex
 		$this->checkIndex( 'mw_cirrus_versions', 1 );
 		$aliases = array();
 		foreach ( $this->clusterState[ 'metadata' ][ 'indices' ] as $indexName => $data ) {

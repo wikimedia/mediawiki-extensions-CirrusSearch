@@ -58,6 +58,11 @@ interface ResultsType {
 	 */
 	function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
 		\Elastica\ResultSet $result, $searchContainedSyntax );
+
+	/**
+	 * @return mixed Empty set of search results
+	 */
+	function createEmptyResult();
 }
 
 /**
@@ -100,6 +105,13 @@ class TitleResultsType implements ResultsType {
 			$results[] = Title::makeTitle( $r->namespace, $r->title );
 		}
 		return $results;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function createEmptyResult() {
+		return array();
 	}
 }
 
@@ -231,6 +243,13 @@ class FancyTitleResultsType extends TitleResultsType {
 			$results[] = $resultForTitle;
 		}
 		return $results;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function createEmptyResult() {
+		return array();
 	}
 }
 
@@ -451,6 +470,13 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	/**
+	 * @return EmptyResultSet
+	 */
+	public function createEmptyResult() {
+		return new EmptyResultSet();
+	}
+
+	/**
 	 * @param array[] $fields
 	 * @return array[]
 	 */
@@ -539,6 +565,13 @@ class IdResultsType extends TitleResultsType {
 		}
 		return $results;
 	}
+
+	/**
+	 * @return string[]
+	 */
+	public function createEmptyResult() {
+		return array();
+	}
 }
 
 class InterwikiResultsType implements ResultsType {
@@ -565,6 +598,13 @@ class InterwikiResultsType implements ResultsType {
 	 */
 	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $result, $searchContainedSyntax ) {
 		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
+	}
+
+	/**
+	 * @return EmptyResultSet
+	 */
+	public function createEmptyResult() {
+		return new EmptyResultSet();
 	}
 
 	/**

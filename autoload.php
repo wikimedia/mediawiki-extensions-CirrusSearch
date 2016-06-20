@@ -92,6 +92,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\SearchConfig' => __DIR__ . '/includes/SearchConfig.php',
 	'CirrusSearch\\Search\\BoostTemplatesFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\CustomFieldFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
+	'CirrusSearch\\Search\\EmptyResultSet' => __DIR__ . '/includes/Search/EmptyResultSet.php',
 	'CirrusSearch\\Search\\Escaper' => __DIR__ . '/includes/Search/Escaper.php',
 	'CirrusSearch\\Search\\FancyTitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\Filters' => __DIR__ . '/includes/Search/Filters.php',

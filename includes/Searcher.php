@@ -63,10 +63,11 @@ class Searcher extends ElasticsearchIntermediary {
 	const MAX_TEXT_SEARCH = 300;
 
 	/**
-	 * Maximum offset depth allowed.  Too deep will cause very slow queries.
-	 * 100,000 feels plenty deep.
+	 * Maximum offset + limit depth allowed. As in the deepest possible result
+	 * to return. Too deep will cause very slow queries. 10,000 feels plenty
+	 * deep. This should be <= index.max_result_window in elasticsearch.
 	 */
-	const MAX_OFFSET = 100000;
+	const MAX_OFFSET_LIMIT = 10000;
 
 	/**
 	 * @var integer search offset
@@ -218,8 +219,12 @@ class Searcher extends ElasticsearchIntermediary {
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
 		$this->config = $config;
-		$this->offset = min( $offset, self::MAX_OFFSET );
-		$this->limit = $limit;
+		$this->offset = $offset;
+		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
+			$this->limit = self::MAX_OFFSET_LIMIT - $offset;
+		} else {
+			$this->limit = $limit;
+		}
 		$this->indexBaseName = $index ?: $config->getWikiId();
 		$this->language = $config->get( 'ContLang' );
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
@@ -1046,6 +1051,18 @@ GROOVY;
 	 * @return Status results from the query transformed by the resultsType
 	 */
 	private function search( $type, $for, $cacheTTL = 0 ) {
+		if ( $this->limit <= 0 && ! $this->returnQuery ) {
+			if ( $this->returnResult ) {
+				return Status::newGood( array(
+						'description' => 'Canceled due to offset out of bounds',
+						'path' => '',
+						'result' => array(),
+				) );
+			} else {
+				return Status::newGood( $this->resultsType->createEmptyResult() );
+			}
+		}
+
 		if ( $this->nonTextQueries ) {
 			$bool = new \Elastica\Query\BoolQuery();
 			if ( $this->query !== null ) {

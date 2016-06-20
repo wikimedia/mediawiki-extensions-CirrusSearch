@@ -46,7 +46,7 @@ class ResultSet extends SearchResultSet {
 	private $suggestionQuery;
 
 	/**
-	 * @var string
+	 * @var string|null
 	 */
 	private $suggestionSnippet;
 
@@ -227,7 +227,7 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getSuggestionQuery() {
 		return $this->suggestionQuery;
@@ -305,14 +305,14 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getQueryAfterRewrite() {
 		return $this->rewrittenQuery;
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getQueryAfterRewriteSnippet() {
 		return $this->rewrittenQuerySnippet;

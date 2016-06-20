@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Sanity;
 
+use ArrayObject;
 use CirrusSearch\Connection;
 use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
@@ -56,19 +57,29 @@ class Checker {
 	private $fastRedirectCheck;
 
 	/**
+	 * A cache for pages loaded with loadPagesFromDB( $pageIds ). This is only
+	 * useful when multiple Checker are run to check different elastic clusters.
+	 * @var ArrayObject|null
+	 */
+	private $pageCache;
+
+	/**
 	 * Build the checker.
 	 * @param Connection $connection
 	 * @param Remediator $remediator the remediator to which to send titles
 	 *   that are insane
 	 * @param Searcher $searcher searcher to use for fetches
 	 * @param bool $logSane should we log sane ids
+	 * @param bool $fastRedirectCheck fast but inconsistent redirect check
+	 * @param ArrayObject|null $pageCache cache for WikiPage loaded from db
 	 */
-	public function __construct( Connection $connection, Remediator $remediator, Searcher $searcher, $logSane, $fastRedirectCheck ) {
+	public function __construct( Connection $connection, Remediator $remediator, Searcher $searcher, $logSane, $fastRedirectCheck, ArrayObject $pageCache = null ) {
 		$this->connection = $connection;
 		$this->remediator = $remediator;
 		$this->searcher = $searcher;
 		$this->logSane = $logSane;
 		$this->fastRedirectCheck = $fastRedirectCheck;
+		$this->pageCache = $pageCache;
 	}
 
 	/**
@@ -214,7 +225,16 @@ class Checker {
 	 * @return WikiPage[] the list of wiki pages indexed in page id
 	 */
 	private function loadPagesFromDB( array $ids ) {
-		$pages = array();
+		// If no cache object is constructed we build a new one.
+		// Building it in the constructor would cause memleaks because
+		// there is no automatic prunning of old entries. If a cache
+		// object is provided the owner of this Checker instance must take
+		// care of the cleaning.
+		$cache = $this->pageCache ?: new ArrayObject();
+		$ids = array_diff( $ids, array_keys( $cache->getArrayCopy() ) );
+		if ( empty( $ids ) ) {
+			return $cache->getArrayCopy();
+		}
 		$dbr = wfGetDB( DB_SLAVE );
 		$where = 'page_id IN (' . $dbr->makeList( $ids ) . ')';
 		$res = $dbr->select(
@@ -225,9 +245,9 @@ class Checker {
 		);
 		foreach ( $res as $row ) {
 			$page = WikiPage::newFromRow( $row );
-			$pages[$page->getId()] = $page;
+			$cache->offsetSet( $page->getId(), $page );
 		}
-		return $pages;
+		return $cache->getArrayCopy();
 	}
 
 	/**

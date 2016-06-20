@@ -4,8 +4,10 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Updater;
+use CirrusSearch\SearchConfig;
 use Job as MWJob;
 use JobQueueGroup;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -87,11 +89,22 @@ abstract class Job extends MWJob {
 			unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 		}
 
-		$ret = $this->doJob();
+		$backupPoolCounterPerUser = null;
+		if ( isset( $wgPoolCounterConf['CirrusSearch-PerUser'] ) ) {
+			$backupPoolCounterPerUser = $wgPoolCounterConf['CirrusSearch-PerUser'];
+			unset( $wgPoolCounterConf['CirrusSearch-PerUser'] );
+		}
 
-		// Restore the pool counter settings in case other jobs need them
-		if ( $backupPoolCounterSearch ) {
-			$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
+		try {
+			$ret = $this->doJob();
+		} finally {
+			// Restore the pool counter settings in case other jobs need them
+			if ( $backupPoolCounterSearch ) {
+				$wgPoolCounterConf['CirrusSearch-Search'] = $backupPoolCounterSearch;
+			}
+			if ( $backupPoolCounterPerUser ) {
+				$wgPoolCounterConf['CirrusSearch-PerUser'] = $backupPoolCounterSearch;
+			}
 		}
 
 		return $ret;
@@ -152,5 +165,45 @@ abstract class Job extends MWJob {
 	 */
 	protected function setAllowRetries( $allowRetries ) {
 		$this->allowRetries = $allowRetries;
+	}
+
+	/**
+	 * @param int $retryCount The number of times the job has errored out.
+	 * @return int Number of seconds to delay. With the default minimum exponent
+	 *  of 6 the possible return values are  64, 128, 256, 512 and 1024 giving a
+	 *  maximum delay of 17 minutes.
+	 */
+	public static function backoffDelay( $retryCount ) {
+		global $wgCirrusSearchWriteBackoffExponent;
+		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand(0, min( $retryCount, 4 ) ) ) );
+	}
+
+	/**
+	 * Construct the list of connections suited for this job.
+	 * NOTE: only suited for jobs that work on multiple clusters by
+	 * inspecting the 'cluster' job param
+	 *
+	 * @param SearchConfig $config
+	 * @return Connection[] indexed by cluster name
+	 */
+	protected function decideClusters( SearchConfig $config ) {
+		$cluster = isset ( $this->params['cluster'] ) ? $this->params['cluster'] : null;
+		if ( $cluster === null ) {
+			return Connection::getWritableClusterConnections( $config );
+		}
+		if ( !$config->canWriteToCluster( $cluster ) ) {
+			// Just in case a job is present in the queue but its cluster
+			// has been removed from the config file.
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Received {command} job for unwritable cluster {cluster}",
+				array(
+					'command' => $this->command,
+					'cluster' =>  $cluster
+				)
+			);
+			// this job does not allow retries so we just need to throw an exception
+			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
+		}
+		return array( $cluster => Connection::getPool( $config, $cluster ) );
 	}
 }

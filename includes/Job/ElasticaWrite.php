@@ -62,73 +62,11 @@ class ElasticaWrite extends Job {
 		return false;
 	}
 
-	/**
-	 * @return Connection[]
-	 */
-	protected function decideClusters() {
+	protected function doJob() {
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		if ( $this->params['cluster'] !== null && !$this->canWriteToCluster( $config, $this->params['cluster'] ) ) {
-			// Just in case a job is present in the queue but its cluster
-			// has been removed from the config file.
-			$cluster = $this->params['cluster'];
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Received job {method} for unwritable cluster {cluster} {diff}s after insertion",
-				array(
-					'method' => $this->params['method'],
-					'arguments' => $this->params['arguments'],
-					'diff' => time() - $this->params['createdAt'],
-					'cluster' =>  $cluster
-				)
-			);
-			// this job does not allow retries so we just need to throw an exception
-			throw new \RuntimeException( "Received job for unwritable cluster $cluster." );
-		}
-		if ( $this->params['cluster'] !== null ) {
-			// parent::__construct initialized the correct connection
-			$name = $this->connection->getClusterName();
-			return array( $name => $this->connection );
-		}
-
-		if( $config->has( 'CirrusSearchWriteClusters' ) ) {
-			$clusters = $config->get( 'CirrusSearchWriteClusters' );
-			if( is_null( $clusters ) ) {
-				$clusters = array_keys( $config->get( 'CirrusSearchClusters' ) );
-			}
-		} else {
-			$clusters = array_keys( $config->get( 'CirrusSearchClusters' ) );
-		}
-		$connections = array();
-		foreach ( $clusters as $name ) {
-			$connections[$name] = Connection::getPool( $config, $name );
-		}
-		return $connections;
-	}
-
-	/**
-	 * @param SearchConfig $config
-	 * @param string $cluster
-	 * @return bool True is cluster is writable
-	 */
-	private function canWriteToCluster( SearchConfig $config, $cluster ) {
-		if ( $config->getElement( 'CirrusSearchClusters', $cluster ) === null ) {
-			// No definition for the cluster
-			return false;
-		}
-		if ( $config->has( 'CirrusSearchWriteClusters' ) ) {
-			$clusters = $config->get( 'CirrusSearchWriteClusters' );
-			if ( !is_null ( $clusters ) ) {
-				// Check if the cluster is allowed for writing
-				return in_array( $cluster, $clusters );
-			}
-		}
-		return true;
-	}
-
-	protected function doJob() {
-
-		$connections = $this->decideClusters();
+		$connections = $this->decideClusters( $config );
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running {method} on cluster $clusterNames {diff}s after insertion",
@@ -252,16 +190,5 @@ class ElasticaWrite extends Job {
 			);
 			JobQueueGroup::singleton()->push( $job );
 		}
-	}
-
-	/**
-	 * @param int $retryCount The number of times the job has errored out.
-	 * @return int Number of seconds to delay. With the default minimum exponent
-	 *  of 6 the possible return values are  64, 128, 256, 512 and 1024 giving a
-	 *  maximum delay of 17 minutes.
-	 */
-	public static function backoffDelay( $retryCount ) {
-		global $wgCirrusSearchWriteBackoffExponent;
-		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand(0, min( $retryCount, 4 ) ) ) );
 	}
 }

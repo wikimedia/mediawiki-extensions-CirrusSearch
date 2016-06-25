@@ -27,9 +27,9 @@
 	"cirrussearch-completionsuggester-desc": "새로운 검색 제안 알고리즘. 이 기능을 사용하면 우측 상단에 검색 제안 창이 나타납니다.",
 	"cirrussearch-completion-profile-strict": "깐깐한 프로파일에서는 일부 문장기호들이 삭제되지만, 발음기호나 강세기호들은 보존합니다.",
 	"cirrussearch-completion-profile-classic": "고전 어미와 일부 문장기호들 그리고 발음기호들이 삭제됨.",
-	"cirrussearch-completion-profile-normal": "약간의 문장부호, 서너개의 발음기호와 불용어 삭제함.",
+	"cirrussearch-completion-profile-normal": "약간의 문장부호, 서너 개의 발음기호와 불용어 삭제함.",
 	"cirrussearch-completion-profile-fuzzy": "오타가 수정된 일반 문서와 유사(두 가지 오타를 지원)",
-	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 템플릿, 기사의 언어 그리고 최신정도에 기반한 순위(템플릿, 언어, 최신성은 이 위키에서 활성화되지 않을 수 있습니다.)",
+	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 일부 틀, 문서의 언어와 최신화 정도에 기반한 순위 (틀, 언어, 최신화 정도는 이 위키에서 활성화되지 않을 수 있습니다.)",
 	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에서 활성화될 때 일부 틀과 문서의 언어, 신규 정도에 따른 순위",
-	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위(디버그에만)"
+	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위 (디버그 전용)"
 }

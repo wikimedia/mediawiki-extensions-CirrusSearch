@@ -170,5 +170,5 @@ class Saneitize extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Saneitize";
+$maintClass = Saneitize::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

@@ -149,5 +149,5 @@ class CopySearchIndex extends Maintenance {
 
 }
 
-$maintClass = 'CirrusSearch\Maintenance\CopySearchIndex';
+$maintClass = CopySearchIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

@@ -175,5 +175,5 @@ class Metastore extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\Metastore";
+$maintClass = Metastore::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

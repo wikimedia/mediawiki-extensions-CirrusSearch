@@ -82,5 +82,5 @@ class CirrusIsSetup extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\CirrusIsSetup";
+$maintClass = CirrusIsSetup::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

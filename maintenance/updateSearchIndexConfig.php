@@ -53,7 +53,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 	public function execute() {
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			$this->outputIndented( "$indexType index...\n");
-			$child = $this->runChild( 'CirrusSearch\Maintenance\UpdateOneSearchIndexConfig' );
+			$child = $this->runChild( UpdateOneSearchIndexConfig::class );
 			$child->mOptions[ 'indexType' ] = $indexType;
 			$child->execute();
 			$child->done();
@@ -61,5 +61,5 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\UpdateSearchIndexConfig";
+$maintClass = UpdateSearchIndexConfig::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

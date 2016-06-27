@@ -47,7 +47,7 @@ abstract class Job extends MWJob {
 	public function __construct( $title, $params ) {
 		$params += array( 'cluster' => null );
 		// eg: DeletePages -> cirrusSearchDeletePages
-		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', get_class( $this ) );
+		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', static::class );
 		parent::__construct( $jobName, $title, $params );
 
 		// All CirrusSearch jobs are reasonably expensive.  Most involve parsing and it

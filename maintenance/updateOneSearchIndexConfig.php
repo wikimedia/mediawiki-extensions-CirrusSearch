@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\Maintenance\Metastore;
 use CirrusSearch\Util;
 use Elastica;
 
@@ -290,7 +291,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 *  maint class is being created
 	 */
 	private function updateVersions() {
-		$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+		$child = $this->runChild( Metastore::class );
 		$child->mOptions['index-version-basename'] = $this->indexBaseName;
 		$child->mOptions['update-index-version'] = true;
 		$child->execute();
@@ -610,5 +611,5 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\UpdateOneSearchIndexConfig";
+$maintClass = UpdateOneSearchIndexConfig::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

@@ -51,5 +51,5 @@ class FreezeWritesToCluster extends Maintenance {
 	}
 }
 
-$maintClass = 'CirrusSearch\Maintenance\FreezeWritesToCluster';
+$maintClass = FreezeWritesToCluster::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

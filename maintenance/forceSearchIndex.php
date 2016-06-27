@@ -637,5 +637,5 @@ class ForceSearchIndex extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\ForceSearchIndex";
+$maintClass = ForceSearchIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

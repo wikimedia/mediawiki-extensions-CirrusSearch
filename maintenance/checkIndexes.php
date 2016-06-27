@@ -242,5 +242,5 @@ class CheckIndexes extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\CheckIndexes";
+$maintClass = CheckIndexes::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

@@ -796,5 +796,5 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 }
 
-$maintClass = 'CirrusSearch\Maintenance\UpdateSuggesterIndex';
+$maintClass = UpdateSuggesterIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

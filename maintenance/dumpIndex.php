@@ -260,5 +260,5 @@ class DumpIndex extends Maintenance {
 class IndexDumperException extends \Exception {
 }
 
-$maintClass = "CirrusSearch\Maintenance\DumpIndex";
+$maintClass = DumpIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

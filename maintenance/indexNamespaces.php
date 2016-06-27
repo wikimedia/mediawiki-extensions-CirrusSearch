@@ -57,5 +57,5 @@ class IndexNamespaces extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\IndexNamespaces";
+$maintClass = IndexNamespaces::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

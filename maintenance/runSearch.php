@@ -197,5 +197,5 @@ class RunSearch extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\RunSearch";
+$maintClass = RunSearch::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

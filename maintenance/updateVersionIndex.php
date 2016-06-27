@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Maintenance\Metastore;
+
 /**
  * Update and check the CirrusSearch version index.
  *
@@ -51,21 +53,21 @@ class UpdateVersionIndex extends Maintenance {
 		$baseName = $this->getOption( 'baseName', wfWikiID() );
 		if( $this->hasOption( 'show-all' ) ) {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-all-index-versions instead.\n" );
-			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child = $this->runChild( Metastore::class );
 			$child->mOptions[ 'show-all-index-versions' ] = true;
 			$child->mOptions[ 'index-version-basename' ] = $baseName;
 			$child->execute();
 			$child->done();
 		} elseif ( $this->hasOption( 'update' ) ) {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --update-index-version instead.\n" );
-			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child = $this->runChild( Metastore::class );
 			$child->mOptions[ 'update-index-version' ] = true;
 			$child->mOptions[ 'index-version-basename' ] = $baseName;
 			$child->execute();
 			$child->done();
 		} else {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-index-version instead.\n" );
-			$child = $this->runChild( 'CirrusSearch\Maintenance\Metastore' );
+			$child = $this->runChild( Metastore::class );
 			$child->mOptions[ 'show-index-version' ] = true;
 			$child->mOptions[ 'index-version-basename' ] = $baseName;
 			$child->execute();
@@ -74,5 +76,5 @@ class UpdateVersionIndex extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Maintenance\UpdateVersionIndex";
+$maintClass = UpdateVersionIndex::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

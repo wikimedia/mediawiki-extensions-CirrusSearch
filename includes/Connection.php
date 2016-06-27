@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use ElasticaConnection;
 use MWNamespace;
+use CirrusSearch\Maintenance\MetaStoreIndex;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
@@ -189,31 +190,10 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * Fetch the Elastica Type used for all wikis in the cluster to track
-	 * frozen indexes that should not be written to.
-	 * @return \Elastica\Index
-	 */
-	public function getFrozenIndex() {
-		global $wgCirrusSearchCreateFrozenIndex;
-
-		$index = $this->getIndex( 'mediawiki_cirrussearch_frozen_indexes' );
-		if ( $wgCirrusSearchCreateFrozenIndex ) {
-			if ( !$index->exists() ) {
-				$options = array(
-					'number_of_shards' => 1,
-					'auto_expand_replicas' => '0-2',
-				 );
-				$index->create( $options, true );
-			}
-		}
-		return $index;
-	}
-
-	/**
 	 * @return \Elastica\Type
 	 */
 	public function getFrozenIndexNameType() {
-		return $this->getFrozenIndex()->getType( 'name' );
+		return MetaStoreIndex::getFrozenType( $this );
 	}
 
 	/**

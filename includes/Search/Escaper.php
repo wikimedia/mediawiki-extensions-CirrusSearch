@@ -103,7 +103,7 @@ class Escaper {
 	 * @return array(string, boolean) (fixed up query string, is this a fuzzy query?)
 	 */
 	public function fixupWholeQueryString( $string ) {
-		$escapeBadSyntax = array( self::class, 'escapeBadSyntax' );
+		$escapeBadSyntax = [ self::class, 'escapeBadSyntax' ];
 
 		// Be careful when editing this method because the ordering of the replacements matters.
 
@@ -154,11 +154,11 @@ class Escaper {
 		// Lowercase AND and OR when not surrounded on both sides by a term.
 		// Lowercase NOT when it doesn't have a term after it.
 		$string = preg_replace_callback( '/^|(AND|OR|NOT)\s*(?:AND|OR)/u',
-			array( self::class, 'lowercaseMatched' ), $string );
+			[ self::class, 'lowercaseMatched' ], $string );
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
-			array( self::class, 'lowercaseMatched' ), $string );
+			[ self::class, 'lowercaseMatched' ], $string );
 
-		return array( $string, $fuzzyQuery );
+		return [ $string, $fuzzyQuery ];
 	}
 
 	/**

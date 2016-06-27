@@ -69,7 +69,7 @@ class PooledHttp extends Http {
 			if ( $ch === null ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Elastic connection pool cannot init: Unknown pool {pool}. Did you configure curl.namedPools?",
-					array( 'pool' => $pool )
+					[ 'pool' => $pool ]
 				);
 			}
 		}

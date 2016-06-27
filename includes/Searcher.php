@@ -223,15 +223,15 @@ class Searcher extends ElasticsearchIntermediary {
 		// from the default query we make so we feed it exactly the right query to highlight.
 		$highlightQuery = new \Elastica\Query\MultiMatch();
 		$highlightQuery->setQuery( $search );
-		$highlightQuery->setFields( array(
+		$highlightQuery->setFields( [
 			'title.near_match', 'redirect.title.near_match',
 			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
-		) );
+		] );
 		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 			// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
 			$allQuery = new \Elastica\Query\MultiMatch();
 			$allQuery->setQuery( $search );
-			$allQuery->setFields( array( 'all_near_match', 'all_near_match.asciifolding' ) );
+			$allQuery->setFields( [ 'all_near_match', 'all_near_match.asciifolding' ] );
 			$this->searchContext->addFilter( $allQuery );
 		} else {
 			$this->searchContext->addFilter( $highlightQuery );
@@ -254,11 +254,11 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( strlen( $search ) > 0 ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
 				$match = new \Elastica\Query\Match();
-				$match->setField( 'title.word_prefix', array(
+				$match->setField( 'title.word_prefix', [
 					'query' => $search,
 					'analyzer' => 'plain',
 					'operator' => 'and',
-				) );
+				] );
 				$this->searchContext->addFilter( $match );
 			} else {
 				// Elasticsearch seems to have trouble extracting the proper terms to highlight
@@ -266,12 +266,12 @@ class Searcher extends ElasticsearchIntermediary {
 				$query = new \Elastica\Query\MultiMatch();
 				$query->setQuery( $search );
 				$weights = $this->config->get( 'CirrusSearchPrefixWeights' );
-				$query->setFields( array(
+				$query->setFields( [
 					'title.prefix^' . $weights[ 'title' ],
 					'redirect.title.prefix^' . $weights[ 'redirect' ],
 					'title.prefix_asciifolding^' . $weights[ 'title_asciifolding' ],
 					'redirect.title.prefix_asciifolding^' . $weights[ 'redirect_asciifolding' ],
-				) );
+				] );
 				$this->searchContext->setMainQuery( $query );
 			}
 		}
@@ -315,7 +315,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$qb = new $builderSettings['builder_class'](
 			$this->config,
 			$this->escaper,
-			array(
+			[
 				// Handle title prefix notation
 				new Query\PrefixFeature( $this->connection ),
 				// Handle prefer-recent keyword
@@ -338,7 +338,7 @@ class Searcher extends ElasticsearchIntermediary {
 				new Query\SimpleInSourceFeature( $this->escaper ),
 				// Handle intitle keyword
 				new Query\InTitleFeature( $this->escaper ),
-			),
+			],
 			$builderSettings['settings']
 		);
 
@@ -372,12 +372,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		sort( $titles, SORT_STRING );
-		$docIds = array();
-		$likeDocs = array();
+		$docIds = [];
+		$likeDocs = [];
 		foreach ( $titles as $title ) {
 			$docId = $this->config->makeId( $title->getArticleID() );
 			$docIds[] = $docId;
-			$likeDocs[] = array( '_id' => $docId );
+			$likeDocs[] = [ '_id' => $docId ];
 		}
 
 		// If no fields has been set we return no results.
@@ -411,11 +411,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$moreLikeThisUseFields = false;
 		}
 
-		if ( !$moreLikeThisUseFields && $moreLikeThisFields != array( 'text' ) ) {
+		if ( !$moreLikeThisUseFields && $moreLikeThisFields != [ 'text' ] ) {
 			// Run a first pass to extract the text field content because we want to compare it
 			// against other fields.
-			$text = array();
-			$found = $this->get( $docIds, array( 'text' ) );
+			$text = [];
+			$found = $this->get( $docIds, [ 'text' ] );
 			if ( !$found->isOK() ) {
 				return $found;
 			}
@@ -474,11 +474,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->user,
 			function() use ( $docIds, $sourceFiltering, $indexType, $size ) {
 				try {
-					$this->start( "get of {indexType}.{docIds}", array(
+					$this->start( "get of {indexType}.{docIds}", [
 						'indexType' => $indexType,
 						'docIds' => $docIds,
 						'queryType' => 'get',
-					) );
+					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
 					// We use a search query instead of _get/_mget, these methods are
@@ -493,12 +493,12 @@ class Searcher extends ElasticsearchIntermediary {
 					// the ids requested.
 					$query->setFrom( 0 );
 					$query->setSize( $size );
-					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_then_fetch' ) );
+					$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\NotFoundException $e ) {
 					// NotFoundException just means the field didn't exist.
 					// It is up to the caller to decide if that is an error.
-					return $this->success( array() );
+					return $this->success( [] );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
@@ -515,18 +515,18 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->user,
 			function() use ( $name ) {
 				try {
-					$this->start( "lookup namespace for {namespaceName}", array(
+					$this->start( "lookup namespace for {namespaceName}", [
 						'namespaceName' => $name,
 						'query' => $name,
 						'queryType' => 'namespace',
-					) );
+					] );
 					$pageType = $this->connection->getNamespaceType( $this->indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
 					$query = new \Elastica\Query( $match );
 					$query->setParam( '_source', false );
 					$query->addParam( 'stats', 'namespace' );
-					$resultSet = $pageType->search( $query, array( 'search_type' => 'query_then_fetch' ) );
+					$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
@@ -544,11 +544,11 @@ class Searcher extends ElasticsearchIntermediary {
 	private function search( $for, $cacheTTL = 0 ) {
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
-				return Status::newGood( array(
+				return Status::newGood( [
 						'description' => 'Canceled due to offset out of bounds',
 						'path' => '',
-						'result' => array(),
-				) );
+						'result' => [],
+				] );
 			} else {
 				return Status::newGood( $this->resultsType->createEmptyResult() );
 			}
@@ -562,7 +562,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$query->setParam( '_source', $this->resultsType->getSourceFiltering() );
 		$query->setParam( 'fields', $this->resultsType->getFields() );
 
-		$extraIndexes = array();
+		$extraIndexes = [];
 		$namespaces = $this->searchContext->getNamespaces();
 		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
@@ -583,9 +583,9 @@ class Searcher extends ElasticsearchIntermediary {
 				// Elastica 2.3.x.  For some reason it unwraps our suggest
 				// query when we don't want it to, so wrap it one more time
 				// to make the unwrap do nothing.
-				$query->setParam( 'suggest', array(
+				$query->setParam( 'suggest', [
 					'suggest' => $this->searchContext->getSuggest()
-				) );
+				] );
 			} else {
 				$query->setParam( 'suggest', $this->searchContext->getSuggest() );
 			}
@@ -610,31 +610,31 @@ class Searcher extends ElasticsearchIntermediary {
 		case 'relevance':
 			break;  // The default
 		case 'title_asc':
-			$query->setSort( array( 'title.keyword' => 'asc' ) );
+			$query->setSort( [ 'title.keyword' => 'asc' ] );
 			break;
 		case 'title_desc':
-			$query->setSort( array( 'title.keyword' => 'desc' ) );
+			$query->setSort( [ 'title.keyword' => 'desc' ] );
 			break;
 		case 'incoming_links_asc':
-			$query->setSort( array( 'incoming_links' => array(
+			$query->setSort( [ 'incoming_links' => [
 				'order' => 'asc',
 				'missing' => '_first',
-			) ) );
+			] ] );
 			break;
 		case 'incoming_links_desc':
-			$query->setSort( array( 'incoming_links' => array(
+			$query->setSort( [ 'incoming_links' => [
 				'order' => 'desc',
 				'missing' => '_last',
-			) ) );
+			] ] );
 			break;
 		default:
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Invalid sort type: {sort}",
-				array( 'sort' => $this->sort )
+				[ 'sort' => $this->sort ]
 			);
 		}
 
-		$queryOptions = array();
+		$queryOptions = [];
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
@@ -662,7 +662,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		$description = "{queryType} search for '{query}'";
-		$logContext = array(
+		$logContext = [
 			'queryType' => $this->searchContext->getSearchType(),
 			'query' => $for,
 			'limit' => $this->limit ?: null,
@@ -670,16 +670,16 @@ class Searcher extends ElasticsearchIntermediary {
 			// parent::buildLogContext will replace the '' with an
 			// actual suggestion.
 			'suggestion' => $this->searchContext->getSuggest() ? '' : null,
-		);
+		];
 
 		if ( $this->returnQuery ) {
-			return Status::newGood( array(
+			return Status::newGood( [
 				'description' => $this->formatDescription( $description, $logContext ),
 				'path' => $search->getPath(),
 				'params' => $search->getOptions(),
 				'query' => $query->toArray(),
 				'options' => $queryOptions,
-			) );
+			] );
 		}
 
 		if ( $this->returnExplain ) {
@@ -727,11 +727,11 @@ class Searcher extends ElasticsearchIntermediary {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					/** @suppress PhanTypeMismatchArgument phan doesn't understand array addition */
 					"Pool error {$forUserName}on key {key} during $description:  {error}",
-					$logContext + array(
+					$logContext + [
 						'userName' => $userName,
 						'key' => 'key',
 						'error' => $error
-					)
+					]
 				);
 
 				if ( $error === 'pool-queuefull' ) {
@@ -750,11 +750,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$responseData = $result->getValue()->getResponse()->getData();
 
 			if ( $this->returnResult ) {
-				return Status::newGood( array(
+				return Status::newGood( [
 						'description' => $this->formatDescription( $description, $logContext ),
 						'path' => $search->getPath(),
 						'result' => $responseData,
-				) );
+				] );
 			}
 
 			$result->setResult( true, $this->resultsType->transformElasticsearchResult(
@@ -796,14 +796,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function getAndFilterExtraIndexes() {
 		if ( $this->searchContext->getLimitSearchToLocalWiki() ) {
-			return array();
+			return [];
 		}
 		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces(
 			$this->searchContext->getNamespaces()
 		);
 		if ( $extraIndexes ) {
 			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
-				array( 'local_sites_with_dupe' => $this->indexBaseName )
+				[ 'local_sites_with_dupe' => $this->indexBaseName ]
 			) );
 		}
 		return $extraIndexes;
@@ -874,7 +874,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		$foundNamespace = $foundNamespace[ 0 ];
 		$query = substr( $query, $colon + 1 );
-		$this->searchContext->setNamespaces( array( $foundNamespace->getId() ) );
+		$this->searchContext->setNamespaces( [ $foundNamespace->getId() ] );
 	}
 
 	/**
@@ -887,7 +887,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return string $input with replacements from $context performed
 	 */
 	private function formatDescription( $input, $context ) {
-		$pairs = array();
+		$pairs = [];
 		foreach ( $context as $key => $value ) {
 			$pairs['{' . $key . '}'] = $value;
 		}

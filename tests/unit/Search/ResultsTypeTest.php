@@ -38,174 +38,174 @@ class ResultsTypeTest extends MediaWikiTestCase {
 	}
 
 	public static function fullTextHighlightingConfigurationTestCases() {
-		$boostBefore = array(
+		$boostBefore = [
 			20 => 2,
 			50 => 1.8,
 			200 => 1.5,
 			1000 => 1.2,
-		);
+		];
 
-		return array(
-			'default configuration' => array(
+		return [
+			'default configuration' => [
 				FullTextResultsType::HIGHLIGHT_ALL,
 				false,
-				array(),
-				array(
-					'pre_tags' => array( '<span class="searchmatch">' ),
-					'post_tags' => array( '</span>' ),
-					'fields' => array(
-						'title' => array(
+				[],
+				[
+					'pre_tags' => [ '<span class="searchmatch">' ],
+					'post_tags' => [ '</span>' ],
+					'fields' => [
+						'title' => [
 							'number_of_fragments' => 0,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'title', 'title.plain' ),
-						),
-						'redirect.title' => array(
+							'matched_fields' => [ 'title', 'title.plain' ],
+						],
+						'redirect.title' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 10000,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'redirect.title', 'redirect.title.plain' ),
-						),
-						'category' => array(
+							'matched_fields' => [ 'redirect.title', 'redirect.title.plain' ],
+						],
+						'category' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 10000,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'category', 'category.plain' ),
-						),
-						'heading' => array(
+							'matched_fields' => [ 'category', 'category.plain' ],
+						],
+						'heading' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 10000,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'heading', 'heading.plain' ),
-						),
-						'text' => array(
+							'matched_fields' => [ 'heading', 'heading.plain' ],
+						],
+						'text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'fvh',
 							'order' => 'score',
 							'no_match_size' => 150,
-							'matched_fields' => array( 'text', 'text.plain' ),
-						),
-						'auxiliary_text' => array(
+							'matched_fields' => [ 'text', 'text.plain' ],
+						],
+						'auxiliary_text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'auxiliary_text', 'auxiliary_text.plain' ),
-						),
-						'file_text' => array(
+							'matched_fields' => [ 'auxiliary_text', 'auxiliary_text.plain' ],
+						],
+						'file_text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'fvh',
 							'order' => 'score',
-							'matched_fields' => array( 'file_text', 'file_text.plain' ),
-						),
-					),
-				)
-			),
-			'default configuration with experimental highlighter' => array(
+							'matched_fields' => [ 'file_text', 'file_text.plain' ],
+						],
+					],
+				]
+			],
+			'default configuration with experimental highlighter' => [
 				FullTextResultsType::HIGHLIGHT_ALL,
 				true,
-				array(),
-				array(
-					'pre_tags' => array( '<span class="searchmatch">' ),
-					'post_tags' => array( '</span>' ),
-					'fields' => array(
-						'title' => array(
+				[],
+				[
+					'pre_tags' => [ '<span class="searchmatch">' ],
+					'post_tags' => [ '</span>' ],
+					'fields' => [
+						'title' => [
 							'number_of_fragments' => 1,
 							'type' => 'experimental',
-							'matched_fields' => array( 'title', 'title.plain' ),
+							'matched_fields' => [ 'title', 'title.plain' ],
 							'fragmenter' => 'none',
-						),
-						'redirect.title' => array(
-							'number_of_fragments' => 1,
-							'type' => 'experimental',
-							'order' => 'score',
-							'options' => array( 'skip_if_last_matched' => true ),
-							'matched_fields' => array( 'redirect.title', 'redirect.title.plain' ),
-							'fragmenter' => 'none',
-						),
-						'category' => array(
+						],
+						'redirect.title' => [
 							'number_of_fragments' => 1,
 							'type' => 'experimental',
 							'order' => 'score',
-							'options' => array( 'skip_if_last_matched' => true ),
-							'matched_fields' => array( 'category', 'category.plain' ),
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'redirect.title', 'redirect.title.plain' ],
 							'fragmenter' => 'none',
-						),
-						'heading' => array(
+						],
+						'category' => [
 							'number_of_fragments' => 1,
 							'type' => 'experimental',
 							'order' => 'score',
-							'options' => array( 'skip_if_last_matched' => true ),
-							'matched_fields' => array( 'heading', 'heading.plain' ),
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'category', 'category.plain' ],
 							'fragmenter' => 'none',
-						),
-						'text' => array(
+						],
+						'heading' => [
+							'number_of_fragments' => 1,
+							'type' => 'experimental',
+							'order' => 'score',
+							'options' => [ 'skip_if_last_matched' => true ],
+							'matched_fields' => [ 'heading', 'heading.plain' ],
+							'fragmenter' => 'none',
+						],
+						'text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'experimental',
-							'options' => array(
+							'options' => [
 								'top_scoring' => true,
 								'boost_before' => $boostBefore,
 								'max_fragments_scored' => 5000,
-							),
+							],
 							'no_match_size' => 150,
-							'matched_fields' => array( 'text', 'text.plain' ),
+							'matched_fields' => [ 'text', 'text.plain' ],
 							'fragmenter' => 'scan',
-						),
-						'auxiliary_text' => array(
+						],
+						'auxiliary_text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'experimental',
-							'options' => array(
+							'options' => [
 								'top_scoring' => true,
 								'boost_before' => $boostBefore,
 								'max_fragments_scored' => 5000,
 								'skip_if_last_matched' => true,
-							),
-							'matched_fields' => array( 'auxiliary_text', 'auxiliary_text.plain' ),
+							],
+							'matched_fields' => [ 'auxiliary_text', 'auxiliary_text.plain' ],
 							'fragmenter' => 'scan',
-						),
-						'file_text' => array(
+						],
+						'file_text' => [
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
 							'type' => 'experimental',
-							'options' => array(
+							'options' => [
 								'top_scoring' => true,
 								'boost_before' => $boostBefore,
 								'max_fragments_scored' => 5000,
 								'skip_if_last_matched' => true,
-							),
-							'matched_fields' => array( 'file_text', 'file_text.plain' ),
+							],
+							'matched_fields' => [ 'file_text', 'file_text.plain' ],
 							'fragmenter' => 'scan',
-						),
-					),
-				),
-			),
-			'source configuration with experimental-highlighter' => array(
+						],
+					],
+				],
+			],
+			'source configuration with experimental-highlighter' => [
 				FullTextResultsType::HIGHLIGHT_ALL,
 				true,
-				array(
-					array(
+				[
+					[
 						'pattern' => '(some|thing)',
 						'locale' => 'testlocale',
 						'insensitive' => false,
-					),
-				),
-				array(
-					'pre_tags' => array( '<span class="searchmatch">' ),
-					'post_tags' => array( '</span>' ),
-					'fields' => array(
-						'source_text.plain' => array(
+					],
+				],
+				[
+					'pre_tags' => [ '<span class="searchmatch">' ],
+					'post_tags' => [ '</span>' ],
+					'fields' => [
+						'source_text.plain' => [
 							'type' => 'experimental',
 							'number_of_fragments' => 1,
 							'fragment_size' => 150,
-							'options' => array(
-								'regex' => array( '(some|thing)' ),
+							'options' => [
+								'regex' => [ '(some|thing)' ],
 								'locale' => 'testlocale',
 								'regex_flavor' => 'lucene',
 								'skip_query' => true,
@@ -214,13 +214,13 @@ class ResultsTypeTest extends MediaWikiTestCase {
 								'top_scoring' => true,
 								'boost_before' => $boostBefore,
 								'max_fragments_scored' => 5000,
-							),
+							],
 							'no_match_size' => 150,
 							'fragmenter' => 'scan',
-						),
-					),
-				),
-			),
-		);
+						],
+					],
+				],
+			],
+		];
 	}
 }

@@ -31,12 +31,12 @@ abstract class IndexAliasValidator extends Validator {
 	/**
 	 * @var array
 	 */
-	protected $create = array();
+	protected $create = [];
 
 	/**
 	 * @var array
 	 */
-	protected $remove = array();
+	protected $remove = [];
 
 	/**
 	 * @param Client $client
@@ -59,7 +59,7 @@ abstract class IndexAliasValidator extends Validator {
 	 */
 	public function validate() {
 		// arrays of aliases to be added/removed
-		$add = $remove = array();
+		$add = $remove = [];
 
 		$this->outputIndented( "\tValidating $this->aliasName alias..." );
 		$status = $this->client->getStatus();

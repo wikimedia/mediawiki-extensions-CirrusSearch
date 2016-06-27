@@ -37,7 +37,7 @@ class ShardAllocationValidator extends Validator {
 
 		$actual = $this->fetchActualAllocation();
 		$changed = false;
-		foreach ( array( 'include', 'exclude', 'require' ) as $type ) {
+		foreach ( [ 'include', 'exclude', 'require' ] as $type ) {
 			$desired = $this->indexAllocation[$type];
 			if ( $desired ) {
 				$this->output( "\n" );
@@ -77,7 +77,7 @@ class ShardAllocationValidator extends Validator {
 	private function fetchActualAllocation() {
 		$settings = $this->index->getSettings()->get();
 		return isset( $settings['routing']['allocation'] ) ?
-			$settings['routing']['allocation'] : array();
+			$settings['routing']['allocation'] : [];
 	}
 
 	/**
@@ -85,12 +85,12 @@ class ShardAllocationValidator extends Validator {
 	 * @param array $allocation
 	 */
 	private function set( $type, $allocation ) {
-		$this->index->getSettings()->set( array(
-			'routing' => array(
-				'allocation' => array(
+		$this->index->getSettings()->set( [
+			'routing' => [
+				'allocation' => [
 					$type => $allocation,
-				)
-			)
-		) );
+				]
+			]
+		] );
 	}
 }

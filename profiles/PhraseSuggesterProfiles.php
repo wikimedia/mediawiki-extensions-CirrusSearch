@@ -61,18 +61,18 @@ class PhraseSuggesterProfiles {
 			// later if proven useful.
 			switch ( $smoothing ) {
 			case 'laplace' :
-				$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = array(
-					'laplace' => array(
+				$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = [
+					'laplace' => [
 						'alpha' => 0.5
-					)
-				);
+					]
+				];
 				break;
 			case 'stupid_backoff' :
-				$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = array(
-					'stupid_backoff' => array(
+				$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = [
+					'stupid_backoff' => [
 						'discount' => 0.4
-					)
-				);
+					]
+				];
 				break;
 			}
 		}
@@ -122,7 +122,7 @@ class PhraseSuggesterProfiles {
 			function () {
 				$source = wfMessage( 'cirrussearch-didyoumean-settings' )->inContentLanguage();
 				if ( !$source || $source->isDisabled() ) {
-					return array();
+					return [];
 				}
 				return Util::parseSettingsInMessage( $source->plain() );
 			}
@@ -194,17 +194,17 @@ class PhraseSuggesterProfiles {
 				break;
 			case 'smoothing' :
 				if ( $v === 'laplace' ) {
-					$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = array(
-						'laplace' => array(
+					$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = [
+						'laplace' => [
 							'alpha' => 0.5
-						)
-					);
+						]
+					];
 				} else if ( $v === 'stupid_backoff' ) {
-					$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = array(
-						'stupid_backoff' => array(
+					$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = [
+						'stupid_backoff' => [
 							'discount' => 0.4
-						)
-					);
+						]
+					];
 				}
 				break;
 			case 'laplace_alpha' :
@@ -223,15 +223,15 @@ class PhraseSuggesterProfiles {
 		// Apply smoothing model options, if none provided we'll use elasticsearch defaults
 		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) &&
 			isset ( $laplaceAlpha ) ) {
-			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] = array(
+			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] = [
 				'alpha' => $laplaceAlpha
-			);
+			];
 		}
 		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) &&
 			isset ( $stupidBackoffDiscount ) ) {
-			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] = array(
+			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] = [
 				'discount' => $stupidBackoffDiscount
-			);
+			];
 		}
 	}
 }

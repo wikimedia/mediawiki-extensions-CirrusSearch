@@ -34,19 +34,19 @@ class UtilTest extends MediaWikiTestCase {
 	}
 
 	public static function recursiveSameTestCases() {
-		return array(
-			array( true, array(), array() ),
-			array( false, array( true ), array() ),
-			array( false, array( true ), array( false ) ),
-			array( true, array( true ), array( true ) ),
-			array( false, array( 1 ), array( 2 ) ),
-			array( false, array( 1, 2 ), array( 2, 1 ) ),
-			array( true, array( 1, 2, 3 ), array( 1, 2, 3 ) ),
-			array( false, array( array( 1 ) ), array( array( 2 ) ) ),
-			array( true, array( array( 1 ) ), array( array( 1 ) ) ),
-			array( true, array( 'candle' => array( 'wax' => 'foo' ) ), array( 'candle' => array( 'wax' => 'foo' ) ) ),
-			array( false, array( 'candle' => array( 'wax' => 'foo' ) ), array( 'candle' => array( 'wax' => 'bar' ) ) ),
-		);
+		return [
+			[ true, [], [] ],
+			[ false, [ true ], [] ],
+			[ false, [ true ], [ false ] ],
+			[ true, [ true ], [ true ] ],
+			[ false, [ 1 ], [ 2 ] ],
+			[ false, [ 1, 2 ], [ 2, 1 ] ],
+			[ true, [ 1, 2, 3 ], [ 1, 2, 3 ] ],
+			[ false, [ [ 1 ] ], [ [ 2 ] ] ],
+			[ true, [ [ 1 ] ], [ [ 1 ] ] ],
+			[ true, [ 'candle' => [ 'wax' => 'foo' ] ], [ 'candle' => [ 'wax' => 'foo' ] ] ],
+			[ false, [ 'candle' => [ 'wax' => 'foo' ] ], [ 'candle' => [ 'wax' => 'bar' ] ] ],
+		];
 	}
 
 	/**
@@ -58,35 +58,35 @@ class UtilTest extends MediaWikiTestCase {
 	}
 
 	public static function cleanUnusedFieldsProvider() {
-		return array(
+		return [
 			// sample
-			array(
+			[
 				// data
-				array(
+				[
 					'title' => "I'm a title",
 					'useless' => "I'm useless",
-				),
+				],
 				// properties
-				array(
+				[
 					'title' => 'params-for-title'
-				),
+				],
 				// expect
-				array(
+				[
 					'title' => "I'm a title",
-				),
-			),
+				],
+			],
 			// Flow data - untouched
-			array(
+			[
 				// data (as seen in https://gerrit.wikimedia.org/r/#/c/195889/1//COMMIT_MSG)
-				array(
+				[
 					'namespace' => 1,
 					'namespace_text' => "Talk",
 					'pageid' => 2,
 					'title' => "Main Page",
 					'timestamp' => "2014-02-07T01:42:57Z",
 					'update_timestamp' => "2014-02-25T14:12:40Z",
-					'revisions' => array(
-						array(
+					'revisions' => [
+						[
 							'id' => "rpvwvywl9po7ih77",
 							'text' => "topic title content",
 							'source_text' => "topic title content",
@@ -94,8 +94,8 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-07T01:42:57Z",
 							'update_timestamp' => "2014-02-07T01:42:57Z",
 							'type' => "topic"
-						),
-						array(
+						],
+						[
 							'id' => "ropuzninqgyf19ko",
 							'text' => "reply content",
 							'source_text' => "reply '''content'''",
@@ -103,39 +103,39 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-25T14:12:40Z",
 							'update_timestamp' => "2014-02-25T14:12:40Z",
 							'type' => "post"
-						),
-					)
-				),
+						],
+					]
+				],
 				// properties (as seen in https://gerrit.wikimedia.org/r/#/c/161251/26/includes/Search/maintenance/MappingConfigBuilder.php)
-				array(
-					'namespace' => array( '...' ),
-					'namespace_text' => array( '...' ),
-					'pageid' => array( '...' ),
-					'title' => array( '...' ),
-					'timestamp' => array( '...' ),
-					'update_timestamp' => array( '...' ),
-					'revisions' => array(
-						'properties' => array(
-							'id' => array( '...' ),
-							'text' => array( '...' ),
-							'source_text' => array( '...' ),
-							'moderation_state' => array( '...' ),
-							'timestamp' => array( '...' ),
-							'update_timestamp' => array( '...' ),
-							'type' => array( '...' ),
-						)
-					),
-				),
+				[
+					'namespace' => [ '...' ],
+					'namespace_text' => [ '...' ],
+					'pageid' => [ '...' ],
+					'title' => [ '...' ],
+					'timestamp' => [ '...' ],
+					'update_timestamp' => [ '...' ],
+					'revisions' => [
+						'properties' => [
+							'id' => [ '...' ],
+							'text' => [ '...' ],
+							'source_text' => [ '...' ],
+							'moderation_state' => [ '...' ],
+							'timestamp' => [ '...' ],
+							'update_timestamp' => [ '...' ],
+							'type' => [ '...' ],
+						]
+					],
+				],
 				// expect
-				array(
+				[
 					'namespace' => 1,
 					'namespace_text' => "Talk",
 					'pageid' => 2,
 					'title' => "Main Page",
 					'timestamp' => "2014-02-07T01:42:57Z",
 					'update_timestamp' => "2014-02-25T14:12:40Z",
-					'revisions' => array(
-						array(
+					'revisions' => [
+						[
 							'id' => "rpvwvywl9po7ih77",
 							'text' => "topic title content",
 							'source_text' => "topic title content",
@@ -143,8 +143,8 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-07T01:42:57Z",
 							'update_timestamp' => "2014-02-07T01:42:57Z",
 							'type' => "topic"
-						),
-						array(
+						],
+						[
 							'id' => "ropuzninqgyf19ko",
 							'text' => "reply content",
 							'source_text' => "reply '''content'''",
@@ -152,22 +152,22 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-25T14:12:40Z",
 							'update_timestamp' => "2014-02-25T14:12:40Z",
 							'type' => "post"
-						),
-					)
-				),
-			),
+						],
+					]
+				],
+			],
 			// Flow data - deleted columns in config
-			array(
+			[
 				// data (as seen in https://gerrit.wikimedia.org/r/#/c/195889/1//COMMIT_MSG)
-				array(
+				[
 					'namespace' => 1,
 					'namespace_text' => "Talk",
 					'pageid' => 2,
 					'title' => "Main Page",
 					'timestamp' => "2014-02-07T01:42:57Z",
 					'update_timestamp' => "2014-02-25T14:12:40Z",
-					'revisions' => array(
-						array(
+					'revisions' => [
+						[
 							'id' => "rpvwvywl9po7ih77",
 							'text' => "topic title content",
 							'source_text' => "topic title content",
@@ -175,8 +175,8 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-07T01:42:57Z",
 							'update_timestamp' => "2014-02-07T01:42:57Z",
 							'type' => "topic"
-						),
-						array(
+						],
+						[
 							'id' => "ropuzninqgyf19ko",
 							'text' => "reply content",
 							'source_text' => "reply '''content'''",
@@ -184,66 +184,66 @@ class UtilTest extends MediaWikiTestCase {
 							'timestamp' => "2014-02-25T14:12:40Z",
 							'update_timestamp' => "2014-02-25T14:12:40Z",
 							'type' => "post"
-						),
-					)
-				),
+						],
+					]
+				],
 				// properties (as seen in https://gerrit.wikimedia.org/r/#/c/161251/26/includes/Search/maintenance/MappingConfigBuilder.php)
-				array(
-					'namespace' => array( '...' ),
-					'namespace_text' => array( '...' ),
-					'pageid' => array( '...' ),
-					'title' => array( '...' ),
+				[
+					'namespace' => [ '...' ],
+					'namespace_text' => [ '...' ],
+					'pageid' => [ '...' ],
+					'title' => [ '...' ],
 					// deleted timestamp & update_timestamp columns
-					'revisions' => array(
-						'properties' => array(
-							'id' => array( '...' ),
-							'text' => array( '...' ),
-							'source_text' => array( '...' ),
-							'moderation_state' => array( '...' ),
+					'revisions' => [
+						'properties' => [
+							'id' => [ '...' ],
+							'text' => [ '...' ],
+							'source_text' => [ '...' ],
+							'moderation_state' => [ '...' ],
 							// deleted timestamp & update_timestamp columns
-							'type' => array( '...' ),
-						)
-					),
-				),
+							'type' => [ '...' ],
+						]
+					],
+				],
 				// expect
-				array(
+				[
 					'namespace' => 1,
 					'namespace_text' => "Talk",
 					'pageid' => 2,
 					'title' => "Main Page",
 					// deleted timestamp & update_timestamp columns
-					'revisions' => array(
-						array(
+					'revisions' => [
+						[
 							'id' => "rpvwvywl9po7ih77",
 							'text' => "topic title content",
 							'source_text' => "topic title content",
 							'moderation_state' => "",
 							// deleted timestamp & update_timestamp columns
 							'type' => "topic"
-						),
-						array(
+						],
+						[
 							'id' => "ropuzninqgyf19ko",
 							'text' => "reply content",
 							'source_text' => "reply '''content'''",
 							'moderation_state' => "hide",
 							// deleted timestamp & update_timestamp columns
 							'type' => "post"
-						),
-					)
-				),
-			),
-		);
+						],
+					]
+				],
+			],
+		];
 	}
 
 	public function testChooseBestRedirect() {
 		$convert = function( $x ) {
-			$redirect = array();
+			$redirect = [];
 			foreach( $x as $t ) {
-				$redirect[] = array( 'title' => $t, 'namespace' => 0 );
+				$redirect[] = [ 'title' => $t, 'namespace' => 0 ];
 			}
 			return $redirect;
 		};
-		$input = $convert( array( 'Al. Einstein', 'Albert Einstein', 'A. Einstein', 'Einstein, Albert' ) );
+		$input = $convert( [ 'Al. Einstein', 'Albert Einstein', 'A. Einstein', 'Einstein, Albert' ] );
 		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'a', $input ) );
 		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'al', $input ) );
 		$this->assertEquals( 'Albert Einstein', Util::chooseBestRedirect( 'albet', $input ) );

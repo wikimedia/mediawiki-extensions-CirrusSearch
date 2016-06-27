@@ -119,7 +119,7 @@ class InterwikiSearcher extends Searcher {
 	 * @return array
 	 */
 	protected function getAndFilterExtraIndexes() {
-		return array();
+		return [];
 	}
 
 	/**

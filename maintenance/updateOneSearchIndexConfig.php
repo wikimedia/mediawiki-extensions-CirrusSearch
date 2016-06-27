@@ -365,7 +365,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \CirrusSearch\Maintenance\Validators\Validator[]
 	 */
 	private function getIndexSettingsValidators() {
-		$validators = array();
+		$validators = [];
 		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
 		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
 		$validators[] = $this->getShardAllocationValidator();
@@ -399,7 +399,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
 			$this->getMappingConfig(),
-			array( 'page' => $this->getPageType(), 'namespace' => $this->getNamespaceType() ),
+			[ 'page' => $this->getPageType(), 'namespace' => $this->getNamespaceType() ],
 			$this
 		);
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
@@ -429,8 +429,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSearchConfig(),
 			$connection,
 			$connection,
-			array( $this->getPageType() ),
-			array( $this->getOldPageType() ),
+			[ $this->getPageType() ],
+			[ $this->getOldPageType() ],
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$wgCirrusSearchMaintenanceTimeout,
@@ -445,7 +445,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSpecificIndexName(),
 			$this->startOver,
 			$reindexer,
-			array( $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ),
+			[ $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ],
 			$this->getIndexSettingsValidators(),
 			$this->reindexAndRemoveOk,
 			$this->tooFewReplicas,
@@ -476,7 +476,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $wgCirrusSearchMainPageCacheWarmer ) {
 			$wgCirrusSearchCacheWarmers['content'][] = \Title::newMainPage()->getText();
 		}
-		$cacheWarmers = isset( $wgCirrusSearchCacheWarmers[$this->indexType] ) ? $wgCirrusSearchCacheWarmers[$this->indexType] : array();
+		$cacheWarmers = isset( $wgCirrusSearchCacheWarmers[$this->indexType] ) ? $wgCirrusSearchCacheWarmers[$this->indexType] : [];
 
 		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $cacheWarmers, $this );
 		$status = $warmers->validate();
@@ -506,7 +506,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @param array $availablePlugins
 	 * @return AnalysisConfigBuilder
 	 */
-	private function pickAnalyzer( $langCode, array $availablePlugins = array() ) {
+	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
 		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder( $langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
 			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );

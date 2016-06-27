@@ -109,8 +109,8 @@ class SuggestBuilder {
 	 */
 	public function build( $inputDocs ) {
 		// Cross namespace titles
-		$crossNsTitles = array();
-		$docs = array();
+		$crossNsTitles = [];
+		$docs = [];
 		foreach ( $inputDocs as $sourceDoc ) {
 			$inputDoc = $sourceDoc['source'];
 			$docId = $sourceDoc['id'];
@@ -144,18 +144,18 @@ class SuggestBuilder {
 					$location = $this->findPrimaryCoordinates( $inputDoc );
 
 					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
-					$crossNsTitles[$redir['title']] = array(
+					$crossNsTitles[$redir['title']] = [
 						'title' => $title,
 						'score' => $score,
 						'location' => $location
-					);
+					];
 				}
 			}
 		}
 
 		// Build cross ns suggestions
 		if ( !empty ( $crossNsTitles ) ) {
-			$titles = array();
+			$titles = [];
 			foreach( $crossNsTitles as $text => $data ) {
 				$titles[] = $data['title'];
 			}
@@ -168,10 +168,10 @@ class SuggestBuilder {
 			// - we will certainly suggest multiple times the same pages
 			// - we must not run a second pass at query time: no redirect suggestion
 			foreach ( $crossNsTitles as $text => $data ) {
-				$suggestion = array(
+				$suggestion = [
 					'text' => $text,
-					'variants' => array()
-				);
+					'variants' => []
+				];
 				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['location'], $data['score'] );
 			}
 		}
@@ -188,7 +188,7 @@ class SuggestBuilder {
 	private function buildNormalSuggestions( $docId, array $inputDoc ) {
 		if ( !isset( $inputDoc['title'] ) ) {
 			// Bad doc, nothing to do here.
-			return array();
+			return [];
 		}
 
 		$score = $this->scoringMethod->score( $inputDoc );
@@ -212,7 +212,7 @@ class SuggestBuilder {
 	 */
 	public function getRequiredFields() {
 		$fields = $this->scoringMethod->getRequiredFields();
-		$fields = array_merge( $fields, array( 'title', 'redirect', 'namespace' ) );
+		$fields = array_merge( $fields, [ 'title', 'redirect', 'namespace' ] );
 		if ( $this->withGeo ) {
 			$fields[] = 'coordinates';
 		}
@@ -257,7 +257,7 @@ class SuggestBuilder {
 	 * @return \Elastica\Document the suggestion document
 	 */
 	private function buildTitleSuggestion( $docId, array $title, array $location = null, $score ) {
-		$inputs = array( $this->prepareInput( $title['text'] ) );
+		$inputs = [ $this->prepareInput( $title['text'] ) ];
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
@@ -286,7 +286,7 @@ class SuggestBuilder {
 	 * @return \Elastica\Document the suggestion document
 	 */
 	private function buildRedirectsSuggestion( $docId, array $redirects, array $location = null, $score ) {
-		$inputs = array();
+		$inputs = [];
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
@@ -306,33 +306,33 @@ class SuggestBuilder {
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
 	private function buildSuggestion( $docId, $output, array $inputs, array $location = null, $score ) {
-		$doc = array(
+		$doc = [
 			'batch_id' => $this->batchId,
-			'suggest' => array (
+			'suggest' => [
 				'input' => $inputs,
 				'output' => $output,
 				'weight' => $score
-			),
-			'suggest-stop' => array (
+			],
+			'suggest-stop' => [
 				'input' => $inputs,
 				'output' => $output,
 				'weight' => $score
-			)
-		);
+			]
+		];
 
 		if ( $this->withGeo && $location !== null ) {
-			$doc['suggest-geo'] = array(
+			$doc['suggest-geo'] = [
 				'input' => $inputs,
 				'output' => $output,
 				'weight' => $score,
-				'context' => array( 'location' => $location )
-			);
-			$doc['suggest-stop-geo'] = array(
+				'context' => [ 'location' => $location ]
+			];
+			$doc['suggest-stop-geo'] = [
 				'input' => $inputs,
 				'output' => $output,
 				'weight' => $score,
-				'context' => array( 'location' => $location )
-			);
+				'context' => [ 'location' => $location ]
+			];
 		}
 		return new \Elastica\Document( $docId, $doc );
 	}
@@ -343,7 +343,7 @@ class SuggestBuilder {
 	 *  resolve to the document.
 	 */
 	public function buildInputs( array $input ) {
-		$inputs = array( $this->prepareInput( $input['text'] ) );
+		$inputs = [ $this->prepareInput( $input['text'] ) ];
 		foreach ( $input['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
@@ -386,7 +386,7 @@ class SuggestBuilder {
 	 *         candidates that were not close enough to $groupHead.
 	 */
 	public function extractTitleAndSimilarRedirects( array $doc ) {
-		$redirects = array();
+		$redirects = [];
 		if ( isset( $doc['redirect'] ) ) {
 			foreach( $doc['redirect'] as $redir ) {
 				// Avoid suggesting/displaying non existent titles
@@ -410,11 +410,11 @@ class SuggestBuilder {
 	 *         candidates that were not close enough to $groupHead.
 	 */
 	private function extractSimilars( $groupHead, array $candidates, $checkVariants = false ) {
-		$group = array(
+		$group = [
 			'text' => $groupHead,
-			'variants' => array()
-		);
-		$newCandidates = array();
+			'variants' => []
+		];
+		$newCandidates = [];
 		foreach( $candidates as $c ) {
 			$distance = $this->distance( $groupHead, $c );
 			if( $distance > self::GROUP_ACCEPTABLE_DISTANCE && $checkVariants ) {
@@ -433,10 +433,10 @@ class SuggestBuilder {
 			}
 		}
 
-		return array(
+		return [
 			'group' => $group,
 			'candidates' => $newCandidates
-		);
+		];
 	}
 
 	/**
@@ -518,19 +518,19 @@ class SuggestBuilder {
 
 		switch( $parts[1] ) {
 		case self::REDIRECT_SUGGESTION:
-			return array(
+			return [
 				'docId' => $parts[0],
 				'type' => self::REDIRECT_SUGGESTION,
-			);
+			];
 		case self::TITLE_SUGGESTION:
 			if ( sizeof( $parts ) < 3 ) {
 				return null;
 			}
-			return array(
+			return [
 				'docId' => $parts[0],
 				'type' => self::TITLE_SUGGESTION,
 				'text' => $parts[2]
-			);
+			];
 		}
 		return null;
 	}

@@ -100,7 +100,7 @@ class SaneitizeJobs extends Maintenance {
 
 	private function init() {
 		$res = $this->getDB( DB_SLAVE )->select( 'page',
-			array( 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ) );
+			[ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
 		$row = $res->next();
 		/** @suppress PhanUndeclaredProperty */
 		$this->minId = $row->min_id;
@@ -338,7 +338,7 @@ EOD
 
 
 	private function initMetaStores() {
-		$connections = array();
+		$connections = [];
 		if ( $this->hasOption( 'cluster' ) ) {
 			$cluster = $this->getOption( 'cluster' );
 			if ( !$this->getSearchConfig()->clusterExists( $cluster ) ) {
@@ -356,7 +356,7 @@ EOD
 			$this->error( "No writable cluster found.", 1 );
 		}
 
-		$this->metaStores = array();
+		$this->metaStores = [];
 		foreach ( $connections as $cluster => $connection ) {
 			$store = new MetaStoreIndex( $connection, $this );
 			$store->createOrUpgradeIfNecessary();
@@ -424,7 +424,7 @@ EOD
 		$cluster = $this->getOption( 'cluster' );
 		$job = new \Elastica\Document(
 			$this->jobId( $jobName ),
-			array(
+			[
 				'sanitize_job_wiki' => wfWikiID(),
 				'sanitize_job_created' => time(),
 				'sanitize_job_updated' => time(),
@@ -435,7 +435,7 @@ EOD
 				'sanitize_job_ids_sent_total' => 0,
 				'sanitize_job_jobs_sent' => 0,
 				'sanitize_job_jobs_sent_total' => 0
-			)
+			]
 		);
 		foreach( $this->metaStores as $store ) {
 			$store->sanitizeType()->addDocument( $job );

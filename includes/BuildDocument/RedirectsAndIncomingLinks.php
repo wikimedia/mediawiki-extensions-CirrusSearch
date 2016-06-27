@@ -41,19 +41,19 @@ class RedirectsAndIncomingLinks {
 	public static function buildDocument( \Elastica\Document $doc, Title $title, Connection $conn ) {
 		global $wgCirrusSearchIndexedRedirects;
 
-		$outgoingLinksToCount = array( $title );
+		$outgoingLinksToCount = [ $title ];
 
 		// Gather redirects to this page
 		$redirectTitles = $title->getBacklinkCache()
 			->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
-		$redirects = array();
+		$redirects = [];
 		foreach ( $redirectTitles as $redirect ) {
 			// If the redirect is in main OR the same namespace as the article the index it
 			if ( $redirect->getNamespace() === NS_MAIN || $redirect->getNamespace() === $title->getNamespace()) {
-				$redirects[] = array(
+				$redirects[] = [
 					'namespace' => $redirect->getNamespace(),
 					'title' => $redirect->getText()
-				);
+				];
 				$outgoingLinksToCount[] = $redirect;
 			}
 		}
@@ -90,10 +90,10 @@ class RedirectsAndIncomingLinks {
 		$dbr = wfGetDB( DB_SLAVE );
 
 		foreach ( $titles as $title ) {
-			$conditions[] = $dbr->makeList( array(
+			$conditions[] = $dbr->makeList( [
 				'pl_namespace' => $title->getNamespace(),
 				'pl_title' => $title->getDBkey(),
-			), LIST_AND );
+			], LIST_AND );
 		}
 
 		$condition = $dbr->makeList( $conditions, LIST_OR );

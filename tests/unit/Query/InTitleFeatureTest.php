@@ -8,47 +8,47 @@ use CirrusSearch\Search\SearchContext;
 class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
-		$defaults = array(
-			'fields' => array( 'title' ),
+		$defaults = [
+			'fields' => [ 'title' ],
 			'default_operator' => 'AND',
 			'allow_leading_wildcard' => true,
 			'fuzzy_prefix_length' => 2,
 			'rewrite' => 'top_terms_boost_1024',
-		);
-		return array(
-			'basic search' => array(
-				array( 'query_string' => $defaults + array(
+		];
+		return [
+			'basic search' => [
+				[ 'query_string' => $defaults + [
 					'query' => 'bridge',
-				) ),
+				] ],
 				'bridge ',
 				false,
 				'intitle:bridge',
-			),
-			'fuzzy search' => array(
-				array( 'query_string' => $defaults + array(
+			],
+			'fuzzy search' => [
+				[ 'query_string' => $defaults + [
 					'query' => 'bridge~2',
-				) ),
+				] ],
 				'bridge~2 ',
 				true,
 				'intitle:bridge~2',
-			),
-			'gracefully handles titles including ~' => array(
-				array( 'query_string' => $defaults + array(
+			],
+			'gracefully handles titles including ~' => [
+				[ 'query_string' => $defaults + [
 					'query' => 'this\~that',
-				) ),
+				] ],
 				'this~that ',
 				false,
 				'intitle:this~that',
-			),
-			'maintains provided quotes' => array(
-				array( 'query_string' => $defaults + array(
+			],
+			'maintains provided quotes' => [
+				[ 'query_string' => $defaults + [
 					'query' => '"something or other"',
-				) ),
+				] ],
 				'"something or other" ',
 				false,
 				'intitle:"something or other"',
-			),
-		);
+			],
+		];
 	}
 
 	/**

@@ -77,11 +77,11 @@ class RegexInSourceFeature implements KeywordFeature {
 
 				if ( empty( $matches['not'] ) ) {
 					$context->addFilter( $filter );
-					$context->addHighlightSource( array(
+					$context->addHighlightSource( [
 						'pattern' => $matches['pattern'],
 						'locale' => $this->languageCode,
 						'insensitive' => $insensitive,
-					) );
+					] );
 				} else {
 					$context->addNotFilter( $filter );
 				}
@@ -99,9 +99,9 @@ class RegexInSourceFeature implements KeywordFeature {
 	private function buildRegexWithPlugin( $pattern, $insensitive ) {
 		$filter = new SourceRegex( $pattern, 'source_text', 'source_text.trigram' );
 		// set some defaults
-		$this->regexPlugin += array(
+		$this->regexPlugin += [
 			'max_inspect' => 10000,
-		);
+		];
 		$filter->setMaxInspect( isset( $this->regexPlugin['max_inspect'] )
 			? $this->regexPlugin['max_inspect']
 			: 10000
@@ -152,7 +152,7 @@ GROOVY;
 
 		return new \Elastica\Query\Script( new \Elastica\Script\Script(
 			$script,
-			array(
+			[
 				'pattern' => '.*(' . $pattern . ').*',
 				'insensitive' => $insensitive,
 				'language' => $this->languageCode,
@@ -160,7 +160,7 @@ GROOVY;
 				// an automaton while executing.
 				'automaton' => null,
 				'locale' => null,
-			),
+			],
 			'groovy'
 		) );
 	}

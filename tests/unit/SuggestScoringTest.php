@@ -103,23 +103,23 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 
 	public function testQualityScoreBoostTemplates() {
-		$goodDoc = array(
-			'template' => array( 'Good' )
-		);
+		$goodDoc = [
+			'template' => [ 'Good' ]
+		];
 
-		$badDoc = array(
-			'template' => array( 'Bad' )
-		);
+		$badDoc = [
+			'template' => [ 'Bad' ]
+		];
 
-		$mixedDoc = array(
-			'template' => array( 'Good', 'Bad' )
-		);
+		$mixedDoc = [
+			'template' => [ 'Good', 'Bad' ]
+		];
 
-		$neutralDoc = array(
-			'template' => array( 'Neutral' )
-		);
+		$neutralDoc = [
+			'template' => [ 'Neutral' ]
+		];
 
-		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 
 		$score = 0.5;
 		$res = $qs->boostTemplates( $goodDoc, $score );
@@ -137,34 +137,34 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 	public function testQualityScoreRanking() {
 		$maxDocs = 10000000;
-		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 		$qs->setMaxDocs( $maxDocs );
-		$veryGoodArticle = array(
+		$veryGoodArticle = [
 			'incoming_links' => 120340,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => '230000',
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Good' )
-		);
+			'template' => [ 'Good' ]
+		];
 
-		$goodArticle = array(
+		$goodArticle = [
 			'incoming_links' => 120340,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => '230000',
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array()
-		);
+			'template' => []
+		];
 
-		$goodButBadArticle = array(
+		$goodButBadArticle = [
 			'incoming_links' => 120340,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => '230000',
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Bad' )
-		);
+			'template' => [ 'Bad' ]
+		];
 
 
 		$this->assertLessThan( $qs->score( $veryGoodArticle ), $qs->score( $goodArticle ),
@@ -172,43 +172,43 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		$this->assertLessThan( $qs->score( $goodArticle ), $qs->score( $goodButBadArticle ),
 			"Same values but without a negative boosted template give a better score" );
 
-		$page1 = array(
+		$page1 = [
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => '230000',
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Good' )
-		);
+			'template' => [ 'Good' ]
+		];
 
-		$page2 = array(
+		$page2 = [
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR + 1,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => '230000',
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Good' )
-		);
+			'template' => [ 'Good' ]
+		];
 		$this->assertEquals( $qs->score( $page1 ), $qs->score( $page2 ),
 			"Having more incoming links than the norm give the same score" );
 
-		$page1 = array(
+		$page1 = [
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM,
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Good' )
-		);
+			'template' => [ 'Good' ]
+		];
 
-		$page2 = array(
+		$page2 = [
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR,
 			'external_link' => array_fill( 0, 200, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM + 1,
 			'heading' => array_fill( 0, 30, null ),
 			'redirect' => array_fill( 0, 100, null ),
-			'template' => array( 'Good' )
-		);
+			'template' => [ 'Good' ]
+		];
 
 		$this->assertEquals( $qs->score( $page1 ), $qs->score( $page2 ),
 			"Having more text_bytes than the norm give the same score" );
@@ -216,86 +216,86 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 
 	public function testQualityScoreWithRandomValues() {
 		$maxDocs = 10000000;
-		$qs = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 		$qs->setMaxDocs( $maxDocs );
 
 		for( $i = 0; $i < 1000; $i++ ) {
-			$page = array(
+			$page = [
 				'incoming_links' => mt_rand( 0, 2^31-1 ),
 				'external_link' => array_fill( 0, mt_rand( 1, 2000 ), null ),
 				'text_bytes' => mt_rand( 1, 400000 ),
 				'heading' => array_fill( 0, mt_rand( 1, 1000 ), null ),
 				'redirect' => array_fill( 0, mt_rand( 1, 1000 ), null ),
-				'template' => mt_rand( 0, 1 ) == 1 ? array( 'Good' ) : array('Bad')
-			);
+				'template' => mt_rand( 0, 1 ) == 1 ? [ 'Good' ] : ['Bad']
+			];
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ), "Score is always lower than " . QualityScore::SCORE_RANGE );
 		}
 
 		// Edges
-		$page = array(
+		$page = [
 			'incoming_links' => $maxDocs * QualityScore::INCOMING_LINKS_MAX_DOCS_FACTOR,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM,
 			'heading' => array_fill( 0, QualityScore::HEADING_NORM, null ),
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
-			'template' => array()
-		);
+			'template' => []
+		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "Highest score is " . QualityScore::SCORE_RANGE );
 
-		$page = array(
+		$page = [
 			'incoming_links' => 0,
-			'external_link' => array(),
+			'external_link' => [],
 			'text_bytes' => 0,
-			'heading' => array(),
-			'redirect' => array(),
-			'template' => array()
-		);
+			'heading' => [],
+			'redirect' => [],
+			'template' => []
+		];
 		$this->assertEquals( 0, $qs->score( $page ), "Lowest score is 0" );
 
-		$page = array();
+		$page = [];
 		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
 
 		// A very small wiki
 		$qs = new QualityScore( );
 		$qs->setMaxDocs( 1 );
-		$page = array(
+		$page = [
 			'incoming_links' => 1,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM,
 			'heading' => array_fill( 0, QualityScore::HEADING_NORM, null ),
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
-			'template' => array()
-		);
+			'template' => []
+		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
 
 		// The scoring function should not fail with 0 page
 		$qs = new QualityScore();
-		$page = array(
+		$page = [
 			'incoming_links' => 1,
 			'external_link' => array_fill( 0, QualityScore::EXTERNAL_LINKS_NORM, null ),
 			'text_bytes' => QualityScore::PAGE_SIZE_NORM,
 			'heading' => array_fill( 0, QualityScore::HEADING_NORM, null ),
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
-			'template' => array()
-		);
+			'template' => []
+		];
 		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
 	}
 
 	public function testRobustness() {
-		$templates =  array( 'Good' => 2, 'Bad' => 0.5 );
+		$templates =  [ 'Good' => 2, 'Bad' => 0.5 ];
 		$all_templates = array_keys( $templates );
-		$all_templates += array( 'Foo', 'Bar' );
+		$all_templates += [ 'Foo', 'Bar' ];
 		for ( $i = 0; $i < 5000; $i++ ) {
-			$scorers = array();
-			$scorers[] = new PQScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
-			$scorers[] = new QualityScore( array( 'Good' => 2, 'Bad' => 0.5 ) );
+			$scorers = [];
+			$scorers[] = new PQScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
+			$scorers[] = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 			$scorers[] = new IncomingLinksScoringMethod();
-			$tmpl = array();
+			$tmpl = [];
 			for ( $j = mt_rand( 0, count( $all_templates ) - 1 ); $j >= 0; $j-- ) {
 				$tmpl[] = $all_templates[$j];
 			}
-			$page = array();
+			$page = [];
 			$page['incoming_links'] = mt_rand( 0, 1 ) ? mt_rand( 0, 200 ) : null;
 			$page['external_link'] = $this->randomArray( 200 );
 			$page['text_bytes'] = mt_rand( 0, 1 ) ? (string) mt_rand( 0, 230000 ) : null;
@@ -325,7 +325,7 @@ class SuggestScoringTest extends \MediaWikiTestCase {
 		if ( mt_rand( 0, 1 ) ) {
 			$size = mt_rand( 0, $max );
 			if ( $size === 0 ) {
-				return array();
+				return [];
 			}
 			return array_fill( 0, $size, null );
 		}

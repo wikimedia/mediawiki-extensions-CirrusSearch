@@ -65,7 +65,7 @@ class InCategoryFeature extends SimpleKeywordFeature {
 			$context->setResultsPossible( false );
 		}
 
-		return array( $filter, false );
+		return [ $filter, false ];
 	}
 
 	/**
@@ -77,8 +77,8 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 */
 	private function matchPageCategories( array $categories ) {
 		$filter = new \Elastica\Query\BoolQuery();
-		$pageIds = array();
-		$names = array();
+		$pageIds = [];
+		$names = [];
 		foreach ( $categories as $category ) {
 			if ( substr( $category, 0, 3 ) === 'id:' ) {
 				$pageId = substr( $category, 3 );

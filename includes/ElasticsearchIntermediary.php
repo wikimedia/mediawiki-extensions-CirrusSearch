@@ -64,7 +64,7 @@ class ElasticsearchIntermediary {
 	/**
 	 * @var array map of search request stats to log about the current search request
 	 */
-	protected $logContext = array();
+	protected $logContext = [];
 
 	/**
 	 * @var int how many millis a request through this intermediary needs to take before it counts as slow.
@@ -75,7 +75,7 @@ class ElasticsearchIntermediary {
 	/**
 	 * @var array Metrics about a completed search
 	 */
-	private $searchMetrics = array();
+	private $searchMetrics = [];
 
 	/**
 	 * @var string Id identifying this php execution
@@ -85,12 +85,12 @@ class ElasticsearchIntermediary {
 	/**
 	 * @var array[] Result of self::getLogContext for each request in this process
 	 */
-	static private $logContexts = array();
+	static private $logContexts = [];
 
 	/**
 	 * @var array[string] Result page ids that were returned to user
 	 */
-	static private $resultTitleStrings = array();
+	static private $resultTitleStrings = [];
 
 	/**
 	 * Constructor.
@@ -144,7 +144,7 @@ class ElasticsearchIntermediary {
 		}
 		self::buildRequestSetLog();
 		self::buildUserTestingLog();
-		self::$logContexts = array();
+		self::$logContexts = [];
 	}
 
 	/**
@@ -166,15 +166,15 @@ class ElasticsearchIntermediary {
 		// the old log formats, so here we transform the context into the new
 		// request format. At some point the context should just be created in
 		// the correct format.
-		$requests = array();
+		$requests = [];
 		$allCached = true;
-		$allHits = array();
+		$allHits = [];
 		foreach ( self::$logContexts as $context ) {
-			$request = array(
+			$request = [
 				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
 				'queryType' => isset( $context['queryType'] ) ? (string) $context['queryType'] : '',
 				// populated below
-				'indices' => array(),
+				'indices' => [],
 				'tookMs' => isset( $context['tookMs'] ) ? (int) $context['tookMs'] : -1,
 				'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int) $context['elasticTookMs'] : -1,
 				'limit' => isset( $context['limit'] ) ? (int) $context['limit'] : -1,
@@ -182,13 +182,13 @@ class ElasticsearchIntermediary {
 				'hitsReturned' => isset( $context['hitsReturned'] ) ? (int) $context['hitsReturned'] : -1,
 				'hitsOffset' => isset( $context['hitsOffset'] ) ? (int) $context['hitsOffset'] : -1,
 				// populated below
-				'namespaces' => array(),
+				'namespaces' => [],
 				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
 				'suggestionRequested' => isset( $context['suggestion'] ),
 				'maxScore' => isset( $context['maxScore'] ) ? $context['maxScore'] : -1,
-				'payload' => array(),
-				'hits' => isset( $context['hits'] ) ? array_slice( $context['hits'], 0, self::LOG_MAX_RESULTS ) : array(),
-			);
+				'payload' => [],
+				'hits' => isset( $context['hits'] ) ? array_slice( $context['hits'], 0, self::LOG_MAX_RESULTS ) : [],
+			];
 			if ( isset( $context['hits'] ) ) {
 				$allHits = array_merge( $allHits, $context['hits'] );
 			}
@@ -232,11 +232,11 @@ class ElasticsearchIntermediary {
 		// Reindex allHits by page title's. It's maybe not perfect, but it's
 		// hopefully a "close enough" representation of where our final result
 		// set came from. maybe :(
-		$allHitsByTitle = array();
+		$allHitsByTitle = [];
 		foreach ( $allHits as $hit ) {
 			$allHitsByTitle[$hit['title']] = $hit;
 		}
-		$resultHits = array();
+		$resultHits = [];
 		// FIXME: temporary hack to investigate why SpecialSearch can display results
 		// that do not come from cirrus.
 		$bogusResult = null;
@@ -246,18 +246,18 @@ class ElasticsearchIntermediary {
 				$bogusResult = $titleString;
 			}
 
-			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : array();
+			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : [];
 			// Apply defaults to ensure all properties are accounted for.
-			$resultHits[] = $hit + array(
+			$resultHits[] = $hit + [
 				'title' => $titleString,
 				'index' => "",
 				'pageId' => -1,
 				'score' => -1,
 				'profileName' => ""
-			);
+			];
 		}
 
-		$requestSet = array(
+		$requestSet = [
 			'id' => self::getRequestSetToken(),
 			'ts' => time(),
 			'wikiId' => wfWikiID(),
@@ -268,15 +268,15 @@ class ElasticsearchIntermediary {
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
 			'tookMs' => 1000 * $tookS,
 			'hits' => array_slice( $resultHits, 0, self::LOG_MAX_RESULTS ),
-			'payload' => array(
+			'payload' => [
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 				// Helps to track down what actually caused the request. Will promote to full
 				// param if it proves useful
 				'queryString' => http_build_query( $_GET ),
-			),
+			],
 			'requests' => $requests,
-		);
+		];
 
 		if ( $bogusResult !== null ) {
 			if ( is_string( $bogusResult ) ) {
@@ -305,7 +305,7 @@ class ElasticsearchIntermediary {
 	 * @param array[Search\ResultSet|null] $matches
 	 */
 	public static function setResultPages( array $matches ) {
-		$titleStrings = array();
+		$titleStrings = [];
 		foreach ( $matches as $resultSet ) {
 			if ( $resultSet !== null ) {
 				$titleStrings = array_merge( $titleStrings, self::extractTitleStrings( $resultSet ) );
@@ -315,7 +315,7 @@ class ElasticsearchIntermediary {
 	}
 
 	private static function extractTitleStrings( SearchResultSet $matches ) {
-		$strings = array();
+		$strings = [];
 		$result = $matches->next();
 		while ( $result ) {
 			$strings[] = (string) $result->getTitle();
@@ -355,12 +355,12 @@ class ElasticsearchIntermediary {
 		if ( !$ut->getActiveTestNames() ) {
 			return;
 		}
-		$queries = array();
-		$parameters = array(
-			'index' => array(),
-			'queryType' => array(),
+		$queries = [];
+		$parameters = [
+			'index' => [],
+			'queryType' => [],
 			'acceptLang' => $wgRequest->getHeader( 'Accept-Language' ),
-		);
+		];
 		$elasticTook = 0;
 		$hits = 0;
 		foreach ( self::$logContexts as $context ) {
@@ -382,11 +382,11 @@ class ElasticsearchIntermediary {
 			}
 		}
 
-		foreach ( array( 'index', 'queryType' ) as $key ) {
+		foreach ( [ 'index', 'queryType' ] as $key ) {
 			$parameters[$key] = array_values( array_unique( $parameters[$key] ) );
 		}
 
-		$message = array(
+		$message = [
 			wfWikiID(),
 			'',
 			FormatJson::encode( $queries ),
@@ -397,7 +397,7 @@ class ElasticsearchIntermediary {
 			preg_replace( "/[\t\"']/", "", $wgRequest->getHeader( 'User-Agent') ),
 			FormatJson::encode( $parameters ),
 			self::generateIdentToken(),
-		);
+		];
 
 		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
 		foreach ( $ut->getActiveTestNames() as $test ) {
@@ -414,7 +414,7 @@ class ElasticsearchIntermediary {
 	 * @return string[]
 	 */
 	public static function getQueryTypesUsed() {
-		$types = array();
+		$types = [];
 		foreach ( self::$logContexts as $context ) {
 			if ( isset( $context['queryType'] ) ) {
 				$types[] = $context['queryType'];
@@ -429,7 +429,7 @@ class ElasticsearchIntermediary {
 	 * @param string $description name of the action being started
 	 * @param array $logContext Contextual variables for generating log messages
 	 */
-	public function start( $description, array $logContext = array() ) {
+	public function start( $description, array $logContext = [] ) {
 		$this->description = $description;
 		$this->logContext = $logContext;
 		$this->requestStart = microtime( true );
@@ -452,7 +452,7 @@ class ElasticsearchIntermediary {
 	 * @param string $description name of the action being started
 	 * @param array $logContext Contextual variables for generating log messages
 	 */
-	public function successViaCache( $description, array $logContext = array() ) {
+	public function successViaCache( $description, array $logContext = [] ) {
 		global $wgCirrusSearchLogElasticRequests;
 
 		$this->description = $description;
@@ -510,9 +510,9 @@ class ElasticsearchIntermediary {
 			return 'unknown';
 		}
 
-		$heuristics = array(
-			'rejected' => array (
-				'type_regexes' => array(
+		$heuristics = [
+			'rejected' => [
+				'type_regexes' => [
 					'(^|_)regex_',
 					'^too_complex_to_determinize_exception$',
 					'^elasticsearch_parse_exception$',
@@ -520,25 +520,25 @@ class ElasticsearchIntermediary {
 					'^query_parsing_exception$',
 					'^illegal_argument_exception$',
 					'^too_many_clauses$'
-				),
-				'msg_regexes' => array(),
-			),
-			'failed' => array(
-				'type_regexes' => array(
+				],
+				'msg_regexes' => [],
+			],
+			'failed' => [
+				'type_regexes' => [
 					'^es_rejected_execution_exception$',
 					'^remote_transport_exception$',
 					'^search_context_missing_exception$',
 					'^null_pointer_exception$',
 					'^elasticsearch_timeout_exception$'
-				),
+				],
 				// These are exceptions thrown by elastica itself
-				'msg_regexes' => array(
+				'msg_regexes' => [
 					'^Couldn\'t connect to host',
 					'^No enabled connection',
 					'^Operation timed out',
-				),
-			),
-		);
+				],
+			],
+		];
 		foreach( $heuristics as $type => $heuristic ) {
 			$regex = implode( '|', $heuristic['type_regexes'] );
 			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
@@ -570,16 +570,16 @@ class ElasticsearchIntermediary {
 	public static function extractFullError( \Elastica\Exception\ExceptionInterface $exception ) {
 		if ( !( $exception instanceof ResponseException ) ) {
 			// simulate the basic full error structure
-			return array(
+			return [
 				'type' => 'unknown',
 				'reason' => $exception->getMessage()
-			);
+			];
 		}
 		if ( $exception instanceof PartialShardFailureException ) {
 			// @todo still needs to be fixed, need a way to trigger this
 			// failure
 			$shardStats = $exception->getResponse()->getShardsStatistics();
-			$message = array();
+			$message = [];
 			$type = null;
 			foreach ( $shardStats[ 'failures' ] as $failure ) {
 				$message[] = $failure['reason']['reason'];
@@ -588,11 +588,11 @@ class ElasticsearchIntermediary {
 				}
 			}
 
-			return array(
+			return [
 				'type' => $type,
 				'reason' => 'Partial failure:  ' . implode( ',', $message ),
 				'partial' => true
-			);
+			];
 		}
 
 		return $exception->getResponse()->getFullError();
@@ -721,14 +721,14 @@ class ElasticsearchIntermediary {
 		}
 
 		$params = $this->logContext;
-		$this->logContext = array();
+		$this->logContext = [];
 
-		$params += array(
+		$params += [
 			'tookMs' => intval( $took ),
 			'source' => self::getExecutionContext(),
 			'executor' => self::getExecutionId(),
 			'identity' => self::generateIdentToken(),
-		);
+		];
 
 		if ( $result ) {
 			$queryData = $query->getData();
@@ -751,7 +751,7 @@ class ElasticsearchIntermediary {
 				$offset = isset( $queryData['from'] ) ? $queryData['from'] : 0;
 				$params['hitsReturned'] = $num;
 				$params['hitsOffset'] = intval( $offset );
-				$params['hits'] = array();
+				$params['hits'] = [];
 				foreach ( $resultData['hits']['hits'] as $hit ) {
 					if ( !isset( $hit['_source']['namespace'] )
 						|| !isset( $hit['_source']['title'] )
@@ -764,7 +764,7 @@ class ElasticsearchIntermediary {
 					// stage but we can't see that here...Perhaps we instead attach
 					// this data at a later stage like CompletionSuggester?
 					$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
-					$params['hits'][] = array(
+					$params['hits'][] = [
 						// This *must* match the names and types of the CirrusSearchHit
 						// record in the CirrusSearchRequestSet logging channel avro schema.
 						'title' => (string) $title,
@@ -774,10 +774,10 @@ class ElasticsearchIntermediary {
 						// only comp_suggest has profileName, and that is handled
 						// elsewhere
 						'profileName' => "",
-					);
+					];
 				}
 			}
-			if ( $this->_isset( $queryData, array( 'query', 'filtered', 'filter', 'terms', 'namespace' ) ) ) {
+			if ( $this->_isset( $queryData, [ 'query', 'filtered', 'filter', 'terms', 'namespace' ] ) ) {
 				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
 				$params['namespaces'] = array_map( 'intval', $namespaces );
 			}
@@ -827,7 +827,7 @@ class ElasticsearchIntermediary {
 	 */
 	private function extractMessageAndStatus( \Elastica\Exception\ExceptionInterface $exception = null ) {
 		if ( !$exception ) {
-			return array( Status::newFatal( 'cirrussearch-backend-error' ), '' );
+			return [ Status::newFatal( 'cirrussearch-backend-error' ), '' ];
 		}
 
 		// Lots of times these are the same as getFullError(), but sometimes
@@ -838,10 +838,10 @@ class ElasticsearchIntermediary {
 		// ResponseException like PartialShardFailureException or errors
 		// contacting the cluster.
 		if ( !isset( $error['root_cause'][0]['type'] ) ) {
-			return array(
+			return [
 				Status::newFatal( 'cirrussearch-backend-error' ),
 				$error['type'] . ': ' . $error['reason']
-			);
+			];
 		}
 
 		// We can have multiple root causes if the error is not the
@@ -859,17 +859,17 @@ class ElasticsearchIntermediary {
 			$end = strpos( $message, "\n", 0 );
 			$parseError = substr( $message, 0, $end );
 
-			return array(
+			return [
 				Status::newFatal( 'cirrussearch-parse-error' ),
 				'Parse error on ' . $parseError
-			);
+			];
 		}
 
 		if ( $cause['type'] === 'too_complex_to_determinize_exception' ) {
-			return array( Status::newFatal(
+			return [ Status::newFatal(
 				'cirrussearch-regex-too-complex-error' ),
 				$cause['reason']
-			);
+			];
 		}
 
 		if ( preg_match( '/(^|_)regex_/', $cause['type'] ) ) {
@@ -881,7 +881,7 @@ class ElasticsearchIntermediary {
 			// is using the Groovy script to do regex then a generic backend error
 			// will be displayed.
 
-			$matches = array();
+			$matches = [];
 			// In some cases elastic will serialize the exception by adding
 			// an extra message prefix with the exception type.
 			// If the exception is serialized through Transport:
@@ -896,13 +896,13 @@ class ElasticsearchIntermediary {
 			}
 			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );
 
-			return array( $status, 'Regex syntax error:  ' . $syntaxError );
+			return [ $status, 'Regex syntax error:  ' . $syntaxError ];
 		}
 
-		return array(
+		return [
 			Status::newFatal( 'cirrussearch-backend-error' ),
 			$cause['type'] . ': ' . $cause['reason']
-		);
+		];
 	}
 
 	/**
@@ -911,12 +911,12 @@ class ElasticsearchIntermediary {
 	 */
 	public static function generateIdentToken( $extraData = '' ) {
 		$request = \RequestContext::getMain()->getRequest();
-		return md5( implode( ':', array(
+		return md5( implode( ':', [
 			$extraData,
 			$request->getIP(),
 			$request->getHeader( 'X-Forwarded-For' ),
 			$request->getHeader( 'User-Agent' ),
-		) ) );
+		] ) );
 	}
 
 	/**

@@ -20,9 +20,9 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-$wgCirrusSearchPhraseSuggestProfiles = array(
+$wgCirrusSearchPhraseSuggestProfiles = [
 	// This is the default settings
-	'default' => array(
+	'default' => [
 		// The suggest mode used by the phrase suggester
 		// can be :
 		//  * missing: Only suggest terms in the suggest text that
@@ -86,15 +86,15 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 
 		// Smoothing model See
 		// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html
-		'smoothing_model' => array(
-			'stupid_backoff' => array(
+		'smoothing_model' => [
+			'stupid_backoff' => [
 				'discount' => 0.4
-			)
-		),
-	),
+			]
+		],
+	],
 	// The 'strict' settings will try to avoid displaying weird suggestions.
 	// (suited for small size wikis)
-	'strict' => array(
+	'strict' => [
 		'mode' => 'always',
 		'confidence' => 2.0,
 		'max_errors' => 2,
@@ -104,14 +104,14 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 		'prefix_length' => 2,
 		'collate' => true,
 		'collate_minimum_should_match' => '3<66%',
-		'smoothing_model' => array(
-			'laplace' => array(
+		'smoothing_model' => [
+			'laplace' => [
 				'alpha' => 0.3
-			)
-		)
-	),
+			]
+		]
+	],
 	// Alternative settings, confidence set to 1 but with laplace smoothing
-	'alternative' => array(
+	'alternative' => [
 		'mode' => 'always',
 		'confidence' => 1.0,
 		'max_errors' => 2,
@@ -121,10 +121,10 @@ $wgCirrusSearchPhraseSuggestProfiles = array(
 		'prefix_length' => 2,
 		'collate' => false,
 		'collate_minimum_should_match' => '3<66%',
-		'smoothing_model' => array(
-			'laplace' => array(
+		'smoothing_model' => [
+			'laplace' => [
 				'alpha' => 0.3
-			)
-		)
-	)
-);
+			]
+		]
+	]
+];

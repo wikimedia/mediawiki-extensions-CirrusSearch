@@ -56,7 +56,7 @@ class GeoFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		if ( !class_exists( GeoData::class ) ) {
-			return array( null, false );
+			return [ null, false ];
 		}
 
 		if ( substr( $key, -5 ) === 'title' ) {
@@ -79,7 +79,7 @@ class GeoFeature extends SimpleKeywordFeature {
 			}
 		}
 
-		return array( $filter, false );
+		return [ $filter, false ];
 	}
 
 	/**
@@ -104,24 +104,24 @@ class GeoFeature extends SimpleKeywordFeature {
 			// remaining text is a valid title to use.
 			$pieces = explode( ',', $text, 2 );
 			if ( count( $pieces ) !== 2 ) {
-				return array( null, 0, '' );
+				return [ null, 0, '' ];
 			}
 			$radius = $this->parseDistance( $pieces[0] );
 			if ( $radius === null ) {
-				return array( null, 0, '' );
+				return [ null, 0, '' ];
 			}
 			$title = Title::newFromText( $pieces[1] );
 			if ( !$title || !$title->exists() ) {
-				return array( null, 0, '' );
+				return [ null, 0, '' ];
 			}
 		}
 
 		$coord = GeoData::getPageCoordinates( $title );
 		if ( !$coord ) {
-			return array( null, 0, '' );
+			return [ null, 0, '' ];
 		}
 
-		return array( $coord, $radius, $config->makeId( $title->getArticleID() ) );
+		return [ $coord, $radius, $config->makeId( $title->getArticleID() ) ];
 	}
 
 	/**
@@ -142,7 +142,7 @@ class GeoFeature extends SimpleKeywordFeature {
 		if ( count( $pieces ) === 3 ) {
 			$radius = $this->parseDistance( $pieces[0] );
 			if ( $radius === null ) {
-				return array( null, 0 );
+				return [ null, 0 ];
 			}
 			$lat = $pieces[1];
 			$lon = $pieces[2];
@@ -150,18 +150,18 @@ class GeoFeature extends SimpleKeywordFeature {
 			$lat = $pieces[0];
 			$lon = $pieces[1];
 		} else {
-			return array( null, 0 );
+			return [ null, 0 ];
 		}
 
 		$globe = new Globe( self::DEFAULT_GLOBE );
 		if ( !$globe->coordinatesAreValid( $lat, $lon ) ) {
-			return array( null, 0 );
+			return [ null, 0 ];
 		}
 
-		return array(
+		return [
 			new Coord( floatval( $lat ), floatval( $lon ), $globe->getName() ),
 			$radius,
-		);
+		];
 	}
 
 	/**
@@ -174,7 +174,7 @@ class GeoFeature extends SimpleKeywordFeature {
 			return null;
 		}
 
-		$scale = array(
+		$scale = [
 			'm' => 1,
 			'km' => 1000,
 			// Supported non-SI units, and their conversions, sourced from
@@ -182,7 +182,7 @@ class GeoFeature extends SimpleKeywordFeature {
 			'mi' => 1609.344,
 			'ft' => 0.3048,
 			'yd' => 0.9144,
-		);
+		];
 
 		return max( 10, (int) round( $matches[1] * $scale[$matches[2]] ) );
 	}

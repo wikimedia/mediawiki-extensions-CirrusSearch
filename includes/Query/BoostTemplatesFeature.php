@@ -40,7 +40,7 @@ class BoostTemplatesFeature extends SimpleKeywordFeature {
 			self::parseBoostTemplates( $value )
 		);
 
-		return array( null, false );
+		return [ null, false ];
 	}
 
 	/**
@@ -56,8 +56,8 @@ class BoostTemplatesFeature extends SimpleKeywordFeature {
 	 * @return float[] map of boosted templates (key is the template, value is a float).
 	 */
 	public static function parseBoostTemplates( $text ) {
-		$boostTemplates = array();
-		$templateMatches = array();
+		$boostTemplates = [];
+		$templateMatches = [];
 		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
 			foreach ( $templateMatches as $templateMatch ) {
 				// templates field is populated with Title::getPrefixedText

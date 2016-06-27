@@ -6,17 +6,17 @@ use MediaWiki\MediaWikiServices;
 
 class SearcherTest extends \MediaWikiTestCase {
 	public function searchTextProvider() {
-		$tests = array();
+		$tests = [];
 		foreach ( glob( __DIR__ . '/fixtures/searchText/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
 			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';
-			$tests[$testName] = array(
+			$tests[$testName] = [
 				is_file( $expectedFile )
 					? json_decode( file_get_contents( $expectedFile ), true )
 					// Flags test to generate a new fixture
 					: $expectedFile,
 				file_get_contents( $queryFile ),
-			);
+			];
 		}
 
 		return $tests;
@@ -31,18 +31,18 @@ class SearcherTest extends \MediaWikiTestCase {
 		$conn = Connection::getPool( $config );
 
 		// Override some config for parsing purposes
-		$this->setMwGlobals( array(
+		$this->setMwGlobals( [
 			'wgCirrusSearchUseExperimentalHighlighter' => true,
-			'wgCirrusSearchWikimediaExtraPlugin' => array(
-				'regex' => array( 'build', 'use' ),
-			),
+			'wgCirrusSearchWikimediaExtraPlugin' => [
+				'regex' => [ 'build', 'use' ],
+			],
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
-			'wgContentNamespaces' => array( NS_MAIN ),
+			'wgContentNamespaces' => [ NS_MAIN ],
 			// Override the list of namespaces to give more deterministic results
-			'wgHooks' => array(
-				'CanonicalNamespaces' => array(
+			'wgHooks' => [
+				'CanonicalNamespaces' => [
 					function ( &$namespaces ) {
-						$namespaces = array(
+						$namespaces = [
 							0 => '',
 							-2 => 'Media',
 							-1 => 'Special',
@@ -61,18 +61,18 @@ class SearcherTest extends \MediaWikiTestCase {
 							13 => 'Help_talk',
 							14 => 'Category',
 							15 => 'Category_talk',
-						);
+						];
 					}
-				),
-			) + $GLOBALS['wgHooks']
-		) );
+				],
+			] + $GLOBALS['wgHooks']
+		] );
 
 
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
-		$searcher = new Searcher( $conn, 0, 20, $config, array(
+		$searcher = new Searcher( $conn, 0, 20, $config, [
 			NS_MAIN, NS_TALK, NS_USER, NS_USER_TALK,
-		) );
+		] );
 		$searcher->setReturnQuery( true );
 		$result = $searcher->searchText( $queryString, true );
 		$this->assertTrue( $result->isOK() );

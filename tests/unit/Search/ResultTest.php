@@ -4,33 +4,33 @@ namespace CirrusSearch\Search;
 
 class ResultTest extends \MediaWikiTestCase {
 	public function testInterwikiResults() {
-		$this->setMwGlobals( array(
-			'wgCirrusSearchWikiToNameMap' => array(
+		$this->setMwGlobals( [
+			'wgCirrusSearchWikiToNameMap' => [
 				'es' => 'eswiki',
-			),
-		) );
+			],
+		] );
 
 		$elasticaResultSet = $this->getMockBuilder( \Elastica\ResultSet::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$elasticaResult = new \Elastica\Result( array(
+		$elasticaResult = new \Elastica\Result( [
 			'_index' => 'eswiki_content_123456',
-			'_source' => array(
+			'_source' => [
 				'namespace' => NS_MAIN,
 				'title' => 'Main Page',
-				'redirect' => array(
-					array(
+				'redirect' => [
+					[
 						'title' => 'Main',
 						'namespace' => NS_MAIN,
-					),
-				),
-			),
-			'highlight' => array(
-				'redirect.title' => array( 'Main' ),
-				'heading' => array( '...' ),
-			),
-		) );
+					],
+				],
+			],
+			'highlight' => [
+				'redirect.title' => [ 'Main' ],
+				'heading' => [ '...' ],
+			],
+		] );
 		$result = new Result( $elasticaResultSet, $elasticaResult, 'es' );
 
 		$this->assertTrue( $result->getTitle()->isExternal() );

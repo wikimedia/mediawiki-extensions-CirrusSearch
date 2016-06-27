@@ -206,15 +206,15 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->context = $context;
 
 		list( $profiles, $suggest ) = $this->buildQuery();
-		$queryOptions = array();
+		$queryOptions = [];
 		$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
 		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
-		$logContext = array(
+		$logContext = [
 			'query' => $text,
 			'queryType' => $this->queryType,
-		);
+		];
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
@@ -249,7 +249,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$this->variants = null;
 			return;
 		}
-		$variants = array_diff( array_unique( $variants ), array( $term ) );
+		$variants = array_diff( array_unique( $variants ), [ $term ] );
 		if ( empty( $variants ) ) {
 			$this->variants = null;
 		} else {
@@ -288,7 +288,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$profiles += $addProfiles;
 			$suggest += $addSuggest;
 		}
-		return array( $profiles, $suggest );
+		return [ $profiles, $suggest ];
 	}
 
 	/**
@@ -299,7 +299,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return array a set of suggest queries ready to for elastic
 	 */
 	protected function buildSuggestQueries( array $profiles, $query, $queryLen ) {
-		$suggest = array();
+		$suggest = [];
 		foreach($profiles as $name => $config) {
 			$sugg = $this->buildSuggestQuery( $config, $query, $queryLen );
 			if(!$sugg) {
@@ -328,13 +328,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 		$field = $config['field'];
 		$limit = $this->getHardLimit();
-		$suggest = array(
+		$suggest = [
 			'text' => $query,
-			'completion' => array(
+			'completion' => [
 				'field' => $field,
 				'size' => $limit * $config['fetch_limit_factor']
-			)
-		);
+			]
+		];
 		if ( isset( $config['fuzzy'] ) ) {
 			$suggest['completion']['fuzzy'] = $config['fuzzy'];
 		}
@@ -353,8 +353,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	 protected function handleVariants( array $profiles, $queryLen ) {
 		$variantIndex = 0;
-		$allVariantProfiles = array();
-		$allSuggestions = array();
+		$allVariantProfiles = [];
+		$allSuggestions = [];
 		foreach( $this->variants as $variant ) {
 			$variantIndex++;
 			foreach ( $profiles as $name => $profile ) {
@@ -365,7 +365,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						);
 			}
 		}
-		return array( $allVariantProfiles, $allSuggestions );
+		return [ $allVariantProfiles, $allSuggestions ];
 	}
 
 	/**
@@ -390,7 +390,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return array of suggest request profiles
 	 */
 	private function prepareGeoContextSuggestProfiles() {
-		$profiles = array();
+		$profiles = [];
 		foreach ( $this->config->get( 'CirrusSearchCompletionGeoContextSettings' ) as $geoname => $geoprof ) {
 			foreach ( $this->settings as $sugname => $sugprof ) {
 				if ( !in_array( $sugname, $geoprof['with'] ) ) {
@@ -399,13 +399,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$profile = $sugprof;
 				$profile['field'] .= $geoprof['field_suffix'];
 				$profile['discount'] *= $geoprof['discount'];
-				$profile['context'] = array(
-					'location' => array(
+				$profile['context'] = [
+					'location' => [
 						'lat' => $this->context['geo']['lat'],
 						'lon' => $this->context['geo']['lon'],
 						'precision' => $geoprof['precision']
-					)
-				);
+					]
+				];
 				$profiles["$sugname-$geoname"] = $profile;
 			}
 		}
@@ -427,8 +427,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		unset( $data['_shards'] );
 
 		$limit = $this->getHardLimit();
-		$suggestionsByDocId = array();
-		$suggestionProfileByDocId = array();
+		$suggestionsByDocId = [];
+		$suggestionProfileByDocId = [];
 		foreach ( $data as $name => $results  ) {
 			$discount = $profiles[$name]['discount'];
 			foreach ( $results  as $suggested ) {
@@ -467,13 +467,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$suggestionsByDocId = $this->offset < $limit
 			? array_slice( $suggestionsByDocId, $this->offset, $limit - $this->offset, true )
-			: array();
+			: [];
 
 		$this->logContext['hitsReturned'] = count( $suggestionsByDocId );
 		$this->logContext['hitsOffset'] = $this->offset;
 
 		// we must fetch redirect data for redirect suggestions
-		$missingTextDocIds = array();
+		$missingTextDocIds = [];
 		foreach ( $suggestionsByDocId as $docId => $suggestion ) {
 			if ( $suggestion->getText() === null ) {
 				$missingTextDocIds[] = $docId;
@@ -496,8 +496,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$redirResponse = null;
 			try {
 				$redirResponse = $type->request( '_mget', 'GET',
-					array( 'ids' => $missingTextDocIds ),
-					array( '_source_include' => 'redirect' ) );
+					[ 'ids' => $missingTextDocIds ],
+					[ '_source_include' => 'redirect' ] );
 				if ( $redirResponse->isOk() ) {
 					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
 					$docs = $redirResponse->getData();
@@ -514,20 +514,20 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				} else {
 					LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 						'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
-						array( 'query' => $this->term,
+						[ 'query' => $this->term,
 							'ids' => serialize( $missingText ),
-							'error' => $redirResponse->getError() ) );
+							'error' => $redirResponse->getError() ] );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$error = self::extractFullError( $e );
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Unable to fetch redirects for suggestion {query} with results {ids}. {error_type}: {error_reason}',
-					array(
+					[
 						'query' => $this->term,
 						'ids' => serialize( $missingText ),
 						'error_type' => $error['type'],
 						'error_reason' => $error['reason'],
-					)
+					]
 				);
 			}
 		}
@@ -540,14 +540,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			}
 		);
 
-		$this->logContext['hits'] = array();
+		$this->logContext['hits'] = [];
 		$indexName = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE )->getName();
 		$maxScore = 0;
 		foreach ( $finalResults as $docId => $suggestion ) {
 			$title = $suggestion->getSuggestedTitle();
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
 			$maxScore = max( $maxScore, $suggestion->getScore() );
-			$this->logContext['hits'][] = array(
+			$this->logContext['hits'][] = [
 				// This *must* match the names and types of the CirrusSearchHit
 				// record in the CirrusSearchRequestSet logging channel avro schema.
 				'title' => $title ? (string) $title : $suggestion->getText(),
@@ -557,7 +557,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					? $suggestionProfileByDocId[$docId]
 					: "",
 				'score' => $suggestion->getScore(),
-			);
+			];
 		}
 		$this->logContext['maxScore'] = $maxScore;
 

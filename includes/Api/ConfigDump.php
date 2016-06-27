@@ -39,7 +39,7 @@ class ConfigDump extends ApiBase {
 	}
 
 	public function getAllowedParams() {
-		return array();
+		return [];
 	}
 
 	/**
@@ -53,10 +53,10 @@ class ConfigDump extends ApiBase {
 	 * @see ApiBase::getExamplesMessages
 	 */
 	protected function getExamplesMessages() {
-		return array(
+		return [
 			'action=cirrus-config-dump' =>
 				'apihelp-cirrus-config-dump-example'
-		);
+		];
 	}
 
 }

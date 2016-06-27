@@ -105,7 +105,7 @@ class ConfigUtils {
 	 * @return string[] the list of indices
 	 */
 	public function getAllIndicesByType( $typeName ) {
-		$found = array();
+		$found = [];
 		foreach ( $this->client->getStatus()->getIndexNames() as $name ) {
 			if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
 				$found[] = $name;
@@ -121,10 +121,10 @@ class ConfigUtils {
 	private function scanModulesOrPlugins( $what ) {
 		$result = $this->client->request( '_nodes' );
 		$result = $result->getData();
-		$availables = array();
+		$availables = [];
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
-			$plugins = array();
+			$plugins = [];
 			foreach ( $node[ $what ] as $plugin ) {
 				$plugins[] = $plugin[ 'name' ];
 			}
@@ -142,7 +142,7 @@ class ConfigUtils {
 	 * @param string[] $bannedPlugins
 	 * @return string[]
 	 */
-	public function scanAvailablePlugins( array $bannedPlugins = array() ) {
+	public function scanAvailablePlugins( array $bannedPlugins = [] ) {
 		$this->outputIndented( "Scanning available plugins..." );
 		$availablePlugins = $this->scanModulesOrPlugins( 'plugins' );
 		if ( count( $availablePlugins ) === 0 ) {

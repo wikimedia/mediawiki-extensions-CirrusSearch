@@ -104,7 +104,7 @@ class TextIndexField extends CirrusIndexField {
 		$field = parent::getMapping( $engine );
 
 		if ( $this->checkFlag( self::COPY_TO_SUGGEST ) ) {
-			$field[ 'copy_to' ] = array( 'suggest' );
+			$field[ 'copy_to' ] = [ 'suggest' ];
 		}
 
 		if ( $this->checkFlag( self::FLAG_NO_INDEX ) ) {
@@ -130,35 +130,35 @@ class TextIndexField extends CirrusIndexField {
 		}
 
 		// multi_field is dead in 1.0 so we do this which actually looks less gnarly.
-		$field += array(
+		$field += [
 			'analyzer' => 'text',
 			'search_analyzer' => 'text_search',
 			'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			'similarity' => self::getSimilarity( $this->config, $this->name ),
-			'fields' => array(
-				'plain' => array(
+			'fields' => [
+				'plain' => [
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 					'similarity' => self::getSimilarity( $this->config, $this->name, 'plain' ),
-				),
-			)
-		);
+				],
+			]
+		];
 		$disableNorms = !$this->checkFlag( self::ENABLE_NORMS );
 		if ( $disableNorms ) {
-			$disableNorms = array( 'norms' => array( 'enabled' => false ) );
+			$disableNorms = [ 'norms' => [ 'enabled' => false ] ];
 			$field = array_merge( $field, $disableNorms );
 			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
 		}
 		foreach ( $extra as $extraField ) {
 			$extraName = $extraField[ 'analyzer' ];
 
-			$field[ 'fields' ][ $extraName ] = array_merge( array(
+			$field[ 'fields' ][ $extraName ] = array_merge( [
 				'similarity' => self::getSimilarity( $this->config, $this->name, $extraName ),
 				'type' => 'string',
 				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-			), $extraField );
+			], $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(
 					$field[ 'fields' ][ $extraName ], $disableNorms );
@@ -167,7 +167,7 @@ class TextIndexField extends CirrusIndexField {
 		if ( $this->mappingFlags & MappingConfigBuilder::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER ) {
 			if ( $this->checkFlag( self::SPEED_UP_HIGHLIGHTING ) ) {
 				$field[ 'index_options' ] = 'offsets';
-				$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
+				$fieldNames = [ 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' ];
 				foreach ( $fieldNames as $fieldName ) {
 					if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
 						$field[ 'fields' ][ $fieldName ][ 'index_options' ] = 'offsets';
@@ -177,7 +177,7 @@ class TextIndexField extends CirrusIndexField {
 		} else {
 			// We use the FVH on all fields so turn on term vectors
 			$field[ 'term_vector' ] = 'with_positions_offsets';
-			$fieldNames = array( 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' );
+			$fieldNames = [ 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' ];
 			foreach ( $fieldNames as $fieldName ) {
 				if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
 					$field[ 'fields' ][ $fieldName ][ 'term_vector' ] = 'with_positions_offsets';

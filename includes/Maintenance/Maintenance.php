@@ -168,7 +168,7 @@ abstract class Maintenance extends \Maintenance {
 		global $wgPoolCounterConf, $wgCirrusSearchLogElasticRequests;
 
 		// Make sure we don't flood the pool counter
-		$wgPoolCounterConf = array();
+		$wgPoolCounterConf = [];
 		unset( $wgPoolCounterConf['CirrusSearch-Search'],
 			$wgPoolCounterConf['CirrusSearch-PerUser'] );
 

@@ -33,41 +33,41 @@ class SuggesterMappingConfigBuilder {
 	 * @return array[]
 	 */
 	public function buildConfig() {
-		$geoContext = array(
-			'location' => array(
+		$geoContext = [
+			'location' => [
 				'type' => 'geo',
-				'precision' => array( 6, 4, 3 ), // ~ 1km, 10km, 100km
+				'precision' => [ 6, 4, 3 ], // ~ 1km, 10km, 100km
 				'neighbors' => true,
-			)
-		);
-		$suggest = array(
+			]
+		];
+		$suggest = [
 			'dynamic' => false,
-			'_all' => array( 'enabled' => false ),
-			'_source' => array('enabled' => false ),
-			'properties' => array(
-				'batch_id' => array( 'type' => 'long' ),
-				'suggest' => array(
+			'_all' => [ 'enabled' => false ],
+			'_source' => ['enabled' => false ],
+			'properties' => [
+				'batch_id' => [ 'type' => 'long' ],
+				'suggest' => [
 					'type' => 'completion',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'payloads' => false
-				),
-				'suggest-stop' => array(
+				],
+				'suggest-stop' => [
 					'type' => 'completion',
 					'analyzer' => 'stop_analyzer',
 					'search_analyzer' => 'stop_analyzer_search',
 					'preserve_separators' => false,
 					'preserve_position_increments' => false,
 					'payloads' => false
-				),
-				'suggest-geo' => array(
+				],
+				'suggest-geo' => [
 					'type' => 'completion',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'payloads' => false,
 					'context' => $geoContext
-				),
-				'suggest-stop-geo' => array(
+				],
+				'suggest-stop-geo' => [
 					'type' => 'completion',
 					'analyzer' => 'stop_analyzer',
 					'search_analyzer' => 'stop_analyzer_search',
@@ -75,10 +75,10 @@ class SuggesterMappingConfigBuilder {
 					'preserve_position_increments' => false,
 					'payloads' => false,
 					'context' => $geoContext
-				)
-			)
-		);
-		return array( \CirrusSearch\Connection::TITLE_SUGGEST_TYPE_NAME => $suggest );
+				]
+			]
+		];
+		return [ \CirrusSearch\Connection::TITLE_SUGGEST_TYPE_NAME => $suggest ];
 	}
 
 }

@@ -126,10 +126,10 @@ class DumpIndex extends Maintenance {
 		$limit = (int) $this->getOption( 'limit', 0 );
 
 		$query = new Query();
-		$query->setFields( array( '_id', '_type', '_source' ) );
+		$query->setFields( [ '_id', '_type', '_source' ] );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
-			$query->setSource( array( 'include' => $sourceFields ) );
+			$query->setSource( [ 'include' => $sourceFields ] );
 		}
 		if ( $filter ) {
 			$bool = new \Elastica\Query\BoolQuery();
@@ -137,11 +137,11 @@ class DumpIndex extends Maintenance {
 			$query->setQuery( $bool );
 		}
 
-		$scrollOptions = array(
+		$scrollOptions = [
 			'search_type' => 'scan',
 			'scroll' => "15m",
 			'size' => $this->inputChunkSize
-		);
+		];
 		$index = $this->getIndex();
 
 		$result = $index->search( $query, $scrollOptions );
@@ -157,11 +157,11 @@ class DumpIndex extends Maintenance {
 		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
 			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
 				foreach ( $results as $result ) {
-					$document = array(
+					$document = [
 						'_id' => $result->getId(),
 						'_type' => $result->getType(),
 						'_source' => $result->getSource()
-					);
+					];
 					$this->write( $document );
 					$docsDumped++;
 					$this->outputProgress( $docsDumped, $totalDocsToDump );
@@ -179,11 +179,11 @@ class DumpIndex extends Maintenance {
 	 * @param array $document Valid elasticsearch document to write to stdout
 	 */
 	public function write( array $document ) {
-		$indexOp = array (
-			'index' => array (
+		$indexOp = [
+			'index' => [
 				'_type' => $document['_type'],
 				'_id' => $document['_id']
-			) );
+			] ];
 
 		// We use Elastica wrapper around json_encode.
 		// Depending on PHP version JSON_ESCAPE_UNICODE will be used

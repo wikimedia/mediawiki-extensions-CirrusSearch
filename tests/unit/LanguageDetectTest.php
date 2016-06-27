@@ -31,17 +31,17 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 	private $cirrus;
 
 	public function getLanguageTexts() {
-		return array(
+		return [
 			// simple cases
-			array("Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en"),
-			array("Добро пожаловать в Википедию", "ru"),
+			["Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en"],
+			["Добро пожаловать в Википедию", "ru"],
 			// more query-like cases
-			array("Breaking Bad", "en"),
-			array("Jesenwang flugplatz", "de"),
-			array("volviendose malo", "es"),
-			array("противоточный теплообменник", "ru"),
-			array("שובר שורות", "he"),
-		);
+			["Breaking Bad", "en"],
+			["Jesenwang flugplatz", "de"],
+			["volviendose malo", "es"],
+			["противоточный теплообменник", "ru"],
+			["שובר שורות", "he"],
+		];
 	}
 
 	public function setUp() {
@@ -67,22 +67,22 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 
 	public function testTextCatDetectorLimited() {
 		global $wgCirrusSearchTextcatLanguages;
-		$wgCirrusSearchTextcatLanguages = array("en", "ru");
+		$wgCirrusSearchTextcatLanguages = ["en", "ru"];
 		$detector = new TextCat();
 		$detect = $detector->detect($this->cirrus, "volviendose malo");
 		$this->assertEquals("en", $detect);
 	}
 
 	public function getHttpLangs() {
-		return array(
-			array("en", array("en"), null),
-			array("en", array("en-UK", "en-US"), null),
-			array("pt", array("pt-BR", "pt-PT"), null),
-			array("en", array("en-UK", "*"), null),
-			array("es", array("en-UK", "en-US"), "en"),
-			array("en", array("pt-BR", "en-US"), "pt"),
-			array("en", array("en-US", "pt-BR"), "pt"),
-		);
+		return [
+			["en", ["en"], null],
+			["en", ["en-UK", "en-US"], null],
+			["pt", ["pt-BR", "pt-PT"], null],
+			["en", ["en-UK", "*"], null],
+			["es", ["en-UK", "en-US"], "en"],
+			["en", ["pt-BR", "en-US"], "pt"],
+			["en", ["en-US", "pt-BR"], "pt"],
+		];
 	}
 
 	/**

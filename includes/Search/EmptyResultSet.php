@@ -96,7 +96,7 @@ class EmptyResultSet extends ResultSet {
 	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return array();
+		return [];
 	}
 
 	/**

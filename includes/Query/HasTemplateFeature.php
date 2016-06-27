@@ -39,6 +39,6 @@ class HasTemplateFeature extends SimpleKeywordFeature {
 					->getPrefixedText();
 			}
 		}
-		return array( QueryHelper::matchPage( 'template', $value ), false );
+		return [ QueryHelper::matchPage( 'template', $value ), false ];
 	}
 }

@@ -29,7 +29,7 @@ class TextCat implements Detector {
 		if( !is_dir( $dir ) ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Bad directory for TextCat model: {dir}",
-				array( "dir" => $dir )
+				[ "dir" => $dir ]
 			);
 		}
 

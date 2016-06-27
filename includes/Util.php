@@ -147,7 +147,7 @@ class Util {
 				$forUserName = $userName ? "for {userName} " : '';
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Pool error {$forUserName}on {key}:  {error}",
-					array( 'userName' => $userName, 'key' => $key, 'error' => $error )
+					[ 'userName' => $userName, 'key' => $key, 'error' => $error ]
 				);
 				return Status::newFatal( 'cirrussearch-backend-error' );
 			};
@@ -172,13 +172,13 @@ class Util {
 		$doPerUserWork = function() use ( $type, $globalKey, $workCallback, $errorHandler ) {
 			// Now that we have the per user lock lets get the operation lock.
 			// Note that this could block, causing the user to wait in line with their lock held.
-			$work = new PoolCounterWorkViaCallback( $type, $globalKey, array(
+			$work = new PoolCounterWorkViaCallback( $type, $globalKey, [
 				'doWork' => $workCallback,
 				'error' => $errorHandler( $globalKey ),
-			) );
+			] );
 			return $work->execute();
 		};
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-PerUser', $perUserKey, array(
+		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-PerUser', $perUserKey, [
 			'doWork' => $doPerUserWork,
 			'error' => function( $status ) use( $errorHandler, $perUserKey, $doPerUserWork ) {
 				$errorCallback = $errorHandler( $perUserKey );
@@ -189,7 +189,7 @@ class Util {
 					return $doPerUserWork();
 				}
 			},
-		) );
+		] );
 		return $work->execute();
 	}
 
@@ -401,7 +401,7 @@ class Util {
 						// Now parse the templates
 						return Query\BoostTemplatesFeature::parseBoostTemplates( implode( ' ', $lines ) );
 					}
-					return array();
+					return [];
 				}
 			);
 			self::$defaultBoostTemplates = $templates;

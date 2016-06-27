@@ -48,11 +48,11 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			// Use ICU Folding if the plugin is available and activated in the config
 			$folding_type = 'icu_folding';
 		}
-		$defaults = array(
-			'char_filter' => array(
-				'word_break_helper' => array(
+		$defaults = [
+			'char_filter' => [
+				'word_break_helper' => [
 					'type' => 'mapping',
-					'mappings' => array(
+					'mappings' => [
 						'_=>\u0020', // a space for mw
 						',=>\u0020', // useful for "Lastname, Firstname"
 						'"=>\u0020', // " certainly phrase search?
@@ -78,72 +78,72 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						'{=>\u0020',
 						'}=>\u0020',
 						'\\\\=>\u0020'
-					),
-				),
-			),
-			'filter' => array(
-				"stop_filter" => array(
+					],
+				],
+			],
+			'filter' => [
+				"stop_filter" => [
 					"type" => "stop",
 					"stopwords" => "_none_",
 					"remove_trailing" => "true"
-				),
-				"asciifolding" => array(
+				],
+				"asciifolding" => [
 					"type" => $folding_type,
-				),
-				"icu_normalizer" => array(
+				],
+				"icu_normalizer" => [
 					"type" => "icu_normalizer",
 					"name" => "nfkc_cf"
-				),
-				"token_limit" => array(
+				],
+				"token_limit" => [
 					"type" => "limit",
 					"max_token_count" => "20"
-				)
-			),
-			'analyzer' => array(
-				"stop_analyzer" => array(
+				]
+			],
+			'analyzer' => [
+				"stop_analyzer" => [
 					"type" => "custom",
-					"filter" => array(
+					"filter" => [
 						"standard",
 						"lowercase",
 						"stop_filter",
 						"asciifolding",
 						"token_limit"
-					),
+					],
 					"tokenizer" => "standard"
-				),
+				],
 				// We do not remove stop words when searching,
 				// this leads to extremely weird behaviors while
 				// writing "to be or no to be"
-				"stop_analyzer_search" => array(
+				"stop_analyzer_search" => [
 					"type" => "custom",
-					"filter" => array(
+					"filter" => [
 						"standard",
 						"lowercase",
 						"asciifolding",
 						"token_limit"
-					),
+					],
 					"tokenizer" => "standard"
-				),
-				"plain" => array(
+				],
+				"plain" => [
 					"type" => "custom",
-					"char_filter" => array( 'word_break_helper' ),
-					"filter" => array(
+					"char_filter" => [ 'word_break_helper' ],
+					"filter" => [
 						"token_limit",
 						"lowercase"
-					),
+					],
 					"tokenizer" => "whitespace"
-				),
-				"plain_search" => array(
+				],
+				"plain_search" => [
 					"type" => "custom",
-					"char_filter" => array( 'word_break_helper' ),
-					"filter" => array(
+					"char_filter" => [ 'word_break_helper' ],
+					"filter" => [
 						"token_limit",
 						"lowercase"
-					),
+					],
 					"tokenizer" => "whitespace"
-				)
-			),
-		);
+				]
+			],
+		];
 		return $defaults;
 	}
 
@@ -184,7 +184,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	}
 
 	/** @var string[] */
-	private static $stopwords = array(
+	private static $stopwords = [
 		'ar' => '_arabic_',
 		'hy' =>  '_armenian_',
 		'eu' => '_basque_',
@@ -220,7 +220,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 		'sv' => '_swedish_',
 		'th' => '_thai_',
 		'tr' => '_turkish_'
-	);
+	];
 
 	/**
 	 * @param string $lang

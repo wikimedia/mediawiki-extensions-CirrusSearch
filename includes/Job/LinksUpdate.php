@@ -61,9 +61,9 @@ class LinksUpdate extends Job {
 			if ( !$title ) {
 				continue;
 			}
-			$linkCount = new IncomingLinkCount( $title, array(
+			$linkCount = new IncomingLinkCount( $title, [
 				'cluster' => $this->params['cluster'],
-			) );
+			] );
 			// If possible, delay the job execution by a few seconds so Elasticsearch
 			// can refresh to contain what we just sent it.  The delay should be long
 			// enough for Elasticsearch to complete the refresh cycle, which normally

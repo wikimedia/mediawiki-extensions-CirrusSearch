@@ -42,57 +42,57 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideNamespacesInIndexType() {
-		return array(
+		return [
 			// Standard:
-			array( array( NS_MAIN ), array(), 'content', 1 ),
-			array( array( NS_MAIN ), array(), 'general', false ),
+			[ [ NS_MAIN ], [], 'content', 1 ],
+			[ [ NS_MAIN ], [], 'general', false ],
 
 			// Commons:
-			array( array( NS_MAIN ), array( NS_FILE => 'file' ), 'file', 1 ),
+			[ [ NS_MAIN ], [ NS_FILE => 'file' ], 'file', 1 ],
 
 			// Funky:
-			array( array( NS_MAIN ), array( NS_FILE => 'file', NS_FILE_TALK => 'file' ), 'file', 2 ),
-			array( array( NS_MAIN ), array( NS_FILE => 'file', NS_FILE_TALK => 'file' ), 'conent', false ),
-			array( array( NS_MAIN, NS_FILE ), array(), 'content', 2 ),
-			array( array( NS_MAIN, NS_FILE ), array( NS_FILE => 'file' ), 'file', 1 ),
-			array( array( NS_MAIN, NS_FILE ), array( NS_FILE => 'file' ), 'content', 1 ),
-			array( array( NS_MAIN, NS_FILE, NS_FILE_TALK ), array( NS_FILE => 'file' ), 'content', 2 ),
-			array( array( NS_MAIN, NS_FILE, NS_FILE_TALK ), array(), 'content', 3 ),
-		);
+			[ [ NS_MAIN ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'file', 2 ],
+			[ [ NS_MAIN ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'conent', false ],
+			[ [ NS_MAIN, NS_FILE ], [], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_FILE => 'file' ], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [], 'content', 3 ],
+		];
 	}
 
 	public function extractIndexSuffixProvider() {
-		return array(
-			'basic index name' => array(
+		return [
+			'basic index name' => [
 				'content',
 				'testwiki_content_first',
-			),
-			'timestamped index name' => array(
+			],
+			'timestamped index name' => [
 				'general',
 				'testwiki_general_12345678',
-			),
-			'indexBaseName with underscore' => array(
+			],
+			'indexBaseName with underscore' => [
 				'content',
 				'test_thiswiki_content_first'
-			),
-			'handles user defined suffixes' => array(
+			],
+			'handles user defined suffixes' => [
 				'file',
 				'zomgwiki_file_654321',
-			),
-		);
+			],
+		];
 	}
 
 	/**
 	 * @dataProvider extractIndexSuffixProvider
 	 */
 	public function testExtractIndexSuffixFromIndexName( $expected, $name ) {
-		$config = new HashSearchConfig( array(
-			'CirrusSearchNamespaceMappings' => array(
+		$config = new HashSearchConfig( [
+			'CirrusSearchNamespaceMappings' => [
 				NS_FILE => 'file',
-			),
+			],
 			// Needed for constructor to not blow up
-			'CirrusSearchServers' => array( 'localhost' ),
-		) );
+			'CirrusSearchServers' => [ 'localhost' ],
+		] );
 		$conn = new Connection( $config );
 		$this->assertEquals( $expected, $conn->extractIndexSuffix( $name ) );
 	}
@@ -101,11 +101,11 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 	 * @expectedException \Exception
 	 */
 	public function testExtractIndexSuffixThrowsExceptionOnUnknown() {
-		$config = new HashSearchConfig( array(
-			'CirrusSearchNamespaceMappings' => array(),
+		$config = new HashSearchConfig( [
+			'CirrusSearchNamespaceMappings' => [],
 			// Needed for constructor to not blow up
-			'CirrusSearchServers' => array( 'localhost' ),
-		) );
+			'CirrusSearchServers' => [ 'localhost' ],
+		] );
 		$conn = new Connection( $config );
 		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}

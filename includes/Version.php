@@ -46,7 +46,7 @@ class Version extends ElasticsearchIntermediary {
 		if ( !$result ) {
 			try {
 				$this->start( 'fetching elasticsearch version',
-					array( 'queryType' => 'version' ) );
+					[ 'queryType' => 'version' ] );
 				// If this times out the cluster is in really bad shape but we should still
 				// check it.
 				$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );

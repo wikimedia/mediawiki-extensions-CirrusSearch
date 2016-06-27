@@ -67,7 +67,7 @@ class DataSender extends ElasticsearchIntermediary {
 		global $wgCirrusSearchUpdateConflictRetryCount;
 
 		if ( $indexes === null ) {
-			$names = array( self::ALL_INDEXES_FROZEN_NAME );
+			$names = [ self::ALL_INDEXES_FROZEN_NAME ];
 		} else {
 			if ( count( $indexes ) === 0 ) {
 				return;
@@ -77,11 +77,11 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$this->log->info( "Freezing writes to: " . implode( ',', $names ) );
 
-		$documents = array();
+		$documents = [];
 		foreach ( $names as $indexName ) {
-			$doc = new \Elastica\Document( $indexName, array(
+			$doc = new \Elastica\Document( $indexName, [
 				'name' => $indexName,
-			) );
+			] );
 			$doc->setDocAsUpsert( true );
 			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
 			$documents[] = $doc;
@@ -113,7 +113,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function thawIndexes( array $indexes = null ) {
 		if ( $indexes === null ) {
-			$names = array( self::ALL_INDEXES_FROZEN_NAME );
+			$names = [ self::ALL_INDEXES_FROZEN_NAME ];
 		} else {
 			if ( count( $indexes ) === 0 ) {
 				return;
@@ -169,7 +169,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newGood();
 		}
 
-		if ( !$this->areIndexesAvailableForWrites( array( $indexType ) ) ) {
+		if ( !$this->areIndexesAvailableForWrites( [ $indexType ] ) ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
@@ -178,11 +178,11 @@ class DataSender extends ElasticsearchIntermediary {
 		$justDocumentMissing = false;
 		try {
 			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-			$this->start( "sending {numBulk} documents to the {indexType} index", array(
+			$this->start( "sending {numBulk} documents to the {indexType} index", [
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
 				'queryType' => 'send_data_write',
-			) );
+			] );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			if ( $shardTimeout ) {
 				$bulk->setShardTimeout( $shardTimeout );
@@ -195,7 +195,7 @@ class DataSender extends ElasticsearchIntermediary {
 				function( $docId ) use ( $e ) {
 					$this->log->info(
 						"Updating a page that doesn't yet exist in Elasticsearch: {docId}",
-						array( 'docId' => $docId )
+						[ 'docId' => $docId ]
 					);
 				}
 			);
@@ -217,7 +217,7 @@ class DataSender extends ElasticsearchIntermediary {
 			}, $data );
 			$this->failedLog->warning(
 				'Update for doc ids: ' . implode( ',', $documentIds ),
-				$exception ? array( 'exception' => $exception ) : array()
+				$exception ? [ 'exception' => $exception ] : []
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}
@@ -234,7 +234,7 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $indexType === null ) {
 			$indexes = $this->connection->getAllIndexTypes();
 		} else {
-			$indexes = array( $indexType );
+			$indexes = [ $indexType ];
 		}
 
 		if ( !$this->areIndexesAvailableForWrites( $indexes ) ) {
@@ -245,11 +245,11 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexType ) {
-					$this->start( "deleting {numIds} from {indexType}", array(
+					$this->start( "deleting {numIds} from {indexType}", [
 						'numIds' => $idCount,
 						'indexType' => $indexType,
 						'queryType' => 'send_deletes',
-					) );
+					] );
 					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $docIds );
 					$this->success();
 				}
@@ -257,7 +257,7 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->failure( $e );
 				$this->failedLog->warning(
 					'Delete for ids: ' . implode( ',', $docIds ),
-					array( 'exception' => $e )
+					[ 'exception' => $e ]
 				);
 				return Status::newFatal( 'cirrussearch-failed-send-deletes' );
 			}
@@ -273,7 +273,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions ) {
-		if ( !$this->areIndexesAvailableForWrites( array( $indexName ), true ) ) {
+		if ( !$this->areIndexesAvailableForWrites( [ $indexName ], true ) ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
@@ -281,18 +281,18 @@ class DataSender extends ElasticsearchIntermediary {
 		$status = Status::newGood();
 		foreach ( array_chunk( $otherActions, 30 ) as $updates ) {
 			$bulk = new \Elastica\Bulk( $client );
-			$titles = array();
+			$titles = [];
 			foreach ( $updates as $update ) {
 				$title = Title::makeTitle( $update['ns'], $update['dbKey'] );
 				$action = $this->decideRequiredSetAction( $title );
 				$script = new \Elastica\Script\Script(
 					'super_detect_noop',
-					array(
-						'source' => array(
-							'local_sites_with_dupe' => array( $action => $localSite ),
-						),
-						'handlers' => array( 'local_sites_with_dupe' => 'set' ),
-					),
+					[
+						'source' => [
+							'local_sites_with_dupe' => [ $action => $localSite ],
+						],
+						'handlers' => [ 'local_sites_with_dupe' => 'set' ],
+					],
 					'native'
 				);
 				$script->setId( $update['docId'] );
@@ -305,10 +305,10 @@ class DataSender extends ElasticsearchIntermediary {
 			// Execute the bulk update
 			$exception = null;
 			try {
-				$this->start( "updating {numBulk} documents in other indexes", array(
+				$this->start( "updating {numBulk} documents in other indexes", [
 					'numBulk' => count( $updates ),
 					'queryType' => 'send_data_other_idx_write',
-				) );
+				] );
 				$bulk->send();
 			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
@@ -323,7 +323,7 @@ class DataSender extends ElasticsearchIntermediary {
 				$this->failure( $exception );
 				$this->failedLog->warning(
 					"OtherIndex update for articles: " . implode( ',', $titles ),
-					array( 'exception' => $exception )
+					[ 'exception' => $exception ]
 				);
 				$status->error( 'cirrussearch-failed-update-otherindex' );
 			}
@@ -401,7 +401,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return string[]
 	 */
 	public function indexesToIndexNames( array $indexes ) {
-		$names = array();
+		$names = [];
 		foreach ( $indexes as $indexType ) {
 			$names[] = $this->connection->getIndexName( $this->indexBaseName, $indexType );
 		}

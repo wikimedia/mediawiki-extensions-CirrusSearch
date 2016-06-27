@@ -53,9 +53,9 @@ class MaxShardsPerNodeValidator extends Validator {
 		} else {
 			$this->output( "is $actualMaxShardsPerNode but should be $expectedMaxShardsPerNode..." );
 			$expectedMaxShardsPerNode = $expectedMaxShardsPerNode === 'unlimited' ? -1 : $expectedMaxShardsPerNode;
-			$this->index->getSettings()->set( array(
+			$this->index->getSettings()->set( [
 				'routing.allocation.total_shards_per_node' => $expectedMaxShardsPerNode
-			) );
+			] );
 			$this->output( "corrected\n" );
 		}
 

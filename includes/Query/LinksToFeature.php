@@ -33,6 +33,6 @@ class LinksToFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		return array( QueryHelper::matchPage( 'outgoing_link', $value, true ), false );
+		return [ QueryHelper::matchPage( 'outgoing_link', $value, true ), false ];
 	}
 }

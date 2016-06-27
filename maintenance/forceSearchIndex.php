@@ -346,30 +346,30 @@ class ForceSearchIndex extends Maintenance {
 		$it = new BatchRowIterator(
 			$dbr,
 			'archive',
-			array( 'ar_timestamp', 'ar_namespace', 'ar_title' ),
+			[ 'ar_timestamp', 'ar_namespace', 'ar_title' ],
 			$this->mBatchSize
 		);
 
 		$this->attachPageConditions( $dbr, $it, 'ar' );
 		$this->attachTimestampConditions( $dbr, $it, 'ar' );
 
-		$it->setFetchColumns( array( 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ) );
+		$it->setFetchColumns( [ 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ] );
 
 		return new CallbackIterator( $it, function ( $batch ) {
-			$titlesToDelete = array();
-			$docIdsToDelete = array();
+			$titlesToDelete = [];
+			$docIdsToDelete = [];
 			foreach ( $batch as $row ) {
 				$titlesToDelete[] = Title::makeTitle( $row->ar_namespace, $row->ar_title );
 				$docIdsToDelete[] = $this->getSearchConfig()->makeId( $row->ar_page_id );
 			}
 
-			return array(
+			return [
 				'titlesToDelete' => $titlesToDelete,
 				'docIdsToDelete' => $docIdsToDelete,
 				'endingAt' => isset( $row )
 					? ( new MWTimestamp( $row->ar_timestamp ) )->getTimestamp( TS_ISO_8601 )
 					: 'unknown',
-			);
+			];
 		} );
 	}
 
@@ -377,9 +377,9 @@ class ForceSearchIndex extends Maintenance {
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_SLAVE );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
-		$it->addConditions( array(
+		$it->addConditions( [
 			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
-		) );
+		] );
 		$this->attachPageConditions( $dbr, $it, 'page' );
 
 		return $this->wrapDecodeResults( $it, 'page_id' );
@@ -389,14 +389,14 @@ class ForceSearchIndex extends Maintenance {
 		$dbr = $this->getDB( DB_SLAVE );
 		$it = new BatchRowIterator(
 			$dbr,
-			array( 'page', 'revision' ),
-			array( 'rev_timestamp', 'page_id' ),
+			[ 'page', 'revision' ],
+			[ 'rev_timestamp', 'page_id' ],
 			$this->mBatchSize
 		);
-		$it->addConditions( array(
+		$it->addConditions( [
 			'rev_page = page_id',
 			'rev_id = page_latest',
-		) );
+		] );
 
 		$this->attachTimestampConditions( $dbr, $it, 'rev' );
 		$this->attachPageConditions( $dbr, $it, 'page' );
@@ -409,14 +409,14 @@ class ForceSearchIndex extends Maintenance {
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
-			$it->addConditions( array(
+			$it->addConditions( [
 				'page_id >= ' . $dbr->addQuotes( $fromId ),
-			) );
+			] );
 		}
 		if ( $this->toId ) {
-			$it->addConditions( array(
+			$it->addConditions( [
 				'page_id <= ' . $dbr->addQuotes( $this->toId ),
-			) );
+			] );
 		}
 
 		$this->attachPageConditions( $dbr, $it, 'page' );
@@ -428,10 +428,10 @@ class ForceSearchIndex extends Maintenance {
 		// When initializing we guarantee that if either fromDate or toDate are provided
 		// the other has a sane default value.
 		if ( $this->fromDate ) {
-			$it->addConditions( array(
+			$it->addConditions( [
 				"{$columnPrefix}_timestamp >= " . $dbr->addQuotes( $dbr->timestamp( $this->fromDate ) ),
 				"{$columnPrefix}_timestamp <= " . $dbr->addQuotes( $dbr->timestamp( $this->toDate ) ),
-			) );
+			] );
 		}
 	}
 
@@ -440,15 +440,15 @@ class ForceSearchIndex extends Maintenance {
 			$it->setFetchColumns( WikiPage::selectFields() );
 		}
 		if ( $this->namespace ) {
-			$it->addConditions( array(
+			$it->addConditions( [
 				"{$columnPrefix}_namespace" => $this->namespace,
-			) );
+			] );
 		}
 		if ( $this->excludeContentTypes ) {
 			$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
-			$it->addConditions( array(
+			$it->addConditions( [
 				"{$columnPrefix}_content_model NOT IN ($list)",
-			) );
+			] );
 		}
 	}
 
@@ -462,7 +462,7 @@ class ForceSearchIndex extends Maintenance {
 			// level so those are stored when it is freed.
 			$updater = $this->createUpdater();
 
-			$pages = array();
+			$pages = [];
 			foreach ( $batch as $row ) {
 				// No need to call Updater::traceRedirects here because we know this is a valid page because
 				// it is in the database.
@@ -486,10 +486,10 @@ class ForceSearchIndex extends Maintenance {
 				$endingAt = 'unknown';
 			}
 
-			return array(
+			return [
 				'updates' => $pages,
 				'endingAt' => $endingAt,
-			);
+			];
 		} );
 	}
 
@@ -507,7 +507,7 @@ class ForceSearchIndex extends Maintenance {
 		} catch ( MWException $ex ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Error deserializing content, skipping page: {pageId}",
-				array( 'pageId' => $page->getTitle()->getArticleID() )
+				[ 'pageId' => $page->getTitle()->getArticleID() ]
 			);
 			return null;
 		}
@@ -579,7 +579,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return Updater
 	 */
 	private function createUpdater() {
-		$flags = array();
+		$flags = [];
 		if ( $this->hasOption( 'cluster' ) ) {
 			$flags[] = 'same-cluster';
 		}

@@ -29,12 +29,12 @@ class MappingDump extends ApiBase {
 		foreach( $conn->getAllIndexTypes() as $index ) {
 			$mapping = $conn->getPageType( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
-			$this->getResult()->addPreserveKeysList( array( $index, 'page' ), '_all' );
+			$this->getResult()->addPreserveKeysList( [ $index, 'page' ], '_all' );
 		}
 	}
 
 	public function getAllowedParams() {
-		return array();
+		return [];
 	}
 
 	/**
@@ -48,10 +48,10 @@ class MappingDump extends ApiBase {
 	 * @see ApiBase::getExamplesMessages
 	 */
 	protected function getExamplesMessages() {
-		return array(
+		return [
 			'action=cirrus-mapping-dump' =>
 				'apihelp-cirrus-mapping-dump-example'
-		);
+		];
 	}
 
 }

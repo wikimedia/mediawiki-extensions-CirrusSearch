@@ -80,7 +80,7 @@ class Connection extends ElasticaConnection {
 	/**
 	 * @var Connection[]
 	 */
-	private static $pool = array();
+	private static $pool = [];
 
 	/**
 	 * @param SearchConfig $config
@@ -104,7 +104,7 @@ class Connection extends ElasticaConnection {
 	 * in tests.
 	 */
 	public static function clearPool() {
-		self::$pool = array();
+		self::$pool = [];
 	}
 
 	/**
@@ -223,7 +223,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getAllIndexTypes() {
 		return array_merge( array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ),
-			array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ) );
+			[ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ] );
 	}
 
 	/**
@@ -232,7 +232,7 @@ class Connection extends ElasticaConnection {
 	 * @throws Exception
 	 */
 	public function extractIndexSuffix( $name ) {
-		$matches = array();
+		$matches = [];
 		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes() ) );
 		if ( !preg_match( "/_($possible)_[^_]+$/", $name, $matches ) ) {
 			throw new \Exception( "Can't parse index name: $name" );
@@ -285,7 +285,7 @@ class Connection extends ElasticaConnection {
 	 *  query the namespaces, or false if both need to be queried.
 	 */
 	public function pickIndexTypeForNamespaces( array $namespaces = null ) {
-		$indexTypes = array();
+		$indexTypes = [];
 		if ( $namespaces ) {
 			foreach ( $namespaces as $namespace ) {
 				$indexTypes[] = $this->getIndexSuffixForNamespace( $namespace );
@@ -312,12 +312,12 @@ class Connection extends ElasticaConnection {
 		}
 		// If no namespaces provided all indices are needed
 		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		return array_merge( array( self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ),
+		return array_merge( [ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ],
 			array_values( $mappings ) );
 	}
 
 	public function destroyClient() {
-		self::$pool = array();
+		self::$pool = [];
 		parent::destroyClient();
 	}
 
@@ -327,7 +327,7 @@ class Connection extends ElasticaConnection {
 	 * @return Connection[] array of connection indexed by cluster name
 	 */
 	public static function getClusterConnections( array $clusters, SearchConfig $config ) {
-		$connections = array();
+		$connections = [];
 		foreach ( $clusters as $name ) {
 			$connections[$name] = self::getPool( $config, $name );
 		}

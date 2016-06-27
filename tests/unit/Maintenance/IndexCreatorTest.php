@@ -42,7 +42,7 @@ class IndexCreatorTest extends \PHPUnit_Framework_TestCase {
 			4, // shardCount
 			'0-2', // replicaCount
 			30, // refreshInterval
-			array(), // mergeSettings
+			[], // mergeSettings
 			true // searchAllFields
 		);
 
@@ -50,17 +50,17 @@ class IndexCreatorTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function createIndexProvider() {
-		$successResponse = new Response( array() );
-		$errorResponse = new Response( array( 'error' => 'index creation failed' ) );
+		$successResponse = new Response( [] );
+		$errorResponse = new Response( [ 'error' => 'index creation failed' ] );
 
-		return array(
-			array( true, 'unlimited', $successResponse ),
-			array( true, 2, $successResponse ),
-			array( true, 2, $errorResponse ),
-			array( false, 'unlimited', $successResponse ),
-			array( false, 2, $successResponse ),
-			array( false, 'unlimited', $errorResponse )
-		);
+		return [
+			[ true, 'unlimited', $successResponse ],
+			[ true, 2, $successResponse ],
+			[ true, 2, $errorResponse ],
+			[ false, 'unlimited', $successResponse ],
+			[ false, 2, $successResponse ],
+			[ false, 'unlimited', $errorResponse ]
+		];
 	}
 
 	private function getIndex( $response ) {

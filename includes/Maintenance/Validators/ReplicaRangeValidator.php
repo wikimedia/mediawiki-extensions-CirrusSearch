@@ -40,7 +40,7 @@ class ReplicaRangeValidator extends Validator {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "is $actualReplicaCount but should be " . $this->replicaCount . '...' );
-			$this->index->getSettings()->set( array( 'auto_expand_replicas' => $this->replicaCount ) );
+			$this->index->getSettings()->set( [ 'auto_expand_replicas' => $this->replicaCount ] );
 			$this->output( "corrected\n" );
 		}
 

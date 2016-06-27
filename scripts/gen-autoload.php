@@ -9,7 +9,7 @@ require_once "$IP/includes/utils/AutoloadGenerator.php";
 function main() {
 	$base = dirname( __DIR__ );
 	$generator = new AutoloadGenerator( $base );
-	foreach ( array( 'includes', 'maintenance', 'profiles' ) as $dir ) {
+	foreach ( [ 'includes', 'maintenance', 'profiles' ] as $dir ) {
 		$generator->readDir( $base . '/' . $dir );
 	}
 	foreach ( glob( $base . '/*.php' ) as $file ) {

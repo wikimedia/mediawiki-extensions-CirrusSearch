@@ -5,21 +5,21 @@ namespace CirrusSearch;
 class ClusterSettingsTest extends \PHPUnit_Framework_TestCase {
 
 	public static function provideShardCount() {
-		return array(
-			'Handles per-index shard counts' => array(
-				array( 'general' => 7 ),
+		return [
+			'Handles per-index shard counts' => [
+				[ 'general' => 7 ],
 				'eqiad',
 				'general',
 				7,
-			),
+			],
 
-			'Handles per-cluster shard counts' => array(
-				array( 'content' => 6, 'eqiad' => array( 'content' => 9 ) ),
+			'Handles per-cluster shard counts' => [
+				[ 'content' => 6, 'eqiad' => [ 'content' => 9 ] ],
 				'eqiad',
 				'content',
 				9,
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -39,28 +39,28 @@ class ClusterSettingsTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideReplicaCounts() {
-		return array(
-			'Simple replica config returns exact setting ' => array(
+		return [
+			'Simple replica config returns exact setting ' => [
 				'0-2',
 				'eqiad',
 				'content',
 				'0-2',
-			),
+			],
 
-			'Accepts array for replica config' => array(
-				array( 'content' => '1-2' ),
+			'Accepts array for replica config' => [
+				[ 'content' => '1-2' ],
 				'eqiad',
 				'content',
 				'1-2',
-			),
+			],
 
-			'Accepts per-cluster replica config' => array(
-				array( 'content' => '1-2', 'eqiad' => array( 'content' => '2-3' ) ),
+			'Accepts per-cluster replica config' => [
+				[ 'content' => '1-2', 'eqiad' => [ 'content' => '2-3' ] ],
 				'eqiad',
 				'content',
 				'2-3'
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -80,16 +80,16 @@ class ClusterSettingsTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideDropDelayedJobsAfter() {
-		return array(
-			'Simple integer timeout is returned directly' => array(
+		return [
+			'Simple integer timeout is returned directly' => [
 				60, 'eqiad', 60
-			),
-			'Can set per-cluster timeout' => array(
-				array( 'eqiad' => 99, 'labsearch' => 42 ),
+			],
+			'Can set per-cluster timeout' => [
+				[ 'eqiad' => 99, 'labsearch' => 42 ],
 				'labsearch',
 				42
-			),
-		);
+			],
+		];
 	}
 
 	/**

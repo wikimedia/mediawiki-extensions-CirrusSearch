@@ -40,9 +40,9 @@ class Filters {
 		// 1.  Strip script filters from $must and $mustNot.
 		// 2.  Unify the non-script filters.
 		// 3.  Build a BoolAnd filter out of the script filters if there are any.
-		$scriptFilters = array();
-		$nonScriptMust = array();
-		$nonScriptMustNot = array();
+		$scriptFilters = [];
+		$nonScriptMust = [];
+		$nonScriptMustNot = [];
 		foreach ( $mustFilters as $must ) {
 			if ( $must->hasParam( 'script' ) ) {
 				$scriptFilters[] = $must;
@@ -157,7 +157,7 @@ class Filters {
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
 		$query = new \Elastica\Query\QueryString( $queryString );
-		$query->setFields( array( $field ) );
+		$query->setFields( [ $field ] );
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( $escaper->getAllowLeadingWildcard() );
 		$query->setFuzzyPrefixLength( 2 );

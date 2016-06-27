@@ -28,36 +28,36 @@
  * If you add new profiles you may want to add the corresponding i18n messages with the following name:
  * cirrussearch-completion-profile-profilename
  */
-$wgCirrusSearchCompletionProfiles = array(
+$wgCirrusSearchCompletionProfiles = [
 	// Strict profile (no accent squasing)
-	'strict' => array(
-		'plain-strict' => array(
+	'strict' => [
+		'plain-strict' => [
 			'field' => 'suggest',
 			'min_query_len' => 0,
 			'discount' => 1.0,
 			'fetch_limit_factor' => 2,
-		),
-	),
+		],
+	],
 	// Accent squashing and stopwords filtering
-	'normal' => array(
-		'plain-normal' => array(
+	'normal' => [
+		'plain-normal' => [
 			'field' => 'suggest',
 			'min_query_len' => 0,
 			'discount' => 1.0,
 			'fetch_limit_factor' => 2,
-		),
-		'plain-stop-normal' => array(
+		],
+		'plain-stop-normal' => [
 			'field' => 'suggest-stop',
 			'min_query_len' => 0,
 			'discount' => 0.001,
 			'fetch_limit_factor' => 2,
-		),
-	),
+		],
+	],
 	// Default profile
-	'fuzzy' => array(
+	'fuzzy' => [
 		// Defines the list of suggest queries to run in the same request.
 		// key is the name of the suggestion request
-		'plain' => array(
+		'plain' => [
 			// Field to request
 			'field' => 'suggest',
 			// Fire the request only if the user query has min_query_len chars.
@@ -72,70 +72,70 @@ $wgCirrusSearchCompletionProfiles = array(
 			// Requesting more than the limit helps to display the correct number
 			// of suggestions
 			'fetch_limit_factor' => 2,
-		),
-		'plain_stop' => array(
+		],
+		'plain_stop' => [
 			'field' => 'suggest-stop',
 			'min_query_len' => 0,
 			'discount' => 0.001,
 			'fetch_limit_factor' => 2,
-		),
+		],
 		// Fuzzy query for query length (3 to 4) with prefix len 1
-		'plain_fuzzy_2' => array(
+		'plain_fuzzy_2' => [
 			'field' => 'suggest',
 			'min_query_len' => 3,
 			'max_query_len' => 4,
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 2,
-			'fuzzy' => array(
+			'fuzzy' => [
 				'fuzzyness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
-			)
-		),
-		'plain_stop_fuzzy_2' => array(
+			]
+		],
+		'plain_stop_fuzzy_2' => [
 			'field' => 'suggest-stop',
 			'min_query_len' => 3,
 			'max_query_len' => 4,
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
-			'fuzzy' => array(
+			'fuzzy' => [
 				'fuzzyness' => 'AUTO',
 				'prefix_length' => 2,
 				'unicode_aware' => true,
-			)
-		),
+			]
+		],
 		// Fuzzy query for query length > 5 with prefix len 0
-		'plain_fuzzy_1' => array(
+		'plain_fuzzy_1' => [
 			'field' => 'suggest',
 			'min_query_len' => 5,
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 1,
-			'fuzzy' => array(
+			'fuzzy' => [
 				'fuzzyness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
-			)
-		),
-		'plain_stop_fuzzy_1' => array(
+			]
+		],
+		'plain_stop_fuzzy_1' => [
 			'field' => 'suggest-stop',
 			'min_query_len' => 5,
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
-			'fuzzy' => array(
+			'fuzzy' => [
 				'fuzzyness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
-			)
-		)
-	),
-);
+			]
+		]
+	],
+];
 
 /**
  * List of profiles for geo context suggestions
  */
-$wgCirrusSearchCompletionGeoContextProfiles = array(
-	'default' => array(
-		'geo-1km' => array(
+$wgCirrusSearchCompletionGeoContextProfiles = [
+	'default' => [
+		'geo-1km' => [
 			'field_suffix' => '-geo',
 			// Discount applied to the score, this value will be multiplied
 			// to the discount from $wgCirrusSearchCompletionProfiles
@@ -143,19 +143,19 @@ $wgCirrusSearchCompletionGeoContextProfiles = array(
 			'precision' => 6,
 			// List of requests to run with this precision
 			// must be a valid name from the active $wgCirrusSearchCompletionProfiles
-			'with' => array( 'plain', 'plain_stop', 'plain_fuzzy', 'plain_stop_fuzzy' )
-		),
-		'geo-10km' => array(
+			'with' => [ 'plain', 'plain_stop', 'plain_fuzzy', 'plain_stop_fuzzy' ]
+		],
+		'geo-10km' => [
 			'field_suffix' => '-geo',
 			'discount' => 0.5,
 			'precision' => 4,
-			'with' => array( 'plain', 'plain_stop', 'plain_fuzzy' )
-		),
-		'geo-100km' => array(
+			'with' => [ 'plain', 'plain_stop', 'plain_fuzzy' ]
+		],
+		'geo-100km' => [
 			'field_suffix' => '-geo',
 			'discount' => 0.2,
 			'precision' => 3,
-			'with' => array( 'plain', 'plain_stop' )
-		)
-	)
-);
+			'with' => [ 'plain', 'plain_stop' ]
+		]
+	]
+];

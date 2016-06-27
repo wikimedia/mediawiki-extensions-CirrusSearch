@@ -57,7 +57,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$this->defaultStemWeight = $settings['default_stem_weight'];
 		$this->defaultQueryType = $settings['default_query_type'];
 		$this->defaultMinShouldMatch = $settings['default_min_should_match'];
-		$this->dismaxSettings = isset( $settings['dismax_settings'] ) ? $settings['dismax_settings'] : array();
+		$this->dismaxSettings = isset( $settings['dismax_settings'] ) ? $settings['dismax_settings'] : [];
 	}
 
 	/**
@@ -127,7 +127,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$phrase = new \Elastica\Query\MultiMatch();
 			$phrase->setParam( 'type', 'phrase' );
 			$phrase->setParam( 'slop', $slop );
-			$fields = array();
+			$fields = [];
 			foreach( $this->phraseFields as $f => $b ) {
 				$fields[] = "$f^$b";
 			}
@@ -153,15 +153,15 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		// - Diacritics are sometimes (english) strangely (T141216)
 		// A dedicated field used for filtering would be nice
 		$match = new \Elastica\Query\Match();
-		$match->setField( 'all', array( "query" => $queryString ) );
+		$match->setField( 'all', [ "query" => $queryString ] );
 		$match->setFieldOperator( 'all', 'AND' );
 		$all_filter->addShould( $match );
 		$match = new \Elastica\Query\Match();
-		$match->setField( 'all.plain', array( "query" => $queryString ) );
+		$match->setField( 'all.plain', [ "query" => $queryString ] );
 		$match->setFieldOperator( 'all.plain', 'AND' );
 		$all_filter->addShould( $match );
 		$query->addFilter( $all_filter );
-		$dismaxQueries = array();
+		$dismaxQueries = [];
 
 		foreach( $this->fields as $f => $settings ) {
 			$mmatch = new \Elastica\Query\MultiMatch();
@@ -170,7 +170,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$minShouldMatch = $this->defaultMinShouldMatch;
 			$stemWeight = $this->defaultStemWeight;
 			$boost = 1;
-			$fields = array( "$f.plain^1", "$f^$stemWeight" );
+			$fields = [ "$f.plain^1", "$f^$stemWeight" ];
 			$in_dismax = null;
 
 			if ( is_array( $settings ) ) {
@@ -178,9 +178,9 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 				$queryType = isset( $settings['query_type'] ) ? $settings['query_type'] : $queryType;
 				$minShouldMatch = isset( $settings['min_should_match'] ) ? $settings['min_should_match'] : $minShouldMatch;
 				if( isset( $settings['is_plain'] ) && $settings['is_plain'] ) {
-					$fields = array( $f );
+					$fields = [ $f ];
 				} else {
-					$fields = array( "$f.plain^1", "$f^$stemWeight" );
+					$fields = [ "$f.plain^1", "$f^$stemWeight" ];
 				}
 				$in_dismax = isset( $settings['in_dismax'] ) ? $settings['in_dismax'] : null;
 			} else {

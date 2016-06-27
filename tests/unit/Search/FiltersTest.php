@@ -32,10 +32,10 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testUnify( $expected, $mustFilters, $mustNotFilters ) {
 		if ( !is_array( $mustFilters ) ) {
-			$mustFilters = array( $mustFilters );
+			$mustFilters = [ $mustFilters ];
 		}
 		if ( !is_array( $mustNotFilters ) ) {
-			$mustNotFilters = array( $mustNotFilters );
+			$mustNotFilters = [ $mustNotFilters ];
 		}
 		$this->assertEquals( $expected, Filters::unify( $mustFilters, $mustNotFilters ) );
 	}
@@ -44,9 +44,9 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 		$scriptOne = new Script( 'dummy1' );
 		$scriptTwo = new Script( 'dummy2' );
 		$scriptThree = new Script( 'dummy3' );
-		$foo = new Term( array( 'test' => 'foo' ) );
-		$bar = new Term( array( 'test' => 'bar' ) );
-		$baz = new Term( array( 'test' => 'baz' ) );
+		$foo = new Term( [ 'test' => 'foo' ] );
+		$bar = new Term( [ 'test' => 'bar' ] );
+		$baz = new Term( [ 'test' => 'baz' ] );
 
 		$notScriptOne = new BoolQuery();
 		$notScriptOne->addMustNot( $scriptOne );
@@ -55,46 +55,46 @@ class FiltersTest extends PHPUnit_Framework_TestCase {
 		$notFoo = new BoolQuery();
 		$notFoo->addMustNot( $foo );
 
-		return array(
-			'empty input gives empty output' => array( null, array(), array() ),
-			'a single must script returns itself' => array( $scriptOne, $scriptOne, array() ),
-			'a single must not script returns bool mustNot' => array( $notScriptOne, array(), $scriptOne ),
-			'a single must query returns itself' => array( $foo, $foo, array() ),
-			'a single must not query return bool mustNot' => array( $notFoo, array(), $foo ),
-			'multiple must return bool must' => array(
-				self::newBool( array( $foo, $bar ), array() ),
-				array( $foo, $bar ),
-				array()
-			),
-			'multiple must not' => array(
-				self::newBool( array(), array( $foo, $bar ) ),
-				array(),
-				array( $foo, $bar ),
-			),
-			'must and multiple must not' => array(
-				self::newBool( array( $baz ), array( $foo, $bar ) ),
-				array( $baz ),
-				array( $foo, $bar ),
-			),
-			'must and multiple must not with a filtered script' => array(
+		return [
+			'empty input gives empty output' => [ null, [], [] ],
+			'a single must script returns itself' => [ $scriptOne, $scriptOne, [] ],
+			'a single must not script returns bool mustNot' => [ $notScriptOne, [], $scriptOne ],
+			'a single must query returns itself' => [ $foo, $foo, [] ],
+			'a single must not query return bool mustNot' => [ $notFoo, [], $foo ],
+			'multiple must return bool must' => [
+				self::newBool( [ $foo, $bar ], [] ),
+				[ $foo, $bar ],
+				[]
+			],
+			'multiple must not' => [
+				self::newBool( [], [ $foo, $bar ] ),
+				[],
+				[ $foo, $bar ],
+			],
+			'must and multiple must not' => [
+				self::newBool( [ $baz ], [ $foo, $bar ] ),
+				[ $baz ],
+				[ $foo, $bar ],
+			],
+			'must and multiple must not with a filtered script' => [
 				self::newAnd(
-					self::newBool( array( $baz ), array( $foo, $bar ) ),
+					self::newBool( [ $baz ], [ $foo, $bar ] ),
 					$scriptOne
 				),
-				array( $scriptOne, $baz ),
-				array( $foo, $bar ),
-			),
-			'must and multiple must not with multiple filtered scripts' => array(
+				[ $scriptOne, $baz ],
+				[ $foo, $bar ],
+			],
+			'must and multiple must not with multiple filtered scripts' => [
 				self::newAnd(
-					self::newBool( array( $baz ), array( $foo, $bar ) ),
+					self::newBool( [ $baz ], [ $foo, $bar ] ),
 					$scriptOne,
 					$scriptTwo,
 					$notScriptThree
 				),
-				array( $scriptOne, $baz, $scriptTwo ),
-				array( $foo, $scriptThree, $bar ),
-			),
-		);
+				[ $scriptOne, $baz, $scriptTwo ],
+				[ $foo, $scriptThree, $bar ],
+			],
+		];
 	}
 
 	/**

@@ -28,17 +28,17 @@ class MassIndexTest extends PHPUnit_Framework_TestCase {
 	 * @dataProvider workItemCountTestCases
 	 */
 	public function testWorkItemCount( $pageDBKeys, $expected ) {
-		$job = new MassIndex( Title::newMainPage(), array(
+		$job = new MassIndex( Title::newMainPage(), [
 			'pageDBKeys' => $pageDBKeys,
-		) );
+		] );
 		$this->assertEquals( $expected, $job->workItemCount() );
 	}
 
 	public static function workItemCountTestCases() {
-		return array(
-			array( array(), 0 ),
-			array( array( 'Foo' ), 1 ),
-			array( array( 'Cat', 'Cow', 'Puppy' ), 3 ),
-		);
+		return [
+			[ [], 0 ],
+			[ [ 'Foo' ], 1 ],
+			[ [ 'Cat', 'Cow', 'Puppy' ], 3 ],
+		];
 	}
 }

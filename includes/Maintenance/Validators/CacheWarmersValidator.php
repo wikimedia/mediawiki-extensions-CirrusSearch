@@ -34,7 +34,7 @@ class CacheWarmersValidator extends Validator {
 	 * @param array $cacheWarmers
 	 * @param Maintenance $out
 	 */
-	public function __construct( $indexType, Type $pageType, array $cacheWarmers = array(), Maintenance $out = null ) {
+	public function __construct( $indexType, Type $pageType, array $cacheWarmers = [], Maintenance $out = null ) {
 		parent::__construct( $out );
 
 		$this->indexType = $indexType;
@@ -66,7 +66,7 @@ class CacheWarmersValidator extends Validator {
 	 *  json encoding and sending to elasticsearch.
 	 */
 	private function buildExpectedWarmers() {
-		$warmers = array();
+		$warmers = [];
 		foreach ( $this->cacheWarmers as $search ) {
 			$warmers[ $search ] = $this->buildWarmer( $search );
 		}
@@ -86,7 +86,7 @@ class CacheWarmersValidator extends Validator {
 			0, 50,
 			// 0 offset 50 limit is the default for searching so we try it too.
 			null,
-			array(),
+			[],
 			// array() for namespaces will stop us from eagerly caching the namespace
 			// filters. That is probably OK because most searches don't use one.
 			// It'd be overeager.
@@ -107,10 +107,10 @@ class CacheWarmersValidator extends Validator {
 		$data = $this->pageType->getIndex()->request( "_warmer/", 'GET' )->getData();
 		$firstKeys = array_keys( $data );
 		if ( count( $firstKeys ) === 0 ) {
-			return array();
+			return [];
 		}
 		if ( !isset( $data[ $firstKeys[ 0 ] ][ 'warmers' ] ) ) {
-			return array();
+			return [];
 		}
 		$warmers = $data[ $firstKeys[ 0 ] ][ 'warmers' ];
 		foreach ( $warmers as &$warmer ) {
@@ -174,7 +174,7 @@ class CacheWarmersValidator extends Validator {
 	 * @return array[] List of warmers that differ
 	 */
 	private function diff( $expectedWarmers, $actualWarmers ) {
-		$result = array();
+		$result = [];
 		foreach ( $expectedWarmers as $key => $value ) {
 			if ( !isset( $actualWarmers[ $key ] ) || !Util::recursiveSame( $value, $actualWarmers[ $key ] ) ) {
 				$result[ $key ] = $value;

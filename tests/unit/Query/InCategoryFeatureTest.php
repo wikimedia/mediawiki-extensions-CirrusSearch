@@ -8,103 +8,103 @@ use IDatabase;
 class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
-		return array(
-			'single category' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+		return [
+			'single category' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Zomg',
-							),
-						) )
-					)
-				) ),
+							],
+						] ]
+					]
+				] ],
 				'incategory:Zomg'
-			),
-			'multiple categories' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+			],
+			'multiple categories' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Zomg',
-							),
-						) ),
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+							],
+						] ],
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Wowzers',
-							),
-						) )
-					)
-				) ),
+							],
+						] ]
+					]
+				] ],
 				'incategory:Zomg|Wowzers'
-			),
-			'resolves id: prefix' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+			],
+			'resolves id: prefix' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Cat2',
-							),
-						) ),
-					)
-				) ),
+							],
+						] ],
+					]
+				] ],
 				'incategory:id:2',
-			),
-			'throws away invalid id: values' => array(
+			],
+			'throws away invalid id: values' => [
 				null,
 				'incategory:id:qwerty',
-			),
-			'throws away unknown id: values' => array(
+			],
+			'throws away unknown id: values' => [
 				null,
 				'incategory:id:7654321'
-			),
-			'allows mixing id: with names' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+			],
+			'allows mixing id: with names' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Cirrus',
-							),
-						) ),
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+							],
+						] ],
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Cat2',
-							),
-						) ),
-					),
-				) ),
+							],
+						] ],
+					],
+				] ],
 				'incategory:Cirrus|id:2',
-			),
-			'applies supplied category limit' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+			],
+			'applies supplied category limit' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'This',
-							),
-						) ),
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+							],
+						] ],
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'That',
-							),
-						) )
-					)
-				) ),
+							],
+						] ]
+					]
+				] ],
 				'incategory:This|That|Other',
-			),
-			'invalid id: counts towards category limit' => array(
-				array( 'bool' => array(
-					'should' => array(
-						array( 'match' => array(
-							'category.lowercase_keyword' => array(
+			],
+			'invalid id: counts towards category limit' => [
+				[ 'bool' => [
+					'should' => [
+						[ 'match' => [
+							'category.lowercase_keyword' => [
 								'query' => 'Test',
-							),
-						) ),
-					)
-				) ),
+							],
+						] ],
+					]
+				] ],
 				'incategory:id:qwerty|Test|Case',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -120,9 +120,9 @@ class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 			->method( 'setResultsPossible' )
 			->with( false );
 
-		$feature = new InCategoryFeature( new \HashConfig( array(
+		$feature = new InCategoryFeature( new \HashConfig( [
 			'CirrusSearchMaxIncategoryOptions' => 2,
-		) ) );
+		] ) );
 		$feature->apply( $context, $term );
 	}
 
@@ -136,14 +136,14 @@ class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 			->method( 'select' )
 			->with( 'page' )
 			->will( $this->returnCallback( function ( $table, $select, $where ) {
-				if ( isset( $where['page_id'] ) && $where['page_id'] === array( '2' ) ) {
-					return array( (object) array(
+				if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
+					return [ (object) [
 						'page_namespace' => NS_CATEGORY,
 						'page_title' => 'Cat2',
 						'page_id' => 2,
-					) );
+					] ];
 				} else {
-					return array();
+					return [];
 				}
 			} ) );
 		$lb = $this->getMockBuilder( LoadBalancer::class )

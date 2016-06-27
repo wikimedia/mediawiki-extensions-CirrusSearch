@@ -39,7 +39,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @param KeywordFeature[] $features
 	 * @param array[] $settings currently ignored
 	 */
-	public function __construct( SearchConfig $config, Escaper $escaper, array $features, array $settings = array() ) {
+	public function __construct( SearchConfig $config, Escaper $escaper, array $features, array $settings = [] ) {
 		$this->config = $config;
 		$this->escaper = $escaper;
 		$this->features = $features;
@@ -92,10 +92,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 					$phraseHighlightMatch = new \Elastica\Query\QueryString( );
 					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
-					$phraseHighlightMatch->setFields( array( 'all.plain' ) );
+					$phraseHighlightMatch->setFields( [ 'all.plain' ] );
 					$searchContext->addNonTextHighlightQuery( $phraseHighlightMatch );
 
-					return array();
+					return [];
 				}
 
 				if ( !isset( $matches[ 'fuzzy' ] ) ) {
@@ -105,12 +105,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 					// Got to collect phrases that don't use the all field so we can highlight them.
 					// The highlighter locks phrases to the fields that specify them.  It doesn't do
 					// that with terms.
-					return array(
+					return [
 						'escaped' => $negate . self::switchSearchToExact( $searchContext, $main, true ),
 						'nonAll' => $negate . self::switchSearchToExact( $searchContext, $main, false ),
-					);
+					];
 				}
-				return array( 'escaped' => $negate . $main );
+				return [ 'escaped' => $negate . $main ];
 			} );
 		// Find prefix matches and force them to only match against the plain analyzed fields.  This
 		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
@@ -118,15 +118,15 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
 			function ( $matches ) use ( $searchContext ) {
 				$term = $this->escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
-				return array(
+				return [
 					'escaped' => self::switchSearchToExactForWildcards( $searchContext, $term ),
 					'nonAll' => self::switchSearchToExactForWildcards( $searchContext, $term )
-				);
+				];
 			} );
 
-		$escapedQuery = array();
-		$nonAllQuery = array();
-		$nearMatchQuery = array();
+		$escapedQuery = [];
+		$nonAllQuery = [];
+		$nearMatchQuery = [];
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'escaped' ] ) ) {
 				$escapedQuery[] = $queryPart[ 'escaped' ];
@@ -146,7 +146,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			}
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'Unknown query part: {queryPart}',
-				array( 'queryPart' => serialize( $queryPart ) )
+				[ 'queryPart' => serialize( $queryPart ) ]
 			);
 		}
 
@@ -204,9 +204,9 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				$rescoreFields = $nonAllFields;
 			}
 
-			$searchContext->addRescore( array(
+			$searchContext->addRescore( [
 				'window_size' => $this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ),
-				'query' => array(
+				'query' => [
 					'rescore_query' => $this->buildPhraseRescoreQuery(
 						$searchContext,
 						$rescoreFields,
@@ -215,15 +215,15 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 					),
 					'query_weight' => 1.0,
 					'rescore_query_weight' => $this->config->get( 'CirrusSearchPhraseRescoreBoost' ),
-				)
-			) );
+				]
+			] );
 		}
 
 		if ( $showSuggestion ) {
-			$searchContext->setSuggest( array(
+			$searchContext->setSuggest( [
 				'text' => $term,
 				'suggest' => $this->buildSuggestConfig( 'suggest' ),
-			) );
+			] );
 		}
 	}
 
@@ -245,11 +245,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		);
 
 		$searchContext->setSearchType( 'degraded_full_text' );
-		$searchContext->setMainQuery( new \Elastica\Query\Simple( array( 'simple_query_string' => array(
+		$searchContext->setMainQuery( new \Elastica\Query\Simple( [ 'simple_query_string' => [
 			'fields' => $fields,
 			'query' => $this->queryStringQueryString,
 			'default_operator' => 'AND',
-		) ) ) );
+		] ] ) );
 		$searchContext->clearRescore();
 
 		return true;
@@ -273,31 +273,31 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$suggestSettings['confidence'] = $confidence;
 		}
 
-		$settings = array(
-			'phrase' => array(
+		$settings = [
+			'phrase' => [
 				'field' => $field,
 				'size' => 1,
 				'max_errors' => $suggestSettings['max_errors'],
 				'confidence' => $suggestSettings['confidence'],
 				'real_word_error_likelihood' => $suggestSettings['real_word_error_likelihood'],
-				'direct_generator' => array(
-					array(
+				'direct_generator' => [
+					[
 						'field' => $field,
 						'suggest_mode' => $suggestSettings['mode'],
 						'max_term_freq' => $suggestSettings['max_term_freq'],
 						'min_doc_freq' => $suggestSettings['min_doc_freq'],
 						'prefix_length' => $suggestSettings['prefix_length'],
-					),
-				),
-				'highlight' => array(
+					],
+				],
+				'highlight' => [
 					'pre_tag' => Searcher::SUGGESTION_HIGHLIGHT_PRE,
 					'post_tag' => Searcher::SUGGESTION_HIGHLIGHT_POST,
-				),
-			),
-		);
+				],
+			],
+		];
 		// Add a second generator with the reverse field
 		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' ) ) {
-			$settings['phrase']['direct_generator'][] = array(
+			$settings['phrase']['direct_generator'][] = [
 				'field' => $field . '.reverse',
 				'suggest_mode' => $suggestSettings['mode'],
 				'max_term_freq' => $suggestSettings['max_term_freq'],
@@ -305,26 +305,26 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				'prefix_length' => $suggestSettings['prefix_length'],
 				'pre_filter' => 'token_reverse',
 				'post_filter' => 'token_reverse'
-			);
+			];
 		}
 		if ( !empty( $suggestSettings['collate'] ) ) {
-			$collateFields = array('title.plain', 'redirect.title.plain');
+			$collateFields = ['title.plain', 'redirect.title.plain'];
 			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' )  ) {
 				$collateFields[] = 'text.plain';
 			}
-			$settings['phrase']['collate'] = array(
-				'query' => array (
-					'inline' => array(
-						'multi_match' => array(
+			$settings['phrase']['collate'] = [
+				'query' => [
+					'inline' => [
+						'multi_match' => [
 							'query' => '{{suggestion}}',
 							'operator' => 'or',
 							'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
 							'type' => 'cross_fields',
 							'fields' => $collateFields
-						),
-					),
-				),
-			);
+						],
+					],
+				],
+			];
 		}
 		if( isset( $suggestSettings['smoothing_model'] ) ) {
 			$settings['phrase']['smoothing'] = $suggestSettings['smoothing_model'];
@@ -407,7 +407,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// match in titles be poorly scored (actually it breaks some tests).
 		if ( $context->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 			$titleWeight = $context->getConfig()->getElement( 'CirrusSearchWeights', 'title' );
-			$fields = array();
+			$fields = [];
 			$fields[] = "title.plain:$term^${titleWeight}";
 			$fields[] = "all.plain:$term";
 			$exact = join( ' OR ', $fields );
@@ -449,12 +449,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			if ( $fieldSuffix === '.near_match' ) {
 				// The near match fields can't shard a root field because field fields need it -
 				// thus no suffix all.
-				return array( "all_near_match^${weight}" );
+				return [ "all_near_match^${weight}" ];
 			}
-			return array( "all${fieldSuffix}^${weight}" );
+			return [ "all${fieldSuffix}^${weight}" ];
 		}
 
-		$fields = array();
+		$fields = [];
 		// Only title and redirect support near_match so skip it for everything else
 		$titleWeight = $weight * $searchWeights[ 'title' ];
 		$redirectWeight = $weight * $searchWeights[ 'redirect' ];
@@ -498,7 +498,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @return array[] The set of query pieces after applying regex and callable
 	 */
 	private static function replaceAllPartsOfQuery( array $query, $regex, $callable ) {
-		$result = array();
+		$result = [];
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'raw' ] ) ) {
 				$result = array_merge( $result, self::replacePartsOfQuery( $queryPart[ 'raw' ], $regex, $callable ) );
@@ -530,15 +530,15 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *  converted into.
 	 */
 	private static function replacePartsOfQuery( $queryPart, $regex, $callable ) {
-		$destination = array();
-		$matches = array();
+		$destination = [];
+		$matches = [];
 		$offset = 0;
 		while ( preg_match( $regex, $queryPart, $matches, PREG_OFFSET_CAPTURE, $offset ) ) {
 			$startOffset = $matches[0][1];
 			if ( $startOffset > $offset ) {
-				$destination[] = array(
+				$destination[] = [
 					'raw' => substr( $queryPart, $offset, $startOffset - $offset )
-				);
+				];
 			}
 
 			$callableResult = call_user_func( $callable, $matches );
@@ -550,9 +550,9 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		}
 
 		if ( $offset < strlen( $queryPart ) ) {
-			$destination[] = array(
+			$destination[] = [
 				'raw' => substr( $queryPart, $offset ),
-			);
+			];
 		}
 
 		return $destination;

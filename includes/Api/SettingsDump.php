@@ -28,7 +28,7 @@ class SettingsDump extends ApiBase {
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
 		foreach( $conn->getAllIndexTypes() as $index ) {
 			$this->getResult()->addValue( 
-				array( $index, 'page' ),
+				[ $index, 'page' ],
 				'index',
 				$conn->getIndex( $indexPrefix, $index )->getSettings()->get()
 			);
@@ -36,7 +36,7 @@ class SettingsDump extends ApiBase {
 	}
 
 	public function getAllowedParams() {
-		return array();
+		return [];
 	}
 
 	/**
@@ -50,10 +50,10 @@ class SettingsDump extends ApiBase {
 	 * @see ApiBase::getExamplesMessages
 	 */
 	protected function getExamplesMessages() {
-		return array(
+		return [
 			'action=cirrus-settings-dump' =>
 				'apihelp-cirrus-settings-dump-example'
-		);
+		];
 	}
 
 }

@@ -29,6 +29,6 @@ class DummyConnection extends \CirrusSearch\Connection {
 	}
 
 	public function getServerList() {
-		return array( 'localhost' );
+		return [ 'localhost' ];
 	}
 }

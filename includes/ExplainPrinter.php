@@ -23,7 +23,7 @@ namespace CirrusSearch;
  */
 class ExplainPrinter {
 	public function format( array $queryResult ) {
-		$result = array();
+		$result = [];
 		foreach ( $queryResult['result']['hits']['hits'] as $hit ) {
 			$result[] =
 				"<div>" .

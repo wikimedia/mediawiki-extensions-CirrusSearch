@@ -96,13 +96,13 @@ class Checker {
 	 * @return int the number of pages updated
 	 */
 	public function check( array $pageIds ) {
-		$docIds = array_map( array( $this->searchConfig, 'makeId' ), $pageIds );
+		$docIds = array_map( [ $this->searchConfig, 'makeId' ], $pageIds );
 
 		$pagesFromDb = $this->loadPagesFromDB( $pageIds );
 		$pagesFromIndex = $this->loadPagesFromIndex( $docIds );
 		$nbPagesFixed = 0;
 		foreach( array_combine( $pageIds, $docIds ) as $pageId => $docId ) {
-			$fromIndex = array();
+			$fromIndex = [];
 			if ( isset( $pagesFromIndex[$docId] ) ) {
 				$fromIndex = $pagesFromIndex[$docId];
 			}
@@ -245,7 +245,7 @@ class Checker {
 		$dbr = wfGetDB( DB_SLAVE );
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
 		$res = $dbr->select(
-			array( 'page' ),
+			[ 'page' ],
 			WikiPage::selectFields(),
 			$where,
 			__METHOD__
@@ -263,14 +263,14 @@ class Checker {
 	 * @throws \Exception if an error occurred
 	 */
 	private function loadPagesFromIndex( array $docIds ) {
-		$status = $this->searcher->get( $docIds, array( 'namespace', 'title' ) );
+		$status = $this->searcher->get( $docIds, [ 'namespace', 'title' ] );
 		if ( !$status->isOK() ) {
 			throw new \Exception( 'Cannot fetch ids from index' );
 		}
 		/** @var \Elastica\ResultSet $dataFromIndex */
 		$dataFromIndex = $status->getValue();
 
-		$indexedPages = array();
+		$indexedPages = [];
 		foreach ( $dataFromIndex as $indexInfo ) {
 			$indexedPages[$indexInfo->getId()][] = $indexInfo;
 		}

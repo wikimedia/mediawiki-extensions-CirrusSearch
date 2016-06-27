@@ -129,20 +129,20 @@ class Metastore extends Maintenance {
 	private function updateIndexVersion( $baseName ) {
 		$versionType = $this->metaStore->versionType();
 		$this->outputIndented( "Updating tracking indexes..." );
-		$docs = array();
+		$docs = [];
 		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
 		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
 		$connSettings = $this->getConnection()->getSettings();
 		foreach( $this->getConnection()->getAllIndexTypes() as $type ) {
 			$docs[] = new \Elastica\Document(
 				$this->getConnection()->getIndexName( $baseName, $type ),
-				array(
+				[
 					'analysis_maj' => $aMaj,
 					'analysis_min' => $aMin,
 					'mapping_maj' => $mMaj,
 					'mapping_min' => $mMin,
 					'shard_count' => $connSettings->getShardCount( $type ),
-				)
+				]
 			);
 		}
 		$versionType->addDocuments( $docs );
@@ -154,21 +154,21 @@ class Metastore extends Maintenance {
 		if ( !$index->exists() ) {
 			$this->error( "Cannot dump metastore: index does not exists. Please run --upgrade first", 1 );
 		}
-		$scrollOptions = array(
+		$scrollOptions = [
 			'search_type' => 'scan',
 			'scroll' => "15m",
 			'size' => 100
-		);
+		];
 		$result = $index->search( new \Elastica\Query(), $scrollOptions );
 		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
 			function( $results ) {
 				foreach ( $results as $result ) {
-					$indexOp = array(
-						'index' => array(
+					$indexOp = [
+						'index' => [
 							'_type' => $result->getType(),
 							'_id' => $result->getId(),
-						)
-					);
+						]
+					];
 					fwrite( STDOUT, JSON::stringify( $indexOp ) . "\n" );
 					fwrite( STDOUT, JSON::stringify( $result->getSource() ) . "\n" );
 				}

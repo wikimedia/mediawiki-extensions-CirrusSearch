@@ -55,10 +55,10 @@ class QueueingRemediator implements Remediator {
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {
 		JobQueueGroup::singleton()->push(
-			new DeletePages( $title, array(
+			new DeletePages( $title, [
 				'docId' => $docId,
 				'cluster' => $this->cluster,
-			) )
+			] )
 		);
 	}
 
@@ -69,22 +69,22 @@ class QueueingRemediator implements Remediator {
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $wrongIndex ) {
 		JobQueueGroup::singleton()->push(
-			new DeletePages( $page->getTitle(), array(
+			new DeletePages( $page->getTitle(), [
 				'indexType' => $wrongIndex,
 				'docId' => $docId,
 				'cluster' => $this->cluster,
-			) )
+			] )
 		);
 		$this->pushLinksUpdateJob( $page );
 	}
 
 	private function pushLinksUpdateJob( WikiPage $page ) {
 		JobQueueGroup::singleton()->push(
-			new LinksUpdate( $page->getTitle(), array(
-				'addedLinks' => array(),
-				'removedLinks' => array(),
+			new LinksUpdate( $page->getTitle(), [
+				'addedLinks' => [],
+				'removedLinks' => [],
 				'cluster' => $this->cluster,
-			) )
+			] )
 		);
 	}
 }

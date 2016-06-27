@@ -5,40 +5,40 @@ namespace CirrusSearch\Query;
 class HasTemplateFeatureText extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
-		return array(
-			'basic usage' => array(
-				array( 'match' => array(
-					'template' => array(
+		return [
+			'basic usage' => [
+				[ 'match' => [
+					'template' => [
 						'query' => 'Template:Coord',
-					),
-				) ),
+					],
+				] ],
 				'hastemplate:Coord',
-			),
-			'calling out Template NS directly' => array(
-				array( 'match' => array(
-					'template' => array(
+			],
+			'calling out Template NS directly' => [
+				[ 'match' => [
+					'template' => [
 						'query' => 'Template:Coord',
-					),
-				) ),
+					],
+				] ],
 				'hastemplate:Template:Coord',
-			),
-			'with namespace' => array(
-				array( 'match' => array(
-					'template' => array(
+			],
+			'with namespace' => [
+				[ 'match' => [
+					'template' => [
 						'query' => 'User talk:Zomg',
-					),
-				) ),
+					],
+				] ],
 				'hastemplate:User_talk:Zomg',
-			),
-			'using colon prefix to indicate NS_MAIN' => array(
-				array( 'match' => array(
-					'template' => array(
+			],
+			'using colon prefix to indicate NS_MAIN' => [
+				[ 'match' => [
+					'template' => [
 						'query' => 'Main page',
-					),
-				) ),
+					],
+				] ],
 				'hastemplate::Main_page',
-			),
-		);
+			],
+		];
 	}
 
 	/**

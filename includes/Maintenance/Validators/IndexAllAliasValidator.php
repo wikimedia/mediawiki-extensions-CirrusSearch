@@ -30,7 +30,7 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	 * @return \Status
 	 */
 	protected function updateIndices( array $add, array $remove ) {
-		$data = array();
+		$data = [];
 
 		$this->output( "alias not already assigned to this index..." );
 
@@ -39,11 +39,11 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 		// build the request to Elasticsearch ourselves.
 
 		foreach ( $add as $indexName ) {
-			$data['action'][] = array( 'add' => array( 'index' => $indexName, 'alias' => $this->aliasName ) );
+			$data['action'][] = [ 'add' => [ 'index' => $indexName, 'alias' => $this->aliasName ] ];
 		}
 
 		foreach ( $remove as $indexName ) {
-			$data['action'][] = array( 'remove' => array( 'index' => $indexName, 'alias' => $this->aliasName ) );
+			$data['action'][] = [ 'remove' => [ 'index' => $indexName, 'alias' => $this->aliasName ] ];
 		}
 
 		$this->client->request( '_aliases', \Elastica\Request::POST, $data );

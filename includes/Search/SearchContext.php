@@ -72,7 +72,7 @@ class SearchContext {
 	 * @var array[] nested array of arrays. Each child array contains three keys:
 	 * coord, radius and weight. Used for geographic radius boosting.
 	 */
-	private $geoBoosts = array();
+	private $geoBoosts = [];
 
 	/**
 	 * @var bool Could this query possibly return results?
@@ -83,7 +83,7 @@ class SearchContext {
 	 * @var string[] List of features in the user suplied query string. Features are
 	 *  held in the array key, value is always true.
 	 */
-	private $syntaxUsed = array();
+	private $syntaxUsed = [];
 
 	/**
 	 * @var string The type of search being performed. ex: full_text, near_match, prefix, etc.
@@ -93,19 +93,19 @@ class SearchContext {
 	/**
 	 * @var AbstractQuery[] List of filters that query results must match
 	 */
-	private $filters = array();
+	private $filters = [];
 
 	/**
 	 * @var AbstractQuery[] List of filters that query results must not match
 	 */
-	private $notFilters = array();
+	private $notFilters = [];
 
 	/**
 	 * @var array[] $config List of configurations for highlighting the article
 	 *  source. Passed to ResultType::getHighlightingConfiguration to generate
 	 *  final highlighting configuration. Empty if source is ignored.
 	 */
-	private $highlightSource = array();
+	private $highlightSource = [];
 
 	/**
 	 * @var boolean is this a fuzzy query?
@@ -123,25 +123,25 @@ class SearchContext {
 	 *  for more advanced highlighting (e.g. match_phrase_prefix for regular
 	 *  quoted strings).
 	 */
-	private $nonTextHighlightQueries = array();
+	private $nonTextHighlightQueries = [];
 
 	/**
 	 * @var array Set of rescore configurations as used by elasticsearch. The query needs
 	 *  to be an Elastica query.
 	 */
-	private $rescore = array();
+	private $rescore = [];
 
 	/**
 	 * @var string[] array of prefixes that should be prepended to suggestions. Can be added
 	 *  to externally and is added to during search syntax parsing.
 	 */
-	private $suggestPrefixes = array();
+	private $suggestPrefixes = [];
 
 	/**
 	 * @var string[] array of suffixes that should be prepended to suggestions. Can be added
 	 *  to externally and is added to during search syntax parsing.
 	 */
-	private $suggestSuffixes = array();
+	private $suggestSuffixes = [];
 
 	/**
 	 * @var AbstractQuery|null main query. null defaults to MatchAll
@@ -152,7 +152,7 @@ class SearchContext {
 	 * @var \Elastica\Query\Match[] Queries that don't use Elastic's "query string" query, for
 	 *  more advanced searching (e.g. match_phrase_prefix for regular quoted strings).
 	 */
-	private $nonTextQueries = array();
+	private $nonTextQueries = [];
 
 	/**
 	 * @var array|null Configuration for suggest query
@@ -481,7 +481,7 @@ class SearchContext {
 	 * @return array[] Rescore configurations as used by elasticsearch.
 	 */
 	public function getRescore() {
-		$result = array();
+		$result = [];
 		foreach ( $this->rescore as $rescore ) {
 			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
 			$result[] = $rescore;
@@ -504,7 +504,7 @@ class SearchContext {
 	 * have been added.
 	 */
 	public function clearRescore() {
-		$this->rescore = array();
+		$this->rescore = [];
 	}
 
 	/**

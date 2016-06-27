@@ -27,7 +27,7 @@ class ElasticSearch implements Detector {
 			// This happens when language detection is not configured
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Could not connect to language detector: {exception}",
-				array( "exception" => $e )
+				[ "exception" => $e ]
 			);
 			return null;
 		}

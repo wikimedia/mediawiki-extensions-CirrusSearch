@@ -33,7 +33,7 @@ class OrderedStreamingForkController extends \ForkController {
 	/** @var int */
 	protected $nextOutputId;
 	/** @var string[] Int key indicates order, value is data */
-	protected $delayedOutputData = array();
+	protected $delayedOutputData = [];
 
 	/**
 	 * @param int $numProcs The number of worker processes to fork
@@ -72,7 +72,7 @@ class OrderedStreamingForkController extends \ForkController {
 	protected function forkWorkers( $numProcs ) {
 		$this->prepareEnvironment();
 
-		$childSockets = array();
+		$childSockets = [];
 		// Create the child processes
 		for ( $i = 0; $i < $numProcs; $i++ ) {
 			$sockets = stream_socket_pair( STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP );
@@ -118,7 +118,7 @@ class OrderedStreamingForkController extends \ForkController {
 			if ( $line ) {
 				list( $id, $data ) = json_decode( $line );
 				$result = call_user_func( $this->workCallback, $data );
-				fwrite( $this->output, json_encode( array( $id, $result ) ) . "\n" );
+				fwrite( $this->output, json_encode( [ $id, $result ] ) . "\n" );
 			}
 		}
 	}
@@ -143,7 +143,7 @@ class OrderedStreamingForkController extends \ForkController {
 	 * @param resource[] $sockets
 	 */
 	protected function feedChildren( array $sockets ) {
-		$used = array();
+		$used = [];
 		$id = 0;
 		$this->nextOutputId = 0;
 
@@ -159,7 +159,7 @@ class OrderedStreamingForkController extends \ForkController {
 				continue;
 			}
 			$socket = array_pop( $sockets );
-			fwrite( $socket, json_encode( array( $id++, $data ) ) . "\n" );
+			fwrite( $socket, json_encode( [ $id++, $data ] ) . "\n" );
 			$used[] = $socket;
 		}
 		while ( $used ) {
@@ -178,7 +178,7 @@ class OrderedStreamingForkController extends \ForkController {
 	 */
 	protected function updateAvailableSockets( &$sockets, &$used, $timeout ) {
 		$read = $used;
-		$write = $except = array();
+		$write = $except = [];
 		stream_select( $read, $write, $except, $timeout );
 		foreach ( $read as $socket ) {
 			$line = fgets( $socket );

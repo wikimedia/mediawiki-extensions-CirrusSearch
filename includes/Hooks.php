@@ -47,7 +47,7 @@ class Hooks {
 	/**
 	 * @var string[] Destination of titles being moved (the ->getPrefixedDBkey() form).
 	 */
-	private static $movingTitles = array();
+	private static $movingTitles = [];
 
 	/**
 	 * Hooked to call initialize after the user is set up.
@@ -215,7 +215,7 @@ class Hooks {
 			function () {
 				$source = wfMessage( 'cirrussearch-morelikethis-settings' )->inContentLanguage();
 				if ( $source && $source->isDisabled() ) {
-					return array();
+					return [];
 				}
 				return Util::parseSettingsInMessage( $source->plain() );
 			}
@@ -341,10 +341,10 @@ class Hooks {
 			// DeferredUpdate so we don't end up racing our own page deletion
 			DeferredUpdates::addCallableUpdate( function() use ( $target ) {
 				JobQueueGroup::singleton()->push(
-					new Job\LinksUpdate( $target, array(
-						'addedLinks' => array(),
-						'removedLinks' => array(),
-					) )
+					new Job\LinksUpdate( $target, [
+						'addedLinks' => [],
+						'removedLinks' => [],
+					] )
 				);
 			} );
 		}
@@ -364,9 +364,9 @@ class Hooks {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
-			new Job\DeletePages( $page->getTitle(), array(
+			new Job\DeletePages( $page->getTitle(), [
 				'docId' => self::getConfig()->makeId( $pageId )
-			) )
+			] )
 		);
 		return true;
 	}
@@ -386,7 +386,7 @@ class Hooks {
 		}
 		JobQueueGroup::singleton()->push(
 			Job\MassIndex::build(
-				array( WikiPage::factory( $title ) ),
+				[ WikiPage::factory( $title ) ],
 				Updater::INDEX_EVERYTHING
 			)
 		);
@@ -404,11 +404,11 @@ class Hooks {
 	 */
 	public static function onRevisionDelete( $title ) {
 		JobQueueGroup::singleton()->push(
-			new Job\LinksUpdate( $title, array(
-				'addedLinks' => array(),
-				'removedLinks' => array(),
+			new Job\LinksUpdate( $title, [
+				'addedLinks' => [],
+				'removedLinks' => [],
 				'prioritize' => true
-			) )
+			] )
 		);
 		return true;
 	}
@@ -440,7 +440,7 @@ class Hooks {
 
 		// Prepend our message if needed
 		if ( $wgCirrusSearchShowNowUsing ) {
-			$out->addHTML( Xml::openElement( 'div', array( 'class' => 'cirrussearch-now-using' ) ) .
+			$out->addHTML( Xml::openElement( 'div', [ 'class' => 'cirrussearch-now-using' ] ) .
 				$specialSearch->msg( 'cirrussearch-now-using' )->parse() .
 				Xml::closeElement( 'div' ) );
 		}
@@ -477,10 +477,10 @@ class Hooks {
 	private static function addSearchFeedbackLink( $link, SpecialSearch $specialSearch, OutputPage $out ) {
 		$anchor = Xml::element(
 			'a',
-			array( 'href' => $link ),
+			[ 'href' => $link ],
 			$specialSearch->msg( 'cirrussearch-give-feedback' )->text()
 		);
-		$block = Html::rawElement( 'div', array(), $anchor );
+		$block = Html::rawElement( 'div', [], $anchor );
 		$out->addHTML( $block );
 	}
 
@@ -500,12 +500,12 @@ class Hooks {
 			return true;
 		}
 
-		$params = array(
+		$params = [
 			'addedLinks' => self::prepareTitlesForLinksUpdate(
 				$linksUpdate->getAddedLinks(), $wgCirrusSearchLinkedArticlesToUpdate ),
 			'removedLinks' => self::prepareTitlesForLinksUpdate(
 				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
-		);
+		];
 		// Prioritize jobs that are triggered from a web process.  This should prioritize
 		// single page update jobs over those triggered by template changes.
 		if ( PHP_SAPI != 'cli' ) {
@@ -573,7 +573,7 @@ class Hooks {
 
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
-		$searcher = new Searcher( self::getConnection(), 0, 50, null, array( $title->getNamespace() ), $user );
+		$searcher = new Searcher( self::getConnection(), 0, 50, null, [ $title->getNamespace() ], $user );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$searcher->updateNamespacesFromQuery( $term );
 		} else {
@@ -633,10 +633,10 @@ class Hooks {
 		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
 			$conn = self::getConnection();
 			$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
-			$job = new Job\DeletePages( $title, array(
+			$job = new Job\DeletePages( $title, [
 				'indexType' => $oldIndexType,
 				'docId' => self::getConfig()->makeId( $oldId )
-			) );
+			] );
 			// Push the job after DB commit but cancel on rollback
 			wfGetDB( DB_MASTER )->onTransactionIdle( function() use ( $job ) {
 				JobQueueGroup::singleton()->lazyPush( $job );
@@ -655,7 +655,7 @@ class Hooks {
 	 */
 	private static function prepareTitlesForLinksUpdate( $titles, $max ) {
 		$titles = self::pickFromArray( $titles, $max );
-		$dBKeys = array();
+		$dBKeys = [];
 		foreach ( $titles as $title ) {
 			$dBKeys[] = $title->getPrefixedDBkey();
 		}
@@ -673,14 +673,14 @@ class Hooks {
 			return $array;
 		}
 		if ( $num < 1 ) {
-			return array();
+			return [];
 		}
 		$chosen = array_rand( $array, $num );
 		// If $num === 1 then array_rand will return a key rather than an array of keys.
 		if ( !is_array( $chosen ) ) {
-			return array( $array[ $chosen ] );
+			return [ $array[ $chosen ] ];
 		}
-		$result = array();
+		$result = [];
 		foreach ( $chosen as $key ) {
 			$result[] = $array[ $key ];
 		}
@@ -701,10 +701,10 @@ class Hooks {
 		global $wgCirrusSearchEnableSearchLogging,
 			$wgCirrusSearchFeedbackLink;
 
-		$vars += array(
+		$vars += [
 			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
 			'wgCirrusSearchFeedbackLink' => $wgCirrusSearchFeedbackLink,
-		);
+		];
 
 		return true;
 	}
@@ -734,7 +734,7 @@ class Hooks {
 	 * @param mixed $page
 	 * @param array $query
 	 */
-	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = array() ) {
+	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = [] ) {
 		global $wgCirrusSearchInterwikiProv;
 		if( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
 			$query["wprov"] = $wgCirrusSearchInterwikiProv;
@@ -755,16 +755,16 @@ class Hooks {
 			return true;
 		}
 
-		$pref['cirrussearch-completionsuggester'] = array(
+		$pref['cirrussearch-completionsuggester'] = [
 			'label-message' => 'cirrussearch-completionsuggester-pref',
 			'desc-message' => 'cirrussearch-completionsuggester-desc',
 			'info-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester',
 			'discussion-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension_talk:CirrusSearch/CompletionSuggester',
-			'screenshot' => array(
+			'screenshot' => [
 				'ltr' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-ltr.svg",
 				'rtl' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-rtl.svg",
-			)
-		);
+			]
+		];
 		return true;
 	}
 
@@ -796,14 +796,14 @@ class Hooks {
 		global $wgOut;
 
 		$wgOut->addModules( 'ext.cirrus.serp' );
-		$wgOut->addJsConfigVars( array(
+		$wgOut->addJsConfigVars( [
 			'wgCirrusSearchRequestSetToken' => ElasticsearchIntermediary::getRequestSetToken(),
-		) );
+		] );
 
 		// This ignores interwiki results for now...not sure what do do with those
-		ElasticsearchIntermediary::setResultPages( array(
+		ElasticsearchIntermediary::setResultPages( [
 			$titleMatches,
 			$textMatches
-		) );
+		] );
 	}
 }

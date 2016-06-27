@@ -68,7 +68,7 @@ class UserTesting {
 	/**
 	 * @var string[] Map from test name to the bucket the request is in.
 	 */
-	protected $tests = array();
+	protected $tests = [];
 
 	/**
 	 * Returns a stable instance based on $wgCirrusSearchUserTesting
@@ -102,7 +102,7 @@ class UserTesting {
 	public function __construct( array $config, $callback = null, $trigger = '' ) {
 		/** @suppress PhanTypeComparisonFromArray phan is just wrong here */
 		if ( $callback === null ) {
-			$callback = array( __CLASS__, 'oneIn' );
+			$callback = [ __CLASS__, 'oneIn' ];
 		}
 		foreach ( $config as $testName => $testConfig ) {
 			if ( $trigger ) {
@@ -150,7 +150,7 @@ class UserTesting {
 	 * @return string[]
 	 */
 	public function getActiveTestNamesWithBucket() {
-		$result = array();
+		$result = [];
 		foreach ( $this->tests as $test => $bucket ) {
 			$result[] = "$test:$bucket";
 		}
@@ -165,7 +165,7 @@ class UserTesting {
 	 */
 	protected function activateTest( $testName, $bucket, array $testConfig ) {
 		$this->tests[$testName] = '';
-		$globals = array();
+		$globals = [];
 		if ( isset( $testConfig['globals'] ) ) {
 			$globals = $testConfig['globals'];
 		}

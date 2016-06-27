@@ -36,7 +36,7 @@ class CheckIndexes extends Maintenance {
 	 *  errors are nested based on the keys in self::$path at the time the error
 	 *  occurred.
 	 */
-	private $errors = array();
+	private $errors = [];
 	/**
 	 * @var string[] Represents each step of current indentation level
 	 */
@@ -65,7 +65,7 @@ class CheckIndexes extends Maintenance {
 		$this->ensureCirrusInfoFetched();
 		// @todo: use MetaStoreIndex
 		$this->checkIndex( 'mw_cirrus_versions', 1 );
-		$aliases = array();
+		$aliases = [];
 		foreach ( $this->clusterState[ 'metadata' ][ 'indices' ] as $indexName => $data ) {
 			foreach ( $data[ 'aliases' ] as $alias ) {
 				$aliases[ $alias ][] = $indexName;
@@ -99,7 +99,7 @@ class CheckIndexes extends Maintenance {
 	 * @param int
 	 */
 	private function checkIndex( $indexName, $expectedShardCount ) {
-		$this->path = array();
+		$this->path = [];
 		$metadata = $this->getIndexMetadata( $indexName );
 		$this->in( $indexName );
 		if ( $metadata === null ) {
@@ -115,7 +115,7 @@ class CheckIndexes extends Maintenance {
 			$this->in( "shard $shardIndex" );
 			foreach ( $shardRoutingTable as $replicaIndex => $replica ) {
 				$this->in( "replica $replicaIndex" );
-				$this->check( 'state', array( 'STARTED', 'RELOCATING' ), $replica[ 'state' ] );
+				$this->check( 'state', [ 'STARTED', 'RELOCATING' ], $replica[ 'state' ] );
 				$this->out();
 			}
 			$this->out();
@@ -231,12 +231,12 @@ class CheckIndexes extends Maintenance {
 			$query->setSize( 5000 );
 			$res = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )
 				->getIndex()->search( $query );
-			$this->cirrusInfo = array();
+			$this->cirrusInfo = [];
 			foreach( $res as $r ) {
 				$data = $r->getData();
-				$this->cirrusInfo[ $r->getId() ] = array(
+				$this->cirrusInfo[ $r->getId() ] = [
 					'shard_count' => $data[ 'shard_count' ],
-				);
+				];
 			}
 		}
 	}

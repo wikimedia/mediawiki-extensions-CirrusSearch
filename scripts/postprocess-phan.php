@@ -7,12 +7,12 @@ foreach ( $results as $error ) {
 		continue;
 	}
 	list( $source, $file, $lineno, $type, $message ) = $matches;
-	$errors[$file][] = array(
+	$errors[$file][] = [
 		'orig' => $error,
 		// convert from 1 indexed to 0 indexed
 		'lineno' => $lineno - 1,
 		'type' => $type,
-	);
+	];
 }
 
 foreach ( $errors as $file => $errors ) {

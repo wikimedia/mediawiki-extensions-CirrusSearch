@@ -37,11 +37,11 @@ class RescoreBuilder {
 	 *
 	 * @var string[] $rescoreMainParams
 	 */
-	private static $rescoreMainParams = array(
+	private static $rescoreMainParams = [
 		'query_weight',
 		'rescore_query_weight',
 		'score_mode'
-	);
+	];
 
 	const FUNCTION_SCORE_TYPE = "function_score";
 
@@ -74,12 +74,12 @@ class RescoreBuilder {
 	 * @return array of rescore queries
 	 */
 	public function build() {
-		$rescores = array();
+		$rescores = [];
 		foreach( $this->profile['rescore'] as $rescoreDef ) {
 			$windowSize = $this->windowSize( $rescoreDef );
-			$rescore = array(
+			$rescore = [
 				'window_size' => $windowSize,
-			);
+			];
 
 			$rescore['query'] = array_intersect_key( $rescoreDef, array_flip( self::$rescoreMainParams ) );
 			$rescoreQuery = $this->buildRescoreQuery( $rescoreDef );
@@ -189,13 +189,13 @@ class FunctionScoreChain {
 	 *
 	 * @var string[]
 	 */
-	private static $functionScoreParams = array(
+	private static $functionScoreParams = [
 		'boost',
 		'boost_mode',
 		'max_boost',
 		'score_mode',
 		'min_score'
-	);
+	];
 
 	/**
 	 * @var SearchContext
@@ -477,7 +477,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 			// nothing to boost, no need to initialize anything else.
 			return;
 		}
-		$this->normalizedNamespaceWeights = array();
+		$this->normalizedNamespaceWeights = [];
 		$language = $this->context->getConfig()->get( 'ContLang' );
 		foreach ( $this->context->getConfig()->get( 'CirrusSearchNamespaceWeights' ) as $ns => $weight ) {
 			if ( is_string( $ns ) ) {
@@ -526,7 +526,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 
 		// first build the opposite map, this will allow us to add a
 		// single factor function per weight by using a terms filter.
-		$weightToNs = array();
+		$weightToNs = [];
 		foreach( $this->namespacesToBoost as $ns ) {
 			$weight = $this->getBoostForNamespace( $ns ) * $this->weight;
 			$key = (string) $weight;
@@ -536,7 +536,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				continue;
 			}
 			if ( !isset( $weightToNs[$key] ) ) {
-				$weightToNs[$key] = array( $ns );
+				$weightToNs[$key] = [ $ns ];
 			} else {
 				$weightToNs[$key][] = $ns;
 			}
@@ -567,11 +567,11 @@ class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
 		if( !$this->context->isBoostLinks() ) {
 			return;
 		}
-		$functionScore->addFunction( 'field_value_factor', array(
+		$functionScore->addFunction( 'field_value_factor', [
 			'field' => 'incoming_links',
 			'modifier' => 'log2p',
 			'missing' => 0,
-		) );
+		] );
 	}
 }
 
@@ -828,7 +828,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 	/** @var float */
 	private $impact;
 	/** @var array[] */
-	private $scriptFunctions = array();
+	private $scriptFunctions = [];
 	/** @var float */
 	private $epsilon = 0.0000001;
 
@@ -865,7 +865,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 			} else {
 				$weight = $this->getOverriddenFactor( $member['weight'] );
 			}
-			$function = array( 'weight' => $weight );
+			$function = [ 'weight' => $weight ];
 			switch( $member['type'] ) {
 			case 'satu':
 				$function['script'] = new SatuFunctionScoreBuilder( $this->context, 1, $member['params'] );
@@ -937,12 +937,12 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 		}
 		// Convert half life for time in days to decay constant for time in milliseconds.
 		$decayConstant = log( 2 ) / $this->context->getPreferRecentHalfLife() / 86400000;
-		$parameters = array(
+		$parameters = [
 			'decayConstant' => $decayConstant,
 			'decayPortion' => $this->context->getPreferRecentDecayPortion(),
 			'nonDecayPortion' => 1 - $this->context->getPreferRecentDecayPortion(),
 			'now' => time() * 1000
-		);
+		];
 
 		// e^ct where t is last modified time - now which is negative
 		$exponentialDecayExpression = "exp(decayConstant * (doc['timestamp'].value - now))";
@@ -1013,7 +1013,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $this->userWeight ) {
 			$functionScore->addWeightFunction(
 				$this->userWeight * $this->weight,
-				new \Elastica\Query\Term( array( 'language' => $this->userLang ) )
+				new \Elastica\Query\Term( [ 'language' => $this->userLang ] )
 			);
 		}
 
@@ -1021,7 +1021,7 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $this->wikiWeight && $this->userLang != $this->wikiLang ) {
 			$functionScore->addWeightFunction(
 				$this->wikiWeight * $this->weight,
-				new \Elastica\Query\Term( array( 'language' => $this->wikiLang ) )
+				new \Elastica\Query\Term( [ 'language' => $this->wikiLang ] )
 			);
 		}
 	}

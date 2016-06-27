@@ -38,12 +38,12 @@ class ElasticaWrite extends Job {
 	 * @param array $params
 	 */
 	public function __construct( $title, $params ) {
-		parent::__construct( $title, $params + array(
+		parent::__construct( $title, $params + [
 			'createdAt' => time(),
 			'errorCount' => 0,
 			'retryCount' => 0,
 			'cluster' => null,
-		) );
+		] );
 	}
 
 	/**
@@ -67,15 +67,15 @@ class ElasticaWrite extends Job {
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running {method} on cluster $clusterNames {diff}s after insertion",
-			array(
+			[
 				'method' => $this->params['method'],
 				'arguments' => $this->params['arguments'],
 				'diff' => time() - $this->params['createdAt'],
 				'clusters' => array_keys( $connections ),
-			)
+			]
 		);
-		$retry = array();
-		$error = array();
+		$retry = [];
+		$error = [];
 		foreach ( $connections as $clusterName => $conn ) {
 			if ( $this->params['clientSideTimeout'] ) {
 				$conn->setTimeout( $this->params['clientSideTimeout'] );
@@ -84,18 +84,18 @@ class ElasticaWrite extends Job {
 			$sender = new DataSender( $conn, $this->searchConfig );
 			try {
 				$status = call_user_func_array(
-					array( $sender, $this->params['method'] ),
+					[ $sender, $this->params['method'] ],
 					$this->params['arguments']
 				);
 			} catch ( \Exception $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",
-					array(
+					[
 						'method' => $this->params['method'],
 						'cluster' => $clusterName,
 						'errorMessage' => $e->getMessage(),
 						'exception' => $e,
-					)
+					]
 				);
 				$status = Status::newFatal( 'cirrussearch-send-failure' );
 			}
@@ -133,11 +133,11 @@ class ElasticaWrite extends Job {
 		if ( $diff > $dropTimeout ) {
 			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
 				"Dropping delayed ElasticaWrite job for DataSender::{method} in cluster {cluster} after waiting {diff}s",
-				array(
+				[
 					'method' => $this->params['method'],
 					'cluster' => $conn->getClusterName(),
 					'diff' => $diff,
-				)
+				]
 			);
 		} else {
 			$delay = self::backoffDelay( $this->params['retryCount'] );
@@ -147,10 +147,10 @@ class ElasticaWrite extends Job {
 			$job->setDelay( $delay );
 			LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 				"ElasticaWrite job reported frozen on cluster {cluster}. Requeueing job with delay of {delay}s",
-				array(
+				[
 					'cluster' => $conn->getClusterName(),
 					'delay' => $delay
-				)
+				]
 			);
 			JobQueueGroup::singleton()->push( $job );
 		}
@@ -166,10 +166,10 @@ class ElasticaWrite extends Job {
 		if ( $this->params['errorCount'] >= self::MAX_ERROR_RETRY ) {
 			LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->warning(
 				"Dropping failing ElasticaWrite job for DataSender::{method} in cluster {cluster} after repeated failure",
-				array(
+				[
 					'method' => $this->params['method'],
 					'cluster' => $conn->getClusterName(),
-				)
+				]
 			);
 		} else {
 			$delay = self::backoffDelay( $this->params['errorCount'] );
@@ -180,10 +180,10 @@ class ElasticaWrite extends Job {
 			// Individual failures should have already logged specific errors,
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
 				"ElasticaWrite job reported failure on cluster {cluster}. Requeueing job with delay of {delay}.",
-				array(
+				[
 					'cluster' => $conn->getClusterName(),
 					'delay' => $delay
-				)
+				]
 			);
 			JobQueueGroup::singleton()->push( $job );
 		}

@@ -33,31 +33,31 @@ class OtherIndex extends Job {
 	 *  to, or null for all clusters.
 	 */
 	public static function queueIfRequired( array $titles, $cluster ) {
-		$titlesToUpdate = array();
+		$titlesToUpdate = [];
 		foreach( $titles as $title ) {
 			if ( OtherIndexes::getExternalIndexes( $title ) ) {
-				$titlesToUpdate[] = array( $title->getNamespace(), $title->getText() );
+				$titlesToUpdate[] = [ $title->getNamespace(), $title->getText() ];
 			}
 		}
 		if ( $titlesToUpdate ) {
 			// Note that we're updating a bunch of titles but we have to pick one to
 			// attach to the job so we pick the first one.
 			JobQueueGroup::singleton()->push(
-				new self( $titles[ 0 ], array(
+				new self( $titles[ 0 ], [
 					'titles' => $titlesToUpdate,
 					'cluster' => $cluster,
-				) )
+				] )
 			);
 		}
 	}
 
 	protected function doJob() {
-		$titles = array();
+		$titles = [];
 		foreach ( $this->params[ 'titles' ] as $titleArr ) {
 			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}
-		$flags = array();
+		$flags = [];
 		if ( $this->params['cluster'] ) {
 			$flags[] = 'same-cluster';
 		}

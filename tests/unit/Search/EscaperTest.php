@@ -30,22 +30,22 @@ class EscaperTest extends PHPUnit_Framework_TestCase {
 	public function testFuzzyEscape( $input, $expected, $isFuzzy ) {
 		$escaper = new Escaper( 'unittest' );
 		$actual = $escaper->fixupWholeQueryString( $input );
-		$this->assertEquals( array( $expected, $isFuzzy), $actual );
+		$this->assertEquals( [ $expected, $isFuzzy], $actual );
 	}
 
 	public static function fuzzyEscapeTestCases() {
-		return array(
-			'Default fuzziness is allowed' => array( 'fuzzy~', 'fuzzy~', true ),
-			'No fuzziness is allowed' => array( 'fuzzy~0', 'fuzzy~0', true ),
-			'One char edit distance is allowed' => array( 'fuzzy~1', 'fuzzy~1', true ),
-			'Two char edit distance is allowed' => array( 'fuzzy~2', 'fuzzy~2', true ),
-			'Three char edit distance is disallowed' => array( 'fuzzy~3', 'fuzzy\\~3', false ),
-			'non-integer edit distance is disallowed' => array( 'fuzzy~1.0', 'fuzzy\\~1.0', false ),
-			'Larger edit distances are disallowed' => array( 'fuzzy~10', 'fuzzy\\~10', false ),
-			'Proximity searches are allowed' => array( '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10', false ),
-			'Float fuzziness with leading 0 is disallowed' => array( 'fuzzy~0.8', 'fuzzy\\~0.8', false ),
-			'Float fuzziness is disallowed' => array( 'fuzzy~.8', 'fuzzy\\~.8', false ),
-		);
+		return [
+			'Default fuzziness is allowed' => [ 'fuzzy~', 'fuzzy~', true ],
+			'No fuzziness is allowed' => [ 'fuzzy~0', 'fuzzy~0', true ],
+			'One char edit distance is allowed' => [ 'fuzzy~1', 'fuzzy~1', true ],
+			'Two char edit distance is allowed' => [ 'fuzzy~2', 'fuzzy~2', true ],
+			'Three char edit distance is disallowed' => [ 'fuzzy~3', 'fuzzy\\~3', false ],
+			'non-integer edit distance is disallowed' => [ 'fuzzy~1.0', 'fuzzy\\~1.0', false ],
+			'Larger edit distances are disallowed' => [ 'fuzzy~10', 'fuzzy\\~10', false ],
+			'Proximity searches are allowed' => [ '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10', false ],
+			'Float fuzziness with leading 0 is disallowed' => [ 'fuzzy~0.8', 'fuzzy\\~0.8', false ],
+			'Float fuzziness is disallowed' => [ 'fuzzy~.8', 'fuzzy\\~.8', false ],
+		];
 	}
 
 	/**
@@ -58,18 +58,18 @@ class EscaperTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public static function quoteEscapeTestCases() {
-		return array(
-			array( 'en', 'foo', 'foo' ),
-			array( 'en', 'fo"o', 'fo"o' ),
-			array( 'el', 'fo"o', 'fo"o' ),
-			array( 'de', 'fo"o', 'fo"o' ),
-			array( 'he', 'מלבי"ם', 'מלבי\"ם' ),
-			array( 'he', '"מלבי"', '"מלבי"' ),
-			array( 'he', '"מלבי"ם"', '"מלבי\"ם"' ),
-			array( 'he', 'מַ"כִּית', 'מַ\"כִּית' ),
-			array( 'he', 'הוּא שִׂרְטֵט עַיִ"ן', 'הוּא שִׂרְטֵט עַיִ\"ן' ),
-			array( 'he', '"הוּא שִׂרְטֵט עַיִ"ן"', '"הוּא שִׂרְטֵט עַיִ\"ן"' ),
-		);
+		return [
+			[ 'en', 'foo', 'foo' ],
+			[ 'en', 'fo"o', 'fo"o' ],
+			[ 'el', 'fo"o', 'fo"o' ],
+			[ 'de', 'fo"o', 'fo"o' ],
+			[ 'he', 'מלבי"ם', 'מלבי\"ם' ],
+			[ 'he', '"מלבי"', '"מלבי"' ],
+			[ 'he', '"מלבי"ם"', '"מלבי\"ם"' ],
+			[ 'he', 'מַ"כִּית', 'מַ\"כִּית' ],
+			[ 'he', 'הוּא שִׂרְטֵט עַיִ"ן', 'הוּא שִׂרְטֵט עַיִ\"ן' ],
+			[ 'he', '"הוּא שִׂרְטֵט עַיִ"ן"', '"הוּא שִׂרְטֵט עַיִ\"ן"' ],
+		];
 	}
 
 	/**
@@ -82,15 +82,15 @@ class EscaperTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public static function balanceQuotesTestCases() {
-		return array(
-			array( 'foo', 'foo' ),
-			array( '"foo', '"foo"' ),
-			array( '"foo" bar', '"foo" bar' ),
-			array( '"foo" ba"r', '"foo" ba"r"' ),
-			array( '"foo" ba\\"r', '"foo" ba\\"r' ),
-			array( '"foo\\" ba\\"r', '"foo\\" ba\\"r"' ),
-			array( '\\"foo\\" ba\\"r', '\\"foo\\" ba\\"r' ),
-			array( '"fo\\o bar', '"fo\\o bar"' ),
-		);
+		return [
+			[ 'foo', 'foo' ],
+			[ '"foo', '"foo"' ],
+			[ '"foo" bar', '"foo" bar' ],
+			[ '"foo" ba"r', '"foo" ba"r"' ],
+			[ '"foo" ba\\"r', '"foo" ba\\"r' ],
+			[ '"foo\\" ba\\"r', '"foo\\" ba\\"r"' ],
+			[ '\\"foo\\" ba\\"r', '\\"foo\\" ba\\"r' ],
+			[ '"fo\\o bar', '"fo\\o bar"' ],
+		];
 	}
 }

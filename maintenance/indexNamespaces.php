@@ -43,18 +43,18 @@ class IndexNamespaces extends Maintenance {
 		$this->output( "done\n" );
 
 		$this->outputIndented( "Indexing namespaces..." );
-		$namesByNsId = array();
+		$namesByNsId = [];
 		foreach ( $wgContLang->getNamespaceIds() as $name => $nsId ) {
 			if ( $name ) {
 				$namesByNsId[$nsId][] = $name;
 			}
 		}
-		$documents = array();
+		$documents = [];
 		foreach ( $namesByNsId as $nsId => $names ) {
-			$documents[] = new Document( $nsId, array(
+			$documents[] = new Document( $nsId, [
 				'name' => $names,
 				'wiki' => $this->getSearchConfig()->getWikiId(),
-			) );
+			] );
 		}
 		$type->addDocuments( $documents );
 		$this->output( "done\n" );

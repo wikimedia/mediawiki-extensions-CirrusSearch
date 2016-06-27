@@ -52,7 +52,7 @@ abstract class Job extends MWJob {
 	 * @param array $params
 	 */
 	public function __construct( $title, $params ) {
-		$params += array( 'cluster' => null );
+		$params += [ 'cluster' => null ];
 		// eg: DeletePages -> cirrusSearchDeletePages
 		$jobName = 'cirrusSearch' . str_replace( 'CirrusSearch\\Job\\', '', static::class );
 		parent::__construct( $jobName, $title, $params );
@@ -146,7 +146,7 @@ abstract class Job extends MWJob {
 	 * @return Updater
 	 */
 	protected function createUpdater() {
-		$flags = array();
+		$flags = [];
 		if ( isset( $this->params['cluster'] ) ) {
 			$flags[] = 'same-cluster';
 		}
@@ -200,14 +200,14 @@ abstract class Job extends MWJob {
 			// has been removed from the config file.
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Received {command} job for unwritable cluster {cluster}",
-				array(
+				[
 					'command' => $this->command,
 					'cluster' =>  $cluster
-				)
+				]
 			);
 			// this job does not allow retries so we just need to throw an exception
 			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
 		}
-		return array( $cluster => Connection::getPool( $this->searchConfig, $cluster ) );
+		return [ $cluster => Connection::getPool( $this->searchConfig, $cluster ) ];
 	}
 }

@@ -80,7 +80,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		try {
 			$this->output( "is taken...\n" );
 			$this->outputIndented( "\tReindexing...\n" );
-			call_user_func_array( array( $this->reindexer, 'reindex' ), $this->reindexParams );
+			call_user_func_array( [ $this->reindexer, 'reindex' ], $this->reindexParams );
 			if ( $this->tooFewReplicas ) {
 				$this->reindexer->optimize();
 
@@ -100,7 +100,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		// now add alias & remove indices for real
 		$status = Status::newGood();
 		$status->merge( $this->swapAliases( $add ) );
-		$status->merge( parent::updateIndices( array(), $remove ) );
+		$status->merge( parent::updateIndices( [], $remove ) );
 		return $status;
 	}
 

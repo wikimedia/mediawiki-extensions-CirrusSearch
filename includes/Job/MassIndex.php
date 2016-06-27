@@ -34,17 +34,17 @@ class MassIndex extends Job {
 	 */
 	public static function build( array $pages, $updateFlags, $cluster = null ) {
 		// Strip $pages down to PrefixedDBKeys so we don't put a ton of stuff in the job queue.
-		$pageDBKeys = array();
+		$pageDBKeys = [];
 		foreach ( $pages as $page ) {
 			$pageDBKeys[] = $page->getTitle()->getPrefixedDBkey();
 		}
 
 		// We don't have a "title" for this job so we use the Main Page because it exists.
-		return new self( Title::newMainPage(), array(
+		return new self( Title::newMainPage(), [
 			'pageDBKeys' => $pageDBKeys,
 			'updateFlags' => $updateFlags,
 			'cluster' => $cluster,
-		) );
+		] );
 	}
 
 	/**
@@ -53,14 +53,14 @@ class MassIndex extends Job {
 	 */
 	protected function doJob() {
 		// Reload pages from pageIds to throw into the updater
-		$pageData = array();
+		$pageData = [];
 		foreach ( $this->params[ 'pageDBKeys' ] as $pageDBKey ) {
 			$title = Title::newFromDBkey( $pageDBKey );
 			// Skip any titles with broken keys.  We can't do anything with them.
 			if ( !$title ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Skipping invalid DBKey: {pageDBKey}",
-					array( 'pageDBKey' => $pageDBKey )
+					[ 'pageDBKey' => $pageDBKey ]
 				);
 				continue;
 			}

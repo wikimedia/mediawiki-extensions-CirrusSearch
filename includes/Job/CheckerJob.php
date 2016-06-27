@@ -41,14 +41,14 @@ class CheckerJob extends Job {
 	 * @return CheckerJob
 	 */
 	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster ) {
-		$job = new self( Title::makeTitle( 0, "" ), array(
+		$job = new self( Title::makeTitle( 0, "" ), [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,
 			'createdAt' => time(),
 			'retryCount' => 0,
 			'profile' => $profile,
 			'cluster' => $cluster,
-		) );
+		] );
 		$job->setDelay( $delay );
 		return $job;
 	}
@@ -79,9 +79,9 @@ class CheckerJob extends Job {
 		if( !$profile ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",
-				array(
+				[
 					'profile' => $this->params['profile']
-				)
+				]
 			);
 			return false;
 		}
@@ -114,19 +114,19 @@ class CheckerJob extends Job {
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running CheckerJob on cluster $clusterNames {diff}s after insertion",
-			array(
+			[
 				'diff' => time() - $this->params['createdAt'],
 				'clusters' => array_keys( $connections ),
-			)
+			]
 		);
 
 		$from = $this->params['fromPageId'];
 		$to = $this->params['toPageId'];
 
 		$pageCache = new ArrayObject();
-		$checkers = array();
+		$checkers = [];
 		foreach( $connections as $cluster => $connection ) {
-			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, array(), null );
+			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
 			$checker = new Checker(
 				$this->searchConfig,
 				$connection,
@@ -149,7 +149,7 @@ class CheckerJob extends Job {
 				$this->retry( "execution time exceeded checker_job_max_time", reset( $pageIds ) );
 				return true;
 			}
-			$pageCache->exchangeArray( array() );
+			$pageCache->exchangeArray( [] );
 			foreach( $checkers as $checker ) {
 				$checker->check( $pageIds );
 			}
@@ -161,13 +161,13 @@ class CheckerJob extends Job {
 	 * @return int the total number of update jobs enqueued
 	 */
 	public static function getPressure() {
-		$queues = array(
+		$queues = [
 			'cirrusSearchLinksUpdatePrioritized',
 			'cirrusSearchLinksUpdate',
 			'cirrusSearchElasticaWrite',
 			'cirrusSearchOtherIndex',
 			'cirrusSearchDeletePages',
-		);
+		];
 		$size = 0;
 		foreach( $queues as $queueName ) {
 			$queue = JobQueueGroup::singleton()->get( $queueName );
@@ -198,9 +198,9 @@ class CheckerJob extends Job {
 		$job->setDelay( $delay );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
 			"Sanitize CheckerJob: $cause, Requeueing CheckerJob with a delay of {delay}s.",
-			array(
+			[
 				'delay' => $delay
-			)
+			]
 		);
 		JobQueueGroup::singleton()->push( $job );
 	}

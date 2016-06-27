@@ -35,15 +35,15 @@ class FreezeWritesToCluster extends ApiBase {
 	}
 
 	public function getAllowedParams() {
-		return array(
-			'thaw' => array()
-		);
+		return [
+			'thaw' => []
+		];
 	}
 
 	public function getParamDescription() {
-		return array(
+		return [
 			'thaw' => 'Allow writes to the elasticsearch cluster. When not provided writes will be frozen.',
-		);
+		];
 	}
 
 	/**

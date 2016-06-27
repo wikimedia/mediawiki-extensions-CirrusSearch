@@ -18,8 +18,8 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );
-		$func->addFunction( 'foo_function', array() );
-		$func->addFunction( 'foo_function', array() );
+		$func->addFunction( 'foo_function', [] );
+		$func->addFunction( 'foo_function', [] );
 		$this->assertFalse( $func->isEmptyFunction() );
 		$array = $func->toArray();
 		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
@@ -33,7 +33,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testPreferRecent() {
-		$config = new HashSearchConfig( array() );
+		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
 		$builder = new PreferRecentFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
@@ -49,13 +49,13 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	public function testLangWeight() {
 		// Default user lang seems to be en with unit tests
 		// Test that we generate 2 filters
-		$config = new HashSearchConfig( array(
-			'CirrusSearchLanguageWeight' => array(
+		$config = new HashSearchConfig( [
+			'CirrusSearchLanguageWeight' => [
 				'user' => 2,
 				'wiki' => 3,
-			),
+			],
 			'LanguageCode' => 'de'
-		) );
+		] );
 		$context = new SearchContext( $config, null );
 		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
@@ -65,13 +65,13 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( count( $array['function_score']['functions'] ), 2 );
 
 		// Set cont lang as en to we generate only 1 filter
-		$config = new HashSearchConfig( array(
-			'CirrusSearchLanguageWeight' => array(
+		$config = new HashSearchConfig( [
+			'CirrusSearchLanguageWeight' => [
 				'user' => 2,
 				'wiki' => 3,
-			),
+			],
 			'LanguageCode' => 'en'
-		) );
+		] );
 
 		$context = new SearchContext( $config, null );
 		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
@@ -82,10 +82,10 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( count( $array['function_score']['functions'] ), 1 );
 
 		// Test that we do not generate any filter is weight are not set.
-		$config = new HashSearchConfig( array(
-			'CirrusSearchLanguageWeight' => array(),
+		$config = new HashSearchConfig( [
+			'CirrusSearchLanguageWeight' => [],
 			'LanguageCode' => 'de'
-		) );
+		] );
 		$context = new SearchContext( $config, null );
 		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
@@ -94,28 +94,28 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBoostTemplates() {
-		$config = new HashSearchConfig( array() );
+		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
-		$context->setBoostTemplatesFromQuery( array( 'test' => 3.2 ) );
+		$context->setBoostTemplatesFromQuery( [ 'test' => 3.2 ] );
 		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
 	}
 
 	public function testCustomField() {
-		$config = new HashSearchConfig( array() );
+		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
-		$profile = array(
+		$profile = [
 			'field' => 'test',
 			'factor' => 5,
 			'modifier' => 'sqrt',
 			'missing' => 1,
-		);
+		];
 		$builder = new CustomFieldFunctionScoreBuilder( $context, 1, $profile );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -126,7 +126,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testScriptScore() {
-		$config = new HashSearchConfig( array() );
+		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
 		$script = "sqrt( doc['incoming_links'].value )";
 		$builder = new ScriptScoreFunctionScoreBuilder( $context, 2, $script );
@@ -141,7 +141,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBoostLinks() {
-		$settings = array();
+		$settings = [];
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, null );
 		$context->setBoostLinks( true );
@@ -162,19 +162,19 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testNamespacesBoost() {
-		$settings = array(
-			'CirrusSearchNamespaceWeights' => array(
+		$settings = [
+			'CirrusSearchNamespaceWeights' => [
 				NS_MAIN => 2.5,
 				NS_PROJECT => 1.3,
 				NS_HELP => 3,
-			),
+			],
 			'CirrusSearchDefaultNamespaceWeight' => 0.2,
 			'CirrusSearchTalkNamespaceWeight' => 0.25
-		);
+		];
 		$config = new HashSearchConfig( $settings );
 
 		// 5 namespaces in the query generates 5 filters
-		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ) );
+		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ] );
 		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -183,12 +183,12 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( 5, count( $array['function_score']['functions'] ) );
 
 		// With a single namespace the function score is empty
-		$context->setNamespaces( array( 0 ) );
+		$context->setNamespaces( [ 0 ] );
 		$fScore = new FunctionScoreDecorator();
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		// with 2 namespaces we have 2 functions
-		$context->setNamespaces( array( NS_MAIN, NS_HELP ) );
+		$context->setNamespaces( [ NS_MAIN, NS_HELP ] );
 		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -197,15 +197,15 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
 
 		// Test that 2 similar boosts are flattened into the same filter
-		$settings = array(
-			'CirrusSearchNamespaceWeights' => array(
+		$settings = [
+			'CirrusSearchNamespaceWeights' => [
 				NS_MAIN => 2,
 				NS_PROJECT => 2,
 				NS_HELP => 3,
-			),
-		);
+			],
+		];
 		$config = new HashSearchConfig( $settings );
-		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP ) );
+		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ] );
 		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -214,15 +214,15 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals( 2, count( $array['function_score']['functions'] ) );
 
 		// Test that a weigth to 1 is ignored
-		$settings = array(
-			'CirrusSearchNamespaceWeights' => array(
+		$settings = [
+			'CirrusSearchNamespaceWeights' => [
 				NS_MAIN => 2,
 				NS_PROJECT => 2,
 				NS_HELP => 1,
-			),
-		);
+			],
+		];
 		$config = new HashSearchConfig( $settings );
-		$context = new SearchContext( $config, array( NS_MAIN, NS_PROJECT, NS_HELP ) );
+		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ] );
 		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
@@ -239,7 +239,7 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 
 		$context = new SearchContext( $config, $namespaces );
 		$context->setBoostLinks( true );
-		$context->setBoostTemplatesFromQuery( array( 'Good' => 1.3 ) );
+		$context->setBoostTemplatesFromQuery( [ 'Good' => 1.3 ] );
 		$builder = new RescoreBuilder( $context, $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
@@ -248,90 +248,90 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideRescoreProfilesWithFallback() {
-		$defaultChain = array(
-			'functions' => array(
-				array( 'type' => 'boostlinks' )
-			)
-		);
-		$fullChain = array(
-			'functions' => array(
-				array( 'type' => 'boostlinks' ),
-				array( 'type' => 'templates' )
-			)
-		);
-		$profile = array(
-			'ContentNamespaces' => array( 1, 2 ),
-			'CirrusSearchRescoreProfiles' => array(
-				'full' => array(
-					'supported_namespaces' => array( 0, 1 ),
+		$defaultChain = [
+			'functions' => [
+				[ 'type' => 'boostlinks' ]
+			]
+		];
+		$fullChain = [
+			'functions' => [
+				[ 'type' => 'boostlinks' ],
+				[ 'type' => 'templates' ]
+			]
+		];
+		$profile = [
+			'ContentNamespaces' => [ 1, 2 ],
+			'CirrusSearchRescoreProfiles' => [
+				'full' => [
+					'supported_namespaces' => [ 0, 1 ],
 					'fallback_profile' => 'default',
-					'rescore' => array(
-						array(
+					'rescore' => [
+						[
 							'window' => 123,
 							'type' => 'function_score',
 							'function_chain' => 'full',
-						)
-					)
-				),
-				'content' => array(
+						]
+					]
+				],
+				'content' => [
 					'supported_namespaces' => 'content',
 					'fallback_profile' => 'default',
-					'rescore' => array(
-						array(
+					'rescore' => [
+						[
 							'window' => 123,
 							'type' => 'function_score',
 							'function_chain' => 'full',
-						)
-					)
-				),
-				'default' => array(
+						]
+					]
+				],
+				'default' => [
 					'supported_namespaces' => 'all',
-					'rescore' => array(
-						array(
+					'rescore' => [
+						[
 							'window' => 123,
 							'type' => 'function_score',
 							'function_chain' => 'default',
-						)
-					)
-				)
-			),
-			'CirrusSearchRescoreFunctionScoreChains' => array(
+						]
+					]
+				]
+			],
+			'CirrusSearchRescoreFunctionScoreChains' => [
 				'full' => $fullChain,
 				'default' => $defaultChain
-			)
-		);
-		return array(
-			'No fallback' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
-				array( 0 ),
+			]
+		];
+		return [
+			'No fallback' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				[ 0 ],
 				2
-			),
-			'No fallback multi namespace' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
-				array( 0, 1 ),
+			],
+			'No fallback multi namespace' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				[ 0, 1 ],
 				2
-			),
-			'No fallback content ns' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'content' ),
-				array( 1, 2 ),
+			],
+			'No fallback content ns' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'content' ],
+				[ 1, 2 ],
 				2
-			),
-			'Fallback content ns' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'content' ),
-				array( 0, 2 ),
+			],
+			'Fallback content ns' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'content' ],
+				[ 0, 2 ],
 				1
-			),
-			'Fallback with multiple namespace' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
-				array( 0, 2 ),
+			],
+			'Fallback with multiple namespace' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
+				[ 0, 2 ],
 				1
-			),
-			'Fallback null ns' => array(
-				$profile + array( 'CirrusSearchRescoreProfile' => 'full' ),
+			],
+			'Fallback null ns' => [
+				$profile + [ 'CirrusSearchRescoreProfile' => 'full' ],
 				null,
 				1
-			),
-		);
+			],
+		];
 	}
 	/**
 	 * @dataProvider provideRescoreProfilesWithWindowSize
@@ -347,74 +347,74 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideRescoreProfilesWithWindowSize() {
-		$testChain = array(
-			'functions' => array( array( 'type' => 'boostlinks' ) )
-		);
-		return array(
-			'Overridden' => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+		$testChain = [
+			'functions' => [ [ 'type' => 'boostlinks' ] ]
+		];
+		return [
+			'Overridden' => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'window_size_override' => 'CirrusSearchOverrideWindow',
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								)
-							)
-						)
-					),
+								]
+							]
+						]
+					],
 					'CirrusSearchOverrideWindow' => 321,
-					'CirrusSearchRescoreFunctionScoreChains' => array(
+					'CirrusSearchRescoreFunctionScoreChains' => [
 						'test' => $testChain
-					)
-				),
+					]
+				],
 				321
-			),
-			'Overridden with missing config' => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+			],
+			'Overridden with missing config' => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'window_size_override' => 'CirrusSearchOverrideWindow',
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								)
-							)
-						)
-					),
-					'CirrusSearchRescoreFunctionScoreChains' => array(
+								]
+							]
+						]
+					],
+					'CirrusSearchRescoreFunctionScoreChains' => [
 						'test' => $testChain
-					)
-				),
+					]
+				],
 				123
-			),
-			'Not overridden' => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+			],
+			'Not overridden' => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								)
-							)
-						)
-					),
-					'CirrusSearchRescoreFunctionScoreChains' => array(
+								]
+							]
+						]
+					],
+					'CirrusSearchRescoreFunctionScoreChains' => [
 						'test' => $testChain
-					)
-				),
+					]
+				],
 				123
-			),
-		);
+			],
+		];
 	}
 	/**
 	 * @expectedException \CirrusSearch\Search\InvalidRescoreProfileException
@@ -429,125 +429,125 @@ class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public static function provideInvalidRescoreProfiles() {
-		return array(
-			'Unsupported rescore query type' => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+		return [
+			'Unsupported rescore query type' => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'type' => 'foobar',
-								)
-							)
-						)
-					),
-				),
-			),
-			"Invalid rescore profile: supported_namespaces should be 'all' or an array of namespaces" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+								]
+							]
+						]
+					],
+				],
+			],
+			"Invalid rescore profile: supported_namespaces should be 'all' or an array of namespaces" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 1,
-						)
-					),
-				),
-			),
-			"Invalid rescore profile: fallback_profile is mandatory" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
-							'supported_namespaces' => array( 0 ),
-						)
-					),
-				),
-			),
-			"Unknown fallback profile" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
-							'supported_namespaces' => array( 0 ),
+						]
+					],
+				],
+			],
+			"Invalid rescore profile: fallback_profile is mandatory" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
+							'supported_namespaces' => [ 0 ],
+						]
+					],
+				],
+			],
+			"Unknown fallback profile" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
+							'supported_namespaces' => [ 0 ],
 							'fallback_profile' => 'missing',
-						)
-					),
-				),
-			),
-			"Fallback profile must support all namespaces" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
-							'supported_namespaces' => array( 0 ),
+						]
+					],
+				],
+			],
+			"Fallback profile must support all namespaces" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
+							'supported_namespaces' => [ 0 ],
 							'fallback_profile' => 'fallback',
-						),
-						'fallback' => array(
-							'supported_namespaces' => array( 3 ),
-						)
-					),
-				),
-			),
-			"Unknown rescore function chain" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+						],
+						'fallback' => [
+							'supported_namespaces' => [ 3 ],
+						]
+					],
+				],
+			],
+			"Unknown rescore function chain" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								),
-								array(
+								],
+								[
 									'window' => 123,
 									'type' => 'function_score',
 									'function_chain' => 'test_missing',
-								)
-							)
-						),
-					),
-					'CirrusSearchRescoreFunctionScoreChains' => array(
-						'test' => array()
-					)
-				),
-			),
-			"Invalid function chain (none defined)" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+								]
+							]
+						],
+					],
+					'CirrusSearchRescoreFunctionScoreChains' => [
+						'test' => []
+					]
+				],
+			],
+			"Invalid function chain (none defined)" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								),
-							)
-						),
-					),
-					'CirrusSearchRescoreFunctionScoreChains' => array(
-						'test' => array( )
-					)
-				),
-			),
-			"Invalid function score type" => array(
-				array(
-					'CirrusSearchRescoreProfiles' => array(
-						'default' => array(
+								],
+							]
+						],
+					],
+					'CirrusSearchRescoreFunctionScoreChains' => [
+						'test' => [ ]
+					]
+				],
+			],
+			"Invalid function score type" => [
+				[
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [
 							'supported_namespaces' => 'all',
-							'rescore' => array(
-								array(
+							'rescore' => [
+								[
 									'window' => 123,
 									'type' => 'function_score',
 									'function_chain' => 'test',
-								),
-							)
-						),
-					),
-					'CirrusSearchRescoreFunctionScoreChains' => array(
-						'test' => array( 'functions' => array( array( 'type' => 'foobar' ) ) )
-					)
-				),
-			),
-		);
+								],
+							]
+						],
+					],
+					'CirrusSearchRescoreFunctionScoreChains' => [
+						'test' => [ 'functions' => [ [ 'type' => 'foobar' ] ] ]
+					]
+				],
+			],
+		];
 	}
 }

@@ -155,12 +155,12 @@ class Reindexer {
 		$this->setConnectionTimeout();
 		$settings = $this->index->getSettings();
 		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
-		$settings->set( array(
+		$settings->set( [
 			'refresh_interval' => -1,
 			'merge.policy.segments_per_tier' => 40,
 			'merge.policy.max_merge_at_once' => 40,
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-		) );
+		] );
 
 		if ( $processes > 1 ) {
 			if ( !isset( $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] ) ||
@@ -211,10 +211,10 @@ class Reindexer {
 		}
 
 		// Revert settings changed just for reindexing
-		$settings->set( array(
+		$settings->set( [
 			'refresh_interval' => $refreshInterval . 's',
 			'merge.policy' => $this->mergeSettings,
-		) );
+		] );
 	}
 
 	public function optimize() {
@@ -224,7 +224,7 @@ class Reindexer {
 		try {
 			// Reset the timeout just in case we lost it somewhere along the line
 			$this->setConnectionTimeout();
-			$this->index->optimize( array( 'max_num_segments' => 5 ) );
+			$this->index->optimize( [ 'max_num_segments' => 5 ] );
 			$this->output( "Done\n" );
 		} catch ( HttpException $e ) {
 			if ( $e->getMessage() === 'Operation timed out' ) {
@@ -299,7 +299,7 @@ class Reindexer {
 		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		try {
 			$query = new Query();
-			$query->setFields( array( '_id', '_source' ) );
+			$query->setFields( [ '_id', '_source' ] );
 			if ( $filter ) {
 				$bool = new \Elastica\Query\BoolQuery();
 				$bool->addFilter( $filter );
@@ -308,11 +308,11 @@ class Reindexer {
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
 			$result = $oldType
-				->search( $query, array(
+				->search( $query, [
 					'search_type' => 'scan',
 					'scroll' => '1h',
 					'size'=> $chunkSize,
-				) );
+				] );
 			$totalDocsToReindex = $result->getResponse()->getData();
 			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
 			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
@@ -321,7 +321,7 @@ class Reindexer {
 			MWElasticUtils::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
 				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $type,
 						&$completed, $totalDocsToReindex, $operationStartTime ) {
-					$documents = array();
+					$documents = [];
 					foreach( $results as $result ) {
 						$documents[] = $this->buildNewDocument( $result, $properties );
 					}
@@ -345,11 +345,11 @@ class Reindexer {
 			$error = ElasticsearchIntermediary::extractFullError( $e );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Search backend error during reindex.  Error type is '{type}' ({error_type}) and message is:  {error_reason}",
-				array(
+				[
 					'type' => $type,
 					'error_type' => $error['type'],
 					'error_reason' => $error['reason'],
-				)
+				]
 			);
 			die( 1 );
 		}
@@ -468,7 +468,7 @@ class Reindexer {
 			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$errorType' and message is:  $message" );
 			foreach ( $documents as $document ) {
 				// Continue using the bulk api because we're used to it.
-				$type->addDocuments( array( $document ) );
+				$type->addDocuments( [ $document ] );
 			}
 		}
 	}

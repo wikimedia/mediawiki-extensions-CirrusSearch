@@ -30,7 +30,7 @@ class IncomingLinkCount extends Job {
 		$updater = $this->createUpdater();
 		// We're intentionally throwing out whether or not this job succeeds.
 		// We're logging it but we're not retrying.
-		$updater->updateLinkedArticles( array( $this->getTitle() ) );
+		$updater->updateLinkedArticles( [ $this->getTitle() ] );
 		return true;
 	}
 }

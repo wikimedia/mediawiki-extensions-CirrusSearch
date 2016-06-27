@@ -5,36 +5,36 @@ namespace CirrusSearch;
 class ElasticsearchIntermediaryTest extends \PHPUnit_Framework_TestCase {
 
 	public static function provideExceptions() {
-		return array(
-			'Regex is rejected' => array(
+		return [
+			'Regex is rejected' => [
 				'rejected',
 				self::newResponseException( 'invalid_regex_exception', 'Syntax error somewhere' ),
-			),
-			'Too many clauses is rejected' => array(
+			],
+			'Too many clauses is rejected' => [
 				'rejected',
 				self::newResponseException( 'too_many_clauses', 'Too many boolean clauses' ),
-			),
-			'NPE is failed' => array(
+			],
+			'NPE is failed' => [
 				'failed',
 				self::newResponseException( 'null_pointer_exception', 'Bug somewhere' ),
-			),
-			'Exotic NPE is unknown' => array(
+			],
+			'Exotic NPE is unknown' => [
 				'unknown',
 				self::newResponseException( 'null_pointer_error', 'Bug in the bug' ),
-			),
-			'Elastica connection problem is failed' => array(
+			],
+			'Elastica connection problem is failed' => [
 				'failed',
 				new \Elastica\Exception\Connection\HttpException( CURLE_COULDNT_CONNECT ),
-			),
-			'Elastica connection timeout is failed' => array(
+			],
+			'Elastica connection timeout is failed' => [
 				'failed',
 				new \Elastica\Exception\Connection\HttpException( 28 ),
-			),
-			'null is unkown' => array(
+			],
+			'null is unkown' => [
 				'unknown',
 				null,
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -48,14 +48,14 @@ class ElasticsearchIntermediaryTest extends \PHPUnit_Framework_TestCase {
 		return new \Elastica\Exception\ResponseException(
 			new \Elastica\Request( 'dummy' ),
 			new \Elastica\Response(
-				array(
-					'error' => array (
-						'root_cause' => array( array (
+				[
+					'error' => [
+						'root_cause' => [ [
 							'type' => $type,
 							'reason' => $message,
-						) ),
-					)
-				)
+						] ],
+					]
+				]
 			)
 		);
 	}

@@ -146,14 +146,14 @@ class MetaStoreIndex {
 		$this->log( "Creating metastore index... $name" );
 		// Don't forget to update METASTORE_MAJOR_VERSION when changing something
 		// in the settings
-		$settings = array(
+		$settings = [
 			'number_of_shards' => 1,
 			'auto_expand_replicas' => '0-2'
-		);
-		$args = array(
+		];
+		$args = [
 			'settings' => $settings,
 			'mappings' => $this->buildMapping(),
-		);
+		];
 		// @todo utilize $this->getIndex()->create(...) once it supports setting
 		// the master_timeout parameter.
 		$index = $this->client->getIndex( $name );
@@ -161,7 +161,7 @@ class MetaStoreIndex {
 			'',
 			\Elastica\Request::PUT,
 			$args,
-			array( 'master_timeout' => $this->masterTimeout )
+			[ 'master_timeout' => $this->masterTimeout ]
 		);
 		$this->log( " ok\n" );
 		$this->configUtils->waitForGreen( $index->getName(), 3600 );
@@ -176,52 +176,52 @@ class MetaStoreIndex {
 	 * @return array[] the mapping
 	 */
 	private function buildMapping() {
-		return array(
-			self::VERSION_TYPE => array(
-				'properties' => array(
-					'analysis_maj' => array( 'type' => 'long', 'include_in_all' => false ),
-					'analysis_min' => array( 'type' => 'long', 'include_in_all' => false ),
-					'mapping_maj' => array( 'type' => 'long', 'include_in_all' => false ),
-					'mapping_min' => array( 'type' => 'long', 'include_in_all' => false ),
-					'shard_count' => array( 'type' => 'long', 'include_in_all' => false ),
-				),
-			),
-			self::FROZEN_TYPE => array(
-				'properties' => array(),
-			),
-			self::SANITIZE_TYPE => array(
-				'properties' => array(
-					'sanitize_job_wiki' => array( 'type' => 'string' ),
-					'sanitize_job_created' => array(
+		return [
+			self::VERSION_TYPE => [
+				'properties' => [
+					'analysis_maj' => [ 'type' => 'long', 'include_in_all' => false ],
+					'analysis_min' => [ 'type' => 'long', 'include_in_all' => false ],
+					'mapping_maj' => [ 'type' => 'long', 'include_in_all' => false ],
+					'mapping_min' => [ 'type' => 'long', 'include_in_all' => false ],
+					'shard_count' => [ 'type' => 'long', 'include_in_all' => false ],
+				],
+			],
+			self::FROZEN_TYPE => [
+				'properties' => [],
+			],
+			self::SANITIZE_TYPE => [
+				'properties' => [
+					'sanitize_job_wiki' => [ 'type' => 'string' ],
+					'sanitize_job_created' => [
 						'type' => 'date',
 						'format' => 'epoch_second',
-					),
-					'sanitize_job_updated' => array(
+					],
+					'sanitize_job_updated' => [
 						'type' => 'date',
 						'format' => 'epoch_second',
-					),
-					'sanitize_job_last_loop' => array(
+					],
+					'sanitize_job_last_loop' => [
 						'type' => 'date',
 						'format' => 'epoch_second',
-					),
-					'sanitize_job_cluster' => array( 'type' => 'string' ),
-					'sanitize_job_id_offset' => array( 'type' => 'long' ),
-					'sanitize_job_ids_sent' => array( 'type' => 'long' ),
-					'sanitize_job_jobs_sent' => array( 'type' => 'long' ),
-					'sanitize_job_jobs_sent_total' => array( 'type' => 'long' ),
-				),
-			),
-			self::INTERNAL_TYPE => array(
-				'properties' => array(
-					'metastore_major_version' => array(
+					],
+					'sanitize_job_cluster' => [ 'type' => 'string' ],
+					'sanitize_job_id_offset' => [ 'type' => 'long' ],
+					'sanitize_job_ids_sent' => [ 'type' => 'long' ],
+					'sanitize_job_jobs_sent' => [ 'type' => 'long' ],
+					'sanitize_job_jobs_sent_total' => [ 'type' => 'long' ],
+				],
+			],
+			self::INTERNAL_TYPE => [
+				'properties' => [
+					'metastore_major_version' => [
 						'type' => 'integer'
-					),
-					'metastore_minor_version' => array(
+					],
+					'metastore_minor_version' => [
 						'type' => 'integer'
-					),
-				),
-			),
-		);
+					],
+				],
+			],
+		];
 	}
 
 	private function minorUpgrade() {
@@ -231,9 +231,9 @@ class MetaStoreIndex {
 				'_mapping',
 				\Elastica\Request::PUT,
 				$mapping,
-				array(
+				[
 					'master_timeout' => $this->masterTimeout,
-				)
+				]
 			);
 		}
 		$this->storeMetastoreVersion( $index );
@@ -257,24 +257,24 @@ class MetaStoreIndex {
 		}
 		// Create the alias
 		$path = '_aliases';
-		$data = array( 'actions' => array(
-			array(
-				'add' => array(
+		$data = [ 'actions' => [
+			[
+				'add' => [
 					'index' => $name,
 					'alias' => self::INDEX_NAME,
-				)
-			),
-		) );
+				]
+			],
+		] ];
 		if ( $oldIndexName !== null ) {
-			$data['actions'][] = array(
-					'remove' => array(
+			$data['actions'][] = [
+					'remove' => [
 						'index' => $oldIndexName,
 						'alias' => self::INDEX_NAME,
-					)
-				);
+					]
+				];
 		}
 		$this->client->request( $path, \Elastica\Request::POST, $data,
-			array( 'master_timeout' => $this->masterTimeout ) );
+			[ 'master_timeout' => $this->masterTimeout ] );
 		if ( $oldIndexName !== null ) {
 			$this->log( "Deleting old index $oldIndexName\n" );
 			$this->connection->getIndex( $oldIndexName )->delete();
@@ -286,7 +286,7 @@ class MetaStoreIndex {
 	 * alias or null if the alias does not exist
 	 */
 	private function getAliasedIndexName() {
-		$resp = $this->client->request( '_aliases/' . self::INDEX_NAME, \Elastica\Request::GET, array() );
+		$resp = $this->client->request( '_aliases/' . self::INDEX_NAME, \Elastica\Request::GET, [] );
 		$indexName = null;
 		foreach( $resp->getData() as $index => $aliases ) {
 			if ( isset( $aliases['aliases'][self::INDEX_NAME] ) ) {
@@ -310,26 +310,26 @@ class MetaStoreIndex {
 		// yet if we just need to filter the metastore version info or
 		// the whole internal type. Currently we only use the internal
 		// type for storing the metastore version.
-		$reindex = array(
-			'source' => array (
+		$reindex = [
+			'source' => [
 				'index' => self::INDEX_NAME,
-				'query' => array(
-					'bool' => array(
-						'must_not' => array(
-							'type' => array ( 'value' => self::INTERNAL_TYPE )
-						),
-					)
-				),
-			),
-			'dest' => array( 'index' => $index->getName() ),
-		);
+				'query' => [
+					'bool' => [
+						'must_not' => [
+							'type' => [ 'value' => self::INTERNAL_TYPE ]
+						],
+					]
+				],
+			],
+			'dest' => [ 'index' => $index->getName() ],
+		];
 		// reindex is extremely fast so we can wait for it
 		// we might consider using the task manager if this process
 		// becomes longer and/or prone to curl timeouts
 		$resp = $this->client->request( '_reindex',
 			\Elastica\Request::POST,
 			$reindex,
-			array( 'wait_for_completion' => true )
+			[ 'wait_for_completion' => true ]
 		);
 		$index->refresh();
 		$this->switchAliasTo( $index );
@@ -368,7 +368,7 @@ class MetaStoreIndex {
 	 * @return int[] major, minor version
 	 */
 	public function runtimeVersion() {
-		return array( self::METASTORE_MAJOR_VERSION, self::METASTORE_MINOR_VERSION );
+		return [ self::METASTORE_MAJOR_VERSION, self::METASTORE_MINOR_VERSION ];
 	}
 
 	/**
@@ -378,10 +378,10 @@ class MetaStoreIndex {
 		$index->getType( self::INTERNAL_TYPE )->addDocument(
 			new \Elastica\Document(
 				self::METASTORE_VERSION_DOCID,
-				array(
+				[
 					'metastore_major_version' => self::METASTORE_MAJOR_VERSION,
 					'metastore_minor_version' => self::METASTORE_MINOR_VERSION,
-				)
+				]
 			)
 		);
 	}
@@ -482,7 +482,7 @@ class MetaStoreIndex {
 		try {
 			$doc = self::getInternalType( $connection )->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
-			return array( 0, 0 );
+			return [ 0, 0 ];
 		} catch( \Elastica\Exception\ResponseException $e ) {
 			// BC code in case the metastore alias does not exist yet
 			$fullError = $e->getResponse()->getFullError();
@@ -491,13 +491,13 @@ class MetaStoreIndex {
 				&& isset( $fullError['index'] )
 				&& $fullError['index'] === self::INDEX_NAME
 			) {
-				return array( 0, 0 );
+				return [ 0, 0 ];
 			}
 			throw $e;
 		}
-		return array(
+		return [
 			(int) $doc->get('metastore_major_version'),
 			(int) $doc->get('metastore_minor_version')
-		);
+		];
 	}
 }

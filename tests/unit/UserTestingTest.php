@@ -55,7 +55,7 @@ class UserTestingTest extends \MediaWikiTestCase {
 		$expected = $samples / $config['test']['sampleRate'];
 		$expectedPerBucket = $expected / count( $config['test']['buckets'] );
 		$allowedError = .25;
-		$buckets = array();
+		$buckets = [];
 		for ( $i = 0; $i < $samples; ++$i ) {
 			$ut = new UserTesting( $config );
 			if ( $ut->isParticipatingIn( 'test' ) ) {
@@ -78,18 +78,18 @@ class UserTestingTest extends \MediaWikiTestCase {
 	}
 
 	public function testListsTestsCurrentlyParticipatingIn() {
-		$config = $this->config( array( 'test', 'foo', 'bar' ) );
+		$config = $this->config( [ 'test', 'foo', 'bar' ] );
 		$ut = $this->ut( $config, true);
-		$this->assertEquals( array( 'test', 'foo', 'bar' ), $ut->getActiveTestNames() );
-		$ut = $this->ut( $config, array( false, true, true ) );
-		$this->assertEquals( array( 'foo', 'bar' ), $ut->getActiveTestNames() );
+		$this->assertEquals( [ 'test', 'foo', 'bar' ], $ut->getActiveTestNames() );
+		$ut = $this->ut( $config, [ false, true, true ] );
+		$this->assertEquals( [ 'foo', 'bar' ], $ut->getActiveTestNames() );
 	}
 
 	public function testActiveTestOverridesGlobalVariables() {
-		$config = $this->config( 'test', 10, array(
+		$config = $this->config( 'test', 10, [
 			'wgCirrusSearchBoostLinks' => true,
 			'dontsetthisvariable' => true,
-		) );
+		] );
 
 		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
 		$ut = $this->ut( $config, true );
@@ -101,12 +101,12 @@ class UserTestingTest extends \MediaWikiTestCase {
 	}
 
 	public function testDoesNotReinitializeFromGetInstance() {
-		$this->setMwGlobals( array(
-			'wgCirrusSearchUserTesting' => $this->config( 'test', 10, array(
+		$this->setMwGlobals( [
+			'wgCirrusSearchUserTesting' => $this->config( 'test', 10, [
 				'wgCirrusSearchBoostLinks' => true,
-			) ),
+			] ),
 			'wgCirrusSearchBoostLinks' => false,
-		) );
+		] );
 		$ut = UserTesting::getInstance( function () { return true; } );
 		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
 		$GLOBALS['wgCirrusSearchBoostLinks'] = false;
@@ -116,9 +116,9 @@ class UserTestingTest extends \MediaWikiTestCase {
 
 	public function testPerBucketGlobalsOverridePerTestGlobals() {
 		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
-		$config = $this->config( 'test', 10, array(
+		$config = $this->config( 'test', 10, [
 			'wgCirrusSearchBoostLinks' => 'test',
-		) );
+		] );
 		$config['test']['buckets']['a']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
 		$config['test']['buckets']['b']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
 
@@ -127,17 +127,17 @@ class UserTestingTest extends \MediaWikiTestCase {
 	}
 
 	public function providerChooseBucket() {
-		return array(
-			array( 'a', 0, array( 'a', 'b', 'c' ) ),
-			array( 'a', 0, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'a', 0.24, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'a', 0.25, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'b', 0.26, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'b', 0.49, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'b', 0.50, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'c', 0.51, array( 'a', 'b', 'c', 'd' ) ),
-			array( 'd', 1, array( 'a', 'b', 'c', 'd' ) ),
-		);
+		return [
+			[ 'a', 0, [ 'a', 'b', 'c' ] ],
+			[ 'a', 0, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'a', 0.24, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'a', 0.25, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'b', 0.26, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'b', 0.49, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'b', 0.50, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'c', 0.51, [ 'a', 'b', 'c', 'd' ] ],
+			[ 'd', 1, [ 'a', 'b', 'c', 'd' ] ],
+		];
 	}
 
 	/**
@@ -148,44 +148,44 @@ class UserTestingTest extends \MediaWikiTestCase {
 	}
 
 	public function testTrigger() {
-		$config = array(
-			'someTest' => array(
-				'buckets' => array(
-					'a' => array(
+		$config = [
+			'someTest' => [
+				'buckets' => [
+					'a' => [
 						'trigger' => 'hi there',
-					),
-					'b' => array(
+					],
+					'b' => [
 						'trigger' =>  'or this one',
-					),
-				),
-			),
-		);
+					],
+				],
+			],
+		];
 
-		$req = new \FauxRequest( array( 'cirrusUserTesting' => 'hi there' ) );
+		$req = new \FauxRequest( [ 'cirrusUserTesting' => 'hi there' ] );
 		$this->setMwGlobals( 'wgCirrusSearchUserTesting', $config );
 		\RequestContext::getMain()->setRequest( $req );
-		$this->assertEquals( array( 'someTest:a' ), UserTesting::getInstance()->getActiveTestNamesWithBucket() );
+		$this->assertEquals( [ 'someTest:a' ], UserTesting::getInstance()->getActiveTestNamesWithBucket() );
 
 		$ut = new UserTesting( $config, null, 'hi there' );
-		$this->assertEquals( array( 'someTest:a' ), $ut->getActiveTestNamesWithBucket() );
+		$this->assertEquals( [ 'someTest:a' ], $ut->getActiveTestNamesWithBucket() );
 
 		$ut = new UserTesting( $config, null, 'or this one' );
-		$this->assertEquals( array( 'someTest:b' ), $ut->getActiveTestNamesWithBucket() );
+		$this->assertEquals( [ 'someTest:b' ], $ut->getActiveTestNamesWithBucket() );
 	}
 
-	protected function config( $testNames, $sampleRate = 10, $globals = array() ) {
+	protected function config( $testNames, $sampleRate = 10, $globals = [] ) {
 		if ( $globals ) {
-			$globals = array( 'globals' => $globals );
+			$globals = [ 'globals' => $globals ];
 		}
-		$config = array();
+		$config = [];
 		foreach ( (array)$testNames as $name ) {
-			$config[$name] = $globals + array(
+			$config[$name] = $globals + [
 				'sampleRate' => $sampleRate,
-				'buckets' => array(
-					'a' => array(),
-					'b' => array(),
-				),
-			);
+				'buckets' => [
+					'a' => [],
+					'b' => [],
+				],
+			];
 		}
 		return $config;
 	}

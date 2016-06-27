@@ -38,138 +38,138 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 
 
 	public function provideQueries() {
-		$simpleProfile = array(
-			'plain' => array(
+		$simpleProfile = [
+			'plain' => [
 				'field' => 'suggest',
 				'min_query_len' => 0,
 				'discount' => 1.0,
 				'fetch_limit_factor' => 2,
-			),
-		);
+			],
+		];
 
-		$simpleFuzzy = $simpleProfile + array(
-			'plain-fuzzy' => array(
+		$simpleFuzzy = $simpleProfile + [
+			'plain-fuzzy' => [
 				'field' => 'suggest',
 				'min_query_len' => 0,
-				'fuzzy' => array(
+				'fuzzy' => [
 					'fuzzyness' => 'AUTO',
 					'prefix_length' => 1,
 					'unicode_aware' => true,
-				),
+				],
 				'discount' => 0.5,
 				'fetch_limit_factor' => 1.5
-			)
-		);
+			]
+		];
 
-		$profile = array(
+		$profile = [
 			'simple' => $simpleProfile,
 			'fuzzy' => $simpleFuzzy,
-		);
+		];
 
-		return array(
-			"simple" => array(
-				array(
+		return [
+			"simple" => [
+				[
 					'CirrusSearchCompletionSettings' => 'simple',
 					'CirrusSearchCompletionProfiles' => $profile,
-				),
+				],
 				10,
 				' complete me ',
 				null,
 				$simpleProfile, // The profile remains unmodified here
-				array(
-					'plain' => array(
+				[
+					'plain' => [
 						'text' => 'complete me ', // keep trailing white spaces
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
-						),
-					),
-				),
-			),
-			"simple with fuzzy" => array(
-				array(
+						],
+					],
+				],
+			],
+			"simple with fuzzy" => [
+				[
 					'CirrusSearchCompletionSettings' => 'fuzzy',
 					'CirrusSearchCompletionProfiles' => $profile,
-				),
+				],
 				10,
 				' complete me ',
 				null,
 				$simpleFuzzy, // The profiles remains unmodified here
-				array(
-					'plain' => array(
+				[
+					'plain' => [
 						'text' => 'complete me ', // keep trailing white spaces
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
-						),
-					),
-					'plain-fuzzy' => array(
+						],
+					],
+					'plain-fuzzy' => [
 						'text' => 'complete me ', // keep trailing white spaces
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 15.0, // effect of fetch_limit_factor
 							// fuzzy config is simply copied from the profile
-							'fuzzy' => array(
+							'fuzzy' => [
 								'fuzzyness' => 'AUTO',
 								'prefix_length' => 1,
 								'unicode_aware' => true,
-							),
-						),
-					),
-				),
-			),
-			"simple with variants" => array(
-				array(
+							],
+						],
+					],
+				],
+			],
+			"simple with variants" => [
+				[
 					'CirrusSearchCompletionSettings' => 'simple',
 					'CirrusSearchCompletionProfiles' => $profile,
-				),
+				],
 				10,
 				' complete me ',
-				array( ' variant1 ', ' complete me ', ' variant2 ' ),
+				[ ' variant1 ', ' complete me ', ' variant2 ' ],
 				// Profile is updated with extra variant setup
 				// to include an extra discount
 				// ' complete me ' variant duplicate will be ignored
-				$simpleProfile + array(
-					'plain-variant-1' => array(
+				$simpleProfile + [
+					'plain-variant-1' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
 						'discount' => 1.0 * CompletionSuggester::VARIANT_EXTRA_DISCOUNT,
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
-					),
-					'plain-variant-2' => array(
+					],
+					'plain-variant-2' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
 						'discount' => 1.0 * (CompletionSuggester::VARIANT_EXTRA_DISCOUNT/2),
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
-					)
-				),
-				array(
-					'plain' => array(
+					]
+				],
+				[
+					'plain' => [
 						'text' => 'complete me ', // keep trailing white spaces
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
-						),
-					),
-					'plain-variant-1' => array(
+						],
+					],
+					'plain-variant-1' => [
 						'text' => 'variant1 ',
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
-						),
-					),
-					'plain-variant-2' => array(
+						],
+					],
+					'plain-variant-2' => [
 						'text' => 'variant2 ',
-						'completion' => array(
+						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
-						),
-					),
-				),
-			),
-		);
+						],
+					],
+				],
+			],
+		];
 	}
 
 	/**
@@ -177,13 +177,13 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testMinMaxDefaultProfile( $len, $query ) {
 		global $wgCirrusSearchCompletionProfiles;
-		$config = array(
+		$config = [
 			'CirrusSearchCompletionSettings' => 'fuzzy',
 			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
-		);
+		];
 		// Test that we generate at most 4 profiles
 		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), 1 );
-		list( $profiles, $suggest ) = $completion->testBuildQuery( $query, array() );
+		list( $profiles, $suggest ) = $completion->testBuildQuery( $query, [] );
 		// Unused profiles are kept
 		$this->assertEquals( count( $wgCirrusSearchCompletionProfiles['fuzzy'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
@@ -209,14 +209,14 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function provideMinMaxQueries() {
-		$queries = array();
+		$queries = [];
 		// The completion should not count extra spaces
 		// This is to avoid enbling costly fuzzy profiles
 		// by cheating with spaces
 		$query = '  ';
 		for( $i = 0; $i < 100; $i++ ) {
 			$test = "Query length {$i}";
-			$queries[$test] = array( $i, $query . '   ' );
+			$queries[$test] = [ $i, $query . '   ' ];
 			$query .= '';
 		}
 		return $queries;
@@ -227,11 +227,11 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testOffsets( \Elastica\Response $resp, $limit, $offset, $first, $last, $size, $hardLimit ) {
 		global $wgCirrusSearchCompletionProfiles;
-		$config = array(
+		$config = [
 			'CirrusSearchCompletionSettings' => 'fuzzy',
 			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
 			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
-		);
+		];
 		// Test that we generate at most 4 profiles
 		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), $limit, $offset );
 
@@ -247,55 +247,55 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function provideResponse() {
-		$suggestions = array();
+		$suggestions = [];
 		$max = 200;
 		for( $i = 1; $i <= $max; $i++ ) {
 			$score = $max - $i;
-			$suggestions[] = array(
+			$suggestions[] = [
 				'text'=> "$i:t:Title$i",
 				'score' => $score,
-			);
+			];
 		}
 
-		$suggestData = array( array(
+		$suggestData = [ [
 					'text' => 'Tit',
 					'options' => $suggestions
-				) );
+				] ];
 
-		$data = array(
-			'_shards' => array(),
+		$data = [
+			'_shards' => [],
 			'plain' => $suggestData,
 			'plain_fuzzy_2' => $suggestData,
 			'plain_stop' => $suggestData,
 			'plain_stop_fuzzy_2' => $suggestData,
-		);
+		];
 		$resp = new \Elastica\Response( $data );
-		return array(
-			'Simple offset 0' => array(
+		return [
+			'Simple offset 0' => [
 				$resp,
 				5, 0, 'Title1', 'Title5', 5, 50
-			 ),
-			'Simple offset 5' => array(
+			 ],
+			'Simple offset 5' => [
 				$resp,
 				5, 5, 'Title6', 'Title10', 5, 50
-			 ),
-			'Reach ES limit' => array(
+			 ],
+			'Reach ES limit' => [
 				$resp,
 				5, $max-3, 'Title198', 'Title200', 3, 300
-			 ),
-			'Reach Cirrus limit' => array(
+			 ],
+			'Reach Cirrus limit' => [
 				$resp,
 				5, 47, 'Title48', 'Title50', 3, 50
-			 ),
-			'Out of Cirrus bounds' => array(
+			 ],
+			'Out of Cirrus bounds' => [
 				$resp,
 				5, 67, null, null, 0, 50
-			 ),
-			'Out of elastic results' => array(
+			 ],
+			'Out of elastic results' => [
 				$resp,
 				5, 200, null, null, 0, 300
-			 ),
-		);
+			 ],
+		];
 
 	}
 }
@@ -305,7 +305,7 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
  */
 class MyCompletionSuggester extends CompletionSuggester {
 	public function __construct( SearchConfig $config, $limit, $offset=0 ) {
-		parent::__construct( new DummyConnection(), $limit, $offset, $config, array( NS_MAIN ), null, "dummy" );
+		parent::__construct( new DummyConnection(), $limit, $offset, $config, [ NS_MAIN ], null, "dummy" );
 	}
 
 	public function testBuildQuery( $search, $variants ) {

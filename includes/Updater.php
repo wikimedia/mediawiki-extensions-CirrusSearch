@@ -43,7 +43,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * of updates.
 	 * @var string[]
 	 */
-	private $updated = array();
+	private $updated = [];
 
 	/**
 	 * @var string|null Name of cluster to write to, or null if none
@@ -59,7 +59,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param Connection $conn
 	 * @param string[] $flags
 	 */
-	public function __construct( Connection $conn, SearchConfig $config, array $flags = array() ) {
+	public function __construct( Connection $conn, SearchConfig $config, array $flags = [] ) {
 		parent::__construct( $conn, null, 0 );
 		$this->searchConfig = $config;
 		if ( in_array( 'same-cluster', $flags ) ) {
@@ -78,7 +78,7 @@ class Updater extends ElasticsearchIntermediary {
 		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
 			$updatedCount = $this->updatePages(
-				array( $page ),
+				[ $page ],
 				$wgCirrusSearchUpdateShardTimeout,
 				$wgCirrusSearchClientSideUpdateTimeout,
 				self::INDEX_EVERYTHING
@@ -91,11 +91,11 @@ class Updater extends ElasticsearchIntermediary {
 		if ( count( $redirects ) === 0 ) {
 			return true;
 		}
-		$redirectDocIds = array();
+		$redirectDocIds = [];
 		foreach ( $redirects as $redirect ) {
 			$redirectDocIds[] = $this->searchConfig->makeId( $redirect->getId() );
 		}
-		return $this->deletePages( array(), $redirectDocIds, $wgCirrusSearchClientSideUpdateTimeout );
+		return $this->deletePages( [], $redirectDocIds, $wgCirrusSearchClientSideUpdateTimeout );
 	}
 
 	/**
@@ -112,26 +112,26 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	public function traceRedirects( $title ) {
 		// Loop through redirects until we get to the ultimate target
-		$redirects = array();
+		$redirects = [];
 		while ( true ) {
 			$titleText = $title->getFullText();
 			if ( in_array( $titleText, $this->updated ) ) {
 				// Already indexed this article in this process.  This is mostly useful
 				// to catch self redirects but has a storied history of catching strange
 				// behavior.
-				return array( null, $redirects );
+				return [ null, $redirects ];
 			}
 
 			// Never. Ever. Index. Negative. Namespaces.
 			if ( $title->getNamespace() < 0 ) {
-				return array( null, $redirects );
+				return [ null, $redirects ];
 			}
 
 			$page = WikiPage::factory( $title );
 			$logger = LoggerFactory::getInstance( 'CirrusSearch' );
 			if ( !$page->exists() ) {
 				$logger->debug( "Ignoring an update for a nonexistent page: $titleText" );
-				return array( null, $redirects );
+				return [ null, $redirects ];
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
@@ -139,7 +139,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			// If the event that the content is _still_ not usable, we have to give up.
 			if ( !is_object( $content ) ) {
-				return array( null, $redirects );
+				return [ null, $redirects ];
 			}
 
 			// Add the page to the list of updated pages before we start trying to update to catch redirect loops.
@@ -150,12 +150,12 @@ class Updater extends ElasticsearchIntermediary {
 				if ( $target->equals( $page->getTitle() ) ) {
 					// This doesn't warn about redirect loops longer than one but we'll catch those anyway.
 					$logger->info( "Title redirecting to itself. Skip indexing" );
-					return array( null, $redirects );
+					return [ null, $redirects ];
 				}
 				$title = $target;
 				continue;
 			} else {
-				return array( $page, $redirects );
+				return [ $page, $redirects ];
 			}
 		}
 	}
@@ -192,7 +192,7 @@ class Updater extends ElasticsearchIntermediary {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
 		// Don't update the same page twice. We shouldn't, but meh
-		$pageIds = array();
+		$pageIds = [];
 		$pages = array_filter( $pages, function( WikiPage $page ) use ( &$pageIds ) {
 			if ( !in_array( $page->getId(), $pageIds ) ) {
 				$pageIds[] = $page->getId();
@@ -204,7 +204,7 @@ class Updater extends ElasticsearchIntermediary {
 		$titles = $this->pagesToTitles( $pages );
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 
-		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), array() );
+		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
 			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) &&
@@ -220,12 +220,12 @@ class Updater extends ElasticsearchIntermediary {
 			foreach( array_chunk( $data, 10 ) as $chunked ) {
 				$job = new Job\ElasticaWrite(
 					reset( $titles ),
-					array(
+					[
 						'clientSideTimeout' => $clientSideTimeout,
 						'method' => 'sendData',
-						'arguments' => array( $indexType, $chunked, $shardTimeout ),
+						'arguments' => [ $indexType, $chunked, $shardTimeout ],
 						'cluster' => $this->writeToClusterName,
-					)
+					]
 				);
 				// This job type will insert itself into the job queue
 				// with a delay if writes to ES are currently unavailable
@@ -253,12 +253,12 @@ class Updater extends ElasticsearchIntermediary {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		$job = new Job\ElasticaWrite(
 			$titles ? reset( $titles ) : Title::makeTitle( 0, "" ),
-			array(
+			[
 				'clientSideTimeout' => $clientSideTimeout,
 				'method' => 'sendDeletes',
-				'arguments' => array( $docIds, $indexType ),
+				'arguments' => [ $docIds, $indexType ],
 				'cluster' => $this->writeToClusterName,
-			)
+			]
 		);
 		// This job type will insert itself into the job queue
 		// with a delay if writes to ES are currently paused
@@ -279,7 +279,7 @@ class Updater extends ElasticsearchIntermediary {
 		$forceParse = $flags & self::FORCE_PARSE;
 		$fullDocument = !( $skipParse || $skipLinks );
 
-		$documents = array();
+		$documents = [];
 		$engine = new \CirrusSearch();
 		foreach ( $pages as $page ) {
 			$title = $page->getTitle();
@@ -287,12 +287,12 @@ class Updater extends ElasticsearchIntermediary {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Attempted to build a document for a page that doesn\'t exist.  This should be caught ' .
 					"earlier but wasn't.  Page: {title}",
-					array( 'title' => $title )
+					[ 'title' => $title ]
 				);
 				continue;
 			}
 
-			$doc = new \Elastica\Document( $this->searchConfig->makeId( $page->getId() ), array(
+			$doc = new \Elastica\Document( $this->searchConfig->makeId( $page->getId() ), [
 				'version' => $page->getLatest(),
 				'version_type' => 'external',
 				'wiki' => wfWikiID(),
@@ -300,7 +300,7 @@ class Updater extends ElasticsearchIntermediary {
 				'namespace_text' => Util::getNamespaceText( $title ),
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-			) );
+			] );
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
 			// OtherIndex::updateOtherIndex.
 			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
@@ -333,7 +333,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			if ( !$skipLinks ) {
-				MWHooks::run( 'CirrusSearchBuildDocumentLinks', array( $doc, $title, $this->connection) );
+				MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $this->connection] );
 			}
 
 			$documents[] = $doc;
@@ -350,9 +350,9 @@ class Updater extends ElasticsearchIntermediary {
 	private function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();
 		$params[ 'source' ] = $doc->getData();
-		$params[ 'detectors' ] = array(
+		$params[ 'detectors' ] = [
 			'incoming_links' => 'within 20%',
-		);
+		];
 
 		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
 		if ( $doc->getDocAsUpsert() ) {
@@ -370,7 +370,7 @@ class Updater extends ElasticsearchIntermediary {
 	public function updateLinkedArticles( $titles ) {
 		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
 
-		$pages = array();
+		$pages = [];
 		foreach ( $titles as $title ) {
 			// Special pages don't get updated
 			if ( !$title || $title->getNamespace() < 0 ) {
@@ -415,7 +415,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return Title[]
 	 */
 	private function pagesToTitles( $pages ) {
-		$titles = array();
+		$titles = [];
 		foreach ( $pages as $page ) {
 			$titles[] = $page->getTitle();
 		}

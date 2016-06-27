@@ -182,8 +182,8 @@ class Result extends SearchResult {
 			$highlightPreEscaped = htmlspecialchars( Searcher::HIGHLIGHT_PRE );
 			$highlightPostEscaped = htmlspecialchars( Searcher::HIGHLIGHT_POST );
 		}
-		return str_replace( array( $highlightPreEscaped, $highlightPostEscaped ),
-			array( Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ),
+		return str_replace( [ $highlightPreEscaped, $highlightPostEscaped ],
+			[ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ],
 			htmlspecialchars( $snippet ) );
 	}
 
@@ -219,7 +219,7 @@ class Result extends SearchResult {
 		if ( $best === null ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Search backend highlighted a redirect ({title}) but didn't return it.",
-				array( 'title' => $title )
+				[ 'title' => $title ]
 			);
 			return null;
 		}
@@ -240,7 +240,7 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	private function stripHighlighting( $highlighted ) {
-		$markers = array( Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST );
+		$markers = [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ];
 		return str_replace( $markers, '', $highlighted );
 	}
 

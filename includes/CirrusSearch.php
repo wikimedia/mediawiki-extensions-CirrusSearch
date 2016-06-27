@@ -53,12 +53,12 @@ class CirrusSearch extends SearchEngine {
 	 * @var array metrics about the last thing we searched sourced from the
 	 *  Searcher instance
 	 */
-	private $lastSearchMetrics = array();
+	private $lastSearchMetrics = [];
 
 	/**
 	 * @var array additional metrics about the search sourced within this class
 	 */
-	private $extraSearchMetrics = array();
+	private $extraSearchMetrics = [];
 
 	/**
 	 * @var string
@@ -156,7 +156,7 @@ class CirrusSearch extends SearchEngine {
 				$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) ) {
 			$matches = $this->searchTextSecondTry( $term, $matches );
 		}
-		ElasticsearchIntermediary::setResultPages( array( $matches ) );
+		ElasticsearchIntermediary::setResultPages( [ $matches ] );
 
 		return $matches;
 	}
@@ -178,10 +178,10 @@ class CirrusSearch extends SearchEngine {
 			if ( !class_exists( $klass ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Unknown detector class for {name}: {class}",
-					array(
+					[
 						"name" => $name,
 						"class" => $klass,
-					)
+					]
 				);
 				continue;
 
@@ -190,10 +190,10 @@ class CirrusSearch extends SearchEngine {
 			if( !( $detector instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Bad detector class for {name}: {class}",
-					array(
+					[
 						"name" => $name,
 						"class" => $klass,
-					)
+					]
 				);
 				continue;
 			}
@@ -204,17 +204,17 @@ class CirrusSearch extends SearchEngine {
 				// log context? It would be inconsistent with the
 				// langdetect => false condition which does not have a next
 				// request though.
-				Searcher::appendLastLogContext( array(
+				Searcher::appendLastLogContext( [
 					'langdetect' => $name,
-				) );
+				] );
 				$detected = $wiki;
 				break;
 			}
 		}
 		if ( $detected === null ) {
-			Searcher::appendLastLogContext( array(
+			Searcher::appendLastLogContext( [
 				'langdetect' => 'failed',
-			) );
+			] );
 		} else {
 			// Report language detection with search metrics
 			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;
@@ -242,7 +242,7 @@ class CirrusSearch extends SearchEngine {
 			return null;
 		}
 
-		return array( $interwiki, $interWikiId );
+		return [ $interwiki, $interWikiId ];
 	}
 
 	/**
@@ -285,11 +285,11 @@ class CirrusSearch extends SearchEngine {
 			} catch ( MWException $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Failed to get config for {interwiki}:{dbwiki}",
-					array(
+					[
 						"interwiki" => $altWiki[0],
 						"dbwiki" => $altWiki[1],
 						"exception" => $e
-					)
+					]
 				);
 				$config = null;
 			}
@@ -482,8 +482,8 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function moreLikeThis( $term, $searcher, $options ) {
 		// Expand titles chasing through redirects
-		$titles = array();
-		$found = array();
+		$titles = [];
+		$found = [];
 		foreach ( explode( '|', $term ) as $title ) {
 			$title = Title::newFromText( trim( $title ) );
 			while ( true ) {
@@ -548,7 +548,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return string[]
 	 */
 	public function getValidSorts() {
-		return array( 'relevance', 'title_asc', 'title_desc' );
+		return [ 'relevance', 'title_asc', 'title_desc' ];
 	}
 
 	/**
@@ -707,25 +707,25 @@ class CirrusSearch extends SearchEngine {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
 			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
 				// No profile selection if completion suggester is disabled.
-				return array();
+				return [];
 			}
-			$profiles = array();
+			$profiles = [];
 			foreach( array_keys( $this->config->get( 'CirrusSearchCompletionProfiles' ) ) as $name ) {
-				$profiles[] = array(
+				$profiles[] = [
 					'name' => $name,
 					'desc-message' => 'cirrussearch-completion-profile-' . $name,
 					'default' => $this->config->get( 'CirrusSearchCompletionSettings' ) == $name,
-				);
+				];
 			}
 			// Add fallback to prefixsearch
-			$profiles[] = array(
+			$profiles[] = [
 				'name' => self::COMPLETION_PREFIX_FALLBACK_PROFILE,
 				'desc-message' => 'cirrussearch-completion-profile-' . self::COMPLETION_PREFIX_FALLBACK_PROFILE,
 				'default' => false,
-			);
+			];
 			return $profiles;
 		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
-			$profiles = array();
+			$profiles = [];
 			// The Hook should run profiles/RescoreProfiles.php before
 			// any consumer call to getProfiles, so that the default
 			// will be properly set when the curstom request param
@@ -735,7 +735,7 @@ class CirrusSearch extends SearchEngine {
 			foreach( $this->config->get( 'CirrusSearchRescoreProfiles' ) as $name => $profile ) {
 				$default = $cirrusDefault === $name;
 				$defaultFound |= $default;
-				$profiles[] = array(
+				$profiles[] = [
 					'name' => $name,
 					// @todo: decide what to with profiles we declare
 					// in wmf-config with no i18n messages.
@@ -746,7 +746,7 @@ class CirrusSearch extends SearchEngine {
 					// here.
 					'desc-message' => isset ( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
 					'default' => $default,
-				);
+				];
 			}
 			return $profiles;
 		}

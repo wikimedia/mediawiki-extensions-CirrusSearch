@@ -32,9 +32,9 @@ use WebRequest;
  *
  */
 
-$wgCirrusSearchRescoreProfiles = array(
+$wgCirrusSearchRescoreProfiles = [
 	// Default profile which uses an all in one function score chain
-	'classic' => array(
+	'classic' => [
 		// i18n description for this profile.
 		'i18n_msg' => 'cirrussearch-qi-profile-classic',
 		// use 'all' if this rescore profile supports all namespaces
@@ -49,8 +49,8 @@ $wgCirrusSearchRescoreProfiles = array(
 
 		// List of rescores
 		// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-rescore.html
-		'rescore' => array(
-			array(
+		'rescore' => [
+			[
 				// the rescore window size
 				'window' => 8192,
 
@@ -74,16 +74,16 @@ $wgCirrusSearchRescoreProfiles = array(
 				// name of the function score chains, must be
 				// defined in $wgCirrusSearchRescoreFunctionScoreChains
 				'function_chain' => 'classic_allinone_chain'
-			)
-		)
-	),
+			]
+		]
+	],
 
 	// Default rescore without boostlinks
-	'classic_noboostlinks' => array(
+	'classic_noboostlinks' => [
 		'i18n_msg' => 'cirrussearch-qi-profile-classic-noboostlinks',
 		'supported_namespaces' => 'all',
-		'rescore' => array(
-			array(
+		'rescore' => [
+			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 				'query_weight' => 1.0,
@@ -91,82 +91,82 @@ $wgCirrusSearchRescoreProfiles = array(
 				'score_mode' => 'multiply',
 				'type' => 'function_score',
 				'function_chain' => 'optional_chain'
-			),
-		)
-	),
+			],
+		]
+	],
 
 	// Useful to debug primary lucene score
-	'empty' => array(
+	'empty' => [
 		'i18n_msg' => 'cirrussearch-qi-profile-empty',
 		'supported_namespaces' => 'all',
-		'rescore' => array(),
-	),
-);
+		'rescore' => [],
+	],
+];
 
 /**
  * List of function score chains
  */
-$wgCirrusSearchRescoreFunctionScoreChains = array(
+$wgCirrusSearchRescoreFunctionScoreChains = [
 	// Default chain where all the functions are combined
 	// In the same chain.
-	'classic_allinone_chain' => array(
-		'functions' => array(
+	'classic_allinone_chain' => [
+		'functions' => [
 			// Scores documents with log(incoming_link + 2)
 			// Activated if $wgCirrusSearchBoostLinks is set
-			array( 'type' => 'boostlinks' ),
+			[ 'type' => 'boostlinks' ],
 
 			// Scores documents according to their timestamp
 			// Activated if $wgCirrusSearchPreferRecentDefaultDecayPortion
 			// and $wgCirrusSearchPreferRecentDefaultHalfLife are set
 			// can be activated with prefer-recent special syntax
-			array( 'type' => 'recency' ),
+			[ 'type' => 'recency' ],
 
 			// Scores documents according to their templates
 			// Templates weights can be defined with special
 			// syntax boost-templates or by setting the
 			// system message cirrus-boost-templates
-			array( 'type' => 'templates' ),
+			[ 'type' => 'templates' ],
 
 			// Scores documents according to their namespace.
 			// Activated if the query runs on more than one namespace
 			// See $wgCirrusSearchNamespaceWeights
-			array( 'type' => 'namespaces' ),
+			[ 'type' => 'namespaces' ],
 
 			// Scores documents according to their language,
 			// See $wgCirrusSearchLanguageWeight
-			array( 'type' => 'language' ),
+			[ 'type' => 'language' ],
 
 			// Boosts documents in a particular geographic area.
 			// Triggered by query syntax.
-			array( 'type' => 'georadius', 'weight' => array(
+			[ 'type' => 'georadius', 'weight' => [
 				'value' => 2,
 				'config_override' => 'CirrusSearchPreferGeoRadiusWeight',
 				'uri_param_override' => 'cirrusPreferGeoRadiusWeight',
-			) ),
-		)
-	),
+			] ],
+		]
+	],
 	// Chain with optional functions if classic_allinone_chain
 	// or optional_chain is omitted from the rescore profile then some
 	// query features and global config will be ineffective.
-	'optional_chain' => array(
-		'functions' => array(
-			array( 'type' => 'recency' ),
-			array( 'type' => 'templates' ),
-			array( 'type' => 'namespaces' ),
-			array( 'type' => 'language' ),
-			array( 'type' => 'georadius', 'weight' => array(
+	'optional_chain' => [
+		'functions' => [
+			[ 'type' => 'recency' ],
+			[ 'type' => 'templates' ],
+			[ 'type' => 'namespaces' ],
+			[ 'type' => 'language' ],
+			[ 'type' => 'georadius', 'weight' => [
 				'value' => 2,
 				'config_override' => 'CirrusSearchPreferGeoRadiusWeight',
 				'uri_param_override' => 'cirrusPreferGeoRadiusWeight',
-			) ),
-		)
-	),
+			] ],
+		]
+	],
 	// Chain with boostlinks only
-	'boostlinks_only_chain' => array(
-		'functions' => array(
-			array( 'type' => 'boostlinks' )
-		)
-	),
+	'boostlinks_only_chain' => [
+		'functions' => [
+			[ 'type' => 'boostlinks' ]
+		]
+	],
 
 //	// Example chain (do not use) with incoming_links to illustrate
 //	// the 'custom_field' function score type.
@@ -256,4 +256,4 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 //			),
 //		),
 //	),
-);
+];

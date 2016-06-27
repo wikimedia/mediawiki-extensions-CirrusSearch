@@ -81,7 +81,7 @@ class MappingValidator extends Validator {
 		$requiredMappings = $this->mappingConfig;
 		if ( !$this->checkMapping( $requiredMappings ) ) {
 			/** @var Mapping[] $actions */
-			$actions = array();
+			$actions = [];
 
 			// TODO Conflict resolution here might leave old portions of mappings
 			foreach ( $this->types as $typeName => $type ) {
@@ -102,9 +102,9 @@ class MappingValidator extends Validator {
 						'_mapping',
 						Request::PUT,
 						$action->toArray(),
-						array(
+						[
 							'master_timeout' => $this->masterTimeout,
-						)
+						]
 					);
 				}
 				$this->output( "corrected\n" );

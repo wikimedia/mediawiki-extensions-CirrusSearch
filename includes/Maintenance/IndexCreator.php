@@ -91,16 +91,16 @@ class IndexCreator {
 		$searchAllFields
 	) {
 		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
-		$args = array(
-			'settings' => array(
+		$args = [
+			'settings' => [
 				'number_of_shards' => $shardCount,
 				'auto_expand_replicas' => $replicaCount,
 				'analysis' => $this->analysisConfigBuilder->buildConfig(),
 				'refresh_interval' => $refreshInterval . 's',
 				'merge.policy' => $mergeSettings,
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-			)
-		);
+			]
+		];
 		$similarity = $this->analysisConfigBuilder->buildSimilarityConfig();
 		if ( $similarity ) {
 			$args['settings']['similarity'] = $similarity;

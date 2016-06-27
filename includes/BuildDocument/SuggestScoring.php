@@ -82,7 +82,7 @@ class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	 * {@inheritDoc}
 	 */
 	public function getRequiredFields() {
-		return array( 'incoming_links' );
+		return [ 'incoming_links' ];
 	}
 
 	/**
@@ -260,7 +260,7 @@ class QualityScore implements SuggestScoringMethod {
 	 * {@inheritDoc}
 	 */
 	public function getRequiredFields() {
-		return array( 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' );
+		return [ 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' ];
 	}
 
 	/**
@@ -292,7 +292,7 @@ class PQScore extends QualityScore {
 	 * @return string[]
 	 */
 	public function getRequiredFields() {
-		return array_merge( parent::getRequiredFields(), array( 'popularity_score' ) );
+		return array_merge( parent::getRequiredFields(), [ 'popularity_score' ] );
 	}
 
 	/**

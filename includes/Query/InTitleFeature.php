@@ -55,6 +55,6 @@ class InTitleFeature extends SimpleKeywordFeature {
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$filter = Filters::intitle( $this->escaper, $context, $quotedValue );
 
-		return array( $filter, !$negated );
+		return [ $filter, !$negated ];
 	}
 }

@@ -77,11 +77,11 @@ class NearMatchPicker {
 			return null;
 		}
 
-		$transformers = array(
+		$transformers = [
 			function( $term ) { return $term; },
-			array( $this->language, 'lc' ),
-			array( $this->language, 'ucwords' ),
-		);
+			[ $this->language, 'lc' ],
+			[ $this->language, 'ucwords' ],
+		];
 
 		foreach ( $transformers as $transformer ) {
 			$transformedTerm = call_user_func( $transformer, $this->term );

@@ -85,57 +85,57 @@ class MappingConfigBuilder {
 
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
-		$titleExtraAnalyzers = array(
-			array( 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-			array( 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-			array( 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-			array( 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-			array( 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
-		);
+		$titleExtraAnalyzers = [
+			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+		];
 		if ( $flags & self::PREFIX_START_WITH_ANY ) {
-			$titleExtraAnalyzers[] = array(
+			$titleExtraAnalyzers[] = [
 				'analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
 				'index_options' => 'docs'
-			);
+			];
 		}
 
-		$sourceExtraAnalyzers = array();
+		$sourceExtraAnalyzers = [];
 		if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
 		     in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
-			$sourceExtraAnalyzers[] = array(
+			$sourceExtraAnalyzers[] = [
 				'analyzer' => 'trigram',
 				'index_options' => 'docs',
-			);
+			];
 		}
 
-		$suggestField = array(
+		$suggestField = [
 			'type' => 'string',
 			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
 			'index_options' => 'freqs',
 			'analyzer' => 'suggest',
-		);
+		];
 
 		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {
-			$suggestField['fields'] = array(
-				'reverse' => array(
+			$suggestField['fields'] = [
+				'reverse' => [
 					'type' => 'string',
 					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest', 'reverse' ),
 					'index_options' => 'freqs',
 					'analyzer' => 'suggest_reverse',
-				),
-			);
+				],
+			];
 		}
 
 
 		$page = [
 			'dynamic' => false,
-			'_all' => array( 'enabled' => false ),
-			'properties' => array(
-				'timestamp' => array(
+			'_all' => [ 'enabled' => false ],
+			'properties' => [
+				'timestamp' => [
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
-				),
+				],
 				'wiki' => $this->buildKeywordField( 'wiki' )->getMapping( $this->engine ),
 				'namespace' => $this->buildLongField( 'namespace' )->getMapping( $this->engine ),
 				'namespace_text' => $this->buildKeywordField( 'namespace_text' )
@@ -145,24 +145,24 @@ class MappingConfigBuilder {
 					$titleExtraAnalyzers )->setMappingFlags( $flags )->getMapping( $this->engine ),
 				'text' => array_merge_recursive( $this->buildStringField( 'text', null,
 					( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : [ ] )
-					->setMappingFlags( $flags )->getMapping( $this->engine ), array(
-						'fields' => array(
-							'word_count' => array(
+					->setMappingFlags( $flags )->getMapping( $this->engine ), [
+						'fields' => [
+							'word_count' => [
 								'type' => 'token_count',
 								'store' => true,
 								'analyzer' => 'plain',
-							)
-						)
-					) ),
+							]
+						]
+					] ),
 				'text_bytes' => $this->buildLongField( 'text_bytes' )
 					->setFlag( SearchIndexField::FLAG_NO_INDEX )
 					->getMapping( $this->engine ),
 				'source_text' => $this->buildStringField( 'source_text', 0,
 					$sourceExtraAnalyzers
 				)->setMappingFlags( $flags )->getMapping( $this->engine ),
-				'redirect' => array(
+				'redirect' => [
 					'dynamic' => false,
-					'properties' => array(
+					'properties' => [
 						'namespace' => $this->buildLongField( 'namespace' )
 							->getMapping( $this->engine ),
 						'title' => $this->buildStringField( 'redirect.title',
@@ -170,8 +170,8 @@ class MappingConfigBuilder {
 							TextIndexField::COPY_TO_SUGGEST, $titleExtraAnalyzers )
 							->setMappingFlags( $flags )
 							->getMapping( $this->engine ),
-					)
-				),
+					]
+				],
 				'incoming_links' => $this->buildLongField( 'incoming_links' )
 					->getMapping( $this->engine ),
 				'local_sites_with_dupe' => $this->buildKeywordField( 'local_sites_with_dupe' )
@@ -181,7 +181,7 @@ class MappingConfigBuilder {
 				// FIXME: this should be moved to Wikibase Client
 				'wikibase_item' => $this->buildKeywordField( 'wikibase_item' )
 					->getMapping( $this->engine ),
-			)
+			]
 		];
 
 		return $page;
@@ -229,49 +229,49 @@ class MappingConfigBuilder {
 
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
 			// is never used in phrase queries or highlighting.
-			$page[ 'properties' ][ 'all_near_match' ] = array(
+			$page[ 'properties' ][ 'all_near_match' ] = [
 				'type' => 'string',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
 				'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
-				'norms' => array( 'enabled' => false ),
+				'norms' => [ 'enabled' => false ],
 				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
-				'fields' => array(
-					'asciifolding' => array(
+				'fields' => [
+					'asciifolding' => [
 						'type' => 'string',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
 						'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
-						'norms' => array( 'enabled' => false ),
+						'norms' => [ 'enabled' => false ],
 						'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match', 'asciifolding' ),
-					),
-				),
-			);
-			$nearMatchFields = array(
+					],
+				],
+			];
+			$nearMatchFields = [
 				'title' => $wgCirrusSearchWeights[ 'title' ],
 				'redirect' => $wgCirrusSearchWeights[ 'redirect' ],
-			);
+			];
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
 		$config[ 'page' ] = $page;
 
-		$config[ 'namespace' ] = array(
+		$config[ 'namespace' ] = [
 			'dynamic' => false,
-			'_all' => array( 'enabled' => false ),
-			'properties' => array(
-				'name' => array(
+			'_all' => [ 'enabled' => false ],
+			'properties' => [
+				'name' => [
 					'type' => 'string',
 					'analyzer' => 'near_match_asciifolding',
-					'norms' => array( 'enabled' => false ),
+					'norms' => [ 'enabled' => false ],
 					'index_options' => 'docs',
 					'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
-				),
+				],
 				'wiki' => $this->buildKeywordField( 'wiki' )->getMapping( $this->engine ),
-			),
-		);
+			],
+		];
 
-		Hooks::run( 'CirrusSearchMappingConfig', array( &$config, $this ) );
+		Hooks::run( 'CirrusSearchMappingConfig', [ &$config, $this ] );
 
 		return $config;
 	}

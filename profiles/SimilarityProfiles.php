@@ -25,46 +25,46 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-$wgCirrusSearchSimilarityProfiles = array(
+$wgCirrusSearchSimilarityProfiles = [
 	// default profile, uses the classic TF/IDF from Lucene
-	'default' => array(),
+	'default' => [],
 	// BM25 with default values for k and a for all fields
-	'bm25_with_defaults' => array(
-		'similarity' => array(
-			'bm25' => array(
+	'bm25_with_defaults' => [
+		'similarity' => [
+			'bm25' => [
 				'type' => 'BM25'
-			)
-		),
-		'fields' => array(
+			]
+		],
+		'fields' => [
 			'__default__' => 'bm25',
-		)
-	),
+		]
+	],
 	// Example with "randomly" tuned values
 	// (do not use)
-	'bm25_tuned' => array(
-		'similarity' => array(
-			'title' => array(
+	'bm25_tuned' => [
+		'similarity' => [
+			'title' => [
 				'type' => 'BM25',
 				'k1' => 1.23,
 				'b' => 0.75,
-			),
-			'opening' => array(
+			],
+			'opening' => [
 				'type' => 'BM25',
 				'k1' => 1.22,
 				'b' => 0.75,
-			),
-			'arrays' => array(
+			],
+			'arrays' => [
 				'type' => 'BM25',
 				'k1' => 1.1,
 				'b' => 0.3,
-			),
-			'text' => array(
+			],
+			'text' => [
 				'type' => 'BM25',
 				'k1' => 1.3,
 				'b' => 0.80,
-			),
-		),
-		'fields' => array(
+			],
+		],
+		'fields' => [
 			'__default__' => 'text',
 			// Field specific config
 			'opening_text' => 'opening',
@@ -72,25 +72,25 @@ $wgCirrusSearchSimilarityProfiles = array(
 			'title' => 'title',
 			'heading' => 'arrays',
 			'suggest' => 'title',
-		),
-	),
-	'bm25_browser_tests' => array(
-		'similarity' => array(
+		],
+	],
+	'bm25_browser_tests' => [
+		'similarity' => [
 			// Lower norms impact, cirrustestwiki is not well
 			// balanced with many small docs without opening nor
 			// heading resulting in very low avg field length
 			// on such fields
-			'lower_norms' => array(
+			'lower_norms' => [
 				'type' => 'BM25',
 				'k1' => 1.2,
 				'b' => 0.3,
-			),
-			'with_defaults' => array(
+			],
+			'with_defaults' => [
 				'type' => 'BM25',
-			)
-		),
-		'fields' => array(
+			]
+		],
+		'fields' => [
 			'__default__' => 'lower_norms',
-		),
-	),
-);
+		],
+	],
+];

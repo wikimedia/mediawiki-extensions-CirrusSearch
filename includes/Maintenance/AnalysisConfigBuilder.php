@@ -84,7 +84,7 @@ class AnalysisConfigBuilder {
 	 */
 	public function buildConfig() {
 		$config = $this->customize( $this->defaults() );
-		Hooks::run( 'CirrusSearchAnalysisConfig', array( &$config ) );
+		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config ] );
 		return $config;
 	}
 
@@ -106,175 +106,175 @@ class AnalysisConfigBuilder {
 	 * @return array
 	 */
 	private function defaults() {
-		$defaults = array(
-			'analyzer' => array(
-				'text' => array(
+		$defaults = [
+			'analyzer' => [
+				'text' => [
 					'type' => $this->getDefaultTextAnalyzerType(),
-					'char_filter' => array( 'word_break_helper' ),
-				),
-				'text_search' => array(
+					'char_filter' => [ 'word_break_helper' ],
+				],
+				'text_search' => [
 					'type' => $this->getDefaultTextAnalyzerType(),
-					'char_filter' => array( 'word_break_helper' ),
-				),
-				'plain' => array(
+					'char_filter' => [ 'word_break_helper' ],
+				],
+				'plain' => [
 					// Surprisingly, the Lucene docs claim this works for
 					// Chinese, Japanese, and Thai as well.
 					// The difference between this and the 'standard'
 					// analyzer is the lack of english stop words.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase' ),
-					'char_filter' => array( 'word_break_helper' ),
-				),
-				'plain_search' => array(
+					'filter' => [ 'standard', 'lowercase' ],
+					'char_filter' => [ 'word_break_helper' ],
+				],
+				'plain_search' => [
 					// In accent squashing languages this will not contain accent
 					// squashing to allow searches with accents to only find accents
 					// and searches without accents to find both.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase' ),
-					'char_filter' => array( 'word_break_helper' ),
-				),
-				'suggest' => array(
+					'filter' => [ 'standard', 'lowercase' ],
+					'char_filter' => [ 'word_break_helper' ],
+				],
+				'suggest' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase', 'suggest_shingle' ),
-				),
-				'suggest_reverse' => array(
+					'filter' => [ 'standard', 'lowercase', 'suggest_shingle' ],
+				],
+				'suggest_reverse' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase', 'suggest_shingle', 'reverse' ),
-				),
-				'token_reverse' => array(
+					'filter' => [ 'standard', 'lowercase', 'suggest_shingle', 'reverse' ],
+				],
+				'token_reverse' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => array('reverse')
-				),
-				'near_match' => array(
+					'filter' => ['reverse']
+				],
+				'near_match' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => array( 'lowercase' ),
-					'char_filter' => array( 'near_space_flattener' ),
-				),
-				'near_match_asciifolding' => array(
+					'filter' => [ 'lowercase' ],
+					'char_filter' => [ 'near_space_flattener' ],
+				],
+				'near_match_asciifolding' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => array( 'lowercase', 'asciifolding' ),
-					'char_filter' => array( 'near_space_flattener' ),
-				),
-				'prefix' => array(
+					'filter' => [ 'lowercase', 'asciifolding' ],
+					'char_filter' => [ 'near_space_flattener' ],
+				],
+				'prefix' => [
 					'type' => 'custom',
 					'tokenizer' => 'prefix',
-					'filter' => array( 'lowercase' ),
-					'char_filter' => array( 'near_space_flattener' ),
-				),
-				'prefix_asciifolding' => array(
+					'filter' => [ 'lowercase' ],
+					'char_filter' => [ 'near_space_flattener' ],
+				],
+				'prefix_asciifolding' => [
 					'type' => 'custom',
 					'tokenizer' => 'prefix',
-					'filter' => array( 'lowercase', 'asciifolding' ),
-					'char_filter' => array( 'near_space_flattener' ),
-				),
-				'word_prefix' => array(
+					'filter' => [ 'lowercase', 'asciifolding' ],
+					'char_filter' => [ 'near_space_flattener' ],
+				],
+				'word_prefix' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase', 'prefix_ngram_filter' ),
-				),
-				'lowercase_keyword' => array(
+					'filter' => [ 'standard', 'lowercase', 'prefix_ngram_filter' ],
+				],
+				'lowercase_keyword' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => array( 'lowercase' ),
-				),
-				'trigram' => array(
+					'filter' => [ 'lowercase' ],
+				],
+				'trigram' => [
 					'type' => 'custom',
 					'tokenizer' => 'trigram',
-					'filter' => array( 'lowercase' ),
-				),
-			),
-			'filter' => array(
-				'suggest_shingle' => array(
+					'filter' => [ 'lowercase' ],
+				],
+			],
+			'filter' => [
+				'suggest_shingle' => [
 					'type' => 'shingle',
 					'min_shingle_size' => 2,
 					'max_shingle_size' => 3,
 					'output_unigrams' => true,
-				),
-				'lowercase' => array(
+				],
+				'lowercase' => [
 					'type' => 'lowercase',
-				),
-				'aggressive_splitting' => array(
+				],
+				'aggressive_splitting' => [
 					'type' => 'word_delimiter',
 					'stem_english_possessive' => false,
 					// 'catenate_words' => true, // Might be useful but causes errors on indexing
 					// 'catenate_numbers' => true, // Might be useful but causes errors on indexing
 					// 'catenate_all' => true, // Might be useful but causes errors on indexing
 					'preserve_original' => false // "wi-fi-555" finds "wi-fi-555".  Not needed because of plain analysis.
-				),
-				'prefix_ngram_filter' => array(
+				],
+				'prefix_ngram_filter' => [
 					'type' => 'edgeNGram',
 					'max_gram' => Searcher::MAX_TITLE_SEARCH,
-				),
-				'asciifolding' => array(
+				],
+				'asciifolding' => [
 					'type' => 'asciifolding',
 					'preserve_original' => false
-				),
-				'asciifolding_preserve' => array(
+				],
+				'asciifolding_preserve' => [
 					'type' => 'asciifolding',
 					'preserve_original' => true
-				),
-			),
-			'tokenizer' => array(
-				'prefix' => array(
+				],
+			],
+			'tokenizer' => [
+				'prefix' => [
 					'type' => 'edgeNGram',
 					'max_gram' => Searcher::MAX_TITLE_SEARCH,
-				),
-				'no_splitting' => array( // Just grab the whole term.
+				],
+				'no_splitting' => [ // Just grab the whole term.
 					'type' => 'keyword',
-				),
-				'trigram' => array(
+				],
+				'trigram' => [
 					'type' => 'nGram',
 					'min_gram' => 3,
 					'max_gram' => 3,
-				),
-			),
-			'char_filter' => array(
+				],
+			],
+			'char_filter' => [
 				// Flattens things that are space like to spaces in the near_match style analyzers
-				'near_space_flattener' => array(
+				'near_space_flattener' => [
 					'type' => 'mapping',
-					'mappings' => array(
+					'mappings' => [
 						"'=>\u0020",       // Useful for finding names
 						'\u2019=>\u0020',  // Unicode right single quote
 						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
 						'_=>\u0020',       // Mediawiki loves _ and people are used to it but it usually means space
 						'-=>\u0020',       // Useful for finding hyphenated names unhyphenated
-					),
-				),
+					],
+				],
 				// Converts things that don't always count as word breaks into spaces which always
 				// count as word breaks.
-				'word_break_helper' => array(
+				'word_break_helper' => [
 					'type' => 'mapping',
-					'mappings' => array(
+					'mappings' => [
 						'_=>\u0020',
 						// These are more useful for code:
 						'.=>\u0020',
 						'(=>\u0020',
 						')=>\u0020',
-					),
-				),
-			),
-		);
+					],
+				],
+			],
+		];
 		foreach ( $defaults[ 'analyzer' ] as &$analyzer ) {
 			if ( $analyzer[ 'type' ] === 'default' ) {
-				$analyzer = array(
+				$analyzer = [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => array( 'standard', 'lowercase' ),
-				);
+					'filter' => [ 'standard', 'lowercase' ],
+				];
 			}
 		}
 		if ( $this->icu ) {
-			$defaults[ 'filter' ][ 'icu_normalizer' ] = array(
+			$defaults[ 'filter' ][ 'icu_normalizer' ] = [
 				'type' => 'icu_normalizer',
 				'name' => 'nfkc_cf',
-			);
+			];
 		}
 
 		return $defaults;
@@ -293,17 +293,17 @@ class AnalysisConfigBuilder {
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
 		case 'english':
-			$config[ 'filter' ][ 'possessive_english' ] = array(
+			$config[ 'filter' ][ 'possessive_english' ] = [
 				'type' => 'stemmer',
 				'language' => 'possessive_english',
-			);
+			];
 			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
-			$config[ 'analyzer' ][ 'text' ] = array(
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'char_filter' => array( 'word_break_helper' ),
-			);
-			$filters = array();
+				'char_filter' => [ 'word_break_helper' ],
+			];
+			$filters = [];
 			$filters[] = 'standard';
 			$filters[] = 'aggressive_splitting';
 			$filters[] = 'possessive_english';
@@ -323,22 +323,22 @@ class AnalysisConfigBuilder {
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 
 			// Setup custom stemmer
-			$config[ 'filter' ][ 'custom_stem' ] = array(
+			$config[ 'filter' ][ 'custom_stem' ] = [
 				'type' => 'stemmer_override',
 				'rules' => <<<STEMMER_RULES
 guidelines => guideline
 STEMMER_RULES
 				,
-			);
+			];
 			break;
 		case 'french':
 			// Add asciifolding_preserve to filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 			break;
 		case 'italian':
-			$config[ 'filter' ][ 'italian_elision' ] = array(
+			$config[ 'filter' ][ 'italian_elision' ] = [
 				'type' => 'elision',
-				'articles' => array(
+				'articles' => [
 					'c',
 					'l',
 					'all',
@@ -360,23 +360,23 @@ STEMMER_RULES
 					's',
 					'v',
 					'd'
-				),
-			);
-			$config[ 'filter' ][ 'italian_stop' ] = array(
+				],
+			];
+			$config[ 'filter' ][ 'italian_stop' ] = [
 				'type' => 'stop',
 				'stopwords' => '_italian_',
-			);
-			$config[ 'filter' ][ 'light_italian_stemmer' ] = array(
+			];
+			$config[ 'filter' ][ 'light_italian_stemmer' ] = [
 				'type' => 'stemmer',
 				'language' => 'light_italian',
-			);
+			];
 			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
-			$config[ 'analyzer' ][ 'text' ] = array(
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
-				'char_filter' => array( 'word_break_helper' ),
-			);
-			$filters = array();
+				'char_filter' => [ 'word_break_helper' ],
+			];
+			$filters = [];
 			$filters[] = 'standard';
 			$filters[] = 'italian_elision';
 			$filters[] = 'aggressive_splitting';
@@ -460,7 +460,7 @@ STEMMER_RULES
 	 *
 	 * @var string[]
 	 */
-	private $elasticsearchLanguageAnalyzers = array(
+	private $elasticsearchLanguageAnalyzers = [
 		'ar' => 'arabic',
 		'hy' => 'armenian',
 		'eu' => 'basque',
@@ -498,21 +498,21 @@ STEMMER_RULES
 		'sv' => 'swedish',
 		'tr' => 'turkish',
 		'th' => 'thai',
-	);
+	];
 
 
 	/**
 	 * @var array[]
 	 */
-	private $elasticsearchLanguageAnalyzersFromPlugins = array(
-		'analysis-stempel' => array( 'pl' => 'polish' ),
-		'analysis-kuromoji' => array( 'ja' => 'kuromoji' ),
-		'analysis-smartcn' => array( 'zh-hans' => 'smartcn' ),
+	private $elasticsearchLanguageAnalyzersFromPlugins = [
+		'analysis-stempel' => [ 'pl' => 'polish' ],
+		'analysis-kuromoji' => [ 'ja' => 'kuromoji' ],
+		'analysis-smartcn' => [ 'zh-hans' => 'smartcn' ],
 		// This hasn't had a release in a while and seems to not work with the
 		// current version of elasticsearch:
-		'elasticsearch-analysis-hebrew' => array( 'he' => 'hebrew' ),
+		'elasticsearch-analysis-hebrew' => [ 'he' => 'hebrew' ],
 		// TODO Hebrew requires some special query handling....
-	);
+	];
 
 	/**
 	 * @return string MediaWiki language code

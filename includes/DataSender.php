@@ -162,6 +162,7 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$exception = null;
 		$responseSet = null;
+		$justDocumentMissing = false;
 		try {
 			$pageType = $this->connection->getPageType( wfWikiID(), $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
@@ -177,7 +178,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk->addData( $data, 'update' );
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
-			$missing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
+			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
 				function( $id ) use ( $e ) {
 					$this->log->info(
 						"Updating a page that doesn't yet exist in Elasticsearch: {id}",
@@ -185,16 +186,15 @@ class DataSender extends ElasticsearchIntermediary {
 					);
 				}
 			);
-			if ( !$missing ) {
+			if ( !$justDocumentMissing ) {
 				$exception = $e;
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$exception = $e;
 		}
 
-		if ( $exception === null &&
-			$responseSet !== null && count( $responseSet->getBulkResponses() ) > 0
-		) {
+		$validResponse = $responseSet !== null && count( $responseSet->getBulkResponses() ) > 0;
+		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
 			$this->success();
 			return Status::newGood();
 		} else {

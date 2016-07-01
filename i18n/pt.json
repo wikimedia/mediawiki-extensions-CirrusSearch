@@ -23,8 +23,8 @@
 	"apihelp-cirrus-config-dump-description": "Dump da configuração do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki.",
-	"apihelp-cirrus-suggest-description": "Sugerir conclusões para o termo pesquisado.",
 	"cirrussearch-give-feedback": "Dê-nos a sua opinião",
 	"cirrussearch-completionsuggester-pref": "Sugestões completas",
-	"cirrussearch-completionsuggester-desc": "Um novo algoritmo para pesquisar enquanto digita. Uma vez ativada, a caixa de pesquisa no canto superior direito vai apresentar hipóteses de artigos baseados na palavra que digitou."
+	"cirrussearch-completionsuggester-desc": "Um novo algoritmo para pesquisar enquanto digita. Uma vez ativada, a caixa de pesquisa no canto superior direito vai apresentar hipóteses de artigos baseados na palavra que digitou.",
+	"cirrussearch-completion-profile-fuzzy": "Semelhante ao normal com correção de erro por digitação (dois erros de ortografia suportados)."
 }

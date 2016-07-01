@@ -38,7 +38,7 @@ class MetaStoreIndex {
 	 * @const int minor version increment only when adding a new field to
 	 * an existing mapping or a new mapping
 	 */
-	const METASTORE_MINOR_VERSION = 1;
+	const METASTORE_MINOR_VERSION = 2;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -191,7 +191,26 @@ class MetaStoreIndex {
 				'properties' => array(),
 			),
 			self::SANITIZE_TYPE => array(
-				'properties' => array(),
+				'properties' => array(
+					'sanitize_job_wiki' => array( 'type' => 'string' ),
+					'sanitize_job_created' => array(
+						'type' => 'date',
+						'format' => 'epoch_second',
+					),
+					'sanitize_job_updated' => array(
+						'type' => 'date',
+						'format' => 'epoch_second',
+					),
+					'sanitize_job_last_loop' => array(
+						'type' => 'date',
+						'format' => 'epoch_second',
+					),
+					'sanitize_job_cluster' => array( 'type' => 'string' ),
+					'sanitize_job_id_offset' => array( 'type' => 'long' ),
+					'sanitize_job_ids_sent' => array( 'type' => 'long' ),
+					'sanitize_job_jobs_sent' => array( 'type' => 'long' ),
+					'sanitize_job_jobs_sent_total' => array( 'type' => 'long' ),
+				),
 			),
 			self::INTERNAL_TYPE => array(
 				'properties' => array(

@@ -303,4 +303,33 @@ class Connection extends ElasticaConnection {
 		self::$pool = array();
 		parent::destroyClient();
 	}
+
+	/**
+	 * @param string[] array of cluter names
+	 * @param SearchConfig $config the search config
+	 * @return Connection[] array of connection indexed by cluster name
+	 */
+	public static function getClusterConnections( array $clusters, SearchConfig $config ) {
+		$connections = array();
+		foreach ( $clusters as $name ) {
+			$connections[$name] = self::getPool( $config, $name );
+		}
+		return $connections;
+	}
+
+	/**
+	 * @param SearchConfig $config the search config
+	 * @return Connection[] array of connection indexed by cluster name.
+	 */
+	public static function getWritableClusterConnections( SearchConfig $config ) {
+		return self::getClusterConnections( $config->getWritableClusters(), $config );
+	}
+
+	/**
+	 * @param SearchConfig $config the search config
+	 * @return Connection[] array of connection indexed by cluster name.
+	 */
+	public static function getAllClusterConnections( SearchConfig $config ) {
+		return self::getClusterConnections( $config->getAvailableClusters(), $config );
+	}
 }

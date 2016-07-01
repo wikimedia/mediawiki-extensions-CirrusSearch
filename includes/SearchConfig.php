@@ -36,6 +36,18 @@ class SearchConfig implements \Config {
 	private $wikiId;
 
 	/**
+	 * @var string[]|null writable clusters (lazy loaded, call
+	 * getWritableClusters() instead of direct access)
+	 */
+	private $writableClusters;
+
+	/**
+	 * @var string[]|null clusters available (lazy loaded, call
+	 * getAvailableClusters() instead of direct access)
+	 */
+	private $availableClusters;
+
+	/**
 	 * Create new search config for current or other wiki.
 	 * @param string|null $overrideWiki Interwiki link name for wiki
 	 * @param string|null $overrideName DB name for the wiki
@@ -160,5 +172,66 @@ class SearchConfig implements \Config {
 	 */
 	protected function setSource( Config $source ) {
 		$this->source = $source;
+	}
+
+	/**
+	 * @return string[] array of all the cluster names defined in this config
+	 */
+	public function getAvailableClusters() {
+		if ( $this-availableClusters === null ) {
+			$this->initClusterConfig();
+		}
+		return $this->availableClusters;
+	}
+
+	/**
+	 * @return string[] array of all the clusters allowed to receive write operations
+	 */
+	public function getWritableClusters() {
+		if ( $this->writableClusters === null ) {
+			$this->initClusterConfig();
+		}
+		return $this->writableClusters;
+	}
+
+	/**
+	 * Check if a cluster is declared "writable".
+	 * NOTE: a cluster is considered writable even if one of its index is
+	 * frozen.
+	 * Before sending any writes in this cluster, the forzen index status
+	 * must be checked fr the  target index.
+	 * @see DataSender::areIndexesAvailableForWrites()
+	 *
+	 * @param string $cluster
+	 * @retirn bool true is the cluster is writable
+	 */
+	public function canWriteToCluster( $cluster ) {
+		return in_array( $cluster, $this->getWritableClusters() );
+	}
+
+	/**
+	 * Check if this cluster is defined.
+	 * NOTE: this cluster may not be available for writes.
+	 *
+	 * @param string $cluster
+	 * @retirn bool true is the cluster is writable
+	 */
+	public function clusterExists( $cluster ) {
+		return in_array( $cluster, $this->getAvailableClusters() );
+	}
+
+	/**
+	 * Initialization of availableClusters and writableClusters
+	 */
+	private function initClusterConfig() {
+		$this->availableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
+		if( $this->has( 'CirrusSearchWriteClusters' ) ) {
+			$this->writableClusters = $this->get( 'CirrusSearchWriteClusters' );
+			if( is_null( $this->writableClusters ) ) {
+				$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
+			}
+		} else {
+			$this->writableClusters = $this->availableClusters;
+		}
 	}
 }

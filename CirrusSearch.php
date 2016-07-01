@@ -888,6 +888,38 @@ $wgCirrusSearchMasterTimeout = '30s';
  */
 $wgCirrusSearchCreateFrozenIndex = true;
 
+/**
+ * Configure settings of the continuous sanitity check.
+ * The process will scan and check discrepancies between mysql and
+ * elasticsearch for all possible ids in the database.
+ * Used by maintenance/saneitizeJobs.php
+ * This maintenance script needs to be scheduled by cron
+ */
+$wgCirrusSearchSanityCheck = array(
+	// Size of the chunk sent per CherckerJob
+	'jobs_chunk_size' => 10,
+	// Max number of checker jobs in the queue
+	'max_checker_jobs' => 5,
+	// Max number of update jobs, the checker jobs will hold until the
+	// number of pending update jobs decrease below this limit.
+	// This value depends on the number of jobrunner availables
+	// and the max write throughput you want to put on elastic.
+	'update_jobs_max_pressure' => 50,
+	// Max time in seconds a checker job is allowed to run,
+	// the job will reschedule itself at a later time with
+	// a new offset it this timeout is reached.
+	'checker_job_max_time' => 60,
+	// number of articles processed in batch by a checker job
+	// number of batches is jobs_chunk_size/checker_batch_size
+	// A higher value will increase throughput but will also
+	// consume more memory on the jobrunners.
+	'checker_batch_size' => 5,
+	// Minimum time to wait between loops in seconds
+	// Default: 2 weeks
+	// Usefull to not restart a loop too frequently on small wikis
+	'min_loop_duration' => 2*7*24*3600,
+);
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';
@@ -945,6 +977,7 @@ $wgJobClasses[ 'cirrusSearchLinksUpdatePrioritized' ] = 'CirrusSearch\Job\LinksU
 $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\Job\MassIndex';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\Job\OtherIndex';
 $wgJobClasses[ 'cirrusSearchElasticaWrite' ] = 'CirrusSearch\Job\ElasticaWrite';
+$wgJobClasses[ 'cirrusSearchCheckerJob' ] = 'CirrusSearch\Job\CheckerJob';
 
 /**
  * Actions

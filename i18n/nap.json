@@ -35,5 +35,7 @@
 	"cirrussearch-completion-profile-classic": "Prefisso classeco, poche nzegne 'e puntuaziona e nu poch' 'e diacritice luvate.",
 	"cirrussearch-completion-profile-normal": "Poche carattere 'e puntuaziona, nu poch' 'e diacritice e parole 'e pausa luvate.",
 	"cirrussearch-completion-profile-fuzzy": "Simmele a 'o normale cu n'accunciamento tipografico (se suppuortano dduje).",
+	"cirrussearch-qi-profile-classic": "Ranking cu' bbase 'o nummero 'e cullegamente ca traseno, cocche template, 'a lengua d' 'a voce e quant'è nova 'a voce ('e template/lengua/nuvità putessero nun stà a disposizione ancora int'a sta wiki).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Ranking cu' bbase 'a cocche template, 'a lengua d' 'a voce e quant'è nova 'a voce, quanno fuje appicciata int'a stu wiki sta voce.",
 	"cirrussearch-qi-profile-empty": "Ranking cu' bbase 'e caratteristiche dipendente (sulo pe' debug)."
 }

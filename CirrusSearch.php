@@ -882,13 +882,6 @@ $wgCirrusSearchTextcatModel = false;
 $wgCirrusSearchMasterTimeout = '30s';
 
 /**
- * Allow runtime creation of the frozen index. This can cause race conditions if many
- * things are writing in parallel and is not suggested. This is a temporary fix and
- * will be removed post-haste.
- */
-$wgCirrusSearchCreateFrozenIndex = true;
-
-/**
  * Configure settings of the continuous sanitity check.
  * The process will scan and check discrepancies between mysql and
  * elasticsearch for all possible ids in the database.

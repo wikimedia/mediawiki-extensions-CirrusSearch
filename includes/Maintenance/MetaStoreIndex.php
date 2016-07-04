@@ -435,10 +435,6 @@ class MetaStoreIndex {
 	 * @return \Elastica\Type $type
 	 */
 	public static function getVersionType( Connection $connection ) {
-		if ( self::getMetastoreVersion( $connection ) == array( 0, 0 ) ) {
-			// BC code
-			return $connection->getIndex( 'mw_cirrus_versions' )->getType( 'version' );
-		}
 		return $connection->getIndex( self::INDEX_NAME )->getType( self::VERSION_TYPE );
 	}
 
@@ -457,22 +453,6 @@ class MetaStoreIndex {
 	 * @return \Elastica\Type $type
 	 */
 	public static function getFrozenType( Connection $connection ) {
-		$version = self::getMetastoreVersion( $connection );
-		if ( $version == array( 0, 0 ) ) {
-			// BC code
-			global $wgCirrusSearchCreateFrozenIndex;
-			$index = $connection->getIndex( 'mediawiki_cirrussearch_frozen_indexes' );
-			if ( $wgCirrusSearchCreateFrozenIndex ) {
-				if ( !$index->exists() ) {
-					$options = array(
-						'number_of_shards' => 1,
-						'auto_expand_replicas' => '0-2',
-					 );
-					$index->create( $options, true );
-				}
-			}
-			return $index->getType( 'name' );
-		}
 		return $connection->getIndex( self::INDEX_NAME )->getType( self::FROZEN_TYPE );
 	}
 
@@ -502,8 +482,6 @@ class MetaStoreIndex {
 	 */
 	public static function getMetastoreVersion( Connection $connection ) {
 		try {
-			// @todo: do we need to cache this query?
-			// that would cause 1 extra query per update
 			$doc = self::getInternalType( $connection )->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return array( 0, 0 );

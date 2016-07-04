@@ -3,12 +3,8 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere.  1.3.2 and above are all fine though soon it'll be 1.6+.
-
-CirrusSearch still uses dynamic scripts. Its very close to not needing them any more - probably by
-August 2015 it won't. Anyway, for now you'll have to re-enable dynamic scripting in Elasticsearch. Do
-that by adding the contents of the elasticsearch.yml file in this directory to the elasticsearch.yml
-file that comes with your installation.
+Get Elasticsearch up and running somewhere. Elasticsearch v2.x is only supported but 2.3.3 is highly
+recommended if you plan to use the wikimedia elasticsearch plugins.
 
 Place the CirrusSearch extension in your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)

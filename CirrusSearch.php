@@ -25,6 +25,7 @@ require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
 require_once __DIR__ . "/profiles/RescoreProfiles.php";
 require_once __DIR__ . "/profiles/SimilarityProfiles.php";
+require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 
 $wgExtensionCredits['other'][] = array(
 	'path'           => __FILE__,
@@ -882,36 +883,18 @@ $wgCirrusSearchTextcatModel = false;
 $wgCirrusSearchMasterTimeout = '30s';
 
 /**
- * Configure settings of the continuous sanitity check.
+ * Activate/Deactivate continuous sanity check.
  * The process will scan and check discrepancies between mysql and
  * elasticsearch for all possible ids in the database.
- * Used by maintenance/saneitizeJobs.php
- * This maintenance script needs to be scheduled by cron
+ * Settings will be automatically chosen according to wiki size (see
+ * profiles/SaneitizeProfiles.php)
+ * The script responsible for pushing sanitization jobs is saneitizeJobs.php.
+ * It needs to be scheduled by cron, default settings provided are suited
+ * for a bi-hourly schedule (--refresh-freq=7200).
+ * Setting $wgCirrusSearchSanityCheck to false will prevent the script from
+ * pushing new jobs even if it's still scheduled by cron.
  */
-$wgCirrusSearchSanityCheck = array(
-	// Size of the chunk sent per CherckerJob
-	'jobs_chunk_size' => 10,
-	// Max number of checker jobs in the queue
-	'max_checker_jobs' => 5,
-	// Max number of update jobs, the checker jobs will hold until the
-	// number of pending update jobs decrease below this limit.
-	// This value depends on the number of jobrunner availables
-	// and the max write throughput you want to put on elastic.
-	'update_jobs_max_pressure' => 50,
-	// Max time in seconds a checker job is allowed to run,
-	// the job will reschedule itself at a later time with
-	// a new offset it this timeout is reached.
-	'checker_job_max_time' => 60,
-	// number of articles processed in batch by a checker job
-	// number of batches is jobs_chunk_size/checker_batch_size
-	// A higher value will increase throughput but will also
-	// consume more memory on the jobrunners.
-	'checker_batch_size' => 5,
-	// Minimum time to wait between loops in seconds
-	// Default: 2 weeks
-	// Usefull to not restart a loop too frequently on small wikis
-	'min_loop_duration' => 2*7*24*3600,
-);
+$wgCirrusSearchSanityCheck = true;
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

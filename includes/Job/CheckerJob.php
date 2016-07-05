@@ -37,15 +37,17 @@ class CheckerJob extends Job {
 	 * @param int $fromId
 	 * @param int $toId
 	 * @param int $delay
+	 * @param string $profile sanitization profile to use
 	 * @param string|null $cluster
 	 * @return CheckerJob
 	 */
-	public static function build( $fromId, $toId, $delay, $cluster ) {
+	public static function build( $fromId, $toId, $delay, $profile, $cluster ) {
 		$job = new self( Title::makeTitle( 0, "" ), array(
 			'fromId' => $fromId,
 			'toId' => $toId,
 			'createdAt' => time(),
 			'retryCount' => 0,
+			'profile' => $profile,
 			'cluster' => $cluster,
 		) );
 		$job->setDelay( $delay );
@@ -68,14 +70,24 @@ class CheckerJob extends Job {
 	 * @return bool
 	 */
 	private function runCheck( SearchConfig $config ) {
-		$maxPressure = $config->getElement( 'CirrusSearchSanityCheck', 'update_jobs_max_pressure' );
+		$profile = $config->getElement( 'CirrusSearchSanitizationProfiles', $this->params['profile'] );
+		if( !$profile ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",
+				array(
+					'profile' => $this->params['profile']
+				)
+			);
+			return false;
+		}
+		$maxPressure = isset( $profile['update_jobs_max_pressure'] ) ? $profile['update_jobs_max_pressure'] : null;
 		if ( !$maxPressure || $maxPressure < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid update_jobs_max_pressure, check CirrusSearchSanityCheck config."
 			);
 			return false;
 		}
-		$batchSize = $config->getElement( 'CirrusSearchSanityCheck', 'checker_batch_size' );
+		$batchSize = isset( $profile['checker_batch_size'] ) ? $profile['checker_batch_size'] : null;
 		if ( !$batchSize || $batchSize < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_batch_size, check CirrusSearchSanityCheck config."
@@ -83,7 +95,7 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$maxTime = $config->getElement( 'CirrusSearchSanityCheck', 'checker_job_max_time' );
+		$maxTime = isset( $profile['checker_job_max_time'] ) ? $profile['checker_job_max_time'] : null;
 		if ( !$maxTime || $maxTime < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_job_max_time, check CirrusSearchSanityCheck config."

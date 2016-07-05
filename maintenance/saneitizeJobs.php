@@ -61,6 +61,11 @@ class SaneitizeJobs extends Maintenance {
 	 */
 	private $config;
 
+	/**
+	 * @var string profile name
+	 */
+	private $profileName;
+
 	public function __construct() {
 		parent::__construct();
 		$this->mDescription = 'Manage sanitize jobs (CheckerJob). This ' .
@@ -105,7 +110,21 @@ class SaneitizeJobs extends Maintenance {
 		$this->config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-
+		$profiles = $this->config->get( 'CirrusSearchSanitizationProfiles' );
+		uasort( $profiles, function( $a, $b ) {
+			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
+		} );
+		$wikiSize = $this->maxId - $this->minId;
+		foreach( $profiles as $name => $settings ) {
+			if ( $settings['max_wiki_size'] > $wikiSize ) {
+				$this->profileName = $name;
+				$this->log( "Detected $wikiSize ids to check, selecting profile $name\n" );
+				break;
+			}
+		}
+		if ( !$this->profileName ) {
+			$this->error( "No profile found for $wikiSize ids, please check sanitization profiles", 1 );
+		}
 	}
 
 	private function deleteJob() {
@@ -144,9 +163,10 @@ class SaneitizeJobs extends Maintenance {
 		if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
 			$this->error( "Metastore unavailable, please index some data first.\n", 1 );
 		}
-		$minLoopDuration = $this->config->getElement( 'CirrusSearchSanityCheck', 'min_loop_duration' );
-		$maxJobs = $this->config->getElement( 'CirrusSearchSanityCheck', 'max_checker_jobs' );
-		$maxUpdates = $this->config->getElement( 'CirrusSearchSanityCheck', 'update_jobs_max_pressure' );
+		$profile = $this->config->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$minLoopDuration = $profile['min_loop_duration'];
+		$maxJobs = $profile['max_checker_jobs'];
+		$maxUpdates = $profile['update_jobs_max_pressure'];
 
 		$this->initMetaStores();
 		$jobName = $this->getOption( 'job-name', 'default' );
@@ -224,12 +244,16 @@ EOD
 
 	private function pushJobs() {
 		$pushJobFreq = $this->getOption( 'refresh-freq', 2*3600 );
-		$chunkSize = $this->config->getElement( 'CirrusSearchSanityCheck', 'jobs_chunk_size' );
-		$maxJobs = $this->config->getElement( 'CirrusSearchSanityCheck', 'max_checker_jobs' );
+		if ( !$this->config->get( 'CirrusSearchSanityCheck' ) ) {
+			$this->error( "Sanity check disabled, abandonning...\n", 1 );
+		}
+		$profile = $this->config->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$chunkSize = $profile['jobs_chunk_size'];
+		$maxJobs = $profile['max_checker_jobs'];
 		if ( !$maxJobs || $maxJobs <= 0 ) {
 			$this->error( "max_checker_jobs invalid abandonning.\n", 1 );
 		}
-		$minLoopDuration = $this->config->getElement( 'CirrusSearchSanityCheck', 'min_loop_duration' );
+		$minLoopDuration = $profile['min_loop_duration'];
 
 		$pressure = $this->getPressure();
 		if ( $pressure >= $maxJobs ) {
@@ -298,7 +322,7 @@ EOD
 	private function sendJob( $from, $to, $refreshRate, $cluster ) {
 		$delay = mt_rand( 0, $refreshRate );
 		$this->log( "Pushing CheckerJob( $from, $to, $delay, $cluster )\n");
-		JobQueueGroup::singleton()->push( CheckerJob::build( $from, $to, $delay, $cluster ) );
+		JobQueueGroup::singleton()->push( CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster ) );
 	}
 
 	/**

@@ -9,7 +9,7 @@ fi
 
 MW_PREFIX=$(realpath "${MW_PREFIX:-$(dirname "$0")/../../..}")
 CIRRUS="extensions/CirrusSearch/includes/ extensions/CirrusSearch/maintenance/ extensions/CirrusSearch/profiles"
-DEPS="extensions/Elastica/ extensions/BetaFeatures includes vendor/ maintenance/ languages/ extensions/CirrusSearch/vendor"
+DEPS="extensions/Elastica/ extensions/GeoData extensions/BetaFeatures includes vendor/ maintenance/ languages/ extensions/CirrusSearch/vendor"
 
 set -e
 

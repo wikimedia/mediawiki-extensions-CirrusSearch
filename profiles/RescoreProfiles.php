@@ -135,6 +135,14 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 			// Scores documents according to their language,
 			// See $wgCirrusSearchLanguageWeight
 			array( 'type' => 'language' ),
+
+			// Boosts documents in a particular geographic area.
+			// Triggered by query syntax.
+			array( 'type' => 'georadius', 'weight' => array(
+				'value' => 2,
+				'config_override' => 'CirrusSearchPreferGeoRadiusWeight',
+				'uri_param_override' => 'cirrusPreferGeoRadiusWeight',
+			) ),
 		)
 	),
 	// Chain with optional functions if classic_allinone_chain
@@ -146,6 +154,11 @@ $wgCirrusSearchRescoreFunctionScoreChains = array(
 			array( 'type' => 'templates' ),
 			array( 'type' => 'namespaces' ),
 			array( 'type' => 'language' ),
+			array( 'type' => 'georadius', 'weight' => array(
+				'value' => 2,
+				'config_override' => 'CirrusSearchPreferGeoRadiusWeight',
+				'uri_param_override' => 'cirrusPreferGeoRadiusWeight',
+			) ),
 		)
 	),
 	// Chain with boostlinks only

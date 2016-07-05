@@ -285,6 +285,8 @@ class FunctionScoreChain {
 			return new LogMultFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
 		case 'geomean':
 			return new GeoMeanFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+		case 'georadius':
+			return new GeoRadiusFunctionScoreBuilder( $this->context, $weight );
 		default:
 			throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 		}
@@ -947,6 +949,22 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 		}
 		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $exponentialDecayExpression,
 			$parameters, 'expression' ), null, $this->weight );
+	}
+}
+
+/**
+ * Builds a boost for documents based on geocoordinates.
+ * Reads its params from SearchContext::geoBoost. Initialized
+ * by special syntax in user query.
+ */
+class GeoRadiusFunctionScoreBuilder extends FunctionScoreBuilder {
+	public function append( FunctionScore $functionScore ) {
+		foreach ( $this->context->getGeoBoosts() as $config ) {
+			$functionScore->addWeightFunction(
+				$this->weight * $config['weight'],
+				Filters::geo( $config['coord'], $config['radius'] )
+			);
+		}
 	}
 }
 

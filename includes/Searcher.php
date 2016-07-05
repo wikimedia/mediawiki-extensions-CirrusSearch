@@ -11,6 +11,7 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
+use GeoData\Coord;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -508,12 +509,12 @@ GROOVY;
 			}
 		);
 		// Match filters that look like foobar:thing or foobar:"thing thing"
-		// The {7,15} keeps this from having horrible performance on big strings
+		// The {7,16} keeps this from having horrible performance on big strings
 		$fuzzyQuery = $this->fuzzyQuery;
 		$isEmptyQuery = false;
 		$this->extractSpecialSyntaxFromTerm(
-			'/(?<key>[a-z\\-]{7,15}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
-			function ( $matches ) use ( &$filters, &$notFilters,
+			'/(?<key>[a-z\\-]{7,16}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
+			function ( $matches ) use ( &$filters, &$notFilters, &$searchType,
 					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
 				$key = $matches['key'];
 				$quotedValue = $matches['value'];
@@ -522,12 +523,53 @@ GROOVY;
 					: $matches['unquoted'];
 				$filterDestination = &$filters;
 				$keepText = true;
+				$negated = false;
 				if ( $key[ 0 ] === '-' ) {
+					$negated = true;
 					$key = substr( $key, 1 );
 					$filterDestination = &$notFilters;
 					$keepText = false;
 				}
 				switch ( $key ) {
+					case 'nearcoord':
+						list( $coord, $radius ) = Util::parseGeoNearby( $value );
+						if ( $coord ) {
+							$searchType = 'geo_' . $searchType;
+							$filterDestination[] = Filters::geo( $coord, $radius );
+							$searchContainedSyntax = true;
+							return '';
+						}
+						return $matches[0];
+					case 'boost-nearcoord':
+						// @todo Do we need a slightly different syntax for user specified weights?
+						list( $coord, $radius ) = Util::parseGeoNearby( $value );
+						if ( $coord ) {
+							$searchType = 'geo_' . $searchType;
+							$this->getSearchContext()
+								->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
+							$searchContainedSyntax = true;
+							return '';
+						}
+						return $matches[0];
+					case 'neartitle':
+						list( $coord, $radius, $exclude ) = Util::parseGeoNearbyTitle( $value );
+						if ( $coord ) {
+							$searchType = 'geo_' . $searchType;
+							$filterDestination[] = Filters::geo( $coord, $radius, $exclude );
+							$searchContainedSyntax = true;
+							return '';
+						}
+						return $matches[0];
+					case 'boost-neartitle':
+						list( $coord, $radius, $exclude ) = Util::parseGeoNearbyTitle( $value );
+						if ( $coord ) {
+							$searchType = 'geo_' . $searchType;
+							$this->getSearchContext()
+								->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
+							$searchContainedSyntax = true;
+							return '';
+						}
+						return $matches[0];
 					case 'boost-templates':
 						$boostTemplates = Util::parseBoostTemplates( $value );
 						$this->getSearchContext()->setBoostTemplatesFromQuery( $boostTemplates );
@@ -1691,5 +1733,4 @@ GROOVY;
 	public function getSearchContext() {
 		return $this->searchContext;
 	}
-
 }

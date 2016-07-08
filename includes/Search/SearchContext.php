@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
+use GeoData\Coord;
 use Elastica\Query\AbstractQuery;
 
 /**
@@ -76,6 +77,12 @@ class SearchContext {
 	 * @var string rescore profile to use
 	 */
 	private $rescoreProfile;
+
+	/**
+	 * @var array nested array of arrays. Each child array contains three keys:
+	 * coord, radius and weight. Used for geographic radius boosting.
+	 */
+	private $geoBoosts = array();
 
 	/**
 	 * @param SearchConfig $config
@@ -224,5 +231,26 @@ class SearchContext {
 	 */
 	public function setRescoreProfile( $rescoreProfile ) {
 		$this->rescoreProfile = $rescoreProfile;
+	}
+
+	/**
+	 * @return array nested array of arrays. Each child array contains three keys:
+	 * coord, radius and weight
+	 */
+	public function getGeoBoosts() {
+		return $this->geoBoosts;
+	}
+
+	/**
+	 * @param Coord $coord Coordinates to boost near
+	 * @param int $radius radius to boost within, in meters
+	 * @param float $weight Number to multiply score by when within radius
+	 */
+	public function addGeoBoost( Coord $coord, $radius, $weight ) {
+		$this->geoBoosts[] = [
+			'coord' => $coord,
+			'radius' => $radius,
+			'weight' => $weight,
+		];
 	}
 }

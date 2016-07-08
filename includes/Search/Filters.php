@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use Elastica;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
+use GeoData\Coord;
 
 /**
  * Utilities for dealing with filters.
@@ -143,6 +144,37 @@ class Filters {
 				return 'title';
 			}
 		});
+	}
+
+	/**
+	 * Create a filter for near: and neartitle: queries.
+	 *
+	 * @param Coord $coord
+	 * @param int $radius Search radius in meters
+	 * @param int $idToExclude Page id to exclude, or 0 for no exclusions.
+	 * @return AbstractQuery
+	 */
+	public static function geo( Coord $coord, $radius, $idToExclude = 0 ) {
+		$filter = new \Elastica\Query\BoolQuery();
+		$filter->addFilter( new \Elastica\Query\Term( [ 'coordinates.globe' => $coord->globe ] ) );
+		$filter->addFilter( new \Elastica\Query\Term( [ 'coordinates.primary' => 1 ] ) );
+
+		$distanceFilter = new \Elastica\Query\GeoDistance(
+			'coordinates.coord',
+			[ 'lat' => $coord->lat, 'lon' => $coord->lon ],
+			$radius . 'm'
+		);
+		$distanceFilter->setOptimizeBbox( 'indexed' );
+		$filter->addFilter( $distanceFilter );
+
+		if ( $idToExclude > 0 ) {
+			$filter->addMustNot( new \Elastica\Query\Term( [ '_id' => $idToExclude ] ) );
+		}
+
+		$nested = new \Elastica\Query\Nested();
+		$nested->setPath( 'coordinates' )->setQuery( $filter );
+
+		return $nested;
 	}
 
 	/**

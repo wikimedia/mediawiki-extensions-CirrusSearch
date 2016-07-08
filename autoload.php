@@ -105,6 +105,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\FunctionScoreChain' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\FunctionScoreDecorator' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\GeoMeanFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
+	'CirrusSearch\\Search\\GeoRadiusFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\IdResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\IncomingLinksFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\InterwikiResultsType' => __DIR__ . '/includes/Search/ResultsType.php',

@@ -41,17 +41,12 @@ class SearchContext {
 	private $namespaces;
 
 	/**
-	 * @var boolean
-	 */
-	private $searchContainedSyntax = false;
-
-	/**
 	 * @var SearchTextQueryBuilderFactory
 	 */
 	private $searchTextQueryBuilderFactory;
 
 	/**
-	 * @var array list of boost templates extracted from the query string
+	 * @var array|null list of boost templates extracted from the query string
 	 */
 	private $boostTemplatesFromQuery;
 
@@ -79,10 +74,100 @@ class SearchContext {
 	private $rescoreProfile;
 
 	/**
-	 * @var array nested array of arrays. Each child array contains three keys:
+	 * @var array[] nested array of arrays. Each child array contains three keys:
 	 * coord, radius and weight. Used for geographic radius boosting.
 	 */
 	private $geoBoosts = array();
+
+	/**
+	 * @var bool Could this query possibly return results?
+	 */
+	private $resultsPossible = true;
+
+	/**
+	 * @var string[] List of features in the user suplied query string. Features are
+	 *  held in the array key, value is always true.
+	 */
+	private $syntaxUsed = array();
+
+	/**
+	 * @var string The type of search being performed. ex: full_text, near_match, prefix, etc.
+	 */
+	private $searchType = 'unknown';
+
+	/**
+	 * @var AbstractQuery[] List of filters that query results must match
+	 */
+	private $filters = array();
+
+	/**
+	 * @var AbstractQuery[] List of filters that query results must not match
+	 */
+	private $notFilters = array();
+
+	/**
+	 * @var array[] $config List of configurations for highlighting the article
+	 *  source. Passed to ResultType::getHighlightingConfiguration to generate
+	 *  final highlighting configuration. Empty if source is ignored.
+	 */
+	private $highlightSource = array();
+
+	/**
+	 * @var boolean is this a fuzzy query?
+	 */
+	private $fuzzyQuery = false;
+
+	/**
+	 * @var AbstractQuery|null Query that should be used for highlighting if different
+	 *  from the query used for selecting.
+	 */
+	private $highlightQuery;
+
+	/**
+	 * @var AbstractQuery[] queries that don't use Elastic's "query string" query,
+	 *  for more advanced highlighting (e.g. match_phrase_prefix for regular
+	 *  quoted strings).
+	 */
+	private $nonTextHighlightQueries = array();
+
+	/**
+	 * @var array Set of rescore configurations as used by elasticsearch. The query needs
+	 *  to be an Elastica query.
+	 */
+	private $rescore = array();
+
+	/**
+	 * @var string[] array of prefixes that should be prepended to suggestions. Can be added
+	 *  to externally and is added to during search syntax parsing.
+	 */
+	private $suggestPrefixes = array();
+
+	/**
+	 * @var string[] array of suffixes that should be prepended to suggestions. Can be added
+	 *  to externally and is added to during search syntax parsing.
+	 */
+	private $suggestSuffixes = array();
+
+	/**
+	 * @var AbstractQuery|null main query. null defaults to MatchAll
+	 */
+	private $mainQuery;
+
+	/**
+	 * @var \Elastica\Query\Match[] Queries that don't use Elastic's "query string" query, for
+	 *  more advanced searching (e.g. match_phrase_prefix for regular quoted strings).
+	 */
+	private $nonTextQueries = array();
+
+	/**
+	 * @var array|null Configuration for suggest query
+	 */
+	private $suggest;
+
+	/**
+	 * @var bool Should this search limit results to the local wiki?
+	 */
+	private $limitSearchToLocalWiki = false;
 
 	/**
 	 * @param SearchConfig $config
@@ -130,20 +215,6 @@ class SearchContext {
 	}
 
 	/**
-	 * @return true if the query contains special syntax
-	 */
-	public function isSearchContainedSyntax() {
-		return $this->searchContainedSyntax;
-	}
-
-	/**
-	 * @param bool $searchContainedSyntax true if the query contains special syntax
-	 */
-	public function setSearchContainedSyntax( $searchContainedSyntax ) {
-		$this->searchContainedSyntax = $searchContainedSyntax;
-	}
-
-	/**
 	 * @param string $queryStringQueryString
 	 * @return SearchTextQueryBuilder
 	 */
@@ -188,6 +259,7 @@ class SearchContext {
 
 	/**
 	 * Set prefer recent options
+	 *
 	 * @param float $preferRecentDecayPortion
 	 * @param float $preferRecentHalfLife
 	 */
@@ -206,6 +278,7 @@ class SearchContext {
 
 	/**
 	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 *
 	 * @return float the decay portion for prefer recent
 	 */
 	public function getPreferRecentDecayPortion() {
@@ -214,6 +287,7 @@ class SearchContext {
 
 	/**
 	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 *
 	 * @return float the half life for prefer recent
 	 */
 	public function getPreferRecentHalfLife() {
@@ -235,7 +309,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @return array nested array of arrays. Each child array contains three keys:
+	 * @return array[] nested array of arrays. Each child array contains three keys:
 	 * coord, radius and weight
 	 */
 	public function getGeoBoosts() {
@@ -253,5 +327,308 @@ class SearchContext {
 			'radius' => $radius,
 			'weight' => $weight,
 		];
+	}
+
+	/**
+	 * @return bool Could this query possibly return results?
+	 */
+	public function areResultsPossible() {
+		return $this->resultsPossible;
+	}
+
+	/**
+	 * @param bool $possible Could this query possible return results? Defaults to true
+	 *  if not called.
+	 */
+	public function setResultsPossible( $possible ) {
+		$this->resultsPossible = $possible;
+	}
+
+	/**
+	 * @return bool True when the query uses any kind of special syntax
+	 */
+	public function isSyntaxUsed() {
+		return count( $this->syntaxUsed ) > 0;
+	}
+
+	/**
+	 * @return string[] List of special syntax used in the query
+	 */
+	public function getSyntaxUsed() {
+		return array_keys( $this->syntaxUsed );
+	}
+
+	/**
+	 * @param string $feature Name of a syntax feature used in the query string
+	 */
+	public function addSyntaxUsed( $feature ) {
+		$this->syntaxUsed[$feature] = true;
+	}
+
+	/**
+	 * @return string The type of search being performed, ex: full_text, near_match, prefix, etc.
+	 * @todo It might be possible to determine this based on the features used.
+	 */
+	public function getSearchType() {
+		return $this->searchType;
+	}
+
+	/**
+	 * @param string $type The type of search being performed. ex: full_text, near_match, prefix, etc.
+	 */
+	public function setSearchType( $type ) {
+		$this->searchType = $type;
+	}
+
+	/**
+	 * @param AbstractQuery $filter Query results must match this filter
+	 */
+	public function addFilter( AbstractQuery $filter ) {
+		$this->filters[] = $filter;
+	}
+
+	/**
+	 * @param AbstractQuery $filter Query results must not match this filter
+	 */
+	public function addNotFilter( AbstractQuery $filter ) {
+		$this->notFilters[] = $filter;
+	}
+
+	/**
+	 * @param bool $isFuzzy is this a fuzzy query?
+	 */
+	public function setFuzzyQuery( $isFuzzy ) {
+		$this->fuzzyQuery = $isFuzzy;
+	}
+
+	/**
+	 * @return bool is this a fuzzy query?
+	 */
+	public function isFuzzyQuery() {
+		return $this->fuzzyQuery;
+	}
+
+	/**
+	 * @param array $config Configuration for highlighting the article source. Passed
+	 *  to ResultType::getHighlightingConfiguration to generate final highlighting
+	 *  configuration.
+	 */
+	public function addHighlightSource( array $config ) {
+		$this->highlightSource[] = $config;
+	}
+
+	/**
+	 * @param AbstractQuery Query that should be used for highlighting if different
+	 *  from the query used for selecting.
+	 */
+	public function setHighlightQuery( AbstractQuery $query ) {
+		$this->highlightQuery = $query;
+	}
+
+	/**
+	 * @param AbstractQuery $query queries that don't use Elastic's "query
+	 * string" query, for more advanced highlighting (e.g. match_phrase_prefix
+	 * for regular quoted strings).
+	 */
+	public function addNonTextHighlightQuery( AbstractQuery $query ) {
+		$this->nonTextHighlightQueries[] = $query;
+	}
+
+	/**
+	 * @return array|null Highlight portion of query to be sent to elasticsearch
+	 */
+	public function getHighlight( ResultsType $resultsType ) {
+		$highlight = $resultsType->getHighlightingConfiguration( $this->highlightSource );
+		if ( !$highlight ) {
+			return null;
+		}
+		if ( $this->fuzzyQuery ) {
+			$highlight['fields'] = array_filter(
+				$highlight['fields'],
+				function ( $field ) {
+					return $field['type'] !== 'plain';
+				}
+			);
+		}
+		$query = $this->getHighlightQuery();
+		if ( $query ) {
+			$highlight['highlight_query'] = $query->toArray();
+		}
+
+		return $highlight;
+	}
+
+	/**
+	 * @return AbstractQuery|null Query that should be used for highlighting if different
+	 *  from the query used for selecting.
+	 */
+	private function getHighlightQuery() {
+		if ( empty( $this->nonTextHighlightQueries ) ) {
+			return $this->highlightQuery;
+		}
+
+		$bool = new \Elastica\Query\BoolQuery();
+		if ( $this->highlightQuery) {
+			$bool->addShould( $this->highlightQuery );
+		}
+		foreach ( $this->nonTextHighlightQueries as $nonTextHighlightQuery ) {
+			$bool->addShould( $nonTextHighlightQuery );
+		}
+
+		return $bool;
+	}
+
+	/**
+	 * @return bool True if rescore queries are attached
+	 */
+	public function hasRescore() {
+		return count( $this->rescore ) > 0;
+	}
+
+	/**
+	 * rescore_query has to be in array form before we send it to Elasticsearch but it is way
+	 * easier to work with if we leave it in query form until now
+	 *
+	 * @return array[] Rescore configurations as used by elasticsearch.
+	 */
+	public function getRescore() {
+		$result = array();
+		foreach ( $this->rescore as $rescore ) {
+			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
+			$result[] = $rescore;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param array[] $rescore Rescore configuration as used by elasticsearch. The query needs
+	 *  to be an Elastica query.
+	 */
+	public function addRescore( array $rescore ) {
+		$this->rescore[] = $rescore;
+	}
+
+	/**
+	 * Remove all rescores from the query. Used when it is known that extra work scoring
+	 * results will not be useful or necessary. Only effective if done *after* all rescores
+	 * have been added.
+	 */
+	public function clearRescore() {
+		$this->rescore = array();
+	}
+
+	/**
+	 * @param array[] $rescores A set of rescore configurations as used by elasticsearch. The
+	 *  query needs to be an Elastica query.
+	 */
+	public function mergeRescore( $rescores ) {
+		$this->rescore = array_merge( $this->rescore, $rescores );
+	}
+
+	/**
+	 * @return string[] List of prefixes to be prepended to suggestions
+	 */
+	public function getSuggestPrefixes() {
+		return $this->suggestPrefixes;
+	}
+
+	/**
+	 * @param string $prefix Prefix to be prepended to suggestions
+	 */
+	public function addSuggestPrefix( $prefix ) {
+		$this->suggestPrefixes[] = $prefix;
+	}
+
+	/**
+	 * @return string[] List of suffixes to be appended to suggestions
+	 */
+	public function getSuggestSuffixes() {
+		return $this->suggestSuffixes;
+	}
+
+	/**
+	 * @param string $suffix Suffix to be appended to suggestions
+	 */
+	public function addSuggestSuffix( $suffix ) {
+		$this->suggestSuffixes[] = $suffix;
+	}
+
+	/**
+	 * @return AbstractQuery The primary query to be sent to elasticsearch. Includes
+	 *  the main query, non text queries, and any additional filters.
+	 */
+	public function getQuery() {
+		if ( empty( $this->nonTextQueries ) ) {
+			$mainQuery = $this->mainQuery ?: new \Elastica\Query\MatchAll();
+		} else {
+			$mainQuery = new \Elastica\Query\BoolQuery();
+			if ( $this->mainQuery ) {
+				$mainQuery ->addMust( $this->mainQuery );
+			}
+			foreach ( $this->nonTextQueries as $nonTextQuery ) {
+				$mainQuery->addMust( $nonTextQuery );
+			}
+		}
+		// Wrap $mainQuery in a filtered query if there are any filters
+		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
+		if ( $unifiedFilter !== null ) {
+			if ( ! ( $mainQuery instanceof \Elastica\Query\BoolQuery ) ) {
+				$bool = new \Elastica\Query\BoolQuery();
+				$bool->addMust( $mainQuery );
+				$mainQuery = $bool;
+			}
+			$mainQuery->addFilter( $unifiedFilter );
+		}
+
+
+		return $mainQuery;
+	}
+
+	/**
+	 * @param AbstractQuery $query The primary query to be passed to
+	 *  elasticsearch.
+	 */
+	public function setMainQuery( AbstractQuery $query ) {
+		$this->mainQuery = $query;
+	}
+
+	/**
+	 * @param \Elastica\Query\Match $match Queries that don't use Elastic's
+	 * "query string" query, for more advanced searching (e.g.
+	 *  match_phrase_prefix for regular quoted strings).
+	 */
+	public function addNonTextQuery( \Elastica\Query\Match $match ) {
+		$this->nonTextQueries[] = $match;
+	}
+
+	/**
+	 * @return array|null Configuration for suggest query
+	 */
+	public function getSuggest() {
+		return $this->suggest;
+	}
+
+	/**
+	 * @param array $suggest Configuration for suggest query
+	 */
+	public function setSuggest( array $suggest ) {
+		$this->suggest = $suggest;
+	}
+
+	/**
+	 * @return boolean Should this search limit results to the local wiki? If
+	 *  not called the default is false.
+	 */
+	public function getLimitSearchToLocalWiki() {
+		return $this->limitSearchToLocalWiki;
+	}
+
+	/**
+	 * @param boolean $localWikiOnly Should this search limit results to the local wiki? If
+	 *  not called the default is false.
+	 */
+	public function setLimitSearchToLocalWiki( $localWikiOnly ) {
+		$this->limitSearchToLocalWiki = $localWikiOnly;
 	}
 }

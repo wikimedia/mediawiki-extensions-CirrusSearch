@@ -67,8 +67,8 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		$namespaceKey = $this->getNamespaces() !== null ?
-			implode( ',', $this->getNamespaces() ) : '';
+		$namespaceKey = $this->searchContext->getNamespaces() !== null ?
+			implode( ',', $this->searchContext->getNamespaces() ) : '';
 
 		$cache = ObjectCache::getLocalClusterInstance();
 		$key = $cache->makeKey(

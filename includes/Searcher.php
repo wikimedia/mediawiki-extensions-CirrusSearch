@@ -93,71 +93,16 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var string sort type
 	 */
 	private $sort = 'relevance';
-	/**
-	 * @var string[] array of prefixes that should be prepended to suggestions.  Can be added to externally and is added to
-	 * during search syntax parsing.
-	 */
-	private $suggestPrefixes = array();
-	/**
-	 * @var string[] array of suffixes that should be prepended to suggestions.  Can be added to externally and is added to
-	 * during search syntax parsing.
-	 */
-	private $suggestSuffixes = array();
 
-
-	// These fields are filled in by the particular search methods
-	/**
-	 * @var string term to search.
-	 */
-	private $term;
-	/**
-	 * @var \Elastica\Query\AbstractQuery|null main query.  null defaults to \Elastica\Query\MatchAll
-	 */
-	private $query = null;
-	/**
-	 * @var \Elastica\Query\AbstractQuery[] filters that MUST hold true of all results
-	 */
-	private $filters = array();
-	/**
-	 * @var \Elastica\Query\AbstractQuery[] filters that MUST NOT hold true of all results
-	 */
-	private $notFilters = array();
-	/**
-	 * @var array
-	 */
-	private $suggest = null;
-	/**
-	 * @var array[] of rescore configurations as used by elasticsearch.  The query needs to be an Elastica query.
-	 */
-	private $rescore = array();
 	/**
 	 * @var string index base name to use
 	 */
 	private $indexBaseName;
 
 	/**
-	 * @var boolean is this a fuzzy query?
-	 */
-	private $fuzzyQuery = false;
-	/**
-	 * @var null|\Elastica\Query\AbstractQuery query that should be used for highlighting if different from the
-	 * query used for selecting.
-	 */
-	private $highlightQuery = null;
-	/**
-	 * @var array[] configuration for highlighting the article source.  Empty if source is ignored.
-	 */
-	private $highlightSource = array();
-
-	/**
 	 * @var Escaper escapes queries
 	 */
 	private $escaper;
-
-	/**
-	 * @var boolean limit the search to the local wiki.  Defaults to false.
-	 */
-	private $limitSearchToLocalWiki = false;
 
 	/**
 	 * @var boolean just return the array that makes up the query instead of searching
@@ -173,18 +118,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var boolean return explanation with results
 	 */
 	private $returnExplain = false;
-
-	/**
-	 * @var \Elastica\Query\Match[] queries that don't use Elastic's "query string" query, for more
-	 * advanced searching (e.g. match_phrase_prefix for regular quoted strings).
-	 */
-	private $nonTextQueries = array();
-
-	/**
-	 * @var \Elastica\Query\QueryString[] queries that don't use Elastic's "query string" query, for more
-	 * advanced highlighting (e.g. match_phrase_prefix for regular quoted strings).
-	 */
-	private $nonTextHighlightQueries = array();
 
 	/**
 	 * Search environment configuration
@@ -273,7 +206,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param boolean $limitSearchToLocalWiki should the results be limited?
 	 */
 	public function limitSearchToLocalWiki( $limitSearchToLocalWiki ) {
-		$this->limitSearchToLocalWiki = $limitSearchToLocalWiki;
+		$this->searchContext->setLimitSearchToLocalWiki( $limitSearchToLocalWiki );
 	}
 
 	/**
@@ -286,9 +219,9 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.
-		$this->highlightQuery = new \Elastica\Query\MultiMatch();
-		$this->highlightQuery->setQuery( $search );
-		$this->highlightQuery->setFields( array(
+		$highlightQuery = new \Elastica\Query\MultiMatch();
+		$highlightQuery->setQuery( $search );
+		$highlightQuery->setFields( array(
 			'title.near_match', 'redirect.title.near_match',
 			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
 		) );
@@ -297,12 +230,14 @@ class Searcher extends ElasticsearchIntermediary {
 			$allQuery = new \Elastica\Query\MultiMatch();
 			$allQuery->setQuery( $search );
 			$allQuery->setFields( array( 'all_near_match', 'all_near_match.asciifolding' ) );
-			$this->filters[] = $allQuery;
+			$this->searchContext->addFilter( $allQuery );
 		} else {
-			$this->filters[] = $this->highlightQuery;
+			$this->searchContext->addFilter( $highlightQuery );
 		}
+		$this->searchContext->setHighlightQuery( $highlightQuery );
+		$this->searchContext->setSearchType( 'near_match' );
 
-		return $this->search( 'near_match', $search );
+		return $this->search( $search );
 	}
 
 	/**
@@ -313,7 +248,8 @@ class Searcher extends ElasticsearchIntermediary {
 	public function prefixSearch( $search ) {
 		$this->checkTitleSearchRequestLength( $search );
 
-		if ( $search ) {
+		$this->searchContext->setSearchType( 'prefix' );
+		if ( strlen( $search ) > 0 ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
 				$match = new \Elastica\Query\Match();
 				$match->setField( 'title.word_prefix', array(
@@ -321,35 +257,34 @@ class Searcher extends ElasticsearchIntermediary {
 					'analyzer' => 'plain',
 					'operator' => 'and',
 				) );
-				$this->filters[] = $match;
+				$this->searchContext->addFilter( $match );
 			} else {
 				// Elasticsearch seems to have trouble extracting the proper terms to highlight
 				// from the default query we make so we feed it exactly the right query to highlight.
-				$this->query = new \Elastica\Query\MultiMatch();
-				$this->query->setQuery( $search );
+				$query = new \Elastica\Query\MultiMatch();
+				$query->setQuery( $search );
 				$weights = $this->config->get( 'CirrusSearchPrefixWeights' );
-				$this->query->setFields( array(
+				$query->setFields( array(
 					'title.prefix^' . $weights[ 'title' ],
 					'redirect.title.prefix^' . $weights[ 'redirect' ],
 					'title.prefix_asciifolding^' . $weights[ 'title_asciifolding' ],
 					'redirect.title.prefix_asciifolding^' . $weights[ 'redirect_asciifolding' ],
 				) );
+				$this->searchContext->setMainQuery( $query );
 			}
-		} else {
-			$this->query = new \Elastica\Query\MatchAll();
 		}
 
 		/** @suppress PhanDeprecatedFunction */
 		$this->searchContext->setBoostLinks( true );
 
-		return $this->search( 'prefix', $search );
+		return $this->search( $search );
 	}
 
 	/**
 	 * @param string $suggestPrefix prefix to be prepended to suggestions
 	 */
 	public function addSuggestPrefix( $suggestPrefix ) {
-		$this->suggestPrefixes[] = $suggestPrefix;
+		$this->searchContext->addSuggestPrefix( $suggestPrefix );
 	}
 
 	/**
@@ -366,18 +301,16 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$originalTerm = $term;
-		$searchContainedSyntax = false;
-		$this->term = $term;
-		$searchType = 'full_text';
+		$this->searchContext->setSearchType( 'full_text' );
 		// Handle title prefix notation
-		$prefixPos = strpos( $this->term, 'prefix:' );
+		$prefixPos = strpos( $term, 'prefix:' );
 		if ( $prefixPos !== false ) {
-			$value = substr( $this->term, 7 + $prefixPos );
+			$value = substr( $term, 7 + $prefixPos );
 			$value = trim( $value, '"' ); // Trim quotes in case the user wanted to quote the prefix
 			if ( strlen( $value ) > 0 ) {
-				$searchContainedSyntax = true;
-				$this->term = substr( $this->term, 0, max( 0, $prefixPos - 1 ) );
-				$this->suggestSuffixes[] = ' prefix:' . $value;
+				$this->searchContext->addSyntaxUsed( "prefix" );
+				$term = substr( $term, 0, max( 0, $prefixPos - 1 ) );
+				$this->searchContext->addSuggestSuffix( ' prefix:' . $value );
 				// Suck namespaces out of $value
 				$cirrusSearchEngine = new CirrusSearch();
 				$cirrusSearchEngine->setConnection( $this->connection );
@@ -388,20 +321,19 @@ class Searcher extends ElasticsearchIntermediary {
 					$value = str_replace( '_', ' ', $value );
 					$prefixQuery = new \Elastica\Query\Match();
 					$prefixQuery->setFieldQuery( 'title.prefix', $value );
-					$this->filters[] = $prefixQuery;
+					$this->searchContext->addFilter( $prefixQuery );
 				}
 			}
 		}
 
-		$preferRecentDecayPortion = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
-		$preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
-		$unspecifiedDecayPortion = $this->config->get( 'CirrusSearchPreferRecentUnspecifiedDecayPortion' );
 		// Matches "prefer-recent:" and then an optional floating point number <= 1 but >= 0 (decay
 		// portion) and then an optional comma followed by another floating point number >= 0 (half life)
-		$this->extractSpecialSyntaxFromTerm(
+		$term = $this->extractSpecialSyntaxFromTerm(
+			$term,
 			'/prefer-recent:(1|0?(?:\.\d+)?)?(?:,(\d*\.?\d+))? ?/',
-			function ( $matches ) use ( $unspecifiedDecayPortion, &$preferRecentDecayPortion, &$preferRecentHalfLife,
-					&$searchContainedSyntax ) {
+			function ( $matches ) {
+				$preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
+				$unspecifiedDecayPortion = $this->config->get( 'CirrusSearchPreferRecentUnspecifiedDecayPortion' );
 				if ( isset( $matches[ 1 ] ) && strlen( $matches[ 1 ] ) ) {
 					$preferRecentDecayPortion = floatval( $matches[ 1 ] );
 				} else {
@@ -410,45 +342,45 @@ class Searcher extends ElasticsearchIntermediary {
 				if ( isset( $matches[ 2 ] ) ) {
 					$preferRecentHalfLife = floatval( $matches[ 2 ] );
 				}
-				$searchContainedSyntax = true;
+				$this->searchContext->setPreferRecentOptions( $preferRecentDecayPortion, $preferRecentHalfLife );
+				$this->searchContext->addSyntaxUsed( 'prefer-recent' );
 				return '';
 			}
 		);
-		$this->searchContext->setPreferRecentOptions( $preferRecentDecayPortion, $preferRecentHalfLife );
 
-		$this->extractSpecialSyntaxFromTerm(
+		$term = $this->extractSpecialSyntaxFromTerm(
+			$term,
 			'/^\s*local:/',
 			function () {
-				$this->limitSearchToLocalWiki( true );
+				$this->searchContext->setLimitSearchToLocalWiki( true );
+				$this->searchContext->addSyntaxUsed( 'local' );
 				return '';
 			}
 		);
 
 		// Handle other filters
-		$filters = $this->filters;
-		$notFilters = $this->notFilters;
-		$highlightSource = array();
-		$this->extractSpecialSyntaxFromTerm(
+		$term = $this->extractSpecialSyntaxFromTerm(
+			$term,
 			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
-			function ( $matches ) use ( &$filters, &$notFilters, &$searchContainedSyntax, &$searchType, &$highlightSource ) {
+			function ( $matches ) {
 
 				if ( !$this->config->get( 'CirrusSearchEnableRegex' ) ) {
 					return;
 				}
 
-				$searchContainedSyntax = true;
-				$searchType = 'regex';
+				$this->searchContext->addSyntaxUsed( 'regex' );
+				$this->searchContext->setSearchType( 'regex' );
 				$insensitive = !empty( $matches[ 'insensitive' ] );
 
-				$filterDestination = &$filters;
 				if ( !empty( $matches[ 'not' ] ) ) {
-					$filterDestination = &$notFilters;
+					$negated = true;
 				} else {
-					$highlightSource[] = array(
+					$negated = false;
+					$this->searchContext->addHighlightSource( array(
 						'pattern' => $matches[ 'pattern' ],
 						'locale' => $this->config->get( 'LanguageCode' ),
 						'insensitive' => $insensitive,
-					);
+					) );
 				}
 				$regex = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 				if ( $regex && in_array( 'use', $regex ) ) {
@@ -467,7 +399,6 @@ class Searcher extends ElasticsearchIntermediary {
 					}
 					$filter->setCaseSensitive( !$insensitive );
 					$filter->setLocale( $this->config->get( 'LanguageCode' ) );
-					$filterDestination[] = $filter;
 				} else {
 					// Without the extra plugin we need to use groovy to attempt the regex.
 					// Its less good but its something.
@@ -492,7 +423,7 @@ if (sourceText == null) {
 }
 
 GROOVY;
-					$filterDestination[] = new \Elastica\Query\Script( new \Elastica\Script\Script(
+					$filter = new \Elastica\Query\Script( new \Elastica\Script\Script(
 						$script,
 						array(
 							'pattern' => '.*(' . $matches[ 'pattern' ] . ').*',
@@ -506,75 +437,74 @@ GROOVY;
 						'groovy'
 					) );
 				}
+
+				if ( $negated ) {
+					$this->searchContext->addNotFilter( $filter );
+				} else {
+					$this->searchContext->addFilter( $filter );
+				}
 			}
 		);
 		// Match filters that look like foobar:thing or foobar:"thing thing"
 		// The {7,16} keeps this from having horrible performance on big strings
-		$fuzzyQuery = $this->fuzzyQuery;
-		$isEmptyQuery = false;
-		$this->extractSpecialSyntaxFromTerm(
+		$term = $this->extractSpecialSyntaxFromTerm(
+			$term,
 			'/(?<key>[a-z\\-]{7,16}):\s*(?<value>"(?<quoted>(?:[^"]|(?<=\\\)")+)"|(?<unquoted>\S+)) ?/',
-			function ( $matches ) use ( &$filters, &$notFilters, &$searchType,
-					&$searchContainedSyntax, &$fuzzyQuery, &$highlightSource, &$isEmptyQuery ) {
+			function ( $matches ) {
 				$key = $matches['key'];
 				$quotedValue = $matches['value'];
 				$value = $matches['quoted'] !== ''
 					? str_replace( '\"', '"', $matches['quoted'] )
 					: $matches['unquoted'];
-				$filterDestination = &$filters;
-				$keepText = true;
-				$negated = false;
 				if ( $key[ 0 ] === '-' ) {
 					$negated = true;
 					$key = substr( $key, 1 );
-					$filterDestination = &$notFilters;
-					$keepText = false;
+				} else {
+					$negated = false;
 				}
+				$keepText = false;
+				$filter = null;
 				switch ( $key ) {
 					case 'nearcoord':
 						list( $coord, $radius ) = Util::parseGeoNearby( $value );
 						if ( $coord ) {
-							$searchType = 'geo_' . $searchType;
-							$filterDestination[] = Filters::geo( $coord, $radius );
-							$searchContainedSyntax = true;
-							return '';
+							$this->searchContext->setSearchType( 'geo_' . $this->searchContext->getSearchType() );
+							$filter = Filters::geo( $coord, $radius );
+							$this->searchContext->addSyntaxUsed( $key );
 						}
-						return $matches[0];
+						break;
 					case 'boost-nearcoord':
 						// @todo Do we need a slightly different syntax for user specified weights?
 						list( $coord, $radius ) = Util::parseGeoNearby( $value );
 						if ( $coord ) {
-							$searchType = 'geo_' . $searchType;
+							$this->searchContext->setSearchType( 'geo_' . $this->searchContext->getSearchType() );
 							$this->getSearchContext()
 								->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
-							$searchContainedSyntax = true;
-							return '';
+							$this->searchContext->addSyntaxUsed( $key );
 						}
-						return $matches[0];
+						break;
 					case 'neartitle':
 						list( $coord, $radius, $exclude ) = Util::parseGeoNearbyTitle( $value );
 						if ( $coord ) {
-							$searchType = 'geo_' . $searchType;
-							$filterDestination[] = Filters::geo( $coord, $radius, $exclude );
-							$searchContainedSyntax = true;
-							return '';
+							$this->searchContext->setSearchType( 'geo_' . $this->searchContext->getSearchType() );
+							$filter = Filters::geo( $coord, $radius, $exclude );
+							$this->searchContext->addSyntaxUsed( $key );
 						}
-						return $matches[0];
+						break;
 					case 'boost-neartitle':
 						list( $coord, $radius, $exclude ) = Util::parseGeoNearbyTitle( $value );
 						if ( $coord ) {
-							$searchType = 'geo_' . $searchType;
+							$this->searchContext->setSearchType( 'geo_' . $this->searchContext->getSearchType() );
 							$this->getSearchContext()
 								->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
-							$searchContainedSyntax = true;
-							return '';
+							$this->searchContext->addSyntaxUsed( $key );
 						}
-						return $matches[0];
+						break;
 					case 'boost-templates':
 						$boostTemplates = Util::parseBoostTemplates( $value );
 						$this->getSearchContext()->setBoostTemplatesFromQuery( $boostTemplates );
-						$searchContainedSyntax = true;
-						return '';
+						$this->searchContext->addSyntaxUsed( $key );
+						break;
 					case 'hastemplate':
 						// We emulate template syntax here as best as possible,
 						// so things in NS_MAIN are prefixed with ":" and things
@@ -590,54 +520,60 @@ GROOVY;
 									$title->getDBkey() )->getPrefixedText();
 							}
 						}
-						$filterDestination[] = $this->matchPage( 'template', $value );
-						$searchContainedSyntax = true;
-						return '';
+						$filter = $this->matchPage( 'template', $value );
+						$this->searchContext->addSyntaxUsed( $key );
+						break;
 					case 'linksto':
-						$filterDestination[] = $this->matchPage( 'outgoing_link', $value, true );
-						$searchContainedSyntax = true;
-						return '';
+						$filter = $this->matchPage( 'outgoing_link', $value, true );
+						$this->searchContext->addSyntaxUsed( $key );
+						break;
 					case 'incategory':
 						$categories = array_slice( explode( '|', $value ), 0, $this->config->get( 'CirrusSearchMaxIncategoryOptions' ) );
-						$categoryFilters = $this->matchPageCategories( $categories );
-						if ( $categoryFilters === null ) {
-							$isEmptyQuery = true;
-						} else {
-							$filterDestination[] = $categoryFilters;
+						$filter = $this->matchPageCategories( $categories );
+						if ( $filter === null ) {
+							$this->searchContext->setResultsPossible( false );
 						}
-						$searchContainedSyntax = true;
-						return '';
+						$this->searchContext->addSyntaxUsed( $key );
+						break;
 					case 'insource':
-						$updateReferences = Filters::insource( $this->escaper, $this->getSearchContext(), $quotedValue );
-						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
-						return '';
+						$filter = Filters::insource( $this->escaper, $this->searchContext, $quotedValue );
+						$this->searchContext->addSyntaxUsed( $key );
+						$this->searchContext->addHighlightSource( array( 'query' => $filter ) );
+						break;
 					case 'intitle':
-						$updateReferences = Filters::intitle( $this->escaper, $this->getSearchContext(), $quotedValue );
-						$updateReferences( $fuzzyQuery, $filterDestination, $highlightSource, $searchContainedSyntax );
-						return $keepText ? "$quotedValue " : '';
+						$filter = Filters::intitle( $this->escaper, $this->searchContext, $quotedValue );
+						$this->searchContext->addSyntaxUsed( $key );
+						$keepText = !$negated;
+						break;
 					default:
 						return $matches[0];
 				}
+
+				if ( $filter ) {
+					if ( $negated ) {
+						$this->searchContext->addNotFilter( $filter );
+					} else {
+						$this->searchContext->addFilter( $filter );
+					}
+				}
+
+				return $keepText ? "$quotedValue " : '';
 			}
 		);
-		if ( $isEmptyQuery ) {
+
+		if ( !$this->searchContext->areResultsPossible() ) {
 			return Status::newGood( new SearchResultSet( true ) );
 		}
-		$this->filters = $filters;
-		$this->notFilters = $notFilters;
-		$this->searchContext->setSearchContainedSyntax( $searchContainedSyntax );
-		$this->fuzzyQuery = $fuzzyQuery;
-		$this->highlightSource = $highlightSource;
 
-		$this->term = $this->escaper->escapeQuotes( $this->term );
-		$this->term = trim( $this->term );
+		$term = $this->escaper->escapeQuotes( $term );
+		$term = trim( $term );
 
 		// Match quoted phrases including those containing escaped quotes
 		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
 		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
 		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
 		$slop = $this->config->get('CirrusSearchPhraseSlop');
-		$query = self::replacePartsOfQuery( $this->term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
+		$query = self::replacePartsOfQuery( $term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
 			function ( $matches ) use ( $slop ) {
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
 				$main = $this->escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
@@ -647,12 +583,12 @@ GROOVY;
 					$phraseMatch = new Elastica\Query\Match( );
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
 					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
-					$this->nonTextQueries[] = $phraseMatch;
+					$this->searchContext->addNonTextQuery( $phraseMatch );
 
 					$phraseHighlightMatch = new Elastica\Query\QueryString( );
 					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
 					$phraseHighlightMatch->setFields( array( 'all.plain' ) );
-					$this->nonTextHighlightQueries[] = $phraseHighlightMatch;
+					$this->searchContext->addNonTextHighlightQuery( $phraseHighlightMatch );
 
 					return array();
 				}
@@ -678,7 +614,7 @@ GROOVY;
 			function ( $matches ) {
 				$term = $this->escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return array(
-						'escaped' => $this->switchSearchToExactForWildcards( $term ),
+					'escaped' => $this->switchSearchToExactForWildcards( $term ),
 					'nonAll' => $this->switchSearchToExactForWildcards( $term )
 				);
 			} );
@@ -710,13 +646,18 @@ GROOVY;
 		}
 
 		// Actual text query
-		list( $queryStringQueryString, $this->fuzzyQuery ) =
+		list( $queryStringQueryString, $isFuzzy ) =
 			$this->escaper->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+		$this->searchContext->setFuzzyQuery( $isFuzzy );
 		// Note that no escaping is required for near_match's match query.
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
-		if ( $queryStringQueryString !== '' ) {
+		if ( $queryStringQueryString === '' ) {
+			$result = $this->search( $originalTerm );
+			// No need to check for a parse error here because we don't actually create a query for
+			// Elasticsearch to parse
+		} else {
 			if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $queryStringQueryString ) ) {
-				$this->searchContext->setSearchContainedSyntax( true );
+				$this->searchContext->addSyntaxUsed( 'query_string' );
 				// We're unlikely to make good suggestions for query string with special syntax in them....
 				$showSuggestion = false;
 			}
@@ -725,8 +666,13 @@ GROOVY;
 				$this->buildFullTextSearchFields( $this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
 			$nearMatchFields = $this->buildFullTextSearchFields( $this->config->get( 'CirrusSearchNearMatchWeight' ),
 				'.near_match', true );
-			$this->query = $this->buildSearchTextQuery( $fields, $nearMatchFields,
-				$queryStringQueryString, $nearMatchQuery );
+
+			$this->searchContext->setMainQuery( $this->buildSearchTextQuery(
+				$fields,
+				$nearMatchFields,
+				$queryStringQueryString,
+				$nearMatchQuery
+			) );
 
 			// The highlighter doesn't know about the weighting from the all fields so we have to send
 			// it a query without the all fields.  This swaps one in.
@@ -735,7 +681,9 @@ GROOVY;
 					$this->buildFullTextSearchFields( 1, '.plain', false ),
 					$this->buildFullTextSearchFields( $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
 				list( $nonAllQueryString, /*_*/ ) = $this->escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
-				$this->highlightQuery = $this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false, true );
+				$this->searchContext->setHighlightQuery(
+					$this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false, true )
+				);
 			} else {
 				$nonAllFields = $fields;
 			}
@@ -746,7 +694,7 @@ GROOVY;
 			// out of phrase queries at this point.
 			if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
 					$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-					!$this->searchContext->isSearchContainedSyntax() &&
+					!$this->searchContext->isSyntaxUsed() &&
 					strpos( $queryStringQueryString, '"' ) === false &&
 					strpos( $queryStringQueryString, ' ' ) !== false ) {
 
@@ -755,7 +703,7 @@ GROOVY;
 					$rescoreFields = $nonAllFields;
 				}
 
-				$this->rescore[] = array(
+				$this->searchContext->addRescore( array(
 					'window_size' => $this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ),
 					'query' => array(
 						'rescore_query' => $this->buildSearchTextQueryForFields( $rescoreFields,
@@ -763,38 +711,38 @@ GROOVY;
 						'query_weight' => 1.0,
 						'rescore_query_weight' => $this->config->get( 'CirrusSearchPhraseRescoreBoost' ),
 					)
-				);
+				) );
 			}
 
 			$showSuggestion = $showSuggestion && ($this->offset == 0);
 
 			if ( $showSuggestion ) {
-				$this->suggest = array(
-					'text' => $this->term,
+				$this->searchContext->setSuggest( array(
+					'text' => $term,
 					'suggest' => $this->buildSuggestConfig( 'suggest' ),
-				);
+				) );
 			}
 
-			$result = $this->search( $searchType, $originalTerm );
+			$result = $this->search( $originalTerm );
 
 			if ( !$result->isOK() && $this->isParseError( $result ) ) {
 				// Elasticsearch has reported a parse error and we've already logged it when we built the status
 				// so at this point all we can do is retry the query as a simple query string query.
-				$this->query = new \Elastica\Query\Simple( array( 'simple_query_string' => array(
-					'fields' => $fields,
-					'query' => $queryStringQueryString,
-					'default_operator' => 'AND',
+				$this->searchContext->setMainQuery( new \Elastica\Query\Simple( array(
+					'simple_query_string' => array(
+						'fields' => $fields,
+						'query' => $queryStringQueryString,
+						'default_operator' => 'AND',
+					),
 				) ) );
-				$this->rescore = array(); // Not worth trying in this state.
-				$result = $this->search( 'degraded_full_text', $originalTerm );
+				// Not worth trying in this state.
+				$this->searchContext->clearRescore();
+				$this->searchContext->setSearchType( 'degraded_full_text' );
+				$result = $this->search( $originalTerm );
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
 			}
-		} else {
-			$result = $this->search( $searchType, $originalTerm );
-			// No need to check for a parse error here because we don't actually create a query for
-			// Elasticsearch to parse
 		}
 
 		return $result;
@@ -884,13 +832,15 @@ GROOVY;
 			$this->connection = Connection::getPool( $this->config, $cluster );
 		}
 
-		$this->searchContext->setSearchContainedSyntax( true );
+		$this->searchContext->addSyntaxUsed( 'more_like' );
+		$this->searchContext->setSearchType( 'more_like' );
+
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
 		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );
 		sort( $moreLikeThisFields );
-		$this->query = new \Elastica\Query\MoreLikeThis();
-		$this->query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
-		$this->query->setFields( $moreLikeThisFields );
+		$query = new \Elastica\Query\MoreLikeThis();
+		$query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
+		$query->setFields( $moreLikeThisFields );
 
 		// The 'all' field cannot be retrieved from _source
 		// We have to extract the text content before.
@@ -919,18 +869,18 @@ GROOVY;
 		}
 
 		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
-		$this->query->setLike( $likeDocs );
+		$query->setLike( $likeDocs );
+		$this->searchContext->setMainQuery( $query );
 
 		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
-			$this->filters[] = new \Elastica\Query\Exists( 'wikibase_item' );
+			$this->searchContext->addFilter( new \Elastica\Query\Exists( 'wikibase_item' ) );
 		}
 
 		// highlight snippets are not great so it's worth running a match all query
 		// to save cpu cycles
-		$this->highlightQuery = new \Elastica\Query\MatchAll();
+		$this->searchContext->setHighlightQuery( new \Elastica\Query\MatchAll() );
 
 		return $this->search(
-			'more_like',
 			implode( ', ', $titles ),
 			$this->config->get( 'CirrusSearchMoreLikeThisTTL' )
 		);
@@ -946,13 +896,13 @@ GROOVY;
 	 */
 	public function get( array $pageIds, $sourceFiltering ) {
 		$indexType = $this->connection->pickIndexTypeForNamespaces(
-			$this->getNamespaces()
+			$this->searchContext->getNamespaces()
 		);
 
 		// The worst case would be to have all ids duplicated in all available indices.
 		// We set the limit accordingly
 		$size = count ( $this->connection->getAllIndexSuffixesForNamespaces(
-			$this->getNamespaces()
+			$this->searchContext->getNamespaces()
 		));
 		$size *= count( $pageIds );
 		return Util::doPoolCounterWork(
@@ -1021,19 +971,21 @@ GROOVY;
 	}
 
 	/**
+	 * @param string $term
 	 * @param string $regex
 	 * @param callable $callback
+	 * @return string Modified $term
 	 */
-	private function extractSpecialSyntaxFromTerm( $regex, $callback ) {
-		$this->term = preg_replace_callback( $regex,
+	private function extractSpecialSyntaxFromTerm( $term, $regex, $callback ) {
+		return preg_replace_callback( $regex,
 			function ( $matches ) use ( $callback ) {
 				$result = $callback( $matches );
 				if ( $result === '' ) {
-					$this->suggestPrefixes[] = $matches[ 0 ];
+					$this->searchContext->addSuggestPrefix( $matches[0] );
 				}
 				return $result;
 			},
-			$this->term
+			$term
 		);
 	}
 
@@ -1087,12 +1039,11 @@ GROOVY;
 	/**
 	 * Powers full-text-like searches including prefix search.
 	 *
-	 * @param string $type
 	 * @param string $for
 	 * @param int $cacheTTL Cache results into ObjectCache for $cacheTTL seconds
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	private function search( $type, $for, $cacheTTL = 0 ) {
+	private function search( $for, $cacheTTL = 0 ) {
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
 				return Status::newGood( array(
@@ -1105,23 +1056,8 @@ GROOVY;
 			}
 		}
 
-		if ( $this->nonTextQueries ) {
-			$bool = new \Elastica\Query\BoolQuery();
-			if ( $this->query !== null ) {
-				$bool->addMust( $this->query );
-			}
-			foreach ( $this->nonTextQueries as $nonTextQuery ) {
-				$bool->addMust( $nonTextQuery );
-			}
-			$this->query = $bool;
-		}
-
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
-		}
-		// Default null queries now so the rest of the method can assume it is not null.
-		if ( $this->query === null ) {
-			$this->query = new \Elastica\Query\MatchAll();
 		}
 
 		$query = new Elastica\Query();
@@ -1129,71 +1065,33 @@ GROOVY;
 		$query->setParam( 'fields', $this->resultsType->getFields() );
 
 		$extraIndexes = array();
-		$namespaces = $this->getNamespaces();
+		$namespaces = $this->searchContext->getNamespaces();
 		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
-				$this->filters[] = new \Elastica\Query\Terms( 'namespace', $namespaces );
+				$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
 			}
 		}
 
-		// Wrap $this->query in a filtered query if there are any filters
-		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
-		if ( $unifiedFilter !== null ) {
-			if ( $this->query instanceof \Elastica\Query\BoolQuery ) {
-				$bool = $this->query;
-			} else {
-				$bool = new \Elastica\Query\BoolQuery();
-				$bool->addMust( $this->query );
-				$this->query = $bool;
-			}
-			$bool->addFilter( $unifiedFilter );
-		}
+		$this->installBoosts();
+		$query->setQuery( $this->searchContext->getQuery() );
 
-		// Call installBoosts right after we're done munging the query to include filters
-		// so any rescores installBoosts adds to the query are done against filtered results.
-		$this->installBoosts( $type );
-
-		$query->setQuery( $this->query );
-
-		$highlight = $this->resultsType->getHighlightingConfiguration( $this->highlightSource );
+		$highlight = $this->searchContext->getHighlight( $this->resultsType );
 		if ( $highlight ) {
-			// Fuzzy queries work _terribly_ with the plain highlighter so just drop any field that is forcing
-			// the plain highlighter all together.  Do this here because this works so badly that no
-			// ResultsType should be able to use the plain highlighter for these queries.
-			if ( $this->fuzzyQuery ) {
-				$highlight[ 'fields' ] = array_filter( $highlight[ 'fields' ], function( $field ) {
-					return $field[ 'type' ] !== 'plain';
-				});
-			}
-			if ( !empty( $this->nonTextHighlightQueries ) ) {
-				// We have some phrase_prefix queries, so let's include them in the
-				// generated highlight_query.
-				$bool = new \Elastica\Query\BoolQuery();
-				if ( $this->highlightQuery ) {
-					$bool->addShould( $this->highlightQuery );
-				}
-				foreach ( $this->nonTextHighlightQueries as $nonTextHighlightQuery ) {
-					$bool->addShould( $nonTextHighlightQuery );
-				}
-				$this->highlightQuery = $bool;
-			}
-			if ( $this->highlightQuery ) {
-				$highlight[ 'highlight_query' ] = $this->highlightQuery->toArray();
-			}
 			$query->setHighlight( $highlight );
 		}
-		if ( $this->suggest ) {
+
+		if ( $this->searchContext->getSuggest() ) {
 			if ( interface_exists( 'Elastica\\ArrayableInterface' ) ) {
 				// Elastica 2.3.x.  For some reason it unwraps our suggest
 				// query when we don't want it to, so wrap it one more time
 				// to make the unwrap do nothing.
 				$query->setParam( 'suggest', array(
-					'suggest' => $this->suggest,
+					'suggest' => $this->searchContext->getSuggest()
 				) );
 			} else {
-				$query->setParam( 'suggest', $this->suggest );
+				$query->setParam( 'suggest', $this->searchContext->getSuggest() );
 			}
 			$query->addParam( 'stats', 'suggest' );
 		}
@@ -1206,21 +1104,12 @@ GROOVY;
 
 		if ( $this->sort != 'relevance' ) {
 			// Clear rescores if we aren't using relevance as the search sort because they aren't used.
-			$this->rescore = array();
+			$this->searchContext->clearRescore();
+		} elseif ( $this->searchContext->hasRescore() ) {
+			$query->setParam( 'rescore', $this->searchContext->getRescore() );
 		}
 
-		if ( $this->rescore ) {
-			// rescore_query has to be in array form before we send it to Elasticsearch but it is way easier to work
-			// with if we leave it in query for until now
-			$modifiedRescore = array();
-			foreach ( $this->rescore as $rescore ) {
-				$rescore[ 'query' ][ 'rescore_query' ] = $rescore[ 'query' ][ 'rescore_query' ]->toArray();
-				$modifiedRescore[] = $rescore;
-			}
-			$query->setParam( 'rescore', $modifiedRescore );
-		}
-
-		$query->addParam( 'stats', $type );
+		$query->addParam( 'stats', $this->searchContext->getSearchType() );
 		switch ( $this->sort ) {
 		case 'relevance':
 			break;  // The default
@@ -1254,7 +1143,7 @@ GROOVY;
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 
-		switch( $type ) {
+		switch( $this->searchContext->getSearchType() ) {
 		case 'regex':
 			$poolCounterType = 'CirrusSearch-Regex';
 			$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
@@ -1278,13 +1167,13 @@ GROOVY;
 
 		$description = "{queryType} search for '{query}'";
 		$logContext = array(
-			'queryType' => $type,
+			'queryType' => $this->searchContext->getSearchType(),
 			'query' => $for,
 			'limit' => $this->limit ?: null,
 			// null means not requested, '' means not found. If found
 			// parent::buildLogContext will replace the '' with an
 			// actual suggestion.
-			'suggestion' => $this->suggest ? '' : null,
+			'suggestion' => $this->searchContext->getSuggest() ? '' : null,
 		);
 
 		if ( $this->returnQuery ) {
@@ -1315,6 +1204,7 @@ GROOVY;
 				serialize( $this->resultsType )
 			) );
 			$cacheResult = $cache->get( $key );
+			$type = $this->searchContext->getSearchType();
 			if ( $cacheResult ) {
 				$requestStats->increment("CirrusSearch.query_cache.$type.hit");
 				$this->successViaCache( $description, $logContext );
@@ -1336,7 +1226,7 @@ GROOVY;
 					return $this->failure( $e );
 				}
 			},
-			function( $error, $key, $userName ) use ( $type, $description, $logContext ) {
+			function( $error, $key, $userName ) use ( $description, $logContext ) {
 				$forUserName = $userName ? "for {userName} " : '';
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					/** @suppress PhanTypeMismatchArgument phan doesn't understand array addition */
@@ -1353,7 +1243,7 @@ GROOVY;
 						$loggedIn = $this->user->isLoggedIn() ? 'logged-in' : 'anonymous';
 						return Status::newFatal( "cirrussearch-too-busy-for-you-{$loggedIn}-error" );
 					}
-					if ( $type === 'regex' ) {
+					if ( $this->searchContext->getSearchType() === 'regex' ) {
 						return Status::newFatal( 'cirrussearch-regex-too-busy-error' );
 					}
 					return Status::newFatal( 'cirrussearch-too-busy-error' );
@@ -1371,8 +1261,10 @@ GROOVY;
 				) );
 			}
 
-			$result->setResult( true, $this->resultsType->transformElasticsearchResult( $this->suggestPrefixes,
-				$this->suggestSuffixes, $result->getValue(), $this->searchContext->isSearchContainedSyntax() ) );
+			$result->setResult( true, $this->resultsType->transformElasticsearchResult(
+				$this->searchContext,
+				$result->getValue()
+			) );
 			$isPartialResult = false;
 			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
 				$isPartialResult = true;
@@ -1388,6 +1280,7 @@ GROOVY;
 			}
 
 			if ( $cacheTTL > 0 && !$isPartialResult ) {
+				/** @suppress PhanUndeclaredVariable */
 				$requestStats->increment("CirrusSearch.query_cache.$type.set");
 				/** @suppress PhanUndeclaredVariable */
 				$cache->set( $key, $result, $cacheTTL );
@@ -1396,13 +1289,6 @@ GROOVY;
 
 
 		return $result;
-	}
-
-	/**
-	 * @return int[]|null
-	 */
-	public function getNamespaces() {
-		return $this->searchContext->getNamespaces();
 	}
 
 	/**
@@ -1415,7 +1301,7 @@ GROOVY;
 			// We're reaching into another wiki's indexes and we don't know what is there so be defensive.
 			return true;
 		}
-		$nsCount = count( $this->getNamespaces() );
+		$nsCount = count( $this->searchContext->getNamespaces() );
 		$validNsCount = count( MWNamespace::getValidNamespaces() );
 		if ( $nsCount === $validNsCount ) {
 			// We're only on our wiki and we're searching _everything_.
@@ -1613,7 +1499,7 @@ GROOVY;
 		$fields[] = "opening_text${fieldSuffix}^${openingTextWeight}";
 		$fields[] = "text${fieldSuffix}^${textWeight}";
 		$fields[] = "auxiliary_text${fieldSuffix}^${auxiliaryTextWeight}";
-		$namespaces = $this->getNamespaces();
+		$namespaces = $this->searchContext->getNamespaces();
 		if ( !$namespaces || in_array( NS_FILE, $namespaces ) ) {
 			$fileTextWeight = $weight * $searchWeights[ 'file_text' ];
 			$fields[] = "file_text${fieldSuffix}^${fileTextWeight}";
@@ -1629,30 +1515,31 @@ GROOVY;
 	 * @return string[]
 	 */
 	protected function getAndFilterExtraIndexes() {
-		if ( $this->limitSearchToLocalWiki ) {
+		if ( $this->searchContext->getLimitSearchToLocalWiki() ) {
 			return array();
 		}
-		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces( $this->getNamespaces() );
+		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces(
+			$this->searchContext->getNamespaces()
+		);
 		if ( $extraIndexes ) {
-			$this->notFilters[] = new \Elastica\Query\Term(
-				array( 'local_sites_with_dupe' => $this->indexBaseName ) );
+			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
+				array( 'local_sites_with_dupe' => $this->indexBaseName )
+			) );
 		}
 		return $extraIndexes;
 	}
 
 	/**
 	 * If there is any boosting to be done munge the the current query to get it right.
-	 *
-	 * @param string $type
 	 */
-	private function installBoosts( $type ) {
+	private function installBoosts() {
 		if ( $this->sort !== 'relevance' ) {
 			// Boosts are irrelevant if you aren't sorting by, well, relevance
 			return;
 		}
 
 		$builder = new RescoreBuilder( $this->searchContext );
-		$this->rescore = array_merge( $this->rescore, $builder->build() );
+		$this->searchContext->mergeRescore( $builder->build() );
 	}
 
 

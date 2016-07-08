@@ -50,14 +50,11 @@ interface ResultsType {
 	function getHighlightingConfiguration( array $highlightSource );
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $result
-	 * @param bool $searchContainedSyntax
 	 * @return mixed Set of search results, the types of which vary by implementation.
 	 */
-	function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
-		\Elastica\ResultSet $result, $searchContainedSyntax );
+	function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result );
 
 	/**
 	 * @return mixed Empty set of search results
@@ -92,14 +89,11 @@ class TitleResultsType implements ResultsType {
 	}
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $resultSet
-	 * @param bool $searchContainedSyntax
 	 * @return array
 	 */
-	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
-		\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$results[] = Title::makeTitle( $r->namespace, $r->title );
@@ -184,16 +178,13 @@ class FancyTitleResultsType extends TitleResultsType {
 	/**
 	 * Convert the results to titles.
 	 *
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $resultSet
-	 * @param bool $searchContainedSyntax
 	 * @return array[] Array of arrays, each with optional keys:
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
-	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
-			\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$title = Title::makeTitle( $r->namespace, $r->title );
@@ -458,15 +449,18 @@ class FullTextResultsType implements ResultsType {
 	}
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $result
-	 * @param bool $searchContainedSyntax
 	 * @return ResultSet
 	 */
-	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
-			\Elastica\ResultSet $result, $searchContainedSyntax ) {
-		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result ) {
+		return new ResultSet(
+			$context->getSuggestPrefixes(),
+			$context->getSuggestSuffixes(),
+			$result,
+			$context->isSyntaxUsed(),
+			$this->prefix
+		);
 	}
 
 	/**
@@ -551,14 +545,11 @@ class IdResultsType extends TitleResultsType {
 	}
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $resultSet
-	 * @param bool $searchContainedSyntax
 	 * @return string[]
 	 */
-	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes,
-		\Elastica\ResultSet $resultSet, $searchContainedSyntax ) {
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = array();
 		foreach( $resultSet->getResults() as $r ) {
 			$results[] = $r->getId();
@@ -590,14 +581,18 @@ class InterwikiResultsType implements ResultsType {
 	}
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
+	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $result
-	 * @param bool $searchContainedSyntax
 	 * @return ResultSet
 	 */
-	public function transformElasticsearchResult( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $result, $searchContainedSyntax ) {
-		return new ResultSet( $suggestPrefixes, $suggestSuffixes, $result, $searchContainedSyntax, $this->prefix );
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result ) {
+		return new ResultSet(
+			$context->getSuggestPrefixes(),
+			$context->getSuggestSuffixes(),
+			$result,
+			$context->isSyntaxUsed(),
+			$this->prefix
+		);
 	}
 
 	/**

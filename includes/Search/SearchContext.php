@@ -181,7 +181,7 @@ class SearchContext {
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
 
 		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
-		if ( $decay ) {
+		if ( $decay > 0 ) {
 			$this->preferRecentDecayPortion = $decay;
 			$this->preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
 		}

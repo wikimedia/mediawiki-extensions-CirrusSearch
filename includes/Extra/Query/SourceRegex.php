@@ -132,7 +132,7 @@ class SourceRegex extends AbstractQuery {
 	}
 
     /**
-     * @param bool $locale locale used for case conversions.  Its important that
+     * @param string $locale locale used for case conversions.  Its important that
      *  this matches the locale used for lowercasing in the ngram index.
      * @return $this
      */

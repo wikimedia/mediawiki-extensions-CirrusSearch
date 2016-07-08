@@ -374,26 +374,6 @@ class Util {
 	}
 
 	/**
-	 * Parse boosted templates.  Parse failures silently return no boosted templates.
-	 *
-	 * @param string $text text representation of boosted templates
-	 * @return float[] map of boosted templates (key is the template, value is a float).
-	 */
-	public static function parseBoostTemplates( $text ) {
-		$boostTemplates = array();
-		$templateMatches = array();
-		if ( preg_match_all( '/([^|]+)\|(\d+)% ?/', $text, $templateMatches, PREG_SET_ORDER ) ) {
-			foreach ( $templateMatches as $templateMatch ) {
-				// templates field is populated with Title::getPrefixedText
-				// which will replace _ to ' '. We should do the same here.
-				$template = strtr( $templateMatch[ 1 ], '_', ' ' );
-				$boostTemplates[ $template ] = floatval( $templateMatch[ 2 ] ) / 100;
-			}
-		}
-		return $boostTemplates;
-	}
-
-	/**
 	 * @return float[]
 	 */
 	public static function getDefaultBoostTemplates() {
@@ -406,7 +386,8 @@ class Util {
 					$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
 					if( !$source->isDisabled() ) {
 						$lines = Util::parseSettingsInMessage( $source->plain() );
-						return Util::parseBoostTemplates( implode( ' ', $lines ) );                  // Now parse the templates
+						// Now parse the templates
+						return Query\BoostTemplatesFeature::parseBoostTemplates( implode( ' ', $lines ) );
 					}
 					return array();
 				}
@@ -560,5 +541,4 @@ class Util {
 		}
 	return $term;
 	}
-
 }

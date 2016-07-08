@@ -128,8 +128,7 @@ class Filters {
 
 	/**
 	 * Create a filter for intitle: queries.  This was extracted from the big
-	 * switch block in Searcher.php.  This function is pure, deferring state
-	 * changes to the reference-updating return function.
+	 * switch block in Searcher.php.
 	 *
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
@@ -147,41 +146,9 @@ class Filters {
 	}
 
 	/**
-	 * Create a filter for near: and neartitle: queries.
-	 *
-	 * @param Coord $coord
-	 * @param int $radius Search radius in meters
-	 * @param int $idToExclude Page id to exclude, or 0 for no exclusions.
-	 * @return AbstractQuery
-	 */
-	public static function geo( Coord $coord, $radius, $idToExclude = 0 ) {
-		$filter = new \Elastica\Query\BoolQuery();
-		$filter->addFilter( new \Elastica\Query\Term( [ 'coordinates.globe' => $coord->globe ] ) );
-		$filter->addFilter( new \Elastica\Query\Term( [ 'coordinates.primary' => 1 ] ) );
-
-		$distanceFilter = new \Elastica\Query\GeoDistance(
-			'coordinates.coord',
-			[ 'lat' => $coord->lat, 'lon' => $coord->lon ],
-			$radius . 'm'
-		);
-		$distanceFilter->setOptimizeBbox( 'indexed' );
-		$filter->addFilter( $distanceFilter );
-
-		if ( $idToExclude > 0 ) {
-			$filter->addMustNot( new \Elastica\Query\Term( [ '_id' => $idToExclude ] ) );
-		}
-
-		$nested = new \Elastica\Query\Nested();
-		$nested->setPath( 'coordinates' )->setQuery( $filter );
-
-		return $nested;
-	}
-
-	/**
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
 	 * @param string $value
-	 * @param bool $updateHighlightSourceRef
 	 * @param callable $fieldF
 	 * @return AbstractQuery
 	 */
@@ -201,5 +168,4 @@ class Filters {
 
 		return $query;
 	}
-
 }

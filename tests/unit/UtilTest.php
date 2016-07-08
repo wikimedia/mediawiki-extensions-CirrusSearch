@@ -2,13 +2,7 @@
 
 namespace CirrusSearch;
 
-use Elastica\Exception\InvalidException;
-use GeoData\Coord;
-use LoadBalancer;
-use IDatabase;
 use MediaWikiTestCase;
-use MediaWiki\MediaWikiServices;
-use Title;
 
 /**
  * Test Util functions.
@@ -534,5 +528,4 @@ class UtilTest extends MediaWikiTestCase {
 		}
 
 	}
-
 }

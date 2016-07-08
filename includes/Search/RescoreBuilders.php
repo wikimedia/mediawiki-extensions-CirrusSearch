@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Query\GeoFeature;
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\AbstractQuery;
@@ -962,7 +963,7 @@ class GeoRadiusFunctionScoreBuilder extends FunctionScoreBuilder {
 		foreach ( $this->context->getGeoBoosts() as $config ) {
 			$functionScore->addWeightFunction(
 				$this->weight * $config['weight'],
-				Filters::geo( $config['coord'], $config['radius'] )
+				GeoFeature::createQuery( $config['coord'], $config['radius'] )
 			);
 		}
 	}

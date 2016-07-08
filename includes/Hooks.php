@@ -535,6 +535,9 @@ class Hooks {
 			}
 		}
 
+		// a bit of a hack...but pull in abstract classes that arn't in the autoloader
+		require_once $dir . '/Query/BaseSimpleKeywordFeatureTest.php';
+
 		return true;
 	}
 

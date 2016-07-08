@@ -38,10 +38,7 @@ class SearcherTest extends \MediaWikiTestCase {
 			),
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
 			'wgContentNamespaces' => array( NS_MAIN ),
-		) );
-
-		// Override the list of namespaces to give more deterministic results
-		$this->setMwGlobals( array(
+			// Override the list of namespaces to give more deterministic results
 			'wgHooks' => array(
 				'CanonicalNamespaces' => array(
 					function ( &$namespaces ) {

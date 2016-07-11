@@ -171,6 +171,7 @@ $wgCirrusSearchRegexMaxDeterminizedStates = 20000;
 // 10000.
 // With elasticsearch 1.3 this setting must be disabled.
 // $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
+$wgCirrusSearchQueryStringMaxDeterminizedStates = null;
 
 // By default, Cirrus will organize pages into one of two indexes (general or
 // content) based on whether a page is in a content namespace. This should

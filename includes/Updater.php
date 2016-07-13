@@ -58,7 +58,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param string[] $flags
 	 */
 	public function __construct( Connection $conn, array $flags = array() ) {
-		parent::__construct( $conn, null, null );
+		parent::__construct( $conn, null, 0 );
 		if ( in_array( 'same-cluster', $flags ) ) {
 			$this->writeToClusterName = $this->connection->getClusterName();
 		}

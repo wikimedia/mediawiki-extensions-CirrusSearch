@@ -349,7 +349,7 @@ EOD
 				$this->error( "Unknown cluster $cluster\n", 1 );
 			}
 			if ( $this->config->canWriteToCluster( $cluster ) ) {
-				$this->error( "$selectedCluster is not writable\n", 1 );
+				$this->error( "$cluster is not writable\n", 1 );
 			}
 			$connections[$cluster] = Connection::getPool( $this->config, $cluster );
 		} else {

@@ -39,7 +39,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @var Connection
 	 */
 	public function __construct( Connection $conn ) {
-		parent::__construct( $conn, null, null );
+		parent::__construct( $conn, null, 0 );
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 	}

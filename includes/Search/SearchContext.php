@@ -180,6 +180,7 @@ class SearchContext {
 	/**
 	 * @deprecated use custom rescore profile
 	 * @return bool
+	 * @suppress PhanDeprecatedProperty
 	 */
 	public function isBoostLinks() {
 		return $this->boostLinks;

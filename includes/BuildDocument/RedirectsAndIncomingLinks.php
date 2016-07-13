@@ -82,7 +82,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	}
 
 	protected function __construct( Connection $conn ) {
-		parent::__construct( $conn, null, null );
+		parent::__construct( $conn, null, 0 );
 		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
 	}
 

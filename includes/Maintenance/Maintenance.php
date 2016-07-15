@@ -35,9 +35,35 @@ abstract class Maintenance extends \Maintenance {
 	 */
 	private $connection;
 
+	/**
+	 * @var SearchConfig
+	 */
+	protected $searchConfig;
+
 	public function __construct() {
 		parent::__construct();
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
+	}
+
+	public function finalSetup() {
+		parent::finalSetup();
+		$this->searchConfig = MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
+	}
+
+	/**
+	 * @param string $maintClass
+	 * @param string|null $classFile
+	 * @return \Maintenance
+	 */
+	public function runChild( $maintClass, $classFile = null ) {
+		$child = parent::runChild( $maintClass, $classFile );
+		if ( $child instanceof self ) {
+			$child->searchConfig = $this->searchConfig;
+		}
+
+		return $child;
 	}
 
 	/**
@@ -46,43 +72,36 @@ abstract class Maintenance extends \Maintenance {
 	 */
 	public function getConnection( $cluster = null ) {
 		if( $cluster ) {
-			$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
-			if ( $config instanceof SearchConfig ) {
-				if (!$config->getElement( 'CirrusSearchClusters', $cluster ) ) {
+			if ( $this->searchConfig instanceof SearchConfig ) {
+				if (!$this->searchConfig->getElement( 'CirrusSearchClusters', $cluster ) ) {
 					$this->error( 'Unknown cluster.', 1 );
 				}
-				return Connection::getPool( $config, $cluster );
+				return Connection::getPool( $this->searchConfig, $cluster );
 			} else {
 				// We shouldn't ever get here ... but the makeConfig type signature returns the parent class of SearchConfig
 				// so just being extra careful...
-				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $config ) );
+				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $this->searchConfig ) );
 			}
 		}
 		if ( $this->connection === null ) {
-			$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
-			$cluster = $this->decideCluster( $config );
-			$this->connection = Connection::getPool( $config, $cluster );
+			$cluster = $this->decideCluster();
+			$this->connection = Connection::getPool( $this->searchConfig, $cluster );
 		}
 		return $this->connection;
 	}
 
 	/**
-	 * @param SearchConfig $config
 	 * @return string|null
 	 */
-	private function decideCluster( SearchConfig $config ) {
+	private function decideCluster() {
 		$cluster = $this->getOption( 'cluster', null );
 		if ( $cluster === null ) {
 			return null;
 		}
-		if ( $config->has( 'CirrusSearchServers' ) ) {
+		if ( $this->searchConfig->has( 'CirrusSearchServers' ) ) {
 			$this->error( 'Not configured for cluster operations.', 1 );
 		}
-		$hosts = $config->getElement( 'CirrusSearchClusters', $cluster );
+		$hosts = $this->searchConfig->getElement( 'CirrusSearchClusters', $cluster );
 		if ( $hosts === null ) {
 			$this->error( 'Unknown cluster.', 1 );
 		}

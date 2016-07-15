@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Api;
 
+use CirrusSearch\SearchConfig;
+
 /**
  * Dumps CirrusSearch mappings for easy viewing.
  *
@@ -23,8 +25,9 @@ namespace CirrusSearch\Api;
 class MappingDump extends ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
+		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
 		foreach( $conn->getAllIndexTypes() as $index ) {
-			$mapping = $conn->getPageType( wfWikiID(), $index )->getMapping();
+			$mapping = $conn->getPageType( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
 			$this->getResult()->addPreserveKeysList( array( $index, 'page' ), '_all' );
 		}

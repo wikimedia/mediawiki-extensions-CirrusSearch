@@ -84,7 +84,7 @@ class ElasticaWrite extends Job {
 				$conn->setTimeout( $this->params['clientSideTimeout'] );
 			}
 
-			$sender = new DataSender( $conn );
+			$sender = new DataSender( $conn, $config );
 			try {
 				$status = call_user_func_array(
 					array( $sender, $this->params['method'] ),

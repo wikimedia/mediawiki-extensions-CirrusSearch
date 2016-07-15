@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Maintenance\Metastore;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica;
 
@@ -215,7 +216,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
 		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(

@@ -897,6 +897,11 @@ $wgCirrusSearchMasterTimeout = '30s';
  */
 $wgCirrusSearchSanityCheck = true;
 
+/**
+ * The base name of indexes used on this wiki.
+ */
+$wgCirrusSearchIndexBaseName = wfWikiID();
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

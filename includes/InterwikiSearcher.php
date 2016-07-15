@@ -41,7 +41,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param Connection $connection
 	 * @param int[] $namespaces Namespace numbers to search
 	 * @param User|null $user
-	 * @param string $index Base name for index to search from, defaults to wfWikiId()
+	 * @param string $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 * @param string $interwiki Interwiki prefix we're searching
 	 */
 	public function __construct( Connection $connection, array $namespaces, User $user = null, $index, $interwiki ) {

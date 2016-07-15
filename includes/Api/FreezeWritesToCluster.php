@@ -25,7 +25,7 @@ use CirrusSearch\DataSender;
  */
 class FreezeWritesToCluster extends ApiBase {
 	public function execute() {
-		$sender = new DataSender( $this->getCirrusConnection() );
+		$sender = new DataSender( $this->getCirrusConnection(), $this->getSearchConfig() );
 
 		if ( $this->getParameter( 'thaw' ) ) {
 			$sender->thawIndexes();

@@ -205,7 +205,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param SearchConfig|null $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
-	 * @param string|boolean $index Base name for index to search from, defaults to wfWikiId()
+	 * @param string|boolean $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
 	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false ) {

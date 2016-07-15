@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica;
 use Elastica\Filter;
@@ -107,7 +108,7 @@ class DumpIndex extends Maintenance {
 		$this->setConnectionTimeout();
 
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$indexTypes = $this->getConnection()->getAllIndexTypes();
 		if ( !in_array( $this->indexType, $indexTypes ) ) {

@@ -366,17 +366,17 @@ class ForceSearchIndex extends Maintenance {
 	 * @return bool
 	 */
 	private function simpleCheckIndexes() {
-		$wiki = wfWikiID();
+		$indexBaseName = $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME );
 
 		// Top-level alias needs to exist
-		if ( !$this->getConnection()->getIndex( $wiki )->exists() ) {
+		if ( !$this->getConnection()->getIndex( $indexBaseName )->exists() ) {
 			return false;
 		}
 
 		// Now check all index types to see if they exist
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			// If the alias for this type doesn't exist, fail
-			if ( !$this->getConnection()->getIndex( $wiki, $indexType )->exists() ) {
+			if ( !$this->getConnection()->getIndex( $indexBaseName, $indexType )->exists() ) {
 				return false;
 			}
 		}

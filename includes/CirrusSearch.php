@@ -82,10 +82,12 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	public function __construct( $baseName = null ) {
-		$this->indexBaseName = $baseName === null ? wfWikiID() : $baseName;
 		$this->config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
+		$this->indexBaseName = $baseName === null
+			? $this->config->get( SearchConfig::INDEX_BASE_NAME )
+			: $baseName;
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
 	}

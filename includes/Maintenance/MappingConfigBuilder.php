@@ -128,6 +128,7 @@ class MappingConfigBuilder {
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
 				),
+				'wiki' => $this->buildKeywordField(),
 				'namespace' => $this->buildLongField(),
 				'namespace_text' => $this->buildKeywordField(),
 				'title' => $this->buildStringField( 'title',

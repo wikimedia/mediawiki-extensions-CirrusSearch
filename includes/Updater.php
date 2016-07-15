@@ -291,6 +291,7 @@ class Updater extends ElasticsearchIntermediary {
 			$doc = new \Elastica\Document( $page->getId(), array(
 				'version' => $page->getLatest(),
 				'version_type' => 'external',
+				'wiki' => wfWikiID(),
 				'namespace' => $title->getNamespace(),
 				'namespace_text' => Util::getNamespaceText( $title ),
 				'title' => $title->getText(),

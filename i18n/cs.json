@@ -4,7 +4,8 @@
 			"Matěj Grabovský",
 			"Mormegil",
 			"Paxt",
-			"Utar"
+			"Utar",
+			"Walter Klosse"
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
@@ -22,6 +23,7 @@
 	"cirrussearch-pref-label": "Nové hledání",
 	"cirrussearch-pref-desc": "Vyzkoušejte nový vyhledávač, který podporuje více jazyků, zobrazuje novější výsledky a dokonce hledá text uvnitř šablon.",
 	"apihelp-cirrus-config-dump-description": "Výpis konfigurace CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Výpis konfigurace CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Výpis mapování CirrusSearch pro tuto wiki.",
 	"apihelp-cirrus-settings-dump-description": "Výpis nastavení CirrusSearch pro tuto wiki.",
 	"cirrussearch-give-feedback": "Sdělte nám svůj názor",

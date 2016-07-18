@@ -547,7 +547,7 @@ class Hooks {
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
 		$searcher = new Searcher( self::getConnection(), 0, 1, null, $namespaces );
 		$searcher->updateNamespacesFromQuery( $search );
-		$namespaces = $searcher->getNamespaces();
+		$namespaces = $searcher->getSearchContext()->getNamespaces();
 		return false;
 	}
 

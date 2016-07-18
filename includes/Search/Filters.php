@@ -118,10 +118,10 @@ class Filters {
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
 	 * @param string $value
-	 * @return callable a side-effecting function to update several references
+	 * @return AbstractQuery
 	 */
 	public static function insource( Escaper $escaper, SearchContext $context, $value ) {
-		return self::insourceOrIntitle( $escaper, $context, $value, true, function () {
+		return self::insourceOrIntitle( $escaper, $context, $value, function () {
 			return 'source_text.plain';
 		});
 	}
@@ -134,10 +134,10 @@ class Filters {
 	 * @param Escaper $escaper
 	 * @param SearchContext $context
 	 * @param string $value
-	 * @return callable a side-effecting function to update several references
+	 * @return AbstractQuery
 	 */
 	public static function intitle( Escaper $escaper, SearchContext $context, $value ) {
-		return self::insourceOrIntitle( $escaper, $context, $value, false, function ( $queryString ) {
+		return self::insourceOrIntitle( $escaper, $context, $value, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return 'title.plain';
 			} else {
@@ -183,9 +183,9 @@ class Filters {
 	 * @param string $value
 	 * @param bool $updateHighlightSourceRef
 	 * @param callable $fieldF
-	 * @return callable
+	 * @return AbstractQuery
 	 */
-	private static function insourceOrIntitle( Escaper $escaper, SearchContext $context, $value, $updateHighlightSourceRef, $fieldF ) {
+	private static function insourceOrIntitle( Escaper $escaper, SearchContext $context, $value, $fieldF ) {
 		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
@@ -196,18 +196,10 @@ class Filters {
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
 
-		$updateReferences =
-			function ( &$fuzzyQueryRef, &$filterDestinationRef, &$highlightSourceRef, &$searchContainedSyntaxRef )
-			     use ( $fuzzyQuery, $query, $updateHighlightSourceRef ) {
-				$fuzzyQueryRef             = $fuzzyQuery;
-				$filterDestinationRef[]    = $query;
-				if ($updateHighlightSourceRef) {
-					$highlightSourceRef[]      = array( 'query' => $query );
-				}
-				$searchContainedSyntaxRef  = true;
-			};
+		// @todo use a multi-return instead of passing in context?
+		$context->setFuzzyQuery( $fuzzyQuery );
 
-		return $updateReferences;
+		return $query;
 	}
 
 }

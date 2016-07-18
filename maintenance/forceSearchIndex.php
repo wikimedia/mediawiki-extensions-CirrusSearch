@@ -2,8 +2,11 @@
 
 namespace CirrusSearch;
 
+use BatchRowIterator;
 use CirrusSearch;
+use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Maintenance\Maintenance;
+use IDatabase;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -51,11 +54,6 @@ class ForceSearchIndex extends Maintenance {
 	public $namespace;
 	public $excludeContentTypes;
 	public $lastJobQueueCheckTime = 0;
-
-	/**
-	 * @var int number of completed jobs
-	 */
-	private $completed;
 
 	/**
 	 * @var boolean true if the script is run with --ids
@@ -167,99 +165,49 @@ class ForceSearchIndex extends Maintenance {
 			: 'Deleted';
 
 		$operationStartTime = microtime( true );
-		$this->completed = 0;
+		$completed = 0;
 		$rate = 0;
 
-		$minUpdate = $this->fromDate;
-		if ( $this->indexUpdates ) {
-			$minId = $this->getOption( 'fromId', -1 );
+		if ( $this->runWithIds ) {
+			$it = $this->getIdsIterator();
+		} elseif ( $this->indexUpdates && $this->fromDate === null) {
+			$it = $this->getUpdatesByIdIterator();
+		} elseif ( $this->indexUpdates ) {
+			$it = $this->getUpdatesByDateIterator();
 		} else {
-			$minNamespace = -100000000;
-			$minTitle = '';
+			$it = $this->getDeletesIterator();
 		}
 
-		while ( $this->jobsTodo() ) {
-			$size = 0;
+		foreach ( $it as $batch ) {
 			if ( $this->indexUpdates ) {
-				if ( $this->runWithIds ) {
-					$updates = $this->findUpdatesByIds( array_shift( $this->ids ) );
-				} else {
-					/** @suppress PhanUndeclaredVariable */
-					$updates = $this->findUpdates( $minUpdate, $minId, $this->toDate );
-				}
-				$size = count( $updates );
-				// Note that we'll strip invalid updates after checking to the loop break condition
-				// because we don't want a batch the contains only invalid updates to cause early
-				// termination of the process....
-			} else {
-				/** @suppress PhanUndeclaredVariable */
-				$deletes = $this->findDeletes( $minUpdate, $minNamespace, $minTitle, $this->toDate );
-				$size = count( $deletes );
-				// @todo: add --ids support with --deletes
-				// instead of inspecting the archive table we could maybe create Titles, try
-				// to fetch them with LinkBatch then send deletes only on those where
-				// $title->exists() === false
-			}
-
-			if ( $size == 0 ) {
-				break;
-			}
-			if ( $this->indexUpdates ) {
-				/** @suppress PhanUndeclaredVariable */
-				$last = $updates[ $size - 1 ];
-				// We make sure to set this if we need it but don't bother when we don't because
-				// it requires loading the revision.
-				if ( isset( $last[ 'update' ] ) ) {
-					$minUpdate = $last[ 'update' ];
-				}
-				$minId = $last[ 'id' ];
-
-				// Strip updates down to just pages
-				$pages = array();
-				/** @suppress PhanUndeclaredVariable */
-				foreach ( $updates as $update ) {
-					if ( isset( $update[ 'page' ] ) ) {
-						$pages[] = $update[ 'page' ];
-					}
-				}
+				$size = count( $batch['updates'] );
+				$updates = array_filter( $batch['updates'] );
 				if ( $this->queue ) {
 					$this->waitForQueueToShrink( $wiki );
 					JobQueueGroup::singleton()->push(
-						Job\MassIndex::build( $pages, $updateFlags, $this->getOption( 'cluster' ) )
+						Job\MassIndex::build( $updates, $updateFlags, $this->getOption( 'cluster' ) )
 					);
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = $this->createUpdater();
-					$size = $updater->updatePages( $pages, null, null, $updateFlags );
+					$size = $updater->updatePages( $updates, null, null, $updateFlags );
 				}
 			} else {
-				$titlesToDelete = array();
-				$idsToDelete = array();
-				/** @suppress PhanUndeclaredVariable */
-				foreach( $deletes as $delete ) {
-					$titlesToDelete[] = $delete[ 'title' ];
-					$idsToDelete[] = $delete[ 'page' ];
-					$lastDelete = $delete;
-				}
-				$minUpdate = $lastDelete[ 'timestamp' ];
-				$minNamespace = $lastDelete[ 'title' ]->getNamespace();
-				$minTitle = $lastDelete[ 'title' ]->getText();
+				$size = count( $batch['titlesToDelete'] );
 				$updater = $this->createUpdater();
-				$updater->deletePages( $titlesToDelete, $idsToDelete );
+				$updater->deletePages( $batch['titlesToDelete'], $batch['idsToDelete'] );
 			}
 
-			$this->completed += $size;
-			$rate = $this->calculateIndexingRate( $this->completed, $operationStartTime );
 
-			if ( is_null( $this->toDate ) ) {
-				/** @suppress PhanUndeclaredVariable */
-				$endingAt = $minId;
-			} else {
-				$endingAt = $minUpdate->getTimestamp( TS_ISO_8601 );
+			$completed += $size;
+			$rate = $this->calculateIndexingRate( $completed, $operationStartTime );
+
+			$this->output( "$wiki $operationName $size pages ending at {$batch['endingAt']} at $rate/second\n" );
+			if ( !is_null( $this->limit ) && $completed > $this->limit ) {
+				break;
 			}
-			$this->output( "$wiki $operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
-		$this->output( "$operationName a total of {$this->completed} pages at $rate/second\n" );
+		$this->output( "$operationName a total of {$completed} pages at $rate/second\n" );
 		$this->waitForQueueToDrain( $wiki );
 	}
 
@@ -279,8 +227,7 @@ class ForceSearchIndex extends Maintenance {
 				return intval( $id );
 			},
 			explode( ',', $this->getOption( 'ids' ) ) );
-		$ids = array_unique( $ids, SORT_REGULAR );
-		return array_chunk( $ids, $this->mBatchSize );
+		return array_unique( $ids, SORT_REGULAR );
 	}
 
 	private function buildUpdateFlags() {
@@ -307,17 +254,21 @@ class ForceSearchIndex extends Maintenance {
 
 	private function waitForQueueToShrink( $wiki ) {
 		$now = microtime( true );
-		if ( $now - $this->lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
-			$this->lastJobQueueCheckTime = $now;
-			$queueSize = $this->getUpdatesInQueue();
-			if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
-				do {
-					$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
-					usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-					$queueSize = $this->getUpdatesInQueue();
-				} while ( $this->pauseForJobs < $queueSize );
-			}
+		if ( $now - $this->lastJobQueueCheckTime <= self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
+			return;
 		}
+
+		$this->lastJobQueueCheckTime = $now;
+		$queueSize = $this->getUpdatesInQueue();
+		if ( $this->maxJobs === null || $this->maxJobs >= $queueSize )  {
+			return;
+		}
+
+		do {
+			$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
+			usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+			$queueSize = $this->getUpdatesInQueue();
+		} while ( $this->pauseForJobs < $queueSize );
 	}
 
 	private function waitForQueueToDrain( $wiki ) {
@@ -346,14 +297,6 @@ class ForceSearchIndex extends Maintenance {
 			}
 			$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
 			usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-		}
-	}
-
-	private function jobsTodo() {
-		if ( $this->runWithIds ) {
-			return !empty( $this->ids );
-		} else {
-			return is_null( $this->limit ) || $this->limit > $this->completed;
 		}
 	}
 
@@ -399,209 +342,202 @@ class ForceSearchIndex extends Maintenance {
 		return true;
 	}
 
-	/**
-	 * Find $this->mBatchSize pages that have updates made after (minUpdate,minId) and before maxUpdate.
-	 *
-	 * @param $minUpdate string|null Minimum mediawiki timestamp
-	 * @param $minId int|null Minimum mediawiki page id
-	 * @param string|null $maxUpdate Maximum mediawiki timestamp
-	 * @return array An array of the last update timestamp, id, and page that was found.
-	 *    Sometimes page is null - those record should be used to determine new
-	 *    inputs for this function but should not by synced to the search index.
-	 */
-	private function findUpdates( $minUpdate, $minId, $maxUpdate ) {
+	protected function getDeletesIterator() {
 		$dbr = $this->getDB( DB_SLAVE );
-		$minId = $dbr->addQuotes( $minId );
-		if ( $maxUpdate === null ) {
-			$where = array( "$minId < page_id" );
-			if ( $this->toId !== null ) {
-				$toId = $dbr->addQuotes( $this->toId );
-				$where[] = "page_id <= $toId";
-			}
-			if ( $this->namespace ) {
-				$where['page_namespace'] = $this->namespace;
-			}
-			if ( $this->excludeContentTypes ) {
-				$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
-				$where[] = "page_content_model NOT IN ($list)";
+		$it = new BatchRowIterator(
+			$dbr,
+			'archive',
+			array( 'ar_timestamp', 'ar_namespace', 'ar_title' ),
+			$this->mBatchSize
+		);
+
+		$this->attachPageConditions( $dbr, $it, 'ar' );
+		$this->attachTimestampConditions( $dbr, $it, 'ar' );
+
+		$it->setFetchColumns( array( 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ) );
+
+		return new CallbackIterator( $it, function ( $batch ) {
+			$titlesToDelete = array();
+			$idsToDelete = array();
+			foreach ( $batch as $row ) {
+				$titlesToDelete[] = Title::makeTitle( $row->ar_namespace, $row->ar_title );
+				$idsToDelete[] = $row->ar_page_id;
 			}
 
-			// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
-			$res = $dbr->select(
-				array( 'page' ),
-				WikiPage::selectFields(),
-				$where,
-				__METHOD__,
-				array( 'ORDER BY' => 'page_id',
-				       'LIMIT' => $this->mBatchSize )
+			return array(
+				'titlesToDelete' => $titlesToDelete,
+				'idsToDelete' => $idsToDelete,
+				'endingAt' => isset( $row )
+					? ( new MWTimestamp( $row->ar_timestamp ) )->getTimestamp( TS_ISO_8601 )
+					: 'unknown',
 			);
-		} else {
-			$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
-			$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
-
-			$where = array(
-				'page_id = rev_page',
-				'rev_id = page_latest',
-				"( ( $minUpdate = rev_timestamp AND $minId < page_id ) OR $minUpdate < rev_timestamp )",
-				"rev_timestamp <= $maxUpdate"
-			);
-			if ( $this->namespace ) {
-				$where['page_namespace'] = $this->namespace;
-			}
-			if ( $this->excludeContentTypes ) {
-				$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
-				$where[] = "page_content_model NOT IN ($list)";
-			}
-
-			$res = $dbr->select(
-				array( 'page', 'revision' ),
-				array_merge(
-					array( 'rev_timestamp' ),
-					WikiPage::selectFields()
-				),
-				$where,
-				// Note that redirects are allowed here so we can pick up redirects made during search downtime
-				__METHOD__,
-				array( 'ORDER BY' => 'rev_timestamp, rev_page',
-				       'LIMIT' => $this->mBatchSize )
-			);
-		}
-
-		return $this->decodeResults( $res, $maxUpdate );
+		} );
 	}
 
-	/**
-	 * Find $this->mBatchSize pages that have updates made after (minUpdate,minId) and before maxUpdate.
-	 *
-	 * @param $ids int[] list of ids
-	 * @return array An array of the last update timestamp, id, and page that was found.
-	 *    Sometimes page is null - those record should be used to determine new
-	 *    inputs for this function but should not by synced to the search index.
-	 */
-	private function findUpdatesByIds( array $ids ) {
+
+	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_SLAVE );
-		$where = array();
-		$where[] = 'page_id IN (' . $dbr->makeList( $ids ) . ')';
+		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
+		$it->addConditions( array(
+			'page_id in (' . $dbr->makeList( $this->ids, LIST_COMMA ) . ')',
+		) );
+		$this->attachPageConditions( $dbr, $it, 'page' );
+
+		return $this->wrapDecodeResults( $it, 'page_id' );
+	}
+
+	protected function getUpdatesByDateIterator() {
+		$dbr = $this->getDB( DB_SLAVE );
+		$it = new BatchRowIterator(
+			$dbr,
+			array( 'page', 'revision' ),
+			array( 'rev_timestamp', 'page_id' ),
+			$this->mBatchSize
+		);
+		$it->addConditions( array(
+			'rev_page = page_id',
+			'rev_id = page_latest',
+		) );
+
+		$this->attachTimestampConditions( $dbr, $it, 'rev' );
+		$this->attachPageConditions( $dbr, $it, 'page' );
+
+		return $this->wrapDecodeResults( $it, 'rev_timestamp' );
+	}
+
+	protected function getUpdatesByIdIterator() {
+		$dbr = $this->getDB( DB_SLAVE );
+		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
+		$fromId = $this->getOption( 'fromId', 0 );
+		if ( $fromId > 0 ) {
+			$it->addConditions( array(
+				'page_id >= ' . $dbr->addQuotes( $fromId ),
+			) );
+		}
+		if ( $this->toId ) {
+			$it->addConditions( array(
+				'page_id <= ' . $dbr->addQuotes( $this->toId ),
+			) );
+		}
+
+		$this->attachPageConditions( $dbr, $it, 'page' );
+
+		return $this->wrapDecodeResults( $it, 'page_id' );
+	}
+
+	private function attachTimestampConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
+		// When initializing we guarantee that if either fromDate or toDate are provided
+		// the other has a sane default value.
+		if ( $this->fromDate ) {
+			$it->addConditions( array(
+				"{$columnPrefix}_timestamp >= " . $dbr->addQuotes( $dbr->timestamp( $this->fromDate ) ),
+				"{$columnPrefix}_timestamp <= " . $dbr->addQuotes( $dbr->timestamp( $this->toDate ) ),
+			) );
+		}
+	}
+
+	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
+		if ( $columnPrefix === 'page' ) {
+			$it->setFetchColumns( WikiPage::selectFields() );
+		}
 		if ( $this->namespace ) {
-			$where['page_namespace'] = $this->namespace;
+			$it->addConditions( array(
+				"{$columnPrefix}_namespace" => $this->namespace,
+			) );
 		}
 		if ( $this->excludeContentTypes ) {
 			$list = $dbr->makeList( $this->excludeContentTypes, LIST_COMMA );
-			$where[] = "page_content_model NOT IN ($list)";
+			$it->addConditions( array(
+				"{$columnPrefix}_content_model NOT IN ($list)",
+			) );
 		}
-
-		// We'd like to filter out redirects here but it makes the query much slower on larger wikis....
-		$res = $dbr->select(
-			array( 'page' ),
-			WikiPage::selectFields(),
-			$where,
-			__METHOD__,
-			array( 'ORDER BY' => 'page_id',
-			       'LIMIT' => $this->mBatchSize )
-		);
-
-		return $this->decodeResults( $res, null );
 	}
 
 	/**
-	 * @param mixed $res Database result
-	 * @param string|null Maximum mediawiki timestamp
-	 * @return array[]
+	 * @param BatchRowIterator $it
+	 * @return CallbackIterator
 	 */
-	private function decodeResults( $res, $maxUpdate ) {
-		$result = array();
-		// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
-		// level so those are stored when it is freed.
-		$updater = $this->createUpdater();
+	private function wrapDecodeResults( BatchRowIterator $it, $endingAtColumn ) {
+		return new CallbackIterator( $it, function ( $batch ) use ( $endingAtColumn ) {
+			// Build the updater outside the loop because it stores the redirects it hits.  Don't build it at the top
+			// level so those are stored when it is freed.
+			$updater = $this->createUpdater();
 
-		foreach ( $res as $row ) {
-			// No need to call Updater::traceRedirects here because we know this is a valid page because
-			// it is in the database.
-			$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
+			$pages = array();
+			foreach ( $batch as $row ) {
+				// No need to call Updater::traceRedirects here because we know this is a valid page because
+				// it is in the database.
+				$page = WikiPage::newFromRow( $row, WikiPage::READ_LATEST );
 
-			try {
-				$content = $page->getContent();
-			} catch ( MWException $ex ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Error deserializing content, skipping page: {pageId}",
-					array( 'pageId' => $row->page_id )
-				);
-				continue;
+				// null pages still get attached to keep the counts the same. They will be filtered
+				// later on.
+				$pages[] = $this->decidePage( $updater, $page );
 			}
 
-			if ( $content === null ) {
-				// Skip pages without content.  Pages have no content because their latest revision
-				// as loaded by the query above doesn't exist.
-				$this->output( "Skipping page with no content: $row->page_id\n" );
-				$page = null;
-			} else if ( $content->isRedirect() ) {
-				if ( $maxUpdate === null ) {
-					// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
-					// ignore redirects!  Just ignore it!  We would filter them out at the db level but that is slow
-					// for large wikis.
-					$page = null;
+			if ( isset( $row ) ) {
+				if ( $endingAtColumn === 'rev_timestamp' ) {
+					$ts = new MWTimestamp( $row->rev_timestamp );
+					$endingAt = $ts->getTimestamp( TS_ISO_8601 );
+				} elseif ( $endingAtColumn === 'page_id' ) {
+					$endingAt = $row->page_id;
 				} else {
-					// We found a redirect.  Great.  Since we can't index special pages and redirects to special pages
-					// are totally possible, as well as fun stuff like redirect loops, we need to use
-					// Updater's redirect tracing logic which is very complete.  Also, it returns null on
-					// self redirects.  Great!
-					list( $page, ) = $updater->traceRedirects( $page->getTitle() );
+					throw new \MWException( 'Unknown $endingAtColumn: ' . $endingAtColumn );
 				}
+			} else {
+				$endingAt = 'unknown';
 			}
-			$update = array(
-				'page' => $page,
-				'id' => $row->page_id,
-			);
-			if ( $maxUpdate !== null ) {
-				$update[ 'update' ] = new MWTimestamp( $row->rev_timestamp );
-			}
-			$result[] = $update;
-		}
 
-		return $result;
+			return array(
+				'updates' => $pages,
+				'endingAt' => $endingAt,
+			);
+		} );
 	}
 
 	/**
-	 * Find $this->mBatchSize deletes who were deleted after (minUpdate,minNamespace,minTitle) and before maxUpdate.
+	 * Determine the actual page in the index that needs to be updated, based on a
+	 * source page.
 	 *
-	 * @param string $minUpdate
-	 * @param int $minNamespace
-	 * @param string $minTitle
-	 * @param string $maxUpdate
-	 * @return array An array of the last update timestamp and id that were found
+	 * @param Updater $updater
+	 * @param WikiPage $page
+	 * @return WikiPage|null WikiPage to be updated, or null if none.
 	 */
-	private function findDeletes( $minUpdate, $minNamespace, $minTitle, $maxUpdate ) {
-		$dbr = $this->getDB( DB_SLAVE );
-		$minUpdate = $dbr->addQuotes( $dbr->timestamp( $minUpdate ) );
-		$minNamespace = $dbr->addQuotes( (string) $minNamespace );
-		$minTitle = $dbr->addQuotes( $minTitle );
-		$maxUpdate = $dbr->addQuotes( $dbr->timestamp( $maxUpdate ) );
-		$where = array(
-			"( ( $minUpdate = ar_timestamp AND $minNamespace < ar_namespace AND $minTitle < ar_title )"
-				. " OR $minUpdate < ar_timestamp )",
-			"ar_timestamp <= $maxUpdate"
-		);
-		if ( $this->namespace ) {
-			$where['ar_namespace'] = $this->namespace;
+	private function decidePage( Updater $updater, WikiPage $page ) {
+		try {
+			$content = $page->getContent();
+		} catch ( MWException $ex ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Error deserializing content, skipping page: {pageId}",
+				array( 'pageId' => $page->getTitle()->getArticleID() )
+			);
+			return null;
 		}
 
-		$res = $dbr->select(
-			'archive',
-			array( 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ),
-			$where,
-			__METHOD__,
-			array( 'ORDER BY' => 'ar_timestamp, ar_namespace, ar_title',
-			       'LIMIT' => $this->mBatchSize )
-		);
-		$result = array();
-		foreach ( $res as $row ) {
-			$result[] = array(
-				'timestamp' => new MWTimestamp( $row->ar_timestamp ),
-				'title' => Title::makeTitle( $row->ar_namespace, $row->ar_title ),
-				'page' => $row->ar_page_id,
-			);
+		if ( $content === null ) {
+			// Skip pages without content.  Pages have no content because their latest revision
+			// as loaded by the query above doesn't exist.
+			$this->output( 'Skipping page with no content: ' . $page->getTitle()->getArticleID() . "\n" );
+			return null;
 		}
-		return $result;
+
+		if ( !$content->isRedirect() ) {
+			return $page;
+		}
+
+		if ( $this->toDate === null ) {
+			// Looks like we accidentally picked up a redirect when we were indexing by id and thus trying to
+			// ignore redirects!  Just ignore it!  We would filter them out at the db level but that is slow
+			// for large wikis.
+			return null;
+		}
+
+		// We found a redirect.  Great.  Since we can't index special pages and redirects to special pages
+		// are totally possible, as well as fun stuff like redirect loops, we need to use
+		// Updater's redirect tracing logic which is very complete.  Also, it returns null on
+		// self redirects.  Great!
+		list( $page, ) = $updater->traceRedirects( $page->getTitle() );
+
+		return $page;
 	}
 
 	/**

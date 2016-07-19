@@ -65,7 +65,9 @@ class CirrusIsSetup extends Maintenance {
 
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			try {
-				$count = $this->getConnection()->getPageType( wfWikiID(), $indexType )->count();
+				$count = $this->getConnection()
+					->getPageType( $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ), $indexType )
+					->count();
 			} catch ( \Elastica\Exception\ResponseException $e ) {
 				$this->output( "$indexType doesn't exist.\n" );
 				$this->error( "true" );

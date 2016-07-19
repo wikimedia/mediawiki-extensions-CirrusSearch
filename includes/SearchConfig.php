@@ -11,6 +11,9 @@ use RequestContext;
  * or from specific wiki configuration.
  */
 class SearchConfig implements \Config {
+	// Constants for referring to various config values. Helps prevent fat-fingers
+	const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
+
 	/**
 	 * Override settings
 	 * @var Config

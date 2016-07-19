@@ -107,10 +107,7 @@ class SaneitizeJobs extends Maintenance {
 		$this->minId = $row->min_id;
 		/** @suppress PhanUndeclaredProperty */
 		$this->maxId = $row->max_id;
-		$this->config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		$profiles = $this->config->get( 'CirrusSearchSanitizationProfiles' );
+		$profiles = $this->searchConfig->get( 'CirrusSearchSanitizationProfiles' );
 		uasort( $profiles, function( $a, $b ) {
 			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
 		} );
@@ -163,7 +160,7 @@ class SaneitizeJobs extends Maintenance {
 		if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
 			$this->error( "Metastore unavailable, please index some data first.\n", 1 );
 		}
-		$profile = $this->config->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$profile = $this->searchConfig->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
 		$minLoopDuration = $profile['min_loop_duration'];
 		$maxJobs = $profile['max_checker_jobs'];
 		$maxUpdates = $profile['update_jobs_max_pressure'];
@@ -244,10 +241,10 @@ EOD
 
 	private function pushJobs() {
 		$pushJobFreq = $this->getOption( 'refresh-freq', 2*3600 );
-		if ( !$this->config->get( 'CirrusSearchSanityCheck' ) ) {
+		if ( !$this->searchConfig->get( 'CirrusSearchSanityCheck' ) ) {
 			$this->error( "Sanity check disabled, abandonning...\n", 1 );
 		}
-		$profile = $this->config->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$profile = $this->searchConfig->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
 		$chunkSize = $profile['jobs_chunk_size'];
 		$maxJobs = $profile['max_checker_jobs'];
 		if ( !$maxJobs || $maxJobs <= 0 ) {
@@ -345,15 +342,15 @@ EOD
 		$connections = array();
 		if ( $this->hasOption( 'cluster' ) ) {
 			$cluster = $this->getOption( 'cluster' );
-			if ( !$this->config->clusterExists( $cluster ) ) {
+			if ( !$this->searchConfig->clusterExists( $cluster ) ) {
 				$this->error( "Unknown cluster $cluster\n", 1 );
 			}
-			if ( $this->config->canWriteToCluster( $cluster ) ) {
+			if ( $this->searchConfig->canWriteToCluster( $cluster ) ) {
 				$this->error( "$cluster is not writable\n", 1 );
 			}
-			$connections[$cluster] = Connection::getPool( $this->config, $cluster );
+			$connections[$cluster] = Connection::getPool( $this->searchConfig, $cluster );
 		} else {
-			$connections = Connection::getWritableClusterConnections( $this->config );
+			$connections = Connection::getWritableClusterConnections( $this->searchConfig );
 		}
 
 		if ( empty( $connections ) ) {

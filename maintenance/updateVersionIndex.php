@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Maintenance\Metastore;
+use CirrusSearch\SearchConfig;
 
 /**
  * Update and check the CirrusSearch version index.
@@ -50,7 +51,7 @@ class UpdateVersionIndex extends Maintenance {
 	 *  maint class is being created
 	 */
 	public function execute() {
-		$baseName = $this->getOption( 'baseName', wfWikiID() );
+		$baseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
 		if( $this->hasOption( 'show-all' ) ) {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-all-index-versions instead.\n" );
 			$child = $this->runChild( Metastore::class );

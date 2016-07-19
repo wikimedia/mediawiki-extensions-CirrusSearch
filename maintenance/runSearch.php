@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
 use RequestContext;
 use SearchSuggestionSet;
@@ -60,7 +61,7 @@ class RunSearch extends Maintenance {
 
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
-		$this->indexBaseName = $this->getOption( 'baseName', wfWikiID() );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );

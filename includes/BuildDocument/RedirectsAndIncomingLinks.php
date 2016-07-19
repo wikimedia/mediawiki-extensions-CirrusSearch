@@ -4,9 +4,11 @@ namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\Terms;
 use Elastica\Query\BoolQuery;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use SplObjectStorage;
 use Title;
 use WikiPage;
@@ -37,6 +39,11 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private static $externalLinks = null;
 
 	/**
+	 * @var SearchConfig
+	 */
+	private $config;
+
+	/**
 	 * @var \Elastica\Multi\Search
 	 */
 	private $linkCountMultiSearch;
@@ -47,6 +54,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private $linkCountClosures = array();
 
 	/**
+	 * @param SearchConfig $config
 	 * @param \Elastica\Document $doc
 	 * @param Title $title
 	 * @param Connection $conn
@@ -57,7 +65,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			self::$externalLinks = new SplObjectStorage;
 		}
 		if ( !isset( self::$externalLinks[$conn] ) ) {
-			self::$externalLinks[$conn] = new self( $conn );
+			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+			// @todo should there instead be a way to source $config from $conn?
+			self::$externalLinks[$conn] = new self( $config, $conn );
 		}
 		/** @var self $externalLink */
 		$externalLink = self::$externalLinks[$conn];
@@ -81,8 +91,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		return true;
 	}
 
-	protected function __construct( Connection $conn ) {
+	protected function __construct( SearchConfig $config, Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
+		$this->config = $config;
 		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
 	}
 
@@ -165,7 +176,8 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$bool = new BoolQuery();
 		$bool->addFilter( new Terms( 'outgoing_link', $titles ) );
 
-		$type = $this->connection->getPageType( wfWikiID() );
+		$indexPrefix = $this->config->get( SearchConfig::INDEX_BASE_NAME );
+		$type = $this->connection->getPageType( $indexPrefix );
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );

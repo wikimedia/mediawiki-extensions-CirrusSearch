@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\SearchConfig;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
@@ -36,12 +37,18 @@ class DataSender extends ElasticsearchIntermediary {
 	private $failedLog;
 
 	/**
+	 * @var string
+	 */
+	private $indexBaseName;
+
+	/**
 	 * @var Connection
 	 */
-	public function __construct( Connection $conn ) {
+	public function __construct( Connection $conn, SearchConfig $config ) {
 		parent::__construct( $conn, null, 0 );
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
+		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 	}
 
 	/**
@@ -164,7 +171,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$responseSet = null;
 		$justDocumentMissing = false;
 		try {
-			$pageType = $this->connection->getPageType( wfWikiID(), $indexType );
+			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
 			$this->start( "sending {numBulk} documents to the {indexType} index", array(
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
@@ -237,7 +244,7 @@ class DataSender extends ElasticsearchIntermediary {
 						'indexType' => $indexType,
 						'queryType' => 'send_deletes',
 					) );
-					$this->connection->getPageType( wfWikiID(), $indexType )->deleteIds( $ids );
+					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $ids );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -389,9 +396,8 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function indexesToIndexNames( array $indexes ) {
 		$names = array();
-		$wikiId = wfWikiID();
 		foreach ( $indexes as $indexType ) {
-			$names[] = $this->connection->getIndexName( $wikiId, $indexType );
+			$names[] = $this->connection->getIndexName( $this->indexBaseName, $indexType );
 		}
 		return $names;
 	}

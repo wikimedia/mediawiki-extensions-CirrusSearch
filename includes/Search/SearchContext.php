@@ -179,6 +179,12 @@ class SearchContext {
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->namespaces = $namespaces;
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
+
+		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
+		if ( $decay ) {
+			$this->preferRecentDecayPortion = $decay;
+			$this->preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
+		}
 	}
 
 	/**
@@ -270,7 +276,7 @@ class SearchContext {
 
 
 	/**
-	 * @return bool true if preferRecent options has been set.
+	 * @return bool true if preferRecent options have been set.
 	 */
 	public function hasPreferRecentOptions() {
 		return $this->preferRecentHalfLife > 0 && $this->preferRecentDecayPortion > 0;

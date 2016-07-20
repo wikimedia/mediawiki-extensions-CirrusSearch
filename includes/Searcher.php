@@ -128,7 +128,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var SearchContext
 	 */
-	private $searchContext;
+	protected $searchContext;
 
 	/**
 	 * Constructor

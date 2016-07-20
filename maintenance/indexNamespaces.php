@@ -51,7 +51,10 @@ class IndexNamespaces extends Maintenance {
 		}
 		$documents = array();
 		foreach ( $namesById as $id => $names ) {
-			$documents[] = new Document( $id, array( 'name' => $names ) );
+			$documents[] = new Document( $id, array(
+				'name' => $names,
+				'wiki' => $this->searchConfig->getWikiId(),
+			) );
 		}
 		$type->addDocuments( $documents );
 		$this->output( "done\n" );

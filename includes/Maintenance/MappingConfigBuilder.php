@@ -232,6 +232,7 @@ class MappingConfigBuilder {
 					'index_options' => 'docs',
 					'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
 				),
+				'wiki' => $this->buildKeywordField(),
 			),
 		);
 

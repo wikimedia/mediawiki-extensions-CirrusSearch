@@ -38,12 +38,12 @@ class Saneitize extends Maintenance {
 	/**
 	 * @var int mediawiki page id
 	 */
-	private $fromId;
+	private $fromPageId;
 
 	/**
 	 * @var int mediawiki page id
 	 */
-	private $toId;
+	private $toPageId;
 
 	/**
 	 * @var bool true to enable fast but inconsistent redirect checks
@@ -97,12 +97,12 @@ class Saneitize extends Maintenance {
 		$buildChunks = $this->getOption( 'buildChunks');
 		if ( $buildChunks ) {
 			$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
-			$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $this->fromId, $this->toId );
+			$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $this->fromPageId, $this->toPageId );
 			return;
 		}
 		$this->buildChecker();
 		$updated = $this->check();
-		$this->output( "Fixed $updated page(s) (" . ( $this->toId - $this->fromId ) . " checked)\n" );
+		$this->output( "Fixed $updated page(s) (" . ( $this->toPageId - $this->fromPageId ) . " checked)\n" );
 	}
 
 	/**
@@ -110,41 +110,41 @@ class Saneitize extends Maintenance {
 	 */
 	private function check() {
 		$updated = 0;
-		for ( $pageId = $this->fromId; $pageId <= $this->toId; $pageId += $this->mBatchSize ) {
-			$max = min( $this->toId, $pageId + $this->mBatchSize - 1 );
+		for ( $pageId = $this->fromPageId; $pageId <= $this->toPageId; $pageId += $this->mBatchSize ) {
+			$max = min( $this->toPageId, $pageId + $this->mBatchSize - 1 );
 			$updated += $this->checkChunk( range( $pageId, $max ) );
 		}
 		return $updated;
 	}
 
 	/**
-	 * @param int[] $ids
+	 * @param int[] $pageIds mediawiki page ids
 	 * @return int number of pages corrected
 	 */
-	private function checkChunk( array $ids ) {
-		$updated = $this->checker->check( $ids );
-		$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), end( $ids ),
-			$this->toId ) );
+	private function checkChunk( array $pageIds ) {
+		$updated = $this->checker->check( $pageIds );
+		$this->output( sprintf( "[%20s]%10d/%d\n", wfWikiID(), end( $pageIds ),
+			$this->toPageId ) );
 		return $updated;
 	}
 
 	private function setFromAndTo() {
 		$dbr = $this->getDB( DB_SLAVE );
-		$this->fromId = $this->getOption( 'fromId' );
-		if ( $this->fromId === null ) {
-			$this->fromId = 0;
+		$this->fromPageId = $this->getOption( 'fromId' );
+		if ( $this->fromPageId === null ) {
+			$this->fromPageId = 0;
 		}
-		$this->toId = $this->getOption( 'toId' );
-		if ( $this->toId === null ) {
-			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
-			if ( $this->toId === false ) {
-				$this->toId = 0;
+		$this->toPageId = $this->getOption( 'toId' );
+		if ( $this->toPageId === null ) {
+			$this->toPageId = $dbr->selectField( 'page', 'MAX(page_id)' );
+			if ( $this->toPageId === false ) {
+				$this->toPageId = 0;
 			} else {
 				// Its technically possible for there to be pages in the index with ids greater
 				// than the maximum id in the database.  That isn't super likely, but we'll
 				// check a bit ahead just in case.  This isn't scientific or super accurate,
 				// but its cheap.
-				$this->toId += 100;
+				$this->toPageId += 100;
 			}
 		}
 	}
@@ -161,6 +161,7 @@ class Saneitize extends Maintenance {
 		// This searcher searches all indexes for the current wiki.
 		$searcher = new Searcher( $this->getConnection(), 0, 0, null, array(), null );
 		$this->checker = new Checker(
+			$this->getSearchConfig(),
 			$this->getConnection(),
 			$remediator,
 			$searcher,

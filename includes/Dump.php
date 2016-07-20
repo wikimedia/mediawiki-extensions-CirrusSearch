@@ -38,8 +38,9 @@ class Dump extends FormlessAction {
 		$conn = new Connection( $config );
 		$searcher = new Searcher( $conn, 0, 0, null, array(), $this->getUser() );
 
-		$id = $this->getTitle()->getArticleID();
-		$esSources = $searcher->get( array( $id ), true );
+		/** @suppress PhanUndeclaredMethod Phan doesn't know $config is a SearchConfig */
+		$docId = $config->makeId( $this->getTitle()->getArticleID() );
+		$esSources = $searcher->get( array( $docId ), true );
 		if ( !$esSources->isOK() ) {
 			// Exception has been logged
 			echo '{}';

@@ -39,17 +39,20 @@ interface Remediator {
 
 	/**
 	 * A non-existent page is in the index.  Odds are good it was deleted.
-	 * @param int $pageId id of the deleted page
+	 *
+	 * @param string $docId elsaticsearch document id of the deleted page
 	 * @param Title $title title of the page read from the ghost
 	 */
-	public function ghostPageInIndex( $pageId, Title $title );
+	public function ghostPageInIndex( $docId, Title $title );
 
 	/**
 	 * An existent page is in more then one index.
+	 *
+	 * @param string $docId elasticsearch document id
 	 * @param WikiPage $page page in too many indexes
 	 * @param string $indexType index type that the page is in but shouldn't be in
 	 */
-	public function pageInWrongIndex( WikiPage $page, $indexType );
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType );
 }
 
 /**
@@ -60,16 +63,17 @@ class NoopRemediator implements Remediator {
 	public function pageNotInIndex( WikiPage $page ) {}
 
 	/**
-	 * @param int $pageId
+	 * @param string $docId
 	 * @param Title $title
 	 */
-	public function ghostPageInIndex( $pageId, Title $title ) {}
+	public function ghostPageInIndex( $docId, Title $title ) {}
 
 	/**
+	 * @param string $docId
 	 * @param WikiPage $page
 	 * @param string $indexType
 	 */
-	public function pageInWrongIndex( WikiPage $page, $indexType ) {}
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {}
 }
 
 /**
@@ -97,29 +101,30 @@ class PrintingRemediator implements Remediator {
 	}
 
 	/**
-	 * @param int $pageId
+	 * @param string $docId
 	 * @param Title $title
 	 */
-	public function ghostPageInIndex( $pageId, Title $title ) {
-		$this->log( $pageId, $title, 'Deleted page in index' );
-		$this->next->ghostPageInIndex( $pageId, $title );
+	public function ghostPageInIndex( $docId, Title $title ) {
+		$this->log( $docId, $title, 'Deleted page in index' );
+		$this->next->ghostPageInIndex( $docId, $title );
 	}
 
 	/**
+	 * @param string $docId
 	 * @param WikiPage $page
 	 * @param string $indexType
 	 */
-	public function pageInWrongIndex( WikiPage $page, $indexType ) {
+	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {
 		$this->log( $page->getId(), $page->getTitle(), "Page in wrong index: $indexType" );
-		$this->next->pageInWrongIndex( $page, $indexType );
+		$this->next->pageInWrongIndex( $docId, $page, $indexType );
 	}
 
 	/**
-	 * @param int $pageId
+	 * @param int|string $pageOrDocId
 	 * @param Title $title
 	 * @param string $message
 	 */
-	private function log( $pageId, $title, $message ) {
-		printf("%30s %10d %s\n", $message, $pageId, $title );
+	private function log( $pageOrDocId, $title, $message ) {
+		printf("%30s %10d %s\n", $message, $pageOrDocId, $title );
 	}
 }

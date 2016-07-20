@@ -77,20 +77,20 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 */
 	private function matchPageCategories( array $categories ) {
 		$filter = new \Elastica\Query\BoolQuery();
-		$ids = array();
+		$pageIds = array();
 		$names = array();
 		foreach ( $categories as $category ) {
 			if ( substr( $category, 0, 3 ) === 'id:' ) {
-				$id = substr( $category, 3 );
-				if ( ctype_digit( $id ) ) {
-					$ids[] = $id;
+				$pageId = substr( $category, 3 );
+				if ( ctype_digit( $pageId ) ) {
+					$pageIds[] = $pageId;
 				}
 			} else {
 				$names[] = $category;
 			}
 		}
 
-		foreach ( Title::newFromIDs( $ids ) as $title ) {
+		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
 			$names[] = $title->getText();
 		}
 		if ( !$names ) {

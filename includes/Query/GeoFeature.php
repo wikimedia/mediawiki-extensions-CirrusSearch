@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 use GeoData\GeoData;
 use GeoData\Coord;
@@ -59,10 +60,13 @@ class GeoFeature extends SimpleKeywordFeature {
 		}
 
 		if ( substr( $key, -5 ) === 'title' ) {
-			list( $coord, $radius, $exclude ) = $this->parseGeoNearbyTitle( $value );
+			list( $coord, $radius, $excludeDocId ) = $this->parseGeoNearbyTitle(
+				$context->getConfig(),
+				$value
+			);
 		} else {
 			list( $coord, $radius ) = $this->parseGeoNearby( $value );
-			$exclude = 0;
+			$excludeDocId = '';
 		}
 
 		$filter = null;
@@ -71,7 +75,7 @@ class GeoFeature extends SimpleKeywordFeature {
 			if ( substr( $key, 0, 6 ) === 'boost-' ) {
 				$context->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
 			} else {
-				$filter = self::createQuery( $coord, $radius, $exclude );
+				$filter = self::createQuery( $coord, $radius, $excludeDocId );
 			}
 		}
 
@@ -83,12 +87,13 @@ class GeoFeature extends SimpleKeywordFeature {
 	 *   <title>
 	 *   <radius>,<title>
 	 *
-	 * @param string $text
+	 * @param SearchConfig $config the Cirrus config object
+	 * @param string $text user input to parse
 	 * @return array Three member array with Coordinate object, integer radius
 	 *  in meters, and page id to exclude from results.. When invalid the
 	 *  Coordinate returned will be null.
 	 */
-	public function parseGeoNearbyTitle( $text ) {
+	public function parseGeoNearbyTitle( SearchConfig $config, $text ) {
 		$title = Title::newFromText( $text );
 		if ( $title && $title->exists() ) {
 			// Default radius if not provided: 5km
@@ -99,24 +104,24 @@ class GeoFeature extends SimpleKeywordFeature {
 			// remaining text is a valid title to use.
 			$pieces = explode( ',', $text, 2 );
 			if ( count( $pieces ) !== 2 ) {
-				return array( null, 0, 0 );
+				return array( null, 0, '' );
 			}
 			$radius = $this->parseDistance( $pieces[0] );
 			if ( $radius === null ) {
-				return array( null, 0, 0 );
+				return array( null, 0, '' );
 			}
 			$title = Title::newFromText( $pieces[1] );
 			if ( !$title || !$title->exists() ) {
-				return array( null, 0, 0 );
+				return array( null, 0, '' );
 			}
 		}
 
 		$coord = GeoData::getPageCoordinates( $title );
 		if ( !$coord ) {
-			return array( null, 0, 0 );
+			return array( null, 0, '' );
 		}
 
-		return array( $coord, $radius, $title->getArticleID() );
+		return array( $coord, $radius, $config->makeId( $title->getArticleID() ) );
 	}
 
 	/**
@@ -187,10 +192,10 @@ class GeoFeature extends SimpleKeywordFeature {
 	 *
 	 * @param Coord $coord
 	 * @param int $radius Search radius in meters
-	 * @param int $idToExclude Page id to exclude, or 0 for no exclusions.
+	 * @param string $docIdToExclude Document id to exclude, or "" for no exclusions.
 	 * @return AbstractQuery
 	 */
-	public static function createQuery( Coord $coord, $radius, $idToExclude = 0 ) {
+	public static function createQuery( Coord $coord, $radius, $docIdToExclude = '' ) {
 		$query = new \Elastica\Query\BoolQuery();
 		$query->addFilter( new \Elastica\Query\Term( [ 'coordinates.globe' => $coord->globe ] ) );
 		$query->addFilter( new \Elastica\Query\Term( [ 'coordinates.primary' => 1 ] ) );
@@ -203,8 +208,8 @@ class GeoFeature extends SimpleKeywordFeature {
 		$distanceFilter->setOptimizeBbox( 'indexed' );
 		$query->addFilter( $distanceFilter );
 
-		if ( $idToExclude > 0 ) {
-			$query->addMustNot( new \Elastica\Query\Term( [ '_id' => $idToExclude ] ) );
+		if ( $docIdToExclude !== '' ) {
+			$query->addMustNot( new \Elastica\Query\Term( [ '_id' => $docIdToExclude ] ) );
 		}
 
 		$nested = new \Elastica\Query\Nested();

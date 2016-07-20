@@ -427,8 +427,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		unset( $data['_shards'] );
 
 		$limit = $this->getHardLimit();
-		$suggestions = array();
-		$suggestionProfile = array();
+		$suggestionsByDocId = array();
+		$suggestionProfileByDocId = array();
 		foreach ( $data as $name => $results  ) {
 			$discount = $profiles[$name]['discount'];
 			foreach ( $results  as $suggested ) {
@@ -438,50 +438,49 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						// Ignore broken output
 						continue;
 					}
-					$pageId = $output['id'];
+					$docId = $output['docId'];
 					$type = $output['type'];
 
 					$score = $discount * $suggest['score'];
-					if ( !isset( $suggestions[$pageId] ) ||
-						$score > $suggestions[$pageId]->getScore()
+					if ( !isset( $suggestionsByDocId[$docId] ) ||
+						$score > $suggestionsByDocId[$docId]->getScore()
 					) {
+						$pageId = $this->config->makePageId( $docId );
 						$suggestion = new SearchSuggestion( $score, null, null, $pageId );
 						// If it's a title suggestion we have the text
 						if ( $type === SuggestBuilder::TITLE_SUGGESTION ) {
 							$suggestion->setText( $output['text'] );
 						}
-						$suggestions[$pageId] = $suggestion;
-						$suggestionProfile[$pageId] = $name;
+						$suggestionsByDocId[$docId] = $suggestion;
+						$suggestionProfileByDocId[$docId] = $name;
 					}
 				}
 			}
 		}
 
 		// simply sort by existing scores
-		uasort( $suggestions, function ( SearchSuggestion $a, SearchSuggestion $b ) {
+		uasort( $suggestionsByDocId, function ( SearchSuggestion $a, SearchSuggestion $b ) {
 			return $b->getScore() - $a->getScore();
 		} );
 
-		$this->logContext['hitsTotal'] = count( $suggestions );
+		$this->logContext['hitsTotal'] = count( $suggestionsByDocId );
 
-		if ( $this->offset < $limit ) {
-			$suggestions = array_slice( $suggestions, $this->offset, $limit - $this->offset, true );
-		} else {
-			$suggestions = array();
-		}
+		$suggestionsByDocId = $this->offset < $limit
+			? array_slice( $suggestionsByDocId, $this->offset, $limit - $this->offset, true )
+			: array();
 
-		$this->logContext['hitsReturned'] = count( $suggestions );
+		$this->logContext['hitsReturned'] = count( $suggestionsByDocId );
 		$this->logContext['hitsOffset'] = $this->offset;
 
 		// we must fetch redirect data for redirect suggestions
-		$missingText = array();
-		foreach ( $suggestions as $id => $suggestion ) {
+		$missingTextDocIds = array();
+		foreach ( $suggestionsByDocId as $docId => $suggestion ) {
 			if ( $suggestion->getText() === null ) {
-				$missingText[] = $id;
+				$missingTextDocIds[] = $docId;
 			}
 		}
 
-		if ( !empty ( $missingText ) ) {
+		if ( !empty ( $missingTextDocIds ) ) {
 			// Experimental.
 			//
 			// Second pass query to fetch redirects.
@@ -497,7 +496,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$redirResponse = null;
 			try {
 				$redirResponse = $type->request( '_mget', 'GET',
-					array( 'ids' => $missingText ),
+					array( 'ids' => $missingTextDocIds ),
 					array( '_source_include' => 'redirect' ) );
 				if ( $redirResponse->isOk() ) {
 					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
@@ -508,8 +507,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						}
 						// We use the original query, we should maybe use the variant that generated this result?
 						$text = Util::chooseBestRedirect( $this->term, $doc['_source']['redirect'] );
-						if( !empty( $suggestions[$doc['_id']] ) ) {
-							$suggestions[$doc['_id']]->setText( $text );
+						if( !empty( $suggestionsByDocId[$doc['_id']] ) ) {
+							$suggestionsByDocId[$doc['_id']]->setText( $text );
 						}
 					}
 				} else {
@@ -534,7 +533,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 
 		$finalResults = array_filter(
-			$suggestions,
+			$suggestionsByDocId,
 			function ( SearchSuggestion $suggestion ) {
 				// text should be not empty for suggestions
 				return $suggestion->getText() != null;
@@ -544,7 +543,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->logContext['hits'] = array();
 		$indexName = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE )->getName();
 		$maxScore = 0;
-		foreach ( $finalResults as $suggestion ) {
+		foreach ( $finalResults as $docId => $suggestion ) {
 			$title = $suggestion->getSuggestedTitle();
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
 			$maxScore = max( $maxScore, $suggestion->getScore() );
@@ -554,7 +553,9 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				'title' => $title ? (string) $title : $suggestion->getText(),
 				'index' => $indexName,
 				'pageId' => (int) $pageId,
-				'profileName' => isset( $suggestionProfile[$pageId] ) ? $suggestionProfile[$pageId] : "",
+				'profileName' => isset( $suggestionProfileByDocId[$docId] )
+					? $suggestionProfileByDocId[$docId]
+					: "",
 				'score' => $suggestion->getScore(),
 			);
 		}

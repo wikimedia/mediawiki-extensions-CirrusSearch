@@ -426,6 +426,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$connection = $this->getConnection();
 
 		$reindexer = new Reindexer(
+			$this->getSearchConfig(),
 			$connection,
 			$connection,
 			array( $this->getPageType() ),

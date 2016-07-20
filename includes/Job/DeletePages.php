@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Job;
 
+use MediaWiki\MediaWikiServices;
+
 /**
  * Job wrapper around Updater::deletePages.  If indexType parameter is
  * specified then only deletes from that type of index.
@@ -23,6 +25,15 @@ namespace CirrusSearch\Job;
  */
 class DeletePages extends Job {
 	public function __construct( $title, $params ) {
+		// BC for jobs created before this explicitly handled document id's
+		if ( isset( $params['id'] ) ) {
+			// parent::__construct would set $this->searchConfig, but we need this early. Since
+			// it's only for BC probably ok to leave this dirtiness for now.
+			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+			/** @suppress PhanUndeclaredMethod phan doesn't know this is a SearchConfig */
+			$params['docId'] = $config->makeId( $params['id'] );
+			unset( $params['id'] );
+		}
 		parent::__construct( $title, $params );
 
 		// This is one of the cheapest jobs we have. Plus I'm reasonably
@@ -36,7 +47,7 @@ class DeletePages extends Job {
 
 		$updater = $this->createUpdater();
 		$indexType = isset( $this->params[ 'indexType' ] ) ? $this->params[ 'indexType' ] : null;
-		return $updater->deletePages( array( $this->title ), array( $this->params[ 'id' ] ),
+		return $updater->deletePages( array( $this->title ), array( $this->params[ 'docId' ] ),
 			$wgCirrusSearchClientSideUpdateTimeout, $indexType );
 	}
 }

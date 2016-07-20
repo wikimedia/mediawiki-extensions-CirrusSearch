@@ -36,6 +36,11 @@ abstract class Job extends MWJob {
 	protected $connection;
 
 	/**
+	 * @var SearchConfig
+	 */
+	protected $searchConfig;
+
+	/**
 	 * @var bool should we retry if this job failed
 	 */
 	private $allowRetries = true;
@@ -58,13 +63,13 @@ abstract class Job extends MWJob {
 		// data.  Luckily, this is how the JobQueue implementations work.
 		$this->removeDuplicates = true;
 
-		$config = MediaWikiServices::getInstance()
+		$this->searchConfig = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 		// When the 'cluster' parameter is provided the job must only operate on
 		// the specified cluster, take special care to ensure nested jobs get the
 		// correct cluster set.  When set to null all clusters should be written to.
-		$this->connection = Connection::getPool( $config, $params['cluster'] );
+		$this->connection = Connection::getPool( $this->searchConfig, $params['cluster'] );
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -145,7 +150,7 @@ abstract class Job extends MWJob {
 		if ( isset( $this->params['cluster'] ) ) {
 			$flags[] = 'same-cluster';
 		}
-		return new Updater( $this->connection, $flags );
+		return new Updater( $this->connection, $this->searchConfig, $flags );
 	}
 
 	/**
@@ -183,15 +188,14 @@ abstract class Job extends MWJob {
 	 * NOTE: only suited for jobs that work on multiple clusters by
 	 * inspecting the 'cluster' job param
 	 *
-	 * @param SearchConfig $config
 	 * @return Connection[] indexed by cluster name
 	 */
-	protected function decideClusters( SearchConfig $config ) {
+	protected function decideClusters() {
 		$cluster = isset ( $this->params['cluster'] ) ? $this->params['cluster'] : null;
 		if ( $cluster === null ) {
-			return Connection::getWritableClusterConnections( $config );
+			return Connection::getWritableClusterConnections( $this->searchConfig );
 		}
-		if ( !$config->canWriteToCluster( $cluster ) ) {
+		if ( !$this->searchConfig->canWriteToCluster( $cluster ) ) {
 			// Just in case a job is present in the queue but its cluster
 			// has been removed from the config file.
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -204,6 +208,6 @@ abstract class Job extends MWJob {
 			// this job does not allow retries so we just need to throw an exception
 			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
 		}
-		return array( $cluster => Connection::getPool( $config, $cluster ) );
+		return array( $cluster => Connection::getPool( $this->searchConfig, $cluster ) );
 	}
 }

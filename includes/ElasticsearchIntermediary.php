@@ -196,8 +196,8 @@ class ElasticsearchIntermediary {
 				$request['indices'][] = $context['index'];
 			}
 			if ( isset( $context['namespaces'] ) ) {
-				foreach ( $context['namespaces'] as $id ) {
-					$request['namespaces'][] = (int) $id;
+				foreach ( $context['namespaces'] as $nsId ) {
+					$request['namespaces'][] = (int) $nsId;
 				}
 			}
 			if ( !empty( $context['langdetect' ] ) ) {

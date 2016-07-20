@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\SearchConfig;
 use GeoData\Coord;
 use LoadBalancer;
 use IDatabase;
@@ -222,11 +223,11 @@ class GeoFeatureTest extends MediaWikiTestCase {
 				'7km,Washington, D.C.'
 			),
 			'unknown page lookup' => array(
-				array( null, 0, 0 ),
+				array( null, 0, '' ),
 				'Unknown Title',
 			),
 			'unknown page lookup with radius' => array(
-				array( null, 0, 0 ),
+				array( null, 0, '' ),
 				'4km, Unknown Title',
 			),
 		);
@@ -270,9 +271,16 @@ class GeoFeatureTest extends MediaWikiTestCase {
 		MediaWikiServices::getInstance()->getLinkCache()
 			->addGoodLinkObj( 1234567, Title::newFromText( 'Washington, D.C.' ) );
 
+		$config = $this->getMock( SearchConfig::class );
+		$config->expects( $this->any() )
+			->method( 'makeId' )
+			->will( $this->returnCallback( function ( $id ) {
+				return $id;
+			} ) );
+
 		// Finally run the test
 		$feature = new GeoFeature;
-		$result = $feature->parseGeoNearbyTitle( $value );
+		$result = $feature->parseGeoNearbyTitle( $config, $value );
 		if ( $result[0] instanceof Coord ) {
 			$result[0] = array( 'lat' => $result[0]->lat, 'lon' => $result[0]->lon );
 		}

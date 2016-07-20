@@ -61,15 +61,14 @@ class ForceSearchIndex extends Maintenance {
 	private $runWithIds;
 
 	/**
-	 * @var int[][] chunks of ids to reindex when --ids is used, chunk size
-	 * is controlled by mBatchSize
+	 * @var int[] list of page ids to reindex when --ids is used
 	 */
-	private $ids;
+	private $pageIds;
 
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from id based indexing to "
+		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from page id based indexing to "
 			. "date based indexing which uses less efficient queries and follows redirects.\n\n"
 			. "Note: All froms are _exclusive_ and all tos are _inclusive_.\n"
 			. "Note 2: Setting fromId and toId use the efficient query so those are ok.\n"
@@ -79,7 +78,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'to', 'Stop date of reindex in YYYY-mm-ddTHH:mm:ssZ.  Defaults to now.', false, true );
 		$this->addOption( 'fromId', 'Start indexing at a specific page_id.  Not useful with --deletes.', false, true );
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Not useful with --deletes or --from or --to.', false, true );
-		$this->addOption( 'ids', 'List of ids (comma separated) to reindex. Not allowed with deletes/from/to/fromId/toId/limit.', false, true );
+		$this->addOption( 'ids', 'List of page ids (comma separated) to reindex. Not allowed with deletes/from/to/fromId/toId/limit.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
@@ -120,11 +119,11 @@ class ForceSearchIndex extends Maintenance {
 			$this->error( "$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1 );
 		}
 
-		// We need to check ids options early otherwize hasOption may return
+		// We need to check ids options early otherwise hasOption may return
 		// true even if the user did not set the option on the commandline
 		if ( $this->hasOption( 'ids' ) ) {
 			$this->runWithIds = true;
-			$this->ids = $this->buildIdBatches();
+			$this->pageIds = $this->buildPageIdBatches();
 		}
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
@@ -195,7 +194,7 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$size = count( $batch['titlesToDelete'] );
 				$updater = $this->createUpdater();
-				$updater->deletePages( $batch['titlesToDelete'], $batch['idsToDelete'] );
+				$updater->deletePages( $batch['titlesToDelete'], $batch['docIdsToDelete'] );
 			}
 
 
@@ -211,7 +210,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->waitForQueueToDrain( $wiki );
 	}
 
-	private function buildIdBatches() {
+	private function buildPageIdBatches() {
 		if ( $this->getOption( 'deletes' ) || $this->hasOption( 'limit' )
 			|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
 			|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
@@ -219,15 +218,15 @@ class ForceSearchIndex extends Maintenance {
 			$this->error( '--ids cannot be used with deletes/from/to/fromId/toId/limit', 1 );
 		}
 
-		$ids = array_map( function( $id ) {
-				$id = trim( $id );
-				if ( !ctype_digit( $id ) ) {
-					$this->error( "Invalid id provided in --ids, got '$id', expected a positive integer", 1 );
+		$pageIds = array_map( function( $pageId ) {
+				$pageId = trim( $pageId );
+				if ( !ctype_digit( $pageId ) ) {
+					$this->error( "Invalid page id provided in --ids, got '$pageId', expected a positive integer", 1 );
 				}
-				return intval( $id );
+				return intval( $pageId );
 			},
 			explode( ',', $this->getOption( 'ids' ) ) );
-		return array_unique( $ids, SORT_REGULAR );
+		return array_unique( $pageIds, SORT_REGULAR );
 	}
 
 	private function buildUpdateFlags() {
@@ -358,15 +357,15 @@ class ForceSearchIndex extends Maintenance {
 
 		return new CallbackIterator( $it, function ( $batch ) {
 			$titlesToDelete = array();
-			$idsToDelete = array();
+			$docIdsToDelete = array();
 			foreach ( $batch as $row ) {
 				$titlesToDelete[] = Title::makeTitle( $row->ar_namespace, $row->ar_title );
-				$idsToDelete[] = $row->ar_page_id;
+				$docIdsToDelete[] = $this->getSearchConfig()->makeId( $row->ar_page_id );
 			}
 
 			return array(
 				'titlesToDelete' => $titlesToDelete,
-				'idsToDelete' => $idsToDelete,
+				'docIdsToDelete' => $docIdsToDelete,
 				'endingAt' => isset( $row )
 					? ( new MWTimestamp( $row->ar_timestamp ) )->getTimestamp( TS_ISO_8601 )
 					: 'unknown',
@@ -379,7 +378,7 @@ class ForceSearchIndex extends Maintenance {
 		$dbr = $this->getDB( DB_SLAVE );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$it->addConditions( array(
-			'page_id in (' . $dbr->makeList( $this->ids, LIST_COMMA ) . ')',
+			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
 		) );
 		$this->attachPageConditions( $dbr, $it, 'page' );
 
@@ -584,7 +583,7 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->hasOption( 'cluster' ) ) {
 			$flags[] = 'same-cluster';
 		}
-		return new Updater( $this->getConnection(), $flags );
+		return new Updater( $this->getConnection(), $this->getSearchConfig(), $flags );
 	}
 }
 

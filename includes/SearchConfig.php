@@ -13,6 +13,7 @@ use RequestContext;
 class SearchConfig implements \Config {
 	// Constants for referring to various config values. Helps prevent fat-fingers
 	const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
+	const PREFIX_IDS = 'CirrusSearchPrefixIds';
 
 	/**
 	 * Override settings
@@ -127,6 +128,72 @@ class SearchConfig implements \Config {
 	 */
 	public function getWikiId() {
 		return $this->wikiId;
+	}
+
+	/**
+	 * @todo
+	 * The indices have to be rebuilt with new id's and we have to know when
+	 * generating queries if new style id's are being used, or old style. It
+	 * could plausibly be done with the metastore index, but that seems like
+	 * overkill because the knowledge is only necessary during transition, and
+	 * not post-transition.  Additionally this function would then need to know
+	 * the name of the index being queried, and that isn't always known when
+	 * building.
+	 *
+	 * @param string|int $pageId
+	 * @return string
+	 */
+	public function makeId( $pageId ) {
+		$prefix = $this->get( self::PREFIX_IDS )
+			? $this->getWikiId()
+			: null;
+
+		if ( $prefix === null ) {
+			return (string) $pageId;
+		} else {
+			return "{$prefix}|{$pageId}";
+		}
+	}
+
+	/**
+	 * There are times, such as when using the Reindexer, when we aren't completely
+	 * sure if these are old style numeric page id's, or new style prefixed id's.
+	 * Do some magic to decide and self::makeId() when necessary.
+	 *
+	 * @param string|int $pageOrDocId
+	 * @return string
+	 */
+	public function maybeMakeId( $pageOrDocId ) {
+		if ( !is_string( $pageOrDocId ) || ctype_digit( $pageOrDocId ) ) {
+			return $this->makeId( $pageOrDocId );
+		} else {
+			return $pageOrDocId;
+		}
+	}
+
+	/**
+	 * Convert an elasticsearch document id back into a mediawiki page id.
+	 *
+	 * @param string $docId Elasticsearch document id
+	 * @return int Related mediawiki page id
+	 */
+	public function makePageId( $docId ) {
+		if ( !$this->get( self::PREFIX_IDS ) ) {
+			return (int)$docId;
+		}
+
+		$pieces = explode( '|', $docId );
+		switch( count( $pieces ) ) {
+		case 2:
+			return (int)$pieces[1];
+		case 1:
+			// Broken doc id...assume somehow this didn't get prefixed.
+			// Attempt to continue on...but maybe should throw exception
+			// instead?
+			return (int)$docId;
+		default:
+			throw new \Exception( "Invalid document id: $docId" );
+		}
 	}
 
 	/**

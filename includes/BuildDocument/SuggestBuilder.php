@@ -113,7 +113,7 @@ class SuggestBuilder {
 		$docs = array();
 		foreach ( $inputDocs as $sourceDoc ) {
 			$inputDoc = $sourceDoc['source'];
-			$id = $sourceDoc['id'];
+			$docId = $sourceDoc['id'];
 			if ( !isset( $inputDoc['namespace'] ) ) {
 				// Bad doc, nothing to do here.
 				continue;
@@ -123,7 +123,7 @@ class SuggestBuilder {
 					// Bad doc, nothing to do here.
 					continue;
 				}
-				$docs = array_merge( $docs, $this->buildNormalSuggestions( $id, $inputDoc ) );
+				$docs = array_merge( $docs, $this->buildNormalSuggestions( $docId, $inputDoc ) );
 			} else {
 				if ( !isset( $inputDoc['redirect'] ) ) {
 					// Bad doc, nothing to do here.
@@ -181,11 +181,11 @@ class SuggestBuilder {
 	/**
 	 * Build classic suggestion
 	 *
-	 * @param int $id
+	 * @param string $docId
 	 * @param array $inputDoc
 	 * @return \Elastica\Document[] a set of suggest documents
 	 */
-	private function buildNormalSuggestions( $id, array $inputDoc ) {
+	private function buildNormalSuggestions( $docId, array $inputDoc ) {
 		if ( !isset( $inputDoc['title'] ) ) {
 			// Bad doc, nothing to do here.
 			return array();
@@ -197,9 +197,9 @@ class SuggestBuilder {
 		$location = $this->findPrimaryCoordinates( $inputDoc );
 
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
-		$docs[] = $this->buildTitleSuggestion( $id, $suggestions['group'], $location, $score );
+		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $location, $score );
 		if ( !empty( $suggestions['candidates'] ) ) {
-			$docs[] = $this->buildRedirectsSuggestion( $id, $suggestions['candidates'],
+			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'],
 				$location, $score );
 		}
 		return $docs;
@@ -250,20 +250,20 @@ class SuggestBuilder {
 	 * The output is encoded as pageId:t:Title.
 	 * NOTE: the client will be able to display Title encoded in the output when searching.
 	 *
-	 * @param int $id the page id
+	 * @param string $docId the page id
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
 	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildTitleSuggestion( $id, array $title, array $location = null, $score ) {
+	private function buildTitleSuggestion( $docId, array $title, array $location = null, $score ) {
 		$inputs = array( $this->prepareInput( $title['text'] ) );
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
-		$output = self::encodeTitleOutput( $id, $title['text'] );
+		$output = self::encodeTitleOutput( $docId, $title['text'] );
 		return $this->buildSuggestion(
-			self::TITLE_SUGGESTION . $id,
+			self::TITLE_SUGGESTION . $docId,
 			$output,
 			$inputs,
 			$location,
@@ -279,33 +279,33 @@ class SuggestBuilder {
 	 * and choose the best one to display. This is because we are unable
 	 * to make this decision at index time.
 	 *
-	 * @param int $id the page id
+	 * @param string $docId the elasticsearch document id
 	 * @param string[] $redirects
 	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildRedirectsSuggestion( $id, array $redirects, array $location = null, $score ) {
+	private function buildRedirectsSuggestion( $docId, array $redirects, array $location = null, $score ) {
 		$inputs = array();
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
-		$output = $id . ":" . self::REDIRECT_SUGGESTION;
+		$output = $docId . ":" . self::REDIRECT_SUGGESTION;
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
-		return $this->buildSuggestion( self::REDIRECT_SUGGESTION . $id, $output, $inputs, $location, $score );
+		return $this->buildSuggestion( self::REDIRECT_SUGGESTION . $docId, $output, $inputs, $location, $score );
 	}
 
 	/**
 	 * Builds a suggestion document.
 	 *
-	 * @param string $id The document id
+	 * @param string $docId The document id
 	 * @param string $output the suggestion output
 	 * @param string[] $inputs the suggestion inputs
 	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $id, $output, array $inputs, array $location = null, $score ) {
+	private function buildSuggestion( $docId, $output, array $inputs, array $location = null, $score ) {
 		$doc = array(
 			'batch_id' => $this->batchId,
 			'suggest' => array (
@@ -334,7 +334,7 @@ class SuggestBuilder {
 				'context' => array( 'location' => $location )
 			);
 		}
-		return new \Elastica\Document( $id, $doc );
+		return new \Elastica\Document( $docId, $doc );
 	}
 
 	/**
@@ -477,22 +477,22 @@ class SuggestBuilder {
 	/**
 	 * Encode a title suggestion output
 	 *
-	 * @param int $id pageId
+	 * @param string $docId elasticsearch document id
 	 * @param string $title
 	 * @return string the encoded output
 	 */
-	public static function encodeTitleOutput( $id, $title ) {
-		return $id . ':'. self::TITLE_SUGGESTION . ':' . $title;
+	public static function encodeTitleOutput( $docId, $title ) {
+		return $docId . ':'. self::TITLE_SUGGESTION . ':' . $title;
 	}
 
 	/**
 	 * Encode a redirect suggestion output
 	 *
-	 * @param int $id pageId
+	 * @param string $docId elasticsearch document id
 	 * @return string the encoded output
 	 */
-	public static function encodeRedirectOutput( $id ) {
-		return $id . ':' . self::REDIRECT_SUGGESTION;
+	public static function encodeRedirectOutput( $docId ) {
+		return $docId . ':' . self::REDIRECT_SUGGESTION;
 	}
 
 	/**
@@ -503,7 +503,7 @@ class SuggestBuilder {
 	 * text (optional): if TITLE_SUGGESTION the Title text
 	 *
 	 * @param string $output text value returned by a suggest query
-	 * @return array|null mixed or null if the output is not properly encoded
+	 * @return string[]|null array of strings, or null if the output is not properly encoded
 	 */
 	public static function decodeOutput( $output ) {
 		if ( $output == null ) {
@@ -519,7 +519,7 @@ class SuggestBuilder {
 		switch( $parts[1] ) {
 		case self::REDIRECT_SUGGESTION:
 			return array(
-				'id' => $parts[0],
+				'docId' => $parts[0],
 				'type' => self::REDIRECT_SUGGESTION,
 			);
 		case self::TITLE_SUGGESTION:
@@ -527,7 +527,7 @@ class SuggestBuilder {
 				return null;
 			}
 			return array(
-				'id' => $parts[0],
+				'docId' => $parts[0],
 				'type' => self::TITLE_SUGGESTION,
 				'text' => $parts[2]
 			);

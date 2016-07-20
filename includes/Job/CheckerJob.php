@@ -5,7 +5,6 @@ namespace CirrusSearch\Job;
 use ArrayObject;
 use CirrusSearch\Connection;
 use CirrusSearch\Searcher;
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
 use MediaWiki\Logger\LoggerFactory;
@@ -34,17 +33,17 @@ use Title;
 class CheckerJob extends Job {
 	/**
 	 * Construct a new CherckerJob.
-	 * @param int $fromId
-	 * @param int $toId
+	 * @param int $fromPageId
+	 * @param int $toPageId
 	 * @param int $delay
 	 * @param string $profile sanitization profile to use
 	 * @param string|null $cluster
 	 * @return CheckerJob
 	 */
-	public static function build( $fromId, $toId, $delay, $profile, $cluster ) {
+	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster ) {
 		$job = new self( Title::makeTitle( 0, "" ), array(
-			'fromId' => $fromId,
-			'toId' => $toId,
+			'fromPageId' => $fromPageId,
+			'toPageId' => $toPageId,
 			'createdAt' => time(),
 			'retryCount' => 0,
 			'profile' => $profile,
@@ -55,22 +54,28 @@ class CheckerJob extends Job {
 	}
 
 	/**
+	 * @param Title $title
+	 * @param array $params
+	 */
+	public function __construct( $title, $params ) {
+		// BC for jobs created before id fields were clarified to be explicitly page id's
+		if ( isset( $params['fromId'] ) ) {
+			$params['fromPageId'] = $params['fromId'];
+			unset( $params['fromId'] );
+		}
+		if ( isset( $parmas['toId'] ) ) {
+			$params['toPageId'] = $params['toId'];
+			unset( $params['toId'] );
+		}
+		parent::__construct( $title, $params );
+	}
+
+	/**
 	 * @return bool
 	 * @throws \MWException
 	 */
 	protected function doJob() {
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		return $this->runCheck( $config );
-	}
-
-	/**
-	 * @param SearchConfig $config
-	 * @return bool
-	 */
-	private function runCheck( SearchConfig $config ) {
-		$profile = $config->getElement( 'CirrusSearchSanitizationProfiles', $this->params['profile'] );
+		$profile = $this->searchConfig->getElement( 'CirrusSearchSanitizationProfiles', $this->params['profile'] );
 		if( !$profile ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",
@@ -105,7 +110,7 @@ class CheckerJob extends Job {
 
 		$startTime = time();
 
-		$connections = $this->decideClusters( $config );
+		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running CheckerJob on cluster $clusterNames {diff}s after insertion",
@@ -115,14 +120,15 @@ class CheckerJob extends Job {
 			)
 		);
 
-		$from = $this->params['fromId'];
-		$to = $this->params['toId'];
+		$from = $this->params['fromPageId'];
+		$to = $this->params['toPageId'];
 
 		$pageCache = new ArrayObject();
 		$checkers = array();
 		foreach( $connections as $cluster => $connection ) {
-			$searcher = new Searcher( $connection, 0, 0, $config, array(), null );
+			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, array(), null );
 			$checker = new Checker(
+				$this->searchConfig,
 				$connection,
 				new QueueingRemediator( $cluster ),
 				$searcher,

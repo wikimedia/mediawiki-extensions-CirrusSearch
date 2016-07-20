@@ -28,13 +28,13 @@ class OtherIndexes extends Updater {
 	private $localSite;
 
 	/**
-	 * Constructor
 	 * @param Connection $connection
+	 * @param SearchConfig $config
 	 * @param array $flags
 	 * @param string $localSite
 	 */
-	public function __construct( Connection $connection, array $flags, $localSite) {
-		parent::__construct( $connection, $flags );
+	public function __construct( Connection $connection, SearchConfig $config, array $flags, $localSite) {
+		parent::__construct( $connection, $config, $flags );
 		$this->localSite = $localSite;
 	}
 
@@ -103,10 +103,10 @@ class OtherIndexes extends Updater {
 				$query->setSize( 1 );
 
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
-				$findIdsClosures[] = function( $id ) use
+				$findIdsClosures[] = function( $docId ) use
 						( $otherIndex, &$updates, $title ) {
 					$updates[$otherIndex][] = array(
-						'id' => $id,
+						'docId' => $docId,
 						'ns' => $title->getNamespace(),
 						'dbKey' => $title->getDBkey(),
 					);

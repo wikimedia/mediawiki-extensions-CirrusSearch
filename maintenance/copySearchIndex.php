@@ -85,10 +85,7 @@ class CopySearchIndex extends Maintenance {
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
 			$this->error("Target cluster should be different from current cluster.", 1);
 		}
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		$clusterSettings = new ClusterSettings( $config, $targetConnection->getClusterName() );
+		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 
 		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexType );
 		$utils = new ConfigUtils( $targetConnection->getClient(), $this );
@@ -96,6 +93,7 @@ class CopySearchIndex extends Maintenance {
 				 $targetIndexName );
 
 		$reindexer = new Reindexer(
+				$this->getSearchConfig(),
 				$sourceConnection,
 				$targetConnection,
 				// Target Index

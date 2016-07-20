@@ -346,7 +346,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		return array(
 			'title' => array(
 				array(
-					'id' => 123,
+					'docId' => '123',
 					'type' => SuggestBuilder::TITLE_SUGGESTION,
 					'text' => 'This is a title',
 				),
@@ -354,7 +354,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 			),
 			'redirect' => array(
 				array(
-					'id' => 123,
+					'docId' => '123',
 					'type' => SuggestBuilder::REDIRECT_SUGGESTION,
 				),
 				SuggestBuilder::encodeRedirectOutput( 123 ),

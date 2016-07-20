@@ -28,6 +28,9 @@ use WikiPage;
  */
 
 class QueueingRemediator implements Remediator {
+	/**
+	 * @var string|null
+	 */
 	protected $cluster;
 
 	/**
@@ -37,6 +40,7 @@ class QueueingRemediator implements Remediator {
 	public function __construct( $cluster ) {
 		$this->cluster = $cluster;
 	}
+
 	public function redirectInIndex( WikiPage $page ) {
 		$this->pushLinksUpdateJob( $page );
 	}
@@ -45,27 +49,29 @@ class QueueingRemediator implements Remediator {
 	}
 
 	/**
+	 * @param string $docId
 	 * @param int $pageId
 	 * @param Title $title
 	 */
-	public function ghostPageInIndex( $pageId, Title $title ) {
+	public function ghostPageInIndex( $docId, Title $title ) {
 		JobQueueGroup::singleton()->push(
 			new DeletePages( $title, array(
-				'id' => $pageId,
+				'docId' => $docId,
 				'cluster' => $this->cluster,
 			) )
 		);
 	}
 
 	/**
+	 * @param string $docId
 	 * @param WikiPage $page
 	 * @param string $wrongIndex
 	 */
-	public function pageInWrongIndex( WikiPage $page, $wrongIndex ) {
+	public function pageInWrongIndex( $docId, WikiPage $page, $wrongIndex ) {
 		JobQueueGroup::singleton()->push(
 			new DeletePages( $page->getTitle(), array(
 				'indexType' => $wrongIndex,
-				'id' => $page->getId(),
+				'docId' => $docId,
 				'cluster' => $this->cluster,
 			) )
 		);

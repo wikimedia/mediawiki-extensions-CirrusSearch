@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica\Document;
 use Elastica\Exception\Connection\HttpException;
@@ -32,6 +33,11 @@ use MWElasticUtils;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Reindexer {
+	/**
+	 * @var SearchConfig
+	 */
+	private $searchConfig;
+
 	/*** "From" portion ***/
 	/**
 	 * @var Index
@@ -96,6 +102,7 @@ class Reindexer {
 	private $out;
 
 	/**
+	 * @param SearchConfig $searchConfig
 	 * @param Connection $source
 	 * @param Connection $target
 	 * @param Type[] $types
@@ -108,8 +115,9 @@ class Reindexer {
 	 * @param Maintenance $out
 	 * @throws \Exception
 	 */
-	public function __construct( Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
+	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!
+		$this->searchConfig = $searchConfig;
 		$this->oldConnection = $source;
 		$this->connection = $target;
 		$this->types = $types;
@@ -366,11 +374,16 @@ class Reindexer {
 			$data['wiki'] = wfWikiId();
 		}
 
+		// Maybe instead the reindexer should know if we are converting from the old
+		// style numeric page id's to the new style prefixed id's. This probably
+		// works though.
+		$docId = $this->searchConfig->maybeMakeId( $result->getId() );
+
 		// Note that while setting the opType to create might improve performance slightly it can cause
 		// trouble if the scroll returns the same id twice.  It can do that if the document is updated
 		// during the scroll process.  I'm unclear on if it will always do that, so you still have to
 		// perform the date based catch up after the reindex.
-		return new Document( $result->getId(), $data );
+		return new Document( $docId, $data );
 	}
 
 	/**

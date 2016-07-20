@@ -277,8 +277,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			return;
 		}
 		$indexByName = array();
-		foreach( $indices as $idx ) {
-			$indexByName[$idx] = $this->getConnection()->getIndex( $idx );
+		foreach( $indices as $name ) {
+			$indexByName[$name] = $this->getConnection()->getIndex( $name );
 		}
 
 		$status = new Status($this->getClient());
@@ -286,16 +286,16 @@ class UpdateSuggesterIndex extends Maintenance {
 			// do not try to delete indices that are used in aliases
 			unset( $indexByName[$aliased->getName()] );
 		}
-		foreach ( $indexByName as $name => $idx ) {
+		foreach ( $indexByName as $name => $index ) {
 			# double check with stats
-			$stats = $idx->getStats()->getData();
+			$stats = $index->getStats()->getData();
 			// Extra check: if stats report usages we should not try to fix things
 			// automatically.
 			if ( $stats['_all']['total']['suggest']['total'] == 0 ) {
-				$this->log( "Deleting broken index {$idx->getName()}\n" );
-				$this->deleteIndex( $idx );
+				$this->log( "Deleting broken index {$index->getName()}\n" );
+				$this->deleteIndex( $index );
 			} else {
-				$this->log( "Broken index {$idx->getName()} appears to be in use, please check and delete.\n" );
+				$this->log( "Broken index {$index->getName()} appears to be in use, please check and delete.\n" );
 			}
 
 		}
@@ -437,15 +437,15 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Deleting remaining docs from previous batch ($totalDocsInIndex).\n" );
 		MWElasticUtils::iterateOverScroll( $this->getIndex(), $result->getResponse()->getScrollId(), '15m',
 			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
-				$ids = array();
+				$docIds = array();
 				foreach( $results as $result ) {
 					$docsDumped++;
-					$ids[] = $result->getId();
+					$docIds[] = $result->getId();
 				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
-					function() use ( $ids ) {
-						$this->getType()->deleteIds( $ids );
+					function() use ( $docIds ) {
+						$this->getType()->deleteIds( $docIds );
 					}
 				);
 			}, 0, $this->indexRetryAttempts );

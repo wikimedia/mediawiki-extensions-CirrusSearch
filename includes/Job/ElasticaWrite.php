@@ -63,10 +63,7 @@ class ElasticaWrite extends Job {
 	}
 
 	protected function doJob() {
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		$connections = $this->decideClusters( $config );
+		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running {method} on cluster $clusterNames {diff}s after insertion",
@@ -84,7 +81,7 @@ class ElasticaWrite extends Job {
 				$conn->setTimeout( $this->params['clientSideTimeout'] );
 			}
 
-			$sender = new DataSender( $conn, $config );
+			$sender = new DataSender( $conn, $this->searchConfig );
 			try {
 				$status = call_user_func_array(
 					array( $sender, $this->params['method'] ),

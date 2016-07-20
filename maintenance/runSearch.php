@@ -113,7 +113,7 @@ class RunSearch extends Maintenance {
 					$data['rows'][] = array(
 						// use getDocId() rather than asking the title to allow this script
 						// to work when a production index has been imported to a test es instance
-						'pageId' => $result->getDocId(),
+						'docId' => $result->getDocId(),
 						'title' => $result->getTitle()->getPrefixedText(),
 						'score' => $result->getScore(),
 						'snippets' => array(

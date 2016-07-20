@@ -372,11 +372,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
 		sort( $titles, SORT_STRING );
-		$pageIds = array();
+		$docIds = array();
 		$likeDocs = array();
 		foreach ( $titles as $title ) {
-			$pageIds[] = $title->getArticleID();
-			$likeDocs[] = array( '_id' => $title->getArticleID() );
+			$docId = $this->config->makeId( $title->getArticleID() );
+			$docIds[] = $docId;
+			$likeDocs[] = array( '_id' => $docId );
 		}
 
 		// If no fields has been set we return no results.
@@ -414,7 +415,7 @@ class Searcher extends ElasticsearchIntermediary {
 			// Run a first pass to extract the text field content because we want to compare it
 			// against other fields.
 			$text = array();
-			$found = $this->get( $pageIds, array( 'text' ) );
+			$found = $this->get( $docIds, array( 'text' ) );
 			if ( !$found->isOK() ) {
 				return $found;
 			}
@@ -449,14 +450,14 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Get the page with $id.  Note that the result is a status containing _all_ pages found.
+	 * Get the page with $docId.  Note that the result is a status containing _all_ pages found.
 	 * It is possible to find more then one page if the page is in multiple indexes.
-	 * @param int[] $pageIds array of page ids
+	 * @param string[] $docIds array of document ids
 	 * @param string[]|true|false $sourceFiltering source filtering to apply
 	 * @return Status containing pages found, containing an empty array if not found,
 	 *    or an error if there was an error
 	 */
-	public function get( array $pageIds, $sourceFiltering ) {
+	public function get( array $docIds, $sourceFiltering ) {
 		$indexType = $this->connection->pickIndexTypeForNamespaces(
 			$this->searchContext->getNamespaces()
 		);
@@ -466,15 +467,16 @@ class Searcher extends ElasticsearchIntermediary {
 		$size = count ( $this->connection->getAllIndexSuffixesForNamespaces(
 			$this->searchContext->getNamespaces()
 		));
-		$size *= count( $pageIds );
+		$size *= count( $docIds );
+
 		return Util::doPoolCounterWork(
 			'CirrusSearch-Search',
 			$this->user,
-			function() use ( $pageIds, $sourceFiltering, $indexType, $size ) {
+			function() use ( $docIds, $sourceFiltering, $indexType, $size ) {
 				try {
-					$this->start( "get of {indexType}.{pageIds}", array(
+					$this->start( "get of {indexType}.{docIds}", array(
 						'indexType' => $indexType,
-						'pageIds' => array_map( 'intval', $pageIds ),
+						'docIds' => $docIds,
 						'queryType' => 'get',
 					) );
 					// Shard timeout not supported on get requests so we just use the client side timeout
@@ -483,7 +485,7 @@ class Searcher extends ElasticsearchIntermediary {
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
 					$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $pageIds ) );
+					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $docIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
 					// We ignore limits provided to the searcher

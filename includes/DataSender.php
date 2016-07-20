@@ -42,6 +42,11 @@ class DataSender extends ElasticsearchIntermediary {
 	private $indexBaseName;
 
 	/**
+	 * @var SearchConfig
+	 */
+	private $searchConfig;
+
+	/**
 	 * @var Connection
 	 */
 	public function __construct( Connection $conn, SearchConfig $config ) {
@@ -49,6 +54,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$this->log = LoggerFactory::getInstance( 'CirrusSearch' );
 		$this->failedLog = LoggerFactory::getInstance( 'CirrusSearchChangeFailed' );
 		$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
+		$this->searchConfig = $config;
 	}
 
 	/**
@@ -186,10 +192,10 @@ class DataSender extends ElasticsearchIntermediary {
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function( $id ) use ( $e ) {
+				function( $docId ) use ( $e ) {
 					$this->log->info(
-						"Updating a page that doesn't yet exist in Elasticsearch: {id}",
-						array( 'id' => $id )
+						"Updating a page that doesn't yet exist in Elasticsearch: {docId}",
+						array( 'docId' => $docId )
 					);
 				}
 			);
@@ -220,11 +226,11 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * Send delete requests to Elasticsearch.
 	 *
-	 * @param int[] $ids ids to delete from Elasticsearch
+	 * @param string[] $docIds elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
 	 * @return Status
 	 */
-	public function sendDeletes( $ids, $indexType = null ) {
+	public function sendDeletes( $docIds, $indexType = null ) {
 		if ( $indexType === null ) {
 			$indexes = $this->connection->getAllIndexTypes();
 		} else {
@@ -235,7 +241,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
-		$idCount = count( $ids );
+		$idCount = count( $docIds );
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexType ) {
@@ -244,13 +250,13 @@ class DataSender extends ElasticsearchIntermediary {
 						'indexType' => $indexType,
 						'queryType' => 'send_deletes',
 					) );
-					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $ids );
+					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $docIds );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
 				$this->failedLog->warning(
-					'Delete for ids: ' . implode( ',', $ids ),
+					'Delete for ids: ' . implode( ',', $docIds ),
 					array( 'exception' => $e )
 				);
 				return Status::newFatal( 'cirrussearch-failed-send-deletes' );
@@ -263,7 +269,7 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $localSite The wikiId to add/remove from local_sites_with_dupe
 	 * @param string $indexName The name of the index to perform updates to
-	 * @param array $otherActions A list of arrays each containing the id within elasticsearch ('id') and the article id within $localSite ('articleId')
+	 * @param array $otherActions A list of arrays each containing the id within elasticsearch ('docId') and the article namespace ('ns') and DB key ('dbKey') at the within $localSite
 	 * @return Status
 	 */
 	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions ) {
@@ -289,7 +295,7 @@ class DataSender extends ElasticsearchIntermediary {
 					),
 					'native'
 				);
-				$script->setId( $update['id'] );
+				$script->setId( $update['docId'] );
 				$script->setParam( '_type', 'page' );
 				$script->setParam( '_index', $indexName );
 				$bulk->addScript( $script, 'update' );
@@ -380,11 +386,11 @@ class DataSender extends ElasticsearchIntermediary {
 				// This is generally not an error but we should
 				// log it to see how many we get
 				$action = $bulkResponse->getAction();
-				$id = 'missing';
+				$docId = 'missing';
 				if ( $action instanceof \Elastica\Bulk\Action\AbstractDocument ) {
-					$id = $action->getData()->getId();
+					$docId = $action->getData()->getId();
 				}
-				call_user_func( $logCallback, $id );
+				call_user_func( $logCallback, $docId );
 			}
 		}
 		return $justDocumentMissing;

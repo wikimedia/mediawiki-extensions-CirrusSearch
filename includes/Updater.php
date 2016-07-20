@@ -51,11 +51,17 @@ class Updater extends ElasticsearchIntermediary {
 	protected $writeToClusterName;
 
 	/**
+	 * @var SearchConfig
+	 */
+	protected $searchConfig;
+
+	/**
 	 * @param Connection $conn
 	 * @param string[] $flags
 	 */
-	public function __construct( Connection $conn, array $flags = array() ) {
+	public function __construct( Connection $conn, SearchConfig $config, array $flags = array() ) {
 		parent::__construct( $conn, null, 0 );
+		$this->searchConfig = $config;
 		if ( in_array( 'same-cluster', $flags ) ) {
 			$this->writeToClusterName = $this->connection->getClusterName();
 		}
@@ -85,11 +91,11 @@ class Updater extends ElasticsearchIntermediary {
 		if ( count( $redirects ) === 0 ) {
 			return true;
 		}
-		$redirectIds = array();
+		$redirectDocIds = array();
 		foreach ( $redirects as $redirect ) {
-			$redirectIds[] = $redirect->getId();
+			$redirectDocIds[] = $this->searchConfig->makeId( $redirect->getId() );
 		}
-		return $this->deletePages( array(), $redirectIds, $wgCirrusSearchClientSideUpdateTimeout );
+		return $this->deletePages( array(), $redirectDocIds, $wgCirrusSearchClientSideUpdateTimeout );
 	}
 
 	/**
@@ -232,25 +238,25 @@ class Updater extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Delete pages from the elasticsearch index.  $titles and $ids must point to the
+	 * Delete pages from the elasticsearch index.  $titles and $docIds must point to the
 	 * same pages and should point to them in the same order.
 	 *
 	 * @param Title[] $titles List of titles to delete.  If empty then skipped other index
 	 *      maintenance is skipped.
-	 * @param integer[] $ids List of ids to delete
+	 * @param integer[] $docIds List of elasticsearch document ids to delete
 	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
 	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param string $indexType index from which to delete
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
-	public function deletePages( $titles, $ids, $clientSideTimeout = null, $indexType = null ) {
+	public function deletePages( $titles, $docIds, $clientSideTimeout = null, $indexType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		$job = new Job\ElasticaWrite(
 			$titles ? reset( $titles ) : Title::makeTitle( 0, "" ),
 			array(
 				'clientSideTimeout' => $clientSideTimeout,
 				'method' => 'sendDeletes',
-				'arguments' => array( $ids, $indexType ),
+				'arguments' => array( $docIds, $indexType ),
 				'cluster' => $this->writeToClusterName,
 			)
 		);
@@ -286,7 +292,7 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$doc = new \Elastica\Document( $page->getId(), array(
+			$doc = new \Elastica\Document( $this->searchConfig->makeId( $page->getId() ), array(
 				'version' => $page->getLatest(),
 				'version_type' => 'external',
 				'wiki' => wfWikiID(),

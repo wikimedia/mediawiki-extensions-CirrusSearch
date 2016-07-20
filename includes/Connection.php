@@ -259,6 +259,7 @@ class Connection extends ElasticaConnection {
 
 	/**
 	 * Is there more then one namespace in the provided index type?
+	 *
 	 * @param string $indexType an index type
 	 * @return false|integer false if the number of indexes is unknown, an integer if it is known
 	 */

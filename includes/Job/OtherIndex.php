@@ -61,7 +61,7 @@ class OtherIndex extends Job {
 		if ( $this->params['cluster'] ) {
 			$flags[] = 'same-cluster';
 		}
-		$otherIdx = new OtherIndexes( $this->connection, $flags, wfWikiID() );
+		$otherIdx = new OtherIndexes( $this->connection, $this->searchConfig, $flags, wfWikiID() );
 		$otherIdx->updateOtherIndex( $titles );
 	}
 }

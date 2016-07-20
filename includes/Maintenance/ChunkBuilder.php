@@ -29,19 +29,19 @@ class ChunkBuilder {
 	 *  larger than that size are spat out.  If specified as a number followed
 	 *  by the word "total" without a space between them then that many chunks
 	 *  will be spat out sized to cover the entire wiki.
-	 * @param int $from
-	 * @param int $to
+	 * @param int $fromPageId
+	 * @param int $toPageId
 	 */
-	public function build( $self, array $options, $buildChunks, $from, $to ) {
+	public function build( $self, array $options, $buildChunks, $fromPageId, $toPageId ) {
 		$fixedChunkSize = strpos( $buildChunks, 'total' ) === false;
 		$buildChunks = intval( $buildChunks );
 		if ( $fixedChunkSize ) {
 			$chunkSize = $buildChunks;
 		} else {
-			$chunkSize = max( 1, ceil( ( $to - $from ) / $buildChunks ) );
+			$chunkSize = max( 1, ceil( ( $toPageId - $fromPageId ) / $buildChunks ) );
 		}
-		for ( $id = $from; $id < $to; $id = $id + $chunkSize ) {
-			$chunkToId = min( $to, $id + $chunkSize );
+		for ( $pageId = $fromPageId; $pageId < $toPageId; $pageId += $chunkSize ) {
+			$chunkToId = min( $toPageId, $pageId + $chunkSize );
 			print "php $self";
 			foreach ( $options as $optName => $optVal ) {
 				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
@@ -51,7 +51,7 @@ class ChunkBuilder {
 				}
 				print " --$optName $optVal";
 			}
-			print " --fromId $id --toId $chunkToId\n";
+			print " --fromId $pageId --toId $chunkToId\n";
 		}
 	}
 }

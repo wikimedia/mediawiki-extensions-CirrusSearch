@@ -364,7 +364,9 @@ class Hooks {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
 		// load it from the title because the page row has already been deleted.
 		JobQueueGroup::singleton()->push(
-			new Job\DeletePages( $page->getTitle(), array( 'id' => $pageId ) )
+			new Job\DeletePages( $page->getTitle(), array(
+				'docId' => self::getConfig()->makeId( $pageId )
+			) )
 		);
 		return true;
 	}
@@ -633,7 +635,7 @@ class Hooks {
 			$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
 			$job = new Job\DeletePages( $title, array(
 				'indexType' => $oldIndexType,
-				'id' => $oldId
+				'docId' => self::getConfig()->makeId( $oldId )
 			) );
 			// Push the job after DB commit but cancel on rollback
 			wfGetDB( DB_MASTER )->onTransactionIdle( function() use ( $job ) {
@@ -708,13 +710,19 @@ class Hooks {
 	}
 
 	/**
+	 * @return SearchConfig
+	 */
+	private static function getConfig() {
+		return MediaWikiServices::getInstance()
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
+	}
+
+	/**
 	 * @return Connection
 	 */
 	private static function getConnection() {
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		return new Connection( $config );
+		return new Connection( self::getConfig() );
 	}
 
 	/**

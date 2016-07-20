@@ -189,7 +189,7 @@ class SearchContext {
 	}
 
 	/**
-	 * the namespaces being requested.
+	 * mediawiki namespace id's being requested.
 	 * NOTE: this value may change during the Searcher process.
 	 *
 	 * @return int[]|null
@@ -199,7 +199,7 @@ class SearchContext {
 	}
 
 	/**
-	 * set the namespaces
+	 * set the mediawiki namespace id's
 	 *
 	 * @param int[]|null $namespaces array of integer
 	 */

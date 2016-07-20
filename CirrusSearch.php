@@ -911,7 +911,9 @@ $wgCirrusSearchMasterTimeout = '30s';
 $wgCirrusSearchSanityCheck = true;
 
 /**
- * The base name of indexes used on this wiki.
+ * The base name of indexes used on this wiki. This value must be
+ * unique across all wiki's sharing an elasticsearch cluster unless
+ * $wgCirrusSearchMultiWikiIndices is set to true.
  */
 $wgCirrusSearchIndexBaseName = wfWikiID();
 
@@ -936,6 +938,15 @@ $wgCirrusSearchStripQuestionMarks = 'all';
  */
 $wgCirrusSearchFullTextQueryBuilderProfile = 'default';
 
+/**
+ * Transitionary flag for converting between older style
+ * doc ids (page ids) to the newer style ids (wikiid|pageid).
+ * Changing this from false to true requires first turning
+ * this on, then performing an in-place reindex. There may
+ * be some duplicate/outdated results while the inplace
+ * reindex is running.
+ */
+$wgCirrusSearchPrefixIds = false;
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

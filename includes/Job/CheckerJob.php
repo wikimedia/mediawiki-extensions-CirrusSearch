@@ -137,11 +137,11 @@ class CheckerJob extends Job {
 		while ( $pageIds = array_shift( $ranges ) ) {
 			if ( self::getPressure() > $maxPressure ) {
 				$this->retry( "too much pressure on update jobs", reset( $pageIds ) );
-				return false;
+				return true;
 			}
 			if ( time() - $startTime > $maxTime ) {
 				$this->retry( "execution time exceeded checker_job_max_time", reset( $pageIds ) );
-				return false;
+				return true;
 			}
 			$pageCache->exchangeArray( array() );
 			foreach( $checkers as $checker ) {

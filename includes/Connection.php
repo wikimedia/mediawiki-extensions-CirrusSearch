@@ -227,6 +227,22 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
+	 * @param string $name
+	 * @return string
+	 * @throws Exception
+	 */
+	public function extractIndexSuffix( $name ) {
+		$matches = array();
+		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes() ) );
+		if ( !preg_match( "/_($possible)_[^_]+$/", $name, $matches ) ) {
+			throw new \Exception( "Can't parse index name: $name" );
+		}
+
+		return $matches[1];
+	}
+
+
+	/**
 	 * Get the index suffix for a given namespace
 	 * @param int $namespace A namespace id
 	 * @return string

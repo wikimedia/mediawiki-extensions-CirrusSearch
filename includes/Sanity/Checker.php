@@ -201,11 +201,7 @@ class Checker {
 		$foundInsanityInIndex = false;
 		$expectedType = $this->connection->getIndexSuffixForNamespace( $page->getTitle()->getNamespace() );
 		foreach ( $fromIndex as $indexInfo ) {
-			$matches = array();
-			if ( !preg_match( '/_(.+)_.+$/', $indexInfo->getIndex(), $matches ) ) {
-				throw new \Exception( "Can't parse index name:  " . $indexInfo->getIndex() );
-			}
-			$type = $matches[ 1 ];
+			$type = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
 			if ( $type !== $expectedType ) {
 				// Got to grab the index type from the index name....
 				$this->remediator->pageInWrongIndex( $page, $type );
@@ -218,7 +214,6 @@ class Checker {
 		$this->sane( $pageId, 'Page in index' );
 		return false;
 	}
-
 
 	/**
 	 * @param int[] $ids page ids

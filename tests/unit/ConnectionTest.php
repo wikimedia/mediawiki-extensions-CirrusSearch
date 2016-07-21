@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Test\HashSearchConfig;
 use MediaWiki\MediaWikiServices;
 use PHPUnit_Framework_TestCase;
 
@@ -58,5 +59,54 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 			array( array( NS_MAIN, NS_FILE, NS_FILE_TALK ), array( NS_FILE => 'file' ), 'content', 2 ),
 			array( array( NS_MAIN, NS_FILE, NS_FILE_TALK ), array(), 'content', 3 ),
 		);
+	}
+
+	public function extractIndexSuffixProvider() {
+		return array(
+			'basic index name' => array(
+				'content',
+				'testwiki_content_first',
+			),
+			'timestamped index name' => array(
+				'general',
+				'testwiki_general_12345678',
+			),
+			'indexBaseName with underscore' => array(
+				'content',
+				'test_thiswiki_content_first'
+			),
+			'handles user defined suffixes' => array(
+				'file',
+				'zomgwiki_file_654321',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider extractIndexSuffixProvider
+	 */
+	public function testExtractIndexSuffixFromIndexName( $expected, $name ) {
+		$config = new HashSearchConfig( array(
+			'CirrusSearchNamespaceMappings' => array(
+				NS_FILE => 'file',
+			),
+			// Needed for constructor to not blow up
+			'CirrusSearchServers' => array( 'localhost' ),
+		) );
+		$conn = new Connection( $config );
+		$this->assertEquals( $expected, $conn->extractIndexSuffix( $name ) );
+	}
+
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testExtractIndexSuffixThrowsExceptionOnUnknown() {
+		$config = new HashSearchConfig( array(
+			'CirrusSearchNamespaceMappings' => array(),
+			// Needed for constructor to not blow up
+			'CirrusSearchServers' => array( 'localhost' ),
+		) );
+		$conn = new Connection( $config );
+		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}
 }

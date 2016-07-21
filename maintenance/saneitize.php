@@ -102,7 +102,7 @@ class Saneitize extends Maintenance {
 		}
 		$this->buildChecker();
 		$updated = $this->check();
-		$this->output( "Fixed $updated page(s) (" . ( $this->toId - $this->fromId ) . " checked)" );
+		$this->output( "Fixed $updated page(s) (" . ( $this->toId - $this->fromId ) . " checked)\n" );
 	}
 
 	/**

@@ -41,7 +41,7 @@ $wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
 // to require them ourselves.
-require_once( "$IP/extensions/MwEmbedSupport/MwEmbedSupport.php" );
+wfLoadExtension( 'MwEmbedSupport' );
 require_once( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
 require_once( "$IP/extensions/PdfHandler/PdfHandler.php" );
 require_once( "$IP/extensions/Cite/Cite.php" );

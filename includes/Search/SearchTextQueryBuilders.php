@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use RequestContext;
 
@@ -36,13 +37,13 @@ class SearchTextQueryBuilderFactory {
 	private $builders = array();
 
 	/**
-	 * @var SearchContext
+	 * @var SearchConfig
 	 */
-	private $context;
+	private $config;
 
-	public function __construct( SearchContext $context ) {
-		$this->context = $context;
-		$this->builders[] = new SearchTextQueryStringBuilder( $context );
+	public function __construct( SearchConfig $config ) {
+		$this->config = $config;
+		$this->builders[] = new SearchTextQueryStringBuilder( $config );
 	}
 
 	/**
@@ -111,15 +112,15 @@ interface SearchTextQueryBuilder {
  */
 abstract class SearchTextBaseQueryBuilder implements SearchTextQueryBuilder {
 	/**
-	 * @var SearchContext
+	 * @var SearchConfig
 	 */
-	protected $context;
+	protected $config;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 */
-	public function __construct( SearchContext $context ) {
-		$this->context = $context;
+	public function __construct( SearchConfig $config ) {
+		$this->config = $config;
 	}
 }
 
@@ -185,10 +186,10 @@ class SearchTextQueryStringBuilder extends SearchTextBaseQueryBuilder {
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( $defaultOperator );
-		$query->setAllowLeadingWildcard( $this->context->isAllowLeadingWildcards() );
+		$query->setAllowLeadingWildcard( (bool) $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
-		$states = $this->context->getConfig()->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
+		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
 		if ( isset( $states ) ) {
 			// Requires ES 1.4+
 			$query->setParam( 'max_determinized_states', $states );

@@ -12,6 +12,7 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchTextQueryBuilderFactory;
 use GeoData\Coord;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
@@ -979,7 +980,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Query\Simple
 	 */
 	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore, $forHighlight = false ) {
-		$searchTextQueryBuilder = $this->searchContext->searchTextQueryBuilder( $queryString );
+		$factory = new SearchTextQueryBuilderFactory( $this->config );
+		$searchTextQueryBuilder = $factory->getBuilder( $queryString );
 		if ( $isRescore ) {
 			return $searchTextQueryBuilder->buildRescoreQuery( $fields, $queryString, $phraseSlop );
 		} else if( $forHighlight ) {

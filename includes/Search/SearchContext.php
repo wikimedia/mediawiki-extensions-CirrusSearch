@@ -41,11 +41,6 @@ class SearchContext {
 	private $namespaces;
 
 	/**
-	 * @var SearchTextQueryBuilderFactory
-	 */
-	private $searchTextQueryBuilderFactory;
-
-	/**
 	 * @var array|null list of boost templates extracted from the query string
 	 */
 	private $boostTemplatesFromQuery;
@@ -175,7 +170,6 @@ class SearchContext {
 	 */
 	public function __construct( SearchConfig $config, array $namespaces = null ) {
 		$this->config = $config;
-		$this->searchTextQueryBuilderFactory = new SearchTextQueryBuilderFactory( $this );
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->namespaces = $namespaces;
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
@@ -211,21 +205,6 @@ class SearchContext {
 	 */
 	public function setNamespaces( $namespaces ) {
 		$this->namespaces = $namespaces;
-	}
-
-	/**
-	 * @return bool true if leading wildcards are allowed
-	 */
-	public function isAllowLeadingWildcards() {
-		return (bool) $this->config->get( 'CirrusSearchAllowLeadingWildcard' );
-	}
-
-	/**
-	 * @param string $queryStringQueryString
-	 * @return SearchTextQueryBuilder
-	 */
-	public function searchTextQueryBuilder( $queryStringQueryString ) {
-		return $this->searchTextQueryBuilderFactory->getBuilder( $queryStringQueryString );
 	}
 
 	/**

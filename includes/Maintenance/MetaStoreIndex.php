@@ -116,10 +116,9 @@ class MetaStoreIndex {
 
 	public function createOrUpgradeIfNecessary() {
 		$this->fixOldName();
-		$status = $this->client->getStatus();
 		// If the mw_cirrus_metastore alias still not exists it
 		// means we need to create everything from scratch.
-		if ( !$status->aliasExists( self::INDEX_NAME ) ) {
+		if ( !$this->client->getIndex( self::INDEX_NAME )->exists() ) {
 			$this->log( self::INDEX_NAME . " missing creating.\n" );
 			$newIndex = $this->createNewIndex();
 			$this->switchAliasTo( $newIndex );
@@ -341,13 +340,12 @@ class MetaStoreIndex {
 	 * If mw_cirrus_versions exists with no mw_cirrus_metastore
 	 */
 	private function fixOldName() {
-		$status = $this->client->getStatus();
-		if ( !$status->indexExists( self::OLD_INDEX_NAME ) ) {
+		if ( !$this->client->getIndex( self::OLD_INDEX_NAME )->exists() ) {
 			return;
 		}
 		// Old mw_cirrus_versions exists, if mw_cirrus_metastore alias does not
 		// exist we must create it
-		if ( !$status->aliasExists( self::INDEX_NAME ) ) {
+		if ( !$this->client->getIndex( self::INDEX_NAME )->exists() ) {
 			$this->log( "Adding transition alias to " . self::OLD_INDEX_NAME . "\n" );
 			// Old one exists but new one does not
 			// we need to create an alias

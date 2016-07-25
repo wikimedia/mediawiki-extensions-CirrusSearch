@@ -309,216 +309,53 @@ class Searcher extends ElasticsearchIntermediary {
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$this->searchContext->setSearchType( 'full_text' );
 
-		$features = array(
-			// Handle title prefix notation
-			new Query\PrefixFeature( $this->connection ),
-			// Handle prefer-recent keyword
-			new Query\PreferRecentFeature( $this->config ),
-			// Handle local keyword
-			new Query\LocalFeature(),
-			// Handle insource keyword using regex
-			new Query\RegexInSourceFeature( $this->config ),
-			// Handle neartitle, nearcoord keywords, and their boosted alternates
-			new Query\GeoFeature(),
-			// Handle boost-templates keyword
-			new Query\BoostTemplatesFeature(),
-			// Handle hastemplate keyword
-			new Query\HasTemplateFeature(),
-			// Handle linksto keyword
-			new Query\LinksToFeature(),
-			// Handle incategory keyword
-			new Query\InCategoryFeature( $this->config ),
-			// Handle non-regex insource keyword
-			new Query\SimpleInSourceFeature( $this->escaper ),
-			// Handle intitle keyword
-			new Query\InTitleFeature( $this->escaper ),
+		$qb = new Query\FullTextQueryStringQueryBuilder(
+			$this->config,
+			$this->escaper,
+			array(
+				// Handle title prefix notation
+				new Query\PrefixFeature( $this->connection ),
+				// Handle prefer-recent keyword
+				new Query\PreferRecentFeature( $this->config ),
+				// Handle local keyword
+				new Query\LocalFeature(),
+				// Handle insource keyword using regex
+				new Query\RegexInSourceFeature( $this->config ),
+				// Handle neartitle, nearcoord keywords, and their boosted alternates
+				new Query\GeoFeature(),
+				// Handle boost-templates keyword
+				new Query\BoostTemplatesFeature(),
+				// Handle hastemplate keyword
+				new Query\HasTemplateFeature(),
+				// Handle linksto keyword
+				new Query\LinksToFeature(),
+				// Handle incategory keyword
+				new Query\InCategoryFeature( $this->config ),
+				// Handle non-regex insource keyword
+				new Query\SimpleInSourceFeature( $this->escaper ),
+				// Handle intitle keyword
+				new Query\InTitleFeature( $this->escaper ),
+			)
 		);
 
-		foreach ( $features as $feature ) {
-			$term = $feature->apply( $this->searchContext, $term );
-		}
+		$showSuggestion = $showSuggestion && $this->offset == 0;
+		$qb->build( $this->searchContext, $term, $showSuggestion );
 
 		if ( !$this->searchContext->areResultsPossible() ) {
 			return Status::newGood( new SearchResultSet( true ) );
 		}
 
-		$term = $this->escaper->escapeQuotes( $term );
-		$term = trim( $term );
-
-		$queryHelper = new QueryHelper( $this->config );
-
-		// Match quoted phrases including those containing escaped quotes
-		// Those phrases can optionally be followed by ~ then a number (this is the phrase slop)
-		// That can optionally be followed by a ~ (this matches stemmed words in phrases)
-		// The following all match: "a", "a boat", "a\"boat", "a boat"~, "a boat"~9, "a boat"~9~, -"a boat", -"a boat"~9~
-		$slop = $this->config->get('CirrusSearchPhraseSlop');
-		$query = QueryHelper::replacePartsOfQuery( $term, '/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
-			function ( $matches ) use ( $queryHelper, $slop ) {
-				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
-				$main = $this->escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
-
-				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
-						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
-					$phraseMatch = new Elastica\Query\Match( );
-					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
-					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
-					$this->searchContext->addNonTextQuery( $phraseMatch );
-
-					$phraseHighlightMatch = new Elastica\Query\QueryString( );
-					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
-					$phraseHighlightMatch->setFields( array( 'all.plain' ) );
-					$this->searchContext->addNonTextHighlightQuery( $phraseHighlightMatch );
-
-					return array();
-				}
-
-				if ( !isset( $matches[ 'fuzzy' ] ) ) {
-					if ( !isset( $matches[ 'slop' ] ) ) {
-						$main = $main . '~' . $slop[ 'precise' ];
-					}
-					// Got to collect phrases that don't use the all field so we can highlight them.
-					// The highlighter locks phrases to the fields that specify them.  It doesn't do
-					// that with terms.
-					return array(
-						'escaped' => $negate . $queryHelper->switchSearchToExact( $this->searchContext, $main, true ),
-						'nonAll' => $negate . $queryHelper->switchSearchToExact( $this->searchContext, $main, false ),
-					);
-				}
-				return array( 'escaped' => $negate . $main );
-			} );
-		// Find prefix matches and force them to only match against the plain analyzed fields.  This
-		// prevents prefix matches from getting confused by stemming.  Users really don't expect stemming
-		// in prefix queries.
-		$query = QueryHelper::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
-			function ( $matches ) use ( $queryHelper ) {
-				$term = $this->escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
-				return array(
-					'escaped' => $queryHelper->switchSearchToExactForWildcards( $this->searchContext, $term ),
-					'nonAll' => $queryHelper->switchSearchToExactForWildcards( $this->searchContext, $term )
-				);
-			} );
-
-		$escapedQuery = array();
-		$nonAllQuery = array();
-		$nearMatchQuery = array();
-		foreach ( $query as $queryPart ) {
-			if ( isset( $queryPart[ 'escaped' ] ) ) {
-				$escapedQuery[] = $queryPart[ 'escaped' ];
-				if ( isset( $queryPart[ 'nonAll' ] ) ) {
-					$nonAllQuery[] = $queryPart[ 'nonAll' ];
-				} else {
-					$nonAllQuery[] = $queryPart[ 'escaped' ];
-				}
-				continue;
-			}
-			if ( isset( $queryPart[ 'raw' ] ) ) {
-				$fixed = $this->escaper->fixupQueryStringPart( $queryPart[ 'raw' ] );
-				$escapedQuery[] = $fixed;
-				$nonAllQuery[] = $fixed;
-				$nearMatchQuery[] = $queryPart[ 'raw' ];
-				continue;
-			}
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				'Unknown query part: {queryPart}',
-				array( 'queryPart' => serialize( $queryPart ) )
-			);
-		}
-
-		// Actual text query
-		list( $queryStringQueryString, $fuzzyQuery ) =
-			$this->escaper->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
-		$this->searchContext->setFuzzyQuery( $fuzzyQuery );
-
-		if ( $queryStringQueryString === '' ) {
-			// No need to check for a parse error here because we don't actually create a query for
-			// Elasticsearch to parse
-			return $this->search( $originalTerm );
-		} else {
-			// Note that no escaping is required for near_match's match query.
-			$nearMatchQuery = implode( ' ', $nearMatchQuery );
-
-			if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $queryStringQueryString ) ) {
-				$this->searchContext->addSyntaxUsed( 'query_string' );
-				// We're unlikely to make good suggestions for query string with special syntax in them....
-				$showSuggestion = false;
-			}
-			$fields = array_merge(
-				$queryHelper->buildFullTextSearchFields( $this->searchContext, 1, '.plain', true ),
-				$queryHelper->buildFullTextSearchFields( $this->searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
-			$nearMatchFields = $queryHelper->buildFullTextSearchFields( $this->searchContext,
-				$this->config->get( 'CirrusSearchNearMatchWeight' ), '.near_match', true );
-			$this->searchContext->setMainQuery( $this->buildSearchTextQuery( $fields, $nearMatchFields,
-				$queryStringQueryString, $nearMatchQuery ) );
-
-			// The highlighter doesn't know about the weighting from the all fields so we have to send
-			// it a query without the all fields.  This swaps one in.
-			if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-				$nonAllFields = array_merge(
-					$queryHelper->buildFullTextSearchFields( $this->searchContext, 1, '.plain', false ),
-					$queryHelper->buildFullTextSearchFields( $this->searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-				list( $nonAllQueryString, /*_*/ ) = $this->escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
-				$this->searchContext->setHighlightQuery(
-					$this->buildSearchTextQueryForFields( $nonAllFields, $nonAllQueryString, 1, false, true )
-				);
-			} else {
-				$nonAllFields = $fields;
-			}
-
-			// Only do a phrase match rescore if the query doesn't include any quotes and has a space.
-			// Queries without spaces are either single term or have a phrase query generated.
-			// Queries with the quote already contain a phrase query and we can't build phrase queries
-			// out of phrase queries at this point.
-			if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
-					$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-					!$this->searchContext->isSyntaxUsed() &&
-					strpos( $queryStringQueryString, '"' ) === false &&
-					strpos( $queryStringQueryString, ' ' ) !== false ) {
-
-				$rescoreFields = $fields;
-				if ( !$this->config->get( 'CirrusSearchAllFieldsForRescore' ) ) {
-					$rescoreFields = $nonAllFields;
-				}
-
-				$this->searchContext->addRescore( array(
-					'window_size' => $this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ),
-					'query' => array(
-						'rescore_query' => $this->buildSearchTextQueryForFields( $rescoreFields,
-							'"' . $queryStringQueryString . '"', $this->config->getElement( 'CirrusSearchPhraseSlop', 'boost' ), true ),
-						'query_weight' => 1.0,
-						'rescore_query_weight' => $this->config->get( 'CirrusSearchPhraseRescoreBoost' ),
-					)
-				) );
-			}
-
-			$showSuggestion = $showSuggestion && ($this->offset == 0);
-
-			if ( $showSuggestion ) {
-				$this->searchContext->setSuggest( array(
-					'text' => $term,
-					'suggest' => $this->buildSuggestConfig( 'suggest' ),
-				) );
-			}
-
-			$result = $this->search( $originalTerm );
-
-			if ( !$result->isOK() && $this->isParseError( $result ) ) {
-				// Elasticsearch has reported a parse error and we've already logged it when we built the status
-				// so at this point all we can do is retry the query as a simple query string query.
-				$this->searchContext->setMainQuery( new \Elastica\Query\Simple( array( 'simple_query_string' => array(
-					'fields' => $fields,
-					'query' => $queryStringQueryString,
-					'default_operator' => 'AND',
-				) ) ) );
-				$this->searchContext->clearRescore();
-				$this->searchContext->setSearchType( 'degraded_full_text' );
-				$result = $this->search( $originalTerm );
+		$result = $this->search( $originalTerm );
+		if ( !$result->isOK() && $this->isParseError( $result ) ) {
+			if ( $qb->buildDegraded( $this->searchContext ) ) {
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
+				$result = $this->search( $term );
 			}
-
-			return $result;
 		}
+
+		return $result;
 	}
 
 	/**
@@ -942,117 +779,6 @@ class Searcher extends ElasticsearchIntermediary {
 
 
 		return $result;
-	}
-
-	/**
-	 * @param string[] $fields
-	 * @param string[] $nearMatchFields
-	 * @param string $queryString
-	 * @param string $nearMatchQuery
-	 * @return \Elastica\Query\Simple|\Elastica\Query\BoolQuery
-	 */
-	private function buildSearchTextQuery( array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
-		$queryForMostFields = $this->buildSearchTextQueryForFields( $fields, $queryString,
-				$this->config->getElement( 'CirrusSearchPhraseSlop', 'default' ), false );
-		if ( $nearMatchQuery ) {
-			// Build one query for the full text fields and one for the near match fields so that
-			// the near match can run unescaped.
-			$bool = new \Elastica\Query\BoolQuery();
-			$bool->setMinimumNumberShouldMatch( 1 );
-			$bool->addShould( $queryForMostFields );
-			$nearMatch = new \Elastica\Query\MultiMatch();
-			$nearMatch->setFields( $nearMatchFields );
-			$nearMatch->setQuery( $nearMatchQuery );
-			$bool->addShould( $nearMatch );
-			return $bool;
-		}
-		return $queryForMostFields;
-	}
-
-	/**
-	 * @todo: refactor as we may want to implement many different way to build
-	 *        the main query.
-	 * @param string[] $fields
-	 * @param string $queryString
-	 * @param int $phraseSlop
-	 * @param bool $isRescore
-	 * @param bool $forHighlight
-	 * @return \Elastica\Query\Simple
-	 */
-	private function buildSearchTextQueryForFields( array $fields, $queryString, $phraseSlop, $isRescore, $forHighlight = false ) {
-		$factory = new SearchTextQueryBuilderFactory( $this->config );
-		$searchTextQueryBuilder = $factory->getBuilder( $queryString );
-		if ( $isRescore ) {
-			return $searchTextQueryBuilder->buildRescoreQuery( $fields, $queryString, $phraseSlop );
-		} else if( $forHighlight ) {
-			return $searchTextQueryBuilder->buildHighlightQuery( $fields, $queryString, $phraseSlop );
-		} else {
-			return $searchTextQueryBuilder->buildMainQuery( $fields, $queryString, $phraseSlop );
-		}
-	}
-
-	/**
-	 * Build suggest config for $field.
-	 * @param string $field field to suggest against
-	 * @return array[] array of Elastica configuration
-	 */
-	private function buildSuggestConfig( $field ) {
-		// check deprecated settings
-		$suggestSettings = $this->config->get( 'CirrusSearchPhraseSuggestSettings' );
-		$maxErrors = $this->config->get( 'CirrusSearchPhraseSuggestMaxErrors' );
-		if ( isset( $maxErrors ) ) {
-			$suggestSettings['max_errors'] = $maxErrors;
-		}
-		$confidence = $this->config->get( 'CirrusSearchPhraseSuggestMaxErrors' );
-		if ( isset( $confidence ) ) {
-			$suggestSettings['confidence'] = $confidence;
-		}
-
-		$settings = array(
-			'phrase' => array(
-				'field' => $field,
-				'size' => 1,
-				'max_errors' => $suggestSettings['max_errors'],
-				'confidence' => $suggestSettings['confidence'],
-				'real_word_error_likelihood' => $suggestSettings['real_word_error_likelihood'],
-				'direct_generator' => array(
-					array(
-						'field' => $field,
-						'suggest_mode' => $suggestSettings['mode'],
-						'max_term_freq' => $suggestSettings['max_term_freq'],
-						'min_doc_freq' => $suggestSettings['min_doc_freq'],
-						'prefix_length' => $suggestSettings['prefix_length'],
-					),
-				),
-				'highlight' => array(
-					'pre_tag' => self::SUGGESTION_HIGHLIGHT_PRE,
-					'post_tag' => self::SUGGESTION_HIGHLIGHT_POST,
-				),
-			),
-		);
-		if ( !empty( $suggestSettings['collate'] ) ) {
-			$collateFields = array('title.plain', 'redirect.title.plain');
-			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' )  ) {
-				$collateFields[] = 'text.plain';
-			}
-			$settings['phrase']['collate'] = array(
-				'query' => array (
-					'inline' => array(
-						'multi_match' => array(
-							'query' => '{{suggestion}}',
-							'operator' => 'or',
-							'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
-							'type' => 'cross_fields',
-							'fields' => $collateFields
-						),
-					),
-				),
-			);
-		}
-		if( isset( $suggestSettings['smoothing_model'] ) ) {
-			$settings['phrase']['smoothing'] = $suggestSettings['smoothing_model'];
-		}
-		return $settings;
 	}
 
 	/**

@@ -50,6 +50,7 @@ class ForceSearchIndex extends Maintenance {
 	public $pauseForJobs;
 	public $namespace;
 	public $excludeContentTypes;
+	public $lastJobQueueCheckTime = 0;
 
 	/**
 	 * @var int number of completed jobs
@@ -124,25 +125,8 @@ class ForceSearchIndex extends Maintenance {
 		// We need to check ids options early otherwize hasOption may return
 		// true even if the user did not set the option on the commandline
 		if ( $this->hasOption( 'ids' ) ) {
-			if ( $this->getOption( 'deletes' ) || $this->hasOption( 'limit' )
-				|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
-				|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
-			) {
-				$this->error( '--ids cannot be used with deletes/from/to/fromId/toId/limit', 1 );
-			}
-
-
 			$this->runWithIds = true;
-			$ids = array_map( function( $id ) {
-					$id = trim( $id );
-					if ( !ctype_digit( $id ) ) {
-						$this->error( "Invalid id provided in --ids, got '$id', expected a positive integer", 1 );
-					}
-					return intval( $id );
-				},
-				explode( ',', $this->getOption( 'ids' ) ) );
-			$ids = array_unique( $ids, SORT_REGULAR );
-			$this->ids = array_chunk( $ids, $this->mBatchSize );
+			$this->ids = $this->buildIdBatches();
 		}
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
@@ -162,23 +146,8 @@ class ForceSearchIndex extends Maintenance {
 		$this->maxJobs = $this->getOption( 'maxJobs' ) ? intval( $this->getOption( 'maxJobs' ) ) : null;
 		$this->pauseForJobs = $this->getOption( 'pauseForJobs' ) ?
 			intval( $this->getOption( 'pauseForJobs' ) ) : $this->maxJobs;
-		$updateFlags = 0;
-		if ( $this->getOption( 'indexOnSkip' ) ) {
-			$updateFlags |= Updater::INDEX_ON_SKIP;
-		}
-		if ( $this->getOption( 'skipParse' ) ) {
-			$updateFlags |= Updater::SKIP_PARSE;
-			if ( !$this->getOption( 'batch-size' ) ) {
-				$this->setBatchSize( 50 );
-			}
-		}
-		if ( $this->getOption( 'skipLinks' ) ) {
-			$updateFlags |= Updater::SKIP_LINKS;
-		}
+		$updateFlags = $this->buildUpdateFlags();
 
-		if ( $this->getOption( 'forceParse' ) ) {
-			$updateFlags |= Updater::FORCE_PARSE;
-		}
 		if ( !$this->getOption( 'batch-size' ) &&
 			( $this->getOption( 'queue' ) || $this->getOption( 'deletes' ) )
 		) {
@@ -192,17 +161,12 @@ class ForceSearchIndex extends Maintenance {
 			'trim',
 			explode( ',', $this->getOption( 'excludeContentTypes', '' ) )
 		) );
-		if ( $this->indexUpdates ) {
-			if ( $this->queue ) {
-				$operationName = 'Queued';
-			} else {
-				$operationName = 'Indexed';
-			}
-		} else {
-			$operationName = 'Deleted';
-		}
+
+		$operationName = $this->indexUpdates
+			? ( $this->queue ? 'Queued' : 'Indexed' )
+			: 'Deleted';
+
 		$operationStartTime = microtime( true );
-		$lastJobQueueCheckTime = 0;
 		$this->completed = 0;
 		$rate = 0;
 
@@ -259,18 +223,7 @@ class ForceSearchIndex extends Maintenance {
 					}
 				}
 				if ( $this->queue ) {
-					$now = microtime( true );
-					if ( $now - $lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
-						$lastJobQueueCheckTime = $now;
-						$queueSize = $this->getUpdatesInQueue();
-						if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
-							do {
-								$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
-								usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
-								$queueSize = $this->getUpdatesInQueue();
-							} while ( $this->pauseForJobs < $queueSize );
-						}
-					}
+					$this->waitForQueueToShrink( $wiki );
 					JobQueueGroup::singleton()->push(
 						Job\MassIndex::build( $pages, $updateFlags, $this->getOption( 'cluster' ) )
 					);
@@ -307,30 +260,92 @@ class ForceSearchIndex extends Maintenance {
 			$this->output( "$wiki $operationName $size pages ending at $endingAt at $rate/second\n" );
 		}
 		$this->output( "$operationName a total of {$this->completed} pages at $rate/second\n" );
+		$this->waitForQueueToDrain( $wiki );
+	}
+
+	private function buildIdBatches() {
+		if ( $this->getOption( 'deletes' ) || $this->hasOption( 'limit' )
+			|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
+			|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
+		) {
+			$this->error( '--ids cannot be used with deletes/from/to/fromId/toId/limit', 1 );
+		}
+
+		$ids = array_map( function( $id ) {
+				$id = trim( $id );
+				if ( !ctype_digit( $id ) ) {
+					$this->error( "Invalid id provided in --ids, got '$id', expected a positive integer", 1 );
+				}
+				return intval( $id );
+			},
+			explode( ',', $this->getOption( 'ids' ) ) );
+		$ids = array_unique( $ids, SORT_REGULAR );
+		return array_chunk( $ids, $this->mBatchSize );
+	}
+
+	private function buildUpdateFlags() {
+		$updateFlags = 0;
+		if ( $this->getOption( 'indexOnSkip' ) ) {
+			$updateFlags |= Updater::INDEX_ON_SKIP;
+		}
+		if ( $this->getOption( 'skipParse' ) ) {
+			$updateFlags |= Updater::SKIP_PARSE;
+			if ( !$this->getOption( 'batch-size' ) ) {
+				$this->setBatchSize( 50 );
+			}
+		}
+		if ( $this->getOption( 'skipLinks' ) ) {
+			$updateFlags |= Updater::SKIP_LINKS;
+		}
+
+		if ( $this->getOption( 'forceParse' ) ) {
+			$updateFlags |= Updater::FORCE_PARSE;
+		}
+
+		return $updateFlags;
+	}
+
+	private function waitForQueueToShrink( $wiki ) {
+		$now = microtime( true );
+		if ( $now - $this->lastJobQueueCheckTime > self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS ) {
+			$this->lastJobQueueCheckTime = $now;
+			$queueSize = $this->getUpdatesInQueue();
+			if ( $this->maxJobs !== null && $this->maxJobs < $queueSize )  {
+				do {
+					$this->output( "$wiki Waiting while job queue shrinks: $this->pauseForJobs > $queueSize\n" );
+					usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+					$queueSize = $this->getUpdatesInQueue();
+				} while ( $this->pauseForJobs < $queueSize );
+			}
+		}
+	}
+
+	private function waitForQueueToDrain( $wiki ) {
+		if ( !$this->queue ) {
+			return;
+		}
 
 		$lastQueueSizeForOurJob = PHP_INT_MAX;
 		$waitStartTime = microtime( true );
-		if ( $this->queue ) {
-			$this->output( "Waiting for jobs to drain from the queue\n" );
-			while ( true ) {
-				$queueSizeForOurJob = $this->getUpdatesInQueue();
-				if ( $queueSizeForOurJob === 0 ) {
-					break;
-				}
-				// We subtract 5 because we some jobs may be added by deletes
-				if ( $queueSizeForOurJob > $lastQueueSizeForOurJob ) {
-					$this->output( "Queue size went up.  Another script is likely adding jobs " .
-						"and it'll wait for them to empty.\n" );
-					break;
-				}
-				if ( microtime( true ) - $waitStartTime > 120 ) {
-					// Wait at least two full minutes before we check if the job count went down.
-					// Less then that and we might be seeing lag from redis's counts.
-					$lastQueueSizeForOurJob = $queueSizeForOurJob;
-				}
-				$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
-				usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
+		$this->output( "Waiting for jobs to drain from the queue\n" );
+		while ( true ) {
+			$queueSizeForOurJob = $this->getUpdatesInQueue();
+			if ( $queueSizeForOurJob === 0 ) {
+				return;
 			}
+			// We subtract 5 because we some jobs may be added by deletes
+			if ( $queueSizeForOurJob > $lastQueueSizeForOurJob ) {
+				$this->output( "Queue size went up.  Another script is likely adding jobs " .
+					"and it'll wait for them to empty.\n" );
+				return;
+			}
+			if ( microtime( true ) - $waitStartTime > 120 ) {
+				// Wait at least two full minutes before we check if the job count went down.
+				// Less then that and we might be seeing lag from redis's counts.
+				$lastQueueSizeForOurJob = $queueSizeForOurJob;
+			}
+			$this->output( "$wiki $queueSizeForOurJob jobs left on the queue.\n" );
+			usleep( self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS * 1000000 );
 		}
 	}
 

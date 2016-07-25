@@ -1069,9 +1069,7 @@ GROOVY;
 		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
-			if ( $this->needNsFilter( $extraIndexes, $indexType ) ) {
-				$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
-			}
+			$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
 		}
 
 		$this->installBoosts();
@@ -1289,30 +1287,6 @@ GROOVY;
 
 
 		return $result;
-	}
-
-	/**
-	 * @param string[] $extraIndexes
-	 * @param string $indexType
-	 * @return boolean
-	 */
-	protected function needNsFilter( array $extraIndexes, $indexType ) {
-		if ( $extraIndexes ) {
-			// We're reaching into another wiki's indexes and we don't know what is there so be defensive.
-			return true;
-		}
-		$nsCount = count( $this->searchContext->getNamespaces() );
-		$validNsCount = count( MWNamespace::getValidNamespaces() );
-		if ( $nsCount === $validNsCount ) {
-			// We're only on our wiki and we're searching _everything_.
-			return false;
-		}
-		if ( !$indexType ) {
-			// We're searching less than everything but we're going across indexes.  Back to the defensive.
-			return true;
-		}
-		$namespacesInIndexType = $this->connection->namespacesInIndexType( $indexType );
-		return $nsCount !== $namespacesInIndexType;
 	}
 
 	/**

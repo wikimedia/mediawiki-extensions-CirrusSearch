@@ -46,10 +46,23 @@
                 ],
                 "filter": [
                     {
-                        "match": {
-                            "title.prefix": {
-                                "query": "prefix tes"
-                            }
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "title.prefix": {
+                                            "query": "prefix tes"
+                                        }
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "namespace": [
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]

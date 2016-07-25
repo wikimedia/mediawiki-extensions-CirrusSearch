@@ -24,10 +24,23 @@
                 ],
                 "filter": [
                     {
-                        "match": {
-                            "title.prefix": {
-                                "query": "Prefix Test Redirec"
-                            }
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "title.prefix": {
+                                            "query": "Prefix Test Redirec"
+                                        }
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "namespace": [
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]

@@ -46,10 +46,23 @@
                 ],
                 "filter": [
                     {
-                        "match": {
-                            "title.prefix": {
-                                "query": ""
-                            }
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "title.prefix": {
+                                            "query": ""
+                                        }
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "namespace": [
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]

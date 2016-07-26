@@ -902,6 +902,22 @@ $wgCirrusSearchSanityCheck = true;
  */
 $wgCirrusSearchIndexBaseName = wfWikiID();
 
+/**
+ * Treat question marks in simple queries as question marks, not
+ * wildcard characters, especially at the end of a query. If the
+ * query doesn't use insource: and there is no escape character,
+ * remove ? from the end of the query, before a word boundary, or
+ * everywhere; also de-escape all escaped question marks.
+ *
+ * Valid values, all unknown values map to 'no':
+ *   final - only strip trailing question marks and white space
+ *   break - strip non-final question marks followed by a word boundary
+ *   all   - strip all question marks (and replace them with spaces)
+ *   no    - don't strip question marks
+ */
+$wgCirrusSearchStripQuestionMarks = 'all';
+
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

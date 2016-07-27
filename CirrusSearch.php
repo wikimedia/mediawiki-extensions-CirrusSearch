@@ -997,6 +997,19 @@ $wgResourceModules += array(
 );
 
 /**
+ * Mapping of result types to CirrusSearch classes.
+ */
+$wgCirrusSearchFieldTypes = array(
+	SearchIndexField::INDEX_TYPE_TEXT => \CirrusSearch\Search\TextIndexField::class,
+	SearchIndexField::INDEX_TYPE_KEYWORD => \CirrusSearch\Search\KeywordIndexField::class,
+	SearchIndexField::INDEX_TYPE_INTEGER => \CirrusSearch\Search\IntegerIndexField::class,
+	SearchIndexField::INDEX_TYPE_NUMBER => \CirrusSearch\Search\NumberIndexField::class,
+	SearchIndexField::INDEX_TYPE_DATETIME => \CirrusSearch\Search\DatetimeIndexField::class,
+	SearchIndexField::INDEX_TYPE_BOOL => \CirrusSearch\Search\BooleanIndexField::class,
+	SearchIndexField::INDEX_TYPE_NESTED => \CirrusSearch\Search\NestedIndexField::class,
+);
+
+/**
  * Jenkins configuration required to get all the browser tests passing cleanly.
  *
  * @todo re-enable the code below if/when browser tests are enabled again

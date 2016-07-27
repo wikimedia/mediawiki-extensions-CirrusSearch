@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'intitle:\"\"links catapult\"\"\n'",
+    "description": "full_text search for 'intitle:\"\\\"links catapult\\\"\"\n'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
@@ -17,11 +17,10 @@
         "fields": "text.word_count",
         "query": {
             "bool": {
-                "minimum_number_should_match": 1,
-                "should": [
+                "must": [
                     {
                         "query_string": {
-                            "query": "\"\" (all.plain:\"links catapult\"~0^1) \"\"",
+                            "query": "(all.plain:\"\\\"links catapult\\\"\"~0^1)",
                             "fields": [
                                 "all.plain^1",
                                 "all^0.5"
@@ -34,14 +33,6 @@
                             "rewrite": "top_terms_boost_1024",
                             "max_determinized_states": 500
                         }
-                    },
-                    {
-                        "multi_match": {
-                            "fields": [
-                                "all_near_match^2"
-                            ],
-                            "query": "\" \""
-                        }
                     }
                 ],
                 "filter": [
@@ -50,7 +41,7 @@
                             "must": [
                                 {
                                     "query_string": {
-                                        "query": "\"\"links",
+                                        "query": "\"\\\"links catapult\\\"\"",
                                         "fields": [
                                             "title"
                                         ],
@@ -198,7 +189,7 @@
             },
             "highlight_query": {
                 "query_string": {
-                    "query": "\"\" (title.plain:\"links catapult\"~0^20 OR redirect.title.plain:\"links catapult\"~0^15 OR category.plain:\"links catapult\"~0^8 OR heading.plain:\"links catapult\"~0^5 OR opening_text.plain:\"links catapult\"~0^3 OR text.plain:\"links catapult\"~0^1 OR auxiliary_text.plain:\"links catapult\"~0^0.5) \"\"",
+                    "query": "(title.plain:\"\\\"links catapult\\\"\"~0^20 OR redirect.title.plain:\"\\\"links catapult\\\"\"~0^15 OR category.plain:\"\\\"links catapult\\\"\"~0^8 OR heading.plain:\"\\\"links catapult\\\"\"~0^5 OR opening_text.plain:\"\\\"links catapult\\\"\"~0^3 OR text.plain:\"\\\"links catapult\\\"\"~0^1 OR auxiliary_text.plain:\"\\\"links catapult\\\"\"~0^0.5)",
                     "fields": [
                         "title.plain^20",
                         "redirect.title.plain^15",

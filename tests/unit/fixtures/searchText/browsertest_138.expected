@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'incategory:\"Categorywith \" Quote\"\n'",
+    "description": "full_text search for 'incategory:\"Categorywith \\\" Quote\"\n'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
@@ -17,31 +17,9 @@
         "fields": "text.word_count",
         "query": {
             "bool": {
-                "minimum_number_should_match": 1,
-                "should": [
+                "must": [
                     {
-                        "query_string": {
-                            "query": "Quote\"\"",
-                            "fields": [
-                                "all.plain^1",
-                                "all^0.5"
-                            ],
-                            "auto_generate_phrase_queries": true,
-                            "phrase_slop": 0,
-                            "default_operator": "AND",
-                            "allow_leading_wildcard": true,
-                            "fuzzy_prefix_length": 2,
-                            "rewrite": "top_terms_boost_1024",
-                            "max_determinized_states": 500
-                        }
-                    },
-                    {
-                        "multi_match": {
-                            "fields": [
-                                "all_near_match^2"
-                            ],
-                            "query": "Quote\""
-                        }
+                        "match_all": {}
                     }
                 ],
                 "filter": [
@@ -54,7 +32,7 @@
                                             {
                                                 "match": {
                                                     "category.lowercase_keyword": {
-                                                        "query": "Categorywith "
+                                                        "query": "Categorywith \" Quote"
                                                     }
                                                 }
                                             }
@@ -195,34 +173,6 @@
                         "file_text",
                         "file_text.plain"
                     ]
-                }
-            },
-            "highlight_query": {
-                "query_string": {
-                    "query": "Quote\"\"",
-                    "fields": [
-                        "title.plain^20",
-                        "redirect.title.plain^15",
-                        "category.plain^8",
-                        "heading.plain^5",
-                        "opening_text.plain^3",
-                        "text.plain^1",
-                        "auxiliary_text.plain^0.5",
-                        "title^10",
-                        "redirect.title^7.5",
-                        "category^4",
-                        "heading^2.5",
-                        "opening_text^1.5",
-                        "text^0.5",
-                        "auxiliary_text^0.25"
-                    ],
-                    "auto_generate_phrase_queries": true,
-                    "phrase_slop": 1,
-                    "default_operator": "AND",
-                    "allow_leading_wildcard": true,
-                    "fuzzy_prefix_length": 2,
-                    "rewrite": "top_terms_boost_1024",
-                    "max_determinized_states": 500
                 }
             }
         },

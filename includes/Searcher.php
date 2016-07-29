@@ -299,8 +299,12 @@ class Searcher extends ElasticsearchIntermediary {
 			return $checkLengthStatus;
 		}
 
-		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
+		// save original term for logging
 		$originalTerm = $term;
+
+		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
+
+		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$this->searchContext->setSearchType( 'full_text' );
 		// Handle title prefix notation
 		$prefixPos = strpos( $term, 'prefix:' );

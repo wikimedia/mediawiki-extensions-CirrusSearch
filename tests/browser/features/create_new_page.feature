@@ -14,8 +14,8 @@ Feature: Searches that prompt, or not, for new page creation
   | \|\| catapult                                             |  no link  |
   | *ickle                                                    |   a link  |
   | incategory:weaponry                                       |  no link  |
-  | catapu?t                                                  |  no link  |
-  | catapul?                                                  |  no link  |
+  | catapu\\?t                                                |  no link  |
+  | catapul\\?                                                |  no link  |
   | morelike:ThisPageDoesNotExist                             |  no link  |
   | morelike:ChangeMe                                         |  no link  |
 

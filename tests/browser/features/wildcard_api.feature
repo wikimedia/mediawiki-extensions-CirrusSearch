@@ -6,8 +6,8 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?k       |
-    | c?       |
+    | \\?k     |
+    | c\\?     |
 
   Scenario Outline: Wildcards don't match stemmed matches
     When I api search for pi<wildcard>kle
@@ -15,7 +15,7 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?k       |
+    | \\?k     |
 
   Scenario Outline: Wildcards in leading intitle: terms match
     When I api search for intitle:functiona<wildcard> intitle:programming
@@ -23,7 +23,7 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?        |
+    | \\?      |
 
   Scenario Outline: Wildcard suffixes in trailing intitle: terms match stemmed matches
     When I api search for intitle:functional intitle:programmin<wildcard>
@@ -31,7 +31,7 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?        |
+    | \\?      |
 
   Scenario Outline: Wildcards within trailing intitle: terms match stemmed matches
     When I api search for intitle:functional intitle:prog<wildcard>amming
@@ -39,7 +39,7 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?        |
+    | \\?      |
 
   Scenario Outline: Searching with a single wildcard finds expected results
     When I api search for catapu<wildcard>
@@ -47,8 +47,8 @@ Feature: Searches that contain wildcard matches
   Examples:
     | wildcard |
     | *        |
-    | ?t       |
-    | l?       |
+    | \\?t     |
+    | l\\?     |
 
   Scenario: Searching with a complex wildcard query fails
     When I api search for d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*l*y*w*i*l*d*c*a*r*d*d*e*a*d*w*i*l*d*c*a*r*d*

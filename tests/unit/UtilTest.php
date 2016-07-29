@@ -501,4 +501,38 @@ class UtilTest extends MediaWikiTestCase {
 
 		$this->assertEquals( $expected, $result );
 	}
+
+	public function teststripQuestionMarks() {
+		// tests are input, strippingLevel, expectedOutput
+		$tests = [ [ 'pickles', 'all', 'pickles' ],
+				   [ 'pic?les', 'all', 'pic les' ],
+				   [ 'pic?les', 'break', 'pic?les' ],
+				   [ 'pic?les', 'no', 'pic?les' ],
+				   [ 'pic?les', 'final', 'pic?les' ],
+				   [ 'pickle?', 'all', 'pickle ' ],
+				   [ 'pickle?', 'break', 'pickle' ],
+				   [ 'მწნილი?', 'no', 'მწნილი?' ],
+				   [ 'მწნილი?', 'final', 'მწნილი' ],
+				   [ '?漬物', 'all', ' 漬物' ],
+				   [ '?漬物', 'break', '?漬物' ],
+				   [ 'pic? les', 'all', 'pic  les' ],
+				   [ 'pic? les', 'break', 'pic les' ],
+				   [ 'pic\?les', 'all', 'pic?les' ],
+				   [ 'pic\?les', 'break', 'pic?les' ],
+				   [ 'pic\?les', 'no', 'pic\?les' ],
+				   [ 'pic\?les', 'final', 'pic?les' ],
+				   [ 'insource:/x?/', 'all', 'insource:/x?/' ],
+				   [ 'insource:/x?/', 'break', 'insource:/x?/' ],
+				   [ 'insource:/x?/', 'no', 'insource:/x?/' ],
+				   [ 'insource:/x?/', 'final', 'insource:/x?/' ],
+				   [ '??', 'all', '??' ],
+				   [ '¿.; ?', 'all', '¿.; ?' ],
+				];
+
+		foreach ( $tests as $test ) {
+			$this->assertEquals( Util::stripQuestionMarks( $test[0], $test[1] ), $test[2] );
+		}
+
+	}
+
 }

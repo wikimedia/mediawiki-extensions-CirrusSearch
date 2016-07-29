@@ -526,4 +526,39 @@ class Util {
 
 		return max( 10, (int) round( $matches[1] * $scale[$matches[2]] ) );
 	}
+
+	/**
+	 * Strip question marks from queries, according to the defined stripping
+	 * level, defined by $wgCirrusSearchStripQuestionMarks. Strip all ?s, those
+	 * at word breaks, or only string-final. Ignore queries that are all
+	 * punctuation or use insource. Don't remove escaped \?s, but unescape them.
+	 * ¿ is not :punct:, hence $more_punct.
+	 *
+	 * @param string $term
+	 * @param string $strippingLevel
+	 * @return string modified term, based on strippingLevel
+	 */
+	public static function stripQuestionMarks( $term, $strippingLevel ) {
+		// strip question marks
+		$more_punct = "[¿]";
+		if ( strpos( $term, 'insource:' ) === false &&
+			preg_match( "/^([[:punct:]]|\s|$more_punct)+$/", $term ) === 0
+		) {
+			if ( $strippingLevel === 'final' ) {
+				// strip only query-final question marks that are not escaped
+				$term = preg_replace( "/((?<!\\\\)\?|\s)+$/", '', $term );
+				$term = preg_replace( '/\\\\\?/', '?', $term );
+			} elseif ( $strippingLevel === 'break' ) {
+				//strip question marks at word boundaries
+				$term = preg_replace( '/(?<!\\\\)(\?)+(\PL|$)/', '$2', $term );
+				$term = preg_replace( '/\\\\\?/', '?', $term );
+			} elseif ( $strippingLevel === 'all' ) {
+				//strip all unescapred question marks
+				$term = preg_replace( '/(?<!\\\\)(\?)+/', ' ', $term );
+				$term = preg_replace( '/\\\\\?/', '?', $term );
+			}
+		}
+	return $term;
+	}
+
 }

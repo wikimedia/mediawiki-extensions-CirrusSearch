@@ -30,6 +30,6 @@
 	"cirrussearch-completion-profile-normal": "약간의 문장부호, 서너 개의 발음기호와 불용어 삭제함.",
 	"cirrussearch-completion-profile-fuzzy": "오타가 수정된 일반 문서와 유사(두 가지 오타를 지원)",
 	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 일부 틀, 문서의 언어와 최신화 정도에 기반한 순위 (틀, 언어, 최신화 정도는 이 위키에서 활성화되지 않을 수 있습니다.)",
-	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에서 활성화될 때 일부 틀과 문서의 언어, 신규 정도에 따른 순위",
+	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에 활성화될 때 일부 틀과 문서의 언어, 최신 정도를 바탕으로 순위를 매김.",
 	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위 (디버그 전용)"
 }

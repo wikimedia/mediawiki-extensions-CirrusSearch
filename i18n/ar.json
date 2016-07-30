@@ -7,7 +7,8 @@
 			"Manhal",
 			"Shbib Al-Subaie",
 			"محمد أحمد عبد الفتاح",
-			"Maroen1990"
+			"Maroen1990",
+			"Meno25"
 		]
 	},
 	"cirrussearch-desc": "عملية البحث مدعومة من قبل Elasticsearch لميدياويكي",
@@ -22,7 +23,7 @@
 	"cirrussearch-pref-label": "بحث جديد",
 	"cirrussearch-pref-desc": "جرب طريقة البحث الجديدة التي تدعم عدد أكبر من اللغات وتوفر نتائج أفضل من ناحية التحديثات. كما يمكنها أيضا البحث لك عن نصوص داخل قوالب.",
 	"cirrussearch-give-feedback": "اعطنا ملاحظاتك",
-	"cirrussearch-didyoumean-settings": "translatewiki_net-bw_.55c1df9bbfe201.81298463@translatewiki.net",
+	"cirrussearch-didyoumean-settings": "  #<!-- leave this line exactly as it is --> <pre>\n# This message lets you configure the settings of the \"Did you mean\" suggestions.\n# See also https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# Changes to this take effect immediately.\n# The syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the setting name followed by a \":\" character followed by the setting value\n# The settings are :\n#   * max_errors (integer): the maximum number of terms that will be considered misspelled in order to be corrected. 1 or 2.\n#   * confidence (float): The confidence level defines a factor applied to the input phrases score which is used as a threshold for other suggestion candidates. Only candidates that score higher than the threshold will be included in the result. For instance a confidence level of 1.0 will only return suggestions that score higher than the input phrase. If set to 0.0 the best candidate are returned.\n#   * min_doc_freq (float 0 to 1): The minimal threshold in number of documents a suggestion should appear in.\n#                   High frequency terms are generally \"stop words\".\n#   * max_term_freq (float 0 to 1): The maximum threshold in number of documents in which a term can exist in order to be included.\n#   * prefix_length (integer): The minimal number of prefix characters that must match a term in order to be a suggestion.\n#   * suggest_mode (missing, popular, always): The suggest mode controls the way suggestions are included.\n# Examples of good lines:\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- leave this line exactly as it is -->",
 	"cirrussearch-completionsuggester-pref": "مقترح الإكمال",
 	"cirrussearch-completionsuggester-desc": "خوارزمية جديدة لاستكمال البحث أثناء الكتابة. بمجرد تفعيلها سيستخدم صندوق البحث في أعلى اليسار ميزة مقترح الإكمال."
 }

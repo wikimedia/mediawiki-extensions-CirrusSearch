@@ -222,19 +222,19 @@ class Result extends SearchResult {
 			);
 			return null;
 		}
-		return Title::makeTitleSafe( $best[ 'namespace' ], $best[ 'title' ], '', $this->interwiki );
+		return Title::makeTitle( $best[ 'namespace' ], $best[ 'title' ], '', $this->interwiki );
 	}
 
 	/**
 	 * @return Title
 	 */
 	private function findSectionTitle() {
-		$heading = $this->stripHighlighting( $this->sectionSnippet );
-		return Title::makeTitle(
-			$this->getTitle()->getNamespace(),
-			$this->getTitle()->getDBkey(),
-			Title::escapeFragmentForURL( $heading )
-		);
+		$title = clone $this->getTitle();
+		$title->setFragment( Title::escapeFragmentForURL(
+			$this->stripHighlighting( $this->sectionSnippet )
+		) );
+
+		return $title;
 	}
 
 	/**

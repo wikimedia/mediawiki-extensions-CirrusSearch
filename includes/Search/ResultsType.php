@@ -286,7 +286,12 @@ class FullTextResultsType implements ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
-		return array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
+		$fields = array( 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' );
+		if ( $this->prefix ) {
+			$fields[] = 'namespace_text';
+		}
+
+		return $fields;
 	}
 
 	/**

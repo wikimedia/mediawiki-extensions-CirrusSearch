@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use SearchIndexField;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\SimilarityProfiles;
 use SearchEngine;
 
 /**
@@ -37,11 +38,6 @@ class TextIndexField extends CirrusIndexField {
 	 */
 	protected $extra;
 	/**
-	 * Similarity config
-	 * @var array
-	 */
-	private $similarity;
-	/**
 	 * Text options for this field
 	 * @var int
 	 */
@@ -56,7 +52,6 @@ class TextIndexField extends CirrusIndexField {
 	public function __construct( $name, $type, SearchConfig $config, $extra = [] ) {
 		parent::__construct($name, $type, $config );
 
-		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
 		$this->extra = $extra;
 	}
 
@@ -200,18 +195,6 @@ class TextIndexField extends CirrusIndexField {
 	 * @return string
 	 */
 	public function getSimilarity( $field, $analyzer = null ) {
-		$fieldSimilarity = 'default';
-		if ( isset( $this->similarity['fields'] ) ) {
-			if( isset( $this->similarity['fields'][$field] ) ) {
-				$fieldSimilarity = $this->similarity['fields'][$field];
-			} else if ( $this->similarity['fields']['__default__'] ) {
-				$fieldSimilarity = $this->similarity['fields']['__default__'];
-			}
-
-			if ( $analyzer != null && isset( $this->similarity['fields']["$field.$analyzer"] ) ) {
-				$fieldSimilarity = $this->similarity['fields']["$field.$analyzer"];
-			}
-		}
-		return $fieldSimilarity;
+		return SimilarityProfiles::getSimilarity( $this->config, $field, $analyzer );
 	}
 }

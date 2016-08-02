@@ -7,6 +7,7 @@ use CirrusSearch\Search\IntegerIndexField;
 use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
+use CirrusSearch\SimilarityProfiles;
 use Hooks;
 use MediaWiki\MediaWikiServices;
 use SearchIndexField;
@@ -86,7 +87,6 @@ class MappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = array(
-			array( 'analyzer' => 'suggest' ),
 			array( 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
 			array( 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => array( 'enabled' => false ) ),
@@ -161,6 +161,8 @@ class MappingConfigBuilder {
 					->getMapping( $this->engine ),
 				'suggest' => array(
 					'type' => 'string',
+					'similarity' => SimilarityProfiles::getSimilarity( $this->config, 'suggest' ),
+					'index_options' => 'freqs',
 					'analyzer' => 'suggest',
 				),
 				// FIXME: this should be moved to Wikibase Client

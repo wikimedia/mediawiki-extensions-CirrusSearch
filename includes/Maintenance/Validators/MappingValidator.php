@@ -112,7 +112,7 @@ class MappingValidator extends Validator {
 				$this->output( "failed!\n" );
 				$message = ElasticsearchIntermediary::extractMessage( $e );
 				return Status::newFatal( new RawMessage(
-					"Couldn't update mappings.  Here is elasticsearch's error message: $message\n" ) );
+					"Couldn't update existing mappings. You may need to reindex.\nHere is elasticsearch's error message: $message\n" ) );
 			}
 		}
 

@@ -5,5 +5,5 @@ Feature: Removed text
     Then there are no api search results
 
   Scenario: Searching fox text that is inside autocollapse tags doesn't find it
-    When I api search for in autocollapse
+    When I api search for inside autocollapse
     Then there are no api search results

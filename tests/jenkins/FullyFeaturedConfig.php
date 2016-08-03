@@ -39,6 +39,10 @@ $wgCirrusSearchPhraseSuggestReverseField = array(
 	'use' => true,
 );
 
+// Set defaults to BM25 and the new query builder
+$wgCirrusSearchSimilarityProfile = $wgCirrusSearchSimilarityProfiles['bm25_browser_tests'];
+$wgCirrusSearchFullTextQueryBuilderProfile = 'browser_tests';
+
 $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',

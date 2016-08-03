@@ -309,7 +309,10 @@ class Searcher extends ElasticsearchIntermediary {
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$this->searchContext->setSearchType( 'full_text' );
 
-		$qb = new Query\FullTextQueryStringQueryBuilder(
+		$builderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
+		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $builderProfile );
+
+		$qb = new $builderSettings['builder_class'](
 			$this->config,
 			$this->escaper,
 			array(
@@ -335,7 +338,8 @@ class Searcher extends ElasticsearchIntermediary {
 				new Query\SimpleInSourceFeature( $this->escaper ),
 				// Handle intitle keyword
 				new Query\InTitleFeature( $this->escaper ),
-			)
+			),
+			$builderSettings['settings']
 		);
 
 		$showSuggestion = $showSuggestion && $this->offset == 0;

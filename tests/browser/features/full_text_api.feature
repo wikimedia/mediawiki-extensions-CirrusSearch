@@ -22,7 +22,7 @@ Feature: Full text search
 
   @setup_phrase_rescore
   Scenario: Searching for an unquoted phrase finds the phrase first
-    When I api search for Rescore Test Words
+    When I api search for Words Test Rescore
     Then Rescore Test Words Chaff is the first api search result
 
   @setup_phrase_rescore

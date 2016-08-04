@@ -2,21 +2,16 @@
 
 namespace CirrusSearch;
 
-use Exception;
 use GeoData\Coord;
 use GeoData\GeoData;
 use GeoData\Globe;
-use GenderCache;
 use IP;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MWNamespace;
-use MWElasticUtils;
 use PoolCounterWorkViaCallback;
 use RequestContext;
 use Status;
 use Title;
-use User;
 use WebRequest;
 
 /**
@@ -374,15 +369,32 @@ class Util {
 	}
 
 	/**
-	 * @return float[]
+	 * Get boost templates configured in messages.
+	 * @param SearchConfig $config Search config requesting the templates
+	 * @return \float[]
 	 */
-	public static function getDefaultBoostTemplates() {
-		if ( self::$defaultBoostTemplates === null ) {
-			$cache = \ObjectCache::getLocalServerInstance();
-			self::$defaultBoostTemplates = $cache->getWithSetCallback(
-				$cache->makeKey( 'cirrussearch-boost-templates' ),
+	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
+		// are we on the same wiki?
+		if ( is_null( $config ) ) {
+			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+			$local = true;
+		} else {
+			$local = ( $config->getWikiId() == wfWikiID() );
+		}
+
+		$cache = \ObjectCache::getLocalClusterInstance();
+		$cacheKey = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
+
+		if ( $local ) {
+			// if we're dealing with local templates
+			if ( self::$defaultBoostTemplates !== null ) {
+				return self::$defaultBoostTemplates;
+			}
+
+			$templates = $cache->getWithSetCallback(
+				$cacheKey,
 				600,
-				function() {
+				function () {
 					$source = wfMessage( 'cirrussearch-boost-templates' )->inContentLanguage();
 					if( !$source->isDisabled() ) {
 						$lines = Util::parseSettingsInMessage( $source->plain() );
@@ -392,8 +404,18 @@ class Util {
 					return array();
 				}
 			);
+			self::$defaultBoostTemplates = $templates;
+			return $templates;
 		}
-		return self::$defaultBoostTemplates;
+
+		// Here we're dealing with boost template from other wiki, try to fetch it if it exists
+		// otherwise, don't bother.
+		// We won't use static cache for non-local keys.
+		$templates = $cache->get( $cacheKey );
+		if ( !$templates ) {
+			return [];
+		}
+		return $templates;
 	}
 
 	/**

@@ -8,6 +8,17 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 	public function __construct( array $settings ) {
 		$this->setSource( new \HashConfig( $settings ) );
 	}
+
+	/**
+	 * Allow overriding Wiki ID
+	 * @return mixed|string
+	 */
+	public function getWikiId() {
+		if ( $this->has( '_wikiID' ) ) {
+			return $this->get( '_wikiID' );
+		}
+		return parent::getWikiId();
+	}
 }
 
 class DummyConnection extends \CirrusSearch\Connection {
@@ -16,7 +27,7 @@ class DummyConnection extends \CirrusSearch\Connection {
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
 	}
-	
+
 	public function getServerList() {
 		return array( 'localhost' );
 	}

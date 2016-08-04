@@ -2,7 +2,10 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Test\HashSearchConfig;
+use MediaWiki\MediaWikiServices;
 use MediaWikiTestCase;
+use Language;
 
 /**
  * Test Util functions.
@@ -526,6 +529,111 @@ class UtilTest extends MediaWikiTestCase {
 		foreach ( $tests as $test ) {
 			$this->assertEquals( Util::stripQuestionMarks( $test[0], $test[1] ), $test[2] );
 		}
+	}
 
+	/**
+	 * Produces mock message cache for injecting messages
+	 * @return MessageCache
+	 */
+	private function getMockCache() {
+		$mock = $this->getMockBuilder( 'MessageCache' )->disableOriginalConstructor()->getMock();
+		$mock->method( 'get' )->willReturnCallback( function ( $key, $useDB, Language $lang ) {
+			return "This is $key in {$lang->getCode()}|100%";
+		} );
+		return $mock;
+	}
+
+	/**
+	 * Set message cache instance to given object.
+	 * TODO: we wouldn't have to do this if we had some proper way to mock message cache.
+	 * @param $class
+	 * @param $var
+	 * @param $value
+	 */
+	private function setPrivateVar( $class, $var, $value ) {
+		// nasty hack - reset message cache instance
+		$mc = new \ReflectionClass( $class );
+		$mcInstance = $mc->getProperty( $var );
+		$mcInstance->setAccessible( true );
+		$mcInstance->setValue( $value );
+	}
+
+	/**
+	 * Create test hash config for a wiki.
+	 * @param $wiki
+	 * @return HashSearchConfig
+	 */
+	private function getHashConfig( $wiki ) {
+		$config = new HashSearchConfig([
+			'_wikiID' => $wiki
+		]);
+		return $config;
+	}
+
+	/**
+	 * Put data for a wiki into test cache.
+	 * @param \BagOStuff $cache
+	 * @param            $wiki
+	 */
+	private function putDataIntoCache( \BagOStuff $cache, $wiki ) {
+		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );
+		$cache->set( $key, "Data for $wiki" );
+	}
+
+	/**
+	 * Create test local cache
+	 * @return \BagOStuff
+	 */
+	private function makeLocalCache() {
+		$this->setMwGlobals( [
+			'wgMainCacheType' => 'UtilTest',
+			'wgObjectCaches' => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ]
+		] );
+
+		return \ObjectCache::getLocalClusterInstance();
+	}
+
+	/**
+	 * @covers Utils::getDefaultBoostTemplates
+	 */
+	public function testgetDefaultBoostTemplates() {
+		$cache = $this->makeLocalCache();
+		$this->putDataIntoCache( $cache, 'ruwiki' );
+		$this->putDataIntoCache( $cache, 'cywiki' );
+
+		$cy = Util::getDefaultBoostTemplates( $this->getHashConfig( 'cywiki' ) );
+		$ru = Util::getDefaultBoostTemplates( $this->getHashConfig( 'ruwiki' ) );
+
+		$this->assertNotEquals( $cy, $ru, 'Boosts should change with language' );
+
+		// no cache means empty array
+		$this->assertArrayEquals( [ ],
+			Util::getDefaultBoostTemplates( $this->getHashConfig( 'hywiki' ) ) );
+
+	}
+
+	public function testgetDefaultBoostTemplatesLocal() {
+		global $wgContLang;
+		$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
+		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
+
+		$cache = $this->makeLocalCache();
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
+
+		$cur = Util::getDefaultBoostTemplates();
+		reset( $cur );
+		$this->assertContains( ' in ' . $wgContLang->getCode(), key( $cur ) );
+
+		// Check we cached it
+		$cached = $cache->get( $key );
+		$this->assertNotEmpty( $cached, 'Should cache the value' );
+	}
+
+	public function tearDown() {
+		// reset cache so that our mock won't pollute other tests
+		$this->setPrivateVar( \MessageCache::class, 'instance', null );
+		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
+		parent::tearDown();
 	}
 }

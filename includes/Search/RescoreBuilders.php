@@ -432,7 +432,8 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		// we disable default boost templates.
 		if ( $this->boostTemplates === null ) {
 			// Fallback to default otherwise
-			$this->boostTemplates = Util::getDefaultBoostTemplates();
+			$this->boostTemplates =
+				Util::getDefaultBoostTemplates( $context->getConfig() );
 		}
 	}
 

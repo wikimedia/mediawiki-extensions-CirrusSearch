@@ -1,7 +1,5 @@
 <?php
 
-namespace CirrusSearch;
-
 /**
  * CirrusSearch - List of Similarity profiles
  * Configure the Similarity function used for scoring
@@ -77,22 +75,3 @@ $wgCirrusSearchSimilarityProfiles = array(
 		),
 	),
 );
-
-class SimilarityProfiles {
-	public static function getSimilarity( SearchConfig $config, $field, $analyzer = null ) {
-		$similarity = $config->get( 'CirrusSearchSimilarityProfile' );
-		$fieldSimilarity = 'default';
-		if ( isset( $similarity['fields'] ) ) {
-			if( isset( $similarity['fields'][$field] ) ) {
-				$fieldSimilarity = $similarity['fields'][$field];
-			} else if ( $similarity['fields']['__default__'] ) {
-				$fieldSimilarity = $similarity['fields']['__default__'];
-			}
-
-			if ( $analyzer != null && isset( $similarity['fields']["$field.$analyzer"] ) ) {
-				$fieldSimilarity = $similarity['fields']["$field.$analyzer"];
-			}
-		}
-		return $fieldSimilarity;
-	}
-}

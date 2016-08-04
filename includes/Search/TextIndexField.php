@@ -4,7 +4,6 @@ namespace CirrusSearch\Search;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use SearchIndexField;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\SimilarityProfiles;
 use SearchEngine;
 
 /**
@@ -135,14 +134,14 @@ class TextIndexField extends CirrusIndexField {
 			'analyzer' => 'text',
 			'search_analyzer' => 'text_search',
 			'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-			'similarity' => $this->getSimilarity( $this->name ),
+			'similarity' => self::getSimilarity( $this->config, $this->name ),
 			'fields' => array(
 				'plain' => array(
 					'type' => 'string',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
-					'similarity' => $this->getSimilarity( $this->name, 'plain' ),
+					'similarity' => self::getSimilarity( $this->config, $this->name, 'plain' ),
 				),
 			)
 		);
@@ -156,7 +155,7 @@ class TextIndexField extends CirrusIndexField {
 			$extraName = $extraField[ 'analyzer' ];
 
 			$field[ 'fields' ][ $extraName ] = array_merge( array(
-				'similarity' => $this->getSimilarity( $this->name, $extraName ),
+				'similarity' => self::getSimilarity( $this->config, $this->name, $extraName ),
 				'type' => 'string',
 				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			), $extraField );
@@ -190,11 +189,25 @@ class TextIndexField extends CirrusIndexField {
 
 	/**
 	 * Get the field similarity
+	 * @param SearchConfig $config
 	 * @param string $field
 	 * @param string $analyzer
 	 * @return string
 	 */
-	public function getSimilarity( $field, $analyzer = null ) {
-		return SimilarityProfiles::getSimilarity( $this->config, $field, $analyzer );
+	public static function getSimilarity( SearchConfig $config, $field, $analyzer = null ) {
+		$similarity = $config->get( 'CirrusSearchSimilarityProfile' );
+		$fieldSimilarity = 'default';
+		if ( isset( $similarity['fields'] ) ) {
+			if( isset( $similarity['fields'][$field] ) ) {
+				$fieldSimilarity = $similarity['fields'][$field];
+			} else if ( $similarity['fields']['__default__'] ) {
+				$fieldSimilarity = $similarity['fields']['__default__'];
+			}
+
+			if ( $analyzer != null && isset( $similarity['fields']["$field.$analyzer"] ) ) {
+				$fieldSimilarity = $similarity['fields']["$field.$analyzer"];
+			}
+		}
+		return $fieldSimilarity;
 	}
 }

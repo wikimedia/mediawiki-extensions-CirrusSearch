@@ -7,7 +7,6 @@ use CirrusSearch\Search\IntegerIndexField;
 use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
-use CirrusSearch\SimilarityProfiles;
 use Hooks;
 use MediaWiki\MediaWikiServices;
 use SearchIndexField;
@@ -161,7 +160,7 @@ class MappingConfigBuilder {
 					->getMapping( $this->engine ),
 				'suggest' => array(
 					'type' => 'string',
-					'similarity' => SimilarityProfiles::getSimilarity( $this->config, 'suggest' ),
+					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
 					'index_options' => 'freqs',
 					'analyzer' => 'suggest',
 				),
@@ -222,7 +221,7 @@ class MappingConfigBuilder {
 				'index_options' => 'freqs',
 				'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 				'norms' => array( 'enabled' => false ),
-				'similarity' => $allField->getSimilarity( 'all_near_match' ),
+				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
 				'fields' => array(
 					'asciifolding' => array(
 						'type' => 'string',
@@ -230,7 +229,7 @@ class MappingConfigBuilder {
 						'index_options' => 'freqs',
 						'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 						'norms' => array( 'enabled' => false ),
-						'similarity' => $allField->getSimilarity( 'all_near_match', 'asciifolding' ),
+						'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match', 'asciifolding' ),
 					),
 				),
 			);

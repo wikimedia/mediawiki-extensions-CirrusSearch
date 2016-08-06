@@ -22,8 +22,8 @@
  */
 
 require_once __DIR__ . "/profiles/SuggestProfiles.php";
-require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.php";
-require_once __DIR__ . "/profiles/RescoreProfiles.php";
+require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.config.php";
+require_once __DIR__ . "/profiles/RescoreProfiles.config.php";
 require_once __DIR__ . "/profiles/SimilarityProfiles.php";
 require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 

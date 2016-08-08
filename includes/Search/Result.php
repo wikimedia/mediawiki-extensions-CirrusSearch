@@ -230,12 +230,9 @@ class Result extends SearchResult {
 	 * @return Title
 	 */
 	private function findSectionTitle() {
-		$title = clone $this->getTitle();
-		$title->setFragment( Title::escapeFragmentForURL(
+		return $this->getTitle()->createFragmentTarget( Title::escapeFragmentForURL(
 			$this->stripHighlighting( $this->sectionSnippet )
 		) );
-
-		return $title;
 	}
 
 	/**

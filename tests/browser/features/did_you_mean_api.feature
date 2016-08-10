@@ -31,6 +31,14 @@ Feature: Did you mean
     When I api search for popular cultur
     Then popular *culture* is suggested by api
 
+  Scenario Outline: Uncommon phrases spelled incorrectly get suggestions even if the typos is in the first 2 characters
+    When I api search for <term>
+    Then <suggested> is suggested by api
+  Examples:
+    |                    term                   |                  suggested                  |
+    | nabel prize                               | *nobel* prize                               |
+    | onbel prize                               | *nobel* prize                               |
+
   Scenario: Uncommon phrases spelled incorrectly get suggestions even if they contain words that are spelled correctly on their own
     When I api search for noble prize
     Then *nobel* prize is suggested by api
@@ -70,7 +78,14 @@ Feature: Did you mean
     Then *grammy* is suggested by api
 
   Scenario: Customize prefix length of did you mean suggestions below the hard limit
-    When I set did you mean suggester option cirrusSuggPrefixLength to 1
+    When I reset did you mean suggester options
+    And I set did you mean suggester option cirrusSuggPrefixLength to 1
+    And I api search for nabol prize
+  Then there is no api suggestion
+
+  Scenario: Disable the reverse field
+    When I reset did you mean suggester options
+    And I set did you mean suggester option cirrusSuggUseReverse to no
     And I api search for nabel prize
     Then there is no api suggestion
 

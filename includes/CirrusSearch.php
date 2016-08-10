@@ -10,6 +10,7 @@ use CirrusSearch\Search\ResultSet;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
+use CirrusSearch\Search\TextIndexField;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -759,11 +760,22 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchIndexField
 	 */
 	public function makeSearchFieldMapping( $name, $type ) {
+		$overrides = $this->config->get( 'CirrusSearchFieldTypeOverrides' );
 		$mappings = $this->config->get( 'CirrusSearchFieldTypes' );
 		if ( !isset( $mappings[$type] ) ) {
 			return new NullIndexField();
 		}
 		$klass = $mappings[$type];
+
+		// Check if a specific class is provided for this field
+		if ( isset( $overrides[$name] ) ) {
+			if ( $klass !== $overrides[$name] && !is_subclass_of( $overrides[$name], $klass ) ) {
+				throw new \Exception( "Specialized class " . $overrides[$name] .
+					" for field $name is not compatible with type class $klass" );
+			}
+			$klass = $overrides[$name];
+		}
+
 		return new $klass( $name, $type, $this->config );
 	}
 }

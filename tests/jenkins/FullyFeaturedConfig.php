@@ -34,6 +34,11 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 
 $wgCirrusSearchUseCompletionSuggester = 'yes';
 
+$wgCirrusSearchPhraseSuggestReverseField = array(
+	'build' => true,
+	'use' => true,
+);
+
 $wgJobQueueAggregator = array(
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',

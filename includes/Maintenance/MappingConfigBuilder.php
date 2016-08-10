@@ -109,6 +109,25 @@ class MappingConfigBuilder {
 			);
 		}
 
+		$suggestField = array(
+			'type' => 'string',
+			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
+			'index_options' => 'freqs',
+			'analyzer' => 'suggest',
+		);
+
+		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {
+			$suggestField['fields'] = array(
+				'reverse' => array(
+					'type' => 'string',
+					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest', 'reverse' ),
+					'index_options' => 'freqs',
+					'analyzer' => 'suggest_reverse',
+				),
+			);
+		}
+
+
 		$page = [
 			'dynamic' => false,
 			'_all' => array( 'enabled' => false ),
@@ -158,12 +177,7 @@ class MappingConfigBuilder {
 				'local_sites_with_dupe' => $this->buildKeywordField( 'local_sites_with_dupe' )
 					->setFlag( SearchIndexField::FLAG_CASEFOLD )
 					->getMapping( $this->engine ),
-				'suggest' => array(
-					'type' => 'string',
-					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
-					'index_options' => 'freqs',
-					'analyzer' => 'suggest',
-				),
+				'suggest' => $suggestField,
 				// FIXME: this should be moved to Wikibase Client
 				'wikibase_item' => $this->buildKeywordField( 'wikibase_item' )
 					->getMapping( $this->engine ),

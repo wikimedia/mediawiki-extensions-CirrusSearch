@@ -324,7 +324,7 @@ class ForceSearchIndex extends Maintenance {
 	 * @return bool
 	 */
 	private function simpleCheckIndexes() {
-		$indexBaseName = $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME );
+		$indexBaseName = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
 
 		// Top-level alias needs to exist
 		if ( !$this->getConnection()->getIndex( $indexBaseName )->exists() ) {

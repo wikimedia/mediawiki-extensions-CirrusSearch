@@ -36,7 +36,7 @@ class IndexNamespaces extends Maintenance {
 	public function execute() {
 		global $wgContLang;
 
-		$type = $this->getConnection()->getNamespaceType( $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$type = $this->getConnection()->getNamespaceType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$this->outputIndented( "Deleting namespaces..." );
 		$type->deleteByQuery( new MatchAll() );
@@ -53,7 +53,7 @@ class IndexNamespaces extends Maintenance {
 		foreach ( $namesById as $id => $names ) {
 			$documents[] = new Document( $id, array(
 				'name' => $names,
-				'wiki' => $this->searchConfig->getWikiId(),
+				'wiki' => $this->getSearchConfig()->getWikiId(),
 			) );
 		}
 		$type->addDocuments( $documents );

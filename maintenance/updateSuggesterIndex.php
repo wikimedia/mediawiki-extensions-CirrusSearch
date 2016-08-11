@@ -199,7 +199,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Set the timeout for maintenance actions
 		$this->setConnectionTimeout();
 
-		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 100 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
@@ -263,7 +263,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private function canWrite() {
 		// Reuse DataSender even if we don't send anything with it.
-		$sender = new DataSender( $this->getConnection(), $this->searchConfig );
+		$sender = new DataSender( $this->getConnection(), $this->getSearchConfig() );
 		return $sender->areIndexesAvailableForWrites( array( $this->getIndexTypeName() ) );
 	}
 

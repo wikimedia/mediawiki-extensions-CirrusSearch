@@ -309,9 +309,9 @@ class AnalysisConfigBuilder {
 			$filters[] = 'possessive_english';
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';
+			$filters[] = 'asciifolding';
 			$filters[] = 'kstem';
 			$filters[] = 'custom_stem';
-			$filters[] = 'asciifolding_preserve';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
 			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)

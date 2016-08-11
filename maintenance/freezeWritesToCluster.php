@@ -40,7 +40,7 @@ class FreezeWritesToCluster extends Maintenance {
 	}
 
 	public function execute() {
-		$sender = new DataSender( $this->getConnection(), $this->searchConfig );
+		$sender = new DataSender( $this->getConnection(), $this->getSearchConfig() );
 		if ( $this->hasOption( 'thaw' ) ) {
 			$sender->thawIndexes();
 			$this->output( "Thawed any existing cluster-wide freeze\n\n" );

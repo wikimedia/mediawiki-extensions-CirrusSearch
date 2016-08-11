@@ -108,7 +108,7 @@ class DumpIndex extends Maintenance {
 		$this->setConnectionTimeout();
 
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$indexTypes = $this->getConnection()->getAllIndexTypes();
 		if ( !in_array( $this->indexType, $indexTypes ) ) {

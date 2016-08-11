@@ -51,7 +51,7 @@ class UpdateVersionIndex extends Maintenance {
 	 *  maint class is being created
 	 */
 	public function execute() {
-		$baseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$baseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 		if( $this->hasOption( 'show-all' ) ) {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-all-index-versions instead.\n" );
 			$child = $this->runChild( Metastore::class );

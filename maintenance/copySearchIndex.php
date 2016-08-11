@@ -72,7 +72,7 @@ class CopySearchIndex extends Maintenance {
 		global $wgCirrusSearchMaintenanceTimeout;
 
 		$this->indexType = $this->getOption( 'indexType' );
-		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );

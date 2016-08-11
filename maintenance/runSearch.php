@@ -61,7 +61,7 @@ class RunSearch extends Maintenance {
 
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
-		$this->indexBaseName = $this->getOption( 'baseName', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$this->applyGlobals();
 		$callback = array( $this, 'consume' );

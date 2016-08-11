@@ -87,10 +87,10 @@ class Metastore extends Maintenance {
 		} elseif( $this->hasOption( 'show-all-index-versions' ) ) {
 			$this->showIndexVersions();
 		} elseif ( $this->hasOption( 'update-index-version' ) ) {
-			$baseName = $this->getOption( 'index-version-basename', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 			$this->updateIndexVersion( $baseName );
 		} elseif ( $this->hasOption( 'show-index-version' ) ) {
-			$baseName = $this->getOption( 'index-version-basename', $this->searchConfig->get( SearchConfig::INDEX_BASE_NAME ) );
+			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 			$filter = new \Elastica\Query\BoolQuery();
 			$ids = new \Elastica\Query\Ids();
 			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {

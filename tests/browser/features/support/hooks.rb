@@ -261,7 +261,7 @@ phrase_rescore = false
 setup_phrase_rescore = lambda do |world|
   unless phrase_rescore
     world.steps %(
-      Given a page named Rescore Test Words Chaff exists
+      Given a page named Rescore Test Words Chaff exists with contents Words Test Rescore Chaff
       And a page named Test Words Rescore Rescore Test Words exists
       And a page named Rescore Test TextContent exists with contents Chaff
       And a page named Rescore Test HasTextContent exists with contents Rescore Test TextContent
@@ -498,7 +498,7 @@ setup_relevancy = lambda do |world|
       And a page named Relevancytestphraseviacategory exists with contents not relevant [[Category:Relevancytestphrase phrase category]]
       And a page named Relevancytestphraseviaheading exists with contents ==Relevancytestphrase phrase heading==
       And a page named Relevancytestphraseviaopening exists with contents @Relevancytestphraseviaopening.txt
-      And a page named Relevancytestphraseviatext exists with contents [[Relevancytestphrase phrase]]
+      And a page named Relevancytestphraseviatext exists with contents [[Relevancytestphrase phrase]] text
       And a page named Relevancytestphraseviaauxtext exists with contents @Relevancytestphraseviaauxtext.txt
       And a page named Relevancytwo Wordtest exists with contents relevance is bliss
       And a page named Wordtest Relevancytwo exists with contents relevance is cool
@@ -603,7 +603,7 @@ removed_text = false
 setup_removed_text = lambda do |world|
   unless removed_text
     world.steps %(
-      Given a page named Autocollapse Example exists with contents <div class="autocollapse">in autocollapse</div>
+      Given a page named Autocollapse Example exists with contents <div class="autocollapse">inside autocollapse</div>
         )
     removed_text = true
   end

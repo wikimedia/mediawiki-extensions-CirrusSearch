@@ -330,10 +330,14 @@ class SearchContext {
 	}
 
 	/**
-	 * @return bool True when the query uses any kind of special syntax
+	 * @var string|null $type type of syntax to check, null for any type
+	 * @return bool True when the query uses $type kind of special syntax
 	 */
-	public function isSyntaxUsed() {
-		return count( $this->syntaxUsed ) > 0;
+	public function isSyntaxUsed( $type = null ) {
+		if ( $type === null ) {
+			return count( $this->syntaxUsed ) > 0;
+		}
+		return isset( $this->syntaxUsed[$type] );
 	}
 
 	/**

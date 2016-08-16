@@ -74,4 +74,22 @@ $wgCirrusSearchSimilarityProfiles = array(
 			'suggest' => 'title',
 		),
 	),
+	'bm25_browser_tests' => array(
+		'similarity' => array(
+			// Lower norms impact for redirects data
+			'suggest_and_redirects' => array(
+				'type' => 'BM25',
+				'k1' => 1.2,
+				'b' => 0.3,
+			),
+			'with_defaults' => array(
+				'type' => 'BM25',
+			)
+		),
+		'fields' => array(
+			'__default__' => 'with_defaults',
+			'suggest' => 'suggest_and_redirects',
+			'redirect' => 'suggest_and_redirects',
+		),
+	),
 );

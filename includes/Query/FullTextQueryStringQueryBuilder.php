@@ -6,18 +6,17 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\SearchTextQueryBuilderFactory;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
  * Builds an Elastica query backed by an elasticsearch QueryString query
  * Has many warts and edge cases that are hardly desirable.
  */
-class FullTextQueryStringQueryBuilder {
+class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	/**
 	 * @var SearchConfig
 	 */
-	private $config;
+	protected $config;
 
 	/**
 	 * @var Escaper
@@ -38,8 +37,9 @@ class FullTextQueryStringQueryBuilder {
 	 * @param SearchConfig $config
 	 * @param Escaper $escaper
 	 * @param KeywordFeature[] $features
+	 * @param array[] $settings currently ignored
 	 */
-	public function __construct( SearchConfig $config, Escaper $escaper, array $features ) {
+	public function __construct( SearchConfig $config, Escaper $escaper, array $features, array $settings = array() ) {
 		$this->config = $config;
 		$this->escaper = $escaper;
 		$this->features = $features;
@@ -172,7 +172,7 @@ class FullTextQueryStringQueryBuilder {
 			self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
 		$nearMatchFields = self::buildFullTextSearchFields( $searchContext,
 			$this->config->get( 'CirrusSearchNearMatchWeight' ), '.near_match', true );
-		$searchContext->setMainQuery( $this->buildSearchTextQuery( $fields, $nearMatchFields,
+		$searchContext->setMainQuery( $this->buildSearchTextQuery( $searchContext, $fields, $nearMatchFields,
 			$this->queryStringQueryString, $nearMatchQuery ) );
 
 		// The highlighter doesn't know about the weighting from the all fields so we have to send
@@ -183,7 +183,7 @@ class FullTextQueryStringQueryBuilder {
 				self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
 			list( $nonAllQueryString, /*_*/ ) = $this->escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 			$searchContext->setHighlightQuery(
-				$this->buildQueryString( $nonAllFields, $nonAllQueryString, 1 )
+				$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
 			);
 		} else {
 			$nonAllFields = $fields;
@@ -207,9 +207,10 @@ class FullTextQueryStringQueryBuilder {
 			$searchContext->addRescore( array(
 				'window_size' => $this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ),
 				'query' => array(
-					'rescore_query' => $this->buildQueryString(
+					'rescore_query' => $this->buildPhraseRescoreQuery(
+						$searchContext,
 						$rescoreFields,
-						'"' . $this->queryStringQueryString . '"',
+						$this->queryStringQueryString,
 						$this->config->getElement( 'CirrusSearchPhraseSlop', 'boost' )
 					),
 					'query_weight' => 1.0,
@@ -337,13 +338,14 @@ class FullTextQueryStringQueryBuilder {
 	 * QueryString query, and optionally a MultiMatch if a $nearMatchQuery
 	 * is provided.
 	 *
+	 * @param SearchContext $searchContext
 	 * @param string[] $fields
 	 * @param string[] $nearMatchFields
 	 * @param string $queryString
 	 * @param string $nearMatchQuery
-	 * @return \Elastica\Query\Simple|\Elastica\Query\BoolQuery
+	 * @return \Elastica\Query\AbstractQuery
 	 */
-	private function buildSearchTextQuery( array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
+	protected function buildSearchTextQuery( SearchContext $context, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
 		$slop = $this->config->getElement( 'CirrusSearchPhraseSlop', 'default' );
 		$queryForMostFields = $this->buildQueryString( $fields, $queryString, $slop );
 		if ( !$nearMatchQuery ) {
@@ -554,5 +556,29 @@ class FullTextQueryStringQueryBuilder {
 		}
 
 		return $destination;
+	}
+
+	/**
+	 * Builds the highlight query
+	 * @param SearchContext $context
+	 * @param string[] $fields
+	 * @param string $queryText
+	 * @param int $slop
+	 * @return \Elastica\Query\AbstractQuery
+	 */
+	protected function buildHighlightQuery( SearchContext $context, array $fields, $queryText, $slop ) {
+		return $this->buildQueryString( $fields, $queryText, $slop );
+	}
+
+	/**
+	 * Builds the phrase rescore query
+	 * @param SearchContext $context
+	 * @param string[] $fields
+	 * @param string $queryText
+	 * @param int $slop
+	 * @return \Elastica\Query\AbstractQuery
+	 */
+	protected function buildPhraseRescoreQuery( SearchContext $context, array $fields, $queryText, $slop ) {
+		return $this->buildQueryString( $fields, '"' . $queryText . '"', $slop );
 	}
 }

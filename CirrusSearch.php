@@ -955,6 +955,22 @@ $wgCirrusSearchPrefixIds = false;
  */
 $wgCirrusSearchExtraBackendLatency = 0;
 
+/**
+ * Configure default boost-templates
+ * Can be overridden on wiki and System messages.
+ *
+ * $wgCirrusSearchBoostTemplates = [
+ * 	'Template:Featured article' => 2.0,
+ * ];
+ */
+$wgCirrusSearchBoostTemplates = [];
+
+/**
+ * Disable customization of boot templates on wiki
+ * Set to true to disable onwiki config.
+ */
+$wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

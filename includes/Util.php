@@ -374,20 +374,46 @@ class Util {
 	 * @return \float[]
 	 */
 	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
-		// are we on the same wiki?
 		if ( is_null( $config ) ) {
 			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-			$local = true;
-		} else {
-			$local = ( $config->getWikiId() == wfWikiID() );
 		}
 
+		$fromConfig = $config->get( 'CirrusSearchBoostTemplates' );
+		if ( $config->get( 'CirrusSearchIgnoreOnWikiBoostTemplates' ) ) {
+			// on wiki messages disabled, we can return this config
+			// directly
+			return $fromConfig;
+		}
+
+		$fromMessage = self::getOnWikiBoostTemplates( $config );
+		if ( empty( $fromMessage ) ) {
+			// the onwiki config is empty (or unknown for non-local
+			// config), we can fallback to templates from config
+			return $fromConfig;
+		}
+		return $fromMessage;
+	}
+
+	/**
+	 * Load and cache boost templates configured on wiki via the system
+	 * message 'cirrussearch-boost-templates'.
+	 * If called from the local wiki the message will be cached.
+	 * If called from a non local wiki an attempt to fetch this data from the cache is made.
+	 * If an empty array is returned it means that no config is available on wiki
+	 * or the value possibly unknown if run from a non local wiki.
+	 *
+	 * @param SearchConfig $config
+	 * @return \float[] indexed by template name
+	 */
+	private static function getOnWikiBoostTemplates( SearchConfig $config ) {
 		$cache = \ObjectCache::getLocalClusterInstance();
 		$cacheKey = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
-
-		if ( $local ) {
-			// if we're dealing with local templates
+		if ( $config->getWikiId() == wfWikiID() ) {
+			// Local wiki we can fetch boost templates from system
+			// message
 			if ( self::$defaultBoostTemplates !== null ) {
+				// This static cache is never set with non-local
+				// wiki data.
 				return self::$defaultBoostTemplates;
 			}
 
@@ -407,15 +433,15 @@ class Util {
 			self::$defaultBoostTemplates = $templates;
 			return $templates;
 		}
-
 		// Here we're dealing with boost template from other wiki, try to fetch it if it exists
 		// otherwise, don't bother.
-		// We won't use static cache for non-local keys.
-		$templates = $cache->get( $cacheKey );
-		if ( !$templates ) {
+		$nonLocalCache = $cache->get( $cacheKey );
+		if ( !is_array( $nonLocalCache ) ) {
+			// not yet in cache, value is unknown
+			// return empty array
 			return [];
 		}
-		return $templates;
+		return $nonLocalCache;
 	}
 
 	/**

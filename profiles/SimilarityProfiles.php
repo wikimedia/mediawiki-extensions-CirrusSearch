@@ -76,8 +76,11 @@ $wgCirrusSearchSimilarityProfiles = array(
 	),
 	'bm25_browser_tests' => array(
 		'similarity' => array(
-			// Lower norms impact for redirects data
-			'suggest_and_redirects' => array(
+			// Lower norms impact, cirrustestwiki is not well
+			// balanced with many small docs without opening nor
+			// heading resulting in very low avg field length
+			// on such fields
+			'lower_norms' => array(
 				'type' => 'BM25',
 				'k1' => 1.2,
 				'b' => 0.3,
@@ -87,9 +90,7 @@ $wgCirrusSearchSimilarityProfiles = array(
 			)
 		),
 		'fields' => array(
-			'__default__' => 'with_defaults',
-			'suggest' => 'suggest_and_redirects',
-			'redirect' => 'suggest_and_redirects',
+			'__default__' => 'lower_norms',
 		),
 	),
 );

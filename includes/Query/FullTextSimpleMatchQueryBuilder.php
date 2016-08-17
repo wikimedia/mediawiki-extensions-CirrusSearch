@@ -45,6 +45,11 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 */
 	private $defaultMinShouldMatch;
 
+	/**
+	 * @var array[] dismax query settings
+	 */
+	private $dismaxSettings;
+
 	public function __construct( SearchConfig $config, Escaper $escaper, array $feature, array $settings ) {
 		parent::__construct( $config, $escaper, $feature );
 		$this->fields = $settings['fields'];
@@ -52,6 +57,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$this->defaultStemWeight = $settings['default_stem_weight'];
 		$this->defaultQueryType = $settings['default_query_type'];
 		$this->defaultMinShouldMatch = $settings['default_min_should_match'];
+		$this->dismaxSettings = isset( $settings['dismax_settings'] ) ? $settings['dismax_settings'] : array();
 	}
 
 	/**
@@ -197,8 +203,17 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 				$query->addShould( $mmatch );
 			}
 		}
-		foreach ( $dismaxQueries as $queries ) {
+		foreach ( $dismaxQueries as $name => $queries ) {
 			$dismax = new \Elastica\Query\DisMax();
+			if ( isset ( $this->dismaxSettings[$name] ) ) {
+				$settings = $this->dismaxSettings[$name];
+				if ( isset ( $settings['tie_breaker'] ) ) {
+					$dismax->setTieBreaker( $settings['tie_breaker'] );
+				}
+				if ( isset ( $settings['boost'] ) ) {
+					$dismax->setBoost( $settings['boost'] );
+				}
+			}
 			foreach( $queries as $q ) {
 				$dismax->addQuery( $q );
 			}

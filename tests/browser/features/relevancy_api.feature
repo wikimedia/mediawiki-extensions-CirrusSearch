@@ -46,6 +46,11 @@ Feature: Results are ordered from most relevant to least.
       And Relevancytestviatext is the sixth or seventh api search result
       And Relevancytestviaauxtext is the sixth or seventh api search result
 
+  # Last two tests use "sixth or seventh" because the current implementation of the all field
+  # and the copy_to hack will copy the content only one time for both text and auxiliary_text
+  # auxiliary_text is set to 0.5 but will be approximated to 1 (similar to text)
+  # phrase freq will be identical for both fields making length norms the sole discriminating
+  # criteria.
   Scenario: Results are sorted based on what part of the page matches: title, redirect, category, etc
     When I api search with query independent profile classic_noboostlinks for "Relevancytestphrase phrase"
     Then Relevancytestphrase phrase is the first api search result

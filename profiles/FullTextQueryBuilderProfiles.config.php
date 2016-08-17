@@ -59,10 +59,9 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = array(
 					'boost' => 2.1,
 					'in_dismax' => 'redirects_or_shingles',
 				),
-				// Very high category weight still unclear why such
-				// high boost is needed for tests/browser/features/relevancy_api.feature
-				'category' => 3.5,
-				'heading' => 2.3,
+				// category should win over heading/opening
+				'category' => 1.8,
+				'heading' => 1.3,
 				// Pack text and opening_text in a dismax query
 				// this is to avoid scoring twice the same words
 				'text' => array(
@@ -79,7 +78,19 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = array(
 			'phrase_rescore_fields' => array(
 				// Low boost to counter high phrase rescore boost
 				'text' => 0.07,
-				'text.plain' => 0.07,
+				// higher on text.plain for tests/browser/features/relevancy_api.feature:106
+				'text.plain' => 0.1,
+			),
+			'dismax_settings' => array(
+				// Use a tie breaker, avg field length is so
+				// low for opening_text that we would have to
+				// set an insanely high boost to make sure it
+				// wins text in the dismax. Instead we use a
+				// tie breaker that will add 20% of the score
+				// of the opening_text clauses
+				'text_and_opening_text' => array(
+					'tie_breaker' => 0.2,
+				),
 			),
 		)
 	),

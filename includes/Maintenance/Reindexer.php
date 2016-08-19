@@ -360,6 +360,12 @@ class Reindexer {
 		// out any old fields that we no longer use.
 		$data = Util::cleanUnusedFields( $result->getSource(), $properties );
 
+		// This field was added July, 2016. For the first reindex that occurs after it was added it will
+		// not exist in the documents, so add it here.
+		if ( !isset( $data['wiki'] ) ) {
+			$data['wiki'] = wfWikiId();
+		}
+
 		// Note that while setting the opType to create might improve performance slightly it can cause
 		// trouble if the scroll returns the same id twice.  It can do that if the document is updated
 		// during the scroll process.  I'm unclear on if it will always do that, so you still have to

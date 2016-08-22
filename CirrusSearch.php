@@ -948,6 +948,13 @@ $wgCirrusSearchFullTextQueryBuilderProfile = 'default';
  */
 $wgCirrusSearchPrefixIds = false;
 
+
+/**
+ * Adds an artificial backend latency in miroseconds.
+ * Only useful for testing.
+ */
+$wgCirrusSearchExtraBackendLatency = 0;
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

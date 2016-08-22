@@ -93,6 +93,11 @@ class ElasticsearchIntermediary {
 	static private $resultTitleStrings = [];
 
 	/**
+	 * @var int artificial extra backend latency in micro seconds
+	 */
+	private $extraBackendLatency;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Connection $connection
@@ -102,14 +107,16 @@ class ElasticsearchIntermediary {
 	 * action is being performed during a job.
 	 * @param float $slowSeconds how many seconds a request through this intermediary needs to take before it counts as
 	 * slow.  0 means none count as slow.
+	 * @param float $extraBackendLatency artificial backend latency.
 	 */
-	protected function __construct( Connection $connection, User $user = null, $slowSeconds ) {
+	protected function __construct( Connection $connection, User $user = null, $slowSeconds, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
 		if ( is_null( $user ) ) {
 			$user = RequestContext::getMain()->getUser();
 		}
 		$this->user = $user;
 		$this->slowMillis = (int) ( 1000 * $slowSeconds );
+		$this->extraBackendLatency = $extraBackendLatency;
 		$this->ut = UserTesting::getInstance();
 	}
 
@@ -433,6 +440,9 @@ class ElasticsearchIntermediary {
 		$this->description = $description;
 		$this->logContext = $logContext;
 		$this->requestStart = microtime( true );
+		if ( $this->extraBackendLatency ) {
+			usleep( $this->extraBackendLatency );
+		}
 	}
 
 	/**

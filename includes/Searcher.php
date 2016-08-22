@@ -153,7 +153,7 @@ class Searcher extends ElasticsearchIntermediary {
 				->makeConfig( 'CirrusSearch' );
 		}
 
-		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ) );
+		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
 		$this->config = $config;
 		$this->offset = $offset;
 		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {

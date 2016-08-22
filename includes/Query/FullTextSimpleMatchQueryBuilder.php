@@ -140,6 +140,20 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	protected function getMultiTermRewriteMethod() {
+		// Use blended freq as a rewrite method. The
+		// top_terms_boost_1024 method used by the parent is not well
+		// suited for a weighted sum and for some reasons uses the
+		// queryNorms which depends on the number of terms found by the
+		// wildcard. Using this one we'll use the similarity configured
+		// for this field instead of a constant score and in the case
+		// of BM25 queryNorm is ignored (removed in lucene 7)
+		return 'top_terms_blended_freqs_1024';
+	}
+
+	/**
 	 * Generate an elasticsearch query by reading profile settings
 	 * @param string $queryString the query text
 	 * @return \Elastica\Query\AbstractQuery

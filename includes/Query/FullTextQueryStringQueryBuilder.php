@@ -384,12 +384,20 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( (bool) $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$query->setFuzzyPrefixLength( 2 );
-		$query->setRewrite( 'top_terms_boost_1024' );
+		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
 		if ( isset( $states ) ) {
 			$query->setParam( 'max_determinized_states', $states );
 		}
 		return $query;
+	}
+
+	/**
+	 * the rewrite method to use for multi term queries
+	 * @return string
+	 */
+	protected function getMultiTermRewriteMethod() {
+		return 'top_terms_boost_1024';
 	}
 
 	/**

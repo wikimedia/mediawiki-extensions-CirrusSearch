@@ -69,22 +69,26 @@ abstract class Maintenance extends \Maintenance {
 	 */
 	public function getConnection( $cluster = null ) {
 		if( $cluster ) {
-			if ( $this->getSearchConfig() instanceof SearchConfig ) {
-				if (!$this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster ) ) {
-					$this->error( 'Unknown cluster.', 1 );
-				}
-				return Connection::getPool( $this->getSearchConfig(), $cluster );
-			} else {
+			if ( !$this->getSearchConfig() instanceof SearchConfig ) {
 				// We shouldn't ever get here ... but the makeConfig type signature returns the parent class of SearchConfig
 				// so just being extra careful...
 				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $this->getSearchConfig() ) );
 			}
+			if (!$this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster ) ) {
+				$this->error( 'Unknown cluster.', 1 );
+			}
+			$connection = Connection::getPool( $this->getSearchConfig(), $cluster );
+		} else {
+			if ( $this->connection === null ) {
+				$cluster = $this->decideCluster();
+				$this->connection = Connection::getPool( $this->getSearchConfig(), $cluster );
+			}
+			$connection = $this->connection;
 		}
-		if ( $this->connection === null ) {
-			$cluster = $this->decideCluster();
-			$this->connection = Connection::getPool( $this->getSearchConfig(), $cluster );
-		}
-		return $this->connection;
+
+		$connection->setTimeout( $this->getSearchConfig()->get( 'CirrusSearchMaintenanceTimeout' ) );
+
+		return $connection;
 	}
 
 	public function getSearchConfig() {

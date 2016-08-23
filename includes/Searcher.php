@@ -470,7 +470,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$size *= count( $docIds );
 
 		return Util::doPoolCounterWork(
-			'CirrusSearch-Search',
+			$this->getPoolCounterType(),
 			$this->user,
 			function() use ( $docIds, $sourceFiltering, $indexType, $size ) {
 				try {
@@ -480,7 +480,7 @@ class Searcher extends ElasticsearchIntermediary {
 						'queryType' => 'get',
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
+					$this->connection->setTimeout( $this->getTimeout() );
 					// We use a search query instead of _get/_mget, these methods are
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
@@ -520,13 +520,20 @@ class Searcher extends ElasticsearchIntermediary {
 						'query' => $name,
 						'queryType' => 'namespace',
 					] );
+					$queryOptions = [
+						'search_type' => 'query_then_fetch',
+						'timeout' => $this->getTimeout(),
+					];
+
+					$this->connection->setTimeout( $queryOptions['timeout'] );
 					$pageType = $this->connection->getNamespaceType( $this->indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
 					$query = new \Elastica\Query( $match );
 					$query->setParam( '_source', false );
 					$query->addParam( 'stats', 'namespace' );
-					$resultSet = $pageType->search( $query, [ 'search_type' => 'query_then_fetch' ] );
+					$resultSet = $pageType->search( $query, $queryOptions );
+					// @todo check for partial results due to timeout?
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
@@ -639,19 +646,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
 
-		switch( $this->searchContext->getSearchType() ) {
-		case 'regex':
-			$poolCounterType = 'CirrusSearch-Regex';
-			$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
-			break;
-		case 'prefix':
-			$poolCounterType = 'CirrusSearch-Prefix';
-			$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
-			break;
-		default:
-			$poolCounterType = 'CirrusSearch-Search';
-			$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
-		}
+
+
+		$queryOptions['timeout'] = $this->getTimeout();
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
 		// Setup the search
@@ -712,7 +709,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// Perform the search
 		$result = Util::doPoolCounterWork(
-			$poolCounterType,
+			$this->getPoolCounterType(),
 			$this->user,
 			function() use ( $search, $description, $logContext ) {
 				try {
@@ -899,5 +896,26 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function getSearchContext() {
 		return $this->searchContext;
+	}
+
+	private function getPoolCounterType() {
+		$poolCounterTypes = array(
+			'regex' => 'CirrusSearch-Regex',
+			'prefix' => 'CirrusSearch-Prefix',
+		);
+		if ( isset( $poolCounterTypes[$this->searchContext->getSearchType()] ) ) {
+			return $poolCounterTypes[$this->searchContext->getSearchType()];
+		}
+		return 'CirrusSearch-Search';
+	}
+
+	private function getTimeout() {
+		if ( $this->searchContext->getSearchType() === 'regex' ) {
+			$type = 'regex';
+		} else {
+			$type = 'default';
+		}
+
+		return $this->config->getElement( 'CirrusSearchSearchShardTimeout', $type );
 	}
 }

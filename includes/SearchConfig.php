@@ -248,7 +248,7 @@ class SearchConfig implements \Config {
 	 * @return string[] array of all the cluster names defined in this config
 	 */
 	public function getAvailableClusters() {
-		if ( $this-availableClusters === null ) {
+		if ( $this->availableClusters === null ) {
 			$this->initClusterConfig();
 		}
 		return $this->availableClusters;

@@ -43,11 +43,8 @@ class DeletePages extends Job {
 	}
 
 	protected function doJob() {
-		global $wgCirrusSearchClientSideUpdateTimeout;
-
 		$updater = $this->createUpdater();
 		$indexType = isset( $this->params[ 'indexType' ] ) ? $this->params[ 'indexType' ] : null;
-		return $updater->deletePages( [ $this->title ], [ $this->params[ 'docId' ] ],
-			$wgCirrusSearchClientSideUpdateTimeout, $indexType );
+		return $updater->deletePages( [ $this->title ], [ $this->params[ 'docId' ] ], $indexType );
 	}
 }

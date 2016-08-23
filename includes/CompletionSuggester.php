@@ -206,8 +206,9 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->context = $context;
 
 		list( $profiles, $suggest ) = $this->buildQuery();
-		$queryOptions = [];
-		$queryOptions[ 'timeout' ] = $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
+		$queryOptions = [
+			'timeout' => $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' ),
+		];
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
 		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );

@@ -106,13 +106,8 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgCirrusSearchMaintenanceTimeout;
-
 		$this->disablePoolCountersAndLogging();
 		$wiki = sprintf( "[%20s]", wfWikiID() );
-
-		// Set the timeout for maintenance actions
-		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 
 		// Make sure we've actually got indices to populate
 		if ( !$this->simpleCheckIndexes() ) {
@@ -189,7 +184,7 @@ class ForceSearchIndex extends Maintenance {
 				} else {
 					// Update size with the actual number of updated documents.
 					$updater = $this->createUpdater();
-					$size = $updater->updatePages( $updates, null, null, $updateFlags );
+					$size = $updater->updatePages( $updates, $updateFlags );
 				}
 			} else {
 				$size = count( $batch['titlesToDelete'] );

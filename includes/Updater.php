@@ -73,14 +73,10 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool true if the page updated, false if it failed, null if it didn't need updating
 	 */
 	public function updateFromTitle( $title ) {
-		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
-
 		list( $page, $redirects ) = $this->traceRedirects( $title );
 		if ( $page ) {
 			$updatedCount = $this->updatePages(
 				[ $page ],
-				$wgCirrusSearchUpdateShardTimeout,
-				$wgCirrusSearchClientSideUpdateTimeout,
 				self::INDEX_EVERYTHING
 			);
 			if ( $updatedCount < 0 ) {
@@ -95,7 +91,7 @@ class Updater extends ElasticsearchIntermediary {
 		foreach ( $redirects as $redirect ) {
 			$redirectDocIds[] = $this->searchConfig->makeId( $redirect->getId() );
 		}
-		return $this->deletePages( [], $redirectDocIds, $wgCirrusSearchClientSideUpdateTimeout );
+		return $this->deletePages( [], $redirectDocIds );
 	}
 
 	/**
@@ -178,17 +174,11 @@ class Updater extends ElasticsearchIntermediary {
 	 *     half of the two phase index build.
 	 *
 	 * @param WikiPage[] $pages pages to update
-	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
-	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
-	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
-	 *   Elasticsearch's time format.
-	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
-	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param int $flags Bit field containing instructions about how the document should be built
 	 *   and sent to Elasticsearch.
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
-	public function updatePages( $pages, $shardTimeout, $clientSideTimeout, $flags ) {
+	public function updatePages( $pages, $flags ) {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
 		// Don't update the same page twice. We shouldn't, but meh
@@ -213,6 +203,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			$allData[$suffix][] = $document;
 		}
+
 		$count = 0;
 		foreach( $allData as $indexType => $data ) {
 			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
@@ -221,9 +212,8 @@ class Updater extends ElasticsearchIntermediary {
 				$job = new Job\ElasticaWrite(
 					reset( $titles ),
 					[
-						'clientSideTimeout' => $clientSideTimeout,
 						'method' => 'sendData',
-						'arguments' => [ $indexType, $chunked, $shardTimeout ],
+						'arguments' => [ $indexType, $chunked ],
 						'cluster' => $this->writeToClusterName,
 					]
 				);
@@ -244,17 +234,14 @@ class Updater extends ElasticsearchIntermediary {
 	 * @param Title[] $titles List of titles to delete.  If empty then skipped other index
 	 *      maintenance is skipped.
 	 * @param integer[] $docIds List of elasticsearch document ids to delete
-	 * @param null|int $clientSideTimeout timeout in seconds to update pages or null to not
-	 *      change the configured timeout which defaults to 300 seconds.
 	 * @param string $indexType index from which to delete
 	 * @return bool True if nothing happened or we successfully deleted, false on failure
 	 */
-	public function deletePages( $titles, $docIds, $clientSideTimeout = null, $indexType = null ) {
+	public function deletePages( $titles, $docIds, $indexType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		$job = new Job\ElasticaWrite(
 			$titles ? reset( $titles ) : Title::makeTitle( 0, "" ),
 			[
-				'clientSideTimeout' => $clientSideTimeout,
 				'method' => 'sendDeletes',
 				'arguments' => [ $docIds, $indexType ],
 				'cluster' => $this->writeToClusterName,
@@ -368,8 +355,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return boolean were all pages updated?
 	 */
 	public function updateLinkedArticles( $titles ) {
-		global $wgCirrusSearchUpdateShardTimeout, $wgCirrusSearchClientSideUpdateTimeout;
-
 		$pages = [];
 		foreach ( $titles as $title ) {
 			// Special pages don't get updated
@@ -403,8 +388,7 @@ class Updater extends ElasticsearchIntermediary {
 			// a full update (just link counts).
 			$pages[] = $page;
 		}
-		$updatedCount = $this->updatePages( $pages, $wgCirrusSearchUpdateShardTimeout,
-			$wgCirrusSearchClientSideUpdateTimeout, self::SKIP_PARSE );
+		$updatedCount = $this->updatePages( $pages, self::SKIP_PARSE );
 		return $updatedCount >= 0;
 	}
 

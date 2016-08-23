@@ -193,21 +193,29 @@ abstract class Job extends MWJob {
 	protected function decideClusters() {
 		$cluster = isset ( $this->params['cluster'] ) ? $this->params['cluster'] : null;
 		if ( $cluster === null ) {
-			return Connection::getWritableClusterConnections( $this->searchConfig );
+			$conns = Connection::getWritableClusterConnections( $this->searchConfig );
+		} else {
+			if ( !$this->searchConfig->canWriteToCluster( $cluster ) ) {
+				// Just in case a job is present in the queue but its cluster
+				// has been removed from the config file.
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					"Received {command} job for unwritable cluster {cluster}",
+					[
+						'command' => $this->command,
+						'cluster' =>  $cluster
+					]
+				);
+				// this job does not allow retries so we just need to throw an exception
+				throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
+			}
+			$conns = [ $cluster => Connection::getPool( $this->searchConfig, $cluster ) ];
 		}
-		if ( !$this->searchConfig->canWriteToCluster( $cluster ) ) {
-			// Just in case a job is present in the queue but its cluster
-			// has been removed from the config file.
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Received {command} job for unwritable cluster {cluster}",
-				[
-					'command' => $this->command,
-					'cluster' =>  $cluster
-				]
-			);
-			// this job does not allow retries so we just need to throw an exception
-			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
+
+		$timeout = $this->searchConfig->get( 'CirrusSearchClientSideUpdateTimeout' );
+		foreach ( $conns as $connection ) {
+			$connection->setTimeout( $timeout );
 		}
-		return [ $cluster => Connection::getPool( $this->searchConfig, $cluster ) ];
+
+		return $conns;
 	}
 }

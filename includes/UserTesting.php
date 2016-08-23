@@ -77,11 +77,13 @@ class UserTesting {
 	 * @param callable|null $callback
 	 * @return self
 	 */
-	public static function getInstance( $callback = null ) {
+	public static function getInstance( $callback = null, $trigger = null ) {
 		global $wgCirrusSearchUserTesting;
 		if ( self::$instance === null ) {
-			$trigger = \RequestContext::getMain()->getRequest()
-				->getVal( 'cirrusUserTesting' );
+			if ( $trigger === null ) {
+				$trigger = \RequestContext::getMain()->getRequest()
+					->getVal( 'cirrusUserTesting' );
+			}
 			self::$instance = new self( $wgCirrusSearchUserTesting, $callback, $trigger );
 		}
 		return self::$instance;

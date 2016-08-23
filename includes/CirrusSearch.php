@@ -332,7 +332,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( $config ) {
-			$this->indexBaseName = $config->getWikiId();
+			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		}
 
 		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );

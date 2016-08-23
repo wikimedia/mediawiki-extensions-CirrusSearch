@@ -371,7 +371,7 @@ class Reindexer {
 		// This field was added July, 2016. For the first reindex that occurs after it was added it will
 		// not exist in the documents, so add it here.
 		if ( !isset( $data['wiki'] ) ) {
-			$data['wiki'] = wfWikiId();
+			$data['wiki'] = $this->searchConfig->getWikiId();
 		}
 
 		// Maybe instead the reindexer should know if we are converting from the old

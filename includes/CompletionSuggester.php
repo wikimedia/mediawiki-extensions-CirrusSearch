@@ -160,7 +160,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->config = $config;
 		$this->limit = $limit;
 		$this->offset = $offset;
-		$this->indexBaseName = $index ?: $config->getWikiId();
+		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
 
 		if ( $profileName == null ) {

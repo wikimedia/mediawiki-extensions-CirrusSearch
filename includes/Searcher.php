@@ -161,7 +161,7 @@ class Searcher extends ElasticsearchIntermediary {
 		} else {
 			$this->limit = $limit;
 		}
-		$this->indexBaseName = $index ?: $config->getWikiId();
+		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->language = $config->get( 'ContLang' );
 		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$this->searchContext = new SearchContext( $this->config, $namespaces );

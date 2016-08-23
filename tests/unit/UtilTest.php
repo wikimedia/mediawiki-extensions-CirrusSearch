@@ -312,13 +312,19 @@ class UtilTest extends MediaWikiTestCase {
 
 	/**
 	 * Create test hash config for a wiki.
-	 * @param $wiki
+	 * @param string $wiki
+	 * @param mixed[] $moreData additional config
 	 * @return HashSearchConfig
 	 */
-	private function getHashConfig( $wiki ) {
-		$config = new HashSearchConfig([
-			'_wikiID' => $wiki
-		]);
+	private function getHashConfig( $wiki, array $moreData = array() ) {
+		if ( !isset( $moreData['CirrusSearchBoostTemplates'] ) ) {
+			$moreData['CirrusSearchBoostTemplates'] = [];
+		}
+		if ( !isset( $moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] ) ) {
+			$moreData['CirrusSearchIgnoreOnWikiBoostTemplates'] = false;
+		}
+		$moreData[ '_wikiID' ] = $wiki;
+		$config = new HashSearchConfig( $moreData );
 		return $config;
 	}
 
@@ -329,7 +335,7 @@ class UtilTest extends MediaWikiTestCase {
 	 */
 	private function putDataIntoCache( \BagOStuff $cache, $wiki ) {
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );
-		$cache->set( $key, "Data for $wiki" );
+		$cache->set( $key, ["Data for $wiki" => 2] );
 	}
 
 	/**
@@ -364,16 +370,96 @@ class UtilTest extends MediaWikiTestCase {
 
 	}
 
+	/**
+	 * @covers Utils::getDefaultBoostTemplates
+	 */
+	public function testCustomizeBoostTemplatesByConfig() {
+		$configValues = [
+			'CirrusSearchBoostTemplates' => [
+				'Featured' => 2,
+			],
+		];
+		$config = $this->getHashConfig( 'ruwiki', $configValues );
+		$ru = Util::getDefaultBoostTemplates( $config );
+		$this->assertArrayEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+	}
+
+	/**
+	 * @covers Utils::getDefaultBoostTemplates
+	 */
+	public function testOverrideBoostTemplatesWithOnWikiConfig() {
+		$configValues = [
+			'CirrusSearchBoostTemplates' => [
+				'Featured' => 2,
+			],
+		];
+		$config = $this->getHashConfig( 'ruwiki', $configValues );
+
+		// On wiki config should override config templates
+		$cache = $this->makeLocalCache();
+		$this->putDataIntoCache( $cache, 'ruwiki' );
+		$ru = Util::getDefaultBoostTemplates( $config );
+		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+	}
+
+	/**
+	 * @covers Utils::getDefaultBoostTemplates
+	 */
+	public function testOverrideBoostTemplatesWithOnCurrentWikiConfig() {
+		$configValues = [
+			'CirrusSearchBoostTemplates' => [
+				'Featured' => 2,
+			],
+		];
+		$config = $this->getHashConfig( wfWikiID(), $configValues );
+
+		// On wiki config should override config templates
+		$cache = $this->makeLocalCache();
+		$this->putDataIntoCache( $cache, wfWikiID() );
+
+		$ru = Util::getDefaultBoostTemplates( $config );
+		$this->assertNotEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+	}
+
+	/**
+	 * @covers Utils::getDefaultBoostTemplates
+	 */
+	public function testDisableOverrideBoostTemplatesWithOnWikiConfig() {
+		$configValues = [
+			'CirrusSearchBoostTemplates' => [
+				'Featured' => 2,
+			],
+			// we can disable on wiki customization
+			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
+		];
+		$config = $this->getHashConfig( 'ruwiki', $configValues );
+
+		$cache = $this->makeLocalCache();
+		$this->putDataIntoCache( $cache, 'ruwiki' );
+
+		$ru = Util::getDefaultBoostTemplates( $this->getHashConfig( 'ruwiki' ) );
+		$this->assertArrayEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
+	}
+
 	public function testgetDefaultBoostTemplatesLocal() {
 		global $wgContLang;
 		$this->setPrivateVar( \MessageCache::class, 'instance', $this->getMockCache() );
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 
 		$cache = $this->makeLocalCache();
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$config = $this->getHashConfig( wfWikiID() );
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
 
-		$cur = Util::getDefaultBoostTemplates();
+		// FIXME: we cannot really test the default value for $config
+		// with Util::getDefaultBoostTemplates(). It looks like
+		// MediaWikiServices initializes the current wiki SearchConfig
+		// when wfWikiID() == 'wiki' and then it's cached, the test
+		// framework seems to update the wiki name to wiki-unittest_
+		// making it impossible to test if we are running on the local
+		// wiki.
+		// resetting MediaWikiServices would be nice but it does not
+		// seem to be trivial.
+		$cur = Util::getDefaultBoostTemplates( $config );
 		reset( $cur );
 		$this->assertContains( ' in ' . $wgContLang->getCode(), key( $cur ) );
 

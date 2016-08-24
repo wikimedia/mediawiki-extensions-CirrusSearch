@@ -287,6 +287,11 @@ $wgCirrusSearchFunctionRescoreWindowSize = 8192;
 // http://www.elasticsearch.org/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch/
 $wgCirrusSearchMoreAccurateScoringMode = true;
 
+/**
+ * Should the phrase suggester (did you mean) be enabled?
+ */
+$wgCirrusSearchEnablePhraseSuggest = true;
+
 // NOTE: This settings is deprecated: update or create your own PhraseSuggester profile.
 // Maximum number of terms that we ask phrase suggest to correct.
 // See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/

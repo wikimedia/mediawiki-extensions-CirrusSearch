@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
+use CirrusSearch\UserTesting;
 
 /**
  * Cirrus helpful extensions to Maintenance.
@@ -43,10 +44,33 @@ abstract class Maintenance extends \Maintenance {
 	public function __construct() {
 		parent::__construct();
 		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
+		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing framework, e.g. --userTestTrigger=trigger', false, true );
 	}
 
 	public function finalSetup() {
 		parent::finalSetup();
+		if ( $this->hasOption( 'userTestTrigger' ) ) {
+			$this->setupUserTest();
+		}
+	}
+
+	/**
+	 * Setup config vars with the UserTest framework
+	 */
+	private function setupUserTest() {
+		// Configure the UserTesting framework
+		// Useful in case an index needs to be built with a
+		// test config that is not meant to be the default.
+		// This is realistically only usefull to test accross
+		// multiple clusters.
+		// Perhaps setting $wgCirrusSearchIndexBaseName to an
+		// alternate value would testing on the same cluster
+		// but this index would not receive updates.
+		$trigger = $this->getOption( 'userTestTrigger' );
+		$ut = UserTesting::getInstance( null, $trigger );
+		if ( !$ut->getActiveTestNames() ) {
+			$this->error( "Unknown user test trigger: $trigger", 1 );
+		}
 	}
 
 	/**

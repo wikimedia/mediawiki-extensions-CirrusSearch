@@ -41,3 +41,7 @@ if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/rescore.inc" ) ) {
 	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/rescore.inc" );
 	$wgCirrusSearchRescoreProfile = 'relforge';
 }
+
+if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/templates.inc" ) ) {
+	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/templates.inc" );
+}

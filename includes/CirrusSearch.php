@@ -11,6 +11,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\TextIndexField;
+use CirrusSearch\UserTesting;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -83,6 +84,9 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	public function __construct( $baseName = null ) {
+		// Initialize UserTesting before we create a Connection
+		// This is useful to do tests accross multiple clusters
+		UserTesting::getInstance();
 		$this->config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );

@@ -32,6 +32,12 @@ use Title;
  */
 class CheckerJob extends Job {
 	/**
+	 * @const int max number of retries, 3 means that the job can be run at
+	 * most 4 times.
+	 */
+	const JOB_MAX_RETRIES = 3;
+
+	/**
 	 * Construct a new CherckerJob.
 	 * @param int $fromPageId
 	 * @param int $toPageId
@@ -63,7 +69,7 @@ class CheckerJob extends Job {
 			$params['fromPageId'] = $params['fromId'];
 			unset( $params['fromId'] );
 		}
-		if ( isset( $parmas['toId'] ) ) {
+		if ( isset( $params['toId'] ) ) {
 			$params['toPageId'] = $params['toId'];
 			unset( $params['toId'] );
 		}
@@ -100,6 +106,14 @@ class CheckerJob extends Job {
 			return false;
 		}
 
+		$chunkSize = isset( $profile['jobs_chunk_size'] ) ? $profile['jobs_chunk_size'] : null;
+		if ( !$chunkSize || $chunkSize < 0 ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Cannot run CheckerJob invalid jobs_chunk_size, check CirrusSearchSanityCheck config."
+			);
+			return false;
+		}
+
 		$maxTime = isset( $profile['checker_job_max_time'] ) ? $profile['checker_job_max_time'] : null;
 		if ( !$maxTime || $maxTime < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
@@ -108,10 +122,35 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$startTime = time();
+		$from = $this->params['fromPageId'];
+		$to = $this->params['toPageId'];
+
+		if ( $from > $to ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Cannot run CheckerJob: from > to ( {from} > {to} ), job is corrupted?",
+				[
+					'from' => $from,
+					'to' => $to,
+				]
+			);
+			return false;
+		}
+
+		if ( ( $to - $from ) > $chunkSize ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Cannot run CheckerJob: to - from > chunkSize( {from}, {to} > {chunkSize} ), job is corrupted or profile mismatch?",
+				[
+					'from' => $from,
+					'to' => $to,
+					'chunkSize' => $chunkSize,
+				]
+			);
+			return false;
+		}
 
 		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
+
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
 			"Running CheckerJob on cluster $clusterNames {diff}s after insertion",
 			[
@@ -120,8 +159,7 @@ class CheckerJob extends Job {
 			]
 		);
 
-		$from = $this->params['fromPageId'];
-		$to = $this->params['toPageId'];
+		$startTime = time();
 
 		$pageCache = new ArrayObject();
 		$checkers = [];
@@ -191,15 +229,29 @@ class CheckerJob extends Job {
 	 * @param int $newFrom the new from offset
 	 */
 	private function retry( $cause, $newFrom ) {
+		if ( $this->params['retryCount'] >= self::JOB_MAX_RETRIES  ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->info(
+				"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Abandonning CheckerJob after {retries} retries, (jobs_chunk_size too high?).",
+				[
+					'retries' => $this->params['retryCount'],
+					'fromPageId' => $this->params['fromPageId'],
+					'toPageId' => $this->params['toPageId'],
+				]
+			);
+			return;
+		}
+
 		$delay = self::backoffDelay( $this->params['retryCount'] );
 		$job = clone $this;
 		$job->params['retryCount']++;
 		$job->params['fromPageId'] = $newFrom;
 		$job->setDelay( $delay );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
-			"Sanitize CheckerJob: $cause, Requeueing CheckerJob with a delay of {delay}s.",
+			"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Requeueing CheckerJob with a delay of {delay}s.",
 			[
-				'delay' => $delay
+				'delay' => $delay,
+				'fromPageId' => $job->params['fromPageId'],
+				'toPageId' => $job->params['toPageId'],
 			]
 		);
 		JobQueueGroup::singleton()->push( $job );

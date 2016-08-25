@@ -98,7 +98,9 @@ class RedirectsAndIncomingLinks {
 
 		$condition = $dbr->makeList( $conditions, LIST_OR );
 
-		$res = $dbr->selectField( 'pagelinks', 'count(1)', $condition, __METHOD__ );
+		$res = $dbr->selectField( 'pagelinks', 'count(1)', $condition, __METHOD__, [
+			'USE INDEX' => 'pl_namespace',
+		]);
 		if ( $res === false ) {
 			return null;
 		}

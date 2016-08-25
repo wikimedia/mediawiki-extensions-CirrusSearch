@@ -194,7 +194,7 @@ class CheckerJob extends Job {
 		$delay = self::backoffDelay( $this->params['retryCount'] );
 		$job = clone $this;
 		$job->params['retryCount']++;
-		$job->params['fromId'] = $newFrom;
+		$job->params['fromPageId'] = $newFrom;
 		$job->setDelay( $delay );
 		LoggerFactory::getInstance( 'CirrusSearch' )->info(
 			"Sanitize CheckerJob: $cause, Requeueing CheckerJob with a delay of {delay}s.",

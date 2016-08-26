@@ -53,6 +53,13 @@ interface Remediator {
 	 * @param string $indexType index type that the page is in but shouldn't be in
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexType );
+
+	/**
+	 * @param string $docId elasticsearch document id
+	 * @param WikiPage $page page with outdated document in index
+	 * @param string $indexType index contgaining outdated document
+	 */
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType );
 }
 
 /**
@@ -74,6 +81,13 @@ class NoopRemediator implements Remediator {
 	 * @param string $indexType
 	 */
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {}
+
+	/**
+	 * @param string $docId elasticsearch document id
+	 * @param WikiPage $page page with outdated document in index
+	 * @param string $indexType index contgaining outdated document
+	 */
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {}
 }
 
 /**
@@ -117,6 +131,16 @@ class PrintingRemediator implements Remediator {
 	public function pageInWrongIndex( $docId, WikiPage $page, $indexType ) {
 		$this->log( $page->getId(), $page->getTitle(), "Page in wrong index: $indexType" );
 		$this->next->pageInWrongIndex( $docId, $page, $indexType );
+	}
+
+	/**
+	 * @param string $docId elasticsearch document id
+	 * @param WikiPage $page page with outdated document in index
+	 * @param string $indexType index contgaining outdated document
+	 */
+	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
+		$this->log( $page->getId(), $page->getTitle(), "Outdated page in index: $indexType" );
+		$this->next->oldVersionInIndex( $docId, $page, $indexType );
 	}
 
 	/**

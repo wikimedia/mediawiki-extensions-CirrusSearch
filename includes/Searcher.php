@@ -342,7 +342,8 @@ class Searcher extends ElasticsearchIntermediary {
 			$builderSettings['settings']
 		);
 
-		$showSuggestion = $showSuggestion && $this->offset == 0;
+		$showSuggestion = $showSuggestion && $this->offset == 0
+			&& $this->config->get( 'CirrusSearchEnablePhraseSuggest' );
 		$qb->build( $this->searchContext, $term, $showSuggestion );
 
 		if ( !$this->searchContext->areResultsPossible() ) {

@@ -69,8 +69,6 @@ class CopySearchIndex extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgCirrusSearchMaintenanceTimeout;
-
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
@@ -104,7 +102,6 @@ class CopySearchIndex extends Maintenance {
 				[ $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ) ],
 				$clusterSettings->getShardCount( $this->indexType ),
 				$clusterSettings->getReplicaCount( $this->indexType ),
-				$wgCirrusSearchMaintenanceTimeout,
 				$this->getMergeSettings(),
 				$this->getMappingConfig(),
 				$this

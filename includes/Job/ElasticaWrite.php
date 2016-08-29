@@ -77,10 +77,6 @@ class ElasticaWrite extends Job {
 		$retry = [];
 		$error = [];
 		foreach ( $connections as $clusterName => $conn ) {
-			if ( $this->params['clientSideTimeout'] ) {
-				$conn->setTimeout( $this->params['clientSideTimeout'] );
-			}
-
 			$sender = new DataSender( $conn, $this->searchConfig );
 			try {
 				$status = call_user_func_array(

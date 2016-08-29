@@ -149,7 +149,6 @@ class OtherIndexes extends Updater {
 		// in the same update.
 		foreach ( $updates as $indexName => $actions ) {
 			$job = new Job\ElasticaWrite( reset( $titles ), [
-				'clientSideTimeout' => false,
 				'method' => 'sendOtherIndexUpdates',
 				'arguments' => [ $this->localSite, $indexName, $actions ],
 				'cluster' => $this->writeToClusterName,

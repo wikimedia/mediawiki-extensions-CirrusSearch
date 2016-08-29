@@ -73,14 +73,7 @@ class Saneitize extends Maintenance {
 	}
 
 	public function execute() {
-		global $wgCirrusSearchMaintenanceTimeout,
-			$wgCirrusSearchClientSideUpdateTimeout;
-
 		$this->disablePoolCountersAndLogging();
-
-		// Set the timeout for maintenance actions
-		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
-		$wgCirrusSearchClientSideUpdateTimeout = $wgCirrusSearchMaintenanceTimeout;
 
 		if ( $this->hasOption( 'batch-size' ) ) {
 			$this->setBatchSize( $this->getOption( 'batch-size' ) );

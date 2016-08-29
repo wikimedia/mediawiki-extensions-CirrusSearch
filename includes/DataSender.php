@@ -157,13 +157,9 @@ class DataSender extends ElasticsearchIntermediary {
 	/**
 	 * @param string $indexType type of index to which to send $data
 	 * @param (\Elastica\Script|\Elastica\Document)[] $data documents to send
-	 * @param null|string $shardTimeout How long should elaticsearch wait for an offline
-	 *   shard.  Defaults to null, meaning don't wait.  Null is more efficient when sending
-	 *   multiple pages because Cirrus will use Elasticsearch's bulk API.  Timeout is in
-	 *   Elasticsearch's time format.
 	 * @return Status
 	 */
-	public function sendData( $indexType, $data, $shardTimeout ) {
+	public function sendData( $indexType, $data ) {
 		$documentCount = count( $data );
 		if ( $documentCount === 0 ) {
 			return Status::newGood();
@@ -184,9 +180,7 @@ class DataSender extends ElasticsearchIntermediary {
 				'queryType' => 'send_data_write',
 			] );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
-			if ( $shardTimeout ) {
-				$bulk->setShardTimeout( $shardTimeout );
-			}
+			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
 			$bulk->setType( $pageType );
 			$bulk->addData( $data, 'update' );
 			$responseSet = $bulk->send();

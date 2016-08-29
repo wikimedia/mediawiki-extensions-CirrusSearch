@@ -209,9 +209,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->disablePoolCountersAndLogging();
 
-		// Set the timeout for maintenance actions
-		$this->setConnectionTimeout();
-
 		$utils = new ConfigUtils( $this->getConnection()->getClient(), $this );
 
 		$this->indexType = $this->getOption( 'indexType' );
@@ -421,8 +418,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * Validate the alias that is just for this index's type.
 	 */
 	private function validateSpecificAlias() {
-		global $wgCirrusSearchMaintenanceTimeout;
-
 		$connection = $this->getConnection();
 
 		$reindexer = new Reindexer(
@@ -433,7 +428,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			[ $this->getOldPageType() ],
 			$this->getShardCount(),
 			$this->getReplicaCount(),
-			$wgCirrusSearchMaintenanceTimeout,
 			$this->getMergeSettings(),
 			$this->getMappingConfig(),
 			$this
@@ -579,11 +573,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	protected function getOldPageType() {
 		return $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType );
-	}
-
-	protected function setConnectionTimeout() {
-		global $wgCirrusSearchMaintenanceTimeout;
-		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
 	/**

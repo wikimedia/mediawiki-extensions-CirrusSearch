@@ -196,9 +196,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			$this->error( "Failed to get shard count and replica count information: {$e->getMessage()}", 1 );
 		}
 
-		// Set the timeout for maintenance actions
-		$this->setConnectionTimeout();
-
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 100 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
@@ -490,11 +487,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			[],
 			[ 'master_timeout' => $this->masterTimeout ]
 		);
-	}
-
-	protected function setConnectionTimeout() {
-		global $wgCirrusSearchMaintenanceTimeout;
-		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
 	private function optimize() {

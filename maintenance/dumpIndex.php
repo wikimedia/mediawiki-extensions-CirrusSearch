@@ -104,8 +104,6 @@ class DumpIndex extends Maintenance {
 
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
-		// Set the timeout for maintenance actions
-		$this->setConnectionTimeout();
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
@@ -168,11 +166,6 @@ class DumpIndex extends Maintenance {
 				}
 			}, $limit, 5 );
 		$this->output( "Dump done.\n" );
-	}
-
-	private function setConnectionTimeout() {
-		global $wgCirrusSearchMaintenanceTimeout;
-		$this->getConnection()->setTimeout( $wgCirrusSearchMaintenanceTimeout );
 	}
 
 	/**

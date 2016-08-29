@@ -202,11 +202,11 @@ $wgCirrusSearchNamespaceMappings = [];
 // results until the job is done.
 $wgCirrusSearchExtraIndexes = [];
 
-// Shard timeout for non-maintenance index operations.  This is the amount of
-// time Elasticsearch will wait around for an offline primary shard. Currently
-// this is just used in page updates and not deletes.  It is defined in
-// Elasticsearch's time format which is a string containing a number and then
-// a unit which is one of d (days), m (minutes), h (hours), ms (milliseconds) or
+// Shard timeout for index operations.  This is the amount of time
+// Elasticsearch will wait around for an offline primary shard. Currently this
+// is just used in page updates and not deletes.  It is defined in
+// Elasticsearch's time format which is a string containing a number and then a
+// unit which is one of d (days), m (minutes), h (hours), ms (milliseconds) or
 // w (weeks).  Cirrus defaults to a very tiny value to prevent job executors
 // from waiting around a long time for Elasticsearch.  Instead, the job will
 // fail and be retried later.

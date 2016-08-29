@@ -82,11 +82,6 @@ class Reindexer {
 	private $replicaCount;
 
 	/**
-	 * @var int
-	 */
-	private $connectionTimeout;
-
-	/**
 	 * @var array
 	 */
 	private $mergeSettings;
@@ -109,13 +104,12 @@ class Reindexer {
 	 * @param Type[] $oldTypes
 	 * @param int $shardCount
 	 * @param string $replicaCount
-	 * @param int $connectionTimeout
 	 * @param array $mergeSettings
 	 * @param array $mappingConfig
 	 * @param Maintenance $out
 	 * @throws \Exception
 	 */
-	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, $connectionTimeout, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
+	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
 		// @todo: this constructor has too many arguments - refactor!
 		$this->searchConfig = $searchConfig;
 		$this->oldConnection = $source;
@@ -124,7 +118,6 @@ class Reindexer {
 		$this->oldTypes = $oldTypes;
 		$this->shardCount = $shardCount;
 		$this->replicaCount = $replicaCount;
-		$this->connectionTimeout = $connectionTimeout;
 		$this->mergeSettings = $mergeSettings;
 		$this->mappingConfig = $mappingConfig;
 		$this->out = $out;
@@ -149,7 +142,7 @@ class Reindexer {
 		global $wgCirrusSearchWikimediaExtraPlugin;
 
 		// Set some settings that should help io load during bulk indexing.  We'll have to
-		// optimize after this to consolidate down to a proper number of shards but that is
+		// optimize after this to consolidate down to a proper number of segments but that is
 		// is worth the price.  total_shards_per_node will help to make sure that each shard
 		// has as few neighbors as possible.
 		$this->setConnectionTimeout();
@@ -477,8 +470,9 @@ class Reindexer {
 	 * Reset connection timeouts
 	 */
 	private function setConnectionTimeout() {
-		$this->connection->setTimeout( $this->connectionTimeout );
-		$this->oldConnection->setTimeout( $this->connectionTimeout );
+		$timeout = $this->searchConfig->get( 'CirrusSearchMaintenanceTimeout' );
+		$this->connection->setTimeout( $timeout );
+		$this->oldConnection->setTimeout( $timeout );
 	}
 
 	/**

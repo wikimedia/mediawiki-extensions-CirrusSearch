@@ -792,6 +792,15 @@ $wgCirrusSearchCompletionDefaultScore = 'quality';
 $wgCirrusSearchUseCompletionSuggester = 'no';
 
 /**
+ * Use defaultsort as an additional title suggestion
+ * Useful in case the title does not start with a representative
+ * name ( e.g. Republic of Ireland ) or for names where defaultsort
+ * often contains the phrase surname, firstname.
+ * NOTE: Experimental
+ */
+$wgCirrusSearchCompletionSuggesterUseDefaultSort = false;
+
+/**
  * Maximum number of results to ask from the elasticsearch completion
  * api, note that this value will be multiplied by fetch_limit_factor
  * set in Completion profiles (default to 2)

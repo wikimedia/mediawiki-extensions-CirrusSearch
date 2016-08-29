@@ -217,7 +217,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
-		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo );
+		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo, $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) );
 
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.

@@ -86,6 +86,11 @@ class SuggestBuilder {
 	private $withGeo;
 
 	/**
+	 * @var boolean set to true to add an extra title suggestion with defaultsort
+	 */
+	private $withDefaultSort;
+
+	/**
 	 * NOTE: Currently a fixed value because the completion suggester does not support
 	 * multi namespace suggestion.
 	 *
@@ -97,9 +102,10 @@ class SuggestBuilder {
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
 	 * @param bool $withGeo
 	 */
-	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true ) {
+	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true, $withDefaultSort = false ) {
 		$this->scoringMethod = $scoringMethod;
 		$this->withGeo = $withGeo;
+		$this->withDefaultSort = $withDefaultSort;
 		$this->batchId = time();
 	}
 
@@ -197,6 +203,10 @@ class SuggestBuilder {
 		$location = $this->findPrimaryCoordinates( $inputDoc );
 
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
+		if ( $this->withDefaultSort && !empty( $inputDoc['defaultsort'] ) ) {
+			$suggestions['group']['variants'][] = $inputDoc['defaultsort'];
+		}
+
 		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $location, $score );
 		if ( !empty( $suggestions['candidates'] ) ) {
 			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'],
@@ -215,6 +225,9 @@ class SuggestBuilder {
 		$fields = array_merge( $fields, [ 'title', 'redirect', 'namespace' ] );
 		if ( $this->withGeo ) {
 			$fields[] = 'coordinates';
+		}
+		if ( $this->withDefaultSort ) {
+			$fields[] = 'defaultsort';
 		}
 		return $fields;
 	}

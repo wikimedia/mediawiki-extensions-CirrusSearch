@@ -83,3 +83,7 @@ Feature: Suggestion API test
     | V:          | V:N               |
     | Z           | Zam Wilson        |
     | Z:          | Z:Navigation      |
+
+  Scenario: Default sort can be used as search input
+    When I ask suggestion API for Wilson
+      Then the API should produce list starting with Sam Wilson

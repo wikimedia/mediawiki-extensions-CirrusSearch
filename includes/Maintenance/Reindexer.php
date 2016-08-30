@@ -168,40 +168,47 @@ class Reindexer {
 
 			switch ( $forkResult ) {
 				case 'child':
-					foreach ( $this->types as $i => $type ) {
-						$oldType = $this->oldTypes[$i];
-						$this->reindexInternal( $type, $oldType, $processes, $fork->getChildNumber(), $chunkSize, $retryAttempts );
+					$success = false;
+					try {
+						foreach ( $this->types as $i => $type ) {
+							$oldType = $this->oldTypes[$i];
+							$this->reindexInternal( $type, $oldType, $processes, $fork->getChildNumber(), $chunkSize, $retryAttempts, $acceptableCountDeviation );
+						}
+						$success = true;
+					} finally {
+						// We don't want the child to continue the script
+						die( $success ? 0 : 1 );
 					}
-					die( 0 );
 				case 'done':
+					// When done is returned all children have terminated this is handled by the ForkController
 					break;
 				default:
 					$this->error( "Unexpected result while forking:  $forkResult", 1 );
 			}
-
-			$this->outputIndented( "Verifying counts..." );
-			// We can't verify counts are exactly equal because they won't be - we still push updates into
-			// the old index while reindexing the new one.
-			foreach ( $this->types as $i => $type ) {
-				$oldType = $this->oldTypes[$i];
-				$oldCount = (float) $oldType->count();
-				$this->index->refresh();
-				$newCount = (float) $type->count();
-				$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
-				if ( $difference > $acceptableCountDeviation ) {
-					$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
-					$this->error( 'Failed to load index - counts not close enough.  ' .
-						"old=$oldCount new=$newCount difference=$difference.  " .
-						'Check for warnings above.', 1 );
-				}
-			}
-			$this->output( "done\n" );
 		} else {
 			foreach ( $this->types as $i => $type ) {
 				$oldType = $this->oldTypes[$i];
-				$this->reindexInternal( $type, $oldType, 1, 1, $chunkSize, $retryAttempts );
+				$this->reindexInternal( $type, $oldType, 1, 1, $chunkSize, $retryAttempts, $acceptableCountDeviation );
 			}
 		}
+
+		$this->outputIndented( "Verifying counts..." );
+		// We can't verify counts are exactly equal because they won't be - we still push updates into
+		// the old index while reindexing the new one.
+		foreach ( $this->types as $i => $type ) {
+			$oldType = $this->oldTypes[$i];
+			$oldCount = (float) $oldType->count();
+			$this->index->refresh();
+			$newCount = (float) $type->count();
+			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
+			if ( $difference > $acceptableCountDeviation ) {
+				$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
+				$this->error( 'Failed to load index - counts not close enough.  ' .
+					"old=$oldCount new=$newCount difference=$difference.  " .
+					'Check for warnings above.', 1 );
+			}
+		}
+		$this->output( "done\n" );
 
 		// Revert settings changed just for reindexing
 		$settings->set( [
@@ -268,14 +275,21 @@ class Reindexer {
 	}
 
 	/**
-	 * @param Type $type
-	 * @param Type $oldType
-	 * @param int $children
-	 * @param int $childNumber
-	 * @param int|string $chunkSize
-	 * @param int $retryAttempts
+	 * Internal reindex method. Will run in a separate process if $children is > 1
+	 *
+	 * @param Type $type the elasticsearch Type we will write to
+	 * @param Type $oldType the elasticsearch Type we read from
+	 * @param int $children the number of processes
+	 * @param int $childNumber the "process id"
+	 * @param int|string $chunkSize number of docs we index in one bulk operation
+	 * @param int $retryAttempts the number of times we retry elasticsearch operations
+	 * @param float $acceptableCountDeviation acceptable difference between
+	 * the number of documents in the old and new index, 0.05 means that we
+	 * accept a ratio of 5%. If the source index contains 100 docs the target index
+	 * must contain between 95 and 105 docs.
+	 * @throws \Exception if an unrecoverable error occured while reindexing
 	 */
-	private function reindexInternal( Type $type, Type $oldType, $children, $childNumber, $chunkSize, $retryAttempts ) {
+	private function reindexInternal( Type $type, Type $oldType, $children, $childNumber, $chunkSize, $retryAttempts, $acceptableCountDeviation ) {
 		$filter = null;
 		$messagePrefix = "";
 		if ( $childNumber === 1 && $children === 1 ) {
@@ -289,7 +303,9 @@ class Reindexer {
 			// Note that it is not ok to abs(_uid.hashCode) because hashCode(Integer.MIN_VALUE) == Integer.MIN_VALUE
 			$filter = new \CirrusSearch\Extra\Query\IdHashMod( $children, $childNumber );
 		}
+		$numberOfDocsInOldType = $oldType->count();
 		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
+		$scrollId = null;
 		try {
 			$query = new Query();
 			$query->setFields( [ '_id', '_source' ] );
@@ -300,37 +316,69 @@ class Reindexer {
 			}
 
 			// Note here we dump from the current index (using the alias) so we can use Connection::getPageType
-			$result = $oldType
+			$scrollTime = '1h';
+			$results = $oldType
 				->search( $query, [
 					'search_type' => 'scan',
-					'scroll' => '1h',
+					'scroll' => $scrollTime,
 					'size'=> $chunkSize,
 				] );
-			$totalDocsToReindex = $result->getResponse()->getData();
+			$totalDocsToReindex = $results->getResponse()->getData();
 			$totalDocsToReindex = $totalDocsToReindex['hits']['total'];
 			$this->outputIndented( $messagePrefix . "About to reindex $totalDocsToReindex documents\n" );
 			$operationStartTime = microtime( true );
 			$completed = 0;
-			MWElasticUtils::iterateOverScroll( $this->oldIndex, $result->getResponse()->getScrollId(), '1h',
-				function( $results ) use ( $properties, $retryAttempts, $messagePrefix, $type,
-						&$completed, $totalDocsToReindex, $operationStartTime ) {
-					$documents = [];
-					foreach( $results as $result ) {
-						$documents[] = $this->buildNewDocument( $result, $properties );
-					}
-					$this->withRetry( $retryAttempts, $messagePrefix, 'retrying as singles',
-						function() use ( $type, $messagePrefix, $documents ) {
-							$this->sendDocuments( $type, $messagePrefix, $documents );
-						} );
-					$completed += sizeof( $results );
-					$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
-					$this->outputIndented( $messagePrefix .
-						"Reindexed $completed/$totalDocsToReindex documents at $rate/second\n");
-				}, 0, $retryAttempts,
-				function( $e, $errors ) use ( $messagePrefix ) {
-					$this->sleepOnRetry( $e, $errors, $messagePrefix, 'fetching documents to reindex' );
-				} );
+			$failures = 0;
 
+			while( true ) {
+				$scrollId = $results->getResponse()->getScrollId();
+				$results = MWElasticUtils::withRetry( $retryAttempts,
+					function() use ( $oldType, $scrollId, $scrollTime ) {
+						return $oldType->search( [], [
+							'scroll_id' => $scrollId,
+							'scroll' => $scrollTime,
+						] );
+					},
+					/* on error callback */
+					function( $e, $errors ) use ( $messagePrefix ) {
+						$this->sleepOnRetry( $e, $errors,
+							$messagePrefix, 'fetching documents to reindex' );
+					}
+				);
+
+				if( !$results->count() ) {
+					// No need to clear scroll on the last call
+					$scrollId = null;
+					break;
+				}
+
+				$documents = [];
+				foreach( $results as $result ) {
+					$documents[] = $this->buildNewDocument( $result, $properties );
+				}
+
+				// We will retry bulk failures by sending index operations
+				// individually, if we fail again we ignore the error.
+				$nbDocIndexed = $this->sendDocuments( $type, $messagePrefix, $documents );
+
+				$failures += count( $results ) - $nbDocIndexed;
+				$completed += count( $results );
+
+				$rate = round( $completed / ( microtime( true ) - $operationStartTime ) );
+				$this->outputIndented( $messagePrefix .
+					"Reindexed $completed/$totalDocsToReindex documents " .
+					"($failures failures) at $rate/second\n" );
+
+				// Check if we can have enough docs in the future index
+				// by deducting the number of failed docs
+				$deviation = $failures / $numberOfDocsInOldType;
+				if ( $numberOfDocsInOldType > 0 && $deviation > $acceptableCountDeviation ) {
+					throw new \Exception( "Too many failures ($failures), " .
+						"the resulting index cannot have enough documents " .
+						"to match an acceptable count deviation of " .
+						"$acceptableCountDeviation." );
+				}
+			}
 			$this->outputIndented( $messagePrefix . "All done\n" );
 		} catch ( ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
@@ -344,7 +392,27 @@ class Reindexer {
 					'error_reason' => $error['reason'],
 				]
 			);
-			die( 1 );
+			/** @suppress PhanTypeMismatchArgumentInternal ExceptionInterface is an Exception */
+			throw new \Exception( "Search backend error during reindex.", 0, $e );
+		} catch( \Exception $e ) {
+			$this->outputIndented( $messagePrefix . "Error during reindex: " . $e->getMessage() . "\n" );
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Error during reindex: {message}",
+				[
+					'message' => $e->getMessage(),
+					'exception' => $e,
+				]
+			);
+			throw new \Exception( 'Error during reindex.', 0, $e );
+		} finally {
+			if ( $scrollId ) {
+				try {
+					$oldType->getIndex()->getClient() ->request(
+						"_search/scroll/".$scrollId,
+						\Elastica\Request::DELETE
+					);
+				} catch ( \Exception $e ) {}
+			}
 		}
 	}
 
@@ -417,20 +485,6 @@ class Reindexer {
 	}
 
 	/**
-	 * @param int $attempts
-	 * @param string $messagePrefix
-	 * @param string $description
-	 * @param callable $func
-	 * @return mixed
-	 */
-	private function withRetry( $attempts, $messagePrefix, $description, $func) {
-		return MWElasticUtils::withRetry ( $attempts, $func,
-			function( $e, $errors ) use ( $messagePrefix, $description ) {
-				$this->sleepOnRetry( $e, $errors, $messagePrefix, $description );
-			} );
-	}
-
-	/**
 	 * @param ExceptionInterface $e exception caught
 	 * @param int $errors number of errors
 	 * @param string $messagePrefix
@@ -450,19 +504,81 @@ class Reindexer {
 	 *
 	 * @param Type $type
 	 * @param string $messagePrefix
-	 * @param Elastica\Document[]
+	 * @param \Elastica\Document[]
+	 * @return int the number of indexed document
 	 */
 	private function sendDocuments( Type $type, $messagePrefix, array $documents ) {
+		$nbDocIndexed = 0;
 		try {
 			$type->addDocuments( $documents );
+			$nbDocIndexed = count( $documents );
 		} catch ( ExceptionInterface $e ) {
 			$errorType = get_class( $e );
 			$message = ElasticsearchIntermediary::extractMessage( $e );
-			$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$errorType' and message is:  $message" );
-			foreach ( $documents as $document ) {
-				// Continue using the bulk api because we're used to it.
-				$type->addDocuments( [ $document ] );
+			if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
+				// Some docs failed let's retry them individually
+				$failures = count( $e->getActionExceptions() );
+				$nbDocIndexed += count( $documents ) - $failures;
+				$this->outputIndented( $messagePrefix . "Partial failure (indexed $nbDocIndexed, failed $failures) detected in bulk action. " .
+					"Retrying as singles.  Error type is '$errorType' and message is:  $message\n" );
+				$nbDocIndexed += $this->retryBulkFailures( $type, $messagePrefix, $documents, $e );
+			} else {
+				// Global failure? network?
+				$this->outputIndented( $messagePrefix . "Error adding documents in bulk.  Retrying as singles.  Error type is '$errorType' and message is:  $message\n" );
+				foreach ( $documents as $document ) {
+					$nbDocIndexed += $this->sendSingleDoc( $type, $messagePrefix, $document );
+				}
 			}
+		}
+		return $nbDocIndexed;
+	}
+
+	/**
+	 * Retry individual failures from a bulk request
+	 *
+	 * @param Type $type
+	 * @param string $messagePrefix
+	 * @param Elastica\Document[] $documents
+	 * @param Elastica\Exception\Bulk\ResponseException $e
+	 * @return int the number of indexed documents
+	 */
+	private function retryBulkFailures( Type $type, $messagePrefix, array $documents, \Elastica\Exception\Bulk\ResponseException $e ) {
+		$docsById = [];
+		foreach( $documents as $doc ) {
+			$docsById[$doc->getId()] = $doc;
+		}
+		$nbDocIndexed = 0;
+		foreach( $e->getActionExceptions() as $failure ) {
+			$action = $failure->getAction();
+			if ( !isset( $docsById[$action->getMetadata()['_id']] ) ) {
+				// A bug in Elastica?
+				continue;
+			}
+			$doc = $docsById[$action->getMetadata()['_id']];
+			$nbDocIndexed += $this->sendSingleDoc( $type, $messagePrefix, $doc );
+		}
+		return $nbDocIndexed;
+	}
+
+	/**
+	 * Retry a single doc, a failure will be ignored
+	 *
+	 * @param Type $type
+	 * @param string $messagePrefix
+	 * @param Elastica\Document $doc
+	 * @return int the number of docs indexed: 1 if succesfull 0 otherwize
+	 */
+	private function sendSingleDoc( Type $type, $messagePrefix, \Elastica\Document $doc ) {
+		try {
+			// TODO: should we use MWElasticUtils::withRetry here?
+			$type->addDocument( $doc );
+			return 1;
+		} catch( ExceptionInterface $e ) {
+			$errorType = get_class( $e );
+			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$id = $doc->getId();
+			$this->outputIndented( $messagePrefix . "Failed to to index doc id $id : $errorType, $message\n" );
+			return 0;
 		}
 	}
 

@@ -109,10 +109,16 @@ class AnalysisConfigBuilder {
 		$defaults = [
 			'analyzer' => [
 				'text' => [
+					// These defaults are not applied to non-custom
+					// analysis chains, i.e., those that use the
+					// default language analyzers on 'text'
 					'type' => $this->getDefaultTextAnalyzerType(),
 					'char_filter' => [ 'word_break_helper' ],
 				],
 				'text_search' => [
+					// These defaults are not applied to non-custom
+					// analysis chains, i.e., those that use the
+					// default language analyzers on 'text_search'
 					'type' => $this->getDefaultTextAnalyzerType(),
 					'char_filter' => [ 'word_break_helper' ],
 				],
@@ -297,7 +303,7 @@ class AnalysisConfigBuilder {
 				'type' => 'stemmer',
 				'language' => 'possessive_english',
 			];
-			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
+			// Replace the default English analyzer with a rebuilt copy with asciifolding inserted before stemming
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
@@ -334,6 +340,48 @@ STEMMER_RULES
 		case 'french':
 			// Add asciifolding_preserve to filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
+
+			$config[ 'char_filter' ][ 'french_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					'\u0130=>I',	// dotted I
+				],
+			];
+			$config[ 'filter' ][ 'french_elision' ] = [
+				'type' => 'elision',
+				'articles_case' => true,
+				'articles' => [
+					'l', 'm', 't', 'qu', 'n', 's',
+					'j', 'd', 'c', 'jusqu', 'quoiqu',
+					'lorsqu', 'puisqu',
+				],
+			];
+			$config[ 'filter' ][ 'french_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => '_french_',
+			];
+			$config[ 'filter' ][ 'french_stemmer' ] = [
+				'type' => 'stemmer',
+				'language' => 'light_french',
+			];
+
+			// Replace the default French analyzer with a rebuilt copy with asciifolding_preserve tacked on the end
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'char_filter' => [ 'french_charfilter' ],
+			];
+
+			$filters = [];
+			$filters[] = 'french_elision';
+			$filters[] = 'lowercase';
+			$filters[] = 'french_stop';
+			$filters[] = 'french_stemmer';
+			$filters[] = 'asciifolding_preserve';
+			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
+
+			// In French text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = [
@@ -370,7 +418,7 @@ STEMMER_RULES
 				'type' => 'stemmer',
 				'language' => 'light_italian',
 			];
-			// Replace the default english analyzer with a rebuilt copy with asciifolding tacked on the end
+			// Replace the default Italian analyzer with a rebuilt copy with asciifolding tacked on the end
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',

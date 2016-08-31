@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\Escaper;
@@ -222,7 +223,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		if ( $showSuggestion ) {
 			$searchContext->setSuggest( [
 				'text' => $term,
-				'suggest' => $this->buildSuggestConfig( 'suggest' ),
+				'suggest' => $this->buildSuggestConfig( 'suggest', $searchContext ),
 			] );
 		}
 	}
@@ -259,9 +260,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * Build suggest config for $field.
 	 *
 	 * @param string $field field to suggest against
+	 * @param SearchContext $searchContext
 	 * @return array[] array of Elastica configuration
 	 */
-	private function buildSuggestConfig( $field ) {
+	private function buildSuggestConfig( $field, $searchContext ) {
 		// check deprecated settings
 		$suggestSettings = $this->config->get( 'CirrusSearchPhraseSuggestSettings' );
 		$maxErrors = $this->config->get( 'CirrusSearchPhraseSuggestMaxErrors' );
@@ -295,8 +297,18 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				],
 			],
 		];
+		$extraIndexes = null;
+		if ( $searchContext->getNamespaces() ) {
+			$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces(
+				$searchContext->getNamespaces()
+			);
+		}
 		// Add a second generator with the reverse field
-		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' ) ) {
+		// Only do this for local queries, we don't know if it's activated
+		// on other wikis.
+		if ( empty( $extraIndexes )
+			&& $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
+		) {
 			$settings['phrase']['direct_generator'][] = [
 				'field' => $field . '.reverse',
 				'suggest_mode' => $suggestSettings['mode'],

@@ -33,6 +33,7 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 
 $wgCirrusSearchUseCompletionSuggester = 'yes';
+$wgCirrusSearchCompletionSuggesterUseDefaultSort = true;
 
 $wgCirrusSearchPhraseSuggestReverseField = array(
 	'build' => true,

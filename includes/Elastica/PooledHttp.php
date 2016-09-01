@@ -5,7 +5,6 @@ namespace CirrusSearch\Elastica;
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use RequestContext;
 
 /**
  * Implements cross-request connection pooling via hhvm's built in

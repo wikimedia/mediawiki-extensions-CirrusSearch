@@ -4,10 +4,8 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
-use CirrusSearch\SearchConfig;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use Status;
 use Title;
 

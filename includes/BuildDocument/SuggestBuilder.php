@@ -101,6 +101,7 @@ class SuggestBuilder {
 	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
 	 * @param bool $withGeo
+	 * @param bool $withDefaultSort
 	 */
 	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true, $withDefaultSort = false ) {
 		$this->scoringMethod = $scoringMethod;

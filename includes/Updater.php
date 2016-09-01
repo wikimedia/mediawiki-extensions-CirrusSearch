@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use ParserCache;
-use ParserOutput;
 use TextContent;
 use Title;
 use WikiPage;
@@ -57,6 +56,7 @@ class Updater extends ElasticsearchIntermediary {
 
 	/**
 	 * @param Connection $conn
+	 * @param SearchConfig $config
 	 * @param string[] $flags
 	 */
 	public function __construct( Connection $conn, SearchConfig $config, array $flags = [] ) {

@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\SearchConfig;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use Status;

@@ -609,7 +609,7 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param Elastica\Exception\ExceptionInterface $exception
+	 * @param \Elastica\Exception\ExceptionInterface $exception
 	 * @return string
 	 */
 	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {

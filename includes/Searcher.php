@@ -3,21 +3,14 @@
 namespace CirrusSearch;
 
 use Elastica;
-use CirrusSearch;
-use CirrusSearch\Extra\Query\SourceRegex;
-use CirrusSearch\Query\QueryHelper;
 use CirrusSearch\Search\Escaper;
-use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\SearchTextQueryBuilderFactory;
-use GeoData\Coord;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use MWNamespace;
 use ObjectCache;
 use SearchResultSet;
 use Status;

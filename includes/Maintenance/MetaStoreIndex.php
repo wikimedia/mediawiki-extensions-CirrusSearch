@@ -1,9 +1,8 @@
 <?php
 
 namespace CirrusSearch\Maintenance;
-use CirrusSearch\Connection;
 
-use Elastica\Client;
+use CirrusSearch\Connection;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -104,7 +103,7 @@ class MetaStoreIndex {
 	/**
 	 * @param Connection $connection
 	 * @param Maintenance $out
-	 * @param $masterTimeout int
+	 * @param string $masterTimeout
 	 */
 	public function __construct( Connection $connection, Maintenance $out, $masterTimeout = '10000s' ) {
 		$this->connection = $connection;

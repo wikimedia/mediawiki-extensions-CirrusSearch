@@ -3,12 +3,10 @@
 namespace CirrusSearch\Job;
 
 use ArrayObject;
-use CirrusSearch\Connection;
 use CirrusSearch\Searcher;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use JobQueueGroup;
 use Title;
 

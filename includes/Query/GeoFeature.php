@@ -166,7 +166,6 @@ class GeoFeature extends SimpleKeywordFeature {
 
 	/**
 	 * @param string $distance
-	 * @param int $default
 	 * @return int|null Parsed distance in meters, or null if unparsable
 	 */
 	public function parseDistance( $distance ) {

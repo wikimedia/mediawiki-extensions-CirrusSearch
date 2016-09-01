@@ -50,7 +50,6 @@ class QueueingRemediator implements Remediator {
 
 	/**
 	 * @param string $docId
-	 * @param int $pageId
 	 * @param Title $title
 	 */
 	public function ghostPageInIndex( $docId, Title $title ) {

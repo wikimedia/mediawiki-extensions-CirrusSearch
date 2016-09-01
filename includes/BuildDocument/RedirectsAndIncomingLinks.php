@@ -3,15 +3,7 @@
 namespace CirrusSearch\BuildDocument;
 
 use CirrusSearch\Connection;
-use CirrusSearch\ElasticsearchIntermediary;
-use CirrusSearch\SearchConfig;
-use Elastica\Query\Terms;
-use Elastica\Query\BoolQuery;
-use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
-use SplObjectStorage;
 use Title;
-use WikiPage;
 
 /**
  * Adds redirects and incoming links to the documents.  These are done together
@@ -34,6 +26,7 @@ use WikiPage;
  */
 class RedirectsAndIncomingLinks {
 	/**
+	 * @param \Elastica\Document $doc
 	 * @param Title $title
 	 * @param Connection $conn
 	 * @return bool
@@ -89,6 +82,7 @@ class RedirectsAndIncomingLinks {
 	private static function countIncomingLinks( array $titles ) {
 		$dbr = wfGetDB( DB_SLAVE, 'vslow' );
 
+		$conditions = [];
 		foreach ( $titles as $title ) {
 			$conditions[] = $dbr->makeList( [
 				'pl_namespace' => $title->getNamespace(),

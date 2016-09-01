@@ -7,7 +7,6 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use MediaWiki\MediaWikiServices;
-use Status;
 use Title;
 use WikiPage;
 
@@ -71,6 +70,7 @@ class Checker {
 
 	/**
 	 * Build the checker.
+	 * @param SearchConfig $config
 	 * @param Connection $connection
 	 * @param Remediator $remediator the remediator to which to send titles
 	 *   that are insane
@@ -180,7 +180,6 @@ class Checker {
 	 *
 	 * @param string $docId
 	 * @param int $pageId
-	 * @param WikiPage $page
 	 * @param \Elastica\Result[] $fromIndex
 	 * @return bool true if a modification was needed
 	 */

@@ -62,7 +62,7 @@ class PrefixFeature implements KeywordFeature {
 
 		// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 		if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
-			$value = str_Replace( '_', ' ', $value );
+			$value = str_replace( '_', ' ', $value );
 			$prefixQuery = new \Elastica\Query\Match();
 			$prefixQuery->setFieldQuery( 'title.prefix', $value );
 			$context->addFilter( $prefixQuery );

@@ -2,9 +2,6 @@
 
 namespace CirrusSearch;
 
-use GeoData\Coord;
-use GeoData\GeoData;
-use GeoData\Globe;
 use IP;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;

@@ -30,7 +30,7 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	private $maxConditions;
 
 	/**
-	 * @param int $maxConditions
+	 * @param Config $config
 	 */
 	public function __construct( Config $config ) {
 		$this->maxConditions = $config->get( 'CirrusSearchMaxIncategoryOptions' );

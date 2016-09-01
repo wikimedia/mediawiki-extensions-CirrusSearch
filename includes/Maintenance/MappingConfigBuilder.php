@@ -204,10 +204,6 @@ class MappingConfigBuilder {
 		$fields = $this->engine->getSearchIndexFields();
 
 		foreach ( $fields as $fieldName => $field ) {
-			if ( $field->checkFlag( SearchIndexField::FLAG_SOURCE_DATA ) ) {
-				// No need to specify a mapping for source data.
-				continue;
-			}
 			if ( $field instanceof CirrusIndexField ) {
 				$field->setMappingFlags( $flags );
 			}

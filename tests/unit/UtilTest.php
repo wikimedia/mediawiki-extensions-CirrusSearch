@@ -347,6 +347,13 @@ class UtilTest extends MediaWikiTestCase {
 			'wgMainCacheType' => 'UtilTest',
 			'wgObjectCaches' => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ]
 		] );
+		$services = \MediaWiki\MediaWikiServices::getInstance();
+		if ( method_exists( $services, 'getLocalClusterObjectCache' ) ) {
+			$services->resetServiceForTesting( 'LocalClusterObjectCache' );
+			$services->redefineService( 'LocalClusterObjectCache', function () {
+				return new \HashBagOStuff();
+			} );
+		}
 
 		return \ObjectCache::getLocalClusterInstance();
 	}

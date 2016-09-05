@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch\BuildDocument;
+namespace CirrusSearch\BuildDocument\Completion;
 
 use CirrusSearch\Util;
 

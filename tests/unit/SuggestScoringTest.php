@@ -2,9 +2,9 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\BuildDocument\IncomingLinksScoringMethod;
-use CirrusSearch\BuildDocument\QualityScore;
-use CirrusSearch\BuildDocument\PQScore;
+use CirrusSearch\BuildDocument\Completion\IncomingLinksScoringMethod;
+use CirrusSearch\BuildDocument\Completion\QualityScore;
+use CirrusSearch\BuildDocument\Completion\PQScore;
 
 /**
  * test suggest scoring functions.

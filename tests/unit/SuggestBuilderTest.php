@@ -2,8 +2,10 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\BuildDocument\SuggestBuilder;
-use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
 
 /**
  * test suggest builder.
@@ -25,7 +27,7 @@ use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
  */
 class SuggestBuilderTest extends \MediaWikiTestCase {
 	public function testEinstein() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
@@ -73,8 +75,98 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
+	public function testDefaultSort() {
+		$builder = $this->buildBuilder( 'incomingLinks' );
+		$this->assertContains( 'defaultsort', $builder->getRequiredFields() );
+		$score = 10;
+		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$doc = [
+			'title' => 'Albert Einstein',
+			'namespace' => 0,
+			'defaultsort' => 'Einstein, Albert',
+			'redirect' => [
+				[ 'title' => "Albert Enstein", 'namespace' => 0 ],
+				[ 'title' => "Einstein", 'namespace' => 0 ],
+			],
+			'incoming_links' => $score
+		];
+		$expected = [
+			[
+				'suggest' => [
+					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
+					'output' => '1:t:Albert Einstein',
+					'weight' => $score
+				],
+				'suggest-stop' => [
+					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
+					'output' => '1:t:Albert Einstein',
+					'weight' => $score
+				]
+			],
+			[
+				'suggest' => [
+					'input' => [ 'Einstein' ],
+					'output' => '1:r',
+					'weight' => $redirScore
+				],
+				'suggest-stop' => [
+					'input' => [ 'Einstein' ],
+					'output' => '1:r',
+					'weight' => $redirScore
+				]
+			]
+		];
+
+		$crossNsScore = (int) ($score * SuggestBuilder::CROSSNS_DISCOUNT);
+
+		$suggestions = $this->buildSuggestions( $builder, $doc );
+		$this->assertSame( $expected, $suggestions );
+
+		// Test Cross namespace the defaultsort should not be added
+		// to cross namespace redirects
+		$doc = [
+			'title' => 'Guidelines for XYZ',
+			'namespace' => NS_HELP,
+			'defaultsort' => 'XYZ, Guidelines',
+			'redirect' => [
+				[ 'title' => "GXYZ", 'namespace' => 0 ],
+				[ 'title' => "XYZG", 'namespace' => 0 ],
+			],
+			'incoming_links' => $score
+		];
+		$expected = [
+			[
+				'suggest' => [
+					'input' => [ 'GXYZ' ],
+					'output' => '0:t:GXYZ',
+					'weight' => $crossNsScore
+				],
+				'suggest-stop' => [
+					'input' => [ 'GXYZ' ],
+					'output' => '0:t:GXYZ',
+					'weight' => $crossNsScore
+				]
+			],
+			[
+				'suggest' => [
+					'input' => [ 'XYZG' ],
+					'output' => '0:t:XYZG',
+					'weight' => $crossNsScore
+				],
+				'suggest-stop' => [
+					'input' => [ 'XYZG' ],
+					'output' => '0:t:XYZG',
+					'weight' => $crossNsScore
+				]
+			]
+		];
+
+		$suggestions = $this->buildSuggestions( $builder, $doc );
+		$this->assertSame( $expected, $suggestions );
+	}
+
 	public function testEraq() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
@@ -118,7 +210,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 	}
 
 	public function testCrossNSRedirects() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
 		$doc = [
 			'title' => 'Navigation',
@@ -163,7 +255,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 	}
 
 	public function testUlm() {
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$builder = $this->buildBuilder( 'incoming_links' );
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
@@ -304,7 +396,7 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 			]
 		];
 
-		$builder = new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ) );
+		$builder = new GeoSuggestionsBuilder();
 		$coord = $builder->findPrimaryCoordinates( $doc );
 		$expected = [ 'lat' => 0.70777777777778, 'lon' => -50.089444444444 ];
 		$this->assertSame( $expected, $coord );
@@ -384,5 +476,13 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				unset( $dat['batch_id'] );
 				return $dat;
 			}, $builder->build( [ [ 'id' => 1, 'source' => $doc ] ] ) );
+	}
+
+	private function buildBuilder( $scoringMethod ) {
+		$extra = [
+			new GeoSuggestionsBuilder(),
+			new DefaultSortSuggestionsBuilder(),
+		];
+		return new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ), $extra );
 	}
 }

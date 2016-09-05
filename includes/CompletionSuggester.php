@@ -5,7 +5,7 @@ namespace CirrusSearch;
 use Elastica;
 use Elastica\Request;
 use CirrusSearch;
-use CirrusSearch\BuildDocument\SuggestBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Logger\LoggerFactory;

@@ -337,7 +337,7 @@ class Updater extends ElasticsearchIntermediary {
 	private function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();
 		$params[ 'source' ] = $doc->getData();
-		$params[ 'detectors' ] = [
+		$params[ 'handlers' ] = [
 			'incoming_links' => 'within 20%',
 		];
 

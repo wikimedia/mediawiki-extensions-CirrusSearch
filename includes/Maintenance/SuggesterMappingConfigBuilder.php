@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\SearchConfig;
+use MediaWiki\MediaWikiServices;
+
 /**
  * Builds elasticsearch mapping configuration arrays for the suggester index.
  *
@@ -27,7 +30,22 @@ class SuggesterMappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
+
+	/** @var SearchConfig */
+	private $config;
+
+	/**
+	 * Constructor
+	 * @param SearchConfig $config
+	 */
+	public function __construct( SearchConfig $config = null ) {
+		if ( is_null( $config ) ) {
+			$config =
+				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		}
+		$this->config = $config;
+	}
 
 	/**
 	 * @return array[]
@@ -78,6 +96,15 @@ class SuggesterMappingConfigBuilder {
 				]
 			]
 		];
+		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'build' ) ) {
+			$suggest['properties']['suggest-subphrases'] = [
+				'type' => 'completion',
+				'analyzer' => 'subphrases',
+				'search_analyzer' => 'subphrases_search',
+				'payloads' => false
+			];
+
+		}
 		return [ \CirrusSearch\Connection::TITLE_SUGGEST_TYPE_NAME => $suggest ];
 	}
 

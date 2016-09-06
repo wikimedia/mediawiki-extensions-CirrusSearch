@@ -714,7 +714,22 @@ class CirrusSearch extends SearchEngine {
 				return [];
 			}
 			$profiles = [];
-			foreach( array_keys( $this->config->get( 'CirrusSearchCompletionProfiles' ) ) as $name ) {
+			$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
+			// Check that we can use the subphrases FST
+			if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
+				$allowedFields['suggest-subphrases'] = true;
+			}
+			foreach( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
+				$allowed = true;
+				foreach( $settings as $value ) {
+					if ( !array_key_exists( $value['field'], $allowedFields ) ) {
+						$allowed = false;
+						break;
+					}
+				}
+				if ( !$allowed ) {
+					continue;
+				}
 				$profiles[] = [
 					'name' => $name,
 					'desc-message' => 'cirrussearch-completion-profile-' . $name,

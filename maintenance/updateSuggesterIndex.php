@@ -7,6 +7,7 @@ use CirrusSearch\DataSender;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
@@ -216,6 +217,10 @@ class UpdateSuggesterIndex extends Maintenance {
 		$extraBuilders = [];
 		if( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
 			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
+		}
+		$subPhrasesConfig =  $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterSubphrases' );
+		if( $subPhrasesConfig['build'] ) {
+			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
 		}
 		if ( $this->getSearchConfig()->getElement( 'CirrusSearchCompletionSuggesterGeoContext', 'build' ) ) {
 			$extraBuilders[] = new GeoSuggestionsBuilder();

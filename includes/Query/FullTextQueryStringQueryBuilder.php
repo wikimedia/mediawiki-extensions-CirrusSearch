@@ -77,9 +77,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		//   "a", "a boat", "a\"boat", "a boat"~, "a boat"~9,
 		//   "a boat"~9~, -"a boat", -"a boat"~9~
 		$slop = $this->config->get('CirrusSearchPhraseSlop');
+		$matchQuotesRegex = '(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?';
 		$query = self::replacePartsOfQuery(
 			$term,
-			'/(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?/',
+			"/$matchQuotesRegex/",
 			function ( $matches ) use ( $searchContext, $slop ) {
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
 				$main = $this->escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
@@ -163,7 +164,29 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Note that no escaping is required for near_match's match query.
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
 
-		if ( preg_match( '/(?<!\\\\)[?*+~"!|-]|AND|OR|NOT/', $this->queryStringQueryString ) ) {
+		$queryStringRegex =
+			'(' .
+				// quoted strings
+				$matchQuotesRegex .
+			')|(' .
+				// patterns that are seen before tokens.
+				'(^|\s)[+!-]\S' .
+			')|(' .
+				// patterns seen after tokens.
+				'\S(?<!\\\\)~[0-9]?(\s|$)' .
+			')|(' .
+				// patterns that are separated from tokens by whitespace
+				// on both sides.
+				'\s(AND|OR|NOT|&&|\\|\\|)\s' .
+			')|(' .
+				// patterns that can be at the start of the string
+				'^NOT\s' .
+			')|(' .
+				// patterns that can be inside tokens
+				// Note that question mark stripping has already been applied
+				'(?<!\\\\)[?*]' .
+			')';
+		if ( preg_match( "/$queryStringRegex/", $this->queryStringQueryString ) ) {
 			$searchContext->addSyntaxUsed( 'query_string' );
 			// We're unlikely to make good suggestions for query string with special syntax in them....
 			$showSuggestion = false;

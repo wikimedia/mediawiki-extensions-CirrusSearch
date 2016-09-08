@@ -281,7 +281,6 @@ class Updater extends ElasticsearchIntermediary {
 
 			$doc = new \Elastica\Document( $this->searchConfig->makeId( $page->getId() ), [
 				'version' => $page->getLatest(),
-				'version_type' => 'external',
 				'wiki' => wfWikiID(),
 				'namespace' => $title->getNamespace(),
 				'namespace_text' => Util::getNamespaceText( $title ),
@@ -336,10 +335,16 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	private function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();
-		$params[ 'source' ] = $doc->getData();
-		$params[ 'handlers' ] = [
+		$params['source'] = $doc->getData();
+		$params['handlers'] = [
 			'incoming_links' => 'within 20%',
 		];
+		// Added in search-extra 2.3.4.1, around sept 2015. This check can be dropped
+		// and may default sometime in the future when users are certain to be using
+		// a version of the search-extra plugin with document versioning support
+		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'documentVersion' ) ) {
+			$params['handlers']['version'] = 'documentVersion';
+		}
 
 		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
 		if ( $doc->getDocAsUpsert() ) {

@@ -149,6 +149,10 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 // wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 //
+// This turns on document level noop-detection for updates based on revision
+// ids and is compatible with wikimedia-extra versions 2.3.4.1 and greater:
+// $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true
+//
 // This allows forking on reindexing and is compatible with wikimedia-extra
 // versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;

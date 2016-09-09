@@ -3,17 +3,13 @@
 
 
 // w sum with pageviews and inc links
-$wgCirrusSearchPageViewsW = 2.5;
+$wgCirrusSearchPageViewsW = 1.5;//0.;//2.5;
 $wgCirrusSearchPageViewsK = 8E-6;
 $wgCirrusSearchPageViewsA = 0.8;
 
-$wgCirrusSearchIncLinksW = 5;//0.7;
+$wgCirrusSearchIncLinksW = 5.0;//0.7;
 $wgCirrusSearchIncLinksK = 30;
 $wgCirrusSearchIncLinksA = 0.7;
-
-$wgCirrusSearchSizeW = 0.5;
-$wgCirrusSearchSizeK = 300;
-$wgCirrusSearchSizeA = 1;
 
 // w sum with inc links alone (fallback with non content ns)
 $wgCirrusSearchIncLinksAloneW = 7;
@@ -113,27 +109,6 @@ $wgCirrusSearchRescoreFunctionScoreChains['wsum_pageviews_and_inclinks'] = array
 					'value' => 1,
 					'config_override' => 'CirrusSearchIncLinksA',
 					'uri_param_override' => 'cirrusIncLinksA',
-				),
-			),
-		),
-		array(
-			'type' => 'satu',
-			'weight' => array(
-				'value' => 0.6,
-				'config_override' => 'CirrusSearchSizeW',
-				'uri_param_override' => 'cirrusSearchSizeW',
-			),
-			'params' => array(
-				'field' => 'text.word_count',
-				'k' => array(
-					'value' => 10,
-					'config_override' => 'CirrusSearchSizeK',
-					'uri_param_override' => 'cirrusSizesK',
-				),
-				'a' => array(
-					'value' => 1,
-					'config_override' => 'CirrusSearchSizeA',
-					'uri_param_override' => 'cirrusSizeA',
 				),
 			),
 		),

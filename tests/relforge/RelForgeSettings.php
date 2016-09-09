@@ -31,7 +31,7 @@ if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc" ) ) {
 }
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/similarity.inc" ) ) {
 	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/similarity.inc" );
-	$wgCirrusSearchSimilarityProfile = 'relforge';
+	$wgCirrusSearchSimilarityProfile = $wgCirrusSearchSimilarityProfiles['relforge'];
 }
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/ftbuilder.inc" ) ) {
 	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/ftbuilder.inc" );

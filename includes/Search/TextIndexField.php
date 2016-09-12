@@ -19,8 +19,8 @@ class TextIndexField extends CirrusIndexField {
 	const POSITION_INCREMENT_GAP = 10;
 
 	/* Bit field parameters for string fields.
-     *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but useless
-     *     for fields that don't get involved in the score.
+	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but useless
+	 *     for fields that don't get involved in the score.
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
 	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
 	 *     strings or fields with many values.
@@ -49,7 +49,7 @@ class TextIndexField extends CirrusIndexField {
 	protected $typeName = 'string';
 
 	public function __construct( $name, $type, SearchConfig $config, $extra = [] ) {
-		parent::__construct($name, $type, $config );
+		parent::__construct( $name, $type, $config );
 
 		$this->extra = $extra;
 	}
@@ -95,12 +95,10 @@ class TextIndexField extends CirrusIndexField {
 		if (!($engine instanceof \CirrusSearch)) {
 			throw new \LogicException("Cannot map CirrusSearch fields for another engine.");
 		}
+		$this->initFlags();
 		/**
 		 * @var \CirrusSearch $engine
 		 */
-		$this->flags =
-			( $this->flags & self::STRING_FIELD_MASK ) | $this->getTextOptions( $this->mappingFlags );
-
 		$field = parent::getMapping( $engine );
 
 		if ( $this->checkFlag( self::COPY_TO_SUGGEST ) ) {
@@ -164,11 +162,24 @@ class TextIndexField extends CirrusIndexField {
 					$field[ 'fields' ][ $extraName ], $disableNorms );
 			}
 		}
+		$this->configureHighlighting( $field,
+			[ 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' ] );
+		return $field;
+	}
+
+	/**
+	 * Adapt the field options according to the highlighter used
+	 * @var mixed[] &$field the mapping options being built
+	 * @var sting[] $subFields list of subfields to configure
+	 * @var bool $rootField configure the root field (defaults to true)
+	 */
+	protected function configureHighlighting( array &$field, array $subFields, $rootField = true ) {
 		if ( $this->mappingFlags & MappingConfigBuilder::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER ) {
 			if ( $this->checkFlag( self::SPEED_UP_HIGHLIGHTING ) ) {
-				$field[ 'index_options' ] = 'offsets';
-				$fieldNames = [ 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' ];
-				foreach ( $fieldNames as $fieldName ) {
+				if ( !$rootField ) {
+					$field[ 'index_options' ] = 'offsets';
+				}
+				foreach ( $subFields as $fieldName ) {
 					if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
 						$field[ 'fields' ][ $fieldName ][ 'index_options' ] = 'offsets';
 					}
@@ -176,15 +187,24 @@ class TextIndexField extends CirrusIndexField {
 			}
 		} else {
 			// We use the FVH on all fields so turn on term vectors
-			$field[ 'term_vector' ] = 'with_positions_offsets';
-			$fieldNames = [ 'plain', 'prefix', 'prefix_asciifolding', 'near_match', 'near_match_asciifolding' ];
-			foreach ( $fieldNames as $fieldName ) {
+			if ( !$rootField ) {
+				$field[ 'term_vector' ] = 'with_positions_offsets';
+			}
+			foreach ( $subFields as $fieldName ) {
 				if ( isset( $field[ 'fields' ][ $fieldName ] ) ) {
 					$field[ 'fields' ][ $fieldName ][ 'term_vector' ] = 'with_positions_offsets';
 				}
 			}
 		}
-		return $field;
+	}
+
+
+	/**
+	 * Init the field flags
+	 */
+	protected function initFlags() {
+		$this->flags =
+			( $this->flags & self::STRING_FIELD_MASK ) | $this->getTextOptions( $this->mappingFlags );
 	}
 
 	/**

@@ -7,6 +7,7 @@ use CirrusSearch\Search\IntegerIndexField;
 use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
+use CirrusSearch\Search\SourceTextIndexField;
 use Hooks;
 use MediaWiki\MediaWikiServices;
 use SearchIndexField;
@@ -41,7 +42,7 @@ class MappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.9';
+	const VERSION = '1.10';
 
 	/**
 	 * @var bool should the index be optimized for the experimental highlighter?
@@ -100,15 +101,6 @@ class MappingConfigBuilder {
 			];
 		}
 
-		$sourceExtraAnalyzers = [];
-		if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) &&
-		     in_array( 'build', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
-			$sourceExtraAnalyzers[] = [
-				'analyzer' => 'trigram',
-				'index_options' => 'docs',
-			];
-		}
-
 		$suggestField = [
 			'type' => 'string',
 			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
@@ -157,9 +149,8 @@ class MappingConfigBuilder {
 				'text_bytes' => $this->buildLongField( 'text_bytes' )
 					->setFlag( SearchIndexField::FLAG_NO_INDEX )
 					->getMapping( $this->engine ),
-				'source_text' => $this->buildStringField( 'source_text', 0,
-					$sourceExtraAnalyzers
-				)->setMappingFlags( $flags )->getMapping( $this->engine ),
+				'source_text' => $this->buildSourceTextStringField( 'source_text' )
+					->setMappingFlags( $flags )->getMapping( $this->engine ),
 				'redirect' => [
 					'dynamic' => false,
 					'properties' => [
@@ -317,6 +308,16 @@ class MappingConfigBuilder {
 				$extra );
 		$field->setTextOptions( $options );
 		return $field;
+	}
+
+	/**
+	 * Build the source_text index field
+	 *
+	 * @param string $fieldName usually "source_text"
+	 * @return SourceTextIndexField
+	 */
+	protected function buildSourceTextStringField( $fieldName ) {
+		return new SourceTextIndexField( $fieldName, SearchIndexField::INDEX_TYPE_TEXT, $this->config );
 	}
 
 	/**

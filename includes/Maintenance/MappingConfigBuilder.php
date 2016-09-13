@@ -233,7 +233,6 @@ class MappingConfigBuilder {
 				'type' => 'string',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
-				'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 				'norms' => [ 'enabled' => false ],
 				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
 				'fields' => [
@@ -241,7 +240,6 @@ class MappingConfigBuilder {
 						'type' => 'string',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
-						'position_increment_gap' => TextIndexField::POSITION_INCREMENT_GAP,
 						'norms' => [ 'enabled' => false ],
 						'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match', 'asciifolding' ),
 					],

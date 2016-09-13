@@ -33,7 +33,7 @@ class AnalysisConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '0.11';
+	const VERSION = '0.12';
 
 	/**
 	 * @var string Language code we're building analysis for
@@ -140,6 +140,18 @@ class AnalysisConfigBuilder {
 					'tokenizer' => 'standard',
 					'filter' => [ 'standard', 'lowercase' ],
 					'char_filter' => [ 'word_break_helper' ],
+				],
+				'source_text_plain' => [
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => [ 'standard', 'lowercase' ],
+					'char_filter' => [ 'word_break_helper_source_text' ],
+				],
+				'source_text_plain_search' => [
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					'filter' => [ 'standard', 'lowercase' ],
+					'char_filter' => [ 'word_break_helper_source_text' ],
 				],
 				'suggest' => [
 					'type' => 'custom',
@@ -263,6 +275,17 @@ class AnalysisConfigBuilder {
 						'.=>\u0020',
 						'(=>\u0020',
 						')=>\u0020',
+					],
+				],
+				'word_break_helper_source_text' => [
+					'type' => 'mapping',
+					'mappings' => [
+						'_=>\u0020',
+						// These are more useful for code:
+						'.=>\u0020',
+						'(=>\u0020',
+						')=>\u0020',
+						':=>\u0020', // T145023
 					],
 				],
 			],

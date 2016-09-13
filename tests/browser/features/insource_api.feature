@@ -31,6 +31,10 @@ Feature: Searches with the insource filter
     When I api search for insource:"\"catapult anotherword\""
     Then Two Words is not in the api search results
 
+  Scenario: insource splits on semicolon (T145023)
+    When I api search for insource:somebug
+    Then Wikitext is the first api search result
+
   @wildcards
   Scenario: insource: can take a wildcard
     When I api search for all:insource:pickl*

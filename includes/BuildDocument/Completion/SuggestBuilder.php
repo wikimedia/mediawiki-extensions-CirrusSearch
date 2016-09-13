@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch\BuildDocument;
+namespace CirrusSearch\BuildDocument\Completion;
 
 use Title;
 use LinkBatch;
@@ -81,14 +81,14 @@ class SuggestBuilder {
 	private $batchId;
 
 	/**
-	 * @var boolean builds geo contextualized suggestions
-	 */
-	private $withGeo;
-
-	/**
 	 * @var boolean set to true to add an extra title suggestion with defaultsort
 	 */
 	private $withDefaultSort;
+
+	/**
+	 * @var ExtraSuggestionsBuilder[]
+	 */
+	private $extraBuilders;
 
 	/**
 	 * NOTE: Currently a fixed value because the completion suggester does not support
@@ -100,13 +100,11 @@ class SuggestBuilder {
 
 	/**
 	 * @param SuggestScoringMethod $scoringMethod the scoring function to use
-	 * @param bool $withGeo
-	 * @param bool $withDefaultSort
+	 * @param ExtraSuggestionsBuilder[] $extraBuilders set of extra builders
 	 */
-	public function __construct( SuggestScoringMethod $scoringMethod, $withGeo = true, $withDefaultSort = false ) {
+	public function __construct( SuggestScoringMethod $scoringMethod, array $extraBuilders = [] ) {
 		$this->scoringMethod = $scoringMethod;
-		$this->withGeo = $withGeo;
-		$this->withDefaultSort = $withDefaultSort;
+		$this->extraBuilders = $extraBuilders;
 		$this->batchId = time();
 	}
 
@@ -125,7 +123,7 @@ class SuggestBuilder {
 				// Bad doc, nothing to do here.
 				continue;
 			}
-			if( $inputDoc['namespace'] == NS_MAIN ) {
+			if( $inputDoc['namespace'] == $this->targetNamespace ) {
 				if ( !isset( $inputDoc['title'] ) ) {
 					// Bad doc, nothing to do here.
 					continue;
@@ -147,14 +145,11 @@ class SuggestBuilder {
 					$score = $this->scoringMethod->score( $inputDoc );
 					// Discount the score of these suggestions.
 					$score = (int) ($score * self::CROSSNS_DISCOUNT);
-					// We support only earth and the primary/first coordinates...
-					$location = $this->findPrimaryCoordinates( $inputDoc );
 
 					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
 					$crossNsTitles[$redir['title']] = [
 						'title' => $title,
 						'score' => $score,
-						'location' => $location
 					];
 				}
 			}
@@ -179,7 +174,7 @@ class SuggestBuilder {
 					'text' => $text,
 					'variants' => []
 				];
-				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['location'], $data['score'] );
+				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['score'], $inputDoc );
 			}
 		}
 		return $docs;
@@ -200,18 +195,14 @@ class SuggestBuilder {
 
 		$score = $this->scoringMethod->score( $inputDoc );
 
-		// We support only earth and the primary/first coordinates...
-		$location = $this->findPrimaryCoordinates( $inputDoc );
-
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
 		if ( $this->withDefaultSort && !empty( $inputDoc['defaultsort'] ) ) {
 			$suggestions['group']['variants'][] = $inputDoc['defaultsort'];
 		}
 
-		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $location, $score );
+		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc );
 		if ( !empty( $suggestions['candidates'] ) ) {
-			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'],
-				$location, $score );
+			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'], $score, $inputDoc );
 		}
 		return $docs;
 	}
@@ -224,40 +215,12 @@ class SuggestBuilder {
 	public function getRequiredFields() {
 		$fields = $this->scoringMethod->getRequiredFields();
 		$fields = array_merge( $fields, [ 'title', 'redirect', 'namespace' ] );
-		if ( $this->withGeo ) {
-			$fields[] = 'coordinates';
+		foreach( $this->extraBuilders as $extraBuilder ) {
+			$fields = array_merge( $fields, $extraBuilder->getRequiredFields() );
 		}
-		if ( $this->withDefaultSort ) {
-			$fields[] = 'defaultsort';
-		}
-		return $fields;
+		return array_values( array_unique( $fields ) );
 	}
 
-	/**
-	 * Inspects the 'coordinates' index and return the first coordinates flagged as 'primary'
-	 * or the first coordinates if no primaries are found.
-	 *
-	 * @param array $inputDoc the input doc
-	 * @return array|null with 'lat' and 'lon' or null
-	 */
-	public function findPrimaryCoordinates( array $inputDoc ) {
-		if ( !isset( $inputDoc['coordinates'] ) || !is_array( $inputDoc['coordinates'] ) ) {
-			return null;
-		}
-
-		$first = null;
-		foreach( $inputDoc['coordinates'] as $coord ) {
-			if ( isset( $coord['globe'] ) && $coord['globe'] == 'earth' && isset( $coord['coord'] ) ) {
-				if ( $first === null ) {
-					$first = $coord['coord'];
-				}
-				if ( isset( $coord['primary'] ) && $coord['primary'] ) {
-					return $coord['coord'];
-				}
-			}
-		}
-		return $first;
-	}
 
 	/**
 	 * Builds the 'title' suggestion.
@@ -266,22 +229,23 @@ class SuggestBuilder {
 	 *
 	 * @param string $docId the page id
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
-	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
+	 * @param mixed[] $inputDoc
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildTitleSuggestion( $docId, array $title, array $location = null, $score ) {
+	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc ) {
 		$inputs = [ $this->prepareInput( $title['text'] ) ];
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
 		$output = self::encodeTitleOutput( $docId, $title['text'] );
 		return $this->buildSuggestion(
-			self::TITLE_SUGGESTION . $docId,
+			self::TITLE_SUGGESTION,
+			$docId,
 			$output,
 			$inputs,
-			$location,
-			$score
+			$score,
+			$inputDoc
 		);
 	}
 
@@ -295,31 +259,33 @@ class SuggestBuilder {
 	 *
 	 * @param string $docId the elasticsearch document id
 	 * @param string[] $redirects
-	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
+	 * @param mixed[] $inputDoc
 	 * @return \Elastica\Document the suggestion document
 	 */
-	private function buildRedirectsSuggestion( $docId, array $redirects, array $location = null, $score ) {
+	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc ) {
 		$inputs = [];
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
-		$output = $docId . ":" . self::REDIRECT_SUGGESTION;
+		$output = self::encodeRedirectOutput( $docId );
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
-		return $this->buildSuggestion( self::REDIRECT_SUGGESTION . $docId, $output, $inputs, $location, $score );
+		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $output,
+			$inputs, $score, $inputDoc );
 	}
 
 	/**
 	 * Builds a suggestion document.
 	 *
+	 * @param string $suggestionType suggestion type (title or redirect)
 	 * @param string $docId The document id
 	 * @param string $output the suggestion output
 	 * @param string[] $inputs the suggestion inputs
-	 * @param array|null $location the geo coordinates or null if unavailable
 	 * @param int $score the weight of the suggestion
+	 * @param mixed[] $inputDoc
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $docId, $output, array $inputs, array $location = null, $score ) {
+	private function buildSuggestion( $suggestionType, $docId, $output, array $inputs, $score, array $inputDoc ) {
 		$doc = [
 			'batch_id' => $this->batchId,
 			'suggest' => [
@@ -334,21 +300,11 @@ class SuggestBuilder {
 			]
 		];
 
-		if ( $this->withGeo && $location !== null ) {
-			$doc['suggest-geo'] = [
-				'input' => $inputs,
-				'output' => $output,
-				'weight' => $score,
-				'context' => [ 'location' => $location ]
-			];
-			$doc['suggest-stop-geo'] = [
-				'input' => $inputs,
-				'output' => $output,
-				'weight' => $score,
-				'context' => [ 'location' => $location ]
-			];
+		$suggestDoc = new \Elastica\Document( $this->encodeDocId( $suggestionType, $docId ), $doc );
+		foreach( $this->extraBuilders as $builder ) {
+			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, $this->targetNamespace );
 		}
-		return new \Elastica\Document( $docId, $doc );
+		return $suggestDoc;
 	}
 
 	/**
@@ -486,6 +442,15 @@ class SuggestBuilder {
 		// TODO: switch to a ratio instead of raw distance would help to group
 		// longer strings
 		return levenshtein( $a, $b );
+	}
+
+	/**
+	 * Encode the suggestion doc id
+	 * @param string $docId
+	 * @param string $suggestionType
+	 */
+	private function encodeDocId( $docId, $suggestionType ) {
+		return $suggestionType . $docId;
 	}
 
 	/**

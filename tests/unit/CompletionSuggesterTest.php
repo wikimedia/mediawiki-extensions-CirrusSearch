@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Test\HashSearchConfig;
 use CirrusSearch\Test\DummyConnection;
-use CirrusSearch\BuildDocument\SuggestBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 
 /**
  * Completion Suggester Tests

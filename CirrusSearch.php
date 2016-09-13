@@ -810,6 +810,13 @@ $wgCirrusSearchUseCompletionSuggester = 'no';
 $wgCirrusSearchCompletionSuggesterUseDefaultSort = false;
 
 /**
+ * Builds extra fst with a geo context.
+ * Can generate a very large in-memory FST
+ * NOTE: Experimental, no API endpoints are available yet.
+ */
+$wgCirrusSearchCompletionSuggesterGeoContext = ['build' => false];
+
+/**
  * Maximum number of results to ask from the elasticsearch completion
  * api, note that this value will be multiplied by fetch_limit_factor
  * set in Completion profiles (default to 2)

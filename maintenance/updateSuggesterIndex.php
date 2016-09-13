@@ -6,9 +6,11 @@ use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\Util;
-use CirrusSearch\BuildDocument\SuggestBuilder;
-use CirrusSearch\BuildDocument\SuggestScoringMethodFactory;
-use CirrusSearch\BuildDocument\SuggestScoringMethod;
+use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
+use CirrusSearch\BuildDocument\Completion\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\SearchConfig;
 use Elastica;
@@ -113,11 +115,6 @@ class UpdateSuggesterIndex extends Maintenance {
 
 
 	/**
-	 * @var boolean index geo contextualized suggestions
-	 */
-	private $withGeo;
-
-	/**
 	 * @var string
 	 */
 	private $masterTimeout;
@@ -162,7 +159,6 @@ class UpdateSuggesterIndex extends Maintenance {
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
 		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
-		$this->addOption( 'with-geo', 'Build geo contextualized suggestions. Defaults to false.', false, false );
 		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
 			'Defaults to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
 		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
@@ -201,7 +197,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
-		$this->withGeo = $this->getOption( 'with-geo', false );
 
 		$this->utils = new ConfigUtils( $this->getClient(), $this);
 
@@ -217,7 +212,15 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
-		$this->builder = new SuggestBuilder( $this->scoreMethod, $this->withGeo, $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) );
+
+		$extraBuilders = [];
+		if( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
+			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
+		}
+		if ( $this->getSearchConfig()->getElement( 'CirrusSearchCompletionSuggesterGeoContext', 'build' ) ) {
+			$extraBuilders[] = new GeoSuggestionsBuilder();
+		}
+		$this->builder = new SuggestBuilder( $this->scoreMethod, $extraBuilders );
 
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.

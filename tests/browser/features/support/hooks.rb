@@ -655,6 +655,7 @@ setup_suggest = lambda do |world|
         And a page named Sam Wilson exists with contents Warren Kenneth Worthington III, originally known as Angel and later as Archangel, ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson, Sam}}
         And a page named Zam Wilson exists with contents #REDIRECT [[Sam Wilson]]
         And a page named The Doors exists with contents The Doors were an American rock band formed in 1965 in Los Angeles.
+        And a page named Hyperion Cantos/Endymion exists with contents Endymion is the third science fiction novel by Dan Simmons.
         And I reindex suggestions
     )
     suggest = true

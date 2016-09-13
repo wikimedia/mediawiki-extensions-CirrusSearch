@@ -25,7 +25,7 @@ use CirrusSearch\SearchConfig;
  */
 
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
-	const VERSION = "1.1";
+	const VERSION = "1.2";
 
 	/**
 	 * @param string $langCode The language code to build config for
@@ -141,9 +141,31 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"lowercase"
 					],
 					"tokenizer" => "whitespace"
-				]
+				],
 			],
 		];
+		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'build' ) ) {
+			$defaults['analyzer']['subphrases'] = [
+				"type" => "custom",
+				"filter" => [
+					"standard",
+					"lowercase",
+					"asciifolding",
+					"token_limit"
+				],
+				"tokenizer" => "standard"
+			];
+			$defaults['analyzer']['subphrases_search'] = [
+				"type" => "custom",
+				"filter" => [
+					"standard",
+					"lowercase",
+					"asciifolding",
+					"token_limit"
+				],
+				"tokenizer" => "standard"
+			];
+		}
 		return $defaults;
 	}
 

@@ -34,6 +34,12 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 
 $wgCirrusSearchUseCompletionSuggester = 'yes';
 $wgCirrusSearchCompletionSuggesterUseDefaultSort = true;
+$wgCirrusSearchCompletionSuggesterSubphrases = [
+	'use' => true,
+	'build' => true,
+	'type' => 'anywords',
+	'limit' => 10,
+];
 
 $wgCirrusSearchPhraseSuggestReverseField = array(
 	'build' => true,

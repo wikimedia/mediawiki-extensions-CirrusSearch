@@ -801,6 +801,22 @@ $wgCirrusSearchCompletionDefaultScore = 'quality';
 $wgCirrusSearchUseCompletionSuggester = 'no';
 
 /**
+ * Tell the completion suggest to build and use an
+ * extra field built with subphrases suggestions.
+ * 2 types of subphrases are supported:
+ * - subpages: generate subphrase suggestions based on subpages
+ * - anywords: generate subphrase suggestions starting with any words in the
+ *   title
+ * limit: limits the number of subphrases generated
+ */
+$wgCirrusSearchCompletionSuggesterSubphrases = [
+	'build' => false,
+	'use' => false,
+	'type' => 'anywords',
+	'limit' => 10,
+];
+
+/**
  * Use defaultsort as an additional title suggestion
  * Useful in case the title does not start with a representative
  * name ( e.g. Republic of Ireland ) or for names where defaultsort

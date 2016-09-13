@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
+use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
 
 /**
@@ -476,6 +477,226 @@ class SuggestBuilderTest extends \MediaWikiTestCase {
 				unset( $dat['batch_id'] );
 				return $dat;
 			}, $builder->build( [ [ 'id' => 1, 'source' => $doc ] ] ) );
+	}
+
+	/**
+	 * @dataProvider providePagesForSubphrases
+	 */
+	public function testSubphrasesSuggestionsBuilder( $input, $langSubPage, $type, $max, array $output ) {
+		$config = ['limit' => $max, 'type' => $type];
+		$builder = NaiveSubphrasesSuggestionsBuilder::create( $config );
+		$subPageSuggestions = $builder->tokenize( $input, $langSubPage );
+		$this->assertEquals( $output, $subPageSuggestions );
+	}
+
+	public function providePagesForSubphrases() {
+		return [
+			'none subpage' => [
+				'Hello World',
+				'',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[]
+			],
+			'none any words' => [
+				'Hello World',
+				'',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				['World']
+			],
+			'none subpage translated' => [
+				'Hello World/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[],
+			],
+			'none any words translated' => [
+				'Hello World/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				['World/ru'],
+			],
+			'simple subphrase' => [
+				'Hyperion Cantos/Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				['Hyperion'],
+			],
+			'simple any words' => [
+				'Hyperion Cantos/Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				['Cantos/Hyperion', 'Hyperion'],
+			],
+			'simple subpage translated' => [
+				'Hyperion Cantos/Hyperion/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				['Hyperion/ru'],
+			],
+			'simple any words translated' => [
+				'Hyperion Cantos/Hyperion/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				['Cantos/Hyperion/ru', 'Hyperion/ru'],
+			],
+			'multiple subpage' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[
+					'Hyperion/The Priest\'s Tale',
+					'The Priest\'s Tale'
+				],
+			],
+			'multiple any words' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				10,
+				[
+					'Cantos/Hyperion/The Priest\'s Tale',
+					'Hyperion/The Priest\'s Tale',
+					'The Priest\'s Tale',
+					'Priest\'s Tale',
+					'Tale'
+				],
+			],
+			'multiple subpage translated' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[
+					'Hyperion/The Priest\'s Tale/ru',
+					'The Priest\'s Tale/ru'
+				],
+			],
+			'multiple any words translated' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				10,
+				[
+					'Cantos/Hyperion/The Priest\'s Tale/ru',
+					'Hyperion/The Priest\'s Tale/ru',
+					'The Priest\'s Tale/ru',
+					'Priest\'s Tale/ru',
+					'Tale/ru',
+				],
+			],
+			'multiple subpage limited' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/Part One',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				2,
+				[
+					'Hyperion/The Priest\'s Tale/Part One',
+					'The Priest\'s Tale/Part One'
+				],
+			],
+			'multiple any words limited' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/Part One',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				2,
+				[
+					'Cantos/Hyperion/The Priest\'s Tale/Part One',
+					'Hyperion/The Priest\'s Tale/Part One',
+				],
+			],
+			'multiple translated subpage limited' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/Part One/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				2,
+				[
+					'Hyperion/The Priest\'s Tale/Part One/ru',
+					'The Priest\'s Tale/Part One/ru'
+				],
+			],
+			'multiple translated any words limited' => [
+				'Hyperion Cantos/Hyperion/The Priest\'s Tale/Part One/ru',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				2,
+				[
+					'Cantos/Hyperion/The Priest\'s Tale/Part One/ru',
+					'Hyperion/The Priest\'s Tale/Part One/ru',
+				],
+			],
+			'empty subpage' => [
+				'Hyperion Cantos//Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				['Hyperion'],
+			],
+			'empty subpage anywords' => [
+				'Hyperion Cantos//Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				['Cantos//Hyperion', 'Hyperion'],
+			],
+			'misplace lang subpage' => [
+				'Hyperion Cantos/ru/Hyperion',
+				'ru',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				['ru/Hyperion', 'Hyperion'],
+			],
+			'missing subpage' => [
+				'Hyperion Cantos/',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[]
+			],
+			'orphan subpage' => [
+				'/Hyperion Cantos/Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[ 'Hyperion' ]
+			],
+			'starts with space' => [
+				' Hyperion',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				[]
+			],
+			'edge case with empty title' => [
+				'',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				[]
+			],
+			'edge case with only split chars' => [
+				'//',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
+				3,
+				[]
+			],
+			'edge case with only split chars #2' => [
+				' / / /en',
+				'en',
+				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
+				3,
+				[]
+			]
+		];
 	}
 
 	private function buildBuilder( $scoringMethod ) {

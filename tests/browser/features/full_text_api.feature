@@ -52,7 +52,7 @@ Feature: Full text search
     | $wgNamespaceAliases | $wgNamespaceAliases |
     | namespace_aliases   | $wgNamespaceAliases |
     | NamespaceAliases    | $wgNamespaceAliases |
-    | wgnamespacealiases  | $wgNamespaceAliases |    
+    | wgnamespacealiases  | $wgNamespaceAliases |
     | snake case          | PFSC                |
     | snakeCase           | PFSC                |
     | snake_case          | PFSC                |
@@ -125,6 +125,16 @@ Feature: Full text search
     | वाङ्‍मय |
     | वाङ‍्मय |
     | वाङ्‌मय |
+
+  Scenario Outline: Searching without accents finds results with accents
+    When I api search for <term>
+    Then <result>
+  Examples:
+    | term        | result |
+    | ανθρωπος    | Page with non ascii letters is the first api search result |
+    | ἄνθρωπος    | Page with non ascii letters is the first api search result |
+    | широкии     | there are no api search results                            |
+    | широкий     | Page with non ascii letters is the first api search result |
 
   @accented_namespace
   Scenario: Searching for an accented namespace without the accent finds things in it

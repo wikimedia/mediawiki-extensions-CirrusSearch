@@ -46,6 +46,11 @@ class AnalysisConfigBuilder {
 	private $icu;
 
 	/**
+	 * @var boolean true if icu folding is requested and available
+	 */
+	private $icuFolding;
+
+	/**
 	 * @var array Similarity algo (tf/idf, bm25, etc) configuration
 	 */
 	private $similarity;
@@ -77,7 +82,38 @@ class AnalysisConfigBuilder {
 			'CirrusSearchSimilarityProfiles',
 			$config->get( 'CirrusSearchSimilarityProfile' )
 		);
+
 		$this->config = $config;
+		$this->icuFolding = $this->shouldActivateIcuFolding( $plugins );
+	}
+
+	/**
+	 * Determine if ascii folding should be used
+	 * @param string[] $plugins list of installed elasticsearch plugins
+	 * @return bool true if icu folding should be enabled
+	 */
+	private function shouldActivateIcuFolding( array $plugins ) {
+		if ( !$this->icu || !in_array( 'extra', $plugins ) ) {
+			// ICU folding requires the icu plugin and the extra plugin
+			return false;
+		}
+		$in_config = $this->config->get( 'CirrusSearchUseIcuFolding' );
+		// BC code, this config var was originally a simple boolean
+		if ( $in_config === true ) {
+			$in_config = 'yes';
+		}
+		if ( $in_config === false ) {
+			$in_config = 'no';
+		}
+		switch( $in_config ) {
+		case 'yes': return true;
+		case 'no': return false;
+		case 'default':
+			if ( isset( $this->languagesWithIcuFolding[$this->language] ) ) {
+				return $this->languagesWithIcuFolding[$this->language];
+			}
+		default: return false;
+		}
 	}
 
 	/**
@@ -88,6 +124,10 @@ class AnalysisConfigBuilder {
 	public function buildConfig() {
 		$config = $this->customize( $this->defaults() );
 		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config ] );
+		if ( $this->icuFolding ) {
+			$config = $this->enableICUFolding( $config );
+		}
+		$config = $this->fixAsciiFolding( $config );
 		return $config;
 	}
 
@@ -101,6 +141,132 @@ class AnalysisConfigBuilder {
 			return $this->similarity['similarity'];
 		}
 		return null;
+	}
+
+	/**
+	 * Activate ICU folding instead of asciifolding
+	 * @param mixed[] $config
+	 * @return mixed[] update config
+	 */
+	public function enableICUFolding( array $config ) {
+		$unicodeSetFilter = $this->getICUSetFilter();
+		$filter = [
+			'type' => 'icu_folding',
+		];
+		if ( !empty( $unicodeSetFilter ) ) {
+			$filter['unicodeSetFilter'] = $unicodeSetFilter;
+		}
+		$config['filter']['icu_folding'] = $filter;
+
+		// Adds a simple nfkc normalizer for cases where
+		// we preserve original but the lowercase filter
+		// is not used before
+		$config['filter']['icu_nfkc_normalization'] = [
+			'type' => 'icu_normalizer',
+			'name' => 'nfkc',
+		];
+
+		$newfilters = [];
+		foreach( $config['analyzer'] as $name => $value ) {
+			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+				continue;
+			}
+			if ( !isset( $value['filter'] ) ) {
+				continue;
+			}
+			if ( in_array( 'asciifolding', $value['filter'] ) ) {
+				$newfilters[$name] = $this->switchFiltersToICUFolding( $value['filter'] );
+			}
+			if ( in_array( 'asciifolding_preserve', $value['filter'] ) ) {
+				$newfilters[$name] = $this->switchFiltersToICUFoldingPreserve( $value['filter'] );
+			}
+		}
+
+		foreach( $newfilters as $name => $filters ) {
+			$config['analyzer'][$name]['filter'] = $filters;
+		}
+		// Explicitly enable icu_folding on plain analyzers if it's not
+		// already enabled
+		foreach( ['plain'] as $analyzer ) {
+			if ( !isset( $config['analyzer'][$analyzer] ) ) {
+				continue;
+			}
+			if ( !isset( $config['analyzer'][$analyzer]['filter'] ) ) {
+				$config['analyzer'][$analyzer]['filter'] = [];
+			}
+			$config['analyzer'][$analyzer]['filter'] =
+				$this->switchFiltersToICUFoldingPreserve(
+					$config['analyzer'][$analyzer]['filter'], true );
+		}
+
+		return $config;
+	}
+
+	/**
+	 * Replace occurrence of asciifolding to icu_folding
+	 * @param string[] list of filters
+	 * @return string[] new list of filters
+	 */
+	private function switchFiltersToICUFolding( array $filters ) {
+		return array_replace( $filters,
+			[ array_search( 'asciifolding', $filters ) => 'icu_folding' ] );
+	}
+
+	/**
+	 * Replace occurrence of asciifolding_preserve with a set
+	 * of compatible filters to enable icu_folding
+	 * @param string[] list of filters
+	 * @param bool $append append icu_folding even if asciifolding is not present
+	 * @return string[] new list of filters
+	 */
+	private function switchFiltersToICUFoldingPreserve( array $filters, $append = false ) {
+		if ( in_array( 'icu_folding', $filters ) ) {
+			// ICU folding already here
+			return $filters;
+		}
+		$ap_idx = array_search( 'asciifolding_preserve', $filters );
+		if ( $ap_idx === false && $append ) {
+			$ap_idx = count( $filters );
+			// fake an asciifolding_preserve so we can
+			// reuse code that replaces it
+			$filters[] = 'asciifolding_preserve';
+		}
+		if ( $ap_idx === false ) {
+			return $filters;
+		}
+		// with ICU lowercase is replaced by icu_normalizer/nfkc_cf
+		// thus unicode normalization is already done.
+		$lc_idx = array_search( 'icu_normalizer', $filters );
+		$newfilters = [];
+		if ( $lc_idx === false || $lc_idx > $ap_idx ) {
+			// If lowercase is not detected before we
+			// will have to do some icu normalization
+			// this is to prevent preserving "un-normalized"
+			// unicode chars.
+			$newfilters[] = 'icu_nfkc_normalization';
+		}
+		$newfilters[] = 'preserve_original_recorder';
+		$newfilters[] = 'icu_folding';
+		$newfilters[] = 'preserve_original';
+		array_splice( $filters, $ap_idx, 1, $newfilters );
+		return $filters;
+	}
+
+	/**
+	 * Return the list of chars to exclude from ICU folding
+	 * @return string|null
+	 */
+	protected function getICUSetFilter() {
+		if ( $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' ) !== null ) {
+			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
+		}
+		switch( $this->language ) {
+		// @todo: complete the default filters per language
+		case 'fi': return '[^åäöÅÄÖ]';
+		case 'ru': return '[^йЙ]';
+		case 'sw': return '[^åäöÅÄÖ]';
+		default: return null;
+		}
 	}
 
 	/**
@@ -578,7 +744,6 @@ STEMMER_RULES
 			}
 		}
 
-		$config = $this->fixAsciiFolding( $config );
 		return $config;
 	}
 
@@ -696,6 +861,11 @@ STEMMER_RULES
 		'th' => 'thai',
 	];
 
+	/**
+	 * @var bool[] indexed by language code, languages where ICU folding
+	 * can be enabled by default
+	 */
+	private $languagesWithIcuFolding = [];
 
 	/**
 	 * @var array[]
@@ -715,5 +885,12 @@ STEMMER_RULES
 	 */
 	public function getLanguage() {
 		return $this->language;
+	}
+
+	/**
+	 * @return bool true if ICU Folding is enabled
+	 */
+	public function isIcuFolding() {
+		return $this->icuFolding;
 	}
 }

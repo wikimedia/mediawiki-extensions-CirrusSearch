@@ -26,6 +26,7 @@ setup_main = lambda do |world|
       And a page named वाङ्‌मय exists
       And a page named ChangeMe exists with contents foo
       And a page named Wikitext exists with contents {{#tag:somebug}}
+      And a page named Page with non ascii letters exists with contents ἄνθρωπος, широкий
         )
     main = true
   end

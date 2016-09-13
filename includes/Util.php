@@ -220,48 +220,6 @@ class Util {
 	}
 
 	/**
-	 * Matches $data against $properties to clear keys that no longer exist.
-	 * E.g.:
-	 * $data = array(
-	 *     'title' => "I'm a title",
-	 *     'useless' => "I'm useless",
-	 * );
-	 * $properties = array(
-	 *     'title' => 'params-for-title'
-	 * );
-	 *
-	 * Will return:
-	 * array(
-	 *     'title' => "I'm a title",
-	 * )
-	 * With the no longer existing 'useless' field stripped.
-	 *
-	 * We could just use array_intersect_key for this simple example, but it
-	 * gets more complex with nested data.
-	 *
-	 * @param array $data
-	 * @param array $properties
-	 * @return array
-	 */
-	public static function cleanUnusedFields( array $data, array $properties ) {
-		$data = array_intersect_key( $data, $properties );
-
-		foreach ( $data as $key => $value ) {
-			if ( is_array( $value ) ) {
-				foreach ( $value as $i => $innerValue ) {
-					if ( is_array( $innerValue ) && isset( $properties[$key]['properties'] ) ) {
-						// go recursive to intersect multidimensional values
-						$data[$key][$i] = static::cleanUnusedFields( $innerValue, $properties[$key]['properties'] );
-					}
-
-				}
-			}
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Parse a message content into an array. This function is generally used to
 	 * parse settings stored as i18n messages (see cirrussearch-boost-templates).
 	 *

@@ -194,6 +194,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'justAllocation', 'Just validate the shard allocation settings.  Use ' .
 			"when you need to apply new cache warmers but want to be sure that you won't apply any other " .
 			'changes at an inopportune time.' );
+		$maintenance->addOption( 'fieldsToDelete', 'List of of comma separated field names to delete ' .
+			'while reindexing documents (defaults to empty)', false, true );
 		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
 	}
 
@@ -430,7 +432,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getReplicaCount(),
 			$this->getMergeSettings(),
 			$this->getMappingConfig(),
-			$this
+			$this,
+			explode( ',', $this->getOption( 'fieldsToDelete', '' ) )
 		);
 
 		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(

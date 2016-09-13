@@ -97,6 +97,11 @@ class Reindexer {
 	private $out;
 
 	/**
+	 * @var string[] list of fields to delete
+	 */
+	private $fieldsToDelete;
+
+	/**
 	 * @param SearchConfig $searchConfig
 	 * @param Connection $source
 	 * @param Connection $target
@@ -109,7 +114,7 @@ class Reindexer {
 	 * @param Maintenance $out
 	 * @throws \Exception
 	 */
-	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, array $mergeSettings, array $mappingConfig, Maintenance $out = null ) {
+	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, array $mergeSettings, array $mappingConfig, Maintenance $out = null, $fieldsToDelete = [] ) {
 		// @todo: this constructor has too many arguments - refactor!
 		$this->searchConfig = $searchConfig;
 		$this->oldConnection = $source;
@@ -121,6 +126,7 @@ class Reindexer {
 		$this->mergeSettings = $mergeSettings;
 		$this->mappingConfig = $mappingConfig;
 		$this->out = $out;
+		$this->fieldsToDelete = $fieldsToDelete;
 
 		if ( empty($types) || empty($oldTypes) ) {
 			throw new \Exception( "Types list should be non-empty" );
@@ -304,7 +310,6 @@ class Reindexer {
 			$filter = new \CirrusSearch\Extra\Query\IdHashMod( $children, $childNumber );
 		}
 		$numberOfDocsInOldType = $oldType->count();
-		$properties = $this->mappingConfig[$oldType->getName()]['properties'];
 		$scrollId = null;
 		try {
 			$query = new Query();
@@ -354,7 +359,7 @@ class Reindexer {
 
 				$documents = [];
 				foreach( $results as $result ) {
-					$documents[] = $this->buildNewDocument( $result, $properties );
+					$documents[] = $this->buildNewDocument( $result );
 				}
 
 				// We will retry bulk failures by sending index operations
@@ -424,11 +429,9 @@ class Reindexer {
 	 * @param array $properties mapping properties
 	 * @return Document
 	 */
-	private function buildNewDocument( \Elastica\Result $result, array $properties ) {
-		// Build the new document to just contain keys which have a mapping in the new properties.  To clean
-		// out any old fields that we no longer use.
-		$data = Util::cleanUnusedFields( $result->getSource(), $properties );
-
+	private function buildNewDocument( \Elastica\Result $result ) {
+		// FIXME: support inner properties
+		$data = array_diff_key( $result->getSource(), array_flip( $this->fieldsToDelete ) );
 		// This field was added July, 2016. For the first reindex that occurs after it was added it will
 		// not exist in the documents, so add it here.
 		if ( !isset( $data['wiki'] ) ) {

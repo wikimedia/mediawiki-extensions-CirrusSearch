@@ -155,7 +155,6 @@ class TextIndexField extends CirrusIndexField {
 			$field[ 'fields' ][ $extraName ] = array_merge( [
 				'similarity' => self::getSimilarity( $this->config, $this->name, $extraName ),
 				'type' => 'string',
-				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			], $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(

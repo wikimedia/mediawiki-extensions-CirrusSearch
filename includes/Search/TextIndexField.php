@@ -175,7 +175,7 @@ class TextIndexField extends CirrusIndexField {
 	protected function configureHighlighting( array &$field, array $subFields, $rootField = true ) {
 		if ( $this->mappingFlags & MappingConfigBuilder::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER ) {
 			if ( $this->checkFlag( self::SPEED_UP_HIGHLIGHTING ) ) {
-				if ( !$rootField ) {
+				if ( $rootField ) {
 					$field[ 'index_options' ] = 'offsets';
 				}
 				foreach ( $subFields as $fieldName ) {
@@ -186,7 +186,7 @@ class TextIndexField extends CirrusIndexField {
 			}
 		} else {
 			// We use the FVH on all fields so turn on term vectors
-			if ( !$rootField ) {
+			if ( $rootField ) {
 				$field[ 'term_vector' ] = 'with_positions_offsets';
 			}
 			foreach ( $subFields as $fieldName ) {

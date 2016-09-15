@@ -247,7 +247,9 @@ class ResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			return new Result( $this->result, $current, $this->interwikiPrefix );
+			$result = new Result( $this->result, $current, $this->interwikiPrefix );
+			$this->augmentResult( $result );
+			return $result;
 		}
 		return false;
 	}

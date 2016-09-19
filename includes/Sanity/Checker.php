@@ -264,7 +264,7 @@ class Checker {
 		$latest = $page->getLatest();
 		$foundInsanityInIndex = false;
 		foreach ( $fromIndex as $indexInfo ) {
-			$version = $indexInfo->getSource()['version'];
+			$version = isset( $indexInfo->getSource()['version'] ) ? $indexInfo->getSource()['version'] : -1;
 			if ( $version < $latest ) {
 				$type = $this->connection->extractIndexSuffix( $indexInfo->getIndex() );
 				$this->remediator->oldVersionInIndex( $docId, $page, $type );

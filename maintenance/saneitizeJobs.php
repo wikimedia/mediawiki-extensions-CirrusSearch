@@ -99,7 +99,7 @@ class SaneitizeJobs extends Maintenance {
 	}
 
 	private function init() {
-		$res = $this->getDB( DB_SLAVE )->select( 'page',
+		$res = $this->getDB( DB_REPLICA )->select( 'page',
 			[ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
 		$row = $res->next();
 		/** @suppress PhanUndeclaredProperty */

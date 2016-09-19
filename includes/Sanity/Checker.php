@@ -291,7 +291,7 @@ class Checker {
 		if ( empty( $pageIds ) ) {
 			return $cache->getArrayCopy();
 		}
-		$dbr = wfGetDB( DB_SLAVE );
+		$dbr = wfGetDB( DB_REPLICA );
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
 		$res = $dbr->select(
 			[ 'page' ],

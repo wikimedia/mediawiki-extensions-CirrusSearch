@@ -122,7 +122,7 @@ class Saneitize extends Maintenance {
 	}
 
 	private function setFromAndTo() {
-		$dbr = $this->getDB( DB_SLAVE );
+		$dbr = $this->getDB( DB_REPLICA );
 		$this->fromPageId = $this->getOption( 'fromId' );
 		if ( $this->fromPageId === null ) {
 			$this->fromPageId = 0;

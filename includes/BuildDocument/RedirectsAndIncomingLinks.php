@@ -80,7 +80,7 @@ class RedirectsAndIncomingLinks {
 	 * @return int|null The number of incoming links, or null on failure
 	 */
 	private static function countIncomingLinks( array $titles ) {
-		$dbr = wfGetDB( DB_SLAVE, 'vslow' );
+		$dbr = wfGetDB( DB_REPLICA, 'vslow' );
 
 		$conditions = [];
 		foreach ( $titles as $title ) {

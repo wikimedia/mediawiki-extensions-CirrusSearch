@@ -54,7 +54,7 @@ $wgCirrusSearchCompletionProfiles = [
 		],
 	],
 	// Normal with subphrases
-	'normal_subphrases' => [
+	'normal-subphrases' => [
 		'plain-normal' => [
 			'field' => 'suggest',
 			'min_query_len' => 0,
@@ -149,7 +149,7 @@ $wgCirrusSearchCompletionProfiles = [
 			]
 		]
 	],
-	'fuzzy_subphrases' => [
+	'fuzzy-subphrases' => [
 		// Defines the list of suggest queries to run in the same request.
 		// key is the name of the suggestion request
 		'plain' => [

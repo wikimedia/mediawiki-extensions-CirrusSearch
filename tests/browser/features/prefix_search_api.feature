@@ -144,10 +144,10 @@ Feature: Prefix search via api
     | endym     | classic           | the API should produce list of length 0              |
     | endym     | normal            | the API should produce list of length 0              |
     | endym     | fuzzy             | the API should produce list of length 0              |
-    | endym     | normal_subphrases | Hyperion Cantos/Endymion is the first api suggestion |
-    | endym     | fuzzy_subphrases  | Hyperion Cantos/Endymion is the first api suggestion |
-    | endimion  | normal_subphrases | the API should produce list of length 0              |
-    | endimion  | fuzzy_subphrases  | Hyperion Cantos/Endymion is the first api suggestion |
+    | endym     | normal-subphrases | Hyperion Cantos/Endymion is the first api suggestion |
+    | endym     | fuzzy-subphrases  | Hyperion Cantos/Endymion is the first api suggestion |
+    | endimion  | normal-subphrases | the API should produce list of length 0              |
+    | endimion  | fuzzy-subphrases  | Hyperion Cantos/Endymion is the first api suggestion |
   # Just take too long to run on a regular basis
   # @redirect @huge
   # Scenario: Prefix search on pages with tons of redirects is reasonably fast

@@ -605,7 +605,6 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchSuggestionSet
 	 */
 	protected function completionSearchBackend( $search ) {
-
 		if ( in_array( NS_SPECIAL, $this->namespaces ) ) {
 			// delegate special search to parent
 			return parent::completionSearchBackend( $search );
@@ -704,44 +703,40 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param string $profileType
+	 * @param User|null $user
+	 * @return array|null
 	 */
-	public function getProfiles( $profileType ) {
+	public function getProfiles( $profileType, User $user = null ) {
 		switch( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
 			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
 				// No profile selection if completion suggester is disabled.
 				return [];
 			}
-			$profiles = [];
-			$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
-			// Check that we can use the subphrases FST
-			if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
-				$allowedFields['suggest-subphrases'] = true;
+
+			$userDefault = $this->config->get( 'CirrusSearchCompletionSettings' );
+			$allowedProfiles = $this->getAllowedCompletionProfiles();
+			// Only check user options if the user is logged to avoid loading
+			// default user options.
+			if ( $user !== null && $user->getId() !== 0 &&
+				$user->getOption( 'cirrussearch-pref-completion-profile' ) !== null &&
+				array_key_exists(
+					$user->getOption( 'cirrussearch-pref-completion-profile' ),
+					$allowedProfiles )
+			) {
+
+				$userDefault = $user->getOption( 'cirrussearch-pref-completion-profile' );
 			}
-			foreach( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
-				$allowed = true;
-				foreach( $settings as $value ) {
-					if ( !array_key_exists( $value['field'], $allowedFields ) ) {
-						$allowed = false;
-						break;
-					}
-				}
-				if ( !$allowed ) {
-					continue;
-				}
+
+			$profiles = [];
+			foreach( array_keys( $allowedProfiles ) as $name ) {
 				$profiles[] = [
 					'name' => $name,
 					'desc-message' => 'cirrussearch-completion-profile-' . $name,
-					'default' => $this->config->get( 'CirrusSearchCompletionSettings' ) == $name,
+					'default' => $userDefault === $name,
 				];
 			}
-			// Add fallback to prefixsearch
-			$profiles[] = [
-				'name' => self::COMPLETION_PREFIX_FALLBACK_PROFILE,
-				'desc-message' => 'cirrussearch-completion-profile-' . self::COMPLETION_PREFIX_FALLBACK_PROFILE,
-				'default' => false,
-			];
 			return $profiles;
 		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
 			$profiles = [];
@@ -770,6 +765,35 @@ class CirrusSearch extends SearchEngine {
 			return $profiles;
 		}
 		return null;
+	}
+
+	/**
+	 * Return the list of completion profiles allowed
+	 * @return array[] list of profiles indexed by profile name
+	 */
+	private function getAllowedCompletionProfiles() {
+		$profiles = [];
+		$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
+		// Check that we can use the subphrases FST
+		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
+			$allowedFields['suggest-subphrases'] = true;
+		}
+		foreach( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
+			$allowed = true;
+			foreach( $settings as $value ) {
+				if ( !array_key_exists( $value['field'], $allowedFields ) ) {
+					$allowed = false;
+					break;
+				}
+			}
+			if ( !$allowed ) {
+				continue;
+			}
+			$profiles[$name] = $settings;
+		}
+		// Add fallback to prefixsearch
+		$profiles[self::COMPLETION_PREFIX_FALLBACK_PROFILE] = [];
+		return $profiles;
 	}
 
 	/**

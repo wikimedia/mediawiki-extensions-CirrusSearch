@@ -31,8 +31,12 @@
 	"cirrussearch-completion-profile-strict": "Strict profile with few punctuation characters removed but diacritics and stress marks are kept.",
 	"cirrussearch-completion-profile-classic": "Classic prefix, few punctuation characters and some diacritics removed.",
 	"cirrussearch-completion-profile-normal": "Few punctuation characters, some diacritics and stopwords removed.",
+	"cirrussearch-completion-profile-normal-subphrases": "Few punctuation characters, some diacritics and stopwords removed. It will match also subphrases (can be subphrases or subpages depending on internal wiki configuration).",
 	"cirrussearch-completion-profile-fuzzy": "Similar to normal with typo correction (two typos supported).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Similar to normal with typo correction (two typos supported). It will match also subphrases (can be subphrases or subpages depending on internal wiki configuration).",
 	"cirrussearch-qi-profile-classic": "Ranking based on the number of incoming links, some templates, article language and recency (templates/language/recency may not be activated on this wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Ranking based on some templates, article language and recency when activated on this wiki.",
-	"cirrussearch-qi-profile-empty": "Ranking based solely on query dependent features (for debug only)."
+	"cirrussearch-qi-profile-empty": "Ranking based solely on query dependent features (for debug only).",
+	"cirrussearch-pref-completion-profile-help": "Set the behavior for autocomplete (search-as-you-type) suggestions.",
+	"prefs-completion": "Search completion"
 }

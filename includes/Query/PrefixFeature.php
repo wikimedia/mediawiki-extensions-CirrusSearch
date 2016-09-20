@@ -2,8 +2,7 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch;
-use CirrusSearch\Connection;
+use SearchEngine;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -22,15 +21,6 @@ use CirrusSearch\Search\SearchContext;
  *   prefix:"California Cou"
  */
 class PrefixFeature implements KeywordFeature {
-
-	/**
-	 * @var Connection
-	 */
-	private $connection;
-
-	public function __construct( Connection $conn ) {
-		$this->connection = $conn;
-	}
 
 	/**
 	 * @param SearchContext $context
@@ -55,10 +45,15 @@ class PrefixFeature implements KeywordFeature {
 
 		// Suck namespaces out of $value. Note that this overrides provided
 		// namespace filters.
-		$cirrusSearchEngine = new CirrusSearch();
-		$cirrusSearchEngine->setConnection( $this->connection );
-		$value = trim( $cirrusSearchEngine->replacePrefixes( $value ) );
-		$context->setNamespaces( $cirrusSearchEngine->namespaces );
+		$queryAndNamespace = SearchEngine::parseNamespacePrefixes( $value );
+		if ( $queryAndNamespace === false ) {
+			// If no namespaces is extracted we force to NS_MAIN
+			$context->setNamespaces( [ NS_MAIN ] );
+		} else {
+			$value = $queryAndNamespace[0];
+			$context->setNamespaces( $queryAndNamespace[1] );
+		}
+		$value = trim( $value );
 
 		// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
 		if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {

@@ -310,7 +310,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->escaper,
 			[
 				// Handle title prefix notation
-				new Query\PrefixFeature( $this->connection ),
+				new Query\PrefixFeature(),
 				// Handle prefer-recent keyword
 				new Query\PreferRecentFeature( $this->config ),
 				// Handle local keyword

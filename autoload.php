@@ -101,6 +101,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Query\\InCategoryFeature' => __DIR__ . '/includes/Query/InCategoryFeature.php',
 	'CirrusSearch\\Query\\InTitleFeature' => __DIR__ . '/includes/Query/InTitleFeature.php',
 	'CirrusSearch\\Query\\KeywordFeature' => __DIR__ . '/includes/Query/KeywordFeature.php',
+	'CirrusSearch\\Query\\LanguageFeature' => __DIR__ . '/includes/Query/LanguageFeature.php',
 	'CirrusSearch\\Query\\LinksToFeature' => __DIR__ . '/includes/Query/LinksToFeature.php',
 	'CirrusSearch\\Query\\LocalFeature' => __DIR__ . '/includes/Query/LocalFeature.php',
 	'CirrusSearch\\Query\\PreferRecentFeature' => __DIR__ . '/includes/Query/PreferRecentFeature.php',

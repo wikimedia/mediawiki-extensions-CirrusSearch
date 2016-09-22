@@ -41,8 +41,12 @@
 	"cirrussearch-completion-profile-strict": "ملف حرفي مع إزالة القليل من حروف الترقيم لكن مع إبقاء التشكيل والعلامات.",
 	"cirrussearch-completion-profile-classic": "بدائة كلاسيكية، إزالة القليل من حروف الترقيم وبعض التشكيل.",
 	"cirrussearch-completion-profile-normal": "القليل من حروف الترقيم، مع إزالة بعض التشكيل وكلمات الإيقاف.",
+	"cirrussearch-completion-profile-normal-subphrases": "بعض علامات الترقيم، مع إزالة بعض الشدات وكلمات الإيقاف. ستطابق أيضا العبارات الفرعية (يمكن أن تكون عبارات فرعية أو صفحات فرعية حسب ضبط الويكي الداخلي).",
 	"cirrussearch-completion-profile-fuzzy": "يماثل العادي مع تصحيح الأخطاء الإملائية (خطآن إملائيان مدعومان).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "تماثل العادي مع تصحيح الأخطاء الإملائية (خطآن إملائيان مدعومان). ستطابق أيضا العبارات الفرعية (يمكن أن تكون عبارات فرعية أو صفحات فرعية حسب ضبط الويكي الداخلي).",
 	"cirrussearch-qi-profile-classic": "الرتبة معتمدة على عدد الوصلات الداخلة، بعض القوالب، لغة المقالة والحداثة (القوالب/اللغة/الحداثة ربما تكون غير مفعلة على هذه الويكي).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "الرتبة بناء على بعض القوالب، لغة المقالة والحداثة عند التفعيل على هذه الويكي.",
-	"cirrussearch-qi-profile-empty": "الرتبة بناء على الخواص المعتمدة على الاستعلام (للتصحيح فقط)."
+	"cirrussearch-qi-profile-empty": "الرتبة بناء على الخواص المعتمدة على الاستعلام (للتصحيح فقط).",
+	"cirrussearch-pref-completion-profile-help": "اضبط سلوك اقتراحات الإكمال التلقائي (search-as-you-type).",
+	"prefs-completion": "إكمال البحث"
 }

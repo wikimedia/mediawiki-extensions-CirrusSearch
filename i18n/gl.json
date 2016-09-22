@@ -37,8 +37,10 @@
 	"cirrussearch-completion-profile-strict": "Perfil estrito con algúns caracteres de puntuación eliminados pero mantendo os diacríticos e os acentos.",
 	"cirrussearch-completion-profile-classic": "Prefixo clásico, elimináronse algúns signos de puntuación e signos diacríticos.",
 	"cirrussearch-completion-profile-normal": "Elimináronse algúns caracteres de puntuación, algúns diacríticos e algúns conectores de texto.",
+	"cirrussearch-completion-profile-normal-subphrases": "Algúns caracteres de puntuación, signos diacríticos e puntos insignificantes eliminados. Tamén revisa as subfrases (poden ser subfrases ou subpáxinas na configuración interna da wiki).",
 	"cirrussearch-completion-profile-fuzzy": "Similar a normal con corrección de erros ortográficos (dous erros aceptados).",
 	"cirrussearch-qi-profile-classic": "Clasificación baseada no número de ligazóns entrantes, algúns modelos, a lingua do artigo e actualidade (modelos/lingua/actualidade poden non estar activas neste wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación baseada nalgúns modelos, a lingua do artigo e actualidade cando están activos neste wiki.",
-	"cirrussearch-qi-profile-empty": "Clasificación baseada unicamente na busca de funcionalidades dependentes (unicamente para depuración)."
+	"cirrussearch-qi-profile-empty": "Clasificación baseada unicamente na busca de funcionalidades dependentes (unicamente para depuración).",
+	"prefs-completion": "Buscar unha compleción"
 }

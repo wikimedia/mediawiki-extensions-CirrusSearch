@@ -36,8 +36,12 @@
 	"cirrussearch-completion-profile-strict": "Strenges Profil mit wenigen entfernten Satzzeichen, aber diakritische Zeichen und Betonungszeichen bleiben bestehen.",
 	"cirrussearch-completion-profile-classic": "Klassisches Präfix, wenige Satzzeichen und einige entfernte diakritische Zeichen.",
 	"cirrussearch-completion-profile-normal": "Wenige Satzzeichen, einige diakritische Zeichen und Stoppwörter werden entfernt.",
+	"cirrussearch-completion-profile-normal-subphrases": "Wenige Satzzeichen, einige diakritische Zeichen und Stoppwörter wurden entfernt. Es wird auch mit Subphrasen übereinstimmen (können Subphrasen oder Unterseiten sein, abhängig von der internen Wikikonfiguration).",
 	"cirrussearch-completion-profile-fuzzy": "Ähnlich dem normalen Profil mit Korrektur von Tippfehlern (zwei Tippfehler werden unterstützt).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Ähnlich wie die normale Korrektur von Tippfehlern (zwei Tippfehler werden unterstützt). Es wird auch mit Subphrasen übereinstimmen (können Subphrasen oder Unterseiten sein, abhängig von der internen Wikikonfiguration).",
 	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der eingehenden Links, einige Vorlagen, Artikelsprache und Neuheit (Vorlagen/Sprache/Neuheit könnten nicht auf diesem Wiki aktiviert sein).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einige Vorlagen, Artikelsprache und Neuheit, falls auf diesem Wiki aktiviert.",
-	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung)."
+	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung).",
+	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten für die Autovervollständigungsvorschläge fest (Suchen beim Eingeben).",
+	"prefs-completion": "Suchvervollständigung"
 }

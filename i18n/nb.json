@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Danmichaelo"
+			"Danmichaelo",
+			"Jon Harald Søby"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-basert søkemotor for MediaWiki",

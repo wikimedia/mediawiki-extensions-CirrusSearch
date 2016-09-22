@@ -5,7 +5,8 @@
 			"Kaganer",
 			"Sunpriat",
 			"Jackie",
-			"Putnik"
+			"Putnik",
+			"Туллук"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -30,5 +31,9 @@
 	"apihelp-cirrus-settings-dump-example": "Получить дамп настроек CirrusSearch для этой вики.",
 	"cirrussearch-give-feedback": "Оставьте отзыв",
 	"cirrussearch-completionsuggester-pref": "Предложение окончаний",
-	"cirrussearch-completionsuggester-desc": "Новый алгоритм для поиска по мере ввода. После включения, в поле поиска в правом верхнем углу будет использоваться Предложение окончаний."
+	"cirrussearch-completionsuggester-desc": "Новый алгоритм для поиска по мере ввода. После включения, в поле поиска в правом верхнем углу будет использоваться Предложение окончаний.",
+	"cirrussearch-completion-profile-normal-subphrases": "\nНесколько знаков препинания, а также диакритические и игнорируемые слова удалены . Также этому могут быть подвергнуты субфразы ( это могут быть субфразы или подстраницы в зависимости от внутренней конфигурации вики ) .",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Соответствует нормальному исправлению опечатки (возможно две опечатки). Этому могут быть подвержены также субфразы  (субфразы или подстраницы в зависимости от внутренней конфигурации wiki)",
+	"cirrussearch-pref-completion-profile-help": "Задает поведение для автоматического заполнения предложения (Поиск при вводе).",
+	"prefs-completion": "Завершение поиска"
 }

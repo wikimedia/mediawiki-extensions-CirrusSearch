@@ -44,8 +44,12 @@
 	"cirrussearch-completion-profile-strict": "Profil strict avec peu de signes de ponctuation supprimés, mais les diacritiques et les accents sont conservés.",
 	"cirrussearch-completion-profile-classic": "Préfixe classique, peu de signes de ponctuation et quelques signes diacritiques supprimés.",
 	"cirrussearch-completion-profile-normal": "Peu de signes de ponctuation, quelques diacritiques et mots de liaison supprimés.",
+	"cirrussearch-completion-profile-normal-subphrases": "Quelques caractères de ponctuation, signes diacritiques et mots insignifiants supprimés. cela correspondra aussi aux sous-phrases (qui peuvent être des sous-phrases ou des sous-pages, selon la configuration interne du wiki).",
 	"cirrussearch-completion-profile-fuzzy": "Similaire à normal avec la correction des fautes d’orthographe (deux acceptées).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Similaire à normal avec la correction des fautes de frappe (deux fautes tolérées). Cela correspondra aussi aux sous-phrases (qui peuvent être des sous-phrases ou des sous-pages, selon la configuration interne du wiki).",
 	"cirrussearch-qi-profile-classic": "Classement basé sur le nombre de liens entrants, sur quelques modèles, sur la langue de l’article et son ancienneté (modèles/langue/ancienneté peuvent ne pas être activés sur ce wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classement basé sur certains modèles, la langue de l’article et l’ancienneté, quand cela est activé sur ce wiki.",
-	"cirrussearch-qi-profile-empty": "Classement basé uniquement sur la requête de fonctionnalités dépendantes (uniquement pour débogage)."
+	"cirrussearch-qi-profile-empty": "Classement basé uniquement sur la requête de fonctionnalités dépendantes (uniquement pour débogage).",
+	"cirrussearch-pref-completion-profile-help": "Fixer le comportement à suggestions d’auto-complétion (recherche en cours de frappe).",
+	"prefs-completion": "Rechercher une complétion"
 }

@@ -24,5 +24,6 @@
 	"cirrussearch-pref-desc": "Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.",
 	"apihelp-cirrus-config-dump-description": "Zrzut konfiguracji CirrusSearch.",
 	"cirrussearch-give-feedback": "Wyślij nam opinię",
-	"cirrussearch-completionsuggester-pref": "Podpowiadacz wyszukiwania"
+	"cirrussearch-completionsuggester-pref": "Podpowiadacz wyszukiwania",
+	"prefs-completion": "Zakończenie wyszukiwania"
 }

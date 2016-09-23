@@ -222,13 +222,15 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					$profiles, $text ) {
 				$description = "{queryType} search for '{query}'";
 				$this->start( $description, $logContext );
+				$this->logContext['timing']['start'] = microtime( true );
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
+					$this->logContext['timing']['end-comp-req'] = microtime( true );
 					if( $result->isOk() ) {
 						$result = $this->postProcessSuggest( $result, $profiles );
-						return $this->success( $result );
 					}
-					return $result;
+					$this->logContext['timing']['done'] = microtime( true );
+					return $this->success( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
@@ -426,6 +428,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$data = $response->getData();
 		unset( $data['_shards'] );
 
+		$this->logContext['timing']['mark1'] = microtime( true );
 		$limit = $this->getHardLimit();
 		$suggestionsByDocId = [];
 		$suggestionProfileByDocId = [];
@@ -457,6 +460,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				}
 			}
 		}
+		$this->logContext['timing']['mark2'] = microtime( true );
 
 		// simply sort by existing scores
 		uasort( $suggestionsByDocId, function ( SearchSuggestion $a, SearchSuggestion $b ) {
@@ -481,6 +485,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		}
 
 		if ( !empty ( $missingTextDocIds ) ) {
+			$this->logContext['timing']['mark3'] = microtime( true );
 			// Experimental.
 			//
 			// Second pass query to fetch redirects.
@@ -498,6 +503,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$redirResponse = $type->request( '_mget', 'GET',
 					[ 'ids' => $missingTextDocIds ],
 					[ '_source_include' => 'redirect' ] );
+				$this->logContext['timing']['mark4'] = microtime( true );
 				if ( $redirResponse->isOk() ) {
 					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
 					$docs = $redirResponse->getData();
@@ -530,8 +536,10 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					]
 				);
 			}
+			$this->logContext['timing']['mark5'] = microtime( true );
 		}
 
+		$this->logContext['timing']['mark6'] = microtime( true );
 		$finalResults = array_filter(
 			$suggestionsByDocId,
 			function ( SearchSuggestion $suggestion ) {
@@ -560,6 +568,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			];
 		}
 		$this->logContext['maxScore'] = $maxScore;
+		$this->logContext['timing']['mark7'] = microtime( true );
 
 		return new SearchSuggestionSet( $finalResults );
 	}

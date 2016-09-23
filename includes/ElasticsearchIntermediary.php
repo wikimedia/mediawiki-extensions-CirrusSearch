@@ -215,6 +215,18 @@ class ElasticsearchIntermediary {
 			} else {
 				$allCached = false;
 			}
+
+			if ( isset( $context['timing'] ) ) {
+				$start = 0;
+				if ( isset( $context['timing']['start'] ) ) {
+					$start = $context['timing']['start'];
+					unset( $context['timing']['start'] );
+				}
+				foreach ( $context['timing'] as $name => $time ) {
+					$request['payload']["timing-$name"] = (string) intval(( $time - $start ) * 1000);
+				}
+			}
+
 			$requests[] = $request;
 		}
 
@@ -296,6 +308,7 @@ class ElasticsearchIntermediary {
 		if ( $allCached ) {
 			$requestSet['payload']['cached'] = 'true';
 		}
+
 		LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug( '', $requestSet );
 	}
 

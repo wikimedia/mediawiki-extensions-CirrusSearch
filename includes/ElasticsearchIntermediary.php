@@ -293,6 +293,9 @@ class ElasticsearchIntermediary {
 				// Helps to track down what actually caused the request. Will promote to full
 				// param if it proves useful
 				'queryString' => http_build_query( $_GET ),
+				// When tracking down performance issues it is useful to know if they are localized
+				// to a particular set of instances
+				'host' => gethostname(),
 			],
 			'requests' => $requests,
 		];

@@ -45,7 +45,7 @@ Feature: Searches that contain quotes
     Then there are no api search results
 
   Scenario: Searching for a quoted * actually searches for a *
-    When I api search for "pick*"
+    When I api search with query independent profile empty for "pick*"
     Then Pick* is the first api search result
 
   Scenario Outline: Searching for "<word> <word>"~<number> activates a proximity search

@@ -291,7 +291,7 @@ class Checker {
 		if ( empty( $pageIds ) ) {
 			return $cache->getArrayCopy();
 		}
-		$dbr = wfGetDB( DB_REPLICA );
+		$dbr = $this->getDB();
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
 		$res = $dbr->select(
 			[ 'page' ],
@@ -304,6 +304,13 @@ class Checker {
 			$cache->offsetSet( $page->getId(), $page );
 		}
 		return $cache->getArrayCopy();
+	}
+
+	/**
+	 * @return \IDatabase
+	 */
+	private function getDB() {
+		return wfGetDB( DB_REPLICA );
 	}
 
 	/**

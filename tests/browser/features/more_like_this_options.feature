@@ -29,7 +29,7 @@ Feature: More like this queries with custom settings
     Then there are no search results
 
   Scenario: Searching for morelike:<page> with the title field and settings with poor precision
-    When I set More Like This Options to title field, word length to 1 and I search for morelike:More Like Me 1
+    When I set More Like This Options to title field, word length to 2 and I search for morelike:More Like Me 1
     Then ChangeMe is in the search results
 
   Scenario: Searching for morelike:<page> with the all field works even if cirrusMtlUseFields is set to yes

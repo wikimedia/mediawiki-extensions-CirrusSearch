@@ -432,9 +432,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$limit = $this->getHardLimit();
 		$suggestionsByDocId = [];
 		$suggestionProfileByDocId = [];
+		$hitsTotal = 0;
 		foreach ( $data as $name => $results  ) {
 			$discount = $profiles[$name]['discount'];
 			foreach ( $results  as $suggested ) {
+				$hitsTotal += count( $suggested['options'] );
 				foreach ( $suggested['options'] as $suggest ) {
 					$output = SuggestBuilder::decodeOutput( $suggest['text'] );
 					if ( $output === null ) {
@@ -467,7 +469,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			return $b->getScore() - $a->getScore();
 		} );
 
-		$this->logContext['hitsTotal'] = count( $suggestionsByDocId );
+		$this->logContext['hitsTotal'] = $hitsTotal;
 
 		$suggestionsByDocId = $this->offset < $limit
 			? array_slice( $suggestionsByDocId, $this->offset, $limit - $this->offset, true )

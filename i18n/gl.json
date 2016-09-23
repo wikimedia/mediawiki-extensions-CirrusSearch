@@ -42,5 +42,6 @@
 	"cirrussearch-qi-profile-classic": "Clasificación baseada no número de ligazóns entrantes, algúns modelos, a lingua do artigo e actualidade (modelos/lingua/actualidade poden non estar activas neste wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación baseada nalgúns modelos, a lingua do artigo e actualidade cando están activos neste wiki.",
 	"cirrussearch-qi-profile-empty": "Clasificación baseada unicamente na busca de funcionalidades dependentes (unicamente para depuración).",
+	"cirrussearch-pref-completion-profile-help": "Fixar o comportamento das suxestións de autocompletar (busca mentras teclea).",
 	"prefs-completion": "Buscar unha compleción"
 }

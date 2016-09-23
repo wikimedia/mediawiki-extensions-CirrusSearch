@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use Elastica;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\MatchAll;
 use GeoData\Coord;
 
 /**
@@ -26,6 +27,30 @@ use GeoData\Coord;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Filters {
+	/**
+	 * Turns a list of queries into a boolean OR, requiring only one
+	 * of the provided queries to match.
+	 *
+	 * @param AbstractQuery[] $queries
+	 * @param bool $matchAll When true (default) function never returns null,
+	 *  when no queries are provided a MatchAll is returned.
+	 * @return AbstractQuery|null The resulting OR query. Only returns null when
+	 *  no queries are passed and $matchAll is false.
+	 */
+	public static function booleanOr( array $queries, $matchAll = true ) {
+		if ( !$queries ) {
+			return $matchAll ? new MatchAll() : null;
+		} elseif ( count( $queries ) === 1 ) {
+			return reset( $queries );
+		} else {
+			$bool = new BoolQuery();
+			foreach ( $queries as $query ) {
+				$bool->addShould( $query );
+			}
+			return $bool;
+		}
+	}
+
 	/**
 	 * Merges lists of include/exclude filters into a single filter that
 	 * Elasticsearch will execute efficiently.

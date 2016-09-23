@@ -331,6 +331,8 @@ class Searcher extends ElasticsearchIntermediary {
 				new Query\SimpleInSourceFeature( $this->escaper ),
 				// Handle intitle keyword
 				new Query\InTitleFeature( $this->escaper ),
+				// inlanguage keyword
+				new Query\LanguageFeature(),
 			],
 			$builderSettings['settings']
 		);

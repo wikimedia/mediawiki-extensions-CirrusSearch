@@ -339,9 +339,6 @@ class AnalysisConfigBuilder {
 	private function customize( $config ) {
 		switch ( $this->getDefaultTextAnalyzerType() ) {
 		// Please add languages in alphabetical order.
-		case 'greek':
-			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
-			break;
 		case 'english':
 			$config[ 'filter' ][ 'possessive_english' ] = [
 				'type' => 'stemmer',
@@ -410,6 +407,7 @@ STEMMER_RULES
 			];
 
 			// Replace the default French analyzer with a rebuilt copy with asciifolding_preserve tacked on the end
+			// T141216 / T142620
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
@@ -426,6 +424,16 @@ STEMMER_RULES
 
 			// In French text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
+		case 'greek':
+			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
+			break;
+		case 'hebrew':
+			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
+			// analyzer for queries.
+			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
+				$config[ 'analyzer' ][ 'text_search' ][ 'type' ] = 'hebrew_exact';
+			}
 			break;
 		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = [
@@ -486,15 +494,59 @@ STEMMER_RULES
 			// In Italian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'russian':
+			$config[ 'char_filter' ][ 'russian_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					'\u0301=>',		// combining acute accent, only used to show stress T102298
+					// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
+					'\u0435\u0308=>\u0435',
+					'\u0415\u0308=>\u0415',
+					'\u0451=>\u0435',
+					'\u0401=>\u0415',
+					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
+				],
+			];
+
+			// Drop acute stress marks and fold ё=>е everywhere
+			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'russian_charfilter';
+			$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'russian_charfilter';
+
+			$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
+			$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
+
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+
+
+			// unpack built-in Russian analyzer and add character filter T102298 / T124592
+			$config[ 'filter' ][ 'russian_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => '_russian_',
+			];
+			$config[ 'filter' ][ 'russian_stemmer' ] = [
+				'type' => 'stemmer',
+				'language' => 'russian',
+			];
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'char_filter' => [ 'russian_charfilter' ],
+			];
+			$filters = [];
+			$filters[] = 'lowercase';
+			$filters[] = 'russian_stop';
+			$filters[] = 'russian_stemmer';
+			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
+
+			// In Russian text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
-			break;
-		case 'hebrew':
-			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
-			// analyzer for queries.
-			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
-				$config[ 'analyzer' ][ 'text_search' ][ 'type' ] = 'hebrew_exact';
-			}
 			break;
 		}
 		if ( $this->icu ) {

@@ -10,5 +10,6 @@
 	"cirrussearch-now-using": "Dës Wiki benotzt eng nei Sichmaschinn.([[mw:Special:MyLanguage/Help:CirrusSearch|Fir méi ze wëssen]])",
 	"cirrussearch-ignored-headings": " #<!-- dës Zeil net änneren --> <pre>\n# Iwwerschrëften, déi vun der Sich ignoréiert ginn.\n# Dës Ännerunge gi wirksam, soubal déi Säit mat der Iwwerschrëft indexéiert gouf.\n# Dir kënnt déi Säitenindexéierung erzwéngen, andeem dir eng Nullännerung maacht.\n# Syntax:\n# * Alles, wat no enger Raut („#“) bis zum Ënn vun der Zeil steet, ass eng Bemierkung.\n# * All net-eidel Zeil ass de geneeën Titel fir z'ignoréieren.\nReferenzen\nWeblinken\nKuckt och\n #</pre> <!-- dës Zeil net änneren -->",
 	"cirrussearch-pref-label": "Nei sichen",
-	"cirrussearch-give-feedback": "Gitt eis Äre Feedback"
+	"cirrussearch-give-feedback": "Gitt eis Äre Feedback",
+	"prefs-completion": "Siche komplettéieren"
 }

@@ -7,5 +7,11 @@
 	"cirrussearch-pref-label": "Nova pretraga",
 	"cirrussearch-give-feedback": "Pružite nam povratne informacije",
 	"cirrussearch-completionsuggester-pref": "Predviđanje pretrage",
-	"cirrussearch-completionsuggester-desc": "Novi algoritam za pretraživanje dok pišete. Kad uključite ovu beta mogućnost, kutija za pretragu u gornjem desnom uglu koristit će Predviđanje pretrage."
+	"cirrussearch-completionsuggester-desc": "Novi algoritam za pretraživanje dok pišete. Kad uključite ovu beta mogućnost, kutija za pretragu u gornjem desnom uglu koristit će Predviđanje pretrage.",
+	"cirrussearch-completion-profile-strict": "Strogi profil prema kojem se uklanja nekoliko interpunkcijskih znakova, ali će dijakritički znakovi i oznake za naglas biti zadržani.",
+	"cirrussearch-completion-profile-classic": "Klasičan prefiks, uklanja se nekoliko interpunkcijskih i dijakritičkih znakova.",
+	"cirrussearch-completion-profile-normal": "Nekoliko interpunkcijskih znakova, uklanjaju se neki dijakritički znakovi i nevažne riječi (stop-slova).",
+	"cirrussearch-completion-profile-fuzzy": "Slično normalnoj pretrazi s tim da je podržana ispravka tipfelera (podržana su 2 tipfelera).",
+	"cirrussearch-pref-completion-profile-help": "Podesite način na koji softver vrši automatsko dovršavanje pretraga.",
+	"prefs-completion": "Dovršavanje pretrage"
 }

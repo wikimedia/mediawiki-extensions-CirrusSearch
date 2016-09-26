@@ -37,9 +37,6 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearch extends SearchEngine {
-	const MORE_LIKE_THIS_PREFIX = 'morelike:';
-	const MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX = 'morelikewithwikibase:';
-
 	const COMPLETION_SUGGESTER_FEATURE = 'completionSuggester';
 
 	/** @const string name of the prefixsearch fallback profile */
@@ -376,48 +373,39 @@ class CirrusSearch extends SearchEngine {
 		$returnExplain = $this->request && $this->request->getVal( 'cirrusExplain' ) !== null;
 		$searcher->setReturnExplain( $returnExplain );
 
-		// Delegate to either searchText or moreLikeThisArticle and dump the result into $status
-		if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_PREFIX ) ) === self::MORE_LIKE_THIS_PREFIX ) {
-			$term = substr( $term, strlen( self::MORE_LIKE_THIS_PREFIX ) );
-			$status = $this->moreLikeThis( $term, $searcher, Searcher::MORE_LIKE_THESE_NONE );
-		} else if ( substr( $term, 0, strlen( self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) ) === self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) {
-			$term = substr( $term, strlen( self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX ) );
-			$status = $this->moreLikeThis( $term, $searcher, Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE );
+		if ( $this->lastNamespacePrefix ) {
+			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
 		} else {
-			# Namespace lookup should not be done for morelike special syntax (T111244)
-			if ( $this->lastNamespacePrefix ) {
-				$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
-			} else {
-				$searcher->updateNamespacesFromQuery( $term );
-			}
-			$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
-			if ( $this->request ) {
-				if ( $this->request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
-					$this->showSuggestion = false;
-				}
-				if ( $this->request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
-					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_TITLE;
-				}
-				if ( $this->request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
-					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLE;
-				}
-				if ( $this->request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
-					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
-				}
-				if ( $this->request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
-					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
-				}
-				if ( $this->request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
-					$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
-				}
-			}
-			if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;
-			}
-
-			$searcher->setResultsType( new FullTextResultsType( $highlightingConfig, $config ? $config->getWikiCode() : '') );
-			$status = $searcher->searchText( $term, $this->showSuggestion );
+			$searcher->updateNamespacesFromQuery( $term );
 		}
+		$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
+		if ( $this->request ) {
+			if ( $this->request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
+				$this->showSuggestion = false;
+			}
+			if ( $this->request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_TITLE;
+			}
+			if ( $this->request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLE;
+			}
+			if ( $this->request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
+			}
+			if ( $this->request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
+			}
+			if ( $this->request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
+				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
+			}
+		}
+		if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
+			$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;
+		}
+
+		$searcher->setResultsType( new FullTextResultsType( $highlightingConfig, $config ? $config->getWikiCode() : '') );
+		$status = $searcher->searchText( $term, $this->showSuggestion );
+
 		if ( $dumpQuery || $dumpResult ) {
 			$header = null;
 			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
@@ -496,48 +484,6 @@ class CirrusSearch extends SearchEngine {
 		} else {
 			return SearchSuggestionSet::emptySuggestionSet();
 		}
-	}
-
-	/**
-	 * @param string $term
-	 * @param Searcher $searcher
-	 * @param int $options A bitset of Searcher::MORE_LIKE_THESE_*
-	 * @return Status<SearchResultSet>
-	 */
-	private function moreLikeThis( $term, $searcher, $options ) {
-		// Expand titles chasing through redirects
-		$titles = [];
-		$found = [];
-		foreach ( explode( '|', $term ) as $title ) {
-			$title = Title::newFromText( trim( $title ) );
-			while ( true ) {
-				if ( !$title ) {
-					continue 2;
-				}
-				$titleText = $title->getFullText();
-				if ( in_array( $titleText, $found ) ) {
-					continue 2;
-				}
-				$found[] = $titleText;
-				if ( !$title->exists() ) {
-					continue 2;
-				}
-				if ( $title->isRedirect() ) {
-					$page = WikiPage::factory( $title );
-					if ( !$page->exists() ) {
-						continue 2;
-					}
-					$title = $page->getRedirectTarget();
-				} else {
-					break;
-				}
-			}
-			$titles[] = $title;
-		}
-		if ( count( $titles ) ) {
-			return $searcher->moreLikeTheseArticles( $titles, $options );
-		}
-		return Status::newGood( new SearchResultSet( true ) /* empty */ );
 	}
 
 	/**

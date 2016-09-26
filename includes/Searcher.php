@@ -383,14 +383,6 @@ class Searcher extends ElasticsearchIntermediary {
 			return Status::newGood( new SearchResultSet( true ) /* empty */ );
 		}
 
-		// more like this queries are quite expensive and are suspected to be
-		// triggering latency spikes. This allows redirecting more like this
-		// queries to a different cluster
-		$cluster = $this->config->get( 'CirrusSearchMoreLikeThisCluster' );
-		if ( $cluster ) {
-			$this->connection = Connection::getPool( $this->config, $cluster );
-		}
-
 		$this->searchContext->addSyntaxUsed( 'more_like' );
 		$this->searchContext->setSearchType( 'more_like' );
 
@@ -565,6 +557,8 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$extraIndexes = [];
 		$namespaces = $this->searchContext->getNamespaces();
+
+		$this->overrideConnectionIfNeeded();
 		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
@@ -639,8 +633,6 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
 		}
-
-
 
 		$queryOptions['timeout'] = $this->getTimeout();
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
@@ -911,5 +903,20 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		return $this->config->getElement( 'CirrusSearchSearchShardTimeout', $type );
+	}
+
+	/**
+	 * Some queries, like more like this, are quite expensive and can cause
+	 * latency spikes. This allows redirecting queries using particular
+	 * features to specific clusters.
+	 */
+	private function overrideConnectionIfNeeded() {
+		$overrides = $this->config->get( 'CirrusSearchFullTextClusterOverrides' );
+		foreach ( $overrides as $feature => $cluster ) {
+			if ( $this->searchContext->isSyntaxUsed( $feature ) ) {
+				$this->connection = Connection::getPool( $this->config, $cluster );
+				return;
+			}
+		}
 	}
 }

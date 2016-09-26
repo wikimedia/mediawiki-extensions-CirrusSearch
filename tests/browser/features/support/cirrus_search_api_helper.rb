@@ -1,9 +1,42 @@
 require "mimemagic"
 require "faraday"
 require "digest/sha1"
+require "English"
+
+# Getting into the process for initializing faraday inside mediawiki api
+# gem is not really possible without an even bigger hack than this...so
+# this is less evil hax to piggyback on a middleware that's already used
+module FaradayMiddleware
+  class FollowRedirects
+    old_call = instance_method(:call)
+    define_method(:call) do |env|
+      CirrusSearchApiHelper.last_api_request_env = {
+        "url" => env[:url].to_s,
+        "body" => env[:body]
+      }
+      old_call.bind(self).call(env)
+    end
+  end
+end
 
 # Common code cirrus' test use when dealing with api.
 module CirrusSearchApiHelper
+  class << self
+    attr_accessor :last_api_request_env
+  end
+
+  def with_api
+    yield
+  rescue RSpec::Expectations::ExpectationNotMetError
+    raise $ERROR_INFO, "#{$ERROR_INFO}\nLoaded from #{CirrusSearchApiHelper.last_api_request_env}", $ERROR_INFO.backtrace
+  end
+
+  def with_browser
+    yield
+  rescue RSpec::Expectations::ExpectationNotMetError
+    raise $ERROR_INFO, "#{$ERROR_INFO}\nLoaded from #{browser.url}", $ERROR_INFO.backtrace
+  end
+
   def edit_page(title, text, add)
     text = File.read("articles/" + text[1..-1]) if text.start_with?("@")
     fetched_text = get_page_text(title)

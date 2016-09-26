@@ -64,6 +64,11 @@ class SearcherTest extends \MediaWikiTestCase {
 			] + $GLOBALS['wgHooks']
 		] );
 
+		// Set a couple pre-defined pages for anything (morelike) that needs valid pages
+		$linkCache = MediaWikiServices::getInstance()->getLinkCache();
+		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
+		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
+
 		\RequestContext::getMain()->setRequest( new \FauxRequest( [
 			'cirrusDumpQuery' => 1,
 		] ) );

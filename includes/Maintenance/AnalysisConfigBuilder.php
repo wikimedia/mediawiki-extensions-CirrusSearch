@@ -141,6 +141,24 @@ class AnalysisConfigBuilder {
 					'filter' => [ 'standard', 'lowercase' ],
 					'char_filter' => [ 'word_break_helper' ],
 				],
+				// Used by ShortTextIndexField
+				'short_text' => [
+					'type' => 'custom',
+					'tokenizer' => 'whitespace',
+					'filter' => [
+						'lowercase',
+						'aggressive_splitting',
+						'asciifolding_preserve',
+					],
+				],
+				'short_text_search' => [
+					'type' => 'custom',
+					'tokenizer' => 'whitespace',
+					'filter' => [
+						'lowercase',
+						'aggressive_splitting',
+					],
+				],
 				'source_text_plain' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',

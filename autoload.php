@@ -154,6 +154,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\SatuFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\ScriptScoreFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\SearchContext' => __DIR__ . '/includes/Search/SearchContext.php',
+	'CirrusSearch\\Search\\ShortTextIndexField' => __DIR__ . '/includes/Search/ShortTextIndexField.php',
 	'CirrusSearch\\Search\\SourceTextIndexField' => __DIR__ . '/includes/Search/SourceTextIndexField.php',
 	'CirrusSearch\\Search\\TextIndexField' => __DIR__ . '/includes/Search/TextIndexField.php',
 	'CirrusSearch\\Search\\TitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',

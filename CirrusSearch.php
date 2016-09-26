@@ -1118,6 +1118,7 @@ $wgCirrusSearchFieldTypes = [
 	SearchIndexField::INDEX_TYPE_DATETIME => \CirrusSearch\Search\DatetimeIndexField::class,
 	SearchIndexField::INDEX_TYPE_BOOL => \CirrusSearch\Search\BooleanIndexField::class,
 	SearchIndexField::INDEX_TYPE_NESTED => \CirrusSearch\Search\NestedIndexField::class,
+	SearchIndexField::INDEX_TYPE_SHORT_TEXT => \CirrusSearch\Search\ShortTextIndexField::class,
 ];
 
 /**

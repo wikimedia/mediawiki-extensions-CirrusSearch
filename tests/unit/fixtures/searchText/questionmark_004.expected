@@ -1,5 +1,5 @@
 {
-    "description": "regex search for 'insource:\/pii?ckles\/\n'",
+    "description": "regex search for 'insource:\/pii?ckles\/'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",

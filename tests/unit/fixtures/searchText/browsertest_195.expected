@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'linksto:\"LinksToTest Target\" Using Template\n'",
+    "description": "full_text search for 'linksto:\"LinksToTest Target\" Using Template'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
@@ -167,27 +167,6 @@
                     "matched_fields": [
                         "auxiliary_text",
                         "auxiliary_text.plain"
-                    ]
-                },
-                "file_text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "file_text",
-                        "file_text.plain"
                     ]
                 }
             },

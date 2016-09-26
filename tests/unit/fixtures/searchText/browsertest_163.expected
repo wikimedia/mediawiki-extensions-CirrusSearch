@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'insource:pickl*\n'",
+    "description": "full_text search for 'insource:pickl*'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",

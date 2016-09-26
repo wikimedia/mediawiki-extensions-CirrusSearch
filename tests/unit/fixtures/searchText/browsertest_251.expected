@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'prefer-recent: PreferRecent First OR Second OR Third\n'",
+    "description": "full_text search for 'prefer-recent: PreferRecent First OR Second OR Third'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
@@ -155,27 +155,6 @@
                         "auxiliary_text",
                         "auxiliary_text.plain"
                     ]
-                },
-                "file_text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "file_text",
-                        "file_text.plain"
-                    ]
                 }
             },
             "highlight_query": {
@@ -232,7 +211,7 @@
                                             "decayConstant": 5.0140855075228e-11,
                                             "decayPortion": 0.6,
                                             "nonDecayPortion": 0.4,
-                                            "now": 1468257196000
+                                            "now": 1474915276000
                                         },
                                         "lang": "expression"
                                     },

@@ -1,6 +1,6 @@
 {
-    "description": "full_text search for 'prefix test prefix:\n'",
-    "path": "wiki_content\/page\/_search",
+    "description": "full_text search for 'prefix test prefix:'",
+    "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -21,7 +21,7 @@
                 "should": [
                     {
                         "query_string": {
-                            "query": "prefix test",
+                            "query": "prefix test prefix\\:",
                             "fields": [
                                 "all.plain^1",
                                 "all^0.5"
@@ -40,28 +40,18 @@
                             "fields": [
                                 "all_near_match^2"
                             ],
-                            "query": "prefix test"
+                            "query": "prefix test prefix:"
                         }
                     }
                 ],
                 "filter": [
                     {
-                        "bool": {
-                            "must": [
-                                {
-                                    "match": {
-                                        "title.prefix": {
-                                            "query": ""
-                                        }
-                                    }
-                                },
-                                {
-                                    "terms": {
-                                        "namespace": [
-                                            0
-                                        ]
-                                    }
-                                }
+                        "terms": {
+                            "namespace": [
+                                0,
+                                1,
+                                2,
+                                3
                             ]
                         }
                     }
@@ -165,32 +155,11 @@
                         "auxiliary_text",
                         "auxiliary_text.plain"
                     ]
-                },
-                "file_text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "file_text",
-                        "file_text.plain"
-                    ]
                 }
             },
             "highlight_query": {
                 "query_string": {
-                    "query": "prefix test",
+                    "query": "prefix test prefix\\:",
                     "fields": [
                         "title.plain^20",
                         "redirect.title.plain^15",
@@ -218,7 +187,7 @@
             }
         },
         "suggest": {
-            "text": "prefix test",
+            "text": "prefix test prefix:",
             "suggest": {
                 "phrase": {
                     "field": "suggest",
@@ -254,6 +223,29 @@
         "size": 20,
         "rescore": [
             {
+                "window_size": 512,
+                "query": {
+                    "rescore_query": {
+                        "query_string": {
+                            "query": "\"prefix test prefix\\:\"",
+                            "fields": [
+                                "all.plain^1",
+                                "all^0.5"
+                            ],
+                            "auto_generate_phrase_queries": true,
+                            "phrase_slop": 1,
+                            "default_operator": "AND",
+                            "allow_leading_wildcard": true,
+                            "fuzzy_prefix_length": 2,
+                            "rewrite": "top_terms_boost_1024",
+                            "max_determinized_states": 500
+                        }
+                    },
+                    "query_weight": 1,
+                    "rescore_query_weight": 10
+                }
+            },
+            {
                 "window_size": 8192,
                 "query": {
                     "query_weight": 1,
@@ -267,6 +259,36 @@
                                         "field": "incoming_links",
                                         "modifier": "log2p",
                                         "missing": 0
+                                    }
+                                },
+                                {
+                                    "weight": "0.25",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                1
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.05",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                2
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.0125",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                3
+                                            ]
+                                        }
                                     }
                                 }
                             ]

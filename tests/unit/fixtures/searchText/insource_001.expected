@@ -1,5 +1,5 @@
 {
-    "description": "regex search for 'insource:\/ab?c\/\n'",
+    "description": "regex search for 'insource:\/ab?c\/'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",

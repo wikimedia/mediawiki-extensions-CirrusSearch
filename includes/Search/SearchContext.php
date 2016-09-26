@@ -165,6 +165,11 @@ class SearchContext {
 	private $limitSearchToLocalWiki = false;
 
 	/**
+	 * @param int The number of seconds to cache results for
+	 */
+	private $cacheTtl = 0;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -620,4 +625,19 @@ class SearchContext {
 	public function setLimitSearchToLocalWiki( $localWikiOnly ) {
 		$this->limitSearchToLocalWiki = $localWikiOnly;
 	}
+
+	/**
+	 * @return int The number of seconds to cache results for
+	 */
+	public function getCacheTtl() {
+		return $this->cacheTtl;
+	}
+
+	/**
+	 * @param int $ttl The number of seconds to cache results for
+	 */
+	public function setCacheTtl( $ttl ) {
+		$this->cacheTtl = $ttl;
+	}
+
 }

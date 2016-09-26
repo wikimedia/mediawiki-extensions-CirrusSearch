@@ -439,10 +439,9 @@ class Searcher extends ElasticsearchIntermediary {
 		// to save cpu cycles
 		$this->searchContext->setHighlightQuery( new \Elastica\Query\MatchAll() );
 
-		return $this->search(
-			implode( ', ', $titles ),
-			$this->config->get( 'CirrusSearchMoreLikeThisTTL' )
-		);
+		$this->searchContext->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
+
+		return $this->search( implode( ', ', $titles ) );
 	}
 
 	/**
@@ -541,10 +540,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Powers full-text-like searches including prefix search.
 	 *
 	 * @param string $for
-	 * @param int $cacheTTL Cache results into ObjectCache for $cacheTTL seconds
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	private function search( $for, $cacheTTL = 0 ) {
+	private function search( $for ) {
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
 				return Status::newGood( [
@@ -680,11 +678,11 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		if ( $this->returnResult || $this->returnExplain ) {
 			// don't cache debugging queries
-			$cacheTTL = 0;
+			$this->searchContext->setCacheTtl( 0 );
 		}
 
 		$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		if ( $cacheTTL > 0 ) {
+		if ( $this->searchContext->getCacheTtl() > 0 ) {
 			$cache = ObjectCache::getLocalClusterInstance();
 			$key = $cache->makeKey( 'cirrussearch', 'search', md5(
 				$search->getPath() .
@@ -768,11 +766,11 @@ class Searcher extends ElasticsearchIntermediary {
 				}
 			}
 
-			if ( $cacheTTL > 0 && !$isPartialResult ) {
+			if ( $this->searchContext->getCacheTtl() > 0 && !$isPartialResult ) {
 				/** @suppress PhanUndeclaredVariable */
 				$requestStats->increment("CirrusSearch.query_cache.$type.set");
 				/** @suppress PhanUndeclaredVariable */
-				$cache->set( $key, $result, $cacheTTL );
+				$cache->set( $key, $result, $this->searchContext->getCacheTtl() );
 			}
 		}
 

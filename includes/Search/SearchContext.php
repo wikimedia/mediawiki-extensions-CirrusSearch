@@ -639,5 +639,4 @@ class SearchContext {
 	public function setCacheTtl( $ttl ) {
 		$this->cacheTtl = $ttl;
 	}
-
 }

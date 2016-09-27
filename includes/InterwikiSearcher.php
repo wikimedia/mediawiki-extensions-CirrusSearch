@@ -58,37 +58,25 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Fetch search results, from caches, if there's any
 	 * @param string $term Search term to look for
-	 * @return ResultSet|null
+	 * @return ResultSet|null|false
 	 */
 	public function getInterwikiResults( $term ) {
-
 		// Return early if we can
 		if ( !$term ) {
 			return null;
 		}
 
-		$namespaceKey = $this->searchContext->getNamespaces() !== null ?
-			implode( ',', $this->searchContext->getNamespaces() ) : '';
-
-		$cache = ObjectCache::getLocalClusterInstance();
-		$key = $cache->makeKey(
-			'cirrus',
-			'interwiki',
-			$this->interwiki,
-			$namespaceKey,
-			md5( $term )
+		$this->searchContext->setCacheTtl(
+			$this->config->get( 'CirrusSearchInterwikiCacheTime' )
 		);
-		$ttl = $this->config->get( 'CirrusSearchInterwikiCacheTime' );
 
-		return $cache->getWithSetCallback( $key, $ttl, function () use ( $term ) {
-			$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
-			$results = $this->searchText( $term, false );
-			if ( $results->isOK() ) {
-				return $results->getValue();
-			} else {
-				return false;
-			}
-		} );
+		$this->setResultsType( new InterwikiResultsType( $this->interwiki ) );
+		$results = $this->searchText( $term, false );
+		if ( $results->isOK() ) {
+			return $results->getValue();
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -122,4 +110,11 @@ class InterwikiSearcher extends Searcher {
 		return [];
 	}
 
+	/**
+	 * @return string The stats key used for reporting hit/miss rates of the
+	 *  application side query cache.
+	 */
+	protected function getQueryCacheStatsKey() {
+		return 'CirrusSearch.query_cache.interwiki';
+	}
 }

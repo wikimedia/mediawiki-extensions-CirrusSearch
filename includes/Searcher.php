@@ -640,13 +640,13 @@ class Searcher extends ElasticsearchIntermediary {
 					serialize( $this->resultsType )
 				) );
 				$cacheResult = $cache->get( $key );
-				$type = $this->searchContext->getSearchType();
+				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
-					$requestStats->increment("CirrusSearch.query_cache.$type.hit");
+					$requestStats->increment("$statsKey.hit");
 					$this->successViaCache( $description, $logContext );
 					return $cacheResult;
 				} else {
-					$requestStats->increment("CirrusSearch.query_cache.$type.miss");
+					$requestStats->increment("$statsKey.miss");
 				}
 
 				$result = $work();
@@ -655,7 +655,7 @@ class Searcher extends ElasticsearchIntermediary {
 					$responseData = $result->getValue()->getResponse()->getData();
 					$isPartialResult = isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ];
 					if ( !$isPartialResult ) {
-						$requestStats->increment("CirrusSearch.query_cache.$type.set");
+						$requestStats->increment("$statsKey.set");
 						$cache->set( $key, $result, $this->searchContext->getCacheTtl() );
 					}
 				}
@@ -844,5 +844,14 @@ class Searcher extends ElasticsearchIntermediary {
 				return;
 			}
 		}
+	}
+
+	/**
+	 * @return string The stats key used for reporting hit/miss rates of the
+	 *  application side query cache.
+	 */
+	protected function getQueryCacheStatsKey() {
+		$type = $this->searchContext->getSearchType();
+		return "CirrusSearch.query_cache.$type";
 	}
 }

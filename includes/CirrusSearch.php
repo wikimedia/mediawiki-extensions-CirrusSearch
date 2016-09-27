@@ -406,17 +406,57 @@ class CirrusSearch extends SearchEngine {
 		$searcher->setResultsType( new FullTextResultsType( $highlightingConfig, $config ? $config->getWikiCode() : '') );
 		$status = $searcher->searchText( $term, $this->showSuggestion );
 
+		$this->lastSearchMetrics = $searcher->getSearchMetrics();
+
+		if ( !$status->isOK() ) {
+			return $status;
+		}
+
+		// For historical reasons all callers of searchText interpret any Status return as an error
+		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
+		// since that is interpreted as no results.
+		$result = $status->getValue();
+
+		// Add interwiki results, if we have a sane result
+		// Note that we have no way of sending warning back to the user.  In this case all warnings
+		// are logged when they are added to the status object so we just ignore them here....
+		if ( $wgCirrusSearchInterwikiSources &&
+				( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) ) ) {
+
+			// If we are dumping we need to convert into an array that can be appended to
+			if ( $dumpQuery || $dumpResult ) {
+				$result = [$result];
+			}
+
+			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
+			// wrote the code but Searcher needs some refactoring first.
+			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
+				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, null, $index, $interwiki );
+				$iwSearch->setReturnQuery( $dumpQuery );
+				$iwSearch->setDumpResult( $dumpResult );
+				$iwSearch->setReturnExplain( $returnExplain );
+				$interwikiResult = $iwSearch->getInterwikiResults( $term );
+				if ( $dumpQuery || $dumpResult ) {
+					$result[] = $interwikiResult;
+				} elseif ( $interwikiResult ) {
+					$result->addInterwikiResults(
+						$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki
+					);
+				}
+			}
+		}
+
 		if ( $dumpQuery || $dumpResult ) {
 			$header = null;
 			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
 				$printer = new CirrusSearch\ExplainPrinter();
-				$result = $printer->format( $status->getValue() );
+				$result = $printer->format( $result );
 			} else {
 				$header = 'Content-type: application/json; charset=UTF-8';
-				if ( $status->getValue() === null ) {
+				if ( $result === null ) {
 					$result = '{}';
 				} else {
-					$result = json_encode( $status->getValue(), JSON_PRETTY_PRINT );
+					$result = json_encode( $result, JSON_PRETTY_PRINT );
 				}
 			}
 
@@ -434,27 +474,7 @@ class CirrusSearch extends SearchEngine {
 			}
 		}
 
-		$this->lastSearchMetrics = $searcher->getSearchMetrics();
 
-		// Add interwiki results, if we have a sane result
-		// Note that we have no way of sending warning back to the user.  In this case all warnings
-		// are logged when they are added to the status object so we just ignore them here....
-		if ( $status->isOK() && $wgCirrusSearchInterwikiSources && $status->getValue() &&
-				method_exists( $status->getValue(), 'addInterwikiResults' ) ) {
-			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
-			// wrote the code but Searcher needs some refactoring first.
-			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
-				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, null, $index, $interwiki );
-				$interwikiResult = $iwSearch->getInterwikiResults( $term );
-				if ( $interwikiResult ) {
-					$status->getValue()->addInterwikiResults( $interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki );
-				}
-			}
-		}
-
-		// For historical reasons all callers of searchText interpret any Status return as an error
-		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
-		// since that is interpreted as no results.
 		return $status->isOK() ? $status->getValue() : $status;
 	}
 

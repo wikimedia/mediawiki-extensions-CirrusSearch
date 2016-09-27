@@ -42,6 +42,7 @@ class SearcherTest extends \MediaWikiTestCase {
 	public function testSearchText( array $config, $expected, $queryString ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
+			'wgCirrusSearchIndexBaseName' => 'wiki',
 			'wgCirrusSearchUseExperimentalHighlighter' => true,
 			'wgCirrusSearchWikimediaExtraPlugin' => [
 				'regex' => [ 'build', 'use' ],

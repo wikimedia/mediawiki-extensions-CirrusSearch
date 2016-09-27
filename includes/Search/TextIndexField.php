@@ -214,7 +214,10 @@ class TextIndexField extends CirrusIndexField {
 	 * @return string
 	 */
 	public static function getSimilarity( SearchConfig $config, $field, $analyzer = null ) {
-		$similarity = $config->get( 'CirrusSearchSimilarityProfile' );
+		$similarity = $config->getElement(
+			'CirrusSearchSimilarityProfiles',
+			$config->get( 'CirrusSearchSimilarityProfile' )
+		);
 		$fieldSimilarity = 'default';
 		if ( isset( $similarity['fields'] ) ) {
 			if( isset( $similarity['fields'][$field] ) ) {

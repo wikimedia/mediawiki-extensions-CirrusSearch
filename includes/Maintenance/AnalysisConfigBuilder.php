@@ -73,7 +73,10 @@ class AnalysisConfigBuilder {
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
 		}
-		$this->similarity = $config->get( 'CirrusSearchSimilarityProfile' );
+		$this->similarity = $config->getElement(
+			'CirrusSearchSimilarityProfiles',
+			$config->get( 'CirrusSearchSimilarityProfile' )
+		);
 		$this->config = $config;
 	}
 

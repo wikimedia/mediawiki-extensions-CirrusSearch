@@ -363,7 +363,7 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 
 // Configure the similarity module
 // see profile/SimilarityProfiles.php for more details
-$wgCirrusSearchSimilarityProfile = $wgCirrusSearchSimilarityProfiles['default'];
+$wgCirrusSearchSimilarityProfile = 'default';
 
 // Weight of fields.  Must be integers not decimals.  If $wgCirrusSearchAllFields['use']
 // is false this can be changed on the fly.  If it is true then changes to this require

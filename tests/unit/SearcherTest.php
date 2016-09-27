@@ -7,17 +7,30 @@ use Title;
 
 class SearcherTest extends \MediaWikiTestCase {
 	public function searchTextProvider() {
+		$configs = [
+			'default' => [],
+		];
+		// globals overrides. All tests will be run for each defined configuration
+		foreach ( glob( __DIR__ . '/fixtures/searchText/*.config' ) as $configFile ) {
+			$configName = substr( basename( $configFile ), 0, -7 );
+			$configs[$configName] = json_decode( file_get_contents( $configFile ), true );
+		}
 		$tests = [];
 		foreach ( glob( __DIR__ . '/fixtures/searchText/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
-			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';
-			$tests[$testName] = [
-				is_file( $expectedFile )
+			$query = file_get_contents( $queryFile );
+			foreach ( $configs as $configName => $config ) {
+				$expectedFile = substr( $queryFile, 0, -5 ) . $configName . '.expected';
+				$expected = is_file( $expectedFile )
 					? json_decode( file_get_contents( $expectedFile ), true )
 					// Flags test to generate a new fixture
-					: $expectedFile,
-				file_get_contents( $queryFile ),
-			];
+					: $expectedFile;
+				$tests["{$testName}-{$configName}"] = [
+					$config,
+					$expected,
+					$query,
+				];
+			}
 		}
 
 		return $tests;
@@ -26,9 +39,9 @@ class SearcherTest extends \MediaWikiTestCase {
 	/**
 	 * @dataProvider searchTextProvider
 	 */
-	public function testSearchText( $expected, $queryString ) {
+	public function testSearchText( array $config, $expected, $queryString ) {
 		// Override some config for parsing purposes
-		$this->setMwGlobals( [
+		$this->setMwGlobals( $config + [
 			'wgCirrusSearchUseExperimentalHighlighter' => true,
 			'wgCirrusSearchWikimediaExtraPlugin' => [
 				'regex' => [ 'build', 'use' ],

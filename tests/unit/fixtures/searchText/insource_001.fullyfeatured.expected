@@ -1,0 +1,153 @@
+{
+    "description": "regex search for 'insource:\/ab?c\/'",
+    "path": "wiki\/page\/_search",
+    "params": {
+        "timeout": "120s",
+        "search_type": "dfs_query_then_fetch"
+    },
+    "query": {
+        "_source": [
+            "id",
+            "title",
+            "namespace",
+            "redirect.*",
+            "timestamp",
+            "text_bytes"
+        ],
+        "fields": "text.word_count",
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match_all": {}
+                    }
+                ],
+                "filter": [
+                    {
+                        "bool": {
+                            "must": [
+                                {
+                                    "source_regex": {
+                                        "regex": "ab?c",
+                                        "field": "source_text",
+                                        "ngram_field": "source_text.trigram",
+                                        "max_inspect": 10000,
+                                        "max_determinized_states": 20000,
+                                        "case_sensitive": true,
+                                        "locale": "en"
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "namespace": [
+                                            0,
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ],
+            "post_tags": [
+                "<\/span>"
+            ],
+            "fields": {
+                "source_text.plain": {
+                    "type": "experimental",
+                    "number_of_fragments": 1,
+                    "fragmenter": "scan",
+                    "fragment_size": 150,
+                    "options": {
+                        "top_scoring": true,
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "regex": [
+                            "ab?c"
+                        ],
+                        "locale": "en",
+                        "regex_flavor": "lucene",
+                        "skip_query": true,
+                        "regex_case_insensitive": false,
+                        "max_determinized_states": 20000
+                    },
+                    "no_match_size": 150
+                }
+            }
+        },
+        "size": 20,
+        "rescore": [
+            {
+                "window_size": 8192,
+                "query": {
+                    "query_weight": 1,
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply",
+                    "rescore_query": {
+                        "function_score": {
+                            "functions": [
+                                {
+                                    "field_value_factor": {
+                                        "field": "incoming_links",
+                                        "modifier": "log2p",
+                                        "missing": 0
+                                    }
+                                },
+                                {
+                                    "weight": "0.25",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                1
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.05",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                2
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.0125",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                3
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ],
+        "stats": [
+            "regex"
+        ]
+    },
+    "options": {
+        "timeout": "120s",
+        "search_type": "dfs_query_then_fetch"
+    }
+}

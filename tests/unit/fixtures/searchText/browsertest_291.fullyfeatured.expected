@@ -1,0 +1,242 @@
+{
+    "description": "full_text search for '\"Screenshot, for test purposes\"'",
+    "path": "wiki\/page\/_search",
+    "params": {
+        "timeout": "20s",
+        "search_type": "dfs_query_then_fetch"
+    },
+    "query": {
+        "_source": [
+            "id",
+            "title",
+            "namespace",
+            "redirect.*",
+            "timestamp",
+            "text_bytes"
+        ],
+        "fields": "text.word_count",
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "query_string": {
+                            "query": "(all.plain:\"Screenshot, for test purposes\"~0^1)",
+                            "fields": [
+                                "all.plain^1",
+                                "all^0.5"
+                            ],
+                            "auto_generate_phrase_queries": true,
+                            "phrase_slop": 0,
+                            "default_operator": "AND",
+                            "allow_leading_wildcard": true,
+                            "fuzzy_prefix_length": 2,
+                            "rewrite": "top_terms_blended_freqs_1024",
+                            "max_determinized_states": 500
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "terms": {
+                            "namespace": [
+                                0,
+                                1,
+                                2,
+                                3
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ],
+            "post_tags": [
+                "<\/span>"
+            ],
+            "fields": {
+                "title": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "number_of_fragments": 1,
+                    "matched_fields": [
+                        "title",
+                        "title.plain"
+                    ]
+                },
+                "redirect.title": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "redirect.title",
+                        "redirect.title.plain"
+                    ]
+                },
+                "category": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "category",
+                        "category.plain"
+                    ]
+                },
+                "heading": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "heading",
+                        "heading.plain"
+                    ]
+                },
+                "text": {
+                    "type": "experimental",
+                    "number_of_fragments": 1,
+                    "fragmenter": "scan",
+                    "fragment_size": 150,
+                    "options": {
+                        "top_scoring": true,
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000
+                    },
+                    "no_match_size": 150,
+                    "matched_fields": [
+                        "text",
+                        "text.plain"
+                    ]
+                },
+                "auxiliary_text": {
+                    "type": "experimental",
+                    "number_of_fragments": 1,
+                    "fragmenter": "scan",
+                    "fragment_size": 150,
+                    "options": {
+                        "top_scoring": true,
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "auxiliary_text",
+                        "auxiliary_text.plain"
+                    ]
+                }
+            },
+            "highlight_query": {
+                "query_string": {
+                    "query": "(title.plain:\"Screenshot, for test purposes\"~0^20 OR redirect.title.plain:\"Screenshot, for test purposes\"~0^15 OR category.plain:\"Screenshot, for test purposes\"~0^8 OR heading.plain:\"Screenshot, for test purposes\"~0^5 OR opening_text.plain:\"Screenshot, for test purposes\"~0^3 OR text.plain:\"Screenshot, for test purposes\"~0^1 OR auxiliary_text.plain:\"Screenshot, for test purposes\"~0^0.5)",
+                    "fields": [
+                        "title.plain^20",
+                        "redirect.title.plain^15",
+                        "category.plain^8",
+                        "heading.plain^5",
+                        "opening_text.plain^3",
+                        "text.plain^1",
+                        "auxiliary_text.plain^0.5",
+                        "title^10",
+                        "redirect.title^7.5",
+                        "category^4",
+                        "heading^2.5",
+                        "opening_text^1.5",
+                        "text^0.5",
+                        "auxiliary_text^0.25"
+                    ],
+                    "auto_generate_phrase_queries": true,
+                    "phrase_slop": 1,
+                    "default_operator": "AND",
+                    "allow_leading_wildcard": true,
+                    "fuzzy_prefix_length": 2,
+                    "rewrite": "top_terms_blended_freqs_1024",
+                    "max_determinized_states": 500
+                }
+            }
+        },
+        "size": 20,
+        "rescore": [
+            {
+                "window_size": 8192,
+                "query": {
+                    "query_weight": 1,
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply",
+                    "rescore_query": {
+                        "function_score": {
+                            "functions": [
+                                {
+                                    "field_value_factor": {
+                                        "field": "incoming_links",
+                                        "modifier": "log2p",
+                                        "missing": 0
+                                    }
+                                },
+                                {
+                                    "weight": "0.25",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                1
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.05",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                2
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.0125",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                3
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ],
+        "stats": [
+            "full_text"
+        ]
+    },
+    "options": {
+        "timeout": "20s",
+        "search_type": "dfs_query_then_fetch"
+    }
+}

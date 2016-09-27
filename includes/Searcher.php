@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use Elastica;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
@@ -457,29 +456,11 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Powers full-text-like searches including prefix search.
-	 *
-	 * @param string $for
-	 * @return Status results from the query transformed by the resultsType
+	 * @return \Elastica\Search
 	 */
-	private function search( $for ) {
-		if ( $this->limit <= 0 && ! $this->returnQuery ) {
-			if ( $this->returnResult ) {
-				return Status::newGood( [
-						'description' => 'Canceled due to offset out of bounds',
-						'path' => '',
-						'result' => [],
-				] );
-			} else {
-				return Status::newGood( $this->resultsType->createEmptyResult() );
-			}
-		}
+	private function buildSearch() {
 
-		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
-		}
-
-		$query = new Elastica\Query();
+		$query = new \Elastica\Query();
 		$query->setParam( '_source', $this->resultsType->getSourceFiltering() );
 		$query->setParam( 'fields', $this->resultsType->getFields() );
 
@@ -499,6 +480,10 @@ class Searcher extends ElasticsearchIntermediary {
 		$highlight = $this->searchContext->getHighlight( $this->resultsType );
 		if ( $highlight ) {
 			$query->setHighlight( $highlight );
+		}
+
+		if ( $this->resultsType === null ) {
+			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
 		}
 
 		if ( $this->searchContext->getSuggest() ) {
@@ -557,20 +542,49 @@ class Searcher extends ElasticsearchIntermediary {
 			);
 		}
 
-		$queryOptions = [];
+		// Setup the search
+		$queryOptions = [
+			\Elastica\Search::OPTION_TIMEOUT => $this->getTimeout(),
+		];
+		// @todo when switching to multi-search this has to be provided at the top level
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
-			$queryOptions[ 'search_type' ] = 'dfs_query_then_fetch';
+			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
-		$queryOptions['timeout'] = $this->getTimeout();
-		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
-
-		// Setup the search
 		$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+		$search = new \Elastica\Search($this->connection->getClient());
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
 		}
+
+		if ( $this->returnExplain ) {
+			$query->setExplain( true );
+		}
+
+		return $search;
+	}
+
+	/**
+	 * Powers full-text-like searches including prefix search.
+	 *
+	 * @param string $for
+	 * @return Status results from the query transformed by the resultsType
+	 */
+	private function search( $for ) {
+		if ( $this->limit <= 0 && ! $this->returnQuery ) {
+			if ( $this->returnResult ) {
+				return Status::newGood( [
+						'description' => 'Canceled due to offset out of bounds',
+						'path' => '',
+						'result' => [],
+				] );
+			} else {
+				return Status::newGood( $this->resultsType->createEmptyResult() );
+			}
+		}
+
+		$search = $this->buildSearch();
 
 		$description = "{queryType} search for '{query}'";
 		$logContext = [
@@ -588,14 +602,12 @@ class Searcher extends ElasticsearchIntermediary {
 				'description' => $this->formatDescription( $description, $logContext ),
 				'path' => $search->getPath(),
 				'params' => $search->getOptions(),
-				'query' => $query->toArray(),
-				'options' => $queryOptions,
+				'query' => $search->getQuery()->toArray(),
+				'options' => $search->getOptions(),
 			] );
 		}
 
-		if ( $this->returnExplain ) {
-			$query->setExplain( true );
-		}
+		$this->connection->setTimeout( $this->getTimeout() );
 
 		// Perform the search
 		$work = function () use ( $search, $description, $logContext ) {
@@ -719,7 +731,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$builder = new RescoreBuilder( $this->searchContext );
 		$this->searchContext->mergeRescore( $builder->build() );
 	}
-
 
 	/**
 	 * @param string $search

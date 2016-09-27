@@ -596,46 +596,64 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $this->returnExplain ) {
 			$query->setExplain( true );
 		}
-		if ( $this->returnResult || $this->returnExplain ) {
-			// don't cache debugging queries
-			$this->searchContext->setCacheTtl( 0 );
-		}
-
-		$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		if ( $this->searchContext->getCacheTtl() > 0 ) {
-			$cache = ObjectCache::getLocalClusterInstance();
-			$key = $cache->makeKey( 'cirrussearch', 'search', md5(
-				$search->getPath() .
-				serialize( $search->getOptions() ) .
-				serialize( $query->toArray() ) .
-				serialize( $this->resultsType )
-			) );
-			$cacheResult = $cache->get( $key );
-			$type = $this->searchContext->getSearchType();
-			if ( $cacheResult ) {
-				$requestStats->increment("CirrusSearch.query_cache.$type.hit");
-				$this->successViaCache( $description, $logContext );
-				return $cacheResult;
-			} else {
-				$requestStats->increment("CirrusSearch.query_cache.$type.miss");
-			}
-		}
 
 		// Perform the search
-		$result = Util::doPoolCounterWork(
-			$this->getPoolCounterType(),
-			$this->user,
-			function() use ( $search, $description, $logContext ) {
-				try {
-					$this->start( $description, $logContext );
-					return $this->success( $search->search() );
-				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-					return $this->failure( $e );
+		$work = function () use ( $search, $description, $logContext ) {
+			return Util::doPoolCounterWork(
+				$this->getPoolCounterType(),
+				$this->user,
+				function () use ( $search, $description, $logContext ) {
+					try {
+						$this->start( $description, $logContext );
+						return $this->success( $search->search() );
+					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+						return $this->failure( $e );
+					}
+				},
+				$this->searchContext->getSearchType() === 'regex'
+					? 'cirrussearch-regex-too-busy-error' : null
+			);
+		};
+
+		// Wrap with caching if needed, but don't cache debugging queries
+		$skipCache = $this->returnResult || $this->returnExplain;
+		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
+			$work = function () use ( $work, $search, $description, $logContext ) {
+				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
+				$cache = ObjectCache::getLocalClusterInstance();
+				$key = $cache->makeKey( 'cirrussearch', 'search', md5(
+					$search->getPath() .
+					serialize( $search->getOptions() ) .
+					serialize( $search->getQuery()->toArray() ) .
+					serialize( $this->resultsType )
+				) );
+				$cacheResult = $cache->get( $key );
+				$type = $this->searchContext->getSearchType();
+				if ( $cacheResult ) {
+					$requestStats->increment("CirrusSearch.query_cache.$type.hit");
+					$this->successViaCache( $description, $logContext );
+					return $cacheResult;
+				} else {
+					$requestStats->increment("CirrusSearch.query_cache.$type.miss");
 				}
-			},
-			$this->searchContext->getSearchType() === 'regex'
-				? 'cirrussearch-regex-too-busy-error' : null
-		);
+
+				$result = $work();
+
+				if ( $result->isOK() ) {
+					$responseData = $result->getValue()->getResponse()->getData();
+					$isPartialResult = isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ];
+					if ( !$isPartialResult ) {
+						$requestStats->increment("CirrusSearch.query_cache.$type.set");
+						$cache->set( $key, $result, $this->searchContext->getCacheTtl() );
+					}
+				}
+
+				return $result;
+			};
+		}
+
+		$result = $work();
+
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();
 
@@ -651,9 +669,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->searchContext,
 				$result->getValue()
 			) );
-			$isPartialResult = false;
 			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
-				$isPartialResult = true;
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"$description timed out and only returned partial results!",
 					$logContext
@@ -664,15 +680,7 @@ class Searcher extends ElasticsearchIntermediary {
 					$result->warning( 'cirrussearch-timed-out' );
 				}
 			}
-
-			if ( $this->searchContext->getCacheTtl() > 0 && !$isPartialResult ) {
-				/** @suppress PhanUndeclaredVariable */
-				$requestStats->increment("CirrusSearch.query_cache.$type.set");
-				/** @suppress PhanUndeclaredVariable */
-				$cache->set( $key, $result, $this->searchContext->getCacheTtl() );
-			}
 		}
-
 
 		return $result;
 	}

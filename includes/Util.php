@@ -117,15 +117,14 @@ class Util {
 	 * that Cirrus always uses.
 	 *
 	 * @param string $type same as type parameter on PoolCounter::factory
-	 * @param \User $user the user
+	 * @param \User|null $user the user
 	 * @param callable $workCallback callback when pool counter is acquired.  Called with
 	 *  no parameters.
-	 * @param callable $errorCallback optional callback called on errors.  Called with
-	 *  the error string and the key as parameters.  If left undefined defaults
-	 *  to a function that returns a fatal status and logs an warning.
+	 * @param string|null $busyErrorMsg The i18n key to return when the queue
+	 *  is full, or null to use the default.
 	 * @return mixed
 	 */
-	public static function doPoolCounterWork( $type, $user, $workCallback, $errorCallback = null ) {
+	public static function doPoolCounterWork( $type, $user, $workCallback, $busyErrorMsg = null ) {
 		global $wgCirrusSearchPoolCounterKey;
 
 		// By default the pool counter allows you to lock the same key with
@@ -134,77 +133,41 @@ class Util {
 
 		if ( !$user ) {
 			// We don't want to even use the pool counter if there isn't a user.
+			// Note that anonymous users are still users, this is most likely
+			// maintenance scripts.
+			//
+			// @todo Maintenenace scripts and jobs should already override
+			// poolcounters as necessary, can this be removed?
 			return $workCallback();
 		}
-		$perUserKey = md5( $user->getName() );
-		$perUserKey = "nowait:CirrusSearch:_per_user:$perUserKey";
-		$globalKey = "$type:$wgCirrusSearchPoolCounterKey";
-		if ( $errorCallback === null ) {
-			$errorCallback = function( $error, $key, $userName ) {
-				$forUserName = $userName ? "for {userName} " : '';
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Pool error {$forUserName}on {key}:  {error}",
-					[ 'userName' => $userName, 'key' => $key, 'error' => $error ]
-				);
-				return Status::newFatal( 'cirrussearch-backend-error' );
-			};
-		}
+
+		$key = "$type:$wgCirrusSearchPoolCounterKey";
+
+		$errorCallback = function( Status $status ) use ( $key, $busyErrorMsg ) {
+			/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
+			$errors = $status->getErrorsArray();
+			$error = $errors[0][0];
+
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Pool error on {key}:  {error}",
+				[ 'key' => $key, 'error' => $error ]
+			);
+			if ( $error === 'pool-queuefull' ) {
+				return Status::newFatal( $busyErrorMsg ?: 'cirrussearch-too-busy-error' );
+			}
+			return Status::newFatal( 'cirrussearch-backend-error' );
+		};
+
 		// wrap some stats collection on the success/failure handlers
 		$startPoolWork = microtime( true );
 		$workCallback = self::wrapWithPoolStats( $startPoolWork, $type, true, $workCallback );
 		$errorCallback = self::wrapWithPoolStats( $startPoolWork, $type, false, $errorCallback );
 
-		$errorHandler = function( $key ) use ( $errorCallback, $user ) {
-			return function( Status $status ) use ( $errorCallback, $key, $user ) {
-				/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
-				$status = $status->getErrorsArray();
-				// anon usernames are needed within the logs to determine if
-				// specific ips (such as large #'s of users behind a proxy)
-				// need to be whitelisted. We do not need this information
-				// for logged in users and do not store it.
-				$userName = $user->isAnon() ? $user->getName() : '';
-				return $errorCallback( $status[ 0 ][ 0 ], $key, $userName );
-			};
-		};
-		$doPerUserWork = function() use ( $type, $globalKey, $workCallback, $errorHandler ) {
-			// Now that we have the per user lock lets get the operation lock.
-			// Note that this could block, causing the user to wait in line with their lock held.
-			$work = new PoolCounterWorkViaCallback( $type, $globalKey, [
-				'doWork' => $workCallback,
-				'error' => $errorHandler( $globalKey ),
-			] );
-			return $work->execute();
-		};
-		$work = new PoolCounterWorkViaCallback( 'CirrusSearch-PerUser', $perUserKey, [
-			'doWork' => $doPerUserWork,
-			'error' => function( $status ) use( $errorHandler, $perUserKey, $doPerUserWork ) {
-				$errorCallback = $errorHandler( $perUserKey );
-				$errorResult = $errorCallback( $status );
-				if ( Util::isUserPoolCounterActive() ) {
-					return $errorResult;
-				} else {
-					return $doPerUserWork();
-				}
-			},
+		$work = new PoolCounterWorkViaCallback( $type, $key, [
+			'doWork' => $workCallback,
+			'error' => $errorCallback,
 		] );
 		return $work->execute();
-	}
-
-	/**
-	 * @return bool
-	 */
-	public static function isUserPoolCounterActive() {
-		global $wgCirrusSearchBypassPerUserFailure,
-			$wgCirrusSearchForcePerUserPoolCounter;
-
-		$ip = RequestContext::getMain()->getRequest()->getIP();
-		if ( IP::isInRanges( $ip, $wgCirrusSearchForcePerUserPoolCounter ) ) {
-			return true;
-		} elseif ( $wgCirrusSearchBypassPerUserFailure ) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	/**

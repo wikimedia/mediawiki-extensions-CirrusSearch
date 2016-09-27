@@ -89,12 +89,4 @@ if ( class_exists( 'PoolCounter_Client' ) ) {
 		'workers' => 50,
 		'maxqueue' => 200,
 	);
-	// Limit users to a single concurent search. Note that this also effects
-	// ip address, so shared ip addresses will run into issues.
-	$wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
-		'class' => 'PoolCounter_Client',
-		'timeout' => 0,
-		'workers' => 5,
-		'maxqueue' => 5,
-	);
 }

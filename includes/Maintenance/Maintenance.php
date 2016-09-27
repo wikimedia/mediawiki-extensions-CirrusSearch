@@ -197,8 +197,7 @@ abstract class Maintenance extends \Maintenance {
 
 		// Make sure we don't flood the pool counter
 		$wgPoolCounterConf = [];
-		unset( $wgPoolCounterConf['CirrusSearch-Search'],
-			$wgPoolCounterConf['CirrusSearch-PerUser'] );
+		unset( $wgPoolCounterConf['CirrusSearch-Search'] );
 
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.

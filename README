@@ -136,16 +136,6 @@ LocalSettings.php like so:
 	),
  );
 
-If you have a version of the pool counter with Ie282b8486c7bad451fbc5fb9a8274c6e01a728a7
-you can also enable per user request limits:
- // Each user (or remote IP) can only do 5 concurrent queries.
- $wgPoolCounterConf[ 'CirrusSearch-PerUser' ] = array(
-	'class' => 'PoolCounter_Client',
-	'timeout' => 0,
-	'workers' => 5,
-	'maxqueue' => 5,
- );
-
 Upgrading
 ---------
 When you upgrade there four possible cases for maintaining the index:

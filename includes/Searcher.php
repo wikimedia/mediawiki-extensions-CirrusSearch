@@ -633,30 +633,9 @@ class Searcher extends ElasticsearchIntermediary {
 					return $this->failure( $e );
 				}
 			},
-			function( $error, $key, $userName ) use ( $description, $logContext ) {
-				$forUserName = $userName ? "for {userName} " : '';
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					/** @suppress PhanTypeMismatchArgument phan doesn't understand array addition */
-					"Pool error {$forUserName}on key {key} during $description:  {error}",
-					$logContext + [
-						'userName' => $userName,
-						'key' => 'key',
-						'error' => $error
-					]
-				);
-
-				if ( $error === 'pool-queuefull' ) {
-					if ( strpos( $key, 'nowait:CirrusSearch:_per_user' ) === 0 ) {
-						$loggedIn = $this->user->isLoggedIn() ? 'logged-in' : 'anonymous';
-						return Status::newFatal( "cirrussearch-too-busy-for-you-{$loggedIn}-error" );
-					}
-					if ( $this->searchContext->getSearchType() === 'regex' ) {
-						return Status::newFatal( 'cirrussearch-regex-too-busy-error' );
-					}
-					return Status::newFatal( 'cirrussearch-too-busy-error' );
-				}
-				return Status::newFatal( 'cirrussearch-backend-error' );
-			});
+			$this->searchContext->getSearchType() === 'regex'
+				? 'cirrussearch-regex-too-busy-error' : null
+		);
 		if ( $result->isOK() ) {
 			$responseData = $result->getValue()->getResponse()->getData();
 

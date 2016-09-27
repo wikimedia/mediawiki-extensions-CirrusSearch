@@ -16,6 +16,7 @@ function main() {
 		$generator->readFile( $file );
 	}
 	$generator->readFile( dirname( __DIR__ ) . '/tests/unit/TestUtils.php' );
+	$generator->readFile( dirname( __DIR__ ) . '/tests/unit/Query/BaseSimpleKeywordFeatureTest.php' );
 
 	$data = $generator->getAutoload( basename( __DIR__ ) . '/' . basename( __FILE__ ) );
 	file_put_contents( $generator->getTargetFileinfo()['filename'], $data );

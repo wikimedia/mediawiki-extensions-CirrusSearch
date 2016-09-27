@@ -92,6 +92,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\NearMatchPicker' => __DIR__ . '/includes/NearMatchPicker.php',
 	'CirrusSearch\\OtherIndexes' => __DIR__ . '/includes/OtherIndexes.php',
 	'CirrusSearch\\PhraseSuggesterProfiles' => __DIR__ . '/profiles/PhraseSuggesterProfiles.php',
+	'CirrusSearch\\Query\\BaseSimpleKeywordFeatureTest' => __DIR__ . '/tests/unit/Query/BaseSimpleKeywordFeatureTest.php',
 	'CirrusSearch\\Query\\BoostTemplatesFeature' => __DIR__ . '/includes/Query/BoostTemplatesFeature.php',
 	'CirrusSearch\\Query\\FullTextQueryBuilder' => __DIR__ . '/includes/Query/FullTextQueryBuilder.php',
 	'CirrusSearch\\Query\\FullTextQueryStringQueryBuilder' => __DIR__ . '/includes/Query/FullTextQueryStringQueryBuilder.php',

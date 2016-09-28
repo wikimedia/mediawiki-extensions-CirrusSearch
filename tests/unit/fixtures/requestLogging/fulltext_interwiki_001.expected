@@ -172,26 +172,5 @@
         },
         "level": "debug",
         "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
-    },
-    {
-        "channel": "CirrusSearchRequests",
-        "context": {
-            "elasticTookMs": 0,
-            "executor": "123456789",
-            "hitsOffset": 0,
-            "hitsReturned": 5,
-            "hitsTotal": 7,
-            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
-            "index": "cirrustestwiki",
-            "limit": 5,
-            "maxScore": 9.647443,
-            "query": "main",
-            "queryType": "full_text",
-            "source": "cli",
-            "suggestion": null,
-            "tookMs": 0
-        },
-        "level": "debug",
-        "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
     }
 ]

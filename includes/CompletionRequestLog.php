@@ -107,10 +107,20 @@ class CompletionRequestLog extends BaseRequestLog {
 			'maxScore' => $this->maxScore,
 			'hitsReturned' => count( $this->hits ),
 			'hitsOffset' => isset( $this->extra['offset'] ) ? $this->extra['offset'] : 0,
-			'hits' => $this->hits,
 			'tookMs' => $this->getTookMs(),
 		];
 
+	}
+
+	/**
+	 * @return array[]
+	 */
+	public function getRequests() {
+		$vars = $this->getLogVariables() + [
+			'hits' => $this->hits,
+		];
+
+		return [$vars];
 	}
 
 	/**

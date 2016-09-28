@@ -173,10 +173,11 @@ class DataSender extends ElasticsearchIntermediary {
 		$justDocumentMissing = false;
 		try {
 			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-			$this->startNewLog( 'sending {numBulk} documents to the {indexType} index', 'send_data_write', [
-				'numBulk' => $documentCount,
-				'indexType' => $indexType,
-			] );
+			$this->start( new BulkUpdateRequestLog(
+				$this->connection->getClient(),
+				'sending {numBulk} documents to the {index} index(s)',
+				'send_data_write'
+			) );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
 			$bulk->setType( $pageType );
@@ -296,9 +297,11 @@ class DataSender extends ElasticsearchIntermediary {
 			// Execute the bulk update
 			$exception = null;
 			try {
-				$this->startNewLog( 'updating {numBulk} documents in other indexes', 'send_data_other_idx_write', [
-					'numBulk' => count( $updates )
-				] );
+				$this->start( new BulkUpdateRequestLog(
+					$this->connection->getClient(),
+					'updating {numBulk} documents in other indexes',
+					'send_data_other_idx_write'
+				) );
 				$bulk->send();
 			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {

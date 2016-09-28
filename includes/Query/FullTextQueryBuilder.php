@@ -17,4 +17,13 @@ interface FullTextQueryBuilder {
 	 * searches that might be better?
 	 */
 	public function build( SearchContext $searchContext, $term, $showSuggestion );
+
+	/**
+	 * Attempt to build a degraded query from the query already built into $context. Must be
+	 * called *after* self::build().
+	 *
+	 * @param SearchContext $context
+	 * @return bool True if a degraded query was built
+	 */
+	public function buildDegraded( SearchContext $searchContext );
 }

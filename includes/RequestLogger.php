@@ -88,9 +88,6 @@ class RequestLogger {
 				} );
 			}
 
-			// Don't report hits to standard logging destinations
-			unset( $finalContext['hits'] );
-
 			$logMessage = $this->buildLogMessage( $log, $finalContext );
 			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $finalContext );
 			if ( $slowMillis && $log->getTookMs() >= $slowMillis ) {
@@ -173,7 +170,7 @@ class RequestLogger {
 	private function buildRequestSetLog() {
 		global $wgRequest;
 
-		// for the moment RequestLog::getLogVariables is still created in the
+		// for the moment RequestLog::getRequests() is still created in the
 		// old format to serve the old log formats, so here we transform the
 		// context into the new avro defined format. At some point the context
 		// should just be created in the correct format.
@@ -181,39 +178,40 @@ class RequestLogger {
 		$allCached = true;
 		$allHits = [];
 		foreach ( $this->logs as $idx => $log ) {
-			$context = $log->getLogVariables();
-			$request = [
-				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
-				'queryType' => isset( $context['queryType'] ) ? (string) $context['queryType'] : '',
-				// populated below
-				'indices' => isset( $context['index'] ) ? explode( ',', $context['index'] ) : [],
-				'tookMs' => isset( $context['tookMs'] ) ? (int) $context['tookMs'] : -1,
-				'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int) $context['elasticTookMs'] : -1,
-				'limit' => isset( $context['limit'] ) ? (int) $context['limit'] : -1,
-				'hitsTotal' => isset( $context['hitsTotal'] ) ? (int) $context['hitsTotal'] : -1,
-				'hitsReturned' => isset( $context['hitsReturned'] ) ? (int) $context['hitsReturned'] : -1,
-				'hitsOffset' => isset( $context['hitsOffset'] ) ? (int) $context['hitsOffset'] : -1,
-				// populated below
-				'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
-				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
-				'suggestionRequested' => isset( $context['suggestion'] ),
-				'maxScore' => isset( $context['maxScore'] ) ? (float) $context['maxScore'] : -1.0,
-				'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
-				'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],
-			];
-			$allHits = array_merge( $allHits, $request['hits'] );
-			if ( $log->isCachedResponse() ) {
-				$request['payload']['cached'] = 'true';
-			} else {
-				$allCached = false;
-			}
-			if ( isset( $this->extraPayload[$idx] ) ) {
-				foreach ( $this->extraPayload[$idx] as $key => $value ) {
-					$request['payload'][$key] = (string)$value;
+			foreach ( $log->getRequests() as $context ) {
+				$request = [
+					'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
+					'queryType' => isset( $context['queryType'] ) ? (string) $context['queryType'] : '',
+					// populated below
+					'indices' => isset( $context['index'] ) ? explode( ',', $context['index'] ) : [],
+					'tookMs' => isset( $context['tookMs'] ) ? (int) $context['tookMs'] : -1,
+					'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int) $context['elasticTookMs'] : -1,
+					'limit' => isset( $context['limit'] ) ? (int) $context['limit'] : -1,
+					'hitsTotal' => isset( $context['hitsTotal'] ) ? (int) $context['hitsTotal'] : -1,
+					'hitsReturned' => isset( $context['hitsReturned'] ) ? (int) $context['hitsReturned'] : -1,
+					'hitsOffset' => isset( $context['hitsOffset'] ) ? (int) $context['hitsOffset'] : -1,
+					// populated below
+					'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
+					'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
+					'suggestionRequested' => isset( $context['suggestion'] ),
+					'maxScore' => isset( $context['maxScore'] ) ? (float) $context['maxScore'] : -1.0,
+					'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
+					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],
+				];
+				$allHits = array_merge( $allHits, $request['hits'] );
+				if ( $log->isCachedResponse() ) {
+					$request['payload']['cached'] = 'true';
+				} else {
+					$allCached = false;
 				}
-			}
+				if ( isset( $this->extraPayload[$idx] ) ) {
+					foreach ( $this->extraPayload[$idx] as $key => $value ) {
+						$request['payload'][$key] = (string)$value;
+					}
+				}
 
-			$requests[] = $request;
+				$requests[] = $request;
+			}
 		}
 
 		// Reindex allHits by page title's. It's maybe not perfect, but it's

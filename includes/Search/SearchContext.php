@@ -186,6 +186,12 @@ class SearchContext {
 		}
 	}
 
+	public function __clone() {
+		if ( $this->mainQuery ) {
+			$this->mainQuery = clone $this->mainQuery;
+		}
+	}
+
 	/**
 	 * @return SearchConfig the Cirrus config object
 	 */

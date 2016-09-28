@@ -174,6 +174,20 @@ abstract class ElasticsearchIntermediary {
 		self::$requestLogger->addRequest( $log );
 	}
 
+	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet ) {
+		foreach ( $multiResultSet->getResultSets() as $resultSet ) {
+			if ( $resultSet->getResponse()->hasError() ) {
+				return $this->failure( new \Elastica\Exception\ResponseException(
+					$this->connection->getClient()->getLastRequest(),
+					$resultSet->getResponse()
+				) );
+			}
+		}
+
+		// Should never get here
+		return $this->success( $multiResultSet );
+	}
+
 	/**
 	 * Log a failure and return an appropriate status.  Public so it can be
 	 * called from pool counter methods.

@@ -5,10 +5,10 @@ namespace CirrusSearch;
 use User;
 
 /**
- * Represents logging information for a single request made between php and
- * elasticsearch. Information returned from here goes through the RequestLogger
- * class and gets logged to the CirrusSearchRequestSet channel for later
- * processing in analytics platforms.
+ * Represents logging information for a single network operation made between
+ * php and elasticsearch. Information returned from here goes through the
+ * RequestLogger class and gets logged to the CirrusSearchRequestSet channel
+ * for later processing in analytics platforms.
  */
 interface RequestLog {
 	/**
@@ -55,8 +55,21 @@ interface RequestLog {
 	function isCachedResponse();
 
 	/**
-	 * @return array Various information about the request. The exact set of returned keys can vary,
-	 *  but should generally conform to what is expected in RequestLogger::buildRequestSetLog().
+	 * @return array Various information about the request(s). The exact set of
+	 *  returned keys can vary, but should generally conform to what is expected
+	 *  in RequestLogger::buildRequestSetLog(). This must return a single map
+	 *  of k/v pairs regardless of the number of requests represented here.
+	 *  This is utilized primarily for error reporting purposes.
 	 */
 	function getLogVariables();
+
+	/**
+	 * @return array[] array of arrays containing various information about the
+	 * request(s). The exact returned keys can vary, but should generally
+	 * conform to what is expected in RequestLogger::buildRequestSetLog(). This
+	 * must return one map per request represented by this log. This is
+	 * primarily used for structured logging of request data to be analyzed in
+	 * analytics platforms.
+	 */
+	function getRequests();
 }

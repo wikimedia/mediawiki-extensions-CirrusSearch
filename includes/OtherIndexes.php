@@ -120,9 +120,12 @@ class OtherIndexes extends Updater {
 		}
 
 		// Look up the ids and run all closures to build the list of updates
-		$this->startNewLog( 'searching for {numIds} ids in other indexes', 'other_idx_lookup', [
-			'numIds' => $findIdsClosuresCount
-		] );
+		$this->start( new MultiSearchRequestLog(
+			$this->connection->getClient(),
+			'searching for {numIds} ids in other indexes',
+			'other_idx_lookup',
+			[ 'numIds' => $findIdsClosuresCount ]
+		) );
 		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
 		try {
 			$this->success();

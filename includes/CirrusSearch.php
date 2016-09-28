@@ -101,6 +101,8 @@ class CirrusSearch extends SearchEngine {
 			: $baseName;
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
+		// enable interwiki by default
+		$this->features['interwiki'] = true;
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -328,8 +330,6 @@ class CirrusSearch extends SearchEngine {
 	 * @return null|Status|ResultSet
 	 */
 	protected function searchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
-		global $wgCirrusSearchInterwikiSources;
-
 		// Convert the unicode character 'ideographic whitespace' into standard
 		// whitespace.  Cirrussearch treats them both as normal whitespace, but
 		// the preceding isn't appropriately trimmed.
@@ -420,28 +420,28 @@ class CirrusSearch extends SearchEngine {
 		// Add interwiki results, if we have a sane result
 		// Note that we have no way of sending warning back to the user.  In this case all warnings
 		// are logged when they are added to the status object so we just ignore them here....
-		if ( $wgCirrusSearchInterwikiSources &&
-				( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) ) ) {
+		if ( $this->isFeatureEnabled( 'interwiki' ) &&
+			( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) )
+		) {
 
-			// If we are dumping we need to convert into an array that can be appended to
-			if ( $dumpQuery || $dumpResult ) {
-				$result = [$result];
-			}
-
-			// @todo @fixme: This should absolutely be a multisearch. I knew this when I
-			// wrote the code but Searcher needs some refactoring first.
-			foreach ( $wgCirrusSearchInterwikiSources as $interwiki => $index ) {
-				$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces, null, $index, $interwiki );
-				$iwSearch->setReturnQuery( $dumpQuery );
-				$iwSearch->setDumpResult( $dumpResult );
-				$iwSearch->setReturnExplain( $returnExplain );
-				$interwikiResult = $iwSearch->getInterwikiResults( $term );
+			$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces );
+			$iwSearch->setReturnQuery( $dumpQuery );
+			$iwSearch->setDumpResult( $dumpResult );
+			$iwSearch->setReturnExplain( $returnExplain );
+			$interwikiResults = $iwSearch->getInterwikiResults( $term );
+			if ( $interwikiResults !== null ) {
+				// If we are dumping we need to convert into an array that can be appended to
 				if ( $dumpQuery || $dumpResult ) {
-					$result[] = $interwikiResult;
-				} elseif ( $interwikiResult ) {
-					$result->addInterwikiResults(
-						$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki
-					);
+					$result = [$result];
+				}
+				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
+					if ( $dumpQuery || $dumpResult ) {
+						$result[] = $interwikiResult;
+					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
+						$result->addInterwikiResults(
+							$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki
+						);
+					}
 				}
 			}
 		}

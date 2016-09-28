@@ -7,6 +7,7 @@ use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Query\FullTextQueryBuilder;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -89,7 +90,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var string index base name to use
 	 */
-	private $indexBaseName;
+	protected $indexBaseName;
 
 	/**
 	 * @var Escaper escapes queries
@@ -203,16 +204,16 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
-	 * @param string $search text by which to search
+	 * @param string $term text by which to search
 	 * @return Status status containing results defined by resultsType on success
 	 */
-	public function nearMatchTitleSearch( $search ) {
-		$this->checkTitleSearchRequestLength( $search );
+	public function nearMatchTitleSearch( $term ) {
+		$this->checkTitleSearchRequestLength( $term );
 
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.
 		$highlightQuery = new \Elastica\Query\MultiMatch();
-		$highlightQuery->setQuery( $search );
+		$highlightQuery->setQuery( $term );
 		$highlightQuery->setFields( [
 			'title.near_match', 'redirect.title.near_match',
 			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
@@ -220,7 +221,7 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 			// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
 			$allQuery = new \Elastica\Query\MultiMatch();
-			$allQuery->setQuery( $search );
+			$allQuery->setQuery( $term );
 			$allQuery->setFields( [ 'all_near_match', 'all_near_match.asciifolding' ] );
 			$this->searchContext->addFilter( $allQuery );
 		} else {
@@ -229,23 +230,23 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->searchContext->setHighlightQuery( $highlightQuery );
 		$this->searchContext->setSearchType( 'near_match' );
 
-		return $this->search( $search );
+		return $this->searchOne( $term );
 	}
 
 	/**
 	 * Perform a prefix search.
-	 * @param string $search text by which to search
+	 * @param string $term text by which to search
 	 * @return Status status containing results defined by resultsType on success
 	 */
-	public function prefixSearch( $search ) {
-		$this->checkTitleSearchRequestLength( $search );
+	public function prefixSearch( $term ) {
+		$this->checkTitleSearchRequestLength( $term );
 
 		$this->searchContext->setSearchType( 'prefix' );
-		if ( strlen( $search ) > 0 ) {
+		if ( strlen( $term ) > 0 ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
 				$match = new \Elastica\Query\Match();
 				$match->setField( 'title.word_prefix', [
-					'query' => $search,
+					'query' => $term,
 					'analyzer' => 'plain',
 					'operator' => 'and',
 				] );
@@ -254,7 +255,7 @@ class Searcher extends ElasticsearchIntermediary {
 				// Elasticsearch seems to have trouble extracting the proper terms to highlight
 				// from the default query we make so we feed it exactly the right query to highlight.
 				$query = new \Elastica\Query\MultiMatch();
-				$query->setQuery( $search );
+				$query->setQuery( $term );
 				$weights = $this->config->get( 'CirrusSearchPrefixWeights' );
 				$query->setFields( [
 					'title.prefix^' . $weights[ 'title' ],
@@ -269,7 +270,7 @@ class Searcher extends ElasticsearchIntermediary {
 		/** @suppress PhanDeprecatedFunction */
 		$this->searchContext->setBoostLinks( true );
 
-		return $this->search( $search );
+		return $this->searchOne( $term );
 	}
 
 	/**
@@ -280,22 +281,19 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Search articles with provided term.
+	 * Build full text search for articles with provided term. All the
+	 * state is applied to $this->searchContext. The returned query
+	 * builder can be used to build a degraded query if necessary.
+	 *
 	 * @param string $term term to search
 	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
-	 * @return Status status containing results defined by resultsType on success
+	 * @return FullTextQueryBuilder
 	 */
-	public function searchText( $term, $showSuggestion ) {
-		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
-		if ( !$checkLengthStatus->isOK() ) {
-			return $checkLengthStatus;
-		}
-
+	protected function buildFullTextSearch( $term, $showSuggestion ) {
 		// save original term for logging
 		$originalTerm = $term;
 
 		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
-
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 		$this->searchContext->setSearchType( 'full_text' );
 
@@ -346,17 +344,30 @@ class Searcher extends ElasticsearchIntermediary {
 			&& $this->config->get( 'CirrusSearchEnablePhraseSuggest' );
 		$qb->build( $this->searchContext, $term, $showSuggestion );
 
-		if ( !$this->searchContext->areResultsPossible() ) {
-			return Status::newGood( new SearchResultSet( true ) );
+		return $qb;
+	}
+
+	/**
+	 * Search articles with provided term.
+	 * @param string $term term to search
+	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
+	 * @return Status
+	 */
+	public function searchText( $term, $showSuggestion ) {
+		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
+		if ( !$checkLengthStatus->isOK() ) {
+			return $checkLengthStatus;
 		}
 
-		$result = $this->search( $originalTerm );
+		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
+
+		$result = $this->searchOne( $term );
 		if ( !$result->isOK() && ElasticaErrorHandler::isParseError( $result ) ) {
 			if ( $qb->buildDegraded( $this->searchContext ) ) {
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
-				$result = $this->search( $term );
+				$result = $this->searchOne( $term );
 			}
 		}
 
@@ -456,7 +467,11 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @return \Elastica\Search
 	 */
-	private function buildSearch() {
+	protected  function buildSearch() {
+
+		if ( $this->resultsType === null ) {
+			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
+		}
 
 		$query = new \Elastica\Query();
 		$query->setParam( '_source', $this->resultsType->getSourceFiltering() );
@@ -466,7 +481,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$namespaces = $this->searchContext->getNamespaces();
 
 		$this->overrideConnectionIfNeeded();
-		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		if ( $namespaces ) {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
@@ -478,10 +492,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$highlight = $this->searchContext->getHighlight( $this->resultsType );
 		if ( $highlight ) {
 			$query->setHighlight( $highlight );
-		}
-
-		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
 		}
 
 		if ( $this->searchContext->getSuggest() ) {
@@ -549,8 +559,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
+		$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
 		$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-		$search = new \Elastica\Search($this->connection->getClient());
+
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
 			$search->addIndex( $i );
@@ -563,13 +574,33 @@ class Searcher extends ElasticsearchIntermediary {
 		return $search;
 	}
 
+	protected function searchOne( $for ) {
+		$search = $this->buildSearch();
+
+		if ( !$this->searchContext->areResultsPossible() ) {
+			return Status::newGood( new SearchResultSet( true ) );
+		}
+
+		$result = $this->searchMulti( [$search], $for );
+		if ( $result->isOK() ) {
+			// Convert array of responses to single value
+			$value = $result->getValue();
+			$result->setResult( true, reset( $value ) );
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Powers full-text-like searches including prefix search.
 	 *
+	 * @param \Elastica\Search[] $searches
 	 * @param string $for
+	 * @param ResultsType[] $resultsTypes Specific ResultType instances to use with $searches. Any
+	 *  search without a matching key in this array uses $this->resultsType.
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	private function search( $for ) {
+	protected function searchMulti( $searches, $for, array $resultsTypes = [] ) {
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
 				return Status::newGood( [
@@ -582,29 +613,47 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
-		$search = $this->buildSearch();
-
-		$queryType = $this->searchContext->getSearchType();
-		$log = $this->newLog( "{queryType} search for '{query}'", $queryType, [
-			'query' => $for,
-			'limit' => $this->limit ?: null,
-			// null means not requested, '' means not found. If found
-			// SearchRequestLog::getLogVariables will replace the '' with an
-			// actual suggestion.
-			'suggestion' => $this->searchContext->getSuggest() ? '' : null,
-		] );
+		$description = "{queryType} search for '{query}'";
+		$log = new MultiSearchRequestLog(
+			$this->connection->getClient(),
+			"{queryType} search for '{query}'",
+			$this->searchContext->getSearchType(),
+			[
+				'query' => $for,
+				'limit' => $this->limit ?: null,
+				// null means not requested, '' means not found. If found
+				// parent::buildLogContext will replace the '' with an
+				// actual suggestion.
+				'suggestion' => $this->searchContext->getSuggest() ? '' : null,
+			]
+		);
 
 		if ( $this->returnQuery ) {
-			return Status::newGood( [
-				'description' => $log->formatDescription(),
-				'path' => $search->getPath(),
-				'params' => $search->getOptions(),
-				'query' => $search->getQuery()->toArray(),
-				'options' => $search->getOptions(),
-			] );
+			$retval = [];
+			$description = $log->formatDescription();
+			foreach ( $searches as $key => $search ) {
+				$retval[$key] = [
+					'description' => $description,
+					'path' => $search->getPath(),
+					'params' => $search->getOptions(),
+					'query' => $search->getQuery()->toArray(),
+					'options' => $search->getOptions(),
+				];
+			}
+			return Status::newGood( $retval );
 		}
 
+		// Similar to indexing support only the bulk code path, rather than
+		// single and bulk. The extra overhead should be minimal, and the
+		// reduced complexity is welcomed.
+		$search = new \Elastica\Multi\Search( $this->connection->getClient() );
+		$search->addSearches( $searches );
+
 		$this->connection->setTimeout( $this->getTimeout() );
+
+		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
+			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
+		}
 
 		// Perform the search
 		$work = function () use ( $search, $log ) {
@@ -614,8 +663,16 @@ class Searcher extends ElasticsearchIntermediary {
 				function () use ( $search, $log ) {
 					try {
 						$this->start( $log );
-						$result = $search->search();
-						return $this->success( $result );
+						// @todo only reports the first error, also turns
+						// a partial (single search) error into a complete
+						// failure across the board. Should be addressed
+						// at some point.
+						$multiResultSet = $search->search();
+						if ( $multiResultSet->hasError() ) {
+							return $this->multiFailure( $multiResultSet );
+						} else {
+							return $this->success( $multiResultSet );
+						}
 					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 						return $this->failure( $e );
 					}
@@ -628,77 +685,108 @@ class Searcher extends ElasticsearchIntermediary {
 		// Wrap with caching if needed, but don't cache debugging queries
 		$skipCache = $this->returnResult || $this->returnExplain;
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
-			$work = function () use ( $work, $search, $log ) {
+			$work = function () use ( $work, $searches, $log, $resultsTypes ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 				$cache = ObjectCache::getLocalClusterInstance();
+				$keyParts = [];
+				foreach ( $searches as $key => $search ) {
+					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $this->resultsType;
+					$keyParts[] = $search->getPath() .
+						serialize( $search->getOptions() ) .
+						serialize( $search->getQuery()->toArray() ) .
+						serialize( $resultsType );
+				}
 				$key = $cache->makeKey( 'cirrussearch', 'search', 'v2', md5(
-					$search->getPath() .
-					serialize( $search->getOptions() ) .
-					serialize( $search->getQuery()->toArray() ) .
-					serialize( $this->resultsType )
+					implode( '|', $keyParts )
 				) );
 				$cacheResult = $cache->get( $key );
 				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
-					list( $logVariables, $result ) = $cacheResult;
+					list( $logVariables, $multiResultSet ) = $cacheResult;
 					$requestStats->increment("$statsKey.hit");
 					$log->setCachedResult( $logVariables );
 					$this->successViaCache( $log );
-					return $result;
+					return $multiResultSet;
 				} else {
 					$requestStats->increment("$statsKey.miss");
 				}
 
-				$result = $work();
+				$multiResultSet = $work();
 
-				if ( $result->isOK() ) {
-					$responseData = $result->getValue()->getResponse()->getData();
-					$isPartialResult = isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ];
+				if ( $multiResultSet->isOK() ) {
+					$isPartialResult = false;
+					foreach ( $multiResultSet->getValue()->getResultSets() as $resultSet ) {
+						$responseData = $resultSet->getResponse()->getData();
+						if ( isset( $responseData['timed_out'] ) && $responseData['timed_out'] ) {
+							$isPartialResult = true;
+							break;
+						}
+					}
 					if ( !$isPartialResult ) {
 						$requestStats->increment("$statsKey.set");
 						$cache->set(
 							$key,
-							[$log->getLogVariables(), $result],
+							[$log->getLogVariables(), $multiResultSet],
 							$this->searchContext->getCacheTtl()
 						);
 					}
 				}
 
-				return $result;
+				return $multiResultSet;
 			};
 		}
 
-		$result = $work();
+		$status = $work();
 
-		if ( $result->isOK() ) {
-			$responseData = $result->getValue()->getResponse()->getData();
+		// @todo Does this need anything special for multi-search changes?
+		if ( !$status->isOK() ) {
+			return $status;
+		}
 
-			if ( $this->returnResult ) {
-				return Status::newGood( [
-						'description' => $log->formatDescription(),
-						'path' => $search->getPath(),
-						'result' => $responseData,
-				] );
+		$retval = [];
+		if ( $this->returnResult ) {
+			$description = $log->formatDescription();
+			foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
+				$retval[$key] = [
+					'description' => $description,
+					'path' => $searches[$key]->getPath(),
+					'result' => $resultSet->getResponse()->getData(),
+				];
 			}
+			return Status::newGood( $retval );
+		}
 
-			$result->setResult( true, $this->resultsType->transformElasticsearchResult(
-				$this->searchContext,
-				$result->getValue()
-			) );
-			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					$log->getDescription() . " timed out and only returned partial results!",
-					$log->getLogVariables()
+		$timedOut = false;
+		foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
+			$response = $resultSet->getResponse();
+			if ( $response->hasError() ) {
+				// @todo error handling
+				$retval[$key] = null;
+			} else {
+				$responseData = $response->getData();
+
+				$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $this->resultsType;
+				$retval[$key] = $resultsType->transformElasticsearchResult(
+					$this->searchContext,
+					$resultSet
 				);
-				if ( $result->getValue()->numRows() === 0 ) {
-					return Status::newFatal( 'cirrussearch-backend-error' );
-				} else {
-					$result->warning( 'cirrussearch-timed-out' );
+				if ( $resultSet->hasTimedOut() ) {
+					$timedOut = true;
 				}
 			}
 		}
 
-		return $result;
+		if ( $timedOut ) {
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				$log->getDescription() . " timed out and only returned partial results!",
+				$log->getLogVariables()
+			);
+			$status->warning( 'cirrussearch-timed-out' );
+		}
+
+		$status->setResult( true, $retval );
+
+		return $status;
 	}
 
 	/**
@@ -737,11 +825,11 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $search
+	 * @param string $term
 	 * @throws UsageException
 	 */
-	private function checkTitleSearchRequestLength( $search ) {
-		$requestLength = mb_strlen( $search );
+	private function checkTitleSearchRequestLength( $term ) {
+		$requestLength = mb_strlen( $term );
 		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
 			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
@@ -749,15 +837,15 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $search
+	 * @param string $term
 	 * @return Status
 	 */
-	private function checkTextSearchRequestLength( $search ) {
-		$requestLength = mb_strlen( $search );
+	private function checkTextSearchRequestLength( $term ) {
+		$requestLength = mb_strlen( $term );
 		if (
 			$requestLength > self::MAX_TEXT_SEARCH &&
 			// allow category intersections longer than the maximum
-			strpos( $search, 'incategory:' ) === false
+			strpos( $term, 'incategory:' ) === false
 		) {
 			return Status::newFatal( 'cirrussearch-query-too-long', $this->language->formatNum( $requestLength ), $this->language->formatNum( self::MAX_TEXT_SEARCH ) );
 		}

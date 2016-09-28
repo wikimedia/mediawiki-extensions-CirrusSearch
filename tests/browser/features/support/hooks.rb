@@ -631,6 +631,23 @@ setup_accented_namespace = lambda do |world|
   end
 end
 
+files_for_search = false
+setup_files_for_search = lambda do |world|
+  unless files_for_search
+    world.steps %(
+      Given a file named File:No_SVG.svg exists with contents No_SVG.svg and description [[Category:Red circle with left slash]]
+      And a file named File:Somethingelse_svg_SVG.svg exists with contents Somethingelse_svg_SVG.svg and description [[Category:Red circle with left slash]]
+      And a file named File:Linux_Distribution_Timeline_text_version.pdf exists with contents Linux_Distribution_Timeline_text_version.pdf and description Linux distribution timeline.
+      And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
+      And a file named File:OnCommons.svg exists on commons with contents OnCommons.svg and description File stored on commons for test purposes
+      And a file named File:DuplicatedLocally.svg exists on commons with contents DuplicatedLocally.svg and description File stored on commons and duplicated locally
+      And a file named File:DuplicatedLocally.svg exists with contents DuplicatedLocally.svg and description Locally stored file duplicated on commons
+      And I delete File:Frozen.svg
+        )
+    files_for_search = true
+  end
+end
+
 suggest = false
 setup_suggest = lambda do |world|
   unless suggest
@@ -898,4 +915,7 @@ Before("@accented_namespace") do
 end
 Before("@suggest") do
   setup_suggest.call(self)
+end
+Before("@filesearch") do
+  setup_files_for_search.call(self)
 end

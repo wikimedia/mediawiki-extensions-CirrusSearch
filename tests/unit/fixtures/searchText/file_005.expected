@@ -1,0 +1,224 @@
+{
+    "description": "full_text search for 'filesize:>100 filemime:pdf'",
+    "path": "wiki\/page\/_search",
+    "params": {
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
+    },
+    "query": {
+        "_source": [
+            "id",
+            "title",
+            "namespace",
+            "redirect.*",
+            "timestamp",
+            "text_bytes"
+        ],
+        "fields": "text.word_count",
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match_all": {
+
+                        }
+                    }
+                ],
+                "filter": [
+                    {
+                        "bool": {
+                            "must": [
+                                {
+                                    "match": {
+                                        "file_mime": {
+                                            "query": "pdf",
+                                            "operator": "AND"
+                                        }
+                                    }
+                                },
+                                {
+                                    "range": {
+                                        "file_size": {
+                                            "gte": 102400
+                                        }
+                                    }
+                                },
+                                {
+                                    "terms": {
+                                        "namespace": [
+                                            0,
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "highlight": {
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ],
+            "post_tags": [
+                "<\/span>"
+            ],
+            "fields": {
+                "title": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "number_of_fragments": 1,
+                    "matched_fields": [
+                        "title",
+                        "title.plain"
+                    ]
+                },
+                "redirect.title": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "redirect.title",
+                        "redirect.title.plain"
+                    ]
+                },
+                "category": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "category",
+                        "category.plain"
+                    ]
+                },
+                "heading": {
+                    "type": "experimental",
+                    "fragmenter": "none",
+                    "order": "score",
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "heading",
+                        "heading.plain"
+                    ]
+                },
+                "text": {
+                    "type": "experimental",
+                    "number_of_fragments": 1,
+                    "fragmenter": "scan",
+                    "fragment_size": 150,
+                    "options": {
+                        "top_scoring": true,
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000
+                    },
+                    "no_match_size": 150,
+                    "matched_fields": [
+                        "text",
+                        "text.plain"
+                    ]
+                },
+                "auxiliary_text": {
+                    "type": "experimental",
+                    "number_of_fragments": 1,
+                    "fragmenter": "scan",
+                    "fragment_size": 150,
+                    "options": {
+                        "top_scoring": true,
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "skip_if_last_matched": true
+                    },
+                    "matched_fields": [
+                        "auxiliary_text",
+                        "auxiliary_text.plain"
+                    ]
+                }
+            }
+        },
+        "size": 20,
+        "rescore": [
+            {
+                "window_size": 8192,
+                "query": {
+                    "query_weight": 1,
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply",
+                    "rescore_query": {
+                        "function_score": {
+                            "functions": [
+                                {
+                                    "field_value_factor": {
+                                        "field": "incoming_links",
+                                        "modifier": "log2p",
+                                        "missing": 0
+                                    }
+                                },
+                                {
+                                    "weight": "0.25",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                1
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.05",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                2
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "weight": "0.0125",
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                3
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ],
+        "stats": [
+            "full_text"
+        ]
+    },
+    "options": {
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
+    }
+}

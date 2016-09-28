@@ -333,6 +333,10 @@ class Searcher extends ElasticsearchIntermediary {
 				new Query\InTitleFeature( $this->escaper ),
 				// inlanguage keyword
 				new Query\LanguageFeature(),
+				// File types
+				new Query\FileTypeFeature(),
+				// File numeric characteristics - size, resolution, etc.
+				new Query\FileNumericFeature(),
 			],
 			$builderSettings['settings']
 		);

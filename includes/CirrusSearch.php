@@ -83,6 +83,15 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $request;
 
+	/**
+	 * Sets the behaviour for the dump query, dump result, etc debugging features.
+	 * By default echo's and dies. If this is set to false it will be returned
+	 * from Searcher::searchText, which breaks the type signature contracts and should
+	 * only be used from unit tests.
+	 * @var bool
+	 */
+	private $dumpAndDie = true;
+
 	public function __construct( $baseName = null ) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests accross multiple clusters
@@ -410,20 +419,31 @@ class CirrusSearch extends SearchEngine {
 			$status = $searcher->searchText( $term, $this->showSuggestion );
 		}
 		if ( $dumpQuery || $dumpResult ) {
-			// When dumping the query we skip _everything_ but echoing the query.
-			RequestContext::getMain()->getOutput()->disable();
+			$header = null;
 			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
 				$printer = new CirrusSearch\ExplainPrinter();
-				echo $printer->format( $status->getValue() );
+				$result = $printer->format( $status->getValue() );
 			} else {
-				$this->request->response()->header( 'Content-type: application/json; charset=UTF-8' );
+				$header = 'Content-type: application/json; charset=UTF-8';
 				if ( $status->getValue() === null ) {
-					echo '{}';
+					$result = '{}';
 				} else {
-					echo json_encode( $status->getValue() );
+					$result = json_encode( $status->getValue(), JSON_PRETTY_PRINT );
 				}
 			}
-			exit();
+
+			if ( $this->dumpAndDie ) {
+				// When dumping the query we skip _everything_ but echoing the query.
+				RequestContext::getMain()->getOutput()->disable();
+				if ( $header !== null ) {
+					$this->request->response()->header( $header );
+				}
+				echo $result;
+				exit();
+			} else {
+				// This breaks the return types and is only used in the fixtures unit tests
+				return $result;
+			}
 		}
 
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();
@@ -820,5 +840,15 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		return new $klass( $name, $type, $this->config );
+	}
+
+	/**
+	 * @param bool $dumpAndDie Sets the behaviour for the dump query, dump
+	 *  result, etc debugging features. By default echo's and dies. If this is
+	 *  set to false it will be returned from Searcher::searchText, which breaks
+	 *  the type signature contracts and should only be used from unit tests.
+	 */
+	public function setDumpAndDie( $dumpAndDie ) {
+		$this->dumpAndDie = $dumpAndDie;
 	}
 }

@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'insource:\"\\\"catapult anotherword\\\"\"\n'",
+    "description": "full_text search for 'insource:\"\\\"catapult anotherword\\\"\"'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",

@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\MediaWikiServices;
+use Title;
 
 class SearcherTest extends \MediaWikiTestCase {
 	public function searchTextProvider() {
@@ -26,10 +27,6 @@ class SearcherTest extends \MediaWikiTestCase {
 	 * @dataProvider searchTextProvider
 	 */
 	public function testSearchText( $expected, $queryString ) {
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-		// Use real connection for simplicity, but no network request will be sent.
-		$conn = Connection::getPool( $config );
-
 		// Override some config for parsing purposes
 		$this->setMwGlobals( [
 			'wgCirrusSearchUseExperimentalHighlighter' => true,
@@ -67,26 +64,25 @@ class SearcherTest extends \MediaWikiTestCase {
 			] + $GLOBALS['wgHooks']
 		] );
 
+		\RequestContext::getMain()->setRequest( new \FauxRequest( [
+			'cirrusDumpQuery' => 1,
+		] ) );
 
+		$engine = new \CirrusSearch();
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
-		$searcher = new Searcher( $conn, 0, 20, $config, [
+		$engine->setNamespaces( [
 			NS_MAIN, NS_TALK, NS_USER, NS_USER_TALK,
 		] );
-		$searcher->setReturnQuery( true );
-		$result = $searcher->searchText( $queryString, true );
-		$this->assertTrue( $result->isOK() );
-		$elasticQuery = $result->getValue();
+		$engine->setShowSuggestion( true );
+		$engine->setLimitOffset( 20, 0 );
+		$engine->setDumpAndDie( false );
+		$encodedQuery = $engine->searchText( $queryString );
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture
-			file_put_contents( $expected, json_encode( $elasticQuery, JSON_PRETTY_PRINT ) );
+			file_put_contents( $expected, $encodedQuery );
 		} else {
-			// To make debugging easier we want to compare the decoded arrays, rather than the encoded
-			// json elasticsearch recieves. Unfortunately the empty objects ({}) in the output are not
-			// round-tripable by php json parsers into the source elastica generates. As such round trip
-			// the result once to make it equivilent.
-			$encoded = json_encode( $elasticQuery, JSON_PRETTY_PRINT );
-			$elasticQuery = json_decode( $encoded, true );
+			$elasticQuery = json_decode( $encodedQuery, true );
 
 			// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 			// the output is actually the same.
@@ -98,7 +94,7 @@ class SearcherTest extends \MediaWikiTestCase {
 			unset( $elasticQuery['path'] );
 
 			// Finally compare some things
-			$this->assertEquals( $expected, $elasticQuery, $encoded );
+			$this->assertEquals( $expected, $elasticQuery, $encodedQuery );
 		}
 	}
 

@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'insource:keyword\n'",
+    "description": "full_text search for 'insource:keyword'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",

@@ -43,8 +43,6 @@ class Searcher extends ElasticsearchIntermediary {
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST = '</span>';
 	const HIGHLIGHT_REGEX = '/<span class="searchmatch">.*?<\/span>/';
-	const MORE_LIKE_THESE_NONE = 0;
-	const MORE_LIKE_THESE_ONLY_WIKIBASE = 1;
 
 	/**
 	 * Maximum title length that we'll check in prefix and keyword searches.
@@ -309,7 +307,11 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->config,
 			$this->escaper,
 			[
-				// Handle title prefix notation
+				// Handle morelike keyword (greedy). This needs to be the
+				// very first item until combining with other queries
+				// is worked out.
+				new Query\MoreLikeFeature( $this->config, [$this, 'get'] ),
+				// Handle title prefix notation (greedy)
 				new Query\PrefixFeature(),
 				// Handle prefer-recent keyword
 				new Query\PreferRecentFeature( $this->config ),
@@ -360,84 +362,6 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Find articles that contain similar text to the provided title array.
-	 * @param Title[] $titles array of titles of articles to search for
-	 * @param int $options bitset of options:
-	 *  MORE_LIKE_THESE_NONE
-	 *  MORE_LIKE_THESE_ONLY_WIKIBASE - filter results to only those containing wikibase items
-	 * @return Status<ResultSet>
-	 */
-	public function moreLikeTheseArticles( array $titles, $options = Searcher::MORE_LIKE_THESE_NONE ) {
-		sort( $titles, SORT_STRING );
-		$docIds = [];
-		$likeDocs = [];
-		foreach ( $titles as $title ) {
-			$docId = $this->config->makeId( $title->getArticleID() );
-			$docIds[] = $docId;
-			$likeDocs[] = [ '_id' => $docId ];
-		}
-
-		// If no fields has been set we return no results.
-		// This can happen if the user override this setting with field names that
-		// are not allowed in $this->config->get( 'CirrusSearchMoreLikeThisAllowedFields (see Hooks.php)
-		if( !$this->config->get( 'CirrusSearchMoreLikeThisFields' ) ) {
-			return Status::newGood( new SearchResultSet( true ) /* empty */ );
-		}
-
-		$this->searchContext->addSyntaxUsed( 'more_like' );
-		$this->searchContext->setSearchType( 'more_like' );
-
-		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
-		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );
-		sort( $moreLikeThisFields );
-		$query = new \Elastica\Query\MoreLikeThis();
-		$query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
-		$query->setFields( $moreLikeThisFields );
-
-		// The 'all' field cannot be retrieved from _source
-		// We have to extract the text content before.
-		if( in_array( 'all', $moreLikeThisFields ) ) {
-			$moreLikeThisUseFields = false;
-		}
-
-		if ( !$moreLikeThisUseFields && $moreLikeThisFields != [ 'text' ] ) {
-			// Run a first pass to extract the text field content because we want to compare it
-			// against other fields.
-			$text = [];
-			$found = $this->get( $docIds, [ 'text' ] );
-			if ( !$found->isOK() ) {
-				return $found;
-			}
-			$found = $found->getValue();
-			if ( count( $found ) === 0 ) {
-				// If none of the pages are in the index we can't find articles like them
-				return Status::newGood( new SearchResultSet() /* empty */ );
-			}
-			foreach ( $found as $foundArticle ) {
-				$text[] = $foundArticle->text;
-			}
-			sort( $text, SORT_STRING );
-			$likeDocs = array_merge( $likeDocs, $text );
-		}
-
-		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
-		$query->setLike( $likeDocs );
-		$this->searchContext->setMainQuery( $query );
-
-		if ( $options & Searcher::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
-			$this->searchContext->addFilter( new \Elastica\Query\Exists( 'wikibase_item' ) );
-		}
-
-		// highlight snippets are not great so it's worth running a match all query
-		// to save cpu cycles
-		$this->searchContext->setHighlightQuery( new \Elastica\Query\MatchAll() );
-
-		$this->searchContext->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
-
-		return $this->search( implode( ', ', $titles ) );
 	}
 
 	/**

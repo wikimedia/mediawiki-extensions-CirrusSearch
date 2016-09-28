@@ -1,5 +1,5 @@
 {
-    "description": "more_like search for 'morelike:Some page'",
+    "description": "full_text search for 'something morelike:Some page'",
     "path": "wiki\/page\/_search",
     "params": {
         "search_type": "dfs_query_then_fetch",
@@ -17,24 +17,30 @@
         "fields": "text.word_count",
         "query": {
             "bool": {
-                "must": [
+                "minimum_number_should_match": 1,
+                "should": [
                     {
-                        "more_like_this": {
-                            "min_doc_freq": 2,
-                            "max_doc_freq": null,
-                            "max_query_terms": 25,
-                            "min_term_freq": 2,
-                            "min_word_len": 0,
-                            "max_word_len": 0,
-                            "minimum_should_match": "30%",
+                        "query_string": {
+                            "query": "something morelike\\:Some page",
                             "fields": [
-                                "text"
+                                "all.plain^1",
+                                "all^0.5"
                             ],
-                            "like": [
-                                {
-                                    "_id": "12345"
-                                }
-                            ]
+                            "auto_generate_phrase_queries": true,
+                            "phrase_slop": 0,
+                            "default_operator": "AND",
+                            "allow_leading_wildcard": true,
+                            "fuzzy_prefix_length": 2,
+                            "rewrite": "top_terms_boost_1024",
+                            "max_determinized_states": 500
+                        }
+                    },
+                    {
+                        "multi_match": {
+                            "fields": [
+                                "all_near_match^2"
+                            ],
+                            "query": "something morelike:Some page"
                         }
                     }
                 ],
@@ -152,11 +158,93 @@
                 }
             },
             "highlight_query": {
-                "match_all": {}
+                "query_string": {
+                    "query": "something morelike\\:Some page",
+                    "fields": [
+                        "title.plain^20",
+                        "redirect.title.plain^15",
+                        "category.plain^8",
+                        "heading.plain^5",
+                        "opening_text.plain^3",
+                        "text.plain^1",
+                        "auxiliary_text.plain^0.5",
+                        "title^10",
+                        "redirect.title^7.5",
+                        "category^4",
+                        "heading^2.5",
+                        "opening_text^1.5",
+                        "text^0.5",
+                        "auxiliary_text^0.25"
+                    ],
+                    "auto_generate_phrase_queries": true,
+                    "phrase_slop": 1,
+                    "default_operator": "AND",
+                    "allow_leading_wildcard": true,
+                    "fuzzy_prefix_length": 2,
+                    "rewrite": "top_terms_boost_1024",
+                    "max_determinized_states": 500
+                }
             }
         },
+        "suggest": {
+            "text": "something morelike:Some page",
+            "suggest": {
+                "phrase": {
+                    "field": "suggest",
+                    "size": 1,
+                    "max_errors": 2,
+                    "confidence": 2,
+                    "real_word_error_likelihood": 0.95,
+                    "direct_generator": [
+                        {
+                            "field": "suggest",
+                            "suggest_mode": "always",
+                            "max_term_freq": 0.5,
+                            "min_doc_freq": 0,
+                            "prefix_length": 2
+                        }
+                    ],
+                    "highlight": {
+                        "pre_tag": "<em>",
+                        "post_tag": "<\/em>"
+                    },
+                    "smoothing": {
+                        "stupid_backoff": {
+                            "discount": 0.4
+                        }
+                    }
+                }
+            }
+        },
+        "stats": [
+            "suggest",
+            "full_text"
+        ],
         "size": 20,
         "rescore": [
+            {
+                "window_size": 512,
+                "query": {
+                    "rescore_query": {
+                        "query_string": {
+                            "query": "\"something morelike\\:Some page\"",
+                            "fields": [
+                                "all.plain^1",
+                                "all^0.5"
+                            ],
+                            "auto_generate_phrase_queries": true,
+                            "phrase_slop": 1,
+                            "default_operator": "AND",
+                            "allow_leading_wildcard": true,
+                            "fuzzy_prefix_length": 2,
+                            "rewrite": "top_terms_boost_1024",
+                            "max_determinized_states": 500
+                        }
+                    },
+                    "query_weight": 1,
+                    "rescore_query_weight": 10
+                }
+            },
             {
                 "window_size": 8192,
                 "query": {
@@ -208,9 +296,6 @@
                     }
                 }
             }
-        ],
-        "stats": [
-            "more_like"
         ]
     },
     "options": {

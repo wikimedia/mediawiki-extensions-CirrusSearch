@@ -122,24 +122,4 @@ class InterwikiSearcher extends Searcher {
 		return [];
 	}
 
-	/**
-	 * @param array $extraIndexes
-	 * @param string $indexType
-	 * @return bool
-	 */
-	protected function needNsFilter( array $extraIndexes, $indexType ) {
-		// We need to be defensive here, the parent class is not aware
-		// that we plan to search on another wiki. Since we support only
-		// core namespaces we must always add ns filters. This is because
-		// content index on the target wiki may contain non-core ns like
-		// Author on wikisource. This is causing troubles in core because it
-		// gets confused by namespace id collisions.
-		// The solution could be to use only namespace text and avoid setting
-		// namespace id in the result title but anyway I think this is misleading
-		// since we do not respect the namespaces filter.
-		// Another approach would be to explicitely support a notion of
-		// "content namespaces" : If I search on content namespaces
-		// then I want to search on content namespaces on this wiki aswell.
-		return true;
-	}
 }

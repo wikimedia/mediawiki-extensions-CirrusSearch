@@ -24,24 +24,30 @@ namespace CirrusSearch;
 class ExplainPrinter {
 	public function format( array $queryResult ) {
 		$result = [];
-		foreach ( $queryResult['result']['hits']['hits'] as $hit ) {
-			$result[] =
-				"<div>" .
-					"<h3>" . htmlentities( $hit['_source']['title'] ) . "</h3>" .
-					"<div>" . $hit['highlight']['text'][0] . "</div>" .
-					"<table>" .
-						"<tr>" .
-							"<td>article id</td>" .
-							"<td>" . htmlentities( $hit['_id'] ) . "</td>" .
-						"</tr><tr>" .
-							"<td>ES score</td>" .
-							"<td>" . htmlentities( $hit['_score'] ) . "</td>" .
-						"</tr><tr>" .
-							"<td>ES explain</td>" .
-							"<td><pre>" . htmlentities( $this->formatText( $hit['_explanation'] ) ) . "</pre></td>" .
-						"</tr>" .
-					"</table>" .
-				"</div>";
+		if ( isset( $queryResult['result']['hits']['hits'] ) ) {
+			$queryResult = [$queryResult];
+		}
+		foreach( $queryResult as $qr ) {
+			$result[] = "<div><h2>{$qr['description']} on {$qr['path']}</h2></div>";
+			foreach ( $qr['result']['hits']['hits'] as $hit ) {
+				$result[] =
+					"<div>" .
+						"<h3>" . htmlentities( $hit['_source']['title'] ) . "</h3>" .
+						( isset( $hit['highlight']['text'][0] ) ? "<div>" . $hit['highlight']['text'][0] . "</div>" : "" ) .
+						"<table>" .
+							"<tr>" .
+								"<td>article id</td>" .
+								"<td>" . htmlentities( $hit['_id'] ) . "</td>" .
+							"</tr><tr>" .
+								"<td>ES score</td>" .
+								"<td>" . htmlentities( $hit['_score'] ) . "</td>" .
+							"</tr><tr>" .
+								"<td>ES explain</td>" .
+								"<td><pre>" . htmlentities( $this->formatText( $hit['_explanation'] ) ) . "</pre></td>" .
+							"</tr>" .
+						"</table>" .
+					"</div>";
+			}
 		}
 
 		return "<div>" . implode( '', $result ) . "</div>";

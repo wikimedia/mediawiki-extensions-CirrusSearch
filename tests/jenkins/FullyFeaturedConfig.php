@@ -59,7 +59,7 @@ $wgJobQueueAggregator = array(
 	),
 );
 
-if ( class_exists( 'PoolCounter_Client' ) ) {
+if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// If the pool counter is around set up prod like pool counter settings
 	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = array(
 		'class' => 'PoolCounter_Client',

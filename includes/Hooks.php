@@ -208,7 +208,7 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		$cache = \ObjectCache::getLocalServerInstance();
+		$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
 		$lines = $cache->getWithSetCallback(
 			$cache->makeKey( 'cirrussearch-morelikethis-settings' ),
 			600,

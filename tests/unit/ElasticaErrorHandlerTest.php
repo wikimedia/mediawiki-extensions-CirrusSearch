@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-class ElasticsearchIntermediaryTest extends \PHPUnit_Framework_TestCase {
+class ElasticaErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public static function provideExceptions() {
 		return [
@@ -41,7 +41,7 @@ class ElasticsearchIntermediaryTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider provideExceptions
 	 */
 	public function testExceptionClassifier( $expected_type, $exception ) {
-		$this->assertEquals( $expected_type, ElasticsearchIntermediary::classifyError( $exception ) );
+		$this->assertEquals( $expected_type, ElasticaErrorHandler::classifyError( $exception ) );
 	}
 
 	public static function newResponseException( $type, $message ) {

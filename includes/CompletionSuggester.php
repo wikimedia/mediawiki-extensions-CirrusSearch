@@ -527,7 +527,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 							'error' => $redirResponse->getError() ] );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				$error = self::extractFullError( $e );
+				$error = ElasticaErrorHandler::extractFullError( $e );
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					'Unable to fetch redirects for suggestion {query} with results {ids}. {error_type}: {error_reason}',
 					[

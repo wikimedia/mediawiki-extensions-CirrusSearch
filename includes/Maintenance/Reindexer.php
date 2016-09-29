@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica\Document;
@@ -388,7 +388,7 @@ class Reindexer {
 		} catch ( ExceptionInterface $e ) {
 			// Note that we can't fail the master here, we have to check how many documents are in the new index in the master.
 			$type = get_class( $e );
-			$error = ElasticsearchIntermediary::extractFullError( $e );
+			$error = ElasticaErrorHandler::extractFullError( $e );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Search backend error during reindex.  Error type is '{type}' ({error_type}) and message is:  {error_reason}",
 				[
@@ -496,7 +496,7 @@ class Reindexer {
 	private function sleepOnRetry( ExceptionInterface $e, $errors, $messagePrefix, $description ) {
 		$type = get_class( $e );
 		$seconds = MWElasticUtils::backoffDelay( $errors );
-		$message = ElasticsearchIntermediary::extractMessage( $e );
+		$message = ElasticaErrorHandler::extractMessage( $e );
 		$this->outputIndented( $messagePrefix . "Caught an error $description.  " .
 			"Backing off for $seconds and retrying.  Error type is '$type' and message is:  $message\n" );
 		sleep( $seconds );
@@ -517,7 +517,7 @@ class Reindexer {
 			$nbDocIndexed = count( $documents );
 		} catch ( ExceptionInterface $e ) {
 			$errorType = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$message = ElasticaErrorHandler::extractMessage( $e );
 			if ( $e instanceof \Elastica\Exception\Bulk\ResponseException ) {
 				// Some docs failed let's retry them individually
 				$failures = count( $e->getActionExceptions() );
@@ -578,7 +578,7 @@ class Reindexer {
 			return 1;
 		} catch( ExceptionInterface $e ) {
 			$errorType = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$message = ElasticaErrorHandler::extractMessage( $e );
 			$id = $doc->getId();
 			$this->outputIndented( $messagePrefix . "Failed to to index doc id $id : $errorType, $message\n" );
 			return 0;

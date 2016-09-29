@@ -351,7 +351,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		$result = $this->search( $originalTerm );
-		if ( !$result->isOK() && $this->isParseError( $result ) ) {
+		if ( !$result->isOK() && ElasticaErrorHandler::isParseError( $result ) ) {
 			if ( $qb->buildDegraded( $this->searchContext ) ) {
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all

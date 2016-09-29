@@ -754,7 +754,7 @@ class ElasticsearchIntermediary {
 					];
 				}
 			}
-			if ( $this->_isset( $queryData, [ 'query', 'filtered', 'filter', 'terms', 'namespace' ] ) ) {
+			if ( isset( $queryData['query']['filtered']['filter']['terms']['namespace'] ) ) {
 				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
 				$params['namespaces'] = array_map( 'intval', $namespaces );
 			}
@@ -867,35 +867,5 @@ class ElasticsearchIntermediary {
 			Status::newFatal( 'cirrussearch-backend-error' ),
 			$cause['type'] . ': ' . $cause['reason']
 		];
-	}
-
-	/**
-	 * Like isset, but wont fatal when one of the expected array keys in a
-	 * multi-dimensional array is a string.
-	 *
-	 * Temporary hack required only for php 5.3. Can be removed when 5.4 is no
-	 * longer a requirement.  See T99871 for more details.
-	 *
-	 * @param array $array
-	 * @param array $path
-	 * @return bool
-	 */
-	private function _isset( $array, $path ) {
-		while( true ) {
-			$step = array_shift( $path );
-			if ( !isset( $array[$step] ) ) {
-				// next step of the path is non-existent
-				return false;
-			} elseif( !$path ) {
-				// reached the end of our path
-				return true;
-			} elseif ( !is_array( $array[$step] ) ) {
-				// more steps exist in the path, but we don't have an array
-				return false;
-			} else {
-				// keep looking
-				$array = $array[$step];
-			}
-		}
 	}
 }

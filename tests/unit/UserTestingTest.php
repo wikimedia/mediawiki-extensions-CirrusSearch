@@ -23,7 +23,7 @@ namespace CirrusSearch;
 class UserTestingTest extends \MediaWikiTestCase {
 	public function setUp() {
 		parent::setUp();
-		ElasticsearchIntermediary::resetExecutionId();
+		Util::resetExecutionId();
 		UserTesting::resetInstance();
 	}
 

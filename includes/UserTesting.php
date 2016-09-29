@@ -238,7 +238,7 @@ class UserTesting {
 	 *  requests returns 0.
 	 */
 	static public function oneIn( $testName, $sampleRate ) {
-		$hash = ElasticsearchIntermediary::generateIdentToken( $testName );
+		$hash = Util::generateIdentToken( $testName );
 		$probability = self::hexToProbability( $hash );
 		$rateThreshold = 1 / $sampleRate;
 		if ( $rateThreshold >= $probability ) {

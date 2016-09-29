@@ -78,11 +78,6 @@ class ElasticsearchIntermediary {
 	private $searchMetrics = [];
 
 	/**
-	 * @var string Id identifying this php execution
-	 */
-	static private $executionId;
-
-	/**
 	 * @var array[] Result of self::getLogContext for each request in this process
 	 */
 	static private $logContexts = [];
@@ -118,27 +113,6 @@ class ElasticsearchIntermediary {
 		$this->slowMillis = (int) ( 1000 * $slowSeconds );
 		$this->extraBackendLatency = $extraBackendLatency;
 		$this->ut = UserTesting::getInstance();
-	}
-
-	/**
-	 * Identifies a specific execution of php.  That might be one web
-	 * request, or multiple jobs run in the same executor. An execution id
-	 * is valid over a brief timespan, perhaps a minute or two for some jobs.
-	 *
-	 * @return string unique identifier
-	 */
-	private static function getExecutionId() {
-		if ( self::$executionId === null ) {
-			self::$executionId = mt_rand();
-		}
-		return self::$executionId;
-	}
-
-	/**
-	 * Unit tests only
-	 */
-	public static function resetExecutionId() {
-		self::$executionId = null;
 	}
 
 	/**
@@ -277,11 +251,11 @@ class ElasticsearchIntermediary {
 		}
 
 		$requestSet = [
-			'id' => self::getRequestSetToken(),
+			'id' => Util::getRequestSetToken(),
 			'ts' => time(),
 			'wikiId' => wfWikiID(),
-			'source' => self::getExecutionContext(),
-			'identity' => self::generateIdentToken(),
+			'source' => Util::getExecutionContext(),
+			'identity' => Util::generateIdentToken(),
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
@@ -348,29 +322,6 @@ class ElasticsearchIntermediary {
 		return $strings;
 	}
 
-	/**
-	 * Get a token that (hopefully) uniquely identifies this search. It will be
-	 * added to the search result page js config vars, and put into the url with
-	 * history.replaceState(). This means click through's from supported browsers
-	 * will record this token as part of the referrer.
-	 *
-	 * @return string
-	 */
-	public static function getRequestSetToken() {
-		static $token;
-		if ( $token === null ) {
-			// random UID, 70B tokens have a collision probability of 4*10^-16
-			// so should work for marking unique queries.
-			$uuid = UIDGenerator::newUUIDv4();
-			// make it a little shorter by using straight base36
-			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
-				   substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4) .
-				   substr( $uuid, 24 );
-			$token = \Wikimedia\base_convert( $hex, 16, 36 );
-		}
-		return $token;
-	}
-
 	private static function buildUserTestingLog() {
 		global $wgRequest;
 
@@ -414,12 +365,12 @@ class ElasticsearchIntermediary {
 			'',
 			FormatJson::encode( $queries ),
 			$hits,
-			self::getExecutionContext(),
+			Util::getExecutionContext(),
 			$elasticTook,
 			$wgRequest->getIP(),
 			preg_replace( "/[\t\"']/", "", $wgRequest->getHeader( 'User-Agent') ),
 			FormatJson::encode( $parameters ),
-			self::generateIdentToken(),
+			Util::generateIdentToken(),
 		];
 
 		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
@@ -751,9 +702,9 @@ class ElasticsearchIntermediary {
 
 		$params += [
 			'tookMs' => intval( $took ),
-			'source' => self::getExecutionContext(),
-			'executor' => self::getExecutionId(),
-			'identity' => self::generateIdentToken(),
+			'source' => Util::getExecutionContext(),
+			'executor' => Util::getExecutionId(),
+			'identity' => Util::generateIdentToken(),
 		];
 
 		if ( $result ) {
@@ -831,19 +782,6 @@ class ElasticsearchIntermediary {
 		$idx = count( self::$logContexts ) - 1;
 		if ( $idx >= 0 ) {
 			self::$logContexts[$idx] += $values;
-		}
-	}
-
-	/**
-	 * @return string The context the request is in. Either cli, api or web.
-	 */
-	static public function getExecutionContext() {
-		if ( php_sapi_name() === 'cli' ) {
-			return 'cli';
-		} elseif ( defined( 'MW_API' ) ) {
-			return 'api';
-		} else {
-			return 'web';
 		}
 	}
 
@@ -929,20 +867,6 @@ class ElasticsearchIntermediary {
 			Status::newFatal( 'cirrussearch-backend-error' ),
 			$cause['type'] . ': ' . $cause['reason']
 		];
-	}
-
-	/**
-	 * @param string $extraData Extra information to mix into the hash
-	 * @return string A token that identifies the source of the request
-	 */
-	public static function generateIdentToken( $extraData = '' ) {
-		$request = \RequestContext::getMain()->getRequest();
-		return md5( implode( ':', [
-			$extraData,
-			$request->getIP(),
-			$request->getHeader( 'X-Forwarded-For' ),
-			$request->getHeader( 'User-Agent' ),
-		] ) );
 	}
 
 	/**

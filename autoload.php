@@ -115,6 +115,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Query\\RegexInSourceFeature' => __DIR__ . '/includes/Query/RegexInSourceFeature.php',
 	'CirrusSearch\\Query\\SimpleInSourceFeature' => __DIR__ . '/includes/Query/SimpleInSourceFeature.php',
 	'CirrusSearch\\Query\\SimpleKeywordFeature' => __DIR__ . '/includes/Query/SimpleKeywordFeature.php',
+	'CirrusSearch\\RequestLogger' => __DIR__ . '/includes/RequestLogger.php',
 	'CirrusSearch\\RescoreProfiles' => __DIR__ . '/profiles/RescoreProfiles.php',
 	'CirrusSearch\\Saneitize' => __DIR__ . '/maintenance/saneitize.php',
 	'CirrusSearch\\Sanity\\Checker' => __DIR__ . '/includes/Sanity/Checker.php',

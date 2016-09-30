@@ -46,6 +46,23 @@ When(/^I api search( with rewrites enabled)?(?: with query independent profile (
     @api_error = e
   end
 end
+When(/^I api search on (\w+) for (.*)$/) do |wiki, search|
+  begin
+    on_wiki(wiki) do
+      @api_result = search_for(
+        search.gsub(/%[^ {]+%/, @search_vars)
+          .gsub(/%\{\\u([\dA-Fa-f]{4,6})\}%/) do  # replace %{\uXXXX}% with the unicode code point
+            [Regexp.last_match[1].hex].pack("U")
+          end,
+        {}
+      )
+    end
+  rescue MediawikiApi::ApiError => e
+    @api_error = e
+  rescue MediawikiApi::HttpError => e
+    @api_error = e
+  end
+end
 When(/^I get api suggestions for (.*?)(?: using the (.*) profile)?$/) do |search, profile|
   begin
     profile = profile ? profile : "fuzzy"

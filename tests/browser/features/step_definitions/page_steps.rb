@@ -3,6 +3,13 @@ Given(/^a page named (.*) exists(?: with contents (.*))?$/) do |title, text|
   edit_page(title, text, false)
 end
 
+Given(/^a page on (\w+) named (.*) exists(?: with contents (.*))?$/) do |wiki, title, text|
+  text = title unless text
+  on_wiki(wiki) do
+    edit_page(title, text, false)
+  end
+end
+
 Given(/^a file named (.*) exists(?: on (commons))? with contents (.*) and description (.*)$/) do |title, wiki, contents, description|
   on_wiki(wiki) do
     upload_file(title, contents, description)   # Make sure the file is correct

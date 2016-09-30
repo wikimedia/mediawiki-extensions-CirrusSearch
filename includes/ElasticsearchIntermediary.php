@@ -50,10 +50,6 @@ class ElasticsearchIntermediary {
 	 */
 	protected $user;
 	/**
-	 * @var UserTesting Reports on this requests participation in tests
-	 */
-	protected $ut;
-	/**
 	 * @var float|null start time of current request or null if none is running
 	 */
 	private $requestStart = null;
@@ -112,7 +108,10 @@ class ElasticsearchIntermediary {
 		$this->user = $user;
 		$this->slowMillis = (int) ( 1000 * $slowSeconds );
 		$this->extraBackendLatency = $extraBackendLatency;
-		$this->ut = UserTesting::getInstance();
+		// This isn't explicitly used, but we need to make sure it is
+		// instantiated so it has the opportunity to override global
+		// configuration for test buckets.
+		UserTesting::getInstance();
 	}
 
 	/**
@@ -124,7 +123,6 @@ class ElasticsearchIntermediary {
 			return;
 		}
 		self::buildRequestSetLog();
-		self::buildUserTestingLog();
 		self::$logContexts = [];
 	}
 
@@ -320,65 +318,6 @@ class ElasticsearchIntermediary {
 		}
 		$matches->rewind();
 		return $strings;
-	}
-
-	private static function buildUserTestingLog() {
-		global $wgRequest;
-
-		$ut = UserTesting::getInstance();
-		if ( !$ut->getActiveTestNames() ) {
-			return;
-		}
-		$queries = [];
-		$parameters = [
-			'index' => [],
-			'queryType' => [],
-			'acceptLang' => $wgRequest->getHeader( 'Accept-Language' ),
-		];
-		$elasticTook = 0;
-		$hits = 0;
-		foreach ( self::$logContexts as $context ) {
-			$hits += isset( $context['hitsTotal'] ) ? $context['hitsTotal'] : 0;
-			if ( isset( $context['query'] ) ) {
-				$queries[] = $context['query'];
-			}
-			if ( isset( $context['elasticTookMs'] ) ) {
-				$elasticTook += $context['elasticTookMs'];
-			}
-			if ( isset( $context['index'] ) ) {
-				$parameters['index'][] = $context['index'];
-			}
-			if ( isset( $context['queryType'] ) ) {
-				$parameters['queryType'][] = $context['queryType'];
-			}
-			if ( !empty( $context['langdetect' ] ) ) {
-				$parameters['langdetect'] = $context['langdetect'];
-			}
-		}
-
-		foreach ( [ 'index', 'queryType' ] as $key ) {
-			$parameters[$key] = array_values( array_unique( $parameters[$key] ) );
-		}
-
-		$message = [
-			wfWikiID(),
-			'',
-			FormatJson::encode( $queries ),
-			$hits,
-			Util::getExecutionContext(),
-			$elasticTook,
-			$wgRequest->getIP(),
-			preg_replace( "/[\t\"']/", "", $wgRequest->getHeader( 'User-Agent') ),
-			FormatJson::encode( $parameters ),
-			Util::generateIdentToken(),
-		];
-
-		$logger = LoggerFactory::getInstance( 'CirrusSearchUserTesting' );
-		foreach ( $ut->getActiveTestNames() as $test ) {
-			$bucket = $ut->getBucket( $test );
-			$message[1] = "{$test}-{$bucket}";
-			$logger->debug( implode( "\t", $message ) );
-		}
 	}
 
 	/**

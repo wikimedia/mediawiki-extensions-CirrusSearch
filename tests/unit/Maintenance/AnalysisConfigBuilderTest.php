@@ -54,6 +54,15 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $builder->isIcuFolding() );
 	}
 
+	/** @dataProvider provideICUTokenizer */
+	public function testICUTokinizer( array $input, array $expected ) {
+		$config = new HashSearchConfig( ['CirrusSearchUseIcuTokenizer' => 'yes'] );
+		$plugins = ['extra', 'analysis-icu'];
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
+		$result = $builder->enableICUTokenizer( $input );
+		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+	}
+
 	public static function provideASCIIFoldingFilters() {
 		return [
 			'only custom is updated' => [
@@ -290,6 +299,49 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'icu_normalizer',
 							],
 						],
+					],
+				],
+			],
+		];
+	}
+
+	public static function provideICUTokenizer() {
+		return [
+			'only custom is updated' => [
+				[
+					'analyzer' => [
+						'french' => [
+							'type' => 'french',
+							'filter' => ['random']
+						]
+					],
+				],
+				[
+					'analyzer' => [
+						'french' => [
+							'type' => 'french',
+							'filter' => ['random']
+						]
+					],
+				],
+			],
+			'only custom is updated' => [
+				[
+					'analyzer' => [
+						'chinese' => [
+							'type' => 'custom',
+							'tokenizer' => 'standard',
+							'filter' => ['random']
+						]
+					],
+				],
+				[
+					'analyzer' => [
+						'chinese' => [
+							'type' => 'custom',
+							'tokenizer' => 'icu_tokenizer',
+							'filter' => ['random']
+						]
 					],
 				],
 			],

@@ -48,7 +48,12 @@ class AnalysisConfigBuilder {
 	/**
 	 * @var boolean true if icu folding is requested and available
 	 */
-	private $icuFolding;
+	protected $icuFolding;
+
+	/**
+	 * @var boolean true if the icu tokenizer is requested and available
+	 */
+	protected $icuTokenizer;
 
 	/**
 	 * @var array Similarity algo (tf/idf, bm25, etc) configuration
@@ -85,6 +90,7 @@ class AnalysisConfigBuilder {
 
 		$this->config = $config;
 		$this->icuFolding = $this->shouldActivateIcuFolding( $plugins );
+		$this->icuTokenizer = $this->shouldActivateIcuTokenization();
 	}
 
 	/**
@@ -117,6 +123,27 @@ class AnalysisConfigBuilder {
 	}
 
 	/**
+	 * Determine if the icu tokenizer can be enabled
+	 * @return bool
+	 */
+	private function shouldActivateIcuTokenization() {
+		if ( !$this->icu ) {
+			// requires the icu plugin
+			return false;
+		}
+		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
+		switch( $in_config ) {
+		case 'yes': return true;
+		case 'no': return false;
+		case 'default':
+			if ( isset( $this->languagesWithIcuTokenization[$this->language] ) ) {
+				return $this->languagesWithIcuTokenization[$this->language];
+			}
+		default: return false;
+		}
+	}
+
+	/**
 	 * Build the analysis config.
 	 *
 	 * @return array the analysis config
@@ -124,6 +151,9 @@ class AnalysisConfigBuilder {
 	public function buildConfig() {
 		$config = $this->customize( $this->defaults() );
 		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config ] );
+		if ( $this->icuTokenizer ) {
+			$config = $this->enableICUTokenizer( $config );
+		}
 		if ( $this->icuFolding ) {
 			$config = $this->enableICUFolding( $config );
 		}
@@ -141,6 +171,22 @@ class AnalysisConfigBuilder {
 			return $this->similarity['similarity'];
 		}
 		return null;
+	}
+	/**
+	 * replace the standard tokenizer with icu_tokenizer
+	 * @param mixed[] $config
+	 * @return mixed[] update config
+	 */
+	public function enableICUTokenizer( array $config ) {
+		foreach( $config['analyzer'] as $name => &$value ) {
+			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+				continue;
+			}
+			if ( isset( $value['tokenizer'] ) && 'standard' === $value['tokenizer'] ) {
+				$value['tokenizer'] = 'icu_tokenizer';
+			}
+		}
+		return $config;
 	}
 
 	/**
@@ -864,6 +910,12 @@ STEMMER_RULES
 	 * can be enabled by default
 	 */
 	private $languagesWithIcuFolding = [];
+
+	/**
+	 * @var bool[] indexed by language code, languages where ICU tokenization
+	 * can be enabled by default
+	 */
+	private $languagesWithIcuTokenization = [];
 
 	/**
 	 * @var array[]

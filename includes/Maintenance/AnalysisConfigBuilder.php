@@ -510,6 +510,42 @@ STEMMER_RULES
 				}, $analyzer[ 'filter' ] );
 			}
 		}
+
+		$config = $this->fixAsciiFolding( $config );
+		return $config;
+	}
+
+	/**
+	 * Workaround for https://issues.apache.org/jira/browse/LUCENE-7468
+	 * The preserve_original duplicates token even if they are
+	 * not modified, leading to more space used and wrong term frequencies.
+	 * Workaround is to append a unique filter to remove the dups.
+	 * (made public for unit tests)
+	 *
+	 * @param mixed[] $config
+	 * @return mixed[] update mapping
+	 */
+	public function fixAsciiFolding( array $config ) {
+		$needDedupFilter = false;
+		foreach( $config['analyzer'] as $name => &$value ) {
+			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+				continue;
+			}
+			if ( !isset( $value['filter'] ) ) {
+				continue;
+			}
+			$ascii_idx = array_search( 'asciifolding_preserve', $value['filter'] );
+			if ( $ascii_idx !== FALSE ) {
+				$needDedupFilter = true;
+				array_splice( $value['filter'], $ascii_idx + 1, 0, ['dedup_asciifolding'] );
+			}
+		}
+		if ( $needDedupFilter ) {
+			$config['filter']['dedup_asciifolding'] = [
+				'type' => 'unique',
+				'only_on_same_position' => true,
+			];
+		}
 		return $config;
 	}
 

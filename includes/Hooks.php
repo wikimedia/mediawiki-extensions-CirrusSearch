@@ -797,7 +797,7 @@ class Hooks {
 
 		$wgOut->addModules( 'ext.cirrus.serp' );
 		$wgOut->addJsConfigVars( [
-			'wgCirrusSearchRequestSetToken' => ElasticsearchIntermediary::getRequestSetToken(),
+			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),
 		] );
 
 		// This ignores interwiki results for now...not sure what do do with those

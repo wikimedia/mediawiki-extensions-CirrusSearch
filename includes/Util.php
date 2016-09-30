@@ -9,6 +9,7 @@ use PoolCounterWorkViaCallback;
 use RequestContext;
 use Status;
 use Title;
+use UIDGenerator;
 use WebRequest;
 
 /**
@@ -36,6 +37,11 @@ class Util {
 	 * @var array|null boost templates
 	 */
 	private static $defaultBoostTemplates = null;
+
+	/**
+	 * @var string Id identifying this php execution
+	 */
+	static private $executionId;
 
 	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying
@@ -395,4 +401,77 @@ class Util {
 		}
 		return $term;
 	}
+
+	/**
+	 * Identifies a specific execution of php. That might be one web
+	 * request, or multiple jobs run in the same executor. An execution id
+	 * is valid over a brief timespan, perhaps a minute or two for some jobs.
+	 *
+	 * @return string unique identifier
+	 */
+	public static function getExecutionId() {
+		if ( self::$executionId === null ) {
+			self::$executionId = (string) mt_rand();
+		}
+		return self::$executionId;
+	}
+
+	/**
+	 * Unit tests only
+	 */
+	public static function resetExecutionId() {
+		self::$executionId = null;
+	}
+
+	/**
+	 * Get a token that (hopefully) uniquely identifies this search. It will be
+	 * added to the search result page js config vars, and put into the url with
+	 * history.replaceState(). This means click through's from supported browsers
+	 * will record this token as part of the referrer.
+	 *
+	 * @return string
+	 */
+	public static function getRequestSetToken() {
+		static $token;
+		if ( $token === null ) {
+			// random UID, 70B tokens have a collision probability of 4*10^-16
+			// so should work for marking unique queries.
+			$uuid = UIDGenerator::newUUIDv4();
+			// make it a little shorter by using straight base36
+			$hex = substr( $uuid, 0, 8 ) . substr( $uuid, 9, 4 ) .
+				   substr( $uuid, 14, 4 ) . substr( $uuid, 19, 4) .
+				   substr( $uuid, 24 );
+			$token = \Wikimedia\base_convert( $hex, 16, 36 );
+		}
+		return $token;
+	}
+
+	/**
+	 * @param string $extraData Extra information to mix into the hash
+	 * @return string A token that identifies the source of the request
+	 */
+	public static function generateIdentToken( $extraData = '' ) {
+		$request = \RequestContext::getMain()->getRequest();
+		return md5( implode( ':', [
+			$extraData,
+			$request->getIP(),
+			$request->getHeader( 'X-Forwarded-For' ),
+			$request->getHeader( 'User-Agent' ),
+		] ) );
+	}
+
+	/**
+	 * @return string The context the request is in. Either cli, api or web.
+	 */
+	static public function getExecutionContext() {
+		if ( php_sapi_name() === 'cli' ) {
+			return 'cli';
+		} elseif ( defined( 'MW_API' ) ) {
+			return 'api';
+		} else {
+			return 'web';
+		}
+	}
+
+
 }

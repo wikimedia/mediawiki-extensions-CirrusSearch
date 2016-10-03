@@ -909,7 +909,14 @@ STEMMER_RULES
 	 * @var bool[] indexed by language code, languages where ICU folding
 	 * can be enabled by default
 	 */
-	private $languagesWithIcuFolding = [];
+	private $languagesWithIcuFolding = [
+		'el' => true,
+		'en' => true,
+		'en-ca' => true,
+		'en-gb' => true,
+		'simple' => true,
+		'fr' => true,
+	];
 
 	/**
 	 * @var bool[] indexed by language code, languages where ICU tokenization

@@ -45,8 +45,7 @@ class Version extends ElasticsearchIntermediary {
 		$result = $cache->get( $mcKey );
 		if ( !$result ) {
 			try {
-				$this->start( 'fetching elasticsearch version',
-					[ 'queryType' => 'version' ] );
+				$this->startNewLog( 'fetching elasticsearch version', 'version' );
 				// If this times out the cluster is in really bad shape but we should still
 				// check it.
 				$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
@@ -61,5 +60,20 @@ class Version extends ElasticsearchIntermediary {
 		}
 
 		return Status::newGood( $result );
+	}
+
+	/**
+	 * @param string $description
+	 * @param string $queryType
+	 * @param string[] $extra
+	 * @return SearchRequestLog
+	 */
+	protected function newLog( $description, $queryType, array $extra = [] ) {
+		return new SearchRequestLog(
+			$this->connection->getClient(),
+			$description,
+			$queryType,
+			$extra
+		);
 	}
 }

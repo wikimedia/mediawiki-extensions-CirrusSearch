@@ -211,21 +211,18 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
 
 		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
-		$logContext = [
-			'query' => $text,
-			'queryType' => $this->queryType,
-		];
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
-			function() use( $index, $suggest, $logContext, $queryOptions,
-					$profiles, $text ) {
-				$description = "{queryType} search for '{query}'";
-				$this->start( $description, $logContext );
+			function() use( $index, $suggest, $queryOptions, $profiles, $text ) {
+				$log = $this->startNewLog( "{queryType} search for '{query}'", $this->queryType, [
+					'query' => $text,
+					'offset' => $this->offset,
+				] );
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
-						$result = $this->postProcessSuggest( $result, $profiles );
+						$result = $this->postProcessSuggest( $result, $profiles, $log );
 					}
 					return $this->success( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -418,10 +415,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 *
 	 * @param \Elastica\Response $response Response from elasticsearch _suggest api
 	 * @param array $profiles the suggestion profiles
+	 * @param CompletionRequestLog $log
 	 * @return SearchSuggestionSet a set of Suggestions
 	 */
-	protected function postProcessSuggest( \Elastica\Response $response, $profiles ) {
-		$this->logContext['elasticTookMs'] = intval( $response->getQueryTime() * 1000 );
+	protected function postProcessSuggest( \Elastica\Response $response, $profiles, CompletionRequestLog $log ) {
+		$log->setResponse( $response );
 		$data = $response->getData();
 		unset( $data['_shards'] );
 
@@ -464,14 +462,9 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			return $b->getScore() - $a->getScore();
 		} );
 
-		$this->logContext['hitsTotal'] = $hitsTotal;
-
 		$suggestionsByDocId = $this->offset < $limit
 			? array_slice( $suggestionsByDocId, $this->offset, $limit - $this->offset, true )
 			: [];
-
-		$this->logContext['hitsReturned'] = count( $suggestionsByDocId );
-		$this->logContext['hitsOffset'] = $this->offset;
 
 		// we must fetch redirect data for redirect suggestions
 		$missingTextDocIds = [];
@@ -500,7 +493,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					[ 'ids' => $missingTextDocIds ],
 					[ '_source_include' => 'redirect' ] );
 				if ( $redirResponse->isOk() ) {
-					$this->logContext['elasticTook2PassMs'] = intval( $redirResponse->getQueryTime() * 1000 );
+					$log->set2ndPassResponse( $redirResponse );
 					$docs = $redirResponse->getData();
 					foreach ( $docs['docs'] as $doc ) {
 						if ( empty( $doc['_source']['redirect'] ) ) {
@@ -541,26 +534,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			}
 		);
 
-		$this->logContext['hits'] = [];
 		$indexName = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE )->getName();
-		$maxScore = 0;
-		foreach ( $finalResults as $docId => $suggestion ) {
-			$title = $suggestion->getSuggestedTitle();
-			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
-			$maxScore = max( $maxScore, $suggestion->getScore() );
-			$this->logContext['hits'][] = [
-				// This *must* match the names and types of the CirrusSearchHit
-				// record in the CirrusSearchRequestSet logging channel avro schema.
-				'title' => $title ? (string) $title : $suggestion->getText(),
-				'index' => $indexName,
-				'pageId' => (int) $pageId,
-				'profileName' => isset( $suggestionProfileByDocId[$docId] )
-					? $suggestionProfileByDocId[$docId]
-					: "",
-				'score' => $suggestion->getScore(),
-			];
-		}
-		$this->logContext['maxScore'] = (float) $maxScore;
+		$log->setResult( $indexName, $finalResults, $suggestionProfileByDocId );
 
 		return new SearchSuggestionSet( $finalResults );
 	}
@@ -579,6 +554,20 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	public function setOffset( $offset ) {
 		$this->offset = $offset;
+	}
+
+	/**
+	 * @param string $description
+	 * @param string $queryType
+	 * @param string[] $extra
+	 * @return CompletionRequestLog
+	 */
+	protected function newLog( $description, $queryType, array $extra = [] ) {
+		return new CompletionRequestLog(
+			$description,
+			$queryType,
+			$extra
+		);
 	}
 
 	/**

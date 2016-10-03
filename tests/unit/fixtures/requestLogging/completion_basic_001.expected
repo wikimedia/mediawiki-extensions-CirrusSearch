@@ -46,6 +46,7 @@
     {
         "channel": "CirrusSearchRequests",
         "context": {
+            "elasticTook2PassMs": -1,
             "elasticTookMs": 0,
             "executor": "123456789",
             "hitsOffset": 0,

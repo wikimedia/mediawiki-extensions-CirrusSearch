@@ -1,0 +1,163 @@
+<?php
+
+namespace CirrusSearch;
+
+use Title;
+use User;
+
+class SearchRequestLog extends BaseRequestLog {
+	/**
+	 * @var bool
+	 */
+	private $cached = false;
+
+	/**
+	 * @var \Elastica\Client
+	 */
+	private $client;
+
+	/**
+	 * @var \Elastica\Request|null The elasticsearch request for this log
+	 */
+	private $request;
+
+	/**
+	 * @var \Elastica\Request|null The elasticsearch request issued prior to
+	 *  this log, used to protect against accidentaly using the wrong request.
+	 */
+	private $lastRequest;
+
+	/**
+	 * @var \Elastica\Response|null The elasticsearch response for this log
+	 */
+	private $response;
+
+	/**
+	 * @var \Elastica\Response|null The elasticsearch response issued prior to
+	 *  this log, used to protect against accidentaly using the wrong response.
+	 */
+	private $lastResponse;
+
+	/**
+	 * @var \Elastica\ResultSet
+	 */
+	private $resultSet;
+
+	/**
+	 * @param \Elastica\Client $client
+	 * @param string $description
+	 * @param string $queryType
+	 * @param string[] $extra
+	 */
+	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [] ) {
+		parent::__construct( $description, $queryType, $extra );
+		$this->client = $client;
+		$this->lastRequest = $client->getLastRequest();
+		$this->lastResponse = $client->getLastResponse();
+	}
+
+	/*
+	 * @param array
+	 */
+	public function setCachedResult( array $extra ) {
+		$this->extra += $extra;
+		$this->cached = true;
+	}
+
+	public function finish() {
+		if ( $this->request || $this->response ) {
+			throw new \RuntimeException( 'Finishing a log more than once' );
+		}
+		parent::finish();
+		$request = $this->client->getLastRequest();
+		$this->request = $request === $this->lastRequest ? null : $request;
+		$this->lastRequest = null;
+		$response = $this->client->getLastResponse();
+		$this->response = $response === $this->lastResponse ? null : $response;
+		$this->lastResponse = null;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCachedResponse() {
+		return $this->cached;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getElasticTookMs() {
+		if ( !$this->response ) {
+			return -1;
+		}
+		$data = $this->response->getData();
+
+		return isset( $data['took'] ) ? $data['took'] : -1;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getLogVariables() {
+		$vars = [
+			'queryType' => $this->queryType,
+			'tookMs' => $this->getTookMs(),
+		] + $this->extra;
+
+		if ( !$this->request || !$this->response ) {
+			// @todo this is probably incomplete
+			return $vars;
+		}
+
+		$queryData = $this->request->getData();
+		$resultData = $this->response->getData();
+
+		$index = explode( '/', $this->request->getPath() );
+		$vars['index'] = $index[0];
+		if ( isset( $resultData['took'] ) ) {
+			$vars['elasticTookMs'] = $resultData['took'];
+		}
+		if ( isset( $resultData['hits']['total'] ) ) {
+			$vars['hitsTotal'] = $resultData['hits']['total'];
+		}
+		if ( isset( $resultData['hits']['max_score'] ) ) {
+			$vars['maxScore'] = $resultData['hits']['max_score'];
+		}
+		if ( isset( $resultData['hits']['hits'] ) ) {
+			$vars['hitsReturned'] = count( $resultData['hits']['hits'] );
+			$vars['hitsOffset'] = isset( $queryData['from'] ) ? $queryData['from'] : 0;
+			$vars['hits'] = [];
+			foreach ( $resultData['hits']['hits'] as $hit ) {
+				if ( !isset( $hit['_source']['namespace'] )
+					|| !isset( $hit['_source']['title'] )
+				) {
+					// This is probably a query that does not return pages like
+					// geo or namespace queries.
+					// @todo Should these get their own request logging class?
+					continue;
+				}
+				// duplication of work...this happens in the transformation
+				// stage but we can't see that here...Perhaps we instead attach
+				// this data at a later stage like CompletionSuggester?
+				$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
+				$vars['hits'][] = [
+					'title' => (string)$title,
+					'index' => isset( $hit['_index'] ) ? $hit['_index'] : "",
+					'pageId' => isset( $hit['_id'] ) ? $hit['_id'] : -1,
+					'score' => isset( $hit['_score'] ) ? $hit['_score'] : -1.0,
+				];
+			}
+		}
+		// @todo detecting this seems like a hack, would be better to explicitly pass in
+		if ( isset( $queryData['query']['filtered']['filter']['terms']['namespace'] ) ) {
+			$vars['namespaces'] = $queryData['query']['filtered']['filter']['terms']['namespace'];
+		}
+		if ( isset( $resultData['suggest']['suggest'][0]['options'][0]['text'] ) ) {
+			$vars['suggestion'] = $resultData['suggest']['suggest'][0]['options'][0]['text'];
+		}
+
+		return $vars;
+	}
+
+}

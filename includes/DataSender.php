@@ -173,10 +173,9 @@ class DataSender extends ElasticsearchIntermediary {
 		$justDocumentMissing = false;
 		try {
 			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-			$this->start( "sending {numBulk} documents to the {indexType} index", [
+			$this->startNewLog( 'sending {numBulk} documents to the {indexType} index', 'send_data_write', [
 				'numBulk' => $documentCount,
 				'indexType' => $indexType,
-				'queryType' => 'send_data_write',
 			] );
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
@@ -238,10 +237,9 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexType ) {
-					$this->start( "deleting {numIds} from {indexType}", [
+					$this->startNewLog( 'deleting {numIds} from {indexType}', 'send_deletes', [
 						'numIds' => $idCount,
 						'indexType' => $indexType,
-						'queryType' => 'send_deletes',
 					] );
 					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $docIds );
 					$this->success();
@@ -298,9 +296,8 @@ class DataSender extends ElasticsearchIntermediary {
 			// Execute the bulk update
 			$exception = null;
 			try {
-				$this->start( "updating {numBulk} documents in other indexes", [
-					'numBulk' => count( $updates ),
-					'queryType' => 'send_data_other_idx_write',
+				$this->startNewLog( 'updating {numBulk} documents in other indexes', 'send_data_other_idx_write', [
+					'numBulk' => count( $updates )
 				] );
 				$bulk->send();
 			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
@@ -399,5 +396,20 @@ class DataSender extends ElasticsearchIntermediary {
 			$names[] = $this->connection->getIndexName( $this->indexBaseName, $indexType );
 		}
 		return $names;
+	}
+
+	/**
+	 * @param string $description
+	 * @param string $queryType
+	 * @param string[] $extra
+	 * @return SearchRequestLog
+	 */
+	protected function newLog( $description, $queryType, array $extra = [] ) {
+		return new SearchRequestLog(
+			$this->connection->getClient(),
+			$description,
+			$queryType,
+			$extra
+		);
 	}
 }

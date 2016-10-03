@@ -36,9 +36,9 @@ class RequestLogger {
 	const LOG_MAX_RESULTS = 50;
 
 	/**
-	 * @var array[] Result of self::getLogContext for each request in this process
+	 * @var RequestLog[] Set of requests made
 	 */
-	private $logContexts = [];
+	private $logs = [];
 
 	/**
 	 * @var array[string] Result page ids that were returned to user
@@ -46,37 +46,55 @@ class RequestLogger {
 	private $resultTitleStrings = [];
 
 	/**
+	 * @var string[][] Extra payload for the logs, indexed first by the log index
+	 *  in self::$logs, and second by the payload item name.
+	 */
+	private $extraPayload = [];
+
+	/**
 	 * Summarizes all the requests made in this process and reports
 	 * them along with the test they belong to.
 	 */
-	private function reportLogContexts() {
-		if ( $this->logContexts ) {
+	private function reportLogs() {
+		if ( $this->logs ) {
 			$this->buildRequestSetLog();
-			$this->logContexts = [];
+			$this->logs = [];
 		}
 	}
 
-	public function addRequest( $description, array $context, $tookMs, Client $client = null, $slowMillis = null, User $user = null ) {
+	/**
+	 * @param RequestLog $log The log about a network request to be added
+	 * @param User|null $user The user performing the request, or null
+	 *  for actions that don't have a user (such as index updates).
+	 * @param int|null $slowMillis The threshold in ms after which the request
+	 *  will be considered slow.
+	 * @return array A map of information about the performed request, suitible
+	 *  for use as a psr-3 log context.
+	 */
+	public function addRequest( RequestLog $log, User $user = null, $slowMillis = null ) {
 		global $wgCirrusSearchLogElasticRequests;
 
-		// Note that this had side-effects, so even if the result is unused
-		// it's still doing "something"
-		$finalContext = $this->buildLogContext( $context, $tookMs, $client );
+		// @todo Is this necessary here? Check on what uses the response value
+		$finalContext = $log->getLogVariables() + [
+			'source' => Util::getExecutionContext(),
+			'executor' => Util::getExecutionId(),
+			'identity' => Util::generateIdentToken(),
+		];
 		if ( $wgCirrusSearchLogElasticRequests ) {
-			$this->logContexts[] = $finalContext;
-			if ( count( $this->logContexts ) === 1 ) {
+			$this->logs[] = $log;
+			if ( count( $this->logs ) === 1 ) {
 				DeferredUpdates::addCallableUpdate( function () {
-					$this->reportLogContexts();
+					$this->reportLogs();
 				} );
 			}
 
 			// Don't report hits to standard logging destinations
 			unset( $finalContext['hits'] );
 
-			$logMessage = $this->buildLogMessage( $description, $finalContext );
+			$logMessage = $this->buildLogMessage( $log, $finalContext );
 			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $finalContext );
-			if ( $slowMillis && $tookMs >= $slowMillis ) {
-				if ( $user ) {
+			if ( $slowMillis && $log->getTookMs() >= $slowMillis ) {
+				if ( $user !== null ) {
 					$finalContext['user'] = $user->getName();
 					$logMessage .= ' for {user}';
 				}
@@ -87,14 +105,14 @@ class RequestLogger {
 		return $finalContext;
 	}
 
-
 	/**
-	 * @param array $values
+	 * @param string $key
+	 * @param string $value
 	 */
-	public function appendLastLogContext( array $values ) {
-		$idx = count( $this->logContexts ) - 2;
-		if ( $idx >= 0 ) {
-			$this->logContexts[$idx] += $values;
+	public function appendLastLogPayload( $key, $value ) {
+		$idx = count( $this->logs ) - 1;
+		if ( isset( $this->logs[$idx] ) ) {
+			$this->extraPayload[$idx][$key] = $value;
 		}
 	}
 
@@ -106,10 +124,8 @@ class RequestLogger {
 	 */
 	public function getQueryTypesUsed() {
 		$types = [];
-		foreach ( $this->logContexts as $context ) {
-			if ( isset( $context['queryType'] ) ) {
-				$types[] = $context['queryType'];
-			}
+		foreach ( $this->logs as $log ) {
+			$types[] = $log->getQueryType();
 		}
 		return array_unique( $types );
 	}
@@ -142,28 +158,35 @@ class RequestLogger {
 	 * even if they have a default, and that types must match exactly.
 	 * "5" is not an int as much as php would like it to be.
 	 *
+	 * To ensure no problems serializing all properties must be explicitly
+	 * cast to the correct type.
+	 *
 	 * Avro will happily ignore fields that are present but not used. To
 	 * add new fields to the schema they must first be added here and
 	 * deployed. Then the schema can be updated. Removing goes in reverse,
 	 * adjust the schema to ignore the column, then deploy code no longer
 	 * providing it.
+	 *
+	 * All default values should match those use in the
+	 * CirrusSearchRequestSet.idl (mediawiki-event-schemas repository)
 	 */
 	private function buildRequestSetLog() {
 		global $wgRequest;
 
-		// for the moment these are still created in the old format to serve
-		// the old log formats, so here we transform the context into the new
-		// request format. At some point the context should just be created in
-		// the correct format.
+		// for the moment RequestLog::getLogVariables is still created in the
+		// old format to serve the old log formats, so here we transform the
+		// context into the new avro defined format. At some point the context
+		// should just be created in the correct format.
 		$requests = [];
 		$allCached = true;
 		$allHits = [];
-		foreach ( $this->logContexts as $context ) {
+		foreach ( $this->logs as $idx => $log ) {
+			$context = $log->getLogVariables();
 			$request = [
 				'query' => isset( $context['query'] ) ? (string) $context['query'] : '',
 				'queryType' => isset( $context['queryType'] ) ? (string) $context['queryType'] : '',
 				// populated below
-				'indices' => [],
+				'indices' => isset( $context['index'] ) ? explode( ',', $context['index'] ) : [],
 				'tookMs' => isset( $context['tookMs'] ) ? (int) $context['tookMs'] : -1,
 				'elasticTookMs' => isset( $context['elasticTookMs'] ) ? (int) $context['elasticTookMs'] : -1,
 				'limit' => isset( $context['limit'] ) ? (int) $context['limit'] : -1,
@@ -171,63 +194,26 @@ class RequestLogger {
 				'hitsReturned' => isset( $context['hitsReturned'] ) ? (int) $context['hitsReturned'] : -1,
 				'hitsOffset' => isset( $context['hitsOffset'] ) ? (int) $context['hitsOffset'] : -1,
 				// populated below
-				'namespaces' => [],
+				'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
 				'suggestion' => isset( $context['suggestion'] ) ? (string) $context['suggestion'] : '',
 				'suggestionRequested' => isset( $context['suggestion'] ),
-				'maxScore' => isset( $context['maxScore'] ) ? $context['maxScore'] : -1,
-				'payload' => [],
-				'hits' => isset( $context['hits'] ) ? array_slice( $context['hits'], 0, self::LOG_MAX_RESULTS ) : [],
+				'maxScore' => isset( $context['maxScore'] ) ? (float) $context['maxScore'] : -1.0,
+				'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
+				'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],
 			];
-			if ( isset( $context['hits'] ) ) {
-				$allHits = array_merge( $allHits, $context['hits'] );
-			}
-			if ( isset( $context['index'] ) ) {
-				$request['indices'] = explode( ',', $context['index'] );
-			}
-			if ( isset( $context['namespaces'] ) ) {
-				foreach ( $context['namespaces'] as $nsId ) {
-					$request['namespaces'][] = (int) $nsId;
-				}
-			}
-			if ( !empty( $context['langdetect' ] ) ) {
-				$request['payload']['langdetect'] = (string) $context['langdetect'];
-			}
-			if ( isset( $context['cached'] ) && $context['cached'] ) {
+			$allHits = array_merge( $allHits, $request['hits'] );
+			if ( $log->isCachedResponse() ) {
 				$request['payload']['cached'] = 'true';
 			} else {
 				$allCached = false;
 			}
-
-			if ( isset( $context['timing'] ) ) {
-				$start = 0;
-				if ( isset( $context['timing']['start'] ) ) {
-					$start = $context['timing']['start'];
-					unset( $context['timing']['start'] );
-				}
-				foreach ( $context['timing'] as $name => $time ) {
-					$request['payload']["timing-$name"] = (string) intval(( $time - $start ) * 1000);
+			if ( isset( $this->extraPayload[$idx] ) ) {
+				foreach ( $this->extraPayload[$idx] as $key => $value ) {
+					$request['payload'][$key] = (string)$value;
 				}
 			}
 
 			$requests[] = $request;
-		}
-
-		// Note that this is only accurate for hhvm and php-fpm
-		// since they close the request to the user before running
-		// deferred updates.
-		$timing = \RequestContext::getMain()->getTiming();
-		$startMark = $timing->getEntryByName( 'requestStart' );
-		$endMark  = $timing->getEntryByName( 'requestShutdown' );
-		if ( $startMark && $endMark ) {
-			// should always work, but Timing can return null so
-			// fallbacks are provided.
-			$tookS = $endMark['startTime'] - $startMark['startTime'];
-		} elseif( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
-			// php >= 5.4
-			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'];
-		} else {
-			// php 5.3
-			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME'];
 		}
 
 		// Reindex allHits by page title's. It's maybe not perfect, but it's
@@ -241,15 +227,14 @@ class RequestLogger {
 		// FIXME: temporary hack to investigate why SpecialSearch can display results
 		// that do not come from cirrus.
 		$bogusResult = null;
-		foreach ( $this->resultTitleStrings as $titleString ) {
+		$resultTitleStrings = array_slice( $this->resultTitleStrings, 0, self::LOG_MAX_RESULTS );
+		foreach ( $resultTitleStrings as $titleString ) {
 			// Track only the first missing title.
 			if ( $bogusResult === null && !isset( $allHitsByTitle[$titleString] ) ) {
 				$bogusResult = $titleString;
 			}
 
-			$hit = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : [];
-			// Apply defaults to ensure all properties are accounted for.
-			$resultHits[] = $hit + [
+			$resultHits[] = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : [
 				'title' => $titleString,
 				'index' => "",
 				'pageId' => -1,
@@ -267,8 +252,8 @@ class RequestLogger {
 			'ip' => $wgRequest->getIP() ?: '',
 			'userAgent' => $wgRequest->getHeader( 'User-Agent') ?: '',
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
-			'tookMs' => 1000 * $tookS,
-			'hits' => array_slice( $resultHits, 0, self::LOG_MAX_RESULTS ),
+			'tookMs' => $this->getPhpRequestTookMs(),
+			'hits' => $resultHits,
 			'payload' => [
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
@@ -297,29 +282,36 @@ class RequestLogger {
 		LoggerFactory::getInstance( 'CirrusSearchRequestSet' )->debug( '', $requestSet );
 	}
 
+	/**
+	 * @param SearchResultSet $matches
+	 * @return string[]
+	 */
 	private function extractTitleStrings( SearchResultSet $matches ) {
 		$strings = [];
+		$matches->rewind();
 		$result = $matches->next();
 		while ( $result ) {
 			$strings[] = (string) $result->getTitle();
 			$result = $matches->next();
 		}
+		// not everything rewinds before working through the matches, so
+		// be nice and rewind it for them.
 		$matches->rewind();
+
 		return $strings;
 	}
 
 	/**
-	 * @param string $description psr-3 compatible logging string, will be combined with $context
-	 * @param array $context Request specific log variables from self::buildLogContext()
+	 * @param RequestLog $log The request to build a log message about
+	 * @param array $context Request specific log variables from RequestLog::getLogVariables()
 	 * @return string a PSR-3 compliant message describing $context
 	 */
-	private function buildLogMessage( $description, array $context ) {
-		// No need to check description because it must be set by $this->start.
-		$message = $description;
+	private function buildLogMessage( RequestLog $log, array $context ) {
+		$message = $log->getDescription();
 		$message .= " against {index} took {tookMs} millis";
 		if ( isset( $context['elasticTookMs'] ) ) {
 			$message .= " and {elasticTookMs} Elasticsearch millis";
-			if ( isset( $context['elasticTook2PassMs'] ) ) {
+			if ( isset( $context['elasticTook2PassMs'] ) && $context['elasticTook2PassMs'] >= 0 ) {
 				$message .= " (with 2nd pass: {elasticTook2PassMs} ms)";
 			}
 		}
@@ -340,93 +332,53 @@ class RequestLogger {
 	}
 
 	/**
-	 * These values end up serialized into Avro which has strict typing
-	 * requirements. float !== int !== string.
+	 * Enforce all avro-specified type constraints on CirrusSearchHit and limit
+	 * the number of results to the maximum specified. The defaults should
+	 * match the defaults specified in CirrusSearchRequestSet.idl
+	 * (mediawiki-event-schemas repository)
 	 *
-	 * Note that this really only handles the "standard" search response
-	 * format from elasticsearch. The completion suggester is a bit of a
-	 * special snowflake in that it has a completely different response
-	 * format than other searches. The CirrusSearch\CompletionSuggester
-	 * class is responsible for providing any useful logging data by adding
-	 * directly to $this->logContext.
-	 *
-	 * @param array $params
-	 * @param float $took Number of milliseconds the request took
-	 * @param Client|null $client
-	 * @return array
+	 * @param array[] $hits
+	 * @return array[]
 	 */
-	private function buildLogContext( array $params, $took, Client $client = null ) {
-		if ( $client ) {
-			$query = $client->getLastRequest();
-			$result = $client->getLastResponse();
+	private function encodeHits( array $hits ) {
+		$result = [];
+		foreach ( array_slice( $hits, 0, self::LOG_MAX_RESULTS )  as $hit ) {
+			$result[] = [
+				'title' => isset( $hit['title'] ) ? (string)$hit['title'] : '',
+				'index' => isset( $hit['index'] ) ? (string)$hit['index'] : '',
+				// @todo this can be a string, and should be docId
+				'pageId' => isset( $hit['pageId'] ) ? (int)$hit['pageId'] : -1,
+				'score' => isset( $hit['score'] ) ? (float)$hit['score'] : -1,
+				'profileName' => isset( $hit['profileName'] ) ? (string)$hit['profileName'] : '',
+			];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Note that this is only accurate for hhvm and php-fpm
+	 * since they close the request to the user before running
+	 * deferred updates.
+	 *
+	 * @return int The number of ms the php request took
+	 */
+	private function getPhpRequestTookMs() {
+		$timing = \RequestContext::getMain()->getTiming();
+		$startMark = $timing->getEntryByName( 'requestStart' );
+		$endMark  = $timing->getEntryByName( 'requestShutdown' );
+		if ( $startMark && $endMark ) {
+			// should always work, but Timing can return null so
+			// fallbacks are provided.
+			$tookS = $endMark['startTime'] - $startMark['startTime'];
+		} elseif( isset( $_SERVER['REQUEST_TIME_FLOAT'] ) ) {
+			// php >= 5.4
+			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'];
 		} else {
-			$query = null;
-			$result = null;
+			// php 5.3
+			$tookS = microtime( true ) - $_SERVER['REQUEST_TIME'];
 		}
 
-		$params += [
-			'tookMs' => intval( $took ),
-			'source' => Util::getExecutionContext(),
-			'executor' => Util::getExecutionId(),
-			'identity' => Util::generateIdentToken(),
-		];
-
-		if ( $result ) {
-			$queryData = $query->getData();
-			$resultData = $result->getData();
-
-			$index = explode( '/', $query->getPath() );
-			$params['index'] = $index[0];
-			if ( isset( $resultData[ 'took' ] ) ) {
-				$elasticTook = $resultData[ 'took' ];
-				$params['elasticTookMs'] = intval( $elasticTook );
-			}
-			if ( isset( $resultData['hits']['total'] ) ) {
-				$params['hitsTotal'] = intval( $resultData['hits']['total'] );
-			}
-			if ( isset( $resultData['hits']['max_score'] ) ) {
-				$params['maxScore'] = $resultData['hits']['max_score'];
-			}
-			if ( isset( $resultData['hits']['hits'] ) ) {
-				$num = count( $resultData['hits']['hits'] );
-				$offset = isset( $queryData['from'] ) ? $queryData['from'] : 0;
-				$params['hitsReturned'] = $num;
-				$params['hitsOffset'] = intval( $offset );
-				$params['hits'] = [];
-				foreach ( $resultData['hits']['hits'] as $hit ) {
-					if ( !isset( $hit['_source']['namespace'] )
-						|| !isset( $hit['_source']['title'] )
-					) {
-						// This is probably a query that does not return pages
-						// like geo or namespace queries
-						continue;
-					}
-					// duplication of work ... this happens in the transformation
-					// stage but we can't see that here...Perhaps we instead attach
-					// this data at a later stage like CompletionSuggester?
-					$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
-					$params['hits'][] = [
-						// This *must* match the names and types of the CirrusSearchHit
-						// record in the CirrusSearchRequestSet logging channel avro schema.
-						'title' => (string) $title,
-						'index' => isset( $hit['_index'] ) ? $hit['_index'] : "",
-						'pageId' => isset( $hit['_id'] ) ? (int) $hit['_id'] : -1,
-						'score' => isset( $hit['_score'] ) ? (float) $hit['_score'] : -1,
-						// only comp_suggest has profileName, and that is handled
-						// elsewhere
-						'profileName' => "",
-					];
-				}
-			}
-			if ( isset( $queryData['query']['filtered']['filter']['terms']['namespace'] ) ) {
-				$namespaces = $queryData['query']['filtered']['filter']['terms']['namespace'];
-				$params['namespaces'] = array_map( 'intval', $namespaces );
-			}
-			if ( isset( $resultData['suggest']['suggest'][0]['options'][0]['text'] ) ) {
-				$params['suggestion'] = $resultData['suggest']['suggest'][0]['options'][0]['text'];
-			}
-		}
-
-		return $params;
+		return intval( 1000 * $tookS );
 	}
 }

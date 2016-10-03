@@ -26,32 +26,26 @@ use User;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ElasticsearchIntermediary {
+abstract class ElasticsearchIntermediary {
 	/**
 	 * @var Connection
 	 */
 	protected $connection;
-	/**
-	 * @var User|null user for which we're performing this search or null in the case of
-	 * requests kicked off by jobs
-	 */
-	protected $user;
-	/**
-	 * @var float|null start time of current request or null if none is running
-	 */
-	private $requestStart = null;
-	/**
-	 * @var string|null description of the next request to be sent to Elasticsearch or null if not yet decided
-	 */
-	private $description = null;
-	/**
-	 * @var array map of search request stats to log about the current search request
-	 */
-	protected $logContext = [];
 
 	/**
-	 * @var int how many millis a request through this intermediary needs to take before it counts as slow.
-	 * 0 means none count as slow.
+	 * @var User|null user for which we're performing this search or null in
+	 * the case of requests kicked off by jobs
+	 */
+	protected $user;
+
+	/**
+	 * @var RequestLog|null Log for in-progress search request
+	 */
+	protected $currentRequestLog = null;
+
+	/**
+	 * @var int how many millis a request through this intermediary needs to
+	 * take before it counts as slow. 0 means none count as slow.
 	 */
 	private $slowMillis;
 
@@ -74,12 +68,15 @@ class ElasticsearchIntermediary {
 	 * Constructor.
 	 *
 	 * @param Connection $connection
-	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.  Note that
-	 * null isn't for anonymous users - those are still User objects and should be provided if possible.  Null is for
-	 * when the action is being performed in some context where the user that caused it isn't available.  Like when an
-	 * action is being performed during a job.
-	 * @param float $slowSeconds how many seconds a request through this intermediary needs to take before it counts as
-	 * slow.  0 means none count as slow.
+	 * @param User|null $user user for which this search is being performed.
+	 *  Attached to slow request logs.  Note that null isn't for anonymous users
+	 *  - those are still User objects and should be provided if possible.  Null
+	 *  is for when the action is being performed in some context where the user
+	 *  that caused it isn't available.  Like when an action is being performed
+	 *  during a job.
+	 * @param float $slowSeconds how many seconds a request through this
+	 *  intermediary needs to take before it counts as slow.  0 means none count
+	 *  as slow.
 	 * @param float $extraBackendLatency artificial backend latency.
 	 */
 	protected function __construct( Connection $connection, User $user = null, $slowSeconds, $extraBackendLatency = 0 ) {
@@ -127,8 +124,9 @@ class ElasticsearchIntermediary {
 	 */
 	public static function getQueryTypesUsed() {
 		if ( self::$requestLogger === null ) {
-			// This can happen when, for example, completion search is triggered against NS_SPECIAL, where
-			// searching is done strictly in PHP and never actually creates a SearchEngine.
+			// This can happen when, for example, completion search is
+			// triggered against NS_SPECIAL, where searching is done strictly
+			// in PHP and never actually creates a  SearchEngine.
 			return [];
 		} else {
 			return self::$requestLogger->getQueryTypesUsed();
@@ -136,25 +134,26 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Mark the start of a request to Elasticsearch.  Public so it can be called from pool counter methods.
+	 * Mark the start of a request to Elasticsearch.  Public so it can be
+	 * called from pool counter methods.
 	 *
-	 * @param string $description name of the action being started
-	 * @param array $logContext Contextual variables for generating log messages
+	 * @param RequestLog $log
 	 */
-	public function start( $description, array $logContext = [] ) {
-		$this->description = $description;
-		$this->logContext = $logContext;
-		$this->requestStart = microtime( true );
+	public function start( RequestLog $log ) {
+		$this->currentRequestLog = $log;
+		$log->start();
 		if ( $this->extraBackendLatency ) {
 			usleep( $this->extraBackendLatency );
 		}
 	}
 
 	/**
-	 * Log a successful request and return the provided result in a good Status.  If you don't need the status
-	 * just ignore the return.  Public so it can be called from pool counter methods.
+	 * Log a successful request and return the provided result in a good
+	 * Status.  If you don't need the status just ignore the return.  Public so
+	 * it can be called from pool counter methods.
 	 *
-	 * @param mixed $result result of the request.  defaults to null in case the request doesn't have a result
+	 * @param mixed $result result of the request.  defaults to null in case
+	 *  the request doesn't have a result
 	 * @return Status wrapping $result
 	 */
 	public function success( $result = null ) {
@@ -163,27 +162,28 @@ class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Log a successful request when the response comes from a cache outside elasticsearch.
-	 * This is a combination of self::start() and self::success().
+	 * Log a successful request when the response comes from a cache outside
+	 * elasticsearch. This is a combination of self::start() and self::success().
 	 *
-	 * @param string $description name of the action being started
-	 * @param array $logContext Contextual variables for generating log messages
+	 * @param RequestLog $log
 	 */
-	public function successViaCache( $description, array $logContext = [] ) {
-		$logContext['cached'] = true;
-		self::$requestLogger->addRequest( $description, $logContext, -1 );
-		$this->requestStart = null;
+	public function successViaCache( RequestLog $log ) {
+		if ( $this->extraBackendLatency ) {
+			usleep( $this->extraBackendLatency );
+		}
+		self::$requestLogger->addRequest( $log );
 	}
 
 	/**
-	 * Log a failure and return an appropriate status.  Public so it can be called from pool counter methods.
+	 * Log a failure and return an appropriate status.  Public so it can be
+	 * called from pool counter methods.
 	 *
 	 * @param \Elastica\Exception\ExceptionInterface|null $exception if the request failed
 	 * @return Status representing a backend failure
 	 */
 	public function failure( \Elastica\Exception\ExceptionInterface $exception = null ) {
-		$context = $this->logContext;
-		$context['took'] = $this->finishRequest();
+		$log = $this->finishRequest();
+		$context = $log->getLogVariables();
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
 		$context['message'] = $message;
 
@@ -193,7 +193,7 @@ class ElasticsearchIntermediary {
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-			"Search backend error during {$this->description} after {took}: {message}",
+			"Search backend error during {$log->getDescription()} after {tookMs}: {message}",
 			$context
 		);
 		return $status;
@@ -209,39 +209,64 @@ class ElasticsearchIntermediary {
 
 	/**
 	 * Log the completion of a request to Elasticsearch.
-	 * @return int|null number of milliseconds it took to complete the request
+	 *
+	 * @return RequestLog|null The log for the finished request, or null if no
+	 * request was started.
 	 */
 	private function finishRequest() {
-		if ( !$this->requestStart ) {
+		if ( !$this->currentRequestLog ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				'finishRequest called without staring a request'
 			);
 			return null;
 		}
-		$endTime = microtime( true );
-		$took = (int) ( ( $endTime - $this->requestStart ) * 1000 );
+		$log = $this->currentRequestLog;
+		$this->currentRequestLog = null;
+
+		$log->finish();
+		$tookMs = $log->getTookMs();
 		$clusterName = $this->connection->getClusterName();
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-		$stats->timing( "CirrusSearch.$clusterName.requestTime", $took );
-		$this->searchMetrics['wgCirrusStartTime'] = $this->requestStart;
-		$this->searchMetrics['wgCirrusEndTime'] = $endTime;
-		$logContext = self::$requestLogger->addRequest( $this->description, $this->logContext, $took, $this->connection->getClient(), $this->slowMillis, $this->user );
-		$type = isset( $logContext['queryType'] ) ? $logContext['queryType'] : 'unknown';
-		$stats->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $took );
-		if ( isset( $logContext['elasticTookMs'] ) ) {
-			$this->searchMetrics['wgCirrusElasticTime'] = $logContext['elasticTookMs'];
+		$stats->timing( "CirrusSearch.$clusterName.requestTime", $tookMs );
+		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
+		$logContext = self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
+		$type = $log->getQueryType();
+		$stats->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $tookMs );
+		if ( $log->getElasticTookMs() ) {
+			$this->searchMetrics['wgCirrusElasticTime'] = $log->getElasticTookMs();
 		}
-		$this->requestStart = null;
-		$this->logContext = [];
-		$this->description = null;
 
-		return $took;
+		return $log;
 	}
 
 	/**
-	 * @param array $values
+	 * @param string $key
+	 * @param string $value
 	 */
-	static public function appendLastLogContext( array $values ) {
-		self::$requestLogger->appendLastLogContext( $values );
+	static public function appendLastLogPayload( $key, $value ) {
+		self::$requestLogger->appendLastLogPayload( $key, $value );
 	}
+
+	/**
+	 * @param string $description A psr-3 compliant string describing the request
+	 * @param string $queryType The type of search being performed such as
+	 * fulltext, get, etc.
+	 * @param string[] $extra A map of additional request-specific data
+	 * @return RequestLog
+	 */
+	protected function startNewLog( $description, $queryType, array $extra = [] ) {
+		$log = $this->newLog( $description, $queryType, $extra );
+		$this->start( $log );
+
+		return $log;
+	}
+
+	/**
+	 * @param string $description A psr-3 compliant string describing the request
+	 * @param string $queryType The type of search being performed such as
+	 * fulltext, get, etc.
+	 * @param string[] $extra A map of additional request-specific data
+	 * @return RequestLog
+	 */
+	abstract protected function newLog( $description, $queryType, array $extra = [] );
 }

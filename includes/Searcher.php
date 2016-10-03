@@ -388,10 +388,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->user,
 			function() use ( $docIds, $sourceFiltering, $indexType, $size ) {
 				try {
-					$this->start( "get of {indexType}.{docIds}", [
+					$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
 						'indexType' => $indexType,
 						'docIds' => $docIds,
-						'queryType' => 'get',
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
 					$this->connection->setTimeout( $this->getTimeout() );
@@ -429,10 +428,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->user,
 			function() use ( $name ) {
 				try {
-					$this->start( "lookup namespace for {namespaceName}", [
+					$this->startNewLog( 'lookup namespace for {namespaceName}', 'namespace', [
 						'namespaceName' => $name,
 						'query' => $name,
-						'queryType' => 'namespace',
 					] );
 					$queryOptions = [
 						'search_type' => 'query_then_fetch',
@@ -586,20 +584,19 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$search = $this->buildSearch();
 
-		$description = "{queryType} search for '{query}'";
-		$logContext = [
-			'queryType' => $this->searchContext->getSearchType(),
+		$queryType = $this->searchContext->getSearchType();
+		$log = $this->newLog( "{queryType} search for '{query}'", $queryType, [
 			'query' => $for,
 			'limit' => $this->limit ?: null,
 			// null means not requested, '' means not found. If found
-			// parent::buildLogContext will replace the '' with an
+			// SearchRequestLog::getLogVariables will replace the '' with an
 			// actual suggestion.
 			'suggestion' => $this->searchContext->getSuggest() ? '' : null,
-		];
+		] );
 
 		if ( $this->returnQuery ) {
 			return Status::newGood( [
-				'description' => $this->formatDescription( $description, $logContext ),
+				'description' => $log->formatDescription(),
 				'path' => $search->getPath(),
 				'params' => $search->getOptions(),
 				'query' => $search->getQuery()->toArray(),
@@ -610,14 +607,15 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->connection->setTimeout( $this->getTimeout() );
 
 		// Perform the search
-		$work = function () use ( $search, $description, $logContext ) {
+		$work = function () use ( $search, $log ) {
 			return Util::doPoolCounterWork(
 				$this->getPoolCounterType(),
 				$this->user,
-				function () use ( $search, $description, $logContext ) {
+				function () use ( $search, $log ) {
 					try {
-						$this->start( $description, $logContext );
-						return $this->success( $search->search() );
+						$this->start( $log );
+						$result = $search->search();
+						return $this->success( $result );
 					} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 						return $this->failure( $e );
 					}
@@ -630,10 +628,10 @@ class Searcher extends ElasticsearchIntermediary {
 		// Wrap with caching if needed, but don't cache debugging queries
 		$skipCache = $this->returnResult || $this->returnExplain;
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
-			$work = function () use ( $work, $search, $description, $logContext ) {
+			$work = function () use ( $work, $search, $log ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 				$cache = ObjectCache::getLocalClusterInstance();
-				$key = $cache->makeKey( 'cirrussearch', 'search', md5(
+				$key = $cache->makeKey( 'cirrussearch', 'search', 'v2', md5(
 					$search->getPath() .
 					serialize( $search->getOptions() ) .
 					serialize( $search->getQuery()->toArray() ) .
@@ -642,9 +640,11 @@ class Searcher extends ElasticsearchIntermediary {
 				$cacheResult = $cache->get( $key );
 				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
+					list( $logVariables, $result ) = $cacheResult;
 					$requestStats->increment("$statsKey.hit");
-					$this->successViaCache( $description, $logContext );
-					return $cacheResult;
+					$log->setCachedResult( $logVariables );
+					$this->successViaCache( $log );
+					return $result;
 				} else {
 					$requestStats->increment("$statsKey.miss");
 				}
@@ -656,7 +656,11 @@ class Searcher extends ElasticsearchIntermediary {
 					$isPartialResult = isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ];
 					if ( !$isPartialResult ) {
 						$requestStats->increment("$statsKey.set");
-						$cache->set( $key, $result, $this->searchContext->getCacheTtl() );
+						$cache->set(
+							$key,
+							[$log->getLogVariables(), $result],
+							$this->searchContext->getCacheTtl()
+						);
 					}
 				}
 
@@ -671,7 +675,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 			if ( $this->returnResult ) {
 				return Status::newGood( [
-						'description' => $this->formatDescription( $description, $logContext ),
+						'description' => $log->formatDescription(),
 						'path' => $search->getPath(),
 						'result' => $responseData,
 				] );
@@ -683,8 +687,8 @@ class Searcher extends ElasticsearchIntermediary {
 			) );
 			if ( isset( $responseData['timed_out'] ) && $responseData[ 'timed_out' ] ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"$description timed out and only returned partial results!",
-					$logContext
+					$log->getDescription() . " timed out and only returned partial results!",
+					$log->getLogVariables()
 				);
 				if ( $result->getValue()->numRows() === 0 ) {
 					return Status::newFatal( 'cirrussearch-backend-error' );
@@ -787,23 +791,6 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Perform a quick and dirty replacement for $this->description
-	 * when it's not going through monolog. It replaces {foo} with
-	 * the value from $context['foo'].
-	 *
-	 * @param string $input String to perform replacement on
-	 * @param array $context patterns and their replacements
-	 * @return string $input with replacements from $context performed
-	 */
-	private function formatDescription( $input, $context ) {
-		$pairs = [];
-		foreach ( $context as $key => $value ) {
-			$pairs['{' . $key . '}'] = $value;
-		}
-		return strtr( $input, $pairs );
-	}
-
-	/**
 	 * @return SearchContext
 	 */
 	public function getSearchContext() {
@@ -853,5 +840,20 @@ class Searcher extends ElasticsearchIntermediary {
 	protected function getQueryCacheStatsKey() {
 		$type = $this->searchContext->getSearchType();
 		return "CirrusSearch.query_cache.$type";
+	}
+
+	/**
+	 * @param string $description
+	 * @param string $queryType
+	 * @param string[] $extra
+	 * @return SearchRequestLog
+	 */
+	protected function newLog( $description, $queryType, array $extra = [] ) {
+		return new SearchRequestLog(
+			$this->connection->getClient(),
+			$description,
+			$queryType,
+			$extra
+		);
 	}
 }

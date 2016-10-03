@@ -214,17 +214,13 @@ class CirrusSearch extends SearchEngine {
 				// log context? It would be inconsistent with the
 				// langdetect => false condition which does not have a next
 				// request though.
-				Searcher::appendLastLogContext( [
-					'langdetect' => $name,
-				] );
+				Searcher::appendLastLogPayload( 'langdetect', $name );
 				$detected = $wiki;
 				break;
 			}
 		}
 		if ( $detected === null ) {
-			Searcher::appendLastLogContext( [
-				'langdetect' => 'failed',
-			] );
+			Searcher::appendLastLogPayload( 'langdetect', 'failed' );
 		} else {
 			// Report language detection with search metrics
 			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;

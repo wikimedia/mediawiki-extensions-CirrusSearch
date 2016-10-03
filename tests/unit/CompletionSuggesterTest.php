@@ -235,7 +235,10 @@ class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
 		// Test that we generate at most 4 profiles
 		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), $limit, $offset );
 
-		$suggestions = $completion->testPostProcess( 'Tit', $resp );
+		$log = $this->getMockBuilder( CompletionRequestLog::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$suggestions = $completion->testPostProcess( 'Tit', $resp, $log );
 		$this->assertEquals( $size, $suggestions->getSize() );
 		if ( $size > 0 ) {
 			$suggestions = $suggestions->getSuggestions();
@@ -313,9 +316,9 @@ class MyCompletionSuggester extends CompletionSuggester {
 		return $this->buildQuery();
 	}
 
-	public function testPostProcess( $search, \Elastica\Response $resp ) {
+	public function testPostProcess( $search, \Elastica\Response $resp, CompletionRequestLog $log ) {
 		$this->setTermAndVariants( $search );
 		list( $profiles ) = $this->buildQuery();
-		return $this->postProcessSuggest( $resp, $profiles );
+		return $this->postProcessSuggest( $resp, $profiles, $log );
 	}
 }

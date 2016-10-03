@@ -1,0 +1,59 @@
+[
+    {
+        "channel": "CirrusSearchRequestSet",
+        "context": {
+            "backendUserTests": [],
+            "hits": [],
+            "ip": "127.0.0.1",
+            "payload": {
+                "acceptLang": "",
+                "queryString": ""
+            },
+            "requests": [
+                {
+                    "elasticTookMs": 2,
+                    "hits": [],
+                    "hitsOffset": 0,
+                    "hitsReturned": 0,
+                    "hitsTotal": 0,
+                    "indices": [
+                        "wiki"
+                    ],
+                    "limit": -1,
+                    "maxScore": -1,
+                    "namespaces": [],
+                    "payload": [],
+                    "query": "",
+                    "queryType": "get",
+                    "suggestion": "",
+                    "suggestionRequested": false
+                }
+            ],
+            "source": "cli",
+            "userAgent": ""
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
+        "channel": "CirrusSearchRequests",
+        "context": {
+            "docIds": [
+                42
+            ],
+            "elasticTookMs": 0,
+            "executor": "123456789",
+            "hitsOffset": 0,
+            "hitsReturned": 0,
+            "hitsTotal": 0,
+            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+            "index": "wiki",
+            "indexType": false,
+            "queryType": "get",
+            "source": "cli",
+            "tookMs": 0
+        },
+        "level": "debug",
+        "message": "get of {indexType}.{docIds} against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
+    }
+]

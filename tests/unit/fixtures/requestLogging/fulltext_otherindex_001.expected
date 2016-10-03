@@ -1,0 +1,90 @@
+[
+    {
+        "channel": "CirrusSearchRequestSet",
+        "context": {
+            "backendUserTests": [],
+            "hits": [
+                {
+                    "index": "commonswiki_file_first",
+                    "pageId": 26,
+                    "profileName": "",
+                    "score": 0.83292395,
+                    "title": "File:OnCommons.svg"
+                },
+                {
+                    "index": "commonswiki_file_first",
+                    "pageId": 27,
+                    "profileName": "",
+                    "score": 0.8020882,
+                    "title": "File:DuplicatedLocally.svg"
+                }
+            ],
+            "ip": "127.0.0.1",
+            "payload": {
+                "acceptLang": "",
+                "queryString": ""
+            },
+            "requests": [
+                {
+                    "elasticTookMs": 6,
+                    "hits": [
+                        {
+                            "index": "commonswiki_file_first",
+                            "pageId": 26,
+                            "profileName": "",
+                            "score": 0.83292395,
+                            "title": "File:OnCommons.svg"
+                        },
+                        {
+                            "index": "commonswiki_file_first",
+                            "pageId": 27,
+                            "profileName": "",
+                            "score": 0.8020882,
+                            "title": "File:DuplicatedLocally.svg"
+                        }
+                    ],
+                    "hitsOffset": 0,
+                    "hitsReturned": 2,
+                    "hitsTotal": 2,
+                    "indices": [
+                        "wiki_general",
+                        "commonswiki_file"
+                    ],
+                    "limit": 20,
+                    "maxScore": 2.7669134,
+                    "namespaces": [],
+                    "payload": [],
+                    "query": "svg",
+                    "queryType": "full_text",
+                    "suggestion": "",
+                    "suggestionRequested": true
+                }
+            ],
+            "source": "cli",
+            "userAgent": ""
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
+        "channel": "CirrusSearchRequests",
+        "context": {
+            "elasticTookMs": 0,
+            "executor": "123456789",
+            "hitsOffset": 0,
+            "hitsReturned": 2,
+            "hitsTotal": 2,
+            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+            "index": "wiki_general,commonswiki_file",
+            "limit": 20,
+            "maxScore": 2.7669134,
+            "query": "svg",
+            "queryType": "full_text",
+            "source": "cli",
+            "suggestion": "",
+            "tookMs": 0
+        },
+        "level": "debug",
+        "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
+    }
+]

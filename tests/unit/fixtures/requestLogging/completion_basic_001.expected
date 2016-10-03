@@ -1,0 +1,65 @@
+[
+    {
+        "channel": "CirrusSearchRequestSet",
+        "context": {
+            "backendUserTests": [],
+            "hits": [],
+            "ip": "127.0.0.1",
+            "payload": {
+                "acceptLang": "",
+                "queryString": ""
+            },
+            "requests": [
+                {
+                    "elasticTookMs": 0,
+                    "hits": [
+                        {
+                            "index": "wiki_titlesuggest",
+                            "pageId": 1,
+                            "profileName": "plain",
+                            "score": 5679327,
+                            "title": "Main Page"
+                        }
+                    ],
+                    "hitsOffset": 0,
+                    "hitsReturned": 1,
+                    "hitsTotal": 4,
+                    "indices": [
+                        "wiki_titlesuggest"
+                    ],
+                    "limit": -1,
+                    "maxScore": 5679327,
+                    "namespaces": [],
+                    "payload": [],
+                    "query": "main p",
+                    "queryType": "comp_suggest",
+                    "suggestion": "",
+                    "suggestionRequested": false
+                }
+            ],
+            "source": "cli",
+            "userAgent": ""
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
+        "channel": "CirrusSearchRequests",
+        "context": {
+            "elasticTookMs": 0,
+            "executor": "123456789",
+            "hitsOffset": 0,
+            "hitsReturned": 1,
+            "hitsTotal": 4,
+            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+            "index": "wiki_titlesuggest",
+            "maxScore": 5679327,
+            "query": "main p",
+            "queryType": "comp_suggest",
+            "source": "cli",
+            "tookMs": 0
+        },
+        "level": "debug",
+        "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
+    }
+]

@@ -171,6 +171,7 @@ class Connection extends ElasticaConnection {
 		foreach ( $config as $idx => $server ) {
 			if (
 				isset( $server['transport'] ) &&
+				is_string( $server['transport'] ) &&
 				class_exists( $server['transport'] )
 			) {
 				$transportClass = $server['transport'];

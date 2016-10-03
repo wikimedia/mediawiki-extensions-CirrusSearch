@@ -1,0 +1,58 @@
+[
+    {
+        "channel": "CirrusSearchRequestSet",
+        "context": {
+            "backendUserTests": [],
+            "hits": [],
+            "ip": "127.0.0.1",
+            "payload": {
+                "acceptLang": "",
+                "queryString": ""
+            },
+            "requests": [
+                {
+                    "elasticTookMs": 26,
+                    "hits": [],
+                    "hitsOffset": 0,
+                    "hitsReturned": 0,
+                    "hitsTotal": 0,
+                    "indices": [
+                        "wiki"
+                    ],
+                    "limit": 20,
+                    "maxScore": -1,
+                    "namespaces": [],
+                    "payload": [],
+                    "query": "mani page",
+                    "queryType": "full_text",
+                    "suggestion": "main page",
+                    "suggestionRequested": true
+                }
+            ],
+            "source": "cli",
+            "userAgent": ""
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
+        "channel": "CirrusSearchRequests",
+        "context": {
+            "elasticTookMs": 0,
+            "executor": "123456789",
+            "hitsOffset": 0,
+            "hitsReturned": 0,
+            "hitsTotal": 0,
+            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+            "index": "wiki",
+            "limit": 20,
+            "query": "mani page",
+            "queryType": "full_text",
+            "source": "cli",
+            "suggestion": "main page",
+            "tookMs": 0
+        },
+        "level": "debug",
+        "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset} and suggested '{suggestion}'. Requested via {source} for {identity} by executor {executor}"
+    }
+]

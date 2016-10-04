@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Maintenance;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
@@ -110,7 +110,7 @@ class MappingValidator extends Validator {
 				$this->output( "corrected\n" );
 			} catch ( ExceptionInterface $e ) {
 				$this->output( "failed!\n" );
-				$message = ElasticsearchIntermediary::extractMessage( $e );
+				$message = ElasticaErrorHandler::extractMessage( $e );
 				return Status::newFatal( new RawMessage(
 					"Couldn't update existing mappings. You may need to reindex.\nHere is elasticsearch's error message: $message\n" ) );
 			}

@@ -31,6 +31,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Connection' => __DIR__ . '/includes/Connection.php',
 	'CirrusSearch\\DataSender' => __DIR__ . '/includes/DataSender.php',
 	'CirrusSearch\\Dump' => __DIR__ . '/includes/Dump.php',
+	'CirrusSearch\\ElasticaErrorHandler' => __DIR__ . '/includes/ElasticaErrorHandler.php',
 	'CirrusSearch\\Elastica\\PooledHttp' => __DIR__ . '/includes/Elastica/PooledHttp.php',
 	'CirrusSearch\\Elastica\\PooledHttps' => __DIR__ . '/includes/Elastica/PooledHttps.php',
 	'CirrusSearch\\ElasticsearchIntermediary' => __DIR__ . '/includes/ElasticsearchIntermediary.php',

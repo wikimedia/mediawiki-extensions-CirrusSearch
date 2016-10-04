@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\ElasticsearchIntermediary;
+use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Maintenance\Metastore;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
@@ -272,7 +272,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
-			$message = ElasticsearchIntermediary::extractMessage( $e );
+			$message = ElasticaErrorHandler::extractMessage( $e );
 			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );

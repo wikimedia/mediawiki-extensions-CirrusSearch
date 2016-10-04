@@ -101,6 +101,58 @@ $wgCirrusSearchRescoreProfiles = [
 		'supported_namespaces' => 'all',
 		'rescore' => [],
 	],
+
+	// inclinks applied as a weighted sum
+	'wsum_inclinks' => [
+		'supported_namespaces' => 'all',
+		'rescore' => [
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'total',
+				'type' => 'function_score',
+				'function_chain' => 'wsum_inclinks'
+			],
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'multiply',
+				'type' => 'function_score',
+				'function_chain' => 'optional_chain'
+			],
+		],
+	],
+
+	// inclinks + pageviews applied as weighted sum
+	// NOTE: requires the custom field popularity_score
+	'wsum_inclinks_pv' => [
+		'supported_namespaces' => 'content',
+		'fallback_profile' => 'wsum_inclinks',
+		'rescore' => [
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'total',
+				'type' => 'function_score',
+				'function_chain' => 'wsum_inclinks_pv'
+			],
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'multiply',
+				'type' => 'function_score',
+				'function_chain' => 'optional_chain'
+			],
+		],
+	],
 ];
 
 /**
@@ -168,92 +220,80 @@ $wgCirrusSearchRescoreFunctionScoreChains = [
 		]
 	],
 
-//	// Example chain (do not use) with incoming_links to illustrate
-//	// the 'custom_field' function score type.
-//	// Simulates the behavior of boostlinks by using a custom field.
-//	'custom_incominglinks' => array(
-//		// First, each document is scored by the defined functions. The
-//		// parameter score_mode specifies how the computed scores are
-//		// combined. Makes sense only if more than one function are added
-//		// to the chain.
-//		'boost_mode' => 'multiply',
-//		'functions' => array(
-//			array(
-//				// custom field allows you to use a custom numeric
-//				// field with a field_value_factor function score.
-//				'type' => 'custom_field',
-//				// If multiple functions are added to the chain
-//				// weight is a factor applied to the function result.
-//				// If the function produces more than one function
-//				// (templates, namespaces, language) then this weight
-//				// is multiplied to the weight computed by the function
-//				'weight' => 1,
-//
-//				// Params used by field_value_factor
-//				// see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-//				'params' => array(
-//					// field name
-//					'field' => 'incoming_links',
-//
-//					// Optional factor to multiply the field value
-//					// with, defaults to 1.
-//					'factor' => array(
-//						'value' => 1,
-//						'config_override' => 'CirrusSearchBoostLinksFactor',
-//						'uri_param_override' => 'cirrusBoostLinksFactor',
-//					),
-//
-//					// Modifier to apply to the field value, can be
-//					// one of: none, log, log1p, log2p, ln, ln1p,
-//					// ln2p, square, sqrt, or reciprocal. Defaults
-//					// to none.
-//					'modifier' => 'log2p',
-//
-//					// Value used if the document doesn’t have that
-//					// field. The modifier and factor are still
-//					// applied to it as though it were read from
-//					// the document.
-//					'missing' => 0,
-//				),
-//			),
-//			array(
-//				// Log scale boost,
-//				// Generates a boost factor (min: 1, max: impact)
-//				'type' => 'logscale_boost',
-//				'params' => array(
-//					'field' => 'popularity_score',
-//					// Scale, usually set to the max value
-//					'scale' => array(
-//						'value' => 0.0004,
-//						'uri_param_override' => 'cirrusBoostLinksScale',
-//						'config_override' => 'CirrusSearchBoostLinksScale',
-//					),
-//					// Set the midpoint point where this function generates
-//					// so that a field value of 'midpoint' is at the center
-//					// of the scale
-//					'midpoint' => array(
-//						'value' => 0.0000005,
-//						'uri_param_override' => 'cirrusBoostLinksCenter',
-//						'config_override' => 'CirrusSearchBoostLinksCenter',
-//					),
-//					// Set the impact, a value of one can double the score
-//					'impact' => array(
-//						'value' => 1,
-//						'uri_param_override' => 'cirrusBoostLinksImpact',
-//						'config_override' => 'CirrusSearchBoostLinksImpact',
-//					),
-//				)
-//		),
-//	),
-//	// Example chain (do not use) with incoming_links to illustrate
-//	// the 'script' function score type.
-//	// Simulates the behavior of boostlinks by using a script.
-//	'custom_incominglinks_script' => array(
-//		'functions' => array(
-//			array(
-//				'type' => 'script',
-//				'script' => "log10( doc['incoming_links'].value + 2)"
-//			),
-//		),
-//	),
+	// inclinks as a weighted sum
+	'wsum_inclinks' => [
+		'functions' => [
+			[
+				'type' => 'satu',
+				'weight' => [
+					'value' => 13,
+					'config_override' => 'CirrusSearchIncLinksAloneW',
+					'uri_param_override' => 'cirrusIncLinksAloneW',
+				],
+				'params' => [
+					'field' => 'incoming_links',
+					'k' => [
+						'value' => 30,
+						'config_override' => 'CirrusSearchIncLinksAloneK',
+						'uri_param_override' => 'cirrusIncLinksAloneK',
+					],
+					'a' => [
+						'value' => 0.7,
+						'config_override' => 'CirrusSearchIncLinksAloneA',
+						'uri_param_override' => 'cirrusIncLinksAloneA',
+					]
+				],
+			],
+		],
+	],
+
+	// inclinks as a weighted sum
+	'wsum_inclinks_pv' => [
+		'score_mode' => 'sum',
+		'boost_mode' => 'sum',
+		'functions' => [
+			[
+				'type' => 'satu',
+				'weight' => [
+					'value' => 3,
+					'config_override' => 'CirrusSearchPageViewsW',
+					'uri_param_override' => 'cirrusPageViewsW',
+				],
+				'params' => [
+					'field' => 'popularity_score',
+					'k' => [
+						'value' => 8E-6,
+						'config_override' => 'CirrusSearchPageViewsK',
+						'uri_param_override' => 'cirrusPageViewsK',
+					],
+					'a' => [
+						'value' => 0.8,
+						'config_override' => 'CirrusSearchPageViewsA',
+						'uri_param_override' => 'cirrusPageViewsA',
+					],
+				],
+			],
+			[
+				'type' => 'satu',
+				'weight' => [
+					'value' => 10,
+					'config_override' => 'CirrusSearchIncLinksW',
+					'uri_param_override' => 'cirrusIncLinkssW',
+				],
+				'params' => [
+					'field' => 'incoming_links',
+					'k' => [
+						'value' => 30,
+						'config_override' => 'CirrusSearchIncLinksK',
+						'uri_param_override' => 'cirrusIncLinksK',
+					],
+					'a' => [
+						'value' => 0.7,
+						'config_override' => 'CirrusSearchIncLinksA',
+						'uri_param_override' => 'cirrusIncLinksA',
+					],
+				],
+			],
+		],
+	],
 ];

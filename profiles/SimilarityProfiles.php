@@ -93,4 +93,24 @@ $wgCirrusSearchSimilarityProfiles = [
 			'__default__' => 'lower_norms',
 		],
 	],
+	// Default BM25 settings used by wmf sites
+	'wmf_defaults' => [
+		'similarity' => [
+			'default' => [
+				'type' => 'BM25',
+			],
+			'arrays' => [
+				'type' => 'BM25',
+				'k1' => 1.2,
+				'b' => 0.3,
+			],
+		],
+		'fields' => [
+			'__default__' => 'default',
+			'category' => 'arrays',
+			'heading' => 'arrays',
+			'redirect.title' => 'arrays',
+			'suggest' => 'arrays',
+		],
+	],
 ];

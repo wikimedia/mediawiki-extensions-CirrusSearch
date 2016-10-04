@@ -14,8 +14,6 @@
 	"cirrussearch-backend-error": "Non si è riuscito a completare la tua ricerca a causa di un problema temporaneo. Riprova più tardi.",
 	"cirrussearch-parse-error": "Non è possibile interpretare la query. Si prega di renderla più semplice. La query è stata registrata per migliorare il sistema di ricerca.",
 	"cirrussearch-too-busy-error": "Attualmente il motore di ricerca è sovraccarico. Riprova più tardi.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Hai troppe ricerche in corso contemporaneamente. Se stai condividendo un indirizzo IP con altri utenti, puoi effettuare l'accesso per operare con i tuoi limiti.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Hai troppo ricerche contemporaneamente in corso.",
 	"cirrussearch-regex-syntax-error": "Errore di sintassi nell'espressione regolare a $2: $1",
 	"cirrussearch-regex-too-busy-error": "Attualmente troppe ricerche con espressioni regolari in esecuzione. Riprova più tardi.",
 	"cirrussearch-regex-too-complex-error": "L'espressione regolare è troppo complessa. Approfondisci [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|qui]] come semplificarla.",

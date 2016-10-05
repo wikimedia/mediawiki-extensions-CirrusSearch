@@ -24,6 +24,14 @@ $wgCirrusSearchRefreshInterval = 30;
 // We don't use DFS in prod
 $wgCirrusSearchMoreAccurateScoringMode = false;
 
+// subphrase is not enabled by default on prod
+$wgCirrusSearchCompletionSuggesterSubphrases = [
+	'use' => false,
+	'build' => false,
+	'type' => 'subpages',
+	'limit' => 3,
+];
+
 
 // Specific settings
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc" ) ) {

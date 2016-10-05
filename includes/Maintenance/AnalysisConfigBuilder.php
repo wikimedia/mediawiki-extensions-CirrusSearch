@@ -595,7 +595,6 @@ STEMMER_RULES
 		'pt-br' => 'brazilian',
 		'bg' => 'bulgarian',
 		'ca' => 'catalan',
-		'zh-hans' => 'chinese',
 		'ja' => 'cjk',
 		'ko' => 'cjk',
 		'cs' => 'czech',

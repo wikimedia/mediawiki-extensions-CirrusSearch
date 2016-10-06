@@ -680,6 +680,18 @@ setup_suggest = lambda do |world|
   end
 end
 
+ruwiki = false
+setup_ruwiki = lambda do |world|
+  unless ruwiki
+    world.steps %(
+    Given a page on ru named Черная дыра exists with contents Черная дыра́ — область пространства-времени
+      And a page on ru named Саша Чёрный exists with contents настоящее имя Алекса́ндр Миха́йлович Гли́кберг
+      And a page on ru named Бразер exists with contents белорусский советский скульптор
+    )
+    ruwiki = true
+  end
+end
+
 # Optimization for parallel runners so only one does the setup, Makes the bold
 # assumption parallel runner is going to run everything.
 lock_file_path = "/tmp/parallel_cucumber.lock"
@@ -918,4 +930,7 @@ Before("@suggest") do
 end
 Before("@filesearch") do
   setup_files_for_search.call(self)
+end
+Before("@ru") do
+  setup_ruwiki.call(self)
 end

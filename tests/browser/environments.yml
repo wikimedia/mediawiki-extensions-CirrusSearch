@@ -20,6 +20,7 @@ mw-vagrant-host: &default
   mediawiki_commons_api_url: http://commons.wiki.local.wmftest.net:8080/w/api.php
   mediawiki_url: http://cirrustest.wiki.local.wmftest.net:8080/wiki/
   mediawiki_url_commons: http://commons.wiki.local.wmftest.net:8080/wiki/
+  mediawiki_url_ru: http://ru.wiki.local.wmftest.net:8080/wiki/
   mediawiki_user: admin
   mediawiki_password: vagrant
   reuse_browser: true
@@ -49,6 +50,7 @@ cindy:
   mediawiki_commons_api_url: http://commons-cirrus-browser-bot.wmflabs.org/w/api.php
   mediawiki_url: http://cirrustest-cirrus-browser-bot.wmflabs.org/wiki/
   mediawiki_url_commons: http://commons-cirrus-browser-bot.wmflabs.org/wiki/
+  mediawiki_url_ru: http://ru-cirrus-browser-bot.wmflabs.org/wiki/
   mediawiki_user: admin
   mediawiki_password: vagrant
   reuse_browser: true

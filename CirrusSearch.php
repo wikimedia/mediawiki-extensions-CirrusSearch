@@ -1003,6 +1003,15 @@ $wgCirrusSearchBoostTemplates = [];
  */
 $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
 
+/**
+ * CirrusSearch development options:
+ * - morelike_collect_titles_from_elastic: first pass collection from elastic
+ * - ignore_missing_rev: ignore missing revisions
+ *
+ * NOTE: never activate any of these on a production site
+ */
+$wgCirrusSearchDevelOptions = [];
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

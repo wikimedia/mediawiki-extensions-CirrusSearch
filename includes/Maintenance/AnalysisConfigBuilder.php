@@ -385,7 +385,8 @@ STEMMER_RULES
 			$config[ 'char_filter' ][ 'french_charfilter' ] = [
 				'type' => 'mapping',
 				'mappings' => [
-					'\u0130=>I',	// dotted I
+					'\u0130=>I',		// dotted I
+					'\u02BC=>\u0027',	// modifier apostrophe to straight quote T146804
 				],
 			];
 			$config[ 'filter' ][ 'french_elision' ] = [

@@ -176,6 +176,21 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	private function customize( array $config ) {
 		$defaultStopSet = $this->getDefaultStopSet( $this->getLanguage() );
 		$config['filter']['stop_filter']['stopwords'] = $defaultStopSet;
+
+		switch ( $this->getDefaultTextAnalyzerType() ) {
+		// Please add languages in alphabetical order.
+		case 'russian':
+			// T102298 ignore combining acute / stress accents
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0301=>';
+			// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0451=>\u0435';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0401=>\u0415';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+			break;
+		}
+
+
 		if ( $this->isIcuAvailable() ) {
 			foreach ( $config[ 'analyzer' ] as $k => &$analyzer ) {
 				if ( $k != "stop_analyzer" && $k != "stop_analyzer_search" ) {

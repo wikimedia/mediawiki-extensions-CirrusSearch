@@ -2,11 +2,17 @@
 
 namespace CirrusSearch\Test;
 
+use GlobalVarConfig;
 use MediaWiki\MediaWikiServices;
+use MultiConfig;
 
 class HashSearchConfig extends \CirrusSearch\SearchConfig {
-	public function __construct( array $settings ) {
-		$this->setSource( new \HashConfig( $settings ) );
+	public function __construct( array $settings, array $flags = [] ) {
+		$config = new \HashConfig( $settings );
+		if ( in_array( 'inherit', $flags ) ) {
+			$config = new MultiConfig( [$config, new GlobalVarConfig] );
+		}
+		$this->setSource( $config );
 	}
 
 	/**

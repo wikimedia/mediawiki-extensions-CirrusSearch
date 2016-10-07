@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Test\HashSearchConfig;
-use MediaWiki\MediaWikiServices;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -29,14 +28,10 @@ class ConnectionTest extends PHPUnit_Framework_TestCase {
 	 * @dataProvider provideNamespacesInIndexType
 	 */
 	public function testNamespacesInIndexType( $contentNamespaces, $namespaceMappings, $indexType, $expected ) {
-		global $wgContentNamespaces,
-			$wgCirrusSearchNamespaceMappings;
-
-		$wgContentNamespaces = $contentNamespaces;
-		$wgCirrusSearchNamespaceMappings = $namespaceMappings;
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
+		$config = new HashSearchConfig( [
+			'ContentNamespaces' => $contentNamespaces,
+			'CirrusSearchNamespaceMappings' => $namespaceMappings,
+		], ['inherit'] );
 		$conn = new Connection( $config );
 		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
 	}

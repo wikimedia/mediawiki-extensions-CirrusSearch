@@ -2,16 +2,35 @@
 	"@metadata": {
 		"authors": [
 			"Tgr",
-			"Csega"
+			"Csega",
+			"Tacsipacsi"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch alapú MediaWiki kereső",
 	"cirrussearch-backend-error": "Egy átmeneti hiba miatt nem tudtuk végrehajtani a keresést. Kérlek, próbálkozz később.",
 	"cirrussearch-parse-error": "Nem értem a keresőkifejezést, kérlek írd át egyszerűbbre. (A kifejezést eltároltuk és felhasználjuk a keresőrendszer fejlesztésére.)",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Már túl sok egyidejű keresést fut.",
+	"cirrussearch-too-busy-error": "A kereső jelenleg túl elfoglalt. Próbálkozz újra később.",
+	"cirrussearch-regex-syntax-error": "Hiba a reguláris kifejezésben a(z) $2 helyen: $1",
+	"cirrussearch-regex-too-busy-error": "Túl sok reguláris kifejezést használó keresés fut jelenleg. Próbálkozz újra később.",
+	"cirrussearch-regex-too-complex-error": "A reguláris kifejezés túl bonyolult. Tudj meg többet az egyszerűsítéséről [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|itt]].",
 	"cirrussearch-now-using": "Ez a wiki egy új keresőt használ. ([[mw:Special:MyLanguage/Help:CirrusSearch|Bővebben]])",
 	"cirrussearch-ignored-headings": " #<!-- ezen a soron ne változtass --> <pre>\n# Az itt megadott szakaszokat figyelmen kívül hagyja a kereső.\n# Ha megváltoztatod ezt a listát, csak a változtatás után indexelt lapokra lesz hatása.\n# Ha újra akarsz indexelni egy adott oldalt, egy üres szerkesztéssel (megnyit-elment) megteheted.\n# Szintaxis:\n#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja\n#   * Minden nem üres sor egy olyan szakasz címe, amit nem akarjuk, hogy indexeljen a kereső. (Csak a pontos egyezés számít, kisbetű/nagybetűt is beleértve.)\nForrások\nJegyzetek\nHivatkozások\nKülső hivatkozások\nLásd még\n #</pre> <!-- ezen a soron ne változtass -->",
 	"cirrussearch-boost-templates": " #<!-- ezen a soron ne változtass --> <pre>\n# Ha egy lap tartalmazza az itt megadott sablonok valamelyikét, akkor a keresési pontszáma (ami alapján a találatok rendezve lesznek) szorzódik a megadott százalékkal.\n# Ha ezt az oldalt módosítod, az azonnal hatással lesz minden lapra.\n# Szintaxis:\n#   * A # jeltől a sor végéig tartó rész megjegyzés, a szoftver figyelmen kívül hagyja\n#   * Minden nem üres sor egy sablon neve (csak a pontos egyezés számít, beleértve a névteret és a kisbetű/nagybetűt is), majd egy | karakter, majd egy százalékként megadott szám.\n# Jó példák:\n# Sablon:Jó|150%\n# Sablon:Nagyon-nagyon jó|300%\n# Sablon:Rossz|50%\n# Rossz példák:\n# Sablon:Bah|150.234234% <-- tizedestörtet nem használhatsz!\n# Bah|150% <--- ez a fő névtérben lévő \"Bah\" lapra fog vonatkozni, nem a Bah sablonra\n# Ha tesztelni akarod, milyen hatása lenne ezen lap megváltoztatásának egy adott keresésre, írd be a keresés legelejére a boost-templates:\"XX\" kulcsszót, ahol XX az ezen a lapon megadotthoz hasonló konfiguráció, de újsor helyett szóközökkel elválasztva.\n# Az ilyen keresések figyelmen kívül hagyják ennek a lapnak a beállításait.\n #</pre> <!-- ezen a soron ne változtass -->",
 	"cirrussearch-pref-label": "Új keresés",
-	"cirrussearch-pref-desc": "Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele."
+	"cirrussearch-pref-desc": "Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele.",
+	"cirrussearch-give-feedback": "Visszajelzés",
+	"cirrussearch-query-too-long": "A keresőkifejezés hosszabb a megengedettnél ($1 > $2).",
+	"cirrussearch-completionsuggester-pref": "Automatikus kiegészítés",
+	"cirrussearch-completionsuggester-desc": "Új algoritmus a keresőkifejezés automatikus kiegészítésére. Ha engedélyezed, a jobb felső sarokban lévő keresőmező ezt fogja használni.",
+	"cirrussearch-completion-profile-strict": "Szigorú profil, egy pár írásjelet eltávolít, de az ékezeteket és hangsúlyjeleket meghagyja.",
+	"cirrussearch-completion-profile-classic": "Klasszikus előtag, néhány írásjelet és bizonyos ékezeteket eltávolít.",
+	"cirrussearch-completion-profile-normal": "Néhány írásjel, bizonyos ékezetek és szavak eltávolítása.",
+	"cirrussearch-completion-profile-normal-subphrases": "Néhány írásjel, bizonyos ékezetek és szavak eltávolítása. Alkifejezéseket is megtalál (lehetnek alkifejezések vagy allapok a wiki belső konfigurációjától függően).",
+	"cirrussearch-completion-profile-fuzzy": "A normálhoz hasonló, elírásjavítással (két elírásig).",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "A normálhoz hasonló, elírásjavítással (két elírásig). Alkifejezéseket is megtalál (lehetnek alkifejezések vagy allapok a wiki belső konfigurációjától függően).",
+	"cirrussearch-qi-profile-classic": "A rangsor a bejövő hivatkozások számán, bizonyos sablonokon, a cikk nyelvén és újdonságán alapul (a sablonok/nyelv/újdonság nem biztos, hogy elérhető ezen a wikin).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "A rangsor bizonyos sablonokon, a cikk nyelvén és újdonságán alapul, amennyiben elérhető ezen a wikin.",
+	"cirrussearch-qi-profile-empty": "A rangsor kizárólag lekérdezésfüggő funkciókon alapul (csak hibakereséshez).",
+	"cirrussearch-pref-completion-profile-help": "Az automatikus kiegészítés javaslatainak működését szabályozza.",
+	"prefs-completion": "Automatikus kiegészítés"
 }

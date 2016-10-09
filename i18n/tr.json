@@ -7,15 +7,14 @@
 			"Arystanbek",
 			"McAang",
 			"Sayginer",
-			"JackUKElliott"
+			"JackUKElliott",
+			"HakanIST"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
 	"cirrussearch-backend-error": "Biz geçici bir sorun nedeniyle aramanızı tamamlayamadık. Lütfen daha sonra tekrar deneyin.",
 	"cirrussearch-parse-error": "Sorgu anlaşılamadı. Lütfen daha basit olun. Sorgu arama sistemini iyileştirmek için oturum açmış olmalısınız.",
 	"cirrussearch-too-busy-error": "Arama şu anda çok meşgul. Lütfen daha sonra tekrar deneyiniz.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Çok fazla eşzamanlı aramaları çalışan var. Eğer diğer kullanıcılar ile bir IP adresi paylaşıyorsanız kendi sınırlarına almak için oturum açabilirsiniz.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Çok fazla eşzamanlı aramaları çalışan var.",
 	"cirrussearch-regex-too-busy-error": "Çok fazla sıradan ifade araması çalışmakta. Lütfen daha sonra tekrar deneyiniz.",
 	"cirrussearch-now-using": "Bu wiki yeni bir arama motoru kullanıyor.\n([[mw:Special:MyLanguage/Help:CirrusSearch|Daha fazla bilgi]])",
 	"cirrussearch-ignored-headings": " #<!-- bu satırı olduğu gibi bırakın --> <pre>\n# Başlıklar aramada göz ardı edilecektir.\n# Bu değişiklikler başlık ve sayfa endeksli şekilde en kısa sürede yürürlüğe girecektir.\n# Boş bir düzenleme yaparak, yeniden dizin oluşturulmasını zorlayabilirsiniz.\n# Sözdizimi aşağıdaki gibidir:\n#   * \"#\" karakteri ile başlayan her satır, satır sonuna kadar bir yorumdur.\n#   * Boş olmayan her türlü satırın tam başlığı her durumda görmezden gelinir.\nKaynaklar\nDış bağlantılar\nAyrıca bakınız\n #</pre> <!-- bu satırları olduğu gibi bırakın-->",
@@ -29,5 +28,6 @@
 	"apihelp-cirrus-settings-dump-description": "Bu wiki için CirrusSearch ayarları dökümü.",
 	"apihelp-cirrus-settings-dump-example": "Bu viki için CirrusSearch ayarlarının dökümünü al.",
 	"cirrussearch-completionsuggester-pref": "Tamamlama önerici",
-	"cirrussearch-completionsuggester-desc": "Siz yazdıkça arama yapan yeni bir algoritma. Etkinleştirildiğinde, sağ üst köşedeki arama kutusu Tamamlama Önerici'yi kullanacaktır."
+	"cirrussearch-completionsuggester-desc": "Siz yazdıkça arama yapan yeni bir algoritma. Etkinleştirildiğinde, sağ üst köşedeki arama kutusu Tamamlama Önerici'yi kullanacaktır.",
+	"prefs-completion": "Arama tamamlama"
 }

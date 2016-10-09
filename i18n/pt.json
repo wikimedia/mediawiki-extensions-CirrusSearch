@@ -10,8 +10,6 @@
 	"cirrussearch-backend-error": "Não foi possível concluir a pesquisa devido a um problema temporário. Tente novamente mais tarde, por favor.",
 	"cirrussearch-parse-error": "O pedido de pesquisa não foi compreendido. Simplifique-o, por favor. O pedido foi registado para melhorar o sistema de pesquisa.",
 	"cirrussearch-too-busy-error": "De momento, a pesquisa está muito ocupada. Por favor, tente novamente mais tarde.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Há demasiadas pesquisas simultâneas em execução. Se estiver a partilhar um endereço IP com outros utilizadores, pode autenticar-se para obter seus próprios limites.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Há demasiadas pesquisas simultâneas em execução.",
 	"cirrussearch-regex-syntax-error": "Erro de sintaxe regular em $2: $1",
 	"cirrussearch-regex-too-busy-error": "Estão a ser executadas demasiadas pesquisas com expressões regulares. Por favor, tente novamente mais tarde.",
 	"cirrussearch-regex-too-complex-error": "A expressão regular é demasiado complexa.  Saiba mais como simplificá-la [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|aqui]].",
@@ -26,5 +24,6 @@
 	"cirrussearch-give-feedback": "Dê-nos a sua opinião",
 	"cirrussearch-completionsuggester-pref": "Sugestões completas",
 	"cirrussearch-completionsuggester-desc": "Um novo algoritmo para pesquisar enquanto digita. Uma vez ativada, a caixa de pesquisa no canto superior direito vai apresentar hipóteses de artigos baseados na palavra que digitou.",
-	"cirrussearch-completion-profile-fuzzy": "Semelhante ao normal com correção de erro por digitação (dois erros de ortografia suportados)."
+	"cirrussearch-completion-profile-fuzzy": "Semelhante ao normal com correção de erro por digitação (dois erros de ortografia suportados).",
+	"cirrussearch-qi-profile-classic": "Classificação baseada no número de ligações para a página, algumas predefinições, a língua do artigo e a sua idade (predefinições, língua e idade podem não estar ativados nesta wiki)."
 }

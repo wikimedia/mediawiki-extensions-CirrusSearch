@@ -1,6 +1,8 @@
 <?php
 
 namespace CirrusSearch;
+use MediaWiki\MediaWikiServices;
+
 /**
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +117,7 @@ class PhraseSuggesterProfiles {
 			$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit,
 			$wgCirrusSearchPhraseSuggestAllowedMode;
 
-		$cache = \ObjectCache::getLocalServerInstance();
+		$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
 		$lines = $cache->getWithSetCallback(
 			$cache->makeKey( 'cirrussearch-didyoumean-settings' ),
 			600,

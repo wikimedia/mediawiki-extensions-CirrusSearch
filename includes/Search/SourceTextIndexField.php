@@ -56,7 +56,6 @@ class SourceTextIndexField extends TextIndexField {
 				'type' => 'string',
 				'analyzer' => 'trigram',
 				'index_options' => 'docs',
-				'position_increment_gap' => self::POSITION_INCREMENT_GAP,
 			];
 		}
 		$this->configureHighlighting( $field, ['plain'], false );

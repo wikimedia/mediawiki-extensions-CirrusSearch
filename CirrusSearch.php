@@ -526,15 +526,16 @@ $wgCirrusSearchMoreLikeThisAllowedFields = [
 // be retrieved by elasticsearch.
 $wgCirrusSearchMoreLikeThisUseFields = false;
 
-// This allows redirecting full text queries to a separate cluster configured
+// This allows redirecting queries to a separate cluster configured
 // in $wgCirrusSearchClusters. Note that queries can use multiple features, in
 // the case multiple features have overrides the first match wins.
 //
-// Example sending more_like queries to codfw:
-//   $wgCirrusSearchFullTextClusterOverrides = array(
+// Example sending more_like queries to codfw and completion to eqiad:
+//   $wgCirrusSearchClusterOverrides = [
 //     'more_like' => 'codfw',
-//   );
-$wgCirrusSearchFullTextClusterOverrides = array();
+//     'completion' => 'eqiad',
+//   ];
+$wgCirrusSearchClusterOverrides = [];
 
 // More like this queries can be quite expensive. Set this to > 0 to cache the
 // results for the specified # of seconds into ObjectCache (memcache, redis, or

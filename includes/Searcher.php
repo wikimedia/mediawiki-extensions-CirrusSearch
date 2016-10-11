@@ -837,7 +837,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * features to specific clusters.
 	 */
 	private function overrideConnectionIfNeeded() {
-		$overrides = $this->config->get( 'CirrusSearchFullTextClusterOverrides' );
+		$overrides = $this->config->get( 'CirrusSearchClusterOverrides' );
 		foreach ( $overrides as $feature => $cluster ) {
 			if ( $this->searchContext->isSyntaxUsed( $feature ) ) {
 				$this->connection = Connection::getPool( $this->config, $cluster );

@@ -491,9 +491,13 @@ class CirrusSearch extends SearchEngine {
 		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
 			$profile = $this->features[SearchEngine::COMPLETION_PROFILE_TYPE];
 		}
-		// offset is omitted, searchSuggestion does not support
-		// scrolling results
-		$suggester = new CompletionSuggester( $this->connection, $this->limit,
+		$clusterOverride = $config->getElement( 'CirrusSearchClusterOverrides', 'completion' );
+		if ( $clusterOverride !== null ) {
+			$connection = Connection::getPool( $config, $clusterOverride );
+		} else {
+			$connection = $this->connection;
+		}
+		$suggester = new CompletionSuggester( $connection, $this->limit,
 				$this->offset, $config, $this->namespaces, null,
 				$this->indexBaseName, $profile );
 

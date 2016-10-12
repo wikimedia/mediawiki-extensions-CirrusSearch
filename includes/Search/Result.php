@@ -63,6 +63,8 @@ class Result extends SearchResult {
 	private $score;
 	/** @var array */
 	private $explanation;
+	/** @var bool */
+	private $ignoreMissingRev;
 
 	/**
 	 * Build the result.
@@ -73,6 +75,8 @@ class Result extends SearchResult {
 	 * @param \Elastica\Result $result containing information about the result this class should represent
 	 */
 	public function __construct( $results, $result, $interwiki = '' ) {
+		global $wgCirrusSearchDevelOptions;
+		$this->ignoreMissingRev = isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] );
 		if ( $interwiki ) {
 			$this->setInterwiki( $result, $interwiki );
 		}
@@ -167,7 +171,7 @@ class Result extends SearchResult {
 	 * @return bool
 	 */
 	public function isMissingRevision() {
-		return !$this->mTitle->isKnown();
+		return !($this->ignoreMissingRev || $this->mTitle->isKnown());
 	}
 
 	/**

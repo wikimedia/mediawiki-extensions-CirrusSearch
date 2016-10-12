@@ -98,6 +98,37 @@ class MoreLikeFeature implements KeywordFeature {
 	 * @return Title[]
 	 */
 	private function collectTitles( $term ) {
+		if ( $this->config->getElement( 'CirrusSearchDevelOptions',
+			'morelike_collect_titles_from_elastic' )
+		) {
+			return $this->collectTitlesFromElastic( $term );
+		} else {
+			return $this->collectTitlesFromDB( $term );
+		}
+	}
+
+	/**
+	 * Use for devel purpose only
+	 * @param string $terms
+	 * @return Title[]
+	 */
+	private function collectTitlesFromElastic( $terms ) {
+		$titles = [];
+		foreach ( explode( '|', $terms ) as $term ) {
+			$title = null;
+			\CirrusSearch\Hooks::onSearchGetNearMatch( $term, $title );
+			if ( $title != null ) {
+				$titles[] = $title;
+			}
+		}
+		return $titles;
+	}
+
+	/**
+	 * @param string $term
+	 * @return Title[]
+	 */
+	private function collectTitlesFromDB( $term ) {
 		$titles = [];
 		$found = [];
 		foreach ( explode( '|', $term ) as $title ) {

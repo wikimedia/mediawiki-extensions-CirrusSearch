@@ -304,7 +304,7 @@ class CirrusSearch extends SearchEngine {
 				$config = null;
 			}
 			if ( $config ) {
-				$matches = $this->searchTextReal( $term, $config );
+				$matches = $this->searchTextReal( $term, $config, true );
 				if ( $matches instanceof ResultSet ) {
 					$numRows = $matches->numRows();
 					$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
@@ -327,9 +327,11 @@ class CirrusSearch extends SearchEngine {
 	 * Do the hard part of the searching - actual Searcher invocation
 	 * @param string $term
 	 * @param SearchConfig $config
+	 * @param boolean $forceLocal set to true to force searching on the
+	 *        local wiki (e.g. avoid searching on commons)
 	 * @return null|Status|ResultSet
 	 */
-	private function searchTextReal( $term, SearchConfig $config = null ) {
+	protected function searchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
 		global $wgCirrusSearchInterwikiSources;
 
 		// Convert the unicode character 'ideographic whitespace' into standard
@@ -352,6 +354,8 @@ class CirrusSearch extends SearchEngine {
 			$term = substr( $term, 1 );
 			$searcher->addSuggestPrefix( '~' );
 		}
+
+		$searcher->getSearchContext()->setLimitSearchToLocalWiki( $forceLocal );
 
 		// TODO remove this when we no longer have to support core versions without
 		// Ie946150c6796139201221dfa6f7750c210e97166

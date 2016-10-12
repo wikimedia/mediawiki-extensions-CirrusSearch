@@ -23,7 +23,7 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
+class LanguageDetectTest extends \MediaWikiTestCase {
 
 	/**
 	 * @var \CirrusSearch
@@ -45,6 +45,7 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function setUp() {
+		parent::setUp();
 		$this->cirrus = new \CirrusSearch();
 		global $wgCirrusSearchTextcatModel;
 		if (empty( $wgCirrusSearchTextcatModel ) ) {
@@ -71,6 +72,31 @@ class LanguageDetectTest extends \PHPUnit_Framework_TestCase {
 		$detector = new TextCat();
 		$detect = $detector->detect($this->cirrus, "volviendose malo");
 		$this->assertEquals("en", $detect);
+	}
+
+	/**
+	 * Simply test the searchTextReal $forceLocal boolean flag.
+	 * Testing the full chain seems hard so we just test that
+	 * the $forceLocal flag is running a search on the local
+	 * wiki.
+	 */
+	public function testLocalSearch() {
+		\RequestContext::getMain()->setRequest( new \FauxRequest( [
+			'cirrusDumpQuery' => 1,
+		] ) );
+		$this->setMwGlobals( [
+			'wgCirrusSearchIndexBaseName' => 'mywiki',
+			'wgCirrusSearchExtraIndexes' => [NS_FILE => ['externalwiki_file']],
+		] );
+		$cirrus = new MyCirrusSearch();
+		$cirrus->setNamespaces( [NS_FILE] );
+		$cirrus->setDumpAndDie( false );
+		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true );
+		$result = json_decode( $result, true );
+		$this->assertEquals( 'mywiki_general/page/_search', $result['path'] );
+		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig() );
+		$result = json_decode( $result, true );
+		$this->assertEquals( 'mywiki_general,externalwiki_file/page/_search', $result['path'] );
 	}
 
 	public function getHttpLangs() {
@@ -104,5 +130,14 @@ class TestHttpAccept extends HttpAccept {
 	function setLanguages($content, $http) {
 		$this->wikiLang = $content;
 		$this->httpLang = $http;
+	}
+}
+
+/**
+ * Just a simple wrapper to access the protected method searchTextReal
+ */
+class MyCirrusSearch extends \CirrusSearch {
+	public function mySearchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
+		return $this->searchTextReal( $term, $config, $forceLocal );
 	}
 }

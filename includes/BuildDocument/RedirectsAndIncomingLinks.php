@@ -90,15 +90,16 @@ class RedirectsAndIncomingLinks {
 			], LIST_AND );
 		}
 
-		$condition = $dbr->makeList( $conditions, LIST_OR );
-
-		$res = $dbr->selectField( 'pagelinks', 'count(1)', $condition, __METHOD__, [
-			'USE INDEX' => 'pl_namespace',
-		]);
-		if ( $res === false ) {
-			return null;
+		$count = 0;
+		foreach ( array_chunk( $conditions, 9 ) as $chunk ) {
+			$condition = $dbr->makeList( $chunk, LIST_OR );
+			$res = $dbr->selectField( 'pagelinks', 'count(1)', $condition, __METHOD__ );
+			if ( $res === false ) {
+				return null;
+			}
+			$count += (int) $res;
 		}
 
-		return (int) $res;
+		return $count;
 	}
 }

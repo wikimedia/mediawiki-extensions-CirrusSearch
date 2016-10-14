@@ -665,6 +665,8 @@ STEMMER_RULES
 		'hi' => 'hindi',
 		'hu' => 'hungarian',
 		'id' => 'indonesian',
+		'lt' => 'lithuanian',
+		'lv' => 'latvian',
 		'ga' => 'irish',
 		'it' => 'italian',
 		'nb' => 'norwegian',

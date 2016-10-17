@@ -500,14 +500,33 @@ STEMMER_RULES
 				'type' => 'mapping',
 				'mappings' => [
 					'\u0301=>',		// combining acute accent, only used to show stress T102298
-					// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
-					'\u0435\u0308=>\u0435',
-					'\u0415\u0308=>\u0415',
-					'\u0451=>\u0435',
-					'\u0401=>\u0415',
 					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
 				],
 			];
+
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>'; // T102298
+
+			// The Russian analyzer is also used for Ukrainian and Rusyn for now, so processing that's
+			// very specific to Russian should be separated out
+			if ($this->language == 'ru') {
+				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0451=>\u0435';
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0401=>\u0415';
+
+				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
+				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
+				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+			}
+
+			// Ukrainian uses the Russian analyzer for now, but we want some Ukrainian-specific processing
+			if ($this->language == 'uk') {
+				// T146358 map right quote and modifier letter apostrophe to apostrophe
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u02BC=>\u0027';
+				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u2019=>\u0027';
+			}
 
 			// Drop acute stress marks and fold ё=>е everywhere
 			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'russian_charfilter';
@@ -516,11 +535,6 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
 			$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
 
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
 
 
 			// unpack built-in Russian analyzer and add character filter T102298 / T124592

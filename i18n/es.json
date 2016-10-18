@@ -17,8 +17,6 @@
 	"cirrussearch-backend-error": "La búsqueda no se pudo completar debido a un problema temporal. Inténtalo de nuevo en unos instantes.",
 	"cirrussearch-parse-error": "La queja no fue entendida. Hágala más sencilla. La queja fue registrada para mejorar el sistema de búsqueda.",
 	"cirrussearch-too-busy-error": "La búsqueda está actualmente ocupada. Inténtalo de nuevo más tarde.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Tienes demasiadas búsquedas abiertas a la vez. Si estás compartiendo tu dirección IP con otros usuarios puedes identificarte para establecer tus propios límites.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Tienes demasiadas búsquedas abiertas a la vez.",
 	"cirrussearch-regex-syntax-error": "Error sintáctico de la expresión regular en la posición $2: $1",
 	"cirrussearch-regex-too-busy-error": "Se están ejecutando demasiadas expresiones regulares en este momento. Inténtalo de nuevo más tarde.",
 	"cirrussearch-regex-too-complex-error": "La expresión regular es bastante compleja. Obtén más información simplificándola [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|aquí]].",
@@ -33,5 +31,6 @@
 	"apihelp-cirrus-settings-dump-description": "Volcado de configuración de CirrusSearch para este wiki.",
 	"cirrussearch-give-feedback": "Danos tu opinión",
 	"cirrussearch-morelikethis-settings": "#<!-- leave this line exactly as it is --> <pre>\n# Este mensaje te permite configurar los ajustes de la característica \"mas como esto\".\n# Los cambios para esto toman efecto inmediato.\n# La sintaxis es como sigue:\n#   * Todo con el caracter \"#\" al final de la línea es un comentario.\n#   * Toda línea que no esté en blanco es un ajuste de nombre seguido por el caracter \":\" seguida por el valor de ajuste.\n# Los ajustes son:\n#   * min_doc_freq (entero): Número mínimo de documentos  (por fragmento) que se necesita en un periodo para ser considerado.\n#   * minimum_should_match (porcentaje -100% to 100%, o número entero de periodos): El porcentaje de periodos para coincidir. Por defecto 30%.\n#   * min_word_len (entero): Longitud mínima de de periodos a ser considerados. Por defecto 0.\n#   * max_word_len (entero): La longitud máxima de palabras que serán ignoradas. Por defecto indeterminado (0).\n#   * fields (lista de valores separadas por comas):Estos son los campos a usar. Los campos permitidos son título, texto, texto_auxiliar, texto_de_apertura, encabezados y todo.\n#   * use_fields (verdadero|falso) : Dice a la consulta \"mas como esto\" que ise solo el campo de dato. Por defecto es falso: el sistema extraerá el contenido del campo texto para construir la consulta.\n# Ejemplos de buenas líneas:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# use_fields:true\n# </pre> <!-- leave this line exactly as it is -->",
-	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)"
+	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)",
+	"prefs-completion": "Compleción de búsquedas"
 }

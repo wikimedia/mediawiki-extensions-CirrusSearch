@@ -26,5 +26,6 @@
 	"cirrussearch-completionsuggester-desc": "Um novo algoritmo para pesquisar enquanto digita. Uma vez ativada, a caixa de pesquisa no canto superior direito vai apresentar hipóteses de artigos baseados na palavra que digitou.",
 	"cirrussearch-completion-profile-fuzzy": "Semelhante ao normal com correção de erro por digitação (dois erros de ortografia suportados).",
 	"cirrussearch-qi-profile-classic": "Classificação baseada no número de ligações para a página, algumas predefinições, a língua do artigo e a sua idade (predefinições, língua e idade podem não estar ativados nesta wiki).",
-	"cirrussearch-pref-completion-profile-help": "Define o comportamento do recurso que autocompleta sugestões (pesquisa-enquanto-digita)."
+	"cirrussearch-pref-completion-profile-help": "Define o comportamento do recurso que autocompleta sugestões (pesquisa-enquanto-digita).",
+	"prefs-completion": "Preenchimento de pesquisas"
 }

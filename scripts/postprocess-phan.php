@@ -1,6 +1,7 @@
 <?php
 
 $results = file( "php://stdin" );
+$errors = [];
 foreach ( $results as $error ) {
 	if ( !preg_match( '/^(.*):(\d+) (Phan\w+) (.*)$/', $error, $matches ) ) {
 		echo "Failed to parse line: $error\n";

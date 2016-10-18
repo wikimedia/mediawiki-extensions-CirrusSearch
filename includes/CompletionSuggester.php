@@ -509,7 +509,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 						'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
 						[ 'query' => $this->term,
-							'ids' => serialize( $missingText ),
+							'ids' => serialize( $missingTextDocIds ),
 							'error' => $redirResponse->getError() ] );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -518,7 +518,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					'Unable to fetch redirects for suggestion {query} with results {ids}. {error_type}: {error_reason}',
 					[
 						'query' => $this->term,
-						'ids' => serialize( $missingText ),
+						'ids' => serialize( $missingTextDocIds ),
 						'error_type' => $error['type'],
 						'error_reason' => $error['reason'],
 					]

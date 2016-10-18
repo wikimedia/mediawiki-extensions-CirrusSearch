@@ -39,7 +39,7 @@ class IndexNamespaces extends Maintenance {
 		$type = $this->getConnection()->getNamespaceType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$this->outputIndented( "Deleting namespaces..." );
-		$type->deleteByQuery( new MatchAll() );
+		$type->deleteByQuery( \Elastica\Query::create( new MatchAll() ) );
 		$this->output( "done\n" );
 
 		$this->outputIndented( "Indexing namespaces..." );

@@ -144,7 +144,9 @@ class DataSender extends ElasticsearchIntermediary {
 
 		$ids = new \Elastica\Query\Ids( null, $indexes );
 		$ids->addId( self::ALL_INDEXES_FROZEN_NAME );
-		$resp = $this->connection->getFrozenIndexNameType()->search( $ids );
+		$resp = $this->connection->getFrozenIndexNameType()->search(
+			\Elastica\Query::create( $ids )
+		);
 
 		if ( $resp->count() === 0 ) {
 			return true;

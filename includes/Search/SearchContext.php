@@ -175,6 +175,7 @@ class SearchContext {
 	 */
 	public function __construct( SearchConfig $config, array $namespaces = null ) {
 		$this->config = $config;
+		/** @suppress PhanDeprecatedProperty */
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->namespaces = $namespaces;
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
@@ -241,6 +242,7 @@ class SearchContext {
 	 * @param bool $boostLinks Deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
 	 */
 	public function setBoostLinks( $boostLinks ) {
+		/** @suppress PhanDeprecatedProperty */
 		$this->boostLinks = $boostLinks;
 	}
 

@@ -103,6 +103,7 @@ class ForceSearchIndex extends Maintenance {
 			'this with --indexOnSkip for the first half of the two phase index build.' );
 		$this->addOption( 'namespace', 'Only index pages in this given namespace', false, true );
 		$this->addOption( 'excludeContentTypes', 'Exclude pages of the specified content types. These must be a comma separated list of strings such as "wikitext" or "json" matching the CONTENT_MODEL_* constants.', false, true, false );
+		$this->addOption( 'useDbIndex', 'Use specific index when fetching IDs from the database.', false, true, false );
 	}
 
 	public function execute() {
@@ -444,6 +445,10 @@ class ForceSearchIndex extends Maintenance {
 			$it->addConditions( [
 				"{$columnPrefix}_content_model NOT IN ($list)",
 			] );
+		}
+		if ( $this->hasOption( 'useDbIndex' ) ) {
+			$index = $this->getOption( 'useDbIndex' );
+			$it->addOptions( [ 'USE INDEX' => $index ] );
 		}
 	}
 

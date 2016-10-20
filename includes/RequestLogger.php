@@ -63,12 +63,15 @@ class RequestLogger {
 		// it's still doing "something"
 		$finalContext = $this->buildLogContext( $context, $tookMs, $client );
 		if ( $wgCirrusSearchLogElasticRequests ) {
-			if ( count( $this->logContexts ) === 0 ) {
+			$this->logContexts[] = $finalContext;
+			if ( count( $this->logContexts ) === 1 ) {
 				DeferredUpdates::addCallableUpdate( function () {
 					$this->reportLogContexts();
 				} );
 			}
-			$this->logContexts[] = $finalContext;
+
+			// Don't report hits to standard logging destinations
+			unset( $finalContext['hits'] );
 
 			$logMessage = $this->buildLogMessage( $description, $finalContext );
 			LoggerFactory::getInstance( 'CirrusSearchRequests' )->debug( $logMessage, $finalContext );
@@ -179,7 +182,7 @@ class RequestLogger {
 				$allHits = array_merge( $allHits, $context['hits'] );
 			}
 			if ( isset( $context['index'] ) ) {
-				$request['indices'][] = $context['index'];
+				$request['indices'] = explode( ',', $context['index'] );
 			}
 			if ( isset( $context['namespaces'] ) ) {
 				foreach ( $context['namespaces'] as $nsId ) {

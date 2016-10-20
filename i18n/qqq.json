@@ -44,5 +44,21 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classic query independent search profile without boost links (affects fulltext search ranking algorithm).",
 	"cirrussearch-qi-profile-empty": "Empty query independent search profile (affects fulltext search ranking algorithm).",
 	"cirrussearch-pref-completion-profile-help": "Help message for completion profile settings in the user preferences.",
-	"prefs-completion": "Section name for completion settings in the user preferences."
+	"prefs-completion": "Section name for completion settings in the user preferences.",
+	"cirrussearch-pref-completion-section-desc": "Name of the subsection Completion Suggester in the user preferences.",
+	"cirrussearch-pref-completion-section-legend": "Legend of the subsection Completion Suggester in the user preferences.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Name of the completion profile fuzzy.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Description of the completion profile fuzzy.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Name of the completion profile fuzzy-subphrases",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Description of the completion profile fuzzy-subphrases.",
+	"cirrussearch-completion-profile-strict-pref-name": "Name of the completion profile strict.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Description of the completion profile strict.",
+	"cirrussearch-completion-profile-normal-pref-name": "Name of the completion profile normal.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Description of the completion profile normal.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Name of the completion profile normal-subphrases.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Description of the completion profile normal-subphrase.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Name of the subsection Prefix search in the user preferences",
+	"cirrussearch-pref-completion-legacy-section-legend": "Legend of the subsection Prefix search in the user preferences.",
+	"cirrussearch-completion-profile-classic-pref-name": "Name of the completion profile classic.",
+	"cirrussearch-completion-profile-classic-pref-desc": "Description of the completion profile classic."
 }

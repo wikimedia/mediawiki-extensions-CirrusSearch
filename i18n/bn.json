@@ -9,11 +9,15 @@
 	"cirrussearch-parse-error": "প্রশ্নের বোঝা যায়নি। দয়া করে এটি সহজ করুন। অনুসন্ধান ব্যবস্থা উন্নত করতে প্রশ্ন লগ করা হয়েছিল।",
 	"cirrussearch-too-busy-error": "অনুসন্ধান বর্তমানে খুব ব্যস্ত। দয়া করে পরে আবার চেষ্টা করুন।",
 	"cirrussearch-regex-syntax-error": "$2-এ রেগুলার এক্সপ্রেশন সিনট্যাক্স ত্রুটি:  $1",
+	"cirrussearch-regex-too-busy-error": "অনেকগুলি রেগুলার এক্সপ্রেশন অনুসন্ধান বর্তমানে চলমান। অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।",
+	"cirrussearch-regex-too-complex-error": "রেগুলার এক্সপ্রেশন অত্যন্ত জটিল। এটি সরল করা সম্পর্কে [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|এখানে]] আরো জানুন।",
 	"cirrussearch-now-using": "এই উইকি একটি নতুন অনুসন্ধান ইঞ্জিন ব্যবহার করছে।([[mw:Special:MyLanguage/Help:CirrusSearch|আরো জানুন]])",
 	"cirrussearch-pref-label": "নতুন অনুসন্ধান",
 	"cirrussearch-pref-desc": "আমাদের নতুন অনুসন্ধান ব্যবহার করে দেখুন যা অধিক সংখ্যক ভাষা সমর্থন করে, আরও হালনাগাদকৃত ফলাফল প্রদান করে এবং এমনকি টেমপ্লেট ভিতরের পাঠ্যও অনুসন্ধান করতে পারে।",
 	"cirrussearch-give-feedback": "আপনার প্রতিক্রিয়া আমাদের জানান",
 	"cirrussearch-query-too-long": "অনুসন্ধানের অনুরোধ সর্বোচ্চ স্বীকৃত দৈর্ঘ্যের চেয়ে দীর্ঘতর। ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "সম্পূর্ণতা পরামর্শক",
-	"cirrussearch-completionsuggester-desc": "আপনার টাইপ হিসেবে অনুসন্ধানের জন্য নতুন অ্যালগরিদম। সক্রিয় করা হলে উপরের ডান দিকের কোণার অনুসন্ধান বাক্স সম্পূর্ণতা পরামর্শক ব্যবহার করবে।"
+	"cirrussearch-completionsuggester-desc": "আপনার টাইপ হিসেবে অনুসন্ধানের জন্য নতুন অ্যালগরিদম। সক্রিয় করা হলে উপরের ডান দিকের কোণার অনুসন্ধান বাক্স সম্পূর্ণতা পরামর্শক ব্যবহার করবে।",
+	"cirrussearch-pref-completion-profile-help": "স্বয়ংসম্পূর্ণ (লেখার সময় অনুসন্ধান) পরামর্শের জন্য আচরণ নির্ধারণ করুন।",
+	"prefs-completion": "অনুসন্ধান সম্পূর্ণকরণ"
 }

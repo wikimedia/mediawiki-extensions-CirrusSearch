@@ -394,11 +394,7 @@ class FullTextResultsType implements ResultsType {
 		];
 
 		if ( count( $highlightSource ) ) {
-			if ( !$wgCirrusSearchUseExperimentalHighlighter ) {
-				throw new \RuntimeException( 'regex is only supported with $wgCirrusSearchUseExperimentalHighlighter = true' );
-			}
-			$config[ 'fields' ][ 'source_text.plain' ] = $text;
-			$this->configureHighlightingForSource( $config, $highlightSource );
+			$this->configureHighlightingForSource( $config, $highlightSource, $text );
 			return $config;
 		}
 		$experimental = [];
@@ -489,9 +485,11 @@ class FullTextResultsType implements ResultsType {
 	/**
 	 * @param array &$config
 	 * @param array $highlightSource
+	 * @param array $options various options
 	 */
-	private function configureHighlightingForSource( array &$config, array $highlightSource ) {
-		global $wgCirrusSearchRegexMaxDeterminizedStates;
+	private function configureHighlightingForSource( array &$config, array $highlightSource, array $options ) {
+		global $wgCirrusSearchRegexMaxDeterminizedStates,
+			$wgCirrusSearchUseExperimentalHighlighter;
 		$patterns = [];
 		$locale = null;
 		$caseInsensitive = false;
@@ -502,7 +500,10 @@ class FullTextResultsType implements ResultsType {
 				$caseInsensitive |= $part[ 'insensitive' ];
 			}
 		}
-		if ( count( $patterns ) ) {
+		if ( count( $patterns ) && $wgCirrusSearchUseExperimentalHighlighter ) {
+			// highlight for regex queries is only supported by the experimental
+			// highlighter.
+			$config['fields']['source_text.plain'] = $options;
 			$options = [
 				'regex' => $patterns,
 				'locale' => $locale,
@@ -527,6 +528,7 @@ class FullTextResultsType implements ResultsType {
 				}
 			}
 			if ( count( $queryStrings ) ) {
+				$config['fields']['source_text.plain'] = $options;
 				$bool = new \Elastica\Query\BoolQuery();
 				foreach ( $queryStrings as $queryString ) {
 					$bool->addShould( $queryString );

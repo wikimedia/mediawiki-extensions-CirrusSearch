@@ -223,8 +223,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {
 						$result = $this->postProcessSuggest( $result, $profiles, $log );
+						return $this->success( $result );
+					} else {
+						throw new \Elastica\Exception\ResponseException(
+							new Request( "_suggest", Request::POST, $suggest, $queryOptions ),
+							$result
+						);
 					}
-					return $this->success( $result );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}

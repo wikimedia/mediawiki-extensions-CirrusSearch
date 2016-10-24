@@ -807,20 +807,15 @@ class Hooks {
 		] );
 	}
 
-	public static function onGetPreferences( $user, &$preferences ) {
+	public static function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
-		if ( !empty( $profiles ) ) {
-			$options = [];
-			foreach( $profiles as $prof ) {
-				$options[wfMessage( $prof['desc-message'] )->text()] = $prof['name'];
-			}
-			$preferences['cirrussearch-pref-completion-profile'] = array(
-				'type' => 'radio',
+		if ( !empty( $profiles ) && count( $profiles ) > 1 ) {
+			$prefs['cirrussearch-pref-completion-profile'] = [
+				'class' => HTMLCompletionProfileSettings::class,
 				'section' => 'searchoptions/completion',
-				'options' => $options,
-				'help-message' => 'cirrussearch-pref-completion-profile-help',
-			);
+				'profiles' => $profiles
+			];
 		}
 		return true;
 	}

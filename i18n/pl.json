@@ -5,15 +5,14 @@
 			"Tar Lócesilion",
 			"WTM",
 			"Darellur",
-			"Saper"
+			"Saper",
+			"Woytecr"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
 	"cirrussearch-backend-error": "Nie udało nam się zakończyć wyszukiwania z powodu przejściowego problemu. Proszę spróbować później.",
 	"cirrussearch-parse-error": "Pytanie nie zostało zrozumiane. Prosimy o jego uproszczenie. Pytanie zostało zapisane w rejestrze w celu ulepszenia systemu wyszukiwania.",
 	"cirrussearch-too-busy-error": "Wyszukiwanie w tej chwili jest przeciążone. Proszę spróbować później.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Wysłałeś zbyt wiele zapytań jednocześnie. Jeśli się zalogujesz, otrzymasz swój własny limit połączeń, niezależny od innych użytkowników korzystających z tego samego adresu IP.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Masz uruchomionych zbyt wiele jednoczesnych wyszukiwań.",
 	"cirrussearch-regex-syntax-error": "Błąd składni wyrażeń regularnych w pozycji $2: $1",
 	"cirrussearch-regex-too-busy-error": "Zbyt wiele wyszukiwań wyrażeń regularnych aktualnie jest uruchomione.  Spróbuj ponownie później.",
 	"cirrussearch-regex-too-complex-error": "Regularne wyrażenie jest zbyt złożone.  Naucz się więcej o upraszczaniu tego [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|tu]].",
@@ -23,7 +22,16 @@
 	"cirrussearch-pref-label": "Nowe wyszukiwanie",
 	"cirrussearch-pref-desc": "Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.",
 	"apihelp-cirrus-config-dump-description": "Zrzut konfiguracji CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Pobierz zrzut konfiguracji CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Zrzut mapowania CirrusSearch dla tej wiki.",
+	"apihelp-cirrus-mapping-dump-example": "Pobierz zrzut mapowania CirrusSearch dla tej wiki.",
+	"apihelp-cirrus-settings-dump-description": "Zrzut ustawień CirrusSearch dla tej wiki.",
+	"apihelp-cirrus-settings-dump-example": "Pobierz zrzut ustawień CirrusSearch dla tej wiki.",
 	"cirrussearch-give-feedback": "Wyślij nam opinię",
+	"cirrussearch-query-too-long": "Żądanie wyszukiwania jest dłuższe niż maksymalna dozwolona długość. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Podpowiadacz wyszukiwania",
-	"prefs-completion": "Zakończenie wyszukiwania"
+	"cirrussearch-completionsuggester-desc": "Nowy algorytm dla wyszukiwania podczas wpisywania. Po włączeniu, pole wyszukiwania w prawym górnym rogu będzie korzystać z Podpowiedzi Uzupełniania.",
+	"cirrussearch-pref-completion-profile-help": "Ustaw zachowanie podpowiedzi autouzupełniania (wyszukiwanie podczas wpisywania).",
+	"prefs-completion": "Zakończenie wyszukiwania",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Domyślny (zalecane)"
 }

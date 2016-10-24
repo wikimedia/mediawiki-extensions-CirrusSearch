@@ -14,6 +14,13 @@ class SearchConfig implements \Config {
 	// Constants for referring to various config values. Helps prevent fat-fingers
 	const INDEX_BASE_NAME = 'CirrusSearchIndexBaseName';
 	const PREFIX_IDS = 'CirrusSearchPrefixIds';
+	const CIRRUS_VAR_PREFIX = 'wgCirrus';
+
+	/** @static string[] non cirrus vars to load when loading external wiki config */
+	private static $nonCirrusVars = [
+		'wgLanguageCode',
+		'wgContentNamespaces',
+	];
 
 	/**
 	 * Override settings
@@ -53,6 +60,14 @@ class SearchConfig implements \Config {
 
 	/**
 	 * Create new search config for current or other wiki.
+	 * NOTE: if loading another wiki config the list of variables extracted
+	 * is:
+	 *   - all globals with a prefix 'wgCirrus'
+	 *   - all non cirrus vars defined in self::$nonCirrusVars
+	 * Make sure to update this array when new vars are needed or you may encounter
+	 * issues when running queries on external wiki such as TextCat lang detection
+	 * see CirrusSearch::searchTextSecondTry().
+	 *
 	 * @param string|null $overrideWiki Interwiki link name for wiki
 	 * @param string|null $overrideName DB name for the wiki
 	 */
@@ -61,7 +76,7 @@ class SearchConfig implements \Config {
 		if ( $overrideWiki && $overrideName ) {
 			$this->wikiId = $overrideName;
 			if ( $this->wikiId != wfWikiID() ) {
-				$this->source = new \HashConfig( $this->getConfigVars( $overrideName, 'wgCirrus' ) );
+				$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
 				$this->prefix = 'wg';
 				// Re-create language object
 				$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
@@ -74,11 +89,14 @@ class SearchConfig implements \Config {
 
 	/**
 	 * Get search config vars from other wiki's config
+	 *
+	 * Public for unit test purpose only.
+	 *
 	 * @param string $wiki Target wiki
 	 * @param string $prefix Cirrus variables prefix
 	 * @return array
 	 */
-	private function getConfigVars( $wiki, $prefix ) {
+	public function getConfigVars( $wiki, $prefix ) {
 		global $wgConf;
 
 		$cirrusVars = array_filter( array_keys($GLOBALS),
@@ -89,7 +107,7 @@ class SearchConfig implements \Config {
 					return strncmp( $key, $prefix, strlen($prefix) ) === 0;
 				}
 		);
-		$cirrusVars[] = 'wgLanguageCode';
+		$cirrusVars = array_merge( $cirrusVars, self::$nonCirrusVars );
 		// Hack to work around https://phabricator.wikimedia.org/T111441
 		putenv( 'REQUEST_METHOD' );
 		return $wgConf->getConfig( $wiki, $cirrusVars );
@@ -303,5 +321,13 @@ class SearchConfig implements \Config {
 		} else {
 			$this->writableClusters = $this->availableClusters;
 		}
+	}
+
+	/**
+	 * for unit tests purpose only
+	 * @return string[] list of "non-cirrus" var names
+	 */
+	public static function getNonCirrusConfigVarNames() {
+		return self::$nonCirrusVars;
 	}
 }

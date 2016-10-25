@@ -5,15 +5,14 @@
 			"Mormegil",
 			"Paxt",
 			"Utar",
-			"Walter Klosse"
+			"Walter Klosse",
+			"Nixtonin"
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
 	"cirrussearch-backend-error": "Kvůli dočasnému problému jsme nemohli provést požadované vyhledávání. Zkuste to znovu později.",
 	"cirrussearch-parse-error": "Dotaz nebyl pochopen. Prosíme o jeho zjednodušení. Dotaz byl zaznamenán, aby mohl být použit ke zlepšení vyhledávacího systému.",
 	"cirrussearch-too-busy-error": "Vyhledávání je momentálně příliš zaneprázdněno. Zkuste to znovu později.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Běží vám příliš mnoho souběžných vyhledávání. Pokud sdílíte IP adresu s jinými uživateli, můžete se přihlásit, abyste získali vlastní limity.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Běží vám příliš mnoho souběžných vyhledávání.",
 	"cirrussearch-regex-syntax-error": "Regulární výraz obsahuje na pozici $2 syntaktickou chybu: $1",
 	"cirrussearch-regex-too-busy-error": "Momentálně probíhá příliš mnoho vyhledávání pomocí regulárních výrazů. Zkuste to znovu později.",
 	"cirrussearch-regex-too-complex-error": "Regulární výraz je příliš složitý. Podívejte se na [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|návod k jeho zjednodušení]].",
@@ -29,5 +28,20 @@
 	"cirrussearch-give-feedback": "Sdělte nám svůj názor",
 	"cirrussearch-query-too-long": "Vyhledávací dotaz je delší než maximální povolená délka. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Dokončovací našeptávač",
-	"cirrussearch-completionsuggester-desc": "Nový algoritmus pro průběžné hledání. Jakmile ho zapnete, bude vyhledávací pole vpravo nahoře využívat Dokončovací našeptávač."
+	"cirrussearch-completionsuggester-desc": "Nový algoritmus pro průběžné hledání. Jakmile ho zapnete, bude vyhledávací pole vpravo nahoře využívat Dokončovací našeptávač.",
+	"cirrussearch-pref-completion-profile-help": "Nastaví chování pro návrhy automatického dokončování (hledání v průběhu psaní).",
+	"prefs-completion": "Dokončování hledání",
+	"cirrussearch-pref-completion-section-desc": "Dokončovací našeptávač",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dokončovací našeptávač] je algoritmus pro návrhy vyhledávání s lepší korekcí překlepů a relevancí hledání.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Výchozí (doporučeno)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Vyhledávání podřetězce (doporučeno pro delší názvy článků)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování. Vyhledává podřetězce v názvech.",
+	"cirrussearch-completion-profile-strict-pref-name": "Přísný režim (pokročilé)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Bez opravy překlepů. Bez ignorování diakritiky. Přísné porovnávání.",
+	"cirrussearch-completion-profile-normal-pref-name": "Režim přesměrování (pokročilé)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Bez opravy překlepů. Používá blízká přesměrování.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Režim přesměrování s vyhledávání podřetězce (pokročilé)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Bez opravy překlepů. Používá blízká přesměrování. Vyhledává podřetězce v názvech.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasické vyhledávání předpony"
 }

@@ -40,5 +40,17 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classificação baseada em algumas predefinições, a idioma do artigo e a sua idade, quando a classificação está ativada nesta wiki.",
 	"cirrussearch-qi-profile-empty": "Classificação baseada somente em características dependentes da pesquisa (só para despiste de defeitos no software).",
 	"cirrussearch-pref-completion-profile-help": "Defina o comportamento da funcionalidade que fornece sugestões (pesquisar-enquanto-escreve).",
-	"prefs-completion": "Preenchimento de pesquisas"
+	"prefs-completion": "Preenchimento de pesquisas",
+	"cirrussearch-pref-completion-section-desc": "Sugestões completas",
+	"cirrussearch-pref-completion-section-legend": "O algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões completas] permite uma melhor correção de digitação e relevância de pesquisa.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrase (recomendada para os títulos de artigo mais longos)",
+	"cirrussearch-completion-profile-strict-pref-name": "Modo rigoroso (avançado)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Sem correção de erros. Sem omissão de acentuação. Correspondência rigorosa.",
+	"cirrussearch-completion-profile-normal-pref-name": "Modo de redirecionamento (avançado)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Modo de redirecionamento com correspondência de subfrase (avançado)",
+	"cirrussearch-pref-completion-legacy-section-desc": "Pesquisa de prefixo",
+	"cirrussearch-pref-completion-legacy-section-legend": "Histórico do algoritmo pesquisar-enquanto-escreve.",
+	"cirrussearch-completion-profile-classic-pref-name": "Pesquisa clássica de prefixo",
+	"cirrussearch-completion-profile-classic-pref-desc": "Sem correção de erros. Corresponde com o início de títulos."
 }

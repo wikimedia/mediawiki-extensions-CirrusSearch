@@ -9,8 +9,6 @@
 	"cirrussearch-backend-error": "לא הצלחנו להשלים את החיפוש שלך בשל בעיה זמנית. נא לנסות שוב מאוחר יותר.",
 	"cirrussearch-parse-error": "השאילתה לא הובנה. נא לפשט אותה. השאילתה נרשמה ביומן כדי לשפר את מערכת החיפוש.",
 	"cirrussearch-too-busy-error": "החיפוש עמוס מדי כרגע.  נא לנסות שוב מאוחר יותר.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "הרצת יותר מדי חיפושים במקביל. אם כתובת ה־IP שלך משותפת עם אנשים אחרים, אפשר להיכנס לחשבון כדי להגביל הקצאה פרטית.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "הרצת יותר מדי חיפושים במקביל.",
 	"cirrussearch-regex-syntax-error": "במקום $2 בביטוי הרגולרי יש שגיאת תחביר: $1",
 	"cirrussearch-regex-too-busy-error": "יותר מדי חיפושים של ביטויים רגולריים פועלים כעת. נא לנסות שוב מאוחר יותר.",
 	"cirrussearch-regex-too-complex-error": "הביטוי הרגולרי מורכב מדי. אפשר ללמוד איך לפשט אותו [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|כאן]].",
@@ -41,5 +39,9 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "דירוג שמבוסס על תבניות אחדות, שפת הערך והאחרונות כאשר זה מופעל בוויקי הזה.",
 	"cirrussearch-qi-profile-empty": "דירוג שמבוסס רק על אפשרויות שתלויות בשאילתה (רק לשם תיקון שגיאות).",
 	"cirrussearch-pref-completion-profile-help": "הגדרת ההתנהגות של הצעות השלמה אוטומטית (חיפוש תוך כדי הקלדה).",
-	"prefs-completion": "השלמת חיפוש"
+	"prefs-completion": "השלמת חיפוש",
+	"cirrussearch-pref-completion-section-desc": "הצעות להשלמת חיפוש",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "ברירת מחדל (מומלץ)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "מתקן עד שתי שגיאות הקלדה. מתקן הפניות קרובות.",
+	"cirrussearch-completion-profile-strict-pref-name": "מצב קפדני (מתקדם)"
 }

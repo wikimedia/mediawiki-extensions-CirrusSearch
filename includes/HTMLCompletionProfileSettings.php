@@ -84,7 +84,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 		if ( $prof === $value ) {
 			$radioAttrs['checked'] = 'checked';
 		}
-		$html .= Html::input( $this->mID, $prof, 'radio', $radioAttrs );
+		$html .= Html::input( $this->mName, $prof, 'radio', $radioAttrs );
 		$html .= Html::closeElement( 'div' );
 		$html .= Html::openElement( 'div', [ 'style' => 'display:inline-block' ] );
 		$html .= Html::element( 'label',

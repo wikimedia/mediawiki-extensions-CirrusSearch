@@ -51,5 +51,21 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "基于一些模板、条目语言和新近程度的排名，当在此wiki激活时。",
 	"cirrussearch-qi-profile-empty": "完全基于查询相关特性的排名（仅用于调试）。",
 	"cirrussearch-pref-completion-profile-help": "为自动完成（随打即搜）建议设置行为。",
-	"prefs-completion": "搜索完成"
+	"prefs-completion": "搜索完成",
+	"cirrussearch-pref-completion-section-desc": "完整搜索建议工具",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 完整搜索建议工具]是拥有更好错别字纠正和搜索关联性的搜索建议算法。",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "默认（推荐）",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "纠正最多两个错别字。修复相近重定向。",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "子句匹配（建议用于长条目标题）",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "纠正最多两个错别字。修复相近重定向。匹配标题中的子句。",
+	"cirrussearch-completion-profile-strict-pref-name": "严格模式（高级）",
+	"cirrussearch-completion-profile-strict-pref-desc": "无错别字纠正。无口音校正。严格匹配。",
+	"cirrussearch-completion-profile-normal-pref-name": "重定向模式（高级）",
+	"cirrussearch-completion-profile-normal-pref-desc": "无错别字纠正。修复相近重定向。",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "带子句匹配的重定向模式（高级）",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "无错别字纠正。修复相近重定向。匹配标题中的子句。",
+	"cirrussearch-pref-completion-legacy-section-desc": "前缀搜索",
+	"cirrussearch-pref-completion-legacy-section-legend": "传统随打即搜建议算法。",
+	"cirrussearch-completion-profile-classic-pref-name": "传统前缀搜索",
+	"cirrussearch-completion-profile-classic-pref-desc": "无错别字纠正。匹配标题开头。"
 }

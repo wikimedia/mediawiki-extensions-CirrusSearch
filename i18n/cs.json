@@ -43,5 +43,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Bez opravy překlepů. Používá blízká přesměrování.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Režim přesměrování s vyhledávání podřetězce (pokročilé)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Bez opravy překlepů. Používá blízká přesměrování. Vyhledává podřetězce v názvech.",
-	"cirrussearch-completion-profile-classic-pref-name": "Klasické vyhledávání předpony"
+	"cirrussearch-pref-completion-legacy-section-legend": "Původní algoritmus pro hledání v průběhu psaní.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasické vyhledávání předpony",
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez opravy překlepů. Porovnává začátky názvů."
 }

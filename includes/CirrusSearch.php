@@ -421,6 +421,7 @@ class CirrusSearch extends SearchEngine {
 		// Note that we have no way of sending warning back to the user.  In this case all warnings
 		// are logged when they are added to the status object so we just ignore them here....
 		if ( $this->isFeatureEnabled( 'interwiki' ) &&
+			$searcher->getSearchContext()->areResultsPossible() &&
 			( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 

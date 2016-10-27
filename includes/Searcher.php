@@ -609,7 +609,12 @@ class Searcher extends ElasticsearchIntermediary {
 						'result' => [],
 				] );
 			} else {
-				return Status::newGood( $this->resultsType->createEmptyResult() );
+				$this->searchContext->setResultsPossible( false );
+				$retval = [];
+				foreach ( $searches as $key => $search ) {
+					$retval[$key] = $this->resultsType->createEmptyResult();
+				}
+				return Status::newGood( $retval );
 			}
 		}
 

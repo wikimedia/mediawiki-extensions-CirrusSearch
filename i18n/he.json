@@ -41,7 +41,19 @@
 	"cirrussearch-pref-completion-profile-help": "הגדרת ההתנהגות של הצעות השלמה אוטומטית (חיפוש תוך כדי הקלדה).",
 	"prefs-completion": "השלמת חיפוש",
 	"cirrussearch-pref-completion-section-desc": "הצעות להשלמת חיפוש",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester מציע ההשלמות] הוא אלגוריתם להצעות חיפוש עם תיקון שגיאות כתיב ורלוונטיוּת חיפוש משופרים.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "ברירת מחדל (מומלץ)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "מתקן עד שתי שגיאות הקלדה. מתקן הפניות קרובות.",
-	"cirrussearch-completion-profile-strict-pref-name": "מצב קפדני (מתקדם)"
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "התאמת תת־משפט (מומלץ לכותרות ערכים ארוכות יותר)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "תיקון של עד שני סוגים. פתרון הפניות קרובות. התאמת תת־משפט בכותרות.",
+	"cirrussearch-completion-profile-strict-pref-name": "מצב קפדני (מתקדם)",
+	"cirrussearch-completion-profile-strict-pref-desc": "ללא תיקון שגיאות כתיב. התאמה קפדנית.",
+	"cirrussearch-completion-profile-normal-pref-name": "מצב הפניה (מתקדם)",
+	"cirrussearch-completion-profile-normal-pref-desc": "ללא תיקון שגיאות כתיב. פתרון הפניות קרובות.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "מצב הפניה עם התאמת תת־משפט (מתקדם)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "ללא תיקון שגיאות כתיב. פתרון הפעיות קרובות. התאמת תת־משפט בכותרות.",
+	"cirrussearch-pref-completion-legacy-section-desc": "חיפוש תחילית",
+	"cirrussearch-pref-completion-legacy-section-legend": "האלגוריתם הישן של חיפוש תוך כדי הקלדה.",
+	"cirrussearch-completion-profile-classic-pref-name": "חיפוש תחילית קלאסי",
+	"cirrussearch-completion-profile-classic-pref-desc": "ללא תיקון שגיאות כתיב. התאמת התחלות של כותרות."
 }

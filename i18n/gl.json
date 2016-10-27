@@ -55,6 +55,7 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Modo redirección con correspondencia de subfrases (avanzado)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Sen corrección de erros. Resolve redireccións próximas. Busca correspondencias de subfrases en títulos.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Procura de prefixo",
+	"cirrussearch-pref-completion-legacy-section-legend": "O antigo algoritmo de suxestión mentras escribe.",
 	"cirrussearch-completion-profile-classic-pref-name": "Procura de prefixo clásico",
 	"cirrussearch-completion-profile-classic-pref-desc": "Sen corrección de erros. Busca correspondencias no comezo dos títulos."
 }

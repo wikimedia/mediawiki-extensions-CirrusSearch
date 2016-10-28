@@ -73,6 +73,7 @@ class InterwikiSearcher extends Searcher {
 		);
 
 		$this->searchContext->setLimitSearchToLocalWiki( true );
+		$this->searchContext->setOriginalSearchTerm( $term );
 		$this->buildFullTextSearch( $term, false );
 		$context = $this->searchContext;
 
@@ -92,7 +93,7 @@ class InterwikiSearcher extends Searcher {
 			}
 		}
 
-		$results = $this->searchMulti( $searches, $term, $resultsTypes );
+		$results = $this->searchMulti( $searches, $resultsTypes );
 		if ( !$results->isOK() ) {
 			return null;
 		}

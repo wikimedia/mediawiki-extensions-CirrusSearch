@@ -170,6 +170,11 @@ class SearchContext {
 	private $cacheTtl = 0;
 
 	/**
+	 * @param string The original search
+	 */
+	private $originalSearchTerm;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -646,5 +651,19 @@ class SearchContext {
 	 */
 	public function setCacheTtl( $ttl ) {
 		$this->cacheTtl = $ttl;
+	}
+
+	/**
+	 * @return string the original search term
+	 */
+	public function getOriginalSearchTerm() {
+		return $this->originalSearchTerm;
+	}
+
+	/**
+	 * @param string set the original search term
+	 */
+	public function setOriginalSearchTerm( $term ) {
+		$this->originalSearchTerm = $term;
 	}
 }

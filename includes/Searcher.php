@@ -210,6 +210,7 @@ class Searcher extends ElasticsearchIntermediary {
 	public function nearMatchTitleSearch( $term ) {
 		$this->checkTitleSearchRequestLength( $term );
 
+		$this->searchContext->setOriginalSearchTerm( $term );
 		// Elasticsearch seems to have trouble extracting the proper terms to highlight
 		// from the default query we make so we feed it exactly the right query to highlight.
 		$highlightQuery = new \Elastica\Query\MultiMatch();
@@ -230,7 +231,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->searchContext->setHighlightQuery( $highlightQuery );
 		$this->searchContext->setSearchType( 'near_match' );
 
-		return $this->searchOne( $term );
+		return $this->searchOne();
 	}
 
 	/**
@@ -240,6 +241,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function prefixSearch( $term ) {
 		$this->checkTitleSearchRequestLength( $term );
+		$this->searchContext->setOriginalSearchTerm( $term );
 
 		$this->searchContext->setSearchType( 'prefix' );
 		if ( strlen( $term ) > 0 ) {
@@ -270,7 +272,7 @@ class Searcher extends ElasticsearchIntermediary {
 		/** @suppress PhanDeprecatedFunction */
 		$this->searchContext->setBoostLinks( true );
 
-		return $this->searchOne( $term );
+		return $this->searchOne();
 	}
 
 	/**
@@ -290,8 +292,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return FullTextQueryBuilder
 	 */
 	protected function buildFullTextSearch( $term, $showSuggestion ) {
-		// save original term for logging
-		$originalTerm = $term;
+		// Convert the unicode character 'ideographic whitespace' into standard
+		// whitespace. Cirrussearch treats them both as normal whitespace, but
+		// the preceding isn't appropriately trimmed.
+		// No searching for nothing! That takes forever!
+		$term = trim( str_replace( "\xE3\x80\x80", " ", $term ) );
+		if ( $term === '' ) {
+			$this->searchContext->setResultsPossible( false );
+		}
 
 		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
@@ -355,19 +363,20 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function searchText( $term, $showSuggestion ) {
 		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
+		$this->searchContext->setOriginalSearchTerm( $term );
 		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}
 
 		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
 
-		$result = $this->searchOne( $term );
+		$result = $this->searchOne();
 		if ( !$result->isOK() && ElasticaErrorHandler::isParseError( $result ) ) {
 			if ( $qb->buildDegraded( $this->searchContext ) ) {
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
-				$result = $this->searchOne( $term );
+				$result = $this->searchOne();
 			}
 		}
 
@@ -574,14 +583,14 @@ class Searcher extends ElasticsearchIntermediary {
 		return $search;
 	}
 
-	protected function searchOne( $for ) {
+	protected function searchOne() {
 		$search = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
 			return Status::newGood( new SearchResultSet( true ) );
 		}
 
-		$result = $this->searchMulti( [$search], $for );
+		$result = $this->searchMulti( [$search] );
 		if ( $result->isOK() ) {
 			// Convert array of responses to single value
 			$value = $result->getValue();
@@ -595,12 +604,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Powers full-text-like searches including prefix search.
 	 *
 	 * @param \Elastica\Search[] $searches
-	 * @param string $for
 	 * @param ResultsType[] $resultsTypes Specific ResultType instances to use with $searches. Any
 	 *  search without a matching key in this array uses $this->resultsType.
 	 * @return Status results from the query transformed by the resultsType
 	 */
-	protected function searchMulti( $searches, $for, array $resultsTypes = [] ) {
+	protected function searchMulti( $searches, array $resultsTypes = [] ) {
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
 				return Status::newGood( [
@@ -624,7 +632,7 @@ class Searcher extends ElasticsearchIntermediary {
 			"{queryType} search for '{query}'",
 			$this->searchContext->getSearchType(),
 			[
-				'query' => $for,
+				'query' => $this->searchContext->getOriginalSearchTerm(),
 				'limit' => $this->limit ?: null,
 				// null means not requested, '' means not found. If found
 				// parent::buildLogContext will replace the '' with an

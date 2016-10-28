@@ -330,15 +330,6 @@ class CirrusSearch extends SearchEngine {
 	 * @return null|Status|ResultSet
 	 */
 	protected function searchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
-		// Convert the unicode character 'ideographic whitespace' into standard
-		// whitespace.  Cirrussearch treats them both as normal whitespace, but
-		// the preceding isn't appropriately trimmed.
-		$term = trim( str_replace( "\xE3\x80\x80", " ", $term) );
-		// No searching for nothing! That takes forever!
-		if ( $term === '' ) {
-			return null;
-		}
-
 		if ( $config ) {
 			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 		}

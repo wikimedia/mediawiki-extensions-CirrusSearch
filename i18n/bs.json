@@ -13,5 +13,8 @@
 	"cirrussearch-completion-profile-normal": "Nekoliko interpunkcijskih znakova, uklanjaju se neki dijakritički znakovi i nevažne riječi (stop-slova).",
 	"cirrussearch-completion-profile-fuzzy": "Slično normalnoj pretrazi s tim da je podržana ispravka tipfelera (podržana su 2 tipfelera).",
 	"cirrussearch-pref-completion-profile-help": "Podesite način na koji softver vrši automatsko dovršavanje pretraga.",
-	"prefs-completion": "Dovršavanje pretrage"
+	"prefs-completion": "Dovršavanje pretrage",
+	"cirrussearch-pref-completion-section-desc": "Dovršavanje pretrage",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dovršavanje pretrage] novi je algoritam koji omogućava bolje prijedloge pri traženju, bolje ispravke tipfelera i bolju relevantnosti rezultata.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Predodređeno (preporučeno)"
 }

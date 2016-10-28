@@ -33,5 +33,16 @@
 	"cirrussearch-completionsuggester-desc": "Nowy algorytm dla wyszukiwania podczas wpisywania. Po włączeniu, pole wyszukiwania w prawym górnym rogu będzie korzystać z Podpowiedzi Uzupełniania.",
 	"cirrussearch-pref-completion-profile-help": "Ustaw zachowanie podpowiedzi autouzupełniania (wyszukiwanie podczas wpisywania).",
 	"prefs-completion": "Zakończenie wyszukiwania",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Domyślny (zalecane)"
+	"cirrussearch-pref-completion-section-desc": "Podpowiedzi uzupełniania",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Domyślny (zalecane)",
+	"cirrussearch-completion-profile-strict-pref-name": "Tryb ścisły (zaawansowane)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Bez poprawy literówek. Bez składania akcentów. Dokładne dopasowanie.",
+	"cirrussearch-completion-profile-normal-pref-name": "Tryb przekierowań (zaawansowane)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Bez poprawy literówek. Rozwiązuje bliższe przekierowania.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Tryb przekierowań z dopasowywaniem podfraz (zaawansowane)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Bez poprawy literówek. Rozwiązuje bliższe przekierowania. Dopasowuje podfrazy w tytułach.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Wyszukiwanie prefiksami",
+	"cirrussearch-pref-completion-legacy-section-legend": "Starszy algorytm podpowiadania szukaj-podczas-wpisywania.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasyczne wyszukiwanie prefiksami",
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez poprawiania literówek. Dopasowuje początki tytułów."
 }

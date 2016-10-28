@@ -19,5 +19,9 @@
 	"cirrussearch-completionsuggester-pref": "সম্পূর্ণতা পরামর্শক",
 	"cirrussearch-completionsuggester-desc": "আপনার টাইপ হিসেবে অনুসন্ধানের জন্য নতুন অ্যালগরিদম। সক্রিয় করা হলে উপরের ডান দিকের কোণার অনুসন্ধান বাক্স সম্পূর্ণতা পরামর্শক ব্যবহার করবে।",
 	"cirrussearch-pref-completion-profile-help": "স্বয়ংসম্পূর্ণ (লেখার সময় অনুসন্ধান) পরামর্শের জন্য আচরণ নির্ধারণ করুন।",
-	"prefs-completion": "অনুসন্ধান সম্পূর্ণকরণ"
+	"prefs-completion": "অনুসন্ধান সম্পূর্ণকরণ",
+	"cirrussearch-pref-completion-section-desc": "সম্পূর্ণতা পরামর্শক",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester সম্পূর্ণতা পরামর্শক] হচ্ছে ভালো টাইপো সংশোধনসহ অনুসন্ধানের পরামর্শ এবং অনুসন্ধানের প্রাসঙ্গিকতার জন্য একটি অ্যালগরিদম।",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "পূর্বনির্ধারিত (সুপারিশকৃত)",
+	"cirrussearch-pref-completion-legacy-section-desc": "উপসর্গ অনুসন্ধান"
 }

@@ -33,5 +33,21 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에 활성화될 때 일부 틀과 문서의 언어, 최신 정도를 바탕으로 순위를 매김.",
 	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위 (디버그 전용)",
 	"cirrussearch-pref-completion-profile-help": "자동 완성 (입력하면서 검색) 제안을 위한 동작을 설정합니다.",
-	"prefs-completion": "검색 완성"
+	"prefs-completion": "검색 완성",
+	"cirrussearch-pref-completion-section-desc": "완성 제안 기능",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 완성 제안 기능]은 더 개선된 오자 교정 및 적합한 용어를 찾아주는 검색 제안 알고리즘입니다.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "기본값 (권장)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "최대 2개의 오자를 교정합니다. 근접한 넘겨주기를 결정합니다.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "하위 문구 일치 (긴 문서 제목에 권장)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "최대 2개의 오자를 교정합니다. 근접한 넘겨주기를 결정합니다. 제목의 하위 문구와 일치시킵니다.",
+	"cirrussearch-completion-profile-strict-pref-name": "엄격 모드 (고급)",
+	"cirrussearch-completion-profile-strict-pref-desc": "오자 교정을 하지 않습니다. 강세 접기를 하지 않습니다. 엄격하게 일치시킵니다.",
+	"cirrussearch-completion-profile-normal-pref-name": "넘겨주기 모드 (고급)",
+	"cirrussearch-completion-profile-normal-pref-desc": "오자 교정을 하지 않습니다. 근접한 넘겨주기를 결정합니다.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "하위 문구를 일치시키는 넘겨주기 모드 (고급)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "오자 교정을 하지 않습니다. 근접한 넘겨주기를 결정합니다. 제목의 하위 문구와 일치시킵니다.",
+	"cirrussearch-pref-completion-legacy-section-desc": "접두어 검색",
+	"cirrussearch-pref-completion-legacy-section-legend": "전통적인 '입력하면서 검색' 제안 알고리즘입니다.",
+	"cirrussearch-completion-profile-classic-pref-name": "전통적인 접두어 검색",
+	"cirrussearch-completion-profile-classic-pref-desc": "오자를 교정하지 않습니다. 제목의 처음과 일치시킵니다."
 }

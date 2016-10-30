@@ -7,15 +7,14 @@
 			"Romaine",
 			"Siebrand",
 			"Sjoerddebruin",
-			"Esketti"
+			"Esketti",
+			"Hex"
 		]
 	},
 	"cirrussearch-desc": "Zoeken via Solr",
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd. Als u een IP-adres deelt met andere gebruikers kunt u aanmelden om uw eigen beperkingen te krijgen.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "U hebt te veel gelijktijdige zoekopdrachten uitgevoerd.",
 	"cirrussearch-regex-syntax-error": "Reguliere expressie-syntaxfout op $2: $1",
 	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie zoekt momenteel worden uitgevoerd. Probeer het later opnieuw.",
 	"cirrussearch-regex-too-complex-error": "Een reguliere expressie is te complex. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Meer informatie over vereenvoudigen]].",
@@ -28,5 +27,7 @@
 	"apihelp-cirrus-mapping-dump-description": "Dump van CirrusSearchmapping voor deze wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump van CirrusSearchinstellingen voor deze wiki.",
 	"cirrussearch-give-feedback": "Geef ons uw mening",
-	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten"
+	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Standaard (aanbevolen)",
+	"cirrussearch-completion-profile-strict-pref-name": "Strikte modus (geavanceerd)"
 }

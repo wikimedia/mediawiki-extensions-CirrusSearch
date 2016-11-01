@@ -19,6 +19,8 @@ class SearcherTest extends \MediaWikiTestCase {
 		foreach ( glob( __DIR__ . '/fixtures/searchText/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
 			$query = file_get_contents( $queryFile );
+			// Remove trailing newline
+			$query = preg_replace( '/\n$/', '', $query );
 			foreach ( $configs as $configName => $config ) {
 				$expectedFile = substr( $queryFile, 0, -5 ) . $configName . '.expected';
 				$expected = is_file( $expectedFile )

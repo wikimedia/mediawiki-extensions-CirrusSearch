@@ -86,7 +86,7 @@ Feature: Searches with syntax errors
 
   Scenario Outline: Searching for special whitespaces returns no result
     When I api search for <specialwhitespaces>
-    Then the api warns text search is disabled
+    Then there are no api search results
   Examples:
     |     specialwhitespaces     |
     | %{\u3000}%                 |

@@ -17,7 +17,7 @@
 	"cirrussearch-give-feedback": "Anna meile tagasisidet",
 	"cirrussearch-query-too-long": "Päring on pikem kui maksimaalselt lubatud. ($1 > $2)",
 	"cirrussearch-pref-completion-profile-help": "Määra, kuidas näidatakse automaatseid otsisoovitusi (otsimine tippimise ajal).",
-	"prefs-completion": "Otsingu viimistelmine",
+	"prefs-completion": "Otsingu viimistlemine",
 	"cirrussearch-pref-completion-section-desc": "Viimistletud soovitused",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Viimistletud soovituste] algoritm tuleb tippimisvigadega paremini toime ja pakub asjakohasemaid otsisoovitusi.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Vaikimisi (soovitatav)",

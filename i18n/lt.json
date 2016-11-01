@@ -10,8 +10,6 @@
 	"cirrussearch-backend-error": "Nepavyko atlikti jūsų paieškos dėl laikino sutrikimo. Prašome vėliau pabandyti dar kartą.",
 	"cirrussearch-parse-error": "Užklausa nebuvo suprasta. Prašome ją supaprastinti. Ši užklausa buvo išsaugota, kad būtų galima patobulinti paieškos sistemą.",
 	"cirrussearch-too-busy-error": "Paieška dabar yra per daug apkrauta. Prašome vėliau pabandyti dar kartą.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Jūs vykdote per daug paieškų tuo pačiu metu. Jeigu Jūs dalinatės IP adresu su kitais naudotojais, galite prisijungti ir gausite savo atskirą limitą.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Vykdote per daug paieškų vienu metu.",
 	"cirrussearch-regex-syntax-error": "Reguliariosios išraiškos sintaksės klaida čia $2: $1",
 	"cirrussearch-regex-too-busy-error": "Per daug reguliariųjų išraiškų paieškų veikia vienu metu. Prašome vėliau pabandyti dar kartą.",
 	"cirrussearch-regex-too-complex-error": "Per daug sudėtinga reguliarioji išraiška. Apie jos supaprastinimą galite išmokti [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|čia]].",
@@ -29,5 +27,7 @@
 	"cirrussearch-query-too-long": "Paieškos užklausa yra ilgesnė nei maksimalus leistinas ilgis. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Užbaigimo siūlytojas",
 	"cirrussearch-completionsuggester-desc": "Naujas algoritmas paieškai spausdinant. Kai aktyvuotas, paieškos langelis viršutiniame dešiniame kampe naudos Užbaigimo siūlytoją.",
-	"prefs-completion": "Paieškos užbaigimas"
+	"prefs-completion": "Paieškos užbaigimas",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Numatytasis (rekomenduojama)",
+	"cirrussearch-completion-profile-strict-pref-name": "Griežtas režimas (pažengusiems)"
 }

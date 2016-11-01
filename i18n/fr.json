@@ -12,7 +12,8 @@
 			"Trizek",
 			"Orlodrim",
 			"Trial",
-			"Urhixidur"
+			"Urhixidur",
+			"Od1n"
 		]
 	},
 	"cirrussearch-desc": "Fait effectuer la recherche par Solr",
@@ -57,13 +58,13 @@
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondance de partie de phrase (recommandé pour les titres d’article plus longs)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige jusqu’à deux fautes. Résout les redirections proches. Fait correspondre les parties de phrase dans les titres.",
 	"cirrussearch-completion-profile-strict-pref-name": "Mode strict (avancé)",
-	"cirrussearch-completion-profile-strict-pref-desc": "Aucune correction de faute. Aucune omission d’accent. Correspondance stricte.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Aucune correction de faute. Aucune abstraction d’accent. Correspondance stricte.",
 	"cirrussearch-completion-profile-normal-pref-name": "Mode redirection (avancé)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Aucune correction de faute. Résout les redirections proches.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Mode redirection avec correspondance de partie de phrase (avancé)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Aucune correction de faute. Résout les redirections proches. Met en correspondance les parties de phrase dans les titres.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Recherche de préfixe",
-	"cirrussearch-pref-completion-legacy-section-legend": "L’algorithme historique de suggestion en cours de frappe",
+	"cirrussearch-pref-completion-legacy-section-legend": "L’ancien algorithme de suggestion en cours de frappe",
 	"cirrussearch-completion-profile-classic-pref-name": "Recherche de préfixe classique",
 	"cirrussearch-completion-profile-classic-pref-desc": "Aucune correction de faute. Correspond au début des titres."
 }

@@ -6,7 +6,8 @@
 			"WTM",
 			"Darellur",
 			"Saper",
-			"Woytecr"
+			"Woytecr",
+			"Nux"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
@@ -32,9 +33,11 @@
 	"cirrussearch-completionsuggester-pref": "Podpowiadacz wyszukiwania",
 	"cirrussearch-completionsuggester-desc": "Nowy algorytm dla wyszukiwania podczas wpisywania. Po włączeniu, pole wyszukiwania w prawym górnym rogu będzie korzystać z Podpowiedzi Uzupełniania.",
 	"cirrussearch-pref-completion-profile-help": "Ustaw zachowanie podpowiedzi autouzupełniania (wyszukiwanie podczas wpisywania).",
-	"prefs-completion": "Zakończenie wyszukiwania",
-	"cirrussearch-pref-completion-section-desc": "Podpowiedzi uzupełniania",
+	"prefs-completion": "Podpowiedzi wyszukiwania",
+	"cirrussearch-pref-completion-section-desc": "Sugestie podpowiedzi",
+	"cirrussearch-pref-completion-section-legend": "Tzw. [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion Suggester] to algorytm używany do dostarczania podpowiedzi przy wyszukiwaniu. Algorytm umożliwia poprawianie niektórych literówek oraz podpowiedzi lepiej pasujące do wpisanego tekstu.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Domyślny (zalecane)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Poprawia do 2 literówek. Rozwiązuje bliższe przekierowania.",
 	"cirrussearch-completion-profile-strict-pref-name": "Tryb ścisły (zaawansowane)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Bez poprawy literówek. Bez składania akcentów. Dokładne dopasowanie.",
 	"cirrussearch-completion-profile-normal-pref-name": "Tryb przekierowań (zaawansowane)",

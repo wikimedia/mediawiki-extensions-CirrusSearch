@@ -3,7 +3,8 @@
 		"authors": [
 			"Hamilton Abreu",
 			"Vitorvicentevalente",
-			"Fúlvio"
+			"Fúlvio",
+			"He7d3r"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de pesquisa \"Elasticsearch\" para o MediaWiki",
@@ -41,8 +42,8 @@
 	"cirrussearch-qi-profile-empty": "Classificação baseada somente em características dependentes da pesquisa (só para despiste de defeitos no software).",
 	"cirrussearch-pref-completion-profile-help": "Defina o comportamento da funcionalidade que fornece sugestões (pesquisar-enquanto-escreve).",
 	"prefs-completion": "Preenchimento de pesquisas",
-	"cirrussearch-pref-completion-section-desc": "Sugestões completas",
-	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões completas] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
+	"cirrussearch-pref-completion-section-desc": "Sugestões de completamento",
+	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de completamento] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros ortográficos. Resolve redirecionamentos de erros ortográficos.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrases (recomendada para os títulos de artigo mais longos)",

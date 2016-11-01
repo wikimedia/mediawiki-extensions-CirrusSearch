@@ -7,7 +7,8 @@
 			"Srolanh",
 			"Umherirrender",
 			"Dcausse",
-			"Amire80"
+			"Amire80",
+			"Kghbln"
 		]
 	},
 	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"Elasticsearch\" is a full-text search engine. See http://www.elasticsearch.org/",
@@ -52,7 +53,7 @@
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Name of the completion profile fuzzy-subphrases",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Description of the completion profile fuzzy-subphrases.",
 	"cirrussearch-completion-profile-strict-pref-name": "Name of the completion profile strict.",
-	"cirrussearch-completion-profile-strict-pref-desc": "Description of the completion profile strict.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Description of the completion profile strict. In case you wonder what accent folding means: See [http://alistapart.com/article/accent-folding-for-auto-complete this article].",
 	"cirrussearch-completion-profile-normal-pref-name": "Name of the completion profile normal.",
 	"cirrussearch-completion-profile-normal-pref-desc": "Description of the completion profile normal.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Name of the completion profile normal-subphrases.",

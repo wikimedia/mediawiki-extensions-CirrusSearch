@@ -55,6 +55,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 				$html .= $this->addCompSuggestOption( $prof, $value );
 			}
 		}
+		$html .= Html::element( 'br' );
 
 		$html .= Html::element( 'strong',
 			[],

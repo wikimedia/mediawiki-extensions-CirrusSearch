@@ -550,6 +550,18 @@ $wgCirrusSearchShowNowUsing = false;
 // Results are cached.
 $wgCirrusSearchInterwikiSources = [];
 
+/**
+ * Temporary special configuration for load testing the addition of interwiki
+ * search results to a wiki. If this value is null then nothing special
+ * happens, and wgCirrusSearchInterwikiSources is treated as usual. If this is
+ * set to a value between 0 and 1 that is treated as the % of requests to
+ * Special:Search that should use wgCirrusSearchInterwikiSources to make a
+ * query. The results of this query will not be attached to the
+ * SearchResultSet, and will not be displayed to the user. This is to estimate
+ * the effect of adding this additional load onto a search cluster.
+ */
+$wgCirrusSearchInterwikiLoadTest = null;
+
 // How long to cache interwiki search results for (in seconds)
 $wgCirrusSearchInterwikiCacheTime = 7200;
 

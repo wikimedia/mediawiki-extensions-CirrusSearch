@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Candalua"
+		]
+	},
+	"cirrussearch-parse-error": "No gavemo capìo la domanda. Par piaser fala pi fàsile. Se la gavemo segnà par mejorar el sistema de riserca.",
+	"cirrussearch-now-using": "Sto projeto el dòpara un motor de riserca novo ([[mw:Special:MyLanguage/Help:CirrusSearch|piassè informassion]]).",
+	"cirrussearch-pref-label": "Riserca nova",
+	"cirrussearch-give-feedback": "Dìne 'sa te par",
+	"cirrussearch-completionsuggester-pref": "Sugeridor de conpletamento",
+	"cirrussearch-completionsuggester-desc": "El xe un algoritmo novo par mejorar la riserca fin che te scrivi. Na olta intacà la casèla de riserca in tel canton in alto a destra, vegnarà doparà sta fonsion che te sugerisse el possibile completamento de la parola che te sì drio inserir par la riserca.",
+	"prefs-completion": "Conpletamento de la riserca",
+	"cirrussearch-pref-completion-section-desc": "Sugeridor de conpletamento",
+	"cirrussearch-pref-completion-section-legend": "El [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugeridor de conpletamento] el xe un algoritmo par sugerirte la riserca fin che te scrivi, con coression dei erori de batidura e rilevansa de la riserca.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinìo (consejà)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "El corèje fin a do erori de batidura. El risolve i rimandi vissini.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corespondensa de tochi de frase (racomandà par i titoli pi longhi)",
+	"cirrussearch-pref-completion-legacy-section-desc": "Serca par le prime létare",
+	"cirrussearch-pref-completion-legacy-section-legend": "El vecio algoritmo de serca-co-te-scrivi.",
+	"cirrussearch-completion-profile-classic-pref-name": "Riserca clàsega par prime létare",
+	"cirrussearch-completion-profile-classic-pref-desc": "Nissuna coression dei erori de batidura. El cata i scominzi dei titoli."
+}

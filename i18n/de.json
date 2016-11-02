@@ -40,7 +40,7 @@
 	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der eingehenden Links, einige Vorlagen, Artikelsprache und Neuheit (Vorlagen/Sprache/Neuheit könnten nicht auf diesem Wiki aktiviert sein).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einige Vorlagen, Artikelsprache und Neuheit, falls auf diesem Wiki aktiviert.",
 	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung).",
-	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten der Autovervollständigung zu Suchbegriffen als Suchvorschläge während des Eingebens im Suchfeld fest.",
+	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten der Autovervollständigung zu Suchbegriffen bei der Anzeige von Suchvorschlägen fest, die während des Eingebens im Suchfeld gezeigt werden.",
 	"prefs-completion": "Suchvorschläge mit Autovervollständigung",
 	"cirrussearch-pref-completion-section-desc": "Suchvorschläge (komplexer Algorithmus)",
 	"cirrussearch-pref-completion-section-legend": "Dieser [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Algorithmus zur Anzeige von Suchvorschlägen mit Autovervollständigung] bietet Verbesserungen bei Tippfehlern und der Suchrelevanz.",

@@ -1,27 +1,125 @@
 {
     "description": "full_text search for 'fileres:>800'",
-    "path": "wiki\/page\/_search",
+    "options": {
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
+    },
     "params": {
-        "timeout": "20s",
-        "search_type": "dfs_query_then_fetch"
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
     },
     "query": {
         "_source": [
             "id",
-            "title",
             "namespace",
             "redirect.*",
+            "text_bytes",
             "timestamp",
-            "text_bytes"
+            "title"
         ],
         "fields": "text.word_count",
+        "highlight": {
+            "fields": {
+                "auxiliary_text": {
+                    "fragment_size": 150,
+                    "fragmenter": "scan",
+                    "matched_fields": [
+                        "auxiliary_text",
+                        "auxiliary_text.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "skip_if_last_matched": true,
+                        "top_scoring": true
+                    },
+                    "type": "experimental"
+                },
+                "category": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "category",
+                        "category.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "heading": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "heading",
+                        "heading.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "redirect.title": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "redirect.title",
+                        "redirect.title.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "text": {
+                    "fragment_size": 150,
+                    "fragmenter": "scan",
+                    "matched_fields": [
+                        "text",
+                        "text.plain"
+                    ],
+                    "no_match_size": 150,
+                    "number_of_fragments": 1,
+                    "options": {
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "top_scoring": true
+                    },
+                    "type": "experimental"
+                },
+                "title": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "title",
+                        "title.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "type": "experimental"
+                }
+            },
+            "post_tags": [
+                "<\/span>"
+            ],
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ]
+        },
         "query": {
             "bool": {
-                "must": [
-                    {
-                        "match_all": {}
-                    }
-                ],
                 "filter": [
                     {
                         "bool": {
@@ -46,169 +144,70 @@
                             ]
                         }
                     }
+                ],
+                "must": [
+                    {
+                        "match_all": []
+                    }
                 ]
             }
         },
-        "highlight": {
-            "pre_tags": [
-                "<span class=\"searchmatch\">"
-            ],
-            "post_tags": [
-                "<\/span>"
-            ],
-            "fields": {
-                "title": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "number_of_fragments": 1,
-                    "matched_fields": [
-                        "title",
-                        "title.plain"
-                    ]
-                },
-                "redirect.title": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "redirect.title",
-                        "redirect.title.plain"
-                    ]
-                },
-                "category": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "category",
-                        "category.plain"
-                    ]
-                },
-                "heading": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "heading",
-                        "heading.plain"
-                    ]
-                },
-                "text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000
-                    },
-                    "no_match_size": 150,
-                    "matched_fields": [
-                        "text",
-                        "text.plain"
-                    ]
-                },
-                "auxiliary_text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "auxiliary_text",
-                        "auxiliary_text.plain"
-                    ]
-                }
-            }
-        },
-        "size": 20,
         "rescore": [
             {
-                "window_size": 8192,
                 "query": {
                     "query_weight": 1,
-                    "rescore_query_weight": 1,
-                    "score_mode": "multiply",
                     "rescore_query": {
                         "function_score": {
                             "functions": [
                                 {
                                     "field_value_factor": {
                                         "field": "incoming_links",
-                                        "modifier": "log2p",
-                                        "missing": 0
+                                        "missing": 0,
+                                        "modifier": "log2p"
                                     }
                                 },
                                 {
-                                    "weight": "0.25",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 1
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.25"
                                 },
                                 {
-                                    "weight": "0.05",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 2
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.05"
                                 },
                                 {
-                                    "weight": "0.0125",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 3
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.0125"
                                 }
                             ]
                         }
-                    }
-                }
+                    },
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply"
+                },
+                "window_size": 8192
             }
         ],
+        "size": 20,
         "stats": [
             "full_text"
         ]
-    },
-    "options": {
-        "timeout": "20s",
-        "search_type": "dfs_query_then_fetch"
     }
 }

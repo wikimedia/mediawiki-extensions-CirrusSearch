@@ -1,40 +1,73 @@
 {
     "description": "regex search for 'insource:\/pii?ckles\/'",
-    "path": "wiki\/page\/_search",
+    "options": {
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "120s"
+    },
     "params": {
-        "timeout": "120s",
-        "search_type": "dfs_query_then_fetch"
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "120s"
     },
     "query": {
         "_source": [
             "id",
-            "title",
             "namespace",
             "redirect.*",
+            "text_bytes",
             "timestamp",
-            "text_bytes"
+            "title"
         ],
         "fields": "text.word_count",
+        "highlight": {
+            "fields": {
+                "source_text.plain": {
+                    "fragment_size": 150,
+                    "fragmenter": "scan",
+                    "no_match_size": 150,
+                    "number_of_fragments": 1,
+                    "options": {
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "locale": "en",
+                        "max_determinized_states": 20000,
+                        "max_fragments_scored": 5000,
+                        "regex": [
+                            "pii?ckles"
+                        ],
+                        "regex_case_insensitive": false,
+                        "regex_flavor": "lucene",
+                        "skip_query": true,
+                        "top_scoring": true
+                    },
+                    "type": "experimental"
+                }
+            },
+            "post_tags": [
+                "<\/span>"
+            ],
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ]
+        },
         "query": {
             "bool": {
-                "must": [
-                    {
-                        "match_all": {}
-                    }
-                ],
                 "filter": [
                     {
                         "bool": {
                             "must": [
                                 {
                                     "source_regex": {
-                                        "regex": "pii?ckles",
-                                        "field": "source_text",
-                                        "ngram_field": "source_text.trigram",
-                                        "max_inspect": 10000,
-                                        "max_determinized_states": 20000,
                                         "case_sensitive": true,
-                                        "locale": "en"
+                                        "field": "source_text",
+                                        "locale": "en",
+                                        "max_determinized_states": 20000,
+                                        "max_inspect": 10000,
+                                        "ngram_field": "source_text.trigram",
+                                        "regex": "pii?ckles"
                                     }
                                 },
                                 {
@@ -50,104 +83,70 @@
                             ]
                         }
                     }
+                ],
+                "must": [
+                    {
+                        "match_all": []
+                    }
                 ]
             }
         },
-        "highlight": {
-            "pre_tags": [
-                "<span class=\"searchmatch\">"
-            ],
-            "post_tags": [
-                "<\/span>"
-            ],
-            "fields": {
-                "source_text.plain": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "regex": [
-                            "pii?ckles"
-                        ],
-                        "locale": "en",
-                        "regex_flavor": "lucene",
-                        "skip_query": true,
-                        "regex_case_insensitive": false,
-                        "max_determinized_states": 20000
-                    },
-                    "no_match_size": 150
-                }
-            }
-        },
-        "size": 20,
         "rescore": [
             {
-                "window_size": 8192,
                 "query": {
                     "query_weight": 1,
-                    "rescore_query_weight": 1,
-                    "score_mode": "multiply",
                     "rescore_query": {
                         "function_score": {
                             "functions": [
                                 {
                                     "field_value_factor": {
                                         "field": "incoming_links",
-                                        "modifier": "log2p",
-                                        "missing": 0
+                                        "missing": 0,
+                                        "modifier": "log2p"
                                     }
                                 },
                                 {
-                                    "weight": "0.25",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 1
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.25"
                                 },
                                 {
-                                    "weight": "0.05",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 2
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.05"
                                 },
                                 {
-                                    "weight": "0.0125",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 3
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.0125"
                                 }
                             ]
                         }
-                    }
-                }
+                    },
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply"
+                },
+                "window_size": 8192
             }
         ],
+        "size": 20,
         "stats": [
             "regex"
         ]
-    },
-    "options": {
-        "timeout": "120s",
-        "search_type": "dfs_query_then_fetch"
     }
 }

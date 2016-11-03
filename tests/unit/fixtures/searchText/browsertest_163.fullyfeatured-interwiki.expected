@@ -1,41 +1,37 @@
 [
     {
         "description": "full_text search for 'insource:pickl*'",
-        "path": "wiki\/page\/_search",
-        "params": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
+        "options": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
         },
+        "params": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "path": "itwikibooks\/page\/_search",
         "query": {
             "_source": [
-                "id",
-                "title",
                 "namespace",
-                "redirect.*",
-                "timestamp",
-                "text_bytes"
+                "namespace_text",
+                "title"
             ],
-            "fields": "text.word_count",
+            "fields": false,
             "query": {
                 "bool": {
-                    "must": [
-                        {
-                            "match_all": {}
-                        }
-                    ],
                     "filter": [
                         {
                             "bool": {
                                 "must": [
                                     {
                                         "query_string": {
-                                            "query": "pickl*",
+                                            "allow_leading_wildcard": true,
+                                            "default_operator": "AND",
                                             "fields": [
                                                 "source_text.plain"
                                             ],
-                                            "default_operator": "AND",
-                                            "allow_leading_wildcard": true,
                                             "fuzzy_prefix_length": 2,
+                                            "query": "pickl*",
                                             "rewrite": "top_terms_boost_1024"
                                         }
                                     },
@@ -52,347 +48,351 @@
                                 ]
                             }
                         }
+                    ],
+                    "must": [
+                        {
+                            "match_all": []
+                        }
                     ]
                 }
             },
+            "rescore": [
+                {
+                    "query": {
+                        "query_weight": 1,
+                        "rescore_query": {
+                            "function_score": {
+                                "functions": [
+                                    {
+                                        "field_value_factor": {
+                                            "field": "incoming_links",
+                                            "missing": 0,
+                                            "modifier": "log2p"
+                                        }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.25"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.05"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.0125"
+                                    }
+                                ]
+                            }
+                        },
+                        "rescore_query_weight": 1,
+                        "score_mode": "multiply"
+                    },
+                    "window_size": 8192
+                }
+            ],
+            "size": 5,
+            "stats": [
+                "full_text"
+            ]
+        }
+    },
+    {
+        "description": "full_text search for 'insource:pickl*'",
+        "options": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "params": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "path": "itwiktionary\/page\/_search",
+        "query": {
+            "_source": [
+                "namespace",
+                "namespace_text",
+                "title"
+            ],
+            "fields": false,
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "bool": {
+                                "must": [
+                                    {
+                                        "query_string": {
+                                            "allow_leading_wildcard": true,
+                                            "default_operator": "AND",
+                                            "fields": [
+                                                "source_text.plain"
+                                            ],
+                                            "fuzzy_prefix_length": 2,
+                                            "query": "pickl*",
+                                            "rewrite": "top_terms_boost_1024"
+                                        }
+                                    },
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "must": [
+                        {
+                            "match_all": []
+                        }
+                    ]
+                }
+            },
+            "rescore": [
+                {
+                    "query": {
+                        "query_weight": 1,
+                        "rescore_query": {
+                            "function_score": {
+                                "functions": [
+                                    {
+                                        "field_value_factor": {
+                                            "field": "incoming_links",
+                                            "missing": 0,
+                                            "modifier": "log2p"
+                                        }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.25"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.05"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.0125"
+                                    }
+                                ]
+                            }
+                        },
+                        "rescore_query_weight": 1,
+                        "score_mode": "multiply"
+                    },
+                    "window_size": 8192
+                }
+            ],
+            "size": 5,
+            "stats": [
+                "full_text"
+            ]
+        }
+    },
+    {
+        "description": "full_text search for 'insource:pickl*'",
+        "options": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "params": {
+            "search_type": "dfs_query_then_fetch",
+            "timeout": "20s"
+        },
+        "path": "wiki\/page\/_search",
+        "query": {
+            "_source": [
+                "id",
+                "namespace",
+                "redirect.*",
+                "text_bytes",
+                "timestamp",
+                "title"
+            ],
+            "fields": "text.word_count",
             "highlight": {
-                "pre_tags": [
-                    "<span class=\"searchmatch\">"
-                ],
-                "post_tags": [
-                    "<\/span>"
-                ],
                 "fields": {
                     "source_text.plain": {
-                        "type": "experimental",
-                        "number_of_fragments": 1,
-                        "fragmenter": "scan",
                         "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "highlight_query": {
+                            "bool": {
+                                "should": [
+                                    {
+                                        "query_string": {
+                                            "allow_leading_wildcard": true,
+                                            "default_operator": "AND",
+                                            "fields": [
+                                                "source_text.plain"
+                                            ],
+                                            "fuzzy_prefix_length": 2,
+                                            "query": "pickl*",
+                                            "rewrite": "top_terms_boost_1024"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "no_match_size": 150,
+                        "number_of_fragments": 1,
                         "options": {
-                            "top_scoring": true,
                             "boost_before": {
                                 "20": 2,
                                 "50": 1.8,
                                 "200": 1.5,
                                 "1000": 1.2
                             },
-                            "max_fragments_scored": 5000
+                            "max_fragments_scored": 5000,
+                            "top_scoring": true
                         },
-                        "no_match_size": 150,
-                        "highlight_query": {
+                        "type": "experimental"
+                    }
+                },
+                "post_tags": [
+                    "<\/span>"
+                ],
+                "pre_tags": [
+                    "<span class=\"searchmatch\">"
+                ]
+            },
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
                             "bool": {
-                                "should": [
+                                "must": [
                                     {
                                         "query_string": {
-                                            "query": "pickl*",
+                                            "allow_leading_wildcard": true,
+                                            "default_operator": "AND",
                                             "fields": [
                                                 "source_text.plain"
                                             ],
-                                            "default_operator": "AND",
-                                            "allow_leading_wildcard": true,
                                             "fuzzy_prefix_length": 2,
+                                            "query": "pickl*",
                                             "rewrite": "top_terms_boost_1024"
+                                        }
+                                    },
+                                    {
+                                        "terms": {
+                                            "namespace": [
+                                                0,
+                                                1,
+                                                2,
+                                                3
+                                            ]
                                         }
                                     }
                                 ]
                             }
                         }
-                    }
+                    ],
+                    "must": [
+                        {
+                            "match_all": []
+                        }
+                    ]
                 }
             },
+            "rescore": [
+                {
+                    "query": {
+                        "query_weight": 1,
+                        "rescore_query": {
+                            "function_score": {
+                                "functions": [
+                                    {
+                                        "field_value_factor": {
+                                            "field": "incoming_links",
+                                            "missing": 0,
+                                            "modifier": "log2p"
+                                        }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.25"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.05"
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": "0.0125"
+                                    }
+                                ]
+                            }
+                        },
+                        "rescore_query_weight": 1,
+                        "score_mode": "multiply"
+                    },
+                    "window_size": 8192
+                }
+            ],
             "size": 20,
-            "rescore": [
-                {
-                    "window_size": 8192,
-                    "query": {
-                        "query_weight": 1,
-                        "rescore_query_weight": 1,
-                        "score_mode": "multiply",
-                        "rescore_query": {
-                            "function_score": {
-                                "functions": [
-                                    {
-                                        "field_value_factor": {
-                                            "field": "incoming_links",
-                                            "modifier": "log2p",
-                                            "missing": 0
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.25",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    1
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.05",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    2
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.0125",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            ],
             "stats": [
                 "full_text"
             ]
-        },
-        "options": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
-        }
-    },
-    {
-        "description": "full_text search for 'insource:pickl*'",
-        "path": "itwiktionary\/page\/_search",
-        "params": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
-        },
-        "query": {
-            "_source": [
-                "namespace",
-                "namespace_text",
-                "title"
-            ],
-            "fields": false,
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "match_all": {}
-                        }
-                    ],
-                    "filter": [
-                        {
-                            "bool": {
-                                "must": [
-                                    {
-                                        "query_string": {
-                                            "query": "pickl*",
-                                            "fields": [
-                                                "source_text.plain"
-                                            ],
-                                            "default_operator": "AND",
-                                            "allow_leading_wildcard": true,
-                                            "fuzzy_prefix_length": 2,
-                                            "rewrite": "top_terms_boost_1024"
-                                        }
-                                    },
-                                    {
-                                        "terms": {
-                                            "namespace": [
-                                                0,
-                                                1,
-                                                2,
-                                                3
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            },
-            "size": 5,
-            "rescore": [
-                {
-                    "window_size": 8192,
-                    "query": {
-                        "query_weight": 1,
-                        "rescore_query_weight": 1,
-                        "score_mode": "multiply",
-                        "rescore_query": {
-                            "function_score": {
-                                "functions": [
-                                    {
-                                        "field_value_factor": {
-                                            "field": "incoming_links",
-                                            "modifier": "log2p",
-                                            "missing": 0
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.25",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    1
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.05",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    2
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.0125",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            ],
-            "stats": [
-                "full_text"
-            ]
-        },
-        "options": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
-        }
-    },
-    {
-        "description": "full_text search for 'insource:pickl*'",
-        "path": "itwikibooks\/page\/_search",
-        "params": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
-        },
-        "query": {
-            "_source": [
-                "namespace",
-                "namespace_text",
-                "title"
-            ],
-            "fields": false,
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "match_all": {}
-                        }
-                    ],
-                    "filter": [
-                        {
-                            "bool": {
-                                "must": [
-                                    {
-                                        "query_string": {
-                                            "query": "pickl*",
-                                            "fields": [
-                                                "source_text.plain"
-                                            ],
-                                            "default_operator": "AND",
-                                            "allow_leading_wildcard": true,
-                                            "fuzzy_prefix_length": 2,
-                                            "rewrite": "top_terms_boost_1024"
-                                        }
-                                    },
-                                    {
-                                        "terms": {
-                                            "namespace": [
-                                                0,
-                                                1,
-                                                2,
-                                                3
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            },
-            "size": 5,
-            "rescore": [
-                {
-                    "window_size": 8192,
-                    "query": {
-                        "query_weight": 1,
-                        "rescore_query_weight": 1,
-                        "score_mode": "multiply",
-                        "rescore_query": {
-                            "function_score": {
-                                "functions": [
-                                    {
-                                        "field_value_factor": {
-                                            "field": "incoming_links",
-                                            "modifier": "log2p",
-                                            "missing": 0
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.25",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    1
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.05",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    2
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "weight": "0.0125",
-                                        "filter": {
-                                            "terms": {
-                                                "namespace": [
-                                                    3
-                                                ]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            ],
-            "stats": [
-                "full_text"
-            ]
-        },
-        "options": {
-            "timeout": "20s",
-            "search_type": "dfs_query_then_fetch"
         }
     }
 ]

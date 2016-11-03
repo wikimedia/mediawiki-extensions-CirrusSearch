@@ -37,7 +37,8 @@ class Dump extends FormlessAction {
 			->makeConfig( 'CirrusSearch' );
 		/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
 		$conn = new Connection( $config );
-		$searcher = new Searcher( $conn, 0, 0, null, [], $this->getUser() );
+		/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
+		$searcher = new Searcher( $conn, 0, 0, $config, [], $this->getUser() );
 
 		/** @suppress PhanUndeclaredMethod Phan doesn't know $config is a SearchConfig */
 		$docId = $config->makeId( $this->getTitle()->getArticleID() );

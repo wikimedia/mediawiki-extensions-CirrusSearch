@@ -133,16 +133,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|boolean $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
-	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config = null, array $namespaces = null,
+	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
 		User $user = null, $index = false ) {
-
-		if ( is_null( $config ) ) {
-			// @todo connection has an embedded config ... reuse that? somehow should
-			// at least ensure they are the same.
-			$config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
-		}
 
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
 		$this->config = $config;

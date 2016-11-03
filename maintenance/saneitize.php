@@ -152,7 +152,7 @@ class Saneitize extends Maintenance {
 			$remediator = new PrintingRemediator( $remediator );
 		}
 		// This searcher searches all indexes for the current wiki.
-		$searcher = new Searcher( $this->getConnection(), 0, 0, null, [], null );
+		$searcher = new Searcher( $this->getConnection(), 0, 0, $this->getSearchConfig(), [], null );
 		$this->checker = new Checker(
 			$this->getSearchConfig(),
 			$this->getConnection(),

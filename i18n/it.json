@@ -33,8 +33,13 @@
 	"cirrussearch-query-too-long": "Il testo della ricerca ha una lunghezza maggiore rispetto a quella permessa. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Suggeritore completamento",
 	"cirrussearch-completionsuggester-desc": "È un nuovo algoritmo per migliorare la ricerca durante la digitazione. Una volta attivata la casella di ricerca nell'angolo in alto a destra, verrà utilizzata questa funzione che suggerisce il possibile completamento della parola che si sta inserendo per la ricerca.",
-	"cirrussearch-pref-completion-profile-help": "Imposta il comportamento per i suggerimenti del completamento automatico (cerca mentre scrivi).",
+	"cirrussearch-pref-completion-profile-help": "Imposta il comportamento per i suggerimenti del completamento automatico (cerca-mentre-scrivi).",
+	"prefs-completion": "Completamento ricerca",
 	"cirrussearch-pref-completion-section-desc": "Suggeritore completamento",
+	"cirrussearch-pref-completion-section-legend": "Il [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggeritore completamento] è un algoritmo per i suggerimenti di ricerca con una migliore correzione degli errori di battitura e di rilevanza della ricerca.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinito (consigliato)",
-	"cirrussearch-pref-completion-legacy-section-desc": "Ricerca per prefisso"
+	"cirrussearch-pref-completion-legacy-section-desc": "Ricerca per prefisso",
+	"cirrussearch-pref-completion-legacy-section-legend": "L'algoritmo di suggerimento cerca-mentre-scrivi precedente.",
+	"cirrussearch-completion-profile-classic-pref-name": "Ricerca classica per prefisso",
+	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli."
 }

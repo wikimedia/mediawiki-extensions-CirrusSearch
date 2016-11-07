@@ -99,20 +99,25 @@ class SearcherTest extends \MediaWikiTestCase {
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setDumpAndDie( false );
 		$encodedQuery = $engine->searchText( $queryString );
+		$elasticQuery = json_decode( $encodedQuery, true );
+		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
+		// the output is actually the same.
+		$elasticQuery = $this->normalizeNow( $elasticQuery );
+		// The helps with ensuring if there are minor code changes that change the ordering,
+		// regenerating the fixture wont cause changes. Do it always, instead of only when
+		// writing, so that the diff's from phpunit are also as minimal as possible.
+		$elasticQuery = $this->normalizeOrdering( $elasticQuery);
+		// The actual name of the index may vary, and doesn't really matter
+		unset( $elasticQuery['path'] );
+
 		if ( is_string( $expected ) ) {
-			// Flag to generate a new fixture
+			// Flag to generate a new fixture.
+			$encodedQuery = json_encode( $elasticQuery, JSON_PRETTY_PRINT );
 			file_put_contents( $expected, $encodedQuery );
 		} else {
-			$elasticQuery = json_decode( $encodedQuery, true );
-
-			// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
-			// the output is actually the same.
+			// Repeat normalizations applied to $elasticQuery
 			$expected = $this->normalizeNow( $expected );
-			$elasticQuery = $this->normalizeNow( $elasticQuery );
-
-			// The actual name of the index may vary, and doesn't really matter
 			unset( $expected['path'] );
-			unset( $elasticQuery['path'] );
 
 			// Finally compare some things
 			$this->assertEquals( $expected, $elasticQuery, $encodedQuery );
@@ -125,6 +130,25 @@ class SearcherTest extends \MediaWikiTestCase {
 				$value = 1468084245000;
 			}
 		} );
+
+		return $query;
+	}
+
+	private function normalizeOrdering( array $query ) {
+		foreach ( $query as $key => $value ) {
+			if ( is_array( $value ) ) {
+				$query[$key] = $this->normalizeOrdering( $value );
+			}
+		}
+		if ( isset( $query[0] ) ) {
+			// list like. Expensive, but sorta-works?
+			usort( $query, function ( $a, $b ) {
+				return strcmp( json_encode( $a ), json_encode( $b ) );
+			} );
+		} else {
+			// dict like
+			ksort( $query );
+		}
 
 		return $query;
 	}

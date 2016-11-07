@@ -1,184 +1,153 @@
 {
     "description": "full_text search for 'WeightedLinkRemoveUpdate1468251262'",
-    "path": "wiki\/page\/_search",
+    "options": {
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
+    },
     "params": {
-        "timeout": "20s",
-        "search_type": "dfs_query_then_fetch"
+        "search_type": "dfs_query_then_fetch",
+        "timeout": "20s"
     },
     "query": {
         "_source": [
             "id",
-            "title",
             "namespace",
             "redirect.*",
+            "text_bytes",
             "timestamp",
-            "text_bytes"
+            "title"
         ],
         "fields": "text.word_count",
+        "highlight": {
+            "fields": {
+                "auxiliary_text": {
+                    "fragment_size": 150,
+                    "fragmenter": "scan",
+                    "matched_fields": [
+                        "auxiliary_text",
+                        "auxiliary_text.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "skip_if_last_matched": true,
+                        "top_scoring": true
+                    },
+                    "type": "experimental"
+                },
+                "category": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "category",
+                        "category.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "heading": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "heading",
+                        "heading.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "redirect.title": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "redirect.title",
+                        "redirect.title.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "options": {
+                        "skip_if_last_matched": true
+                    },
+                    "order": "score",
+                    "type": "experimental"
+                },
+                "text": {
+                    "fragment_size": 150,
+                    "fragmenter": "scan",
+                    "matched_fields": [
+                        "text",
+                        "text.plain"
+                    ],
+                    "no_match_size": 150,
+                    "number_of_fragments": 1,
+                    "options": {
+                        "boost_before": {
+                            "20": 2,
+                            "50": 1.8,
+                            "200": 1.5,
+                            "1000": 1.2
+                        },
+                        "max_fragments_scored": 5000,
+                        "top_scoring": true
+                    },
+                    "type": "experimental"
+                },
+                "title": {
+                    "fragmenter": "none",
+                    "matched_fields": [
+                        "title",
+                        "title.plain"
+                    ],
+                    "number_of_fragments": 1,
+                    "type": "experimental"
+                }
+            },
+            "highlight_query": {
+                "query_string": {
+                    "allow_leading_wildcard": true,
+                    "auto_generate_phrase_queries": true,
+                    "default_operator": "OR",
+                    "fields": [
+                        "auxiliary_text.plain^0.5",
+                        "auxiliary_text^0.25",
+                        "category.plain^8",
+                        "category^4",
+                        "heading.plain^5",
+                        "heading^2.5",
+                        "opening_text.plain^3",
+                        "opening_text^1.5",
+                        "redirect.title.plain^15",
+                        "redirect.title^7.5",
+                        "text.plain^1",
+                        "text^0.5",
+                        "title.plain^20",
+                        "title^10"
+                    ],
+                    "fuzzy_prefix_length": 2,
+                    "max_determinized_states": 500,
+                    "phrase_slop": 1,
+                    "query": "WeightedLinkRemoveUpdate1468251262",
+                    "rewrite": "top_terms_blended_freqs_1024"
+                }
+            },
+            "post_tags": [
+                "<\/span>"
+            ],
+            "pre_tags": [
+                "<span class=\"searchmatch\">"
+            ]
+        },
         "query": {
             "bool": {
-                "minimum_number_should_match": 1,
-                "should": [
-                    {
-                        "bool": {
-                            "filter": [
-                                {
-                                    "bool": {
-                                        "should": [
-                                            {
-                                                "match": {
-                                                    "all": {
-                                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                                        "operator": "AND"
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                "match": {
-                                                    "all.plain": {
-                                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                                        "operator": "AND"
-                                                    }
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            ],
-                            "should": [
-                                {
-                                    "multi_match": {
-                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                        "boost": 2.3,
-                                        "minimum_should_match": "1",
-                                        "type": "most_fields",
-                                        "fields": [
-                                            "title.plain^1",
-                                            "title^0.3"
-                                        ]
-                                    }
-                                },
-                                {
-                                    "multi_match": {
-                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                        "boost": 1.8,
-                                        "minimum_should_match": "1",
-                                        "type": "most_fields",
-                                        "fields": [
-                                            "category.plain^1",
-                                            "category^0.3"
-                                        ]
-                                    }
-                                },
-                                {
-                                    "multi_match": {
-                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                        "boost": 1.3,
-                                        "minimum_should_match": "1",
-                                        "type": "most_fields",
-                                        "fields": [
-                                            "heading.plain^1",
-                                            "heading^0.3"
-                                        ]
-                                    }
-                                },
-                                {
-                                    "multi_match": {
-                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                        "boost": 0.2,
-                                        "minimum_should_match": "1",
-                                        "type": "most_fields",
-                                        "fields": [
-                                            "auxiliary_text.plain^1",
-                                            "auxiliary_text^0.3"
-                                        ]
-                                    }
-                                },
-                                {
-                                    "multi_match": {
-                                        "query": "WeightedLinkRemoveUpdate1468251262",
-                                        "boost": 0.2,
-                                        "minimum_should_match": "1",
-                                        "type": "most_fields",
-                                        "fields": [
-                                            "file_text.plain^1",
-                                            "file_text^0.3"
-                                        ]
-                                    }
-                                },
-                                {
-                                    "dis_max": {
-                                        "queries": [
-                                            {
-                                                "multi_match": {
-                                                    "query": "WeightedLinkRemoveUpdate1468251262",
-                                                    "boost": 2,
-                                                    "minimum_should_match": "1",
-                                                    "type": "most_fields",
-                                                    "fields": [
-                                                        "redirect.title.plain^1",
-                                                        "redirect.title^0.3"
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "multi_match": {
-                                                    "query": "WeightedLinkRemoveUpdate1468251262",
-                                                    "boost": 2.1,
-                                                    "minimum_should_match": "1",
-                                                    "type": "most_fields",
-                                                    "fields": [
-                                                        "suggest"
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "dis_max": {
-                                        "tie_breaker": 0.2,
-                                        "queries": [
-                                            {
-                                                "multi_match": {
-                                                    "query": "WeightedLinkRemoveUpdate1468251262",
-                                                    "boost": 0.4,
-                                                    "minimum_should_match": "1",
-                                                    "type": "most_fields",
-                                                    "fields": [
-                                                        "text.plain^1",
-                                                        "text^0.3"
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "multi_match": {
-                                                    "query": "WeightedLinkRemoveUpdate1468251262",
-                                                    "boost": 0.5,
-                                                    "minimum_should_match": "1",
-                                                    "type": "most_fields",
-                                                    "fields": [
-                                                        "opening_text.plain^1",
-                                                        "opening_text^0.3"
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            ],
-                            "disable_coord": true
-                        }
-                    },
-                    {
-                        "multi_match": {
-                            "fields": [
-                                "all_near_match^2"
-                            ],
-                            "query": "WeightedLinkRemoveUpdate1468251262"
-                        }
-                    }
-                ],
                 "filter": [
                     {
                         "terms": {
@@ -190,237 +159,267 @@
                             ]
                         }
                     }
+                ],
+                "minimum_number_should_match": 1,
+                "should": [
+                    {
+                        "bool": {
+                            "disable_coord": true,
+                            "filter": [
+                                {
+                                    "bool": {
+                                        "should": [
+                                            {
+                                                "match": {
+                                                    "all": {
+                                                        "operator": "AND",
+                                                        "query": "WeightedLinkRemoveUpdate1468251262"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "match": {
+                                                    "all.plain": {
+                                                        "operator": "AND",
+                                                        "query": "WeightedLinkRemoveUpdate1468251262"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "should": [
+                                {
+                                    "dis_max": {
+                                        "queries": [
+                                            {
+                                                "multi_match": {
+                                                    "boost": 0.4,
+                                                    "fields": [
+                                                        "text.plain^1",
+                                                        "text^0.3"
+                                                    ],
+                                                    "minimum_should_match": "1",
+                                                    "query": "WeightedLinkRemoveUpdate1468251262",
+                                                    "type": "most_fields"
+                                                }
+                                            },
+                                            {
+                                                "multi_match": {
+                                                    "boost": 0.5,
+                                                    "fields": [
+                                                        "opening_text.plain^1",
+                                                        "opening_text^0.3"
+                                                    ],
+                                                    "minimum_should_match": "1",
+                                                    "query": "WeightedLinkRemoveUpdate1468251262",
+                                                    "type": "most_fields"
+                                                }
+                                            }
+                                        ],
+                                        "tie_breaker": 0.2
+                                    }
+                                },
+                                {
+                                    "dis_max": {
+                                        "queries": [
+                                            {
+                                                "multi_match": {
+                                                    "boost": 2,
+                                                    "fields": [
+                                                        "redirect.title.plain^1",
+                                                        "redirect.title^0.3"
+                                                    ],
+                                                    "minimum_should_match": "1",
+                                                    "query": "WeightedLinkRemoveUpdate1468251262",
+                                                    "type": "most_fields"
+                                                }
+                                            },
+                                            {
+                                                "multi_match": {
+                                                    "boost": 2.1,
+                                                    "fields": [
+                                                        "suggest"
+                                                    ],
+                                                    "minimum_should_match": "1",
+                                                    "query": "WeightedLinkRemoveUpdate1468251262",
+                                                    "type": "most_fields"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "boost": 0.2,
+                                        "fields": [
+                                            "auxiliary_text.plain^1",
+                                            "auxiliary_text^0.3"
+                                        ],
+                                        "minimum_should_match": "1",
+                                        "query": "WeightedLinkRemoveUpdate1468251262",
+                                        "type": "most_fields"
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "boost": 0.2,
+                                        "fields": [
+                                            "file_text.plain^1",
+                                            "file_text^0.3"
+                                        ],
+                                        "minimum_should_match": "1",
+                                        "query": "WeightedLinkRemoveUpdate1468251262",
+                                        "type": "most_fields"
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "boost": 1.3,
+                                        "fields": [
+                                            "heading.plain^1",
+                                            "heading^0.3"
+                                        ],
+                                        "minimum_should_match": "1",
+                                        "query": "WeightedLinkRemoveUpdate1468251262",
+                                        "type": "most_fields"
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "boost": 1.8,
+                                        "fields": [
+                                            "category.plain^1",
+                                            "category^0.3"
+                                        ],
+                                        "minimum_should_match": "1",
+                                        "query": "WeightedLinkRemoveUpdate1468251262",
+                                        "type": "most_fields"
+                                    }
+                                },
+                                {
+                                    "multi_match": {
+                                        "boost": 2.3,
+                                        "fields": [
+                                            "title.plain^1",
+                                            "title^0.3"
+                                        ],
+                                        "minimum_should_match": "1",
+                                        "query": "WeightedLinkRemoveUpdate1468251262",
+                                        "type": "most_fields"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "multi_match": {
+                            "fields": [
+                                "all_near_match^2"
+                            ],
+                            "query": "WeightedLinkRemoveUpdate1468251262"
+                        }
+                    }
                 ]
             }
         },
-        "highlight": {
-            "pre_tags": [
-                "<span class=\"searchmatch\">"
-            ],
-            "post_tags": [
-                "<\/span>"
-            ],
-            "fields": {
-                "title": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "number_of_fragments": 1,
-                    "matched_fields": [
-                        "title",
-                        "title.plain"
-                    ]
-                },
-                "redirect.title": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "redirect.title",
-                        "redirect.title.plain"
-                    ]
-                },
-                "category": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "category",
-                        "category.plain"
-                    ]
-                },
-                "heading": {
-                    "type": "experimental",
-                    "fragmenter": "none",
-                    "order": "score",
-                    "number_of_fragments": 1,
-                    "options": {
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "heading",
-                        "heading.plain"
-                    ]
-                },
-                "text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000
-                    },
-                    "no_match_size": 150,
-                    "matched_fields": [
-                        "text",
-                        "text.plain"
-                    ]
-                },
-                "auxiliary_text": {
-                    "type": "experimental",
-                    "number_of_fragments": 1,
-                    "fragmenter": "scan",
-                    "fragment_size": 150,
-                    "options": {
-                        "top_scoring": true,
-                        "boost_before": {
-                            "20": 2,
-                            "50": 1.8,
-                            "200": 1.5,
-                            "1000": 1.2
-                        },
-                        "max_fragments_scored": 5000,
-                        "skip_if_last_matched": true
-                    },
-                    "matched_fields": [
-                        "auxiliary_text",
-                        "auxiliary_text.plain"
-                    ]
-                }
-            },
-            "highlight_query": {
-                "query_string": {
-                    "query": "WeightedLinkRemoveUpdate1468251262",
-                    "fields": [
-                        "title.plain^20",
-                        "redirect.title.plain^15",
-                        "category.plain^8",
-                        "heading.plain^5",
-                        "opening_text.plain^3",
-                        "text.plain^1",
-                        "auxiliary_text.plain^0.5",
-                        "title^10",
-                        "redirect.title^7.5",
-                        "category^4",
-                        "heading^2.5",
-                        "opening_text^1.5",
-                        "text^0.5",
-                        "auxiliary_text^0.25"
-                    ],
-                    "auto_generate_phrase_queries": true,
-                    "phrase_slop": 1,
-                    "default_operator": "OR",
-                    "allow_leading_wildcard": true,
-                    "fuzzy_prefix_length": 2,
-                    "rewrite": "top_terms_blended_freqs_1024",
-                    "max_determinized_states": 500
-                }
-            }
-        },
-        "suggest": {
-            "text": "WeightedLinkRemoveUpdate1468251262",
-            "suggest": {
-                "phrase": {
-                    "field": "suggest",
-                    "size": 1,
-                    "max_errors": 2,
-                    "confidence": 2,
-                    "real_word_error_likelihood": 0.95,
-                    "direct_generator": [
-                        {
-                            "field": "suggest",
-                            "suggest_mode": "always",
-                            "max_term_freq": 0.5,
-                            "min_doc_freq": 0,
-                            "prefix_length": 2
-                        },
-                        {
-                            "field": "suggest.reverse",
-                            "suggest_mode": "always",
-                            "max_term_freq": 0.5,
-                            "min_doc_freq": 0,
-                            "prefix_length": 2,
-                            "pre_filter": "token_reverse",
-                            "post_filter": "token_reverse"
-                        }
-                    ],
-                    "highlight": {
-                        "pre_tag": "<em>",
-                        "post_tag": "<\/em>"
-                    },
-                    "smoothing": {
-                        "stupid_backoff": {
-                            "discount": 0.4
-                        }
-                    }
-                }
-            }
-        },
-        "stats": [
-            "suggest",
-            "full_text"
-        ],
-        "size": 20,
         "rescore": [
             {
-                "window_size": 8192,
                 "query": {
                     "query_weight": 1,
-                    "rescore_query_weight": 1,
-                    "score_mode": "multiply",
                     "rescore_query": {
                         "function_score": {
                             "functions": [
                                 {
                                     "field_value_factor": {
                                         "field": "incoming_links",
-                                        "modifier": "log2p",
-                                        "missing": 0
+                                        "missing": 0,
+                                        "modifier": "log2p"
                                     }
                                 },
                                 {
-                                    "weight": "0.25",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 1
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.25"
                                 },
                                 {
-                                    "weight": "0.05",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 2
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.05"
                                 },
                                 {
-                                    "weight": "0.0125",
                                     "filter": {
                                         "terms": {
                                             "namespace": [
                                                 3
                                             ]
                                         }
-                                    }
+                                    },
+                                    "weight": "0.0125"
                                 }
                             ]
                         }
+                    },
+                    "rescore_query_weight": 1,
+                    "score_mode": "multiply"
+                },
+                "window_size": 8192
+            }
+        ],
+        "size": 20,
+        "stats": [
+            "full_text",
+            "suggest"
+        ],
+        "suggest": {
+            "suggest": {
+                "phrase": {
+                    "confidence": 2,
+                    "direct_generator": [
+                        {
+                            "field": "suggest",
+                            "max_term_freq": 0.5,
+                            "min_doc_freq": 0,
+                            "prefix_length": 2,
+                            "suggest_mode": "always"
+                        },
+                        {
+                            "field": "suggest.reverse",
+                            "max_term_freq": 0.5,
+                            "min_doc_freq": 0,
+                            "post_filter": "token_reverse",
+                            "pre_filter": "token_reverse",
+                            "prefix_length": 2,
+                            "suggest_mode": "always"
+                        }
+                    ],
+                    "field": "suggest",
+                    "highlight": {
+                        "post_tag": "<\/em>",
+                        "pre_tag": "<em>"
+                    },
+                    "max_errors": 2,
+                    "real_word_error_likelihood": 0.95,
+                    "size": 1,
+                    "smoothing": {
+                        "stupid_backoff": {
+                            "discount": 0.4
+                        }
                     }
                 }
-            }
-        ]
-    },
-    "options": {
-        "timeout": "20s",
-        "search_type": "dfs_query_then_fetch"
+            },
+            "text": "WeightedLinkRemoveUpdate1468251262"
+        }
     }
 }

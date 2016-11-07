@@ -6,7 +6,8 @@
 			"Sunpriat",
 			"Jackie",
 			"Putnik",
-			"Туллук"
+			"Туллук",
+			"Gamliel Fishkin"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -37,6 +38,7 @@
 	"cirrussearch-completion-profile-normal-subphrases": "\nНесколько знаков препинания, а также диакритические и игнорируемые слова удалены . Также этому могут быть подвергнуты субфразы ( это могут быть субфразы или подстраницы в зависимости от внутренней конфигурации вики ) .",
 	"cirrussearch-completion-profile-fuzzy": "Подобный обычному с исправлением опечаток (поддерживается до двух опечаток).",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Соответствует нормальному исправлению опечатки (возможно две опечатки). Этому могут быть подвержены также субфразы  (субфразы или подстраницы в зависимости от внутренней конфигурации wiki)",
-	"cirrussearch-pref-completion-profile-help": "Задает поведение для автоматического заполнения предложения (Поиск при вводе).",
-	"prefs-completion": "Завершение поиска"
+	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для автоматического заполнения предложения (Поиск при вводе).",
+	"prefs-completion": "Завершение поиска",
+	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения"
 }

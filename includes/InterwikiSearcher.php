@@ -39,18 +39,19 @@ class InterwikiSearcher extends Searcher {
 	/**
 	 * Constructor
 	 * @param Connection $connection
+	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
 	 * @param User|null $user
 	 * @param string $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
-	public function __construct( Connection $connection, array $namespaces = null, User $user = null ) {
+	public function __construct( Connection $connection, SearchConfig $config, array $namespaces = null, User $user = null ) {
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $namespaces !== null ) {
 			$namespaces = array_filter( $namespaces, function( $namespace ) {
 				return $namespace <= 15;
 			} );
 		}
-		parent::__construct( $connection, 0, self::MAX_RESULTS, null, $namespaces, $user );
+		parent::__construct( $connection, 0, self::MAX_RESULTS, $config, $namespaces, $user );
 	}
 
 	/**

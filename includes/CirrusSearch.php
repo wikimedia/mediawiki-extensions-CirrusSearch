@@ -155,7 +155,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return ResultSet|null|Status results, no results, or error respectively
 	 */
 	public function searchText( $term ) {
-		$config = null;
+		$config = $this->config;
 		if ( $this->request && $this->request->getVal( 'cirrusLang' ) ) {
 			$config = new SearchConfig( $this->request->getVal( 'cirrusLang' ) );
 		}
@@ -272,7 +272,7 @@ class CirrusSearch extends SearchEngine {
 			$rewritten = $oldResult->getSuggestionQuery();
 			$rewrittenSnippet = $oldResult->getSuggestionSnippet();
 			$this->showSuggestion = false;
-			$rewrittenResult = $this->searchTextReal( $rewritten );
+			$rewrittenResult = $this->searchTextReal( $rewritten, $this->config );
 			if (
 				$rewrittenResult instanceof ResultSet
 				&& $rewrittenResult->numRows() > 0
@@ -302,6 +302,7 @@ class CirrusSearch extends SearchEngine {
 				$config = null;
 			}
 			if ( $config ) {
+				$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 				$matches = $this->searchTextReal( $term, $config, true );
 				if ( $matches instanceof ResultSet ) {
 					$numRows = $matches->numRows();
@@ -329,11 +330,7 @@ class CirrusSearch extends SearchEngine {
 	 *        local wiki (e.g. avoid searching on commons)
 	 * @return null|Status|ResultSet
 	 */
-	protected function searchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
-		if ( $config ) {
-			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-		}
-
+	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
 		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
@@ -416,7 +413,7 @@ class CirrusSearch extends SearchEngine {
 			( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 
-			$iwSearch = new InterwikiSearcher( $this->connection, $this->namespaces );
+			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces );
 			$iwSearch->setReturnQuery( $dumpQuery );
 			$iwSearch->setDumpResult( $dumpResult );
 			$iwSearch->setReturnExplain( $returnExplain );
@@ -641,7 +638,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchSuggestionSet
 	 */
 	protected function prefixSearch( $search ) {
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, null, $this->namespaces );
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces );
 
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );

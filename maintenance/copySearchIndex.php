@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\ClusterSettings;
 use CirrusSearch\SearchConfig;
-use MediaWiki\MediaWikiServices;
 
 /**
  * Copy search index from one cluster to another.

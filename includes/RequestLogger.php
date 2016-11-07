@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use DeferredUpdates;
-use Elastica\Client;
 use MediaWiki\Logger\LoggerFactory;
 use RequestContext;
 use SearchResultSet;

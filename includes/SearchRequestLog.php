@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use Title;
-use User;
 
 class SearchRequestLog extends BaseRequestLog {
 	/**

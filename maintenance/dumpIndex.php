@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Util;
 use Elastica;
 use Elastica\Filter;
 use Elastica\Index;

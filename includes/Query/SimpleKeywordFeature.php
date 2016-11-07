@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Searcher;
 use CirrusSearch\Search\SearchContext;
 
 /**

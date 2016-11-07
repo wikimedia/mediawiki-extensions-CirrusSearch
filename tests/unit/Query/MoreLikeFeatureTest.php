@@ -3,7 +3,6 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\SearchConfig;
 use MediaWikiTestCase;
 use MediaWiki\MediaWikiServices;
 use Title;

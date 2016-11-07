@@ -1,8 +1,6 @@
 <?php
 namespace CirrusSearch\Search;
 
-use CirrusSearch\Maintenance\MappingConfigBuilder;
-use SearchIndexField;
 use CirrusSearch\SearchConfig;
 use SearchEngine;
 

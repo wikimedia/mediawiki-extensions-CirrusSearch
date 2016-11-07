@@ -6,11 +6,6 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\Maintenance\Maintenance;
-use CirrusSearch\Sanity\NoopRemediator;
-use CirrusSearch\Sanity\PrintingRemediator;
-use CirrusSearch\Sanity\QueueingRemediator;
-use MediaWiki\MediaWikiServices;
-
 use JobQueueGroup;
 
 /**

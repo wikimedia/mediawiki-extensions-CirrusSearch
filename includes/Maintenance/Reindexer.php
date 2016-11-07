@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Util;
 use Elastica\Document;
 use Elastica\Exception\Connection\HttpException;
 use Elastica\Exception\ExceptionInterface;

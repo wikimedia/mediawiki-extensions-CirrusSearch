@@ -9,7 +9,6 @@ use CirrusSearch\Maintenance\Maintenance;
 use IDatabase;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
-use MediaWiki\MediaWikiServices;
 use MWException;
 use MWTimestamp;
 use Title;

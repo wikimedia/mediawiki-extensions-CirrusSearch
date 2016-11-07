@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use User;
-
 /**
  * Extending from SearchRequestLog doesn't quite feel right, but there
  * is a good amount of shared code. think about best way.

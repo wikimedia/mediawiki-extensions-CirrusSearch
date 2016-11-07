@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use User;
-
 /**
  * Represents logging information for a single network operation made between
  * php and elasticsearch. Information returned from here goes through the

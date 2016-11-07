@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use WebRequest;
-
 /**
  * CirrusSearch - List of profiles for function score rescores.
  *

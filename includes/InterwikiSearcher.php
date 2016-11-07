@@ -5,6 +5,8 @@ namespace CirrusSearch;
 use CirrusSearch\Search\InterwikiResultsType;
 use CirrusSearch\Search\ResultSet;
 use ObjectCache;
+use SpecialPageFactory;
+use Title;
 use User;
 
 /**
@@ -37,6 +39,16 @@ class InterwikiSearcher extends Searcher {
 	private $interwiki;
 
 	/**
+	 * @var bool Is the interwiki load test configured?
+	 */
+	private $isLoadTest = false;
+
+	/**
+	 * @var bool Is the interwiki load test enabled?
+	 */
+	private $isLoadTestEnabled = false;
+
+	/**
 	 * Constructor
 	 * @param Connection $connection
 	 * @param SearchConfig $config
@@ -51,7 +63,27 @@ class InterwikiSearcher extends Searcher {
 				return $namespace <= 15;
 			} );
 		}
-		parent::__construct( $connection, 0, self::MAX_RESULTS, $config, $namespaces, $user );
+
+		$limit = self::MAX_RESULTS;
+
+		$loadTestPercent = $config->get( 'CirrusSearchInterwikiLoadTest' );
+		if ($loadTestPercent !== null ) {
+			$this->isLoadTest = true;
+
+			$requestedTitle = \RequestContext::getMain()->getTitle();
+
+			$isSpecialSearch = $requestedTitle &&
+				$requestedTitle->getNamespace() === NS_SPECIAL &&
+				SpecialPageFactory::resolveAlias( $requestedTitle->getText() )[0] === 'Search';
+			$rand = mt_rand( 1, PHP_INT_MAX ) / PHP_INT_MAX;
+			if ( $isSpecialSearch && $rand <= $loadTestPercent ) {
+				$this->isLoadTestEnabled = true;
+				ElasticsearchIntermediary::appendPayload( 'interwikiLoadTest', 'true' );
+				$limit = 1;
+			}
+		}
+
+		parent::__construct( $connection, 0, $limit, $config, $namespaces, $user );
 	}
 
 	/**
@@ -69,6 +101,11 @@ class InterwikiSearcher extends Searcher {
 		if ( !$sources ) {
 			return null;
 		}
+
+		if ( $this->isLoadTest && !$this->isLoadTestEnabled ) {
+			return null;
+		}
+
 		$this->searchContext->setCacheTtl(
 			$this->config->get( 'CirrusSearchInterwikiCacheTime' )
 		);
@@ -88,8 +125,13 @@ class InterwikiSearcher extends Searcher {
 		$searches = [];
 		$resultsTypes = [];
 		foreach ( $sources as $interwiki => $index ) {
-			$resultsTypes[$interwiki] = new InterwikiResultsType( $interwiki );
-			$this->setResultsType( $resultsTypes[$interwiki] );
+			// Note that this is a hack, $this->resultsType is not properly
+			// specialized to the interwiki use case, but because we are not
+			// returning load test results to the users that is acceptable.
+			if (!$this->isLoadTestEnabled ) {
+				$resultsTypes[$interwiki] = new InterwikiResultsType( $interwiki );
+				$this->setResultsType( $resultsTypes[$interwiki] );
+			}
 			$this->indexBaseName = $index;
 			$this->searchContext = clone $context;
 			$search = $this->buildSearch();
@@ -105,7 +147,13 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		return array_merge( $retval, $results->getValue() );
+		if ($this->isLoadTest) {
+			// For the load test we are generating the results, but not
+			// returning them to the user.
+			return null;
+		} else {
+			return array_merge( $retval, $results->getValue() );
+		}
 	}
 
 	/**

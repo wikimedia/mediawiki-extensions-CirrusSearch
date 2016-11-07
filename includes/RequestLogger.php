@@ -49,7 +49,12 @@ class RequestLogger {
 	 * @var string[][] Extra payload for the logs, indexed first by the log index
 	 *  in self::$logs, and second by the payload item name.
 	 */
-	private $extraPayload = [];
+	private $extraLogPayload = [];
+
+	/**
+	 * @var string[] Extra top-level payload
+	 */
+	private $payload = [];
 
 	/**
 	 * Summarizes all the requests made in this process and reports
@@ -60,6 +65,13 @@ class RequestLogger {
 			$this->buildRequestSetLog();
 			$this->logs = [];
 		}
+	}
+
+	/**
+	 * @return int The number of logs held
+	 */
+	public function count() {
+		return count( $this->logs );
 	}
 
 	/**
@@ -103,14 +115,26 @@ class RequestLogger {
 	}
 
 	/**
+	 * Append a payload entry to the last request that was performed.
+	 *
 	 * @param string $key
 	 * @param string $value
 	 */
 	public function appendLastLogPayload( $key, $value ) {
 		$idx = count( $this->logs ) - 1;
 		if ( isset( $this->logs[$idx] ) ) {
-			$this->extraPayload[$idx][$key] = $value;
+			$this->extraLogPayload[$idx][(string)$key] = (string)$value;
 		}
+	}
+
+	/**
+	 * Append a top-level payload entry to the request set log.
+	 *
+	 * @param string $key
+	 * @param string $value
+	 */
+	public function appendPayload( $key, $value ) {
+		$this->payload[(string)$key] = (string)$value;
 	}
 
 	/**
@@ -204,8 +228,8 @@ class RequestLogger {
 				} else {
 					$allCached = false;
 				}
-				if ( isset( $this->extraPayload[$idx] ) ) {
-					foreach ( $this->extraPayload[$idx] as $key => $value ) {
+				if ( isset( $this->extraLogPayload[$idx] ) ) {
+					foreach ( $this->extraLogPayload[$idx] as $key => $value ) {
 						$request['payload'][$key] = (string)$value;
 					}
 				}
@@ -252,7 +276,7 @@ class RequestLogger {
 			'backendUserTests' => UserTesting::getInstance()->getActiveTestNamesWithBucket(),
 			'tookMs' => $this->getPhpRequestTookMs(),
 			'hits' => $resultHits,
-			'payload' => [
+			'payload' => $this->payload + [
 				// useful while we are testing accept-lang based interwiki
 				'acceptLang' => (string) ($wgRequest->getHeader( 'Accept-Language' ) ?: ''),
 				// Helps to track down what actually caused the request. Will promote to full

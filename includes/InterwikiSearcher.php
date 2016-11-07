@@ -78,6 +78,12 @@ class InterwikiSearcher extends Searcher {
 		$this->buildFullTextSearch( $term, false );
 		$context = $this->searchContext;
 
+		if ( $context->isSyntaxUsed() &&
+			$this->searchContext->getSyntaxUsed() !== ['query_string']
+		) {
+			return null;
+		}
+
 		$retval = [];
 		$searches = [];
 		$resultsTypes = [];

@@ -40,5 +40,6 @@
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Соответствует нормальному исправлению опечатки (возможно две опечатки). Этому могут быть подвержены также субфразы  (субфразы или подстраницы в зависимости от внутренней конфигурации wiki)",
 	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для автоматического заполнения предложения (Поиск при вводе).",
 	"prefs-completion": "Завершение поиска",
-	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения"
+	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)"
 }

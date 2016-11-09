@@ -99,13 +99,6 @@ class RegexInSourceFeature implements KeywordFeature {
 	private function buildRegexWithPlugin( $pattern, $insensitive ) {
 		$filter = new SourceRegex( $pattern, 'source_text', 'source_text.trigram' );
 		// set some defaults
-		$this->regexPlugin += [
-			'max_inspect' => 10000,
-		];
-		$filter->setMaxInspect( isset( $this->regexPlugin['max_inspect'] )
-			? $this->regexPlugin['max_inspect']
-			: 10000
-		);
 		$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );
 		if ( isset( $this->regexPlugin['max_ngrams_extracted'] ) ) {
 			$filter->setMaxNgramsExtracted( $this->regexPlugin['max_ngrams_extracted'] );

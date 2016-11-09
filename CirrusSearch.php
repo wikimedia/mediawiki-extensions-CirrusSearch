@@ -136,14 +136,15 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 //
 // Here is an example to enable faster regex matching:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] =
-//     array( 'build', 'use', 'max_inspect' => 10000 );
+//     array( 'build', 'use' );
 // The 'build' value instructs Cirrus to build the index required to speed up
 // regex queries.  The 'use' value instructs Cirrus to use it to power regular
 // expression queries.  If 'use' is added before the index is rebuilt with
-// 'build' in the array then regex will fail to find anything.  The value of
-// the 'max_inspect' key is the maximum number of pages to recheck the regex
-// against.  Its optional and defaults to 10000 which seems like a reasonable
-// compromise to keep regexes fast while still producing good results.
+// 'build' in the array then regex will fail to find anything. To limit the
+// potential performance impact of regex searches a regex-specific timeout can
+// be set, after which the user will receive partial results and a notice about
+// the timeout. Additionally a regex-specific pool counter can be used to limit
+// the number of regex's being processed in parallel.
 //
 // This turns on noop-detection for updates and is compatible with
 // wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:

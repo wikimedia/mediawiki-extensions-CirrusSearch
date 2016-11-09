@@ -8,7 +8,6 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\RequestLogger;
 use CirrusSearch\Searcher;
-use CirrusSearch\Search\FullTextResultsType;
 use Elastica\Request;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;

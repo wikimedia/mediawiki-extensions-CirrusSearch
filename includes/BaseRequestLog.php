@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use User;
-
 abstract class BaseRequestLog implements RequestLog {
 	/**
 	 * @var string

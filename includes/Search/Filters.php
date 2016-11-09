@@ -6,7 +6,6 @@ use Elastica;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;
-use GeoData\Coord;
 
 /**
  * Utilities for dealing with filters.

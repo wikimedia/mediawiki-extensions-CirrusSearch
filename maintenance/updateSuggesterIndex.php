@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\DataSender;
 use CirrusSearch\ElasticaErrorHandler;
-use CirrusSearch\Util;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;

@@ -10,7 +10,6 @@ use CirrusSearch\Search\ResultSet;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
-use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\UserTesting;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;

@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use IP;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use PoolCounterWorkViaCallback;

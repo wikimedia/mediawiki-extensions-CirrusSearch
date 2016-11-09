@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use WebRequest;
-
 /**
  * CirrusSearch - List of FullTextQueryBuilderProfiles used to generate an elasticsearch
  * query by parsing user input.

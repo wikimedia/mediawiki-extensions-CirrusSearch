@@ -6,7 +6,6 @@ use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 use CirrusSearch\Util;
-use Elastica;
 use Elastica\Exception\ResponseException;
 use Elastica\Type;
 use RawMessage;

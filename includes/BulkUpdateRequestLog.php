@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use User;
-
 /**
  * Request log for requests that update the elasticsearch cluster. All
  * update requests are done through bulk actions.

@@ -98,7 +98,7 @@ class SearcherTest extends \MediaWikiTestCase {
 		$engine->setShowSuggestion( true );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setDumpAndDie( false );
-		$encodedQuery = $engine->searchText( $queryString );
+		$encodedQuery = $engine->searchText( $queryString )->getValue();
 		$elasticQuery = json_decode( $encodedQuery, true );
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
 		// the output is actually the same.

@@ -152,25 +152,26 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Overridden to delegate prefix searching to Searcher.
 	 * @param string $term text to search
-	 * @return ResultSet|null|Status results, no results, or error respectively
+	 * @return Status Value is either SearchResultSet, or null on error.
 	 */
 	public function searchText( $term ) {
 		$config = $this->config;
 		if ( $this->request && $this->request->getVal( 'cirrusLang' ) ) {
 			$config = new SearchConfig( $this->request->getVal( 'cirrusLang' ) );
 		}
-		$matches = $this->searchTextReal( $term, $config );
-		if (!$matches instanceof ResultSet) {
-			return $matches;
+		$status = $this->searchTextReal( $term, $config );
+		$matches = $status->getValue();
+		if ( !$status->isOK() || !$matches instanceof ResultSet ) {
+			return $status;
 		}
 
 		if ( $this->isFeatureEnabled( 'rewrite' ) &&
 				$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) ) {
-			$matches = $this->searchTextSecondTry( $term, $matches );
+			$status = $this->searchTextSecondTry( $term, $status );
 		}
-		ElasticsearchIntermediary::setResultPages( [ $matches ] );
+		ElasticsearchIntermediary::setResultPages( [ $status->getValue() ] );
 
-		return $matches;
+		return $status;
 	}
 
 	/**
@@ -263,16 +264,18 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * @param string $term
-	 * @param ResultSet $oldResult
-	 * @return ResultSet
+	 * @param Status $oldStatus
+	 * @return Status
 	 */
-	private function searchTextSecondTry( $term, ResultSet $oldResult ) {
+	private function searchTextSecondTry( $term, Status $oldStatus ) {
 		// TODO: figure out who goes first - language or suggestion?
+		$oldResult = $oldStatus->getValue();
 		if ( $oldResult->numRows() == 0 && $oldResult->hasSuggestion() ) {
 			$rewritten = $oldResult->getSuggestionQuery();
 			$rewrittenSnippet = $oldResult->getSuggestionSnippet();
 			$this->showSuggestion = false;
-			$rewrittenResult = $this->searchTextReal( $rewritten, $this->config );
+			$rewrittenStatus = $this->searchTextReal( $rewritten, $this->config );
+			$rewrittenResult = $rewrittenStatus->getValue();
 			if (
 				$rewrittenResult instanceof ResultSet
 				&& $rewrittenResult->numRows() > 0
@@ -282,7 +285,7 @@ class CirrusSearch extends SearchEngine {
 					// replace the result but still try the alt language
 					$oldResult = $rewrittenResult;
 				} else {
-					return $rewrittenResult;
+					return $rewrittenStatus;
 				}
 			}
 		}
@@ -303,7 +306,8 @@ class CirrusSearch extends SearchEngine {
 			}
 			if ( $config ) {
 				$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-				$matches = $this->searchTextReal( $term, $config, true );
+				$status = $this->searchTextReal( $term, $config, true );
+				$matches = $status->getValue();
 				if ( $matches instanceof ResultSet ) {
 					$numRows = $matches->numRows();
 					$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
@@ -319,7 +323,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// Don't have any other options yet.
-		return $oldResult;
+		return $oldStatus;
 	}
 
 	/**
@@ -328,7 +332,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param SearchConfig $config
 	 * @param boolean $forceLocal set to true to force searching on the
 	 *        local wiki (e.g. avoid searching on commons)
-	 * @return null|Status|ResultSet
+	 * @return Status
 	 */
 	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
 		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );
@@ -401,9 +405,6 @@ class CirrusSearch extends SearchEngine {
 			return $status;
 		}
 
-		// For historical reasons all callers of searchText interpret any Status return as an error
-		// so we must unwrap all OK statuses.  Note that $status can be "good" and still contain null
-		// since that is interpreted as no results.
 		$result = $status->getValue();
 
 		// Add interwiki results, if we have a sane result
@@ -466,12 +467,11 @@ class CirrusSearch extends SearchEngine {
 				exit();
 			} else {
 				// This breaks the return types and is only used in the fixtures unit tests
-				return $result;
+				$status->setResult( true, $result );
 			}
 		}
 
-
-		return $status->isOK() ? $status->getValue() : $status;
+		return $status;
 	}
 
 	/**

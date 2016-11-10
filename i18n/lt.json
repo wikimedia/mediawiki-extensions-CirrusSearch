@@ -28,6 +28,7 @@
 	"cirrussearch-completionsuggester-pref": "Užbaigimo siūlytojas",
 	"cirrussearch-completionsuggester-desc": "Naujas algoritmas paieškai spausdinant. Kai aktyvuotas, paieškos langelis viršutiniame dešiniame kampe naudos Užbaigimo siūlytoją.",
 	"prefs-completion": "Paieškos užbaigimas",
+	"cirrussearch-pref-completion-section-desc": "Užbaigimo siūlytojas",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Numatytasis (rekomenduojama)",
 	"cirrussearch-completion-profile-strict-pref-name": "Griežtas režimas (pažengusiems)"
 }

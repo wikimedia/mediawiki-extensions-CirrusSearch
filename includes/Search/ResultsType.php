@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
-use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use Title;
 
@@ -64,25 +63,6 @@ interface ResultsType {
 }
 
 abstract class BaseResultsType implements ResultsType {
-	use TitleHelper;
-
-	/** @var SearchConfig */
-	private $config;
-
-	/**
-	 * @param SearchConfig $config
-	 */
-	public function __construct( SearchConfig $config ) {
-		$this->config = $config;
-	}
-
-	/**
-	 * TODO: remove when getWikiCode is removed
-	 * @return SearchConfig
-	 */
-	public function getConfig() {
-		return $this->config;
-	}
 
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
@@ -119,7 +99,7 @@ class TitleResultsType extends BaseResultsType {
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
 		foreach( $resultSet->getResults() as $r ) {
-			$results[] = $this->makeTitle( $r );
+			$results[] = TitleHelper::makeTitle( $r );
 		}
 		return $results;
 	}
@@ -143,11 +123,9 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * Build result type.   The matchedAnalyzer is required to detect if the match
 	 * was from the title or a redirect (and is kind of a leaky abstraction.)
 	 *
-	 * @param SearchConfig $config
 	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 */
-	public function __construct( SearchConfig $config, $matchedAnalyzer ) {
-		parent::__construct( $config );
+	public function __construct( $matchedAnalyzer ) {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
@@ -212,7 +190,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
 		foreach( $resultSet->getResults() as $r ) {
-			$title = $this->makeTitle( $r );
+			$title = TitleHelper::makeTitle( $r );
 			$highlights = $r->getHighlights();
 			$resultForTitle = [];
 
@@ -244,7 +222,7 @@ class FancyTitleResultsType extends TitleResultsType {
 					// Instead of getting the redirect's real namespace we're going to just use the namespace
 					// of the title.  This is not great but OK given that we can't find cross namespace
 					// redirects properly any way.
-					$redirectTitle = $this->makeRedirectTitle( $r, $redirectTitle, $r->namespace );
+					$redirectTitle = TitleHelper::makeRedirectTitle( $r, $redirectTitle, $r->namespace );
 					$resultForTitle[ 'redirectMatches' ][] = $redirectTitle;
 				}
 			}
@@ -294,11 +272,9 @@ class FullTextResultsType extends BaseResultsType {
 	private $highlightingConfig;
 
 	/**
-	 * @param SearchConfig $config
 	 * @param int $highlightingConfig Bitmask, see HIGHLIGHT_* consts
 	 */
-	public function __construct( SearchConfig $config, $highlightingConfig ) {
-		parent::__construct( $config );
+	public function __construct( $highlightingConfig ) {
 		$this->highlightingConfig = $highlightingConfig;
 	}
 
@@ -477,8 +453,7 @@ class FullTextResultsType extends BaseResultsType {
 			$context->getSuggestPrefixes(),
 			$context->getSuggestSuffixes(),
 			$result,
-			$context->isSpecialKeywordUsed(),
-			$this->getConfig()
+			$context->isSpecialKeywordUsed()
 		);
 	}
 

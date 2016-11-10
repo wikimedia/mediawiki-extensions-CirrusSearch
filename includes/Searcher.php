@@ -513,7 +513,7 @@ class Searcher extends ElasticsearchIntermediary {
 	protected  function buildSearch() {
 
 		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType( $this->config, FullTextResultsType::HIGHLIGHT_ALL );
+			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
 		}
 
 		$query = new \Elastica\Query();
@@ -1096,7 +1096,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function searchArchive( $term ) {
 		list( $term, $fuzzyUnused ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
-		$this->setResultsType( new TitleResultsType( $this->config ) );
+		$this->setResultsType( new TitleResultsType() );
 
 		$this->pageType = $this->connection->getArchiveType( $this->indexBaseName );
 

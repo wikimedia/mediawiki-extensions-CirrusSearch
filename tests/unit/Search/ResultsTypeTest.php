@@ -35,10 +35,7 @@ class ResultsTypeTest extends CirrusTestCase {
 		array $expected
 	) {
 		$this->setMwGlobals( 'wgCirrusSearchUseExperimentalHighlighter', $useExperimentalHighlighter );
-		$config = \MediaWiki\MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-		$type = new FullTextResultsType( $config, $highlightingConfig );
+		$type = new FullTextResultsType( $highlightingConfig );
 		$this->assertEquals( $expected, $type->getHighlightingConfiguration( $highlightSource ) );
 	}
 

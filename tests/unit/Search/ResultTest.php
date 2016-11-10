@@ -29,6 +29,7 @@ class ResultTest extends CirrusTestCase {
 				'namespace' => NS_MAIN,
 				'namespace_text' => '',
 				'title' => 'Main Page',
+				'wiki' => 'eswiki',
 				'redirect' => [
 					[
 						'title' => 'Main',
@@ -41,22 +42,6 @@ class ResultTest extends CirrusTestCase {
 				'heading' => [ '...' ],
 			],
 		];
-		$elasticaResult = new \Elastica\Result( $data );
-		// Test BC Code, interwiki info is obtained
-		// by SearchConfig::getWikiCode()
-		$result = new Result(
-			$elasticaResultSet,
-			$elasticaResult,
-			$config->newInterwikiConfig( 'eswiki', false )
-		);
-
-		$this->assertTrue( $result->getTitle()->isExternal(), 'isExternal BC mode' );
-		$this->assertTrue( $result->getRedirectTitle()->isExternal(), 'redirect isExternal BC mode' );
-		$this->assertTrue( $result->getSectionTitle()->isExternal(), 'section title isExternal BC mode' );
-
-		// Should be the default mode soon interwiki is detected by
-		// reading the wiki source field
-		$data['_source']['wiki'] = 'eswiki';
 		$elasticaResult = new \Elastica\Result( $data );
 		$result = new Result(
 			$elasticaResultSet,

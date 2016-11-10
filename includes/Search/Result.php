@@ -5,7 +5,6 @@ namespace CirrusSearch\Search;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Util;
 use CirrusSearch\Searcher;
-use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
 use SearchResult;
@@ -30,7 +29,6 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
-	use TitleHelper;
 
 	/** @var int */
 	private $namespace;
@@ -50,8 +48,6 @@ class Result extends SearchResult {
 	private $textSnippet;
 	/** @var bool */
 	private $isFileMatch = false;
-	/* @var SearchConfig */
-	private $config;
 	/* @var string result wiki */
 	private $wiki;
 	/** @var string */
@@ -76,17 +72,15 @@ class Result extends SearchResult {
 	 *
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
-	 * @param SearchConfig $config
 	 */
-	public function __construct( $results, $result, SearchConfig $config ) {
+	public function __construct( $results, $result ) {
 		global $wgCirrusSearchDevelOptions;
 		$this->ignoreMissingRev = isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] );
-		$this->config = $config;
 		$this->namespaceText = $result->namespace_text;
 		$this->wiki = $result->wiki;
 		$this->docId = $result->getId();
 		$this->namespace = $result->namespace;
-		$this->mTitle = $this->makeTitle( $result );
+		$this->mTitle = TitleHelper::makeTitle( $result );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
@@ -231,7 +225,7 @@ class Result extends SearchResult {
 			);
 			return null;
 		}
-		return $this->makeRedirectTitle( $result, $best['title'], $best['namespace'] );
+		return TitleHelper::makeRedirectTitle( $result, $best['title'], $best['namespace'] );
 	}
 
 	/**
@@ -364,12 +358,5 @@ class Result extends SearchResult {
 	 */
 	public function getExplanation() {
 		return $this->explanation;
-	}
-
-	/**
-	 * @return SearchConfig $config
-	 */
-	public function getConfig() {
-		return $this->config;
 	}
 }

@@ -67,17 +67,14 @@ class SearchConfig implements \Config {
 	 * setting to false will only set the wikiId to $overrideName but will
 	 * keep the current wiki config. This should be removed and no longer
 	 * when all the wikis have the wiki field populated.
-	 * TODO: remove $fullLoad
 	 */
-	public function __construct( $overrideName = null, $fullLoad = true ) {
+	public function __construct( $overrideName = null ) {
 		if ( $overrideName && $overrideName != wfWikiID() ) {
 			$this->wikiId = $overrideName;
-			if ( $fullLoad ) {
-				$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
-				$this->prefix = 'wg';
-				// Re-create language object
-				$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
-			}
+			$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
+			$this->prefix = 'wg';
+			// Re-create language object
+			$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
 			return;
 		}
 		$this->source = new \GlobalVarConfig();
@@ -333,37 +330,5 @@ class SearchConfig implements \Config {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Build a new SearchConfig based on $wiki
-	 * TODO: remove $fullLoad
-	 * @param $wiki dbname of the target wiki
-	 * @param bool $fullLoad
-	 * @return SearchConfig
-	 */
-	public function newInterwikiConfig( $wiki, $fullLoad = true ) {
-		if ( $wiki === $this->wikiId ) {
-			return $this;
-		}
-
-		return new self( $wiki, $fullLoad );
-	}
-
-	/**
-	 * Should not be needed when all wikis have the wiki field
-	 * populated
-	 * TODO: remove the interwiki prefix should not be stored here
-	 * but infered from the wiki field.
-	 * @deprecated
-	 * @return string interwiki prefix
-	 */
-	public function getWikiCode() {
-		if ( $this->wikiId != wfWikiID() ) {
-			return \MediaWiki\MediaWikiServices::getInstance()
-				->getService( InterwikiResolver::SERVICE )
-				->getInterwikiPrefix( $this->wikiId );
-		}
-		return '';
 	}
 }

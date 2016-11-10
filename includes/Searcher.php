@@ -464,7 +464,7 @@ class Searcher extends ElasticsearchIntermediary {
 	protected  function buildSearch() {
 
 		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
+			$this->resultsType = new FullTextResultsType( $this->config, FullTextResultsType::HIGHLIGHT_ALL );
 		}
 
 		$query = new \Elastica\Query();

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
+use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use Title;
 
@@ -62,17 +63,39 @@ interface ResultsType {
 	function createEmptyResult();
 }
 
-/**
- * Returns titles and makes no effort to figure out how the titles matched.
- */
-class TitleResultsType implements ResultsType {
+abstract class BaseResultsType implements ResultsType {
+	use TitleHelper;
+
+	/** @var SearchConfig */
+	private $config;
+
+	/**
+	 * @param SearchConfig $config
+	 */
+	public function __construct( SearchConfig $config ) {
+		$this->config = $config;
+	}
+
+	/**
+	 * TODO: remove when getWikiCode is removed
+	 * @return SearchConfig
+	 */
+	public function getConfig() {
+		return $this->config;
+	}
+
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return [ 'namespace', 'title', 'namespace_text', 'wiki' ];
 	}
+}
 
+/**
+ * Returns titles and makes no effort to figure out how the titles matched.
+ */
+class TitleResultsType extends BaseResultsType {
 	/**
 	 * @return false|string|array corresponding to Elasticsearch fields syntax
 	 */
@@ -96,7 +119,7 @@ class TitleResultsType implements ResultsType {
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
 		foreach( $resultSet->getResults() as $r ) {
-			$results[] = Title::makeTitle( $r->namespace, $r->title );
+			$results[] = $this->makeTitle( $r );
 		}
 		return $results;
 	}
@@ -120,9 +143,11 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * Build result type.   The matchedAnalyzer is required to detect if the match
 	 * was from the title or a redirect (and is kind of a leaky abstraction.)
 	 *
+	 * @param SearchConfig $config
 	 * @param string $matchedAnalyzer the analyzer used to match the title
 	 */
-	public function __construct( $matchedAnalyzer ) {
+	public function __construct( SearchConfig $config, $matchedAnalyzer ) {
+		parent::__construct( $config );
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
@@ -187,7 +212,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
 		foreach( $resultSet->getResults() as $r ) {
-			$title = Title::makeTitle( $r->namespace, $r->title );
+			$title = $this->makeTitle( $r );
 			$highlights = $r->getHighlights();
 			$resultForTitle = [];
 
@@ -219,7 +244,7 @@ class FancyTitleResultsType extends TitleResultsType {
 					// Instead of getting the redirect's real namespace we're going to just use the namespace
 					// of the title.  This is not great but OK given that we can't find cross namespace
 					// redirects properly any way.
-					$redirectTitle = Title::makeTitle( $r->namespace, $redirectTitle );
+					$redirectTitle = $this->makeRedirectTitle( $r, $redirectTitle, $this->namespace );
 					$resultForTitle[ 'redirectMatches' ][] = $redirectTitle;
 				}
 			}
@@ -247,7 +272,7 @@ class FancyTitleResultsType extends TitleResultsType {
 /**
  * Result type for a full text search.
  */
-class FullTextResultsType implements ResultsType {
+class FullTextResultsType extends BaseResultsType {
 	const HIGHLIGHT_NONE = 0;
 	const HIGHLIGHT_TITLE = 1;
 	const HIGHLIGHT_ALT_TITLE = 2;
@@ -269,29 +294,22 @@ class FullTextResultsType implements ResultsType {
 	private $highlightingConfig;
 
 	/**
-	 * @var string interwiki prefix mappings
-	 */
-	private $prefix;
-
-	/**
+	 * @param SearchConfig $config
 	 * @param int $highlightingConfig Bitmask, see HIGHLIGHT_* consts
-	 * @param string $interwiki
 	 */
-	public function __construct( $highlightingConfig, $interwiki = '' ) {
+	public function __construct( SearchConfig $config, $highlightingConfig ) {
+		parent::__construct( $config );
 		$this->highlightingConfig = $highlightingConfig;
-		$this->prefix = $interwiki;
 	}
 
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
-		$fields = [ 'namespace', 'title', 'namespace_text', 'wiki', 'redirect.*', 'timestamp', 'text_bytes' ];
-		if ( $this->prefix ) {
-			$fields[] = 'namespace_text';
-		}
-
-		return $fields;
+		return array_merge(
+			parent::getSourceFiltering(),
+			[ 'redirect.*', 'timestamp', 'text_bytes' ]
+		);
 	}
 
 	/**
@@ -460,7 +478,7 @@ class FullTextResultsType implements ResultsType {
 			$context->getSuggestSuffixes(),
 			$result,
 			$context->isSyntaxUsed(),
-			$this->prefix
+			$this->getConfig()
 		);
 	}
 
@@ -543,12 +561,20 @@ class FullTextResultsType implements ResultsType {
  * Returns page ids. Less CPU load on Elasticsearch since all we're returning
  * is an id.
  */
-class IdResultsType extends TitleResultsType {
+class IdResultsType implements ResultsType {
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
 		return false;
+	}
+
+	public function getFields() {
+		return false;
+	}
+
+	public function getHighlightingConfiguration( array $highlightSource ) {
+		return null;
 	}
 
 	/**
@@ -572,41 +598,24 @@ class IdResultsType extends TitleResultsType {
 	}
 }
 
-class InterwikiResultsType implements ResultsType {
+/**
+ * This class does exactly the same as TitleResultsType
+ * but returns a ResultSet instead of an array of titles
+ */
+class InterwikiResultsType extends BaseResultsType {
 	/**
-	 * @var string interwiki prefix mappings
-	 */
-	private $prefix;
-
-	/**
-	 * Constructor
-	 *
-	 * @param string $interwiki
-	 */
-	public function __construct( $interwiki ) {
-		$this->prefix = $interwiki;
-	}
-
-	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $result
-	 * @return ResultSet
-	 */
+	* @param SearchContext $context
+	* @param \Elastica\ResultSet $result
+	* @return ResultSet
+	*/
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result ) {
 		return new ResultSet(
 			$context->getSuggestPrefixes(),
 			$context->getSuggestSuffixes(),
 			$result,
 			$context->isSyntaxUsed(),
-			$this->prefix
+			$this->getConfig()
 		);
-	}
-
-	/**
-	 * @return EmptyResultSet
-	 */
-	public function createEmptyResult() {
-		return new EmptyResultSet();
 	}
 
 	/**
@@ -614,20 +623,20 @@ class InterwikiResultsType implements ResultsType {
 	 * @return null
 	 */
 	public function getHighlightingConfiguration( array $highlightSource ) {
-		return null;
-	}
-
-	/**
-	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
-	 */
-	public function getSourceFiltering() {
-		return [ 'namespace', 'title', 'namespace_text', 'wiki' ];
+	        return null;
 	}
 
 	/**
 	 * @return false
 	 */
 	public function getFields() {
-		return false;
+	        return false;
+	}
+
+	/**
+	 * @return EmptyResultSet
+	 */
+	public function createEmptyResult() {
+		return new EmptyResultSet();
 	}
 }

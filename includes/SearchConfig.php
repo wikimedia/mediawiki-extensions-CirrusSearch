@@ -35,12 +35,6 @@ class SearchConfig implements \Config {
 	private $prefix = '';
 
 	/**
-	 * Interwiki name for this wiki
-	 * @var string
-	 */
-	private $interwiki;
-
-	/**
 	 * Wiki id or null for current wiki
 	 * @var string|null
 	 */
@@ -68,20 +62,23 @@ class SearchConfig implements \Config {
 	 * issues when running queries on external wiki such as TextCat lang detection
 	 * see CirrusSearch::searchTextSecondTry().
 	 *
-	 * @param string|null $overrideWiki Interwiki link name for wiki
 	 * @param string|null $overrideName DB name for the wiki
+	 * @param bool $fullLoad set to true to fully load the target wiki config
+	 * setting to false will only set the wikiId to $overrideName but will
+	 * keep the current wiki config. This should be removed and no longer
+	 * when all the wikis have the wiki field populated.
+	 * TODO: remove $fullLoad
 	 */
-	public function __construct( $overrideWiki = null, $overrideName = null ) {
-		$this->interwiki = $overrideWiki;
-		if ( $overrideWiki && $overrideName ) {
+	public function __construct( $overrideName = null, $fullLoad = true ) {
+		if ( $overrideName && $overrideName != wfWikiID() ) {
 			$this->wikiId = $overrideName;
-			if ( $this->wikiId != wfWikiID() ) {
+			if ( $fullLoad ) {
 				$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
 				$this->prefix = 'wg';
 				// Re-create language object
 				$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
-				return;
 			}
+			return;
 		}
 		$this->source = new \GlobalVarConfig();
 		$this->wikiId = wfWikiID();
@@ -225,14 +222,6 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * Get wiki's interwiki code
-	 * @return string
-	 */
-	public function getWikiCode() {
-		return $this->interwiki;
-	}
-
-	/**
 	 * Get chain of elements from config array
 	 * @param string $configName
 	 * @param string ... list of path elements
@@ -329,5 +318,67 @@ class SearchConfig implements \Config {
 	 */
 	public static function getNonCirrusConfigVarNames() {
 		return self::$nonCirrusVars;
+	}
+
+	/**
+	 * @return true if cross project (same language) is enabled
+	 */
+	public function isCrossProjectSearchEnabled() {
+		// FIXME: temporary hack to support existing config
+		if ( CirrusConfigInterwikiResolver::accepts( $this ) &&
+			!empty( $this->get( 'CirrusSearchInterwikiSources' ) )
+		) {
+			return true;
+		}
+
+		if ( $this->get( 'CirrusSearchEnableCrossProjectSearch' ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return true if cross language (same project) is enabled
+	 */
+	public function isCrossLanguageSearchEnabled() {
+		// FIXME: temporary hack to support existing config
+		if ( CirrusConfigInterwikiResolver::accepts( $this ) ) {
+			return true;
+		}
+		if ( $this->get( 'CirrusSearchEnableCrossLanguageSearch' ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Build a new SearchConfig based on $wiki
+	 * TODO: remove $fullLoad
+	 * @param $wiki dbname of the target wiki
+	 * @return SearchConfig
+	 */
+	public function newInterwikiConfig( $wiki, $fullLoad = true ) {
+		if ( $wiki === $this->wikiId ) {
+			return $this;
+		}
+
+		return new self( $wiki, $fullLoad );
+	}
+
+	/**
+	 * Should not be needed when all wikis have the wiki field
+	 * populated
+	 * TODO: remove the interwiki prefix should not be stored here
+	 * but infered from the wiki field.
+	 * @deprecated
+	 * @return string interwiki prefix
+	 */
+	public function getWikiCode() {
+		if ( $this->wikiId != wfWikiID() ) {
+			return \MediaWiki\MediaWikiServices::getInstance()
+				->getService( InterwikiResolver::SERVICE )
+				->getInterwikiPrefix( $this->wikiId );
+		}
+		return '';
 	}
 }

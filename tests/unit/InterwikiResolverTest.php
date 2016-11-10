@@ -30,15 +30,15 @@ class InterwikiResolverTest extends CirrusTestCase {
 
 		// Test by-language lookup
 		$this->assertEquals(
-			[ 'fr' => 'frwiki' ],
+			[ 'frwiki', 'fr' ],
 			$resolver->getSameProjectWikiByLang( 'fr' )
 		);
 		$this->assertEquals(
-			[ 'no' => 'nowiki' ],
+			[ 'nowiki', 'no' ],
 			$resolver->getSameProjectWikiByLang( 'no' )
 		);
 		$this->assertEquals(
-			[ 'no' => 'nowiki' ],
+			[ 'nowiki', 'no' ],
 			$resolver->getSameProjectWikiByLang( 'nb' )
 		);
 		$this->assertEquals(
@@ -165,17 +165,17 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'enwiki cross lang lookup finds frwiki' => [
 				'enwiki',
 				'crosslang', 'fr',
-				['fr' => 'frwiki'],
+				['frwiki', 'fr'],
 			],
 			'enwiki cross lang lookup finds nowiki' => [
 				'enwiki',
 				'crosslang', 'nb',
-				['no' => 'nowiki'],
+				['nowiki', 'no'],
 			],
 			'enwikinews cross lang lookup finds frwikinews' => [
 				'enwikinews',
 				'crosslang', 'fr',
-				['fr' => 'frwikinews'],
+				['frwikinews', 'fr'],
 			],
 			'enwikinews cross lang lookup cannot find inexistent hawwikinews' => [
 				'enwikinews',

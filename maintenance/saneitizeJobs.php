@@ -151,9 +151,6 @@ class SaneitizeJobs extends Maintenance {
 	}
 
 	private function showJobDetail() {
-		if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
-			$this->error( "Metastore unavailable, please index some data first.\n", 1 );
-		}
 		$profile = $this->getSearchConfig()->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
 		$minLoopDuration = $profile['min_loop_duration'];
 		$maxJobs = $profile['max_checker_jobs'];
@@ -353,8 +350,13 @@ EOD
 
 		$this->metaStores = [];
 		foreach ( $connections as $cluster => $connection ) {
+			if ( !MetaStoreIndex::cirrusReady( $connection ) ) {
+				$this->error( "No metastore found in cluster $cluster", 1 );
+			}
 			$store = new MetaStoreIndex( $connection, $this );
-			$store->createOrUpgradeIfNecessary();
+			if ( !$store->versionIsAtLeast( [0, 2] ) ) {
+				$this->error( 'Metastore version is too old, expected at least 0.2', 1 );
+			}
 			$this->metaStores[$cluster] = $store;
 		}
 	}

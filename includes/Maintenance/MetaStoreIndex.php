@@ -113,6 +113,24 @@ class MetaStoreIndex {
 		$this->masterTimeout = $masterTimeout;
 	}
 
+	/**
+	 * Compare the current metastore version to an expected minimum
+	 * acceptable version.
+	 *
+	 * @param int[] $expected The metastore version to expected, as a
+	 *  two element array of major then minor version.
+	 * @return bool True when the metastore index in elasticsearch matches
+	 *  requirements
+	 */
+	public function versionIsAtLeast( array $expected ) {
+		// $expected >= $version
+		return version_compare(
+			implode( '.', $expected ),
+			implode( '.', $this->metastoreVersion() ),
+			'>='
+		);
+	}
+
 	public function createOrUpgradeIfNecessary() {
 		$this->fixOldName();
 		// If the mw_cirrus_metastore alias still not exists it

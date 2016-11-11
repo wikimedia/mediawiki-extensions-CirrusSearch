@@ -6,7 +6,8 @@
 			"Olion",
 			"Base",
 			"Dars",
-			"Piramidion"
+			"Piramidion",
+			"Similartothissimilartothat"
 		]
 	},
 	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",
@@ -43,5 +44,10 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "Ранжування на основі деяких шаблонів, мови статті і новизни, якщо активні у цій вікі.",
 	"cirrussearch-qi-profile-empty": "Ранжування засноване виключно на рисах, які залежать від запиту (тільки для налагодження).",
 	"cirrussearch-pref-completion-profile-help": "Налаштуйте поведінку пропозицій автозаповнення (пошук під час набору).",
-	"prefs-completion": "Завершення пошуку"
+	"prefs-completion": "Завершення пошуку",
+	"cirrussearch-pref-completion-section-desc": "Автозаповнення",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Автозаповнення] це алгоритм для пропозицій пошуку з кращим виправленням помилок і відповідністю шуканої фрази.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "За замовчуванням (рекомендується)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Виправляє до двох помилок. Розв'язує близькі перенаправлення.",
+	"cirrussearch-completion-profile-strict-pref-name": "Точний режим (додатково)"
 }

@@ -5,15 +5,14 @@
 			"Dianakc",
 			"Jefersonmoraes",
 			"HenriqueCrang",
-			"Cainamarques"
+			"Cainamarques",
+			"Hamilton Abreu"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
 	"cirrussearch-backend-error": "Não foi possível completar a busca devido a um problema temporário. Por favor, tente novamente mais tarde.",
 	"cirrussearch-parse-error": "A consulta não foi compreendida. Por favor, simplifique-a. A consulta foi registrada para melhorar o sistema de busca.",
 	"cirrussearch-too-busy-error": "A pesquisa atualmente está muito ocupada. Por favor, tente novamente mais tarde.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Você tem demasiadas pesquisas simultâneas em execução. Se você está compartilhando um endereço IP com outros usuários, pode autenticar-se para obter seus próprios limites.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Você tem demasiadas pesquisas simultâneas em execução.",
 	"cirrussearch-regex-syntax-error": "Erro de sintaxe da expressão regular em $2: $1",
 	"cirrussearch-regex-too-busy-error": "Demasiadas buscas com expressões regulares em execução. Por favor, tente novamente mais tarde.",
 	"cirrussearch-regex-too-complex-error": "A expressão regular é complexa demais. Saiba mais como simplificá-la [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|aqui]].",
@@ -25,7 +24,7 @@
 	"apihelp-cirrus-config-dump-description": "Dump das configurações do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki.",
-	"apihelp-cirrus-suggest-description": "Sugere terminações para termos de busca.",
-	"apihelp-cirrus-suggest-param-limit": "Número de resultados a retornar.",
-	"cirrussearch-give-feedback": "Dê-nos a sua opinião"
+	"cirrussearch-give-feedback": "Dê-nos a sua opinião",
+	"cirrussearch-pref-completion-section-desc": "Sugestões de completamento",
+	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de completamento] com melhor correção de erros ortográficos e maior relevância das pesquisas."
 }

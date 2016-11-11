@@ -2,10 +2,12 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusTestCase;
+
 /**
  * @group CirrusSearch
  */
-class ResultTest extends \MediaWikiTestCase {
+class ResultTest extends CirrusTestCase {
 	public function testInterwikiResults() {
 		$this->setMwGlobals( [
 			'wgCirrusSearchWikiToNameMap' => [

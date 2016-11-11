@@ -8,7 +8,7 @@ use Title;
 /**
  * @group CirrusSearch
  */
-class SearcherTest extends \MediaWikiTestCase {
+class SearcherTest extends CirrusTestCase {
 	public function searchTextProvider() {
 		$configs = [
 			'default' => [],

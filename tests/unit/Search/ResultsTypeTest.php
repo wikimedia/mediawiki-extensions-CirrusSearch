@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use MediaWikiTestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * Test escaping search strings.
@@ -24,7 +24,7 @@ use MediaWikiTestCase;
  *
  * @group CirrusSearch
  */
-class ResultsTypeTest extends MediaWikiTestCase {
+class ResultsTypeTest extends CirrusTestCase {
 	/**
 	 * @dataProvider fullTextHighlightingConfigurationTestCases
 	 */

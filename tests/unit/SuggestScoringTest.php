@@ -26,7 +26,7 @@ use CirrusSearch\BuildDocument\Completion\PQScore;
  *
  * @group CirrusSearch
  */
-class SuggestScoringTest extends \MediaWikiTestCase {
+class SuggestScoringTest extends CirrusTestCase {
 	public function testQualityScoreNormFunctions() {
 		$qs = new QualityScore();
 		$qs->setMaxDocs( 10000 );

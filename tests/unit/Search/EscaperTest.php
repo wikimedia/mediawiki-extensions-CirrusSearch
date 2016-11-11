@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use PHPUnit_Framework_TestCase;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * Test escaping search strings.
@@ -24,7 +24,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group CirrusSearch
  */
-class EscaperTest extends PHPUnit_Framework_TestCase {
+class EscaperTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider fuzzyEscapeTestCases

@@ -26,7 +26,7 @@ use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
  *
  * @group CirrusSearch
  */
-class CompletionSuggesterTest extends \PHPUnit_Framework_TestCase {
+class CompletionSuggesterTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideQueries

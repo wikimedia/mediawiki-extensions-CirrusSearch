@@ -2,13 +2,14 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 
 /**
  * @group CirrusSearch
  */
-class BoostTemplatesFeatureTest extends \PHPUnit_Framework_TestCase {
+class BoostTemplatesFeatureTest extends CirrusTestCase {
 
 	public function parseProvider() {
 		return [

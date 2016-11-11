@@ -2,12 +2,13 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusTestCase;
 use SearchIndexField;
 
 /**
  * @group CirrusSearch
  */
-class SearchFieldsTest extends \PHPUnit_Framework_TestCase {
+class SearchFieldsTest extends CirrusTestCase {
 
 	public function getFields() {
 		return [

@@ -28,7 +28,7 @@ use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
  *
  * @group CirrusSearch
  */
-class SuggestBuilderTest extends \MediaWikiTestCase {
+class SuggestBuilderTest extends CirrusTestCase {
 	public function testEinstein() {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;

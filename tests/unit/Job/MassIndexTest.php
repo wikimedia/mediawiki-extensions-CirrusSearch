@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Job;
 
-use PHPUnit_Framework_TestCase;
+use CirrusSearch\CirrusTestCase;
 use Title;
 
 /**
@@ -25,7 +25,7 @@ use Title;
  *
  * @group CirrusSearch
  */
-class MassIndexTest extends PHPUnit_Framework_TestCase {
+class MassIndexTest extends CirrusTestCase {
 	/**
 	 * @dataProvider workItemCountTestCases
 	 */

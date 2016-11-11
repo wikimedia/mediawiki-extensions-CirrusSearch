@@ -9,7 +9,7 @@ use Title;
 /**
  * @group CirrusSearch
  */
-class InterwikiSearcherTest extends \MediaWikiTestCase {
+class InterwikiSearcherTest extends CirrusTestCase {
 	public function loadTestProvider() {
 		return [
 			'when load test is null normal interwiki search applies' => [

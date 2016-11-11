@@ -3,6 +3,7 @@
 namespace CirrusSearch\Test;
 
 use CirrusSearch;
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
@@ -21,7 +22,7 @@ use Psr\Log\AbstractLogger;
  *
  * @group CirrusSearch
  */
-class RequestLoggerTest extends \MediaWikiTestCase {
+class RequestLoggerTest extends CirrusTestCase {
 	public function requestLoggingProvider() {
 		$test = [];
 		foreach ( glob( __DIR__ . "/fixtures/requestLogging/*.request" ) as $requestFile ) {

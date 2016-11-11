@@ -5,7 +5,7 @@ namespace CirrusSearch;
 /**
  * @group CirrusSearch
  */
-class ClusterSettingsTest extends \PHPUnit_Framework_TestCase {
+class ClusterSettingsTest extends CirrusTestCase {
 
 	public static function provideShardCount() {
 		return [

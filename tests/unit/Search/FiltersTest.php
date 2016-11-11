@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusTestCase;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Script;
 use Elastica\Query\Term;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Test for filter utilities.
@@ -28,7 +28,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group CirrusSearch
  */
-class FiltersTest extends PHPUnit_Framework_TestCase {
+class FiltersTest extends CirrusTestCase {
 	/**
 	 * @dataProvider unifyTestCases
 	 */

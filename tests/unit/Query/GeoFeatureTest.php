@@ -2,11 +2,11 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\SearchConfig;
 use GeoData\Coord;
 use LoadBalancer;
 use IDatabase;
-use MediaWikiTestCase;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -30,7 +30,7 @@ use Title;
  *
  * @group CirrusSearch
  */
-class GeoFeatureTest extends MediaWikiTestCase {
+class GeoFeatureTest extends CirrusTestCase {
 
 	public function parseDistanceProvider() {
 		return [

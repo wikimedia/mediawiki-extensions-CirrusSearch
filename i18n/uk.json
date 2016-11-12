@@ -49,5 +49,16 @@
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Автозаповнення] це алгоритм для пропозицій пошуку з кращим виправленням помилок і відповідністю шуканої фрази.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "За замовчуванням (рекомендується)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Виправляє до двох помилок. Розв'язує близькі перенаправлення.",
-	"cirrussearch-completion-profile-strict-pref-name": "Точний режим (додатково)"
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Пошук збігів підфраз (рекомендовано для довших назв статей)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Виправляє до двох типів. Вирішує близькі перенаправлення. Зіставляє підфрази у назвах.",
+	"cirrussearch-completion-profile-strict-pref-name": "Точний режим (додатково)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Без виправлення помилок. Без ігнорування надлітерних знаків. Чітка відповідність.",
+	"cirrussearch-completion-profile-normal-pref-name": "Режим перенаправлень (розширений метод)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Без виправлення помилок. Вирішує близькі перенаправлення.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Режим перенаправлень із пошуком збігів підфраз (розширений метод)",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Без виправлення помилок. Вирішує близькі перенаправлення. Зіставляє підфрази у назвах.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Пошук за префіксом",
+	"cirrussearch-pref-completion-legacy-section-legend": "Стандартний алгоритм пропозицій пошуку-під-час-набору.",
+	"cirrussearch-completion-profile-classic-pref-name": "Класичний пошук за префіксом",
+	"cirrussearch-completion-profile-classic-pref-desc": "Без виправлення помилок. Зіставляє початок назв."
 }

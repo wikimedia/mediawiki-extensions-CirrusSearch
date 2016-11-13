@@ -9,8 +9,6 @@
 	"cirrussearch-backend-error": "Søket ditt kunne ikke utføres på grunn av et midlertidig problem. Vennligst prøv igjen senere.",
 	"cirrussearch-parse-error": "Spørringen ble ikke forstått. Vennligst forenkle den. Spørringen ble logget for å kunne forbedre søkesystemet.",
 	"cirrussearch-too-busy-error": "Søketjenesten er overbelastet. Prøv igjen senere.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Du har for mange samtidige søk. Om du deler IP-adresse med andre brukere kan du logge inn for ikke å dele grensen med dem.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Du har for mange samtidige søk.",
 	"cirrussearch-regex-syntax-error": "Syntaksfeil i regulært uttrykk ved $2: $1",
 	"cirrussearch-regex-too-busy-error": "Det er for mange søk med regulære uttrykk i gang allerede. Prøv igjen senere.",
 	"cirrussearch-regex-too-complex-error": "Det regulære uttrykket er for komplisert. Du kan finne tips til hvordan du kan forenkle det [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|her]].",
@@ -22,5 +20,10 @@
 	"apihelp-cirrus-settings-dump-description": "Dump av CirrusSearch-innstillinger for denne wikien.",
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-innstillingene for denne wiien.",
 	"cirrussearch-give-feedback": "Gi oss tilbakemelding",
-	"cirrussearch-query-too-long": "Søkeforespørselen er lenger enn den maksimale lengden ($1 > $2)"
+	"cirrussearch-query-too-long": "Søkeforespørselen er lenger enn den maksimale lengden ($1 > $2)",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (anbefalt)",
+	"cirrussearch-completion-profile-strict-pref-name": "Streng modus (avansert)",
+	"cirrussearch-completion-profile-normal-pref-name": "Omdirigeringsmodus (avansert)",
+	"cirrussearch-pref-completion-legacy-section-desc": "Prefikssøk",
+	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefikssøk"
 }

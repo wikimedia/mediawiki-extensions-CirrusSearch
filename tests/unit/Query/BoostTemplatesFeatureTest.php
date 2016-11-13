@@ -5,6 +5,9 @@ namespace CirrusSearch\Query;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 
+/**
+ * @group CirrusSearch
+ */
 class BoostTemplatesFeatureTest extends \PHPUnit_Framework_TestCase {
 
 	public function parseProvider() {

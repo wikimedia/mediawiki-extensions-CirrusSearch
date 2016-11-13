@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Query;
 
+/**
+ * @group CirrusSearch
+ */
 class HasTemplateFeatureText extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {

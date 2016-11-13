@@ -4,6 +4,9 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
 
+/**
+ * @group CirrusSearch
+ */
 class SimpleKeywordFeatureTest extends \PHPUnit_Framework_TestCase {
 	public function applyProvider() {
 		return [

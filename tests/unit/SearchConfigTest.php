@@ -2,6 +2,9 @@
 
 namespace CirrusSearch;
 
+/**
+ * @group CirrusSearch
+ */
 class SearchConfigTest extends \MediaWikiTestCase {
 	public function testInterWikiConfig() {
 		$config = new SearchConfig();

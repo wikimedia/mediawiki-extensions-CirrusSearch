@@ -18,6 +18,8 @@ use Psr\Log\AbstractLogger;
  * Tests full text and completion search request logging. Could be expanded for
  * other request types if necessary, but these are mostly the two we care
  * about.
+ *
+ * @group CirrusSearch
  */
 class RequestLoggerTest extends \MediaWikiTestCase {
 	public function requestLoggingProvider() {

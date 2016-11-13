@@ -4,6 +4,9 @@ namespace CirrusSearch\Search;
 
 use SearchIndexField;
 
+/**
+ * @group CirrusSearch
+ */
 class SearchFieldsTest extends \PHPUnit_Framework_TestCase {
 
 	public function getFields() {

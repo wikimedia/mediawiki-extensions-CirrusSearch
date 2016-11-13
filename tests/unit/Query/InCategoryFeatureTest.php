@@ -5,6 +5,9 @@ namespace CirrusSearch\Query;
 use LoadBalancer;
 use IDatabase;
 
+/**
+ * @group CirrusSearch
+ */
 class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {

@@ -2,6 +2,9 @@
 
 namespace CirrusSearch;
 
+/**
+ * @group CirrusSearch
+ */
 class ElasticaErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public static function provideExceptions() {

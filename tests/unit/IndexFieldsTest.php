@@ -2,6 +2,9 @@
 
 use MediaWiki\MediaWikiServices;
 
+/**
+ * @group CirrusSearch
+ */
 class IndexFieldsTest extends MediaWikiTestCase {
 
 	public function getTypes() {

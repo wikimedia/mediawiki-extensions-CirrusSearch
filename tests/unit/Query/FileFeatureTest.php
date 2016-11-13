@@ -1,6 +1,10 @@
 <?php
+
 namespace CirrusSearch\Query;
 
+/**
+ * @group CirrusSearch
+ */
 class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProviderNumeric() {

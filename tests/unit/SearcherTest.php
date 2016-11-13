@@ -5,6 +5,9 @@ namespace CirrusSearch;
 use MediaWiki\MediaWikiServices;
 use Title;
 
+/**
+ * @group CirrusSearch
+ */
 class SearcherTest extends \MediaWikiTestCase {
 	public function searchTextProvider() {
 		$configs = [

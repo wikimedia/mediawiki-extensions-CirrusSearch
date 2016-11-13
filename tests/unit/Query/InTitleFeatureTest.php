@@ -5,6 +5,9 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 
+/**
+ * @group CirrusSearch
+ */
 class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {

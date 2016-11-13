@@ -7,6 +7,9 @@ use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Util;
 
+/**
+ * @group CirrusSearch
+ */
 class FullTextQueryStringQueryBuilderTest extends \PHPUnit_Framework_TestCase {
 
 	public function syntaxUsedProvider() {

@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Search;
 
+/**
+ * @group CirrusSearch
+ */
 class ResultTest extends \MediaWikiTestCase {
 	public function testInterwikiResults() {
 		$this->setMwGlobals( [

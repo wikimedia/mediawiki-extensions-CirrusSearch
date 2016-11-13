@@ -4,6 +4,9 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
 
+/**
+ * @group CirrusSearch
+ */
 class PreferRecentFeatureText extends \MediaWikiTestCase {
 
 	public function parseProvider() {

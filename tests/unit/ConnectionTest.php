@@ -22,6 +22,8 @@ use PHPUnit_Framework_TestCase;
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @group CirrusSearch
  */
 class ConnectionTest extends PHPUnit_Framework_TestCase {
 	/**

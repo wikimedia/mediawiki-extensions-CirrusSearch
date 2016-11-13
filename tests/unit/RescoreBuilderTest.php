@@ -4,6 +4,9 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Test\HashSearchConfig;
 
+/**
+ * @group CirrusSearch
+ */
 class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
 	public function testFunctionScoreDecorator() {
 		$func = new FunctionScoreDecorator();

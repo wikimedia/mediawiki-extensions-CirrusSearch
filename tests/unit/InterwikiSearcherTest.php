@@ -3,11 +3,12 @@
 namespace CirrusSearch;
 
 use CirrusSearch;
-use CirrusSearch\Test\HashSearchConfig;
-use FauxRequest;
 use RequestContext;
 use Title;
 
+/**
+ * @group CirrusSearch
+ */
 class InterwikiSearcherTest extends \MediaWikiTestCase {
 	public function loadTestProvider() {
 		return [

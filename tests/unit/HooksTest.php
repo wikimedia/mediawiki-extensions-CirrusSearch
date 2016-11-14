@@ -24,7 +24,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group CirrusSearch
  */
-class HooksTest extends PHPUnit_Framework_TestCase {
+class HooksTest extends CirrusTestCase {
 	public function testHooksAreArrays() {
 		global $wgHooks;
 

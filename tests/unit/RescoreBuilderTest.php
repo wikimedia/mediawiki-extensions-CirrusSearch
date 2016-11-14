@@ -2,12 +2,13 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Test\HashSearchConfig;
 
 /**
  * @group CirrusSearch
  */
-class RescoreBuilderTest extends \PHPUnit_Framework_TestCase {
+class RescoreBuilderTest extends CirrusTestCase {
 	public function testFunctionScoreDecorator() {
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );

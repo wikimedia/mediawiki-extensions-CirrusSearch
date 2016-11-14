@@ -2,12 +2,13 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchContext;
 
 /**
  * @group CirrusSearch
  */
-class SimpleKeywordFeatureTest extends \PHPUnit_Framework_TestCase {
+class SimpleKeywordFeatureTest extends CirrusTestCase {
 	public function applyProvider() {
 		return [
 			'unquoted value' => [

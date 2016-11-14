@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Test\HashSearchConfig;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
@@ -10,7 +11,7 @@ use CirrusSearch\Util;
 /**
  * @group CirrusSearch
  */
-class FullTextQueryStringQueryBuilderTest extends \PHPUnit_Framework_TestCase {
+class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 
 	public function syntaxUsedProvider() {
 		return [

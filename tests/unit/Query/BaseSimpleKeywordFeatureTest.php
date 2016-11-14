@@ -3,12 +3,13 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * Providers helper for writing tests of classes extending from
  * SimpleKeywordFeature
  */
-abstract class BaseSimpleKeywordFeatureTest extends \MediaWikiTestCase {
+abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	protected function mockContextExpectingAddFilter( array $expectedQuery = null ) {
 		$context = $this->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()

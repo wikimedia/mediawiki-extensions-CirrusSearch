@@ -3,6 +3,7 @@
 namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\Maintenance\IndexCreator;
+use CirrusSearch\CirrusTestCase;
 use Elastica\Response;
 
 /**
@@ -25,7 +26,7 @@ use Elastica\Response;
  *
  * @covers CirrusSearch\Maintenance\IndexCreator
  */
-class IndexCreatorTest extends \PHPUnit_Framework_TestCase {
+class IndexCreatorTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider createIndexProvider

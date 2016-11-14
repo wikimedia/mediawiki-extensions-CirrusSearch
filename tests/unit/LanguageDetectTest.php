@@ -25,7 +25,7 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  *
  * @group CirrusSearch
  */
-class LanguageDetectTest extends \MediaWikiTestCase {
+class LanguageDetectTest extends CirrusTestCase {
 
 	/**
 	 * @var \CirrusSearch

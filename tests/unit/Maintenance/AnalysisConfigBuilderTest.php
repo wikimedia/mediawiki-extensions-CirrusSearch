@@ -3,12 +3,13 @@ namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
  * @covers CirrusSearch\Maintenance\AnalysisConfigBuilder
  */
-class AnalysisConfigBuilderTest extends \PHPUnit_Framework_TestCase {
+class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideASCIIFoldingFilters */
 	public function testASCIIFoldingFix( array $input, array $expected ) {
 		$config = new HashSearchConfig([]);

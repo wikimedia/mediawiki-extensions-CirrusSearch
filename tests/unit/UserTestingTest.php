@@ -22,7 +22,7 @@ namespace CirrusSearch;
  *
  * @group CirrusSearch
  */
-class UserTestingTest extends \MediaWikiTestCase {
+class UserTestingTest extends CirrusTestCase {
 	public function setUp() {
 		parent::setUp();
 		Util::resetExecutionId();

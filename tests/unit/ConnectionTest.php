@@ -25,7 +25,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group CirrusSearch
  */
-class ConnectionTest extends PHPUnit_Framework_TestCase {
+class ConnectionTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideNamespacesInIndexType
 	 */

@@ -4,7 +4,6 @@ namespace CirrusSearch;
 
 use CirrusSearch\Test\HashSearchConfig;
 use MediaWiki\MediaWikiServices;
-use MediaWikiTestCase;
 use Language;
 
 /**
@@ -27,7 +26,7 @@ use Language;
  *
  * @group CirrusSearch
  */
-class UtilTest extends MediaWikiTestCase {
+class UtilTest extends CirrusTestCase {
 	/**
 	 * @dataProvider recursiveSameTestCases
 	 */

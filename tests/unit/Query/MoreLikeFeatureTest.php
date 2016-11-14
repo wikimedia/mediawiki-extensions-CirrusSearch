@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchContext;
-use MediaWikiTestCase;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -27,7 +27,7 @@ use Title;
  *
  * @group CirrusSearch
  */
-class MoreLikeFeatureTest extends MediaWikiTestCase {
+class MoreLikeFeatureTest extends CirrusTestCase {
 
 	public function applyProvider() {
 		return [

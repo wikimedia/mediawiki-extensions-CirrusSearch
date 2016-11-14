@@ -1,11 +1,16 @@
 <?php
 
+namespace CirrusSearch;
+
+use SearchIndexField;
+use CirrusSearch;
+
 use MediaWiki\MediaWikiServices;
 
 /**
  * @group CirrusSearch
  */
-class IndexFieldsTest extends MediaWikiTestCase {
+class IndexFieldsTest extends CirrusTestCase {
 
 	public function getTypes() {
 		return [

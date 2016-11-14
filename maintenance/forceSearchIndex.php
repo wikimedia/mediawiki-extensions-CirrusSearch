@@ -337,7 +337,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getDeletesIterator() {
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
 		$it = new BatchRowIterator(
 			$dbr,
 			'archive',
@@ -370,7 +370,7 @@ class ForceSearchIndex extends Maintenance {
 
 
 	protected function getIdsIterator() {
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$it->addConditions( [
 			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
@@ -381,7 +381,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getUpdatesByDateIterator() {
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
 		$it = new BatchRowIterator(
 			$dbr,
 			[ 'page', 'revision' ],
@@ -400,7 +400,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getUpdatesByIdIterator() {
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
@@ -545,7 +545,7 @@ class ForceSearchIndex extends Maintenance {
 	 *  will be spat out sized to cover the entire wiki.
 	 */
 	private function buildChunks( $buildChunks ) {
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
 			if ( $this->toId === false ) {

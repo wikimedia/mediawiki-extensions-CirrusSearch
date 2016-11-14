@@ -922,7 +922,30 @@ STEMMER_RULES
 	 * @var bool[] indexed by language code, languages where ICU tokenization
 	 * can be enabled by default
 	 */
-	private $languagesWithIcuTokenization = [];
+	private $languagesWithIcuTokenization = [
+		"bo" => true,
+		"dz" => true,
+		"gan" => true,
+		"ja" => true,
+		"km" => true,
+		"lo" => true,
+		"my" => true,
+		"th" => true,
+		"wuu" => true,
+		"zh" => true,
+		"lzh" => true, // zh-classical
+		"zh-classical" => true, // deprecated code fo lzh
+		"yue" => true, // zh-yue
+		"zh-yue" => true, // deprecated code for yue
+		// This list below are languages that may use use mixed scripts
+		"bug" => true,
+		"cdo" => true,
+		"cr" => true,
+		"hak" => true,
+		"jv" => true,
+		"nan" => true, // zh-min-nan
+		"zh-min-nan" => true, // deprecated code for nan
+	];
 
 	/**
 	 * @var array[]

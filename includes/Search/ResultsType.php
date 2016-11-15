@@ -70,7 +70,7 @@ class TitleResultsType implements ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
-		return [ 'namespace', 'title' ];
+		return [ 'namespace', 'title', 'namespace_text', 'wiki' ];
 	}
 
 	/**
@@ -286,7 +286,7 @@ class FullTextResultsType implements ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
-		$fields = [ 'id', 'title', 'namespace', 'redirect.*', 'timestamp', 'text_bytes' ];
+		$fields = [ 'namespace', 'title', 'namespace_text', 'wiki', 'redirect.*', 'timestamp', 'text_bytes' ];
 		if ( $this->prefix ) {
 			$fields[] = 'namespace_text';
 		}
@@ -621,7 +621,7 @@ class InterwikiResultsType implements ResultsType {
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
 	public function getSourceFiltering() {
-		return [ 'namespace', 'namespace_text', 'title' ];
+		return [ 'namespace', 'title', 'namespace_text', 'wiki' ];
 	}
 
 	/**

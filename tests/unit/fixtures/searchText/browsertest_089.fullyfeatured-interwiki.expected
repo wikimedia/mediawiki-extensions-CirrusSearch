@@ -14,7 +14,8 @@
             "_source": [
                 "namespace",
                 "namespace_text",
-                "title"
+                "title",
+                "wiki"
             ],
             "fields": false,
             "query": {
@@ -125,7 +126,8 @@
             "_source": [
                 "namespace",
                 "namespace_text",
-                "title"
+                "title",
+                "wiki"
             ],
             "fields": false,
             "query": {
@@ -234,12 +236,13 @@
         "path": "wiki\/page\/_search",
         "query": {
             "_source": [
-                "id",
                 "namespace",
+                "namespace_text",
                 "redirect.*",
                 "text_bytes",
                 "timestamp",
-                "title"
+                "title",
+                "wiki"
             ],
             "fields": "text.word_count",
             "highlight": {

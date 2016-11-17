@@ -45,6 +45,7 @@ wfLoadExtension( 'MwEmbedSupport' );
 require_once( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
 require_once( "$IP/extensions/PdfHandler/PdfHandler.php" );
 require_once( "$IP/extensions/Cite/Cite.php" );
+wfLoadExtension( 'SiteMatrix' );
 
 // Configuration
 $wgOggThumbLocation = '/usr/bin/oggThumb';

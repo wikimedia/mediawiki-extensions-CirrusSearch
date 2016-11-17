@@ -18,6 +18,7 @@ use Title;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
+use ApiUsageException;
 use UsageException;
 use User;
 use WebRequest;
@@ -582,6 +583,11 @@ class Hooks {
 		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
 		try {
 			$status = $searcher->nearMatchTitleSearch( $term );
+		} catch ( ApiUsageException $e ) {
+			if ( defined( 'MW_API' ) ) {
+				throw $e;
+			}
+			return true;
 		} catch ( UsageException $e ) {
 			if ( defined( 'MW_API' ) ) {
 				throw $e;

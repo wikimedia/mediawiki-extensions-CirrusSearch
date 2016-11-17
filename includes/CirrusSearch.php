@@ -655,6 +655,11 @@ class CirrusSearch extends SearchEngine {
 
 		try {
 			$status = $searcher->prefixSearch( $search );
+		} catch ( ApiUsageException $e ) {
+			if ( defined( 'MW_API' ) ) {
+				throw $e;
+			}
+			return SearchSuggestionSet::emptySuggestionSet();
 		} catch ( UsageException $e ) {
 			if ( defined( 'MW_API' ) ) {
 				throw $e;

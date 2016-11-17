@@ -12,6 +12,7 @@ use MediaWiki\Logger\LoggerFactory;
 use SearchSuggestion;
 use SearchSuggestionSet;
 use Status;
+use ApiUsageException;
 use UsageException;
 use User;
 
@@ -170,13 +171,24 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 	/**
 	 * @param string $search
+	 * @throws ApiUsageException
 	 * @throws UsageException
 	 */
 	private function checkRequestLength( $search ) {
 		$requestLength = mb_strlen( $search );
 		if ( $requestLength > Searcher::MAX_TITLE_SEARCH ) {
-			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
+			if ( class_exists( ApiUsageException::class ) ) {
+				throw ApiUsageException::newWithMessage(
+					null,
+					[ 'apierror-cirrus-requesttoolong', $requestLength, Searcher::MAX_TITLE_SEARCH ],
+					'request_too_long',
+					[],
+					400
+				);
+			} else {
+				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 					" ($requestLength > " . Searcher::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+			}
 		}
 	}
 

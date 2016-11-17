@@ -15,6 +15,7 @@ use ObjectCache;
 use SearchResultSet;
 use Status;
 use Title;
+use ApiUsageException;
 use UsageException;
 use User;
 
@@ -831,13 +832,24 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * @param string $term
+	 * @throws ApiUsageException
 	 * @throws UsageException
 	 */
 	private function checkTitleSearchRequestLength( $term ) {
 		$requestLength = mb_strlen( $term );
 		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
-			throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
-				" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+			if ( class_exists( ApiUsageException::class ) ) {
+				throw ApiUsageException::newWithMessage(
+					null,
+					[ 'apierror-cirrus-requesttoolong', $requestLength, self::MAX_TITLE_SEARCH ],
+					'request_too_long',
+					[],
+					400
+				);
+			} else {
+				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
+					" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+			}
 		}
 	}
 

@@ -445,6 +445,7 @@ class CirrusSearch extends SearchEngine {
 		if ( $dumpQuery || $dumpResult ) {
 			$header = null;
 			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
+				$header = 'Content-type: text/html; charset=UTF-8';
 				$printer = new CirrusSearch\ExplainPrinter();
 				$result = $printer->format( $result );
 			} else {

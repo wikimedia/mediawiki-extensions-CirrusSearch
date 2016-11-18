@@ -55,6 +55,10 @@ class InterwikiResolverTest extends CirrusTestCase {
 	 * @param mixed $expected expected result of $what($arg)
 	 */
 	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected ) {
+		if ( !class_exists( \SiteMatrix::class ) ) {
+			$this->markTestSkipped( 'SiteMatrix not available.' );
+		}
+
 		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki );
 		switch( $what ) {
 		case 'sisters':

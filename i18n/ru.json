@@ -7,7 +7,8 @@
 			"Jackie",
 			"Putnik",
 			"Туллук",
-			"Gamliel Fishkin"
+			"Gamliel Fishkin",
+			"Kareyac"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -28,6 +29,7 @@
 	"apihelp-cirrus-mapping-dump-example": "Получить дамп маппинга CirrusSearch для этой вики.",
 	"apihelp-cirrus-settings-dump-description": "Дамп настроек CirrusSearch для этой вики.",
 	"apihelp-cirrus-settings-dump-example": "Получить дамп настроек CirrusSearch для этой вики.",
+	"apierror-cirrus-requesttoolong": "Поисковый запрос превышает максимально допустимую длину. ($1 > $2)",
 	"cirrussearch-give-feedback": "Оставьте отзыв",
 	"cirrussearch-query-too-long": "Поисковый запрос превышает максимально допустимую длину. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Предложение окончаний",

@@ -58,7 +58,6 @@ class InterwikiSearcherTest extends CirrusTestCase {
 					// bulk calls are two at a time
 					$newCalls /= 2;
 				}
-				$fixture = ['total' => 0, 'hits' => []];
 				$calls += $newCalls;
 				return new \Elastica\Response( json_encode( [
 					'responses' => array_fill(0, $newCalls, ['total' => 0, 'hits' => []])

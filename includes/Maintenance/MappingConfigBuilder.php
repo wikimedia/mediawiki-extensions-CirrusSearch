@@ -82,8 +82,6 @@ class MappingConfigBuilder {
 	 * @return array
 	 */
 	private function getDefaultFields( $flags ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = [

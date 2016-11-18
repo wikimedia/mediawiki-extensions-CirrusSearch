@@ -305,7 +305,7 @@ class DataSender extends ElasticsearchIntermediary {
 					'send_data_other_idx_write'
 				) );
 				$bulk->send();
-			} catch ( \Elastica\Exception\Bulk\ResponseException $e ) {
+			} catch ( ResponseException $e ) {
 				if ( !$this->bulkResponseExceptionIsJustDocumentMissing( $e ) ) {
 					$exception = $e;
 				}

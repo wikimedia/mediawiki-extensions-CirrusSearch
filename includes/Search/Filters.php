@@ -92,7 +92,7 @@ class Filters {
 			return $nonScript;
 		}
 
-		$bool = new \Elastica\Query\BoolQuery();
+		$bool = new BoolQuery();
 		if ( $nonScript === null ) {
 			if ( $scriptFiltersCount === 1 ) {
 				return $scriptFilters[ 0 ];
@@ -124,7 +124,7 @@ class Filters {
 		if ( $mustFilterCount === 1 && $mustNotFilterCount == 0 ) {
 			return $mustFilters[ 0 ];
 		}
-		$bool = new \Elastica\Query\BoolQuery();
+		$bool = new BoolQuery();
 		foreach ( $mustFilters as $must ) {
 			$bool->addMust( $must );
 		}

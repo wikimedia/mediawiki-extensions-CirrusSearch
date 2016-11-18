@@ -107,6 +107,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$redirectTitles = $title->getBacklinkCache()
 			->getLinks( 'redirect', false, false, $wgCirrusSearchIndexedRedirects );
 		$redirects = [];
+		/** @var Title $redirect */
 		foreach ( $redirectTitles as $redirect ) {
 			// If the redirect is in main OR the same namespace as the article the index it
 			if ( $redirect->getNamespace() === NS_MAIN || $redirect->getNamespace() === $title->getNamespace()) {

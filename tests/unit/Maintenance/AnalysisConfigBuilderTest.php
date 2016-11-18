@@ -1,4 +1,5 @@
 <?php
+
 namespace CirrusSearch\Tests\Maintenance;
 
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;

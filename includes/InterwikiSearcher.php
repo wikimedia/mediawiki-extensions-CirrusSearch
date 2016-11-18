@@ -4,9 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\InterwikiResultsType;
 use CirrusSearch\Search\ResultSet;
-use ObjectCache;
 use SpecialPageFactory;
-use Title;
 use User;
 
 /**
@@ -32,11 +30,6 @@ class InterwikiSearcher extends Searcher {
 	 * @var int Max number of results to fetch from other wiki
 	 */
 	const MAX_RESULTS = 5;
-
-	/**
-	 * @var string interwiki prefix
-	 */
-	private $interwiki;
 
 	/**
 	 * @var bool Is the interwiki load test configured?

@@ -2,9 +2,9 @@
 
 namespace CirrusSearch;
 
-use \CachedBagOStuff;
 use \ObjectCache;
 use \SiteMatrix;
+use MediaWiki\MediaWikiServices;
 
 /**
  * InterwikiResolver suited for WMF context and uses SiteMatrix.
@@ -15,7 +15,6 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 
 	private $config;
 	private $cache;
-	private $matrix;
 
 	/**
 	 * @param SearchConfig $config
@@ -74,9 +73,9 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			global $wgConf;
 
 			$matrix = new \SiteMatrix;
-			$iwLookup = \MediaWiki\MediaWikiServices::getInstance()->getInterwikiLookup();
+			$iwLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
 			$wikiDBname = $this->config->get( 'DBname' );
-			list( $_, $myLang ) = $wgConf->siteFromDB( $wikiDBname );
+			list( , $myLang ) = $wgConf->siteFromDB( $wikiDBname );
 			$siteConf = $this->config->get( 'SiteMatrixSites' );
 			$sisterProjects = [];
 			$crossLanguage = [];

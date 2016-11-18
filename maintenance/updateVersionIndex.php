@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\Maintenance\Metastore;
 use CirrusSearch\SearchConfig;
 
 /**

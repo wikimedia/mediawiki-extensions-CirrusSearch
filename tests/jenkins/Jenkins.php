@@ -1,4 +1,5 @@
 <?php
+
 namespace CirrusSearch\Jenkins;
 
 use DatabaseUpdater;

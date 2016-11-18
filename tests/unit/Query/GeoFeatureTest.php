@@ -91,7 +91,7 @@ class GeoFeatureTest extends CirrusTestCase {
 	public function testParseDistance( $expected, $distance ) {
 		if ( class_exists( Coord::class ) ) {
 			$feature = new GeoFeature();
-			$this->assertEquals( $expected, $feature->parseDistance( $distance, 5000 ) );
+			$this->assertEquals( $expected, $feature->parseDistance( $distance ) );
 		} else {
 			$this->markTestSkipped( 'GeoData extension must be installed' );
 		}

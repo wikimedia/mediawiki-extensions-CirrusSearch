@@ -24,7 +24,8 @@ use Psr\Log\AbstractLogger;
  */
 class RequestLoggerTest extends CirrusTestCase {
 	public function requestLoggingProvider() {
-		$test = [];
+		$tests = [];
+
 		foreach ( glob( __DIR__ . "/fixtures/requestLogging/*.request" ) as $requestFile ) {
 			$testBase = substr( $requestFile, 0, -8 );
 			$testName = basename( $testBase );

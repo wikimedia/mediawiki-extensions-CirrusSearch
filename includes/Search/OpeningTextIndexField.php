@@ -1,7 +1,6 @@
 <?php
-namespace CirrusSearch\Search;
 
-use CirrusSearch\Search\TextIndexField;
+namespace CirrusSearch\Search;
 
 /**
  * Simple TextIndexField subclass useful to customize COPY_TO_SUGGEST

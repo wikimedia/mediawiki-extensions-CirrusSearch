@@ -1,4 +1,5 @@
 <?php
+
 namespace CirrusSearch\Search;
 
 use SearchEngine;

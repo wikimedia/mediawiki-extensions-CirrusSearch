@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
-use CirrusSearch\Maintenance\Metastore;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica;

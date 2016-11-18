@@ -162,7 +162,7 @@ class UtilTest extends CirrusTestCase {
 			'wgMainCacheType' => 'UtilTest',
 			'wgObjectCaches' => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ]
 		] );
-		$services = \MediaWiki\MediaWikiServices::getInstance();
+		$services = MediaWikiServices::getInstance();
 		if ( method_exists( $services, 'getLocalClusterObjectCache' ) ) {
 			$services->resetServiceForTesting( 'LocalClusterObjectCache' );
 			$services->redefineService( 'LocalClusterObjectCache', function () {

@@ -14,7 +14,6 @@ use MediaWiki\MediaWikiServices;
 use ObjectCache;
 use SearchResultSet;
 use Status;
-use Title;
 use ApiUsageException;
 use UsageException;
 use User;

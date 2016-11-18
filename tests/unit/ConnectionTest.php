@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Test\HashSearchConfig;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Make sure cirrus doens't break any hooks.

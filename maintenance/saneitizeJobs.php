@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Job\CheckerJob;
-use CirrusSearch\Maintenance\Maintenance;
+
 use JobQueueGroup;
 
 /**
@@ -49,11 +49,6 @@ class SaneitizeJobs extends Maintenance {
 	 * @var int max page id (from db)
 	 */
 	private $maxId;
-
-	/**
-	 * @var SearchConfig
-	 */
-	private $config;
 
 	/**
 	 * @var string profile name

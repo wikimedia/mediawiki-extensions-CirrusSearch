@@ -1,4 +1,5 @@
 <?php
+
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;

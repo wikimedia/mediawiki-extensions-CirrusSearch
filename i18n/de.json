@@ -36,8 +36,8 @@
 	"cirrussearch-completion-profile-classic": "Klassisches Präfix, wenige Satzzeichen und einige entfernte diakritische Zeichen.",
 	"cirrussearch-completion-profile-normal": "Wenige Satzzeichen, einige diakritische Zeichen und Stoppwörter werden entfernt.",
 	"cirrussearch-completion-profile-normal-subphrases": "Wenige Satzzeichen, einige diakritische Zeichen und Stoppwörter wurden entfernt. Es wird auch mit Subphrasen übereinstimmen (können Subphrasen oder Unterseiten sein, abhängig von der internen Wikikonfiguration).",
-	"cirrussearch-completion-profile-fuzzy": "Ähnlich dem normalen Profil mit Korrektur von Tippfehlern (zwei Tippfehler werden unterstützt).",
-	"cirrussearch-completion-profile-fuzzy-subphrases": "Ähnlich wie die normale Korrektur von Tippfehlern (zwei Tippfehler werden unterstützt). Es wird auch mit Subphrasen übereinstimmen (können Subphrasen oder Unterseiten sein, abhängig von der internen Wikikonfiguration).",
+	"cirrussearch-completion-profile-fuzzy": "Bis zu zwei Tippfehler werden korrigiert.",
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Bis zu zwei Tippfehler werden korrigiert. Berücksichtigt dem ersten Wort im Seitennamen folgende Ausdrücke und ggf. Unterseiten.",
 	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der eingehenden Links, einige Vorlagen, Artikelsprache und Neuheit (Vorlagen/Sprache/Neuheit könnten nicht auf diesem Wiki aktiviert sein).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einige Vorlagen, Artikelsprache und Neuheit, falls auf diesem Wiki aktiviert.",
 	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung).",
@@ -54,9 +54,9 @@
 	"cirrussearch-completion-profile-normal-pref-name": "Weiterleitungsmodus (erweitert)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Tippfehler werden nicht korrigiert. Berücksichtigt ähnliche Weiterleitungen.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Weiterleitungsmodus mit Subphrasentreffern (erweitert)",
-	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Keine Korrektur von Tippfehlern. Löst nahe Weiterleitungen auf. Entspricht Subphrasen in Seitennamen.",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Tippfehler werden nicht korrigiert. Berücksichtigt ähnliche Weiterleitungen sowie dem ersten Wort im Seitennamen folgende Ausdrücke.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Suchvorschläge (einfacher Algorithmus)",
 	"cirrussearch-pref-completion-legacy-section-legend": "Dieser Algorithmus zur Anzeige von Suchvorschlägen mit Autovervollständigung bietet keine Verbesserungen bei Tippfehlern und der Suchrelevanz.",
 	"cirrussearch-completion-profile-classic-pref-name": "Präfixsuchmodus",
-	"cirrussearch-completion-profile-classic-pref-desc": "Keine Korrektur von Tippfehlern. Entspricht den Anfängen von Seitennamen."
+	"cirrussearch-completion-profile-classic-pref-desc": "Tippfehler werden nicht korrigiert. Entsprechen den Anfangsbuchstaben der Seitennamen."
 }

@@ -34,5 +34,7 @@
 	"cirrussearch-query-too-long": "La solicitud de búsqueda es más larga que la longitud máxima permitida. ($1 > $2)",
 	"prefs-completion": "Compleción de búsquedas",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predeterminado (recomendado)",
-	"cirrussearch-completion-profile-strict-pref-name": "Modo estricto (avanzado)"
+	"cirrussearch-completion-profile-strict-pref-name": "Modo estricto (avanzado)",
+	"cirrussearch-completion-profile-normal-pref-name": "Modo de redirección (avanzado)",
+	"cirrussearch-pref-completion-legacy-section-desc": "Búsqueda por prefijos"
 }

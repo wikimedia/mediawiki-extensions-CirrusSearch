@@ -1,15 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Minh Nguyen"
+			"Minh Nguyen",
+			"Quenhitran"
 		]
 	},
 	"cirrussearch-desc": "Công cụ tìm kiếm Elasticsearch dành cho MediaWiki",
 	"cirrussearch-backend-error": "Không thể hoàn tất truy vấn của bạn vì một vấn đề tạm thời. Xin vui lòng thử lại sau.",
 	"cirrussearch-parse-error": "Không hiểu rõ truy vấn. Xin hãy làm nó đơn giản hơn. Truy vấn này được ghi vào nhật trình để giúp cải thiện công cụ tìm kiếm.",
 	"cirrussearch-too-busy-error": "Công cụ tìm kiếm đang quá bận rộn. Xin vui lòng thử lại sau.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Bạn đang chạy quá nhiều truy vấn cùng lúc. Nếu bạn đang dùng chung một địa chỉ IP với người khác, đăng nhập để được giới hạn riêng.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Bạn đang chạy quá nhiều truy vấn cùng lúc.",
 	"cirrussearch-regex-syntax-error": "Lỗi cú pháp biểu thức chính quy tại vị trí $2: $1",
 	"cirrussearch-regex-too-busy-error": "Quá nhiều truy vấn biểu thức chính quy đang được thực hiện. Xin vui lòng thử lại sau.",
 	"cirrussearch-regex-too-complex-error": "Biểu thức chính quy này quá phức tạp. Tìm hiểu cách làm nó đơn giản hơn [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|tại đây]].",
@@ -24,5 +23,8 @@
 	"cirrussearch-give-feedback": "Hãy gửi cho chúng tôi nhận xét của bạn",
 	"cirrussearch-query-too-long": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Trình gợi ý tìm kiếm",
-	"cirrussearch-completionsuggester-desc": "Tính năng tìm kiếm trực tiếp mới. Khi được kích hoạt, hộp tìm kiếm ở góc phải bên trên sẽ sử dụng Trình gợi ý tìm kiếm."
+	"cirrussearch-completionsuggester-desc": "Tính năng tìm kiếm trực tiếp mới. Khi được kích hoạt, hộp tìm kiếm ở góc phải bên trên sẽ sử dụng Trình gợi ý tìm kiếm.",
+	"prefs-completion": "Hoàn tất từ khoá tìm kiếm",
+	"cirrussearch-pref-completion-section-desc": "Gợi ý hoàn tất tìm kiếm",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Mặc định (khuyên dùng)"
 }

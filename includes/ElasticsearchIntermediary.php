@@ -199,7 +199,7 @@ abstract class ElasticsearchIntermediary {
 		$log = $this->finishRequest();
 		$context = $log->getLogVariables();
 		list( $status, $message ) = ElasticaErrorHandler::extractMessageAndStatus( $exception );
-		$context['message'] = $message;
+		$context['error_message'] = $message;
 
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$type = ElasticaErrorHandler::classifyError( $exception );
@@ -207,7 +207,7 @@ abstract class ElasticsearchIntermediary {
 		$stats->increment( "CirrusSearch.$clusterName.backend_failure.$type" );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-			"Search backend error during {$log->getDescription()} after {tookMs}: {message}",
+			"Search backend error during {$log->getDescription()} after {tookMs}: {error_message}",
 			$context
 		);
 		return $status;

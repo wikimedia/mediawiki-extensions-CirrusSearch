@@ -389,9 +389,9 @@ class Reindexer {
 			$type = get_class( $e );
 			$error = ElasticaErrorHandler::extractFullError( $e );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Search backend error during reindex.  Error type is '{type}' ({error_type}) and message is:  {error_reason}",
+				"Search backend error during reindex.  Error type is '{exception_type}' ({error_type}) and message is:  {error_reason}",
 				[
-					'type' => $type,
+					'exception_type' => $type,
 					'error_type' => $error['type'],
 					'error_reason' => $error['reason'],
 				]
@@ -401,9 +401,9 @@ class Reindexer {
 		} catch( \Exception $e ) {
 			$this->outputIndented( $messagePrefix . "Error during reindex: " . $e->getMessage() . "\n" );
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Error during reindex: {message}",
+				"Error during reindex: {error_message}",
 				[
-					'message' => $e->getMessage(),
+					'error_message' => $e->getMessage(),
 					'exception' => $e,
 				]
 			);

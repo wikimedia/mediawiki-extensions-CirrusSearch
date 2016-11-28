@@ -22,10 +22,10 @@ class LanguageFeature extends SimpleKeywordFeature {
 	const QUERY_LIMIT = 20;
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'inlanguage';
+	protected function getKeywords() {
+		return ['inlanguage'];
 	}
 
 	/**

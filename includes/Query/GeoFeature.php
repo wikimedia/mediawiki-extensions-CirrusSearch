@@ -37,10 +37,10 @@ class GeoFeature extends SimpleKeywordFeature {
 	const DEFAULT_GLOBE = 'earth';
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return '(boost-)?near(coord|title)';
+	protected function getKeywords() {
+		return ['boost-nearcoord', 'boost-neartitle', 'nearcoord', 'neartitle'];
 	}
 
 	/**

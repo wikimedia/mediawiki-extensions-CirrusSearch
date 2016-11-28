@@ -13,10 +13,10 @@ use \Elastica\Query;
  */
 class FileTypeFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'file(type|mime)';
+	protected function getKeywords() {
+		return ['filetype','filemime'];
 	}
 
 	/**

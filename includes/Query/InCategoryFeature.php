@@ -37,10 +37,10 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	}
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'incategory';
+	protected function getKeywords() {
+		return ['incategory'];
 	}
 
 	/**

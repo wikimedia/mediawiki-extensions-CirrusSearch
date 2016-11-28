@@ -12,11 +12,9 @@ use CirrusSearch\Search\SearchContext;
  */
 abstract class SimpleKeywordFeature implements KeywordFeature {
 	/**
-	 * @return string A piece of a regular expression (not wrapped in //) that
-	 * matches the key to trigger this feature. Does not include the negation
-	 * (-) prefix.
+	 * @return string[] The list of keywords this feature is supposed to match
 	 */
-	abstract protected function getKeywordRegex();
+	abstract protected function getKeywords();
 
 	/**
 	 * Captures either a quoted or unquoted string. Quoted strings may have
@@ -53,7 +51,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * @return string Remaining search query
 	 */
 	public function apply( SearchContext $context, $term ) {
-		$keywordRegex = '(?<key>-?' . $this->getKeywordRegex() . ')';
+		$keyListRegex = implode(
+			'|',
+			array_map(
+				function( $kw ) { return preg_quote( $kw ); },
+				$this->getKeywords()
+			)
+		);
+		$keywordRegex = '(?<key>-?' . $keyListRegex . ')';
 		$valueRegex = '(?<value>' . $this->getValueRegex() . ')';
 
 		return QueryHelper::extractSpecialSyntaxFromTerm(

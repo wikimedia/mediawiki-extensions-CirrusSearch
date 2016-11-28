@@ -15,10 +15,10 @@ use CirrusSearch\Search\SearchContext;
  */
 class LinksToFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'linksto';
+	protected function getKeywords() {
+		return ['linksto'];
 	}
 
 	/**

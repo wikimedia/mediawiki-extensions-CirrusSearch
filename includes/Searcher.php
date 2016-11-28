@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
@@ -93,11 +92,6 @@ class Searcher extends ElasticsearchIntermediary {
 	protected $indexBaseName;
 
 	/**
-	 * @var Escaper escapes queries
-	 */
-	private $escaper;
-
-	/**
 	 * @var boolean just return the array that makes up the query instead of searching
 	 */
 	private $returnQuery = false;
@@ -146,7 +140,6 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->language = $config->get( 'ContLang' );
-		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
 	}
 
@@ -302,7 +295,6 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$qb = new $builderSettings['builder_class'](
 			$this->config,
-			$this->escaper,
 			[
 				// Handle morelike keyword (greedy). This needs to be the
 				// very first item until combining with other queries
@@ -327,9 +319,9 @@ class Searcher extends ElasticsearchIntermediary {
 				// Handle incategory keyword
 				new Query\InCategoryFeature( $this->config ),
 				// Handle non-regex insource keyword
-				new Query\SimpleInSourceFeature( $this->escaper ),
+				new Query\SimpleInSourceFeature(),
 				// Handle intitle keyword
-				new Query\InTitleFeature( $this->escaper ),
+				new Query\InTitleFeature(),
 				// inlanguage keyword
 				new Query\LanguageFeature(),
 				// File types

@@ -165,14 +165,19 @@ class SearchContext {
 	private $limitSearchToLocalWiki = false;
 
 	/**
-	 * @param int The number of seconds to cache results for
+	 * @var int The number of seconds to cache results for
 	 */
 	private $cacheTtl = 0;
 
 	/**
-	 * @param string The original search
+	 * @var string The original search
 	 */
 	private $originalSearchTerm;
+
+	/**
+	 * @var Escaper $escaper
+	 */
+	private $escaper;
 
 	/**
 	 * @param SearchConfig $config
@@ -190,6 +195,7 @@ class SearchContext {
 			$this->preferRecentDecayPortion = $decay;
 			$this->preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
 		}
+		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
 	public function __clone() {
@@ -665,5 +671,12 @@ class SearchContext {
 	 */
 	public function setOriginalSearchTerm( $term ) {
 		$this->originalSearchTerm = $term;
+	}
+
+	/**
+	 * @return Escaper
+	 */
+	public function escaper() {
+		return $this->escaper;
 	}
 }

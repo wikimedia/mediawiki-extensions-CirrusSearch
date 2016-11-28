@@ -40,6 +40,7 @@ $wgExtensionCredits['other'][] = [
 
 /**
  * Configuration
+ * Please update docs/settings.txt if you add new values!
  */
 
 // Default cluster for read operations. This is an array key
@@ -1171,6 +1172,10 @@ $wgCirrusSearchFieldTypes = [
 $wgCirrusSearchFieldTypeOverrides = [
 	'opening_text' => \CirrusSearch\Search\OpeningTextIndexField::class,
 ];
+
+/*
+ * Please update docs/settings.txt if you add new values!
+ */
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

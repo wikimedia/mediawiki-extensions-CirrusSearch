@@ -24,10 +24,10 @@ use CirrusSearch\Search\SearchContext;
  */
 class InTitleFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'intitle';
+	protected function getKeywords() {
+		return ['intitle'];
 	}
 
 	/**

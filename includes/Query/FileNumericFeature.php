@@ -14,10 +14,10 @@ use \Elastica\Query;
  */
 class FileNumericFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'file(size|bits|h|w|height|width|res)';
+	protected function getKeywords() {
+		return ['filesize', 'filebits', 'fileh', 'filew', 'fileheight', 'filewidth', 'fileres'];
 	}
 
 	/**

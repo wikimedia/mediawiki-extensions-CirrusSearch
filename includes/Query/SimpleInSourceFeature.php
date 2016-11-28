@@ -23,10 +23,10 @@ use CirrusSearch\Search\SearchContext;
  */
 class SimpleInSourceFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'insource';
+	protected function getKeywords() {
+		return ['insource'];
 	}
 
 	/**

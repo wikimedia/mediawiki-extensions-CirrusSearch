@@ -181,8 +181,8 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 class MockSimpleKeywordFeature extends SimpleKeywordFeature {
 	private $calls = [];
 
-	protected function getKeywordRegex() {
-		return 'mock';
+	protected function getKeywords() {
+		return ['mock'];
 	}
 
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {

@@ -18,10 +18,10 @@ use CirrusSearch\Search\SearchContext;
  */
 class BoostTemplatesFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'boost-templates';
+	protected function getKeywords() {
+		return ['boost-templates'];
 	}
 
 	/**

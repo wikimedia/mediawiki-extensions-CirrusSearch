@@ -12,10 +12,10 @@ use Title;
  */
 class HasTemplateFeature extends SimpleKeywordFeature {
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	protected function getKeywordRegex() {
-		return 'hastemplate';
+	protected function getKeywords() {
+		return ['hastemplate'];
 	}
 
 	/**

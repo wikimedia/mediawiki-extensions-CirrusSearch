@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\SearchConfig;
 
 /**
  * Providers helper for writing tests of classes extending from
@@ -26,6 +27,7 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 					return true;
 				} ) );
 		}
+		$context->expects( $this->any() )->method( 'getConfig' )->willReturn( new SearchConfig() );
 
 		return $context;
 	}

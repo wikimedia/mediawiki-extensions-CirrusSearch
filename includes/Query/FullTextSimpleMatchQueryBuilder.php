@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 
@@ -50,8 +49,8 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 */
 	private $dismaxSettings;
 
-	public function __construct( SearchConfig $config, Escaper $escaper, array $feature, array $settings ) {
-		parent::__construct( $config, $escaper, $feature );
+	public function __construct( SearchConfig $config, array $feature, array $settings ) {
+		parent::__construct( $config, $feature );
 		$this->fields = $settings['fields'];
 		$this->phraseFields = $settings['phrase_rescore_fields'];
 		$this->defaultStemWeight = $settings['default_stem_weight'];

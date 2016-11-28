@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 
@@ -23,16 +22,6 @@ use CirrusSearch\Search\SearchContext;
  *   insource:"foo OR bar"
  */
 class SimpleInSourceFeature extends SimpleKeywordFeature {
-
-	/**
-	 * @var Escaper
-	 */
-	private $escaper;
-
-	public function __construct( Escaper $escaper ) {
-		$this->escaper = $escaper;
-	}
-
 	/**
 	 * @return string
 	 */
@@ -52,7 +41,7 @@ class SimpleInSourceFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::insource( $this->escaper, $context, $quotedValue );
+		$filter = Filters::insource( $context->escaper(), $context, $quotedValue );
 		$context->addHighlightSource( [ 'query' => $filter ] );
 
 		return [ $filter, false ];

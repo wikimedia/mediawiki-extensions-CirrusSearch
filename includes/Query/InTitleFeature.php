@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 
@@ -24,16 +23,6 @@ use CirrusSearch\Search\SearchContext;
  *   intitle:"foo OR bar"
  */
 class InTitleFeature extends SimpleKeywordFeature {
-
-	/**
-	 * @var Escaper
-	 */
-	private $escaper;
-
-	public function __construct( Escaper $escaper ) {
-		$this->escaper = $escaper;
-	}
-
 	/**
 	 * @return string
 	 */
@@ -53,7 +42,7 @@ class InTitleFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::intitle( $this->escaper, $context, $quotedValue );
+		$filter = Filters::intitle( $context->escaper(), $context, $quotedValue );
 
 		return [ $filter, !$negated ];
 	}

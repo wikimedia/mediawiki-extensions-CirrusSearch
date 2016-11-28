@@ -5,7 +5,6 @@ namespace CirrusSearch\Query;
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -20,11 +19,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	protected $config;
 
 	/**
-	 * @var Escaper
-	 */
-	private $escaper;
-
-	/**
 	 * @var KeywordFeature[]
 	 */
 	private $features;
@@ -36,13 +30,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 	/**
 	 * @param SearchConfig $config
-	 * @param Escaper $escaper
 	 * @param KeywordFeature[] $features
 	 * @param array[] $settings currently ignored
 	 */
-	public function __construct( SearchConfig $config, Escaper $escaper, array $features, array $settings = [] ) {
+	public function __construct( SearchConfig $config, array $features, array $settings = [] ) {
 		$this->config = $config;
-		$this->escaper = $escaper;
 		$this->features = $features;
 	}
 
@@ -67,7 +59,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			return;
 		}
 
-		$term = $this->escaper->escapeQuotes( $term );
+		$term = $searchContext->escaper()->escapeQuotes( $term );
 		$term = trim( $term );
 
 		// Match quoted phrases including those containing escaped quotes.
@@ -83,7 +75,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			"/$matchQuotesRegex/",
 			function ( $matches ) use ( $searchContext, $slop ) {
 				$negate = $matches[ 'negate' ][ 0 ] ? 'NOT ' : '';
-				$main = $this->escaper->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
+				$main = $searchContext->escaper()->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
@@ -119,7 +111,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// in prefix queries.
 		$query = self::replaceAllPartsOfQuery( $query, '/\w+\*(?:\w*\*?)*/u',
 			function ( $matches ) use ( $searchContext ) {
-				$term = $this->escaper->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
+				$term = $searchContext->escaper()->fixupQueryStringPart( $matches[ 0 ][ 0 ] );
 				return [
 					'escaped' => self::switchSearchToExactForWildcards( $searchContext, $term ),
 					'nonAll' => self::switchSearchToExactForWildcards( $searchContext, $term )
@@ -140,7 +132,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				continue;
 			}
 			if ( isset( $queryPart[ 'raw' ] ) ) {
-				$fixed = $this->escaper->fixupQueryStringPart( $queryPart[ 'raw' ] );
+				$fixed = $searchContext->escaper()->fixupQueryStringPart( $queryPart[ 'raw' ] );
 				$escapedQuery[] = $fixed;
 				$nonAllQuery[] = $fixed;
 				$nearMatchQuery[] = $queryPart[ 'raw' ];
@@ -154,7 +146,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		// Actual text query
 		list( $this->queryStringQueryString, $fuzzyQuery ) =
-			$this->escaper->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
+			$searchContext->escaper()->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 		$searchContext->setFuzzyQuery( $fuzzyQuery );
 
 		if ( $this->queryStringQueryString === '' ) {
@@ -205,7 +197,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$nonAllFields = array_merge(
 				self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
 				self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-			list( $nonAllQueryString, /*_*/ ) = $this->escaper->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+			list( $nonAllQueryString, /*_*/ ) = $searchContext->escaper()->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 			$searchContext->setHighlightQuery(
 				$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
 			);

@@ -34,6 +34,11 @@ class FileTypeFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		if ( $key == 'filetype' ) {
+			if ( ( $aliases = $context->getConfig()->get( 'CirrusSearchFiletypeAliases' ) ) ) {
+				if ( isset( $aliases[$value] ) ) {
+					$value = $aliases[$value];
+				}
+			}
 			$query = new Query\Match( 'file_media_type', [ 'query' => $value ] );
 		} else {
 			if ($value !== $quotedValue ) {

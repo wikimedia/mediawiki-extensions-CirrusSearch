@@ -1025,6 +1025,17 @@ $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
  */
 $wgCirrusSearchDevelOptions = [];
 
+/**
+ * Aliases for file types in filtype: search.
+ * Example:
+ * $wgCirrusSearchFiletypeAliases = [
+ *  'jpg' => 'bitmap',
+ *  'image' => 'bitmap',
+ *  'document' => 'office',
+ * ];
+ */
+$wgCirrusSearchFiletypeAliases = [];
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

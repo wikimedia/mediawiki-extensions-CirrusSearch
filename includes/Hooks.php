@@ -430,32 +430,6 @@ class Hooks {
 	}
 
 	/**
-	 * Called to prepend text before search results and inject metrics
-	 * @param SpecialSearch $specialSearch The SpecialPage object for Special:Search
-	 * @param OutputPage $out The output page object
-	 * @param string $term The term being searched for
-	 * @return bool
-	 */
-	public static function onSpecialSearchResultsPrepend( $specialSearch, $out, $term ) {
-		global $wgCirrusSearchShowNowUsing;
-
-		// Prepend our message if needed
-		if ( $wgCirrusSearchShowNowUsing ) {
-			$out->addHTML( Xml::openElement( 'div', [ 'class' => 'cirrussearch-now-using' ] ) .
-				$specialSearch->msg( 'cirrussearch-now-using' )->parse() .
-				Xml::closeElement( 'div' ) );
-		}
-
-		// Embed metrics if this was a Cirrus page
-		$engine = $specialSearch->getSearchEngine();
-		if ( $engine instanceof CirrusSearch ) {
-			$out->addJsConfigVars( $engine->getLastSearchMetrics() );
-		}
-
-		return true;
-	}
-
-	/**
 	 * @param SpecialSearch $specialSearch
 	 * @param OutputPage $out
 	 * @param string $term
@@ -466,6 +440,12 @@ class Hooks {
 
 		if ( $wgCirrusSearchFeedbackLink ) {
 			self::addSearchFeedbackLink( $wgCirrusSearchFeedbackLink, $specialSearch, $out );
+		}
+
+		// Embed metrics if this was a Cirrus page
+		$engine = $specialSearch->getSearchEngine();
+		if ( $engine instanceof CirrusSearch ) {
+			$out->addJsConfigVars( $engine->getLastSearchMetrics() );
 		}
 		return true;
 	}

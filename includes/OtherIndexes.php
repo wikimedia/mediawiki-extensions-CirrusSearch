@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\Logger\LoggerFactory;
+use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Title;
 
 /**
@@ -84,7 +85,7 @@ class OtherIndexes extends Updater {
 		$updates = [];
 
 		// Build multisearch to find ids to update
-		$findIdsMultiSearch = new \Elastica\Multi\Search( $this->connection->getClient() );
+		$findIdsMultiSearch = new MultiSearch( $this->connection->getClient() );
 		$findIdsClosures = [];
 		foreach ( $titles as $title ) {
 			foreach ( OtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {

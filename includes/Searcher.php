@@ -7,6 +7,7 @@ use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Query\FullTextQueryBuilder;
+use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -643,7 +644,7 @@ class Searcher extends ElasticsearchIntermediary {
 		// Similar to indexing support only the bulk code path, rather than
 		// single and bulk. The extra overhead should be minimal, and the
 		// reduced complexity is welcomed.
-		$search = new \Elastica\Multi\Search( $this->connection->getClient() );
+		$search = new MultiSearch( $this->connection->getClient() );
 		$search->addSearches( $searches );
 
 		$this->connection->setTimeout( $this->getTimeout() );

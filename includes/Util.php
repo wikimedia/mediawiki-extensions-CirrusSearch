@@ -393,7 +393,7 @@ class Util {
 				$term = preg_replace( '/(?<!\\\\)(\?)+(\PL|$)/', '$2', $term );
 				$term = preg_replace( '/\\\\\?/', '?', $term );
 			} elseif ( $strippingLevel === 'all' ) {
-				//strip all unescapred question marks
+				//strip all unescaped question marks
 				$term = preg_replace( '/(?<!\\\\)(\?)+/', ' ', $term );
 				$term = preg_replace( '/\\\\\?/', '?', $term );
 			}

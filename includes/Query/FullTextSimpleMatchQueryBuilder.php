@@ -62,7 +62,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	/**
 	 * Build the primary query used for full text search.
 	 * If query_string syntax is not used the experimental query is built.
-	 * We fallback to parent implementation otherwize.
+	 * We fallback to parent implementation otherwise.
 	 *
 	 * @param SearchContext $context
 	 * @param string[] $fields
@@ -99,7 +99,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 * Tries to track queries that would need the auto_generate_phrase
 	 * from query string.
 	 * We don't try to mimic all the behaviors of the lucene tokenizers
-	 * but to detect the words we break explicitely with the wordbreaker.
+	 * but to detect the words we break explicitly with the wordbreaker.
 	 * This includes mainly search for acronyms.
 	 * Other chars may require a phrase query like hyphens...
 	 *

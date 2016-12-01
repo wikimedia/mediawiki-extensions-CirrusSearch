@@ -354,17 +354,17 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
 
-		$result = $this->searchOne();
-		if ( !$result->isOK() && ElasticaErrorHandler::isParseError( $result ) ) {
+		$status = $this->searchOne();
+		if ( !$status->isOK() && ElasticaErrorHandler::isParseError( $status ) ) {
 			if ( $qb->buildDegraded( $this->searchContext ) ) {
 				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
 				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
 				// the parse errors that come in.
-				$result = $this->searchOne();
+				$status = $this->searchOne();
 			}
 		}
 
-		return $result;
+		return $status;
 	}
 
 	/**
@@ -778,7 +778,10 @@ class Searcher extends ElasticsearchIntermediary {
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
 			);
-			$status->warning( 'cirrussearch-timed-out' );
+			$status->warning( $this->searchContext->getSearchType() === 'regex'
+				? 'cirrussearch-regex-timed-out'
+				: 'cirrussearch-timed-out'
+			);
 		}
 
 		$status->setResult( true, $retval );

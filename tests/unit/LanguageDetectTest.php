@@ -93,10 +93,10 @@ class LanguageDetectTest extends CirrusTestCase {
 		$cirrus = new MyCirrusSearch();
 		$cirrus->setNamespaces( [NS_FILE] );
 		$cirrus->setDumpAndDie( false );
-		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true );
+		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true )->getValue();
 		$result = json_decode( $result, true );
 		$this->assertEquals( 'mywiki_general/page/_search', $result['path'] );
-		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig() );
+		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig() )->getValue();
 		$result = json_decode( $result, true );
 		$this->assertEquals( 'mywiki_general,externalwiki_file/page/_search', $result['path'] );
 	}

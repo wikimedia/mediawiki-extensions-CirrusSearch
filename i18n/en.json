@@ -53,5 +53,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Prefix search",
 	"cirrussearch-pref-completion-legacy-section-legend": "The legacy search-as-you-type suggestion algorithm.",
 	"cirrussearch-completion-profile-classic-pref-name": "Classic prefix search",
-	"cirrussearch-completion-profile-classic-pref-desc": "No typo correction. Matches the beginning of titles."
+	"cirrussearch-completion-profile-classic-pref-desc": "No typo correction. Matches the beginning of titles.",
+	"cirrussearch-timed-out": "The search timed out, only partial results are available.",
+	"cirrussearch-regex-timed-out": "The regex search timed out, only partial results are available. Try simplifying your regular expression to get complete results."
 }

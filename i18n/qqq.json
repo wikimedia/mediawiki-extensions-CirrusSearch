@@ -62,5 +62,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Name of the subsection Prefix search in the user preferences",
 	"cirrussearch-pref-completion-legacy-section-legend": "Legend of the subsection Prefix search in the user preferences.",
 	"cirrussearch-completion-profile-classic-pref-name": "Name of the completion profile classic.",
-	"cirrussearch-completion-profile-classic-pref-desc": "Description of the completion profile classic."
+	"cirrussearch-completion-profile-classic-pref-desc": "Description of the completion profile classic.",
+	"cirrussearch-timed-out": "Message displayed to user when the search query gave up due to timeout before completing.",
+	"cirrussearch-regex-timed-out": "Message displayed to user when the regex search query gave up due to timeout before completing."
 }

@@ -68,5 +68,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "前缀搜索",
 	"cirrussearch-pref-completion-legacy-section-legend": "传统随打即搜建议算法。",
 	"cirrussearch-completion-profile-classic-pref-name": "传统前缀搜索",
-	"cirrussearch-completion-profile-classic-pref-desc": "无错别字纠正。匹配标题开头。"
+	"cirrussearch-completion-profile-classic-pref-desc": "无错别字纠正。匹配标题开头。",
+	"cirrussearch-timed-out": "搜索超时，只找到部分结果。",
+	"cirrussearch-regex-timed-out": "正则表达式搜索超时，只找到部分结果。请尝试简化您的正则表达式以获取完整搜索结果。"
 }

@@ -5,15 +5,14 @@
 			"Ebraminio",
 			"Alirezaaa",
 			"فلورانس",
-			"Reza1615"
+			"Reza1615",
+			"Huji"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
 	"cirrussearch-backend-error": "ما نمی‌توانیم جستجویتان به دلیل یک مشکل موقت کامل کنیم. لطفاً بعداً دوباره تلاش کنید.",
 	"cirrussearch-parse-error": "پرسش درک نشد. لطفاً آن را ساده‌تر کنید. پرسش برای جستجوی سامانه وارد شد.",
 	"cirrussearch-too-busy-error": "جستجو در حال حاضر بیش از حد شلوغ است. لطفاً بعداً مجدداً تلاش کنید.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "شما به میزان زیادی درخواست جستجو دادید. در صورتی که از آی‌پی مشترک استفاده می‌کنید با ورود به سامانه می‌توانید از سهمیهٔ خودتان استفاده کنید.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "شما به میزان زیادی درخواست جستجو دادید.",
 	"cirrussearch-regex-syntax-error": "خطای نحوی عبارت منظم $2: $1",
 	"cirrussearch-regex-too-busy-error": "عبارت باقاعده‌های رسادی در حال حاضر در اجرا هستند. لطفاً بعداً مجدداً تلاش کنید.",
 	"cirrussearch-regex-too-complex-error": "عبارت باقاعده پیچیده است. برای ساده‌سازی عبارات باقاعده [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|اینجا]] را مطالعه کنید.",
@@ -33,5 +32,6 @@
 	"cirrussearch-didyoumean-settings": "  #<!-- این بخش را دقیقا به همین صورت رها کنید --> <pre>\n# This message lets you configure the settings of the \"Did you mean\" suggestions.\n# See also https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-phrase.html\n# Changes to this take effect immediately.\n# The syntax is as follows:\n#   * Everything from a \"#\" character to the end of the line is a comment.\n#   * Every non-blank line is the setting name followed by a \":\" character followed by the setting value\n# The settings are :\n#   * max_errors (integer): the maximum number of terms that will be considered misspelled in order to be corrected. 1 or 2.\n#   * confidence (float): The confidence level defines a factor applied to the input phrases score which is used as a threshold for other suggestion candidates. Only candidates that score higher than the threshold will be included in the result. For instance a confidence level of 1.0 will only return suggestions that score higher than the input phrase. If set to 0.0 the best candidate are returned.\n#   * min_doc_freq (float 0 to 1): The minimal threshold in number of documents a suggestion should appear in.\n#                   High frequency terms are generally \"stop words\".\n#   * max_term_freq (float 0 to 1): The maximum threshold in number of documents in which a term can exist in order to be included.\n#   * prefix_length (integer): The minimal number of prefix characters that must match a term in order to be a suggestion.\n#   * suggest_mode (missing, popular, always): The suggest mode controls the way suggestions are included.\n# Examples of good lines:\n# max_errors:2\n# confidence:2.0\n# max_term_freq:0.5\n# min_doc_freq:0.01\n# prefix_length:2\n# suggest_mode:always\n#\n# </pre> <!-- این بخش را دقیقا به همین صورت رها کنید -->",
 	"cirrussearch-query-too-long": "درخواست جستجو بلندتر از میزان حداکثر طول است. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "پیشنهاددهندهٔ پایان",
-	"cirrussearch-completionsuggester-desc": "الگوریتم جدیدی برای جستجو. با فعال کردن این ابزار پیشنهاد دهندهٔ پایان در پنجرهٔ جستجو در سمت چپ و بالای صفحه فعال می‌شود."
+	"cirrussearch-completionsuggester-desc": "الگوریتم جدیدی برای جستجو. با فعال کردن این ابزار پیشنهاد دهندهٔ پایان در پنجرهٔ جستجو در سمت چپ و بالای صفحه فعال می‌شود.",
+	"cirrussearch-regex-timed-out": "زمان جستجوی عبارات باقاعده به پایان رسید، تنها بخشی از نتایج موجود است. برای گرفتن نتایج کامل از عبارات باقاعدهٔ ساده‌ترین استفاده کنید"
 }

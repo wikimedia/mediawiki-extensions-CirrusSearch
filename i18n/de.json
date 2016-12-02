@@ -58,5 +58,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Suchvorschläge (einfacher Algorithmus)",
 	"cirrussearch-pref-completion-legacy-section-legend": "Dieser Algorithmus zur Anzeige von Suchvorschlägen mit Autovervollständigung bietet keine Verbesserungen bei Tippfehlern und der Suchrelevanz.",
 	"cirrussearch-completion-profile-classic-pref-name": "Präfixsuchmodus",
-	"cirrussearch-completion-profile-classic-pref-desc": "Tippfehler werden nicht korrigiert. Entsprechen den Anfangsbuchstaben der Seitennamen."
+	"cirrussearch-completion-profile-classic-pref-desc": "Tippfehler werden nicht korrigiert. Entsprechen den Anfangsbuchstaben der Seitennamen.",
+	"cirrussearch-timed-out": "Zeitüberschreitung bei der Suche, die Ergebnisse sind nur teilweise verfügbar.",
+	"cirrussearch-regex-timed-out": "Zeitüberschreitung bei der Regex-Suche, die Ergebnisse sind nur teilweise verfügbar. Versuche, deine regulären Ausdrücke zu vereinfachen, um vollständige Ergebnisse zu erhalten."
 }

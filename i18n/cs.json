@@ -6,7 +6,8 @@
 			"Paxt",
 			"Utar",
 			"Walter Klosse",
-			"Nixtonin"
+			"Nixtonin",
+			"Matěj Suchánek"
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
@@ -55,5 +56,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Prefixové vyhledávání",
 	"cirrussearch-pref-completion-legacy-section-legend": "Původní algoritmus pro hledání v průběhu psaní.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasické prefixové vyhledávání",
-	"cirrussearch-completion-profile-classic-pref-desc": "Bez opravy překlepů. Porovnává začátky názvů."
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez opravy překlepů. Porovnává začátky názvů.",
+	"cirrussearch-timed-out": "Čas pro vyhledávání vypršel, dostupné výsledky nejsou úplné.",
+	"cirrussearch-regex-timed-out": "Čas pro vyhledávání regulárním výrazem vypršel, dostupné výsledky nejsou úplné. Pro získání úplných výsledků se jej pokuste zjednodušit."
 }

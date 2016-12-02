@@ -58,5 +58,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Pesquisa de prefixo",
 	"cirrussearch-pref-completion-legacy-section-legend": "O antigo algoritmo pesquisar-enquanto-escreve.",
 	"cirrussearch-completion-profile-classic-pref-name": "Pesquisa clássica de prefixo",
-	"cirrussearch-completion-profile-classic-pref-desc": "Sem correção de erros ortográficos. Identifica correspondências no início dos títulos."
+	"cirrussearch-completion-profile-classic-pref-desc": "Sem correção de erros ortográficos. Identifica correspondências no início dos títulos.",
+	"cirrussearch-timed-out": "A pesquisa excedeu o tempo limite, só estão disponíveis resultados parciais.",
+	"cirrussearch-regex-timed-out": "A pesquisa da expressão regular excedeu o tempo limite, só estão disponíveis resultados parciais. Tente simplificar a expressão regular para obter resultados completos."
 }

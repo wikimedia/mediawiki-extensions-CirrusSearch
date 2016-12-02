@@ -56,5 +56,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "חיפוש תחילית",
 	"cirrussearch-pref-completion-legacy-section-legend": "האלגוריתם הישן של חיפוש תוך כדי הקלדה.",
 	"cirrussearch-completion-profile-classic-pref-name": "חיפוש תחילית קלאסי",
-	"cirrussearch-completion-profile-classic-pref-desc": "ללא תיקון שגיאות הקלדה. התאמת התחלות של כותרות."
+	"cirrussearch-completion-profile-classic-pref-desc": "ללא תיקון שגיאות הקלדה. התאמת התחלות של כותרות.",
+	"cirrussearch-timed-out": "זמן ההמתנה של החיפוש עבר. התוצאות המוצגות להלן הן חלקיות.",
+	"cirrussearch-regex-timed-out": "זמן ההמתנה של חיפוש הביטוי הרגולרי עבר. התוצאות המוצגות להלן הן חלקיות. {{GENDER:|נסה|נסי|נסו}} לפשט את הביטוי הרגולרי כדי לקבל תוצאות שלמות."
 }

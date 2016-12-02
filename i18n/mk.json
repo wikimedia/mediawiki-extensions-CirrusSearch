@@ -55,5 +55,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Почеточно пребарување",
 	"cirrussearch-pref-completion-legacy-section-legend": "Постар алгоритам за пребарување при внесување.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класично почеточно пребарување",
-	"cirrussearch-completion-profile-classic-pref-desc": "Без исправка на погрешно внесеното. Ги наоѓа почетоците на насловите."
+	"cirrussearch-completion-profile-classic-pref-desc": "Без исправка на погрешно внесеното. Ги наоѓа почетоците на насловите.",
+	"cirrussearch-timed-out": "Пребарувањето истече. Достапен е само делумен исход.",
+	"cirrussearch-regex-timed-out": "Пребарувањето на регуларни изрази истече; достапен е само делумен исход. Упростете го, за исходот да биде целосен."
 }

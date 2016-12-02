@@ -19,6 +19,7 @@
 	"apihelp-cirrus-config-dump-example": "Få en dump av CirrusSearch-konfigurasjonen.",
 	"apihelp-cirrus-settings-dump-description": "Dump av CirrusSearch-innstillinger for denne wikien.",
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-innstillingene for denne wiien.",
+	"apierror-cirrus-requesttoolong": "Prefikssøkforespørselen var lengre enn den tillatte makslengden. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Gi oss tilbakemelding",
 	"cirrussearch-query-too-long": "Søkeforespørselen er lenger enn den maksimale lengden ($1 > $2)",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (anbefalt)",

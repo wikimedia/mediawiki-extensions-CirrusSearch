@@ -67,5 +67,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Recherche de préfixe",
 	"cirrussearch-pref-completion-legacy-section-legend": "L’ancien algorithme de suggestion en cours de frappe",
 	"cirrussearch-completion-profile-classic-pref-name": "Recherche de préfixe classique",
-	"cirrussearch-completion-profile-classic-pref-desc": "Aucune correction de faute. Correspond au début des titres."
+	"cirrussearch-completion-profile-classic-pref-desc": "Aucune correction de faute. Correspond au début des titres.",
+	"cirrussearch-timed-out": "La recherche a expiré, seuls des résultats partiels sont disponibles.",
+	"cirrussearch-regex-timed-out": "La recherche par expression régulière prend trop de temps, des résultats partiels sont disponibles. Essayez de simplifier votre expression régulière pour obtenir des résultats complets."
 }

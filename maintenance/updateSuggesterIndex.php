@@ -13,6 +13,7 @@ use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Elastica;
 use Elastica\Index;
 use Elastica\Query;
@@ -536,7 +537,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		// Run a first query to count the number of docs.
 		// This is needed for the scoring methods that need
 		// to normalize values against wiki size.
-		$mSearch = new \Elastica\Multi\Search( $this->getClient() );
+		$mSearch = new MultiSearch( $this->getClient() );
 		foreach ( $countIndices as $sourceIndexType ) {
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->addIndex( $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType ) );

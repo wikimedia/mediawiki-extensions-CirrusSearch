@@ -6,6 +6,7 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use CirrusSearch\Connection;
+use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Terms;
 use MediaWiki\Logger\LoggerFactory;
@@ -45,7 +46,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	private $config;
 
 	/**
-	 * @var \Elastica\Multi\Search
+	 * @var MultiSearch
 	 */
 	private $linkCountMultiSearch;
 
@@ -95,7 +96,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	protected function __construct( SearchConfig $config, Connection $conn ) {
 		parent::__construct( $conn, null, 0 );
 		$this->config = $config;
-		$this->linkCountMultiSearch = new \Elastica\Multi\Search( $conn->getClient() );
+		$this->linkCountMultiSearch = new MultiSearch( $conn->getClient() );
 	}
 
 	private function realBuildDocument( \Elastica\Document $doc, Title $title ) {

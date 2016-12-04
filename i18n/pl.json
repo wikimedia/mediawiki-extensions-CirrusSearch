@@ -47,5 +47,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Wyszukiwanie prefiksami",
 	"cirrussearch-pref-completion-legacy-section-legend": "Starszy algorytm podpowiadania szukaj-podczas-wpisywania.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasyczne wyszukiwanie prefiksami",
-	"cirrussearch-completion-profile-classic-pref-desc": "Bez poprawiania literówek. Dopasowuje początki tytułów."
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez poprawiania literówek. Dopasowuje początki tytułów.",
+	"cirrussearch-regex-timed-out": "Wyszukiwanie za pomocą wyrażenia regularnego przekroczyło limit czasu, dostępne są tylko częściowe wyniki. Aby uzyskać pełne wyniki, spróbuj uprościć wyrażenie regularne."
 }

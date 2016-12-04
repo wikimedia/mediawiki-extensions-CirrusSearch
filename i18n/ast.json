@@ -55,5 +55,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Guetar en prefixu",
 	"cirrussearch-pref-completion-legacy-section-legend": "L'antiguu algoritmu de suxerencia de la qu'escribes.",
 	"cirrussearch-completion-profile-classic-pref-name": "Gueta en prefixu clásica",
-	"cirrussearch-completion-profile-classic-pref-desc": "Sin correición de faltes d'ortografía. Casa col principiu de los títulos."
+	"cirrussearch-completion-profile-classic-pref-desc": "Sin correición de faltes d'ortografía. Casa col principiu de los títulos.",
+	"cirrussearch-timed-out": "Escosó'l tiempu de gueta, sólo hai disponibles resultaos parciales.",
+	"cirrussearch-regex-timed-out": "Escosó'l tiempu de gueta de la espresión regular, sólo hai disponibles resultaos parciales. Tenta simplificar la espresión regular pa llograr resultaos completos."
 }

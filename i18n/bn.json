@@ -5,6 +5,7 @@
 			"Aftabuzzaman"
 		]
 	},
+	"cirrussearch-desc": "মিডিয়াউইকির জন্য নমনীয়অনুসন্ধান-চালিত অনুসন্ধান",
 	"cirrussearch-backend-error": "একটি সাময়িক সমস্যার কারণে আমরা আপনার অনুসন্ধান সম্পন্ন করতে পারেনি। দয়া করে পরে আবার চেষ্টা করুন।",
 	"cirrussearch-parse-error": "প্রশ্নের বোঝা যায়নি। দয়া করে এটি সহজ করুন। অনুসন্ধান ব্যবস্থা উন্নত করতে প্রশ্ন লগ করা হয়েছিল।",
 	"cirrussearch-too-busy-error": "অনুসন্ধান বর্তমানে খুব ব্যস্ত। দয়া করে পরে আবার চেষ্টা করুন।",
@@ -23,5 +24,15 @@
 	"cirrussearch-pref-completion-section-desc": "সম্পূর্ণতা পরামর্শক",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester সম্পূর্ণতা পরামর্শক] হচ্ছে ভালো টাইপো সংশোধনসহ অনুসন্ধানের পরামর্শ এবং অনুসন্ধানের প্রাসঙ্গিকতার জন্য একটি অ্যালগরিদম।",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "পূর্বনির্ধারিত (সুপারিশকৃত)",
-	"cirrussearch-pref-completion-legacy-section-desc": "উপসর্গ অনুসন্ধান"
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "দুটি পর্যন্ত টাইপো সংশোধন করে। নিকট পুননির্দেশনা মীমাংসা করে। শিরোনামের উপশব্দগুচ্ছ মিলায়।",
+	"cirrussearch-completion-profile-strict-pref-name": "কঠোর মোড (উন্নত)",
+	"cirrussearch-completion-profile-strict-pref-desc": "কোন টাইপো সংশোধন নয়। কোন স্বরাঘাত ভাঁজ নয়। কঠোর মিলানো।",
+	"cirrussearch-completion-profile-normal-pref-name": "পুনর্নির্দেশ মোড (উন্নত)",
+	"cirrussearch-completion-profile-normal-pref-desc": "কোন টাইপো সংশোধন নয়। নিকট পুননির্দেশনা মীমাংসা করে।",
+	"cirrussearch-pref-completion-legacy-section-desc": "উপসর্গ অনুসন্ধান",
+	"cirrussearch-pref-completion-legacy-section-legend": "লেখার-সময়-অনুসন্ধানের পরামর্শ অ্যালগরিদম",
+	"cirrussearch-completion-profile-classic-pref-name": "ক্লাসিক উপসর্গ অনুসন্ধান",
+	"cirrussearch-completion-profile-classic-pref-desc": "কোন টাইপো সংশোধন নয়। শিরোনামের শুরুর সাথে মিলায়।",
+	"cirrussearch-timed-out": "অনুসন্ধানের সময় শেষ হয়েছে, শুধুমাত্র আংশিক ফলাফল উপলব্ধ।",
+	"cirrussearch-regex-timed-out": "রেজেক্স অনুসন্ধানের সময় শেষ হয়েছে, শুধুমাত্র আংশিক ফলাফল উপলব্ধ। সম্পূর্ণ ফলাফল পেতে আপনার রেগুলার এক্সপ্রেশন সরল করার চেষ্টা করুন।"
 }

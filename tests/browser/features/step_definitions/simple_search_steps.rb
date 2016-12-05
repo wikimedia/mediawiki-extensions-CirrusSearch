@@ -14,16 +14,24 @@ When(/^I search for: (.+)$/) do |search_term|
 end
 
 Then(/^a list of suggested pages should appear$/) do
-  on(SearchPage).search_results_element.when_present.should exist
+  with_browser do
+    on(SearchPage).search_results_element.when_present.should exist
+  end
 end
 Then(/^I should land on Search Results page$/) do
-  on(SearchResultsPage).search_element.when_present
-  browser.url.should match Regexp.escape("&title=Special%3ASearch")
+  with_browser do
+    on(SearchResultsPage).search_element.when_present
+    browser.url.should match Regexp.escape("&title=Special%3ASearch")
+  end
 end
 Then(/^(.+) should be the first result$/) do |page_name|
-  on(SearchPage).first_result.should == page_name
+  with_browser do
+    on(SearchPage).first_result.should == page_name
+  end
 end
 
 Then(/^the page I arrive on has title (.+)$/) do |title|
-  browser.title.should match Regexp.escape(title)
+  with_browser do
+    browser.title.should match Regexp.escape(title)
+  end
 end

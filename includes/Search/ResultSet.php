@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
+use CirrusSearch\SearchConfig;
 use LinkBatch;
 use SearchResultSet;
 
@@ -25,6 +26,8 @@ use SearchResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ResultSet extends SearchResultSet {
+	use TitleHelper;
+
 	/**
 	 * @var \Elastica\ResultSet
 	 */
@@ -56,9 +59,9 @@ class ResultSet extends SearchResultSet {
 	private $searchContainedSyntax;
 
 	/**
-	 * @var string
+	 * @var SearchConfig
 	 */
-	private $interwikiPrefix;
+	private $config;
 
 	/**
 	 * @var array
@@ -80,14 +83,14 @@ class ResultSet extends SearchResultSet {
 	 * @param string[] $suggestSuffixes
 	 * @param \Elastica\ResultSet $res
 	 * @param bool $searchContainedSyntax
-	 * @param string $interwiki
+	 * @param SearchConfig $config
 	 */
-	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax, $interwiki = '' ) {
+	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax, SearchConfig $config ) {
 		$this->result = $res;
 		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
-		$this->interwikiPrefix = $interwiki;
+		$this->config = $config;
 		$this->preCacheContainedTitles( $this->result );
 		$suggestion = $this->findSuggestion();
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
@@ -190,14 +193,14 @@ class ResultSet extends SearchResultSet {
 	 *
 	 * @param \Elastica\ResultSet $resultSet Result set from which the titles come
 	 */
-	private function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
+	protected function preCacheContainedTitles( \Elastica\ResultSet $resultSet ) {
 		// We can only pull in information about the local wiki
- 		if ( $this->interwikiPrefix !== '' ) {
- 			return;
- 		}
 		$lb = new LinkBatch;
 		foreach ( $resultSet->getResults() as $result ) {
-			$lb->add( $result->namespace, $result->title );
+			if ( !$this->isExternal( $result ) ) {
+
+				$lb->add( $result->namespace, $result->title );
+			}
 		}
 		if ( !$lb->isEmpty() ) {
 			$lb->setCaller( __METHOD__ );
@@ -247,7 +250,7 @@ class ResultSet extends SearchResultSet {
 		$current = $this->result->current();
 		if ( $current ) {
 			$this->result->next();
-			$result = new Result( $this->result, $current, $this->interwikiPrefix );
+			$result = new Result( $this->result, $current, $this->config );
 			$this->augmentResult( $result );
 			return $result;
 		}
@@ -318,5 +321,12 @@ class ResultSet extends SearchResultSet {
 	 */
 	public function getQueryAfterRewriteSnippet() {
 		return $this->rewrittenQuerySnippet;
+	}
+
+	/**
+	 * @return SearchConfig
+	 */
+	public function getConfig() {
+		return $this->config;
 	}
 }

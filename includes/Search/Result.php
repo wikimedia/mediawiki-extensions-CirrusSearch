@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\Util;
 use CirrusSearch\Searcher;
+use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
 use SearchResult;
@@ -29,6 +30,8 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class Result extends SearchResult {
+	use TitleHelper;
+
 	/** @var int */
 	private $namespace;
 	/** @var string */
@@ -47,10 +50,12 @@ class Result extends SearchResult {
 	private $textSnippet;
 	/** @var bool */
 	private $isFileMatch = false;
-	/* @var string */
-	private $interwiki = '';
+	/* @var SearchConfig */
+	private $config;
+	/* @var string result wiki */
+	private $wiki;
 	/** @var string */
-	private $interwikiNamespace = '';
+	private $namespaceText = '';
 	/** @var int */
 	private $wordCount;
 	/** @var int */
@@ -71,18 +76,17 @@ class Result extends SearchResult {
 	 *
 	 * @param \Elastica\ResultSet $results containing all search results
 	 * @param \Elastica\Result $result containing the given search result
-	 * @param string $interwiki Interwiki prefix, if any
-	 * @param \Elastica\Result $result containing information about the result this class should represent
+	 * @param SearchConfig $config
 	 */
-	public function __construct( $results, $result, $interwiki = '' ) {
+	public function __construct( $results, $result, SearchConfig $config ) {
 		global $wgCirrusSearchDevelOptions;
 		$this->ignoreMissingRev = isset( $wgCirrusSearchDevelOptions['ignore_missing_rev'] );
-		if ( $interwiki ) {
-			$this->setInterwiki( $result, $interwiki );
-		}
+		$this->config = $config;
+		$this->namespaceText = $result->namespace_text;
+		$this->wiki = $result->wiki;
 		$this->docId = $result->getId();
 		$this->namespace = $result->namespace;
-		$this->mTitle = $this->makeTitle( $result->namespace, $result->title );
+		$this->mTitle = $this->makeTitle( $result );
 		if ( $this->getTitle()->getNamespace() == NS_FILE ) {
 			$this->mImage = wfFindFile( $this->mTitle );
 		}
@@ -105,8 +109,7 @@ class Result extends SearchResult {
 
 		if ( !isset( $highlights[ 'title' ] ) && isset( $highlights[ 'redirect.title' ] ) ) {
 			// Make sure to find the redirect title before escaping because escaping breaks it....
-			$redirects = $result->redirect;
-			$this->redirectTitle = $this->findRedirectTitle( $highlights[ 'redirect.title' ][ 0 ], $redirects );
+			$this->redirectTitle = $this->findRedirectTitle( $result, $highlights[ 'redirect.title' ][ 0 ] );
 			$this->redirectSnippet = $this->escapeHighlightedText( $highlights[ 'redirect.title' ][ 0 ] );
 		}
 
@@ -204,18 +207,19 @@ class Result extends SearchResult {
 	/**
 	 * Build the redirect title from the highlighted redirect snippet.
 	 *
+	 * @param \Elastica\Result $result
 	 * @param string $snippet Highlighted redirect snippet
-	 * @param array[]|null $redirects Array of redirects stored as arrays with 'title' and 'namespace' keys
 	 * @return Title|null object representing the redirect
 	 */
-	private function findRedirectTitle( $snippet, $redirects ) {
+	private function findRedirectTitle( \Elastica\Result $result, $snippet ) {
 		$title = $this->stripHighlighting( $snippet );
 		// Grab the redirect that matches the highlighted title with the lowest namespace.
+		$redirects = $result->redirect;
 		// That is pretty arbitrary but it prioritizes 0 over others.
 		$best = null;
 		if ( $redirects !== null ) {
 			foreach ( $redirects as $redirect ) {
-				if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect ) ) {
+				if ( $redirect[ 'title' ] === $title && ( $best === null || $best[ 'namespace' ] > $redirect['namespace'] ) ) {
 					$best = $redirect;
 				}
 			}
@@ -227,7 +231,7 @@ class Result extends SearchResult {
 			);
 			return null;
 		}
-		return $this->makeTitle( $best[ 'namespace' ], $best[ 'title' ] );
+		return $this->makeRedirectTitle( $result, $best['title'], $best['namespace'] );
 	}
 
 	/**
@@ -246,22 +250,6 @@ class Result extends SearchResult {
 	private function stripHighlighting( $highlighted ) {
 		$markers = [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ];
 		return str_replace( $markers, '', $highlighted );
-	}
-
-	/**
-	 * Set interwiki and interwikiNamespace properties
-	 *
-	 * @param \Elastica\Result $result containing the given search result
-	 * @param string $interwiki Interwiki prefix, if any
-	 */
-	private function setInterwiki( $result, $interwiki ) {
-		$resultIndex = $result->getIndex();
-		$indexBase = InterwikiSearcher::getIndexForInterwiki( $interwiki );
-		$pos = strpos( $resultIndex, $indexBase );
-		if ( $pos === 0 && $resultIndex[strlen( $indexBase )] == '_' ) {
-			$this->interwiki = $interwiki;
-			$this->interwikiNamespace = $result->namespace_text ? $result->namespace_text : '';
-		}
 	}
 
 	/**
@@ -346,14 +334,15 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	public function getInterwikiPrefix() {
-		return $this->interwiki;
+		return $this->mTitle->getInterwiki();
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getInterwikiNamespaceText() {
-		return $this->interwikiNamespace;
+		// Seems to be only useful for API
+		return $this->namespaceText;
 	}
 
 	/**
@@ -378,25 +367,9 @@ class Result extends SearchResult {
 	}
 
 	/**
-	 * Create a title. When making interwiki titles we should be providing the
-	 * namespace text as a portion of the text, rather than a namespace id,
-	 * because namespace id's are not consistent across wiki's. This
-	 * additionally prevents the local wiki from localizing the namespace text
-	 * when it should be using the localized name of the remote wiki.
-	 *
-	 * Unfortunately we don't always have the remote namespace text, such as
-	 * when handling redirects. Do the best we can in this case and take the
-	 * less-than ideal results when we don't.
-	 *
-	 * @param int $namespace
-	 * @param string $text
-	 * @return Title
+	 * @return SearchConfig $config
 	 */
-	private function makeTitle( $namespace, $text ) {
-		if ( $this->interwikiNamespace && $namespace === $this->namespace ) {
-			return Title::makeTitle( 0, $this->interwikiNamespace . ':' . $text, '', $this->interwiki );
-		} else {
-			return Title::makeTitle( $namespace, $text, '', $this->interwiki );
-		}
+	public function getConfig() {
+		return $this->config;
 	}
 }

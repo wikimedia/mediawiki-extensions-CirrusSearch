@@ -87,6 +87,7 @@ class LanguageDetectTest extends CirrusTestCase {
 			'cirrusDumpQuery' => 1,
 		] ) );
 		$this->setMwGlobals( [
+			'wgCirrusSearchInterwikiSources' => null,
 			'wgCirrusSearchIndexBaseName' => 'mywiki',
 			'wgCirrusSearchExtraIndexes' => [NS_FILE => ['externalwiki_file']],
 		] );

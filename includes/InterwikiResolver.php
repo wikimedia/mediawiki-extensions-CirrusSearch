@@ -31,7 +31,7 @@ interface InterwikiResolver {
 	 * to generate crosslanguage interwiki links.
 	 *
 	 * @param string $lang
-	 * @return string[] a single elt array [ 'iw_prefix' => 'wikiId' ] or [] if none found
+	 * @return string[] a two elt array ['wikiId', 'iwPrefix'] or [] if none found
 	 */
 	public function getSameProjectWikiByLang( $lang );
 }

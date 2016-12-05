@@ -38,7 +38,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		// Most of the time the language is equal to the interwiki prefix.
 		// But it's not always the case, use the language_map to identify the interwiki prefix first.
 		$lang = isset( $matrix['language_map'][$lang] ) ? $matrix['language_map'][$lang] : $lang;
-		return isset( $matrix['cross_language'][$lang] ) ? [ $lang => $matrix['cross_language'][$lang] ] : [];
+		return isset( $matrix['cross_language'][$lang] ) ? [ $matrix['cross_language'][$lang], $lang ] : [];
 	}
 
 	/** @return array[] */

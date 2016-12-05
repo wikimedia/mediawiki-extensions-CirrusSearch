@@ -33,7 +33,7 @@ class CacheWarmersValidator extends Validator {
 	 * @param array $cacheWarmers
 	 * @param Maintenance $out
 	 */
-	public function __construct( $indexType, Type $pageType, array $cacheWarmers = [], Maintenance $out = null ) {
+	public function __construct( $indexType, Type $pageType, array $cacheWarmers, Maintenance $out ) {
 		parent::__construct( $out );
 
 		$this->indexType = $indexType;
@@ -93,7 +93,7 @@ class CacheWarmersValidator extends Validator {
 			// Null user because we won't be logging anything about the user.
 		);
 		$searcher->setReturnQuery( true );
-		$searcher->setResultsType( new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL ) );
+		$searcher->setResultsType( new FullTextResultsType( $this->maint->getSearchConfig(), FullTextResultsType::HIGHLIGHT_ALL ) );
 		$searcher->limitSearchToLocalWiki( true );
 		$query = $searcher->searchText( $search, true )->getValue();
 		return $query[ 'query' ];

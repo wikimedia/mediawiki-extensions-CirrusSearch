@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\InterwikiResultsType;
 use CirrusSearch\Search\ResultSet;
+use MediaWiki\MediaWikiServices;
 use SpecialPageFactory;
 use User;
 
@@ -90,7 +91,16 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		$sources = $this->config->get( 'CirrusSearchInterwikiSources' );
+		if ( !$this->config->isCrossProjectSearchEnabled() ) {
+			// TODO: we should probably call this before (in the
+			// CirrusSearch class) to avoid creating an object for
+			// nothing.
+			return null;
+		}
+
+		$sources = MediaWikiServices::getInstance()
+			->getService( InterwikiResolver::SERVICE )
+			->getSisterProjectPrefixes();
 		if ( !$sources ) {
 			return null;
 		}
@@ -122,7 +132,10 @@ class InterwikiSearcher extends Searcher {
 			// specialized to the interwiki use case, but because we are not
 			// returning load test results to the users that is acceptable.
 			if (!$this->isLoadTestEnabled ) {
-				$resultsTypes[$interwiki] = new InterwikiResultsType( $interwiki );
+				// TODO: remove when getWikiCode is removed.
+				// In theory we should be able to reuse the same
+				// Results type for all searches
+				$resultsTypes[$interwiki] = new InterwikiResultsType( $this->config->newInterwikiConfig( $index, false ) );
 				$this->setResultsType( $resultsTypes[$interwiki] );
 			}
 			$this->indexBaseName = $index;
@@ -147,27 +160,6 @@ class InterwikiSearcher extends Searcher {
 		} else {
 			return array_merge( $retval, $results->getValue() );
 		}
-	}
-
-	/**
-	 * Get the index basename for a given interwiki prefix, if one is defined.
-	 * @param string $interwiki
-	 * @return string|null
-	 */
-	public static function getIndexForInterwiki( $interwiki ) {
-		// These settings should be common for all wikis, so globals
-		// are _probably_ OK here.
-		global $wgCirrusSearchInterwikiSources, $wgCirrusSearchWikiToNameMap;
-
-		if ( isset( $wgCirrusSearchInterwikiSources[$interwiki] ) ) {
-			return $wgCirrusSearchInterwikiSources[$interwiki];
-		}
-
-		if ( isset( $wgCirrusSearchWikiToNameMap[$interwiki] ) ) {
-			return $wgCirrusSearchWikiToNameMap[$interwiki];
-		}
-
-		return null;
 	}
 
 	/**

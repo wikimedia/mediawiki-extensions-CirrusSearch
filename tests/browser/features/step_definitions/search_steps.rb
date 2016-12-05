@@ -497,6 +497,14 @@ Then(/^within (\d+) seconds typing (.*) into the search box yields (.*) as the f
     step("#{title} is the first suggestion")
   end
 end
+Then(/^within (\d+) seconds (.*) has (.*) as local_sites_with_dupe$/) do |seconds, page, value|
+  on_wiki("commons") do
+    within(seconds) do
+      step("I dump the cirrus data for " + page)
+      step('the page text contains "local_sites_with_dupe":["' + value + '"]')
+    end
+  end
+end
 Then(/^there is (no|a)? link to create a new page from the search result$/) do |modifier|
   with_browser do
     if modifier == "a"

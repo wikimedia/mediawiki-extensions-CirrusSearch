@@ -5,7 +5,8 @@ Feature: Searching for files on local wiki stored on commons
     Then File:OnCommons.svg is the first api search result
 
   Scenario: A file that exists on commons and the local wiki returns the local result
-    When I api search in namespace 6 for duplicated
+    When within 20 seconds File:DuplicatedLocally.svg has cirrustestwiki as local_sites_with_dupe
+    Then I api search in namespace 6 for duplicated
     Then File:DuplicatedLocally.svg is the first api search result
     And Locally stored file *duplicated* on commons is the highlighted snippet of the first api search result
     And there is no second api search result

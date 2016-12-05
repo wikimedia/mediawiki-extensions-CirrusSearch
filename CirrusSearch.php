@@ -515,17 +515,7 @@ $wgCirrusSearchMoreLikeThisAllowedFields = [
 	'auxiliary_text',
 	'opening_text',
 	'headings',
-	'all'
 ];
-
-// When set to false cirrus will use the text content to build the query
-// and search on the field listed in $wgCirrusSearchMoreLikeThisFields
-// Set to true if you want to use field data as input text to build the initial
-// query.
-// Note that if the all field is used then this setting will be forced to true.
-// This is because the all field is not part of the _source and its content cannot
-// be retrieved by elasticsearch.
-$wgCirrusSearchMoreLikeThisUseFields = false;
 
 // This allows redirecting queries to a separate cluster configured
 // in $wgCirrusSearchClusters. Note that queries can use multiple features, in

@@ -300,7 +300,7 @@ class Searcher extends ElasticsearchIntermediary {
 				// Handle morelike keyword (greedy). This needs to be the
 				// very first item until combining with other queries
 				// is worked out.
-				new Query\MoreLikeFeature( $this->config, [$this, 'get'] ),
+				new Query\MoreLikeFeature( $this->config ),
 				// Handle title prefix notation (greedy)
 				new Query\PrefixFeature(),
 				// Handle prefer-recent keyword

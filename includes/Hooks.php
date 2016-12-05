@@ -204,7 +204,6 @@ class Hooks {
 	 */
 	private static function overrideMoreLikeThisOptionsFromMessage() {
 		global $wgCirrusSearchMoreLikeThisConfig,
-			$wgCirrusSearchMoreLikeThisUseFields,
 			$wgCirrusSearchMoreLikeThisAllowedFields,
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
@@ -261,13 +260,6 @@ class Hooks {
 					array_map( 'trim', explode( ',', $v ) ),
 					$wgCirrusSearchMoreLikeThisAllowedFields );
 				break;
-			case 'use_fields':
-				if ( $v === 'true' ) {
-					$wgCirrusSearchMoreLikeThisUseFields = true;
-				} elseif ( $v === 'false' ) {
-					$wgCirrusSearchMoreLikeThisUseFields = false;
-				}
-				break;
 			}
 			if ( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'] > $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit ) {
 				$wgCirrusSearchMoreLikeThisConfig['max_query_terms'] = $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit;
@@ -303,7 +295,6 @@ class Hooks {
 	 */
 	private static function overrideMoreLikeThisOptions( WebRequest $request ) {
 		global $wgCirrusSearchMoreLikeThisConfig,
-			$wgCirrusSearchMoreLikeThisUseFields,
 			$wgCirrusSearchMoreLikeThisAllowedFields,
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
@@ -316,7 +307,6 @@ class Hooks {
 		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'], $request, 'cirrusMltMinimumShouldMatch' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_len'], $request, 'cirrusMltMinWordLength' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_len'], $request, 'cirrusMltMaxWordLength' );
-		self::overrideYesNo( $wgCirrusSearchMoreLikeThisUseFields, $request, 'cirrusMltUseFields' );
 		$fields = $request->getVal( 'cirrusMltFields' );
 		if( isset( $fields ) ) {
 			$wgCirrusSearchMoreLikeThisFields = array_intersect(

@@ -20,19 +20,10 @@ class MoreLikeFeature implements KeywordFeature {
 	private $config;
 
 	/**
-	 * @var callable Callable for fetching page from elasticsearch. See
-	 *  Searcher::get.
-	 */
-	private $getCallable;
-
-	/**
 	 * @param SearchConfig $config
-	 * @param callable $getCallable Callable for fetching page from
-	 *  elasticsearch. See Searcher::get.
 	 */
-	public function __construct( SearchConfig $config, $getCallable ) {
+	public function __construct( SearchConfig $config ) {
 		$this->config = $config;
-		$this->getCallable = $getCallable;
 	}
 
 	/**
@@ -192,36 +183,10 @@ class MoreLikeFeature implements KeywordFeature {
 		}
 
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
-		$moreLikeThisUseFields = $this->config->get( 'CirrusSearchMoreLikeThisUseFields' );
 		sort( $moreLikeThisFields );
 		$query = new \Elastica\Query\MoreLikeThis();
 		$query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
 		$query->setFields( $moreLikeThisFields );
-
-		// The 'all' field cannot be retrieved from _source
-		// We have to extract the text content before.
-		if ( in_array( 'all', $moreLikeThisFields ) ) {
-			$moreLikeThisUseFields = false;
-		}
-
-		if ( !$moreLikeThisUseFields && $moreLikeThisFields !== ['text'] ) {
-			// Run a first pass to extract the text field content because we
-			// want to compare it against other fields.
-			$text = [];
-			$found = call_user_func( $this->getCallable, $docIds, ['text'] );
-			if ( !$found->isOK() ) {
-				return null;
-			}
-			$found = $found->getValue();
-			if ( !count( $found ) ) {
-				return null;
-			}
-			foreach ( $found as $foundArticle ) {
-				$text[] = $foundArticle->text;
-			}
-			sort( $text, SORT_STRING );
-			$likeDocs = array_merge( $likeDocs, $text );
-		}
 
 		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
 		$query->setLike( $likeDocs );

@@ -128,14 +128,8 @@ class MoreLikeFeatureTest extends CirrusTestCase {
 
 		$context = new SearchContext( $config );
 
-		// This is only used for the 'all' feature which is currently
-		// untested, and is planned to be removed.
-		$getCallback = function ( array $docIds, array $fields ) {
-			throw new \RuntimeException( 'No requests should be made to elasticsearch' );
-		};
-
 		// Finally run the test
-		$feature = new MoreLikeFeature( $config, $getCallback );
+		$feature = new MoreLikeFeature( $config );
 
 		$result = $feature->apply( $context, $term );
 

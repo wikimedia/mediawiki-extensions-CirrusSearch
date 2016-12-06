@@ -110,7 +110,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"stop_analyzer" => [
 					"type" => "custom",
 					"filter" => [
-						"standard",
 						"lowercase",
 						"stop_filter",
 						"accentfolding",
@@ -124,7 +123,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"stop_analyzer_search" => [
 					"type" => "custom",
 					"filter" => [
-						"standard",
 						"lowercase",
 						"accentfolding",
 						"token_limit"
@@ -155,7 +153,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			$defaults['analyzer']['subphrases'] = [
 				"type" => "custom",
 				"filter" => [
-					"standard",
 					"lowercase",
 					"accentfolding",
 					"token_limit"
@@ -165,7 +162,6 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			$defaults['analyzer']['subphrases_search'] = [
 				"type" => "custom",
 				"filter" => [
-					"standard",
 					"lowercase",
 					"accentfolding",
 					"token_limit"

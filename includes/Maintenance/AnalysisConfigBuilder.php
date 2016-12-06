@@ -298,7 +298,7 @@ class AnalysisConfigBuilder {
 					// analyzer is the lack of english stop words.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase' ],
+					'filter' => [ 'lowercase' ],
 					'char_filter' => [ 'word_break_helper' ],
 				],
 				'plain_search' => [
@@ -307,7 +307,7 @@ class AnalysisConfigBuilder {
 					// and searches without accents to find both.
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase' ],
+					'filter' => [ 'lowercase' ],
 					'char_filter' => [ 'word_break_helper' ],
 				],
 				// Used by ShortTextIndexField
@@ -331,24 +331,24 @@ class AnalysisConfigBuilder {
 				'source_text_plain' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase' ],
+					'filter' => [ 'lowercase' ],
 					'char_filter' => [ 'word_break_helper_source_text' ],
 				],
 				'source_text_plain_search' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase' ],
+					'filter' => [ 'lowercase' ],
 					'char_filter' => [ 'word_break_helper_source_text' ],
 				],
 				'suggest' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase', 'suggest_shingle' ],
+					'filter' => [ 'lowercase', 'suggest_shingle' ],
 				],
 				'suggest_reverse' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase', 'suggest_shingle', 'reverse' ],
+					'filter' => [ 'lowercase', 'suggest_shingle', 'reverse' ],
 				],
 				'token_reverse' => [
 					'type' => 'custom',
@@ -382,7 +382,7 @@ class AnalysisConfigBuilder {
 				'word_prefix' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase', 'prefix_ngram_filter' ],
+					'filter' => [ 'lowercase', 'prefix_ngram_filter' ],
 				],
 				'lowercase_keyword' => [
 					'type' => 'custom',
@@ -482,7 +482,7 @@ class AnalysisConfigBuilder {
 				$analyzer = [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
-					'filter' => [ 'standard', 'lowercase' ],
+					'filter' => [ 'lowercase' ],
 				];
 			}
 		}
@@ -517,7 +517,6 @@ class AnalysisConfigBuilder {
 				'char_filter' => [ 'word_break_helper' ],
 			];
 			$filters = [];
-			$filters[] = 'standard';
 			$filters[] = 'aggressive_splitting';
 			$filters[] = 'possessive_english';
 			$filters[] = 'lowercase';
@@ -644,7 +643,6 @@ STEMMER_RULES
 				'char_filter' => [ 'word_break_helper' ],
 			];
 			$filters = [];
-			$filters[] = 'standard';
 			$filters[] = 'italian_elision';
 			$filters[] = 'aggressive_splitting';
 			$filters[] = 'lowercase';

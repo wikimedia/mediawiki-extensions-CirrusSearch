@@ -41,7 +41,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	/**
 	 * Search articles with provided term.
 	 *
-	 * @param SearchContext $context
+	 * @param SearchContext $searchContext
 	 * @param string $term term to search
 	 * @param boolean $showSuggestion should this search suggest alternative
 	 * searches that might be better?
@@ -49,8 +49,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	public function build( SearchContext $searchContext, $term, $showSuggestion ) {
 		// Transform Mediawiki specific syntax to filters and extra
 		// (pre-escaped) query string
-		$searchContext->setSearchType( 'full_text' );
-
 		foreach ( $this->features as $feature ) {
 			$term = $feature->apply( $searchContext, $term );
 		}
@@ -247,7 +245,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * Attempt to build a degraded query from the query already built into $context. Must be
 	 * called *after* self::build().
 	 *
-	 * @param SearchContext $context
+	 * @param SearchContext $searchContext
 	 * @return bool True if a degraded query was built
 	 */
 	public function buildDegraded( SearchContext $searchContext ) {
@@ -260,7 +258,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', true )
 		);
 
-		$searchContext->setSearchType( 'degraded_full_text' );
+		$searchContext->addSyntaxUsed( 'degraded_full_text' );
 		$searchContext->setMainQuery( new \Elastica\Query\Simple( [ 'simple_query_string' => [
 			'fields' => $fields,
 			'query' => $this->queryStringQueryString,
@@ -372,7 +370,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @param string $nearMatchQuery
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	protected function buildSearchTextQuery( SearchContext $context, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
+	protected function buildSearchTextQuery( SearchContext $searchContext, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
 		$slop = $this->config->getElement( 'CirrusSearchPhraseSlop', 'default' );
 		$queryForMostFields = $this->buildQueryString( $fields, $queryString, $slop );
 		if ( !$nearMatchQuery ) {
@@ -433,7 +431,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * the possible fields otherwise. This prevents applying and compiling
 	 * costly wildcard queries too many times.
 	 *
-	 * @param string $term
+	 * @param SearchContext $context
+	 * @param string        $term
 	 * @return string
 	 */
 	private static function switchSearchToExactForWildcards( SearchContext $context, $term ) {
@@ -471,11 +470,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	/**
 	 * Build fields searched by full text search.
 	 *
-	 * @param float $weight weight to multiply by all fields
-	 * @param string $fieldSuffix suffix to add to field names
-	 * @param boolean $allFieldAllowed can we use the all field?  False for
+	 * @param SearchContext $context
+	 * @param float         $weight weight to multiply by all fields
+	 * @param string        $fieldSuffix suffix to add to field names
+	 * @param boolean       $allFieldAllowed can we use the all field?  False for
 	 *  collecting phrases for the highlighter.
-	 * @return string[] array of fields to query
+	 * @return \string[] array of fields to query
 	 */
 	private static function buildFullTextSearchFields( SearchContext $context, $weight, $fieldSuffix, $allFieldAllowed ) {
 		$searchWeights = $context->getConfig()->get( 'CirrusSearchWeights' );

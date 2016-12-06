@@ -71,7 +71,6 @@ class GeoFeature extends SimpleKeywordFeature {
 
 		$filter = null;
 		if ( $coord ) {
-			$context->setSearchType( 'geo_' . $context->getSearchType() );
 			if ( substr( $key, 0, 6 ) === 'boost-' ) {
 				$context->addGeoBoost( $coord, $radius, $negated ? 0.1 : 1 );
 			} else {

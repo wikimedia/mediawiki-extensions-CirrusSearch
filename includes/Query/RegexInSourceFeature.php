@@ -68,7 +68,6 @@ class RegexInSourceFeature implements KeywordFeature {
 				}
 
 				$context->addSyntaxUsed( 'regex' );
-				$context->setSearchType( 'regex' );
 				$insensitive = !empty( $matches['insensitive'] );
 
 				$filter = $this->regexPlugin && in_array( 'use', $this->regexPlugin )

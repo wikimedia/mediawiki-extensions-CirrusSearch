@@ -78,10 +78,6 @@ class MoreLikeFeature implements KeywordFeature {
 		$context->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
 
 		$context->addSyntaxUsed( 'more_like' );
-		// @todo this isn't guaranteed, another keyword could override it.  We
-		// should probably transition to some scheme that inspects syntax used
-		// and decides a search type?
-		$context->setSearchType( 'more_like' );
 	}
 
 	/**

@@ -86,11 +86,6 @@ class SearchContext {
 	private $syntaxUsed = [];
 
 	/**
-	 * @var string The type of search being performed. ex: full_text, near_match, prefix, etc.
-	 */
-	private $searchType = 'unknown';
-
-	/**
 	 * @var AbstractQuery[] List of filters that query results must match
 	 */
 	private $filters = [];
@@ -179,6 +174,17 @@ class SearchContext {
 	 */
 	private $escaper;
 
+	/**
+	 * @var int[] weights of different syntaxes
+	 */
+	private static $syntaxWeights = [
+		// regex is really tough
+		'regex' => PHP_INT_MAX,
+		'more_like' => 100,
+		'near_match' => 2,
+		// FIXME: is this correct?
+		'prefix' => 1,
+	];
 	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
@@ -372,25 +378,50 @@ class SearchContext {
 	}
 
 	/**
-	 * @param string $feature Name of a syntax feature used in the query string
+	 * @return string Text description of syntax used by query.
 	 */
-	public function addSyntaxUsed( $feature ) {
-		$this->syntaxUsed[$feature] = true;
+	public function getSyntaxDescription() {
+		return implode( ',', $this->getSyntaxUsed() );
+	}
+
+	/**
+	 * @param string $feature Name of a syntax feature used in the query string
+	 * @param int    $weight How "complex" is this feature.
+	 */
+	public function addSyntaxUsed( $feature, $weight = null ) {
+		if ( is_null( $weight ) ) {
+			if(isset(self::$syntaxWeights[$feature])) {
+				$weight = self::$syntaxWeights[$feature];
+			} else {
+				$weight = 1;
+			}
+		}
+		$this->syntaxUsed[$feature] = $weight;
 	}
 
 	/**
 	 * @return string The type of search being performed, ex: full_text, near_match, prefix, etc.
-	 * @todo It might be possible to determine this based on the features used.
+	 * Using getSyntaxUsed() is better in most cases.
 	 */
 	public function getSearchType() {
-		return $this->searchType;
+		if ( empty( $this->syntaxUsed ) ) {
+			return 'full_text';
+		}
+		arsort( $this->syntaxUsed );
+		if ( reset( $this->syntaxUsed ) == 1 ) {
+			// To preserve stability of stats with low-complexity syntaxes
+			return 'full_text';
+		}
+
+		// Return the first heaviest syntax
+		return key( $this->syntaxUsed );
 	}
 
 	/**
 	 * @param string $type The type of search being performed. ex: full_text, near_match, prefix, etc.
+	 * @deprecated Use addSyntaxUsed()
 	 */
 	public function setSearchType( $type ) {
-		$this->searchType = $type;
 	}
 
 	/**

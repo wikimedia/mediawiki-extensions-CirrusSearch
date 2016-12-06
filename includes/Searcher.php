@@ -215,7 +215,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->searchContext->addFilter( $highlightQuery );
 		}
 		$this->searchContext->setHighlightQuery( $highlightQuery );
-		$this->searchContext->setSearchType( 'near_match' );
+		$this->searchContext->addSyntaxUsed( 'near_match' );
 
 		return $this->searchOne();
 	}
@@ -229,7 +229,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->checkTitleSearchRequestLength( $term );
 		$this->searchContext->setOriginalSearchTerm( $term );
 
-		$this->searchContext->setSearchType( 'prefix' );
+		$this->searchContext->addSyntaxUsed( 'prefix' );
 		if ( strlen( $term ) > 0 ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
 				$match = new \Elastica\Query\Match();
@@ -289,7 +289,6 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
-		$this->searchContext->setSearchType( 'full_text' );
 
 		$builderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
 		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $builderProfile );
@@ -611,7 +610,6 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
-		$description = "{queryType} search for '{query}'";
 		$log = new MultiSearchRequestLog(
 			$this->connection->getClient(),
 			"{queryType} search for '{query}'",
@@ -675,8 +673,8 @@ class Searcher extends ElasticsearchIntermediary {
 						return $this->failure( $e );
 					}
 				},
-				$this->searchContext->getSearchType() === 'regex'
-					? 'cirrussearch-regex-too-busy-error' : null
+				$this->searchContext->isSyntaxUsed( 'regex' ) ?
+					'cirrussearch-regex-too-busy-error' : null
 			);
 		};
 
@@ -779,7 +777,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$log->getDescription() . " timed out and only returned partial results!",
 				$log->getLogVariables()
 			);
-			$status->warning( $this->searchContext->getSearchType() === 'regex'
+			$status->warning( $this->searchContext->isSyntaxUsed( 'regex' )
 				? 'cirrussearch-regex-timed-out'
 				: 'cirrussearch-timed-out'
 			);
@@ -903,8 +901,10 @@ class Searcher extends ElasticsearchIntermediary {
 			'regex' => 'CirrusSearch-Regex',
 			'prefix' => 'CirrusSearch-Prefix',
 		);
-		if ( isset( $poolCounterTypes[$this->searchContext->getSearchType()] ) ) {
-			return $poolCounterTypes[$this->searchContext->getSearchType()];
+		foreach ( $poolCounterTypes as $type => $counter ) {
+			if ( $this->searchContext->isSyntaxUsed( $type ) ) {
+				return $counter;
+			}
 		}
 		return 'CirrusSearch-Search';
 	}
@@ -913,7 +913,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return string search retrieval timeout
 	 */
 	private function getTimeout() {
-		if ( $this->searchContext->getSearchType() === 'regex' ) {
+		if ( $this->searchContext->isSyntaxUsed( 'regex' ) ) {
 			$type = 'regex';
 		} else {
 			$type = 'default';

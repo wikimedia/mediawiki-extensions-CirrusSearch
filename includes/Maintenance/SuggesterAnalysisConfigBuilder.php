@@ -42,11 +42,23 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @return array
 	 */
 	protected function defaults() {
+		// Use default lowercase filter
+		$lowercase_type = ['type' => 'lowercase'];
+		if( $this->isIcuAvailable() ) {
+			$lowercase_type = [
+				"type" => "icu_normalizer",
+				"name" => "nfkc_cf",
+			];
+		}
 		// Use the default Lucene ASCII filter
-		$folding_type = 'asciifolding';
-		if ( $this->isIcuAvailable() && $this->config->get( 'CirrusSearchUseIcuFolding' ) === true ) {
+		$folding_type = [ 'type' => 'asciifolding' ];
+		if ( $this->isIcuFolding() ) {
 			// Use ICU Folding if the plugin is available and activated in the config
-			$folding_type = 'icu_folding';
+			$folding_type = [ 'type' => 'icu_folding' ];
+			$unicodeSetFilter = $this->getICUSetFilter();
+			if ( !empty( $unicodeSetFilter ) ) {
+				$folding_type['unicodeSetFilter'] = $unicodeSetFilter;
+			}
 		}
 		$defaults = [
 			'char_filter' => [
@@ -87,13 +99,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"stopwords" => "_none_",
 					"remove_trailing" => "true"
 				],
-				"asciifolding" => [
-					"type" => $folding_type,
-				],
-				"icu_normalizer" => [
-					"type" => "icu_normalizer",
-					"name" => "nfkc_cf"
-				],
+				"lowercase" => $lowercase_type,
+				"accentfolding" => $folding_type,
 				"token_limit" => [
 					"type" => "limit",
 					"max_token_count" => "20"
@@ -106,7 +113,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"standard",
 						"lowercase",
 						"stop_filter",
-						"asciifolding",
+						"accentfolding",
 						"token_limit"
 					],
 					"tokenizer" => "standard"
@@ -119,7 +126,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"filter" => [
 						"standard",
 						"lowercase",
-						"asciifolding",
+						"accentfolding",
 						"token_limit"
 					],
 					"tokenizer" => "standard"
@@ -150,7 +157,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"filter" => [
 					"standard",
 					"lowercase",
-					"asciifolding",
+					"accentfolding",
 					"token_limit"
 				],
 				"tokenizer" => "standard"
@@ -160,7 +167,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"filter" => [
 					"standard",
 					"lowercase",
-					"asciifolding",
+					"accentfolding",
 					"token_limit"
 				],
 				"tokenizer" => "standard"

@@ -766,12 +766,21 @@ $wgCirrusSearchCompletionSettings = 'fuzzy';
  * Enable ICU Folding instead of the default ASCII Folding.
  * It allows to cover a wider range of characters when squashing diacritics.
  * see https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu-folding.html
- * Currently this settings is only used by the CompletionSuggester.
- * Requires the ICU plugin installed.
- * Set to true to enable, false to use the default ASCII Folding
+ * Requires the ICU plugin installed and a recent wmf extra plugin (>= 2.3.4).
+ * Set to:
+ * - default: let cirrus decides if ICU folding can be enabled according to wiki language
+ * - yes: force the use of ICU folding
+ * - no: disable ICU folding even if cirrus thinks it can be enabled
  * NOTE: Experimental
  */
-$wgCirrusSearchUseIcuFolding = false;
+$wgCirrusSearchUseIcuFolding = 'default';
+
+/**
+ * Set the unicode set filter for ICU folding
+ * see http://userguide.icu-project.org/strings/unicodeset
+ * e.g. set [^é] to exclude é from icufolding
+ */
+$wgCirrusSearchICUFoldingUnicodeSetFilter = null;
 
 /**
  * Set the default scoring function to be used by maintenance/updateSuggesterIndex.php

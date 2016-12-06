@@ -3,6 +3,7 @@
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;

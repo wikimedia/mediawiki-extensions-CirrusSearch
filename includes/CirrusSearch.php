@@ -393,12 +393,6 @@ class CirrusSearch extends SearchEngine {
 			$iwSearch->setReturnQuery( $dumpQuery );
 			$iwSearch->setDumpResult( $dumpResult );
 			$iwSearch->setReturnExplain( $returnExplain );
-			// This is not strictly true, or even really half true. It is a stand
-			// in for the purposes of interwiki load testing using the full
-			// search configuration, rather than the limited InterwikiResultsType.
-			// InterwikiSearcher will use this or InterwikiResultsType depending
-			// on it's needs.
-			$iwSearch->setResultsType( $resultsType );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to

@@ -254,28 +254,11 @@ abstract class ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Append a payload entry to the last request that was performed.
-	 *
 	 * @param string $key
 	 * @param string $value
 	 */
 	static public function appendLastLogPayload( $key, $value ) {
-		if ( self::$requestLogger !== null ) {
-			self::$requestLogger->appendLastLogPayload( $key, $value );
-		}
-	}
-
-	/**
-	 * Append a top-level payload entry to the request set log.
-	 *
-	 * @param string $key
-	 * @param string $value
-	 */
-	static public function appendPayload( $key, $value ) {
-		if ( self::$requestLogger === null ) {
-			self::$requestLogger = new RequestLogger;
-		}
-		self::$requestLogger->appendPayload( $key, $value );
+		self::$requestLogger->appendLastLogPayload( $key, $value );
 	}
 
 	/**

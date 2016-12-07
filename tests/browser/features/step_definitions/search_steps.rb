@@ -554,7 +554,6 @@ Then(/there are no errors reported by the api$/) do
 end
 Then(/this error is reported by api: (.+)$/) do |expected_error|
   with_api do
-    @api_error.code.should be == "srsearch-error"
     CGI.unescapeHTML(@api_error.info).should == expected_error.strip
   end
 end

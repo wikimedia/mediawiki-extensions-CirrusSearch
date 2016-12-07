@@ -244,7 +244,7 @@ class FancyTitleResultsType extends TitleResultsType {
 					// Instead of getting the redirect's real namespace we're going to just use the namespace
 					// of the title.  This is not great but OK given that we can't find cross namespace
 					// redirects properly any way.
-					$redirectTitle = $this->makeRedirectTitle( $r, $redirectTitle, $this->namespace );
+					$redirectTitle = $this->makeRedirectTitle( $r, $redirectTitle, $r->namespace );
 					$resultForTitle[ 'redirectMatches' ][] = $redirectTitle;
 				}
 			}

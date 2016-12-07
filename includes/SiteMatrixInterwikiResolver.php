@@ -66,7 +66,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	}
 
 	/**
-	 * @return array[]
+	 * @return callable
 	 */
 	private function siteMatrixLoader() {
 		return function() {

@@ -75,6 +75,7 @@ trait TitleHelper {
 			return true;
 		}
 		// TODO: replace by return false when wiki is populated
+		/** @suppress PhanDeprecatedFunction */
 		return !empty( $this->getConfig()->getWikiCode() );
 	}
 
@@ -89,6 +90,7 @@ trait TitleHelper {
 				->getInterwikiPrefix( $r->wiki );
 		}
 		// TODO: replace by return false when wiki is populated
+		/** @suppress PhanDeprecatedFunction */
 		return $this->getConfig()->getWikiCode();
 	}
 

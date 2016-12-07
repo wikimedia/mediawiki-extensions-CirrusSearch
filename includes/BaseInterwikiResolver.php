@@ -9,7 +9,7 @@ namespace CirrusSearch;
  * be stored by this base class.
  */
 abstract class BaseInterwikiResolver implements InterwikiResolver {
-	/** @var array[]: full IW matrix (@see loadMatrix()) */
+	/** @var array[]|null full IW matrix (@see loadMatrix()) */
 	private $matrix;
 
 	/**

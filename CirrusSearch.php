@@ -783,6 +783,21 @@ $wgCirrusSearchUseIcuFolding = 'default';
 $wgCirrusSearchICUFoldingUnicodeSetFilter = null;
 
 /**
+ * Enable the ICU Tokenizer instead of the standard filter
+ * for plain fields.
+ * It may be more suited for languages that do not use spaces
+ * to break words.
+ * Requires the ICU plugin installed
+ * Set to:
+ * - default: let cirrus decides if the ICU tokenizer can be enabled according to wiki language
+ * - yes: force the use of ICU tokenizer
+ * - no: disable the ICU tokenizer even if cirrus thinks it can be enabled
+ * NOTE: Experimental
+ */
+$wgCirrusSearchUseIcuTokenizer = 'default';
+
+
+/**
  * Set the default scoring function to be used by maintenance/updateSuggesterIndex.php
  * @see includes/BuildDocument/SuggestScoring.php for more details about scoring functions
  * NOTE: if you change the scoring method you'll have to rebuild the suggester index.

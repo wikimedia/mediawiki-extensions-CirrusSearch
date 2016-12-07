@@ -60,6 +60,15 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				$folding_type['unicodeSetFilter'] = $unicodeSetFilter;
 			}
 		}
+		$textTokenizer = 'standard';
+		$plainTokenizer = 'whitespace';
+		if ( $this->icuTokenizer ) {
+			$textTokenizer = 'icu_tokenizer';
+			// We cannot use the icu_tokenizer for plain here
+			// even if icu tokenization is mostly needed for languages
+			// where space is not used to break words. We don't want
+			// to break some punctuation chars like ':'
+		}
 		$defaults = [
 			'char_filter' => [
 				'word_break_helper' => [
@@ -115,7 +124,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"accentfolding",
 						"token_limit"
 					],
-					"tokenizer" => "standard"
+					"tokenizer" => $textTokenizer,
 				],
 				// We do not remove stop words when searching,
 				// this leads to extremely weird behaviors while
@@ -127,7 +136,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"accentfolding",
 						"token_limit"
 					],
-					"tokenizer" => "standard"
+					"tokenizer" => $textTokenizer,
 				],
 				"plain" => [
 					"type" => "custom",
@@ -136,7 +145,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"token_limit",
 						"lowercase"
 					],
-					"tokenizer" => "whitespace"
+					"tokenizer" => $plainTokenizer,
 				],
 				"plain_search" => [
 					"type" => "custom",
@@ -145,7 +154,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"token_limit",
 						"lowercase"
 					],
-					"tokenizer" => "whitespace"
+					"tokenizer" => $plainTokenizer,
 				],
 			],
 		];
@@ -157,7 +166,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"accentfolding",
 					"token_limit"
 				],
-				"tokenizer" => "standard"
+				"tokenizer" => $textTokenizer,
 			];
 			$defaults['analyzer']['subphrases_search'] = [
 				"type" => "custom",
@@ -166,7 +175,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"accentfolding",
 					"token_limit"
 				],
-				"tokenizer" => "standard"
+				"tokenizer" => $textTokenizer,
 			];
 		}
 		return $defaults;

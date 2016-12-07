@@ -30,6 +30,13 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	public function testICUFolding( array $input, array $expected ) {
 		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'yes' ] );
 		$plugins = ['extra', 'analysis-icu'];
+		$builder = new AnalysisConfigBuilder( 'unknown_language', $plugins, $config );
+		$result = $builder->enableICUFolding( $input );
+		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+
+		// Test default
+		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'default' ] );
+		$plugins = ['extra', 'analysis-icu'];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->enableICUFolding( $input );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );

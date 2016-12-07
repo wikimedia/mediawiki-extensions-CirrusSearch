@@ -272,6 +272,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "inlanguage",
             "suggest"
         ],
         "suggest": {

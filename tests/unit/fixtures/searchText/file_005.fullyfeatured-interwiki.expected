@@ -216,6 +216,8 @@
         ],
         "size": 20,
         "stats": [
+            "filemime",
+            "filesize",
             "full_text"
         ]
     }

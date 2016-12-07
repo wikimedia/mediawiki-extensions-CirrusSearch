@@ -208,6 +208,7 @@
         ],
         "size": 20,
         "stats": [
+            "fileres",
             "full_text"
         ]
     }

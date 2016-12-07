@@ -394,6 +394,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "prefer-recent",
             "suggest"
         ],
         "suggest": {

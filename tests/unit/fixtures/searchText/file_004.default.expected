@@ -209,6 +209,7 @@
         ],
         "size": 20,
         "stats": [
+            "filew",
             "full_text"
         ]
     }

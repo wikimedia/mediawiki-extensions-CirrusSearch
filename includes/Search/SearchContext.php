@@ -181,9 +181,8 @@ class SearchContext {
 		// regex is really tough
 		'regex' => PHP_INT_MAX,
 		'more_like' => 100,
-		'near_match' => 2,
-		// FIXME: is this correct?
-		'prefix' => 1,
+		'near_match' => 10,
+		'prefix' => 2,
 	];
 	/**
 	 * @param SearchConfig $config
@@ -415,6 +414,19 @@ class SearchContext {
 
 		// Return the first heaviest syntax
 		return key( $this->syntaxUsed );
+	}
+
+	/**
+	 * @return int maximum complexity of the syntax used in search
+	 */
+	public function getSearchComplexity() {
+		if ( empty( $this->syntaxUsed ) ) {
+			return 1;
+		}
+		arsort( $this->syntaxUsed );
+
+		// Return the first heaviest syntax
+		return reset( $this->syntaxUsed );
 	}
 
 	/**

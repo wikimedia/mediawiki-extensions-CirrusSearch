@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'prefix test aaaa prefix:Prefix Test\/aa'",
+    "description": "prefix search for 'prefix test aaaa prefix:Prefix Test\/aa'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -225,7 +225,7 @@
         ],
         "size": 20,
         "stats": [
-            "full_text",
+            "prefix",
             "suggest"
         ],
         "suggest": {

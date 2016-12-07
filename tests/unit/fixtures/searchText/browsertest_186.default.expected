@@ -264,6 +264,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "intitle",
             "suggest"
         ],
         "suggest": {

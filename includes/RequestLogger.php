@@ -196,6 +196,9 @@ class RequestLogger {
 					'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
 					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],
 				];
+				if ( !empty( $context['syntax'] ) ) {
+					$request['payload']['syntax'] = join( ',', $context['syntax'] );
+				}
 				$allHits = array_merge( $allHits, $request['hits'] );
 				if ( $log->isCachedResponse() ) {
 					$request['payload']['cached'] = 'true';

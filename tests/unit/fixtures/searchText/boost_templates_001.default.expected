@@ -195,6 +195,7 @@
         ],
         "size": 20,
         "stats": [
+            "boost-templates",
             "full_text"
         ]
     }

@@ -211,6 +211,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "insource",
             "suggest"
         ],
         "suggest": {

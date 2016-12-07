@@ -263,7 +263,9 @@
         ],
         "size": 20,
         "stats": [
-            "full_text"
+            "full_text",
+            "intitle",
+            "query_string"
         ]
     }
 }

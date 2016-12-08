@@ -55,14 +55,26 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$categories = array_slice(
-			explode( '|', $value ),
-			0,
-			$this->maxConditions
-		);
+		$categories = explode( '|', $value );
+		if ( count( $categories ) > $this->maxConditions ) {
+			$context->addWarning(
+				'cirrussearch-feature-too-many-conditions',
+				$key,
+				$this->maxConditions
+			);
+			$categories = array_slice(
+				$categories,
+				0,
+				$this->maxConditions
+			);
+		}
 		$filter = $this->matchPageCategories( $categories );
 		if ( $filter === null ) {
 			$context->setResultsPossible( false );
+			$context->addWarning(
+				'cirrussearch-incategory-feature-no-valid-categories',
+				$key
+			);
 		}
 
 		return [ $filter, false ];

@@ -396,6 +396,10 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
+		foreach ( $this->searchContext->getWarnings() as $warning ) {
+			call_user_func_array( [ $status, 'warning' ], $warning );
+		}
+
 		return $status;
 	}
 

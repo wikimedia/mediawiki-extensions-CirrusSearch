@@ -186,6 +186,11 @@ class SearchContext {
 	];
 
 	/**
+	 * @var array[] Warnings to be passed into StatusValue::warning()
+	 */
+	private $warnings = [];
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -728,4 +733,18 @@ class SearchContext {
 		$this->extraScoreBuilders[] = $rescore;
 	}
 
+	/**
+	 * @param string $message i18n message key
+	 */
+	public function addWarning( $message /*, parameters... */ ) {
+		$this->warnings[] = func_get_args();
+	}
+
+	/**
+	 * @return array[] Array of arrays. Each sub array is a set of values
+	 *  suitable for creating an i18n message.
+	 */
+	public function getWarnings() {
+		return $this->warnings;
+	}
 }

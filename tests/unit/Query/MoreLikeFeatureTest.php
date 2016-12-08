@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\MediaWikiServices;
 use Title;
@@ -27,7 +28,7 @@ use Title;
  *
  * @group CirrusSearch
  */
-class MoreLikeFeatureTest extends CirrusTestCase {
+class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function applyProvider() {
 		return [
@@ -143,5 +144,25 @@ class MoreLikeFeatureTest extends CirrusTestCase {
 				$this->assertEquals( '', $result, 'Term must be empty string' );
 			}
 		}
+	}
+
+	public function testWarningsForUnknownPages() {
+		MediaWikiServices::getInstance()->getLinkCache()
+			->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
+		$this->assertWarnings(
+			new MoreLikeFeature( new SearchConfig() ),
+			[],
+			'morelike:Some page'
+		);
+		$this->assertWarnings(
+			new MoreLikeFeature( new SearchConfig() ),
+			[],
+			'morelike:Some page|Title that doesnt exist'
+		);
+		$this->assertWarnings(
+			new MoreLikeFeature( new SearchConfig() ),
+			[ [ 'cirrussearch-mlt-feature-no-valid-titles', 'morelike' ] ],
+			'morelike:Title that doesnt exist'
+		);
 	}
 }

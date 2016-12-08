@@ -64,5 +64,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Name of the completion profile classic.",
 	"cirrussearch-completion-profile-classic-pref-desc": "Description of the completion profile classic.",
 	"cirrussearch-timed-out": "Message displayed to user when the search query gave up due to timeout before completing.",
-	"cirrussearch-regex-timed-out": "Message displayed to user when the regex search query gave up due to timeout before completing."
+	"cirrussearch-regex-timed-out": "Message displayed to user when the regex search query gave up due to timeout before completing.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Warning shown to users when a search keyword for numeric file features used something other than a number.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Warning shown to users when a search keyword for numeric file features used multiple arguments with an invalid sign qualifier.",
+	"cirrussearch-feature-not-available": "Warning shown to users when an unavailable search keyword is used.",
+	"cirrussearch-feature-too-many-conditions": "Warning shown to users when more conditions than are allowed were provided to a keyword feature.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Warning shown to users when no valid categories were found with their incategory keyword.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Warning shown to users when no valid titles were found with the provided 'morelike' keyword.",
+	"cirrussearch-mlt-not-configured": "Warning shown to users when issuing a 'more like this' query and the wiki hasn't configured it."
 }

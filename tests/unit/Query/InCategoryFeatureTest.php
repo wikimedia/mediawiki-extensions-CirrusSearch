@@ -157,4 +157,24 @@ class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 			->will( $this->returnValue( $db ) );
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
+
+	public function testTooManyCategoriesWarning() {
+		$this->assertWarnings(
+			new InCategoryFeature( new \HashConfig( [
+				'CirrusSearchMaxIncategoryOptions' => 2,
+			] ) ),
+			[ [ 'cirrussearch-feature-too-many-conditions', 'incategory', 2 ] ],
+			'incategory:a|b|c'
+		);
+	}
+
+	public function testCategoriesMustExistWarning() {
+		$this->assertWarnings(
+			new InCategoryFeature( new \HashConfig( [
+				'CirrusSearchMaxIncategoryOptions' => 2,
+			] ) ),
+			[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ],
+			'incategory:id:74,id:18'
+		);
+	}
 }

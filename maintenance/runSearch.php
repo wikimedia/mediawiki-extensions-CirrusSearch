@@ -76,7 +76,11 @@ class RunSearch extends Maintenance {
 	 * to override current settings.
 	 */
 	protected function applyGlobals() {
-		$options = json_decode( $this->getOption( 'options', 'false' ), true );
+		$optionsData = $this->getOption( 'options', 'false' );
+		if ( substr_compare( $optionsData, 'B64://', 0, strlen( 'B64://' ) ) === 0 ) {
+			$optionsData = base64_decode( substr( $optionsData, strlen( 'B64://' ) ) );
+		}
+		$options = json_decode( $optionsData, true );
 		if ( $options ) {
 			foreach ( $options as $key => $value ) {
 				if ( array_key_exists( $key, $GLOBALS ) ) {

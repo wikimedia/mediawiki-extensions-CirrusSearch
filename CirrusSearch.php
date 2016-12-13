@@ -1145,6 +1145,7 @@ $wgResourceModules += [
 		'messages' => [],
 		'remoteExtPath' => 'CirrusSearch',
 		'localBasePath' => __DIR__,
+		'targets' => [ 'desktop', 'mobile' ],
 	],
 ];
 

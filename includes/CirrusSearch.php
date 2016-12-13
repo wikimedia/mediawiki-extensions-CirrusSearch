@@ -205,6 +205,15 @@ class CirrusSearch extends SearchEngine {
 				continue;
 			}
 			$lang = $detector->detect( $this, $term );
+			if ( $lang === $this->config->get( 'wgLanguageCode' ) ) {
+				// The query is in the wiki language so we
+				// don't need to actually try another wiki.
+				// Note that this may not be very accurate for
+				// wikis that use deprecated language codes
+				// but the interwiki resolver should not return
+				// ourselves.
+				continue;
+			}
 			$wiki = MediaWikiServices::getInstance()
 				->getService( InterwikiResolver::SERVICE )
 				->getSameProjectWikiByLang( $lang );

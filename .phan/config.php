@@ -12,7 +12,7 @@ $cirrusDirs = ['includes', 'maintenance', 'profiles', '.phan/stubs'];
 $otherDirs = [
 	'includes', 'vendor', 'maintenance', 'languages',
 	'extensions/Elastica', 'extensions/GeoData', 'extensions/BetaFeatures',
-	'extensions/CirrusSearch/vendor',
+	'extensions/CirrusSearch/vendor', 'extensions/SiteMatrix',
 ];
 foreach ( $cirrusDirs as $dir ) {
 	$directoryList[] = "$IP/extensions/CirrusSearch/$dir";

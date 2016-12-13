@@ -681,6 +681,19 @@ setup_suggest = lambda do |world|
   end
 end
 
+geo = false
+setup_geo = lambda do |world|
+  unless geo
+    world.steps %(
+    Given a page named San Jose exists with contents San Jose is a nice city located at {{#coordinates:primary|37.333333|-121.9}}.
+      And a page named Santa Clara exists with contents Santa Clara is a nice city located at {{#coordinates:primary|37.354444|-121.969167}}.
+      And a page named Cupertino exists with contents Cupertino is a nice city located at {{#coordinates:primary|37.3175|-122.041944}}.
+    )
+    geo = true
+  end
+end
+
+
 ruwiki = false
 setup_ruwiki = lambda do |world|
   unless ruwiki
@@ -934,4 +947,7 @@ Before("@filesearch") do
 end
 Before("@ru") do
   setup_ruwiki.call(self)
+end
+Before("@geo") do
+  setup_geo.call(self)
 end

@@ -398,7 +398,7 @@ class Searcher extends ElasticsearchIntermediary {
 						'docIds' => $docIds,
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$this->connection->setTimeout( $this->getTimeout() );
+					$this->connection->setTimeout( $this->getClientTimeout() );
 					// We use a search query instead of _get/_mget, these methods are
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
@@ -442,7 +442,7 @@ class Searcher extends ElasticsearchIntermediary {
 						'timeout' => $this->getTimeout(),
 					];
 
-					$this->connection->setTimeout( $queryOptions['timeout'] );
+					$this->connection->setTimeout( $this->getClientTimeout() );
 					$pageType = $this->connection->getNamespaceType( $this->indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
@@ -647,7 +647,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$search = new MultiSearch( $this->connection->getClient() );
 		$search->addSearches( $searches );
 
-		$this->connection->setTimeout( $this->getTimeout() );
+		$this->connection->setTimeout( $this->getClientTimeout() );
 
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
@@ -908,6 +908,9 @@ class Searcher extends ElasticsearchIntermediary {
 		return 'CirrusSearch-Search';
 	}
 
+	/**
+	 * @return string search retrieval timeout
+	 */
 	private function getTimeout() {
 		if ( $this->searchContext->getSearchType() === 'regex' ) {
 			$type = 'regex';
@@ -916,6 +919,19 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		return $this->config->getElement( 'CirrusSearchSearchShardTimeout', $type );
+	}
+
+	/**
+	 * @return int the client side timeout
+	 */
+	private function getClientTimeout() {
+		if ( $this->searchContext->getSearchType() === 'regex' ) {
+			$type = 'regex';
+		} else {
+			$type = 'default';
+		}
+
+		return $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', $type );
 	}
 
 	/**

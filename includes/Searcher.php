@@ -842,6 +842,7 @@ class Searcher extends ElasticsearchIntermediary {
 					400
 				);
 			} else {
+				/** @suppress PhanDeprecatedClass */
 				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 					" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 			}

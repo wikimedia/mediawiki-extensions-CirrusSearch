@@ -186,6 +186,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					400
 				);
 			} else {
+				/** @suppress PhanDeprecatedClass */
 				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
 					" ($requestLength > " . Searcher::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 			}
@@ -227,10 +228,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			'CirrusSearch-Completion',
 			$this->user,
 			function() use( $index, $suggest, $queryOptions, $profiles, $text ) {
-				$log = $this->startNewLog( "{queryType} search for '{query}'", $this->queryType, [
+				$log = $this->newLog( "{queryType} search for '{query}'", $this->queryType, [
 					'query' => $text,
 					'offset' => $this->offset,
 				] );
+				$this->start( $log );
 				try {
 					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
 					if( $result->isOk() ) {

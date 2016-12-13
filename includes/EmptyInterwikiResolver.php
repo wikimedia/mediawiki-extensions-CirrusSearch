@@ -11,6 +11,7 @@ class EmptyInterwikiResolver implements InterwikiResolver {
 	}
 
 	/**
+	 * @param string $wikiId
 	 * @return string|null the interwiki identified for this $wikiId or null if none found
 	 */
 	public function getInterwikiPrefix( $wikiId ) {
@@ -18,6 +19,7 @@ class EmptyInterwikiResolver implements InterwikiResolver {
 	}
 
 	/**
+	 * @param string $lang
 	 * @return string[] a single elt array [ 'iw_prefix' => 'wikiId' ] or [] if none found
 	 */
 	public function getSameProjectWikiByLang( $lang ) {

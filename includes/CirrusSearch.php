@@ -218,14 +218,14 @@ class CirrusSearch extends SearchEngine {
 				break;
 			}
 		}
-		if ( $detected === null ) {
-			Searcher::appendLastLogPayload( 'langdetect', 'failed' );
-			return null;
-		} else {
+		if ( is_array( $detected  ) ) {
 			// Report language detection with search metrics
 			// TODO: do we still need this metric? (see T151796)
 			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;
 			return reset( $detected );
+		} else {
+			Searcher::appendLastLogPayload( 'langdetect', 'failed' );
+			return null;
 		}
 	}
 

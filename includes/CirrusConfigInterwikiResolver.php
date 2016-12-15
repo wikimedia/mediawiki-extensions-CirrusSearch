@@ -46,6 +46,9 @@ class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
 		if ( is_null ( $crossLanguage ) ) {
 			$crossLanguage = [];
 		}
+		$crossLanguage = array_filter( $crossLanguage, function( $entry ) {
+			return $entry !== $this->config->getWikiId();
+		} );
 		$prefixesByWiki = array_flip( $sisterProjects ) + array_flip( $crossLanguage );
 		return [
 			'sister_projects' => $sisterProjects,

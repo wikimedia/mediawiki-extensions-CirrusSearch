@@ -21,6 +21,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$this->assertEquals( 'no', $resolver->getInterwikiPrefix( 'nowiki' ) );
 		$this->assertEquals( 'b', $resolver->getInterwikiPrefix( 'enwikibooks' ) );
 		$this->assertEquals( null, $resolver->getInterwikiPrefix( 'simplewiki' ) );
+		$this->assertEquals( null, $resolver->getInterwikiPrefix( 'enwiki' ) );
 
 		// Test sister projects
 		$this->assertArrayHasKey( 'voy', $resolver->getSisterProjectPrefixes() );
@@ -45,6 +46,12 @@ class InterwikiResolverTest extends CirrusTestCase {
 			[],
 			$resolver->getSameProjectWikiByLang( 'ccc' )
 		);
+		$this->assertEquals(
+			[],
+			$resolver->getSameProjectWikiByLang( 'en' ),
+			'enwiki should not find itself.'
+		);
+
 	}
 
 	/**
@@ -187,11 +194,20 @@ class InterwikiResolverTest extends CirrusTestCase {
 				'crosslang', 'nl',
 				[],
 			],
+			'enwikinews cross lang lookup should not find itself' => [
+				'enwikinews',
+				'crosslang', 'en',
+				[],
+			],
 		];
 	}
 
 	private function getCirrusConfigInterwikiResolver() {
-		$this->setMwGlobals( [
+		$wikiId = 'enwiki';
+		$myGlobals = [
+			'wgDBprefix' => null,
+			'wgDBName' => $wikiId,
+			'wgLanguageCode' => 'en',
 			'wgCirrusSearchInterwikiSources' => [
 				'voy' => 'enwikivoyage',
 				'wikt' => 'enwiktionary',
@@ -200,14 +216,21 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'wgCirrusSearchLanguageToWikiMap' => [
 				'fr' => 'fr',
 				'nb' => 'no',
+				'en' => 'en',
 			],
 			'wgCirrusSearchWikiToNameMap' => [
 				'fr' => 'frwiki',
 				'no' => 'nowiki',
+				'en' => 'enwiki',
 			]
-		] );
+		];
+		$this->setMwGlobals( $myGlobals );
+		$myGlobals['_wikiID'] = $wikiId;
+		// We need to reset this service so it can load wgInterwikiCache
+		$config = new HashSearchConfig( $myGlobals, ['inherit'] );
 		$resolver = MediaWikiServices::getInstance()
-			->getService( InterwikiResolver::SERVICE );
+			->getService( InterwikiResolverFactory::SERVICE )
+			->getResolver( $config );
 		$this->assertEquals( CirrusConfigInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}

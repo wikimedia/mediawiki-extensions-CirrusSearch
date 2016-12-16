@@ -5,22 +5,33 @@ $excludeAnalysisDirectoryList = [];
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
-	$IP = realpath( __DIR__ . '/../../..' );
+	$IP = realpath( __DIR__ . '/../../../..' );
 }
 
-$cirrusDirs = ['includes', 'maintenance', 'profiles', '.phan/stubs'];
+$cirrusDirs = ['includes', 'maintenance', 'profiles', 'tests/phan/stubs'];
 $otherDirs = [
 	'includes', 'vendor', 'maintenance', 'languages',
-	'extensions/Elastica', 'extensions/GeoData', 'extensions/BetaFeatures',
+	'extensions/Elastica', 'extensions/BetaFeatures',
 	'extensions/CirrusSearch/vendor', 'extensions/SiteMatrix',
 ];
+// Use '.' if possible as the path to cirrus to keep output filenames short
+if ( getcwd() === realpath( __DIR__ . '/../../' ) ) {
+	$cirrusIP = '.';
+} else {
+	$cirrusIP = "$IP/extensions/CirrusSearch";
+}
 foreach ( $cirrusDirs as $dir ) {
-	$directoryList[] = "$IP/extensions/CirrusSearch/$dir";
+	$directoryList[] = "$cirrusIP/$dir";
 }
 foreach ( $otherDirs as $dir ) {
 	$fullpath = "$IP/$dir";
-	$directoryList[] = $fullpath;
-	$excludeAnalysisDirectoryList[] = $fullpath;
+	// Some directories, like CirrusSearch vendor, are optional. The
+	// required deps may have been installed at the top level of mediawiki
+	// or some such
+	if ( is_dir( $fullpath ) ) {
+		$directoryList[] = $fullpath;
+		$excludeAnalysisDirectoryList[] = $fullpath;
+	}
 }
 
 /**

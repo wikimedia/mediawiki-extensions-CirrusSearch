@@ -32,6 +32,19 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 	'limit' => 3,
 ];
 
+// Reset this value in case it was set to do some testing
+// in FullyFeaturedConfig.php
+$wgCirrusSearchICUFoldingUnicodeSetFilter = null;
+
+// Move to prod like defaults now
+$wgCirrusSearchSimilarityProfile = 'wmf_defaults';
+$wgCirrusSearchRescoreProfile = 'wsum_inclinks';
+
+// Activate devel options useful for relforge
+$wgCirrusSearchDevelOptions = [
+        'morelike_collect_titles_from_elastic' => true,
+	'ignore_missing_rev' => true,
+];
 
 // Specific settings
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc" ) ) {

@@ -49,5 +49,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "접두어 검색",
 	"cirrussearch-pref-completion-legacy-section-legend": "전통적인 '입력하면서 검색' 제안 알고리즘입니다.",
 	"cirrussearch-completion-profile-classic-pref-name": "전통적인 접두어 검색",
-	"cirrussearch-completion-profile-classic-pref-desc": "오자를 교정하지 않습니다. 제목의 처음과 일치시킵니다."
+	"cirrussearch-completion-profile-classic-pref-desc": "오자를 교정하지 않습니다. 제목의 처음과 일치시킵니다.",
+	"cirrussearch-timed-out": "검색 시간이 초과되어 일부 결과만 표시합니다."
 }

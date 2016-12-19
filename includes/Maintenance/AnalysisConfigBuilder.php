@@ -916,6 +916,7 @@ STEMMER_RULES
 		'en-gb' => true,
 		'simple' => true,
 		'fr' => true,
+		'he' => true,
 	];
 
 	/**

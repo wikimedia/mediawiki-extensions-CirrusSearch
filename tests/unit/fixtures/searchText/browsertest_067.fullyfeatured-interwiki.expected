@@ -107,7 +107,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "query_string"
             ]
         }
     },
@@ -219,7 +220,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "query_string"
             ]
         }
     },
@@ -462,7 +464,8 @@
             ],
             "size": 20,
             "stats": [
-                "full_text"
+                "full_text",
+                "query_string"
             ]
         }
     }

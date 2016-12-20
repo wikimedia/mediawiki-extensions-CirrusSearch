@@ -50,6 +50,7 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": "main page",
+            "syntax": [],
             "tookMs": 0
         },
         "level": "debug",

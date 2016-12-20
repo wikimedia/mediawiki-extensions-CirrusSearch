@@ -147,6 +147,7 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": null,
+            "syntax": [],
             "tookMs": 0
         },
         "level": "debug",
@@ -168,6 +169,7 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": null,
+            "syntax": [],
             "tookMs": 0
         },
         "level": "debug",

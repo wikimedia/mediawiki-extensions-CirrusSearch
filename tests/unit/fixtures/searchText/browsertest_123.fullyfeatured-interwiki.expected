@@ -396,6 +396,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "hastemplate",
             "suggest"
         ],
         "suggest": {

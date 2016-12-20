@@ -514,7 +514,12 @@ class Searcher extends ElasticsearchIntermediary {
 			$query->setParam( 'rescore', $this->searchContext->getRescore() );
 		}
 
-		$query->addParam( 'stats', $this->searchContext->getSearchType() );
+		foreach ( $this->searchContext->getSyntaxUsed() as $syntax ) {
+			$query->addParam( 'stats', $syntax );
+		}
+		if ( $this->searchContext->getSearchType() == 'full_text' ) {
+			$query->addParam( 'stats', 'full_text' );
+		}
 		switch ( $this->sort ) {
 		case 'relevance':
 			break;  // The default
@@ -621,6 +626,8 @@ class Searcher extends ElasticsearchIntermediary {
 				// parent::buildLogContext will replace the '' with an
 				// actual suggestion.
 				'suggestion' => $this->searchContext->getSuggest() ? '' : null,
+				// Used syntax
+				'syntax' => $this->searchContext->getSyntaxUsed(),
 			]
 		);
 

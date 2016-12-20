@@ -208,6 +208,7 @@
         ],
         "size": 20,
         "stats": [
+            "filebits",
             "full_text"
         ]
     }

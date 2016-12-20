@@ -393,6 +393,7 @@
         ],
         "size": 20,
         "stats": [
+            "filetype",
             "full_text",
             "suggest"
         ],

@@ -208,6 +208,7 @@
         "size": 20,
         "stats": [
             "fileres",
+            "filter_only",
             "full_text"
         ],
         "stored_fields": [

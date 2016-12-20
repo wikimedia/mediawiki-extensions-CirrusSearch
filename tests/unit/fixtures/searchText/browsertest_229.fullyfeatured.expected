@@ -212,6 +212,7 @@
         ],
         "size": 20,
         "stats": [
+            "filter_only",
             "full_text",
             "phrase_match_prefix"
         ],

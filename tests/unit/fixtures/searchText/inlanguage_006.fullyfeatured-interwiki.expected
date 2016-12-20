@@ -196,6 +196,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "inlanguage"
             ],
@@ -417,6 +418,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "inlanguage"
             ],
@@ -622,6 +624,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "inlanguage"
             ],
@@ -827,6 +830,7 @@
             ],
             "size": 20,
             "stats": [
+                "filter_only",
                 "full_text",
                 "inlanguage"
             ],

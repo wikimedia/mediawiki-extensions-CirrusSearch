@@ -206,6 +206,7 @@
         "size": 20,
         "stats": [
             "filemime",
+            "filter_only",
             "full_text"
         ],
         "stored_fields": [

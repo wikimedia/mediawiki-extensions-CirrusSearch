@@ -211,6 +211,7 @@
             "size": 5,
             "stats": [
                 "filew",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -446,6 +447,7 @@
             "size": 5,
             "stats": [
                 "filew",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -665,6 +667,7 @@
             "size": 5,
             "stats": [
                 "filew",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -884,6 +887,7 @@
             "size": 20,
             "stats": [
                 "filew",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [

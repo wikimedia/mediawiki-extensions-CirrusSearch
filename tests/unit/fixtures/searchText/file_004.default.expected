@@ -209,6 +209,7 @@
         "size": 20,
         "stats": [
             "filew",
+            "filter_only",
             "full_text"
         ],
         "stored_fields": [

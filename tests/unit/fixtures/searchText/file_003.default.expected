@@ -208,6 +208,7 @@
         "size": 20,
         "stats": [
             "filebits",
+            "filter_only",
             "full_text"
         ],
         "stored_fields": [

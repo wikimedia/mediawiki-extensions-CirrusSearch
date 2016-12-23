@@ -260,27 +260,7 @@ that has everything required to run Cirrus.
 
 Hooks
 -----
-CirrusSearch provides hooks that other extensions can make use of to extend the core schema and
-modify documents.
-
-There are currently two phases to building cirrus documents: the parse phase and the links phase.
-The parse phase then the links phase is run when the article's rendered text would change (actual
-article change and template change).  Only the links phase is run when an article is newly links
-or unlinked.
-
-Note that this whole thing is a somewhat experimental feature at this point and the API hasn't
-really been settled.
-
-'CirrusSearchAnalysisConfig': Allows to hook into the configuration for analysis
- &config - multi-dimensional configuration array for analysis of various languages and fields
- $builder - instance of MappingConfigBuilder, for easier use of utility methods to build fields
-
-'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
- &config - multi-dimensional configuration array that contains Elasticsearch document configuration.
-   The 'page' index contains configuration for Elasticsearch documents representing pages.
-   The 'namespace' index contains namespace configuration for Elasticsearch documents representing
-   namespaces.
-
+See docs/hooks.txt.
 
 Validating a new version of Elasticsearch
 -----------------------------------------

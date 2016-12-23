@@ -69,10 +69,9 @@ class SearchContext {
 	private $rescoreProfile;
 
 	/**
-	 * @var array[] nested array of arrays. Each child array contains three keys:
-	 * coord, radius and weight. Used for geographic radius boosting.
+	 * @var FunctionScoreBuilder[] Extra scoring builders to use.
 	 */
-	private $geoBoosts = [];
+	private $extraScoreBuilders = [];
 
 	/**
 	 * @var bool Could this query possibly return results?
@@ -184,6 +183,7 @@ class SearchContext {
 		'near_match' => 10,
 		'prefix' => 2,
 	];
+
 	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
@@ -316,31 +316,10 @@ class SearchContext {
 	}
 
 	/**
-	 * @param string the rescore profile to use
+	 * @param string $rescoreProfile the rescore profile to use
 	 */
 	public function setRescoreProfile( $rescoreProfile ) {
 		$this->rescoreProfile = $rescoreProfile;
-	}
-
-	/**
-	 * @return array[] nested array of arrays. Each child array contains three keys:
-	 * coord, radius and weight
-	 */
-	public function getGeoBoosts() {
-		return $this->geoBoosts;
-	}
-
-	/**
-	 * @param Coord $coord Coordinates to boost near
-	 * @param int $radius radius to boost within, in meters
-	 * @param float $weight Number to multiply score by when within radius
-	 */
-	public function addGeoBoost( Coord $coord, $radius, $weight ) {
-		$this->geoBoosts[] = [
-			'coord' => $coord,
-			'radius' => $radius,
-			'weight' => $weight,
-		];
 	}
 
 	/**
@@ -474,7 +453,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @param AbstractQuery Query that should be used for highlighting if different
+	 * @param AbstractQuery $query Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
 	public function setHighlightQuery( AbstractQuery $query ) {
@@ -491,6 +470,7 @@ class SearchContext {
 	}
 
 	/**
+	 * @param ResultsType $resultsType
 	 * @return array|null Highlight portion of query to be sent to elasticsearch
 	 */
 	public function getHighlight( ResultsType $resultsType ) {
@@ -710,7 +690,8 @@ class SearchContext {
 	}
 
 	/**
-	 * @param string set the original search term
+	 * Set the original search term
+	 * @param string $term
 	 */
 	public function setOriginalSearchTerm( $term ) {
 		$this->originalSearchTerm = $term;
@@ -722,4 +703,21 @@ class SearchContext {
 	public function escaper() {
 		return $this->escaper;
 	}
+
+	/**
+	 * @return FunctionScoreBuilder[]
+	 */
+	public function getExtraScoreBuilders() {
+		return $this->extraScoreBuilders;
+	}
+
+	/**
+	 * Add custom scoring function to the context.
+	 * The rescore builder will pick it up.
+	 * @param FunctionScoreBuilder $rescore
+	 */
+	public function addCustomRescoreComponent( FunctionScoreBuilder $rescore ) {
+		$this->extraScoreBuilders[] = $rescore;
+	}
+
 }

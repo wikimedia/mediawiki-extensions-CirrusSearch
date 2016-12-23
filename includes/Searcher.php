@@ -2,12 +2,14 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use CirrusSearch\Elastica\MultiSearch as MultiSearch;
+use Elastica\Exception\RuntimeException;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -17,6 +19,7 @@ use Status;
 use ApiUsageException;
 use UsageException;
 use User;
+
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -293,44 +296,63 @@ class Searcher extends ElasticsearchIntermediary {
 		$builderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
 		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $builderProfile );
 
+		$features = [
+			// Handle morelike keyword (greedy). This needs to be the
+			// very first item until combining with other queries
+			// is worked out.
+			new Query\MoreLikeFeature( $this->config ),
+			// Handle title prefix notation (greedy)
+			new Query\PrefixFeature(),
+			// Handle prefer-recent keyword
+			new Query\PreferRecentFeature( $this->config ),
+			// Handle local keyword
+			new Query\LocalFeature(),
+			// Handle insource keyword using regex
+			new Query\RegexInSourceFeature( $this->config ),
+			// Handle boost-templates keyword
+			new Query\BoostTemplatesFeature(),
+			// Handle hastemplate keyword
+			new Query\HasTemplateFeature(),
+			// Handle linksto keyword
+			new Query\LinksToFeature(),
+			// Handle incategory keyword
+			new Query\InCategoryFeature( $this->config ),
+			// Handle non-regex insource keyword
+			new Query\SimpleInSourceFeature(),
+			// Handle intitle keyword
+			new Query\InTitleFeature(),
+			// inlanguage keyword
+			new Query\LanguageFeature(),
+			// File types
+			new Query\FileTypeFeature(),
+			// File numeric characteristics - size, resolution, etc.
+			new Query\FileNumericFeature(),
+		];
+
+		$extraFeatures = [];
+		\Hooks::run( 'CirrusSearchAddQueryFeatures', [ $this->config, &$extraFeatures ] );
+		foreach ( $extraFeatures as $extra ) {
+			if ( $extra instanceof SimpleKeywordFeature ) {
+				$features[] = $extra;
+			} else {
+				LoggerFactory::getInstance( 'CirrusSearch' )
+					->warning( 'Skipped invalid feature of class ' . get_class( $extra ) .
+					           ' - should be instanceof SimpleKeywordFeature' );
+			}
+		}
+
+		/** @var FullTextQueryBuilder $qb */
 		$qb = new $builderSettings['builder_class'](
 			$this->config,
-			[
-				// Handle morelike keyword (greedy). This needs to be the
-				// very first item until combining with other queries
-				// is worked out.
-				new Query\MoreLikeFeature( $this->config ),
-				// Handle title prefix notation (greedy)
-				new Query\PrefixFeature(),
-				// Handle prefer-recent keyword
-				new Query\PreferRecentFeature( $this->config ),
-				// Handle local keyword
-				new Query\LocalFeature(),
-				// Handle insource keyword using regex
-				new Query\RegexInSourceFeature( $this->config ),
-				// Handle neartitle, nearcoord keywords, and their boosted alternates
-				new Query\GeoFeature(),
-				// Handle boost-templates keyword
-				new Query\BoostTemplatesFeature(),
-				// Handle hastemplate keyword
-				new Query\HasTemplateFeature(),
-				// Handle linksto keyword
-				new Query\LinksToFeature(),
-				// Handle incategory keyword
-				new Query\InCategoryFeature( $this->config ),
-				// Handle non-regex insource keyword
-				new Query\SimpleInSourceFeature(),
-				// Handle intitle keyword
-				new Query\InTitleFeature(),
-				// inlanguage keyword
-				new Query\LanguageFeature(),
-				// File types
-				new Query\FileTypeFeature(),
-				// File numeric characteristics - size, resolution, etc.
-				new Query\FileNumericFeature(),
-			],
+			$features,
 			$builderSettings['settings']
 		);
+
+
+
+		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
+			throw new RuntimeException( "Bad builder class configured: {$builderSettings['builder_class']}" );
+		}
 
 		$showSuggestion = $showSuggestion && $this->offset == 0
 			&& $this->config->get( 'CirrusSearchEnablePhraseSuggest' );

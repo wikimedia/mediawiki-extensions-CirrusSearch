@@ -2,10 +2,10 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\Query\GeoFeature;
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\AbstractQuery;
+use Hooks;
 use MWNamespace;
 
 /**
@@ -97,6 +97,7 @@ class RescoreBuilder {
 	 *
 	 * @param array $rescoreDef
 	 * @return FunctionScore|null the rescore query
+	 * @throws InvalidRescoreProfileException
 	 */
 	private function buildRescoreQuery( array $rescoreDef ) {
 		switch( $rescoreDef['type'] ) {
@@ -127,6 +128,7 @@ class RescoreBuilder {
 	 *
 	 * @param array $profile
 	 * @return array the supported rescore profile.
+	 * @throws InvalidRescoreProfileException
 	 */
 	private function getSupportedProfile( array $profile ) {
 		if ( !is_array( $profile['supported_namespaces'] ) ) {
@@ -167,6 +169,7 @@ class RescoreBuilder {
 	/**
 	 * @param string $profileName the profile to load
 	 * @return array the rescore profile identified by $profileName
+	 * @throws InvalidRescoreProfileException
 	 */
 	private function getFallbackProfile( $profileName ) {
 		$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
@@ -221,8 +224,9 @@ class FunctionScoreChain {
 	 * Builds a new function score chain.
 	 *
 	 * @param SearchContext $context
-	 * @param string $chainName the name of the chain (must be a valid
+	 * @param string        $chainName the name of the chain (must be a valid
 	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $chainName ) {
 		$this->chainName = $chainName;
@@ -242,6 +246,7 @@ class FunctionScoreChain {
 	/**
 	 * @return FunctionScore|null the rescore query or null none of functions were
 	 *  needed.
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function buildRescoreQuery() {
 		if ( !isset( $this->chain['functions'] ) ) {
@@ -250,6 +255,12 @@ class FunctionScoreChain {
 		foreach( $this->chain['functions'] as $func ) {
 			$impl = $this->getImplementation( $func );
 			$impl->append( $this->functionScore );
+		}
+		// Add extensions
+		if ( !empty( $this->chain['add_extensions'] ) ) {
+			foreach ( $this->context->getExtraScoreBuilders() as $extBuilder ) {
+				$extBuilder->append( $this->functionScore );
+			}
 		}
 		if ( !$this->functionScore->isEmptyFunction() ) {
 			return $this->functionScore;
@@ -260,6 +271,8 @@ class FunctionScoreChain {
 	/**
 	 * @param array $func
 	 * @return FunctionScoreBuilder
+	 * @throws InvalidRescoreProfileException
+	 * @suppress PhanTypeMismatchReturn phan does not understand hooks and by-ref parameters
 	 */
 	private function getImplementation( $func ) {
 		$weight = isset ( $func['weight'] ) ? $func['weight'] : 1;
@@ -286,10 +299,16 @@ class FunctionScoreChain {
 			return new LogMultFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
 		case 'geomean':
 			return new GeoMeanFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
-		case 'georadius':
-			return new GeoRadiusFunctionScoreBuilder( $this->context, $weight );
 		default:
-			throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
+			$builder = null;
+			Hooks::run( 'CirrusSearchScoreBuilder', [ $func, $this->context, &$builder ] );
+			if ( !$builder ) {
+				throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
+			}
+			/**
+			 * @var $builder FunctionScoreBuilder
+			 */
+			return $builder;
 		}
 	}
 }
@@ -635,8 +654,9 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float $weight
-	 * @param array $profile
+	 * @param float         $weight
+	 * @param array         $profile
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
@@ -667,6 +687,7 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * @param float $M
 	 * @param float $N
 	 * @return float
+	 * @throws InvalidRescoreProfileException
 	 */
 	private function findCenterFactor( $M, $N ) {
 		// Neutral point is found by resolving
@@ -719,8 +740,9 @@ class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float $weight
-	 * @param array $profile
+	 * @param float         $weight
+	 * @param array         $profile
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
@@ -779,8 +801,9 @@ class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float $weight
-	 * @param array $profile
+	 * @param float         $weight
+	 * @param array         $profile
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
@@ -834,8 +857,9 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float $weight
-	 * @param array $profile
+	 * @param float         $weight
+	 * @param array         $profile
+	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
@@ -951,22 +975,6 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 		}
 		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $exponentialDecayExpression,
 			$parameters, 'expression' ), null, $this->weight );
-	}
-}
-
-/**
- * Builds a boost for documents based on geocoordinates.
- * Reads its params from SearchContext::geoBoost. Initialized
- * by special syntax in user query.
- */
-class GeoRadiusFunctionScoreBuilder extends FunctionScoreBuilder {
-	public function append( FunctionScore $functionScore ) {
-		foreach ( $this->context->getGeoBoosts() as $config ) {
-			$functionScore->addWeightFunction(
-				$this->weight * $config['weight'],
-				GeoFeature::createQuery( $config['coord'], $config['radius'] )
-			);
-		}
 	}
 }
 

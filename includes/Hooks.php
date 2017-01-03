@@ -765,8 +765,8 @@ class Hooks {
 
 	/**
 	 * @param string $term
-	 * @param SearchResultSet|null &$titleMatches
-	 * @param SearchResultSet|null &$textMatches
+	 * @param SearchResultSet|null $titleMatches
+	 * @param SearchResultSet|null $textMatches
 	 */
 	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
 		global $wgOut;

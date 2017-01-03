@@ -768,7 +768,7 @@ class Hooks {
 	 * @param SearchResultSet|null &$titleMatches
 	 * @param SearchResultSet|null &$textMatches
 	 */
-	public static function onSpecialSearchResults( $term, &$titleMatches, &$textMatches ) {
+	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
 		global $wgOut;
 
 		$wgOut->addModules( 'ext.cirrus.serp' );

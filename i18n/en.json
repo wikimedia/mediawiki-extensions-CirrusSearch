@@ -43,7 +43,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Default (recommended)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrects up to two typos. Resolves close redirects.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrase matching (recommended for longer article titles)",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrects up to two types. Resolves close redirects. Matches subphrase in titles.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrects up to two typos. Resolves close redirects. Matches subphrase in titles.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strict mode (advanced)",
 	"cirrussearch-completion-profile-strict-pref-desc": "No typo correction. No accent folding. Strict matching.",
 	"cirrussearch-completion-profile-normal-pref-name": "Redirect mode (advanced)",

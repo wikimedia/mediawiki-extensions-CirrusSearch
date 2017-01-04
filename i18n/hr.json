@@ -1,12 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
-			"MaGa"
+			"MaGa",
+			"Ivi104"
 		]
 	},
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Novi način pretrage",
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
 	"cirrussearch-completionsuggester-pref": "Prijedlozi pretraživanja",
-	"cirrussearch-completionsuggester-desc": "Novi algoritam koji pretražuje dok upisujete pojmove. Kad je omogućen, prozor za pretragu će rabiti prijedloge pretraživanja novog algoritma."
+	"cirrussearch-completionsuggester-desc": "Novi algoritam koji pretražuje dok upisujete pojmove. Kad je omogućen, prozor za pretragu će rabiti prijedloge pretraživanja novog algoritma.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Zadano (preporučeno)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dvije pogreške. Vodi na preusmjeravanja bliska upisanome.",
+	"cirrussearch-completion-profile-strict-pref-name": "Strogi način (napredno)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Ne ispravlja pogreške. Ne zanemaruje naglaske. Traži točno upisano.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Ne ispravlja pogreške. Vodi na preusmjeravanja bliska upisanome.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Prefiksna pretraga",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasična prefiksna pretraga",
+	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja pogreške. Traži početke naziva."
 }

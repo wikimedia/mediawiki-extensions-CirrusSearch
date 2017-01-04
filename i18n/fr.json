@@ -57,7 +57,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Par défaut (recommandé)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige jusqu’à deux fautes. Résout les redirections proches.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondance de partie de phrase (recommandé pour les titres d’article plus longs)",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige jusqu’à deux fautes. Résout les redirections proches. Fait correspondre les parties de phrase dans les titres.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige jusqu’à deux fautes de frappe. Résout les redirections proches. Fait correspondre les parties de phrase dans les titres.",
 	"cirrussearch-completion-profile-strict-pref-name": "Mode strict (avancé)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Aucune correction de faute. Aucune abstraction d’accent. Correspondance stricte.",
 	"cirrussearch-completion-profile-normal-pref-name": "Mode redirection (avancé)",

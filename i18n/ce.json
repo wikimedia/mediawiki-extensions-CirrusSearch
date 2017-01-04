@@ -11,7 +11,11 @@
 	"cirrussearch-now-using": "ХӀокху викис лелош ю керла лахаран таро. ([[mw:Special:MyLanguage/Help:CirrusSearch|Мадарра]])",
 	"cirrussearch-pref-label": "Керла лахар",
 	"cirrussearch-pref-desc": "Леладе Википедин керла лахар, цо дукху меттанаш ловш ду, керла хилам а гойту, кхин тӀе кепаш чура йоза карадо.",
+	"cirrussearch-completionsuggester-pref": "Йозанан чаккхе",
+	"cirrussearch-pref-completion-profile-help": "Лохуш дерг ша кховдадо (Лоху чуйоккхушехь).",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Ӏад йитарца (магийна)"
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Ӏад йитарца (магийна)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Шиъ гӀалат нисдо, нийса цӀеран тӀехьажайой.",
+	"cirrussearch-completion-profile-strict-pref-name": "Дика аьтту"
 }

@@ -9,6 +9,7 @@ use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\UserTesting;
@@ -80,6 +81,11 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $request;
 
+    /**
+     * CirrusSearchIndexFieldFactory
+     */
+    private $searchIndexFieldFactory;
+
 	/**
 	 * Sets the behaviour for the dump query, dump result, etc debugging features.
 	 * By default echo's and dies. If this is set to false it will be returned
@@ -101,6 +107,8 @@ class CirrusSearch extends SearchEngine {
 			: $baseName;
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
+        $this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
+
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
 	}
@@ -772,23 +780,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchIndexField
 	 */
 	public function makeSearchFieldMapping( $name, $type ) {
-		$overrides = $this->config->get( 'CirrusSearchFieldTypeOverrides' );
-		$mappings = $this->config->get( 'CirrusSearchFieldTypes' );
-		if ( !isset( $mappings[$type] ) ) {
-			return new NullIndexField();
-		}
-		$klass = $mappings[$type];
-
-		// Check if a specific class is provided for this field
-		if ( isset( $overrides[$name] ) ) {
-			if ( $klass !== $overrides[$name] && !is_subclass_of( $overrides[$name], $klass ) ) {
-				throw new \Exception( "Specialized class " . $overrides[$name] .
-					" for field $name is not compatible with type class $klass" );
-			}
-			$klass = $overrides[$name];
-		}
-
-		return new $klass( $name, $type, $this->config );
+		return $this->searchIndexFieldFactory->makeSearchFieldMapping( $name, $type );
 	}
 
 	/**

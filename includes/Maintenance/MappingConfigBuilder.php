@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Search\CirrusIndexField;
-use CirrusSearch\Search\IntegerIndexField;
+use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
@@ -60,6 +60,11 @@ class MappingConfigBuilder {
 	private $engine;
 
 	/**
+	 * @var CirrusSearchIndexFieldFactory
+	 */
+	private $searchIndexFieldFactory;
+
+	/**
 	 * Constructor
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
 	 * @param SearchConfig $config
@@ -70,9 +75,11 @@ class MappingConfigBuilder {
 			$config =
 				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 		}
+
 		$this->config = $config;
 		$this->engine = new \CirrusSearch();
 		$this->engine->setConfig( $config );
+		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $config );
 	}
 
 	/**
@@ -126,25 +133,21 @@ class MappingConfigBuilder {
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
 				],
-				'wiki' => $this->buildKeywordField( 'wiki' )->getMapping( $this->engine ),
-				'namespace' => $this->buildLongField( 'namespace' )->getMapping( $this->engine ),
-				'namespace_text' => $this->buildKeywordField( 'namespace_text' )
+				'wiki' => $this->searchIndexFieldFactory
+					->newKeywordField( 'wiki' )
 					->getMapping( $this->engine ),
-				'title' => $this->buildStringField( 'title',
+				'namespace' => $this->searchIndexFieldFactory
+					->newLongField( 'namespace' )
+					->getMapping( $this->engine ),
+				'namespace_text' => $this->searchIndexFieldFactory
+					->newKeywordField( 'namespace_text' )
+					->getMapping( $this->engine ),
+				'title' => $this->searchIndexFieldFactory->newStringField( 'title',
 					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST,
 					$titleExtraAnalyzers )->setMappingFlags( $flags )->getMapping( $this->engine ),
-				'text' => array_merge_recursive( $this->buildStringField( 'text', null,
-					( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : [ ] )
-					->setMappingFlags( $flags )->getMapping( $this->engine ), [
-						'fields' => [
-							'word_count' => [
-								'type' => 'token_count',
-								'store' => true,
-								'analyzer' => 'plain',
-							]
-						]
-					] ),
-				'text_bytes' => $this->buildLongField( 'text_bytes' )
+				'text' => $this->getTextFieldMapping( $flags ),
+				'text_bytes' => $this->searchIndexFieldFactory
+					->newLongField( 'text_bytes' )
 					->setFlag( SearchIndexField::FLAG_NO_INDEX )
 					->getMapping( $this->engine ),
 				'source_text' => $this->buildSourceTextStringField( 'source_text' )
@@ -152,23 +155,30 @@ class MappingConfigBuilder {
 				'redirect' => [
 					'dynamic' => false,
 					'properties' => [
-						'namespace' => $this->buildLongField( 'namespace' )
+						'namespace' => $this->searchIndexFieldFactory
+							->newLongField( 'namespace' )
 							->getMapping( $this->engine ),
-						'title' => $this->buildStringField( 'redirect.title',
-							TextIndexField::ENABLE_NORMS | TextIndexField::SPEED_UP_HIGHLIGHTING |
-							TextIndexField::COPY_TO_SUGGEST, $titleExtraAnalyzers )
+						'title' => $this->searchIndexFieldFactory
+							->newStringField( 'redirect.title', TextIndexField::ENABLE_NORMS
+								| TextIndexField::SPEED_UP_HIGHLIGHTING
+								| TextIndexField::COPY_TO_SUGGEST,
+								$titleExtraAnalyzers
+							)
 							->setMappingFlags( $flags )
 							->getMapping( $this->engine ),
 					]
 				],
-				'incoming_links' => $this->buildLongField( 'incoming_links' )
+				'incoming_links' => $this->searchIndexFieldFactory
+					->newLongField( 'incoming_links' )
 					->getMapping( $this->engine ),
-				'local_sites_with_dupe' => $this->buildKeywordField( 'local_sites_with_dupe' )
+				'local_sites_with_dupe' => $this->searchIndexFieldFactory
+					->newKeywordField( 'local_sites_with_dupe' )
 					->setFlag( SearchIndexField::FLAG_CASEFOLD )
 					->getMapping( $this->engine ),
 				'suggest' => $suggestField,
 				// FIXME: this should be moved to Wikibase Client
-				'wikibase_item' => $this->buildKeywordField( 'wikibase_item' )
+				'wikibase_item' => $this->searchIndexFieldFactory
+					->newKeywordField( 'wikibase_item' )
 					->getMapping( $this->engine ),
 			]
 		];
@@ -211,7 +221,8 @@ class MappingConfigBuilder {
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
 			//  1. It is built with copy_to and not stored.
 			//  2. The term frequency information is all whoppy compared to the "real" source text.
-			$allField = $this->buildStringField( 'all', TextIndexField::ENABLE_NORMS );
+			$allField = $this->searchIndexFieldFactory->
+				newStringField( 'all', TextIndexField::ENABLE_NORMS );
 			$page['properties']['all'] =
 				$allField->setMappingFlags( $flags )->getMapping( $this->engine );
 			$page = $this->setupCopyTo( $page, $wgCirrusSearchWeights, 'all' );
@@ -254,7 +265,8 @@ class MappingConfigBuilder {
 					'index_options' => 'docs',
 					'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 				],
-				'wiki' => $this->buildKeywordField( 'wiki' )->getMapping( $this->engine ),
+				'wiki' => $this->searchIndexFieldFactory
+					->newKeywordField( 'wiki' )->getMapping( $this->engine ),
 			],
 		];
 
@@ -288,25 +300,6 @@ class MappingConfigBuilder {
 	}
 
 	/**
-	 * Build a string field that does standard analysis for the language.
-	 * @param string $fieldName the field name
-	 * @param int $options Field options:
-	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but bad for array fields and useless
-	 *     for fields that don't get involved in the score.
-	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
-	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
-	 *     strings or fields with many values.
-	 * @param array $extra Extra analyzers for this field beyond the basic text and plain.
-	 * @return TextIndexField definition of the field
-	 */
-	protected function buildStringField( $fieldName, $options = null, $extra = [] ) {
-		$field = new TextIndexField( $fieldName, SearchIndexField::INDEX_TYPE_TEXT, $this->config,
-				$extra );
-		$field->setTextOptions( $options );
-		return $field;
-	}
-
-	/**
 	 * Build the source_text index field
 	 *
 	 * @param string $fieldName usually "source_text"
@@ -317,21 +310,29 @@ class MappingConfigBuilder {
 	}
 
 	/**
-	 * Create a long field.
-	 * @param string $name Field name
-	 * @return IntegerIndexField
+	 * @param int $flags
+	 * @return array
 	 */
-	protected function buildLongField( $name ) {
-		return new IntegerIndexField( $name, SearchIndexField::INDEX_TYPE_INTEGER, $this->config );
-	}
+	private function getTextFieldMapping( $flags ) {
+		$stringFieldMapping = $this->searchIndexFieldFactory->newStringField(
+			'text',
+			null,
+			( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : [ ]
+		)->setMappingFlags( $flags )->getMapping( $this->engine );
 
-	/**
-	 * Create a long field.
-	 * @param string $name Field name
-	 * @return KeywordIndexField
-	 */
-	protected function buildKeywordField( $name ) {
-		return new KeywordIndexField( $name, SearchIndexField::INDEX_TYPE_KEYWORD, $this->config );
+		$extraFieldMapping = [
+			'fields' => [
+				'word_count' => [
+					'type' => 'token_count',
+					'store' => true,
+					'analyzer' => 'plain',
+				]
+			]
+		];
+
+		$textFieldMapping = array_merge_recursive( $stringFieldMapping, $extraFieldMapping );
+
+		return $textFieldMapping;
 	}
 }
 

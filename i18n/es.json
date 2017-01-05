@@ -40,6 +40,7 @@
 	"cirrussearch-pref-completion-section-legend": "La [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester herramienta de sugerencia de compleción] es un algoritmo que realiza sugerencias con una mejor corrección de errores tipográficos teniendo en cuenta la relevancia en la búsqueda.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predeterminado (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige hasta dos errores tipográficos. Resuelve redirecciones próximas.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige hasta dos errores tipográficos. Resuelve redirecciones cercanas. Identifica correspondencias con subfrases en los títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modo estricto (avanzado)",
 	"cirrussearch-completion-profile-strict-pref-desc": "No corrige errores tipográficos. Es inflexible con los acentos. Correspondencia estricta.",
 	"cirrussearch-completion-profile-normal-pref-name": "Modo de redirección (avanzado)",

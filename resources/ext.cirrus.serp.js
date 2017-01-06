@@ -1,5 +1,5 @@
 ( function ( $, mw ) {
-	$( document ).ready( function () {
+	$( function () {
 		var token = mw.config.get( 'wgCirrusSearchRequestSetToken' ),
 			uri = new mw.Uri( location.href );
 		if ( history.replaceState && token ) {

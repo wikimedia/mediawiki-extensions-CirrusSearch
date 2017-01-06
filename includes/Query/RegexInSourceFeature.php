@@ -71,7 +71,7 @@ class RegexInSourceFeature implements KeywordFeature {
 				$insensitive = !empty( $matches['insensitive'] );
 
 				$filter = $this->regexPlugin && in_array( 'use', $this->regexPlugin )
-					? $this->buildRegexWithPlugin( $matches['pattern'], $insensitive )
+					? $this->buildRegexWithPlugin( $matches['pattern'], $insensitive, $context )
 					: $this->buildRegexWithGroovy( $matches['pattern'], $insensitive );
 
 				if ( empty( $matches['not'] ) ) {
@@ -93,9 +93,10 @@ class RegexInSourceFeature implements KeywordFeature {
 	 *
 	 * @param string $pattern The regular expression to match
 	 * @param bool $insensitive Should the match be case insensitive?
+	 * @param SearchContext $context
 	 * @return AbstractQuery Regular expression query
 	 */
-	private function buildRegexWithPlugin( $pattern, $insensitive ) {
+	private function buildRegexWithPlugin( $pattern, $insensitive, SearchContext $context ) {
 		$filter = new SourceRegex( $pattern, 'source_text', 'source_text.trigram' );
 		// set some defaults
 		$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );
@@ -107,6 +108,11 @@ class RegexInSourceFeature implements KeywordFeature {
 		}
 		$filter->setCaseSensitive( !$insensitive );
 		$filter->setLocale( $this->languageCode );
+
+		$timeout = $context->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
+		if ( $timeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
+			$filter->setTimeout( $timeout );
+		}
 
 		return $filter;
 	}

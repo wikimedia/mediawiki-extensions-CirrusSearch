@@ -34,7 +34,7 @@ really been settled.
  $pages - list of WikiPage objects which have been indexed.
 
 'CirrusSearchAddQueryFeatures': Allows extensions to add query parser features
- &config - SearchConfig object which holds current search configuration
+ &$config - SearchConfig object which holds current search configuration
  &$extraFeatures - array holding feature objects. This is where the extension should add its features.
  The feature class should implement \CirrusSearch\Query\KeywordFeature.
 

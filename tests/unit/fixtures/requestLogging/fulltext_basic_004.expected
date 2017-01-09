@@ -22,7 +22,9 @@
                     "limit": 20,
                     "maxScore": -1,
                     "namespaces": [],
-                    "payload": [],
+                    "payload": {
+                        "syntax": "full_text,full_text_querystring"
+                    },
                     "query": "does not exist or at least i hope not",
                     "queryType": "full_text",
                     "suggestion": "",
@@ -50,7 +52,10 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": "",
-            "syntax": [],
+            "syntax": [
+                "full_text",
+                "full_text_querystring"
+            ],
             "tookMs": 0
         },
         "level": "debug",

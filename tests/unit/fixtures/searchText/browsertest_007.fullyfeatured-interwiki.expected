@@ -269,7 +269,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_simple_match"
             ]
         }
     },
@@ -543,7 +544,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_simple_match"
             ]
         }
     },
@@ -949,6 +951,7 @@
             "size": 20,
             "stats": [
                 "full_text",
+                "full_text_simple_match",
                 "suggest"
             ],
             "suggest": {

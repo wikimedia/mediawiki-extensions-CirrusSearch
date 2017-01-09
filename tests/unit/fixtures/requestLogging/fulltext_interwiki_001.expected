@@ -38,7 +38,9 @@
                     "limit": 20,
                     "maxScore": 6.937646,
                     "namespaces": [],
-                    "payload": [],
+                    "payload": {
+                        "syntax": "full_text,full_text_querystring"
+                    },
                     "query": "main",
                     "queryType": "full_text",
                     "suggestion": "",
@@ -64,7 +66,9 @@
                     "limit": 5,
                     "maxScore": 3.138195,
                     "namespaces": [],
-                    "payload": [],
+                    "payload": {
+                        "syntax": "full_text,full_text_querystring"
+                    },
                     "query": "main",
                     "queryType": "full_text",
                     "suggestion": "",
@@ -118,7 +122,9 @@
                     "limit": 5,
                     "maxScore": 9.647443,
                     "namespaces": [],
-                    "payload": [],
+                    "payload": {
+                        "syntax": "full_text,full_text_querystring"
+                    },
                     "query": "main",
                     "queryType": "full_text",
                     "suggestion": "",
@@ -147,7 +153,10 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": null,
-            "syntax": [],
+            "syntax": [
+                "full_text",
+                "full_text_querystring"
+            ],
             "tookMs": 0
         },
         "level": "debug",
@@ -169,7 +178,10 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": null,
-            "syntax": [],
+            "syntax": [
+                "full_text",
+                "full_text_querystring"
+            ],
             "tookMs": 0
         },
         "level": "debug",

@@ -396,6 +396,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "full_text_simple_match",
             "hastemplate",
             "suggest"
         ],

@@ -139,7 +139,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_querystring"
             ]
         }
     },
@@ -283,7 +284,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_querystring"
             ]
         }
     },
@@ -559,6 +561,7 @@
             "size": 20,
             "stats": [
                 "full_text",
+                "full_text_querystring",
                 "suggest"
             ],
             "suggest": {

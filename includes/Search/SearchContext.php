@@ -178,6 +178,7 @@ class SearchContext {
 	 */
 	private static $syntaxWeights = [
 		// regex is really tough
+		'full_text' => 10,
 		'regex' => PHP_INT_MAX,
 		'more_like' => 100,
 		'near_match' => 10,
@@ -339,7 +340,7 @@ class SearchContext {
 
 	/**
 	 * @var string|null $type type of syntax to check, null for any type
-	 * @return bool True when the query uses $type kind of special syntax
+	 * @return bool True when the query uses $type kind of syntax
 	 */
 	public function isSyntaxUsed( $type = null ) {
 		if ( $type === null ) {
@@ -349,7 +350,19 @@ class SearchContext {
 	}
 
 	/**
-	 * @return string[] List of special syntax used in the query
+	 * @return boolean true if a special keyword was used in the query
+	 */
+	public function isSpecialKeywordUsed() {
+		// full_text is not considered a special keyword
+		return !empty( array_diff_key( $this->syntaxUsed, [
+			'full_text' => true,
+			'full_text_simple_match' => true,
+			'full_text_querystring' => true,
+		] ) );
+	}
+
+	/**
+	 * @return string[] List of syntax used in the query
 	 */
 	public function getSyntaxUsed() {
 		return array_keys( $this->syntaxUsed );
@@ -386,11 +399,6 @@ class SearchContext {
 			return 'full_text';
 		}
 		arsort( $this->syntaxUsed );
-		if ( reset( $this->syntaxUsed ) == 1 ) {
-			// To preserve stability of stats with low-complexity syntaxes
-			return 'full_text';
-		}
-
 		// Return the first heaviest syntax
 		return key( $this->syntaxUsed );
 	}

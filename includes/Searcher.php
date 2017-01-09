@@ -539,9 +539,6 @@ class Searcher extends ElasticsearchIntermediary {
 		foreach ( $this->searchContext->getSyntaxUsed() as $syntax ) {
 			$query->addParam( 'stats', $syntax );
 		}
-		if ( $this->searchContext->getSearchType() == 'full_text' ) {
-			$query->addParam( 'stats', 'full_text' );
-		}
 		switch ( $this->sort ) {
 		case 'relevance':
 			break;  // The default

@@ -147,6 +147,7 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
             "regex"
         ]
     }

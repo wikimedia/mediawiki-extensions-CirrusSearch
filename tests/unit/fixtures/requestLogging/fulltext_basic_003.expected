@@ -22,7 +22,9 @@
                     "limit": 20,
                     "maxScore": -1,
                     "namespaces": [],
-                    "payload": [],
+                    "payload": {
+                        "syntax": "full_text,full_text_querystring"
+                    },
                     "query": "mani page",
                     "queryType": "full_text",
                     "suggestion": "main page",
@@ -50,7 +52,10 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": "main page",
-            "syntax": [],
+            "syntax": [
+                "full_text",
+                "full_text_querystring"
+            ],
             "tookMs": 0
         },
         "level": "debug",

@@ -1,5 +1,5 @@
 {
-    "description": "prefix search for 'prefix test prefix:\"user_talk:\"'",
+    "description": "full_text search for 'prefix test prefix:\"user_talk:\"'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -212,6 +212,8 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
+            "full_text_querystring",
             "prefix",
             "suggest"
         ],

@@ -260,6 +260,7 @@
         "stats": [
             "filetype",
             "full_text",
+            "full_text_querystring",
             "suggest"
         ],
         "suggest": {

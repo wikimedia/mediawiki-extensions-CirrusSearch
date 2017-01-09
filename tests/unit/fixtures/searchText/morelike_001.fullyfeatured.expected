@@ -214,6 +214,7 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
             "more_like"
         ]
     }

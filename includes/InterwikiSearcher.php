@@ -33,6 +33,11 @@ class InterwikiSearcher extends Searcher {
 	const MAX_RESULTS = 5;
 
 	/**
+	 * @var int Max complexity allowed to run on other indices
+	 */
+	const MAX_COMPLEXITY = 10;
+
+	/**
 	 * Constructor
 	 * @param Connection $connection
 	 * @param SearchConfig $config
@@ -83,10 +88,9 @@ class InterwikiSearcher extends Searcher {
 		$this->buildFullTextSearch( $term, false );
 		$context = $this->searchContext;
 
-		foreach ( $this->searchContext->getSyntaxUsed() as $usedSyntax ) {
-			if ( $usedSyntax != 'full_text' && $usedSyntax != 'query_string' ) {
-				return null;
-			}
+		// Avoid costly queries to run on other indices
+		if ( $this->searchContext->getSearchComplexity() > self::MAX_COMPLEXITY ) {
+			return null;
 		}
 
 		$retval = [];

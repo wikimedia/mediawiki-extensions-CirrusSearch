@@ -76,6 +76,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			return parent::buildSearchTextQuery( $context, $fields,
 				$nearMatchFields, $queryString, $nearMatchQuery );
 		}
+		$context->addSyntaxUsed( 'full_text_simple_match', 5 );
 		$this->usedExpQuery = true;
 		$queryForMostFields = $this->buildExpQuery( $queryString );
 		if ( !$nearMatchQuery ) {

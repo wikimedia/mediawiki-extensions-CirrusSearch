@@ -265,6 +265,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "full_text_querystring",
             "incategory",
             "suggest"
         ],

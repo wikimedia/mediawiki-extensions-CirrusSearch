@@ -6,5 +6,7 @@
 	},
 	"cirrussearch-pref-label": "नविन शोध",
 	"cirrussearch-completionsuggester-pref": "पूर्णत्व सूचक",
-	"cirrussearch-completionsuggester-desc": "आपल्या टंकनासोबतच शोध घेणारा नविन गणनविधी. एकदा सक्षम केल्यावर,वरील उजव्या बाजूस असलेली शोधपेटी तो पूर्णत्व सूचक वापरेल."
+	"cirrussearch-completionsuggester-desc": "आपल्या टंकनासोबतच शोध घेणारा नविन गणनविधी. एकदा सक्षम केल्यावर,वरील उजव्या बाजूस असलेली शोधपेटी तो पूर्णत्व सूचक वापरेल.",
+	"cirrussearch-pref-completion-profile-help": "स्वयंपूर्णकरा (शोधा-जसे-आपण-टंकता) सुचवण्यांची वर्तणूक स्थापा.",
+	"prefs-completion": "शोध पूर्ण करणे"
 }

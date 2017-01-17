@@ -141,6 +141,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\BooleanIndexField' => __DIR__ . '/includes/Search/BooleanIndexField.php',
 	'CirrusSearch\\Search\\BoostTemplatesFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\CirrusIndexField' => __DIR__ . '/includes/Search/CirrusIndexField.php',
+	'CirrusSearch\\Search\\CirrusSearchIndexFieldFactory' => __DIR__ . '/includes/Search/CirrusSearchIndexFieldFactory.php',
 	'CirrusSearch\\Search\\CustomFieldFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\DatetimeIndexField' => __DIR__ . '/includes/Search/DatetimeIndexField.php',
 	'CirrusSearch\\Search\\EmptyResultSet' => __DIR__ . '/includes/Search/EmptyResultSet.php',

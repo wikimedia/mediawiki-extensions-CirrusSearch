@@ -112,6 +112,7 @@ class TextIndexField extends CirrusIndexField {
 		}
 
 		$extra = $this->extra;
+
 		if ( $this->mappingFlags & MappingConfigBuilder::PREFIX_START_WITH_ANY ) {
 			$extra[] = [
 				'analyzer' => 'word_prefix',

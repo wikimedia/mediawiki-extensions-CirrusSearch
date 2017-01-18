@@ -17,7 +17,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": false,
             "query": {
                 "bool": {
                     "filter": [
@@ -252,7 +251,8 @@
             "size": 5,
             "stats": [
                 "full_text"
-            ]
+            ],
+            "stored_fields": []
         }
     },
     {
@@ -273,7 +273,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": false,
             "query": {
                 "bool": {
                     "filter": [
@@ -508,7 +507,8 @@
             "size": 5,
             "stats": [
                 "full_text"
-            ]
+            ],
+            "stored_fields": []
         }
     },
     {
@@ -532,7 +532,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -896,6 +895,9 @@
             "stats": [
                 "full_text",
                 "suggest"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ],
             "suggest": {
                 "suggest": {

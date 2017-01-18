@@ -579,18 +579,6 @@ $wgCirrusSearchUpdateConflictRetryCount = 5;
 // Number of characters to include in article fragments.
 $wgCirrusSearchFragmentSize = 150;
 
-// Should we add a cache warmer that searches for the main page to the content
-// namespace?
-// @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
-$wgCirrusSearchMainPageCacheWarmer = true;
-
-// Other cache warmers.  Form is index name => array(searches).  See examples
-// commented out below.
-$wgCirrusSearchCacheWarmers = [];
-// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'foo bar';
-// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
-// $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
-
 // Whether to boost searches based on link counts. Default is true
 // which most wikis will want. Edge cases will want to turn this off.
 $wgCirrusSearchBoostLinks = true;

@@ -91,7 +91,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Maintenance\\UpdateSuggesterIndex' => __DIR__ . '/maintenance/updateSuggesterIndex.php',
 	'CirrusSearch\\Maintenance\\UpdateVersionIndex' => __DIR__ . '/maintenance/updateVersionIndex.php',
 	'CirrusSearch\\Maintenance\\Validators\\AnalyzersValidator' => __DIR__ . '/includes/Maintenance/Validators/AnalyzersValidator.php',
-	'CirrusSearch\\Maintenance\\Validators\\CacheWarmersValidator' => __DIR__ . '/includes/Maintenance/Validators/CacheWarmersValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\IndexAliasValidator' => __DIR__ . '/includes/Maintenance/Validators/IndexAliasValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\IndexAllAliasValidator' => __DIR__ . '/includes/Maintenance/Validators/IndexAllAliasValidator.php',
 	'CirrusSearch\\Maintenance\\Validators\\MappingValidator' => __DIR__ . '/includes/Maintenance/Validators/MappingValidator.php',

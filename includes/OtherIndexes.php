@@ -100,7 +100,7 @@ class OtherIndexes extends Updater {
 				$bool->addFilter( new \Elastica\Query\Term( [ 'namespace' => $title->getNamespace() ] ) );
 
 				$query = new \Elastica\Query( $bool );
-				$query->setFields( [] ); // We only need the _id so don't load the _source
+				$query->setStoredFields( [] ); // We only need the _id so don't load the _source
 				$query->setSize( 1 );
 
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );

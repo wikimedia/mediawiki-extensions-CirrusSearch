@@ -187,9 +187,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			'defaults to wiki id', false, true );
 		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
 			'to help debug unexpected configuration mismatches.' );
-		$maintenance->addOption( 'justCacheWarmers', 'Just validate that the cache warmers are correct ' .
-			'and perform no additional checking.  Use when you need to apply new cache warmers but ' .
-			"want to be sure that you won't apply any other changes at an inopportune time." );
 		$maintenance->addOption( 'justAllocation', 'Just validate the shard allocation settings.  Use ' .
 			"when you need to apply new cache warmers but want to be sure that you won't apply any other " .
 			'changes at an inopportune time.' );
@@ -241,11 +238,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$utils->checkElasticsearchVersion();
 			$this->availablePlugins = $utils->scanAvailablePlugins( $this->bannedPlugins );
 
-			if ( $this->getOption( 'justCacheWarmers', false ) ) {
-				$this->validateCacheWarmers();
-				return;
-			}
-
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
 				return;
@@ -261,7 +253,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
-			$this->validateCacheWarmers();
 			$this->validateAlias();
 			$this->updateVersions();
 			$this->indexNamespaces();
@@ -466,22 +457,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	protected function validateCacheWarmers() {
-		global $wgCirrusSearchMainPageCacheWarmer, $wgCirrusSearchCacheWarmers;
-
-		if ( $wgCirrusSearchMainPageCacheWarmer ) {
-			$wgCirrusSearchCacheWarmers['content'][] = \Title::newMainPage()->getText();
-		}
-		$cacheWarmers = isset( $wgCirrusSearchCacheWarmers[$this->indexType] ) ? $wgCirrusSearchCacheWarmers[$this->indexType] : [];
-
-		$warmers = new \CirrusSearch\Maintenance\Validators\CacheWarmersValidator( $this->indexType, $this->getPageType(), $cacheWarmers, $this );
-		$status = $warmers->validate();
-		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
-		}
-	}
-
-	/**
+	/*
 	 * @return \CirrusSearch\Maintenance\Validators\Validator
 	 */
 	private function getShardAllocationValidator() {

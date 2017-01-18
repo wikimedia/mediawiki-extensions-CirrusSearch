@@ -152,9 +152,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 		$this->addOption( 'indexChunkSize', 'Documents per shard to index in a batch.   ' .
-		    'Note when changing the number of shards that the old shard size is used, not the new ' .
-		    'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
-		    'singles works then lower this number.  Defaults to 100.', false, true );
+			'Note when changing the number of shards that the old shard size is used, not the new ' .
+			'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
+			'singles works then lower this number.  Defaults to 100.', false, true );
 		$this->addOption( 'indexRetryAttempts', 'Number of times to back off and retry ' .
 			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
@@ -426,7 +426,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$query = new Elastica\Query();
 		$query->setQuery( $bool );
-		$query->setFields( [ '_id' ] );
+		// TODO: _id should come back anyways, should this be empty array?
+		$query->setStoredFields( [ '_id' ] );
 
 		$scrollOptions = [
 			'search_type' => 'scan',
@@ -499,13 +500,13 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function optimize() {
 		$this->log("Optimizing index...");
-		$this->getIndex()->optimize( [ 'max_num_segments' => 1 ] );
+		$this->getIndex()->forcemerge( [ 'max_num_segments' => 1 ] );
 		$this->output("ok.\n");
 	}
 
 	private function expungeDeletes() {
 		$this->log("Purging deleted docs...");
-		$this->getIndex()->optimize( [ 'only_expunge_deletes' => true, 'flush' => false ] );
+		$this->getIndex()->forcemerge( [ 'only_expunge_deletes' => true, 'flush' => false ] );
 		$this->output("ok.\n");
 	}
 
@@ -520,7 +521,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$countIndices = [ Connection::CONTENT_INDEX_TYPE ];
 
 		$query = new Query();
-		$query->setFields( [ '_id', '_type', '_source' ] );
+		$query->setStoredFields( [ '_id', '_type', '_source' ] );
 		$query->setSource( [
 			'include' => $this->builder->getRequiredFields()
 		] );
@@ -541,7 +542,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		foreach ( $countIndices as $sourceIndexType ) {
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->addIndex( $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType ) );
-			$search->setOption( \Elastica\Search::OPTION_SEARCH_TYPE, \Elastica\Search::OPTION_SEARCH_TYPE_COUNT );
+			$search->getQuery()->setSize( 0 );
 			$mSearch->addSearch( $search );
 		}
 

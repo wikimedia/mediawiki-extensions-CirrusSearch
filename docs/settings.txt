@@ -862,25 +862,6 @@ Default:
 
 Number of characters to include in article fragments.
 
-; $wgCirrusSearchMainPageCacheWarmer
-
-Default:
-    $wgCirrusSearchMainPageCacheWarmer = true;
-
-Should we add a cache warmer that searches for the main page to the content
-namespace?
-See also: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
-
-; $wgCirrusSearchCacheWarmers
-
-Default:
-    $wgCirrusSearchCacheWarmers = [];
-
-Other cache warmers.  Form is index name => array(searches). Examples:
-    $wgCirrusSearchCacheWarmers[ 'content' ][] = 'foo bar';
-    $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
-    $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
-
 ; $wgCirrusSearchBoostLinks
 
 Default:

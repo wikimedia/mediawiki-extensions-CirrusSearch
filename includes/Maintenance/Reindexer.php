@@ -229,7 +229,7 @@ class Reindexer {
 		try {
 			// Reset the timeout just in case we lost it somewhere along the line
 			$this->setConnectionTimeout();
-			$this->index->optimize( [ 'max_num_segments' => 5 ] );
+			$this->index->forcemerge( [ 'max_num_segments' => 5 ] );
 			$this->output( "Done\n" );
 		} catch ( HttpException $e ) {
 			if ( $e->getMessage() === 'Operation timed out' ) {
@@ -312,7 +312,7 @@ class Reindexer {
 		$scrollId = null;
 		try {
 			$query = new Query();
-			$query->setFields( [ '_id', '_source' ] );
+			$query->setStoredFields( [ '_id', '_source' ] );
 			if ( $filter ) {
 				$bool = new \Elastica\Query\BoolQuery();
 				$bool->addFilter( $filter );

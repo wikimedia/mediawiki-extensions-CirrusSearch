@@ -282,6 +282,12 @@ class InterwikiResolverTest extends CirrusTestCase {
 		return $resolver;
 	}
 
+	protected function tearDown() {
+		MediaWikiServices::getInstance()
+			->resetServiceForTesting( 'InterwikiLookup' );
+		parent::tearDown();
+	}
+
 	private static function readDbListFile( $fileName ) {
 		return @file( $fileName, FILE_IGNORE_NEW_LINES );
 	}

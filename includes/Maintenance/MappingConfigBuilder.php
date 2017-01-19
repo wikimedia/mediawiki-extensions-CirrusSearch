@@ -107,7 +107,7 @@ class MappingConfigBuilder {
 		}
 
 		$suggestField = [
-			'type' => 'string',
+			'type' => 'text',
 			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
 			'index_options' => 'freqs',
 			'analyzer' => 'suggest',
@@ -116,7 +116,7 @@ class MappingConfigBuilder {
 		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {
 			$suggestField['fields'] = [
 				'reverse' => [
-					'type' => 'string',
+					'type' => 'text',
 					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest', 'reverse' ),
 					'index_options' => 'freqs',
 					'analyzer' => 'suggest_reverse',
@@ -230,14 +230,14 @@ class MappingConfigBuilder {
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
 			// is never used in phrase queries or highlighting.
 			$page[ 'properties' ][ 'all_near_match' ] = [
-				'type' => 'string',
+				'type' => 'text',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
 				'norms' => [ 'enabled' => false ],
 				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
 				'fields' => [
 					'asciifolding' => [
-						'type' => 'string',
+						'type' => 'text',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
 						'norms' => [ 'enabled' => false ],
@@ -259,11 +259,10 @@ class MappingConfigBuilder {
 			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'name' => [
-					'type' => 'string',
+					'type' => 'text',
 					'analyzer' => 'near_match_asciifolding',
 					'norms' => [ 'enabled' => false ],
 					'index_options' => 'docs',
-					'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 				],
 				'wiki' => $this->searchIndexFieldFactory
 					->newKeywordField( 'wiki' )->getMapping( $this->engine ),

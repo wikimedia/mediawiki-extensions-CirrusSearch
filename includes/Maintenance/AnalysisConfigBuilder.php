@@ -36,6 +36,11 @@ class AnalysisConfigBuilder {
 	const VERSION = '0.12';
 
 	/**
+	 * Maximum number of characters allowed in keyword terms.
+	 */
+	const KEYWORD_IGNORE_ABOVE = 5000;
+
+	/**
 	 * @var string Language code we're building analysis for
 	 */
 	private $language;
@@ -410,7 +415,7 @@ class AnalysisConfigBuilder {
 				'near_match_asciifolding' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => [ 'lowercase', 'asciifolding' ],
+					'filter' => [ 'truncate_keyword', 'lowercase', 'asciifolding' ],
 					'char_filter' => [ 'near_space_flattener' ],
 				],
 				'prefix' => [
@@ -430,10 +435,15 @@ class AnalysisConfigBuilder {
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase', 'prefix_ngram_filter' ],
 				],
+				'keyword' => [
+					'type' => 'custom',
+					'tokenizer' => 'no_splitting',
+					'filter' => [ 'truncate_keyword' ],
+				],
 				'lowercase_keyword' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => [ 'lowercase' ],
+					'filter' => [ 'truncate_keyword', 'lowercase' ],
 				],
 				'trigram' => [
 					'type' => 'custom',
@@ -470,6 +480,14 @@ class AnalysisConfigBuilder {
 				'asciifolding_preserve' => [
 					'type' => 'asciifolding',
 					'preserve_original' => true
+				],
+				// The 'keyword' type in ES seems like a hack
+				// and doesn't allow normalization (like lowercase)
+				// prior to 5.2. Instead we consistently use 'text'
+				// and truncate where necessary.
+				'truncate_keyword' => [
+					'type' => 'truncate',
+					'length' => self::KEYWORD_IGNORE_ABOVE,
 				],
 			],
 			'tokenizer' => [

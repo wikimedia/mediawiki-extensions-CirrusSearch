@@ -208,7 +208,7 @@ class MetaStoreIndex {
 			],
 			self::SANITIZE_TYPE => [
 				'properties' => [
-					'sanitize_job_wiki' => [ 'type' => 'string' ],
+					'sanitize_job_wiki' => [ 'type' => 'keyword' ],
 					'sanitize_job_created' => [
 						'type' => 'date',
 						'format' => 'epoch_second',
@@ -221,7 +221,7 @@ class MetaStoreIndex {
 						'type' => 'date',
 						'format' => 'epoch_second',
 					],
-					'sanitize_job_cluster' => [ 'type' => 'string' ],
+					'sanitize_job_cluster' => [ 'type' => 'keyword' ],
 					'sanitize_job_id_offset' => [ 'type' => 'long' ],
 					'sanitize_job_ids_sent' => [ 'type' => 'long' ],
 					'sanitize_job_jobs_sent' => [ 'type' => 'long' ],

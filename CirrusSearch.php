@@ -1041,6 +1041,12 @@ $wgCirrusSearchDevelOptions = [];
  */
 $wgCirrusSearchFiletypeAliases = [];
 
+/**
+ * Var to activate some workarounds about specific
+ * bugs/quirks found in elasticsearch.
+ */
+$wgCirrusSearchElasticQuirks = [];
+
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';
 $buildDocument = $includes . 'BuildDocument/';

@@ -226,10 +226,9 @@
                                         "queries": [
                                             {
                                                 "multi_match": {
-                                                    "boost": 2,
+                                                    "boost": 1.05,
                                                     "fields": [
-                                                        "redirect.title.plain^1",
-                                                        "redirect.title^0.3"
+                                                        "suggest"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "nabel prize",
@@ -238,9 +237,10 @@
                                             },
                                             {
                                                 "multi_match": {
-                                                    "boost": 2.1,
+                                                    "boost": 2,
                                                     "fields": [
-                                                        "suggest"
+                                                        "redirect.title.plain^1",
+                                                        "redirect.title^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "nabel prize",
@@ -382,8 +382,8 @@
                     "rescore_query": {
                         "multi_match": {
                             "fields": [
-                                "text.plain^0.1",
-                                "text^0.07"
+                                "text.plain^0.2",
+                                "text^0.14"
                             ],
                             "query": "nabel prize",
                             "slop": 1,

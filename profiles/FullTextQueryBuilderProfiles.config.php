@@ -54,7 +54,7 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 				// include them in a dismax with redirects
 				'suggest' => [
 					'is_plain' => true,
-					'boost' => 2.1,
+					'boost' => 1.05,
 					'in_dismax' => 'redirects_or_shingles',
 				],
 				// category should win over heading/opening
@@ -75,9 +75,9 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 			],
 			'phrase_rescore_fields' => [
 				// Low boost to counter high phrase rescore boost
-				'text' => 0.07,
+				'text' => 0.14,
 				// higher on text.plain for tests/browser/features/relevancy_api.feature:106
-				'text.plain' => 0.1,
+				'text.plain' => 0.2,
 			],
 			'dismax_settings' => [
 				// Use a tie breaker, avg field length is so

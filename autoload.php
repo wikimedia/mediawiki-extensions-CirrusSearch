@@ -16,7 +16,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\BuildDocument\\Builder' => __DIR__ . '/includes/BuildDocument/Builder.php',
 	'CirrusSearch\\BuildDocument\\Completion\\DefaultSortSuggestionsBuilder' => __DIR__ . '/includes/BuildDocument/Completion/DefaultSortSuggestionsBuilder.php',
 	'CirrusSearch\\BuildDocument\\Completion\\ExtraSuggestionsBuilder' => __DIR__ . '/includes/BuildDocument/Completion/ExtraSuggestionsBuilder.php',
-	'CirrusSearch\\BuildDocument\\Completion\\GeoSuggestionsBuilder' => __DIR__ . '/includes/BuildDocument/Completion/GeoSuggestionsBuilder.php',
 	'CirrusSearch\\BuildDocument\\Completion\\IncomingLinksScoringMethod' => __DIR__ . '/includes/BuildDocument/Completion/SuggestScoring.php',
 	'CirrusSearch\\BuildDocument\\Completion\\NaiveSubphrasesSuggestionsBuilder' => __DIR__ . '/includes/BuildDocument/Completion/NaiveSubphrasesSuggestionsBuilder.php',
 	'CirrusSearch\\BuildDocument\\Completion\\PQScore' => __DIR__ . '/includes/BuildDocument/Completion/SuggestScoring.php',

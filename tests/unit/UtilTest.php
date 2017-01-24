@@ -50,22 +50,6 @@ class UtilTest extends CirrusTestCase {
 		];
 	}
 
-	public function testChooseBestRedirect() {
-		$convert = function( $x ) {
-			$redirect = [];
-			foreach( $x as $t ) {
-				$redirect[] = [ 'title' => $t, 'namespace' => 0 ];
-			}
-			return $redirect;
-		};
-		$input = $convert( [ 'Al. Einstein', 'Albert Einstein', 'A. Einstein', 'Einstein, Albert' ] );
-		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'a', $input ) );
-		$this->assertEquals( 'Al. Einstein', Util::chooseBestRedirect( 'al', $input ) );
-		$this->assertEquals( 'Albert Einstein', Util::chooseBestRedirect( 'albet', $input ) );
-		$this->assertEquals( 'Einstein, Albert', Util::chooseBestRedirect( 'Einstein', $input ) );
-		$this->assertEquals( 'Einstein, Albert', Util::chooseBestRedirect( 'Ens', $input ) );
-	}
-
 	public function teststripQuestionMarks() {
 		// tests are input, strippingLevel, expectedOutput
 		$tests = [ [ 'pickles', 'all', 'pickles' ],

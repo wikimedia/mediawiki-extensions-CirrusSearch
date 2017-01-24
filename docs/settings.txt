@@ -1127,16 +1127,6 @@ often contains the phrase surname, firstname.
 
 NOTE: Experimental.
 
-; $wgCirrusSearchCompletionSuggesterGeoContext
-
-Default:
-    $wgCirrusSearchCompletionSuggesterGeoContext = ['build' => false];
-
-Builds extra fst with a geo context.
-Can generate a very large in-memory FST.
-
-NOTE: Experimental, no API endpoints are available yet.
-
 ; $wgCirrusSearchCompletionSuggesterHardLimit
 
 Default:
@@ -1159,16 +1149,6 @@ elasticsearch from rebalancing shards.
 On large wikis it's maybe better to create a new index because
 documents are indexed and optimised with replication disabled
 reducing the number of disk operation to primary shards only.
-
-; $wgCirrusSearchCompletionGeoContextSettings
-
-Default:
-    $wgCirrusSearchCompletionGeoContextSettings = $wgCirrusSearchCompletionGeoContextProfiles['default'];
-
-Profile for geo context search as you type suggestion (completion suggestion)
-(see profiles/SuggestProfiles.php for more details.)
-
-NOTE: This is an experimental API.
 
 ; $wgCirrusSearchEnableAltLanguage
 

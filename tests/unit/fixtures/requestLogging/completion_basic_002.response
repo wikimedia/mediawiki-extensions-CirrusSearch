@@ -1,19 +1,18 @@
-[
-    {
-        "_shards": {
-            "total": 4,
-            "successful": 4,
-            "failed": 0
-        },
-        "plain_stop": [
-            {
-                "text": "does not exist or at least i hope not",
-                "offset": 0,
-                "length": 37,
-                "options": []
-            }
-        ],
-        "plain_stop_fuzzy_1": [
+[{
+    "took": 28,
+    "timed_out": false,
+    "_shards": {
+        "total": 4,
+        "successful": 4,
+        "failed": 0
+    },
+    "hits": {
+        "total": 0,
+        "max_score": 0,
+        "hits": []
+    },
+    "suggest": {
+        "plain": [
             {
                 "text": "does not exist or at least i hope not",
                 "offset": 0,
@@ -29,7 +28,15 @@
                 "options": []
             }
         ],
-        "plain": [
+        "plain_stop": [
+            {
+                "text": "does not exist or at least i hope not",
+                "offset": 0,
+                "length": 37,
+                "options": []
+            }
+        ],
+        "plain_stop_fuzzy_1": [
             {
                 "text": "does not exist or at least i hope not",
                 "offset": 0,
@@ -38,4 +45,4 @@
             }
         ]
     }
-]
+}]

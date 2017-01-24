@@ -54,7 +54,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				'field' => 'suggest',
 				'min_query_len' => 0,
 				'fuzzy' => [
-					'fuzzyness' => 'AUTO',
+					'fuzziness' => 'AUTO',
 					'prefix_length' => 1,
 					'unicode_aware' => true,
 				],
@@ -80,7 +80,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				$simpleProfile, // The profile remains unmodified here
 				[
 					'plain' => [
-						'text' => 'complete me ', // keep trailing white spaces
+						'prefix' => 'complete me ', // keep trailing white spaces
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
@@ -99,20 +99,20 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				$simpleFuzzy, // The profiles remains unmodified here
 				[
 					'plain' => [
-						'text' => 'complete me ', // keep trailing white spaces
+						'prefix' => 'complete me ', // keep trailing white spaces
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
 						],
 					],
 					'plain-fuzzy' => [
-						'text' => 'complete me ', // keep trailing white spaces
+						'prefix' => 'complete me ', // keep trailing white spaces
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 15.0, // effect of fetch_limit_factor
 							// fuzzy config is simply copied from the profile
 							'fuzzy' => [
-								'fuzzyness' => 'AUTO',
+								'fuzziness' => 'AUTO',
 								'prefix_length' => 1,
 								'unicode_aware' => true,
 							],
@@ -149,21 +149,21 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				],
 				[
 					'plain' => [
-						'text' => 'complete me ', // keep trailing white spaces
+						'prefix' => 'complete me ', // keep trailing white spaces
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
 						],
 					],
 					'plain-variant-1' => [
-						'text' => 'variant1 ',
+						'prefix' => 'variant1 ',
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
 						],
 					],
 					'plain-variant-2' => [
-						'text' => 'variant2 ',
+						'prefix' => 'variant2 ',
 						'completion' => [
 							'field' => 'suggest',
 							'size' => 20, // effect of fetch_limit_factor
@@ -202,7 +202,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		}
 		foreach( $suggest as $key => $value ) {
 			// Make sure the query is truncated otherwise elastic won't send results
-			$this->assertTrue( mb_strlen( $value['text'] ) < SuggestBuilder::MAX_INPUT_LENGTH );
+			$this->assertTrue( mb_strlen( $value['prefix'] ) < SuggestBuilder::MAX_INPUT_LENGTH );
 		}
 		foreach( array_keys( $suggest ) as $sug ) {
 			// Makes sure we have the corresponding profile
@@ -257,22 +257,24 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		for( $i = 1; $i <= $max; $i++ ) {
 			$score = $max - $i;
 			$suggestions[] = [
-				'text'=> "$i:t:Title$i",
-				'score' => $score,
+				'_id' => $i.'t',
+				'text'=> "Title$i",
+				'_score' => $score,
 			];
 		}
 
 		$suggestData = [ [
-					'text' => 'Tit',
+					'prefix' => 'Tit',
 					'options' => $suggestions
 				] ];
 
 		$data = [
-			'_shards' => [],
-			'plain' => $suggestData,
-			'plain_fuzzy_2' => $suggestData,
-			'plain_stop' => $suggestData,
-			'plain_stop_fuzzy_2' => $suggestData,
+			'suggest' => [
+				'plain' => $suggestData,
+				'plain_fuzzy_2' => $suggestData,
+				'plain_stop' => $suggestData,
+				'plain_stop_fuzzy_2' => $suggestData,
+			],
 		];
 		$resp = new \Elastica\Response( $data );
 		return [

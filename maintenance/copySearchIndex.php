@@ -60,11 +60,8 @@ class CopySearchIndex extends Maintenance {
 		    'Note when changing the number of shards that the old shard size is used, not the new ' .
 		    'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
 		    'singles works then lower this number.  Defaults to 100.', false, true );
-		$this->addOption( 'reindexRetryAttempts', 'Number of times to back off and retry ' .
-			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
-			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
-			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
-		$this->addOption( 'processes', 'Number of processes to copy with. Defaults to 1', false, true );
+		$this->addOption( 'reindexSlices', 'Number of pieces to slice the scan into, roughly ' .
+			'equivilent to concurrency. Defaults to the number of shards', false, true );
 	}
 
 	public function execute() {
@@ -72,9 +69,8 @@ class CopySearchIndex extends Maintenance {
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
-		$reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 		$targetCluster = $this->getOption( 'targetCluster' );
-		$processes = $this->getOption( 'processes', 1 );
+		$slices = $this->getOption( 'reindexSlices', null );
 
 		$sourceConnection = $this->getConnection();
 		$targetConnection = $this->getConnection( $targetCluster );
@@ -102,10 +98,9 @@ class CopySearchIndex extends Maintenance {
 				$clusterSettings->getShardCount( $this->indexType ),
 				$clusterSettings->getReplicaCount( $this->indexType ),
 				$this->getMergeSettings(),
-				$this->getMappingConfig(),
 				$this
 		);
-		$reindexer->reindex( $processes, 1, $reindexRetryAttempts, $reindexChunkSize);
+		$reindexer->reindex( $slices, 1, $reindexChunkSize);
 		$reindexer->optimize();
 		$reindexer->waitForShards();
 	}
@@ -123,25 +118,6 @@ class CopySearchIndex extends Maintenance {
 		// If there aren't configured merge settings for this index type default to the content type.
 		return $wgCirrusSearchMergeSettings[ 'content' ];
 	}
-
-	/**
-	 * @return array
-	 */
-	protected function getMappingConfig() {
-		global $wgCirrusSearchPrefixSearchStartsWithAnyWord, $wgCirrusSearchPhraseSuggestUseText,
-		$wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
-
-		$builder = new MappingConfigBuilder( $wgCirrusSearchOptimizeIndexForExperimentalHighlighter );
-		$configFlags = 0;
-		if ( $wgCirrusSearchPrefixSearchStartsWithAnyWord ) {
-			$configFlags |= MappingConfigBuilder::PREFIX_START_WITH_ANY;
-		}
-		if ( $wgCirrusSearchPhraseSuggestUseText ) {
-			$configFlags |= MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT;
-		}
-		return $builder->buildConfig( $configFlags );
-	}
-
 }
 
 $maintClass = CopySearchIndex::class;

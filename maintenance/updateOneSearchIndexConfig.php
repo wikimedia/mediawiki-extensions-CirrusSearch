@@ -54,11 +54,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexChunkSize;
 
 	/**
-	 * @var int
-	 */
-	private $reindexRetryAttempts;
-
-	/**
 	 * @var string
 	 */
 	private $indexBaseName;
@@ -79,9 +74,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $tooFewReplicas = false;
 
 	/**
-	 * @var int number of processes to use when reindexing
+	 * @var int number of scan slices to use when reindexing
 	 */
-	private $reindexProcesses;
+	private $reindexSlices;
 
 	/**
 	 * @var string language code we're building for
@@ -170,19 +165,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  Updates performed while this".
 			"operation is in progress will be queued up in the job queue.  Defaults to false." );
-		$maintenance->addOption( 'reindexProcesses', 'Number of processes to use in reindex.  ' .
-			'Not supported on Windows.  Defaults to 1 on Windows and 5 otherwise.', false, true );
+		$maintenance->addOption( 'reindexSlices', 'Number of slices to use in reindex. Roughly '
+			. 'equivalent to the level of indexing parallelism. Defaults to number of shards.' );
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
 			'reindex failure.  Defaults to 5%.', false, true );
 		$maintenance->addOption( 'reindexChunkSize', 'Documents per shard to reindex in a batch.   ' .
-		    'Note when changing the number of shards that the old shard size is used, not the new ' .
-		    'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
-		    'singles works then lower this number.  Defaults to 100.', false, true );
-		$maintenance->addOption( 'reindexRetryAttempts', 'Number of times to back off and retry ' .
-			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
-			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
-			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
+			'Note when changing the number of shards that the old shard size is used, not the new ' .
+			'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
+			'singles works then lower this number.  Defaults to 100.', false, true );
 		$maintenance->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
 		$maintenance->addOption( 'debugCheckConfig', 'Print the configuration as it is checked ' .
@@ -213,11 +204,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->startOver = $this->getOption( 'startOver', false );
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
-		$this->reindexProcesses = $this->getOption( 'reindexProcesses', wfIsWindows() ? 1 : 5 );
+		$this->reindexSlices = $this->getOption( 'reindexSlices', null );
 		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(
 			$this->getOption( 'reindexAcceptableCountDeviation', '5%' ) );
 		$this->reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
-		$this->reindexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 		$this->printDebugCheckConfig = $this->getOption( 'debugCheckConfig', false );
 		$this->langCode = $wgLanguageCode;
 		$this->prefixSearchStartsWithAny = $wgCirrusSearchPrefixSearchStartsWithAnyWord;
@@ -422,7 +412,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$this->getMergeSettings(),
-			$this->getMappingConfig(),
 			$this,
 			explode( ',', $this->getOption( 'fieldsToDelete', '' ) )
 		);
@@ -433,7 +422,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSpecificIndexName(),
 			$this->startOver,
 			$reindexer,
-			[ $this->reindexProcesses, $this->refreshInterval, $this->reindexRetryAttempts, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ],
+			[ $this->reindexSlices, $this->refreshInterval, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ],
 			$this->getIndexSettingsValidators(),
 			$this->reindexAndRemoveOk,
 			$this->tooFewReplicas,

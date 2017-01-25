@@ -675,6 +675,8 @@ setup_suggest = lambda do |world|
         And a page named Zam Wilson exists with contents #REDIRECT [[Sam Wilson]]
         And a page named The Doors exists with contents The Doors were an American rock band formed in 1965 in Los Angeles.
         And a page named Hyperion Cantos/Endymion exists with contents Endymion is the third science fiction novel by Dan Simmons.
+        And a page named はーい exists with contents makes sure we do not fail to index empty tokens (T156234).
+        And I wait 5 seconds
         And I reindex suggestions
     )
     suggest = true

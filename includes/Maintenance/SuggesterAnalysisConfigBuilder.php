@@ -25,7 +25,7 @@ use CirrusSearch\SearchConfig;
  */
 
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
-	const VERSION = "1.2";
+	const VERSION = "1.3";
 
 	/**
 	 * @param string $langCode The language code to build config for
@@ -113,7 +113,16 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"token_limit" => [
 					"type" => "limit",
 					"max_token_count" => "20"
-				]
+				],
+				// Workaround what seems to be a bug in the
+				// completion suggester, empty tokens cause an
+				// issue similar to
+				// https://github.com/elastic/elasticsearch/pull/11158
+				// can be removed with es5 if we want
+				"remove_empty" => [
+					"type" => "length",
+					"min" => 1,
+				],
 			],
 			'analyzer' => [
 				"stop_analyzer" => [
@@ -122,6 +131,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						"lowercase",
 						"stop_filter",
 						"accentfolding",
+						"remove_empty",
 						"token_limit"
 					],
 					"tokenizer" => $textTokenizer,
@@ -134,6 +144,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"filter" => [
 						"lowercase",
 						"accentfolding",
+						"remove_empty",
 						"token_limit"
 					],
 					"tokenizer" => $textTokenizer,
@@ -142,6 +153,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"type" => "custom",
 					"char_filter" => [ 'word_break_helper' ],
 					"filter" => [
+						"remove_empty",
 						"token_limit",
 						"lowercase"
 					],
@@ -151,6 +163,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 					"type" => "custom",
 					"char_filter" => [ 'word_break_helper' ],
 					"filter" => [
+						"remove_empty",
 						"token_limit",
 						"lowercase"
 					],
@@ -164,6 +177,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"filter" => [
 					"lowercase",
 					"accentfolding",
+					"remove_empty",
 					"token_limit"
 				],
 				"tokenizer" => $textTokenizer,
@@ -173,6 +187,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				"filter" => [
 					"lowercase",
 					"accentfolding",
+					"remove_empty",
 					"token_limit"
 				],
 				"tokenizer" => $textTokenizer,

@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\InterwikiResultsType;
 use CirrusSearch\Search\ResultSet;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use SpecialPageFactory;
 use User;
@@ -117,7 +118,29 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		return array_merge( $retval, $results->getValue() );
+		$retval = array_merge( $retval, $results->getValue() );
+
+		if ( $this->isReturnRaw() ) {
+			return $retval;
+		}
+
+		switch ( $this->config->get( 'CirrusSearchCrossProjectOrder' ) ) {
+		case 'recall':
+			uasort( $retval, function( $a, $b ) {
+				return $b->getTotalHits() - $a->getTotalHits();
+			} );
+			return $retval;
+		case 'static':
+			return $retval;
+		default:
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				'wgCirrusSearchCrossProjectOrder is set to ' .
+				'unkown value {invalid_order} using static ' .
+				'instead.',
+				[ 'invalid_order' => $this->config->get( 'CirrusSearchCrossProjectOrder' ) ]
+			);
+			return $retval;
+		}
 	}
 
 	/**

@@ -29,11 +29,6 @@ use User;
  */
 class InterwikiSearcher extends Searcher {
 	/**
-	 * @var int Max number of results to fetch from other wiki
-	 */
-	const MAX_RESULTS = 5;
-
-	/**
 	 * @var int Max complexity allowed to run on other indices
 	 */
 	const MAX_COMPLEXITY = 10;
@@ -53,7 +48,8 @@ class InterwikiSearcher extends Searcher {
 				return $namespace <= 15;
 			} );
 		}
-		parent::__construct( $connection, 0, self::MAX_RESULTS, $config, $namespaces, $user );
+		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
+		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user );
 	}
 
 	/**

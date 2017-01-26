@@ -924,6 +924,11 @@ $wgCirrusSearchHideCrossProjectResults = false;
 $wgCirrusSearchNewCrossProjectPage = false;
 
 /**
+ * The number of results to return in cross-project search
+ */
+$wgCirrusSearchNumCrossProjectSearchResults = 5;
+
+/**
  * Enable cross leanguage search.
  * Usually implemented as fallback for queries
  * that returns fewer than $wgCirrusSearchInterwikiThreshold results

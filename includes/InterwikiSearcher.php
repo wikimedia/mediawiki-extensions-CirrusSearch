@@ -130,6 +130,16 @@ class InterwikiSearcher extends Searcher {
 				return $b->getTotalHits() - $a->getTotalHits();
 			} );
 			return $retval;
+		case 'random':
+			// reset the random number generator
+			// take the first 8 chars from the md5 to build a uint32
+			// and to prevent hexdec from returning floats
+			mt_srand( hexdec( substr( Util::generateIdentToken(), 0, 8 ) ) );
+			$sortKeys = array_map( function () { return mt_rand(); }, $retval );
+			// "Randomly" sort crossproject results
+			// Should give the same order for the same identity
+			array_multisort( $sortKeys, SORT_ASC, $retval );
+			return $retval;
 		case 'static':
 			return $retval;
 		default:

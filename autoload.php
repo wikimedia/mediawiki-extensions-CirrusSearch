@@ -107,6 +107,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\PhraseSuggesterProfiles' => __DIR__ . '/profiles/PhraseSuggesterProfiles.php',
 	'CirrusSearch\\Query\\BaseSimpleKeywordFeatureTest' => __DIR__ . '/tests/unit/Query/BaseSimpleKeywordFeatureTest.php',
 	'CirrusSearch\\Query\\BoostTemplatesFeature' => __DIR__ . '/includes/Query/BoostTemplatesFeature.php',
+	'CirrusSearch\\Query\\ContentModelFeature' => __DIR__ . '/includes/Query/ContentModelFeature.php',
 	'CirrusSearch\\Query\\FileNumericFeature' => __DIR__ . '/includes/Query/FileNumericFeature.php',
 	'CirrusSearch\\Query\\FileTypeFeature' => __DIR__ . '/includes/Query/FileTypeFeature.php',
 	'CirrusSearch\\Query\\FullTextQueryBuilder' => __DIR__ . '/includes/Query/FullTextQueryBuilder.php',

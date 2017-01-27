@@ -335,6 +335,8 @@ class Searcher extends ElasticsearchIntermediary {
 			new Query\FileTypeFeature(),
 			// File numeric characteristics - size, resolution, etc.
 			new Query\FileNumericFeature(),
+			// Content model feature
+			new Query\ContentModelFeature(),
 		];
 
 		$extraFeatures = [];

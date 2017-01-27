@@ -900,6 +900,22 @@ $wgCirrusSearchWikiToNameMap = [];
 $wgCirrusSearchEnableCrossProjectSearch = false;
 
 /**
+ * When wgCirrusSearchEnableCrossProjectSearch is true
+ * Setting wgCirrusSearchHideCrossProjectResults will
+ * tell SpecialSearch to run normally without displaying
+ * interwiki results.
+ * Useful to report how many results we could have been
+ * displayed (For analytics purpose).
+ */
+$wgCirrusSearchHideCrossProjectResults = true;
+
+/**
+ * Informs SpeciaSearch in core that we want
+ * to use the new cross project result page
+ */
+$wgCirrusSearchNewCrossProjectPage = false;
+
+/**
  * Enable cross leanguage search.
  * Usually implemented as fallback for queries
  * that returns fewer than $wgCirrusSearchInterwikiThreshold results

@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"KuboF",
-			"Gamliel Fishkin"
+			"Gamliel Fishkin",
+			"NMaia"
 		]
 	},
 	"cirrussearch-desc": "Serĉo por MediaWiki bazita sur Elasticsearch",
@@ -10,7 +11,12 @@
 	"cirrussearch-too-busy-error": "Serĉado estas nuntempe tro okupita. Bonvolu reprovi postnelonge.",
 	"cirrussearch-now-using": "Tiu ĉi vikio uzas novan serĉilon. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lernu pli]])",
 	"cirrussearch-pref-label": "Nova serĉo",
+	"cirrussearch-give-feedback": "Donu al ni vian opinion",
 	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).",
 	"prefs-completion": "Kompletigo de serĉo",
-	"cirrussearch-pref-completion-section-desc": "Kompletiga sugestilo"
+	"cirrussearch-pref-completion-section-desc": "Kompletiga sugestilo",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Defaŭlta (inda)",
+	"cirrussearch-pref-completion-legacy-section-desc": "Prefiksa serĉo",
+	"cirrussearch-pref-completion-legacy-section-legend": "La heredaĵa dumtajpada serĉsugesta algoritmo.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasika prefiksa serĉo"
 }

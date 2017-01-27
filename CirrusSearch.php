@@ -957,14 +957,23 @@ $wgCirrusSearchInterwikiThreshold = 3;
 $wgCirrusSearchLanguageDetectors = [];
 
 /**
- * Directory where TextCat detector should look for language model
+ * List of directories where TextCat detector should look for language models
  */
-$wgCirrusSearchTextcatModel = false;
+$wgCirrusSearchTextcatModel = [];
+
+/**
+ * Configuration for specifying TextCat parameters.
+ * Keys are maxNgrams, maxReturnedLanguages, resultsRatio,
+ * minInputLength, maxProportion, langBoostScore, and numBoostedLangs.
+ * See vendor/wikimedia/textcat/TextCat.php
+ */
+
+$wgCirrusSearchTextcatConfig = [];
 
 /**
  * Limit the set of languages detected by Textcat.
- * Useful when some languages in the model have very bad precision, e.g.:
- * $wgCirrusSearchTextcatLanguages = array( 'ar', 'it', 'de' );
+ * Useful when some languages in the model have too many false positives, e.g.:
+ * $wgCirrusSearchTextcatLanguages = [ 'ar', 'it', 'de' ];
  */
 
 /**

@@ -176,6 +176,14 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Is this searcher used to return debugging info?
+	 * @return bool true if the search will return raw output
+	 */
+	public function isReturnRaw() {
+		return $this->returnResult || $this->returnQuery;
+	}
+
+	/**
 	 * Set the type of sort to perform.  Must be 'relevance', 'title_asc', 'title_desc'.
 	 * @param string $sort sort type
 	 */

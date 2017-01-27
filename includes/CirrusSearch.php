@@ -403,7 +403,7 @@ class CirrusSearch extends SearchEngine {
 		// are logged when they are added to the status object so we just ignore them here....
 		if ( $this->isFeatureEnabled( 'interwiki' ) &&
 			$searcher->getSearchContext()->areResultsPossible() &&
-			( $dumpQuery || $dumpResult || method_exists( $result, 'addInterwikiResults' ) )
+			( $searcher->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 
 			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces );
@@ -415,12 +415,12 @@ class CirrusSearch extends SearchEngine {
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to
 				$recallMetrics = [];
-				if ( $dumpQuery || $dumpResult ) {
+				if ( $iwSearch->isReturnRaw() ) {
 					$result = [$result];
 				}
 				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
 					$recallMetrics[$interwiki] = "$interwiki:0";
-					if ( $dumpQuery || $dumpResult ) {
+					if ( $iwSearch->isReturnRaw() ) {
 						$result[] = $interwikiResult;
 					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
 						$recallMetrics[$interwiki] = "$interwiki:" . $interwikiResult->getTotalHits();
@@ -442,7 +442,7 @@ class CirrusSearch extends SearchEngine {
 			}
 		}
 
-		if ( $dumpQuery || $dumpResult ) {
+		if ( $searcher->isReturnRaw() ) {
 			$header = null;
 			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
 				$header = 'Content-type: text/html; charset=UTF-8';

@@ -113,12 +113,15 @@ class RequestLoggerTest extends CirrusTestCase {
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
 
+
+				$globals = [
+					'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
+					'wgCirrusSearchInterwikiSources' => [],
+				];
 				if ( isset( $query['interwiki'] ) ) {
-					$this->setMwGlobals(
-						'wgCirrusSearchInterwikiSources',
-						$query['interwiki']
-					);
+					$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
 				}
+				$this->setMwGlobals( $globals );
 
 				$searchEngine = new CirrusSearch( 'wiki' );
 				$searchEngine->setConnection( $connection );

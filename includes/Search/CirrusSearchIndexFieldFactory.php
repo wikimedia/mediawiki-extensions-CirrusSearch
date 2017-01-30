@@ -39,32 +39,32 @@ class CirrusSearchIndexFieldFactory {
 		$this->searchConfig = $searchConfig;
 	}
 
-    /**
-     * Create a search field definition
-     * @param string $name
-     * @param int    $type
-     * @throws Exception
-     * @return SearchIndexField
-     */
-    public function makeSearchFieldMapping( $name, $type ) {
-        $overrides = $this->searchConfig->get( 'CirrusSearchFieldTypeOverrides' );
-        $mappings = $this->searchConfig->get( 'CirrusSearchFieldTypes' );
-        if ( !isset( $mappings[$type] ) ) {
-            return new NullIndexField();
-        }
-        $klass = $mappings[$type];
+	/**
+	 * Create a search field definition
+	 * @param string $name
+	 * @param int    $type
+	 * @throws Exception
+	 * @return SearchIndexField
+	 */
+	public function makeSearchFieldMapping( $name, $type ) {
+		$overrides = $this->searchConfig->get( 'CirrusSearchFieldTypeOverrides' );
+		$mappings = $this->searchConfig->get( 'CirrusSearchFieldTypes' );
+		if ( !isset( $mappings[$type] ) ) {
+			return new NullIndexField();
+		}
+		$klass = $mappings[$type];
 
-        // Check if a specific class is provided for this field
-        if ( isset( $overrides[$name] ) ) {
-            if ( $klass !== $overrides[$name] && !is_subclass_of( $overrides[$name], $klass ) ) {
-                throw new Exception( "Specialized class " . $overrides[$name] .
-                    " for field $name is not compatible with type class $klass" );
-            }
-            $klass = $overrides[$name];
-        }
+		// Check if a specific class is provided for this field
+		if ( isset( $overrides[$name] ) ) {
+			if ( $klass !== $overrides[$name] && !is_subclass_of( $overrides[$name], $klass ) ) {
+				throw new Exception( "Specialized class " . $overrides[$name] .
+					" for field $name is not compatible with type class $klass" );
+			}
+			$klass = $overrides[$name];
+		}
 
-        return new $klass( $name, $type, $this->searchConfig );
-    }
+		return new $klass( $name, $type, $this->searchConfig );
+	}
 
 	/**
 	 * Build a string field that does standard analysis for the language.

@@ -250,7 +250,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_simple_match"
             ],
             "stored_fields": []
         }
@@ -506,7 +507,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_simple_match"
             ],
             "stored_fields": []
         }
@@ -894,6 +896,7 @@
             "size": 20,
             "stats": [
                 "full_text",
+                "full_text_simple_match",
                 "suggest"
             ],
             "stored_fields": [

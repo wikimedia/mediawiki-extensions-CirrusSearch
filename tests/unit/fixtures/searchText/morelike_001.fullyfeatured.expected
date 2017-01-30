@@ -213,6 +213,7 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
             "more_like"
         ],
         "stored_fields": [

@@ -784,6 +784,16 @@ CirrusSearch interwiki searching.
 Keys are the interwiki prefix, values are the index to search
 Results are cached.
 
+; $wgCirrusSearchCrossProjectOrder
+
+Default:
+    $wgCirrusSearchCrossProjectOrder = 'static';
+
+Set the order of crossproject side boxes. Possible values:
+- static: output crossproject results in the order provided by the interwiki
+  resolver (order set in wgCirrusSearchInterwikiSources or SiteMatrix)
+- recall: based on total hits
+
 ; $wgCirrusSearchInterwikiLoadTest
 
 Default:
@@ -1207,6 +1217,13 @@ Map of interwiki link -> wiki name. Example:
 
 FIXME: we really should already have this information, also we're possibly
 duplicating $wgCirrusSearchInterwikiSources. This needs to be fixed.
+
+; wgCirrusSearchNumCrossProjectSearchResults
+
+Default:
+	$wgCirrusSearchNumCrossProjectSearchResults = 1
+
+Controls the number of search results returned for cross project search
 
 ; $wgCirrusSearchInterwikiProv
 

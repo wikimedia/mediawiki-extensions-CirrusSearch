@@ -1,5 +1,5 @@
 {
-    "description": "prefix search for 'something AND prefix:other'",
+    "description": "full_text search for 'something AND prefix:other'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -359,6 +359,8 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
+            "full_text_simple_match",
             "prefix",
             "suggest"
         ],

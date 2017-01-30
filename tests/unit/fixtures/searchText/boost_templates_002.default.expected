@@ -246,6 +246,7 @@
         "stats": [
             "boost-templates",
             "full_text",
+            "full_text_querystring",
             "suggest"
         ],
         "stored_fields": [

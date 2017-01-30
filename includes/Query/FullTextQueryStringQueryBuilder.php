@@ -47,6 +47,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * searches that might be better?
 	 */
 	public function build( SearchContext $searchContext, $term, $showSuggestion ) {
+		$searchContext->addSyntaxUsed( 'full_text' );
 		// Transform Mediawiki specific syntax to filters and extra
 		// (pre-escaped) query string
 		foreach ( $this->features as $feature ) {
@@ -209,7 +210,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// out of phrase queries at this point.
 		if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
 				$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-				!$searchContext->isSyntaxUsed() &&
+				!$searchContext->isSpecialKeywordUsed() &&
 				strpos( $this->queryStringQueryString, '"' ) === false &&
 				strpos( $this->queryStringQueryString, ' ' ) !== false ) {
 
@@ -373,6 +374,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	protected function buildSearchTextQuery( SearchContext $searchContext, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
 		$slop = $this->config->getElement( 'CirrusSearchPhraseSlop', 'default' );
 		$queryForMostFields = $this->buildQueryString( $fields, $queryString, $slop );
+		$searchContext->addSyntaxUsed( 'full_text_querystring', 5 );
 		if ( !$nearMatchQuery ) {
 			return $queryForMostFields;
 		}

@@ -138,7 +138,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_querystring"
             ],
             "stored_fields": []
         }
@@ -282,7 +283,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "full_text_querystring"
             ],
             "stored_fields": []
         }
@@ -558,6 +560,7 @@
             "size": 20,
             "stats": [
                 "full_text",
+                "full_text_querystring",
                 "suggest"
             ],
             "stored_fields": [

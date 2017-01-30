@@ -394,6 +394,7 @@
         "stats": [
             "filetype",
             "full_text",
+            "full_text_simple_match",
             "suggest"
         ],
         "stored_fields": [

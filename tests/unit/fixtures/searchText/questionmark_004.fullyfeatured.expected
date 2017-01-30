@@ -146,6 +146,7 @@
         ],
         "size": 20,
         "stats": [
+            "full_text",
             "regex"
         ],
         "stored_fields": [

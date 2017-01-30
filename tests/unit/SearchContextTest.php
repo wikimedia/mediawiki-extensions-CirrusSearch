@@ -21,13 +21,16 @@ class SearchContextTest extends MediaWikiTestCase {
 
 	public function testNoSyntax() {
 		// No syntax is classified as full_text
-		$this->assertFalse( $this->context->isSyntaxUsed() );
+		$this->context->addSyntaxUsed( 'full_text' );
+		$this->assertTrue( $this->context->isSyntaxUsed() );
+		$this->assertFalse( $this->context->isSpecialKeywordUsed() );
 		$this->assertFalse( $this->context->isSyntaxUsed( 'accio' ) );
 		$this->assertEquals( 'full_text', $this->context->getSearchType() );
 	}
 
 	public function testCheapSyntax() {
 		$this->context->addSyntaxUsed( 'accio' );
+		$this->context->addSyntaxUsed( 'full_text' );
 		$this->assertTrue( $this->context->isSyntaxUsed() );
 		$this->assertTrue( $this->context->isSyntaxUsed( 'accio' ) );
 		$this->assertFalse( $this->context->isSyntaxUsed( 'prefix' ) );
@@ -35,6 +38,7 @@ class SearchContextTest extends MediaWikiTestCase {
 	}
 
 	public function testNoncheapSyntax() {
+		$this->context->addSyntaxUsed( 'full_text' );
 		$this->context->addSyntaxUsed( 'more_like' );
 		$this->assertTrue( $this->context->isSyntaxUsed( 'more_like' ) );
 		$this->assertEquals( 'more_like', $this->context->getSearchType() );
@@ -48,7 +52,7 @@ class SearchContextTest extends MediaWikiTestCase {
 	}
 
 	public function testSyntaxOrder() {
-		$syntaxes = [ 'full_text', 'near_match', 'more_like', 'regex' ];
+		$syntaxes = [ 'full_text', 'more_like', 'regex' ];
 		foreach ( $syntaxes as $syntax ) {
 			$this->context->addSyntaxUsed( $syntax );
 			$this->assertEquals( $syntax, $this->context->getSearchType() );

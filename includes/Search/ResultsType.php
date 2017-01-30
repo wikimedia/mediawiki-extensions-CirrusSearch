@@ -477,7 +477,7 @@ class FullTextResultsType extends BaseResultsType {
 			$context->getSuggestPrefixes(),
 			$context->getSuggestSuffixes(),
 			$result,
-			$context->isSyntaxUsed(),
+			$context->isSpecialKeywordUsed(),
 			$this->getConfig()
 		);
 	}
@@ -613,7 +613,7 @@ class InterwikiResultsType extends BaseResultsType {
 			$context->getSuggestPrefixes(),
 			$context->getSuggestSuffixes(),
 			$result,
-			$context->isSyntaxUsed(),
+			$context->isSpecialKeywordUsed(),
 			$this->getConfig()
 		);
 	}

@@ -32,6 +32,12 @@ Feature: Suggestion API test
     When I ask suggestion API for xmen
       Then the API should produce list starting with X-Men
 
+  Scenario: Empty tokens
+    When I ask suggestion API for はー
+      Then the API should produce list starting with はーい
+      And I ask suggestion API for はい
+      Then the API should produce list starting with はーい
+
   Scenario Outline: Search redirects shows the best redirect
     When I ask suggestion API for <term>
       Then the API should produce list containing <suggested>

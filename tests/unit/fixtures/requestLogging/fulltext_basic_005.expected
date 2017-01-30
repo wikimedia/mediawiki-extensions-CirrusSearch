@@ -41,7 +41,7 @@
                     "maxScore": -1,
                     "namespaces": [],
                     "payload": {
-                        "syntax": "intitle"
+                        "syntax": "full_text,full_text_querystring,intitle"
                     },
                     "query": "intitle:main",
                     "queryType": "full_text",
@@ -90,6 +90,8 @@
             "source": "cli",
             "suggestion": null,
             "syntax": [
+                "full_text",
+                "full_text_querystring",
                 "intitle"
             ],
             "tookMs": 0

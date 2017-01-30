@@ -236,6 +236,7 @@
         "size": 20,
         "stats": [
             "full_text",
+            "full_text_querystring",
             "query_string"
         ],
         "stored_fields": [

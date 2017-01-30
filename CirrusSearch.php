@@ -542,6 +542,14 @@ $wgCirrusSearchInterwikiSources = [];
 // How long to cache interwiki search results for (in seconds)
 $wgCirrusSearchInterwikiCacheTime = 7200;
 
+// Set the order of crossproject side boxes
+// Possible values:
+// - static: output crossproject results in the order provided
+//   by the interwiki resolver (order set in wgCirrusSearchInterwikiSources
+//   or SiteMatrix)
+// - recall: based on total hits
+$wgCirrusSearchCrossProjectOrder = 'static';
+
 // The seconds Elasticsearch will wait to batch index changes before making
 // them available for search.  Lower values make search more real time but put
 // more load on Elasticsearch.  Defaults to 1 second because that is the default
@@ -886,6 +894,27 @@ $wgCirrusSearchWikiToNameMap = [];
  * NOTE: Experimental
  */
 $wgCirrusSearchEnableCrossProjectSearch = false;
+
+/**
+ * When wgCirrusSearchEnableCrossProjectSearch is true
+ * Setting wgCirrusSearchHideCrossProjectResults will
+ * tell SpecialSearch to run normally without displaying
+ * interwiki results.
+ * Useful to report how many results we could have been
+ * displayed (For analytics purpose).
+ */
+$wgCirrusSearchHideCrossProjectResults = false;
+
+/**
+ * Informs SpeciaSearch in core that we want
+ * to use the new cross project result page
+ */
+$wgCirrusSearchNewCrossProjectPage = false;
+
+/**
+ * The number of results to return in cross-project search
+ */
+$wgCirrusSearchNumCrossProjectSearchResults = 5;
 
 /**
  * Enable cross leanguage search.

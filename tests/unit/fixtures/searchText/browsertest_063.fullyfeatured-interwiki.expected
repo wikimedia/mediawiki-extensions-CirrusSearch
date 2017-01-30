@@ -14,10 +14,141 @@
             "_source": [
                 "namespace",
                 "namespace_text",
+                "redirect.*",
+                "text_bytes",
+                "timestamp",
                 "title",
                 "wiki"
             ],
-            "fields": false,
+            "fields": "text.word_count",
+            "highlight": {
+                "fields": {
+                    "auxiliary_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "auxiliary_text",
+                            "auxiliary_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
+                    "category": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "category",
+                            "category.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "heading": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "heading",
+                            "heading.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "redirect.title": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "redirect.title",
+                            "redirect.title.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "text",
+                            "text.plain"
+                        ],
+                        "no_match_size": 150,
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
+                    "title": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "title",
+                            "title.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "type": "experimental"
+                    }
+                },
+                "highlight_query": {
+                    "query_string": {
+                        "allow_leading_wildcard": true,
+                        "auto_generate_phrase_queries": true,
+                        "default_operator": "AND",
+                        "fields": [
+                            "auxiliary_text.plain^0.5",
+                            "auxiliary_text^0.25",
+                            "category.plain^8",
+                            "category^4",
+                            "heading.plain^5",
+                            "heading^2.5",
+                            "opening_text.plain^3",
+                            "opening_text^1.5",
+                            "redirect.title.plain^15",
+                            "redirect.title^7.5",
+                            "text.plain^1",
+                            "text^0.5",
+                            "title.plain^20",
+                            "title^10"
+                        ],
+                        "fuzzy_prefix_length": 2,
+                        "max_determinized_states": 500,
+                        "phrase_slop": 1,
+                        "query": "catapult OR T\\:8\\~=\\~\u00a59\\:77\\:7\\:57;7;76;6346\\-",
+                        "rewrite": "top_terms_blended_freqs_1024"
+                    }
+                },
+                "post_tags": [
+                    "<\/span>"
+                ],
+                "pre_tags": [
+                    "<span class=\"searchmatch\">"
+                ]
+            },
             "query": {
                 "bool": {
                     "filter": [
@@ -137,10 +268,141 @@
             "_source": [
                 "namespace",
                 "namespace_text",
+                "redirect.*",
+                "text_bytes",
+                "timestamp",
                 "title",
                 "wiki"
             ],
-            "fields": false,
+            "fields": "text.word_count",
+            "highlight": {
+                "fields": {
+                    "auxiliary_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "auxiliary_text",
+                            "auxiliary_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
+                    "category": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "category",
+                            "category.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "heading": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "heading",
+                            "heading.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "redirect.title": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "redirect.title",
+                            "redirect.title.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "skip_if_last_matched": true
+                        },
+                        "order": "score",
+                        "type": "experimental"
+                    },
+                    "text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "text",
+                            "text.plain"
+                        ],
+                        "no_match_size": 150,
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
+                    "title": {
+                        "fragmenter": "none",
+                        "matched_fields": [
+                            "title",
+                            "title.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "type": "experimental"
+                    }
+                },
+                "highlight_query": {
+                    "query_string": {
+                        "allow_leading_wildcard": true,
+                        "auto_generate_phrase_queries": true,
+                        "default_operator": "AND",
+                        "fields": [
+                            "auxiliary_text.plain^0.5",
+                            "auxiliary_text^0.25",
+                            "category.plain^8",
+                            "category^4",
+                            "heading.plain^5",
+                            "heading^2.5",
+                            "opening_text.plain^3",
+                            "opening_text^1.5",
+                            "redirect.title.plain^15",
+                            "redirect.title^7.5",
+                            "text.plain^1",
+                            "text^0.5",
+                            "title.plain^20",
+                            "title^10"
+                        ],
+                        "fuzzy_prefix_length": 2,
+                        "max_determinized_states": 500,
+                        "phrase_slop": 1,
+                        "query": "catapult OR T\\:8\\~=\\~\u00a59\\:77\\:7\\:57;7;76;6346\\-",
+                        "rewrite": "top_terms_blended_freqs_1024"
+                    }
+                },
+                "post_tags": [
+                    "<\/span>"
+                ],
+                "pre_tags": [
+                    "<span class=\"searchmatch\">"
+                ]
+            },
             "query": {
                 "bool": {
                     "filter": [

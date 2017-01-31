@@ -10,6 +10,8 @@
 	"cirrussearch-too-busy-error": "ძებნის სისტემა დაკავებულია. გთხოვთ სცადეთ მოგვიანებით.",
 	"cirrussearch-pref-label": "ახალი ძიება",
 	"cirrussearch-pref-desc": "მოსინჯეთ ახალი ძიება, რომელსაც გააჩნია ენების მხარდაჭერა დიდი რაოდენობით; უზრუნველყოფს უფრო ახალ შედეგებს და შეუძლია აგრეთვე იპოვოს ტექსტი თარგების შიგნით.",
-	"apihelp-cirrus-suggest-param-limit": "რამდენი შედეგი ვაჩვენოთ?",
-	"cirrussearch-give-feedback": "გამოგვეხმაურე"
+	"cirrussearch-give-feedback": "გამოგვეხმაურე",
+	"cirrussearch-pref-completion-profile-help": "ადგენს ქცევას წინადადების ავტომატურად შევსებისას (ძიება შეყვანისას).",
+	"cirrussearch-pref-completion-legacy-section-desc": "პრეფიქსით ძიება",
+	"cirrussearch-pref-completion-legacy-section-legend": "ძიების მოძველებული ალგორითმი შეყვანისას."
 }

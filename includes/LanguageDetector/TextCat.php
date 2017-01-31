@@ -22,22 +22,57 @@ class TextCat implements Detector {
 			// Should not happen
 			return null;
 		}
-		$dir = $config->getElement('CirrusSearchTextcatModel');
-		if( !$dir ) {
+		$dirs = $config->getElement('CirrusSearchTextcatModel');
+		if( !$dirs ) {
 			return null;
 		}
-		if( !is_dir( $dir ) ) {
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Bad directory for TextCat model: {dir}",
-				[ "dir" => $dir ]
-			);
+		if ( !is_array( $dirs ) ) { // backward compatibility
+			$dirs = [ $dirs ];
+		}
+		foreach ($dirs as $dir) {
+			if( !is_dir( $dir ) ) {
+				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+					"Bad directory for TextCat model: {dir}",
+					[ "dir" => $dir ]
+				);
+			}
 		}
 
-		$textcat = new \TextCat( $dir );
+		$textcat = new \TextCat( $dirs );
+
+		$textcatConfig = $config->getElement('CirrusSearchTextcatConfig');
+		if ( $textcatConfig ) {
+			if ( isset( $textcatConfig['maxNgrams'] ) ) {
+				$textcat->setMaxNgrams( intval( $textcatConfig['maxNgrams'] ) );
+			}
+			if ( isset( $textcatConfig['maxReturnedLanguages'] ) ) {
+				$textcat->setMaxReturnedLanguages( intval( $textcatConfig['maxReturnedLanguages'] ) );
+			}
+			if ( isset( $textcatConfig['resultsRatio'] ) ) {
+				$textcat->setResultsRatio( floatval( $textcatConfig['resultsRatio'] ) );
+			}
+			if ( isset( $textcatConfig['minInputLength'] ) ) {
+				$textcat->setMinInputLength( intval( $textcatConfig['minInputLength'] ) );
+			}
+			if ( isset( $textcatConfig['maxProportion'] ) ) {
+				$textcat->setMaxProportion( floatval( $textcatConfig['maxProportion'] ) );
+			}
+			if ( isset( $textcatConfig['langBoostScore'] ) ) {
+				$textcat->setLangBoostScore( floatval( $textcatConfig['langBoostScore'] ) );
+			}
+
+			if ( isset( $textcatConfig['numBoostedLangs'] ) &&
+				$config->getElement( 'CirrusSearchTextcatLanguages' )
+			) {
+				$textcat->setBoostedLangs( array_slice (
+					$config->getElement( 'CirrusSearchTextcatLanguages' ),
+					0, $textcatConfig['numBoostedLangs'] ) );
+			}
+		}
 		$languages = $textcat->classify( $text, $config->getElement( 'CirrusSearchTextcatLanguages' ) );
 		if( !empty( $languages ) ) {
 			// For now, just return the best option
-			// TODO: thing what else we could do
+			// TODO: think what else we could do
 			reset( $languages );
 			return key( $languages );
 		}

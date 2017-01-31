@@ -156,7 +156,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\IdResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\IncomingLinksFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\IntegerIndexField' => __DIR__ . '/includes/Search/IntegerIndexField.php',
-	'CirrusSearch\\Search\\InterwikiResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\InvalidRescoreProfileException' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\KeywordIndexField' => __DIR__ . '/includes/Search/KeywordIndexField.php',
 	'CirrusSearch\\Search\\LangWeightFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',

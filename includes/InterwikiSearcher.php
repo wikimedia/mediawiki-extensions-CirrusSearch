@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Search\InterwikiResultsType;
+use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultSet;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -34,6 +34,11 @@ class InterwikiSearcher extends Searcher {
 	const MAX_COMPLEXITY = 10;
 
 	/**
+	 * @var int Highlighting bitfield
+	 */
+	private $highlightingConfig;
+
+	/**
 	 * Constructor
 	 * @param Connection $connection
 	 * @param SearchConfig $config
@@ -41,7 +46,13 @@ class InterwikiSearcher extends Searcher {
 	 * @param User|null $user
 	 * @param string $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
-	public function __construct( Connection $connection, SearchConfig $config, array $namespaces = null, User $user = null ) {
+	public function __construct(
+		Connection $connection,
+		SearchConfig $config,
+		array $namespaces = null,
+		User $user = null,
+		$highlightingConfig = FullTextResultsType::HIGHLIGHT_NONE
+	) {
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $namespaces !== null ) {
 			$namespaces = array_filter( $namespaces, function( $namespace ) {
@@ -50,6 +61,7 @@ class InterwikiSearcher extends Searcher {
 		}
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user );
+		$this->highlightingConfig = $highlightingConfig;
 	}
 
 	/**
@@ -97,7 +109,7 @@ class InterwikiSearcher extends Searcher {
 			// TODO: remove when getWikiCode is removed.
 			// In theory we should be able to reuse the same
 			// Results type for all searches
-			$resultsTypes[$interwiki] = new InterwikiResultsType( $this->config->newInterwikiConfig( $index, false ) );
+			$resultsTypes[$interwiki] = new FullTextResultsType( $this->config->newInterwikiConfig( $index, false ), $this->highlightingConfig );
 			$this->setResultsType( $resultsTypes[$interwiki] );
 			$this->indexBaseName = $index;
 			$this->searchContext = clone $context;

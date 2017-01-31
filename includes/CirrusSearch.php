@@ -406,7 +406,7 @@ class CirrusSearch extends SearchEngine {
 			( $searcher->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 
-			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces );
+			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $highlightingConfig );
 			$iwSearch->setReturnQuery( $dumpQuery );
 			$iwSearch->setDumpResult( $dumpResult );
 			$iwSearch->setReturnExplain( $returnExplain );

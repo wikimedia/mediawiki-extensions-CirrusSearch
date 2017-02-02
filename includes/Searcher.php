@@ -84,7 +84,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
 	 */
-	private $resultsType;
+	protected $resultsType;
 	/**
 	 * @var string sort type
 	 */
@@ -601,6 +601,10 @@ class Searcher extends ElasticsearchIntermediary {
 		return $search;
 	}
 
+	/**
+	 * Perform a single-query search.
+	 * @return Status
+	 */
 	protected function searchOne() {
 		$search = $this->buildSearch();
 

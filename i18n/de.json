@@ -60,5 +60,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Präfixsuchmodus",
 	"cirrussearch-completion-profile-classic-pref-desc": "Tippfehler werden nicht korrigiert. Entsprechen den Anfangsbuchstaben der Seitennamen.",
 	"cirrussearch-timed-out": "Zeitüberschreitung bei der Suche, die Ergebnisse sind nur teilweise verfügbar.",
-	"cirrussearch-regex-timed-out": "Zeitüberschreitung bei der Regex-Suche, die Ergebnisse sind nur teilweise verfügbar. Versuche, deine regulären Ausdrücke zu vereinfachen, um vollständige Ergebnisse zu erhalten."
+	"cirrussearch-regex-timed-out": "Zeitüberschreitung bei der Regex-Suche, die Ergebnisse sind nur teilweise verfügbar. Versuche, deine regulären Ausdrücke zu vereinfachen, um vollständige Ergebnisse zu erhalten.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Der Suchbegriff „$1“ erfordert numerische Werte, jedoch wurde „$2“ angegeben.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Der Suchbegriff „$1“ erlaubt keine Angabe mehrerer Argumente und kein Zeichen mit „$2“.",
+	"cirrussearch-feature-not-available": "Das Such-Schlüsselwort „$1“ ist auf diesem Wiki nicht aktiviert.",
+	"cirrussearch-feature-too-many-conditions": "Es wurden zu viele Bedingungen für „$1“ angegeben. Die Anzahl wird auf $2 beschränkt.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Keine gültigen Titel für „$1“ angegeben.",
+	"cirrussearch-mlt-not-configured": "Die Funktion „$1“ ist falsch konfiguriert. Bitte einen Administrator, $wgCirrusSearchMoreLikeThisFields anzupassen."
 }

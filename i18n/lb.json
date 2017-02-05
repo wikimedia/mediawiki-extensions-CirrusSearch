@@ -13,5 +13,6 @@
 	"cirrussearch-give-feedback": "Gitt eis Äre Feedback",
 	"prefs-completion": "Siche komplettéieren",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (recommandéiert)",
-	"cirrussearch-completion-profile-classic-pref-desc": "Keng Verbesserung vun Tippfeeler. Entsprécht dem Ufank vun den Titelen."
+	"cirrussearch-completion-profile-classic-pref-desc": "Keng Verbesserung vun Tippfeeler. Entsprécht dem Ufank vun den Titelen.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Keng valabel Kategorie fir '$1' uginn."
 }

@@ -48,5 +48,10 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "Starszy algorytm podpowiadania szukaj-podczas-wpisywania.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasyczne wyszukiwanie prefiksami",
 	"cirrussearch-completion-profile-classic-pref-desc": "Bez poprawiania literówek. Dopasowuje początki tytułów.",
-	"cirrussearch-regex-timed-out": "Wyszukiwanie za pomocą wyrażenia regularnego przekroczyło limit czasu, dostępne są tylko częściowe wyniki. Aby uzyskać pełne wyniki, spróbuj uprościć wyrażenie regularne."
+	"cirrussearch-regex-timed-out": "Wyszukiwanie za pomocą wyrażenia regularnego przekroczyło limit czasu, dostępne są tylko częściowe wyniki. Aby uzyskać pełne wyniki, spróbuj uprościć wyrażenie regularne.",
+	"cirrussearch-feature-not-available": "Słowo kluczowe '$1' na tej wiki jest wyłączone.",
+	"cirrussearch-feature-too-many-conditions": "Określono zbyt wiele są warunków do '$1', skrócono do $2.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Nie określono poprawnych kategorii do '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Nie określono poprawnych tytułów do '$1'.",
+	"cirrussearch-mlt-not-configured": "Funkcja '$1' jest błędne skonfigurowana. Poproś administratora, aby naprawił $wgCirrusSearchMoreLikeThisFields"
 }

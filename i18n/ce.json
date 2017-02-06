@@ -15,7 +15,15 @@
 	"cirrussearch-pref-completion-profile-help": "Лохуш дерг ша кховдадо (Лоху чуйоккхушехь).",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester «АвтотӀеюзаран хьехамча] — иза ю вовшашка тера дешнаш лахаран алгоритм.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Ӏад йитарца (магийна)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Шиъ гӀалат нисдо, нийса цӀеран тӀехьажайой.",
-	"cirrussearch-completion-profile-strict-pref-name": "Дика аьтту"
+	"cirrussearch-completion-profile-strict-pref-name": "Дика аьтту",
+	"cirrussearch-completion-profile-strict-pref-desc": "Нийс ма де гӀалаташ. ДӀасахьажоргаш тергал цайо. Къовламе ма-дарра.",
+	"cirrussearch-completion-profile-normal-pref-name": "ДӀасхьажорийн раж (шорйина)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Нийс ма де гӀалаташ. Гойту йогӀуш йолу дӀасахьажоргаш.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Префиксца лахар",
+	"cirrussearch-pref-completion-legacy-section-legend": "Ширъела лахаран алгоритм язъеше.",
+	"cirrussearch-completion-profile-classic-pref-name": "Префиксца классикан лахар",
+	"cirrussearch-completion-profile-classic-pref-desc": "Нийс ма де гӀалаташ. Язъеше гойту цӀерш."
 }

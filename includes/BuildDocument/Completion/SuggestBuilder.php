@@ -64,9 +64,6 @@ class SuggestBuilder {
 	 * promoted as a title suggestion.
 	 * This is useful not to promote Eraq as a title suggestion for Iraq
 	 * Less than 3 can lead to weird results like oba => Osama Bin Laden
-	 * @todo: to avoid displaying typos (if the typo is in the 3 chars)
-	 * we could re-work Utils::chooseBestRedirect and display the title
-	 * if the chosen redirect is close enough to the title.
 	 */
 	const REDIRECT_COMMON_PREFIX_LEN = 3;
 
@@ -242,7 +239,6 @@ class SuggestBuilder {
 		return $this->buildSuggestion(
 			self::TITLE_SUGGESTION,
 			$docId,
-			$output,
 			$inputs,
 			$score,
 			$inputDoc
@@ -268,10 +264,9 @@ class SuggestBuilder {
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
-		$output = self::encodeRedirectOutput( $docId );
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
-		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $output,
-			$inputs, $score, $inputDoc );
+		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $inputs,
+			$score, $inputDoc );
 	}
 
 	/**
@@ -279,23 +274,22 @@ class SuggestBuilder {
 	 *
 	 * @param string $suggestionType suggestion type (title or redirect)
 	 * @param string $docId The document id
-	 * @param string $output the suggestion output
+	 * @param string[] $titles the suggestion titles
+	 * @param string $type suggestion type
 	 * @param string[] $inputs the suggestion inputs
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $suggestionType, $docId, $output, array $inputs, $score, array $inputDoc ) {
+	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc ) {
 		$doc = [
 			'batch_id' => $this->batchId,
 			'suggest' => [
 				'input' => $inputs,
-				'output' => $output,
 				'weight' => $score
 			],
 			'suggest-stop' => [
 				'input' => $inputs,
-				'output' => $output,
 				'weight' => $score
 			]
 		];

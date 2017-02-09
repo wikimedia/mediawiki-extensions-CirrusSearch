@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
-use CirrusSearch\BuildDocument\Completion\GeoSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\DefaultSortSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\NaiveSubphrasesSuggestionsBuilder;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
@@ -50,25 +49,21 @@ class SuggestBuilderTest extends CirrusTestCase {
 				'suggest' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein',
 						'Albert Einsten', 'Albert Einstine' ],
-					'output' => '1:t:Albert Einstein',
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein',
 						'Albert Einsten', 'Albert Einstine' ],
-					'output' => '1:t:Albert Einstein',
 					'weight' => $score
 				]
 			],
 			[
 				'suggest' => [
 					'input' => [ 'Enstein', 'Einstein' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'Enstein', 'Einstein' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				]
 			]
@@ -97,24 +92,20 @@ class SuggestBuilderTest extends CirrusTestCase {
 			[
 				'suggest' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
-					'output' => '1:t:Albert Einstein',
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
-					'output' => '1:t:Albert Einstein',
 					'weight' => $score
 				]
 			],
 			[
 				'suggest' => [
 					'input' => [ 'Einstein' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'Einstein' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				]
 			]
@@ -141,24 +132,20 @@ class SuggestBuilderTest extends CirrusTestCase {
 			[
 				'suggest' => [
 					'input' => [ 'GXYZ' ],
-					'output' => '0:t:GXYZ',
 					'weight' => $crossNsScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'GXYZ' ],
-					'output' => '0:t:GXYZ',
 					'weight' => $crossNsScore
 				]
 			],
 			[
 				'suggest' => [
 					'input' => [ 'XYZG' ],
-					'output' => '0:t:XYZG',
 					'weight' => $crossNsScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'XYZG' ],
-					'output' => '0:t:XYZG',
 					'weight' => $crossNsScore
 				]
 			]
@@ -186,24 +173,20 @@ class SuggestBuilderTest extends CirrusTestCase {
 			[
 				'suggest' => [
 					'input' => [ 'Iraq', 'Irak' ],
-					'output' => '1:t:Iraq',
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'Iraq', 'Irak' ],
-					'output' => '1:t:Iraq',
 					'weight' => $score
 				]
 			],
 			[
 				'suggest' => [
 					'input' => [ 'Eraq' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'Eraq' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				]
 			]
@@ -231,24 +214,20 @@ class SuggestBuilderTest extends CirrusTestCase {
 			[
 				'suggest' => [
 					'input' => [ 'WP:HN' ],
-					'output' => '0:t:WP:HN', // LinkBatch will set 0...
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'WP:HN' ],
-					'output' => '0:t:WP:HN',
 					'weight' => $score
 				],
 			],
 			[
 				'suggest' => [
 					'input' => [ 'WP:NAV' ],
-					'output' => '0:t:WP:NAV',
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'WP:NAV' ],
-					'output' => '0:t:WP:NAV',
 					'weight' => $score
 				],
 			]
@@ -271,21 +250,6 @@ class SuggestBuilderTest extends CirrusTestCase {
 				[ 'title' => "Söflingen", 'namespace' => 0 ],
 				[ 'title' => "Should be ignored", 'namespace' => 1 ],
 			],
-			'coordinates' => [
-				[
-					'coord' => [
-						'lat' => 48.3985,
-						'lon' => 9.9918
-					],
-					'region' => "BW",
-					'dim' => 10000,
-					'name' => "",
-					'primary' => true,
-					'type' => "city",
-					'globe' => "earth",
-					'country' => "DE"
-				]
-			],
 			'incoming_links' => $score
 		];
 
@@ -293,141 +257,28 @@ class SuggestBuilderTest extends CirrusTestCase {
 			[
 				'suggest' => [
 					'input' => [ 'Ulm' ],
-					'output' => '1:t:Ulm',
 					'weight' => $score
 				],
 				'suggest-stop' => [
 					'input' => [ 'Ulm' ],
-					'output' => '1:t:Ulm',
 					'weight' => $score
 				],
-				'suggest-geo' => [
-					'input' => [ 'Ulm' ],
-					'output' => '1:t:Ulm',
-					'weight' => $score,
-					'context' => [
-						'location' => [
-							'lat' => 48.3985,
-							'lon' => 9.9918
-						]
-					]
-				],
-				'suggest-stop-geo' => [
-					'input' => [ 'Ulm' ],
-					'output' => '1:t:Ulm',
-					'weight' => $score,
-					'context' => [
-						'location' => [
-							'lat' => 48.3985,
-							'lon' => 9.9918
-						]
-					]
-				]
 			],
 			[
 				'suggest' => [
 					'input' => [ 'UN/LOCODE:DEULM', 'Ulm, Germany',
 						'Ulm displaced persons camp', 'Söflingen' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				],
 				'suggest-stop' => [
 					'input' => [ 'UN/LOCODE:DEULM', 'Ulm, Germany',
 						'Ulm displaced persons camp', 'Söflingen' ],
-					'output' => '1:r',
 					'weight' => $redirScore
 				],
-				'suggest-geo' => [
-					'input' => [ 'UN/LOCODE:DEULM', 'Ulm, Germany',
-						'Ulm displaced persons camp', 'Söflingen' ],
-					'output' => '1:r',
-					'weight' => $redirScore,
-					'context' => [
-						'location' => [
-							'lat' => 48.3985,
-							'lon' => 9.9918
-						]
-					]
-				],
-				'suggest-stop-geo' => [
-					'input' => [ 'UN/LOCODE:DEULM', 'Ulm, Germany',
-						'Ulm displaced persons camp', 'Söflingen' ],
-					'output' => '1:r',
-					'weight' => $redirScore,
-					'context' => [
-						'location' => [
-							'lat' => 48.3985,
-							'lon' => 9.9918
-						]
-					]
-				]
 			]
 		];
 		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
-	}
-
-	public function testMultipleCoordinates() {
-		$doc = [
-			'coordinates' => [
-				[
-					'coord' => [
-						'lat' => 0.70777777777778,
-						'lon' => -50.089444444444
-					],
-					'region' => null,
-					'dim' => 10000,
-					'name' => "",
-					'primary' => true,
-					'type' => "river",
-					'globe' => "earth",
-					'country' => "BR"
-				],
-				[
-					'coord' => [
-						'lat' => -15.518055555556,
-						'lon' => -71.765277777778
-					],
-					'region' => null,
-					'dim' => 10000,
-					'name' => "",
-					'primary' => false,
-					'type' => "river",
-					'globe' => "earth",
-					'country' => "BR"
-				]
-			]
-		];
-
-		$builder = new GeoSuggestionsBuilder();
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$expected = [ 'lat' => 0.70777777777778, 'lon' => -50.089444444444 ];
-		$this->assertSame( $expected, $coord );
-
-		$doc['coordinates'][1]['primary'] = true;
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$expected = [ 'lat' => 0.70777777777778, 'lon' => -50.089444444444 ];
-		$this->assertSame( $expected, $coord, "With two primaries coord we choose the first one" );
-
-		$doc['coordinates'][0]['primary'] = false;
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$expected = [ 'lat' => -15.518055555556, 'lon' => -71.765277777778 ];
-		$this->assertSame( $expected, $coord, "Choose primary coord even if it's not the first one." );
-
-		$doc['coordinates'][1]['primary'] = false;
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$expected = [ 'lat' => 0.70777777777778, 'lon' => -50.089444444444 ];
-		$this->assertSame( $expected, $coord, "Choose first coord if there's no primary." );
-
-		$doc['coordinates'][0]['primary'] = true;
-		$doc['coordinates'][0]['globe'] = 'Magrathea';
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$expected = [ 'lat' => -15.518055555556, 'lon' => -71.765277777778 ];
-		$this->assertSame( $expected, $coord, "Choose first coord on earth." );
-
-		$doc['coordinates'][1]['globe'] = 'Magrathea';
-		$coord = $builder->findPrimaryCoordinates( $doc );
-		$this->assertNull( $coord, "No coord if none is on earth." );
 	}
 
 	/**
@@ -703,7 +554,6 @@ class SuggestBuilderTest extends CirrusTestCase {
 
 	private function buildBuilder( $scoringMethod ) {
 		$extra = [
-			new GeoSuggestionsBuilder(),
 			new DefaultSortSuggestionsBuilder(),
 		];
 		return new SuggestBuilder( SuggestScoringMethodFactory::getScoringMethod( 'incomingLinks' ), $extra );

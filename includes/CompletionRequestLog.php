@@ -134,10 +134,11 @@ class CompletionRequestLog extends BaseRequestLog {
 		}
 		$hitsTotal = 0;
 		$data = $this->response->getData();
-		unset( $data['_shards'] );
-		foreach ( $data as $type ) {
-			foreach ( $type as $results ) {
-				$hitsTotal += count( $results['options'] );
+		if ( isset( $data['suggest'] ) ) {
+			foreach ( $data['suggest'] as $type ) {
+				foreach ( $type as $results ) {
+					$hitsTotal += count( $results['options'] );
+				}
 			}
 		}
 		return $hitsTotal;

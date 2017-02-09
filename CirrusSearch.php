@@ -1212,6 +1212,21 @@ $wgCirrusSearchFieldTypeOverrides = [
 	'opening_text' => \CirrusSearch\Search\OpeningTextIndexField::class,
 ];
 
+/**
+ * Custom settings to be provided with index creation. Used for setting
+ * slow logs threhsolds and such. Alternatively index templates could
+ * be used within elasticsearch.
+ *
+ * Example:
+ *   $wgCirrusSearchExtraIndexSettings = [
+ *     'indexing.slowlog.threshold.index.warn' => '10s',
+ *     'indexing.slowlog.threshold.index.info' => '5s',
+ *     'search.slowlog.threshold.fetch.info' => '1s',
+ *     'search.slowlog.threshold.fetch.info' => '800ms',
+ *  ]
+ */
+$wgCirrusSearchExtraIndexSettings = [];
+
 /*
  * Please update docs/settings.txt if you add new values!
  */

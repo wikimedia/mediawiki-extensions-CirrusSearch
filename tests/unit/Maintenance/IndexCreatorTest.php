@@ -44,7 +44,8 @@ class IndexCreatorTest extends CirrusTestCase {
 			'0-2', // replicaCount
 			30, // refreshInterval
 			[], // mergeSettings
-			true // searchAllFields
+			true, // searchAllFields
+			[] // extra index settings
 		);
 
 		$this->assertInstanceOf( 'Status', $status );

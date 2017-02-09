@@ -34,6 +34,7 @@ class IndexCreator {
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
 	 * @param bool $searchAllFields
+	 * @param array $extraSettings
 	 *
 	 * @return Status
 	 */
@@ -44,7 +45,8 @@ class IndexCreator {
 		$replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
-		$searchAllFields
+		$searchAllFields,
+		array $extraSettings
 	) {
 		$args = $this->buildArgs(
 			$maxShardsPerNode,
@@ -52,7 +54,8 @@ class IndexCreator {
 			$replicaCount,
 			$refreshInterval,
 			$mergeSettings,
-			$searchAllFields
+			$searchAllFields,
+			$extraSettings
 		);
 
 		try {
@@ -79,6 +82,7 @@ class IndexCreator {
 	 * @param int $refreshInterval
 	 * @param array $mergeSettings
 	 * @param bool $searchAllFields
+	 * @param array $extraSettings
 	 *
 	 * @return array
 	 */
@@ -88,7 +92,8 @@ class IndexCreator {
 		$replicaCount,
 		$refreshInterval,
 		array $mergeSettings,
-		$searchAllFields
+		$searchAllFields,
+		array $extraSettings
 	) {
 		$maxShardsPerNode = $maxShardsPerNode === 'unlimited' ? -1 : $maxShardsPerNode;
 		$args = [
@@ -99,7 +104,7 @@ class IndexCreator {
 				'refresh_interval' => $refreshInterval . 's',
 				'merge.policy' => $mergeSettings,
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
-			]
+			] + $extraSettings
 		];
 		$similarity = $this->analysisConfigBuilder->buildSimilarityConfig();
 		if ( $similarity ) {
@@ -110,6 +115,7 @@ class IndexCreator {
 			// Use our weighted all field as the default rather than _all which is disabled.
 			$args['settings']['index.query.default_field'] = 'all';
 		}
+
 
 		return $args;
 	}

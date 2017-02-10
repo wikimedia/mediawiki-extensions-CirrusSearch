@@ -36,6 +36,8 @@
 	"cirrussearch-qi-profile-classic": "Ranking based on the number of incoming links, some templates, article language and recency (templates/language/recency may not be activated on this wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Ranking based on some templates, article language and recency when activated on this wiki.",
 	"cirrussearch-qi-profile-empty": "Ranking based solely on query dependent features (for debug only).",
+	"cirrussearch-qi-profile-popular-pv": "Ranking based primarily on page views",
+	"cirrussearch-qi-profile-popular-inclinks": "Ranking based primarily on incoming link counts",
 	"cirrussearch-pref-completion-profile-help": "Set the behavior for autocomplete (search-as-you-type) suggestions.",
 	"prefs-completion": "Search completion",
 	"cirrussearch-pref-completion-section-desc": "Completion suggester",

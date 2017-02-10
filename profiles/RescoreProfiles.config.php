@@ -151,6 +151,61 @@ $wgCirrusSearchRescoreProfiles = [
 			],
 		],
 	],
+
+	// inclinks + pageviews applied as weighted sum with
+	// a very high weight on pageviews, for returning the
+	// most popular matching pages
+	'popular_inclinks_pv' => [
+		'supported_namespaces' => 'content',
+		'fallback_profile' => 'popular_inclinks',
+		'i18n_msg' => 'cirrussearch-qi-profile-popular-pv',
+		'rescore' => [
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'total',
+				'type' => 'function_score',
+				'function_chain' => 'wsum_inclinks_pv+'
+			],
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'multiply',
+				'type' => 'function_score',
+				'function_chain' => 'optional_chain'
+			],
+		],
+	],
+
+	'popular_inclinks' => [
+		'supported_namespaces' => 'all',
+		'i18n_msg' => 'cirrussearch-qi-profile-popular-inclinks',
+		'rescore' => [
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 100.0,
+				'score_mode' => 'total',
+				'type' => 'function_score',
+				'function_chain' => 'wsum_inclinks'
+			],
+			[
+				'window' => 8192,
+				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
+				'query_weight' => 1.0,
+				'rescore_query_weight' => 1.0,
+				'score_mode' => 'multiply',
+				'type' => 'function_score',
+				'function_chain' => 'optional_chain'
+			],
+		],
+	],
+
 ];
 
 /**
@@ -243,6 +298,56 @@ $wgCirrusSearchRescoreFunctionScoreChains = [
 				'type' => 'satu',
 				'weight' => [
 					'value' => 3,
+					'config_override' => 'CirrusSearchPageViewsW',
+					'uri_param_override' => 'cirrusPageViewsW',
+				],
+				'params' => [
+					'field' => 'popularity_score',
+					'k' => [
+						'value' => 8E-6,
+						'config_override' => 'CirrusSearchPageViewsK',
+						'uri_param_override' => 'cirrusPageViewsK',
+					],
+					'a' => [
+						'value' => 0.8,
+						'config_override' => 'CirrusSearchPageViewsA',
+						'uri_param_override' => 'cirrusPageViewsA',
+					],
+				],
+			],
+			[
+				'type' => 'satu',
+				'weight' => [
+					'value' => 10,
+					'config_override' => 'CirrusSearchIncLinksW',
+					'uri_param_override' => 'cirrusIncLinkssW',
+				],
+				'params' => [
+					'field' => 'incoming_links',
+					'k' => [
+						'value' => 30,
+						'config_override' => 'CirrusSearchIncLinksK',
+						'uri_param_override' => 'cirrusIncLinksK',
+					],
+					'a' => [
+						'value' => 0.7,
+						'config_override' => 'CirrusSearchIncLinksA',
+						'uri_param_override' => 'cirrusIncLinksA',
+					],
+				],
+			],
+		],
+	],
+
+	// like wsum_inclinks_pv, but heavily weighted towards the popularity score
+	'wsum_inclinks_pv+' => [
+		'score_mode' => 'sum',
+		'boost_mode' => 'sum',
+		'functions' => [
+			[
+				'type' => 'satu',
+				'weight' => [
+					'value' => 1000,
 					'config_override' => 'CirrusSearchPageViewsW',
 					'uri_param_override' => 'cirrusPageViewsW',
 				],

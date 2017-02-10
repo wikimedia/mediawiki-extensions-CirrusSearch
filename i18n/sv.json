@@ -28,5 +28,12 @@
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-inställningarna för denna wiki.",
 	"cirrussearch-give-feedback": "Ge oss din återkoppling",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (rekommenderas)",
-	"cirrussearch-pref-completion-legacy-section-desc": "Prefixsökning"
+	"cirrussearch-pref-completion-legacy-section-desc": "Prefixsökning",
+	"cirrussearch-file-numeric-feature-not-a-number": "Söktermen \"$1\" kräver numeriska värden, men \"$2\" tillhandahölls.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Söktermen \"$1\" tillåter inte flera argument  och ett tecken med \"$2\".",
+	"cirrussearch-feature-not-available": "Sökningsnyckelordet \"$1\" är inte aktiverat på denna wiki.",
+	"cirrussearch-feature-too-many-conditions": "För många villkor tillhandahålls till \"$1\", kortades av till $1.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Inga giltiga kategorier tillhandahölls i \"$1\".",
+	"cirrussearch-mlt-feature-no-valid-titles": "Inga giltiga titlar tillhandahölls för \"$1\".",
+	"cirrussearch-mlt-not-configured": "Funktionen \"$1\" är felkonfigurerad. Be en administratör att åtgärda $wgCirrusSearchMoreLikeThisFields"
 }

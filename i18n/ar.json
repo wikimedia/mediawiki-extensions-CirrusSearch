@@ -65,5 +65,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "بحث بادئة كلاسيكي",
 	"cirrussearch-completion-profile-classic-pref-desc": "لا تصحيح إملائي. يطابق بداية العناوين.",
 	"cirrussearch-timed-out": "وقت البحث انتهى، فقط نتائج جزئية متوفرة.",
-	"cirrussearch-regex-timed-out": "وقت بحث الريجيكس انتهى، فقط نتائج جزئية متوفرة. حاول تبسيط تعبيرك المنتظم للحصول على النتائج الكاملة."
+	"cirrussearch-regex-timed-out": "وقت بحث الريجيكس انتهى، فقط نتائج جزئية متوفرة. حاول تبسيط تعبيرك المنتظم للحصول على النتائج الكاملة.",
+	"cirrussearch-file-numeric-feature-not-a-number": "مصطلح البحث '$1' يتطلب قيم رقمية، لكن '$2' تم توفيره.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "مصطلح البحث '$1' لا يسمح بتوفير مدخلات متعددة وعلامة مع '$2'.",
+	"cirrussearch-feature-not-available": "كلمة البحث المفتاحية '$1' غير مفعلة على هذه الويكي.",
+	"cirrussearch-feature-too-many-conditions": "شروط كثيرة جدا تم توفيرها ل'$1'، اقتطاعها إلى $2.",
+	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "لا عناوين صحيحة تم توفيرها ل'$1'.",
+	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields"
 }

@@ -25,7 +25,7 @@ use CirrusSearch\SearchConfig;
  */
 
 class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
-	const VERSION = "1.3";
+	const VERSION = "1.4";
 
 	/**
 	 * @param string $langCode The language code to build config for
@@ -98,7 +98,35 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						'\\]=>\u0020',
 						'{=>\u0020',
 						'}=>\u0020',
-						'\\\\=>\u0020'
+						'\\\\=>\u0020',
+						// Unicode white spaces
+						// cause issues with completion
+						// only few of them where actually
+						// identified as problematic but
+						// more are added for extra safety
+						// see: T156234
+						// TODO: reevaluate with es5
+						'\u00a0=>\u0020',
+						'\u1680=>\u0020',
+						'\u180e=>\u0020',
+						'\u2000=>\u0020',
+						'\u2001=>\u0020',
+						'\u2002=>\u0020',
+						'\u2003=>\u0020',
+						'\u2004=>\u0020',
+						'\u2005=>\u0020',
+						'\u2006=>\u0020',
+						'\u2007=>\u0020',
+						'\u2008=>\u0020',
+						'\u2009=>\u0020',
+						'\u200a=>\u0020',
+						'\u200b=>\u0020', // causes issue
+						'\u200c=>\u0020', // causes issue
+						'\u200d=>\u0020', // causes issue
+						'\u202f=>\u0020',
+						'\u205f=>\u0020',
+						'\u3000=>\u0020',
+						'\ufeff=>\u0020', // causes issue
 					],
 				],
 			],

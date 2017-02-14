@@ -1484,3 +1484,20 @@ NOTE: This setting is deprecated: update or create your own PhraseSuggester prof
 
 Confidence level required to suggest new phrases.
 See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
+
+; $wgCirrusSearchExtraIndexSettings
+
+Default:
+	$wgCirrusSearchExtraIndexSettings = [];
+
+Custom settings to be provided with index creation. Used for setting
+slow logs threhsolds and such. Alternatively index templates could
+be used within elasticsearch.
+
+Example:
+    $wgCirrusSearchExtraIndexSettings = [
+        'indexing.slowlog.threshold.index.warn' => '10s',
+        'indexing.slowlog.threshold.index.info' => '5s',
+        'search.slowlog.threshold.fetch.info' => '1s',
+        'search.slowlog.threshold.fetch.info' => '800ms',
+    ];

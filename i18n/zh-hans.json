@@ -70,5 +70,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "传统前缀搜索",
 	"cirrussearch-completion-profile-classic-pref-desc": "无错别字纠正。匹配标题开头。",
 	"cirrussearch-timed-out": "搜索超时，只找到部分结果。",
-	"cirrussearch-regex-timed-out": "正则表达式搜索超时，只找到部分结果。请尝试简化您的正则表达式以获取完整搜索结果。"
+	"cirrussearch-regex-timed-out": "正则表达式搜索超时，只找到部分结果。请尝试简化您的正则表达式以获取完整搜索结果。",
+	"cirrussearch-file-numeric-feature-not-a-number": "搜索关键词“$1”要求数值，但提供了“$2”。",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "搜索关键词“$1”不允许提供多个参数和标识“$2”。",
+	"cirrussearch-feature-not-available": "搜索关键词“$1”未在此wiki启用。",
+	"cirrussearch-feature-too-many-conditions": "为“$1”提供了太多条件，截短为$2。",
+	"cirrussearch-incategory-feature-no-valid-categories": "没有为“$1”提供有效分类。",
+	"cirrussearch-mlt-feature-no-valid-titles": "没有为“$1”提供有效标题。",
+	"cirrussearch-mlt-not-configured": "“$1”功能未被配置。请向管理员请求修复$wgCirrusSearchMoreLikeThisFields"
 }

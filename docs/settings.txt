@@ -131,7 +131,7 @@ Should CirrusSearch attempt to use the "experimental" highlighter.  It is an
 Elasticsearch plugin that should produce better snippets for search results.
 Installation instructions are here: https://github.com/wikimedia/search-highlighter
 If you have the highlighter installed you can switch this on and off so long
-as you don't rebuild the index while $wgCirrusSearchOptimizeIndexForExperimentalHighlighter is true.  
+as you don't rebuild the index while $wgCirrusSearchOptimizeIndexForExperimentalHighlighter is true.
 Setting it to true without the highlighter installed will break search.
 
 ; $wgCirrusSearchOptimizeIndexForExperimentalHighlighter
@@ -1247,9 +1247,19 @@ The options that are built in:
 ; $wgCirrusSearchTextcatModel
 
 Default:
-    $wgCirrusSearchTextcatModel = false;
+    $wgCirrusSearchTextcatModel = [];
 
-Directory where TextCat detector should look for language model.
+List of directories where TextCat detector should look for language models
+
+; $wgCirrusSearchTextcatConfig
+
+Default:
+    $wgCirrusSearchTextcatConfig = null;
+
+Configuration for specifying TextCat parameters.
+Keys are maxNgrams, maxReturnedLanguages, resultsRatio,
+minInputLength, maxProportion, langBoostScore, and numBoostedLangs.
+See vendor/wikimedia/textcat/TextCat.php
 
 ; $wgCirrusSearchTextcatLanguages
 
@@ -1259,7 +1269,7 @@ Default:
 Limit the set of languages detected by Textcat.
 Useful when some languages in the model have very bad precision, e.g.:
 
-    $wgCirrusSearchTextcatLanguages = array( 'ar', 'it', 'de' );
+    $wgCirrusSearchTextcatLanguages = [ 'ar', 'it', 'de' ];
 
 ; $wgCirrusSearchMasterTimeout
 
@@ -1447,3 +1457,20 @@ NOTE: This setting is deprecated: update or create your own PhraseSuggester prof
 
 Confidence level required to suggest new phrases.
 See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
+
+; $wgCirrusSearchExtraIndexSettings
+
+Default:
+	$wgCirrusSearchExtraIndexSettings = [];
+
+Custom settings to be provided with index creation. Used for setting
+slow logs threhsolds and such. Alternatively index templates could
+be used within elasticsearch.
+
+Example:
+    $wgCirrusSearchExtraIndexSettings = [
+        'indexing.slowlog.threshold.index.warn' => '10s',
+        'indexing.slowlog.threshold.index.info' => '5s',
+        'search.slowlog.threshold.fetch.info' => '1s',
+        'search.slowlog.threshold.fetch.info' => '800ms',
+    ];

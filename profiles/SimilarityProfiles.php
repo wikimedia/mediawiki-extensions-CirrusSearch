@@ -26,7 +26,8 @@
  */
 
 $wgCirrusSearchSimilarityProfiles = [
-	// default profile, uses the classic TF/IDF from Lucene
+	// default profile, uses the classic TF/IDF from Lucene. With ES5
+	// this will become BM25.
 	'default' => [],
 	// BM25 with default values for k and a for all fields
 	'bm25_with_defaults' => [
@@ -97,6 +98,8 @@ $wgCirrusSearchSimilarityProfiles = [
 	'wmf_defaults' => [
 		'similarity' => [
 			'default' => [
+				// Although not referenced, this is necessary
+				// to disable coord
 				'type' => 'BM25',
 			],
 			'arrays' => [
@@ -106,7 +109,7 @@ $wgCirrusSearchSimilarityProfiles = [
 			],
 		],
 		'fields' => [
-			'__default__' => 'default',
+			'__default__' => 'BM25',
 			'category' => 'arrays',
 			'heading' => 'arrays',
 			'redirect.title' => 'arrays',

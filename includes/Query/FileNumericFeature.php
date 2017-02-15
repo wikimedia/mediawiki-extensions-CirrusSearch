@@ -51,15 +51,20 @@ class FileNumericFeature extends SimpleKeywordFeature {
 
 		$field = $this->keyTable[$key];
 
-		$sign = $this->extractSign( $value );
+		list( $sign, $number ) = $this->extractSign( $value );
 
 		// filesize treats no sign as >, since exact file size matches make no sense
-		if ( !$sign && $key === 'filesize' && strpos( $value, ',' ) === false ) {
+		if ( !$sign && $key === 'filesize' && strpos( $number, ',' ) === false ) {
 			$sign = 1;
 		}
 
+		if ( !$this->validate( $context, $key, $value, $sign, $number ) ) {
+			$context->setResultsPossible( false );
+			return [ null, false ];
+		}
+
 		$query =
-			$this->buildNumericQuery( $field, $sign, $value, ( $key === 'filesize' ) ? 1024 : 1 );
+			$this->buildNumericQuery( $field, $sign, $number, ( $key === 'filesize' ) ? 1024 : 1 );
 
 		return [ $query, false ];
 	}
@@ -68,16 +73,71 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 * Extract sign prefix which can be < or > or nothing.
 	 * @param     $value
 	 * @param int $default
-	 * @return int  0 is equal, 1 is more, -1 is less
+	 * @return array Two element array, first the sign: 0 is equal, 1 is more, -1 is less,
+	 *  then the number to be compared.
 	 */
-	protected function extractSign( &$value, $default = 0 ) {
+	protected function extractSign( $value, $default = 0 ) {
 		if ( $value[0] == '>' || $value[0] == '<' ) {
 			$sign = ( $value[0] == '>' ) ? 1 : - 1;
-			$value = substr( $value, 1 );
+			return [$sign, substr( $value, 1 )];
 		} else {
-			return $default;
+			return [$default, $value];
 		}
-		return $sign;
+	}
+
+	/**
+	 * Validate that input arguments will construct a valid query
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The matched query keyword
+	 * @param string $value The original value provided by user
+	 * @param int $sign
+	 * @param string $number
+	 * @return bool
+	 */
+	protected function validate( SearchContext $context, $key, $value, $sign, $number ) {
+		$valid = true;
+		if ( $sign && strpos( $number, ',' ) !== false ) {
+			$context->addWarning(
+				'cirrussearch-file-numeric-feature-multi-argument-w-sign',
+				$key,
+				$number
+			);
+			$valid = false;
+		} elseif ( $sign || strpos( $number, ',' ) === false ) {
+			if ( !is_numeric( $number ) ) {
+				$this->nanWarning( $context, $key, $number === false ? $value : $number );
+				$valid = false;
+			}
+		} else {
+			$numbers = explode( ',', $number, 2 );
+			if ( !is_numeric( $numbers[0] ) ) {
+				$this->nanWarning( $context, $key, $numbers[0] );
+				$valid = false;
+			}
+			if ( !is_numeric( $numbers[1] ) ) {
+				$this->nanWarning( $context, $key, $numbers[1] );
+				$valid = false;
+			}
+		}
+
+		return $valid;
+	}
+
+	/**
+	 * Adds a warning to the search context that the $key keyword
+	 * was provided with the invalid value $notANumber.
+	 *
+	 * @param SearchContext $context
+	 * @param string $key
+	 * @param string $notANumber
+	 */
+	protected function nanWarning( SearchContext $context, $key, $notANumber ) {
+		$context->addWarning(
+			'cirrussearch-file-numeric-feature-not-a-number',
+			$key,
+			$notANumber
+		);
 	}
 
 	/**
@@ -90,9 +150,6 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 */
 	protected function buildNumericQuery( $field, $sign, $number, $multiplier = 1 ) {
 		if ( $sign ) {
-			if ( !is_numeric( $number ) ) {
-				return null;
-			}
 			$number = intval( $number );
 			if ( $sign < 0 ) {
 				$range = [ 'lte' => $number * $multiplier ];
@@ -102,17 +159,11 @@ class FileNumericFeature extends SimpleKeywordFeature {
 			return new Query\Range( $field, $range );
 		} else {
 			if ( strpos( $number, ',' ) !== false ) {
-				$numbers = explode( ',', $number );
-				if ( !is_numeric( $numbers[0] ) || !is_numeric( $numbers[1] ) ) {
-					return null;
-				}
+				$numbers = explode( ',', $number, 2 );
 				return new Query\Range( $field, [
 					'gte' => intval( $numbers[0] ) * $multiplier,
 					'lte' => intval( $numbers[1] ) * $multiplier
 				] );
-			}
-			if ( !is_numeric( $number ) ) {
-				return null;
 			}
 			$query = new  Query\Match();
 			$query->setFieldQuery( $field, (string)( $number * $multiplier ) );

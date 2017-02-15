@@ -8,7 +8,8 @@
 			"Putnik",
 			"Туллук",
 			"Gamliel Fishkin",
-			"Kareyac"
+			"Kareyac",
+			"Alex Great"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -43,5 +44,15 @@
 	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для автоматического заполнения предложения (Поиск при вводе).",
 	"prefs-completion": "Завершение поиска",
 	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)"
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester «Подсказчик автозаполнения»] — это алгоритм для поиска названий с наиболее близкими по написанию и релевантными по запросу.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправляет до двух опечаток. Подставляет подходящие перенаправления.",
+	"cirrussearch-completion-profile-strict-pref-name": "Точный режим (расширенный)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Не исправляет опечатки. Игнорирует перенаправления. Строгое соответствие.",
+	"cirrussearch-completion-profile-normal-pref-name": "Режим перенаправлений (расширенный)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Не исправляет опечатки. Подставляет подходящие перенаправления.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Поиск по префиксу",
+	"cirrussearch-pref-completion-legacy-section-legend": "Устаревший алгоритм поиска по мере ввода.",
+	"cirrussearch-completion-profile-classic-pref-name": "Классический поиск по префиксу",
+	"cirrussearch-completion-profile-classic-pref-desc": "Не исправляет опечатки. Подсказывает названия от начала по мере ввода."
 }

@@ -36,6 +36,8 @@
 	"cirrussearch-qi-profile-classic": "Ranking based on the number of incoming links, some templates, article language and recency (templates/language/recency may not be activated on this wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Ranking based on some templates, article language and recency when activated on this wiki.",
 	"cirrussearch-qi-profile-empty": "Ranking based solely on query dependent features (for debug only).",
+	"cirrussearch-qi-profile-popular-pv": "Ranking based primarily on page views",
+	"cirrussearch-qi-profile-popular-inclinks": "Ranking based primarily on incoming link counts",
 	"cirrussearch-pref-completion-profile-help": "Set the behavior for autocomplete (search-as-you-type) suggestions.",
 	"prefs-completion": "Search completion",
 	"cirrussearch-pref-completion-section-desc": "Completion suggester",
@@ -55,5 +57,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Classic prefix search",
 	"cirrussearch-completion-profile-classic-pref-desc": "No typo correction. Matches the beginning of titles.",
 	"cirrussearch-timed-out": "The search timed out, only partial results are available.",
-	"cirrussearch-regex-timed-out": "The regex search timed out, only partial results are available. Try simplifying your regular expression to get complete results."
+	"cirrussearch-regex-timed-out": "The regex search timed out, only partial results are available. Try simplifying your regular expression to get complete results.",
+	"cirrussearch-file-numeric-feature-not-a-number": "The search term '$1' requires numeric values, but '$2' was provided.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "The search term '$1' doesn't allow providing multiple arguments and a sign with '$2'.",
+	"cirrussearch-feature-not-available": "The search keyword '$1' is not enabled on this wiki.",
+	"cirrussearch-feature-too-many-conditions": "Too many conditions provided to '$1', truncating to $2.",
+	"cirrussearch-incategory-feature-no-valid-categories": "No valid categories provided to '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "No valid titles provided to '$1'.",
+	"cirrussearch-mlt-not-configured": "The '$1' feature is misconfigured. Ask an admin to fix $wgCirrusSearchMoreLikeThisFields"
 }

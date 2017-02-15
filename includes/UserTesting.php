@@ -114,7 +114,7 @@ class UserTesting {
 						break;
 					}
 				}
-			} elseif ( $testConfig['sampleRate'] > 0 ) {
+			} elseif ( isset( $testConfig['sampleRate'] ) && $testConfig['sampleRate'] > 0 ) {
 				$bucketProbability = call_user_func( $callback, $testName, $testConfig['sampleRate'] );
 				if ( $bucketProbability > 0 ) {
 					$this->activateTest( $testName, $bucketProbability, $testConfig );

@@ -64,6 +64,10 @@ class RegexInSourceFeature implements KeywordFeature {
             '/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
 			function ( $matches ) use ( $context ) {
 				if ( !$this->enabled ) {
+					$context->addWarning(
+						'cirrussearch-feature-not-available',
+						'insource regex'
+					);
 					return '';
 				}
 

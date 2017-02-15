@@ -170,8 +170,19 @@ class ElasticaErrorHandler {
 			// and comes before the next new line so lets slurp it up and log it rather than
 			// the huge clump of error.
 			$shardFailure = reset( $error['failed_shards'] );
-			$message = $shardFailure['reason']['caused_by']['reason'];
+			if ( !empty( $shardFailure['reason'] ) ) {
+				if ( !empty( $shardFailure['reason']['caused_by'] ) ) {
+					$message = $shardFailure['reason']['caused_by']['reason'];
+				} else {
+					$message = $shardFailure['reason']['reason'];
+				}
+			} else {
+				$message = "???";
+			}
 			$end = strpos( $message, "\n", 0 );
+			if ( $end === false ) {
+				$end = strlen( $message );
+			}
 			$parseError = substr( $message, 0, $end );
 
 			return [

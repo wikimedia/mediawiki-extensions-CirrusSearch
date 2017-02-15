@@ -32,47 +32,93 @@ class LanguageDetectTest extends CirrusTestCase {
 	 */
 	private $cirrus;
 
+	/**
+	 * @var TextCat
+	 */
+	private $textcat;
+
+	/**
+	 * data provided is: text, lang1, lang2
+	 * lang1 is result with defaults (testTextCatDetector)
+	 * lang2 is result with non-defaults (testTextCatDetectorWithParams)
+	 *		see notes inline
+	 */
 	public function getLanguageTexts() {
 		return [
 			// simple cases
-			["Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en"],
-			["Добро пожаловать в Википедию", "ru"],
+			["Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en"],
+			["Добро пожаловать в Википедию", "ru", "uk"],	// ru missing, uk present
+
 			// more query-like cases
-			["Breaking Bad", "en"],
-			["Jesenwang flugplatz", "de"],
-			["volviendose malo", "es"],
-			["противоточный теплообменник", "ru"],
-			["שובר שורות", "he"],
+			["who stars in Breaking Bad?", "en", "en"],
+			["Jesenwang flugplatz", "de", "de"],
+			["volviendose malo", "es", null], // en boosted -> too ambiguous
+			["противоточный теплообменник", "ru", "uk"], // ru missing, uk present
+			["שובר שורות", "he", "he"],
+			["୨୪ ଅକ୍ଟୋବର", "or", null],	// or missing, no alternative
+			["th", "en", null],	// too short
 		];
 	}
 
 	public function setUp() {
 		parent::setUp();
 		$this->cirrus = new \CirrusSearch();
-		global $wgCirrusSearchTextcatModel;
-		if (empty( $wgCirrusSearchTextcatModel ) ) {
-			$tc = new \ReflectionClass('TextCat');
-			$wgCirrusSearchTextcatModel = dirname($tc->getFileName())."/LM-query/";
-		}
+		$this->textcat = new TextCat();
 	}
 
 	/**
 	 * @dataProvider getLanguageTexts
 	 * @param string $text
 	 * @param string $language
+	 * @param string $ignore
 	 */
-	public function testTextCatDetector($text, $language) {
-		// not really used for anything, but we need to pass it as a parameter
-		$detector = new TextCat();
-		$detect = $detector->detect($this->cirrus, $text);
+	public function testTextCatDetector($text, $language, $ignore) {
+		$tc = new \ReflectionClass('TextCat');
+		$this->setMwGlobals( [
+			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
+											  dirname( $tc->getFileName() )."/LM/" ],
+			'wgCirrusSearchTextcatLanguages' => null,
+			'wgCirrusSearchTextcatConfig' => null,
+		] );
+		$detect = $this->textcat->detect($this->cirrus, $text);
+		$this->assertEquals($language, $detect);
+	}
+
+	/**
+	 * @dataProvider getLanguageTexts
+	 * @param string $text
+	 * @param string $ignore
+	 * @param string $language
+	 */
+	public function testTextCatDetectorWithParams($text, $ignore, $language) {
+		$tc = new \ReflectionClass('TextCat');
+		$this->setMwGlobals( [
+			// only use one language model directory in old non-array format
+			'wgCirrusSearchTextcatModel' => dirname( $tc->getFileName() )."/LM-query/",
+			'wgCirrusSearchTextcatLanguages' => [ 'en', 'es', 'de', 'he', 'uk' ],
+			'wgCirrusSearchTextcatConfig' => [
+				'maxNgrams' => 9000,
+				'maxReturnedLanguages' => 1,
+				'resultsRatio' => 1.06,
+				'minInputLength' => 3,
+				'maxProportion' => 0.8,
+				'langBoostScore' => 0.15,
+				'numBoostedLangs' => 1,
+			],
+		] );
+		$detect = $this->textcat->detect($this->cirrus, $text);
 		$this->assertEquals($language, $detect);
 	}
 
 	public function testTextCatDetectorLimited() {
-		global $wgCirrusSearchTextcatLanguages;
-		$wgCirrusSearchTextcatLanguages = ["en", "ru"];
-		$detector = new TextCat();
-		$detect = $detector->detect($this->cirrus, "volviendose malo");
+		$tc = new \ReflectionClass('TextCat');
+		$this->setMwGlobals( [
+			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
+											  dirname( $tc->getFileName() )."/LM/" ],
+			'wgCirrusSearchTextcatLanguages' => ["en", "ru"],
+			'wgCirrusSearchTextcatConfig' => null,
+		] );
+		$detect = $this->textcat->detect($this->cirrus, "volviendose malo");
 		$this->assertEquals("en", $detect);
 	}
 

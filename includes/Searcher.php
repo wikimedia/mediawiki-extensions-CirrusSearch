@@ -84,7 +84,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
 	 */
-	private $resultsType;
+	protected $resultsType;
 	/**
 	 * @var string sort type
 	 */
@@ -335,6 +335,8 @@ class Searcher extends ElasticsearchIntermediary {
 			new Query\FileTypeFeature(),
 			// File numeric characteristics - size, resolution, etc.
 			new Query\FileNumericFeature(),
+			// Content model feature
+			new Query\ContentModelFeature(),
 		];
 
 		$extraFeatures = [];
@@ -392,6 +394,10 @@ class Searcher extends ElasticsearchIntermediary {
 				// the parse errors that come in.
 				$status = $this->searchOne();
 			}
+		}
+
+		foreach ( $this->searchContext->getWarnings() as $warning ) {
+			call_user_func_array( [ $status, 'warning' ], $warning );
 		}
 
 		return $status;
@@ -599,6 +605,10 @@ class Searcher extends ElasticsearchIntermediary {
 		return $search;
 	}
 
+	/**
+	 * Perform a single-query search.
+	 * @return Status
+	 */
 	protected function searchOne() {
 		$search = $this->buildSearch();
 

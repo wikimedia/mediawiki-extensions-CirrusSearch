@@ -51,7 +51,7 @@ class MoreLikeFeature implements KeywordFeature {
 			// of input order when the result would be the same.
 			if ( $pos === 0 ) {
 				$titleString = substr( $term, $pos + strlen( $prefix ) );
-				$this->doApply( $context, $titleString, $options );
+				$this->doApply( $context, $prefix, $titleString, $options );
 
 				return "";
 			}
@@ -61,14 +61,22 @@ class MoreLikeFeature implements KeywordFeature {
 		return $term;
 	}
 
-	private function doApply( SearchContext $context, $titleString, $options ) {
+	private function doApply( SearchContext $context, $prefix, $titleString, $options ) {
 		$titles = $this->collectTitles( $titleString );
 		if ( !count( $titles ) ) {
+			$context->addWarning(
+				"cirrussearch-mlt-feature-no-valid-titles",
+				substr( $prefix, 0, -1 )
+			);
 			$context->setResultsPossible( false );
 			return;
 		}
 		$query = $this->buildMoreLikeQuery( $context, $titles, $options );
 		if ( $query === null ) {
+			$context->addWarning(
+				"cirrussearch-mlt-not-configured",
+				$prefix
+			);
 			$context->setResultsPossible( false );
 			return;
 		}

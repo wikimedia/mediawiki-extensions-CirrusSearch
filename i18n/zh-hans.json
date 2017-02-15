@@ -51,6 +51,8 @@
 	"cirrussearch-qi-profile-classic": "基于传入链接、一些模板、条目语言和新近程度的排名（模板/语言/新近程度可能不会在此wiki激活）。",
 	"cirrussearch-qi-profile-classic-noboostlinks": "基于一些模板、条目语言和新近程度的排名，当在此wiki激活时。",
 	"cirrussearch-qi-profile-empty": "完全基于查询相关特性的排名（仅用于调试）。",
+	"cirrussearch-qi-profile-popular-pv": "主要基于页面预览排名",
+	"cirrussearch-qi-profile-popular-inclinks": "主要基于链入链接数排名",
 	"cirrussearch-pref-completion-profile-help": "为自动完成（随打即搜）建议设置行为。",
 	"prefs-completion": "搜索完成",
 	"cirrussearch-pref-completion-section-desc": "完整搜索建议工具",

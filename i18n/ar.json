@@ -46,6 +46,8 @@
 	"cirrussearch-qi-profile-classic": "الرتبة معتمدة على عدد الوصلات الداخلة، بعض القوالب، لغة المقالة والحداثة (القوالب/اللغة/الحداثة ربما تكون غير مفعلة على هذه الويكي).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "الرتبة بناء على بعض القوالب، لغة المقالة والحداثة عند التفعيل على هذه الويكي.",
 	"cirrussearch-qi-profile-empty": "الرتبة بناء على الخواص المعتمدة على الاستعلام (للتصحيح فقط).",
+	"cirrussearch-qi-profile-popular-pv": "الترتيب معتمد أساسا على عدد مشاهدات الصفحة.",
+	"cirrussearch-qi-profile-popular-inclinks": "الترتيب معتمد أساسا على عدد الوصلات الداخلة.",
 	"cirrussearch-pref-completion-profile-help": "اضبط سلوك اقتراحات الإكمال التلقائي (search-as-you-type).",
 	"prefs-completion": "إكمال البحث",
 	"cirrussearch-pref-completion-section-desc": "مقترح الإكمال",

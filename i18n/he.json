@@ -39,6 +39,8 @@
 	"cirrussearch-qi-profile-classic": "דירוג מבוסס על מספר הקישורים הנכנסים, תבניות מסוימות, שפת הערך והאחרונות (ייתכן שתבניות, שפות ואחרונות אינם מופעלים בוויקי הזה).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "דירוג שמבוסס על תבניות אחדות, שפת הערך והאחרונות כאשר זה מופעל בוויקי הזה.",
 	"cirrussearch-qi-profile-empty": "דירוג שמבוסס רק על אפשרויות שתלויות בשאילתה (רק לשם תיקון שגיאות).",
+	"cirrussearch-qi-profile-popular-pv": "דירוג מבוסס בעיקר על מספר הצפיות בדפים",
+	"cirrussearch-qi-profile-popular-inclinks": "דירוג מבוסס בעיקר על מספר הקישורים על הדף",
 	"cirrussearch-pref-completion-profile-help": "הגדרת ההתנהגות של הצעות השלמה אוטומטית (חיפוש תוך כדי הקלדה).",
 	"prefs-completion": "השלמת חיפוש",
 	"cirrussearch-pref-completion-section-desc": "הצעות להשלמת חיפוש",

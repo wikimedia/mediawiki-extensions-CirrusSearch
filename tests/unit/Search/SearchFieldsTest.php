@@ -36,7 +36,7 @@ class SearchFieldsTest extends CirrusTestCase {
 
 		$field->setFlag( SearchIndexField::FLAG_NO_INDEX );
 		$mapping = $field->getMapping( $engine );
-		$this->assertEquals( 'no', $mapping['index'] );
+		$this->assertEquals( false, $mapping['index'] );
 	}
 
 	public function testBadField() {

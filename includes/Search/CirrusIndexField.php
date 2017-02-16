@@ -65,7 +65,7 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 			'type' => $this->typeName,
 		];
 		if ( $this->checkFlag( SearchIndexField::FLAG_NO_INDEX ) ) {
-			$config['index'] = 'no';
+			$config['index'] = false;
 		}
 		return $config;
 	}

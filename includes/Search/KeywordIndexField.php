@@ -23,7 +23,7 @@ class KeywordIndexField extends CirrusIndexField {
 		$config['analyzer'] =
 			$this->checkFlag( self::FLAG_CASEFOLD ) ? 'lowercase_keyword' : 'keyword';
 		$config += [
-			'norms' => [ 'enabled' => false ],
+			'norms' => false,
 			// Omit the length norm because there is only even one token
 			'index_options' => 'docs',
 			// TODO: Re-enable after upgrade to es 5.2 and changing type to keyword

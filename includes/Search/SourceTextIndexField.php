@@ -35,12 +35,12 @@ class SourceTextIndexField extends TextIndexField {
 		$this->initFlags();
 
 		$field = [
-			'index' => 'no', // We only use the .plain field
+			'index' => false, // We only use the .plain field
 			'type' => 'text',
 			'fields' => [
 				'plain' => [
 					'type' => 'text',
-					'norms' => ['enabled' => false],
+					'norms' => false,
 					'analyzer' => 'source_text_plain',
 					'search_analyzer' => 'source_text_plain_search',
 					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
@@ -51,7 +51,7 @@ class SourceTextIndexField extends TextIndexField {
 
 		if ( $this->withTrigrams ) {
 			$field['fields']['trigram'] = [
-				'norms' => ['enabled' => false],
+				'norms' => false,
 				'type' => 'text',
 				'analyzer' => 'trigram',
 				'index_options' => 'docs',

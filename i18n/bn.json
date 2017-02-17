@@ -34,5 +34,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "ক্লাসিক উপসর্গ অনুসন্ধান",
 	"cirrussearch-completion-profile-classic-pref-desc": "কোন টাইপো সংশোধন নয়। শিরোনামের শুরুর সাথে মিলায়।",
 	"cirrussearch-timed-out": "অনুসন্ধানের সময় শেষ হয়েছে, শুধুমাত্র আংশিক ফলাফল উপলব্ধ।",
-	"cirrussearch-regex-timed-out": "রেজেক্স অনুসন্ধানের সময় শেষ হয়েছে, শুধুমাত্র আংশিক ফলাফল উপলব্ধ। সম্পূর্ণ ফলাফল পেতে আপনার রেগুলার এক্সপ্রেশন সরল করার চেষ্টা করুন।"
+	"cirrussearch-regex-timed-out": "রেজেক্স অনুসন্ধানের সময় শেষ হয়েছে, শুধুমাত্র আংশিক ফলাফল উপলব্ধ। সম্পূর্ণ ফলাফল পেতে আপনার রেগুলার এক্সপ্রেশন সরল করার চেষ্টা করুন।",
+	"cirrussearch-incategory-feature-no-valid-categories": "'$1'-এ কোন বৈধ বিষয়শ্রেণী প্রদান করা হয়নি।",
+	"cirrussearch-mlt-feature-no-valid-titles": "'$1'-এ কোন বৈধ শিরোনাম প্রদান করা হয়নি।"
 }

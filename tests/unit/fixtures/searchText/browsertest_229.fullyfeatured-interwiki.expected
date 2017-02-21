@@ -150,10 +150,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }
@@ -373,10 +372,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }
@@ -596,10 +594,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }

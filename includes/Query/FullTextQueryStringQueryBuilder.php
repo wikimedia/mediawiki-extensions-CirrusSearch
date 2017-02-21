@@ -78,9 +78,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
-					$phraseMatch = new \Elastica\Query\Match( );
+					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix( );
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
-					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
 					$searchContext->addNonTextQuery( $phraseMatch );
 
 					$phraseHighlightMatch = new \Elastica\Query\QueryString( );
@@ -382,7 +381,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Build one query for the full text fields and one for the near match fields so that
 		// the near match can run unescaped.
 		$bool = new \Elastica\Query\BoolQuery();
-		$bool->setMinimumNumberShouldMatch( 1 );
+		$bool->setMinimumShouldMatch( 1 );
 		$bool->addShould( $queryForMostFields );
 		$nearMatch = new \Elastica\Query\MultiMatch();
 		$nearMatch->setFields( $nearMatchFields );

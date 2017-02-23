@@ -551,6 +551,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->setQuery( $query );
+			$search->addIndex( $sourceIndex );
 			$query->setSize( $this->indexChunkSize );
 			$totalDocsToDump = -1;
 			$scroll = new \Elastica\Scroll( $search, '15m' );

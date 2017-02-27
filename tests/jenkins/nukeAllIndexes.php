@@ -33,6 +33,13 @@ require_once( __DIR__ . '/../../includes/Maintenance/Maintenance.php' );
 
 class NukeAllIndexes extends Maintenance {
 	public function execute() {
+		global $wgCirrusSearchDevelOptions;
+
+		if ( !isset( $wgCirrusSearchDevelOptions['allow_nuke'] ) || !$wgCirrusSearchDevelOptions['allow_nuke'] ) {
+			$this->output( "Nuke not enabled. Please set \$wgCirrusSearchDevelOptions['allow_nuke'] = true" );
+			return 1;
+		}
+
 		$client = $this->getConnection()->getClient();
 		foreach ( $client->getStatus()->getIndexNames() as $index ) {
 			$this->output( "Deleting $index..." );

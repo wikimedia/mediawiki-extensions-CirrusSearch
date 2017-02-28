@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Milicevic01",
-			"Zoranzoki21"
+			"Zoranzoki21",
+			"Сербијана"
 		]
 	},
 	"cirrussearch-backend-error": "Нисмо могли завршити претрагу због привременог проблема. Покушајте поново касније.",
@@ -12,5 +13,6 @@
 	"cirrussearch-regex-too-busy-error": "Превише регуларних израза претраживања тренутно ради. Покушајте поново касније.",
 	"cirrussearch-now-using": "Овај вики има нови начин претраге. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
-	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење."
+	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
+	"prefs-completion": "Довршавање претраге"
 }

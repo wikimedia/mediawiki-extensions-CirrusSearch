@@ -280,7 +280,7 @@ class SearchConfig implements \Config {
 	 * @see DataSender::areIndexesAvailableForWrites()
 	 *
 	 * @param string $cluster
-	 * @retirn bool true is the cluster is writable
+	 * @return bool
 	 */
 	public function canWriteToCluster( $cluster ) {
 		return in_array( $cluster, $this->getWritableClusters() );
@@ -291,7 +291,7 @@ class SearchConfig implements \Config {
 	 * NOTE: this cluster may not be available for writes.
 	 *
 	 * @param string $cluster
-	 * @retirn bool true is the cluster is writable
+	 * @return bool
 	 */
 	public function clusterExists( $cluster ) {
 		return in_array( $cluster, $this->getAvailableClusters() );
@@ -355,6 +355,7 @@ class SearchConfig implements \Config {
 	 * Build a new SearchConfig based on $wiki
 	 * TODO: remove $fullLoad
 	 * @param $wiki dbname of the target wiki
+	 * @param bool $fullLoad
 	 * @return SearchConfig
 	 */
 	public function newInterwikiConfig( $wiki, $fullLoad = true ) {

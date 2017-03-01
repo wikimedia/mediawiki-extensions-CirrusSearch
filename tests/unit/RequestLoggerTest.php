@@ -261,7 +261,7 @@ class RequestLoggerTest extends CirrusTestCase {
 	 * statically referred to. Still asserts the keys exist, as otherwise avro
 	 * would fail to encode them.
 	 *
-	 * @param AbstractLogger[]
+	 * @param AbstractLogger[] $loggers
 	 * @return array
 	 */
 	private function collectLogs( array $loggers ) {

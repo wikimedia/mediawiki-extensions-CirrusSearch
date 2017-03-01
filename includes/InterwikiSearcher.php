@@ -44,7 +44,7 @@ class InterwikiSearcher extends Searcher {
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
 	 * @param User|null $user
-	 * @param string $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
+	 * @param int $highlightingConfig Bitmask of FullTextResultsType::HIGHLIGHT_… constants
 	 */
 	public function __construct(
 		Connection $connection,

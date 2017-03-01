@@ -57,8 +57,8 @@ class TextIndexField extends CirrusIndexField {
 
 	/**
 	 * Set text options for this field if non-default
-	 * @param $options
-	 * @return $this
+	 * @param int $options
+	 * @return self
 	 */
 	public function setTextOptions( $options ) {
 		$this->textOptions = $options;
@@ -67,7 +67,7 @@ class TextIndexField extends CirrusIndexField {
 
 	/**
 	 * Get text options for this field
-	 * @param $mappingFlags
+	 * @param int $mappingFlags
 	 * @return int
 	 */
 	protected function getTextOptions( $mappingFlags ) {

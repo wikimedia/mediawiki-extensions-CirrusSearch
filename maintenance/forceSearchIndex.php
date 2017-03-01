@@ -453,6 +453,7 @@ class ForceSearchIndex extends Maintenance {
 
 	/**
 	 * @param BatchRowIterator $it
+	 * @param string $endingAtColumn
 	 * @return CallbackIterator
 	 */
 	private function wrapDecodeResults( BatchRowIterator $it, $endingAtColumn ) {

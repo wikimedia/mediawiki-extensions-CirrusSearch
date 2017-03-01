@@ -111,6 +111,7 @@ class Reindexer {
 	 * @param array $mergeSettings
 	 * @param array $mappingConfig
 	 * @param Maintenance $out
+	 * @param string[] $fieldsToDelete
 	 * @throws \Exception
 	 */
 	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, array $mergeSettings, array $mappingConfig, Maintenance $out = null, $fieldsToDelete = [] ) {
@@ -425,7 +426,6 @@ class Reindexer {
 	 * out any old fields that we no longer use.
 	 *
 	 * @param \Elastica\Result $result original document retrieved from a search
-	 * @param array $properties mapping properties
 	 * @return Document
 	 */
 	private function buildNewDocument( \Elastica\Result $result ) {
@@ -506,7 +506,7 @@ class Reindexer {
 	 *
 	 * @param Type $type
 	 * @param string $messagePrefix
-	 * @param \Elastica\Document[]
+	 * @param \Elastica\Document[] $documents
 	 * @return int the number of indexed document
 	 */
 	private function sendDocuments( Type $type, $messagePrefix, array $documents ) {

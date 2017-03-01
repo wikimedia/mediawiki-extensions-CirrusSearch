@@ -46,7 +46,7 @@ class SourceRegex extends AbstractQuery {
 
 	/**
 	 * @param string $regex regex to match against field
-	 * @return $this
+	 * @return self
 	 */
 	public function setRegex( $regex ) {
 		return $this->setParam( 'regex', $regex );
@@ -54,7 +54,7 @@ class SourceRegex extends AbstractQuery {
 
 	/**
 	 * @param string $field field who's source to check with the regex
-	 * @return $this
+	 * @return self
 	 */
 	public function setField( $field ) {
 		return $this->setParam( 'field', $field );
@@ -63,7 +63,7 @@ class SourceRegex extends AbstractQuery {
 	/**
 	 * @param string $ngramField field that is indexed with ngrams to
 	 *  accelerate regex matching
-	 * @return $this
+	 * @return self
 	 */
 	public function setNGramField( $ngramField ) {
 		return $this->setParam( 'ngram_field', $ngramField );
@@ -73,7 +73,7 @@ class SourceRegex extends AbstractQuery {
      * @param int $gramSize size of the ngrams extracted for accelerating
      *  the regex.  Defaults to 3 if not set.  That gram size must have been
      *  produced by analyzing the ngramField.
-     * @return $this
+     * @return self
      */
     public function setGramSize( $gramSize ) {
         return $this->setParam( 'gram_size', $gramSize );
@@ -84,7 +84,7 @@ class SourceRegex extends AbstractQuery {
 	 *  ignored. Roughly corresponds to the maximum number of characters in a
 	 *  character class ([abcd]) before it is treated as . for purposes of
 	 *  acceleration. Defaults to 4.
-	 * @return $this
+	 * @return self
 	 */
 	public function setMaxExpand( $maxExpand ) {
 		return $this->setParam( 'max_expand', $maxExpand );
@@ -95,7 +95,7 @@ class SourceRegex extends AbstractQuery {
 	 *  be traced before the algorithm gives up and assumes the regex is too
 	 *  complex and throws an error back to the user. Defaults to 10000 which
 	 *  handily covers all regexes I cared to test.
-	 * @return $this
+	 * @return self
 	 */
 	public function setMaxStatesTraced( $maxStatesTraced ) {
 		return $this->setParam( 'max_states_traced', $maxStatesTraced );
@@ -107,7 +107,7 @@ class SourceRegex extends AbstractQuery {
 	 *  matching by fiat. Defaults to MAX_INT. Set this to 10000 or something
 	 *  nice and low to prevent regular expressions that cannot be sped up from
 	 *  taking up too many resources.
-	 * @return $this
+	 * @return self
 	 */
 	public function setMaxInspect( $maxInspect ) {
 		return $this->setParam( 'max_inspect', $maxInspect );
@@ -116,7 +116,7 @@ class SourceRegex extends AbstractQuery {
 	/**
 	 * @param int $maxDeterminizedStates maximum number of automaton states
 	 *  that Lucene's regex compilation can expand to (even temporarily)
-	 * @return $this
+	 * @return self
 	 */
 	public function setMaxDeterminizedStates( $maxDeterminizedStates ) {
 		return $this->setParam( 'max_determinized_states', $maxDeterminizedStates );
@@ -125,7 +125,7 @@ class SourceRegex extends AbstractQuery {
 	/**
 	 * @param bool $caseSensitive is the regex case insensitive?  Defaults to
 	 *  case insensitive if not set.
-	 * @return $this
+	 * @return self
 	 */
 	public function setCaseSensitive( $caseSensitive ) {
 		return $this->setParam( 'case_sensitive', $caseSensitive );
@@ -134,7 +134,7 @@ class SourceRegex extends AbstractQuery {
     /**
      * @param string $locale locale used for case conversions.  Its important that
      *  this matches the locale used for lowercasing in the ngram index.
-     * @return $this
+     * @return self
      */
     public function setLocale( $locale ) {
         return $this->setParam( 'locale', $locale );
@@ -143,7 +143,7 @@ class SourceRegex extends AbstractQuery {
 	/**
 	 * @param int $maxNgrams The maximum number of ngrams to extracted from the
 	 *  regex. If more could be extracted from the regex tey are ignored.
-	 * @return $this
+	 * @return self
 	 */
 	public function setMaxNgramsExtracted( $maxNgrams ) {
 		return $this->setParam( 'max_ngrams_extracted', $maxNgrams );
@@ -152,7 +152,7 @@ class SourceRegex extends AbstractQuery {
 	/**
 	* @param int $maxNgramClauses The maximum number of boolean clauses
 	*  generated from extracted ngrams.
-	* @return $this
+	* @return self
 	*/
 	public function setMaxNgramClauses( int $maxNgramClauses ) {
 		return $this->setParam( 'max_ngram_clauses', $maxNgramClauses );
@@ -162,7 +162,7 @@ class SourceRegex extends AbstractQuery {
 	 * NOTE: do not set this timeout if no timeout on the search request is set.
 	 * The format is similar to the one used in the search options.
 	 * @param string $timeout more accurate timeout
-	 * @return $this
+	 * @return self
 	 */
 	public function setTimeout( $timeout ) {
 		return $this->setParam( 'timeout', $timeout );

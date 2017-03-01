@@ -46,7 +46,8 @@ class DataSender extends ElasticsearchIntermediary {
 	private $searchConfig;
 
 	/**
-	 * @var Connection
+	 * @param Connection $conn
+	 * @param SearchConfig $config
 	 */
 	public function __construct( Connection $conn, SearchConfig $config ) {
 		parent::__construct( $conn, null, 0 );

@@ -96,7 +96,7 @@ class CheckIndexes extends Maintenance {
 
 	/**
 	 * @param string $indexName
-	 * @param int
+	 * @param int $expectedShardCount
 	 */
 	private function checkIndex( $indexName, $expectedShardCount ) {
 		$this->path = [];

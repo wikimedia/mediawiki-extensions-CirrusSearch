@@ -43,8 +43,8 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 
 	/**
 	 * Set flags for specific mapping
-	 * @param $flags
-	 * @return $this
+	 * @param int $flags
+	 * @return self
 	 */
 	public function setMappingFlags( $flags ) {
 		$this->mappingFlags = $flags;

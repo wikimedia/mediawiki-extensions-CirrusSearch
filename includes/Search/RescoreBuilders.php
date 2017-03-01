@@ -330,7 +330,7 @@ class FunctionScoreDecorator extends FunctionScore {
 	 * @param array|float $functionParams
 	 * @param AbstractQuery|null $filter
 	 * @param float|null $weight
-	 * @return $this
+	 * @return self
 	 */
 	public function addFunction( $functionType, $functionParams, $filter = null, $weight = null ) {
 		$this->size++;

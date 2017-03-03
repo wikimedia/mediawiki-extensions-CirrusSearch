@@ -199,7 +199,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$this->start( $log );
 				try {
 					$search = [
-						'_source' => false,
+						'_source' => [ 'target_title' ],
 						'suggest' => $suggest,
 					];
 					$result = $index->request( "_search", Request::POST, $search, [ 'size' => 0 ] );
@@ -379,6 +379,12 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 				$hitsTotal += count( $suggested['options'] );
 				foreach ( $suggested['options'] as $suggest ) {
 					$page = $suggest['text'];
+					$targetTitle = $page;
+					$targetTitleNS = NS_MAIN;
+					if ( isset( $suggest['_source']['target_title'] ) ) {
+						$targetTitle = $suggest['_source']['target_title']['title'];
+						$targetTitleNS = $suggest['_source']['target_title']['namespace'];
+					}
 					list ( $docId, $type ) = $this->decodeId( $suggest['_id'] );
 					$score = $discount * $suggest['_score'];
 					if ( !isset( $suggestionsByDocId[$docId] ) ||
@@ -387,7 +393,17 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						$pageId = $this->config->makePageId( $docId );
 						$suggestion = new SearchSuggestion( $score, null, null, $pageId );
 						// Use setText, it'll build the Title
-						$suggestion->setText( $page );
+						if ( $type === SuggestBuilder::TITLE_SUGGESTION && $targetTitleNS === NS_MAIN ) {
+							// For title suggestions we always use the target_title
+							// This is because we may encounter default_sort or subphrases that are not valid titles...
+							// And we prefer to display the title over close redirects
+							// for CrossNS redirect we prefer the returned suggestion
+							$suggestion->setText( $targetTitle );
+
+
+						} else {
+							$suggestion->setText( $page );
+						}
 						$suggestionsByDocId[$docId] = $suggestion;
 						$suggestionProfileByDocId[$docId] = $name;
 					}

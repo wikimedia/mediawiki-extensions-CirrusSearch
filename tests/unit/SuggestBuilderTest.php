@@ -33,6 +33,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
+			'id' => 123,
 			'title' => 'Albert Einstein',
 			'namespace' => 0,
 			'redirect' => [
@@ -46,6 +47,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 		];
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein',
 						'Albert Einsten', 'Albert Einstine' ],
@@ -58,6 +64,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				]
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'Enstein', 'Einstein' ],
 					'weight' => $redirScore
@@ -79,6 +90,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
+			'id' => 123,
 			'title' => 'Albert Einstein',
 			'namespace' => 0,
 			'defaultsort' => 'Einstein, Albert',
@@ -90,6 +102,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 		];
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'Albert Einstein', 'Albert Enstein', 'Einstein, Albert' ],
 					'weight' => $score
@@ -100,6 +117,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				]
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Albert Einstein',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'Einstein' ],
 					'weight' => $redirScore
@@ -119,6 +141,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		// Test Cross namespace the defaultsort should not be added
 		// to cross namespace redirects
 		$doc = [
+			'id' => 123,
 			'title' => 'Guidelines for XYZ',
 			'namespace' => NS_HELP,
 			'defaultsort' => 'XYZ, Guidelines',
@@ -130,6 +153,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 		];
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Guidelines for XYZ',
+					'namespace' => NS_HELP,
+				],
 				'suggest' => [
 					'input' => [ 'GXYZ' ],
 					'weight' => $crossNsScore
@@ -140,6 +168,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				]
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Guidelines for XYZ',
+					'namespace' => NS_HELP,
+				],
 				'suggest' => [
 					'input' => [ 'XYZG' ],
 					'weight' => $crossNsScore
@@ -160,6 +193,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
+			'id' => 123,
 			'title' => 'Iraq',
 			'namespace' => 0,
 			'redirect' => [
@@ -171,6 +205,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Iraq',
+					'namespace' => 0
+				],
 				'suggest' => [
 					'input' => [ 'Iraq', 'Irak' ],
 					'weight' => $score
@@ -181,6 +220,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				]
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Iraq',
+					'namespace' => 0
+				],
 				'suggest' => [
 					'input' => [ 'Eraq' ],
 					'weight' => $redirScore
@@ -199,6 +243,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
 		$doc = [
+			'id' => 123,
 			'title' => 'Navigation',
 			'namespace' => 12,
 			'redirect' => [
@@ -212,6 +257,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Navigation',
+					'namespace' => 12
+				],
 				'suggest' => [
 					'input' => [ 'WP:HN' ],
 					'weight' => $score
@@ -222,6 +272,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				],
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Navigation',
+					'namespace' => 12
+				],
 				'suggest' => [
 					'input' => [ 'WP:NAV' ],
 					'weight' => $score
@@ -241,6 +296,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$score = 10;
 		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
+			'id' => 123,
 			'title' => 'Ulm',
 			'namespace' => 0,
 			'redirect' => [
@@ -255,6 +311,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 
 		$expected = [
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Ulm',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'Ulm' ],
 					'weight' => $score
@@ -265,6 +326,11 @@ class SuggestBuilderTest extends CirrusTestCase {
 				],
 			],
 			[
+				'source_doc_id' => 123,
+				'target_title' => [
+					'title' => 'Ulm',
+					'namespace' => 0,
+				],
 				'suggest' => [
 					'input' => [ 'UN/LOCODE:DEULM', 'Ulm, Germany',
 						'Ulm displaced persons camp', 'Söflingen' ],
@@ -281,55 +347,14 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$this->assertSame( $expected, $suggestions );
 	}
 
-	/**
-	 * @dataProvider provideOutputEncoder
-	 */
-	public function testOutputEncoder( $expected, $encoded ) {
-		$this->assertEquals( $expected, SuggestBuilder::decodeOutput( $encoded ) );
-	}
-
-	public function provideOutputEncoder() {
-		return [
-			'title' => [
-				[
-					'docId' => '123',
-					'type' => SuggestBuilder::TITLE_SUGGESTION,
-					'text' => 'This is a title',
-				],
-				SuggestBuilder::encodeTitleOutput( 123, "This is a title" ),
-			],
-			'redirect' => [
-				[
-					'docId' => '123',
-					'type' => SuggestBuilder::REDIRECT_SUGGESTION,
-				],
-				SuggestBuilder::encodeRedirectOutput( 123 ),
-			],
-			'Garbage' => [
-				null,
-				'Garbage',
-			],
-			'Broken title' => [
-				null,
-				'123:t',
-			],
-			'Partial encoding' => [
-				null,
-				'123:',
-			],
-			'null output' => [
-				null,
-				null,
-			],
-		];
-	}
-
 	private function buildSuggestions( $builder, $doc ) {
+		$id = $doc['id'];
+		unset( $doc['id'] );
 		return array_map( function( $x ) {
 				$dat = $x->getData();
 				unset( $dat['batch_id'] );
 				return $dat;
-			}, $builder->build( [ [ 'id' => 1, 'source' => $doc ] ] ) );
+			}, $builder->build( [ [ 'id' => $id, 'source' => $doc ] ] ) );
 	}
 
 	/**

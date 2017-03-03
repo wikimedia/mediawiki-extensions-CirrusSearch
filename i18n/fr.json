@@ -50,6 +50,8 @@
 	"cirrussearch-qi-profile-classic": "Classement basé sur le nombre de liens entrants, sur quelques modèles, sur la langue de l’article et son ancienneté (modèles/langue/ancienneté peuvent ne pas être activés sur ce wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classement basé sur certains modèles, la langue de l’article et l’ancienneté, quand cela est activé sur ce wiki.",
 	"cirrussearch-qi-profile-empty": "Classement basé uniquement sur la requête de fonctionnalités dépendantes (uniquement pour débogage).",
+	"cirrussearch-qi-profile-popular-pv": "Notation basée principalement sur le nombre de vues de la page",
+	"cirrussearch-qi-profile-popular-inclinks": "Notation basée principalement sur le nombre de liens entrants",
 	"cirrussearch-pref-completion-profile-help": "Définit le comportement des suggestions d’auto-complétion (recherche en cours de frappe).",
 	"prefs-completion": "Recherche approfondie",
 	"cirrussearch-pref-completion-section-desc": "Outil de suggestion de complétion",

@@ -1048,6 +1048,7 @@ $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
  * CirrusSearch development options:
  * - morelike_collect_titles_from_elastic: first pass collection from elastic
  * - ignore_missing_rev: ignore missing revisions
+ * - allow_nuke: Let the tests/jenkins/nukeAllIndexes.php script do its job
  *
  * NOTE: never activate any of these on a production site
  */

@@ -38,6 +38,8 @@
 	"cirrussearch-qi-profile-classic": "Clasificación basada nel númberu d'enllaces entrantes, delles plantíes, llingua del artículu y actualidá (plantíes/llingua/actualidá pueden nun tar activaes nesta wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación basada en delles plantíes, llingua del artículu y actualidá cuando s'activen nesta wiki.",
 	"cirrussearch-qi-profile-empty": "Clasificación basada sólo en carauterístiques dependientes de la consulta (sólo pa depuración).",
+	"cirrussearch-qi-profile-popular-pv": "Clasificación basada principalmente nes visites de les páxines",
+	"cirrussearch-qi-profile-popular-inclinks": "Clasificación basada principalmente na cuenta d'enllaces entrantes",
 	"cirrussearch-pref-completion-profile-help": "Configurar el comportamientu de les suxerencies d'auto-completáu (buscar de la qu'escribes).",
 	"prefs-completion": "Completáu de la gueta",
 	"cirrussearch-pref-completion-section-desc": "Suxeridor de completáu",

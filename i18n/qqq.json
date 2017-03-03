@@ -45,7 +45,7 @@
 	"cirrussearch-qi-profile-classic": "Classic query independent search profile (affects fulltext search ranking algorithm).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Classic query independent search profile without boost links (affects fulltext search ranking algorithm).",
 	"cirrussearch-qi-profile-empty": "Empty query independent search profile (affects fulltext search ranking algorithm).",
-	"cirrussearch-qi-profile-popular-pv": "Page view based query independent search profile (affects fulltext search ranking algorithm).",
+	"cirrussearch-qi-profile-popular-pv": "Page view based query independent search profile (affects fulltext search ranking algorithm). \"Page views\" refers to \"page views ''count''\".",
 	"cirrussearch-qi-profile-popular-inclinks": "Incoming link count based query independent search profile (affects fulltext search ranking algorithm).",
 	"cirrussearch-pref-completion-profile-help": "Help message for completion profile settings in the user preferences.",
 	"prefs-completion": "Section name for completion settings in the user preferences.",

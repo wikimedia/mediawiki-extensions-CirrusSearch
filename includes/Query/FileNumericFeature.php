@@ -71,7 +71,7 @@ class FileNumericFeature extends SimpleKeywordFeature {
 
 	/**
 	 * Extract sign prefix which can be < or > or nothing.
-	 * @param     $value
+	 * @param string $value
 	 * @param int $default
 	 * @return array Two element array, first the sign: 0 is equal, 1 is more, -1 is less,
 	 *  then the number to be compared.

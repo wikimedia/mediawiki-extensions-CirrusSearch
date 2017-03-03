@@ -78,7 +78,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param WikiPage[]
+	 * @param WikiPage[] $pages
 	 * @return bool
 	 */
 	public static function finishBatch( $pages ) {

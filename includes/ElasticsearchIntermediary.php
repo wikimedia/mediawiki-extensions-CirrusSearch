@@ -77,7 +77,7 @@ abstract class ElasticsearchIntermediary {
 	 * @param float $slowSeconds how many seconds a request through this
 	 *  intermediary needs to take before it counts as slow.  0 means none count
 	 *  as slow.
-	 * @param float $extraBackendLatency artificial backend latency.
+	 * @param int $extraBackendLatency artificial backend latency.
 	 */
 	protected function __construct( Connection $connection, User $user = null, $slowSeconds, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;

@@ -154,8 +154,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	 *   [ "Beautifull Word/en", "Word/en" ]
 	 *
 	 * @param string $title
-	 * @param $language
-	 * @param string $cr a character range suited to be used inside [$cr]
+	 * @param string $language
 	 * @return string[] tokenized phrasal suggestions
 	 */
 	public function tokenize( $title, $language ) {

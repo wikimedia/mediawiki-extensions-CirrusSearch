@@ -394,7 +394,7 @@ EOD
 	}
 
 	/**
-	 * @param \Elastica\Document
+	 * @param \Elastica\Document $jobInfo
 	 */
 	private function updateJob( \Elastica\Document $jobInfo ) {
 		$version = time();
@@ -409,6 +409,7 @@ EOD
 	}
 
 	/**
+	 * @param string $jobName
 	 * @return \Elastica\Document
 	 */
 	private function createNewJob( $jobName ) {

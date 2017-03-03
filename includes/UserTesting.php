@@ -75,6 +75,7 @@ class UserTesting {
 	 * global configuration and the trigger from the main request context.
 	 *
 	 * @param callable|null $callback
+	 * @param string|null $trigger
 	 * @return self
 	 */
 	public static function getInstance( $callback = null, $trigger = null ) {

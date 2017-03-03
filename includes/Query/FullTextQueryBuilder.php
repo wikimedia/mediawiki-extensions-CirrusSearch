@@ -22,7 +22,7 @@ interface FullTextQueryBuilder {
 	 * Attempt to build a degraded query from the query already built into $context. Must be
 	 * called *after* self::build().
 	 *
-	 * @param SearchContext $context
+	 * @param SearchContext $searchContext
 	 * @return bool True if a degraded query was built
 	 */
 	public function buildDegraded( SearchContext $searchContext );

@@ -10,7 +10,8 @@ class OpeningTextIndexField extends TextIndexField {
 	/**
 	 * Force COPY_TO_SUGGEST if CirrusSearchPhraseSuggestUseOpeningText
 	 * is set.
-	 * {@inheritDoc}
+	 * @param int $mappingFlags
+	 * @return int
 	 */
 	protected function getTextOptions( $mappingFlags ) {
 		$options = parent::getTextOptions( $mappingFlags );

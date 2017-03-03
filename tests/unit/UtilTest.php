@@ -97,9 +97,9 @@ class UtilTest extends CirrusTestCase {
 	/**
 	 * Set message cache instance to given object.
 	 * TODO: we wouldn't have to do this if we had some proper way to mock message cache.
-	 * @param $class
-	 * @param $var
-	 * @param $value
+	 * @param string $class
+	 * @param string $var
+	 * @param mixed $value
 	 */
 	private function setPrivateVar( $class, $var, $value ) {
 		// nasty hack - reset message cache instance
@@ -130,7 +130,7 @@ class UtilTest extends CirrusTestCase {
 	/**
 	 * Put data for a wiki into test cache.
 	 * @param \BagOStuff $cache
-	 * @param            $wiki
+	 * @param string $wiki
 	 */
 	private function putDataIntoCache( \BagOStuff $cache, $wiki ) {
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );

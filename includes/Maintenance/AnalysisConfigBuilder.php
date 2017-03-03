@@ -255,7 +255,7 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Replace occurrence of asciifolding to icu_folding
-	 * @param string[] list of filters
+	 * @param string[] $filters
 	 * @return string[] new list of filters
 	 */
 	private function switchFiltersToICUFolding( array $filters ) {
@@ -266,7 +266,7 @@ class AnalysisConfigBuilder {
 	/**
 	 * Replace occurrence of asciifolding_preserve with a set
 	 * of compatible filters to enable icu_folding
-	 * @param string[] list of filters
+	 * @param string[] $filters
 	 * @param bool $append append icu_folding even if asciifolding is not present
 	 * @return string[] new list of filters
 	 */

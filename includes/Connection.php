@@ -310,7 +310,7 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * @param string[] array of cluter names
+	 * @param string[] $clusters array of cluster names
 	 * @param SearchConfig $config the search config
 	 * @return Connection[] array of connection indexed by cluster name
 	 */

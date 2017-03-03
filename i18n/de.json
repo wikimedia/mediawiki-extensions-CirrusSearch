@@ -41,6 +41,8 @@
 	"cirrussearch-qi-profile-classic": "Platzierung basierend auf der Anzahl der eingehenden Links, einige Vorlagen, Artikelsprache und Neuheit (Vorlagen/Sprache/Neuheit könnten nicht auf diesem Wiki aktiviert sein).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Platzierung basierend auf einige Vorlagen, Artikelsprache und Neuheit, falls auf diesem Wiki aktiviert.",
 	"cirrussearch-qi-profile-empty": "Platzierung basierend ausschließlich auf anfrageabhängiger Funktionen (nur zur Fehlerbehebung).",
+	"cirrussearch-qi-profile-popular-pv": "Rang, primär basierend auf den Seitenaufrufen",
+	"cirrussearch-qi-profile-popular-inclinks": "Rang, primär basierend auf der Anzahl der eingehenden Links",
 	"cirrussearch-pref-completion-profile-help": "Legt das Verhalten der Autovervollständigung zu Suchbegriffen bei der Anzeige von Suchvorschlägen fest, die während des Eingebens im Suchfeld gezeigt werden.",
 	"prefs-completion": "Suchvorschläge mit Autovervollständigung",
 	"cirrussearch-pref-completion-section-desc": "Suchvorschläge (komplexer Algorithmus)",

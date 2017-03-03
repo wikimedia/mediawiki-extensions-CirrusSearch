@@ -22,7 +22,6 @@ trait TitleHelper {
 	 * when it should be using the localized name of the remote wiki.
 	 *
 	 * @param Result $r int $namespace
-	 * @param string $text
 	 * @return Title
 	 */
 	public function makeTitle( Result $r ) {
@@ -68,6 +67,7 @@ trait TitleHelper {
 	}
 
 	/**
+	 * @param Result $r
 	 * @return bool true if this result refers to an external Title
 	 */
 	public function isExternal( Result $r ) {
@@ -80,6 +80,7 @@ trait TitleHelper {
 	}
 
 	/**
+	 * @param Result $r
 	 * @return string|null the interwiki prefix for this result or null or
 	 * empty if local.
 	 */

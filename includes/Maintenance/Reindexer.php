@@ -115,6 +115,7 @@ class Reindexer {
 	 * @param string $replicaCount
 	 * @param array $mergeSettings
 	 * @param Maintenance $out
+	 * @param string[] $fieldsToDelete
 	 * @throws \Exception
 	 */
 	public function __construct( SearchConfig $searchConfig, Connection $source, Connection $target, array $types, array $oldTypes, $shardCount, $replicaCount, array $mergeSettings, Maintenance $out = null, $fieldsToDelete = [] ) {

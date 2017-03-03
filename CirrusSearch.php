@@ -489,12 +489,12 @@ $wgCirrusSearchMoreLikeThisConfig = [
 
 	// Minimum length for a word to be considered
 	// small words tend to be stop words.
-	'min_word_len' => 0,
+	'min_word_length' => 0,
 
 	// Maximum length for a word to be considered
 	// Very long "words" tend to be uncommon, excluding them can help recall but it
 	// is highly dependent on the language.
-	'max_word_len' => 0,
+	'max_word_length' => 0,
 
 	// Percent of terms to match
 	// High value will increase precision but can prevent small docs to match against large ones

@@ -48,8 +48,8 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_doc_freq' => null,
 						'max_query_terms' => 25,
 						'min_term_freq' => 2,
-						'min_word_len' => 0,
-						'max_word_len' => 0,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
 					->setFields( ['text'] )
@@ -67,8 +67,8 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 							'max_doc_freq' => null,
 							'max_query_terms' => 25,
 							'min_term_freq' => 2,
-							'min_word_len' => 0,
-							'max_word_len' => 0,
+							'min_word_length' => 0,
+							'max_word_length' => 0,
 							'minimum_should_match' => '30%',
 						] )
 						->setFields( ['text'] )
@@ -85,8 +85,8 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_doc_freq' => null,
 						'max_query_terms' => 25,
 						'min_term_freq' => 2,
-						'min_word_len' => 0,
-						'max_word_len' => 0,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
 					->setFields( ['text'] )
@@ -103,8 +103,8 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_doc_freq' => null,
 						'max_query_terms' => 25,
 						'min_term_freq' => 2,
-						'min_word_len' => 0,
-						'max_word_len' => 0,
+						'min_word_length' => 0,
+						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
 					->setFields( ['text'] )

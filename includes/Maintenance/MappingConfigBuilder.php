@@ -92,11 +92,11 @@ class MappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = [
-			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => false ],
 		];
 		if ( $flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = [
@@ -233,14 +233,14 @@ class MappingConfigBuilder {
 				'type' => 'text',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
-				'norms' => [ 'enabled' => false ],
+				'norms' => false,
 				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
 				'fields' => [
 					'asciifolding' => [
 						'type' => 'text',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
-						'norms' => [ 'enabled' => false ],
+						'norms' => false,
 						'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match', 'asciifolding' ),
 					],
 				],
@@ -261,7 +261,7 @@ class MappingConfigBuilder {
 				'name' => [
 					'type' => 'text',
 					'analyzer' => 'near_match_asciifolding',
-					'norms' => [ 'enabled' => false ],
+					'norms' => false,
 					'index_options' => 'docs',
 				],
 				'wiki' => $this->searchIndexFieldFactory

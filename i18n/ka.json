@@ -25,6 +25,7 @@
 	"cirrussearch-completionsuggester-pref": "დასრულების წინადადება",
 	"cirrussearch-pref-completion-profile-help": "ადგენს მოქცევას წინადადების ავტომატურად შევსებისას (ძიება შეყვანისას).",
 	"prefs-completion": "ძიების დასრულება",
+	"cirrussearch-pref-completion-section-desc": "ავტოშემსების კარნახი",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester ავტოშემსების კარნახი] არის ალგორითმი სახელწოდებების ძიებისას მეტად ახლოს მყოფი მართლწერასთან და რელევანტური მოთხოვნის შესაბამისად.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "ნაგულისხმევად (რეკომენდებულია)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "ასწორებს ორ მცადრბეჭდილამდე. ანაცვლებს შესაფერის გადამისამართებას.",

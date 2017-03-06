@@ -239,6 +239,9 @@ class Searcher extends ElasticsearchIntermediary {
 	public function prefixSearch( $term ) {
 		$this->checkTitleSearchRequestLength( $term );
 		$this->searchContext->setOriginalSearchTerm( $term );
+		$this->searchContext->setRescoreProfile(
+			$this->config->get( 'CirrusSearchPrefixSearchRescoreProfile' )
+		);
 
 		$this->searchContext->addSyntaxUsed( 'prefix' );
 		if ( strlen( $term ) > 0 ) {

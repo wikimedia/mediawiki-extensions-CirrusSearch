@@ -915,10 +915,16 @@ $wgCirrusSearchEnableCrossLanguageSearch = false;
 $wgCirrusSearchInterwikiProv = false;
 
 /**
- * Set the rescore profile to default.
+ * Set the full text rescore profile to default.
  * see profile/RescoreProfiles.php for more info
  */
 $wgCirrusSearchRescoreProfile = 'classic';
+
+/**
+ * Set the prefix search rescore profile to default.
+ * see profile/RescoreProfiles.php for more info
+ */
+$wgCirrusSearchPrefixSearchRescoreProfile = 'classic';
 
 /**
  * If current wiki has less than this number of results, try to search other language wikis.

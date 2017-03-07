@@ -57,6 +57,7 @@ class SuggesterMappingConfigBuilder {
 			'_source' => ['enabled' => true ],
 			'properties' => [
 				'batch_id' => [ 'type' => 'long' ],
+				'source_doc_id' => [ 'type' => 'keyword' ],
 				// Sadly we can't reuse the same input
 				// into multiple fields, it would help
 				// us to save space since we now have

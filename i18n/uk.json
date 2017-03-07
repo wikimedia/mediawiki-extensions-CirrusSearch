@@ -44,6 +44,8 @@
 	"cirrussearch-qi-profile-classic": "Ранжування на основі кількості вхідних посилань, деяких шаблонів, мови статті та новизни (шаблони/мова/новизна можуть не бути активовані у цій вікі).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Ранжування на основі деяких шаблонів, мови статті і новизни, якщо активні у цій вікі.",
 	"cirrussearch-qi-profile-empty": "Ранжування засноване виключно на рисах, які залежать від запиту (тільки для налагодження).",
+	"cirrussearch-qi-profile-popular-pv": "Рейтинг, заснований у першу чергу на переглядах сторінок",
+	"cirrussearch-qi-profile-popular-inclinks": "Рейтинг, заснований у першу чергу на кількості вхідних посилань",
 	"cirrussearch-pref-completion-profile-help": "Налаштуйте поведінку пропозицій автозаповнення (пошук під час набору).",
 	"prefs-completion": "Завершення пошуку",
 	"cirrussearch-pref-completion-section-desc": "Автозаповнення",
@@ -51,7 +53,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "За замовчуванням (рекомендується)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Виправляє до двох помилок. Розв'язує близькі перенаправлення.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Пошук збігів підфраз (рекомендовано для довших назв статей)",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Виправляє до двох типів. Вирішує близькі перенаправлення. Зіставляє підфрази у назвах.",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Виправляє до двох помилок. Розв'язує близькі перенаправлення. Зіставляє підфрази у назвах.",
 	"cirrussearch-completion-profile-strict-pref-name": "Точний режим (додатково)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Без виправлення помилок. Без ігнорування надлітерних знаків. Чітка відповідність.",
 	"cirrussearch-completion-profile-normal-pref-name": "Режим перенаправлень (розширений метод)",
@@ -63,5 +65,12 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Класичний пошук за префіксом",
 	"cirrussearch-completion-profile-classic-pref-desc": "Без виправлення помилок. Зіставляє початок назв.",
 	"cirrussearch-timed-out": "Час, відведений для пошуку, минув; доступні лише часткові результати.",
-	"cirrussearch-regex-timed-out": "Час, відведений для пошуку за регулярними виразами, минув; доступні лише часткові результати. Спробуйте спростити свої регулярні вирази, щоб отримати повні результати."
+	"cirrussearch-regex-timed-out": "Час, відведений для пошуку за регулярними виразами, минув; доступні лише часткові результати. Спробуйте спростити свої регулярні вирази, щоб отримати повні результати.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Пошуковий термін «$1» вимагає числових значень, але натомість надано «$2»",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Пошуковий термін «$1» не дозволяє використання декількох аргументів і знаку з «$2».",
+	"cirrussearch-feature-not-available": "Пошукове ключове слово «$1» не діє в цій вікі.",
+	"cirrussearch-feature-too-many-conditions": "Надто багато умов надано для «$1», обрізаємо до $2.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Не задано жодних дійсних категорій для «$1».",
+	"cirrussearch-mlt-feature-no-valid-titles": "Не задано жодних дійсних назв для «$1».",
+	"cirrussearch-mlt-not-configured": "Функція «$1» неправильно налаштована. Попросіть адміністратора виправити $wgCirrusSearchMoreLikeThisFields"
 }

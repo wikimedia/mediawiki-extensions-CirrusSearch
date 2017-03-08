@@ -396,6 +396,14 @@ class AnalysisConfigBuilder {
 					'tokenizer' => 'standard',
 					'filter' => [ 'lowercase', 'suggest_shingle' ],
 				],
+				'suggest_search' => [
+					'type' => 'custom',
+					'tokenizer' => 'standard',
+					// Limit to 30 max tokens, still allow queries with 10 words
+					// but prevents the match_query to explode
+					// workaround: https://github.com/elastic/elasticsearch/issues/23509
+					'filter' => [ 'lowercase', 'suggest_shingle', 'limit_30' ],
+				],
 				'suggest_reverse' => [
 					'type' => 'custom',
 					'tokenizer' => 'standard',
@@ -457,6 +465,10 @@ class AnalysisConfigBuilder {
 					'min_shingle_size' => 2,
 					'max_shingle_size' => 3,
 					'output_unigrams' => true,
+				],
+				'limit_30' => [
+					'type' => 'limit',
+					'max_token_count' => 30,
 				],
 				'lowercase' => [
 					'type' => 'lowercase',

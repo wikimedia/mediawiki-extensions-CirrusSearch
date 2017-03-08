@@ -3,12 +3,14 @@
 		"authors": [
 			"Borislav",
 			"Vodnokon4e",
-			"Termininja"
+			"Termininja",
+			"StanProg"
 		]
 	},
 	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])",
 	"cirrussearch-pref-label": "Ново търсене",
 	"cirrussearch-pref-completion-profile-help": "Настройки за предложения при търсене по време на писане.",
+	"prefs-completion": "Допълване при търсене",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] е алгоритъм за предложения при търсене с по-добра корекция на правописните грешки и значение при търсене.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По подразбиране (препоръчително)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Коригира до две правописни грешки. Взима под внимание някои близки пренасочвания.",

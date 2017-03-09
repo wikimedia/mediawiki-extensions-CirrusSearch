@@ -165,20 +165,6 @@ class Connection extends ElasticaConnection {
 			throw new \RuntimeException( "No configuration available for cluster: {$this->cluster}" );
 		}
 
-		// Elastica will only create transports from within it's own
-		// namespace. To use the CirrusSearch PooledHttp(s) this
-		// clause is necessary.
-		foreach ( $config as $idx => $server ) {
-			if (
-				isset( $server['transport'] ) &&
-				is_string( $server['transport'] ) &&
-				class_exists( $server['transport'] )
-			) {
-				$transportClass = $server['transport'];
-				$config[$idx]['transport'] = new $transportClass;
-			}
-		}
-
 		return $config;
 	}
 

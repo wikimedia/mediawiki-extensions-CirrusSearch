@@ -489,12 +489,12 @@ $wgCirrusSearchMoreLikeThisConfig = [
 
 	// Minimum length for a word to be considered
 	// small words tend to be stop words.
-	'min_word_len' => 0,
+	'min_word_length' => 0,
 
 	// Maximum length for a word to be considered
 	// Very long "words" tend to be uncommon, excluding them can help recall but it
 	// is highly dependent on the language.
-	'max_word_len' => 0,
+	'max_word_length' => 0,
 
 	// Percent of terms to match
 	// High value will increase precision but can prevent small docs to match against large ones
@@ -586,18 +586,6 @@ $wgCirrusSearchUpdateConflictRetryCount = 5;
 
 // Number of characters to include in article fragments.
 $wgCirrusSearchFragmentSize = 150;
-
-// Should we add a cache warmer that searches for the main page to the content
-// namespace?
-// @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
-$wgCirrusSearchMainPageCacheWarmer = true;
-
-// Other cache warmers.  Form is index name => array(searches).  See examples
-// commented out below.
-$wgCirrusSearchCacheWarmers = [];
-// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'foo bar';
-// $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
-// $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
 
 // Whether to boost searches based on link counts. Default is true
 // which most wikis will want. Edge cases will want to turn this off.
@@ -839,13 +827,6 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 $wgCirrusSearchCompletionSuggesterUseDefaultSort = false;
 
 /**
- * Builds extra fst with a geo context.
- * Can generate a very large in-memory FST
- * NOTE: Experimental, no API endpoints are available yet.
- */
-$wgCirrusSearchCompletionSuggesterGeoContext = ['build' => false];
-
-/**
  * Maximum number of results to ask from the elasticsearch completion
  * api, note that this value will be multiplied by fetch_limit_factor
  * set in Completion profiles (default to 2)
@@ -862,14 +843,6 @@ $wgCirrusSearchCompletionSuggesterHardLimit = 50;
  * reducing the number of disk operation to primary shards only.
  */
 $wgCirrusSearchRecycleCompletionSuggesterIndex = true;
-
-/**
- * Profile for geo context search as you type suggestion (completion suggestion)
- * (see profiles/SuggestProfiles.php for more details.)
- *
- * NOTE: This is an experimental API
- */
-$wgCirrusSearchCompletionGeoContextSettings = $wgCirrusSearchCompletionGeoContextProfiles['default'];
 
 /**
  * Enable alternative language search.
@@ -1091,6 +1064,12 @@ $wgCirrusSearchDevelOptions = [];
  * ];
  */
 $wgCirrusSearchFiletypeAliases = [];
+
+/**
+ * Var to activate some workarounds about specific
+ * bugs/quirks found in elasticsearch.
+ */
+$wgCirrusSearchElasticQuirks = [];
 
 $includes = __DIR__ . "/includes/";
 $apiDir = $includes . 'Api/';

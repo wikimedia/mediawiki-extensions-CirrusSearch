@@ -171,22 +171,6 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * There are times, such as when using the Reindexer, when we aren't completely
-	 * sure if these are old style numeric page id's, or new style prefixed id's.
-	 * Do some magic to decide and self::makeId() when necessary.
-	 *
-	 * @param string|int $pageOrDocId
-	 * @return string
-	 */
-	public function maybeMakeId( $pageOrDocId ) {
-		if ( !is_string( $pageOrDocId ) || ctype_digit( $pageOrDocId ) ) {
-			return $this->makeId( $pageOrDocId );
-		} else {
-			return $pageOrDocId;
-		}
-	}
-
-	/**
 	 * Convert an elasticsearch document id back into a mediawiki page id.
 	 *
 	 * @param string $docId Elasticsearch document id

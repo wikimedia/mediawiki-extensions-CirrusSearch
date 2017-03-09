@@ -56,31 +56,7 @@ use User;
  *
  * 2. The redirect suggestions
  * Because the same canonical title can be returned twice we support fetch_limit_factor
- * in suggest profiles to fetch more than what the use asked. Because the list of redirects
- * can be very large we cannot store all of them in the index (see limitations). We run a second
- * pass query on the main cirrus index to fetch them, then we try to detect which one is the closest
- * to the user query (see Util::chooseBestRedirect).
- *
- * LIMITATIONS:
- * A number of hacks are required in Cirrus to workaround some limitations in
- * the elasticsearch completion suggester implementation:
- * - It is a _suggest API, unlike classic "query then fetch" there is no fetch
- *   phase here.
- * - Payloads are stored in memory within the FST: we try to avoid them, but
- *   this forces us to implement a second pass query to fetch redirect titles
- *   from the cirrus main index.
- * - Fuzzy suggestions are ranked by index-time score: we allow to set
- *   'discount' param in the suggest profile (profiles/SuggestProfiles.php). The
- *   default profile includes a fuzzy and non-fuzzy suggestion query. This is to
- *   avoid having fuzzy suggestions ranked higher than exact suggestion.
- * - The suggestion string cannot be expanded to more than 255 strings at
- *   index time: we limit the number of generated tokens in the analysis config
- *   (see includes/Maintenance/SuggesterAnalysisConfigBuilder.php) but we can't
- *   workaround this problem for geosuggestion  (suggestions will be prepended by
- *   geohash prefixes, one per precision step)
- *
- * @todo: investigate new features in elasticsearch completion suggester v2 to remove
- * some workarounds (https://github.com/elastic/elasticsearch/issues/10746).
+ * in suggest profiles to fetch more than what the use asked.
  */
 class CompletionSuggester extends ElasticsearchIntermediary {
 	const VARIANT_EXTRA_DISCOUNT = 0.0001;
@@ -93,13 +69,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @var string[]|null search variants
 	 */
 	private $variants;
-
-	/**
-	 * Currently very limited (see LIMITATIONS) and only works
-	 * for geo context
-	 * @var array|null context for contextualized suggestions
-	 */
-	private $context;
 
 	/**
 	 * @var integer maximum number of result
@@ -202,10 +171,9 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param string $text Search term
 	 * @param string[]|null $variants Search term variants
 	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
-	 * @param array $context
 	 * @return Status
 	 */
-	public function suggest( $text, $variants = null, $context = null ) {
+	public function suggest( $text, $variants = null ) {
 		// If the offset requested is greater than the hard limit
 		// allowed we will always return an empty set so let's do it
 		// asap.
@@ -215,32 +183,32 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 
 		$this->checkRequestLength( $text );
 		$this->setTermAndVariants( $text, $variants );
-		$this->context = $context;
 
 		list( $profiles, $suggest ) = $this->buildQuery();
-		$queryOptions = [
-			'timeout' => $this->config->getElement( 'CirrusSearchSearchShardTimeout', 'default' ),
-		];
-		$this->connection->setTimeout( $queryOptions[ 'timeout' ] );
+		$this->connection->setTimeout( $this->config->getElement( 'wgCirrusSearchClientSideSearchTimeout', 'default' ) );
 
 		$index = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE );
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
-			function() use( $index, $suggest, $queryOptions, $profiles, $text ) {
+			function() use( $index, $suggest, $profiles, $text ) {
 				$log = $this->newLog( "{queryType} search for '{query}'", $this->queryType, [
 					'query' => $text,
 					'offset' => $this->offset,
 				] );
 				$this->start( $log );
 				try {
-					$result = $index->request( "_suggest", Request::POST, $suggest, $queryOptions );
+					$search = [
+						'_source' => [ 'target_title' ],
+						'suggest' => $suggest,
+					];
+					$result = $index->request( "_search", Request::POST, $search, [ 'size' => 0 ] );
 					if( $result->isOk() ) {
 						$result = $this->postProcessSuggest( $result, $profiles, $log );
 						return $this->success( $result );
 					} else {
 						throw new \Elastica\Exception\ResponseException(
-							new Request( "_suggest", Request::POST, $suggest, $queryOptions ),
+							new Request( "_suggest", Request::POST, $suggest ),
 							$result
 						);
 					}
@@ -287,14 +255,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$this->queryType = "comp_suggest";
 
 		$profiles = $this->settings;
-		if ( $this->context != null && isset( $this->context['geo']['lat'] )
-			&& isset( $this->context['geo']['lon'] ) && is_numeric( $this->context['geo']['lat'] )
-			&& is_numeric( $this->context['geo']['lon'] )
-		) {
-			$profiles = $this->prepareGeoContextSuggestProfiles();
-			$this->queryType = "comp_suggest_geo";
-		}
-
 		$suggest = $this->buildSuggestQueries( $profiles, $this->term, $queryLen );
 
 		// Handle variants, update the set of profiles and suggest queries
@@ -315,7 +275,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	protected function buildSuggestQueries( array $profiles, $query, $queryLen ) {
 		$suggest = [];
-		foreach($profiles as $name => $config) {
+		foreach ( $profiles as $name => $config ) {
 			$sugg = $this->buildSuggestQuery( $config, $query, $queryLen );
 			if(!$sugg) {
 				continue;
@@ -344,7 +304,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$field = $config['field'];
 		$limit = $this->getHardLimit();
 		$suggest = [
-			'text' => $query,
+			'prefix' => $query,
 			'completion' => [
 				'field' => $field,
 				'size' => $limit * $config['fetch_limit_factor']
@@ -352,9 +312,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		];
 		if ( isset( $config['fuzzy'] ) ) {
 			$suggest['completion']['fuzzy'] = $config['fuzzy'];
-		}
-		if ( isset( $config['context'] ) ) {
-			$suggest['completion']['context'] = $config['context'];
 		}
 		return $suggest;
 	}
@@ -399,35 +356,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * prepare the list of suggest requests used for geo context suggestions
-	 * This method will merge completion settings with
-	 * $this->config->get( 'CirrusSearchCompletionGeoContextSettings' )
-	 * @return array of suggest request profiles
-	 */
-	private function prepareGeoContextSuggestProfiles() {
-		$profiles = [];
-		foreach ( $this->config->get( 'CirrusSearchCompletionGeoContextSettings' ) as $geoname => $geoprof ) {
-			foreach ( $this->settings as $sugname => $sugprof ) {
-				if ( !in_array( $sugname, $geoprof['with'] ) ) {
-					continue;
-				}
-				$profile = $sugprof;
-				$profile['field'] .= $geoprof['field_suffix'];
-				$profile['discount'] *= $geoprof['discount'];
-				$profile['context'] = [
-					'location' => [
-						'lat' => $this->context['geo']['lat'],
-						'lon' => $this->context['geo']['lon'],
-						'precision' => $geoprof['precision']
-					]
-				];
-				$profiles["$sugname-$geoname"] = $profile;
-			}
-		}
-		return $profiles;
-	}
-
-	/**
 	 * merge top level multi-queries and resolve returned pageIds into Title objects.
 	 *
 	 * WARNING: experimental API
@@ -439,8 +367,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	protected function postProcessSuggest( \Elastica\Response $response, $profiles, CompletionRequestLog $log ) {
 		$log->setResponse( $response );
-		$data = $response->getData();
-		unset( $data['_shards'] );
+		$data = $response->getData()['suggest'];
 
 		$limit = $this->getHardLimit();
 		$suggestionsByDocId = [];
@@ -451,23 +378,31 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			foreach ( $results  as $suggested ) {
 				$hitsTotal += count( $suggested['options'] );
 				foreach ( $suggested['options'] as $suggest ) {
-					$output = SuggestBuilder::decodeOutput( $suggest['text'] );
-					if ( $output === null ) {
-						// Ignore broken output
-						continue;
+					$page = $suggest['text'];
+					$targetTitle = $page;
+					$targetTitleNS = NS_MAIN;
+					if ( isset( $suggest['_source']['target_title'] ) ) {
+						$targetTitle = $suggest['_source']['target_title']['title'];
+						$targetTitleNS = $suggest['_source']['target_title']['namespace'];
 					}
-					$docId = $output['docId'];
-					$type = $output['type'];
-
-					$score = $discount * $suggest['score'];
+					list ( $docId, $type ) = $this->decodeId( $suggest['_id'] );
+					$score = $discount * $suggest['_score'];
 					if ( !isset( $suggestionsByDocId[$docId] ) ||
 						$score > $suggestionsByDocId[$docId]->getScore()
 					) {
 						$pageId = $this->config->makePageId( $docId );
 						$suggestion = new SearchSuggestion( $score, null, null, $pageId );
-						// If it's a title suggestion we have the text
-						if ( $type === SuggestBuilder::TITLE_SUGGESTION ) {
-							$suggestion->setText( $output['text'] );
+						// Use setText, it'll build the Title
+						if ( $type === SuggestBuilder::TITLE_SUGGESTION && $targetTitleNS === NS_MAIN ) {
+							// For title suggestions we always use the target_title
+							// This is because we may encounter default_sort or subphrases that are not valid titles...
+							// And we prefer to display the title over close redirects
+							// for CrossNS redirect we prefer the returned suggestion
+							$suggestion->setText( $targetTitle );
+
+
+						} else {
+							$suggestion->setText( $page );
 						}
 						$suggestionsByDocId[$docId] = $suggestion;
 						$suggestionProfileByDocId[$docId] = $name;
@@ -485,78 +420,18 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			? array_slice( $suggestionsByDocId, $this->offset, $limit - $this->offset, true )
 			: [];
 
-		// we must fetch redirect data for redirect suggestions
-		$missingTextDocIds = [];
-		foreach ( $suggestionsByDocId as $docId => $suggestion ) {
-			if ( $suggestion->getText() === null ) {
-				$missingTextDocIds[] = $docId;
-			}
-		}
-
-		if ( !empty ( $missingTextDocIds ) ) {
-			// Experimental.
-			//
-			// Second pass query to fetch redirects.
-			// It's not clear if it's the best option, this will slowdown the whole query
-			// when we hit a redirect suggestion.
-			// Other option would be to encode redirects as a payload resulting in a
-			// very big index...
-
-			// XXX: we support only the content index
-			$type = $this->connection->getPageType( $this->indexBaseName, Connection::CONTENT_INDEX_TYPE );
-			// NOTE: we are already in a poolCounterWork
-			// Multi get is not supported by elastica
-			$redirResponse = null;
-			try {
-				$redirResponse = $type->request( '_mget', 'GET',
-					[ 'ids' => $missingTextDocIds ],
-					[ '_source_include' => 'redirect' ] );
-				if ( $redirResponse->isOk() ) {
-					$log->set2ndPassResponse( $redirResponse );
-					$docs = $redirResponse->getData();
-					foreach ( $docs['docs'] as $doc ) {
-						if ( empty( $doc['_source']['redirect'] ) ) {
-							continue;
-						}
-						// We use the original query, we should maybe use the variant that generated this result?
-						$text = Util::chooseBestRedirect( $this->term, $doc['_source']['redirect'] );
-						if( !empty( $suggestionsByDocId[$doc['_id']] ) ) {
-							$suggestionsByDocId[$doc['_id']]->setText( $text );
-						}
-					}
-				} else {
-					LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-						'Unable to fetch redirects for suggestion {query} with results {ids} : {error}',
-						[ 'query' => $this->term,
-							'ids' => serialize( $missingTextDocIds ),
-							'error' => $redirResponse->getError() ] );
-				}
-			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				$error = ElasticaErrorHandler::extractFullError( $e );
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					'Unable to fetch redirects for suggestion {query} with results {ids}. {error_type}: {error_reason}',
-					[
-						'query' => $this->term,
-						'ids' => serialize( $missingTextDocIds ),
-						'error_type' => $error['type'],
-						'error_reason' => $error['reason'],
-					]
-				);
-			}
-		}
-
-		$finalResults = array_filter(
-			$suggestionsByDocId,
-			function ( SearchSuggestion $suggestion ) {
-				// text should be not empty for suggestions
-				return $suggestion->getText() != null;
-			}
-		);
-
 		$indexName = $this->connection->getIndex( $this->indexBaseName, Connection::TITLE_SUGGEST_TYPE )->getName();
-		$log->setResult( $indexName, $finalResults, $suggestionProfileByDocId );
+		$log->setResult( $indexName, $suggestionsByDocId, $suggestionProfileByDocId );
 
-		return new SearchSuggestionSet( $finalResults );
+		return new SearchSuggestionSet( $suggestionsByDocId );
+	}
+
+	/**
+	 * @param string $id compacted id (id + $type)
+	 * @return array 2 elt array [ $id, $type ]
+	 */
+	private function decodeId( $id ) {
+		return [ intval( substr( $id, 0, -1 ) ), substr( $id, -1 ) ];
 	}
 
 	/**

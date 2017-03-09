@@ -20,7 +20,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -151,10 +150,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }
@@ -217,6 +215,9 @@
             "size": 5,
             "stats": [
                 "full_text"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -241,7 +242,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -372,10 +372,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }
@@ -438,6 +437,9 @@
             "size": 5,
             "stats": [
                 "full_text"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -462,7 +464,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -593,10 +594,9 @@
                     ],
                     "must": [
                         {
-                            "match": {
+                            "match_phrase_prefix": {
                                 "all.plain": {
-                                    "query": "pick",
-                                    "type": "phrase_prefix"
+                                    "query": "pick"
                                 }
                             }
                         }
@@ -659,6 +659,9 @@
             "size": 20,
             "stats": [
                 "full_text"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     }

@@ -86,7 +86,7 @@ class ElasticaErrorHandler {
 					'^too_complex_to_determinize_exception$',
 					'^elasticsearch_parse_exception$',
 					'^search_parse_exception$',
-					'^query_parsing_exception$',
+					'^query_shard_exception$',
 					'^illegal_argument_exception$',
 					'^too_many_clauses$'
 				],
@@ -165,7 +165,7 @@ class ElasticaErrorHandler {
 		// it happens.
 		$cause = reset( $error['root_cause'] );
 
-		if ( $cause['type'] === 'query_parsing_exception' ) {
+		if ( $cause['type'] === 'query_shard_exception' ) {
 			// The important part of the parse error message is embedded a few levels down
 			// and comes before the next new line so lets slurp it up and log it rather than
 			// the huge clump of error.

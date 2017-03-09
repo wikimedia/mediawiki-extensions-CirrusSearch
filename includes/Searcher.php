@@ -503,8 +503,8 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		$query = new \Elastica\Query();
-		$query->setParam( '_source', $this->resultsType->getSourceFiltering() );
-		$query->setParam( 'fields', $this->resultsType->getFields() );
+		$query->setSource( $this->resultsType->getSourceFiltering() );
+		$query->setStoredFields( $this->resultsType->getStoredFields() );
 
 		$extraIndexes = [];
 		$namespaces = $this->searchContext->getNamespaces();

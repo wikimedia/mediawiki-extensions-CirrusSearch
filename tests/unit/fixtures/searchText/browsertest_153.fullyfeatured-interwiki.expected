@@ -20,7 +20,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -233,6 +232,9 @@
             "stats": [
                 "full_text",
                 "incategory"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -257,7 +259,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -470,6 +471,9 @@
             "stats": [
                 "full_text",
                 "incategory"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -494,7 +498,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -707,6 +710,9 @@
             "stats": [
                 "full_text",
                 "incategory"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     }

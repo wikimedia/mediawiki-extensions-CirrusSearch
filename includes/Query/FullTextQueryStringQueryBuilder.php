@@ -78,9 +78,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
-					$phraseMatch = new \Elastica\Query\Match( );
+					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix( );
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
-					$phraseMatch->setFieldType( "all.plain", "phrase_prefix" );
 					$searchContext->addNonTextQuery( $phraseMatch );
 
 					$phraseHighlightMatch = new \Elastica\Query\QueryString( );
@@ -382,7 +381,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Build one query for the full text fields and one for the near match fields so that
 		// the near match can run unescaped.
 		$bool = new \Elastica\Query\BoolQuery();
-		$bool->setMinimumNumberShouldMatch( 1 );
+		$bool->setMinimumShouldMatch( 1 );
 		$bool->addShould( $queryForMostFields );
 		$nearMatch = new \Elastica\Query\MultiMatch();
 		$nearMatch->setFields( $nearMatchFields );
@@ -413,8 +412,13 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
+		$option = 'max_determinized_states';
+		// Workround https://github.com/elastic/elasticsearch/issues/22722
+		if ( $this->config->getElement( 'CirrusSearchElasticQuirks', 'query_string_max_determinized_states' ) === true ) {
+			$option = 'max_determined_states';
+		}
 		if ( isset( $states ) ) {
-			$query->setParam( 'max_determinized_states', $states );
+			$query->setParam( $option, $states );
 		}
 		return $query;
 	}

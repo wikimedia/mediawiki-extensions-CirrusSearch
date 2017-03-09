@@ -20,7 +20,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -163,7 +162,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -238,14 +237,16 @@
                                     },
                                     {
                                         "script_score": {
-                                            "lang": "expression",
-                                            "params": {
-                                                "decayConstant": 5.0140855075228e-11,
-                                                "decayPortion": 1,
-                                                "nonDecayPortion": 0,
-                                                "now": 1468084245000
-                                            },
-                                            "script": "exp(decayConstant * (doc['timestamp'].value - now))"
+                                            "script": {
+                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
+                                                "lang": "expression",
+                                                "params": {
+                                                    "decayConstant": 5.0140855075228e-11,
+                                                    "decayPortion": 1,
+                                                    "nonDecayPortion": 0,
+                                                    "now": 1468084245000
+                                                }
+                                            }
                                         },
                                         "weight": 1
                                     }
@@ -264,6 +265,9 @@
                 "full_text_querystring",
                 "prefer-recent",
                 "query_string"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -288,7 +292,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -431,7 +434,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -506,14 +509,16 @@
                                     },
                                     {
                                         "script_score": {
-                                            "lang": "expression",
-                                            "params": {
-                                                "decayConstant": 5.0140855075228e-11,
-                                                "decayPortion": 1,
-                                                "nonDecayPortion": 0,
-                                                "now": 1468084245000
-                                            },
-                                            "script": "exp(decayConstant * (doc['timestamp'].value - now))"
+                                            "script": {
+                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
+                                                "lang": "expression",
+                                                "params": {
+                                                    "decayConstant": 5.0140855075228e-11,
+                                                    "decayPortion": 1,
+                                                    "nonDecayPortion": 0,
+                                                    "now": 1468084245000
+                                                }
+                                            }
                                         },
                                         "weight": 1
                                     }
@@ -532,6 +537,9 @@
                 "full_text_querystring",
                 "prefer-recent",
                 "query_string"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -556,7 +564,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -699,7 +706,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -774,14 +781,16 @@
                                     },
                                     {
                                         "script_score": {
-                                            "lang": "expression",
-                                            "params": {
-                                                "decayConstant": 5.0140855075228e-11,
-                                                "decayPortion": 1,
-                                                "nonDecayPortion": 0,
-                                                "now": 1468084245000
-                                            },
-                                            "script": "exp(decayConstant * (doc['timestamp'].value - now))"
+                                            "script": {
+                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
+                                                "lang": "expression",
+                                                "params": {
+                                                    "decayConstant": 5.0140855075228e-11,
+                                                    "decayPortion": 1,
+                                                    "nonDecayPortion": 0,
+                                                    "now": 1468084245000
+                                                }
+                                            }
                                         },
                                         "weight": 1
                                     }
@@ -800,6 +809,9 @@
                 "full_text_querystring",
                 "prefer-recent",
                 "query_string"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     }

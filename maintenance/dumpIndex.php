@@ -122,7 +122,7 @@ class DumpIndex extends Maintenance {
 		$limit = (int) $this->getOption( 'limit', 0 );
 
 		$query = new Query();
-		$query->setFields( [ '_id', '_type', '_source' ] );
+		$query->setStoredFields( [ '_id', '_type', '_source' ] );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
 			$query->setSource( [ 'include' => $sourceFields ] );

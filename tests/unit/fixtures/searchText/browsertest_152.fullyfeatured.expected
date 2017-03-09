@@ -18,7 +18,6 @@
             "title",
             "wiki"
         ],
-        "fields": "text.word_count",
         "highlight": {
             "fields": {
                 "auxiliary_text": {
@@ -180,7 +179,7 @@
                         }
                     }
                 ],
-                "minimum_number_should_match": 1,
+                "minimum_should_match": 1,
                 "should": [
                     {
                         "bool": {
@@ -246,10 +245,9 @@
                                         "queries": [
                                             {
                                                 "multi_match": {
-                                                    "boost": 2,
+                                                    "boost": 1.05,
                                                     "fields": [
-                                                        "redirect.title.plain^1",
-                                                        "redirect.title^0.3"
+                                                        "suggest"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "amazing",
@@ -258,9 +256,10 @@
                                             },
                                             {
                                                 "multi_match": {
-                                                    "boost": 2.1,
+                                                    "boost": 2,
                                                     "fields": [
-                                                        "suggest"
+                                                        "redirect.title.plain^1",
+                                                        "redirect.title^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "amazing",
@@ -403,6 +402,9 @@
             "full_text_simple_match",
             "incategory",
             "suggest"
+        ],
+        "stored_fields": [
+            "text.word_count"
         ],
         "suggest": {
             "suggest": {

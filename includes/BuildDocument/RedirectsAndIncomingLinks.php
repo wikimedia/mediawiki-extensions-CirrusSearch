@@ -182,12 +182,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$search = new \Elastica\Search( $type->getIndex()->getClient() );
 		$search->addIndex( $type->getIndex() );
 		$search->addType( $type );
-		$search->setOption(
-			\Elastica\Search::OPTION_SEARCH_TYPE,
-			\Elastica\Search::OPTION_SEARCH_TYPE_COUNT
-		);
 		$search->setQuery( $bool );
 		$search->getQuery()->addParam( 'stats', 'link_count' );
+		$search->getQuery()->setSize( 0 );
 
 		return $search;
 	}

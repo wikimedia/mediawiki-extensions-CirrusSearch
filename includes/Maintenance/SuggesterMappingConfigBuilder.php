@@ -30,7 +30,7 @@ class SuggesterMappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '1.1';
+	const VERSION = '2.1';
 
 	/** @var SearchConfig */
 	private $config;
@@ -51,24 +51,21 @@ class SuggesterMappingConfigBuilder {
 	 * @return array[]
 	 */
 	public function buildConfig() {
-		$geoContext = [
-			'location' => [
-				'type' => 'geo',
-				'precision' => [ 6, 4, 3 ], // ~ 1km, 10km, 100km
-				'neighbors' => true,
-			]
-		];
 		$suggest = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],
-			'_source' => ['enabled' => false ],
+			'_source' => ['enabled' => true ],
 			'properties' => [
 				'batch_id' => [ 'type' => 'long' ],
+				'source_doc_id' => [ 'type' => 'keyword' ],
+				// Sadly we can't reuse the same input
+				// into multiple fields, it would help
+				// us to save space since we now have
+				// to store the source.
 				'suggest' => [
 					'type' => 'completion',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
-					'payloads' => false
 				],
 				'suggest-stop' => [
 					'type' => 'completion',
@@ -76,24 +73,7 @@ class SuggesterMappingConfigBuilder {
 					'search_analyzer' => 'stop_analyzer_search',
 					'preserve_separators' => false,
 					'preserve_position_increments' => false,
-					'payloads' => false
 				],
-				'suggest-geo' => [
-					'type' => 'completion',
-					'analyzer' => 'plain',
-					'search_analyzer' => 'plain_search',
-					'payloads' => false,
-					'context' => $geoContext
-				],
-				'suggest-stop-geo' => [
-					'type' => 'completion',
-					'analyzer' => 'stop_analyzer',
-					'search_analyzer' => 'stop_analyzer_search',
-					'preserve_separators' => false,
-					'preserve_position_increments' => false,
-					'payloads' => false,
-					'context' => $geoContext
-				]
 			]
 		];
 		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'build' ) ) {
@@ -101,7 +81,6 @@ class SuggesterMappingConfigBuilder {
 				'type' => 'completion',
 				'analyzer' => 'subphrases',
 				'search_analyzer' => 'subphrases_search',
-				'payloads' => false
 			];
 
 		}

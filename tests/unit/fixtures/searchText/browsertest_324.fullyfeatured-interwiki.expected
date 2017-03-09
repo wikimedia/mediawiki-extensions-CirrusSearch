@@ -20,7 +20,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -163,7 +162,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -249,6 +248,9 @@
             "stats": [
                 "full_text",
                 "full_text_querystring"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -273,7 +275,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -416,7 +417,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -502,6 +503,9 @@
             "stats": [
                 "full_text",
                 "full_text_querystring"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ]
         }
     },
@@ -526,7 +530,6 @@
                 "title",
                 "wiki"
             ],
-            "fields": "text.word_count",
             "highlight": {
                 "fields": {
                     "auxiliary_text": {
@@ -669,7 +672,7 @@
                             }
                         }
                     ],
-                    "minimum_number_should_match": 1,
+                    "minimum_should_match": 1,
                     "should": [
                         {
                             "multi_match": {
@@ -756,6 +759,9 @@
                 "full_text",
                 "full_text_querystring",
                 "suggest"
+            ],
+            "stored_fields": [
+                "text.word_count"
             ],
             "suggest": {
                 "suggest": {

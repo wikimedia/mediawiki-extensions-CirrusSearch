@@ -37,9 +37,9 @@ interface ResultsType {
 	 * Get the fields to load.  Most of the time we'll use source filtering instead but
 	 * some fields aren't part of the source.
 	 *
-	 * @return false|string|array corresponding to Elasticsearch fields syntax
+	 * @return array corresponding to Elasticsearch fields syntax
 	 */
-	function getFields();
+	function getStoredFields();
 
 	/**
 	 * Get the highlighting configuration.
@@ -97,10 +97,10 @@ abstract class BaseResultsType implements ResultsType {
  */
 class TitleResultsType extends BaseResultsType {
 	/**
-	 * @return false|string|array corresponding to Elasticsearch fields syntax
+	 * @return array corresponding to Elasticsearch fields syntax
 	 */
-	public function getFields() {
-		return false;
+	public function getStoredFields() {
+		return [];
 	}
 
 	/**
@@ -313,10 +313,10 @@ class FullTextResultsType extends BaseResultsType {
 	}
 
 	/**
-	 * @return string
+	 * @return array
 	 */
-	public function getFields() {
-		return "text.word_count"; // word_count is only a stored field and isn't part of the source.
+	public function getStoredFields() {
+		return ["text.word_count"]; // word_count is only a stored field and isn't part of the source.
 	}
 
 	/**
@@ -569,8 +569,8 @@ class IdResultsType implements ResultsType {
 		return false;
 	}
 
-	public function getFields() {
-		return false;
+	public function getStoredFields() {
+		return [];
 	}
 
 	public function getHighlightingConfiguration( array $highlightSource ) {

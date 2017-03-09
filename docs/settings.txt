@@ -872,25 +872,6 @@ Default:
 
 Number of characters to include in article fragments.
 
-; $wgCirrusSearchMainPageCacheWarmer
-
-Default:
-    $wgCirrusSearchMainPageCacheWarmer = true;
-
-Should we add a cache warmer that searches for the main page to the content
-namespace?
-See also: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-warmers.html
-
-; $wgCirrusSearchCacheWarmers
-
-Default:
-    $wgCirrusSearchCacheWarmers = [];
-
-Other cache warmers.  Form is index name => array(searches). Examples:
-    $wgCirrusSearchCacheWarmers[ 'content' ][] = 'foo bar';
-    $wgCirrusSearchCacheWarmers[ 'content' ][] = 'batman';
-    $wgCirrusSearchCacheWarmers[ 'general' ][] = 'template:noble pipe';
-
 ; $wgCirrusSearchBoostLinks
 
 Default:
@@ -1156,16 +1137,6 @@ often contains the phrase surname, firstname.
 
 NOTE: Experimental.
 
-; $wgCirrusSearchCompletionSuggesterGeoContext
-
-Default:
-    $wgCirrusSearchCompletionSuggesterGeoContext = ['build' => false];
-
-Builds extra fst with a geo context.
-Can generate a very large in-memory FST.
-
-NOTE: Experimental, no API endpoints are available yet.
-
 ; $wgCirrusSearchCompletionSuggesterHardLimit
 
 Default:
@@ -1188,16 +1159,6 @@ elasticsearch from rebalancing shards.
 On large wikis it's maybe better to create a new index because
 documents are indexed and optimised with replication disabled
 reducing the number of disk operation to primary shards only.
-
-; $wgCirrusSearchCompletionGeoContextSettings
-
-Default:
-    $wgCirrusSearchCompletionGeoContextSettings = $wgCirrusSearchCompletionGeoContextProfiles['default'];
-
-Profile for geo context search as you type suggestion (completion suggestion)
-(see profiles/SuggestProfiles.php for more details.)
-
-NOTE: This is an experimental API.
 
 ; $wgCirrusSearchEnableAltLanguage
 
@@ -1435,6 +1396,18 @@ Example:
         'image' => 'bitmap',
         'document' => 'office',
     ];
+
+; $wgCirrusSearchElasticQuirks
+
+Default:
+  $wgCirrusSearchElasticQuirks = [];
+
+Workarounds:
+- from elastic 5.0.0 to 5.1.2 the max_determinized_states option in query_string
+  has been incorrectly renamed to max_determined_states (see
+  https://github.com/elastic/elasticsearch/issues/22722). Add the following key
+  to enable this workaround if you are running such version:
+  'query_string_max_determinized_states' => true
 
 ; $wgCirrusSearchFieldTypes
 

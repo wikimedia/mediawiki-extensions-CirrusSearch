@@ -92,11 +92,11 @@ class MappingConfigBuilder {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = [
-			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
-			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => [ 'enabled' => false ] ],
+			[ 'analyzer' => 'prefix', 'search_analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'prefix_asciifolding', 'search_analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'near_match', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
+			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => false ],
 		];
 		if ( $flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = [
@@ -107,16 +107,17 @@ class MappingConfigBuilder {
 		}
 
 		$suggestField = [
-			'type' => 'string',
+			'type' => 'text',
 			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
 			'index_options' => 'freqs',
 			'analyzer' => 'suggest',
+			'search_analyzer' => 'suggest_search',
 		];
 
 		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {
 			$suggestField['fields'] = [
 				'reverse' => [
-					'type' => 'string',
+					'type' => 'text',
 					'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest', 'reverse' ),
 					'index_options' => 'freqs',
 					'analyzer' => 'suggest_reverse',
@@ -230,17 +231,17 @@ class MappingConfigBuilder {
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
 			// is never used in phrase queries or highlighting.
 			$page[ 'properties' ][ 'all_near_match' ] = [
-				'type' => 'string',
+				'type' => 'text',
 				'analyzer' => 'near_match',
 				'index_options' => 'freqs',
-				'norms' => [ 'enabled' => false ],
+				'norms' => false,
 				'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match' ),
 				'fields' => [
 					'asciifolding' => [
-						'type' => 'string',
+						'type' => 'text',
 						'analyzer' => 'near_match_asciifolding',
 						'index_options' => 'freqs',
-						'norms' => [ 'enabled' => false ],
+						'norms' => false,
 						'similarity' => TextIndexField::getSimilarity( $this->config, 'all_near_match', 'asciifolding' ),
 					],
 				],
@@ -259,11 +260,10 @@ class MappingConfigBuilder {
 			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'name' => [
-					'type' => 'string',
+					'type' => 'text',
 					'analyzer' => 'near_match_asciifolding',
-					'norms' => [ 'enabled' => false ],
+					'norms' => false,
 					'index_options' => 'docs',
-					'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 				],
 				'wiki' => $this->searchIndexFieldFactory
 					->newKeywordField( 'wiki' )->getMapping( $this->engine ),

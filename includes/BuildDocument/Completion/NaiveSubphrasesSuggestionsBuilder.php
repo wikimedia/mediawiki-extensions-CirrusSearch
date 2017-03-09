@@ -99,7 +99,6 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	public function build( array $inputDoc, $suggestType, $score, \Elastica\Document $suggestDoc, $targetNamespace ) {
 		if ( $suggestType === SuggestBuilder::REDIRECT_SUGGESTION ) {
 			// It's unclear howto support redirects here.
-			// Since we use Util::chooseBestRedirect at search time
 			// It seems hard to retrieve the best redirect if
 			// we destroy it with this builder. We would have to
 			// add a special code at search time and apply the
@@ -113,10 +112,12 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		}
 
 		$subPages = $this->tokenize( $inputDoc['title'], $language );
-		$suggest = $suggestDoc->get( 'suggest' );
-		$suggest['input'] = $subPages;
-		foreach( $this->getExtraFields() as $field ) {
-			$suggestDoc->set( $field, $suggest );
+		if ( !empty( $subPages ) ) {
+			$suggest = $suggestDoc->get( 'suggest' );
+			$suggest['input'] = $subPages;
+			foreach( $this->getExtraFields() as $field ) {
+				$suggestDoc->set( $field, $suggest );
+			}
 		}
 	}
 

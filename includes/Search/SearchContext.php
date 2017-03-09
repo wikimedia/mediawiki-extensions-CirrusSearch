@@ -643,11 +643,11 @@ class SearchContext {
 	}
 
 	/**
-	 * @param \Elastica\Query\Match $match Queries that don't use Elastic's
+	 * @param \Elastica\Query\AbstractQuery $match Queries that don't use Elastic's
 	 * "query string" query, for more advanced searching (e.g.
 	 *  match_phrase_prefix for regular quoted strings).
 	 */
-	public function addNonTextQuery( \Elastica\Query\Match $match ) {
+	public function addNonTextQuery( \Elastica\Query\AbstractQuery $match ) {
 		$this->nonTextQueries[] = $match;
 	}
 

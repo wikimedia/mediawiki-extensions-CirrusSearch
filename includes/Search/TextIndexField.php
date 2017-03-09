@@ -47,7 +47,7 @@ class TextIndexField extends CirrusIndexField {
 	 * Name of the type in Elastic
 	 * @var string
 	 */
-	protected $typeName = 'string';
+	protected $typeName = 'text';
 
 	public function __construct( $name, $type, SearchConfig $config, $extra = [] ) {
 		parent::__construct( $name, $type, $config );
@@ -123,9 +123,10 @@ class TextIndexField extends CirrusIndexField {
 		if ( $this->checkFlag( SearchIndexField::FLAG_CASEFOLD ) ) {
 			$extra[] = [
 				'analyzer' => 'lowercase_keyword',
-				'norms' => [ 'enabled' => false ],
+				'norms' => false,
 				'index_options' => 'docs',
-				'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
+				// TODO: Re-enable in ES 5.2 with keyword type and s/analyzer/normalizer/
+				//'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 			];
 		}
 
@@ -137,7 +138,7 @@ class TextIndexField extends CirrusIndexField {
 			'similarity' => self::getSimilarity( $this->config, $this->name ),
 			'fields' => [
 				'plain' => [
-					'type' => 'string',
+					'type' => 'text',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
 					'position_increment_gap' => self::POSITION_INCREMENT_GAP,
@@ -147,7 +148,7 @@ class TextIndexField extends CirrusIndexField {
 		];
 		$disableNorms = !$this->checkFlag( self::ENABLE_NORMS );
 		if ( $disableNorms ) {
-			$disableNorms = [ 'norms' => [ 'enabled' => false ] ];
+			$disableNorms = [ 'norms' => false ];
 			$field = array_merge( $field, $disableNorms );
 			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
 		}
@@ -156,7 +157,7 @@ class TextIndexField extends CirrusIndexField {
 
 			$field[ 'fields' ][ $extraName ] = array_merge( [
 				'similarity' => self::getSimilarity( $this->config, $this->name, $extraName ),
-				'type' => 'string',
+				'type' => 'text',
 			], $extraField );
 			if ( $disableNorms ) {
 				$field[ 'fields' ][ $extraName ] = array_merge(

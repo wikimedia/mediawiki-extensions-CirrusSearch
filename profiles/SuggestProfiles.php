@@ -108,7 +108,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 2,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
@@ -120,7 +120,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 2,
 				'unicode_aware' => true,
 			]
@@ -132,7 +132,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
@@ -143,11 +143,39 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
 		]
+	],
+	// Experimental profile, we fire a single suggest query per field
+	// problem is that a fuzzy match on plain will certainly
+	// win against a non fuzzy match on plain_stop...
+	'fast-fuzzy' => [
+		'plain' => [
+			'field' => 'suggest',
+			'min_query_len' => 0,
+			'discount' => 1.0,
+			'fetch_limit_factor' => 2,
+			// Fuzzy is fired after 3 chars
+			// with auto edit distance based input length
+			// (see https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness )
+			'fuzzy' => [
+				'fuzziness' => 'AUTO',
+				'unicode_aware' => true,
+			]
+		],
+		'plain_stop' => [
+			'field' => 'suggest-stop',
+			'min_query_len' => 0,
+			'discount' => 0.01,
+			'fetch_limit_factor' => 2,
+			'fuzzy' => [
+				'fuzziness' => 'AUTO',
+				'unicode_aware' => true,
+			]
+		],
 	],
 	'fuzzy-subphrases' => [
 		// Defines the list of suggest queries to run in the same request.
@@ -188,7 +216,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 2,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
@@ -200,7 +228,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 2,
 				'unicode_aware' => true,
 			]
@@ -212,7 +240,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
@@ -223,7 +251,7 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.0000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
@@ -234,40 +262,10 @@ $wgCirrusSearchCompletionProfiles = [
 			'discount' => 0.00000001,
 			'fetch_limit_factor' => 1,
 			'fuzzy' => [
-				'fuzzyness' => 'AUTO',
+				'fuzziness' => 'AUTO',
 				'prefix_length' => 1,
 				'unicode_aware' => true,
 			]
 		]
 	],
-];
-
-/**
- * List of profiles for geo context suggestions
- */
-$wgCirrusSearchCompletionGeoContextProfiles = [
-	'default' => [
-		'geo-1km' => [
-			'field_suffix' => '-geo',
-			// Discount applied to the score, this value will be multiplied
-			// to the discount from $wgCirrusSearchCompletionProfiles
-			'discount' => 1.0,
-			'precision' => 6,
-			// List of requests to run with this precision
-			// must be a valid name from the active $wgCirrusSearchCompletionProfiles
-			'with' => [ 'plain', 'plain_stop', 'plain_fuzzy', 'plain_stop_fuzzy' ]
-		],
-		'geo-10km' => [
-			'field_suffix' => '-geo',
-			'discount' => 0.5,
-			'precision' => 4,
-			'with' => [ 'plain', 'plain_stop', 'plain_fuzzy' ]
-		],
-		'geo-100km' => [
-			'field_suffix' => '-geo',
-			'discount' => 0.2,
-			'precision' => 3,
-			'with' => [ 'plain', 'plain_stop' ]
-		]
-	]
 ];

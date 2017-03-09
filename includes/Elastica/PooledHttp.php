@@ -13,10 +13,12 @@ use MediaWiki\MediaWikiServices;
  *
  *  $wgCirrusSearchClusters = array(
  *    'default' => array(
- *      'transport' => 'CirrusSearch\Elastica\PooledHttp',
- *      'port' => 12345,
- *      'host' => 'my.host.name',
- *      'config' => array( 'pool' => 'cirrus' ),
+ *      array(
+ *        'transport' => 'CirrusSearch\Elastica\PooledHttp',
+ *        'port' => 12345,
+ *        'host' => 'my.host.name',
+ *        'config' => array( 'pool' => 'cirrus' ),
+ *      )
  *    )
  *  );
  *

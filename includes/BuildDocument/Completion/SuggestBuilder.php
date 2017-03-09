@@ -64,9 +64,6 @@ class SuggestBuilder {
 	 * promoted as a title suggestion.
 	 * This is useful not to promote Eraq as a title suggestion for Iraq
 	 * Less than 3 can lead to weird results like oba => Osama Bin Laden
-	 * @todo: to avoid displaying typos (if the typo is in the 3 chars)
-	 * we could re-work Utils::chooseBestRedirect and display the title
-	 * if the chosen redirect is close enough to the title.
 	 */
 	const REDIRECT_COMMON_PREFIX_LEN = 3;
 
@@ -119,6 +116,9 @@ class SuggestBuilder {
 		foreach ( $inputDocs as $sourceDoc ) {
 			$inputDoc = $sourceDoc['source'];
 			$docId = $sourceDoc['id'];
+			// a bit of a hack but it's convenient to carry
+			// the id around
+			$inputDoc['id'] = $docId;
 			if ( !isset( $inputDoc['namespace'] ) ) {
 				// Bad doc, nothing to do here.
 				continue;
@@ -224,8 +224,6 @@ class SuggestBuilder {
 
 	/**
 	 * Builds the 'title' suggestion.
-	 * The output is encoded as pageId:t:Title.
-	 * NOTE: the client will be able to display Title encoded in the output when searching.
 	 *
 	 * @param string $docId the page id
 	 * @param array $title the title in 'text' and an array of similar redirects in 'variants'
@@ -238,11 +236,9 @@ class SuggestBuilder {
 		foreach ( $title['variants'] as $variant ) {
 			$inputs[] = $this->prepareInput( $variant );
 		}
-		$output = self::encodeTitleOutput( $docId, $title['text'] );
 		return $this->buildSuggestion(
 			self::TITLE_SUGGESTION,
 			$docId,
-			$output,
 			$inputs,
 			$score,
 			$inputDoc
@@ -251,7 +247,6 @@ class SuggestBuilder {
 
 	/**
 	 * Builds the 'redirects' suggestion.
-	 * The output is encoded as pageId:r
 	 * The score will be discounted by the REDIRECT_DISCOUNT factor.
 	 * NOTE: the client will have to fetch the doc redirects when searching
 	 * and choose the best one to display. This is because we are unable
@@ -268,10 +263,9 @@ class SuggestBuilder {
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $this->prepareInput( $redirect );
 		}
-		$output = self::encodeRedirectOutput( $docId );
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
-		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $output,
-			$inputs, $score, $inputDoc );
+		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $inputs,
+			$score, $inputDoc );
 	}
 
 	/**
@@ -279,28 +273,32 @@ class SuggestBuilder {
 	 *
 	 * @param string $suggestionType suggestion type (title or redirect)
 	 * @param string $docId The document id
-	 * @param string $output the suggestion output
+	 * @param string[] $titles the suggestion titles
+	 * @param string $type suggestion type
 	 * @param string[] $inputs the suggestion inputs
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc
 	 * @return \Elastica\Document a doc ready to be indexed in the completion suggester
 	 */
-	private function buildSuggestion( $suggestionType, $docId, $output, array $inputs, $score, array $inputDoc ) {
+	private function buildSuggestion( $suggestionType, $docId, array $inputs, $score, array $inputDoc ) {
 		$doc = [
 			'batch_id' => $this->batchId,
+			'source_doc_id' => $inputDoc['id'],
+			'target_title' => [
+				'title' => $inputDoc['title'],
+				'namespace' => $inputDoc['namespace'],
+			],
 			'suggest' => [
 				'input' => $inputs,
-				'output' => $output,
 				'weight' => $score
 			],
 			'suggest-stop' => [
 				'input' => $inputs,
-				'output' => $output,
 				'weight' => $score
 			]
 		];
 
-		$suggestDoc = new \Elastica\Document( $this->encodeDocId( $suggestionType, $docId ), $doc );
+		$suggestDoc = new \Elastica\Document( self::encodeDocId( $suggestionType, $docId ), $doc );
 		foreach( $this->extraBuilders as $builder ) {
 			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, $this->targetNamespace );
 		}
@@ -450,69 +448,21 @@ class SuggestBuilder {
 	 * @param string $suggestionType
 	 * @return string
 	 */
-	private function encodeDocId( $docId, $suggestionType ) {
-		return $suggestionType . $docId;
+	public static function encodeDocId( $suggestionType, $docId ) {
+		return $docId . $suggestionType;
 	}
 
 	/**
-	 * Encode a title suggestion output
+	 * Encode possible docIds used by the completion suggester index
 	 *
-	 * @param string $docId elasticsearch document id
-	 * @param string $title
-	 * @return string the encoded output
+	 * @param string $docId
+	 * @return string[] list of docIds
 	 */
-	public static function encodeTitleOutput( $docId, $title ) {
-		return $docId . ':'. self::TITLE_SUGGESTION . ':' . $title;
-	}
-
-	/**
-	 * Encode a redirect suggestion output
-	 *
-	 * @param string $docId elasticsearch document id
-	 * @return string the encoded output
-	 */
-	public static function encodeRedirectOutput( $docId ) {
-		return $docId . ':' . self::REDIRECT_SUGGESTION;
-	}
-
-	/**
-	 * Decode a suggestion output.
-	 * The result is an array with the following keys:
-	 * id: the pageId
-	 * type: either REDIRECT_SUGGESTION or TITLE_SUGGESTION
-	 * text (optional): if TITLE_SUGGESTION the Title text
-	 *
-	 * @param string $output text value returned by a suggest query
-	 * @return string[]|null array of strings, or null if the output is not properly encoded
-	 */
-	public static function decodeOutput( $output ) {
-		if ( $output == null ) {
-			return null;
-		}
-		$parts = explode( ':', $output, 3 );
-		if ( sizeof ( $parts ) < 2 ) {
-			// Ignore broken output
-			return null;
-		}
-
-
-		switch( $parts[1] ) {
-		case self::REDIRECT_SUGGESTION:
-			return [
-				'docId' => $parts[0],
-				'type' => self::REDIRECT_SUGGESTION,
-			];
-		case self::TITLE_SUGGESTION:
-			if ( sizeof( $parts ) < 3 ) {
-				return null;
-			}
-			return [
-				'docId' => $parts[0],
-				'type' => self::TITLE_SUGGESTION,
-				'text' => $parts[2]
-			];
-		}
-		return null;
+	public static function encodePossibleDocIds( $docId ) {
+		return [
+			self::encodeDocId( self::TITLE_SUGGESTION, $docId ),
+			self::encodeDocId( self::REDIRECT_SUGGESTION, $docId ),
+		];
 	}
 
 	/**
@@ -520,5 +470,12 @@ class SuggestBuilder {
 	 */
 	public function getBatchId() {
 		return $this->batchId;
+	}
+
+	/**
+	 * @return int the target namespace
+	 */
+	public function getTargetNamespace() {
+		return $this->targetNamespace;
 	}
 }

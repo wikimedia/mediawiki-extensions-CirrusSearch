@@ -18,7 +18,6 @@
             "title",
             "wiki"
         ],
-        "fields": "text.word_count",
         "highlight": {
             "fields": {
                 "auxiliary_text": {
@@ -161,7 +160,7 @@
                         }
                     }
                 ],
-                "minimum_number_should_match": 1,
+                "minimum_should_match": 1,
                 "should": [
                     {
                         "bool": {
@@ -227,10 +226,9 @@
                                         "queries": [
                                             {
                                                 "multi_match": {
-                                                    "boost": 2,
+                                                    "boost": 1.05,
                                                     "fields": [
-                                                        "redirect.title.plain^1",
-                                                        "redirect.title^0.3"
+                                                        "suggest"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "StemmerTest us",
@@ -239,9 +237,10 @@
                                             },
                                             {
                                                 "multi_match": {
-                                                    "boost": 2.1,
+                                                    "boost": 2,
                                                     "fields": [
-                                                        "suggest"
+                                                        "redirect.title.plain^1",
+                                                        "redirect.title^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
                                                     "query": "StemmerTest us",
@@ -383,8 +382,8 @@
                     "rescore_query": {
                         "multi_match": {
                             "fields": [
-                                "text.plain^0.1",
-                                "text^0.07"
+                                "text.plain^0.2",
+                                "text^0.14"
                             ],
                             "query": "StemmerTest us",
                             "slop": 1,
@@ -401,6 +400,9 @@
             "full_text",
             "full_text_simple_match",
             "suggest"
+        ],
+        "stored_fields": [
+            "text.word_count"
         ],
         "suggest": {
             "suggest": {

@@ -86,7 +86,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		// Build one query for the full text fields and one for the near match fields so that
 		// the near match can run unescaped.
 		$bool = new \Elastica\Query\BoolQuery();
-		$bool->setMinimumNumberShouldMatch( 1 );
+		$bool->setMinimumShouldMatch( 1 );
 		$bool->addShould( $queryForMostFields );
 		$nearMatch = new \Elastica\Query\MultiMatch();
 		$nearMatch->setFields( $nearMatchFields );

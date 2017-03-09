@@ -1,4 +1,1 @@
-{|
-|-
-| Waffle<br>squash
-|}
+Waffle<br>squash

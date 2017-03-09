@@ -2,7 +2,7 @@
 Feature: Searches with the file size filters
 
   Scenario Outline: filesize finds files with given size
-    When I api search in namespace 6 for <search>
+    When I api search in namespace 6 for <search> -intitle:frozen
     Then there are <count> api search results
     And <musthave> is in the api search results
     And <mustnot> is not in the api search results
@@ -14,7 +14,7 @@ Feature: Searches with the file size filters
     | filesize:5,20 | 1     | File:Savepage-greyed.png                          | File:Linux Distribution Timeline text version.pdf |
 
   Scenario Outline: filetype finds files with given internal type
-    When I api search in namespace 6 for <search>
+    When I api search in namespace 6 for <search> -intitle:frozen
     Then there are <count> api search results
     And <musthave> is in the api search results
     And <mustnot> is not in the api search results
@@ -25,7 +25,7 @@ Feature: Searches with the file size filters
       | filetype:Drawing | 4     | File:DuplicatedLocally.svg                        | File:Savepage-greyed.png |
 
   Scenario Outline: filemime finds files with given MIME type
-    When I api search in namespace 6 for <search>
+    When I api search in namespace 6 for <search> -intitle:frozen
     Then there are <count> api search results
     And <musthave> is in the api search results
     And <mustnot> is not in the api search results
@@ -36,7 +36,7 @@ Feature: Searches with the file size filters
       | filemime:application/pdf | 1   | File:Linux Distribution Timeline text version.pdf | File:OnCommons.svg         |
 
   Scenario Outline: Resolution filters find files with given dimensions
-    When I api search in namespace 6 for <search>
+    When I api search in namespace 6 for <search> -intitle:frozen
     Then there are <count> api search results
     And <musthave> is in the api search results
     And <mustnot> is not in the api search results

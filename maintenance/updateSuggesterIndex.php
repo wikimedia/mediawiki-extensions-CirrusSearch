@@ -230,7 +230,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
 			if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
-				throw new \Exception("Cirrus meta sotre does not exist, you must index your data first");
+				throw new \Exception("Cirrus meta store does not exist, you must index your data first");
 			}
 
 			if ( !$this->canWrite() ) {

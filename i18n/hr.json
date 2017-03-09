@@ -10,12 +10,14 @@
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
 	"cirrussearch-completionsuggester-pref": "Prijedlozi pretraživanja",
 	"cirrussearch-completionsuggester-desc": "Novi algoritam koji pretražuje dok upisujete pojmove. Kad je omogućen, prozor za pretragu će rabiti prijedloge pretraživanja novog algoritma.",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Novi algoritam] omogućava bolje prijedloge prilikom pretrage, bolje ispravljanje slovnih pogrešaka te bolju relevantnost rezultata.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Zadano (preporučeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dvije pogreške. Vodi na preusmjeravanja bliska upisanome.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strogi način (napredno)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Ne ispravlja pogreške. Ne zanemaruje naglaske. Traži točno upisano.",
 	"cirrussearch-completion-profile-normal-pref-desc": "Ne ispravlja pogreške. Vodi na preusmjeravanja bliska upisanome.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Prefiksna pretraga",
+	"cirrussearch-pref-completion-legacy-section-legend": "Stari algoritam s prijedlozima prema utipkanom pojmu.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična prefiksna pretraga",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja pogreške. Traži početke naziva."
 }

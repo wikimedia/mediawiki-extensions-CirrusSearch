@@ -354,4 +354,56 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	public function provideLanguageAnalysis() {
+		$tests = [];
+		foreach ( glob( __DIR__ . '/../fixtures/languageAnalysis/*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, -7 );
+			$extraConfig = json_decode( file_get_contents( $testFile ), true );
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new \RuntimeException( "Failed decoding fixture config: $testFile" );
+			}
+			if ( isset( $extraConfig['LangCode'] ) ) {
+				$langCode = $extraConfig['LangCode'];
+			} else {
+				$langCode = $testName;
+			}
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			if ( file_exists( $expectedFile ) ) {
+				$expected = json_decode( file_get_contents( $expectedFile ), true );
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					throw new \RuntimeException( "Failed decoding fixture: $expectedFile" );
+				}
+			} else {
+				$expected = $expectedFile;
+			}
+			$tests[$testName] = [$expected, $langCode, $extraConfig];
+		}
+		return $tests;
+	}
+
+	/**
+	 * Test various language specific analysers against fixtures, to make
+	 *  the results of generation obvious and tracked in git
+	 *
+	 * @dataProvider provideLanguageAnalysis
+	 */
+	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
+		$config = new HashSearchConfig( $extraConfig + [
+			'CirrusSearchSimilarityProfile' => 'default',
+		]);
+		$plugins = [
+			'analysis-stempel', 'analysis-kuromoji',
+			'analysis-smartcn', 'elasticsearch-analysis-hebrew',
+		];
+		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config );
+		if ( is_string( $expected ) ) {
+			// generate fixture
+			$fixture = json_encode( $builder->buildConfig(), JSON_PRETTY_PRINT );
+			file_put_contents( $expected, $fixture );
+			$this->markTestSkipped( "Generated new fixture" );
+		} else {
+			$this->assertEquals( $expected, $builder->buildConfig() );
+		}
+	}
 }

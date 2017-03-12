@@ -15,6 +15,6 @@
 	"cirrussearch-pref-completion-profile-help": "Podesite način na koji softver vrši automatsko dovršavanje pretraga.",
 	"prefs-completion": "Dovršavanje pretrage",
 	"cirrussearch-pref-completion-section-desc": "Dovršavanje pretrage",
-	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dovršavanje pretrage] novi je algoritam koji omogućava bolje prijedloge pri traženju, bolje ispravke tipfelera i bolju relevantnosti rezultata.",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dovršavanje pretrage] jest novi algoritam koji omogućava bolje prijedloge pri pretrazi, bolje ispravke tipfelera i bolju relevantnost rezultata.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predodređeno (preporučeno)"
 }

@@ -105,11 +105,13 @@ class ConfigUtils {
 	 * @return string[] the list of indices
 	 */
 	public function getAllIndicesByType( $typeName ) {
-		$found = [];
-		foreach ( $this->client->getStatus()->getIndexNames() as $name ) {
-			if ( substr( $name, 0, strlen( $typeName ) ) === $typeName ) {
-				$found[] = $name;
-			}
+		$found = null;
+		$response = $this->client->request( $typeName . '*' );
+		if ( $response->isOK() ) {
+			$found = array_keys( $response->getData() );
+		} else {
+			$this->error( "Cannot fetch index names for $typeName: "
+				. $response->getError(), 1 );
 		}
 		return $found;
 	}
@@ -258,5 +260,51 @@ class ConfigUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if this is an index (not an alias)
+	 * @param string $indexName
+	 * @return bool true if this is an index, false if it's an alias or if unknown
+	 */
+	public function isIndex( $indexName ) {
+		// We must emit a HEAD request before calling the _aliases
+		// as it may return an error if the index/alias is missing
+		if ( !$this->client->getIndex( $indexName )->exists() ) {
+			return false;
+		}
+
+		$response = $this->client->request( $indexName . '/_aliases' );
+		if ( $response->isOK() ) {
+			// Only index names are listed as top level keys So if
+			// HEAD /$indexName returns HTTP 200 but $indexName is
+			// not a top level json key then it's an alias
+			return isset( $response->getData()[$indexName] );
+		} else {
+			$this->error( "Cannot determine if $indexName is an index: "
+				. $response->getError(), 1 );
+		}
+		return false;
+	}
+
+	/**
+	 * Return a list of index names that points to $aliasName
+	 * @param string $aliasName
+	 * @return string[] index names
+	 */
+	public function getIndicesWithAlias( $aliasName ) {
+		// We must emit a HEAD request before calling the _aliases
+		// as it may return an error if the index/alias is missing
+		if ( !$this->client->getIndex( $aliasName )->exists() ) {
+			return [];
+		}
+		$response = $this->client->request( $aliasName . '/_aliases' );
+		if ( $response->isOK() ) {
+			return array_keys( $response->getData() );
+		} else {
+			$this->error( "Cannot fetch indices with alias $aliasName: "
+				. $response->getError(), 1 );
+		}
+		return [];
 	}
 }

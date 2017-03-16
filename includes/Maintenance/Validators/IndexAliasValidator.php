@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\ConfigUtils;
 use Elastica\Client;
 use RawMessage;
 use Status;
@@ -39,19 +40,25 @@ abstract class IndexAliasValidator extends Validator {
 	protected $remove = [];
 
 	/**
+	 * @var ConfigUtils
+	 */
+	private $configUtils;
+
+	/**
 	 * @param Client $client
 	 * @param string $aliasName
 	 * @param string $specificIndexName
 	 * @param bool $startOver
 	 * @param Maintenance $out
 	 */
-	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, Maintenance $out = null ) {
+	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, Maintenance $out ) {
 		parent::__construct( $out );
 
 		$this->client = $client;
 		$this->aliasName = $aliasName;
 		$this->specificIndexName = $specificIndexName;
 		$this->startOver = $startOver;
+		$this->configUtils = new ConfigUtils( $client, $out );
 	}
 
 	/**
@@ -62,8 +69,7 @@ abstract class IndexAliasValidator extends Validator {
 		$add = $remove = [];
 
 		$this->outputIndented( "\tValidating $this->aliasName alias..." );
-		$status = $this->client->getStatus();
-		if ( $status->indexExists( $this->aliasName ) ) {
+		if ( $this->configUtils->isIndex( $this->aliasName ) ) {
 			$this->output( "is an index..." );
 			if ( $this->startOver ) {
 				$this->client->getIndex( $this->aliasName )->delete();
@@ -77,12 +83,12 @@ abstract class IndexAliasValidator extends Validator {
 					"script with --startOver and it'll remove the index and continue.\n" ) );
 			}
 		} else {
-			foreach ( $status->getIndicesWithAlias( $this->aliasName ) as $index ) {
-				if ( $index->getName() === $this->specificIndexName ) {
+			foreach ( $this->configUtils->getIndicesWithAlias( $this->aliasName ) as $indexName ) {
+				if ( $indexName === $this->specificIndexName ) {
 					$this->output( "ok\n" );
 					return Status::newGood();
-				} elseif ( $this->shouldRemoveFromAlias( $index->getName() ) ) {
-					$remove[] = $index->getName();
+				} elseif ( $this->shouldRemoveFromAlias( $indexName ) ) {
+					$remove[] = $indexName;
 				}
 			}
 

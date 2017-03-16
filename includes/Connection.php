@@ -191,7 +191,17 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Type
 	 */
 	public function getPageType( $name, $type = false ) {
-		return $this->getIndex( $name, $type )->getType( self::PAGE_TYPE_NAME );
+		return $this->getIndexType( $name, $type, self::PAGE_TYPE_NAME );
+	}
+
+	/**
+	 * Fetch the Elastica Type for pages.
+	 * @param mixed $name basename of index
+	 * @param mixed $type type of index (content or general or false to get all)
+	 * @return \Elastica\Type
+	 */
+	public function getIndexType( $name, $cirrusType, $elasticType ) {
+		return $this->getIndex( $name, $cirrusType )->getType( $elasticType );
 	}
 
 	/**

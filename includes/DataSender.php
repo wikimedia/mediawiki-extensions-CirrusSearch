@@ -161,7 +161,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param (\Elastica\Script|\Elastica\Document)[] $data documents to send
 	 * @return Status
 	 */
-	public function sendData( $indexType, $data ) {
+	public function sendData( $indexType, $data, $elasticType = Connection::PAGE_TYPE_NAME ) {
 		$documentCount = count( $data );
 		if ( $documentCount === 0 ) {
 			return Status::newGood();
@@ -175,7 +175,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$responseSet = null;
 		$justDocumentMissing = false;
 		try {
-			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+			$pageType = $this->connection->getIndexType( $this->indexBaseName, $indexType, $elasticType );
 			$this->start( new BulkUpdateRequestLog(
 				$this->connection->getClient(),
 				'sending {numBulk} documents to the {index} index(s)',
@@ -226,11 +226,15 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string|null $indexType index from which to delete.  null means all.
 	 * @return Status
 	 */
-	public function sendDeletes( $docIds, $indexType = null ) {
+	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {
 		if ( $indexType === null ) {
 			$indexes = $this->connection->getAllIndexTypes();
 		} else {
 			$indexes = [ $indexType ];
+		}
+
+		if ( $elasticType === null ) {
+			$elasticType = Connection::PAGE_TYPE_NAME;
 		}
 
 		if ( !$this->areIndexesAvailableForWrites( $indexes ) ) {
@@ -241,11 +245,14 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $idCount !== 0 ) {
 			try {
 				foreach ( $indexes as $indexType ) {
-					$this->startNewLog( 'deleting {numIds} from {indexType}', 'send_deletes', [
+					$this->startNewLog( 'deleting {numIds} from {indexType}/{elasticType}', 'send_deletes', [
 						'numIds' => $idCount,
 						'indexType' => $indexType,
+						'elasticType' => $elasticType,
 					] );
-					$this->connection->getPageType( $this->indexBaseName, $indexType )->deleteIds( $docIds );
+					$this->connection
+						->getIndexType( $this->indexBaseName, $indexType, $elasticType )
+						->deleteIds( $docIds );
 					$this->success();
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {

@@ -78,11 +78,6 @@ class SuggestBuilder {
 	private $batchId;
 
 	/**
-	 * @var boolean set to true to add an extra title suggestion with defaultsort
-	 */
-	private $withDefaultSort;
-
-	/**
 	 * @var ExtraSuggestionsBuilder[]
 	 */
 	private $extraBuilders;
@@ -196,9 +191,6 @@ class SuggestBuilder {
 		$score = $this->scoringMethod->score( $inputDoc );
 
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
-		if ( $this->withDefaultSort && !empty( $inputDoc['defaultsort'] ) ) {
-			$suggestions['group']['variants'][] = $inputDoc['defaultsort'];
-		}
 
 		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc );
 		if ( !empty( $suggestions['candidates'] ) ) {

@@ -147,9 +147,11 @@ class SuggestBuilder {
 					$score = (int) ($score * self::CROSSNS_DISCOUNT);
 
 					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
-					$crossNsTitles[$redir['title']] = [
+					$crossNsTitles[] = [
 						'title' => $title,
 						'score' => $score,
+						'text' => $redir['title'],
+						'inputDoc' => $inputDoc,
 					];
 				}
 			}
@@ -158,7 +160,7 @@ class SuggestBuilder {
 		// Build cross ns suggestions
 		if ( !empty ( $crossNsTitles ) ) {
 			$titles = [];
-			foreach( $crossNsTitles as $text => $data ) {
+			foreach( $crossNsTitles as $data ) {
 				$titles[] = $data['title'];
 			}
 			$lb = new LinkBatch( $titles );
@@ -169,12 +171,12 @@ class SuggestBuilder {
 			//   is the official one
 			// - we will certainly suggest multiple times the same pages
 			// - we must not run a second pass at query time: no redirect suggestion
-			foreach ( $crossNsTitles as $text => $data ) {
+			foreach ( $crossNsTitles as $data ) {
 				$suggestion = [
-					'text' => $text,
+					'text' => $data['text'],
 					'variants' => []
 				];
-				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['score'], $inputDoc );
+				$docs[] = $this->buildTitleSuggestion( $data['title']->getArticleID(), $suggestion, $data['score'], $data['inputDoc'] );
 			}
 		}
 		return $docs;

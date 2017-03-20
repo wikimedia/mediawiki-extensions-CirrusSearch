@@ -205,6 +205,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$validResponse = $responseSet !== null && count( $responseSet->getBulkResponses() ) > 0;
 		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
 			$this->success();
+			$this->reportUpdateMetrics( $responseSet, $indexType, count( $data ) );
 			return Status::newGood();
 		} else {
 			$this->failure( $exception );
@@ -216,6 +217,40 @@ class DataSender extends ElasticsearchIntermediary {
 				$exception ? [ 'exception' => $exception ] : []
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
+		}
+	}
+
+	/**
+	 * @param \Elastica\Bulk\ResponseSet $responseSet
+	 * @param string $indexType
+	 * @param int $sent
+	 */
+	private function reportUpdateMetrics( \Elastica\Bulk\ResponseSet $responseSet, $indexType, $sent ) {
+		$updateStats = [
+			'sent' => $sent,
+		];
+		$allowedOps = [ 'created', 'updated', 'noop' ];
+		foreach( $responseSet->getBulkResponses() as $bulk ) {
+			$opRes = 'unknown';
+			if ( $bulk instanceof \Elastica\Bulk\Response ) {
+				if ( isset( $bulk->getData()['result'] )
+					&& in_array( $bulk->getData()['result'], $allowedOps )
+				) {
+					$opRes = $bulk->getData()['result'];
+				}
+			}
+			if ( isset ( $updateStats[$opRes] ) ) {
+				$updateStats[$opRes]++;
+			} else {
+				$updateStats[$opRes] = 1;
+			}
+		}
+		$stats = \MediaWiki\MediaWikiServices::getInstance()->getStatsdDataFactory();
+		$cluster = $this->connection->getClusterName();
+		$metricsPrefix = "CirrusSearch.$cluster.updates";
+		foreach( $updateStats as $what => $num ) {
+			$stats->updateCount( "$metricsPrefix.details.{$this->indexBaseName}.$indexType.$what", $num );
+			$stats->updateCount( "$metricsPrefix.all.$what", $num );
 		}
 	}
 

@@ -138,31 +138,39 @@ class DumpIndex extends Maintenance {
 			'scroll' => "15m",
 			'size' => $this->inputChunkSize
 		];
-		$index = $this->getIndex();
 
-		$result = $index->search( $query, $scrollOptions );
+		$search = new \Elastica\Search( $this->getClient() );
+		$search->setQuery( $query );
+		$search->addIndex( $this->getIndex() );
+		$scroll = new \Elastica\Scroll( $search, '15m' );
 
-		$totalDocsInIndex = $result->getResponse()->getData();
-		$totalDocsInIndex = $totalDocsInIndex['hits']['total'];
-		$totalDocsToDump = $limit > 0 ? $limit : $totalDocsInIndex;
+		$totalDocsInIndex = -1;
+		$totalDocsToDump = -1;
 		$docsDumped = 0;
 
 		$this->logToStderr = true;
-		$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
 
-		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) use ( &$docsDumped, $totalDocsToDump ) {
-				foreach ( $results as $result ) {
-					$document = [
-						'_id' => $result->getId(),
-						'_type' => $result->getType(),
-						'_source' => $result->getSource()
-					];
-					$this->write( $document );
-					$docsDumped++;
-					$this->outputProgress( $docsDumped, $totalDocsToDump );
+		foreach( $scroll as $results ) {
+			if ( $totalDocsInIndex === -1 ) {
+				$totalDocsInIndex = $results->getTotalHits();
+				$totalDocsToDump = $limit > 0 ? $limit : $totalDocsInIndex;
+				$this->output( "Dumping $totalDocsToDump documents ($totalDocsInIndex in the index)\n" );
+			}
+
+			foreach ( $results as $result ) {
+				$document = [
+					'_id' => $result->getId(),
+					'_type' => $result->getType(),
+					'_source' => $result->getSource()
+				];
+				$this->write( $document );
+				$docsDumped++;
+				if ( $docsDumped > $limit ) {
+					break;
 				}
-			}, $limit, 5 );
+				$this->outputProgress( $docsDumped, $totalDocsToDump );
+			}
+		}
 		$this->output( "Dump done.\n" );
 	}
 
@@ -244,6 +252,14 @@ class DumpIndex extends Maintenance {
 			$this->outputIndented( "$pctDone% done...\n" );
 		}
 	}
+
+	/**
+	 * @return Elastica\Client
+	 */
+	protected function getClient() {
+		return $this->getConnection()->getClient();
+	}
+
 }
 
 /**

@@ -331,10 +331,14 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$variantIndex++;
 			foreach ( $profiles as $name => $profile ) {
 				$variantProfName = $name . '-variant-' . $variantIndex;
-				$allVariantProfiles[$variantProfName] = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT/$variantIndex );
-				$allSuggestions[$variantProfName] = $this->buildSuggestQuery(
-							$allVariantProfiles[$variantProfName], $variant, $queryLen
-						);
+				$profile = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT/$variantIndex );
+				$suggest = $this->buildSuggestQuery(
+					$profile, $variant, $queryLen
+				);
+				if ( $suggest !== null ) {
+					$allVariantProfiles[$variantProfName] = $profile;
+					$allSuggestions[$variantProfName] = $suggest;
+				}
 			}
 		}
 		return [ $allVariantProfiles, $allSuggestions ];

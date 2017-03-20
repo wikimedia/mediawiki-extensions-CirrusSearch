@@ -21,3 +21,11 @@ Feature: Searches with Russian accents
   Scenario: Searching for with accent
     When I api search on ru for Бра́зер
     Then Бразер is the first api search result
+
+  Scenario: Searching for й when text has й
+    When I api search on ru for чёрный
+    Then Саша Чёрный is the first api search result
+
+  Scenario: Searching for й when text has и
+    When I api search on ru for чёрныи
+    Then there are no api search results

@@ -315,7 +315,7 @@ class AnalysisConfigBuilder {
 		// @todo: complete the default filters per language
 		case 'fi': return '[^åäöÅÄÖ]';
 		case 'ru': return '[^йЙ]';
-		case 'sw': return '[^åäöÅÄÖ]';
+		case 'sv': return '[^åäöÅÄÖ]';
 		default: return null;
 		}
 	}
@@ -800,6 +800,34 @@ STEMMER_RULES
 			// In Russian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'swedish':
+			// Add asciifolding_preserve to filters
+			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
+
+			// Unpack built-in swedish analyzer to add asciifolding_preserve
+			$config['filter']['swedish_stop'] = [
+				'type' => 'stop',
+				'stopwords' => '_swedish_',
+			];
+			$config['filter']['swedish_stemmer'] = [
+				'type' => 'stemmer',
+				'language' => 'swedish',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'swedish_stop',
+					'swedish_stemmer',
+					'asciifolding_preserve',
+				],
+			];
+
+			// In Swedish text_search is just a copy of text
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
@@ -947,6 +975,7 @@ STEMMER_RULES
 		'simple' => true,
 		'fr' => true,
 		'he' => true,
+		'sv' => true,
 	];
 
 	/**

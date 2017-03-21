@@ -1,15 +1,25 @@
 {
     "analyzer": {
         "text": {
-            "type": "smartcn",
+            "type": "custom",
+            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
-                "word_break_helper"
+                "stconvertfix",
+                "tsconvert"
+            ],
+            "filter": [
+                "lowercase"
             ]
         },
         "text_search": {
-            "type": "smartcn",
+            "type": "custom",
+            "tokenizer": "smartcn_tokenizer",
             "char_filter": [
-                "word_break_helper"
+                "stconvertfix",
+                "tsconvert"
+            ],
+            "filter": [
+                "lowercase"
             ]
         },
         "plain": {
@@ -247,6 +257,19 @@
                 ")=>\\u0020",
                 ":=>\\u0020"
             ]
+        },
+        "stconvertfix": {
+            "type": "mapping",
+            "mappings": [
+                "\\u606d\\u5f18=>\\u606d \\u5f18",
+                "\\u5138=>\\u3469"
+            ]
+        },
+        "tsconvert": {
+            "type": "stconvert",
+            "delimiter": "#",
+            "keep_both": false,
+            "convert_type": "t2s"
         }
     }
 }

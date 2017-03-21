@@ -77,8 +77,16 @@ class AnalysisConfigBuilder {
 	 */
 	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
 		$this->language = $langCode;
-		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $plugin => $extra ) {
-			if ( in_array( $plugin, $plugins ) ) {
+		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
+			$pluginsPresent = 1;
+			$pluginList = explode( ',', $pluginSpec );
+			foreach ( $pluginList as $plugin ) {
+				if ( !in_array( $plugin, $plugins ) ) {
+					$pluginsPresent = 0;
+					break;
+				}
+			}
+			if ( $pluginsPresent ) {
 				$this->elasticsearchLanguageAnalyzers = array_merge( $this->elasticsearchLanguageAnalyzers, $extra );
 			}
 		}
@@ -313,6 +321,7 @@ class AnalysisConfigBuilder {
 		}
 		switch( $this->language ) {
 		// @todo: complete the default filters per language
+		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 		case 'fi': return '[^åäöÅÄÖ]';
 		case 'ru': return '[^йЙ]';
 		case 'sv': return '[^åäöÅÄÖ]';
@@ -569,6 +578,32 @@ class AnalysisConfigBuilder {
 	private function customize( $config ) {
 		switch ( $this->getDefaultTextAnalyzerType() ) {
 		// Please add languages in alphabetical order.
+		case 'chinese':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
+			$config[ 'char_filter' ][ 'stconvertfix' ] = [
+				// hack for STConvert errors
+				// see https://github.com/medcl/elasticsearch-analysis-stconvert/issues/13
+				'type' => 'mapping',
+				'mappings' => [
+					'\u606d\u5f18=>\u606d \u5f18',
+					'\u5138=>\u3469',
+				],
+			];
+			$config[ 'char_filter' ][ 'tsconvert' ] = [
+				'type' => 'stconvert',
+				'delimiter' => '#',
+				'keep_both' => false,
+				'convert_type' => 't2s',
+			];
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'smartcn_tokenizer',
+				'char_filter' => [ 'stconvertfix', 'tsconvert' ],
+				'filter' => [ 'lowercase' ],
+			];
+
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'english':
 			$config[ 'filter' ][ 'possessive_english' ] = [
 				'type' => 'stemmer',
@@ -585,7 +620,7 @@ class AnalysisConfigBuilder {
 			$filters[] = 'possessive_english';
 			$filters[] = 'lowercase';
 			$filters[] = 'stop';
-			$filters[] = 'asciifolding';
+			$filters[] = 'asciifolding'; // See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142037
 			$filters[] = 'kstem';
 			$filters[] = 'custom_stem';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
@@ -609,6 +644,7 @@ STEMMER_RULES
 			break;
 		case 'french':
 			// Add asciifolding_preserve to filters
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T142620
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			$config[ 'char_filter' ][ 'french_charfilter' ] = [
@@ -750,15 +786,15 @@ STEMMER_RULES
 			}
 
 			// Drop acute stress marks and fold ё=>е everywhere
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
 			$config[ 'analyzer' ][ 'plain' ][ 'char_filter' ][] = 'russian_charfilter';
 			$config[ 'analyzer' ][ 'plain_search' ][ 'char_filter' ][] = 'russian_charfilter';
 
 			$config[ 'analyzer' ][ 'suggest' ][ 'char_filter' ][] = 'russian_charfilter';
 			$config[ 'analyzer' ][ 'suggest_reverse' ][ 'char_filter' ][] = 'russian_charfilter';
 
-
-
-			// unpack built-in Russian analyzer and add character filter T102298 / T124592
+			// unpack built-in Russian analyzer and add character filter
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592
 			$config[ 'filter' ][ 'russian_stop' ] = [
 				'type' => 'stop',
 				'stopwords' => '_russian_',
@@ -783,6 +819,7 @@ STEMMER_RULES
 			break;
 		case 'swedish':
 			// Add asciifolding_preserve to filters
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// Unpack built-in swedish analyzer to add asciifolding_preserve
@@ -813,6 +850,8 @@ STEMMER_RULES
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
 			break;
 		}
+
+		// replace lowercase filters with icu_normalizer filter
 		if ( $this->icu ) {
 			foreach ( $config[ 'analyzer' ] as &$analyzer ) {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
@@ -992,11 +1031,13 @@ STEMMER_RULES
 	 * @var array[]
 	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
+		// multiple plugin requirement can be comma separated
+		// For Polish, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
+		// For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
 		'analysis-stempel' => [ 'pl' => 'polish' ],
 		'analysis-kuromoji' => [ 'ja' => 'kuromoji' ],
 		'analysis-smartcn' => [ 'zh-hans' => 'smartcn' ],
-		// This hasn't had a release in a while and seems to not work with the
-		// current version of elasticsearch:
+		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'elasticsearch-analysis-hebrew' => [ 'he' => 'hebrew' ],
 		// TODO Hebrew requires some special query handling....
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],

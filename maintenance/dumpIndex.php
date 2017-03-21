@@ -123,6 +123,7 @@ class DumpIndex extends Maintenance {
 
 		$query = new Query();
 		$query->setStoredFields( [ '_id', '_type', '_source' ] );
+		$query->setSort( [ '_doc' ] );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
 			$query->setSource( [ 'include' => $sourceFields ] );
@@ -132,12 +133,6 @@ class DumpIndex extends Maintenance {
 			$bool->addFilter( $filter );
 			$query->setQuery( $bool );
 		}
-
-		$scrollOptions = [
-			'search_type' => 'scan',
-			'scroll' => "15m",
-			'size' => $this->inputChunkSize
-		];
 
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );

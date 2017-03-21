@@ -153,7 +153,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->addOption( 'indexChunkSize', 'Documents per shard to index in a batch.   ' .
 			'Note when changing the number of shards that the old shard size is used, not the new ' .
 			'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
-			'singles works then lower this number.  Defaults to 100.', false, true );
+			'singles works then lower this number.  Defaults to 500.', false, true );
 		$this->addOption( 'indexRetryAttempts', 'Number of times to back off and retry ' .
 			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
@@ -193,7 +193,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
-		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 100 );
+		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 500 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
@@ -424,6 +424,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$query->setQuery( $bool );
 		$query->setSize( $this->indexChunkSize );
 		$query->setSource( false );
+		$query->setSort( ['_doc'] );
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );
 		$search->addIndex( $this->getIndex() );
@@ -527,6 +528,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$bool->addFilter( $pageAndNs );
 
 		$query->setQuery( $bool );
+		$query->setSort( [ '_doc' ] );
 
 		// Run a first query to count the number of docs.
 		// This is needed for the scoring methods that need

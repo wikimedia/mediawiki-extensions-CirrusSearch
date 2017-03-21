@@ -64,7 +64,7 @@ class CheckIndexes extends Maintenance {
 		$this->ensureClusterStateFetched();
 		$this->ensureCirrusInfoFetched();
 		// @todo: use MetaStoreIndex
-		$this->checkIndex( 'mw_cirrus_versions', 1 );
+		$this->checkIndex( 'mw_cirrus_metastore', 1 );
 		$aliases = [];
 		foreach ( $this->clusterState[ 'metadata' ][ 'indices' ] as $indexName => $data ) {
 			foreach ( $data[ 'aliases' ] as $alias ) {
@@ -229,8 +229,10 @@ class CheckIndexes extends Maintenance {
 		if ( $this->cirrusInfo === null ) {
 			$query = new \Elastica\Query();
 			$query->setSize( 5000 );
-			$res = $this->getConnection()->getIndex( 'mw_cirrus_versions' )->getType( 'version' )
-				->getIndex()->search( $query );
+			$res = $this->getConnection()
+				->getIndex( 'mw_cirrus_metastore' )
+				->getType( 'version' )
+				->search( $query );
 			$this->cirrusInfo = [];
 			foreach( $res as $r ) {
 				$data = $r->getData();

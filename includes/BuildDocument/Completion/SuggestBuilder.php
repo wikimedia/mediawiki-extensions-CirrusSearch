@@ -30,7 +30,9 @@ use LinkBatch;
  */
 class SuggestBuilder {
 	/**
-	 * We limit the input to 50 chars
+	 * We limit the input to 50 chars the search requests
+	 * It'll be used when searching to trim the input query
+	 * and when determining close redirects
 	 */
 	const MAX_INPUT_LENGTH = 50;
 
@@ -226,9 +228,9 @@ class SuggestBuilder {
 	 * @return \Elastica\Document the suggestion document
 	 */
 	private function buildTitleSuggestion( $docId, array $title, $score, array $inputDoc ) {
-		$inputs = [ $this->prepareInput( $title['text'] ) ];
+		$inputs = [ $title['text'] ];
 		foreach ( $title['variants'] as $variant ) {
-			$inputs[] = $this->prepareInput( $variant );
+			$inputs[] = $variant;
 		}
 		return $this->buildSuggestion(
 			self::TITLE_SUGGESTION,
@@ -255,7 +257,7 @@ class SuggestBuilder {
 	private function buildRedirectsSuggestion( $docId, array $redirects, $score, array $inputDoc ) {
 		$inputs = [];
 		foreach ( $redirects as $redirect ) {
-			$inputs[] = $this->prepareInput( $redirect );
+			$inputs[] = $redirect;
 		}
 		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
 		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $inputs,
@@ -305,9 +307,9 @@ class SuggestBuilder {
 	 *  resolve to the document.
 	 */
 	public function buildInputs( array $input ) {
-		$inputs = [ $this->prepareInput( $input['text'] ) ];
+		$inputs = [ $input['text'] ];
 		foreach ( $input['variants'] as $variant ) {
-			$inputs[] = $this->prepareInput( $variant );
+			$inputs[] = $variant;
 		}
 		return $inputs;
 	}
@@ -317,7 +319,7 @@ class SuggestBuilder {
 	 * @return string A page title short enough to not cause indexing
 	 *  issues.
 	 */
-	public function prepareInput( $input ) {
+	public function trimForDistanceCheck( $input ) {
 		if ( mb_strlen( $input ) > self::MAX_INPUT_LENGTH ) {
 			$input = mb_substr( $input, 0, self::MAX_INPUT_LENGTH );
 		}
@@ -409,8 +411,8 @@ class SuggestBuilder {
 	 * @return integer the edit distance between a and b
 	 */
 	private function distance( $a, $b ) {
-		$a = $this->prepareInput( $a );
-		$b = $this->prepareInput( $b );
+		$a = $this->trimForDistanceCheck( $a );
+		$b = $this->trimForDistanceCheck( $b );
 		$a = mb_strtolower( $a );
 		$b = mb_strtolower( $b );
 

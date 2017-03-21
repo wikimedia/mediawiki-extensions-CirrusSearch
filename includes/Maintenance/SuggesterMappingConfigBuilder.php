@@ -30,7 +30,7 @@ class SuggesterMappingConfigBuilder {
 	 * and change the minor version when it changes but isn't
 	 * incompatible
 	 */
-	const VERSION = '2.1';
+	const VERSION = '3.0';
 
 	/** @var SearchConfig */
 	private $config;
@@ -66,6 +66,7 @@ class SuggesterMappingConfigBuilder {
 					'type' => 'completion',
 					'analyzer' => 'plain',
 					'search_analyzer' => 'plain_search',
+					'max_input_length' => 255,
 				],
 				'suggest-stop' => [
 					'type' => 'completion',
@@ -73,6 +74,7 @@ class SuggesterMappingConfigBuilder {
 					'search_analyzer' => 'stop_analyzer_search',
 					'preserve_separators' => false,
 					'preserve_position_increments' => false,
+					'max_input_length' => 255,
 				],
 			]
 		];
@@ -81,6 +83,7 @@ class SuggesterMappingConfigBuilder {
 				'type' => 'completion',
 				'analyzer' => 'subphrases',
 				'search_analyzer' => 'subphrases_search',
+				'max_input_length' => 255,
 			];
 
 		}

@@ -64,13 +64,13 @@ class CheckIndexes extends Maintenance {
 		$this->ensureClusterStateFetched();
 		$this->ensureCirrusInfoFetched();
 		// @todo: use MetaStoreIndex
-		$this->checkIndex( 'mw_cirrus_metastore', 1 );
 		$aliases = [];
 		foreach ( $this->clusterState[ 'metadata' ][ 'indices' ] as $indexName => $data ) {
 			foreach ( $data[ 'aliases' ] as $alias ) {
 				$aliases[ $alias ][] = $indexName;
 			}
 		}
+		$this->checkMetastore( $aliases );
 		foreach ( $this->cirrusInfo as $alias => $data ) {
 			foreach ( $aliases[ $alias ] as $indexName ) {
 				$this->checkIndex( $indexName, $data[ 'shard_count'] );
@@ -94,16 +94,29 @@ class CheckIndexes extends Maintenance {
 		}
 	}
 
+	private function checkMetastore( array $aliases ) {
+		$this->in( 'mw_cirrus_metastore' );
+		if ( isset( $aliases[ 'mw_cirrus_metastore' ] ) ) {
+			$this->check( 'alias count', 1, count( $aliases[ 'mw_cirrus_metastore' ] ) );
+			foreach ( $aliases[ 'mw_cirrus_metastore'] as $indexName ) {
+				$this->checkIndex( $indexName, 1 );
+			}
+		} else {
+			$this->err( "does not exist" );
+		}
+		$this->out();
+	}
+
 	/**
 	 * @param string $indexName
 	 * @param int $expectedShardCount
 	 */
 	private function checkIndex( $indexName, $expectedShardCount ) {
-		$this->path = [];
 		$metadata = $this->getIndexMetadata( $indexName );
 		$this->in( $indexName );
 		if ( $metadata === null ) {
 			$this->err( "does not exist" );
+			$this->out();
 			return;
 		}
 		$this->check( 'state', 'open', $metadata[ 'state' ] );

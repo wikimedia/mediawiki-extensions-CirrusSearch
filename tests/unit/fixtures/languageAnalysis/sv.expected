@@ -1,15 +1,25 @@
 {
     "analyzer": {
         "text": {
-            "type": "swedish",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "swedish_stop",
+                "swedish_stemmer",
+                "asciifolding_preserve",
+                "dedup_asciifolding"
             ]
         },
         "text_search": {
-            "type": "swedish",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "swedish_stop",
+                "swedish_stemmer",
+                "asciifolding_preserve",
+                "dedup_asciifolding"
             ]
         },
         "plain": {
@@ -166,7 +176,9 @@
             "tokenizer": "no_splitting",
             "filter": [
                 "truncate_keyword",
-                "lowercase"
+                "lowercase",
+                "asciifolding_preserve",
+                "dedup_asciifolding"
             ]
         },
         "trigram": {
@@ -211,6 +223,14 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "swedish_stop": {
+            "type": "stop",
+            "stopwords": "_swedish_"
+        },
+        "swedish_stemmer": {
+            "type": "stemmer",
+            "language": "swedish"
         },
         "dedup_asciifolding": {
             "type": "unique",

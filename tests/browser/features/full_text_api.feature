@@ -133,8 +133,6 @@ Feature: Full text search
     | term        | result |
     | ανθρωπος    | Page with non ascii letters is the first api search result |
     | ἄνθρωπος    | Page with non ascii letters is the first api search result |
-    | широкии     | there are no api search results                            |
-    | широкий     | Page with non ascii letters is the first api search result |
 
   @accented_namespace
   Scenario: Searching for an accented namespace without the accent finds things in it

@@ -746,7 +746,7 @@ STEMMER_RULES
 
 			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>'; // T102298
 
-			// The Russian analyzer is also used for Ukrainian and Rusyn for now, so processing that's
+			// The Russian analyzer is also used for Rusyn for now, so processing that's
 			// very specific to Russian should be separated out
 			if ($this->language == 'ru') {
 				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
@@ -759,13 +759,6 @@ STEMMER_RULES
 				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
 				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
 				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
-			}
-
-			// Ukrainian uses the Russian analyzer for now, but we want some Ukrainian-specific processing
-			if ($this->language == 'uk') {
-				// T146358 map right quote and modifier letter apostrophe to apostrophe
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u02BC=>\u0027';
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u2019=>\u0027';
 			}
 
 			// Drop acute stress marks and fold ё=>е everywhere
@@ -1018,6 +1011,7 @@ STEMMER_RULES
 		// current version of elasticsearch:
 		'elasticsearch-analysis-hebrew' => [ 'he' => 'hebrew' ],
 		// TODO Hebrew requires some special query handling....
+		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
 	];
 
 	/**

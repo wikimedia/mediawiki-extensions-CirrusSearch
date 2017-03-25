@@ -14,11 +14,13 @@ use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use ObjectCache;
+use RequestContext;
 use SearchResultSet;
 use Status;
 use ApiUsageException;
 use UsageException;
 use User;
+use WebRequest;
 
 
 /**
@@ -98,17 +100,17 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var boolean just return the array that makes up the query instead of searching
 	 */
-	private $returnQuery = false;
+	protected $returnQuery = false;
 
 	/**
 	 * @var boolean return raw Elasticsearch result instead of processing it
 	 */
-	private $returnResult = false;
+	protected $returnResult = false;
 
 	/**
-	 * @var boolean return explanation with results
+	 * @var string|null return explanation with results
 	 */
-	private $returnExplain = false;
+	protected $returnExplain;
 
 	/**
 	 * Search environment configuration
@@ -169,7 +171,7 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param boolean $returnExplain return query explanation
+	 * @param string|null $returnExplain return query explanation
 	 */
 	public function setReturnExplain( $returnExplain ) {
 		$this->returnExplain = $returnExplain;
@@ -1019,5 +1021,53 @@ class Searcher extends ElasticsearchIntermediary {
 			$queryType,
 			$extra
 		);
+	}
+
+	/**
+	 * Set search options from request params
+	 * @param WebRequest|null $request
+	 */
+	public function setOptionsFromRequest( WebRequest $request = null ) {
+		if ( !$request ) {
+			return;
+		}
+		$this->returnQuery = $request->getVal( 'cirrusDumpQuery' ) !== null;
+		$this->returnResult = $request->getVal( 'cirrusDumpResult' ) !== null;
+		$this->returnExplain = $request->getVal( 'cirrusExplain' );
+	}
+
+	/**
+	 * If we're supposed to create raw result, create and return it,
+	 * or output it and finish.
+	 * @param mixed $result Search result data
+	 * @param WebRequest $request Request context
+	 * @param bool $dumpAndDie Whether we should dump result to output or just return it.
+	 * @return string The new raw result.
+	 */
+	public function processRawReturn( $result, WebRequest $request, $dumpAndDie = true ) {
+		$header = null;
+
+		if ( $this->returnExplain === 'pretty' ) {
+			$header = 'Content-type: text/html; charset=UTF-8';
+			$printer = new ExplainPrinter();
+			$result = $printer->format( $result );
+		} else {
+			$header = 'Content-type: application/json; charset=UTF-8';
+			if ( $result === null ) {
+				$result = '{}';
+			} else {
+				$result = json_encode( $result, JSON_PRETTY_PRINT );
+			}
+		}
+
+		if ( $dumpAndDie ) {
+			// When dumping the query we skip _everything_ but echoing the query.
+			RequestContext::getMain()->getOutput()->disable();
+			$request->response()->header( $header );
+			echo $result;
+			exit();
+		}
+
+		return $result;
 	}
 }

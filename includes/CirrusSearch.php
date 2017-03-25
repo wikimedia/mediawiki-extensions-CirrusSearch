@@ -349,12 +349,7 @@ class CirrusSearch extends SearchEngine {
 			}
 		}
 
-		$dumpQuery = $this->request && $this->request->getVal( 'cirrusDumpQuery' ) !== null;
-		$searcher->setReturnQuery( $dumpQuery );
-		$dumpResult = $this->request && $this->request->getVal( 'cirrusDumpResult' ) !== null;
-		$searcher->setDumpResult( $dumpResult );
-		$returnExplain = $this->request && $this->request->getVal( 'cirrusExplain' ) !== null;
-		$searcher->setReturnExplain( $returnExplain );
+		$searcher->setOptionsFromRequest( $this->request );
 
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
@@ -407,9 +402,7 @@ class CirrusSearch extends SearchEngine {
 		) {
 
 			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $highlightingConfig );
-			$iwSearch->setReturnQuery( $dumpQuery );
-			$iwSearch->setDumpResult( $dumpResult );
-			$iwSearch->setReturnExplain( $returnExplain );
+			$iwSearch->setOptionsFromRequest( $this->request );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
 
 			if ( $interwikiResults !== null ) {
@@ -443,32 +436,8 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( $searcher->isReturnRaw() ) {
-			$header = null;
-			if ( $this->request && $this->request->getVal( 'cirrusExplain' ) === 'pretty' ) {
-				$header = 'Content-type: text/html; charset=UTF-8';
-				$printer = new CirrusSearch\ExplainPrinter();
-				$result = $printer->format( $result );
-			} else {
-				$header = 'Content-type: application/json; charset=UTF-8';
-				if ( $result === null ) {
-					$result = '{}';
-				} else {
-					$result = json_encode( $result, JSON_PRETTY_PRINT );
-				}
-			}
-
-			if ( $this->dumpAndDie ) {
-				// When dumping the query we skip _everything_ but echoing the query.
-				RequestContext::getMain()->getOutput()->disable();
-				if ( $header !== null ) {
-					$this->request->response()->header( $header );
-				}
-				echo $result;
-				exit();
-			} else {
-				// This breaks the return types and is only used in the fixtures unit tests
-				$status->setResult( true, $result );
-			}
+			$status->setResult( true,
+				$searcher->processRawReturn( $result, $this->request, $this->dumpAndDie ) );
 		}
 
 		return $status;

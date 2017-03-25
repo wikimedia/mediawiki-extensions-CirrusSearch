@@ -3,7 +3,6 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\SearchConfig;
-use GeoData\Coord;
 use Elastica\Query\AbstractQuery;
 
 /**
@@ -747,4 +746,5 @@ class SearchContext {
 	public function getWarnings() {
 		return $this->warnings;
 	}
+
 }

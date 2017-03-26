@@ -11,10 +11,11 @@
 			"Hex",
 			"Akoopal",
 			"Dinosaur918",
-			"Huhbakker"
+			"Huhbakker",
+			"Mainframe98"
 		]
 	},
-	"cirrussearch-desc": "Zoeken via Solr",
+	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",
 	"cirrussearch-backend-error": "Als gevolg van een tijdelijk probleem kon uw zoekopdracht niet worden voltooid. Probeer het later opnieuw.",
 	"cirrussearch-parse-error": "De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",

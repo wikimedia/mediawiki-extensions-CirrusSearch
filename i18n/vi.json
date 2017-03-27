@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Minh Nguyen",
-			"Quenhitran"
+			"Quenhitran",
+			"Prenn"
 		]
 	},
 	"cirrussearch-desc": "Công cụ tìm kiếm Elasticsearch dành cho MediaWiki",
@@ -24,10 +25,18 @@
 	"cirrussearch-query-too-long": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Trình gợi ý tìm kiếm",
 	"cirrussearch-completionsuggester-desc": "Tính năng tìm kiếm trực tiếp mới. Khi được kích hoạt, hộp tìm kiếm ở góc phải bên trên sẽ sử dụng Trình gợi ý tìm kiếm.",
+	"cirrussearch-pref-completion-profile-help": "Đặt hành vi cho các gợi ý tìm kiếm (tìm kiếm ngay khi nhập).",
 	"prefs-completion": "Hoàn tất từ khoá tìm kiếm",
 	"cirrussearch-pref-completion-section-desc": "Gợi ý hoàn tất tìm kiếm",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Gợi ý hoàn tất tìm kiếm] là một thuật toán gợi ý tìm kiếm giúp sửa lỗi tốt hơn và đưa ra các kết quả phù hợp hơn.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Mặc định (khuyên dùng)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Sửa tối đa hai lỗi sai. Chuyển hướng các trang có tên gần giống nhau.",
+	"cirrussearch-completion-profile-strict-pref-name": "Chế độ chính xác (nâng cao)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Không sửa lỗi sai. Tìm kiếm chính xác những gì được nhập vào.",
 	"cirrussearch-completion-profile-normal-pref-name": "Chế độ đổi hướng (nâng cao)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Không sửa lỗi sai. Chuyển hướng các trang có tên gần giống nhau.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Tìm tiền tố",
-	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố cổ điển"
+	"cirrussearch-pref-completion-legacy-section-legend": "Thuật toán gợi ý tìm kiếm cổ điển.",
+	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố cổ điển",
+	"cirrussearch-completion-profile-classic-pref-desc": "Không sửa lỗi sai. Tìm kiếm từ đầu tên trang."
 }

@@ -166,7 +166,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"alias to this index, and then remove other index.  Updates performed while this".
 			"operation is in progress will be queued up in the job queue.  Defaults to false." );
 		$maintenance->addOption( 'reindexSlices', 'Number of slices to use in reindex. Roughly '
-			. 'equivalent to the level of indexing parallelism. Defaults to number of shards.' );
+			. 'equivalent to the level of indexing parallelism. Defaults to number of shards.', false, true );
 		$maintenance->addOption( 'reindexAcceptableCountDeviation', 'How much can the reindexed ' .
 			'copy of an index is allowed to deviate from the current copy without triggering a ' .
 			'reindex failure.  Defaults to 5%.', false, true );

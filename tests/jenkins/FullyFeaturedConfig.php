@@ -33,6 +33,9 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true;
 
+// Enable when https://gerrit.wikimedia.org/r/#/c/345174/ is available
+// $wgCirrusSearchWikimediaExtraPlugin[ 'token_count_router' ] = true;
+
 $wgCirrusSearchUseCompletionSuggester = 'yes';
 $wgCirrusSearchCompletionSuggesterUseDefaultSort = true;
 $wgCirrusSearchCompletionSuggesterSubphrases = [

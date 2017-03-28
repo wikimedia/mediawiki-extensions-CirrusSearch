@@ -6,6 +6,7 @@ use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Extra\Query\TokenCountRouter;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -29,6 +30,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	private $queryStringQueryString = '';
 
 	/**
+	 * @var bool
+	 */
+	private $useTokenCountRouter;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param KeywordFeature[] $features
 	 * @param array[] $settings currently ignored
@@ -36,6 +42,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	public function __construct( SearchConfig $config, array $features, array $settings = [] ) {
 		$this->config = $config;
 		$this->features = $features;
+		$this->useTokenCountRouter = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'token_count_router' ) === true;
 	}
 
 	/**
@@ -203,16 +210,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$nonAllFields = $fields;
 		}
 
-		// Only do a phrase match rescore if the query doesn't include any quotes and has a space.
-		// Queries without spaces are either single term or have a phrase query generated.
-		// Queries with the quote already contain a phrase query and we can't build phrase queries
-		// out of phrase queries at this point.
-		if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
-				$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-				!$searchContext->isSpecialKeywordUsed() &&
-				strpos( $this->queryStringQueryString, '"' ) === false &&
-				strpos( $this->queryStringQueryString, ' ' ) !== false ) {
-
+		if ( $this->isPhraseRescoreNeeded( $searchContext ) ) {
 			$rescoreFields = $fields;
 			if ( !$this->config->get( 'CirrusSearchAllFieldsForRescore' ) ) {
 				$rescoreFields = $nonAllFields;
@@ -620,6 +618,56 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	protected function buildPhraseRescoreQuery( SearchContext $context, array $fields, $queryText, $slop ) {
-		return $this->buildQueryString( $fields, '"' . $queryText . '"', $slop );
+		return $this->maybeWrapWithTokenCountRouter(
+			$queryText,
+			$this->buildQueryString( $fields, '"' . $queryText . '"', $slop )
+		);
+	}
+
+	/**
+	 * Determines if a phrase rescore is needed
+	 * @param SearchContext $searchContext
+	 * @return bool true if we can a phrase rescore
+	 */
+	protected function isPhraseRescoreNeeded( SearchContext $searchContext ) {
+		// Only do a phrase match rescore if the query doesn't include
+		// any quotes and has a space or the token count router is
+		// active.
+		// Queries without spaces are either single term or have a
+		// phrase query generated.
+		// Queries with the quote already contain a phrase query and we
+		// can't build phrase queries out of phrase queries at this
+		// point.
+		if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
+			$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
+			!$searchContext->isSpecialKeywordUsed() &&
+			strpos( $this->queryStringQueryString, '"' ) === false &&
+			( $this->useTokenCountRouter || strpos( $this->queryStringQueryString, ' ' ) !== false )
+		) {
+			return true;
+		}
+		return false;
+	}
+
+	protected function maybeWrapWithTokenCountRouter( $queryText, \Elastica\Query\AbstractQuery $query ) {
+		if ( $this->useTokenCountRouter ) {
+			$tokCount = new TokenCountRouter(
+				// text
+				$queryText,
+				// fallack
+				new \CirrusSearch\Elastica\MatchNone(),
+				// field
+				null,
+				// analyzer
+				'text_search'
+			);
+			$tokCount->addCondition(
+				TokenCountRouter::GT,
+				1,
+				$query
+			);
+			return $tokCount;
+		}
+		return $query;
 	}
 }

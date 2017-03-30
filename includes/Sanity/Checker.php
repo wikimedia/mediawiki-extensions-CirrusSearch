@@ -306,7 +306,7 @@ class Checker {
 	}
 
 	/**
-	 * @return \IDatabase
+	 * @return \Wikimedia\Rdbms\IDatabase
 	 */
 	private function getDB() {
 		return wfGetDB( DB_REPLICA );

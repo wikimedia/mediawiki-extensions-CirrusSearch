@@ -6,13 +6,13 @@ use BatchRowIterator;
 use CirrusSearch;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Maintenance\Maintenance;
-use IDatabase;
 use JobQueueGroup;
 use MediaWiki\Logger\LoggerFactory;
 use MWException;
 use MWTimestamp;
 use Title;
 use WikiPage;
+use Wikimedia\Rdbms\IDatabase;
 
 /**
  * Force reindexing change to the wiki.

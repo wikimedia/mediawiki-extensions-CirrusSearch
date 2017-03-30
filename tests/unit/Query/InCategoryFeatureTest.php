@@ -3,7 +3,7 @@
 namespace CirrusSearch\Query;
 
 use LoadBalancer;
-use IDatabase;
+use Wikimedia\Rdbms\IDatabase;
 
 /**
  * @group CirrusSearch

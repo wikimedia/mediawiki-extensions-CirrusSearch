@@ -9,7 +9,8 @@
 			"Туллук",
 			"Gamliel Fishkin",
 			"Kareyac",
-			"Alex Great"
+			"Alex Great",
+			"Ole Yves"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -54,5 +55,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Поиск по префиксу",
 	"cirrussearch-pref-completion-legacy-section-legend": "Устаревший алгоритм поиска по мере ввода.",
 	"cirrussearch-completion-profile-classic-pref-name": "Классический поиск по префиксу",
-	"cirrussearch-completion-profile-classic-pref-desc": "Не исправляет опечатки. Подсказывает названия от начала по мере ввода."
+	"cirrussearch-completion-profile-classic-pref-desc": "Не исправляет опечатки. Подсказывает названия от начала по мере ввода.",
+	"cirrussearch-regex-timed-out": "Поиск по регулярному выражению завершил работу раньше своего полного выполнения. Попробуйте упростить регулярное выражение для получения всех результатов."
 }

@@ -62,3 +62,11 @@ Feature: Search backend updates
     When I move Move%{epoch} From4 to User:Move%{epoch} To4 and do not leave a redirect via api
     Then within 20 seconds api searching for User:Move%{epoch} To4 yields User:Move%{epoch} To4 as the first result
       And within 20 seconds api searching for Move%{epoch} To4 yields none as the first result
+
+  Scenario: Deleted pages are added to archive index
+    Given a page named DeleteMeTest exists
+     And I am logged in
+    Then within 20 seconds api searching for DeleteMeTest yields DeleteMeTest as the first result
+    When I delete DeleteMeTest
+     And within 20 seconds I search deleted pages for deltemetest
+    Then deleted page search returns DeleteMeTest as first result

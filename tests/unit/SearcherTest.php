@@ -9,6 +9,7 @@ use Title;
  * @group CirrusSearch
  */
 class SearcherTest extends CirrusTestCase {
+
 	public function searchTextProvider() {
 		$configs = [
 			'default' => [],
@@ -40,6 +41,7 @@ class SearcherTest extends CirrusTestCase {
 
 		return $tests;
 	}
+
 
 	/**
 	 * @dataProvider searchTextProvider
@@ -154,5 +156,72 @@ class SearcherTest extends CirrusTestCase {
 		}
 
 		return $query;
+	}
+
+	public function archiveFixtureProvider() {
+		$tests = [];
+		foreach ( glob( __DIR__ . '/fixtures/archiveSearch/*.query' ) as $queryFile ) {
+			$testName = substr( basename( $queryFile ), 0, - 6 );
+			$query = file_get_contents( $queryFile );
+			// Remove trailing newline
+			$query = preg_replace( '/\n$/', '', $query );
+			$expectedFile = substr( $queryFile, 0, - 5 ) . 'expected';
+			$expected =
+				is_file( $expectedFile ) ? json_decode( file_get_contents( $expectedFile ), true )
+					// Flags test to generate a new fixture
+					: $expectedFile;
+			$tests[$testName] = [
+				$expected,
+				$query,
+			];
+
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider archiveFixtureProvider
+	 * @param $expected
+	 * @param $query
+	 */
+	public function testArchiveQuery( $expected, $query ) {
+		$this->setMwGlobals( [
+				'wgCirrusSearchIndexBaseName' => 'wiki',
+				'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
+				'wgContentNamespaces' => [ NS_MAIN ],
+				'wgCirrusSearchEnableArchive' => true,
+		] );
+
+		\RequestContext::getMain()->setRequest( new \FauxRequest( [
+			'cirrusDumpQuery' => 1,
+		] ) );
+
+		$title = Title::newFromText( $query );
+		if ( $title ) {
+			$ns = $title->getNamespace();
+			$termMain = $title->getText();
+		} else {
+			$ns = 0;
+			$termMain = $query;
+		}
+
+		$engine = new \CirrusSearch();
+		$engine->setLimitOffset( 20, 0 );
+		$engine->setNamespaces( [ $ns ] );
+		$engine->setDumpAndDie( false );
+		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
+		$decodedQuery = json_decode( $elasticQuery, true );
+		unset( $decodedQuery['path'] );
+
+		if ( is_string( $expected ) ) {
+			// Flag to generate a new fixture.
+			file_put_contents( $expected, json_encode( $decodedQuery, JSON_PRETTY_PRINT ) );
+		} else {
+			// Repeat normalizations applied to $elasticQuery
+			unset( $expected['path'] );
+
+			// Finally compare some things
+			$this->assertEquals( $expected, $decodedQuery, $elasticQuery );
+		}
 	}
 }

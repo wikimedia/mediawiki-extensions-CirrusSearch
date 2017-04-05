@@ -1107,6 +1107,7 @@ $wgHooks[ 'ApiBeforeMain' ][] = 'CirrusSearch\Hooks::onApiBeforeMain';
 $wgHooks[ 'ArticleDelete' ][] = 'CirrusSearch\Hooks::onArticleDelete';
 $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::onArticleDeleteComplete';
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';
+$wgHooks[ 'ArticleUndelete' ][] = 'CirrusSearch\Hooks::onArticleUndelete';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Hooks::onBeforeInitialize';
 $wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::getBetaFeaturePreferences';
 $wgHooks[ 'GetPreferences' ][] = 'CirrusSearch\Hooks::onGetPreferences';
@@ -1138,6 +1139,7 @@ $wgJobClasses[ 'cirrusSearchMassIndex' ] = 'CirrusSearch\Job\MassIndex';
 $wgJobClasses[ 'cirrusSearchOtherIndex' ] = 'CirrusSearch\Job\OtherIndex';
 $wgJobClasses[ 'cirrusSearchElasticaWrite' ] = 'CirrusSearch\Job\ElasticaWrite';
 $wgJobClasses[ 'cirrusSearchCheckerJob' ] = 'CirrusSearch\Job\CheckerJob';
+$wgJobClasses[ 'cirrusSearchDeleteArchive' ] = 'CirrusSearch\Job\DeleteArchive';
 
 /**
  * Actions
@@ -1212,6 +1214,15 @@ $wgCirrusSearchFieldTypeOverrides = [
  *  ]
  */
 $wgCirrusSearchExtraIndexSettings = [];
+
+/**
+ * Whether to index deleted pages for archiving.
+ */
+$wgCirrusSearchIndexDeletes = false;
+/**
+ * Enable archive search.
+ */
+$wgCirrusSearchEnableArchive = false;
 
 /*
  * Please update docs/settings.txt if you add new values!

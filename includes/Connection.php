@@ -64,6 +64,12 @@ class Connection extends ElasticaConnection {
 	const TITLE_SUGGEST_TYPE_NAME = 'titlesuggest';
 
 	/**
+	 * Name of the archive type
+	 * @var string
+	 */
+	const ARCHIVE_TYPE_NAME = 'archive';
+
+	/**
 	 * @var SearchConfig
 	 */
 	protected $config;
@@ -212,6 +218,15 @@ class Connection extends ElasticaConnection {
 	public function getNamespaceType( $name ) {
 		$type = 'general'; // Namespaces are always stored in the 'general' index.
 		return $this->getIndex( $name, $type )->getType( self::NAMESPACE_TYPE_NAME );
+	}
+
+	/**
+	 * Fetch the Elastica Type for archive.
+	 * @param mixed $name basename of index
+	 * @return \Elastica\Type
+	 */
+	public function getArchiveType( $name ) {
+		return $this->getIndex( $name, 'general' )->getType( self::ARCHIVE_TYPE_NAME );
 	}
 
 	/**

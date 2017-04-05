@@ -612,6 +612,20 @@ When(/^I reindex suggestions$/) do
     token_type: false
   )
 end
+When(/^within (\d+) seconds I search deleted pages for (.*)/) do |seconds, search|
+  within(seconds) do
+    with_browser do
+      visit(SpecialUndeletePage)
+      on(SpecialUndeletePage).search_input = search
+      on(SpecialUndeletePage).search_button
+    end
+  end
+end
+Then(/^deleted page search returns (.*) as first result/) do |expected|
+  result = on(SpecialUndeletePage).first_result
+  result = result.gsub(/\s+\(\d+ revisions? deleted\)$/, "") unless result.nil?
+  result.should == expected
+end
 
 def within(seconds)
   end_time = Time.new + Integer(seconds)

@@ -90,3 +90,6 @@ if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 		'maxqueue' => 200,
 	);
 }
+
+$wgCirrusSearchIndexDeletes = true;
+$wgCirrusSearchEnableArchive = true;

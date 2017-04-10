@@ -390,18 +390,25 @@ class Updater extends ElasticsearchIntermediary {
 
 	/**
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
+	 * @internal made public for testing purposes
 	 * @param \Elastica\Document $doc
 	 * @return \Elastica\Script\Script
 	 */
-	private function docToSuperDetectNoopScript( $doc ) {
+	public function docToSuperDetectNoopScript( $doc ) {
 		$params = $doc->getParams();
 		$params['source'] = $doc->getData();
+
 		$params['handlers'] = [
 			'incoming_links' => 'within 20%',
 		];
+		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
+		if ( is_array( $extraHandlers ) ) {
+			$params['handlers'] += $extraHandlers;
+		}
 		// Added in search-extra 2.3.4.1, around sept 2015. This check can be dropped
 		// and may default sometime in the future when users are certain to be using
 		// a version of the search-extra plugin with document versioning support
+		// TODO: possibly deprecate this config in favor of super_detect_noop_handlers
 		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'documentVersion' ) ) {
 			$params['handlers']['version'] = 'documentVersion';
 		}

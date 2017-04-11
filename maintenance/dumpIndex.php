@@ -123,6 +123,7 @@ class DumpIndex extends Maintenance {
 
 		$query = new Query();
 		$query->setStoredFields( [ '_id', '_type', '_source' ] );
+		$query->setSize( $this->inputChunkSize );
 		$query->setSort( [ '_doc' ] );
 		if ( $this->hasOption( 'sourceFields' ) ) {
 			$sourceFields = explode( ',', $this->getOption( 'sourceFields' ) );
@@ -160,13 +161,13 @@ class DumpIndex extends Maintenance {
 				];
 				$this->write( $document );
 				$docsDumped++;
-				if ( $docsDumped > $limit ) {
+				if ( $docsDumped >= $totalDocsToDump ) {
 					break;
 				}
-				$this->outputProgress( $docsDumped, $totalDocsToDump );
 			}
+			$this->outputProgress( $docsDumped, $totalDocsToDump );
 		}
-		$this->output( "Dump done.\n" );
+		$this->output( "Dump done ($docsDumped docs).\n" );
 	}
 
 	/**

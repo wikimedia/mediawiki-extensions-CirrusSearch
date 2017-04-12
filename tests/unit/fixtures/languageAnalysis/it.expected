@@ -98,15 +98,6 @@
                 "suggest_shingle"
             ]
         },
-        "suggest_search": {
-            "type": "custom",
-            "tokenizer": "standard",
-            "filter": [
-                "lowercase",
-                "suggest_shingle",
-                "limit_30"
-            ]
-        },
         "suggest_reverse": {
             "type": "custom",
             "tokenizer": "standard",
@@ -205,10 +196,6 @@
             "min_shingle_size": 2,
             "max_shingle_size": 3,
             "output_unigrams": true
-        },
-        "limit_30": {
-            "type": "limit",
-            "max_token_count": 30
         },
         "lowercase": {
             "type": "lowercase"

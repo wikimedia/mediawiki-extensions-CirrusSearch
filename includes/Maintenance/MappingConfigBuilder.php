@@ -111,7 +111,6 @@ class MappingConfigBuilder {
 			'similarity' => TextIndexField::getSimilarity( $this->config, 'suggest' ),
 			'index_options' => 'freqs',
 			'analyzer' => 'suggest',
-			'search_analyzer' => 'suggest_search',
 		];
 
 		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'build' ) ) {

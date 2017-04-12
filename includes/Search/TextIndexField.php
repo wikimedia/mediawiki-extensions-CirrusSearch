@@ -221,7 +221,7 @@ class TextIndexField extends CirrusIndexField {
 			'CirrusSearchSimilarityProfiles',
 			$config->get( 'CirrusSearchSimilarityProfile' )
 		);
-		$fieldSimilarity = 'default';
+		$fieldSimilarity = null;
 		if ( isset( $similarity['fields'] ) ) {
 			if( isset( $similarity['fields'][$field] ) ) {
 				$fieldSimilarity = $similarity['fields'][$field];
@@ -232,6 +232,9 @@ class TextIndexField extends CirrusIndexField {
 			if ( $analyzer != null && isset( $similarity['fields']["$field.$analyzer"] ) ) {
 				$fieldSimilarity = $similarity['fields']["$field.$analyzer"];
 			}
+		}
+		if ( is_null ( $fieldSimilarity ) ) {
+			throw new \RuntimeException( "Invalid similarity profile, unable to infer the similarity for the field $field, (defining a __default__ field might solve the issue" );
 		}
 		return $fieldSimilarity;
 	}

@@ -26,9 +26,19 @@
  */
 
 $wgCirrusSearchSimilarityProfiles = [
-	// default profile, uses the classic TF/IDF from Lucene. With ES5
-	// this will become BM25.
-	'default' => [],
+	// default profile, uses the classic TF/IDF from Lucene.
+	// deprecated the use of the name default is confusing
+	'default' => [
+		'fields' => [
+			'__default__' => 'classic'
+		]
+	],
+	// classic profile, uses the classic TF/IDF from Lucene.
+	'classic' => [
+		'fields' => [
+			'__default__' => 'classic'
+		]
+	],
 	// BM25 with default values for k and a for all fields
 	'bm25_with_defaults' => [
 		'similarity' => [

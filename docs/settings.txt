@@ -503,7 +503,7 @@ Maximum number of newly unlinked articles to update when an article changes.
 ; $wgCirrusSearchSimilarityProfile
 
 Default:
-    $wgCirrusSearchSimilarityProfile = 'default';
+    $wgCirrusSearchSimilarityProfile = 'classic';
 
 Configure the similarity module.
 See profile/SimilarityProfiles.php for more details.

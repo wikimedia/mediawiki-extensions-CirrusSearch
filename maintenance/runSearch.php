@@ -5,9 +5,11 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
+use PageArchive;
 use RequestContext;
 use SearchSuggestionSet;
 use Status;
+use Wikimedia\Rdbms\ResultWrapper;
 
 /**
  * Run search queries provided on stdin
@@ -48,7 +50,7 @@ class RunSearch extends Maintenance {
 			'search queries are read from stdin.' );
 		$this->addOption( 'baseName', 'What basename to use for all indexes, ' .
 			'defaults to wiki id', false, true );
-		$this->addOption( 'type', 'What type of search to run, prefix, suggest or full_text. ' .
+		$this->addOption( 'type', 'What type of search to run, prefix, suggest, archive or full_text. ' .
 			'defaults to full_text.', false, true );
 		$this->addOption( 'options', 'A JSON object mapping from global variable to ' .
 			'its test value', false, true );
@@ -104,43 +106,19 @@ class RunSearch extends Maintenance {
 		if ( $this->getOption( 'decode' ) ) {
 			$query = urldecode( $query );
 		}
+		$archiveSearch = $this->getOption( 'archive' );
 		$data = [ 'query' => $query ];
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {
 			$value = $status->getValue();
-			if ( $value instanceof ResultSet ) {
-				// these are prefix or full text results
-				$data['totalHits'] = $value->getTotalHits();
-				$data['rows'] = [];
-				$result = $value->next();
-				while ( $result ) {
-					$data['rows'][] = [
-						// use getDocId() rather than asking the title to allow this script
-						// to work when a production index has been imported to a test es instance
-						'docId' => $result->getDocId(),
-						'title' => $result->getTitle()->getPrefixedText(),
-						'score' => $result->getScore(),
-						'snippets' => [
-							'text' => $result->getTextSnippet( [$query] ),
-							'title' => $result->getTitleSnippet(),
-							'redirect' => $result->getRedirectSnippet(),
-							'section' => $result->getSectionSnippet(),
-							'category' => $result->getCategorySnippet(),
-						],
-						'explanation' => $result->getExplanation(),
-					];
-					$result = $value->next();
-				}
+			if( $value instanceof ResultWrapper ) {
+				// Archive search results
+				$data += $this->processArchiveResult( $value );
+			}  elseif ( $value instanceof ResultSet ) {
+				$data += $this->processResultSet( $value, $query );
 			} elseif ( $value instanceof SearchSuggestionSet ) {
 				// these are suggestion results
-				$data['totalHits'] = $value->getSize();
-				foreach ( $value->getSuggestions() as $suggestion ) {
-					$data['rows'][] = [
-						'pageId' => $suggestion->getSuggestedTitleID(),
-						'title' => $suggestion->getSuggestedTitle()->getPrefixedText(),
-						'snippets' => [],
-					];
-				}
+				$data += $this->processSuggestionSet( $value );
 			} else {
 				throw new \RuntimeException(
 					"Unknown result type: "
@@ -154,6 +132,84 @@ class RunSearch extends Maintenance {
 	}
 
 	/**
+	 * Extract data from a search result set.
+	 * @param ResultSet $value
+	 * @param string $query
+	 * @return array
+	 */
+	protected function processResultSet( ResultSet $value, $query ) {
+		// these are prefix or full text results
+		$data['totalHits'] = $value->getTotalHits();
+		$data['rows'] = [];
+		$result = $value->next();
+		while ( $result ) {
+			$data['rows'][] = [
+				// use getDocId() rather than asking the title to allow this script
+				// to work when a production index has been imported to a test es instance
+				'docId' => $result->getDocId(),
+				'title' => $result->getTitle()->getPrefixedText(),
+				'score' => $result->getScore(),
+				'snippets' => [
+					'text' => $result->getTextSnippet( [$query] ),
+					'title' => $result->getTitleSnippet(),
+					'redirect' => $result->getRedirectSnippet(),
+					'section' => $result->getSectionSnippet(),
+					'category' => $result->getCategorySnippet(),
+				],
+				'explanation' => $result->getExplanation(),
+			];
+			$result = $value->next();
+		}
+		return $data;
+	}
+
+	/**
+	 * Extract data from a search suggestions set.
+	 * @param SearchSuggestionSet $value
+	 * @return array
+	 */
+	protected function processSuggestionSet( SearchSuggestionSet $value ) {
+		$data['totalHits'] = $value->getSize();
+		$data['rows'] = [];
+		foreach ( $value->getSuggestions() as $suggestion ) {
+			$data['rows'][] = [
+				'pageId' => $suggestion->getSuggestedTitleID(),
+				'title' => $suggestion->getSuggestedTitle()->getPrefixedText(),
+				'snippets' => [],
+			];
+		}
+		return $data;
+	}
+
+	/**
+	 * Extract data from archive search results.
+	 * @param ResultWrapper $value
+	 * @return array
+	 */
+	protected function processArchiveResult( ResultWrapper $value ) {
+		$data['totalHits'] = $value->numRows();
+		$data['rows'] = [];
+		foreach ( $value as $row ) {
+			$data['rows'][] = [
+				'title' => $row->ar_title,
+				'namespace' => $row->ar_namespace,
+				'count' => $row->count,
+			];
+		}
+		return $data;
+	}
+
+	/**
+	 * Search for term in the archive.
+	 * @param string $query
+	 * @return Status<ResultWrapper>
+	 */
+	protected function searchArchive($query) {
+		$result = PageArchive::listPagesBySearch( $query );
+		return Status::newGood( $result );
+	}
+
+	/**
 	 * Transform the search request into a Status object representing the
 	 * search result. Varies based on CLI input argument `type`.
 	 *
@@ -162,6 +218,12 @@ class RunSearch extends Maintenance {
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );
+
+		if ( $searchType == 'archive' ) {
+			// Archive has its own engine so go directly there
+			return $this->searchArchive( $query );
+		}
+
 		$limit = $this->getOption( 'limit', 10 );
 		if ( $this->getOption( 'explain' ) ) {
 			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );

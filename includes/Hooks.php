@@ -550,7 +550,7 @@ class Hooks {
 		} else {
 			$term = $title->getText();
 		}
-		$searcher->setResultsType( new FancyTitleResultsType( self::getConfig(), 'near_match' ) );
+		$searcher->setResultsType( new FancyTitleResultsType( 'near_match' ) );
 		try {
 			$status = $searcher->nearMatchTitleSearch( $term );
 		} catch ( ApiUsageException $e ) {

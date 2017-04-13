@@ -104,13 +104,8 @@ class InterwikiSearcher extends Searcher {
 
 		$retval = [];
 		$searches = [];
-		$resultsTypes = [];
+		$this->setResultsType( new FullTextResultsType( $this->highlightingConfig ) );
 		foreach ( $sources as $interwiki => $index ) {
-			// TODO: remove when getWikiCode is removed.
-			// In theory we should be able to reuse the same
-			// Results type for all searches
-			$resultsTypes[$interwiki] = new FullTextResultsType( $this->config->newInterwikiConfig( $index, false ), $this->highlightingConfig );
-			$this->setResultsType( $resultsTypes[$interwiki] );
 			$this->indexBaseName = $index;
 			$this->searchContext = clone $context;
 			$search = $this->buildSearch();
@@ -121,7 +116,7 @@ class InterwikiSearcher extends Searcher {
 			}
 		}
 
-		$results = $this->searchMulti( $searches, $resultsTypes );
+		$results = $this->searchMulti( $searches );
 		if ( !$results->isOK() ) {
 			return null;
 		}

@@ -533,6 +533,8 @@ class Hooks {
 	 * @param string $term the original search term and all language variants
 	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
+	 * @throws ApiUsageException
+	 * @throws UsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgContLang;
@@ -816,7 +818,7 @@ class Hooks {
 		);
 		$container->defineService(
 			InterwikiResolver::SERVICE,
-			function( $serviceContainer ) {
+			function( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 						->makeConfig( 'CirrusSearch' );
 				return $serviceContainer

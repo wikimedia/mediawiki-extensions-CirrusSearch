@@ -3,8 +3,7 @@
 
 @prefix: ~'ext-cirrus__xplr';
 
-.mw-search-results > li
-{
+.mw-search-results > li {
 	padding: 0.5em;
 	position: relative;
 	left: -0.5em;
@@ -14,25 +13,21 @@
 	width: 100%;
 }
 
-.mw-search-results > li:hover .@{prefix}__buttons
-{
+.mw-search-results > li:hover .@{prefix}__buttons {
 	display: inline;
 }
 
-.mw-search-results li.@{prefix}--active
-{
+.mw-search-results li.@{prefix}--active {
 	box-shadow: 0 30px 90px -20px rgba( 0, 0, 0, 0.3 ), 0 0 1px rgba( 0, 0, 0, 0.5 );
 	z-index: 2;
 }
 
-.mw-search-result-data
-{
+.mw-search-result-data {
 	line-height: 1.6em;
 	white-space: nowrap;
 }
 
-.@{prefix}__content-wrapper
-{
+.@{prefix}__content-wrapper {
 	color: @colorText;
 	width: 100%;
 	position: absolute;
@@ -49,20 +44,17 @@
 	white-space: normal;
 }
 
-.@{prefix}__buttons
-{
+.@{prefix}__buttons {
 	display: none;
 	padding-left: 1em;
 }
 
-.@{prefix}__button
-{
+.@{prefix}__button {
 	color: @colorNeutral;
 	padding-left: 0.2em;
 }
 
-.@{prefix}__button__icon
-{
+.@{prefix}__button__icon {
 	width: 1em;
 	height: 1em;
 	display: inline-block;
@@ -75,8 +67,7 @@
 	transform: rotate( 0 );
 }
 
-.@{prefix}__content
-{
+.@{prefix}__content {
 	margin: 0;
 	padding: 0;
 	padding-bottom: 1rem;
@@ -101,8 +92,7 @@
 	margin: 0.5em 0;
 }
 
-.@{prefix}__related-page
-{
+.@{prefix}__related-page {
 	width: 32.33%;
 	height: 4em;
 	padding: 0.5em;
@@ -115,6 +105,7 @@
 	// since using % width, % margin too.
 	margin-right: 1.5%;
 }
+
 .@{prefix}__related-page:hover {
 	text-decoration: none;
 	background-color: #eaf3ff;
@@ -123,8 +114,8 @@
 .@{prefix}__related-page:last-child {
 	margin-right: 0;
 }
-.@{prefix}__related-page__thumb
-{
+
+.@{prefix}__related-page__thumb {
 	width: 3.14em;
 	height: 3.14em;
 	background-size: cover;
@@ -136,14 +127,12 @@
 	font-size: 14px;
 }
 
-.@{prefix}__related-page:hover .@{prefix}__related-page__title
-{
+.@{prefix}__related-page:hover .@{prefix}__related-page__title {
 	color: @colorProgressive;
 	text-decoration: underline;
 }
 
-.@{prefix}__related-page p
-{
+.@{prefix}__related-page p {
 	margin: 0;
 	font-size: 0.82em;
 	color: @colorTextLight;
@@ -152,8 +141,7 @@
 	text-decoration: none;
 }
 
-.@{prefix}__content__columns
-{
+.@{prefix}__content__columns {
 	position: relative;
 	width: 100%;
 	margin: 0;
@@ -174,8 +162,7 @@
 	color: @colorTextLight;
 }
 
-.@{prefix}__content--languages li
-{
+.@{prefix}__content--languages li {
 	padding: 0 1.5rem 0.5rem 0;
 	display: block;
 	line-height: 1.3;
@@ -185,6 +172,7 @@
 	transition: transform 350ms ease-out;
 	transform: rotate( 180deg );
 }
+
 .@{prefix}__button--active .@{prefix}__button__icon
 {
 	transform: rotate( 180deg );

@@ -102,6 +102,7 @@ $wgCirrusSearchRescoreProfiles = [
 
 	// inclinks applied as a weighted sum
 	'wsum_inclinks' => [
+		'i18n_msg' => 'cirrussearch-qi-profile-wsum-inclinks',
 		'supported_namespaces' => 'all',
 		'rescore' => [
 			[
@@ -128,6 +129,7 @@ $wgCirrusSearchRescoreProfiles = [
 	// inclinks + pageviews applied as weighted sum
 	// NOTE: requires the custom field popularity_score
 	'wsum_inclinks_pv' => [
+		'i18n_msg' => 'cirrussearch-qi-profile-wsum-inclinks-pv',
 		'supported_namespaces' => 'content',
 		'fallback_profile' => 'wsum_inclinks',
 		'rescore' => [

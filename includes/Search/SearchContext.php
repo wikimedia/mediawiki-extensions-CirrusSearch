@@ -45,6 +45,11 @@ class SearchContext {
 	private $boostTemplatesFromQuery;
 
 	/**
+	 * @var array set of per-wiki template boosts from extra index handling
+	 */
+	private $extraIndexBoostTemplates = [];
+
+	/**
 	 * @deprecated use rescore profiles instead
 	 * @var bool do we need to boost links
 	 */
@@ -245,17 +250,37 @@ class SearchContext {
 	 * null if not used in the query or an empty array if there was a syntax error.
 	 * Initialized after special syntax extraction.
 	 *
-	 * @return array|null of boosted templates, key is the template value is the weight
+	 * @return array|null of boosted templates, key is the template value is the weight.
+	 *  null indicates the default template boosts should be used.
 	 */
 	public function getBoostTemplatesFromQuery() {
 		return $this->boostTemplatesFromQuery;
 	}
 
 	/**
-	 * @param array $boostTemplatesFromQuery boosted templates extracted from query
+	 * @param array|null $boostTemplatesFromQuery boosted templates extracted from query.
+	 *  null indicates the default template boosts should be used.
 	 */
 	public function setBoostTemplatesFromQuery( $boostTemplatesFromQuery ) {
 		$this->boostTemplatesFromQuery = $boostTemplatesFromQuery;
+	}
+
+	/**
+	 * Returns list of boosted templates specified by extra indexes query.
+	 *
+	 * @return array Map from wiki id to list of templates to boost
+	 *  within that wiki
+	 */
+	public function getExtraIndexBoostTemplates() {
+		return $this->extraIndexBoostTemplates;
+	}
+
+	/**
+	 * @param string $index Index to boost templates within
+	 * @param array Map from template name to weight to apply to that template
+	 */
+	public function addExtraIndexBoostTemplates( $wiki, array $extraIndexBoostTemplates ) {
+		$this->extraIndexBoostTemplates[$wiki] = $extraIndexBoostTemplates;
 	}
 
 	/**

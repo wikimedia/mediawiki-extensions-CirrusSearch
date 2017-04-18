@@ -251,6 +251,28 @@ done by a job, even when run from forceSearchIndex.php.  If you add an image
 to your wiki but after it is in the extra search index you'll see duplicate
 results until the job is done.
 
+; $wgCirrusSearchExtraIndexBoostTemplates
+
+Default:
+    $wgCirrusSearchExtraIndexBoostTemplates = [];
+
+Template boosts to apply to extra index queries. This is pretty much a complete
+hack, but gets the job done. Top level is a map from the extra index addedby
+$wgCirrusSearchExtraIndexes to a configuration map. That configuration map must
+contain a 'wiki' entry with the same value as the 'wiki' field in the documents,
+and a 'boosts' entry containing a map from template name to boost weight.
+
+Example:
+    $wgCirrusSearchExtraIndexBoostTemplates = [
+        'commonswiki_file' => [
+            'wiki' => 'commonswiki',
+            'boosts' => [
+                'Template:Valued image' => 1.75
+                'Template:Assessments' => 1.75,
+            ],
+        ]
+    ];
+
 ; $wgCirrusSearchUpdateShardTimeout
 
 Default:

@@ -439,6 +439,12 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $boostTemplates;
 
 	/**
+	 * @var float[][] Template boost values with wiki id at top level,
+	 *  template at second level, and boost as the value.
+	 */
+	private $extraIndexBoostTemplates;
+
+	/**
 	 * @param SearchContext $context
 	 * @param float $weight
 	 */
@@ -446,6 +452,8 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		parent::__construct( $context, $weight );
 		// Use the boosted template from query string if available
 		$this->boostTemplates = $context->getBoostTemplatesFromQuery();
+		// Use the boosted templates from extra indexes if available
+		$this->extraIndexBoostTemplates = $context->getExtraIndexBoostTemplates();
 		// empty array may be returned here in the case of a syntax error
 		// @todo: verify that this is what we want: in case of a syntax error
 		// we disable default boost templates.
@@ -457,13 +465,22 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		if( !$this->boostTemplates ) {
-			return;
+		if ( $this->boostTemplates ) {
+			foreach ( $this->boostTemplates as $name => $weight ) {
+				$match = new \Elastica\Query\Match();
+				$match->setFieldQuery( 'template', $name );
+				$functionScore->addWeightFunction( $weight * $this->weight, $match );
+			}
 		}
-		foreach ( $this->boostTemplates as $name => $weight ) {
-			$match = new \Elastica\Query\Match();
-			$match->setFieldQuery( 'template', $name );
-			$functionScore->addWeightFunction( $weight * $this->weight, $match );
+		foreach ( $this->extraIndexBoostTemplates as $wiki => $boostTemplates ) {
+			foreach ( $boostTemplates as $name => $weight ) {
+				$bool = new \Elastica\Query\BoolQuery();
+				$bool->addMust( ( new \Elastica\Query\Match() )
+					->setFieldQuery( 'wiki', $wiki ) );
+				$bool->addMust( ( new \Elastica\Query\Match() )
+					->setFieldQuery( 'template', $name ) );
+				$functionScore->addWeightFunction( $weight * $this->weight, $bool );
+			}
 		}
 	}
 }

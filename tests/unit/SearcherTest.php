@@ -32,6 +32,9 @@ class SearcherTest extends CirrusTestCase {
 					? json_decode( file_get_contents( $expectedFile ), true )
 					// Flags test to generate a new fixture
 					: $expectedFile;
+				if ( isset( $querySettings['config'] ) ) {
+					$config = $querySettings['config'] + $config;
+				}
 				$tests["{$testName}-{$configName}"] = [
 					$config,
 					$expected,
@@ -56,6 +59,8 @@ class SearcherTest extends CirrusTestCase {
 				'regex' => [ 'build', 'use' ],
 			],
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
+			'wgCirrusSearchExtraIndexes' => [],
+			'wgCirrusSearchExtraIndexTemplateBoosts' => [],
 			'wgContentNamespaces' => [ NS_MAIN ],
 			// Override the list of namespaces to give more deterministic results
 			'wgHooks' => [

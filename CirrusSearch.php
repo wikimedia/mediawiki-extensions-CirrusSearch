@@ -208,6 +208,24 @@ $wgCirrusSearchNamespaceMappings = [];
 // results until the job is done.
 $wgCirrusSearchExtraIndexes = [];
 
+// Template boosts to apply to extra index queries. This is pretty much a complete
+// hack, but gets the job done. Top level is a map from the extra index addedby
+// $wgCirrusSearchExtraIndexes to a configuration map. That configuration map must
+// contain a 'wiki' entry with the same value as the 'wiki' field in the documents,
+// and a 'boosts' entry containing a map from template name to boost weight.
+//
+// Example:
+//   $wgCirrusSearchExtraIndexBoostTemplates = [
+//       'commonswiki_file' => [
+//           'wiki' => 'commonswiki',
+//           'boosts' => [
+//               'Template:Valued image' => 1.75
+//               'Template:Assessments' => 1.75,
+//           ],
+//       ]
+//   ];
+$wgCirrusSearchExtraIndexBoostTemplates = [];
+
 // Shard timeout for index operations.  This is the amount of time
 // Elasticsearch will wait around for an offline primary shard. Currently this
 // is just used in page updates and not deletes.  It is defined in
@@ -1045,7 +1063,7 @@ $wgCirrusSearchExtraBackendLatency = 0;
 $wgCirrusSearchBoostTemplates = [];
 
 /**
- * Disable customization of boot templates on wiki
+ * Disable customization of boost templates on wiki
  * Set to true to disable onwiki config.
  */
 $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;

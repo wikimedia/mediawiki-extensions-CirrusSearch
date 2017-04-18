@@ -167,10 +167,7 @@ class Reindexer {
 
 			$request = new ReindexRequest( $oldType, $type, $chunkSize );
 			if ( $slices === null ) {
-				// Roundabout way of getting the number of shards, by inspecting
-				// the _shards key of the stats response.
-				$stats = $oldType->getIndex()->getStats();
-				$request->setSlices( $stats->getResponse()->getShardsStatistics()['total'] );
+				$request->setSlices( $this->getNumberOfShards( $oldType->getIndex() ) );
 			} else {
 				$request->setSlices( $slices );
 			}
@@ -493,5 +490,18 @@ class Reindexer {
 		}
 
 		return $task->getResponse();
+	}
+
+	private function getNumberOfShards( Index $index ) {
+		$response = $index->request( '_settings/index.number_of_shards', Request::GET );
+		$data = $response->getData();
+		// Can't use $index->getName() because that is probably an alias
+		$realIndexName = array_keys( $data )[0];
+		// In theory this should never happen, we will get a ResponseException if the index doesn't
+		// exist and every index must have a number_of_shards settings. But better safe than sorry.
+		if ( !isset( $data[$realIndexName]['settings']['index']['number_of_shards'] ) ) {
+			throw new \RuntimeException( "Couldn't detect number of shards in {$index->getName()}" );
+		}
+		return $data[$realIndexName]['settings']['index']['number_of_shards'];
 	}
 }

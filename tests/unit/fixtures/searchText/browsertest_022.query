@@ -1,1 +1,3 @@
-"bold heading"
+{
+    "query": "\"bold heading\""
+}

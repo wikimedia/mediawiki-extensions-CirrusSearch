@@ -1,1 +1,3 @@
-prefix:Prefix Test Redirec
+{
+    "query": "prefix:Prefix Test Redirec"
+}

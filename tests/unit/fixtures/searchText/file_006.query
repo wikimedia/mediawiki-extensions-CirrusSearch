@@ -1,1 +1,3 @@
-cats filetype:drawing
+{
+    "query": "cats filetype:drawing"
+}

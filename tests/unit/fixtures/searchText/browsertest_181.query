@@ -1,1 +1,3 @@
-intitle:functional intitle:programmin*
+{
+    "query": "intitle:functional intitle:programmin*"
+}

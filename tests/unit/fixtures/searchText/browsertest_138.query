@@ -1,1 +1,3 @@
-incategory:"Categorywith \" Quote"
+{
+    "query": "incategory:\"Categorywith \\\" Quote\""
+}

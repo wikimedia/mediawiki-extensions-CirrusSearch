@@ -1,1 +1,3 @@
-test "imbalanced quotes phrase
+{
+    "query": "test \"imbalanced quotes phrase"
+}

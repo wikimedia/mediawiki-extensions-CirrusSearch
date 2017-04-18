@@ -1,1 +1,3 @@
-prefix:"other thing"
+{
+    "query": "prefix:\"other thing\""
+}

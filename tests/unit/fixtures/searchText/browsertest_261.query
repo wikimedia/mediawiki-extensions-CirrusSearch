@@ -1,1 +1,3 @@
-prefix test prefix:talk:
+{
+    "query": "prefix test prefix:talk:"
+}

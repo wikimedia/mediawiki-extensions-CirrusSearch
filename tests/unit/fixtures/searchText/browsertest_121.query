@@ -1,1 +1,3 @@
-hastemplate:"Template:Template Test"
+{
+    "query": "hastemplate:\"Template:Template Test\""
+}

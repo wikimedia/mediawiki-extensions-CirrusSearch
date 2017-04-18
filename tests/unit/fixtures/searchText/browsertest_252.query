@@ -1,1 +1,3 @@
-prefix prefix:prefix
+{
+    "query": "prefix prefix:prefix"
+}

@@ -1,1 +1,3 @@
-incategory:"Categorywith Twowords"
+{
+    "query": "incategory:\"Categorywith Twowords\""
+}

@@ -1,1 +1,3 @@
-catapult -"asdf" "two words"
+{
+    "query": "catapult -\"asdf\" \"two words\""
+}

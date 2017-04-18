@@ -1,1 +1,3 @@
-prefer-recent:1,1 other
+{
+    "query": "prefer-recent:1,1 other"
+}

@@ -1,1 +1,3 @@
-catapult "catapult" -"two words" -"some stuff"
+{
+    "query": "catapult \"catapult\" -\"two words\" -\"some stuff\""
+}

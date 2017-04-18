@@ -1,1 +1,3 @@
-insource:/a(b|c)d/i
+{
+    "query": "insource:\/a(b|c)d\/i"
+}

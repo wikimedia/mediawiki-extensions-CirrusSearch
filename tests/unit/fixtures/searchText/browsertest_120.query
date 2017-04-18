@@ -1,1 +1,3 @@
-hastemplate:"Talk:TalkTemplate"
+{
+    "query": "hastemplate:\"Talk:TalkTemplate\""
+}

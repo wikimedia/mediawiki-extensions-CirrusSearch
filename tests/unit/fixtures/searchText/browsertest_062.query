@@ -1,1 +1,3 @@
-catapult NOT "two words"~7~
+{
+    "query": "catapult NOT \"two words\"~7~"
+}

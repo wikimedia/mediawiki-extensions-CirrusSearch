@@ -1,1 +1,3 @@
--hastemplate:"Template Test" catapult
+{
+    "query": "-hastemplate:\"Template Test\" catapult"
+}

@@ -1,1 +1,3 @@
-test "phrase search"
+{
+    "query": "test \"phrase search\""
+}

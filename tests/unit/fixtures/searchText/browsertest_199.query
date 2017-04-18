@@ -1,1 +1,3 @@
-mo:some text
+{
+    "query": "mo:some text"
+}

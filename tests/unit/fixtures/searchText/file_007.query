@@ -1,1 +1,3 @@
-filemime:"image/png"
+{
+    "query": "filemime:\"image\/png\""
+}

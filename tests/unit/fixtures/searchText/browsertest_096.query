@@ -1,1 +1,3 @@
-"ffnonesenseword anotherword"~0
+{
+    "query": "\"ffnonesenseword anotherword\"~0"
+}

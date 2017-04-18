@@ -1,1 +1,3 @@
-incategory:"CategoryWith ASpace"
+{
+    "query": "incategory:\"CategoryWith ASpace\""
+}

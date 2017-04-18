@@ -1,1 +1,3 @@
-insource:"catapult anotherword"
+{
+    "query": "insource:\"catapult anotherword\""
+}

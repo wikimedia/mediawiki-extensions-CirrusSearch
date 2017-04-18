@@ -1,1 +1,3 @@
-Relevancylinktest -intitle:link
+{
+    "query": "Relevancylinktest -intitle:link"
+}

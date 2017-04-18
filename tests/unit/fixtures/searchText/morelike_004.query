@@ -1,1 +1,3 @@
-morelike:Page that almost certainly should not exist
+{
+    "query": "morelike:Page that almost certainly should not exist"
+}

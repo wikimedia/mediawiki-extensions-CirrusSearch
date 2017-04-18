@@ -1,1 +1,3 @@
-linksto:"Template:LinksToTest Template"
+{
+    "query": "linksto:\"Template:LinksToTest Template\""
+}

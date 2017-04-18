@@ -1,1 +1,3 @@
--incategory:weaponry incategory:twowords
+{
+    "query": "-incategory:weaponry incategory:twowords"
+}

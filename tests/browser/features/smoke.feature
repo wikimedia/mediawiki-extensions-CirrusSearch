@@ -12,18 +12,18 @@
 @clean @firefox @test2.wikipedia.org @phantomjs @smoke
 Feature: Smoke test
 
-  @en.wikipedia.beta.wmflabs.org
+  @en.wikipedia.beta.wmflabs.org  @expect_failure
   Scenario: Search suggestions
     Given I am at a random page
-    When I search for: main
-    Then a list of suggested pages should appear
-      And Main Page should be the first result
+    When I type main into the search box
+    Then suggestions should appear
+    And Main Page is the first suggestion
 
   @expect_failure
   Scenario: Fill in search term and click search
     Given I am at a random page
-    When I search for: ma
-      And I click the search button
+    When I type ma into the search box
+    And I click the search button
     Then I should land on Search Results page
 
   @en.wikipedia.beta.wmflabs.org

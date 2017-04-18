@@ -233,9 +233,9 @@ When(/^I set More Like This Options to bad settings and I search for (.+)$/) do 
 end
 
 Then(/^suggestions should( not)? appear$/) do |not_appear|
+  sleep(5)
   if not_appear
     # Wait to give the element a chance to load if it was going to
-    sleep(5)
     on(SearchPage).search_results_element.should_not be_visible
   else
     on(SearchPage).search_results_element.when_present.should be_visible

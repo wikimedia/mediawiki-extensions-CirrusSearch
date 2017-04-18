@@ -63,10 +63,6 @@ class SearchConfig implements \Config {
 	 * see CirrusSearch::searchTextSecondTry().
 	 *
 	 * @param string|null $overrideName DB name for the wiki
-	 * @param bool $fullLoad set to true to fully load the target wiki config
-	 * setting to false will only set the wikiId to $overrideName but will
-	 * keep the current wiki config. This should be removed and no longer
-	 * when all the wikis have the wiki field populated.
 	 */
 	public function __construct( $overrideName = null ) {
 		if ( $overrideName && $overrideName != wfWikiID() ) {
@@ -172,6 +168,7 @@ class SearchConfig implements \Config {
 	 *
 	 * @param string $docId Elasticsearch document id
 	 * @return int Related mediawiki page id
+	 * @throws \Exception
 	 */
 	public function makePageId( $docId ) {
 		if ( !$this->get( self::PREFIX_IDS ) ) {

@@ -1,1 +1,3 @@
-intitle:catapul*
+{
+    "query": "intitle:catapul*"
+}

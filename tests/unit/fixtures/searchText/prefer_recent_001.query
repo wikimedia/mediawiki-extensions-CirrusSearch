@@ -1,1 +1,3 @@
-prefer-recent:1 documentation
+{
+    "query": "prefer-recent:1 documentation"
+}

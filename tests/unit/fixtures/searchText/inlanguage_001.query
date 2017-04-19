@@ -1,1 +1,3 @@
-foo inlanguage:es
+{
+    "query": "foo inlanguage:es"
+}

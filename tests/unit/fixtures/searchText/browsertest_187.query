@@ -1,1 +1,3 @@
-intitle:RevDelTest "delete this revision"
+{
+    "query": "intitle:RevDelTest \"delete this revision\""
+}

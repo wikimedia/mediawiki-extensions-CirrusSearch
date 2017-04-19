@@ -1,1 +1,3 @@
-intitle:catapul* amaz*
+{
+    "query": "intitle:catapul* amaz*"
+}

@@ -1,1 +1,3 @@
-something AND prefix:other
+{
+    "query": "something AND prefix:other"
+}

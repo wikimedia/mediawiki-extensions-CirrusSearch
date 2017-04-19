@@ -1,1 +1,3 @@
-incategory:"Categorywith \" Quote" incategory:"Categorywith Twowords"
+{
+    "query": "incategory:\"Categorywith \\\" Quote\" incategory:\"Categorywith Twowords\""
+}

@@ -1,1 +1,3 @@
-boost-templates:"Featured sound|200" music
+{
+    "query": "boost-templates:\"Featured sound|200\" music"
+}

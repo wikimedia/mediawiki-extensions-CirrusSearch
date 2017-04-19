@@ -1,1 +1,3 @@
-intitle:catapult 	intitle:catapult
+{
+    "query": "intitle:catapult \tintitle:catapult"
+}

@@ -1,1 +1,3 @@
-something morelike:Some page
+{
+    "query": "something morelike:Some page"
+}

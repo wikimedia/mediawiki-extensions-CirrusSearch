@@ -1,1 +1,3 @@
-catapult !"two words"~7~
+{
+    "query": "catapult !\"two words\"~7~"
+}

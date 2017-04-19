@@ -1,1 +1,3 @@
--linksto:"LinksToTest Target" LinksToTest
+{
+    "query": "-linksto:\"LinksToTest Target\" LinksToTest"
+}

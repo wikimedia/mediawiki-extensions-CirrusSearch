@@ -1,1 +1,3 @@
-boost-templates:"prize|150%" noble prize
+{
+    "query": "boost-templates:\"prize|150%\" noble prize"
+}

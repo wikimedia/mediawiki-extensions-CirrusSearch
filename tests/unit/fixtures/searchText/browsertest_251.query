@@ -1,1 +1,3 @@
-prefer-recent: PreferRecent First OR Second OR Third
+{
+    "query": "prefer-recent: PreferRecent First OR Second OR Third"
+}

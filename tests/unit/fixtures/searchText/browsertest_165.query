@@ -1,1 +1,3 @@
--insource:pickles pickles
+{
+    "query": "-insource:pickles pickles"
+}

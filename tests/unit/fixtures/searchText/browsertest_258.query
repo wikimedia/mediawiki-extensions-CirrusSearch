@@ -1,1 +1,3 @@
-prefix test aaaa prefix:Prefix Test/
+{
+    "query": "prefix test aaaa prefix:Prefix Test\/"
+}

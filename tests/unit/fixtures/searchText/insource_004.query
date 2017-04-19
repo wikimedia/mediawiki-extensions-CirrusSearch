@@ -1,1 +1,3 @@
-incategory:Foo insource:abc
+{
+    "query": "incategory:Foo insource:abc"
+}

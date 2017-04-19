@@ -1,1 +1,3 @@
-incategory:HeadingsTest "I am a heading"
+{
+    "query": "incategory:HeadingsTest \"I am a heading\""
+}

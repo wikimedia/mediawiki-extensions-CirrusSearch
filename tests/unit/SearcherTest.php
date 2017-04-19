@@ -22,9 +22,10 @@ class SearcherTest extends CirrusTestCase {
 		$tests = [];
 		foreach ( glob( __DIR__ . '/fixtures/searchText/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
-			$query = file_get_contents( $queryFile );
-			// Remove trailing newline
-			$query = preg_replace( '/\n$/', '', $query );
+			$querySettings = json_decode( file_get_contents( $queryFile ), true );
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new \RuntimeException( "Failed parsing query fixture: $queryFile" );
+			}
 			foreach ( $configs as $configName => $config ) {
 				$expectedFile = substr( $queryFile, 0, -5 ) . $configName . '.expected';
 				$expected = is_file( $expectedFile )
@@ -34,7 +35,7 @@ class SearcherTest extends CirrusTestCase {
 				$tests["{$testName}-{$configName}"] = [
 					$config,
 					$expected,
-					$query,
+					$querySettings['query'],
 				];
 			}
 		}

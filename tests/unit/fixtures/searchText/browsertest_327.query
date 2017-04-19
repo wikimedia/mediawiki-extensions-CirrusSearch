@@ -1,1 +1,3 @@
-to -intitle:Manyredirectstarget
+{
+    "query": "to -intitle:Manyredirectstarget"
+}

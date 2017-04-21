@@ -1198,6 +1198,32 @@ Map of interwiki link -> wiki name. Example:
 FIXME: we really should already have this information, also we're possibly
 duplicating $wgCirrusSearchInterwikiSources. This needs to be fixed.
 
+; $wgCirrusSearchEnableCrossProjectSearch = false;
+
+Default:
+    $wgCirrusSearchEnableCrossProjectSearch = false;
+
+Enable crossproject search.
+Crossproject works by seaching on so-called sister wikis: same language, sister
+project.
+NOTE: Experimental
+
+; $wgCirrusSearchCrossProjectSearchBlackList
+
+Default:
+    $wgCirrusSearchCrossProjectSearchBlackList = [];
+
+List of crossproject interwiki prefix to ignore when running crossproject
+search.
+(only useful when the list of cross projects is obtained via the SiteMatrix
+extension)
+
+Example :
+    $wgCirrusSearchCrossProjectSearchBlackList = [ 'n', 'v' ];
+
+In WMF context this would remove wikinews and wikiversity from the list of
+crossproject displayed in the sidebar
+
 ; wgCirrusSearchNumCrossProjectSearchResults
 
 Default:

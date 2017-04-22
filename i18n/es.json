@@ -52,5 +52,7 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "El algoritmo anterior de sugerencia de búsqueda a medida que escribes.",
 	"cirrussearch-completion-profile-classic-pref-name": "Búsqueda clásica por prefijo",
 	"cirrussearch-completion-profile-classic-pref-desc": "Sin correcciones tipográficas. Busca coincidencias con el principio de los títulos.",
+	"cirrussearch-file-numeric-feature-not-a-number": "El término de búsqueda «$1» requiere valores numéricos, pero se ha provisto «$2».",
+	"cirrussearch-feature-not-available": "No se ha activado en este wiki la palabra clave de búsqueda «$1».",
 	"cirrussearch-mlt-not-configured": "La funcionalidad «$1» está mal configurada. Solicita a un administrador que arregle $wgCirrusSearchMoreLikeThisFields"
 }

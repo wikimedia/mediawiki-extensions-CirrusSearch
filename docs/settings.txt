@@ -1246,6 +1246,23 @@ Example :
 In WMF context this would remove wikinews and wikiversity from the list of
 crossproject displayed in the sidebar
 
+Default:
+    $wgCirrusSearchCrossProjectProfiles = [];
+
+Override various profiles to use for interwiki searching.
+
+Example:
+    $wgCirrusSearchCrossProjectProfiles = [
+       'v' => [
+           'ftbuilder' => 'perfield_builder_title_match',
+           'rescore' => 'wsum_inclinks',
+       ],
+    ];
+
+will use the perfield_builder_title_match fulltext query builder with the
+wsum_inclinks rescore profile. Currently only 'ftbuilder' and 'rescore' are
+supported.
+
 ; wgCirrusSearchNumCrossProjectSearchResults
 
 Default:

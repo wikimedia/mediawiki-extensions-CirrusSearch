@@ -911,6 +911,21 @@ $wgCirrusSearchEnableCrossProjectSearch = false;
 $wgCirrusSearchCrossProjectSearchBlackList = [];
 
 /**
+ * Override various profiles to use for interwiki searching.
+ * Example:
+ * $wgCirrusSearchCrossProjectProfiles = [
+ *    'v' => [
+ *        'ftbuilder' => 'perfield_builder_title_match',
+ *        'rescore' => 'wsum_inclinks',
+ *    ],
+ * ];
+ * Will use the perfield_builder_title_match fulttext and wsum_inclinks rescore
+ * profile for wikivoyage (WMF context) and the current wiki profile for
+ * others.
+ */
+$wgCirrusSearchCrossProjectProfiles = [];
+
+/**
  * When wgCirrusSearchEnableCrossProjectSearch is true
  * Setting wgCirrusSearchHideCrossProjectResults will
  * tell SpecialSearch to run normally without displaying

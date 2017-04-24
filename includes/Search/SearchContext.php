@@ -195,6 +195,11 @@ class SearchContext {
 	private $warnings = [];
 
 	/**
+	 * @var string name of the fulltext query builder profile
+	 */
+	private $fulltextQueryBuilderProfile;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -204,6 +209,7 @@ class SearchContext {
 		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->namespaces = $namespaces;
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
+		$this->fulltextQueryBuilderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
 
 		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
 		if ( $decay > 0 ) {
@@ -772,4 +778,17 @@ class SearchContext {
 		return $this->warnings;
 	}
 
+	/**
+	 * @return string the name of the fulltext query builder profile
+	 */
+	public function getFulltextQueryBuilderProfile() {
+		return $this->fulltextQueryBuilderProfile;
+	}
+
+	/**
+	 * @param string $profile set the name of the fulltext query builder profile
+	 */
+	public function setFulltextQueryBuilderProfile( $profile ) {
+		$this->fulltextQueryBuilderProfile = $profile;
+	}
 }

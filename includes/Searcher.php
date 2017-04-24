@@ -315,8 +315,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 
-		$builderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
-		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $builderProfile );
+		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $this->searchContext->getFulltextQueryBuilderProfile() );
 
 		$features = [
 			// Handle morelike keyword (greedy). This needs to be the

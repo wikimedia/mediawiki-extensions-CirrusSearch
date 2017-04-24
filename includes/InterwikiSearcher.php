@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchContext;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use SpecialPageFactory;
@@ -75,13 +76,6 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		if ( !$this->config->isCrossProjectSearchEnabled() ) {
-			// TODO: we should probably call this before (in the
-			// CirrusSearch class) to avoid creating an object for
-			// nothing.
-			return null;
-		}
-
 		$sources = MediaWikiServices::getInstance()
 			->getService( InterwikiResolver::SERVICE )
 			->getSisterProjectPrefixes();
@@ -92,27 +86,61 @@ class InterwikiSearcher extends Searcher {
 			$this->config->get( 'CirrusSearchInterwikiCacheTime' )
 		);
 
-		$this->searchContext->setLimitSearchToLocalWiki( true );
-		$this->searchContext->setOriginalSearchTerm( $term );
-		$this->buildFullTextSearch( $term, false );
-		$context = $this->searchContext;
+		$overriddenProfiles = $this->config->get( 'CirrusSearchCrossProjectProfiles' );
+		// Prepare a map where the key is a generated key identifying
+		// profile overrides, value holds an instance of the
+		// SearchContext and the list of wikis associated to it.
+		// This is needed to try building the query
+		// once per profile combination.
+		$byProfile = [
+			'__default__' => [
+				'context' => $this->searchContext,
+				'wikis' => [],
+			]
+		];
+		foreach( $sources as $interwiki => $index ) {
+			if ( isset( $overriddenProfiles[$interwiki] ) ) {
+				$key = $this->prepareContextKey( $overriddenProfiles[$interwiki] );
+			} else {
+				$key = '__default__';
+			}
 
-		// Avoid costly queries to run on other indices
-		if ( $this->searchContext->getSearchComplexity() > self::MAX_COMPLEXITY ) {
-			return null;
+			if ( isset( $byProfile[$key] ) ) {
+				$byProfile[$key]['wikis'][] = $interwiki;
+			} else {
+				assert( isset( $overriddenProfiles[$interwiki] ) );
+				$byProfile[$key] = [
+					'context' => $this->buildOverriddenContext( $overriddenProfiles[$interwiki] ),
+					'wikis' => [ $interwiki ]
+				];
+			}
 		}
 
 		$retval = [];
 		$searches = [];
 		$this->setResultsType( new FullTextResultsType( $this->highlightingConfig ) );
-		foreach ( $sources as $interwiki => $index ) {
-			$this->indexBaseName = $index;
-			$this->searchContext = clone $context;
-			$search = $this->buildSearch();
-			if ( $this->searchContext->areResultsPossible() ) {
-				$searches[$interwiki] = $search;
-			} else {
-				$retval[$interwiki] = [];
+		foreach( $byProfile as $contexts ) {
+			// Build a new context for every search
+			// Some bits in the context may add up when calling
+			// buildFullTextSearch (such as filters).
+			$this->searchContext = $contexts['context'];
+			$this->searchContext->setLimitSearchToLocalWiki( true );
+			$this->searchContext->setOriginalSearchTerm( $term );
+			$this->buildFullTextSearch( $term, false );
+			$context = $this->searchContext;
+
+			foreach ( $sources as $interwiki => $index ) {
+				if ( !in_array( $interwiki, $contexts['wikis'] ) ) {
+					continue;
+				}
+				$this->indexBaseName = $index;
+				$this->searchContext = clone $context;
+				$search = $this->buildSearch();
+				if ( $this->searchContext->areResultsPossible() ) {
+					$searches[$interwiki] = $search;
+				} else {
+					$retval[$interwiki] = [];
+				}
 			}
 		}
 
@@ -172,5 +200,35 @@ class InterwikiSearcher extends Searcher {
 	 */
 	protected function getQueryCacheStatsKey() {
 		return 'CirrusSearch.query_cache.interwiki';
+	}
+
+	/**
+	 * Simple string representation of the overridden profiles
+	 * @param string[] $overriddenProfiles
+	 * @return string
+	 */
+	private function prepareContextKey( $overriddenProfiles ) {
+		return implode( '|', array_map(
+			function( $v, $k ) { return "$k:$v"; },
+			$overriddenProfiles,
+			array_keys( $overriddenProfiles )
+		) );
+	}
+
+	private function buildOverriddenContext( array $overrides ) {
+		$searchContext = new SearchContext( $this->searchContext->getConfig(), $this->searchContext->getNamespaces() );
+		foreach( $overrides as $name => $profile ) {
+			switch( $name ) {
+			case 'ftbuilder':
+				$searchContext->setFulltextQueryBuilderProfile( $profile );
+				break;
+			case 'rescore':
+				$searchContext->setRescoreProfile( $profile );
+				break;
+			default:
+				throw new \RuntimeException( "Cannot override profile: unsupported type $name found in configuration" );
+			}
+		}
+		return $searchContext;
 	}
 }

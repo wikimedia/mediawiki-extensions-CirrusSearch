@@ -3,7 +3,8 @@
 		"authors": [
 			"Milicevic01",
 			"Zoranzoki21",
-			"Сербијана"
+			"Сербијана",
+			"Obsuser"
 		]
 	},
 	"cirrussearch-backend-error": "Нисмо могли завршити претрагу због привременог проблема. Покушајте поново касније.",
@@ -14,5 +15,8 @@
 	"cirrussearch-now-using": "Овај вики има нови начин претраге. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
 	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
+	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",
+	"cirrussearch-qi-profile-wsum-inclinks-pv": "Пондерисана сума на основу долазних веза и седмичног броја прегледа",
+	"cirrussearch-qi-profile-wsum-inclinks": "Пондерисана сума на основу долазних веза",
 	"prefs-completion": "Довршавање претраге"
 }

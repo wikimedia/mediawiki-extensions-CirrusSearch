@@ -899,6 +899,18 @@ $wgCirrusSearchWikiToNameMap = [];
 $wgCirrusSearchEnableCrossProjectSearch = false;
 
 /**
+ * List of crossproject interwiki prefix to ignore
+ * when running crossproject search.
+ * (only useful when the list of cross projects is
+ * obtained via the SiteMatrix extension)
+ * Example :
+ * $wgCirrusSearchCrossProjectSearchBlackList = [ 'n', 'v' ];
+ * In WMF context this would remove wikinews and wikiversity
+ * from the list of crossproject displayed in the sidebar
+ */
+$wgCirrusSearchCrossProjectSearchBlackList = [];
+
+/**
  * When wgCirrusSearchEnableCrossProjectSearch is true
  * Setting wgCirrusSearchHideCrossProjectResults will
  * tell SpecialSearch to run normally without displaying

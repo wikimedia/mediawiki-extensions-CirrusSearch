@@ -61,12 +61,12 @@ class InterwikiResolverTest extends CirrusTestCase {
 	 * @param mixed $arg arg to $what
 	 * @param mixed $expected expected result of $what($arg)
 	 */
-	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected ) {
+	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected, $blacklist = [] ) {
 		if ( !class_exists( \SiteMatrix::class ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
-		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki );
+		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blacklist );
 		switch( $what ) {
 		case 'sisters':
 			asort( $expected );
@@ -108,6 +108,17 @@ class InterwikiResolverTest extends CirrusTestCase {
 					'v' => 'enwikiversity',
 					'voy' => 'enwikivoyage'
 				]
+			],
+			'enwiki sisters with blacklist' => [
+				'enwiki',
+				'sisters', null,
+				[
+					'wikt' => 'enwiktionary',
+					's' => 'enwikisource',
+					'voy' => 'enwikivoyage'
+				],
+				[ 'n', 'b', 'q', 'v' ]
+
 			],
 			'enwikibook sisters' => [
 				'enwikibooks',
@@ -235,7 +246,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		return $resolver;
 	}
 
-	private function getSiteMatrixInterwikiResolver( $wikiId ) {
+	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist ) {
 		$conf = new \SiteConfiguration;
 		$conf->settings = include( __DIR__ . '/resources/wmf/SiteMatrix_SiteConf_IS.php' );
 		$conf->suffixes = include( __DIR__ . '/resources/wmf/suffixes.php' );
@@ -268,6 +279,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'wgCirrusSearchInterwikiSources' => [],
 			'wgCirrusSearchLanguageToWikiMap' => [],
 			'wgCirrusSearchWikiToNameMap' => [],
+			'wgCirrusSearchCrossProjectSearchBlackList' => $blacklist,
 		];
 		$this->setMwGlobals( $myGlobals );
 		$myGlobals['_wikiID'] = $wikiId;

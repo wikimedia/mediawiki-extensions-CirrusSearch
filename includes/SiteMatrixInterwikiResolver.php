@@ -114,7 +114,10 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				}
 				$dbName = $matrix->getDBName( $myLang, $site );
 				$prefix = $siteConf[$site]['prefix'];
-				$sisterProjects[$prefix] = $dbName;
+
+				if ( !in_array( $prefix, $this->config->get( 'CirrusSearchCrossProjectSearchBlackList' ) ) ) {
+					$sisterProjects[$prefix] = $dbName;
+				}
 				$prefixesByWiki[$dbName] = $prefix;
 			}
 

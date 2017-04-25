@@ -1,15 +1,23 @@
 {
     "analyzer": {
         "text": {
-            "type": "hebrew",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "hebrew",
+            "filter": [
+                "niqqud",
+                "hebrew_lemmatizer",
+                "lowercase",
+                "asciifolding"
             ]
         },
         "text_search": {
-            "type": "hebrew_exact",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "hebrew",
+            "filter": [
+                "niqqud",
+                "hebrew_lemmatizer",
+                "lowercase",
+                "asciifolding"
             ]
         },
         "plain": {

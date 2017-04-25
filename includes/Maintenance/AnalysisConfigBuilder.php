@@ -695,11 +695,12 @@ STEMMER_RULES
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
 			break;
 		case 'hebrew':
-			// If the hebrew plugin kicked us over to the hebrew analyzer use its companion
-			// analyzer for queries.
-			if ( $config[ 'analyzer' ][ 'text_search' ][ 'type' ] === 'hebrew' ) {
-				$config[ 'analyzer' ][ 'text_search' ][ 'type' ] = 'hebrew_exact';
-			}
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'hebrew',
+				'filter' => [ 'niqqud', 'hebrew_lemmatizer', 'lowercase', 'asciifolding' ],
+			];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = [
@@ -1032,14 +1033,17 @@ STEMMER_RULES
 	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
 		// multiple plugin requirement can be comma separated
+
 		// For Polish, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
+		// For Ukrainian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
 		// For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
+		// For Hebrew, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
+
 		'analysis-stempel' => [ 'pl' => 'polish' ],
 		'analysis-kuromoji' => [ 'ja' => 'kuromoji' ],
 		'analysis-smartcn' => [ 'zh-hans' => 'smartcn' ],
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
-		'elasticsearch-analysis-hebrew' => [ 'he' => 'hebrew' ],
-		// TODO Hebrew requires some special query handling....
+		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
 	];
 

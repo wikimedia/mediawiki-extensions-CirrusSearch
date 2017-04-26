@@ -528,7 +528,7 @@ class Searcher extends ElasticsearchIntermediary {
 			$extraIndexes = $this->getAndFilterExtraIndexes();
 			$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
 			foreach ( $extraIndexes as $extraIndex ) {
-				$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexTemplateBoosts', $extraIndex );
+				$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
 				if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
 					$this->searchContext->addExtraIndexBoostTemplates(
 						$extraIndexBoosts['wiki'],

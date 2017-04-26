@@ -60,7 +60,7 @@ class SearcherTest extends CirrusTestCase {
 			],
 			'wgCirrusSearchQueryStringMaxDeterminizedStates' => 500,
 			'wgCirrusSearchExtraIndexes' => [],
-			'wgCirrusSearchExtraIndexTemplateBoosts' => [],
+			'wgCirrusSearchExtraIndexBoostTemplates' => [],
 			'wgContentNamespaces' => [ NS_MAIN ],
 			// Override the list of namespaces to give more deterministic results
 			'wgHooks' => [

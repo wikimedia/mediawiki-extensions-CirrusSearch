@@ -151,6 +151,13 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 // wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 //
+// Controls the list of extra handlers to set when the noop script
+// is enabled.
+//
+// $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop_handlers' ] = [
+//    'labels' => 'equals'
+// ];
+//
 // This turns on document level noop-detection for updates based on revision
 // ids and is compatible with wikimedia-extra versions 2.3.4.1 and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true

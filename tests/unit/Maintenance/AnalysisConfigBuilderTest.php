@@ -395,7 +395,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$plugins = [
 			'analysis-stempel', 'analysis-kuromoji',
 			'analysis-smartcn', 'elasticsearch-analysis-hebrew',
-			'analysis-ukrainian',
+			'analysis-ukrainian', 'analysis-stconvert'
 		];
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( is_string( $expected ) ) {

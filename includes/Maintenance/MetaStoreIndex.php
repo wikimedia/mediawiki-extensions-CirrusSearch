@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
+use GitInfo;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -37,7 +38,7 @@ class MetaStoreIndex {
 	 * @const int minor version increment only when adding a new field to
 	 * an existing mapping or a new mapping
 	 */
-	const METASTORE_MINOR_VERSION = 2;
+	const METASTORE_MINOR_VERSION = 3;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -201,6 +202,9 @@ class MetaStoreIndex {
 					'mapping_maj' => [ 'type' => 'long', 'include_in_all' => false ],
 					'mapping_min' => [ 'type' => 'long', 'include_in_all' => false ],
 					'shard_count' => [ 'type' => 'long', 'include_in_all' => false ],
+					'mediawiki_version' => ['type' => 'keyword', 'include_in_all' => false ],
+					'mediawiki_commit' => ['type' => 'keyword', 'include_in_all' => false ],
+					'cirrus_commit' => ['type' => 'keyword', 'include_in_all' => false ],
 				],
 			],
 			self::FROZEN_TYPE => [
@@ -444,6 +448,14 @@ class MetaStoreIndex {
 	}
 
 	/**
+	 * Update versions for all types on the index.
+	 * @param $baseName
+	 */
+	public function updateAllVersions( $baseName ) {
+		self::updateAllMetastoreVersions( $this->connection, $baseName );
+	}
+
+	/**
 	 * Get the internal index type
 	 * @return \Elastica\Type $type
 	 */
@@ -523,5 +535,69 @@ class MetaStoreIndex {
 			(int) $doc->get('metastore_major_version'),
 			(int) $doc->get('metastore_minor_version')
 		];
+	}
+	/**
+	 * Create version data for index type.
+	 * @param Connection $connection
+	 * @param $indexBaseName
+	 * @param $indexTypeName
+	 * @return \Elastica\Document
+	 */
+	public static function versionData( Connection $connection, $indexBaseName,
+	                                    $indexTypeName ) {
+		global $IP, $wgVersion;
+		if ( $indexTypeName == Connection::TITLE_SUGGEST_TYPE ) {
+			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION );
+			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION );
+		} else {
+			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
+			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
+		}
+		$mwInfo = new GitInfo( $IP );
+		$cirrusInfo = new GitInfo( __DIR__ .  '/../..');
+		$data = [
+			'analysis_maj' => $aMaj,
+			'analysis_min' => $aMin,
+			'mapping_maj' => $mMaj,
+			'mapping_min' => $mMin,
+			'shard_count' => $connection->getSettings()->getShardCount( $indexTypeName ),
+			'mediawiki_version' => $wgVersion,
+			'mediawiki_commit' => $mwInfo->getHeadSHA1(),
+			'cirrus_commit' => $cirrusInfo->getHeadSHA1(),
+		];
+
+		return new \Elastica\Document( $connection->getIndexName( $indexBaseName, $indexTypeName ),
+			$data );
+	}
+
+	/**
+	 * Update version metastore for certain index.
+	 * @param Connection $connection
+	 * @param $indexBaseName
+	 * @param $indexTypeName
+	 * @throws \Exception
+	 */
+	public static function updateMetastoreVersions( Connection $connection, $indexBaseName,
+	                                                $indexTypeName ) {
+		$index = self::getVersionType( $connection );
+		if ( !$index->exists() ) {
+			throw new \Exception( "meta store does not exist, you must index your data first" );
+		}
+		$index->addDocument( self::versionData( $connection, $indexBaseName, $indexTypeName ) );
+	}
+
+	/**
+	 * Update metastore versions for all types of certain index.
+	 * @param Connection $connection
+	 * @param string $baseName Base name of the index.
+	 */
+	public static function updateAllMetastoreVersions( Connection $connection, $baseName ) {
+		$versionType = self::getVersionType( $connection );
+		$docs = [];
+		foreach( $connection->getAllIndexTypes() as $type ) {
+			$docs[] = self::versionData( $connection, $baseName, $type );
+		}
+		$versionType->addDocuments( $docs );
+
 	}
 }

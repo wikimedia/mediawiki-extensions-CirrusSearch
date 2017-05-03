@@ -740,23 +740,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function updateVersions() {
 		$this->log( "Updating tracking indexes..." );
-		$index = MetaStoreIndex::getVersionType( $this->getConnection() );
-		if ( !$index->exists() ) {
-			throw new \Exception("meta store does not exist, you must index your data first");
-		}
-		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
-		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
-		$doc = new \Elastica\Document(
-			$this->getIndexTypeName(),
-			[
-				'analysis_maj' => $aMaj,
-				'analysis_min' => $aMin,
-				'mapping_maj' => $mMaj,
-				'mapping_min' => $mMin,
-				'shard_count' => $this->getShardCount(),
-			]
-		);
-		$index->addDocument( $doc );
+		MetaStoreIndex::updateMetastoreVersions( $this->getConnection(), $this->indexBaseName,
+			$this->indexTypeName );
 		$this->output("ok.\n");
 	}
 

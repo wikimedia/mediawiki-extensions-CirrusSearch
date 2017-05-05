@@ -16,5 +16,10 @@
 	"prefs-completion": "Dovršavanje pretrage",
 	"cirrussearch-pref-completion-section-desc": "Dovršavanje pretrage",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dovršavanje pretrage] jest novi algoritam koji omogućava bolje prijedloge pri pretrazi, bolje ispravke tipfelera i bolju relevantnost rezultata.",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Predodređeno (preporučeno)"
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Predodređeno (preporučeno)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dva tipfelera. Rješava bliska preusmjerenja.",
+	"cirrussearch-completion-profile-strict-pref-name": "Strogi režim (napredno)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Bez ispravka tipfelera. Bez ispravka nadrednih/podrednih znakova. Strogo podudaranje.",
+	"cirrussearch-completion-profile-normal-pref-name": "Režim preusmjerenja (napredno)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Bez ispravka tipfelera. Rješava bliska preusmjerenja."
 }

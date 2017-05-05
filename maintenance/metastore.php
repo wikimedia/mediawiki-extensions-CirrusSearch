@@ -119,6 +119,7 @@ class Metastore extends Maintenance {
 			$this->outputIndented( "index name: " . $r->getId() . "\n" );
 			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
 			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
+			$this->outputIndented( "  code version: {$data['mediawiki_version']} ({$data['mediawiki_commit']}, Cirrus: {$data['cirrus_commit']})\n" );
 			$this->outputIndented( "  shards: {$data['shard_count']}\n" );
 		}
 	}
@@ -127,25 +128,8 @@ class Metastore extends Maintenance {
 	 * @param string $baseName
 	 */
 	private function updateIndexVersion( $baseName ) {
-		$versionType = $this->metaStore->versionType();
 		$this->outputIndented( "Updating tracking indexes..." );
-		$docs = [];
-		list( $aMaj, $aMin ) = explode( '.', \CirrusSearch\Maintenance\AnalysisConfigBuilder::VERSION );
-		list( $mMaj, $mMin ) = explode( '.', \CirrusSearch\Maintenance\MappingConfigBuilder::VERSION );
-		$connSettings = $this->getConnection()->getSettings();
-		foreach( $this->getConnection()->getAllIndexTypes() as $type ) {
-			$docs[] = new \Elastica\Document(
-				$this->getConnection()->getIndexName( $baseName, $type ),
-				[
-					'analysis_maj' => $aMaj,
-					'analysis_min' => $aMin,
-					'mapping_maj' => $mMaj,
-					'mapping_min' => $mMin,
-					'shard_count' => $connSettings->getShardCount( $type ),
-				]
-			);
-		}
-		$versionType->addDocuments( $docs );
+		$this->metaStore->updateAllVersions( $baseName );
 		$this->output( "done\n" );
 	}
 

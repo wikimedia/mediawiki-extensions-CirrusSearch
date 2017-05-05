@@ -252,9 +252,9 @@ class MappingConfigBuilder {
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
-		$config[ 'page' ] = $page;
+		$mappingConfig = [ 'page' => $page ];
 
-		$config[ 'namespace' ] = [
+		$mappingConfig[ 'namespace' ] = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],
 			'properties' => [
@@ -269,7 +269,7 @@ class MappingConfigBuilder {
 			],
 		];
 
-		$config[ 'archive' ] = [
+		$mappingConfig[ 'archive' ] = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],
 			'properties' => [
@@ -279,11 +279,11 @@ class MappingConfigBuilder {
 			],
 		];
 		// Do not use copy settings for archive
-		unset( $config['archive']['properties']['title']['copy_to'] );
+		unset( $mappingConfig['archive']['properties']['title']['copy_to'] );
 
-		Hooks::run( 'CirrusSearchMappingConfig', [ &$config, $this ] );
+		Hooks::run( 'CirrusSearchMappingConfig', [ &$mappingConfig, $this ] );
 
-		return $config;
+		return $mappingConfig;
 	}
 
 	/**

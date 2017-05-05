@@ -23,9 +23,6 @@ class ShortTextIndexField extends CirrusIndexField {
 		$config += [
 			// Omit the length norm because we use it only for filtering
 			'norms' => false,
-			// Store positions because by using aggressive_splitting
-			// we need to allow precise position matching with phrases
-			'index_options' => 'positions',
 		];
 		return $config;
 	}

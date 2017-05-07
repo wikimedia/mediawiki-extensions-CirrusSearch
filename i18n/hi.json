@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Hindustanilanguage",
-			"Sfic"
+			"Sfic",
+			"Jayprakash12345"
 		]
 	},
 	"cirrussearch-desc": "मीडियाविकि इलास्टिक-सर्च द्वारा कार्य करती है।",
@@ -19,6 +20,26 @@
 	"cirrussearch-give-feedback": "अपनी प्रतिक्रिया दें",
 	"cirrussearch-query-too-long": "खोज का शब्द अनुमति की सीमा से बाहर है। ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "सुझाव पूर्ण करने वाला",
+	"prefs-completion": "खोज पूरा होने",
+	"cirrussearch-pref-completion-section-desc": "सुझाव पूर्ण करने वाला",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "डिफ़ॉल्ट (संस्तुत)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "दो टाइपो तक ठीक करता है करीब पुनर्निर्देश को हल करता है",
+	"cirrussearch-completion-profile-strict-pref-name": "सख्त मोड (उन्नत)",
+	"cirrussearch-completion-profile-strict-pref-desc": "कोई टाइपो सुधार नहीं। कोई उच्चारण तह नहीं। सख्त मिलान",
+	"cirrussearch-completion-profile-normal-pref-name": "पुननिर्देशित मोड (उन्नत)",
+	"cirrussearch-completion-profile-normal-pref-desc": "कोई टाइपो सुधार नहीं। करीब अनुप्रेषित को हल करता है",
+	"cirrussearch-completion-profile-normal-subphrases-pref-name": "सबफ़्रेज मिलान (उन्नत) के साथ पुननिर्देशित मोड",
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "कोई टाइपो सुधार नहीं। करीब अनुप्रेषित को हल करता है, शीर्षक में सबफ़्रेश मेल करता है",
 	"cirrussearch-pref-completion-legacy-section-desc": "उपसर्ग खोज",
-	"cirrussearch-completion-profile-classic-pref-name": "पुराना उपसर्ग खोज"
+	"cirrussearch-completion-profile-classic-pref-name": "पुराना उपसर्ग खोज",
+	"cirrussearch-completion-profile-classic-pref-desc": "कोई टाइपो सुधार नहीं। शीर्षक की शुरुआत से मेल खाता है।",
+	"cirrussearch-timed-out": "खोज का समय समाप्त हो गया है, केवल आंशिक परिणाम उपलब्ध हैं।",
+	"cirrussearch-regex-timed-out": "रेगेक्स खोज का समय समाप्त हो गया है, केवल आंशिक परिणाम उपलब्ध हैं। पूरा परिणाम प्राप्त करने के लिए अपनी नियमित अभिव्यक्ति को सरल बनाने का प्रयास करें।",
+	"cirrussearch-file-numeric-feature-not-a-number": "खोज शब्द '$1' में संख्यात्मक मान की आवश्यकता होती है, लेकिन '$2' प्रदान किया गया था।",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "खोज शब्द '$1' कई तर्कों और '$2' के साथ एक संकेत प्रदान करने की अनुमति नहीं देता है",
+	"cirrussearch-feature-not-available": "इस विकि पर खोज कीवर्ड '$1' सक्षम नहीं है",
+	"cirrussearch-feature-too-many-conditions": "'$1' के लिए बहुत सारी स्थितियां प्रदान की गईं, जो $2 में कटौती की गईं।",
+	"cirrussearch-incategory-feature-no-valid-categories": "'$1' के लिए कोई मान्य श्रेणी नहीं दिया गया।",
+	"cirrussearch-mlt-feature-no-valid-titles": "'$1' के लिए कोई मान्य शीर्षक नहीं दिया गया।",
+	"cirrussearch-mlt-not-configured": "'$1' सुविधा को गलत तरीके से कॉन्फ़िगर किया गया है। $WgCirrusSearchMoreLikeThisFields को ठीक करने के लिए एक प्रबन्धक से पूछें।"
 }

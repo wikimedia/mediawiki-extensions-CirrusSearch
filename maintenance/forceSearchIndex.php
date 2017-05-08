@@ -46,7 +46,7 @@ class ForceSearchIndex extends Maintenance {
 	public $toDate = null;
 	public $toId = null;
 	public $indexUpdates;
-	public $archiveOnly;
+	public $archive;
 	public $limit;
 	public $queue;
 	public $maxJobs;
@@ -80,7 +80,7 @@ class ForceSearchIndex extends Maintenance {
 		$this->addOption( 'toId', 'Stop indexing at a specific page_id.  Not useful with --deletes or --from or --to.', false, true );
 		$this->addOption( 'ids', 'List of page ids (comma separated) to reindex. Not allowed with deletes/from/to/fromId/toId/limit.', false, true );
 		$this->addOption( 'deletes', 'If this is set then just index deletes, not updates or creates.', false );
-		$this->addOption( 'archiveOnly', 'Don\'t delete pages, only index them into the archive. Only useful with --deletes', false, false );
+		$this->addOption( 'archive', 'Don\'t delete pages, only index them into the archive.', false, false );
 		$this->addOption( 'limit', 'Maximum number of pages to process before exiting the script. Default to unlimited.', false, true );
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
@@ -130,7 +130,11 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->toId = $this->getOption( 'toId' );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
-		$this->archiveOnly = (bool) $this->getOption( 'archiveOnly', false );
+		$this->archive = (bool) $this->getOption( 'archive', false );
+		if ( $this->archive ) {
+			// If we're indexing only for archive, this implies deletes
+			$this->indexUpdates = false;
+		}
 		$this->limit = $this->getOption( 'limit' );
 		$buildChunks = $this->getOption( 'buildChunks' );
 		if ( $buildChunks !== null ) {
@@ -144,7 +148,7 @@ class ForceSearchIndex extends Maintenance {
 		$updateFlags = $this->buildUpdateFlags();
 
 		if ( !$this->getOption( 'batch-size' ) &&
-			( $this->getOption( 'queue' ) || $this->getOption( 'deletes' ) )
+			( $this->getOption( 'queue' ) || !$this->indexUpdates )
 		) {
 			$this->setBatchSize( 100 );
 		}
@@ -159,7 +163,7 @@ class ForceSearchIndex extends Maintenance {
 
 		$operationName = $this->indexUpdates
 			? ( $this->queue ? 'Queued' : 'Indexed' )
-			: 'Deleted';
+			: ( $this->archive ? 'Archived' : 'Deleted' );
 
 		$operationStartTime = microtime( true );
 		$completed = 0;
@@ -192,8 +196,8 @@ class ForceSearchIndex extends Maintenance {
 			} else {
 				$size = count( $batch['titlesToDelete'] );
 				$updater = $this->createUpdater();
-				$updater->archivePages( $batch['archive'] );
-				if ( !$this->archiveOnly ) {
+				$updater->archivePages( $batch['archive'], $this->archive );
+				if ( !$this->archive ) {
 					$updater->deletePages( $batch['titlesToDelete'], $batch['docIdsToDelete'] );
 				}
 			}
@@ -212,11 +216,11 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	private function buildPageIdBatches() {
-		if ( $this->getOption( 'deletes' ) || $this->hasOption( 'limit' )
+		if ( !$this->indexUpdates || $this->hasOption( 'limit' )
 			|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
 			|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
 		) {
-			$this->error( '--ids cannot be used with deletes/from/to/fromId/toId/limit', 1 );
+			$this->error( '--ids cannot be used with deletes/archive/from/to/fromId/toId/limit', 1 );
 		}
 
 		$pageIds = array_map( function( $pageId ) {

@@ -351,7 +351,7 @@ class ForceSearchIndex extends Maintenance {
 		$it = new BatchRowIterator(
 			$dbr,
 			'archive',
-			[ 'ar_timestamp', 'ar_namespace', 'ar_title' ],
+			[ 'ar_namespace', 'ar_title', 'ar_timestamp' ],
 			$this->mBatchSize
 		);
 

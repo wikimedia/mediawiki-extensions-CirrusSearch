@@ -949,6 +949,13 @@ $wgCirrusSearchHideCrossProjectResults = false;
 $wgCirrusSearchNewCrossProjectPage = false;
 
 /**
+ * Informs SpeciaSearch in core that we want
+ * to display multimedia search results alongside
+ * crossproject results
+ */
+$wgCirrusSearchCrossProjectShowMultimedia = false;
+
+/**
  * The number of results to return in cross-project search
  */
 $wgCirrusSearchNumCrossProjectSearchResults = 5;

@@ -15,8 +15,21 @@
 	"cirrussearch-now-using": "Овај вики има нови начин претраге. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
 	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
+	"cirrussearch-completionsuggester-pref": "Предвиђање претраге",
 	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Пондерисана сума на основу долазних веза и седмичног броја прегледа",
 	"cirrussearch-qi-profile-wsum-inclinks": "Пондерисана сума на основу долазних веза",
-	"prefs-completion": "Довршавање претраге"
+	"cirrussearch-pref-completion-profile-help": "Подешавање аутоматских сугестија (претрага у току куцања).",
+	"prefs-completion": "Довршавање претраге",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Предвиђање претраге] је омогућено алгоритмом за давање сугестија при куцању, са бољим системом за распознавање  и исправљање типфелера те одређивање релевантности претраге.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Подразумевано (препоручено)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправља до два типфелера. Решава блиска преусмерења.",
+	"cirrussearch-completion-profile-strict-pref-name": "Строги режим (напредно)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Без исправљања типфелера. Без поистовећивања африката или верзала са еквивалентима. Строго подударање.",
+	"cirrussearch-completion-profile-normal-pref-name": "Режим преусмерења (напредно)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Без исправљања типфелера. Решава блиска преусмерења.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Претрага по префиксу",
+	"cirrussearch-pref-completion-legacy-section-legend": "Стари алгоритам за аутоматско довршавање претраге у току куцања.",
+	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
+	"cirrussearch-completion-profile-classic-pref-desc": "Без исправљања типфелера. Тражи почетке наслова."
 }

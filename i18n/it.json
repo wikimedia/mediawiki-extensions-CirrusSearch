@@ -9,7 +9,8 @@
 			"AndreaBaitelli",
 			"Anto",
 			"Candalua",
-			"Redredsonia"
+			"Redredsonia",
+			"Kaspo"
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
@@ -32,6 +33,7 @@
 	"apihelp-cirrus-settings-dump-example": "Ottieni un dump delle impostazioni di CirrusSearch per questo wiki.",
 	"apierror-cirrus-requesttoolong": "Il prefisso della ricerca ha una lunghezza maggiore rispetto a quella permessa. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Dacci il tuo feedback",
+	"cirrussearch-morelikethis-settings": "#<!-- lascia questa linea esattamente come e' --> <pre>\n# Questo messagio ti lascia configurare le impostazioni della funzione \"altri come questo\"\n# I cambiamenti a questo avranno effetto immediatamente.\n# La sintassi e' la seguente:\n#   * Ogni cosa dal carattere \"#\" alla fine della linea e' un commento.\n#   * Ogni riga non vuota il nome dell'impostazione  e' seguito dal carattere \":\" seguito dal valore.\n# Le impostazioni sono:\n#   * min_doc_freq (integer): Numero minimo di documenti (per frammento) che hanno bisogno di una scadenza per essere considerati.\n#   * max_doc_freq (integer): Massimo numero di documenti (per frammento) che hanno una scadenza per essere considerati.\n#                  Termini ad alta frequenza sono generalmente \"stop word\".\n#   * max_query_terms (integer): Massimo numero di termini da essere considerati. Questo valore e' limitato a $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n#   * min_term_freq (integer): Minimo numero di volte che il termine appare nel documento per essere considerato. Per piccoli campi (titolo) questo valore dovrebbe essere 1.\n#   * minimum_should_match (percentuale -100% a 100%, o numero intero di temini): La percentuale di termini da cofrontare. Predefinito al 30%.\n#   * min_word_len (integer): Lunghezza mininima del termine per essere considerato. Predefinito a 0.\n#   * max_word_len (integer): Lunghezza massima delle parole sopra la quale l parole saranno ignorate. Predefinito e' illimitato (0).\n#   * campi (lista di valori separati dalla virgola): Questi sono i campi da usare. I campi permessi sono title, text, auxiliary_text, opening_text, headings.\n# Esempi di buone righe:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- lascia questa riga esattamente come e' -->",
 	"cirrussearch-query-too-long": "Il testo della ricerca ha una lunghezza maggiore rispetto a quella permessa. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "Suggeritore completamento",
 	"cirrussearch-completionsuggester-desc": "È un nuovo algoritmo per migliorare la ricerca durante la digitazione. Una volta attivata la casella di ricerca nell'angolo in alto a destra, verrà utilizzata questa funzione che suggerisce il possibile completamento della parola che si sta inserendo per la ricerca.",
@@ -53,5 +55,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Ricerca per prefisso",
 	"cirrussearch-pref-completion-legacy-section-legend": "L'algoritmo di suggerimento cerca-mentre-scrivi precedente.",
 	"cirrussearch-completion-profile-classic-pref-name": "Ricerca classica per prefisso",
-	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli."
+	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli.",
+	"cirrussearch-feature-too-many-conditions": "Troppe condizioni fornite per '$1', trocanto in $2."
 }

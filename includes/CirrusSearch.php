@@ -433,6 +433,7 @@ class CirrusSearch extends SearchEngine {
 				if ( $this->config->get( 'CirrusSearchNewCrossProjectPage' ) &&
 					!$this->config->get( 'CirrusSearchHideCrossProjectResults' ) ) {
 					$this->features['enable-new-crossproject-page'] = true;
+					$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' );
 				}
 			}
 		}

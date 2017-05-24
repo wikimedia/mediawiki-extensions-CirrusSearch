@@ -480,7 +480,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	private function getHardLimit() {
 		$limit = $this->limit + $this->offset;
 		$hardLimit = $this->config->get( 'CirrusSearchCompletionSuggesterHardLimit' );
-		if ( $hardLimit === NULL ) {
+		if ( $hardLimit === null ) {
 			$hardLimit = 50;
 		}
 		if ( $limit > $hardLimit ) {

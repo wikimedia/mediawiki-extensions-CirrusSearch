@@ -889,7 +889,7 @@ STEMMER_RULES
 				continue;
 			}
 			$ascii_idx = array_search( 'asciifolding_preserve', $value['filter'] );
-			if ( $ascii_idx !== FALSE ) {
+			if ( $ascii_idx !== false ) {
 				$needDedupFilter = true;
 				array_splice( $value['filter'], $ascii_idx + 1, 0, ['dedup_asciifolding'] );
 			}

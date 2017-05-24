@@ -626,7 +626,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		}
 	}
 
-	public function log( $message, $channel = NULL ) {
+	public function log( $message, $channel = null ) {
 		$date = new \DateTime();
 		parent::output( $date->format('Y-m-d H:i:s') . " " . $message, $channel );
 	}

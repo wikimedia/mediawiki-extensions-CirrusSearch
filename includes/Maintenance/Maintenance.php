@@ -6,6 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\UserTesting;
+use MediaWiki\Services\CannotReplaceActiveServiceException;
 
 /**
  * Cirrus helpful extensions to Maintenance.
@@ -202,5 +203,15 @@ abstract class Maintenance extends \Maintenance {
 		// Don't skew the dashboards by logging these requests to
 		// the global request log.
 		$wgCirrusSearchLogElasticRequests = false;
+		// Disable statsd data collection.
+		try {
+			$services = \MediaWiki\MediaWikiServices::getInstance();
+			$services->redefineService( "StatsdDataFactory",
+				function ( MediaWikiServices $services ) {
+					return new \NullStatsdDataFactory();
+				} );
+		} catch ( CannotReplaceActiveServiceException $e ) {
+			// ignore it, failing to disable stats is tolerable
+		}
 	}
 }

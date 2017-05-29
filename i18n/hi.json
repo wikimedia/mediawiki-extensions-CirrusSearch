@@ -29,6 +29,8 @@
 	"cirrussearch-query-too-long": "खोज का शब्द अनुमति की सीमा से बाहर है। ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "सुझाव पूर्ण करने वाला",
 	"cirrussearch-completion-profile-fast-fuzzy": "प्रयोगिक पुराना प्रोफ़ाइल (हो सकता है कभी भी हटाया जाये)",
+	"cirrussearch-qi-profile-popular-pv": "पायदान प्राथमिक रूप से पन्नों के दृश्य पर आधारित है।",
+	"cirrussearch-qi-profile-popular-inclinks": "पायदान प्राथमिक रूप से आने वाले कड़ियों की संख्या पर आधारित है।",
 	"prefs-completion": "खोज पूरा होने",
 	"cirrussearch-pref-completion-section-desc": "सुझाव पूर्ण करने वाला",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "डिफ़ॉल्ट (संस्तुत)",

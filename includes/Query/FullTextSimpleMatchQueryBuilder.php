@@ -165,7 +165,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			}
 			$phrase->setFields( $fields );
 			$phrase->setQuery( $queryText );
-			return $phrase;
+			return $this->maybeWrapWithTokenCountRouter( $queryText, $phrase );
 		} else {
 			return parent::buildPhraseRescoreQuery( $context, $fields, $queryText, $slop );
 		}

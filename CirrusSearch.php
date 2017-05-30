@@ -165,6 +165,11 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
 // This allows forking on reindexing and is compatible with wikimedia-extra
 // versions 1.3.1, 1.4.2, 1.5.0, and greater:
 // $wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
+//
+// Allows to use lucene tokenizers to activate phrase rescore. This allows not
+// to rely on the presence of spaces (which obviously does not work on spaceless
+// languages). Available since version 5.1.2
+// $wgCirrusSearchWikimediaExtraPlugin['token_count_router'] = true;
 $wgCirrusSearchWikimediaExtraPlugin = [];
 
 // Should CirrusSearch try to support regular expressions with insource:?

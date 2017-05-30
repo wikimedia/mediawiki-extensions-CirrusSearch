@@ -1111,9 +1111,14 @@ $wgCirrusSearchHideCrossProjectResults = false;
 $wgCirrusSearchNewCrossProjectPage = false;
 
 /**
- * Informs SpeciaSearch in core that we want
- * to display multimedia search results alongside
- * crossproject results
+ * Enables the explore similar feature for search results
+ * which adds links to related pages (morelike), categories and
+ * languages beside each search result on the SERP.
+ */
+$wgCirrusExploreSimilarResults = false;
+
+/**
+ * The number of results to return in cross-project search
  */
 $wgCirrusSearchCrossProjectShowMultimedia = false;
 
@@ -1379,7 +1384,7 @@ $wgResourceModules += [
 			'resources/ext.cirrus.serp.js',
 		],
 		'dependencies' => [
-			'mediawiki.Uri'
+			'mediawiki.Uri',
 		],
 		'styles' => [],
 		'messages' => [],
@@ -1387,6 +1392,30 @@ $wgResourceModules += [
 		'localBasePath' => __DIR__,
 		'targets' => [ 'desktop', 'mobile' ],
 	],
+	"ext.cirrus.explore-similar" =>  [
+		'scripts' =>  [
+			'resources/ext.cirrus.explore-similar.js',
+		],
+		'dependencies' => [
+			'mediawiki.api.messages',
+			'mediawiki.template.mustache',
+		],
+		'styles' => [
+			'resources/ext.cirrus.explore-similar.less',
+		],
+		'remoteExtPath' => 'CirrusSearch',
+		'localBasePath' => __DIR__,
+		'targets' => [ 'desktop' ],
+		'messages' => [
+			'cirrussearch-explore-similar-related',
+			'cirrussearch-explore-similar-categories',
+			'cirrussearch-explore-similar-languages',
+			'otherlanguages',
+			'cirrussearch-explore-similar-related-none',
+			'cirrussearch-explore-similar-categories-none',
+			'cirrussearch-explore-similar-languages-none',
+		]
+	]
 ];
 
 /**

@@ -1036,7 +1036,6 @@ STEMMER_RULES
 		// For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
 		'analysis-stempel' => [ 'pl' => 'polish' ],
 		'analysis-kuromoji' => [ 'ja' => 'kuromoji' ],
-		'analysis-smartcn' => [ 'zh-hans' => 'smartcn' ],
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'elasticsearch-analysis-hebrew' => [ 'he' => 'hebrew' ],
 		// TODO Hebrew requires some special query handling....

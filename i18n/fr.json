@@ -74,7 +74,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Recherche de préfixe classique",
 	"cirrussearch-completion-profile-classic-pref-desc": "Aucune correction de faute. Correspond au début des titres.",
 	"cirrussearch-timed-out": "La recherche a expiré, seuls des résultats partiels sont disponibles.",
-	"cirrussearch-regex-timed-out": "La recherche par expression régulière prend trop de temps, des résultats partiels sont disponibles. Essayez de simplifier votre expression régulière pour obtenir des résultats complets.",
+	"cirrussearch-regex-timed-out": "La recherche par expression rationnelle prend trop de temps, des résultats partiels sont disponibles. Essayez de simplifier votre expression pour obtenir des résultats complets.",
 	"cirrussearch-file-numeric-feature-not-a-number": "Le terme recherché '$1' nécessite des valeurs numériques, mais '$2' a été fourni.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Le terme recherché '$1' n'autorise pas de fournir de multiples arguments et un signe avec '$2'.",
 	"cirrussearch-feature-not-available": "Le mot-clé de recherche '$1' n'est pas activé sur ce wiki.",

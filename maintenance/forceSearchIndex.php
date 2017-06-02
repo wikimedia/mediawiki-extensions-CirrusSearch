@@ -379,8 +379,8 @@ class ForceSearchIndex extends Maintenance {
 				'titlesToDelete' => $titlesToDelete,
 				'docIdsToDelete' => $docIdsToDelete,
 				'archive' => $archive,
-				'endingAt' => isset( $row )
-					? ( new MWTimestamp( $row->ar_timestamp ) )->getTimestamp( TS_ISO_8601 )
+				'endingAt' => isset( $title ) ?
+					substr( preg_replace( '/[^' . Title::legalChars() . ']/', '_', $title->getPrefixedDBkey() ), 0, 30 )
 					: 'unknown',
 			];
 		} );

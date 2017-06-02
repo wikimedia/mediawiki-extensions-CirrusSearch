@@ -301,6 +301,9 @@ class InterwikiResolverTest extends CirrusTestCase {
 	}
 
 	private static function readDbListFile( $fileName ) {
-		return @file( $fileName, FILE_IGNORE_NEW_LINES );
+		\MediaWiki\suppressWarnings();
+		$fileContent = file( $fileName, FILE_IGNORE_NEW_LINES );
+		\MediaWiki\restoreWarnings();
+		return $fileContent;
 	}
 }

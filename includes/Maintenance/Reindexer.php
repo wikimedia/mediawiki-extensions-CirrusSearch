@@ -404,7 +404,7 @@ class Reindexer {
 	 * @param Connection $dest Connection to reindex data into
 	 * @return array|null
 	 */
-	static public function makeRemoteReindexInfo( Connection $source, Connection $dest ) {
+	public static function makeRemoteReindexInfo( Connection $source, Connection $dest ) {
 		if ( $source->getClusterName() === $dest->getClusterName() ) {
 			return null;
 		}

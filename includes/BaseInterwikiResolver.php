@@ -67,5 +67,5 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 *
 	 * return array[]
 	 */
-	protected abstract function loadMatrix();
+	abstract protected function loadMatrix();
 }

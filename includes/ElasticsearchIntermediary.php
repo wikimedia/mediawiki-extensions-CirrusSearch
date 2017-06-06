@@ -257,7 +257,7 @@ abstract class ElasticsearchIntermediary {
 	 * @param string $key
 	 * @param string $value
 	 */
-	static public function appendLastLogPayload( $key, $value ) {
+	public static function appendLastLogPayload( $key, $value ) {
 		self::$requestLogger->appendLastLogPayload( $key, $value );
 	}
 

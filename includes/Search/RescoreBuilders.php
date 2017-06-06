@@ -388,7 +388,7 @@ abstract class FunctionScoreBuilder {
 	 *
 	 * @param FunctionScore $container
 	 */
-	public abstract function append( FunctionScore $container );
+	abstract public function append( FunctionScore $container );
 
 	/**
 	 * Utility method to extract a factor (float) that can

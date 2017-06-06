@@ -102,7 +102,7 @@ abstract class IndexAliasValidator extends Validator {
 	 * @param string $name
 	 * @return bool
 	 */
-	protected abstract function shouldRemoveFromAlias( $name );
+	abstract protected function shouldRemoveFromAlias( $name );
 
 	/**
 	 * @param string[] $add Array of indices to add

@@ -430,7 +430,7 @@ class Util {
 	/**
 	 * @return string The context the request is in. Either cli, api or web.
 	 */
-	static public function getExecutionContext() {
+	public static function getExecutionContext() {
 		if ( PHP_SAPI === 'cli' ) {
 			return 'cli';
 		} elseif ( defined( 'MW_API' ) ) {

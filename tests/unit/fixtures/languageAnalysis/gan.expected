@@ -1,15 +1,17 @@
 {
     "analyzer": {
         "text": {
-            "type": "smartcn",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase"
             ]
         },
         "text_search": {
-            "type": "smartcn",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase"
             ]
         },
         "plain": {

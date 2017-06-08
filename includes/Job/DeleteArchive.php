@@ -23,7 +23,7 @@ class DeleteArchive extends Job {
 
 		// Remove page IDs that still have archived revs
 		foreach ( $archive->listRevisions() as $rev ) {
-			unset( $docs[$rev['ar_page_id']] );
+			unset( $docs[$rev->ar_page_id] );
 		}
 
 		if ( empty( $docs ) ) {

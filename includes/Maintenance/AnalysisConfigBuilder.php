@@ -125,13 +125,16 @@ class AnalysisConfigBuilder {
 			$in_config = 'no';
 		}
 		switch( $in_config ) {
-		case 'yes': return true;
-		case 'no': return false;
+		case 'yes':
+			return true;
+		case 'no':
+			return false;
 		case 'default':
 			if ( isset( $this->languagesWithIcuFolding[$this->language] ) ) {
 				return $this->languagesWithIcuFolding[$this->language];
 			}
-		default: return false;
+		default:
+			return false;
 		}
 	}
 
@@ -146,13 +149,16 @@ class AnalysisConfigBuilder {
 		}
 		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
 		switch( $in_config ) {
-		case 'yes': return true;
-		case 'no': return false;
+		case 'yes':
+			return true;
+		case 'no':
+			return false;
 		case 'default':
 			if ( isset( $this->languagesWithIcuTokenization[$this->language] ) ) {
 				return $this->languagesWithIcuTokenization[$this->language];
 			}
-		default: return false;
+		default:
+			return false;
 		}
 	}
 
@@ -322,10 +328,14 @@ class AnalysisConfigBuilder {
 		switch( $this->language ) {
 		// @todo: complete the default filters per language
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
-		case 'fi': return '[^åäöÅÄÖ]';
-		case 'ru': return '[^йЙ]';
-		case 'sv': return '[^åäöÅÄÖ]';
-		default: return null;
+		case 'fi':
+			return '[^åäöÅÄÖ]';
+		case 'ru':
+			return '[^йЙ]';
+		case 'sv':
+			return '[^åäöÅÄÖ]';
+		default:
+			return null;
 		}
 	}
 

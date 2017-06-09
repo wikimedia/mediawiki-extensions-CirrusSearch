@@ -327,7 +327,6 @@ class MetaStoreIndex {
 		return $indexName;
 	}
 
-
 	private function majorUpgrade() {
 		$plugins = $this->configUtils->scanAvailableModules();
 		if ( !array_search( 'reindex', $plugins ) ) {

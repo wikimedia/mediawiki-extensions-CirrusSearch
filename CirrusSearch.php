@@ -531,7 +531,6 @@ $wgCirrusSearchMoreLikeThisConfig = [
 	'minimum_should_match' => '30%',
 ];
 
-
 // Hard limit to the max_query_terms parameter of more like this queries.
 // This prevent running too large queries.
 $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit = 100;
@@ -811,7 +810,6 @@ $wgCirrusSearchICUFoldingUnicodeSetFilter = null;
  */
 $wgCirrusSearchUseIcuTokenizer = 'default';
 
-
 /**
  * Set the default scoring function to be used by maintenance/updateSuggesterIndex.php
  * @see includes/BuildDocument/SuggestScoring.php for more details about scoring functions
@@ -1090,7 +1088,6 @@ $wgCirrusSearchFullTextQueryBuilderProfile = 'default';
  * reindex is running.
  */
 $wgCirrusSearchPrefixIds = false;
-
 
 /**
  * Adds an artificial backend latency in miroseconds.

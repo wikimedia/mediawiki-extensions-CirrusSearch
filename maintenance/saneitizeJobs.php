@@ -323,7 +323,6 @@ EOD
 		return true;
 	}
 
-
 	private function initMetaStores() {
 		$connections = [];
 		if ( $this->hasOption( 'cluster' ) ) {

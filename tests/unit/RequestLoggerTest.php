@@ -113,7 +113,6 @@ class RequestLoggerTest extends CirrusTestCase {
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
 
-
 				$globals = [
 					'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
 					'wgCirrusSearchInterwikiSources' => [],

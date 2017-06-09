@@ -200,7 +200,6 @@ class TextIndexField extends CirrusIndexField {
 		}
 	}
 
-
 	/**
 	 * Init the field flags
 	 */

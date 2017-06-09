@@ -665,7 +665,6 @@ class Hooks {
 		return $result;
 	}
 
-
 	/**
 	 * ResourceLoaderGetConfigVars hook handler
 	 * This should be used for variables which vary with the html
@@ -828,7 +827,6 @@ class Hooks {
 		);
 		return true;
 	}
-
 
 	/**
 	 * When article is undeleted - check the archive for other instances of the title,

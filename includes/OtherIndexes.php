@@ -81,7 +81,6 @@ class OtherIndexes extends Updater {
 			return;
 		}
 
-
 		$updates = [];
 
 		// Build multisearch to find ids to update

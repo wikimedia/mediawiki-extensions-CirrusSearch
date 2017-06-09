@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use SearchEngine;
+
 /**
  * Index field representing datetime field.
  * @package CirrusSearch

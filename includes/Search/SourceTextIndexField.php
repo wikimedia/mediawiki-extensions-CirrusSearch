@@ -23,7 +23,6 @@ class SourceTextIndexField extends TextIndexField {
 		}
 	}
 
-
 	/**
 	 * @param SearchEngine $engine
 	 * @return array|void

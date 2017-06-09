@@ -1,6 +1,7 @@
 <?php
 
 namespace CirrusSearch;
+
 /**
  * CirrusSearch - List of profiles for "Did you mean" suggestions
  *

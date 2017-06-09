@@ -103,7 +103,6 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( $res, 0, "When score is 0 and boost is 0 the score is still 0." );
 	}
 
-
 	public function testQualityScoreBoostTemplates() {
 		$goodDoc = [
 			'template' => [ 'Good' ]
@@ -167,7 +166,6 @@ class SuggestScoringTest extends CirrusTestCase {
 			'redirect' => array_fill( 0, 100, null ),
 			'template' => [ 'Bad' ]
 		];
-
 
 		$this->assertLessThan( $qs->score( $veryGoodArticle ), $qs->score( $goodArticle ),
 			"Same values but a boosted template give a better score" );

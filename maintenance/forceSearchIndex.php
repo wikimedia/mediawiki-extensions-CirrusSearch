@@ -65,7 +65,6 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private $pageIds;
 
-
 	public function __construct() {
 		parent::__construct();
 		$this->mDescription = "Force indexing some pages.  Setting --from or --to will switch from page id based indexing to "
@@ -201,7 +200,6 @@ class ForceSearchIndex extends Maintenance {
 					$updater->deletePages( $batch['titlesToDelete'], $batch['docIdsToDelete'] );
 				}
 			}
-
 
 			$completed += $size;
 			$rate = $this->calculateIndexingRate( $completed, $operationStartTime );
@@ -385,7 +383,6 @@ class ForceSearchIndex extends Maintenance {
 			];
 		} );
 	}
-
 
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );

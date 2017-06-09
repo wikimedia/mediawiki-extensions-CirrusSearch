@@ -90,7 +90,8 @@ class InterwikiResolverTest extends CirrusTestCase {
 				$resolver->getSameProjectWikiByLang( $arg )
 			);
 			break;
-		default: throw new \Exception( "Invalid op $what" );
+		default:
+			throw new \Exception( "Invalid op $what" );
 		}
 	}
 

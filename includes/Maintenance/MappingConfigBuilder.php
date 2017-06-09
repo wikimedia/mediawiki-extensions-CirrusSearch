@@ -124,7 +124,6 @@ class MappingConfigBuilder {
 			];
 		}
 
-
 		$page = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],

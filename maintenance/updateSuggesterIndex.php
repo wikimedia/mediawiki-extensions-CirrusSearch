@@ -113,7 +113,6 @@ class UpdateSuggesterIndex extends Maintenance {
 	 */
 	private $availablePlugins;
 
-
 	/**
 	 * @var string
 	 */

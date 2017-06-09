@@ -254,7 +254,6 @@ class Connection extends ElasticaConnection {
 		return $matches[1];
 	}
 
-
 	/**
 	 * Get the index suffix for a given namespace
 	 * @param int $namespace A namespace id

@@ -54,7 +54,9 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		$keyListRegex = implode(
 			'|',
 			array_map(
-				function( $kw ) { return preg_quote( $kw ); },
+				function( $kw ) {
+					return preg_quote( $kw );
+				},
 				$this->getKeywords()
 			)
 		);

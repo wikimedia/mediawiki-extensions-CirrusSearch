@@ -38,7 +38,6 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$this->assertEquals( $expectedQueries, $suggest );
 	}
 
-
 	public function provideQueries() {
 		$simpleProfile = [
 			'plain' => [

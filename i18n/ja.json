@@ -6,7 +6,8 @@
 			"SkyDaisy9",
 			"Sujiniku",
 			"Takot",
-			"Mirinano"
+			"Mirinano",
+			"Iwai.masaharu"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
@@ -26,7 +27,9 @@
 	"cirrussearch-give-feedback": "フィードバックをください",
 	"cirrussearch-completionsuggester-pref": "Completion suggester",
 	"cirrussearch-completionsuggester-desc": "新しいアルゴリズムの検索候補表示を入力時に使用します。もし、これを有効化した場合、ページ右上などにある検索ボックスで Completion Suggester が使用されます。",
-	"prefs-completion": "検索の設定",
+	"cirrussearch-pref-completion-profile-help": "（あなたが入力した検索文字列による）自動補完の提案時の挙動を設定します。",
+	"prefs-completion": "検索の補完",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester]は、タイプミスの補正と関連性を重視した検索結果を提供する、素敵なサジェスト機能をもつ検索のためのアルゴリズムです。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "既定（推奨）",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "2つのタイプミスを修正します。よく似たリダイレクトを解決します。",
 	"cirrussearch-completion-profile-strict-pref-name": "完全一致モード（上級）",
@@ -34,5 +37,8 @@
 	"cirrussearch-completion-profile-normal-pref-name": "リダイレクトモード（上級）",
 	"cirrussearch-completion-profile-normal-pref-desc": "タイプミスは修正しません。よく似たリダイレクトのみ解決します。",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "部分一致のリダイレクトモード（上級）",
-	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "タイプミスは修正しません。よく似たリダイレクトを解決します。タイトルの一部と一致します。"
+	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "タイプミスは修正しません。よく似たリダイレクトを解決します。タイトルの一部と一致します。",
+	"cirrussearch-pref-completion-legacy-section-legend": "検索文字列をそのまま使ってサジェストするレガシーなアルゴリズム。",
+	"cirrussearch-completion-profile-classic-pref-name": "クラシックな前方一致検索",
+	"cirrussearch-completion-profile-classic-pref-desc": "タイプミスは修正しません。タイトルに対して前方一致で検索します。"
 }

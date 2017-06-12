@@ -119,7 +119,6 @@ class ReindexTask {
 		return new ReindexStatus( $status );
 	}
 
-
 	private function mergeStatusWithChildren( array $status, array $childResponse ) {
 		foreach ( $childResponse['nodes'] as $nodeData ) {
 			foreach ( $nodeData['tasks'] as $taskId => $childData ) {

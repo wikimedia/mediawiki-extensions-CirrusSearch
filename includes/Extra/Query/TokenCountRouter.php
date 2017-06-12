@@ -124,8 +124,10 @@ class TokenCountRouter extends AbstractQuery {
 		case self::EQ:
 		case self::NEQ:
 		case self::LT:
-		case self::LTE: break;
-		default: throw new \InvalidArgumentException( "$type is not allowed as a condition type" );
+		case self::LTE:
+			break;
+		default:
+			throw new \InvalidArgumentException( "$type is not allowed as a condition type" );
 		}
 		return $this->addParam( 'conditions', [
 			$type => $value,

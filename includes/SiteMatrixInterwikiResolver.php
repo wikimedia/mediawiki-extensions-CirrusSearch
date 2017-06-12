@@ -50,7 +50,6 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		return true;
 	}
 
-
 	protected function loadMatrix() {
 		$cacheKey = $this->cache->makeKey( 'cirrussearch-interwiki-matrix', 'v1' );
 		$matrix = $this->cache->getWithSetCallback(

@@ -248,7 +248,6 @@ class Checker {
 		return false;
 	}
 
-
 	/**
 	 * Check that the indexed version of the page is the
 	 * latest version in the database.

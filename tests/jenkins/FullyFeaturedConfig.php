@@ -22,7 +22,6 @@
 
 require_once( "$IP/extensions/Elastica/Elastica.php" );
 
-
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;

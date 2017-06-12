@@ -116,7 +116,6 @@ class IndexCreator {
 			$args['settings']['index.query.default_field'] = 'all';
 		}
 
-
 		return $args;
 	}
 

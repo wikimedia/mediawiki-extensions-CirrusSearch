@@ -1,7 +1,5 @@
 <?php
 
-
-
 // w sum with pageviews and inc links
 $CirrusSearchWP10W = 3;
 $wgCirrusSearchPageViewsW = 3;//0.;//2.5;
@@ -41,7 +39,6 @@ $wgCirrusSearchRescoreProfiles['relforge'] = array(
 		),
 	),
 );
-
 
 $wgCirrusSearchRescoreProfiles['relforge_inclinks'] = array(
 	'supported_namespaces' => 'all',

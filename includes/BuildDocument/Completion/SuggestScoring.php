@@ -66,7 +66,6 @@ interface SuggestScoringMethod {
 	public function setMaxDocs( $maxDocs );
 }
 
-
 /**
  * Very simple scoring method based on incoming links
  */
@@ -88,7 +87,8 @@ class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	/**
 	 * @param int $maxDocs
 	 */
-	public function setMaxDocs( $maxDocs ) {}
+	public function setMaxDocs( $maxDocs ) {
+	}
 }
 
 /**
@@ -276,7 +276,6 @@ class QualityScore implements SuggestScoringMethod {
 		}
 	}
 }
-
 
 /**
  * Score that combines QualityScore and the pageviews statistics (popularity)

@@ -25,7 +25,6 @@ use UsageException;
 use User;
 use WebRequest;
 
-
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
  * is single use only.
@@ -370,8 +369,6 @@ class Searcher extends ElasticsearchIntermediary {
 			$features,
 			$builderSettings['settings']
 		);
-
-
 
 		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
 			throw new RuntimeException( "Bad builder class configured: {$builderSettings['builder_class']}" );

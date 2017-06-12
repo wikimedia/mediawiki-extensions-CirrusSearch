@@ -166,7 +166,12 @@ class InterwikiSearcher extends Searcher {
 			// take the first 8 chars from the md5 to build a uint32
 			// and to prevent hexdec from returning floats
 			mt_srand( hexdec( substr( Util::generateIdentToken(), 0, 8 ) ) );
-			$sortKeys = array_map( function () { return mt_rand(); }, $retval );
+			$sortKeys = array_map(
+				function () {
+					return mt_rand();
+				},
+				$retval
+			);
 			// "Randomly" sort crossproject results
 			// Should give the same order for the same identity
 			array_multisort( $sortKeys, SORT_ASC, $retval );
@@ -209,7 +214,9 @@ class InterwikiSearcher extends Searcher {
 	 */
 	private function prepareContextKey( $overriddenProfiles ) {
 		return implode( '|', array_map(
-			function( $v, $k ) { return "$k:$v"; },
+			function( $v, $k ) {
+				return "$k:$v";
+			},
 			$overriddenProfiles,
 			array_keys( $overriddenProfiles )
 		) );

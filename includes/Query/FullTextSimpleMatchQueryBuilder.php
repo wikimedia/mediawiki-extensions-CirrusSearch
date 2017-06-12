@@ -284,7 +284,6 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$boolQuery->addFilter( $filter );
 	}
 
-
 	/**
 	 * Builds a simple filter on all and all.plain when all terms must match
 	 *

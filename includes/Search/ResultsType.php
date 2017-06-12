@@ -421,7 +421,6 @@ class FullTextResultsType extends BaseResultsType {
 		return $config;
 	}
 
-
 	/**
 	 * Behaves like array_merge with recursive descent. Unlike array_merge_recursive,
 	 * but just like array_merge, this does not convert non-arrays into arrays.

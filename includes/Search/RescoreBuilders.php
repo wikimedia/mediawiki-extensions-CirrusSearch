@@ -104,7 +104,8 @@ class RescoreBuilder {
 		case self::FUNCTION_SCORE_TYPE:
 			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
 			return $funcChain->buildRescoreQuery();
-		default: throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
+		default:
+			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
 	}
 

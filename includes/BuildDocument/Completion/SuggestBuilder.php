@@ -217,7 +217,6 @@ class SuggestBuilder {
 		return array_values( array_unique( $fields ) );
 	}
 
-
 	/**
 	 * Builds the 'title' suggestion.
 	 *

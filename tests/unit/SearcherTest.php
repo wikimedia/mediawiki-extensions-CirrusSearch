@@ -46,7 +46,6 @@ class SearcherTest extends CirrusTestCase {
 		return $tests;
 	}
 
-
 	/**
 	 * @dataProvider searchTextProvider
 	 */

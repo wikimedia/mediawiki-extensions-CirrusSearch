@@ -318,7 +318,6 @@ class SearchContext {
 		$this->preferRecentHalfLife = $preferRecentHalfLife;
 	}
 
-
 	/**
 	 * @return bool true if preferRecent options have been set.
 	 */
@@ -659,7 +658,6 @@ class SearchContext {
 			}
 			$mainQuery->addFilter( $unifiedFilter );
 		}
-
 
 		return $mainQuery;
 	}

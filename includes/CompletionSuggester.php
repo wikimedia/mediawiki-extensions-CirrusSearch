@@ -404,7 +404,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 							// for CrossNS redirect we prefer the returned suggestion
 							$suggestion->setText( $targetTitle );
 
-
 						} else {
 							$suggestion->setText( $page );
 						}

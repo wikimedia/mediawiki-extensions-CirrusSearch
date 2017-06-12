@@ -45,10 +45,14 @@ class UserTestingTest extends CirrusTestCase {
 			->getMock();
 		$mockReq->expects( $this->any() )
 			->method( 'getIP' )
-			->will( $this->returnCallback( function () { return mt_rand(); } ) );
+			->will( $this->returnCallback( function () {
+				return mt_rand();
+			} ) );
 		$mockReq->expects( $this->any() )
 			->method( 'getHeader' )
-			->will( $this->returnCallback( function () { return mt_rand(); } ) );
+			->will( $this->returnCallback( function () {
+				return mt_rand();
+			} ) );
 
 		\RequestContext::getMain()->setRequest( $mockReq );
 
@@ -109,10 +113,18 @@ class UserTestingTest extends CirrusTestCase {
 			] ),
 			'wgCirrusSearchBoostLinks' => false,
 		] );
-		$ut = UserTesting::getInstance( function () { return true; } );
+		$ut = UserTesting::getInstance(
+			function () {
+				return true;
+			}
+		);
 		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
 		$GLOBALS['wgCirrusSearchBoostLinks'] = false;
-		$ut = UserTesting::getInstance( function () { return true; } );
+		$ut = UserTesting::getInstance(
+			function () {
+				return true;
+			}
+		);
 		$this->assertEquals( false, $GLOBALS['wgCirrusSearchBoostLinks'] );
 	}
 

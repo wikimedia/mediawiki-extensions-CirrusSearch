@@ -23,7 +23,7 @@ class MultiSearch extends \Elastica\Multi\Search {
 			'preference' => true,
 		];
 		$queryOptions = array_diff_key( $header, $toKeep );
-		$actualHeader = array_intersect_key( $header, $toKeep );;
+		$actualHeader = array_intersect_key( $header, $toKeep );
 
 		$data = \Elastica\JSON::stringify($actualHeader)."\n";
 		$queryBody = $query->toArray() + $queryOptions;

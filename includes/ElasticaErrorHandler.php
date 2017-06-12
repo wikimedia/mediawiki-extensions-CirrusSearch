@@ -75,7 +75,7 @@ class ElasticaErrorHandler {
 		$error = self::extractFullError( $exception );
 		if ( isset( $error['root_cause'][0]['type'] ) ) {
 			$error = reset( $error['root_cause'] );
-		} else if ( ! ( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
+		} elseif ( ! ( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
 			return 'unknown';
 		}
 
@@ -217,7 +217,7 @@ class ElasticaErrorHandler {
 			if ( preg_match( '/(?:[a-z_]+: )?(.+) at position (\d+)/', $syntaxError, $matches ) ) {
 				$errorMessage = $matches[ 1 ];
 				$position = $matches[ 2 ];
-			} else if ( $syntaxError === 'unexpected end-of-string' ) {
+			} elseif ( $syntaxError === 'unexpected end-of-string' ) {
 				$errorMessage = 'regex too short to be correct';
 			}
 			$status = Status::newFatal( 'cirrussearch-regex-syntax-error', $errorMessage, $position );

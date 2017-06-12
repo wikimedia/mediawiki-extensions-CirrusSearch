@@ -224,7 +224,7 @@ class TextIndexField extends CirrusIndexField {
 		if ( isset( $similarity['fields'] ) ) {
 			if( isset( $similarity['fields'][$field] ) ) {
 				$fieldSimilarity = $similarity['fields'][$field];
-			} else if ( $similarity['fields']['__default__'] ) {
+			} elseif ( $similarity['fields']['__default__'] ) {
 				$fieldSimilarity = $similarity['fields']['__default__'];
 			}
 

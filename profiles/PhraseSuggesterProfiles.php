@@ -191,7 +191,7 @@ class PhraseSuggesterProfiles {
 			case 'collate' :
 				if ( $v === 'true' ) {
 					$wgCirrusSearchPhraseSuggestSettings['collate'] = true;
-				} else if ( $v === 'false' ) {
+				} elseif ( $v === 'false' ) {
 					$wgCirrusSearchPhraseSuggestSettings['collate'] = false;
 				}
 				break;
@@ -202,7 +202,7 @@ class PhraseSuggesterProfiles {
 							'alpha' => 0.5
 						]
 					];
-				} else if ( $v === 'stupid_backoff' ) {
+				} elseif ( $v === 'stupid_backoff' ) {
 					$wgCirrusSearchPhraseSuggestSettings['smoothing_model'] = [
 						'stupid_backoff' => [
 							'discount' => 0.4

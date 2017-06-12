@@ -199,7 +199,7 @@ class FancyTitleResultsType extends TitleResultsType {
 			// though.
 			if ( isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
 				$resultForTitle[ 'titleMatch' ] = $title;
-			} else if ( isset( $highlights[ "title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
+			} elseif ( isset( $highlights[ "title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
 				$resultForTitle[ 'titleMatch' ] = $title;
 			}
 			$redirectHighlights = [];

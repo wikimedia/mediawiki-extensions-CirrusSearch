@@ -592,7 +592,7 @@ class CirrusSearch extends SearchEngine {
 		if ( empty( $variants ) ) {
 			global $wgContLang;
 			$variants = $wgContLang->autoConvertToAllVariants( $search );
-		} else if ( count( $variants ) > 3 ) {
+		} elseif ( count( $variants ) > 3 ) {
 			// We should not allow too many variants
 			$variants = array_slice( $variants, 0, 3 );
 		}

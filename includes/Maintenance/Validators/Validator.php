@@ -90,7 +90,7 @@ abstract class Validator {
 	private function normalizeConfigValue( $value ) {
 		if ( $value === true ) {
 			return 'true';
-		} else if ( $value === false ) {
+		} elseif ( $value === false ) {
 			return 'false';
 		}
 		return $value;

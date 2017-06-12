@@ -251,9 +251,9 @@ class Util {
 		if ( $val !== null && is_numeric( $val ) ) {
 			if ( !isset( $limit ) ) {
 				$dest = $val;
-			} else if ( $upperLimit && $val <= $limit ) {
+			} elseif ( $upperLimit && $val <= $limit ) {
 				$dest = $val;
-			} else if ( !$upperLimit && $val >= $limit ) {
+			} elseif ( !$upperLimit && $val >= $limit ) {
 				$dest = $val;
 			}
 		}

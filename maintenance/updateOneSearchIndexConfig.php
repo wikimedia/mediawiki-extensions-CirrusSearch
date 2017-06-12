@@ -302,7 +302,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		if ( $this->startOver ) {
 			$this->createIndex( true, "Blowing away index to start over..." );
-		} else if ( !$this->getIndex()->exists() ) {
+		} elseif ( !$this->getIndex()->exists() ) {
 			$this->createIndex( false, "Creating index..." );
 		}
 

@@ -70,7 +70,7 @@ class SuggestScoringTest extends CirrusTestCase {
 			$this->assertGreaterThanOrEqual( 0, $score, "boost cannot produce a score lower than 0" );
 			if ( $boost > 1 ) {
 				$this->assertGreaterThan( $score, $res, "With a boost ($boost) greater than 1 the boosted score must be greater than the original." );
-			} else if ( $boost < 1 ) {
+			} elseif ( $boost < 1 ) {
 				$this->assertLessThan( $score, $res, "With a boost ($boost) less than 1 the boosted score must be less than the original." );
 			} else {
 				$this->assertEquals( $score, $res, "When boost is 1 the score remains unchanged." );

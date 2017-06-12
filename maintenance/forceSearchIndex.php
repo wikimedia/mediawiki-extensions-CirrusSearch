@@ -221,14 +221,16 @@ class ForceSearchIndex extends Maintenance {
 			$this->error( '--ids cannot be used with deletes/archive/from/to/fromId/toId/limit', 1 );
 		}
 
-		$pageIds = array_map( function( $pageId ) {
+		$pageIds = array_map(
+			function( $pageId ) {
 				$pageId = trim( $pageId );
 				if ( !ctype_digit( $pageId ) ) {
 					$this->error( "Invalid page id provided in --ids, got '$pageId', expected a positive integer", 1 );
 				}
 				return intval( $pageId );
 			},
-			explode( ',', $this->getOption( 'ids' ) ) );
+			explode( ',', $this->getOption( 'ids' ) )
+		);
 		return array_unique( $pageIds, SORT_REGULAR );
 	}
 

@@ -44,12 +44,12 @@ class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
 
 	private function getSearchConfig() {
 		return $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
-            ->getMock();
+			->getMock();
 	}
 
 	private function getSearchEngine() {
 		return $this->getMockBuilder( 'CirrusSearch' )
-            ->getMock();
+			->getMock();
 	}
 
 }

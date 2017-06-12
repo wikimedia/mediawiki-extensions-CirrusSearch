@@ -26,7 +26,7 @@ use CirrusSearch\DataSender;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if( $IP === false ) {
-        $IP = __DIR__ . '/../../..';
+	$IP = __DIR__ . '/../../..';
 }
 require_once( "$IP/maintenance/Maintenance.php" );
 require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );

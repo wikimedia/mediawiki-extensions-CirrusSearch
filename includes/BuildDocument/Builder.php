@@ -79,7 +79,7 @@ abstract class ParseBuilder extends Builder {
 	 * @param Title|null $title The title to build a document for
 	 * @param Content $content The page content to build a document from
 	 * @param ParserOutput $parserOutput The parser output to build a document from
-	 */ 
+	 */
 	public function __construct( \Elastica\Document $doc, Title $title = null, Content $content, ParserOutput $parserOutput ) {
 		parent::__construct( $doc, $title );
 		$this->content = $content;

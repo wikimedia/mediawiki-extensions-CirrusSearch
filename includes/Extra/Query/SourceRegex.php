@@ -69,15 +69,15 @@ class SourceRegex extends AbstractQuery {
 		return $this->setParam( 'ngram_field', $ngramField );
 	}
 
-    /**
-     * @param int $gramSize size of the ngrams extracted for accelerating
-     *  the regex.  Defaults to 3 if not set.  That gram size must have been
-     *  produced by analyzing the ngramField.
-     * @return self
-     */
-    public function setGramSize( $gramSize ) {
-        return $this->setParam( 'gram_size', $gramSize );
-    }
+	/**
+	 * @param int $gramSize size of the ngrams extracted for accelerating
+	 *  the regex.  Defaults to 3 if not set.  That gram size must have been
+	 *  produced by analyzing the ngramField.
+	 * @return self
+	 */
+	public function setGramSize( $gramSize ) {
+		return $this->setParam( 'gram_size', $gramSize );
+	}
 
 	/**
 	 * @param int $maxExpand maximum range before outgoing automaton arcs are
@@ -131,14 +131,14 @@ class SourceRegex extends AbstractQuery {
 		return $this->setParam( 'case_sensitive', $caseSensitive );
 	}
 
-    /**
-     * @param string $locale locale used for case conversions.  Its important that
-     *  this matches the locale used for lowercasing in the ngram index.
-     * @return self
-     */
-    public function setLocale( $locale ) {
-        return $this->setParam( 'locale', $locale );
-    }
+	/**
+	 * @param string $locale locale used for case conversions.  Its important that
+	 *  this matches the locale used for lowercasing in the ngram index.
+	 * @return self
+	 */
+	public function setLocale( $locale ) {
+		return $this->setParam( 'locale', $locale );
+	}
 
 	/**
 	 * @param int $maxNgrams The maximum number of ngrams to extracted from the

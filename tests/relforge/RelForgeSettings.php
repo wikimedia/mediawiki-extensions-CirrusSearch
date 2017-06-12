@@ -10,9 +10,9 @@ require_once ( __DIR__ . "/../jenkins/Jenkins.php" );
 
 // pop score is global
 $wgHooks['CirrusSearchMappingConfig'][] = function( array &$config, $mappingConfigBuilder ) {
-        $config['page']['properties']['popularity_score'] = [
-                'type' => 'double',
-        ];
+	$config['page']['properties']['popularity_score'] = [
+		'type' => 'double',
+	];
 };
 
 // No need for replicas in relforge
@@ -42,7 +42,7 @@ $wgCirrusSearchRescoreProfile = 'wsum_inclinks';
 
 // Activate devel options useful for relforge
 $wgCirrusSearchDevelOptions = [
-        'morelike_collect_titles_from_elastic' => true,
+	'morelike_collect_titles_from_elastic' => true,
 	'ignore_missing_rev' => true,
 ];
 

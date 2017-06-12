@@ -61,7 +61,7 @@ class RegexInSourceFeature implements KeywordFeature {
 		return QueryHelper::extractSpecialSyntaxFromTerm(
 			$context,
 			$term,
-            '/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
+			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
 			function ( $matches ) use ( $context ) {
 				if ( !$this->enabled ) {
 					$context->addWarning(

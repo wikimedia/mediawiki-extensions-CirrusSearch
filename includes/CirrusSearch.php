@@ -81,10 +81,10 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $request;
 
-    /**
-     * CirrusSearchIndexFieldFactory
-     */
-    private $searchIndexFieldFactory;
+	/**
+	 * CirrusSearchIndexFieldFactory
+	 */
+	private $searchIndexFieldFactory;
 
 	/**
 	 * Sets the behaviour for the dump query, dump result, etc debugging features.
@@ -100,14 +100,14 @@ class CirrusSearch extends SearchEngine {
 		// This is useful to do tests accross multiple clusters
 		UserTesting::getInstance();
 		$this->config = MediaWikiServices::getInstance()
-				->getConfigFactory()
-				->makeConfig( 'CirrusSearch' );
+			->getConfigFactory()
+			->makeConfig( 'CirrusSearch' );
 		$this->indexBaseName = $baseName === null
 			? $this->config->get( SearchConfig::INDEX_BASE_NAME )
 			: $baseName;
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
-        $this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
+		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
@@ -170,7 +170,8 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( $this->isFeatureEnabled( 'rewrite' ) &&
-				$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) ) {
+			$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] )
+		) {
 			$status = $this->searchTextSecondTry( $term, $status );
 		}
 		ElasticsearchIntermediary::setResultPages( [ $status->getValue() ] );

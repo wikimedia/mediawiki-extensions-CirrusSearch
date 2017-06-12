@@ -350,11 +350,14 @@ class SuggestBuilderTest extends CirrusTestCase {
 	private function buildSuggestions( $builder, $doc ) {
 		$id = $doc['id'];
 		unset( $doc['id'] );
-		return array_map( function( $x ) {
+		return array_map(
+			function( $x ) {
 				$dat = $x->getData();
 				unset( $dat['batch_id'] );
 				return $dat;
-			}, $builder->build( [ [ 'id' => $id, 'source' => $doc ] ] ) );
+			},
+			$builder->build( [ [ 'id' => $id, 'source' => $doc ] ] )
+		);
 	}
 
 	/**

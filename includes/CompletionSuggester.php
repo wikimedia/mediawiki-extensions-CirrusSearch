@@ -323,7 +323,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param int $queryLen the original query length
 	 * @return array new variant profiles
 	 */
-	 protected function handleVariants( array $profiles, $queryLen ) {
+	protected function handleVariants( array $profiles, $queryLen ) {
 		$variantIndex = 0;
 		$allVariantProfiles = [];
 		$allSuggestions = [];

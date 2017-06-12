@@ -15,7 +15,7 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 ];
 
 $wgHooks['CirrusSearchMappingConfig'][] = function( array &$config, $mappingConfigBuilder ) {
-        $config['page']['properties']['wp10'] = [
-                'type' => 'double',
-        ];
+	$config['page']['properties']['wp10'] = [
+		'type' => 'double',
+	];
 };

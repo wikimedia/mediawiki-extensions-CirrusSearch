@@ -21,7 +21,7 @@ class BoostTemplatesFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['boost-templates'];
+		return [ 'boost-templates' ];
 	}
 
 	/**

@@ -15,7 +15,7 @@ class HasTemplateFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['hastemplate'];
+		return [ 'hastemplate' ];
 	}
 
 	/**

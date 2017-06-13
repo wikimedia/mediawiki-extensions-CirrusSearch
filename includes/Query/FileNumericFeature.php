@@ -17,7 +17,7 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['filesize', 'filebits', 'fileh', 'filew', 'fileheight', 'filewidth', 'fileres'];
+		return [ 'filesize', 'filebits', 'fileh', 'filew', 'fileheight', 'filewidth', 'fileres' ];
 	}
 
 	/**
@@ -79,9 +79,9 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	protected function extractSign( $value, $default = 0 ) {
 		if ( $value[0] == '>' || $value[0] == '<' ) {
 			$sign = ( $value[0] == '>' ) ? 1 : - 1;
-			return [$sign, substr( $value, 1 )];
+			return [ $sign, substr( $value, 1 ) ];
 		} else {
-			return [$default, $value];
+			return [ $default, $value ];
 		}
 	}
 
@@ -165,7 +165,7 @@ class FileNumericFeature extends SimpleKeywordFeature {
 					'lte' => intval( $numbers[1] ) * $multiplier
 				] );
 			}
-			$query = new  Query\Match();
+			$query = new Query\Match();
 			$query->setFieldQuery( $field, (string)( $number * $multiplier ) );
 		}
 		return $query;

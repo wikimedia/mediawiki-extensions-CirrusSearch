@@ -25,7 +25,7 @@ class LanguageFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['inlanguage'];
+		return [ 'inlanguage' ];
 	}
 
 	/**
@@ -59,6 +59,6 @@ class LanguageFeature extends SimpleKeywordFeature {
 			}
 		}
 
-		return [Filters::booleanOr( $queries, false ), false];
+		return [ Filters::booleanOr( $queries, false ), false ];
 	}
 }

@@ -16,7 +16,7 @@ class FileTypeFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['filetype','filemime'];
+		return [ 'filetype','filemime' ];
 	}
 
 	/**
@@ -34,14 +34,13 @@ class FileTypeFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		if ( $key == 'filetype' ) {
-			if ( ( $aliases = $context->getConfig()->get( 'CirrusSearchFiletypeAliases' ) ) ) {
-				if ( isset( $aliases[$value] ) ) {
-					$value = $aliases[$value];
-				}
+			$aliases = $context->getConfig()->get( 'CirrusSearchFiletypeAliases' );
+			if ( is_array( $aliases ) && isset( $aliases[$value] ) ) {
+				$value = $aliases[$value];
 			}
 			$query = new Query\Match( 'file_media_type', [ 'query' => $value ] );
 		} else {
-			if ($value !== $quotedValue ) {
+			if ( $value !== $quotedValue ) {
 				// If used with quotes we create a more precise phrase query
 				$query = new Query\MatchPhrase( 'file_mime', $value );
 			} else {

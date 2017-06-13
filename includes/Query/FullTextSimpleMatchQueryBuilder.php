@@ -160,7 +160,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$phrase->setParam( 'type', 'phrase' );
 			$phrase->setParam( 'slop', $slop );
 			$fields = [];
-			foreach( $this->phraseFields as $f => $b ) {
+			foreach ( $this->phraseFields as $f => $b ) {
 				$fields[] = "$f^$b";
 			}
 			$phrase->setFields( $fields );
@@ -195,7 +195,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$this->attachFilter( $this->filter, $queryString, $query );
 		$dismaxQueries = [];
 
-		foreach( $this->fields as $f => $settings ) {
+		foreach ( $this->fields as $f => $settings ) {
 			$mmatch = new \Elastica\Query\MultiMatch();
 			$mmatch->setQuery( $queryString );
 			$queryType = $this->defaultQueryType;
@@ -209,7 +209,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 				$boost = isset( $settings['boost'] ) ? $settings['boost'] : $boost;
 				$queryType = isset( $settings['query_type'] ) ? $settings['query_type'] : $queryType;
 				$minShouldMatch = isset( $settings['min_should_match'] ) ? $settings['min_should_match'] : $minShouldMatch;
-				if( isset( $settings['is_plain'] ) && $settings['is_plain'] ) {
+				if ( isset( $settings['is_plain'] ) && $settings['is_plain'] ) {
 					$fields = [ $f ];
 				} else {
 					$fields = [ "$f.plain^1", "$f^$stemWeight" ];
@@ -246,7 +246,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 					$dismax->setBoost( $settings['boost'] );
 				}
 			}
-			foreach( $queries as $q ) {
+			foreach ( $queries as $q ) {
 				$dismax->addQuery( $q );
 			}
 			$query->addShould( $dismax );
@@ -270,7 +270,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$type = $filterDef['type'];
 		$filter = null;
 
-		switch( $type ) {
+		switch ( $type ) {
 		case 'default':
 			$filter = $this->buildSimpleAllFilter( $query );
 			break;
@@ -295,7 +295,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		// FIXME: We can't use solely the stem field here
 		// - Depending on languages it may lack stopwords,
 		// A dedicated field used for filtering would be nice
-		foreach( [ 'all', 'all.plain' ] as $field ) {
+		foreach ( [ 'all', 'all.plain' ] as $field ) {
 			$m = new \Elastica\Query\Match();
 			$m->setFieldQuery( $field, $query );
 			$m->setFieldOperator( $field, 'AND' );
@@ -325,7 +325,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		}
 		$titleFilter = new \Elastica\Query\BoolQuery();
 
-		foreach( [ 'title', 'redirect.title' ] as $field ) {
+		foreach ( [ 'title', 'redirect.title' ] as $field ) {
 			$m = new \Elastica\Query\Match();
 			$m->setFieldQuery( $field, $query );
 			$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );

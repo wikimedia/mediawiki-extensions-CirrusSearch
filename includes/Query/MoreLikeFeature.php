@@ -44,7 +44,6 @@ class MoreLikeFeature implements KeywordFeature {
 			// behaviour prior to the keyword feature refactor. Allowing other
 			// keywords works fine, but there are some problems to be worked
 			// out for combined text + morelike queries.
-			//
 			// When removing this restriction also need to consider how stable
 			// the query output is, such that when the query is hashed for the
 			// application side query cache the hashes are the same regardless

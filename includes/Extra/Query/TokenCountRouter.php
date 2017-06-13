@@ -118,7 +118,7 @@ class TokenCountRouter extends AbstractQuery {
 	 * true ignoring all remaining conditions
 	 */
 	public function addCondition( $type, $value, AbstractQuery $query ) {
-		switch( $type ) {
+		switch ( $type ) {
 		case self::GT:
 		case self::GTE:
 		case self::EQ:

@@ -29,7 +29,7 @@ class DefaultSortSuggestionsBuilder implements ExtraSuggestionsBuilder {
 			// add defaultsort for this one.
 			return;
 		}
-		if ( $suggestType === SuggestBuilder::TITLE_SUGGESTION && isset( $inputDoc[ self::FIELD ]) ) {
+		if ( $suggestType === SuggestBuilder::TITLE_SUGGESTION && isset( $inputDoc[ self::FIELD ] ) ) {
 			$value = $inputDoc[self::FIELD];
 			if ( is_string( $value ) ) {
 				$this->addInputToFST( $value, 'suggest', $suggestDoc );

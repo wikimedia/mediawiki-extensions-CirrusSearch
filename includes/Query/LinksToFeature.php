@@ -18,7 +18,7 @@ class LinksToFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['linksto'];
+		return [ 'linksto' ];
 	}
 
 	/**

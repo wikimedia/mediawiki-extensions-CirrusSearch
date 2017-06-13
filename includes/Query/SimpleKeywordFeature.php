@@ -74,7 +74,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 				$quotedValue = $match['value'];
 				$value = isset( $match['unquoted'] )
 					? $match['unquoted']
-					: str_replace( '\"', '"', $match['quoted']);
+					: str_replace( '\"', '"', $match['quoted'] );
 
 				if ( $key[0] === '-' ) {
 					$negated = true;

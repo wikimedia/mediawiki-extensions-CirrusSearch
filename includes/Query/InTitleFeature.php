@@ -27,7 +27,7 @@ class InTitleFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['intitle'];
+		return [ 'intitle' ];
 	}
 
 	/**

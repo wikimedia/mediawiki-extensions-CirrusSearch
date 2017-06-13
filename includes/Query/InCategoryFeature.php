@@ -40,7 +40,7 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['incategory'];
+		return [ 'incategory' ];
 	}
 
 	/**

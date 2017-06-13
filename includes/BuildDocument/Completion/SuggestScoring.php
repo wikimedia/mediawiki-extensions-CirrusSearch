@@ -31,7 +31,7 @@ class SuggestScoringMethodFactory {
 	 * @return SuggestScoringMethod
 	 */
 	public static function getScoringMethod( $scoringMethod ) {
-		switch( $scoringMethod ) {
+		switch ( $scoringMethod ) {
 		case 'incomingLinks':
 			return new IncomingLinksScoringMethod();
 		case 'quality':
@@ -269,7 +269,7 @@ class QualityScore implements SuggestScoringMethod {
 	public function setMaxDocs( $maxDocs ) {
 		$this->maxDocs = $maxDocs;
 		// We normalize incoming links according to the size of the index
-		$this->incomingLinksNorm = (int) ($maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR);
+		$this->incomingLinksNorm = (int)( $maxDocs * self::INCOMING_LINKS_MAX_DOCS_FACTOR );
 		if ( $this->incomingLinksNorm < 1 ) {
 			// it's a very small wiki let's force the norm to 1
 			$this->incomingLinksNorm = 1;
@@ -308,7 +308,7 @@ class PQScore extends QualityScore {
 			// log₁(x) is undefined
 			if ( $logBase > 1 ) {
 				// @fixme: rough log scale by using maxDocs...
-				$pop = log ( 1 + ( $pop * $this->maxDocs ), $logBase );
+				$pop = log( 1 + ( $pop * $this->maxDocs ), $logBase );
 			} else {
 				$pop = 0;
 			}

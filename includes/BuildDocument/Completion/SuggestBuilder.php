@@ -120,7 +120,7 @@ class SuggestBuilder {
 				// Bad doc, nothing to do here.
 				continue;
 			}
-			if( $inputDoc['namespace'] == $this->targetNamespace ) {
+			if ( $inputDoc['namespace'] == $this->targetNamespace ) {
 				if ( !isset( $inputDoc['title'] ) ) {
 					// Bad doc, nothing to do here.
 					continue;
@@ -141,7 +141,7 @@ class SuggestBuilder {
 					}
 					$score = $this->scoringMethod->score( $inputDoc );
 					// Discount the score of these suggestions.
-					$score = (int) ($score * self::CROSSNS_DISCOUNT);
+					$score = (int)( $score * self::CROSSNS_DISCOUNT );
 
 					$title = Title::makeTitle( $redir['namespace'], $redir['title'] );
 					$crossNsTitles[] = [
@@ -157,7 +157,7 @@ class SuggestBuilder {
 		// Build cross ns suggestions
 		if ( !empty ( $crossNsTitles ) ) {
 			$titles = [];
-			foreach( $crossNsTitles as $data ) {
+			foreach ( $crossNsTitles as $data ) {
 				$titles[] = $data['title'];
 			}
 			$lb = new LinkBatch( $titles );
@@ -211,7 +211,7 @@ class SuggestBuilder {
 	public function getRequiredFields() {
 		$fields = $this->scoringMethod->getRequiredFields();
 		$fields = array_merge( $fields, [ 'title', 'redirect', 'namespace' ] );
-		foreach( $this->extraBuilders as $extraBuilder ) {
+		foreach ( $this->extraBuilders as $extraBuilder ) {
 			$fields = array_merge( $fields, $extraBuilder->getRequiredFields() );
 		}
 		return array_values( array_unique( $fields ) );
@@ -258,7 +258,7 @@ class SuggestBuilder {
 		foreach ( $redirects as $redirect ) {
 			$inputs[] = $redirect;
 		}
-		$score = (int) ( $score * self::REDIRECT_DISCOUNT );
+		$score = (int)( $score * self::REDIRECT_DISCOUNT );
 		return $this->buildSuggestion( self::REDIRECT_SUGGESTION, $docId, $inputs,
 			$score, $inputDoc );
 	}
@@ -294,7 +294,7 @@ class SuggestBuilder {
 		];
 
 		$suggestDoc = new \Elastica\Document( self::encodeDocId( $suggestionType, $docId ), $doc );
-		foreach( $this->extraBuilders as $builder ) {
+		foreach ( $this->extraBuilders as $builder ) {
 			$builder->build( $inputDoc, $suggestionType, $score, $suggestDoc, $this->targetNamespace );
 		}
 		return $suggestDoc;
@@ -351,10 +351,10 @@ class SuggestBuilder {
 	public function extractTitleAndSimilarRedirects( array $doc ) {
 		$redirects = [];
 		if ( isset( $doc['redirect'] ) ) {
-			foreach( $doc['redirect'] as $redir ) {
+			foreach ( $doc['redirect'] as $redir ) {
 				// Avoid suggesting/displaying non existent titles
 				// in the target namespace
-				if( $redir['namespace'] == $this->targetNamespace ) {
+				if ( $redir['namespace'] == $this->targetNamespace ) {
 					$redirects[] = $redir['title'];
 				}
 			}
@@ -378,9 +378,9 @@ class SuggestBuilder {
 			'variants' => []
 		];
 		$newCandidates = [];
-		foreach( $candidates as $c ) {
+		foreach ( $candidates as $c ) {
 			$distance = $this->distance( $groupHead, $c );
-			if( $distance > self::GROUP_ACCEPTABLE_DISTANCE && $checkVariants ) {
+			if ( $distance > self::GROUP_ACCEPTABLE_DISTANCE && $checkVariants ) {
 				// Run a second pass over the variants
 				foreach ( $group['variants'] as $v ) {
 					$distance = $this->distance( $v, $c );
@@ -423,7 +423,7 @@ class SuggestBuilder {
 		if ( $aLength < $commonPrefixLen ) {
 			$commonPrefixLen = $aLength;
 		}
-		if( $bLength < $commonPrefixLen ) {
+		if ( $bLength < $commonPrefixLen ) {
 			$commonPrefixLen = $bLength;
 		}
 

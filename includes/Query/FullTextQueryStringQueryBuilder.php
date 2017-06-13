@@ -74,7 +74,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// matches stemmed words in phrases). The following all match:
 		//   "a", "a boat", "a\"boat", "a boat"~, "a boat"~9,
 		//   "a boat"~9~, -"a boat", -"a boat"~9~
-		$slop = $this->config->get('CirrusSearchPhraseSlop');
+		$slop = $this->config->get( 'CirrusSearchPhraseSlop' );
 		$matchQuotesRegex = '(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?';
 		$query = self::replacePartsOfQuery(
 			$term,
@@ -85,11 +85,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
 						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
-					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix( );
+					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix();
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
 					$searchContext->addNonTextQuery( $phraseMatch );
 
-					$phraseHighlightMatch = new \Elastica\Query\QueryString( );
+					$phraseHighlightMatch = new \Elastica\Query\QueryString();
 					$phraseHighlightMatch->setQuery( $matches[1] . '*' );
 					$phraseHighlightMatch->setFields( [ 'all.plain' ] );
 					$searchContext->addNonTextHighlightQuery( $phraseHighlightMatch );
@@ -331,8 +331,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			];
 		}
 		if ( !empty( $suggestSettings['collate'] ) ) {
-			$collateFields = ['title.plain', 'redirect.title.plain'];
-			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' )  ) {
+			$collateFields = [ 'title.plain', 'redirect.title.plain' ];
+			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' ) ) {
 				$collateFields[] = 'text.plain';
 			}
 			$settings['phrase']['collate'] = [
@@ -349,7 +349,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				],
 			];
 		}
-		if( isset( $suggestSettings['smoothing_model'] ) ) {
+		if ( isset( $suggestSettings['smoothing_model'] ) ) {
 			$settings['phrase']['smoothing'] = $suggestSettings['smoothing_model'];
 		}
 

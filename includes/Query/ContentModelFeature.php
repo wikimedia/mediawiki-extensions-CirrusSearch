@@ -15,7 +15,7 @@ class ContentModelFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['contentmodel'];
+		return [ 'contentmodel' ];
 	}
 
 	/**

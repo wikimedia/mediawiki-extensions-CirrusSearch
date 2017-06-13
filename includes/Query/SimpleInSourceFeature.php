@@ -26,7 +26,7 @@ class SimpleInSourceFeature extends SimpleKeywordFeature {
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return ['insource'];
+		return [ 'insource' ];
 	}
 
 	/**

@@ -76,7 +76,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	 * @return string[]
 	 */
 	protected function getExtraFields() {
-		return ['suggest-subphrases'];
+		return [ 'suggest-subphrases' ];
 	}
 
 	/**
@@ -115,7 +115,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		if ( !empty( $subPages ) ) {
 			$suggest = $suggestDoc->get( 'suggest' );
 			$suggest['input'] = $subPages;
-			foreach( $this->getExtraFields() as $field ) {
+			foreach ( $this->getExtraFields() as $field ) {
 				$suggestDoc->set( $field, $suggest );
 			}
 		}
@@ -168,7 +168,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		// Remove the first one because it's the whole title
 		array_shift( $matches );
 		$subphrases = [];
-		foreach( $matches as $m ) {
+		foreach ( $matches as $m ) {
 			$subphrases[] = substr( $title, $m[1] ) . $langSubPage;
 		}
 		return $subphrases;

@@ -230,7 +230,7 @@ class Util {
 		if ( $val !== null ) {
 			if ( $val === 'yes' ) {
 				$dest = true;
-			} elseif( $val = 'no' ) {
+			} elseif ( $val === 'no' ) {
 				$dest = false;
 			}
 		}

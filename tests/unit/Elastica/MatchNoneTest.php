@@ -5,8 +5,8 @@ namespace CirrusSearch\Elastica;
 class MatchNoneTest extends \PHPUnit_Framework_TestCase {
 	public function testMatchNone() {
 		$query = new MatchNone();
-		$expectedArray = ['match_none' => new \stdClass()];
-		$this->assertEquals($expectedArray, $query->toArray());
+		$expectedArray = [ 'match_none' => new \stdClass() ];
+		$this->assertEquals( $expectedArray, $query->toArray() );
 	}
 
 	public function testBackPorts() {

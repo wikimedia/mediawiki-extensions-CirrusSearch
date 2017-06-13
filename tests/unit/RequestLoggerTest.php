@@ -106,7 +106,7 @@ class RequestLoggerTest extends CirrusTestCase {
 	 * @dataProvider requestLoggingProvider
 	 */
 	public function testRequestLogging( array $query, $responses = null, $expectedLogs ) {
-		switch( $query['type'] ) {
+		switch ( $query['type'] ) {
 		case 'fulltext':
 			$work =  function ( $config, $connection ) use ( $query ) {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
@@ -239,7 +239,7 @@ class RequestLoggerTest extends CirrusTestCase {
 				->will( new \PHPUnit_Framework_MockObject_Stub_ConsecutiveCalls(
 					array_map( function ( $response ) {
 						return new Response( $response, 200 );
-					}	, $responses )
+					}, $responses )
 				) );
 		}
 
@@ -249,7 +249,7 @@ class RequestLoggerTest extends CirrusTestCase {
 					[ 'transport' => $transport ],
 				]
 			],
-		]);
+		] );
 		$connection = new Connection( $config, 'default' );
 
 		return [ $loggers, $config, $connection, $transport ];

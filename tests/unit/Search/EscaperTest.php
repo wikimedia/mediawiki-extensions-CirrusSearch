@@ -32,7 +32,7 @@ class EscaperTest extends CirrusTestCase {
 	public function testFuzzyEscape( $input, $expected, $isFuzzy ) {
 		$escaper = new Escaper( 'unittest' );
 		$actual = $escaper->fixupWholeQueryString( $input );
-		$this->assertEquals( [ $expected, $isFuzzy], $actual );
+		$this->assertEquals( [ $expected, $isFuzzy ], $actual );
 	}
 
 	public static function fuzzyEscapeTestCases() {
@@ -79,7 +79,7 @@ class EscaperTest extends CirrusTestCase {
 	 */
 	public function testBalanceQuotes( $input, $expected ) {
 		$escaper = new Escaper( 'en' ); // Language doesn't matter here
-		$actual = $escaper->balanceQuotes( $input);
+		$actual = $escaper->balanceQuotes( $input );
 		$this->assertEquals( $expected, $actual );
 	}
 

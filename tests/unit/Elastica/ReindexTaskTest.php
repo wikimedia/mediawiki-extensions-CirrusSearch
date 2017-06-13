@@ -63,7 +63,7 @@ class ReindexTaskTest extends \PHPUnit_Framework_TestCase {
 				"throttled_millis" => 0,
 				"requests_per_second" => 0.0,
 				"throttled_until_millis" => 0,
-				"slices" => [null, null],
+				"slices" => [ null, null ],
 			],
 			"description" => "",
 			"start_time_in_millis" => 1486084727030,

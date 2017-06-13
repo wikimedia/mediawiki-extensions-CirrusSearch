@@ -48,21 +48,21 @@ $wgCirrusSearchDevelOptions = [
 
 // Specific settings
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc" ) ) {
-	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc" );
+	require_once __DIR__ . "/$wgCirrusSearchRelforgeProfile/misc.inc";
 }
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/similarity.inc" ) ) {
-	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/similarity.inc" );
+	require_once __DIR__ . "/$wgCirrusSearchRelforgeProfile/similarity.inc";
 	$wgCirrusSearchSimilarityProfile = 'relforge';
 }
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/ftbuilder.inc" ) ) {
-	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/ftbuilder.inc" );
+	require_once __DIR__ . "/$wgCirrusSearchRelforgeProfile/ftbuilder.inc";
 	$wgCirrusSearchFullTextQueryBuilderProfile = 'relforge';
 }
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/rescore.inc" ) ) {
-	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/rescore.inc" );
+	require_once __DIR__ . "/$wgCirrusSearchRelforgeProfile/rescore.inc";
 	$wgCirrusSearchRescoreProfile = 'relforge';
 }
 
 if ( file_exists( __DIR__ . "/$wgCirrusSearchRelforgeProfile/templates.inc" ) ) {
-	require_once( __DIR__ . "/$wgCirrusSearchRelforgeProfile/templates.inc" );
+	require_once __DIR__ . "/$wgCirrusSearchRelforgeProfile/templates.inc";
 }

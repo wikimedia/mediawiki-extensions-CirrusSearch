@@ -25,11 +25,11 @@ use CirrusSearch\Maintenance\Maintenance;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . "/../../includes/Maintenance/Maintenance.php" );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . "/../../includes/Maintenance/Maintenance.php";
 
 class CleanSetup extends Maintenance {
 	public function execute() {

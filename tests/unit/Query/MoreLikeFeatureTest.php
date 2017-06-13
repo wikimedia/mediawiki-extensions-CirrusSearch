@@ -52,7 +52,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
-					->setFields( ['text'] )
+					->setFields( [ 'text' ] )
 					->setLike( [
 						[ '_id' => '12345' ],
 					] ),
@@ -71,7 +71,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 							'max_word_length' => 0,
 							'minimum_should_match' => '30%',
 						] )
-						->setFields( ['text'] )
+						->setFields( [ 'text' ] )
 						->setLike( [
 							[ '_id' => '12345' ],
 						] )
@@ -89,7 +89,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
-					->setFields( ['text'] )
+					->setFields( [ 'text' ] )
 					->setLike( [
 						[ '_id' => '23456' ],
 						[ '_id' => '12345' ],
@@ -107,7 +107,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'max_word_length' => 0,
 						'minimum_should_match' => '30%',
 					] )
-					->setFields( ['text'] )
+					->setFields( [ 'text' ] )
 					->setLike( [
 						[ '_id' => '12345' ],
 					] ),

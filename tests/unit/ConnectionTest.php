@@ -32,7 +32,7 @@ class ConnectionTest extends CirrusTestCase {
 		$config = new HashSearchConfig( [
 			'ContentNamespaces' => $contentNamespaces,
 			'CirrusSearchNamespaceMappings' => $namespaceMappings,
-		], ['inherit'] );
+		], [ 'inherit' ] );
 		$conn = new Connection( $config );
 		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
 	}

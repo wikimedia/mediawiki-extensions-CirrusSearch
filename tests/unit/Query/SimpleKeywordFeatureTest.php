@@ -88,7 +88,7 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 				],
 				// expected remaining term
 				'',
-				//input term
+				// input term
 				'mock: value',
 			],
 			'eats single extra space after the value' => [
@@ -182,7 +182,7 @@ class MockSimpleKeywordFeature extends SimpleKeywordFeature {
 	private $calls = [];
 
 	protected function getKeywords() {
-		return ['mock'];
+		return [ 'mock' ];
 	}
 
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {

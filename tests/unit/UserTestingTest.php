@@ -85,7 +85,7 @@ class UserTestingTest extends CirrusTestCase {
 
 	public function testListsTestsCurrentlyParticipatingIn() {
 		$config = $this->config( [ 'test', 'foo', 'bar' ] );
-		$ut = $this->ut( $config, true);
+		$ut = $this->ut( $config, true );
 		$this->assertEquals( [ 'test', 'foo', 'bar' ], $ut->getActiveTestNames() );
 		$ut = $this->ut( $config, [ false, true, true ] );
 		$this->assertEquals( [ 'foo', 'bar' ], $ut->getActiveTestNames() );

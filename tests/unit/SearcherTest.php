@@ -116,7 +116,7 @@ class SearcherTest extends CirrusTestCase {
 		// The helps with ensuring if there are minor code changes that change the ordering,
 		// regenerating the fixture wont cause changes. Do it always, instead of only when
 		// writing, so that the diff's from phpunit are also as minimal as possible.
-		$elasticQuery = $this->normalizeOrdering( $elasticQuery);
+		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
 		// The actual name of the index may vary, and doesn't really matter
 		unset( $elasticQuery['path'] );
 

@@ -1,11 +1,11 @@
 <?php
 
 // w sum with pageviews and inc links
-$wgCirrusSearchPageViewsW = 1.5;//0.;//2.5;
+$wgCirrusSearchPageViewsW = 1.5;// 0.;//2.5;
 $wgCirrusSearchPageViewsK = 8E-6;
 $wgCirrusSearchPageViewsA = 0.8;
 
-$wgCirrusSearchIncLinksW = 5.0;//0.7;
+$wgCirrusSearchIncLinksW = 5.0;// 0.7;
 $wgCirrusSearchIncLinksK = 30;
 $wgCirrusSearchIncLinksA = 0.7;
 

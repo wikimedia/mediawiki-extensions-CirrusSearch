@@ -30,7 +30,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	public function testQualityScoreNormFunctions() {
 		$qs = new QualityScore();
 		$qs->setMaxDocs( 10000 );
-		for( $i = 0; $i < 1000; $i++ ) {
+		for ( $i = 0; $i < 1000; $i++ ) {
 			$value = mt_rand( 0, 1000000 );
 			$norm = mt_rand( 1, 1000000 );
 			$score = $qs->scoreNorm( $value, $norm );
@@ -62,7 +62,7 @@ class SuggestScoringTest extends CirrusTestCase {
 
 	public function testQualityScoreBoostFunction() {
 		$qs = new QualityScore();
-		for( $i = 0; $i < 1000; $i++ ) {
+		for ( $i = 0; $i < 1000; $i++ ) {
 			$score = (float) mt_rand() / (float) mt_getrandmax();
 			$boost = (float) mt_rand( 0, 10000 ) / mt_rand( 1, 10000 );
 			$res = $qs->boost( $score, $boost );
@@ -76,7 +76,7 @@ class SuggestScoringTest extends CirrusTestCase {
 				$this->assertEquals( $score, $res, "When boost is 1 the score remains unchanged." );
 			}
 		}
-		for( $i = 1; $i < 1000; $i++ ) {
+		for ( $i = 1; $i < 1000; $i++ ) {
 			// The same boost value must keep original score ordering
 			$score1 = 0.1;
 			$score2 = 0.5;
@@ -97,7 +97,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( $res, 1, "When boost is 1 the score remains unchanged." );
 		$res = $qs->boost( 1, 0 );
 		$this->assertEquals( $res, 0.5, "When boost is 0 the score is divided by 2." );
-		$res = $qs->boost( 1,  2^31-1);
+		$res = $qs->boost( 1,  2^31-1 );
 		$this->assertEquals( $res, 1, "When score is 1 and boost is very high the score is still 1." );
 		$res = $qs->boost( 0,  0 );
 		$this->assertEquals( $res, 0, "When score is 0 and boost is 0 the score is still 0." );
@@ -130,7 +130,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertLessThan( $score, $res, "A bad doc gets a lower score" );
 
 		$res = $qs->boostTemplates( $mixedDoc, $score );
-		$this->assertEquals( $score, $res, "A mixed doc gets the same score");
+		$this->assertEquals( $score, $res, "A mixed doc gets the same score" );
 
 		$res = $qs->boostTemplates( $neutralDoc, $score );
 		$this->assertEquals( $res, $score, "A neutral doc gets the same score" );
@@ -219,14 +219,14 @@ class SuggestScoringTest extends CirrusTestCase {
 		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
 		$qs->setMaxDocs( $maxDocs );
 
-		for( $i = 0; $i < 1000; $i++ ) {
+		for ( $i = 0; $i < 1000; $i++ ) {
 			$page = [
 				'incoming_links' => mt_rand( 0, 2^31-1 ),
 				'external_link' => array_fill( 0, mt_rand( 1, 2000 ), null ),
 				'text_bytes' => mt_rand( 1, 400000 ),
 				'heading' => array_fill( 0, mt_rand( 1, 1000 ), null ),
 				'redirect' => array_fill( 0, mt_rand( 1, 1000 ), null ),
-				'template' => mt_rand( 0, 1 ) == 1 ? [ 'Good' ] : ['Bad']
+				'template' => mt_rand( 0, 1 ) == 1 ? [ 'Good' ] : [ 'Bad' ]
 			];
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
 			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ), "Score is always lower than " . QualityScore::SCORE_RANGE );
@@ -257,7 +257,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( 0, $qs->score( $page ), "Score of a broken article is 0" );
 
 		// A very small wiki
-		$qs = new QualityScore( );
+		$qs = new QualityScore();
 		$qs->setMaxDocs( 1 );
 		$page = [
 			'incoming_links' => 1,
@@ -305,7 +305,7 @@ class SuggestScoringTest extends CirrusTestCase {
 			$page['templates'] = mt_rand( 0, 1 ) ? $tmpl : null;
 
 			$maxDocs = mt_rand( 0, 100 );
-			foreach( $scorers as $scorer ) {
+			foreach ( $scorers as $scorer ) {
 				$scorer->setMaxDocs( $maxDocs );
 				$score = $scorer->score( $page );
 				$pagedebug = print_r( $page, true );

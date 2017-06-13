@@ -25,9 +25,9 @@ class ExplainPrinter {
 	public function format( array $queryResult ) {
 		$result = [];
 		if ( isset( $queryResult['result']['hits']['hits'] ) ) {
-			$queryResult = [$queryResult];
+			$queryResult = [ $queryResult ];
 		}
-		foreach( $queryResult as $qr ) {
+		foreach ( $queryResult as $qr ) {
 			$result[] = "<div><h2>{$qr['description']} on {$qr['path']}</h2></div>";
 			foreach ( $qr['result']['hits']['hits'] as $hit ) {
 				$result[] =

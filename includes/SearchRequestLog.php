@@ -123,7 +123,7 @@ class SearchRequestLog extends BaseRequestLog {
 			$vars['hits'] = $this->extractHits( $this->response->getData() );
 		}
 
-		return [$vars];
+		return [ $vars ];
 	}
 
 	/**

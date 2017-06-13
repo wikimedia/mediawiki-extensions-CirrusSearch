@@ -231,7 +231,7 @@ class DataSender extends ElasticsearchIntermediary {
 			'sent' => $sent,
 		];
 		$allowedOps = [ 'created', 'updated', 'noop' ];
-		foreach( $responseSet->getBulkResponses() as $bulk ) {
+		foreach ( $responseSet->getBulkResponses() as $bulk ) {
 			$opRes = 'unknown';
 			if ( $bulk instanceof \Elastica\Bulk\Response ) {
 				if ( isset( $bulk->getData()['result'] )
@@ -249,7 +249,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$stats = \MediaWiki\MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$cluster = $this->connection->getClusterName();
 		$metricsPrefix = "CirrusSearch.$cluster.updates";
-		foreach( $updateStats as $what => $num ) {
+		foreach ( $updateStats as $what => $num ) {
 			$stats->updateCount( "$metricsPrefix.details.{$this->indexBaseName}.$indexType.$what", $num );
 			$stats->updateCount( "$metricsPrefix.all.$what", $num );
 		}

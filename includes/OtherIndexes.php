@@ -34,7 +34,7 @@ class OtherIndexes extends Updater {
 	 * @param array $flags
 	 * @param string $localSite
 	 */
-	public function __construct( Connection $connection, SearchConfig $config, array $flags, $localSite) {
+	public function __construct( Connection $connection, SearchConfig $config, array $flags, $localSite ) {
 		parent::__construct( $connection, $config, $flags );
 		$this->localSite = $localSite;
 	}
@@ -60,7 +60,7 @@ class OtherIndexes extends Updater {
 		global $wgCirrusSearchExtraIndexes;
 		$extraIndexes = [];
 		if ( $wgCirrusSearchExtraIndexes ) {
-			foreach( $wgCirrusSearchExtraIndexes as $namespace => $indexes ) {
+			foreach ( $wgCirrusSearchExtraIndexes as $namespace => $indexes ) {
 				if ( in_array( $namespace, $namespaces ) ) {
 					$extraIndexes = array_merge( $extraIndexes, $indexes );
 				}

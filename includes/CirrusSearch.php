@@ -203,7 +203,7 @@ class CirrusSearch extends SearchEngine {
 
 			}
 			$detector = new $klass();
-			if( !( $detector instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
+			if ( !( $detector instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Bad detector class for {name}: {class}",
 					[
@@ -236,7 +236,7 @@ class CirrusSearch extends SearchEngine {
 				break;
 			}
 		}
-		if ( is_array( $detected  ) ) {
+		if ( is_array( $detected ) ) {
 			// Report language detection with search metrics
 			// TODO: do we still need this metric? (see T151796)
 			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;
@@ -307,7 +307,7 @@ class CirrusSearch extends SearchEngine {
 					// This comes after the actual query is run so we can collect metrics about
 					// users in the control buckets, and provide them the same latency as users
 					// in the test bucket.
-					if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0) {
+					if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0 ) {
 						$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWikiId );
 					}
 				}
@@ -412,7 +412,7 @@ class CirrusSearch extends SearchEngine {
 				// If we are dumping we need to convert into an array that can be appended to
 				$recallMetrics = [];
 				if ( $iwSearch->isReturnRaw() ) {
-					$result = [$result];
+					$result = [ $result ];
 				}
 				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
 					$recallMetrics[$interwiki] = "$interwiki:0";
@@ -525,7 +525,7 @@ class CirrusSearch extends SearchEngine {
 
 	protected function completionSuggesterEnabled( SearchConfig $config ) {
 		$useCompletion = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
-		if( $useCompletion !== 'yes' && $useCompletion !== 'beta' ) {
+		if ( $useCompletion !== 'yes' && $useCompletion !== 'beta' ) {
 			return false;
 		}
 
@@ -672,7 +672,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return array|null
 	 */
 	public function getProfiles( $profileType, User $user = null ) {
-		switch( $profileType ) {
+		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
 			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
 				// No profile selection if completion suggester is disabled.
@@ -694,7 +694,7 @@ class CirrusSearch extends SearchEngine {
 			}
 
 			$profiles = [];
-			foreach( array_keys( $allowedProfiles ) as $name ) {
+			foreach ( array_keys( $allowedProfiles ) as $name ) {
 				$profiles[] = [
 					'name' => $name,
 					'desc-message' => 'cirrussearch-completion-profile-' . $name,
@@ -710,7 +710,7 @@ class CirrusSearch extends SearchEngine {
 			// cirrusRescoreProfile=profile is set.
 			$cirrusDefault = $this->config->get( 'CirrusSearchRescoreProfile' );
 			$defaultFound = false;
-			foreach( $this->config->get( 'CirrusSearchRescoreProfiles' ) as $name => $profile ) {
+			foreach ( $this->config->get( 'CirrusSearchRescoreProfiles' ) as $name => $profile ) {
 				$default = $cirrusDefault === $name;
 				$defaultFound |= $default;
 				$profiles[] = [
@@ -742,9 +742,9 @@ class CirrusSearch extends SearchEngine {
 		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
 			$allowedFields['suggest-subphrases'] = true;
 		}
-		foreach( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
+		foreach ( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
 			$allowed = true;
-			foreach( $settings as $value ) {
+			foreach ( $settings as $value ) {
 				if ( !array_key_exists( $value['field'], $allowedFields ) ) {
 					$allowed = false;
 					break;
@@ -786,7 +786,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $term Raw search term
 	 * @return Status<Title[]>
 	 */
-	public function searchArchiveTitle ( $term ) {
+	public function searchArchiveTitle( $term ) {
 
 		if ( !$this->config->get( 'CirrusSearchEnableArchive' ) ) {
 			return Status::newGood( [] );

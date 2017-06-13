@@ -120,7 +120,7 @@ class CompletionRequestLog extends BaseRequestLog {
 			'hits' => $this->hits,
 		];
 
-		return [$vars];
+		return [ $vars ];
 	}
 
 	/**

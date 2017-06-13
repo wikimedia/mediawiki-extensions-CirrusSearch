@@ -428,9 +428,9 @@ class Searcher extends ElasticsearchIntermediary {
 
 		// The worst case would be to have all ids duplicated in all available indices.
 		// We set the limit accordingly
-		$size = count ( $this->connection->getAllIndexSuffixesForNamespaces(
+		$size = count( $this->connection->getAllIndexSuffixesForNamespaces(
 			$this->searchContext->getNamespaces()
-		));
+		) );
 		$size *= count( $docIds );
 
 		return Util::doPoolCounterWork(
@@ -465,7 +465,7 @@ class Searcher extends ElasticsearchIntermediary {
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
-			});
+			} );
 	}
 
 	/**
@@ -500,13 +500,13 @@ class Searcher extends ElasticsearchIntermediary {
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
-			});
+			} );
 	}
 
 	/**
 	 * @return \Elastica\Search
 	 */
-	protected  function buildSearch() {
+	protected function buildSearch() {
 
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
@@ -555,10 +555,10 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 			$query->addParam( 'stats', 'suggest' );
 		}
-		if( $this->offset ) {
+		if ( $this->offset ) {
 			$query->setFrom( $this->offset );
 		}
-		if( $this->limit ) {
+		if ( $this->limit ) {
 			$query->setSize( $this->limit );
 		}
 
@@ -644,7 +644,7 @@ class Searcher extends ElasticsearchIntermediary {
 			return Status::newGood( new SearchResultSet( true ) );
 		}
 
-		$result = $this->searchMulti( [$search] );
+		$result = $this->searchMulti( [ $search ] );
 		if ( $result->isOK() ) {
 			// Convert array of responses to single value
 			$value = $result->getValue();
@@ -771,12 +771,12 @@ class Searcher extends ElasticsearchIntermediary {
 				$statsKey = $this->getQueryCacheStatsKey();
 				if ( $cacheResult ) {
 					list( $logVariables, $multiResultSet ) = $cacheResult;
-					$requestStats->increment("$statsKey.hit");
+					$requestStats->increment( "$statsKey.hit" );
 					$log->setCachedResult( $logVariables );
 					$this->successViaCache( $log );
 					return $multiResultSet;
 				} else {
-					$requestStats->increment("$statsKey.miss");
+					$requestStats->increment( "$statsKey.miss" );
 				}
 
 				$multiResultSet = $work();
@@ -791,10 +791,10 @@ class Searcher extends ElasticsearchIntermediary {
 						}
 					}
 					if ( !$isPartialResult ) {
-						$requestStats->increment("$statsKey.set");
+						$requestStats->increment( "$statsKey.set" );
 						$cache->set(
 							$key,
-							[$log->getLogVariables(), $multiResultSet],
+							[ $log->getLogVariables(), $multiResultSet ],
 							$this->searchContext->getCacheTtl()
 						);
 					}

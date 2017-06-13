@@ -205,10 +205,10 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		$count = 0;
-		foreach( $allData as $indexType => $data ) {
+		foreach ( $allData as $indexType => $data ) {
 			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
 			// the max.  So we chunk it and do them sequentially.
-			foreach( array_chunk( $data, 10 ) as $chunked ) {
+			foreach ( array_chunk( $data, 10 ) as $chunked ) {
 				$job = new Job\ElasticaWrite(
 					reset( $titles ),
 					[
@@ -378,7 +378,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 
 			if ( !$skipLinks ) {
-				MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $this->connection] );
+				MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $this->connection ] );
 			}
 
 			$documents[] = $doc;

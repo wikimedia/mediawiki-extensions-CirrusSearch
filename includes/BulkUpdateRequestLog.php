@@ -94,6 +94,6 @@ class BulkUpdateRequestLog extends BaseRequestLog {
 	 * @return array[]
 	 */
 	public function getRequests() {
-		return [$this->getLogVariables()];
+		return [ $this->getLogVariables() ];
 	}
 }

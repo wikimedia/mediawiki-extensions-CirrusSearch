@@ -131,7 +131,7 @@ class Reindexer {
 		$this->out = $out;
 		$this->fieldsToDelete = $fieldsToDelete;
 
-		if ( empty($types) || empty($oldTypes) ) {
+		if ( empty( $types ) || empty( $oldTypes ) ) {
 			throw new \Exception( "Types list should be non-empty" );
 		}
 		$this->index = $types[0]->getIndex();
@@ -243,7 +243,7 @@ class Reindexer {
 	}
 
 	public function waitForShards() {
-		if( !$this->replicaCount || $this->replicaCount === "false" ) {
+		if ( !$this->replicaCount || $this->replicaCount === "false" ) {
 			$this->outputIndented( "\tNo replicas, skipping.\n" );
 			return;
 		}

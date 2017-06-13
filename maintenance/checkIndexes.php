@@ -24,11 +24,11 @@ use CirrusSearch\Maintenance\Maintenance;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class CheckIndexes extends Maintenance {
 	/**
@@ -156,7 +156,7 @@ class CheckIndexes extends Maintenance {
 	 */
 	private function check( $name, $expected, $actual ) {
 		$this->output( str_repeat( "\t", count( $this->path ) ) );
-		$this->output( "$name...");
+		$this->output( "$name..." );
 		if ( is_array( $expected ) ) {
 			if ( in_array( $actual, $expected ) ) {
 				$this->output( "ok\n" );
@@ -247,7 +247,7 @@ class CheckIndexes extends Maintenance {
 				->getType( 'version' )
 				->search( $query );
 			$this->cirrusInfo = [];
-			foreach( $res as $r ) {
+			foreach ( $res as $r ) {
 				$data = $r->getData();
 				$this->cirrusInfo[ $r->getId() ] = [
 					'shard_count' => $data[ 'shard_count' ],

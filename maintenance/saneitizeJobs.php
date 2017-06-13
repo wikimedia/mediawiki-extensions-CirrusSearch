@@ -28,11 +28,11 @@ use JobQueueGroup;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class SaneitizeJobs extends Maintenance {
 	/**
@@ -101,7 +101,7 @@ class SaneitizeJobs extends Maintenance {
 			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
 		} );
 		$wikiSize = $this->maxId - $this->minId;
-		foreach( $profiles as $name => $settings ) {
+		foreach ( $profiles as $name => $settings ) {
 			if ( $settings['max_wiki_size'] > $wikiSize ) {
 				$this->profileName = $name;
 				$this->log( "Detected $wikiSize ids to check, selecting profile $name\n" );
@@ -120,7 +120,7 @@ class SaneitizeJobs extends Maintenance {
 		if ( $jobInfo === null ) {
 			$this->error( "Unknown job $jobName\n", 1 );
 		}
-		foreach( $this->metaStores as $cluster => $store ) {
+		foreach ( $this->metaStores as $cluster => $store ) {
 			$store->sanitizeType()->deleteDocument( $jobInfo );
 			$this->log( "Deleted job $jobName from $cluster.\n" );
 		}
@@ -304,7 +304,7 @@ EOD
 	 */
 	private function sendJob( $from, $to, $refreshRate, $cluster ) {
 		$delay = mt_rand( 0, $refreshRate );
-		$this->log( "Pushing CheckerJob( $from, $to, $delay, $cluster )\n");
+		$this->log( "Pushing CheckerJob( $from, $to, $delay, $cluster )\n" );
 		JobQueueGroup::singleton()->push( CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster ) );
 	}
 
@@ -348,7 +348,7 @@ EOD
 				$this->error( "No metastore found in cluster $cluster", 1 );
 			}
 			$store = new MetaStoreIndex( $connection, $this );
-			if ( !$store->versionIsAtLeast( [0, 2] ) ) {
+			if ( !$store->versionIsAtLeast( [ 0, 2 ] ) ) {
 				$this->error( 'Metastore version is too old, expected at least 0.2', 1 );
 			}
 			$this->metaStores[$cluster] = $store;
@@ -378,7 +378,7 @@ EOD
 				} elseif ( $current->get( 'sanitize_job_updated' ) > $latest->get( 'sanitize_job_updated' ) ) {
 					$latest = $current;
 				}
-			} catch( \Elastica\Exception\NotFoundException $e ) {
+			} catch ( \Elastica\Exception\NotFoundException $e ) {
 			}
 		}
 		return $latest;
@@ -402,7 +402,7 @@ EOD
 		// @todo: remove this suppress (https://github.com/ruflin/Elastica/pull/1134)
 		/** @suppress PhanTypeMismatchArgument this method is improperly annotated */
 		$jobInfo->setVersionType( 'external' );
-		foreach( $this->metaStores as $store ) {
+		foreach ( $this->metaStores as $store ) {
 			$store->sanitizeType()->addDocument( $jobInfo );
 		}
 	}
@@ -429,7 +429,7 @@ EOD
 				'sanitize_job_jobs_sent_total' => 0
 			]
 		);
-		foreach( $this->metaStores as $store ) {
+		foreach ( $this->metaStores as $store ) {
 			$store->sanitizeType()->addDocument( $job );
 		}
 		return $job;
@@ -445,7 +445,7 @@ EOD
 
 	private function log( $msg, $channel = null ) {
 		$date = new \DateTime();
-		$this->output( $date->format('Y-m-d H:i:s') . " " . $msg, $channel );
+		$this->output( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $channel );
 	}
 
 	/**
@@ -454,7 +454,7 @@ EOD
 	 */
 	public function error( $msg, $die = 0 ) {
 		$date = new \DateTime();
-		parent::error( $date->format('Y-m-d H:i:s') . " " . $msg, $die );
+		parent::error( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $die );
 	}
 }
 

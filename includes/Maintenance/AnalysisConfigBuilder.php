@@ -91,7 +91,7 @@ class AnalysisConfigBuilder {
 			}
 		}
 		$this->icu = in_array( 'analysis-icu', $plugins );
-		if ( is_null ( $config ) ) {
+		if ( is_null( $config ) ) {
 			$config = MediaWikiServices::getInstance()
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
@@ -124,7 +124,7 @@ class AnalysisConfigBuilder {
 		if ( $in_config === false ) {
 			$in_config = 'no';
 		}
-		switch( $in_config ) {
+		switch ( $in_config ) {
 		case 'yes':
 			return true;
 		case 'no':
@@ -148,7 +148,7 @@ class AnalysisConfigBuilder {
 			return false;
 		}
 		$in_config = $this->config->get( 'CirrusSearchUseIcuTokenizer' );
-		switch( $in_config ) {
+		switch ( $in_config ) {
 		case 'yes':
 			return true;
 		case 'no':
@@ -197,7 +197,7 @@ class AnalysisConfigBuilder {
 	 * @return mixed[] update config
 	 */
 	public function enableICUTokenizer( array $config ) {
-		foreach( $config['analyzer'] as $name => &$value ) {
+		foreach ( $config['analyzer'] as $name => &$value ) {
 			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
 				continue;
 			}
@@ -232,7 +232,7 @@ class AnalysisConfigBuilder {
 		];
 
 		$newfilters = [];
-		foreach( $config['analyzer'] as $name => $value ) {
+		foreach ( $config['analyzer'] as $name => $value ) {
 			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
 				continue;
 			}
@@ -247,12 +247,12 @@ class AnalysisConfigBuilder {
 			}
 		}
 
-		foreach( $newfilters as $name => $filters ) {
+		foreach ( $newfilters as $name => $filters ) {
 			$config['analyzer'][$name]['filter'] = $filters;
 		}
 		// Explicitly enable icu_folding on plain analyzers if it's not
 		// already enabled
-		foreach( ['plain'] as $analyzer ) {
+		foreach ( [ 'plain' ] as $analyzer ) {
 			if ( !isset( $config['analyzer'][$analyzer] ) ) {
 				continue;
 			}
@@ -325,7 +325,7 @@ class AnalysisConfigBuilder {
 		if ( $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' ) !== null ) {
 			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
 		}
-		switch( $this->language ) {
+		switch ( $this->language ) {
 		// @todo: complete the default filters per language
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 		case 'fi':
@@ -423,7 +423,7 @@ class AnalysisConfigBuilder {
 				'token_reverse' => [
 					'type' => 'custom',
 					'tokenizer' => 'no_splitting',
-					'filter' => ['reverse']
+					'filter' => [ 'reverse' ]
 				],
 				'near_match' => [
 					'type' => 'custom',
@@ -783,7 +783,7 @@ STEMMER_RULES
 
 			// The Russian analyzer is also used for Rusyn for now, so processing that's
 			// very specific to Russian should be separated out
-			if ($this->language == 'ru') {
+			if ( $this->language == 'ru' ) {
 				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
 				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
 				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
@@ -892,7 +892,7 @@ STEMMER_RULES
 	 */
 	public function fixAsciiFolding( array $config ) {
 		$needDedupFilter = false;
-		foreach( $config['analyzer'] as $name => &$value ) {
+		foreach ( $config['analyzer'] as $name => &$value ) {
 			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
 				continue;
 			}
@@ -902,7 +902,7 @@ STEMMER_RULES
 			$ascii_idx = array_search( 'asciifolding_preserve', $value['filter'] );
 			if ( $ascii_idx !== false ) {
 				$needDedupFilter = true;
-				array_splice( $value['filter'], $ascii_idx + 1, 0, ['dedup_asciifolding'] );
+				array_splice( $value['filter'], $ascii_idx + 1, 0, [ 'dedup_asciifolding' ] );
 			}
 		}
 		if ( $needDedupFilter ) {

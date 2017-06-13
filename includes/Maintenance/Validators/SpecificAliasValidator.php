@@ -126,7 +126,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	 * @return Status
 	 */
 	public function swapAliases( array $add ) {
-		$this->outputIndented( "\tSwapping alias...");
+		$this->outputIndented( "\tSwapping alias..." );
 
 		foreach ( $add as $indexName ) {
 			$index = $this->client->getIndex( $indexName );

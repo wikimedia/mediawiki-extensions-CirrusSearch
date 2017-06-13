@@ -34,11 +34,11 @@ use Wikimedia\Rdbms\IDatabase;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class ForceSearchIndex extends Maintenance {
 	const SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS = 3;
@@ -85,7 +85,7 @@ class ForceSearchIndex extends Maintenance {
 			'different processes or machines to rebuild the index.  Works with fromId and toId, not from and to.  ' .
 			'If specified as a number then chunks no larger than that size are spat out.  If specified as a number ' .
 			'followed by the word "total" without a space between them then that many chunks will be spat out sized to ' .
-			'cover the entire wiki.' , false, true );
+			'cover the entire wiki.', false, true );
 		$this->addOption( 'queue', 'Rather than perform the indexes in process add them to the job queue.  Ignored for delete.' );
 		$this->addOption( 'maxJobs', 'If there are more than this many index jobs in the queue then pause before adding ' .
 			'more.  This is only checked every ' . self::SECONDS_BETWEEN_JOB_QUEUE_LENGTH_CHECKS . ' seconds.  Not meaningful ' .
@@ -124,7 +124,7 @@ class ForceSearchIndex extends Maintenance {
 
 		if ( !is_null( $this->getOption( 'from' ) ) || !is_null( $this->getOption( 'to' ) ) ) {
 			// 0 is falsy so MWTimestamp makes that `now`.  '00' is epoch 0.
-			$this->fromDate = new MWTimestamp( $this->getOption( 'from', '00' )  );
+			$this->fromDate = new MWTimestamp( $this->getOption( 'from', '00' ) );
 			$this->toDate = new MWTimestamp( $this->getOption( 'to', false ) );
 		}
 		$this->toId = $this->getOption( 'toId' );
@@ -170,7 +170,7 @@ class ForceSearchIndex extends Maintenance {
 
 		if ( $this->runWithIds ) {
 			$it = $this->getIdsIterator();
-		} elseif ( $this->indexUpdates && $this->fromDate === null) {
+		} elseif ( $this->indexUpdates && $this->fromDate === null ) {
 			$it = $this->getUpdatesByIdIterator();
 		} elseif ( $this->indexUpdates ) {
 			$it = $this->getUpdatesByDateIterator();
@@ -347,7 +347,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getDeletesIterator() {
-		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
+		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator(
 			$dbr,
 			'archive',
@@ -387,7 +387,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getIdsIterator() {
-		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
+		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$it->addConditions( [
 			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
@@ -398,7 +398,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getUpdatesByDateIterator() {
-		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
+		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator(
 			$dbr,
 			[ 'page', 'revision' ],
@@ -417,7 +417,7 @@ class ForceSearchIndex extends Maintenance {
 	}
 
 	protected function getUpdatesByIdIterator() {
-		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
+		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
@@ -563,7 +563,7 @@ class ForceSearchIndex extends Maintenance {
 	 *  will be spat out sized to cover the entire wiki.
 	 */
 	private function buildChunks( $buildChunks ) {
-		$dbr = $this->getDB( DB_REPLICA, ['vslow'] );
+		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
 			if ( $this->toId === false ) {

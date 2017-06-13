@@ -327,7 +327,7 @@ class MappingConfigBuilder {
 		$stringFieldMapping = $this->searchIndexFieldFactory->newStringField(
 			'text',
 			null,
-			( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : [ ]
+			( $flags & self::PHRASE_SUGGEST_USE_TEXT ) ? [ 'analyzer' => 'suggest' ] : []
 		)->setMappingFlags( $flags )->getMapping( $this->engine );
 
 		$extraFieldMapping = [

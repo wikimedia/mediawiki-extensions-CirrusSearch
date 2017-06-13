@@ -31,11 +31,11 @@ use Wikimedia\Rdbms\ResultWrapper;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class RunSearch extends Maintenance {
 
@@ -111,10 +111,10 @@ class RunSearch extends Maintenance {
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {
 			$value = $status->getValue();
-			if( $value instanceof ResultWrapper ) {
+			if ( $value instanceof ResultWrapper ) {
 				// Archive search results
 				$data += $this->processArchiveResult( $value );
-			}  elseif ( $value instanceof ResultSet ) {
+			} elseif ( $value instanceof ResultSet ) {
 				$data += $this->processResultSet( $value, $query );
 			} elseif ( $value instanceof SearchSuggestionSet ) {
 				// these are suggestion results
@@ -150,7 +150,7 @@ class RunSearch extends Maintenance {
 				'title' => $result->getTitle()->getPrefixedText(),
 				'score' => $result->getScore(),
 				'snippets' => [
-					'text' => $result->getTextSnippet( [$query] ),
+					'text' => $result->getTextSnippet( [ $query ] ),
 					'title' => $result->getTitleSnippet(),
 					'redirect' => $result->getRedirectSnippet(),
 					'section' => $result->getSectionSnippet(),
@@ -204,7 +204,7 @@ class RunSearch extends Maintenance {
 	 * @param string $query
 	 * @return Status<ResultWrapper>
 	 */
-	protected function searchArchive($query) {
+	protected function searchArchive( $query ) {
 		$result = PageArchive::listPagesBySearch( $query );
 		return Status::newGood( $result );
 	}

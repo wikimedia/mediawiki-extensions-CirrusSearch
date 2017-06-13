@@ -75,7 +75,7 @@ class RescoreBuilder {
 	 */
 	public function build() {
 		$rescores = [];
-		foreach( $this->profile['rescore'] as $rescoreDef ) {
+		foreach ( $this->profile['rescore'] as $rescoreDef ) {
 			$windowSize = $this->windowSize( $rescoreDef );
 			$rescore = [
 				'window_size' => $windowSize,
@@ -100,7 +100,7 @@ class RescoreBuilder {
 	 * @throws InvalidRescoreProfileException
 	 */
 	private function buildRescoreQuery( array $rescoreDef ) {
-		switch( $rescoreDef['type'] ) {
+		switch ( $rescoreDef['type'] ) {
 		case self::FUNCTION_SCORE_TYPE:
 			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
 			return $funcChain->buildRescoreQuery();
@@ -159,7 +159,7 @@ class RescoreBuilder {
 			return $this->getFallbackProfile( $profile['fallback_profile'] );
 		}
 
-		foreach( $queryNs as $ns ) {
+		foreach ( $queryNs as $ns ) {
 			if ( !in_array( $ns, $profileNs ) ) {
 				return $this->getFallbackProfile( $profile['fallback_profile'] );
 			}
@@ -239,7 +239,7 @@ class FunctionScoreChain {
 		}
 
 		$params = array_intersect_key( $this->chain, array_flip( self::$functionScoreParams ) );
-		foreach( $params as $param => $value ) {
+		foreach ( $params as $param => $value ) {
 			$this->functionScore->setParam( $param, $value );
 		}
 	}
@@ -253,7 +253,7 @@ class FunctionScoreChain {
 		if ( !isset( $this->chain['functions'] ) ) {
 			throw new InvalidRescoreProfileException( "No functions defined in chain {$this->chainName}." );
 		}
-		foreach( $this->chain['functions'] as $func ) {
+		foreach ( $this->chain['functions'] as $func ) {
 			$impl = $this->getImplementation( $func );
 			$impl->append( $this->functionScore );
 		}
@@ -277,7 +277,7 @@ class FunctionScoreChain {
 	 */
 	private function getImplementation( $func ) {
 		$weight = isset ( $func['weight'] ) ? $func['weight'] : 1;
-		switch( $func['type'] ) {
+		switch ( $func['type'] ) {
 		case 'boostlinks':
 			return new IncomingLinksFunctionScoreBuilder( $this->context, $weight );
 		case 'recency':
@@ -564,7 +564,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 		// first build the opposite map, this will allow us to add a
 		// single factor function per weight by using a terms filter.
 		$weightToNs = [];
-		foreach( $this->namespacesToBoost as $ns ) {
+		foreach ( $this->namespacesToBoost as $ns ) {
 			$weight = $this->getBoostForNamespace( $ns ) * $this->weight;
 			$key = (string) $weight;
 			if ( $key == '1' ) {
@@ -578,7 +578,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				$weightToNs[$key][] = $ns;
 			}
 		}
-		foreach( $weightToNs as $weight => $namespaces ) {
+		foreach ( $weightToNs as $weight => $namespaces ) {
 			$filter = new \Elastica\Query\Terms( 'namespace', $namespaces );
 			$functionScore->addWeightFunction( $weight, $filter );
 		}
@@ -601,7 +601,7 @@ class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
 	public function append( FunctionScore $functionScore ) {
 		// Backward compat code, allows to disable this function
 		// even if specified in the rescore profile
-		if( !$this->context->isBoostLinks() ) {
+		if ( !$this->context->isBoostLinks() ) {
 			return;
 		}
 		$functionScore->addFunction( 'field_value_factor', [
@@ -717,11 +717,11 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( 4*$N >= $M ) {
 			throw new InvalidRescoreProfileException( 'The midpoint point cannot be higher than scale/4' );
 		}
-		return ( -( 2*$N - $M ) + sqrt( (2 * $N - $M) * (2 * $N - $M) - 4 * $N * $N ) ) / (2 * $N * $N);
+		return ( -( 2*$N - $M ) + sqrt( ( 2 * $N - $M ) * ( 2 * $N - $M ) - 4 * $N * $N ) ) / ( 2 * $N * $N );
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		if( $this->impact == 0 ) {
+		if ( $this->impact == 0 ) {
 			return;
 		}
 		$formula = $this->getScript();
@@ -898,7 +898,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( !isset( $profile['members'] ) || !is_array( $profile['members'] ) ) {
 			throw new InvalidRescoreProfileException( 'members must be an array of arrays' );
 		}
-		foreach( $profile['members'] as $member ) {
+		foreach ( $profile['members'] as $member ) {
 			if ( !is_array( $member ) ) {
 				throw new InvalidRescoreProfileException( "members must be an array of arrays" );
 			}
@@ -908,7 +908,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 				$weight = $this->getOverriddenFactor( $member['weight'] );
 			}
 			$function = [ 'weight' => $weight ];
-			switch( $member['type'] ) {
+			switch ( $member['type'] ) {
 			case 'satu':
 				$function['script'] = new SatuFunctionScoreBuilder( $this->context, 1, $member['params'] );
 				break;
@@ -937,7 +937,7 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 		$formula .= "exp((";
 		$first = true;
 		$sumWeight = 0;
-		foreach( $this->scriptFunctions as $func ) {
+		foreach ( $this->scriptFunctions as $func ) {
 			if ( $first ) {
 				$first = false;
 			} else {

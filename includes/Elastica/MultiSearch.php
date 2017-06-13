@@ -11,9 +11,9 @@ class MultiSearch extends \Elastica\Multi\Search {
 	 *
 	 * @return string
 	 */
-	protected function _getSearchData(\Elastica\Search $search) {
-		$header = $this->_getSearchDataHeader($search);
-		$header = (empty($header)) ? new \stdClass() : $header;
+	protected function _getSearchData( \Elastica\Search $search ) {
+		$header = $this->_getSearchDataHeader( $search );
+		$header = empty( $header ) ? new \stdClass() : $header;
 		$query = $search->getQuery();
 		$toKeep = [
 			'index' => true,
@@ -25,9 +25,9 @@ class MultiSearch extends \Elastica\Multi\Search {
 		$queryOptions = array_diff_key( $header, $toKeep );
 		$actualHeader = array_intersect_key( $header, $toKeep );
 
-		$data = \Elastica\JSON::stringify($actualHeader)."\n";
+		$data = \Elastica\JSON::stringify( $actualHeader )."\n";
 		$queryBody = $query->toArray() + $queryOptions;
-		$data .= \Elastica\JSON::stringify($queryBody)."\n";
+		$data .= \Elastica\JSON::stringify( $queryBody )."\n";
 		return $data;
 	}
 }

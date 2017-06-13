@@ -27,7 +27,7 @@ class MappingDump extends ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
-		foreach( $conn->getAllIndexTypes() as $index ) {
+		foreach ( $conn->getAllIndexTypes() as $index ) {
 			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
 			$this->getResult()->addPreserveKeysList( [ $index, Connection::PAGE_TYPE_NAME ], '_all' );

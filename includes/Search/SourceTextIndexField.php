@@ -16,8 +16,8 @@ class SourceTextIndexField extends TextIndexField {
 	public function __construct( $name, $type, SearchConfig $config ) {
 		parent::__construct( $name, $type, $config );
 
-		if ( $config->getElement('CirrusSearchWikimediaExtraPlugin', 'regex' ) &&
-			in_array( 'build', $config->getElement('CirrusSearchWikimediaExtraPlugin', 'regex' ) )
+		if ( $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) &&
+			in_array( 'build', $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) )
 		) {
 			$this->withTrigrams = true;
 		}
@@ -28,8 +28,8 @@ class SourceTextIndexField extends TextIndexField {
 	 * @return array|void
 	 */
 	public function getMapping( SearchEngine $engine ) {
-		if (!($engine instanceof \CirrusSearch)) {
-			throw new \LogicException("Cannot map CirrusSearch fields for another engine.");
+		if ( !( $engine instanceof \CirrusSearch ) ) {
+			throw new \LogicException( "Cannot map CirrusSearch fields for another engine." );
 		}
 		$this->initFlags();
 
@@ -56,7 +56,7 @@ class SourceTextIndexField extends TextIndexField {
 				'index_options' => 'docs',
 			];
 		}
-		$this->configureHighlighting( $field, ['plain'], false );
+		$this->configureHighlighting( $field, [ 'plain' ], false );
 		return $field;
 	}
 }

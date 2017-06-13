@@ -101,7 +101,7 @@ class Checker {
 		$pagesFromDb = $this->loadPagesFromDB( $pageIds );
 		$pagesFromIndex = $this->loadPagesFromIndex( $docIds );
 		$nbPagesFixed = 0;
-		foreach( array_combine( $pageIds, $docIds ) as $pageId => $docId ) {
+		foreach ( array_combine( $pageIds, $docIds ) as $pageId => $docId ) {
 			$fromIndex = [];
 			if ( isset( $pagesFromIndex[$docId] ) ) {
 				$fromIndex = $pagesFromIndex[$docId];
@@ -113,7 +113,7 @@ class Checker {
 			} else {
 				$updated = $this->checkInexistentPage( $docId, $pageId, $fromIndex );
 			}
-			if( $updated ) {
+			if ( $updated ) {
 				$nbPagesFixed++;
 			}
 		}
@@ -167,7 +167,7 @@ class Checker {
 		if ( $content == null ) {
 			return false;
 		}
-		if( is_object ( $content ) ) {
+		if ( is_object( $content ) ) {
 			return $content->isRedirect();
 		}
 		return false;
@@ -185,7 +185,7 @@ class Checker {
 	private function checkInexistentPage( $docId, $pageId, $fromIndex ) {
 		$inIndex = count( $fromIndex ) > 0;
 		if ( $inIndex ) {
-			foreach( $fromIndex as $r ) {
+			foreach ( $fromIndex as $r ) {
 				$title = Title::makeTitle( $r->namespace, $r->title );
 				$this->remediator->ghostPageInIndex( $docId, $title );
 			}

@@ -147,7 +147,7 @@ class Filters {
 	public static function insource( Escaper $escaper, SearchContext $context, $value ) {
 		return self::insourceOrIntitle( $escaper, $context, $value, function () {
 			return 'source_text.plain';
-		});
+		} );
 	}
 
 	/**
@@ -166,7 +166,7 @@ class Filters {
 			} else {
 				return 'title';
 			}
-		});
+		} );
 	}
 
 	/**

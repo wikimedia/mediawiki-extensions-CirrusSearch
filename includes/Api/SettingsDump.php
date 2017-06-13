@@ -26,7 +26,7 @@ class SettingsDump extends ApiBase {
 	public function execute() {
 		$conn = $this->getCirrusConnection();
 		$indexPrefix = $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME );
-		foreach( $conn->getAllIndexTypes() as $index ) {
+		foreach ( $conn->getAllIndexTypes() as $index ) {
 			$this->getResult()->addValue(
 				[ $index, 'page' ],
 				'index',

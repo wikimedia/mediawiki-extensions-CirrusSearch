@@ -266,7 +266,7 @@ class ResultSet extends SearchResultSet {
 	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return isset($this->interwikiResults[$type]) ? $this->interwikiResults[$type] : [];
+		return isset( $this->interwikiResults[$type] ) ? $this->interwikiResults[$type] : [];
 	}
 
 	/**
@@ -274,7 +274,7 @@ class ResultSet extends SearchResultSet {
 	 * @return bool
 	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return isset($this->interwikiResults[$type]);
+		return isset( $this->interwikiResults[$type] );
 	}
 
 	/**
@@ -288,7 +288,7 @@ class ResultSet extends SearchResultSet {
 	 * @param string $newQuery
 	 * @param string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery($newQuery, $newQuerySnippet=null) {
+	public function setRewrittenQuery( $newQuery, $newQuerySnippet=null ) {
 		$this->rewrittenQuery = $newQuery;
 		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
 	}

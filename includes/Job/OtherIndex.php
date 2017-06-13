@@ -34,7 +34,7 @@ class OtherIndex extends Job {
 	 */
 	public static function queueIfRequired( array $titles, $cluster ) {
 		$titlesToUpdate = [];
-		foreach( $titles as $title ) {
+		foreach ( $titles as $title ) {
 			if ( OtherIndexes::getExternalIndexes( $title ) ) {
 				$titlesToUpdate[] = [ $title->getNamespace(), $title->getText() ];
 			}

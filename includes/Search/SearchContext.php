@@ -415,7 +415,7 @@ class SearchContext {
 	 */
 	public function addSyntaxUsed( $feature, $weight = null ) {
 		if ( is_null( $weight ) ) {
-			if(isset(self::$syntaxWeights[$feature])) {
+			if ( isset( self::$syntaxWeights[$feature] ) ) {
 				$weight = self::$syntaxWeights[$feature];
 			} else {
 				$weight = 1;
@@ -546,7 +546,7 @@ class SearchContext {
 		}
 
 		$bool = new \Elastica\Query\BoolQuery();
-		if ( $this->highlightQuery) {
+		if ( $this->highlightQuery ) {
 			$bool->addShould( $this->highlightQuery );
 		}
 		foreach ( $this->nonTextHighlightQueries as $nonTextHighlightQuery ) {

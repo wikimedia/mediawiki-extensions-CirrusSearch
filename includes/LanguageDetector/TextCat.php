@@ -18,19 +18,19 @@ class TextCat implements Detector {
 	 */
 	public function detect( CirrusSearch $cirrus, $text ) {
 		$config = $cirrus->getConfig();
-		if( empty( $config ) ) {
+		if ( empty( $config ) ) {
 			// Should not happen
 			return null;
 		}
-		$dirs = $config->getElement('CirrusSearchTextcatModel');
-		if( !$dirs ) {
+		$dirs = $config->getElement( 'CirrusSearchTextcatModel' );
+		if ( !$dirs ) {
 			return null;
 		}
 		if ( !is_array( $dirs ) ) { // backward compatibility
 			$dirs = [ $dirs ];
 		}
-		foreach ($dirs as $dir) {
-			if( !is_dir( $dir ) ) {
+		foreach ( $dirs as $dir ) {
+			if ( !is_dir( $dir ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Bad directory for TextCat model: {dir}",
 					[ "dir" => $dir ]
@@ -40,7 +40,7 @@ class TextCat implements Detector {
 
 		$textcat = new \TextCat( $dirs );
 
-		$textcatConfig = $config->getElement('CirrusSearchTextcatConfig');
+		$textcatConfig = $config->getElement( 'CirrusSearchTextcatConfig' );
 		if ( $textcatConfig ) {
 			if ( isset( $textcatConfig['maxNgrams'] ) ) {
 				$textcat->setMaxNgrams( intval( $textcatConfig['maxNgrams'] ) );
@@ -64,13 +64,13 @@ class TextCat implements Detector {
 			if ( isset( $textcatConfig['numBoostedLangs'] ) &&
 				$config->getElement( 'CirrusSearchTextcatLanguages' )
 			) {
-				$textcat->setBoostedLangs( array_slice (
+				$textcat->setBoostedLangs( array_slice(
 					$config->getElement( 'CirrusSearchTextcatLanguages' ),
 					0, $textcatConfig['numBoostedLangs'] ) );
 			}
 		}
 		$languages = $textcat->classify( $text, $config->getElement( 'CirrusSearchTextcatLanguages' ) );
-		if( !empty( $languages ) ) {
+		if ( !empty( $languages ) ) {
 			// For now, just return the best option
 			// TODO: think what else we could do
 			reset( $languages );

@@ -17,7 +17,7 @@ abstract class ApiBase extends CoreApiBase {
 	 * @return Connection
 	 */
 	public function getCirrusConnection() {
-		if ($this->connection === null) {
+		if ( $this->connection === null ) {
 			$this->connection = new Connection( $this->getSearchConfig() );
 		}
 		return $this->connection;

@@ -28,7 +28,7 @@ class KeywordIndexField extends CirrusIndexField {
 			'index_options' => 'docs',
 			// TODO: Re-enable after upgrade to es 5.2 and changing type to keyword
 			// Omit the frequency and position information because neither are useful
-			//'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
+			// 'ignore_above' => self::KEYWORD_IGNORE_ABOVE,
 		];
 		return $config;
 	}

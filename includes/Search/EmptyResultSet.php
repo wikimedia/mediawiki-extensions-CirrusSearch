@@ -119,7 +119,7 @@ class EmptyResultSet extends ResultSet {
 	 * @param string $newQuery
 	 * @param string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery($newQuery, $newQuerySnippet=null) {
+	public function setRewrittenQuery( $newQuery, $newQuerySnippet=null ) {
 		throw new \Exception( "Can't rewrite empty result set" );
 	}
 

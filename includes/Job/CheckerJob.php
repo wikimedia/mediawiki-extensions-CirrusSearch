@@ -80,7 +80,7 @@ class CheckerJob extends Job {
 	 */
 	protected function doJob() {
 		$profile = $this->searchConfig->getElement( 'CirrusSearchSanitizationProfiles', $this->params['profile'] );
-		if( !$profile ) {
+		if ( !$profile ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",
 				[
@@ -161,7 +161,7 @@ class CheckerJob extends Job {
 
 		$pageCache = new ArrayObject();
 		$checkers = [];
-		foreach( $connections as $cluster => $connection ) {
+		foreach ( $connections as $cluster => $connection ) {
 			$searcher = new Searcher( $connection, 0, 0, $this->searchConfig, [], null );
 			$checker = new Checker(
 				$this->searchConfig,
@@ -186,7 +186,7 @@ class CheckerJob extends Job {
 				return true;
 			}
 			$pageCache->exchangeArray( [] );
-			foreach( $checkers as $checker ) {
+			foreach ( $checkers as $checker ) {
 				$checker->check( $pageIds );
 			}
 		}
@@ -205,7 +205,7 @@ class CheckerJob extends Job {
 			'cirrusSearchDeletePages',
 		];
 		$size = 0;
-		foreach( $queues as $queueName ) {
+		foreach ( $queues as $queueName ) {
 			$queue = JobQueueGroup::singleton()->get( $queueName );
 			$size += $queue->getSize();
 			$size += $queue->getDelayedCount();
@@ -227,7 +227,7 @@ class CheckerJob extends Job {
 	 * @param int $newFrom the new from offset
 	 */
 	private function retry( $cause, $newFrom ) {
-		if ( $this->params['retryCount'] >= self::JOB_MAX_RETRIES  ) {
+		if ( $this->params['retryCount'] >= self::JOB_MAX_RETRIES ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->info(
 				"Sanitize CheckerJob: $cause ({fromPageId}:{toPageId}), Abandonning CheckerJob after {retries} retries, (jobs_chunk_size too high?).",
 				[

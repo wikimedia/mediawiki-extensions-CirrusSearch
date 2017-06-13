@@ -98,7 +98,7 @@ class TitleResultsType extends BaseResultsType {
 	 */
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
-		foreach( $resultSet->getResults() as $r ) {
+		foreach ( $resultSet->getResults() as $r ) {
 			$results[] = TitleHelper::makeTitle( $r );
 		}
 		return $results;
@@ -189,7 +189,7 @@ class FancyTitleResultsType extends TitleResultsType {
 	 */
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
-		foreach( $resultSet->getResults() as $r ) {
+		foreach ( $resultSet->getResults() as $r ) {
 			$title = TitleHelper::makeTitle( $r );
 			$highlights = $r->getHighlights();
 			$resultForTitle = [];
@@ -292,7 +292,7 @@ class FullTextResultsType extends BaseResultsType {
 	 * @return array
 	 */
 	public function getStoredFields() {
-		return ["text.word_count"]; // word_count is only a stored field and isn't part of the source.
+		return [ "text.word_count" ]; // word_count is only a stored field and isn't part of the source.
 	}
 
 	/**
@@ -558,7 +558,7 @@ class IdResultsType implements ResultsType {
 	 */
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
-		foreach( $resultSet->getResults() as $r ) {
+		foreach ( $resultSet->getResults() as $r ) {
 			$results[] = $r->getId();
 		}
 		return $results;

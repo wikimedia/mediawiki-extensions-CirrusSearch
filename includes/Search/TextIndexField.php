@@ -93,8 +93,8 @@ class TextIndexField extends CirrusIndexField {
 	 * @return array
 	 */
 	public function getMapping( SearchEngine $engine ) {
-		if (!($engine instanceof \CirrusSearch)) {
-			throw new \LogicException("Cannot map CirrusSearch fields for another engine.");
+		if ( !( $engine instanceof \CirrusSearch ) ) {
+			throw new \LogicException( "Cannot map CirrusSearch fields for another engine." );
 		}
 		$this->initFlags();
 		/**
@@ -126,7 +126,7 @@ class TextIndexField extends CirrusIndexField {
 				'norms' => false,
 				'index_options' => 'docs',
 				// TODO: Re-enable in ES 5.2 with keyword type and s/analyzer/normalizer/
-				//'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
+				// 'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
 			];
 		}
 
@@ -222,7 +222,7 @@ class TextIndexField extends CirrusIndexField {
 		);
 		$fieldSimilarity = null;
 		if ( isset( $similarity['fields'] ) ) {
-			if( isset( $similarity['fields'][$field] ) ) {
+			if ( isset( $similarity['fields'][$field] ) ) {
 				$fieldSimilarity = $similarity['fields'][$field];
 			} elseif ( $similarity['fields']['__default__'] ) {
 				$fieldSimilarity = $similarity['fields']['__default__'];
@@ -232,7 +232,7 @@ class TextIndexField extends CirrusIndexField {
 				$fieldSimilarity = $similarity['fields']["$field.$analyzer"];
 			}
 		}
-		if ( is_null ( $fieldSimilarity ) ) {
+		if ( is_null( $fieldSimilarity ) ) {
 			throw new \RuntimeException( "Invalid similarity profile, unable to infer the similarity for the field $field, (defining a __default__ field might solve the issue" );
 		}
 		return $fieldSimilarity;

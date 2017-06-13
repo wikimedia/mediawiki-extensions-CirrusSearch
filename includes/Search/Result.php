@@ -167,7 +167,7 @@ class Result extends SearchResult {
 	 * @return bool
 	 */
 	public function isMissingRevision() {
-		return !($this->ignoreMissingRev || $this->mTitle->isKnown());
+		return !( $this->ignoreMissingRev || $this->mTitle->isKnown() );
 	}
 
 	/**

@@ -162,6 +162,6 @@ class PrintingRemediator implements Remediator {
 	 * @param string $message
 	 */
 	private function log( $pageOrDocId, $title, $message ) {
-		printf("%30s %10d %s\n", $message, $pageOrDocId, $title );
+		printf( "%30s %10d %s\n", $message, $pageOrDocId, $title );
 	}
 }

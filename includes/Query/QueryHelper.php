@@ -9,7 +9,6 @@ use CirrusSearch\Search\SearchContext;
  */
 class QueryHelper {
 	/**
-	/**
 	 * Builds a match query against $field for $title. $title is munged to make
 	 * title matching better more intuitive for users.
 	 *

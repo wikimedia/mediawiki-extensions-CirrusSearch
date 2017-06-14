@@ -89,12 +89,12 @@ class SearchConfig implements \Config {
 	public function getConfigVars( $wiki, $prefix ) {
 		global $wgConf;
 
-		$cirrusVars = array_filter( array_keys($GLOBALS),
-				function($key) use($prefix) {
+		$cirrusVars = array_filter( array_keys( $GLOBALS ),
+				function( $key ) use( $prefix ) {
 					if ( !isset( $GLOBALS[$key] ) || is_object( $GLOBALS[$key] ) ) {
 						return false;
 					}
-					return strncmp( $key, $prefix, strlen($prefix) ) === 0;
+					return strncmp( $key, $prefix, strlen( $prefix ) ) === 0;
 				}
 		);
 		$cirrusVars = array_merge( $cirrusVars, self::$nonCirrusVars );
@@ -107,7 +107,7 @@ class SearchConfig implements \Config {
 	 * @param string $name
 	 * @return bool
 	 */
-	public function has($name) {
+	public function has( $name ) {
 		return $this->source->has( $this->prefix . $name );
 	}
 
@@ -115,7 +115,7 @@ class SearchConfig implements \Config {
 	 * @param string $name
 	 * @return mixed
 	 */
-	public function get($name) {
+	public function get( $name ) {
 		if ( !$this->source->has( $this->prefix . $name ) ) {
 			return null;
 		}
@@ -176,7 +176,7 @@ class SearchConfig implements \Config {
 		}
 
 		$pieces = explode( '|', $docId );
-		switch( count( $pieces ) ) {
+		switch ( count( $pieces ) ) {
 		case 2:
 			return (int)$pieces[1];
 		case 1:
@@ -205,15 +205,15 @@ class SearchConfig implements \Config {
 	 * @param string ... list of path elements
 	 * @return mixed Returns value or null if not present
 	 */
-	public function getElement($configName) {
-		if( !$this->has( $configName ) ) {
+	public function getElement( $configName ) {
+		if ( !$this->has( $configName ) ) {
 			return null;
 		}
 		$data = $this->get( $configName );
 		$path = func_get_args();
 		array_shift( $path );
-		foreach( $path as $el ) {
-			if( !isset( $data[$el] ) ) {
+		foreach ( $path as $el ) {
+			if ( !isset( $data[$el] ) ) {
 				return null;
 			}
 			$data = $data[$el];
@@ -280,9 +280,9 @@ class SearchConfig implements \Config {
 	 */
 	private function initClusterConfig() {
 		$this->availableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
-		if( $this->has( 'CirrusSearchWriteClusters' ) ) {
+		if ( $this->has( 'CirrusSearchWriteClusters' ) ) {
 			$this->writableClusters = $this->get( 'CirrusSearchWriteClusters' );
-			if( is_null( $this->writableClusters ) ) {
+			if ( is_null( $this->writableClusters ) ) {
 				$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
 			}
 		} else {

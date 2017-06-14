@@ -23,7 +23,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		$this->config = $config;
 		$this->cache = ObjectCache::getLocalClusterInstance();
 		if ( $config->getWikiId() !== wfWikiID() ) {
-			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID()  );
+			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID() );
 		}
 		if ( !class_exists( SiteMatrix::class ) ) {
 			throw new \RuntimeException( "SiteMatrix is required" );
@@ -86,7 +86,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				return [];
 			}
 
-			foreach( $matrix->getSites() as $site ) {
+			foreach ( $matrix->getSites() as $site ) {
 				if ( $matrix->getDBName( $myLang, $site ) === $wikiDBname ) {
 					$myProject = $site;
 					continue;
@@ -98,14 +98,14 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				return [];
 			}
 
-			foreach( $matrix->getSites() as $site ) {
+			foreach ( $matrix->getSites() as $site ) {
 				if ( $site === $myProject ) {
 					continue;
 				}
 				if ( !$matrix->exist( $myLang, $site ) ) {
 					continue;
 				}
-				if( $matrix->isClosed( $myLang, $site ) ) {
+				if ( $matrix->isClosed( $myLang, $site ) ) {
 					continue;
 				}
 				if ( !isset( $siteConf[$site]['prefix'] ) ) {
@@ -120,7 +120,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				$prefixesByWiki[$dbName] = $prefix;
 			}
 
-			foreach( $matrix->getLangList() as $lang ) {
+			foreach ( $matrix->getLangList() as $lang ) {
 				if ( $lang === $myLang ) {
 					continue;
 				}
@@ -129,7 +129,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				if ( !$matrix->exist( $lang, $myProject ) ) {
 					continue;
 				}
-				if( $matrix->isClosed( $lang, $myProject ) ) {
+				if ( $matrix->isClosed( $lang, $myProject ) ) {
 					continue;
 				}
 				// Bold assumption that the interwiki prefix is equal
@@ -158,8 +158,8 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			}
 			// Cleanup unambiguous languages
 			$cleanLanguageMap = [];
-			foreach( $languageMap as $lang => $dbprefixes ) {
-				if ( array_key_exists ( $lang, $dbprefixes )
+			foreach ( $languageMap as $lang => $dbprefixes ) {
+				if ( array_key_exists( $lang, $dbprefixes )
 					&& ( $dbprefixes === [ $lang ] )
 				) {
 					continue;

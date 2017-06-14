@@ -222,13 +222,13 @@ class UserTesting {
 		}
 		$len = strlen( $hash );
 		$sum = 0;
-		for ( $i = 0; $i < $len; $i += 4) {
+		for ( $i = 0; $i < $len; $i += 4 ) {
 			$piece = substr( $hash, $i, 4 );
 			$dec = hexdec( $piece );
 			// xor will retain the uniform distribution
 			$sum = $sum ^ $dec;
 		}
-		return $sum / ((1<<16)-1);
+		return $sum / ( ( 1<<16 )-1 );
 	}
 
 	/**

@@ -203,7 +203,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						'suggest' => $suggest,
 					];
 					$result = $index->request( "_search", Request::POST, $search, [ 'size' => 0 ] );
-					if( $result->isOk() ) {
+					if ( $result->isOk() ) {
 						$result = $this->postProcessSuggest( $result, $profiles, $log );
 						return $this->success( $result );
 					} else {
@@ -277,7 +277,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$suggest = [];
 		foreach ( $profiles as $name => $config ) {
 			$sugg = $this->buildSuggestQuery( $config, $query, $queryLen );
-			if(!$sugg) {
+			if ( !$sugg ) {
 				continue;
 			}
 			$suggest[$name] = $sugg;
@@ -327,7 +327,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$variantIndex = 0;
 		$allVariantProfiles = [];
 		$allSuggestions = [];
-		foreach( $this->variants as $variant ) {
+		foreach ( $this->variants as $variant ) {
 			$variantIndex++;
 			foreach ( $profiles as $name => $profile ) {
 				$variantProfName = $name . '-variant-' . $variantIndex;
@@ -377,7 +377,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$suggestionsByDocId = [];
 		$suggestionProfileByDocId = [];
 		$hitsTotal = 0;
-		foreach ( $data as $name => $results  ) {
+		foreach ( $data as $name => $results ) {
 			$discount = $profiles[$name]['discount'];
 			foreach ( $results  as $suggested ) {
 				$hitsTotal += count( $suggested['options'] );

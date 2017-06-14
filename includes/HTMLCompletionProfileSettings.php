@@ -26,7 +26,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 		parent::__construct( $params );
 
 		$this->profiles = [];
-		foreach( $params['profiles'] as $prof ) {
+		foreach ( $params['profiles'] as $prof ) {
 			$this->profiles[] = $prof['name'];
 		}
 	}
@@ -50,7 +50,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 			[],
 			wfMessage( 'cirrussearch-pref-completion-section-legend' )->parse()
 		);
-		foreach( $this->compProfilesPreferedOrder as $prof ) {
+		foreach ( $this->compProfilesPreferedOrder as $prof ) {
 			if ( in_array( $prof, $this->profiles ) ) {
 				$html .= $this->addCompSuggestOption( $prof, $value );
 			}
@@ -89,7 +89,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 		$html .= Html::closeElement( 'div' );
 		$html .= Html::openElement( 'div', [ 'style' => 'display:inline-block; width: 90%' ] );
 		$html .= Html::element( 'label',
-			['for' => $radioId, 'style' => 'font-weight: bold'],
+			[ 'for' => $radioId, 'style' => 'font-weight: bold' ],
 			wfMessage( "cirrussearch-completion-profile-$prof-pref-name" )->text()
 		);
 		$html .= Html::element( 'div',

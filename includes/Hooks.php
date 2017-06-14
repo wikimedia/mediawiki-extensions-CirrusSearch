@@ -226,14 +226,14 @@ class Hooks {
 				continue;
 			}
 			list( $k, $v ) = explode( ':', $line, 2 );
-			switch( $k ) {
+			switch ( $k ) {
 			case 'min_doc_freq':
 			case 'max_doc_freq':
 			case 'max_query_terms':
 			case 'min_term_freq':
 			case 'min_word_length':
 			case 'max_word_length':
-				if( is_numeric( $v ) && $v >= 0 ) {
+				if ( is_numeric( $v ) && $v >= 0 ) {
 					$wgCirrusSearchMoreLikeThisConfig[$k] = intval( $v );
 				} elseif ( $v === 'null' ) {
 					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
@@ -243,7 +243,7 @@ class Hooks {
 				// @deprecated Use minimum_should_match now
 				$k = 'minimum_should_match';
 				if ( is_numeric( $v ) && $v > 0 && $v <= 1 ) {
-					$v = ((int) ($v * 100)) . '%';
+					$v = ( (int)( $v * 100 ) ) . '%';
 				} else {
 					break;
 				}
@@ -251,7 +251,7 @@ class Hooks {
 			case 'minimum_should_match':
 				if ( self::isMinimumShouldMatch( $v ) ) {
 					$wgCirrusSearchMoreLikeThisConfig[$k] = $v;
-				} elseif ($v === 'null' ) {
+				} elseif ( $v === 'null' ) {
 					unset( $wgCirrusSearchMoreLikeThisConfig[$k] );
 				}
 				break;
@@ -308,7 +308,7 @@ class Hooks {
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_length'], $request, 'cirrusMltMinWordLength' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'], $request, 'cirrusMltMaxWordLength' );
 		$fields = $request->getVal( 'cirrusMltFields' );
-		if( isset( $fields ) ) {
+		if ( isset( $fields ) ) {
 			$wgCirrusSearchMoreLikeThisFields = array_intersect(
 				array_map( 'trim', explode( ',', $fields ) ),
 				$wgCirrusSearchMoreLikeThisAllowedFields );
@@ -324,7 +324,6 @@ class Hooks {
 		// We use this to pick up redirects so we can update their targets.
 		// Can't re-use ArticleDeleteComplete because the page info's
 		// already gone
-		//
 		// If we abort or fail deletion it's no big deal because this will
 		// end up being a no-op when it executes.
 		$target = $page->getRedirectTarget();
@@ -713,7 +712,7 @@ class Hooks {
 	 */
 	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = [] ) {
 		global $wgCirrusSearchInterwikiProv;
-		if( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
+		if ( $wgCirrusSearchInterwikiProv && $title->isExternal() ) {
 			$query["wprov"] = $wgCirrusSearchInterwikiProv;
 		}
 	}
@@ -813,7 +812,7 @@ class Hooks {
 	public static function onMediaWikiServices( MediaWikiServices $container ) {
 		$container->defineService(
 			InterwikiResolverFactory::SERVICE,
-			[InterwikiResolverFactory::class, 'newFactory']
+			[ InterwikiResolverFactory::class, 'newFactory' ]
 		);
 		$container->defineService(
 			InterwikiResolver::SERVICE,

@@ -43,7 +43,7 @@ class PhraseSuggesterProfiles {
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['max_errors'], $request,
 			'cirrusSuggMaxErrors', $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit );
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['confidence'], $request,
-			'cirrusSuggConfidence');
+			'cirrusSuggConfidence' );
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['max_term_freq'], $request,
 			'cirrusSuggMaxTermFreq', $wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit );
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['min_doc_freq'], $request,
@@ -51,7 +51,7 @@ class PhraseSuggesterProfiles {
 		Util::overrideNumeric( $wgCirrusSearchPhraseSuggestSettings['prefix_length'], $request,
 			'cirrusSuggPrefixLength', $wgCirrusSearchPhraseSuggestPrefixLengthHardLimit, false );
 		$mode = $request->getVal( 'cirrusSuggMode' );
-		if( isset ( $mode ) && in_array( $mode, $wgCirrusSearchPhraseSuggestAllowedMode ) ) {
+		if ( isset( $mode ) && in_array( $mode, $wgCirrusSearchPhraseSuggestAllowedMode ) ) {
 			$wgCirrusSearchPhraseSuggestSettings['mode'] = $mode;
 		}
 
@@ -82,16 +82,16 @@ class PhraseSuggesterProfiles {
 
 		// Custom discount for stupid_backoff smoothing model
 		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) ) {
-			$discount = $request->getVal('cirrusSuggDiscount');
-			if( is_numeric( $discount ) && $discount <= 1 && $discount >= 0 ) {
+			$discount = $request->getVal( 'cirrusSuggDiscount' );
+			if ( is_numeric( $discount ) && $discount <= 1 && $discount >= 0 ) {
 				$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'] = floatval( $discount );
 			}
 		}
 
 		// Custom alpha for laplace smoothing model
 		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) ) {
-			$alpha = $request->getVal('cirrusSuggAlpha');
-			if( is_numeric( $alpha ) && $alpha <= 1 && $alpha >= 0 ) {
+			$alpha = $request->getVal( 'cirrusSuggAlpha' );
+			if ( is_numeric( $alpha ) && $alpha <= 1 && $alpha >= 0 ) {
 				$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'] = floatval( $alpha );
 			}
 		}
@@ -109,7 +109,7 @@ class PhraseSuggesterProfiles {
 	/**
 	 * Override Phrase suggester options ("Did you mean?" suggestions)
 	 */
-	public static function overrideOptionsFromMessage( ) {
+	public static function overrideOptionsFromMessage() {
 		global $wgCirrusSearchPhraseSuggestMaxErrors,
 			$wgCirrusSearchPhraseSuggestConfidence,
 			$wgCirrusSearchPhraseSuggestSettings,
@@ -150,10 +150,10 @@ class PhraseSuggesterProfiles {
 			$k = $linePieces[0];
 			$v = $linePieces[1];
 
-			switch( $k ) {
+			switch ( $k ) {
 			case 'max_errors' :
 				if ( is_numeric( $v ) && $v >= 1 && $v <= $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit ) {
-					$wgCirrusSearchPhraseSuggestSettings['max_errors'] = floatval($v);
+					$wgCirrusSearchPhraseSuggestSettings['max_errors'] = floatval( $v );
 					// Support deprecated settings
 					if ( isset ( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
 						$wgCirrusSearchPhraseSuggestMaxErrors = floatval( $v );
@@ -212,12 +212,12 @@ class PhraseSuggesterProfiles {
 				break;
 			case 'laplace_alpha' :
 				if ( is_numeric( $v ) && $v >= 0 && $v <= 1 ) {
-					$laplaceAlpha = floatval($v);
+					$laplaceAlpha = floatval( $v );
 				}
 				break;
 			case 'stupid_backoff_discount' :
 				if ( is_numeric( $v ) && $v >= 0 && $v <= 1 ) {
-					$stupidBackoffDiscount = floatval($v);
+					$stupidBackoffDiscount = floatval( $v );
 				}
 				break;
 			}

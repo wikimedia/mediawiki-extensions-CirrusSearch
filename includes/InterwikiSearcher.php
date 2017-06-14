@@ -97,7 +97,7 @@ class InterwikiSearcher extends Searcher {
 				'wikis' => [],
 			]
 		];
-		foreach( $sources as $interwiki => $index ) {
+		foreach ( $sources as $interwiki => $index ) {
 			if ( isset( $overriddenProfiles[$interwiki] ) ) {
 				$key = $this->prepareContextKey( $overriddenProfiles[$interwiki] );
 			} else {
@@ -118,7 +118,7 @@ class InterwikiSearcher extends Searcher {
 		$retval = [];
 		$searches = [];
 		$this->setResultsType( new FullTextResultsType( $this->highlightingConfig ) );
-		foreach( $byProfile as $contexts ) {
+		foreach ( $byProfile as $contexts ) {
 			// Build a new context for every search
 			// Some bits in the context may add up when calling
 			// buildFullTextSearch (such as filters).
@@ -223,8 +223,8 @@ class InterwikiSearcher extends Searcher {
 
 	private function buildOverriddenContext( array $overrides ) {
 		$searchContext = new SearchContext( $this->searchContext->getConfig(), $this->searchContext->getNamespaces() );
-		foreach( $overrides as $name => $profile ) {
-			switch( $name ) {
+		foreach ( $overrides as $name => $profile ) {
+			switch ( $name ) {
 			case 'ftbuilder':
 				$searchContext->setFulltextQueryBuilderProfile( $profile );
 				break;

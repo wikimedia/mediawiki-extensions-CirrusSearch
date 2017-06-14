@@ -108,7 +108,7 @@ class ElasticaErrorHandler {
 				],
 			],
 		];
-		foreach( $heuristics as $type => $heuristic ) {
+		foreach ( $heuristics as $type => $heuristic ) {
 			$regex = implode( '|', $heuristic['type_regexes'] );
 			if ( $regex && preg_match( "/$regex/", $error['type'] ) ) {
 				return $type;

@@ -69,7 +69,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideReplicaCounts
 	 */
-	public function testReplicaCount( $replicas, $cluster, $indexType, $expect) {
+	public function testReplicaCount( $replicas, $cluster, $indexType, $expect ) {
 		$config = $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
 			->disableOriginalConstructor()
 			->getMock();

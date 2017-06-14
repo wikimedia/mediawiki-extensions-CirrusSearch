@@ -133,7 +133,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 			]
 		];
 
-		$crossNsScore = (int) ($score * SuggestBuilder::CROSSNS_DISCOUNT);
+		$crossNsScore = (int) ( $score * SuggestBuilder::CROSSNS_DISCOUNT );
 
 		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
@@ -253,7 +253,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 			'incoming_links' => $score
 		];
 
-		$score = (int) (SuggestBuilder::CROSSNS_DISCOUNT * $score);
+		$score = (int) ( SuggestBuilder::CROSSNS_DISCOUNT * $score );
 
 		$expected = [
 			[
@@ -364,7 +364,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 	 * @dataProvider providePagesForSubphrases
 	 */
 	public function testSubphrasesSuggestionsBuilder( $input, $langSubPage, $type, $max, array $output ) {
-		$config = ['limit' => $max, 'type' => $type];
+		$config = [ 'limit' => $max, 'type' => $type ];
 		$builder = NaiveSubphrasesSuggestionsBuilder::create( $config );
 		$subPageSuggestions = $builder->tokenize( $input, $langSubPage );
 		$this->assertEquals( $output, $subPageSuggestions );
@@ -384,7 +384,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 				'',
 				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
 				3,
-				['World']
+				[ 'World' ]
 			],
 			'none subpage translated' => [
 				'Hello World/ru',
@@ -398,35 +398,35 @@ class SuggestBuilderTest extends CirrusTestCase {
 				'ru',
 				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
 				3,
-				['World/ru'],
+				[ 'World/ru' ],
 			],
 			'simple subphrase' => [
 				'Hyperion Cantos/Hyperion',
 				'en',
 				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
 				3,
-				['Hyperion'],
+				[ 'Hyperion' ],
 			],
 			'simple any words' => [
 				'Hyperion Cantos/Hyperion',
 				'en',
 				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
 				3,
-				['Cantos/Hyperion', 'Hyperion'],
+				[ 'Cantos/Hyperion', 'Hyperion' ],
 			],
 			'simple subpage translated' => [
 				'Hyperion Cantos/Hyperion/ru',
 				'ru',
 				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
 				3,
-				['Hyperion/ru'],
+				[ 'Hyperion/ru' ],
 			],
 			'simple any words translated' => [
 				'Hyperion Cantos/Hyperion/ru',
 				'ru',
 				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
 				3,
-				['Cantos/Hyperion/ru', 'Hyperion/ru'],
+				[ 'Cantos/Hyperion/ru', 'Hyperion/ru' ],
 			],
 			'multiple subpage' => [
 				'Hyperion Cantos/Hyperion/The Priest\'s Tale',
@@ -519,21 +519,21 @@ class SuggestBuilderTest extends CirrusTestCase {
 				'en',
 				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
 				3,
-				['Hyperion'],
+				[ 'Hyperion' ],
 			],
 			'empty subpage anywords' => [
 				'Hyperion Cantos//Hyperion',
 				'en',
 				NaiveSubphrasesSuggestionsBuilder::STARTS_WITH_ANY_WORDS_TYPE,
 				3,
-				['Cantos//Hyperion', 'Hyperion'],
+				[ 'Cantos//Hyperion', 'Hyperion' ],
 			],
 			'misplace lang subpage' => [
 				'Hyperion Cantos/ru/Hyperion',
 				'ru',
 				NaiveSubphrasesSuggestionsBuilder::SUBPAGE_TYPE,
 				3,
-				['ru/Hyperion', 'Hyperion'],
+				[ 'ru/Hyperion', 'Hyperion' ],
 			],
 			'missing subpage' => [
 				'Hyperion Cantos/',

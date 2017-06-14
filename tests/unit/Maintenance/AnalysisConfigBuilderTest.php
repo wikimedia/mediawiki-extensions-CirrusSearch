@@ -13,8 +13,8 @@ use CirrusSearch\CirrusTestCase;
 class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideASCIIFoldingFilters */
 	public function testASCIIFoldingFix( array $input, array $expected ) {
-		$config = new HashSearchConfig([]);
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->fixAsciiFolding( $input );
 
@@ -28,43 +28,43 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	/** @dataProvider provideICUFoldingFilters */
 	public function testICUFolding( array $input, array $expected ) {
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'yes' ] );
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'unknown_language', $plugins, $config );
 		$result = $builder->enableICUFolding( $input );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
 
 		// Test default
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'default' ] );
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->enableICUFolding( $input );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
 
 		// test BC code
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => true ] );
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => true ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$this->assertTrue( $builder->isIcuFolding() );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
 
 		// Test that we can force disabling ICU folding
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'no' ] );
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'no' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$this->assertFalse( $builder->isIcuFolding() );
 
 		// Test that ICU folding cannot be enable without the required plugins
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuFolding' => 'yes' ] );
-		$plugins = ['analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
+		$plugins = [ 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$this->assertFalse( $builder->isIcuFolding() );
 	}
 
 	/** @dataProvider provideICUTokenizer */
 	public function testICUTokinizer( array $input, array $expected ) {
-		$config = new HashSearchConfig( ['CirrusSearchUseIcuTokenizer' => 'yes'] );
-		$plugins = ['extra', 'analysis-icu'];
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuTokenizer' => 'yes' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->enableICUTokenizer( $input );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
@@ -77,7 +77,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['asciifolding_preserve']
+							'filter' => [ 'asciifolding_preserve' ]
 						]
 					],
 				],
@@ -85,7 +85,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['asciifolding_preserve']
+							'filter' => [ 'asciifolding_preserve' ]
 						]
 					],
 				],
@@ -95,7 +95,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'custom',
-							'filter' => ['asciifolding']
+							'filter' => [ 'asciifolding' ]
 						]
 					],
 				],
@@ -103,7 +103,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'custom',
-							'filter' => ['asciifolding']
+							'filter' => [ 'asciifolding' ]
 						],
 					],
 				],
@@ -159,7 +159,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['asciifolding']
+							'filter' => [ 'asciifolding' ]
 						]
 					],
 				],
@@ -167,7 +167,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['asciifolding']
+							'filter' => [ 'asciifolding' ]
 						]
 					],
 				],
@@ -319,7 +319,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['random']
+							'filter' => [ 'random' ]
 						]
 					],
 				],
@@ -327,7 +327,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					'analyzer' => [
 						'french' => [
 							'type' => 'french',
-							'filter' => ['random']
+							'filter' => [ 'random' ]
 						]
 					],
 				],
@@ -338,7 +338,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 						'chinese' => [
 							'type' => 'custom',
 							'tokenizer' => 'standard',
-							'filter' => ['random']
+							'filter' => [ 'random' ]
 						]
 					],
 				],
@@ -347,7 +347,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 						'chinese' => [
 							'type' => 'custom',
 							'tokenizer' => 'icu_tokenizer',
-							'filter' => ['random']
+							'filter' => [ 'random' ]
 						]
 					],
 				],
@@ -377,7 +377,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			} else {
 				$expected = $expectedFile;
 			}
-			$tests[$testName] = [$expected, $langCode, $extraConfig];
+			$tests[$testName] = [ $expected, $langCode, $extraConfig ];
 		}
 		return $tests;
 	}
@@ -391,7 +391,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
 		$config = new HashSearchConfig( $extraConfig + [
 			'CirrusSearchSimilarityProfile' => 'default',
-		]);
+		] );
 		$plugins = [
 			'analysis-stempel', 'analysis-kuromoji',
 			'analysis-smartcn', 'analysis-hebrew',

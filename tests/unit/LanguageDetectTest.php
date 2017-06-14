@@ -46,17 +46,17 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function getLanguageTexts() {
 		return [
 			// simple cases
-			["Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en"],
-			["Добро пожаловать в Википедию", "ru", "uk"],	// ru missing, uk present
+			[ "Welcome to Wikipedia, the free encyclopedia that anyone can edit", "en", "en" ],
+			[ "Добро пожаловать в Википедию", "ru", "uk" ],	// ru missing, uk present
 
 			// more query-like cases
-			["who stars in Breaking Bad?", "en", "en"],
-			["Jesenwang flugplatz", "de", "de"],
-			["volviendose malo", "es", null], // en boosted -> too ambiguous
-			["противоточный теплообменник", "ru", "uk"], // ru missing, uk present
-			["שובר שורות", "he", "he"],
-			["୨୪ ଅକ୍ଟୋବର", "or", null],	// or missing, no alternative
-			["th", "en", null],	// too short
+			[ "who stars in Breaking Bad?", "en", "en" ],
+			[ "Jesenwang flugplatz", "de", "de" ],
+			[ "volviendose malo", "es", null ], // en boosted -> too ambiguous
+			[ "противоточный теплообменник", "ru", "uk" ], // ru missing, uk present
+			[ "שובר שורות", "he", "he" ],
+			[ "୨୪ ଅକ୍ଟୋବର", "or", null ],	// or missing, no alternative
+			[ "th", "en", null ],	// too short
 		];
 	}
 
@@ -72,16 +72,16 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param string $language
 	 * @param string $ignore
 	 */
-	public function testTextCatDetector($text, $language, $ignore) {
-		$tc = new \ReflectionClass('TextCat');
+	public function testTextCatDetector( $text, $language, $ignore ) {
+		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
 											  dirname( $tc->getFileName() )."/LM/" ],
 			'wgCirrusSearchTextcatLanguages' => null,
 			'wgCirrusSearchTextcatConfig' => null,
 		] );
-		$detect = $this->textcat->detect($this->cirrus, $text);
-		$this->assertEquals($language, $detect);
+		$detect = $this->textcat->detect( $this->cirrus, $text );
+		$this->assertEquals( $language, $detect );
 	}
 
 	/**
@@ -90,8 +90,8 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param string $ignore
 	 * @param string $language
 	 */
-	public function testTextCatDetectorWithParams($text, $ignore, $language) {
-		$tc = new \ReflectionClass('TextCat');
+	public function testTextCatDetectorWithParams( $text, $ignore, $language ) {
+		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			// only use one language model directory in old non-array format
 			'wgCirrusSearchTextcatModel' => dirname( $tc->getFileName() )."/LM-query/",
@@ -106,20 +106,20 @@ class LanguageDetectTest extends CirrusTestCase {
 				'numBoostedLangs' => 1,
 			],
 		] );
-		$detect = $this->textcat->detect($this->cirrus, $text);
-		$this->assertEquals($language, $detect);
+		$detect = $this->textcat->detect( $this->cirrus, $text );
+		$this->assertEquals( $language, $detect );
 	}
 
 	public function testTextCatDetectorLimited() {
-		$tc = new \ReflectionClass('TextCat');
+		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
 											  dirname( $tc->getFileName() )."/LM/" ],
-			'wgCirrusSearchTextcatLanguages' => ["en", "ru"],
+			'wgCirrusSearchTextcatLanguages' => [ "en", "ru" ],
 			'wgCirrusSearchTextcatConfig' => null,
 		] );
-		$detect = $this->textcat->detect($this->cirrus, "volviendose malo");
-		$this->assertEquals("en", $detect);
+		$detect = $this->textcat->detect( $this->cirrus, "volviendose malo" );
+		$this->assertEquals( "en", $detect );
 	}
 
 	/**
@@ -135,10 +135,10 @@ class LanguageDetectTest extends CirrusTestCase {
 		$this->setMwGlobals( [
 			'wgCirrusSearchInterwikiSources' => null,
 			'wgCirrusSearchIndexBaseName' => 'mywiki',
-			'wgCirrusSearchExtraIndexes' => [NS_FILE => ['externalwiki_file']],
+			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
 		] );
 		$cirrus = new MyCirrusSearch();
-		$cirrus->setNamespaces( [NS_FILE] );
+		$cirrus->setNamespaces( [ NS_FILE ] );
 		$cirrus->setDumpAndDie( false );
 		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true )->getValue();
 		$result = json_decode( $result, true );
@@ -150,13 +150,13 @@ class LanguageDetectTest extends CirrusTestCase {
 
 	public function getHttpLangs() {
 		return [
-			["en", ["en"], null],
-			["en", ["en-UK", "en-US"], null],
-			["pt", ["pt-BR", "pt-PT"], null],
-			["en", ["en-UK", "*"], null],
-			["es", ["en-UK", "en-US"], "en"],
-			["en", ["pt-BR", "en-US"], "pt"],
-			["en", ["en-US", "pt-BR"], "pt"],
+			[ "en", [ "en" ], null ],
+			[ "en", [ "en-UK", "en-US" ], null ],
+			[ "pt", [ "pt-BR", "pt-PT" ], null ],
+			[ "en", [ "en-UK", "*" ], null ],
+			[ "es", [ "en-UK", "en-US" ], "en" ],
+			[ "en", [ "pt-BR", "en-US" ], "pt" ],
+			[ "en", [ "en-US", "pt-BR" ], "pt" ],
 		];
 	}
 
@@ -166,17 +166,17 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param array  $http
 	 * @param string $result
 	 */
-	public function testHttpAcceptDetector($content, $http, $result) {
+	public function testHttpAcceptDetector( $content, $http, $result ) {
 		$detector = new TestHttpAccept();
 
-		$detector->setLanguages($content, $http);
-		$detect = $detector->detect($this->cirrus, "test");
-		$this->assertEquals($result, $detect);
+		$detector->setLanguages( $content, $http );
+		$detect = $detector->detect( $this->cirrus, "test" );
+		$this->assertEquals( $result, $detect );
 	}
 }
 
 class TestHttpAccept extends HttpAccept {
-	function setLanguages($content, $http) {
+	function setLanguages( $content, $http ) {
 		$this->wikiLang = $content;
 		$this->httpLang = $http;
 	}

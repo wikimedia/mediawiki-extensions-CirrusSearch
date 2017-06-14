@@ -65,7 +65,7 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		// This test is kinda-sorta testing the escaper too ... maybe not optimal but simple
 		$context->expects( $this->once() )
-			->method( 'escaper')
+			->method( 'escaper' )
 			->will( $this->returnValue( new Escaper( 'en' ) ) );
 
 		$feature = new InTitleFeature();
@@ -81,7 +81,7 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 			->getMock();
 
 		$context->expects( $this->once() )
-			->method( 'escaper')
+			->method( 'escaper' )
 			->will( $this->returnValue( new Escaper( 'en' ) ) );
 
 		$feature = new InTitleFeature();

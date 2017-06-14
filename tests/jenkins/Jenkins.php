@@ -31,26 +31,26 @@ use Title;
 // Configuration we have to override before installing Cirrus but only if we're using
 // Jenkins as a prototype for development.
 
-require_once( __DIR__ . '/FullyFeaturedConfig.php' );
+require_once __DIR__ . '/FullyFeaturedConfig.php';
 
 // Extra Cirrus stuff for Jenkins
-$wgAutoloadClasses[ 'CirrusSearch\Jenkins\CleanSetup' ] = __DIR__ . '/cleanSetup.php';
-$wgAutoloadClasses[ 'CirrusSearch\Jenkins\NukeAllIndexes' ] = __DIR__ . '/nukeAllIndexes.php';
-$wgHooks[ 'LoadExtensionSchemaUpdates' ][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
-$wgHooks[ 'PageContentLanguage' ][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage';
+$wgAutoloadClasses['CirrusSearch\Jenkins\CleanSetup'] = __DIR__ . '/cleanSetup.php';
+$wgAutoloadClasses['CirrusSearch\Jenkins\NukeAllIndexes'] = __DIR__ . '/nukeAllIndexes.php';
+$wgHooks['LoadExtensionSchemaUpdates'][] = 'CirrusSearch\Jenkins\Jenkins::installDatabaseUpdatePostActions';
+$wgHooks['PageContentLanguage'][] = 'CirrusSearch\Jenkins\Jenkins::setLanguage';
 
 // Dependencies
 // Jenkins will automatically load these for us but it makes this file more generally useful
 // to require them ourselves.
 wfLoadExtension( 'MwEmbedSupport' );
-require_once( "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php" );
-require_once( "$IP/extensions/PdfHandler/PdfHandler.php" );
-require_once( "$IP/extensions/Cite/Cite.php" );
+require_once "$IP/extensions/TimedMediaHandler/TimedMediaHandler.php";
+require_once "$IP/extensions/PdfHandler/PdfHandler.php";
+require_once "$IP/extensions/Cite/Cite.php";
 wfLoadExtension( 'SiteMatrix' );
 
 // Configuration
 $wgOggThumbLocation = '/usr/bin/oggThumb';
-$wgGroupPermissions[ '*' ][ 'deleterevision' ] = true;
+$wgGroupPermissions['*']['deleterevision'] = true;
 $wgFileExtensions[] = 'pdf';
 $wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
@@ -68,15 +68,15 @@ $wgJobTypeConf['default'] = array(
 );
 
 $wgCiteEnablePopups = true;
-$wgExtraNamespaces[ 760 ] = 'Mó';
+$wgExtraNamespaces[760] = 'Mó';
 
 // Extra helpful configuration but not really required
 $wgShowExceptionDetails = true;
 
-$wgCirrusSearchLanguageWeight[ 'user' ] = 10.0;
-$wgCirrusSearchLanguageWeight[ 'wiki' ] = 5.0;
+$wgCirrusSearchLanguageWeight['user'] = 10.0;
+$wgCirrusSearchLanguageWeight['wiki'] = 5.0;
 $wgCirrusSearchAllowLeadingWildcard = false;
-// $wgCirrusSearchInterwikiSources[ 'c' ] = 'commonswiki';
+// $wgCirrusSearchInterwikiSources['c'] = 'commonswiki';
 
 // Test only API action to expose freezing/thawing writes to the elasticsearch cluster
 $wgAPIModules['cirrus-freeze-writes'] = 'CirrusSearch\Api\FreezeWritesToCluster';
@@ -107,7 +107,7 @@ class Jenkins {
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
 		$matches = array();
 		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
-			$pageLang = substr( $matches[ 0 ], 1 );
+			$pageLang = substr( $matches[0], 1 );
 		}
 		return true;
 	}

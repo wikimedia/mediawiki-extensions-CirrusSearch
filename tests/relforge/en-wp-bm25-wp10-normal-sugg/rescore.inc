@@ -2,11 +2,11 @@
 
 // w sum with pageviews and inc links
 $CirrusSearchWP10W = 3;
-$wgCirrusSearchPageViewsW = 3;//0.;//2.5;
+$wgCirrusSearchPageViewsW = 3;// 0.;//2.5;
 $wgCirrusSearchPageViewsK = 8E-6;
 $wgCirrusSearchPageViewsA = 0.8;
 
-$wgCirrusSearchIncLinksW = 5.0;//0.7;
+$wgCirrusSearchIncLinksW = 5.0;// 0.7;
 $wgCirrusSearchIncLinksK = 30;
 $wgCirrusSearchIncLinksA = 0.7;
 

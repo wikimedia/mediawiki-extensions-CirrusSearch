@@ -134,7 +134,7 @@ class UtilTest extends CirrusTestCase {
 	 */
 	private function putDataIntoCache( \BagOStuff $cache, $wiki ) {
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );
-		$cache->set( $key, ["Data for $wiki" => 2] );
+		$cache->set( $key, [ "Data for $wiki" => 2 ] );
 	}
 
 	/**
@@ -171,7 +171,7 @@ class UtilTest extends CirrusTestCase {
 		$this->assertNotEquals( $cy, $ru, 'Boosts should change with language' );
 
 		// no cache means empty array
-		$this->assertArrayEquals( [ ],
+		$this->assertArrayEquals( [],
 			Util::getDefaultBoostTemplates( $this->getHashConfig( 'hywiki' ) ) );
 
 	}

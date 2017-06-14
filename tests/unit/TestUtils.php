@@ -10,7 +10,7 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 	public function __construct( array $settings, array $flags = [] ) {
 		$config = new \HashConfig( $settings );
 		if ( in_array( 'inherit', $flags ) ) {
-			$config = new MultiConfig( [$config, new GlobalVarConfig] );
+			$config = new MultiConfig( [ $config, new GlobalVarConfig ] );
 		}
 		$this->setSource( $config );
 	}

@@ -8,9 +8,9 @@ namespace CirrusSearch;
 class SearchConfigTest extends CirrusTestCase {
 	public function testInterWikiConfig() {
 		$config = new SearchConfig();
-		$config = new \HashConfig( $config->getConfigVars(wfWikiID(), SearchConfig::CIRRUS_VAR_PREFIX) );
+		$config = new \HashConfig( $config->getConfigVars( wfWikiID(), SearchConfig::CIRRUS_VAR_PREFIX ) );
 		$prefix = SearchConfig::CIRRUS_VAR_PREFIX;
-		foreach( $GLOBALS as $n => $v ) {
+		foreach ( $GLOBALS as $n => $v ) {
 			if ( $v === null ) {
 				continue;
 			}

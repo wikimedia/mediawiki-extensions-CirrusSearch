@@ -141,7 +141,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 					'plain-variant-2' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
-						'discount' => 1.0 * (CompletionSuggester::VARIANT_EXTRA_DISCOUNT/2),
+						'discount' => 1.0 * ( CompletionSuggester::VARIANT_EXTRA_DISCOUNT/2 ),
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
 					]
@@ -195,15 +195,15 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		if ( $len < 3 ) {
 			// We do not run fuzzy for small queries
 			$this->assertEquals( 2, count( $suggest ) );
-			foreach( $suggest as $key => $value ) {
+			foreach ( $suggest as $key => $value ) {
 				$this->assertArrayNotHasKey( 'fuzzy', $value );
 			}
 		}
-		foreach( $suggest as $key => $value ) {
+		foreach ( $suggest as $key => $value ) {
 			// Make sure the query is truncated otherwise elastic won't send results
 			$this->assertTrue( mb_strlen( $value['prefix'] ) < SuggestBuilder::MAX_INPUT_LENGTH );
 		}
-		foreach( array_keys( $suggest ) as $sug ) {
+		foreach ( array_keys( $suggest ) as $sug ) {
 			// Makes sure we have the corresponding profile
 			$this->assertArrayHasKey( $sug, $profiles );
 		}
@@ -215,7 +215,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		// This is to avoid enbling costly fuzzy profiles
 		// by cheating with spaces
 		$query = '  ';
-		for( $i = 0; $i < 100; $i++ ) {
+		for ( $i = 0; $i < 100; $i++ ) {
 			$test = "Query length {$i}";
 			$queries[$test] = [ $i, $query . '   ' ];
 			$query .= '';
@@ -253,7 +253,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	public function provideResponse() {
 		$suggestions = [];
 		$max = 200;
-		for( $i = 1; $i <= $max; $i++ ) {
+		for ( $i = 1; $i <= $max; $i++ ) {
 			$score = $max - $i;
 			$suggestions[] = [
 				'_id' => $i.'t',

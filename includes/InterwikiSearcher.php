@@ -7,7 +7,6 @@ use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use SpecialPageFactory;
 use User;
 
 /**

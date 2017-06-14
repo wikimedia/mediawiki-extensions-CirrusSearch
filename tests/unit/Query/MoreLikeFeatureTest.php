@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\CirrusTestCase;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\MediaWikiServices;

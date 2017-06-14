@@ -3,7 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
-use MediaWiki\Mediawikiservices;
+use MediaWiki\MediaWikiServices;
 
 /**
  * @group CirrusSearch

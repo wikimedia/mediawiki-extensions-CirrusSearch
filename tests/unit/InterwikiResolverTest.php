@@ -7,7 +7,6 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusConfigInterwikiResolver;
 use CirrusSearch\SiteMatrixInterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
-use CirrusSearch\InterwikiResolver;
 
 /**
  * @group CirrusSearch

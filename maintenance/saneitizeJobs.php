@@ -3,7 +3,6 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Job\CheckerJob;
 
 use JobQueueGroup;

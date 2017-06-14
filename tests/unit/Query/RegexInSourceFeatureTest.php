@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\SearchConfig;
 use CirrusSearch\Test\HashSearchConfig;
 
 /**

@@ -22,11 +22,11 @@ namespace CirrusSearch\Maintenance;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 /**
  * Update the elasticsearch configuration for this index.
@@ -52,7 +52,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 	 */
 	public function execute() {
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
-			$this->outputIndented( "$indexType index...\n");
+			$this->outputIndented( "$indexType index...\n" );
 			$child = $this->runChild( UpdateOneSearchIndexConfig::class );
 			$child->mOptions[ 'indexType' ] = $indexType;
 			$child->execute();

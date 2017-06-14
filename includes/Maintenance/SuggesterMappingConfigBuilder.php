@@ -54,7 +54,7 @@ class SuggesterMappingConfigBuilder {
 		$suggest = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],
-			'_source' => ['enabled' => true ],
+			'_source' => [ 'enabled' => true ],
 			'properties' => [
 				'batch_id' => [ 'type' => 'long' ],
 				'source_doc_id' => [ 'type' => 'keyword' ],

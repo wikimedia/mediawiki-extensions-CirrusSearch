@@ -45,8 +45,9 @@ class ChunkBuilder {
 			print "php $self";
 			foreach ( $options as $optName => $optVal ) {
 				if ( $optVal === null || $optVal === false || $optName === 'fromId' ||
-						$optName === 'toId' || $optName === 'buildChunks' ||
-						($optName === 'memory-limit' && $optVal === 'max')) {
+					$optName === 'toId' || $optName === 'buildChunks' ||
+					( $optName === 'memory-limit' && $optVal === 'max' )
+				) {
 					continue;
 				}
 				print " --$optName $optVal";

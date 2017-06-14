@@ -26,11 +26,11 @@ use Elastica;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class CirrusIsSetup extends Maintenance {
 	public function __construct() {
@@ -42,7 +42,7 @@ class CirrusIsSetup extends Maintenance {
 		$end = microtime( true ) + 60;
 		while ( true ) {
 			try {
-				$health = new \Elastica\Cluster\Health ( $this->getConnection()->getClient() );
+				$health = new \Elastica\Cluster\Health( $this->getConnection()->getClient() );
 				$status = $health->getStatus();
 				$this->output( "Elasticsearch status:  $status\n" );
 				if ( $status === 'green' ) {

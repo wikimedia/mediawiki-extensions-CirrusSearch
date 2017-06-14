@@ -152,7 +152,7 @@ class OrderedStreamingForkController extends \ForkController {
 			if ( $used ) {
 				do {
 					$this->updateAvailableSockets( $sockets, $used, $sockets ? 0 : 5 );
-				} while( !$sockets );
+				} while ( !$sockets );
 			}
 			$data = trim( $data );
 			if ( !$data ) {

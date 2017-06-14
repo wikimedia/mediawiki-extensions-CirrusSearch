@@ -145,7 +145,7 @@ class MetaStoreIndex {
 			if ( $major < self::METASTORE_MAJOR_VERSION ) {
 				$this->log( self::INDEX_NAME . " major version mismatch upgrading.\n" );
 				$this->majorUpgrade();
-			} elseif( $major == self::METASTORE_MAJOR_VERSION && $minor < self::METASTORE_MINOR_VERSION ) {
+			} elseif ( $major == self::METASTORE_MAJOR_VERSION && $minor < self::METASTORE_MINOR_VERSION ) {
 				$this->log( self::INDEX_NAME . " minor version mismatch trying to upgrade mapping.\n" );
 				$this->minorUpgrade();
 			} elseif ( $major > self::METASTORE_MAJOR_VERSION || $minor > self::METASTORE_MINOR_VERSION ) {
@@ -202,9 +202,9 @@ class MetaStoreIndex {
 					'mapping_maj' => [ 'type' => 'long', 'include_in_all' => false ],
 					'mapping_min' => [ 'type' => 'long', 'include_in_all' => false ],
 					'shard_count' => [ 'type' => 'long', 'include_in_all' => false ],
-					'mediawiki_version' => ['type' => 'keyword', 'include_in_all' => false ],
-					'mediawiki_commit' => ['type' => 'keyword', 'include_in_all' => false ],
-					'cirrus_commit' => ['type' => 'keyword', 'include_in_all' => false ],
+					'mediawiki_version' => [ 'type' => 'keyword', 'include_in_all' => false ],
+					'mediawiki_commit' => [ 'type' => 'keyword', 'include_in_all' => false ],
+					'cirrus_commit' => [ 'type' => 'keyword', 'include_in_all' => false ],
 				],
 			],
 			self::FROZEN_TYPE => [
@@ -247,7 +247,7 @@ class MetaStoreIndex {
 
 	private function minorUpgrade() {
 		$index = $this->connection->getIndex( self::INDEX_NAME );
-		foreach( $this->buildMapping() as $type => $mapping ) {
+		foreach ( $this->buildMapping() as $type => $mapping ) {
 			$index->getType( $type )->request(
 				'_mapping',
 				\Elastica\Request::PUT,
@@ -316,7 +316,7 @@ class MetaStoreIndex {
 		}
 		$resp = $this->client->request( '_alias/' . self::INDEX_NAME, \Elastica\Request::GET, [] );
 		$indexName = null;
-		foreach( $resp->getData() as $index => $aliases ) {
+		foreach ( $resp->getData() as $index => $aliases ) {
 			if ( isset( $aliases['aliases'][self::INDEX_NAME] ) ) {
 				if ( $indexName !== null ) {
 					throw new \Exception( "Multiple indices are aliased with " . self::INDEX_NAME . ", please fix manually." );
@@ -417,7 +417,7 @@ class MetaStoreIndex {
 	 * @param string $msg log message
 	 */
 	private function log( $msg ) {
-		if ($this->out ) {
+		if ( $this->out ) {
 			$this->out->output( $msg );
 		}
 	}
@@ -518,7 +518,7 @@ class MetaStoreIndex {
 			$doc = self::getInternalType( $connection )->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return [ 0, 0 ];
-		} catch( \Elastica\Exception\ResponseException $e ) {
+		} catch ( \Elastica\Exception\ResponseException $e ) {
 			// BC code in case the metastore alias does not exist yet
 			$fullError = $e->getResponse()->getFullError();
 			if ( isset( $fullError['type'] )
@@ -531,8 +531,8 @@ class MetaStoreIndex {
 			throw $e;
 		}
 		return [
-			(int) $doc->get('metastore_major_version'),
-			(int) $doc->get('metastore_minor_version')
+			(int) $doc->get( 'metastore_major_version' ),
+			(int) $doc->get( 'metastore_minor_version' )
 		];
 	}
 	/**
@@ -553,7 +553,7 @@ class MetaStoreIndex {
 			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
 		}
 		$mwInfo = new GitInfo( $IP );
-		$cirrusInfo = new GitInfo( __DIR__ .  '/../..');
+		$cirrusInfo = new GitInfo( __DIR__ .  '/../..' );
 		$data = [
 			'analysis_maj' => $aMaj,
 			'analysis_min' => $aMin,
@@ -593,7 +593,7 @@ class MetaStoreIndex {
 	public static function updateAllMetastoreVersions( Connection $connection, $baseName ) {
 		$versionType = self::getVersionType( $connection );
 		$docs = [];
-		foreach( $connection->getAllIndexTypes() as $type ) {
+		foreach ( $connection->getAllIndexTypes() as $type ) {
 			$docs[] = self::versionData( $connection, $baseName, $type );
 		}
 		$versionType->addDocuments( $docs );

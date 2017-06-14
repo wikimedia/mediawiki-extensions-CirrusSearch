@@ -43,8 +43,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 */
 	protected function defaults() {
 		// Use default lowercase filter
-		$lowercase_type = ['type' => 'lowercase'];
-		if( $this->isIcuAvailable() ) {
+		$lowercase_type = [ 'type' => 'lowercase' ];
+		if ( $this->isIcuAvailable() ) {
 			$lowercase_type = [
 				"type" => "icu_normalizer",
 				"name" => "nfkc_cf",
@@ -240,7 +240,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 
 			// The Russian analyzer is also used for Ukrainian and Rusyn for now, so processing that's
 			// very specific to Russian should be separated out
-			if ($this->getLanguage() == 'ru') {
+			if ( $this->getLanguage() == 'ru' ) {
 				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
 				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0451=>\u0435';
 				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0401=>\u0415';

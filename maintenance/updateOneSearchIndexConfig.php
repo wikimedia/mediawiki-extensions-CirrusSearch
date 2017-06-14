@@ -28,11 +28,11 @@ use Elastica;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 /**
  * Update the elasticsearch configuration for this index.
@@ -160,7 +160,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			"rebuilding it.  Once you specify a new indexIdentifier for this wiki you'll have to " .
 			"run this script with the same identifier each time.  Defaults to 'current' which " .
 			"infers the currently in use identifier.  You can also use 'now' to set the identifier " .
-			"to the current time in seconds which should give you a unique identifier.", false, true);
+			"to the current time in seconds which should give you a unique identifier.", false, true );
 		$maintenance->addOption( 'reindexAndRemoveOk', "If the alias is held by another index then " .
 			"reindex all documents from that index (via the alias) to this one, swing the " .
 			"alias to this index, and then remove other index.  Updates performed while this".

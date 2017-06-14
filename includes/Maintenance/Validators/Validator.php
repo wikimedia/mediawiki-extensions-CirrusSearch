@@ -41,7 +41,7 @@ abstract class Validator {
 	 * @return bool
 	 */
 	protected function checkConfig( $actual, array $required, $indent = null ) {
-		foreach( $required as $key => $value ) {
+		foreach ( $required as $key => $value ) {
 			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
 				$this->debugCheckConfig( "not found..." );

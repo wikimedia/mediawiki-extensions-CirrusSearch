@@ -26,11 +26,11 @@ use CirrusSearch\SearchConfig;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 /**
  * Update the elasticsearch configuration for this index.
@@ -76,7 +76,7 @@ class CopySearchIndex extends Maintenance {
 		$targetConnection = $this->getConnection( $targetCluster );
 
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
-			$this->error("Target cluster should be different from current cluster.", 1);
+			$this->error( "Target cluster should be different from current cluster.", 1 );
 		}
 		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 
@@ -100,7 +100,7 @@ class CopySearchIndex extends Maintenance {
 				$this->getMergeSettings(),
 				$this
 		);
-		$reindexer->reindex( $slices, 1, $reindexChunkSize);
+		$reindexer->reindex( $slices, 1, $reindexChunkSize );
 		$reindexer->optimize();
 		$reindexer->waitForShards();
 	}

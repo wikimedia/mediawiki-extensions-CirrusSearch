@@ -49,7 +49,7 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 		$this->client->request( '_aliases', \Elastica\Request::POST, $data );
 		$this->output( "corrected\n" );
 
-		return parent::updateIndices($add, $remove);
+		return parent::updateIndices( $add, $remove );
 	}
 
 	/**

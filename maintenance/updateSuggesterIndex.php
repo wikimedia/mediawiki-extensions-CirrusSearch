@@ -41,11 +41,11 @@ use MWElasticUtils;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class UpdateSuggesterIndex extends Maintenance {
 	/**
@@ -187,7 +187,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			$this->getShardCount();
 			$this->getReplicaCount();
-		} catch( \Exception $e ) {
+		} catch ( \Exception $e ) {
 			$this->error( "Failed to get shard count and replica count information: {$e->getMessage()}", 1 );
 		}
 
@@ -197,7 +197,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->optimizeIndex = $this->getOption( 'optimize', false );
 
-		$this->utils = new ConfigUtils( $this->getClient(), $this);
+		$this->utils = new ConfigUtils( $this->getClient(), $this );
 
 		$this->langCode = $wgLanguageCode;
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
@@ -213,11 +213,11 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
 
 		$extraBuilders = [];
-		if( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
+		if ( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
 			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
 		}
 		$subPhrasesConfig =  $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterSubphrases' );
-		if( $subPhrasesConfig['build'] ) {
+		if ( $subPhrasesConfig['build'] ) {
 			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
 		}
 		$this->builder = new SuggestBuilder( $this->scoreMethod, $extraBuilders );
@@ -225,7 +225,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
 			if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
-				throw new \Exception("Cirrus meta store does not exist, you must index your data first");
+				throw new \Exception( "Cirrus meta store does not exist, you must index your data first" );
 			}
 
 			if ( !$this->canWrite() ) {
@@ -277,11 +277,11 @@ class UpdateSuggesterIndex extends Maintenance {
 			return;
 		}
 		$indexByName = [];
-		foreach( $indices as $name ) {
+		foreach ( $indices as $name ) {
 			$indexByName[$name] = $this->getConnection()->getIndex( $name );
 		}
 
-		$status = new Status($this->getClient());
+		$status = new Status( $this->getClient() );
 		foreach ( $status->getIndicesWithAlias( $this->getIndexTypeName() ) as $aliased ) {
 			// do not try to delete indices that are used in aliases
 			unset( $indexByName[$aliased->getName()] );
@@ -317,7 +317,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->validateAlias();
 		$this->updateVersions();
 		$this->deleteOldIndex();
-		$this->log("Done.\n");
+		$this->log( "Done.\n" );
 	}
 
 	private function canRecycle() {
@@ -339,7 +339,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$shards = $oldIndex->getSettings()->get( 'number_of_shards' );
 		// We check only the number of shards since it cannot be updated.
-		if( $shards != $this->getShardCount() ) {
+		if ( $shards != $this->getShardCount() ) {
 			$this->error( 'Number of shards mismatch cannot recycle.' );
 			return false;
 		}
@@ -349,7 +349,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		try {
 			$versionDoc = MetaStoreIndex::getVersionType( $this->getConnection() )->getDocument( $this->getIndexTypeName() );
-		} catch( \Elastica\Exception\NotFoundException $nfe ) {
+		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
 		}
@@ -395,7 +395,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * but needs to be carefully tested on bigger indices with high QPS.
 	 */
 	private function recycle() {
-		$this->log( "Recycling index {$this->getIndex()->getName()}\n");
+		$this->log( "Recycling index {$this->getIndex()->getName()}\n" );
 		$this->recycle = true;
 		$this->indexData();
 		// This is fragile... hopefully most of the docs will be deleted from the old segments
@@ -423,7 +423,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$query->setQuery( $bool );
 		$query->setSize( $this->indexChunkSize );
 		$query->setSource( false );
-		$query->setSort( ['_doc'] );
+		$query->setSort( [ '_doc' ] );
 		$search = new \Elastica\Search( $this->getClient() );
 		$search->setQuery( $query );
 		$search->addIndex( $this->getIndex() );
@@ -438,7 +438,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				$docsDumped = 0;
 			}
 			$docIds = [];
-			foreach( $results as $result ) {
+			foreach ( $results as $result ) {
 				$docsDumped++;
 				$docIds[] = $result->getId();
 			}
@@ -464,7 +464,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function deleteOldIndex() {
 		if ( $this->oldIndex && $this->oldIndex->exists() ) {
-			$this->log("Deleting " . $this->oldIndex->getName() . " ... ");
+			$this->log( "Deleting " . $this->oldIndex->getName() . " ... " );
 			// @todo Utilize $this->oldIndex->delete(...) once Elastica library is updated
 			// to allow passing the master_timeout
 			$this->oldIndex->request(
@@ -473,7 +473,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				[],
 				[ 'master_timeout' => $this->masterTimeout ]
 			);
-			$this->output("ok.\n");
+			$this->output( "ok.\n" );
 		}
 	}
 
@@ -493,15 +493,15 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function optimize() {
-		$this->log("Optimizing index...");
+		$this->log( "Optimizing index..." );
 		$this->getIndex()->forcemerge( [ 'max_num_segments' => 1 ] );
-		$this->output("ok.\n");
+		$this->output( "ok.\n" );
 	}
 
 	private function expungeDeletes() {
-		$this->log("Purging deleted docs...");
+		$this->log( "Purging deleted docs..." );
 		$this->getIndex()->forcemerge( [ 'only_expunge_deletes' => true, 'flush' => false ] );
-		$this->output("ok.\n");
+		$this->output( "ok.\n" );
 	}
 
 	private function indexData() {
@@ -542,13 +542,13 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$mSearchRes = $mSearch->search();
 		$total = 0;
-		foreach( $mSearchRes as $res ) {
+		foreach ( $mSearchRes as $res ) {
 			$total += $res->getTotalHits();
 		}
 		$this->log( "Setting max_docs to $total\n" );
 		$this->scoreMethod->setMaxDocs( $total );
 
-		foreach( $sourceIndexTypes as $sourceIndexType ) {
+		foreach ( $sourceIndexTypes as $sourceIndexType ) {
 			$sourceIndex = $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType );
 			$search = new \Elastica\Search( $this->getClient() );
 			$search->setQuery( $query );
@@ -594,15 +594,15 @@ class UpdateSuggesterIndex extends Maintenance {
 		$name = $this->getIndexTypeName();
 
 		$path = '_aliases';
-		$data = ['actions' => []];
-		$status = new Status($index->getClient());
-		foreach ($status->getIndicesWithAlias($name) as $aliased) {
-			$data['actions'][] = ['remove' => ['index' => $aliased->getName(), 'alias' => $name]];
+		$data = [ 'actions' => [] ];
+		$status = new Status( $index->getClient() );
+		foreach ( $status->getIndicesWithAlias( $name ) as $aliased ) {
+			$data['actions'][] = [ 'remove' => [ 'index' => $aliased->getName(), 'alias' => $name ] ];
 		}
 
-		$data['actions'][] = ['add' => ['index' => $index->getName(), 'alias' => $name]];
+		$data['actions'][] = [ 'add' => [ 'index' => $index->getName(), 'alias' => $name ] ];
 
-		$index->getClient()->request($path, Request::POST, $data, [ 'master_timeout' => $this->masterTimeout ] );
+		$index->getClient()->request( $path, Request::POST, $data, [ 'master_timeout' => $this->masterTimeout ] );
 	}
 
 	/**
@@ -627,7 +627,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	public function log( $message, $channel = null ) {
 		$date = new \DateTime();
-		parent::output( $date->format('Y-m-d H:i:s') . " " . $message, $channel );
+		parent::output( $date->format( 'Y-m-d H:i:s' ) . " " . $message, $channel );
 	}
 
 	/**
@@ -695,7 +695,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function enableReplicas() {
-		$this->log("Enabling replicas...\n");
+		$this->log( "Enabling replicas...\n" );
 		$args = [
 			'index' => [
 				'auto_expand_replicas' => $this->getReplicaCount(),
@@ -741,7 +741,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Updating tracking indexes..." );
 		MetaStoreIndex::updateMetastoreVersions( $this->getConnection(), $this->indexBaseName,
 			$this->indexTypeName );
-		$this->output("ok.\n");
+		$this->output( "ok.\n" );
 	}
 
 	/**

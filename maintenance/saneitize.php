@@ -28,11 +28,11 @@ use CirrusSearch\Sanity\QueueingRemediator;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class Saneitize extends Maintenance {
 	/**
@@ -69,7 +69,7 @@ class Saneitize extends Maintenance {
 		$this->addOption( 'buildChunks', 'Instead of running the script spit out commands that can be farmed out to ' .
 			'different processes or machines to check the index.  If specified as a number then chunks no larger than ' .
 			'that size are spat out.  If specified as a number followed by the word "total" without a space between them ' .
-			'then that many chunks will be spat out sized to cover the entire wiki.' , false, true );
+			'then that many chunks will be spat out sized to cover the entire wiki.', false, true );
 	}
 
 	public function execute() {
@@ -87,7 +87,7 @@ class Saneitize extends Maintenance {
 		$this->fastCheck = $this->getOption( 'fastCheck', false );
 
 		$this->setFromAndTo();
-		$buildChunks = $this->getOption( 'buildChunks');
+		$buildChunks = $this->getOption( 'buildChunks' );
 		if ( $buildChunks ) {
 			$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
 			$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $this->fromPageId, $this->toPageId );

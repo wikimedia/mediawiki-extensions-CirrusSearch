@@ -24,11 +24,11 @@ use CirrusSearch\SearchConfig;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class UpdateVersionIndex extends Maintenance {
 	public function __construct() {
@@ -51,7 +51,7 @@ class UpdateVersionIndex extends Maintenance {
 	 */
 	public function execute() {
 		$baseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
-		if( $this->hasOption( 'show-all' ) ) {
+		if ( $this->hasOption( 'show-all' ) ) {
 			$this->output( "*** updateVersionIndex.php is deprecated use metastore.php --show-all-index-versions instead.\n" );
 			$child = $this->runChild( Metastore::class );
 			$child->mOptions[ 'show-all-index-versions' ] = true;

@@ -26,11 +26,11 @@ use MWElasticUtils;
  */
 
 $IP = getenv( 'MW_INSTALL_PATH' );
-if( $IP === false ) {
+if ( $IP === false ) {
 	$IP = __DIR__ . '/../../..';
 }
-require_once( "$IP/maintenance/Maintenance.php" );
-require_once( __DIR__ . '/../includes/Maintenance/Maintenance.php' );
+require_once "$IP/maintenance/Maintenance.php";
+require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class Metastore extends Maintenance {
 	/**
@@ -84,7 +84,7 @@ class Metastore extends Maintenance {
 			$this->metaStore->createOrUpgradeIfNecessary();
 			$this->output( "mw_cirrus_metastore is up and running with version " .
 				implode( '.', $this->metaStore->metastoreVersion() ) . "\n" );
-		} elseif( $this->hasOption( 'show-all-index-versions' ) ) {
+		} elseif ( $this->hasOption( 'show-all-index-versions' ) ) {
 			$this->showIndexVersions();
 		} elseif ( $this->hasOption( 'update-index-version' ) ) {
 			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
@@ -114,7 +114,7 @@ class Metastore extends Maintenance {
 		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
 		$query->setSize( 5000 );
 		$res = $this->metaStore->versionType()->search( $query );
-		foreach( $res as $r ) {
+		foreach ( $res as $r ) {
 			$data = $r->getData();
 			$this->outputIndented( "index name: " . $r->getId() . "\n" );
 			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );

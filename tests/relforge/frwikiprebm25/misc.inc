@@ -3,4 +3,4 @@
 // We don't have this one on prod yet
 $wgCirrusSearchPhraseSuggestReverseField['use'] = false;
 $wgCirrusSearchIndexBaseName = 'frprodwiki';
-$wgLangaugeCode = 'fr';
+$wgLanguageCode = 'fr';

@@ -32,6 +32,7 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 	'limit' => 3,
 ];
 
+$wgCirrusSearchWikimediaExtraPlugin['token_count_router'] = true;
 // Reset this value in case it was set to do some testing
 // in FullyFeaturedConfig.php
 $wgCirrusSearchICUFoldingUnicodeSetFilter = null;

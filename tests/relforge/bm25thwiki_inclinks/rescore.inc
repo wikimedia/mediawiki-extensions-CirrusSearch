@@ -5,10 +5,10 @@ $wgCirrusSearchIncLinksAloneW = 6.5;
 $wgCirrusSearchIncLinksAloneK = 30;
 $wgCirrusSearchIncLinksAloneA = 0.7;
 
-$wgCirrusSearchRescoreProfiles['relforge'] = array(
+$wgCirrusSearchRescoreProfiles['relforge'] = [
 	'supported_namespaces' => 'all',
-	'rescore' => array(
-		array(
+	'rescore' => [
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -16,8 +16,8 @@ $wgCirrusSearchRescoreProfiles['relforge'] = array(
 			'score_mode' => 'total',
 			'type' => 'function_score',
 			'function_chain' => 'wsum_inclinks'
-		),
-		array(
+		],
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -25,32 +25,32 @@ $wgCirrusSearchRescoreProfiles['relforge'] = array(
 			'score_mode' => 'multiply',
 			'type' => 'function_score',
 			'function_chain' => 'optional_chain'
-		),
-	),
-);
+		],
+	],
+];
 
-$wgCirrusSearchRescoreFunctionScoreChains['wsum_inclinks'] = array(
-	'functions' => array(
-		array(
+$wgCirrusSearchRescoreFunctionScoreChains['wsum_inclinks'] = [
+	'functions' => [
+		[
 			'type' => 'satu',
-			'weight' => array(
+			'weight' => [
 				'value' => 1.2,
 				'config_override' => 'CirrusSearchIncLinksAloneW',
 				'uri_param_override' => 'cirrusIncLinksAloneW',
-			),
-			'params' => array(
+			],
+			'params' => [
 				'field' => 'incoming_links',
-				'k' => array(
+				'k' => [
 					'value' => 10,
 					'config_override' => 'CirrusSearchIncLinksAloneK',
 					'uri_param_override' => 'cirrusIncLinksAloneK',
-				),
-				'a' => array(
+				],
+				'a' => [
 					'value' => 1,
 					'config_override' => 'CirrusSearchIncLinksAloneA',
 					'uri_param_override' => 'cirrusIncLinksAloneA',
-				),
-			),
-		),
-	),
-);
+				],
+			],
+		],
+	],
+];

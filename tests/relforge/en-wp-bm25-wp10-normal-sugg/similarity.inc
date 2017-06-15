@@ -1,99 +1,99 @@
 <?php
 
-$wgCirrusSearchSimilarityProfiles['relforge'] = array(
-	'similarity' => array(
-		'default' => array(
+$wgCirrusSearchSimilarityProfiles['relforge'] = [
+	'similarity' => [
+		'default' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'title' => array(
+		],
+		'title' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'title_plain' => array(
+		],
+		'title_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'opening_text' => array(
+		],
+		'opening_text' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'opening_text_plain' => array(
+		],
+		'opening_text_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'auxiliary_text' => array(
+		],
+		'auxiliary_text' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'auxiliary_text_plain' => array(
+		],
+		'auxiliary_text_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'category' => array(
+		],
+		'category' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'category_plain' => array(
+		],
+		'category_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'redirect' => array(
+		],
+		'redirect' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'redirect_plain' => array(
+		],
+		'redirect_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'heading' => array(
+		],
+		'heading' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'heading_plain' => array(
+		],
+		'heading_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'suggest' => array(
+		],
+		'suggest' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.3,
-		),
-		'text' => array(
+		],
+		'text' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'text_plain' => array(
+		],
+		'text_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'all' => array(
+		],
+		'all' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-		'all_plain' => array(
+		],
+		'all_plain' => [
 			'type' => 'BM25',
 			'k1' => 1.2,
 			'b' => 0.75,
-		),
-	),
-	'fields' => array(
+		],
+	],
+	'fields' => [
 		'__default__' => 'text',
 		// Field specific config
 		'opening_text' => 'opening_text',
@@ -111,6 +111,6 @@ $wgCirrusSearchSimilarityProfiles['relforge'] = array(
 		'heading' => 'heading',
 		'heading.plain' => 'heading_plain',
 		'suggest' => 'suggest',
-	),
-);
+	],
+];
 

@@ -1,7 +1,7 @@
 <?php
 
 // Default prod builder
-$wgCirrusSearchFullTextQueryBuilderProfiles['relforge'] = array(
+$wgCirrusSearchFullTextQueryBuilderProfiles['relforge'] = [
 	'builder_class' => \CirrusSearch\Query\FullTextQueryStringQueryBuilder::class,
-	'settings' => array(),
-);
+	'settings' => [],
+];

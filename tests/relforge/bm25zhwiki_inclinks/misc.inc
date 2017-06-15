@@ -1,6 +1,6 @@
 <?php
 // 7 shards for enwiki
-$wgCirrusSearchShardCount = array( 'content' => 7, 'general' => 5, 'titlesuggest' => 4 );
+$wgCirrusSearchShardCount = [ 'content' => 7, 'general' => 5, 'titlesuggest' => 4 ];
 $wgLanguageCode = 'zh';
 $wgCirrusSearchIndexBaseName = 'zhwikibm25perfield';
 $wgCirrusSearchPhraseSuggestReverseField['use'] = false;

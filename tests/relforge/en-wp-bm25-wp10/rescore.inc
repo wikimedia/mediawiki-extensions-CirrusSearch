@@ -15,11 +15,11 @@ $wgCirrusSearchIncLinksAloneW = 7;
 $wgCirrusSearchIncLinksAloneK = 30;
 $wgCirrusSearchIncLinksAloneA = 0.7;
 
-$wgCirrusSearchRescoreProfiles['relforge'] = array(
+$wgCirrusSearchRescoreProfiles['relforge'] = [
 	'supported_namespaces' => 'all',
 	'fallback_profile' => 'relforge_inclinks',
-	'rescore' => array(
-		array(
+	'rescore' => [
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -27,8 +27,8 @@ $wgCirrusSearchRescoreProfiles['relforge'] = array(
 			'score_mode' => 'total',
 			'type' => 'function_score',
 			'function_chain' => 'wsum_pv_inclinks_wp10'
-		),
-		array(
+		],
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -36,14 +36,14 @@ $wgCirrusSearchRescoreProfiles['relforge'] = array(
 			'score_mode' => 'multiply',
 			'type' => 'function_score',
 			'function_chain' => 'optional_chain'
-		),
-	),
-);
+		],
+	],
+];
 
-$wgCirrusSearchRescoreProfiles['relforge_inclinks'] = array(
+$wgCirrusSearchRescoreProfiles['relforge_inclinks'] = [
 	'supported_namespaces' => 'all',
-	'rescore' => array(
-		array(
+	'rescore' => [
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -51,8 +51,8 @@ $wgCirrusSearchRescoreProfiles['relforge_inclinks'] = array(
 			'score_mode' => 'total',
 			'type' => 'function_score',
 			'function_chain' => 'wsum_inclinks'
-		),
-		array(
+		],
+		[
 			'window' => 8192,
 			'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
 			'query_weight' => 1.0,
@@ -60,94 +60,94 @@ $wgCirrusSearchRescoreProfiles['relforge_inclinks'] = array(
 			'score_mode' => 'multiply',
 			'type' => 'function_score',
 			'function_chain' => 'optional_chain'
-		),
-	),
-);
+		],
+	],
+];
 
-$wgCirrusSearchRescoreFunctionScoreChains['wsum_pv_inclinks_wp10'] = array(
+$wgCirrusSearchRescoreFunctionScoreChains['wsum_pv_inclinks_wp10'] = [
 	'score_mode' => 'sum',
 	'boost_mode' => 'sum',
-	'functions' => array(
-		array(
+	'functions' => [
+		[
 			'type' => 'satu',
-			'weight' => array(
+			'weight' => [
 				'value' => 1.8,
 				'config_override' => 'CirrusSearchPageViewsW',
 				'uri_param_override' => 'cirrusPageViewsW',
-			),
-			'params' => array(
+			],
+			'params' => [
 				'field' => 'popularity_score',
-				'k' => array(
+				'k' => [
 					'value' => 0.0000007,
 					'config_override' => 'CirrusSearchPageViewsK',
 					'uri_param_override' => 'cirrusPageViewsK',
-				),
-				'a' => array(
+				],
+				'a' => [
 					'value' => 1,
 					'config_override' => 'CirrusSearchPageViewsA',
 					'uri_param_override' => 'cirrusPageViewsA',
-				),
-			),
-		),
-		array(
+				],
+			],
+		],
+		[
 			'type' => 'satu',
-			'weight' => array(
+			'weight' => [
 				'value' => 0.6,
 				'config_override' => 'CirrusSearchIncLinksW',
 				'uri_param_override' => 'cirrusIncLinksW',
-			),
-			'params' => array(
+			],
+			'params' => [
 				'field' => 'incoming_links',
-				'k' => array(
+				'k' => [
 					'value' => 10,
 					'config_override' => 'CirrusSearchIncLinksK',
 					'uri_param_override' => 'cirrusIncLinksK',
-				),
-				'a' => array(
+				],
+				'a' => [
 					'value' => 1,
 					'config_override' => 'CirrusSearchIncLinksA',
 					'uri_param_override' => 'cirrusIncLinksA',
-				),
-			),
-		),
-		array(
+				],
+			],
+		],
+		[
 			'type' => 'custom_field',
-			'weight' => array(
+			'weight' => [
 				'value' => 0.6,
 				'config_override' => 'CirrusSearchWP10W',
 				'uri_param_override' => 'cirrusWP10W',
-			),
-			'params' => array(
+			],
+			'params' => [
 				'field' => 'wp10',
 				'modifier' => 'none',
 				'missing' => 0,
-			),
-		),
-	),
-);
+			],
+		],
+	],
+];
 
-$wgCirrusSearchRescoreFunctionScoreChains['wsum_inclinks'] = array(
-	'functions' => array(
-		array(
+$wgCirrusSearchRescoreFunctionScoreChains['wsum_inclinks'] = [
+	'functions' => [
+		[
 			'type' => 'satu',
-			'params' => array(
+			'params' => [
 				'field' => 'incoming_links',
-				'weight' => array(
+				'weight' => [
 					'value' => 1.2,
 					'config_override' => 'CirrusSearchIncLinksAloneW',
 					'uri_param_override' => 'cirrusIncLinksAloneW',
-				),
-				'k' => array(
+				],
+				'k' => [
 					'value' => 10,
 					'config_override' => 'CirrusSearchIncLinksAloneK',
 					'uri_param_override' => 'cirrusIncLinksAloneK',
-				),
-				'a' => array(
+				],
+				'a' => [
 					'value' => 1,
 					'config_override' => 'CirrusSearchIncLinksAloneA',
 					'uri_param_override' => 'cirrusIncLinksAloneA',
-				),
-			),
-		),
-	),
-);
+				],
+			],
+		],
+	],
+];

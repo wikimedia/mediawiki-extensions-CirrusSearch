@@ -3,7 +3,6 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
-		<exclude name="Generic.Arrays.DisallowLongArraySyntax"/>
 		<exclude name="Generic.Files.LineLength"/>
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures"/>
 	</rule>

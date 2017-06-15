@@ -25,7 +25,7 @@ require_once "$IP/extensions/Elastica/Elastica.php";
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;
 $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = true;
-$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = array( 'build', 'use' );
+$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = [ 'build', 'use' ];
 
 $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
 $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
@@ -44,53 +44,53 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 	'limit' => 10,
 ];
 
-$wgCirrusSearchPhraseSuggestReverseField = array(
+$wgCirrusSearchPhraseSuggestReverseField = [
 	'build' => true,
 	'use' => true,
-);
+];
 
 // Set defaults to BM25 and the new query builder
 $wgCirrusSearchSimilarityProfile = 'bm25_browser_tests';
 $wgCirrusSearchFullTextQueryBuilderProfile = 'browser_tests';
 
-$wgJobQueueAggregator = array(
+$wgJobQueueAggregator = [
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
-	'redisConfig' => array(
+	'redisConfig' => [
 		'password' => null,
-	),
-);
+	],
+];
 
 if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 	// If the pool counter is around set up prod like pool counter settings
-	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = array(
+	$wgPoolCounterConf[ 'CirrusSearch-Search' ] = [
 		'class' => 'PoolCounter_Client',
 		'timeout' => 15,
 		'workers' => 432,
 		'maxqueue' => 600,
-	);
+	];
 	// Super common and mostly fast
-	$wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = array(
+	$wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = [
 		'class' => 'PoolCounter_Client',
 		'timeout' => 15,
 		'workers' => 432,
 		'maxqueue' => 600,
-	);
+	];
 	// Regex searches are much heavier then regular searches so we limit the
 	// concurrent number.
-	$wgPoolCounterConf[ 'CirrusSearch-Regex' ] = array(
+	$wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
 		'class' => 'PoolCounter_Client',
 		'timeout' => 60,
 		'workers' => 10,
 		'maxqueue' => 20,
-	);
+	];
 	// These should be very very fast and reasonably rare
-	$wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = array(
+	$wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = [
 		'class' => 'PoolCounter_Client',
 		'timeout' => 5,
 		'workers' => 50,
 		'maxqueue' => 200,
-	);
+	];
 }
 
 $wgCirrusSearchIndexDeletes = true;

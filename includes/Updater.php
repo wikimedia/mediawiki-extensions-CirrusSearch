@@ -384,7 +384,7 @@ class Updater extends ElasticsearchIntermediary {
 			$documents[] = $doc;
 		}
 
-		MWHooks::run( 'CirrusSearchBuildDocumentFinishBatch', array( $pages ) );
+		MWHooks::run( 'CirrusSearchBuildDocumentFinishBatch', [ $pages ] );
 
 		return $documents;
 	}

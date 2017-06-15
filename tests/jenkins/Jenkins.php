@@ -56,16 +56,16 @@ $wgFileExtensions[] = 'svg';
 $wgCapitalLinks = false;
 $wgUseInstantCommons = true;
 $wgEnableUploads = true;
-$wgJobTypeConf['default'] = array(
+$wgJobTypeConf['default'] = [
 	'class' => 'JobQueueRedis',
 	'daemonized'  => true,
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
-	'redisConfig' => array(
+	'redisConfig' => [
 		'password' => null,
-	),
-);
+	],
+];
 
 $wgCiteEnablePopups = true;
 $wgExtraNamespaces[760] = 'Mó';
@@ -105,7 +105,7 @@ class Jenkins {
 	 * @return bool
 	 */
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
-		$matches = array();
+		$matches = [];
 		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
 			$pageLang = substr( $matches[0], 1 );
 		}

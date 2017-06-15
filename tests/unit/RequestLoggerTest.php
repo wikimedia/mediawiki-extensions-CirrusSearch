@@ -366,7 +366,7 @@ class RequestLoggerTest extends CirrusTestCase {
 class ArrayLogger extends AbstractLogger {
 	private $logs = [];
 
-	public function log( $level, $message, array $context = array() ) {
+	public function log( $level, $message, array $context = [] ) {
 		$this->logs[] = [
 			'level' => $level,
 			'message' => $message,

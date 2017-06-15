@@ -7,7 +7,7 @@ class CompletionRequestLog extends BaseRequestLog {
 	/**
 	 * @var array
 	 */
-	private $hits = array();
+	private $hits = [];
 
 	/**
 	 * @var \Elastica\Response|null

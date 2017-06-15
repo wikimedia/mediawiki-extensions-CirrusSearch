@@ -33,7 +33,7 @@ require_once "$IP/maintenance/Maintenance.php";
 
 class DeleteBrowserTestPages extends Maintenance {
 	public function execute() {
-		$pattern = implode( '|', array(
+		$pattern = implode( '|', [
 			'IAmABad RedirectChain',
 			'IAmABad RedirectSelf',
 			'IDontExistLink',
@@ -55,12 +55,12 @@ class DeleteBrowserTestPages extends Maintenance {
 			'WeightedLinkRemoveUpdate',
 			'WLDoubleRdir',
 			'WLRURdir',
-		) );
+		] );
 		$pattern = "/$pattern/";
 
 		$dbw = wfGetDB( DB_MASTER );
 		$it = new \BatchRowIterator( $dbw, 'page', 'page_id', 500 );
-		$it->setFetchColumns( array( '*' ) );
+		$it->setFetchColumns( [ '*' ] );
 		$it = new \RecursiveIteratorIterator( $it );
 		foreach ( $it as $row ) {
 			if ( preg_match( $pattern, $row->page_title ) !== 1 ) {

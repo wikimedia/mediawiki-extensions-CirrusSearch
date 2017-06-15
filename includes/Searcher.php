@@ -969,10 +969,10 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	private function getPoolCounterType() {
-		$poolCounterTypes = array(
+		$poolCounterTypes = [
 			'regex' => 'CirrusSearch-Regex',
 			'prefix' => 'CirrusSearch-Prefix',
-		);
+		];
 		foreach ( $poolCounterTypes as $type => $counter ) {
 			if ( $this->searchContext->isSyntaxUsed( $type ) ) {
 				return $counter;

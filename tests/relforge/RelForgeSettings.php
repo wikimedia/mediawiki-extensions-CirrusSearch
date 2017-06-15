@@ -18,7 +18,7 @@ $wgHooks['CirrusSearchMappingConfig'][] = function( array &$config, $mappingConf
 // No need for replicas in relforge
 $wgCirrusSearchReplicas = '0-0';
 // Allow more than one shard per node
-$wgCirrusSearchMaxShardsPerNode = array( 'content' => -1, 'general' => -1, 'titlesuggest' => -1 );
+$wgCirrusSearchMaxShardsPerNode = [ 'content' => -1, 'general' => -1, 'titlesuggest' => -1 ];
 $wgCirrusSearchRefreshInterval = 30;
 
 // We don't use DFS in prod

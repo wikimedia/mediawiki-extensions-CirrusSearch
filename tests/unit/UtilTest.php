@@ -115,7 +115,7 @@ class UtilTest extends CirrusTestCase {
 	 * @param mixed[] $moreData additional config
 	 * @return HashSearchConfig
 	 */
-	private function getHashConfig( $wiki, array $moreData = array() ) {
+	private function getHashConfig( $wiki, array $moreData = [] ) {
 		if ( !isset( $moreData['CirrusSearchBoostTemplates'] ) ) {
 			$moreData['CirrusSearchBoostTemplates'] = [];
 		}

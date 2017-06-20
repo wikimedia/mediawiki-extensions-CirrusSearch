@@ -7,6 +7,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\SearchRequestLog;
 use CirrusSearch\Connection;
 use CirrusSearch\Elastica\MultiSearch as MultiSearch;
+use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Terms;
 use MediaWiki\Logger\LoggerFactory;
@@ -135,6 +136,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		$this->linkCountMultiSearch->addSearch( $this->buildCount( $outgoingLinksToCount ) );
 		$this->linkCountClosures[] = function ( $count ) use( $doc, $redirectCount ) {
 			$doc->set( 'incoming_links', $count + $redirectCount );
+			CirrusIndexField::addNoopHandler( $doc, 'incoming_links', 'within 20%' );
 		};
 	}
 

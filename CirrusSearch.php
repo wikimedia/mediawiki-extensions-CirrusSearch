@@ -1123,14 +1123,6 @@ $wgCirrusSearchCrossProjectShowMultimedia = false;
 $wgCirrusSearchNumCrossProjectSearchResults = 5;
 
 /**
- * Enable cross leanguage search.
- * Usually implemented as fallback for queries
- * that returns fewer than $wgCirrusSearchInterwikiThreshold results
- * NOTE: Experimental
- */
-$wgCirrusSearchEnableCrossLanguageSearch = false;
-
-/**
  * If set to non-empty string, interwiki results will have ?wprov=XYZ parameter added.
  */
 $wgCirrusSearchInterwikiProv = false;

@@ -302,13 +302,6 @@ class SearchConfig implements \Config {
 	 * @return true if cross project (same language) is enabled
 	 */
 	public function isCrossProjectSearchEnabled() {
-		// FIXME: temporary hack to support existing config
-		if ( CirrusConfigInterwikiResolver::accepts( $this ) &&
-			!empty( $this->get( 'CirrusSearchInterwikiSources' ) )
-		) {
-			return true;
-		}
-
 		if ( $this->get( 'CirrusSearchEnableCrossProjectSearch' ) ) {
 			return true;
 		}
@@ -319,11 +312,7 @@ class SearchConfig implements \Config {
 	 * @return true if cross language (same project) is enabled
 	 */
 	public function isCrossLanguageSearchEnabled() {
-		// FIXME: temporary hack to support existing config
-		if ( CirrusConfigInterwikiResolver::accepts( $this ) ) {
-			return true;
-		}
-		if ( $this->get( 'CirrusSearchEnableCrossLanguageSearch' ) ) {
+		if ( $this->get( 'CirrusSearchEnableAltLanguage' ) ) {
 			return true;
 		}
 		return false;

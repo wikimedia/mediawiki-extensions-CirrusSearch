@@ -119,6 +119,7 @@ class RequestLoggerTest extends CirrusTestCase {
 				];
 				if ( isset( $query['interwiki'] ) ) {
 					$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
+					$globals['wgCirrusSearchEnableCrossProjectSearch'] = true;
 				}
 				$this->setMwGlobals( $globals );
 

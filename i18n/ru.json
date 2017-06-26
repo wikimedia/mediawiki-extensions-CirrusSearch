@@ -10,7 +10,8 @@
 			"Gamliel Fishkin",
 			"Kareyac",
 			"Alex Great",
-			"Ole Yves"
+			"Ole Yves",
+			"Facenapalm"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -63,5 +64,7 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "Устаревший алгоритм поиска по мере ввода.",
 	"cirrussearch-completion-profile-classic-pref-name": "Классический поиск по префиксу",
 	"cirrussearch-completion-profile-classic-pref-desc": "Не исправляет опечатки. Подсказывает названия от начала по мере ввода.",
-	"cirrussearch-regex-timed-out": "Поиск по регулярному выражению завершил работу раньше своего полного выполнения. Попробуйте упростить регулярное выражение для получения всех результатов."
+	"cirrussearch-timed-out": "Поиск завершил работу раньше своего полного выполнения.",
+	"cirrussearch-regex-timed-out": "Поиск по регулярному выражению завершил работу раньше своего полного выполнения. Попробуйте упростить регулярное выражение для получения всех результатов.",
+	"cirrussearch-feature-not-available": "Ключевое слово '$1' не активировано в этой вики."
 }

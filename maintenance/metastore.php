@@ -119,7 +119,9 @@ class Metastore extends Maintenance {
 			$this->outputIndented( "index name: " . $r->getId() . "\n" );
 			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
 			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
-			$this->outputIndented( "  code version: {$data['mediawiki_version']} ({$data['mediawiki_commit']}, Cirrus: {$data['cirrus_commit']})\n" );
+			if ( isset( $data['mediawiki_version'] ) ) {
+				$this->outputIndented( "  code version: {$data['mediawiki_version']} ({$data['mediawiki_commit']}, Cirrus: {$data['cirrus_commit']})\n" );
+			}
 			$this->outputIndented( "  shards: {$data['shard_count']}\n" );
 		}
 	}

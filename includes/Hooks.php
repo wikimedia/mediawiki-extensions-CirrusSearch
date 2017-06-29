@@ -769,9 +769,15 @@ class Hooks {
 	 * @param SearchResultSet|null $textMatches
 	 */
 	public static function onSpecialSearchResults( $term, $titleMatches, $textMatches ) {
-		global $wgOut;
+		global $wgOut,
+			$wgCirrusExploreSimilarResults;
 
 		$wgOut->addModules( 'ext.cirrus.serp' );
+
+		if ( $wgCirrusExploreSimilarResults ) {
+			$wgOut->addModules( 'ext.cirrus.explore-similar' );
+		}
+
 		$wgOut->addJsConfigVars( [
 			'wgCirrusSearchRequestSetToken' => Util::getRequestSetToken(),
 		] );

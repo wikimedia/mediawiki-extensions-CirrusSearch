@@ -98,11 +98,11 @@ class UserTestingTest extends CirrusTestCase {
 		] );
 
 		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
-		$ut = $this->ut( $config, true );
+		$this->ut( $config, true );
 		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
 		$this->assertArrayNotHasKey( 'dontsetthisvariable', $GLOBALS );
 		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
-		$ut = $this->ut( $config, false );
+		$this->ut( $config, false );
 		$this->assertEquals( false, $GLOBALS['wgCirrusSearchBoostLinks'] );
 	}
 
@@ -113,14 +113,14 @@ class UserTestingTest extends CirrusTestCase {
 			] ),
 			'wgCirrusSearchBoostLinks' => false,
 		] );
-		$ut = UserTesting::getInstance(
+		UserTesting::getInstance(
 			function () {
 				return true;
 			}
 		);
 		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
 		$GLOBALS['wgCirrusSearchBoostLinks'] = false;
-		$ut = UserTesting::getInstance(
+		UserTesting::getInstance(
 			function () {
 				return true;
 			}
@@ -136,7 +136,7 @@ class UserTestingTest extends CirrusTestCase {
 		$config['test']['buckets']['a']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
 		$config['test']['buckets']['b']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
 
-		$ut = $this->ut( $config, true );
+		$this->ut( $config, true );
 		$this->assertEquals( 'bucket', $GLOBALS['wgCirrusSearchBoostLinks'] );
 	}
 

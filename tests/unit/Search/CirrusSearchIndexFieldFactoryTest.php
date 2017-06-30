@@ -11,7 +11,6 @@ class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
 
 	public function testNewStringField() {
 		$searchConfig = $this->getSearchConfig();
-		$engine = $this->getSearchEngine();
 
 		$factory = new CirrusSearchIndexFieldFactory( $searchConfig );
 		$stringField = $factory->newStringField( 'title' );
@@ -22,7 +21,6 @@ class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
 
 	public function testNewLongField() {
 		$searchConfig = $this->getSearchConfig();
-		$engine = $this->getSearchEngine();
 
 		$factory = new CirrusSearchIndexFieldFactory( $searchConfig );
 		$longField = $factory->newLongField( 'count' );
@@ -33,7 +31,6 @@ class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
 
 	public function testNewKeywordField() {
 		$searchConfig = $this->getSearchConfig();
-		$engine = $this->getSearchEngine();
 
 		$factory = new CirrusSearchIndexFieldFactory( $searchConfig );
 		$keywordField = $factory->newKeywordField( 'id' );
@@ -44,11 +41,6 @@ class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
 
 	private function getSearchConfig() {
 		return $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
-			->getMock();
-	}
-
-	private function getSearchEngine() {
-		return $this->getMockBuilder( 'CirrusSearch' )
 			->getMock();
 	}
 

@@ -4,7 +4,6 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
-use Title;
 
 /**
  * Lightweight classes to describe specific result types we can return.

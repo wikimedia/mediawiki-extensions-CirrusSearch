@@ -3,7 +3,6 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
-use MediaWiki\MediaWikiServices;
 
 /**
  * Job wrapper for deleting pages from archive.

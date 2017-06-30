@@ -131,14 +131,6 @@ class PhraseSuggesterProfiles {
 			}
 		);
 
-		// Keep original alpha or discount settings
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'] ) ) {
-			$laplaceAlpha = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'];
-		}
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'] ) ) {
-			$stupidBackoffDiscount = $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'];
-		}
-
 		$laplaceAlpha = null;
 		$stupidBackoffDiscount = null;
 		foreach ( $lines as $line ) {

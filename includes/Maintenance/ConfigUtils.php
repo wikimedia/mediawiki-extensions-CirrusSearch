@@ -167,8 +167,6 @@ class ConfigUtils {
 	 */
 	public function scanAvailableModules() {
 		$this->outputIndented( "Scanning available modules..." );
-		$result = $this->client->request( '_nodes' );
-		$result = $result->getData();
 		$availableModules = $this->scanModulesOrPlugins( 'modules' );
 		if ( count( $availableModules ) === 0 ) {
 			$this->output( 'none' );

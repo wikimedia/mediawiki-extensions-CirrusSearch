@@ -106,7 +106,6 @@ class RunSearch extends Maintenance {
 		if ( $this->getOption( 'decode' ) ) {
 			$query = urldecode( $query );
 		}
-		$archiveSearch = $this->getOption( 'archive' );
 		$data = [ 'query' => $query ];
 		$status = $this->searchFor( $query );
 		if ( $status->isOK() ) {

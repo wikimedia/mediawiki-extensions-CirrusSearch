@@ -49,7 +49,7 @@ class DeletePages extends Job {
 		$updater->deletePages( [ $this->title ], [ $this->params['docId'] ], $indexType );
 
 		if ( $wgCirrusSearchIndexDeletes ) {
-			$success = $updater->archivePages( [
+			$updater->archivePages( [
 				[
 					'title' => $this->title,
 					'page' => $this->params['docId'],

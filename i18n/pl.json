@@ -7,7 +7,8 @@
 			"Darellur",
 			"Saper",
 			"Woytecr",
-			"Nux"
+			"Nux",
+			"InternerowyGołąb"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
@@ -55,5 +56,10 @@
 	"cirrussearch-feature-too-many-conditions": "Określono zbyt wiele są warunków do '$1', skrócono do $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nie określono poprawnych kategorii do '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nie określono poprawnych tytułów do '$1'.",
-	"cirrussearch-mlt-not-configured": "Funkcja '$1' jest błędne skonfigurowana. Poproś administratora, aby naprawił $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "Funkcja '$1' jest błędne skonfigurowana. Poproś administratora, aby naprawił $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Pokrewne",
+	"cirrussearch-explore-similar-categories": "Kategorie",
+	"cirrussearch-explore-similar-languages": "Języki",
+	"cirrussearch-explore-similar-categories-none": "Brak dostępnych kategorii",
+	"cirrussearch-explore-similar-languages-none": "Niedostępne w językach lokalnych"
 }

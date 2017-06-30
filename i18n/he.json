@@ -73,5 +73,11 @@
 	"cirrussearch-feature-too-many-conditions": "יותר מדי תנאים סופקו לפקודה \"$1\", וזה יקוצר ל{{GRAMMAR:תחילית|$2}}.",
 	"cirrussearch-incategory-feature-no-valid-categories": "לא ניתנו קטגוריות תקינות לפקודה \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "לא ניתנו כותרת תקינות לפקודה \"$1\".",
-	"cirrussearch-mlt-not-configured": "האפשרות \"$1\" אינה מוגדרת באופן תקין. נא לבקש ממנהל האתר לתקן את $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "האפשרות \"$1\" אינה מוגדרת באופן תקין. נא לבקש ממנהל האתר לתקן את $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "דברים קשורים",
+	"cirrussearch-explore-similar-categories": "קטגוריות",
+	"cirrussearch-explore-similar-languages": "שפות",
+	"cirrussearch-explore-similar-related-none": "אין דפים קשורים זמינים",
+	"cirrussearch-explore-similar-categories-none": "אין קטגוריות זמינות",
+	"cirrussearch-explore-similar-languages-none": "לא זמין בשפות מקומיות"
 }

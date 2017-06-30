@@ -8,7 +8,8 @@
 			"Umherirrender",
 			"Dcausse",
 			"Amire80",
-			"Kghbln"
+			"Kghbln",
+			"Robby"
 		]
 	},
 	"cirrussearch-desc": "{{desc|name=Cirrus Search|url=https://www.mediawiki.org/wiki/Extension:CirrusSearch}}\n\"Elasticsearch\" is a full-text search engine. See http://www.elasticsearch.org/",
@@ -82,9 +83,8 @@
 	"cirrussearch-mlt-not-configured": "Warning shown to users when issuing a 'more like this' query and the wiki hasn't configured it.",
 	"cirrussearch-explore-similar-related": "Label for the 'related' section of the Explore Similar search results.",
 	"cirrussearch-explore-similar-categories": "Label for the 'Categories' section of the Explore Similar search results.",
-	"cirrussearch-explore-similar-languages": "Label for the 'Languages' section of the Explore Similar search results.",
+	"cirrussearch-explore-similar-languages": "Label for the 'Languages' section of the Explore Similar search results.\n{{Identical|Language}}",
 	"cirrussearch-explore-similar-related-none": "Text shown when there are no related pages in the Explore Similar search results.",
 	"cirrussearch-explore-similar-categories-none": "Text shown when there are no categories in the Explore Similar search results.",
 	"cirrussearch-explore-similar-languages-none": "Text shown when there are no languages in the Explore Similar search results."
-
 }

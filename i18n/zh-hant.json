@@ -16,8 +16,6 @@
 	"cirrussearch-backend-error": "因發生暫時性的問題，我們無法完成您的搜尋。請稍後再試。",
 	"cirrussearch-parse-error": "無法理解查詢條件，請簡化查詢條件。該查詢會被記錄以改進搜尋系統。",
 	"cirrussearch-too-busy-error": "搜尋引擎目前過於忙碌，請稍候再試。",
-	"cirrussearch-too-busy-for-you-anonymous-error": "你同時在執行太多搜索。假如你與其他使用者共享一個 IP 地址，你可以登入以提高限制。",
-	"cirrussearch-too-busy-for-you-logged-in-error": "您同時在執行太多搜尋。",
 	"cirrussearch-regex-syntax-error": "正規表示法語法錯誤於 $2：$1",
 	"cirrussearch-regex-too-busy-error": "太多正規表示法搜尋動作正在進行，請稍候再試。",
 	"cirrussearch-regex-too-complex-error": "正則表達式過於複雜。請前往[[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|此處]]瞭解如何簡化正則表達式。",
@@ -34,5 +32,6 @@
 	"apihelp-cirrus-settings-dump-example": "取得此 wiki 的 CirrusSearch 設定匯出檔。",
 	"cirrussearch-give-feedback": "給我們您的意見回饋",
 	"cirrussearch-completionsuggester-pref": "完整建議搜尋工具",
-	"cirrussearch-completionsuggester-desc": "這是一套新的搜尋演算法作為您的輸入模式，一旦啟用該功能，位於右上角搜尋框輸入關鍵字時，會出現搜尋結果以及根據您輸入的關鍵字所給出的搜尋建議。"
+	"cirrussearch-completionsuggester-desc": "這是一套新的搜尋演算法作為您的輸入模式，一旦啟用該功能，位於右上角搜尋框輸入關鍵字時，會出現搜尋結果以及根據您輸入的關鍵字所給出的搜尋建議。",
+	"cirrussearch-explore-similar-languages": "語言"
 }

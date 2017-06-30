@@ -76,5 +76,10 @@
 	"cirrussearch-feature-too-many-conditions": "Demasiadas condicións proporcionadas a '$1', truncadas a $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Categorías non válidas proporcionadas a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Títulos non válidos proporcionados a '$1'.",
-	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Solicite a un administrador que amañe $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Solicite a un administrador que amañe $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Relacionado",
+	"cirrussearch-explore-similar-categories": "Categorías",
+	"cirrussearch-explore-similar-languages": "Linguas",
+	"cirrussearch-explore-similar-categories-none": "Ningunha categoría dispoñible",
+	"cirrussearch-explore-similar-languages-none": "Non dispoñible en linguas locais"
 }

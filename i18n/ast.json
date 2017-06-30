@@ -72,5 +72,11 @@
 	"cirrussearch-feature-too-many-conditions": "Diéronse demasiaes condiciones a '$1', truncando a $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nun se dieron categoríes válides a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nun se dieron títulos válidos a '$1'.",
-	"cirrussearch-mlt-not-configured": "La carauterística '$1' ta mal configurada. Pide a un alministrador qu'igüe $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "La carauterística '$1' ta mal configurada. Pide a un alministrador qu'igüe $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Rellacionáu",
+	"cirrussearch-explore-similar-categories": "Categoríes",
+	"cirrussearch-explore-similar-languages": "Llingües",
+	"cirrussearch-explore-similar-related-none": "Nun ta disponible nenguna páxina rellacionada",
+	"cirrussearch-explore-similar-categories-none": "Nun hai nenguna categoría disponible",
+	"cirrussearch-explore-similar-languages-none": "Nun ta disponible en llingües llocales"
 }

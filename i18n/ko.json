@@ -62,5 +62,11 @@
 	"cirrussearch-timed-out": "검색 시간이 초과되어 일부 결과만 표시합니다.",
 	"cirrussearch-feature-not-available": "'$1' 검색 키워드는 이 위키에서 사용하고 있지 않습니다.",
 	"cirrussearch-incategory-feature-no-valid-categories": "유효한 분류가 '$1'에 추가되지 않았습니다.",
-	"cirrussearch-mlt-feature-no-valid-titles": "유효한 제목이 '$1'에 추가되지 않았습니다."
+	"cirrussearch-mlt-feature-no-valid-titles": "유효한 제목이 '$1'에 추가되지 않았습니다.",
+	"cirrussearch-explore-similar-related": "관련",
+	"cirrussearch-explore-similar-categories": "분류",
+	"cirrussearch-explore-similar-languages": "언어",
+	"cirrussearch-explore-similar-related-none": "사용할 수 있는 관련 문서가 없음",
+	"cirrussearch-explore-similar-categories-none": "사용할 수 있는 분류 없음",
+	"cirrussearch-explore-similar-languages-none": "지역 언어에서 사용할 수 없음"
 }

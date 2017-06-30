@@ -17,5 +17,9 @@
 	"prefs-completion": "Siche komplettéieren",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (recommandéiert)",
 	"cirrussearch-completion-profile-classic-pref-desc": "Keng Verbesserung vun Tippfeeler. Entsprécht dem Ufank vun den Titelen.",
-	"cirrussearch-incategory-feature-no-valid-categories": "Keng valabel Kategorie fir '$1' uginn."
+	"cirrussearch-incategory-feature-no-valid-categories": "Keng valabel Kategorie fir '$1' uginn.",
+	"cirrussearch-explore-similar-categories": "Kategorien",
+	"cirrussearch-explore-similar-languages": "Sproochen",
+	"cirrussearch-explore-similar-categories-none": "Keng Kategorien disponibel",
+	"cirrussearch-explore-similar-languages-none": "Net a lokale Sproochen disonibel"
 }

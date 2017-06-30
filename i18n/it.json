@@ -56,5 +56,10 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "L'algoritmo di suggerimento cerca-mentre-scrivi precedente.",
 	"cirrussearch-completion-profile-classic-pref-name": "Ricerca classica per prefisso",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli.",
-	"cirrussearch-feature-too-many-conditions": "Troppe condizioni fornite per '$1', trocanto in $2."
+	"cirrussearch-feature-too-many-conditions": "Troppe condizioni fornite per '$1', trocanto in $2.",
+	"cirrussearch-explore-similar-categories": "Categorie",
+	"cirrussearch-explore-similar-languages": "Lingue",
+	"cirrussearch-explore-similar-related-none": "Non sono disponibili pagine correlate",
+	"cirrussearch-explore-similar-categories-none": "Nessuna categoria disponibile",
+	"cirrussearch-explore-similar-languages-none": "Non disponibile nelle lingue locali"
 }

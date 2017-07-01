@@ -2,11 +2,16 @@
 	"@metadata": {
 		"authors": [
 			"Subi",
-			"Sator"
+			"Sator",
+			"Mikel Ibaiba"
 		]
 	},
 	"cirrussearch-pref-label": "Bilaketa berria",
 	"cirrussearch-give-feedback": "Egiguzu iruzkina",
+	"cirrussearch-explore-similar-related": "Erlazionatua",
 	"cirrussearch-explore-similar-categories": "Kategoriak",
-	"cirrussearch-explore-similar-languages": "Hizkuntzak"
+	"cirrussearch-explore-similar-languages": "Hizkuntzak",
+	"cirrussearch-explore-similar-related-none": "Antzeko orririk ezin da eskuratu",
+	"cirrussearch-explore-similar-categories-none": "Kategoriak ez daude eskuragarri",
+	"cirrussearch-explore-similar-languages-none": "Hizkuntza lokaletan ez dago eskuragarri"
 }

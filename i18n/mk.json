@@ -72,5 +72,11 @@
 	"cirrussearch-feature-too-many-conditions": "Укажани се премногу услови за „$1“. Скратувам на $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Нема укажано важечки категории за „$1“.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Нема укажано важечки наслови за „$1“.",
-	"cirrussearch-mlt-not-configured": "Можноста „$1“ е погрешно поставена. Обратете се кај администратор за да го исправи $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "Можноста „$1“ е погрешно поставена. Обратете се кај администратор за да го исправи $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Поврзано",
+	"cirrussearch-explore-similar-categories": "Категории",
+	"cirrussearch-explore-similar-languages": "Јазици",
+	"cirrussearch-explore-similar-related-none": "Нема поврзани страници на располагање",
+	"cirrussearch-explore-similar-categories-none": "Нема категории на располагање",
+	"cirrussearch-explore-similar-languages-none": "Не е достапно во месните јазици"
 }

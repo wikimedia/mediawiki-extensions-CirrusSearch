@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Danmichaelo",
-			"Jon Harald Søby"
+			"Jon Harald Søby",
+			"Pmt"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-basert søkemotor for MediaWiki",
@@ -58,5 +59,6 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefikssøk",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ingen skrivefeilsretting. Matcher begynnelsen av titler.",
 	"cirrussearch-timed-out": "Søket overskred tidsbegrensningen, kun delvise resultater er tilgjengelige.",
-	"cirrussearch-regex-timed-out": "Søket med regulære uttrykk overskred tidsbegrensningen, kun delvise resultater er tilgjengelige. Prøv å forenkle det regulære uttrykket for å få fullstendige resultater."
+	"cirrussearch-regex-timed-out": "Søket med regulære uttrykk overskred tidsbegrensningen, kun delvise resultater er tilgjengelige. Prøv å forenkle det regulære uttrykket for å få fullstendige resultater.",
+	"cirrussearch-explore-similar-categories": "Kategorier"
 }

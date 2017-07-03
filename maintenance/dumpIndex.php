@@ -7,7 +7,6 @@ use Elastica;
 use Elastica\Index;
 use Elastica\JSON;
 use Elastica\Query;
-use MWElasticUtils;
 
 /**
  * Dump an index to stdout

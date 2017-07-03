@@ -3,24 +3,17 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
-use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\Elastica\PooledHttps;
 use CirrusSearch\Elastica\ReindexRequest;
 use CirrusSearch\Elastica\ReindexResponse;
 use CirrusSearch\Elastica\ReindexTask;
 use CirrusSearch\SearchConfig;
-use Elastica\Document;
 use Elastica\Exception\Connection\HttpException;
-use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
-use Elastica\Query;
 use Elastica\Request;
 use Elastica\Transport\Http;
 use Elastica\Transport\Https;
 use Elastica\Type;
-use ForkController;
-use MediaWiki\Logger\LoggerFactory;
-use MWElasticUtils;
 
 /**
  * This program is free software; you can redistribute it and/or modify

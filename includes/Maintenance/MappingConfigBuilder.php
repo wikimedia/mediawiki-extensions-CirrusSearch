@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
-use CirrusSearch\Search\KeywordIndexField;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\Search\SourceTextIndexField;

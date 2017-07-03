@@ -8,7 +8,6 @@ use CirrusSearch;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Logger\LoggerFactory;
 use SearchSuggestion;
 use SearchSuggestionSet;
 use Status;

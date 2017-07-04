@@ -65,8 +65,6 @@ abstract class ElasticsearchIntermediary {
 	protected static $requestLogger;
 
 	/**
-	 * Constructor.
-	 *
 	 * @param Connection $connection
 	 * @param User|null $user user for which this search is being performed.
 	 *  Attached to slow request logs.  Note that null isn't for anonymous users
@@ -243,7 +241,7 @@ abstract class ElasticsearchIntermediary {
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$stats->timing( "CirrusSearch.$clusterName.requestTime", $tookMs );
 		$this->searchMetrics['wgCirrusTookMs'] = $tookMs;
-		$logContext = self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
+		self::$requestLogger->addRequest( $log, $this->user, $this->slowMillis );
 		$type = $log->getQueryType();
 		$stats->timing( "CirrusSearch.$clusterName.requestTimeMs.$type", $tookMs );
 		if ( $log->getElasticTookMs() ) {

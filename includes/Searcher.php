@@ -831,8 +831,6 @@ class Searcher extends ElasticsearchIntermediary {
 				// @todo error handling
 				$retval[$key] = null;
 			} else {
-				$responseData = $response->getData();
-
 				$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $this->resultsType;
 				$retval[$key] = $resultsType->transformElasticsearchResult(
 					$this->searchContext,
@@ -1100,7 +1098,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchive( $term ) {
-		list( $term, $fuzzyUnused ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
+		list( $term, ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 
 		$this->pageType = $this->connection->getArchiveType( $this->indexBaseName );

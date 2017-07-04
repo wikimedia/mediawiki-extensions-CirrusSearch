@@ -353,7 +353,7 @@ class MetaStoreIndex {
 		// reindex is extremely fast so we can wait for it
 		// we might consider using the task manager if this process
 		// becomes longer and/or prone to curl timeouts
-		$resp = $this->client->request( '_reindex',
+		$this->client->request( '_reindex',
 			\Elastica\Request::POST,
 			$reindex,
 			[ 'wait_for_completion' => true ]

@@ -44,7 +44,7 @@
 	"cirrussearch-pref-completion-section-legend": "Il [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suggeritore completamento] è un algoritmo per i suggerimenti di ricerca con una migliore correzione degli errori di battitura e di rilevanza della ricerca.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinito (consigliato)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corregge fino a due errori di battitura. Risolve reindirizzamenti vicini.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corrispondenza sotto-frase (consigliato per i titoli delle voci più lunghi)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corrispondenza sotto-frase (consigliato per i titoli delle pagine più lunghi)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corregge fino a due errori di battitura. Risolve reindirizzamenti vicini. Corrispondenza sotto-frase nei titoli.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modalità rigorosa (avanzata)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Nessuna correzione errori di battitura. Nessuna flessibilità sugli accenti. Corrispondenza stretta.",

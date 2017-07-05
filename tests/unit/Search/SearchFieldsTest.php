@@ -45,4 +45,21 @@ class SearchFieldsTest extends CirrusTestCase {
 		$this->assertInstanceOf( \NullIndexField::class, $field );
 		$this->assertEquals( null, $field->getMapping( $engine ) );
 	}
+
+	public function testHints() {
+		$doc = new \Elastica\Document( 1, [] );
+		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$this->assertNull( $hint );
+
+		CirrusIndexField::addNoopHandler( $doc, "foo", "bar" );
+		$this->assertTrue( $doc->hasParam( CirrusIndexField::DOC_HINT_PARAM ) );
+		$this->assertArrayHasKey( CirrusIndexField::NOOP_HINT, $doc->getParam( CirrusIndexField::DOC_HINT_PARAM ) );
+		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$this->assertEquals( [ "foo" => "bar" ], $hint );
+
+		CirrusIndexField::resetHints( $doc );
+		$hint = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$this->assertNull( $hint );
+		$this->assertFalse( $doc->hasParam( CirrusIndexField::DOC_HINT_PARAM ) );
+	}
 }

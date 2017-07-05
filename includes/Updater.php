@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
+use CirrusSearch\Search\CirrusIndexField;
 use ParserCache;
 use TextContent;
 use Title;
@@ -201,6 +202,9 @@ class Updater extends ElasticsearchIntermediary {
 					$wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) {
 				$document = $this->docToSuperDetectNoopScript( $document );
 			}
+			// TODO: Move hints reset at a later stage if they appear to be useful
+			// (e.g. in DataSender::sendData)
+			CirrusIndexField::resetHints( $document );
 			$allData[$suffix][] = $document;
 		}
 
@@ -346,6 +350,7 @@ class Updater extends ElasticsearchIntermediary {
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
 			] );
+			CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
 			// OtherIndex::updateOtherIndex.
 			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
@@ -362,9 +367,14 @@ class Updater extends ElasticsearchIntermediary {
 				$output = $contentHandler->getParserOutputForIndexing( $page,
 						$forceParse ? null : ParserCache::singleton() );
 
+				$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
 				foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as
 					$field => $fieldData ) {
 					$doc->set( $field, $fieldData );
+					if ( isset( $fieldDefinitions[$field] ) ) {
+						$hints = $fieldDefinitions[$field]->getEngineHints( $engine );
+						CirrusIndexField::addIndexingHints( $doc, $field, $hints );
+					}
 				}
 
 				// Then let hooks have a go
@@ -396,26 +406,24 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return \Elastica\Script\Script
 	 */
 	public function docToSuperDetectNoopScript( $doc ) {
+		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
 		$params = $doc->getParams();
 		$params['source'] = $doc->getData();
 
-		$params['handlers'] = [
-			'incoming_links' => 'within 20%',
-		];
+		if ( $handlers ) {
+			assert( is_array( $handlers ), "Noop hints must be an array" );
+			$params['handlers'] = $handlers;
+		} else {
+			$params['handlers'] = [];
+		}
 		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
 		if ( is_array( $extraHandlers ) ) {
 			$params['handlers'] += $extraHandlers;
 		}
-		// Added in search-extra 2.3.4.1, around sept 2015. This check can be dropped
-		// and may default sometime in the future when users are certain to be using
-		// a version of the search-extra plugin with document versioning support
-		// TODO: possibly deprecate this config in favor of super_detect_noop_handlers
-		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'documentVersion' ) ) {
-			$params['handlers']['version'] = 'documentVersion';
-		}
 
 		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
 		if ( $doc->getDocAsUpsert() ) {
+			CirrusIndexField::resetHints( $doc );
 			$script->setUpsert( $doc );
 		}
 

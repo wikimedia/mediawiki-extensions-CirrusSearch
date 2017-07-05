@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\Search\CirrusIndexField;
 
 /**
  * Test Updater methods
@@ -28,11 +29,11 @@ class UpdaterTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideDocs
 	 */
-	public function testSuperNoopExtraHandlers( array $rawDoc, array $extraHandlers, array $expectedParams ) {
+	public function testSuperNoopExtraHandlers( array $rawDoc, array $hints, array $extraHandlers, array $expectedParams ) {
 		$config = $this->buildConfig( $extraHandlers );
 		$conn = new Connection( $config );
 		$updater = new Updater( $conn, $config );
-		$doc = $this->builDoc( $rawDoc );
+		$doc = $this->builDoc( $rawDoc, $hints );
 		$script = $updater->docToSuperDetectNoopScript( $doc );
 		$this->assertEquals( $expectedParams['handlers'], $script->getParams()['handlers'] );
 		$this->assertEquals( $expectedParams['_source'], $script->getParams()['source'] );
@@ -43,6 +44,9 @@ class UpdaterTest extends CirrusTestCase {
 			'simple' => [
 				[
 					123 => [ 'title' => 'test' ]
+				],
+				[
+					'incoming_links' => 'within 20%',
 				],
 				[
 					'labels' => 'equals',
@@ -64,6 +68,9 @@ class UpdaterTest extends CirrusTestCase {
 					123 => [ 'title' => 'test' ]
 				],
 				[
+					'incoming_links' => 'within 20%',
+				],
+				[
 					'labels' => 'equals',
 					'version' => 'documentVersion',
 					'incoming_links' => 'within 30%',
@@ -71,6 +78,27 @@ class UpdaterTest extends CirrusTestCase {
 				[
 					'handlers' => [
 						'incoming_links' => 'within 20%',
+						'labels' => 'equals',
+						'version' => 'documentVersion',
+					],
+					'_source' => [
+						'title' => 'test',
+					],
+				],
+			],
+			'no hints' => [
+				[
+					123 => [ 'title' => 'test' ]
+				],
+				[],
+				[
+					'labels' => 'equals',
+					'version' => 'documentVersion',
+					'incoming_links' => 'within 30%',
+				],
+				[
+					'handlers' => [
+						'incoming_links' => 'within 30%',
 						'labels' => 'equals',
 						'version' => 'documentVersion',
 					],
@@ -91,8 +119,11 @@ class UpdaterTest extends CirrusTestCase {
 		], [ 'inherit' ] );
 	}
 
-	private function builDoc( array $doc ) {
-		reset( $doc );
-		return new \Elastica\Document( key( $doc ), reset( $doc ) );
+	private function builDoc( array $doc, array $hints ) {
+		$doc = new \Elastica\Document( key( $doc ), reset( $doc ) );
+		foreach ( $hints as $f => $h ) {
+			CirrusIndexField::addNoopHandler( $doc, $f, $h );
+		}
+		return $doc;
 	}
 }

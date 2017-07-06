@@ -380,8 +380,13 @@ class Reindexer {
 			'lang' => 'painless',
 		];
 		foreach ( $this->fieldsToDelete as $field ) {
-			// Does this actually work?
-			$script['inline'] .= "ctx._source.remove('$field');";
+			$field = trim( $field );
+			if ( strlen( $field ) ) {
+				$script['inline'] .= "ctx._source.remove('$field');";
+			}
+		}
+		if ( $script['inline'] === '' ) {
+			return null;
 		}
 
 		return $script;

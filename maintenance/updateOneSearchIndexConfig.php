@@ -407,6 +407,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		$connection = $this->getConnection();
 
+		$fieldsToDeleteString = $this->getOption( 'fieldsToDelete', '' );
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
 			$connection,
@@ -417,7 +418,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getReplicaCount(),
 			$this->getMergeSettings(),
 			$this,
-			explode( ',', $this->getOption( 'fieldsToDelete', '' ) )
+			array_filter( explode( ',', $this->getOption( 'fieldsToDelete', '' ) ) )
 		);
 
 		$validator = new \CirrusSearch\Maintenance\Validators\SpecificAliasValidator(

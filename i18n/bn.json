@@ -26,7 +26,7 @@
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester সম্পূর্ণতা পরামর্শক] হচ্ছে ভালো টাইপো সংশোধনসহ অনুসন্ধানের পরামর্শ এবং অনুসন্ধানের প্রাসঙ্গিকতার জন্য একটি অ্যালগরিদম।",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "পূর্বনির্ধারিত (সুপারিশকৃত)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "দুটি পর্যন্ত টাইপো সংশোধন করে। নিকট পুননির্দেশনা মীমাংসা করে।",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "উপশব্দগুচ্ছ মেলানো (দীর্ঘতর শিরোনামযুক্ত নিবন্ধের জন্য সুপারিশকৃত)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "উপশব্দগুচ্ছ মেলানো (দীর্ঘতর শিরোনামযুক্ত পাতার জন্য সুপারিশকৃত)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "দুটি পর্যন্ত টাইপো সংশোধন করে। নিকট পুননির্দেশনা মীমাংসা করে। শিরোনামের উপশব্দগুচ্ছ মেলায়।",
 	"cirrussearch-completion-profile-strict-pref-name": "কঠোর মোড (উন্নত)",
 	"cirrussearch-completion-profile-strict-pref-desc": "কোন টাইপো সংশোধন নয়। কোন স্বরাঘাত ভাঁজ নয়। কঠোর মিলানো।",

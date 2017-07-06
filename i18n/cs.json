@@ -7,7 +7,8 @@
 			"Utar",
 			"Walter Klosse",
 			"Nixtonin",
-			"Matěj Suchánek"
+			"Matěj Suchánek",
+			"Dvorapa"
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
@@ -36,8 +37,8 @@
 	"cirrussearch-completion-profile-normal-subphrases": "Odstraněno několik málo interpunkčních znaků, některá diakritická znaménka a stopslova. Také bude porovnávat podřetězce (může jít o podřetězce nebo podstránky podle interní konfigurace wiki).",
 	"cirrussearch-completion-profile-fuzzy": "Podobné normálnímu s opravou překlepů (podporovány dva překlepy).",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Podobné normálnímu s opravou překlepů (podporovány dva překlepy). Také bude porovnávat podřetězce (může jít o podřetězce nebo podstránky podle interní konfigurace wiki).",
-	"cirrussearch-qi-profile-classic": "Řazení podle počtu příchozích odkazů, některých šablon, jazyka článku a aktuálnosti (šablony/jazyky/aktuálnost nemusí být na této wiki aktivovány).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Řazení podle některých šablon, jazyka článku a aktuálnosti, pokud jsou na této wiki aktivovány.",
+	"cirrussearch-qi-profile-classic": "Řazení podle počtu příchozích odkazů, některých šablon, jazyka stránky a aktuálnosti (šablony/jazyky/aktuálnost nemusí být na této wiki aktivovány).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Řazení podle některých šablon, jazyka stránky a aktuálnosti, pokud jsou na této wiki aktivovány.",
 	"cirrussearch-qi-profile-empty": "Řazení závislé výhradně na vlastnostech závislých na dotazu (jen pro ladění).",
 	"cirrussearch-pref-completion-profile-help": "Nastaví chování pro návrhy automatického dokončování (hledání v průběhu psaní).",
 	"prefs-completion": "Dokončování hledání",
@@ -45,7 +46,7 @@
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Dokončovací našeptávač] je algoritmus pro návrhy vyhledávání s lepší korekcí překlepů a relevancí hledání.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Výchozí (doporučeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Vyhledávání podřetězce (doporučeno pro delší názvy článků)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Vyhledávání podřetězce (doporučeno pro delší názvy stránek)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Opravuje až dva překlepy. Používá blízká přesměrování. Vyhledává podřetězce v názvech.",
 	"cirrussearch-completion-profile-strict-pref-name": "Přísný režim (pokročilé)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Bez opravy překlepů. Bez ignorování diakritiky. Přísné porovnávání.",

@@ -357,6 +357,7 @@ class ForceSearchIndex extends Maintenance {
 
 		$this->attachPageConditions( $dbr, $it, 'ar' );
 		$this->attachTimestampConditions( $dbr, $it, 'ar' );
+		$it->addConditions( [ 'ar_page_id IS NOT NULL' ] );
 
 		$it->setFetchColumns( [ 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ] );
 

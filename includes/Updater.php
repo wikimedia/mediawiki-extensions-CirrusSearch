@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use CirrusSearch\Search\CirrusIndexField;
 use ParserCache;
 use TextContent;
@@ -364,8 +365,8 @@ class Updater extends ElasticsearchIntermediary {
 
 			if ( !$skipParse ) {
 				$contentHandler = $page->getContentHandler();
-				$output = $contentHandler->getParserOutputForIndexing( $page,
-						$forceParse ? null : ParserCache::singleton() );
+				$parserCache = $forceParse ? null : MediaWikiServices::getInstance()->getParserCache();
+				$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
 
 				$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
 				foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as

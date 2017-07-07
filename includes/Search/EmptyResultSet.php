@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use SearchResultSet;
+
 /**
  * An empty set of results from Elasticsearch.
  *

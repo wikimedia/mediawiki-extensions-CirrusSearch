@@ -821,8 +821,6 @@ $wgCirrusSearchConfigDumpWhiteList = [
 	'phraseRescoreWindowSize',
 	'functionRescoreWindowSize',
 	'moreAccurateScoringMode',
-	'phraseSuggestMaxErrors',
-	'phraseSuggestConfidence',
 	'phraseSuggestUseText',
 	'phraseSuggestUseOpeningText',
 	'indexedRedirects',
@@ -852,6 +850,19 @@ $wgCirrusSearchConfigDumpWhiteList = [
 	'cacheWarmers',
 	'boostLinks',
 	'indexAllocation',
+	'fullTextQueryBuilderProfile',
+	'rescoreProfile',
+	'prefixSearchRescoreProfile',
+	'similarityProfile',
+	'crossProjectProfiles',
+	'crossProjectOrder',
+	'crossProjectSearchBlackList',
+	'extraIndexBoostTemplates',
+	'enableCrossProjectSearch',
+	'enableAltLanguage',
+	'enableArchive',
+	'useIcuFolding',
+	'useIcuTokenizer',
 ];
 
 /**

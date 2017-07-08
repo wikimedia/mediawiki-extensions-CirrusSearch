@@ -42,8 +42,8 @@
 	"cirrussearch-completion-profile-fuzzy": "Semelhante à pesquisa normal mas com correção de erros ortográficos (dois erros de ortografia suportados).",
 	"cirrussearch-completion-profile-fast-fuzzy": "Perfil difuso experimental (pode ser removido a qualquer altura)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Semelhante à pesquisa normal mas com correção de erros ortográficos (dois erros de ortografia suportados). Também faz correspondência de subfrases (podem ser subfrases ou subpáginas, dependendo da configuração interna da wiki).",
-	"cirrussearch-qi-profile-classic": "Classificação baseada no número de ligações para a página, algumas predefinições, a língua do artigo e a sua idade (predefinições, língua e idade podem não estar ativados nesta wiki).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Classificação baseada em algumas predefinições, a língua do artigo e a sua idade, quando a classificação está ativada nesta wiki.",
+	"cirrussearch-qi-profile-classic": "Classificação baseada no número de ligações para a página, algumas predefinições, a língua da página e a sua idade (predefinições, língua e idade podem não estar ativados nesta wiki).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Classificação baseada em algumas predefinições, a língua da página e a sua idade, quando a classificação está ativada nesta wiki.",
 	"cirrussearch-qi-profile-empty": "Classificação baseada somente em características dependentes da pesquisa (só para despiste de defeitos no software).",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Soma ponderada com base nos links para a página e nos visionamentos de página semanais",
 	"cirrussearch-qi-profile-wsum-inclinks": "Soma ponderada com base nos links para a página",
@@ -55,7 +55,7 @@
 	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de preenchimento] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros ortográficos. Resolve redirecionamentos de erros ortográficos.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrases (recomendada para os títulos de artigo mais longos)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrases (recomendada para os títulos de página mais longos)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige até dois erros ortográficos. Resolve redirecionamentos de erros ortográficos. Identifica correspondências de subfrases nos títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modo rigoroso (avançado)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Sem correção de erros ortográficos. Sem omissão de acentuação. Correspondência rigorosa.",
@@ -75,5 +75,11 @@
 	"cirrussearch-feature-too-many-conditions": "Foram fornecidas demasiadas condições a '$1'; a truncar para '$2'.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Não foram fornecidas categorias válidas a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Não foram fornecidos títulos válidos a '$1'.",
-	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Peça a um administrador para corrigir $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Peça a um administrador para corrigir $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Relacionadas",
+	"cirrussearch-explore-similar-categories": "Categorias",
+	"cirrussearch-explore-similar-languages": "Línguas",
+	"cirrussearch-explore-similar-related-none": "Não existem páginas relacionadas",
+	"cirrussearch-explore-similar-categories-none": "Não existem categorias",
+	"cirrussearch-explore-similar-languages-none": "Não disponibilizado em línguas locais"
 }

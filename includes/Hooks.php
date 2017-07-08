@@ -329,7 +329,7 @@ class Hooks {
 		$target = $page->getRedirectTarget();
 		if ( $target ) {
 			// DeferredUpdate so we don't end up racing our own page deletion
-			DeferredUpdates::addCallableUpdate( function() use ( $target ) {
+			DeferredUpdates::addCallableUpdate( function () use ( $target ) {
 				JobQueueGroup::singleton()->push(
 					new Job\LinksUpdate( $target, [
 						'addedLinks' => [],
@@ -615,7 +615,7 @@ class Hooks {
 				'docId' => self::getConfig()->makeId( $oldId )
 			] );
 			// Push the job after DB commit but cancel on rollback
-			wfGetDB( DB_MASTER )->onTransactionIdle( function() use ( $job ) {
+			wfGetDB( DB_MASTER )->onTransactionIdle( function () use ( $job ) {
 				JobQueueGroup::singleton()->lazyPush( $job );
 			} );
 		}
@@ -822,7 +822,7 @@ class Hooks {
 		);
 		$container->defineService(
 			InterwikiResolver::SERVICE,
-			function( MediaWikiServices $serviceContainer ) {
+			function ( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 						->makeConfig( 'CirrusSearch' );
 				return $serviceContainer
@@ -853,7 +853,6 @@ class Hooks {
 			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
 		);
 		return true;
-
 	}
 
 }

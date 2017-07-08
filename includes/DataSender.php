@@ -189,7 +189,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
-				function( $docId ) use ( $e, $indexType ) {
+				function ( $docId ) use ( $e, $indexType ) {
 					$this->log->info(
 						"Updating a page that doesn't yet exist in Elasticsearch: {docId}",
 						[ 'docId' => $docId, 'indexType' => $indexType ]
@@ -210,7 +210,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newGood();
 		} else {
 			$this->failure( $exception );
-			$documentIds = array_map( function( $d ) {
+			$documentIds = array_map( function ( $d ) {
 				return $d->getId();
 			}, $data );
 			$this->failedLog->warning(

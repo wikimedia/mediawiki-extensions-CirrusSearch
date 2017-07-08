@@ -96,7 +96,7 @@ class SaneitizeJobs extends Maintenance {
 		/** @suppress PhanUndeclaredProperty */
 		$this->maxId = $row->max_id;
 		$profiles = $this->getSearchConfig()->get( 'CirrusSearchSanitizationProfiles' );
-		uasort( $profiles, function( $a, $b ) {
+		uasort( $profiles, function ( $a, $b ) {
 			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
 		} );
 		$wikiSize = $this->maxId - $this->minId;
@@ -221,7 +221,6 @@ JobDetail for {$jobName}
 
 EOD
 		);
-
 	}
 
 	private function pushJobs() {

@@ -57,7 +57,6 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		}
 		$cr = self::$RANGES_BY_TYPE[$config['type']];
 		return new self( $cr, $limit );
-
 	}
 
 	/**

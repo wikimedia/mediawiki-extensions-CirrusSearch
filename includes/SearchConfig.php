@@ -90,7 +90,7 @@ class SearchConfig implements \Config {
 		global $wgConf;
 
 		$cirrusVars = array_filter( array_keys( $GLOBALS ),
-				function( $key ) use( $prefix ) {
+				function ( $key ) use( $prefix ) {
 					if ( !isset( $GLOBALS[$key] ) || is_object( $GLOBALS[$key] ) ) {
 						return false;
 					}
@@ -157,7 +157,7 @@ class SearchConfig implements \Config {
 			: null;
 
 		if ( $prefix === null ) {
-			return (string) $pageId;
+			return (string)$pageId;
 		} else {
 			return "{$prefix}|{$pageId}";
 		}

@@ -500,7 +500,7 @@ class FullTextResultsType extends BaseResultsType {
 				'locale' => $locale,
 				'regex_flavor' => 'lucene',
 				'skip_query' => true,
-				'regex_case_insensitive' => (boolean)$caseInsensitive,
+				'regex_case_insensitive' => (bool)$caseInsensitive,
 				'max_determinized_states' => $wgCirrusSearchRegexMaxDeterminizedStates,
 			];
 			if ( isset( $config['fields']['source_text.plain']['options'] ) ) {

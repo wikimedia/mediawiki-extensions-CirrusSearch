@@ -83,7 +83,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 						'\u02BC=>\u0020',  // Unicode modifier letter apostrophe
 						// Not sure about ( and )...
 						// very useful to search for :
-						//   "john smith explo" instead of "john smith (expl"
+						// "john smith explo" instead of "john smith (expl"
 						// but annoying to search for "(C)"
 						// ')=>\u0020',
 						// '(=>\u0020',
@@ -258,7 +258,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
 				}
-				$analyzer[ 'filter' ] = array_map( function( $filter ) {
+				$analyzer[ 'filter' ] = array_map( function ( $filter ) {
 					if ( $filter === 'lowercase' ) {
 						return 'icu_normalizer';
 					}

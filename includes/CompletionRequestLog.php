@@ -41,16 +41,16 @@ class CompletionRequestLog extends BaseRequestLog {
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
 			$maxScore = max( $maxScore, $suggestion->getScore() );
 			$this->hits[] = [
-				'title' => $title ? (string) $title : $suggestion->getText(),
+				'title' => $title ? (string)$title : $suggestion->getText(),
 				'index' => $indexName,
-				'pageId' => (int) $pageId,
+				'pageId' => (int)$pageId,
 				'score' => $suggestion->getScore(),
 				'profileName' => isset( $suggestionProfileByDocId[$docId] )
 					? $suggestionProfileByDocId[$docId]
 					: "",
 			];
 		}
-		$this->maxScore = (float) $maxScore;
+		$this->maxScore = (float)$maxScore;
 	}
 
 	/**
@@ -69,7 +69,7 @@ class CompletionRequestLog extends BaseRequestLog {
 	 * @param \Elastica\Response $response
 	 */
 	public function set2ndPassResponse( \Elastica\Response $response ) {
-		$this->extra['elasticTook2PassMs'] = (string) round( $response->getQueryTime() * 1000 );
+		$this->extra['elasticTook2PassMs'] = (string)round( $response->getQueryTime() * 1000 );
 	}
 
 	/**
@@ -109,7 +109,6 @@ class CompletionRequestLog extends BaseRequestLog {
 			'hitsOffset' => isset( $this->extra['offset'] ) ? $this->extra['offset'] : 0,
 			'tookMs' => $this->getTookMs(),
 		];
-
 	}
 
 	/**

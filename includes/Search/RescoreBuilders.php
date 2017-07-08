@@ -400,13 +400,13 @@ abstract class FunctionScoreBuilder {
 	 */
 	protected function getOverriddenFactor( $value ) {
 		if ( is_array( $value ) ) {
-			$returnValue = (float) $value['value'];
+			$returnValue = (float)$value['value'];
 
 			if ( isset( $value['config_override'] ) ) {
 				// Override factor with config
 				$fromConfig = $this->context->getConfig()->get( $value['config_override'] );
 				if ( $fromConfig !== null ) {
-					$returnValue = (float) $fromConfig;
+					$returnValue = (float)$fromConfig;
 				}
 			}
 
@@ -417,13 +417,13 @@ abstract class FunctionScoreBuilder {
 				if ( $request ) {
 					$fromUri = $request->getVal( $uriParam );
 					if ( $fromUri !== null && is_numeric( $fromUri ) ) {
-						$returnValue = (float) $fromUri;
+						$returnValue = (float)$fromUri;
 					}
 				}
 			}
 			return $returnValue;
 		} else {
-			return (float) $value;
+			return (float)$value;
 		}
 	}
 }
@@ -566,7 +566,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 		$weightToNs = [];
 		foreach ( $this->namespacesToBoost as $ns ) {
 			$weight = $this->getBoostForNamespace( $ns ) * $this->weight;
-			$key = (string) $weight;
+			$key = (string)$weight;
 			if ( $key == '1' ) {
 				// such weights would have no effect
 				// we can ignore them.

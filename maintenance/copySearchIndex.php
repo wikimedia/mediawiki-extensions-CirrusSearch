@@ -57,9 +57,9 @@ class CopySearchIndex extends Maintenance {
 		$this->addOption( 'indexType', 'Source index.  Either content or general.', true, true );
 		$this->addOption( 'targetCluster', 'Target Cluster.', true, true );
 		$this->addOption( 'reindexChunkSize', 'Documents per shard to reindex in a batch.   ' .
-		    'Note when changing the number of shards that the old shard size is used, not the new ' .
-		    'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
-		    'singles works then lower this number.  Defaults to 100.', false, true );
+			'Note when changing the number of shards that the old shard size is used, not the new ' .
+			'one.  If you see many errors submitting documents in bulk but the automatic retry as ' .
+			'singles works then lower this number.  Defaults to 100.', false, true );
 		$this->addOption( 'reindexSlices', 'Number of pieces to slice the scan into, roughly ' .
 			'equivilent to concurrency. Defaults to the number of shards', false, true );
 	}
@@ -83,22 +83,23 @@ class CopySearchIndex extends Maintenance {
 		$targetIndexName = $targetConnection->getIndexName( $this->indexBaseName, $this->indexType );
 		$utils = new ConfigUtils( $targetConnection->getClient(), $this );
 		$indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ),
-				 $targetIndexName );
+			$targetIndexName
+		);
 
 		$reindexer = new Reindexer(
-				$this->getSearchConfig(),
-				$sourceConnection,
-				$targetConnection,
-				// Target Index
-				[ $targetConnection->getIndex( $this->indexBaseName, $this->indexType,
-						$indexIdentifier )->getType( Connection::PAGE_TYPE_NAME )
-				],
-				// Source Index
-				[ $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ) ],
-				$clusterSettings->getShardCount( $this->indexType ),
-				$clusterSettings->getReplicaCount( $this->indexType ),
-				$this->getMergeSettings(),
-				$this
+			$this->getSearchConfig(),
+			$sourceConnection,
+			$targetConnection,
+			// Target Index
+			[ $targetConnection->getIndex( $this->indexBaseName, $this->indexType,
+				$indexIdentifier )->getType( Connection::PAGE_TYPE_NAME )
+			],
+			// Source Index
+			[ $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ) ],
+			$clusterSettings->getShardCount( $this->indexType ),
+			$clusterSettings->getReplicaCount( $this->indexType ),
+			$this->getMergeSettings(),
+			$this
 		);
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );
 		$reindexer->optimize();

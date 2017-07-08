@@ -75,8 +75,10 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function testTextCatDetector( $text, $language, $ignore ) {
 		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
-			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
-											  dirname( $tc->getFileName() )."/LM/" ],
+			'wgCirrusSearchTextcatModel' => [
+				dirname( $tc->getFileName() )."/LM-query/",
+				dirname( $tc->getFileName() )."/LM/"
+			],
 			'wgCirrusSearchTextcatLanguages' => null,
 			'wgCirrusSearchTextcatConfig' => null,
 		] );
@@ -113,8 +115,10 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function testTextCatDetectorLimited() {
 		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
-			'wgCirrusSearchTextcatModel' => [ dirname( $tc->getFileName() )."/LM-query/",
-											  dirname( $tc->getFileName() )."/LM/" ],
+			'wgCirrusSearchTextcatModel' => [
+				dirname( $tc->getFileName() )."/LM-query/",
+				dirname( $tc->getFileName() )."/LM/"
+			],
 			'wgCirrusSearchTextcatLanguages' => [ "en", "ru" ],
 			'wgCirrusSearchTextcatConfig' => null,
 		] );

@@ -50,7 +50,6 @@ class InterwikiResolverTest extends CirrusTestCase {
 			$resolver->getSameProjectWikiByLang( 'en' ),
 			'enwiki should not find itself.'
 		);
-
 	}
 
 	/**
@@ -257,7 +256,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 			// Used directly by SiteMatrix
 			'wgLocalDatabases' => $conf->wikis,
 			// Used directly by SiteMatrix & SiteMatrixInterwikiResolver
-			'wgSiteMatrixSites' => include ( __DIR__ . '/resources/wmf/SiteMatrixProjects.php' ),
+			'wgSiteMatrixSites' => include __DIR__ . '/resources/wmf/SiteMatrixProjects.php',
 			// Used by SiteMatrix
 			'wgSiteMatrixFile' => __DIR__ . '/resources/wmf/langlist',
 			// Used by SiteMatrix
@@ -274,7 +273,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'wgDBprefix' => null,
 			'wgDBname' => $wikiId,
 			// Used by ClassicInterwikiLookup & SiteMatrixInterwikiResolver
-			'wgInterwikiCache' => include ( __DIR__ . '/resources/wmf/interwiki.php' ),
+			'wgInterwikiCache' => include __DIR__ . '/resources/wmf/interwiki.php',
 			// Reset values so that SiteMatrixInterwikiResolver is used
 			'wgCirrusSearchInterwikiSources' => [],
 			'wgCirrusSearchLanguageToWikiMap' => [],

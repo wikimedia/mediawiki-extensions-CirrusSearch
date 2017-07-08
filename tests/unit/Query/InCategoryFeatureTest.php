@@ -140,7 +140,7 @@ class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
 			->with( 'page' )
 			->will( $this->returnCallback( function ( $table, $select, $where ) {
 				if ( isset( $where['page_id'] ) && $where['page_id'] === [ '2' ] ) {
-					return [ (object) [
+					return [ (object)[
 						'page_namespace' => NS_CATEGORY,
 						'page_title' => 'Cat2',
 						'page_id' => 2,

@@ -129,7 +129,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->toId = $this->getOption( 'toId' );
 		$this->indexUpdates = !$this->getOption( 'deletes', false );
-		$this->archive = (bool) $this->getOption( 'archive', false );
+		$this->archive = (bool)$this->getOption( 'archive', false );
 		if ( $this->archive ) {
 			// If we're indexing only for archive, this implies deletes
 			$this->indexUpdates = false;
@@ -222,7 +222,7 @@ class ForceSearchIndex extends Maintenance {
 		}
 
 		$pageIds = array_map(
-			function( $pageId ) {
+			function ( $pageId ) {
 				$pageId = trim( $pageId );
 				if ( !ctype_digit( $pageId ) ) {
 					$this->error( "Invalid page id provided in --ids, got '$pageId', expected a positive integer", 1 );
@@ -264,7 +264,7 @@ class ForceSearchIndex extends Maintenance {
 
 		$this->lastJobQueueCheckTime = $now;
 		$queueSize = $this->getUpdatesInQueue();
-		if ( $this->maxJobs === null || $this->maxJobs >= $queueSize )  {
+		if ( $this->maxJobs === null || $this->maxJobs >= $queueSize ) {
 			return;
 		}
 

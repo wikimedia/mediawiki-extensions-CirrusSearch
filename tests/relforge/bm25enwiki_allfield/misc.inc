@@ -4,4 +4,3 @@ $wgCirrusSearchShardCount = [ 'content' => 7, 'general' => 4, 'titlesuggest' => 
 $wgLanguagecode = 'en';
 $wgCirrusSearchIndexBaseName = 'enwikibm25perfield';
 $wgCirrusSearchPhraseSuggestReverseField['use'] = false;
-

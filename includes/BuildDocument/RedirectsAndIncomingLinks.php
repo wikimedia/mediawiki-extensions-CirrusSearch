@@ -124,9 +124,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 
 		// Count links
 		// Incoming links is the sum of:
-		//  #1 Number of redirects to the page
-		//  #2 Number of links to the title
-		//  #3 Number of links to all the redirects
+		// #1 Number of redirects to the page
+		// #2 Number of links to the title
+		// #3 Number of links to all the redirects
 
 		// #1 we have a list of the "first" $wgCirrusSearchIndexedRedirects redirect so we just count it:
 		$redirectCount = count( $redirects );
@@ -160,7 +160,7 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				// Note that we still return the pages and execute the update here, we just complain
 				$this->failure( $e );
-				$pageIds = array_map( function( WikiPage $page ) {
+				$pageIds = array_map( function ( WikiPage $page ) {
 					return $page->getId();
 				}, $pages );
 				LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(

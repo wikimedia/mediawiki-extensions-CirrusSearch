@@ -211,9 +211,9 @@ class ElasticaErrorHandler {
 			// In some cases elastic will serialize the exception by adding
 			// an extra message prefix with the exception type.
 			// If the exception is serialized through Transport:
-			//   invalid_regex_exception: expected ']' at position 2
+			// invalid_regex_exception: expected ']' at position 2
 			// Or if the exception is thrown locally by the node receiving the query:
-			//   expected ']' at position 2
+			// expected ']' at position 2
 			if ( preg_match( '/(?:[a-z_]+: )?(.+) at position (\d+)/', $syntaxError, $matches ) ) {
 				$errorMessage = $matches[ 1 ];
 				$position = $matches[ 2 ];

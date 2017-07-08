@@ -118,7 +118,7 @@ class DumpIndex extends Maintenance {
 			$filter = new Elastica\Query\QueryString( $this->getOption( 'filter' ) );
 		}
 
-		$limit = (int) $this->getOption( 'limit', 0 );
+		$limit = (int)$this->getOption( 'limit', 0 );
 
 		$query = new Query();
 		$query->setStoredFields( [ '_id', '_type', '_source' ] );
@@ -238,7 +238,7 @@ class DumpIndex extends Maintenance {
 		if ( $docsDumped <= 0 ) {
 			return;
 		}
-		$pctDone = (int) ( ( $docsDumped / $limit ) * 100 );
+		$pctDone = (int)( ( $docsDumped / $limit ) * 100 );
 		if ( $this->lastProgressPrinted == $pctDone ) {
 			return;
 		}

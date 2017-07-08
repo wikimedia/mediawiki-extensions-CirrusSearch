@@ -183,7 +183,7 @@ class OrderedStreamingForkController extends \ForkController {
 		foreach ( $read as $socket ) {
 			$line = fgets( $socket );
 			list( $id, $data ) = json_decode( trim( $line ) );
-			$this->receive( (int) $id, $data );
+			$this->receive( (int)$id, $data );
 			$sockets[] = $socket;
 			$idx = array_search( $socket, $used );
 			unset( $used[$idx] );

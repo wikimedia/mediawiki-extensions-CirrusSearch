@@ -72,8 +72,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Those phrases can optionally be followed by ~ then a number (this is
 		// the phrase slop). That can optionally be followed by a ~ (this
 		// matches stemmed words in phrases). The following all match:
-		//   "a", "a boat", "a\"boat", "a boat"~, "a boat"~9,
-		//   "a boat"~9~, -"a boat", -"a boat"~9~
+		// "a", "a boat", "a\"boat", "a boat"~, "a boat"~9,
+		// "a boat"~9~, -"a boat", -"a boat"~9~
 		$slop = $this->config->get( 'CirrusSearchPhraseSlop' );
 		$matchQuotesRegex = '(?<![\]])(?<negate>-|!)?(?<main>"((?:[^"]|(?<=\\\)")+)"(?<slop>~\d+)?)(?<fuzzy>~)?';
 		$query = self::replacePartsOfQuery(
@@ -84,7 +84,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				$main = $searchContext->escaper()->fixupQueryStringPart( $matches[ 'main' ][ 0 ] );
 
 				if ( !$negate && !isset( $matches[ 'fuzzy' ] ) && !isset( $matches[ 'slop' ] ) &&
-						 preg_match( '/^"([^"*]+)[*]"/', $main, $matches ) ) {
+					preg_match( '/^"([^"*]+)[*]"/', $main, $matches )
+				) {
 					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix();
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
 					$searchContext->addNonTextQuery( $phraseMatch );
@@ -406,7 +407,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
-		$query->setAllowLeadingWildcard( (bool) $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
+		$query->setAllowLeadingWildcard( (bool)$this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );

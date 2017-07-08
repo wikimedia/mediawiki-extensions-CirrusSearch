@@ -63,8 +63,8 @@ class SuggestScoringTest extends CirrusTestCase {
 	public function testQualityScoreBoostFunction() {
 		$qs = new QualityScore();
 		for ( $i = 0; $i < 1000; $i++ ) {
-			$score = (float) mt_rand() / (float) mt_getrandmax();
-			$boost = (float) mt_rand( 0, 10000 ) / mt_rand( 1, 10000 );
+			$score = (float)mt_rand() / (float)mt_getrandmax();
+			$boost = (float)mt_rand( 0, 10000 ) / mt_rand( 1, 10000 );
 			$res = $qs->boost( $score, $boost );
 			$this->assertLessThanOrEqual( 1, $score, "boost cannot produce a score greater than 1" );
 			$this->assertGreaterThanOrEqual( 0, $score, "boost cannot produce a score lower than 0" );
@@ -87,8 +87,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			$res2 = $qs->boost( $score2, $boost );
 
 			$this->assertGreaterThan( $res1, $res2, "A boost cannot 'overboost' a score" );
-			$res1 = $qs->boost( $score1, (float) 1/(float) $boost );
-			$res2 = $qs->boost( $score2, (float) 1/(float) $boost );
+			$res1 = $qs->boost( $score1, (float)1/(float)$boost );
+			$res2 = $qs->boost( $score2, (float)1/(float)$boost );
 			$this->assertGreaterThan( $res1, $res2, "A boost cannot 'overboost' a score" );
 		}
 
@@ -298,7 +298,7 @@ class SuggestScoringTest extends CirrusTestCase {
 			$page = [];
 			$page['incoming_links'] = mt_rand( 0, 1 ) ? mt_rand( 0, 200 ) : null;
 			$page['external_link'] = $this->randomArray( 200 );
-			$page['text_bytes'] = mt_rand( 0, 1 ) ? (string) mt_rand( 0, 230000 ) : null;
+			$page['text_bytes'] = mt_rand( 0, 1 ) ? (string)mt_rand( 0, 230000 ) : null;
 			$page['heading'] = $this->randomArray( 30 );
 			$page['redirect'] = $this->randomArray( 100 );
 			$page['popularity_score'] = mt_rand( 0, 1 ) ? 1 / mt_rand( 1, 1800000 ) : null;

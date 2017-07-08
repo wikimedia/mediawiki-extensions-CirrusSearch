@@ -27,4 +27,3 @@ foreach ( $errors as $file => $errors ) {
 		}
 	}
 }
-

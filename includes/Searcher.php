@@ -142,8 +142,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string|boolean $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
 	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
-		User $user = null, $index = false ) {
-
+		User $user = null, $index = false
+	) {
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
 		$this->config = $config;
 		$this->offset = $offset;
@@ -359,7 +359,7 @@ class Searcher extends ElasticsearchIntermediary {
 			} else {
 				LoggerFactory::getInstance( 'CirrusSearch' )
 					->warning( 'Skipped invalid feature of class ' . get_class( $extra ) .
-					           ' - should be instanceof SimpleKeywordFeature' );
+						' - should be instanceof SimpleKeywordFeature' );
 			}
 		}
 
@@ -436,7 +436,7 @@ class Searcher extends ElasticsearchIntermediary {
 		return Util::doPoolCounterWork(
 			$this->getPoolCounterType(),
 			$this->user,
-			function() use ( $docIds, $sourceFiltering, $indexType, $size ) {
+			function () use ( $docIds, $sourceFiltering, $indexType, $size ) {
 				try {
 					$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
 						'indexType' => $indexType,
@@ -476,7 +476,7 @@ class Searcher extends ElasticsearchIntermediary {
 		return Util::doPoolCounterWork(
 			'CirrusSearch-NamespaceLookup',
 			$this->user,
-			function() use ( $name ) {
+			function () use ( $name ) {
 				try {
 					$this->startNewLog( 'lookup namespace for {namespaceName}', 'namespace', [
 						'namespaceName' => $name,
@@ -507,7 +507,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
-
 		if ( $this->resultsType === null ) {
 			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
 		}

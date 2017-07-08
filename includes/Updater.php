@@ -133,7 +133,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			$content = $page->getContent();
 			if ( is_string( $content ) ) {
-				$content = new TextContent( (string) $content );
+				$content = new TextContent( (string)$content );
 			}
 			// If the event that the content is _still_ not usable, we have to give up.
 			if ( !is_object( $content ) ) {
@@ -185,7 +185,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
-		$pages = array_filter( $pages, function( WikiPage $page ) use ( &$pageIds ) {
+		$pages = array_filter( $pages, function ( WikiPage $page ) use ( &$pageIds ) {
 			if ( !in_array( $page->getId(), $pageIds ) ) {
 				$pageIds[] = $page->getId();
 				return true;

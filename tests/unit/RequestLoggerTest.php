@@ -143,7 +143,7 @@ class RequestLoggerTest extends CirrusTestCase {
 							// json doesn't round trip a float with no decimal correctly,
 							// so force maxscore into a float
 							$expectedLogs[$logIdx]['context']['requests'][$reqIdx]['maxScore']
-								= (float) $request['maxScore'];
+								= (float)$request['maxScore'];
 							// elastic took ms doesn't get reported by completion api, force
 							// to 0 since our cached request wont take any real-time.
 							$expectedLogs[$logIdx]['context']['requests'][$reqIdx]['elasticTookMs'] = 0;
@@ -151,7 +151,7 @@ class RequestLoggerTest extends CirrusTestCase {
 					} elseif ( $log['channel'] === 'CirrusSearchRequests' ) {
 						if ( isset( $log['context']['maxScore'] ) ) {
 							// Again, json reound trips 0.0 into 0, so we need to get it back to being a float.
-							$expectedLogs[$logIdx]['context']['maxScore'] = (float) $log['context']['maxScore'];
+							$expectedLogs[$logIdx]['context']['maxScore'] = (float)$log['context']['maxScore'];
 						}
 					}
 				}

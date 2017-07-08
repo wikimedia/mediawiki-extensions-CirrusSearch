@@ -5,6 +5,11 @@
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="Generic.Files.LineLength"/>
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures"/>
+		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
+		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
+		<exclude name="MediaWiki.Usage.ReferenceThis.Found"/>
+		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
+		<exclude name="MediaWiki.Commenting.FunctionComment"/>
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">
 		<properties>

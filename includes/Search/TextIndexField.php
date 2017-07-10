@@ -76,7 +76,7 @@ class TextIndexField extends CirrusIndexField {
 		}
 		$options = self::ENABLE_NORMS | self::SPEED_UP_HIGHLIGHTING;
 		if ( $mappingFlags & MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT &&
-		     !$this->checkFlag( SearchIndexField::FLAG_SCORING )
+			!$this->checkFlag( SearchIndexField::FLAG_SCORING )
 		) {
 			// SCORING fields are not copied since this info is already in other fields
 			$options |= self::COPY_TO_SUGGEST;

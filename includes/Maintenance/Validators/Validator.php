@@ -31,7 +31,7 @@ abstract class Validator {
 	 * @param bool $print
 	 */
 	public function printDebugCheckConfig( $print = true ) {
-		$this->printDebugCheckConfig = (bool) $print;
+		$this->printDebugCheckConfig = (bool)$print;
 	}
 
 	/**

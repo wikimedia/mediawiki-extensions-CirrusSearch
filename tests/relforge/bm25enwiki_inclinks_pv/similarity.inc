@@ -108,4 +108,3 @@ $wgCirrusSearchSimilarityProfiles['relforge'] = [
 		'suggest' => 'suggest',
 	],
 ];
-

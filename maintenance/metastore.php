@@ -147,7 +147,7 @@ class Metastore extends Maintenance {
 		];
 		$result = $index->search( new \Elastica\Query(), $scrollOptions );
 		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
-			function( $results ) {
+			function ( $results ) {
 				foreach ( $results as $result ) {
 					$indexOp = [
 						'index' => [

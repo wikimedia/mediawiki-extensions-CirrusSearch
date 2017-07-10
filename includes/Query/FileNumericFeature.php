@@ -48,7 +48,6 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-
 		$field = $this->keyTable[$key];
 
 		list( $sign, $number ) = $this->extractSign( $value );

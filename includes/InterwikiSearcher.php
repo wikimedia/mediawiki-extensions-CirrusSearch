@@ -55,7 +55,7 @@ class InterwikiSearcher extends Searcher {
 	) {
 		// Only allow core namespaces. We can't be sure any others exist
 		if ( $namespaces !== null ) {
-			$namespaces = array_filter( $namespaces, function( $namespace ) {
+			$namespaces = array_filter( $namespaces, function ( $namespace ) {
 				return $namespace <= 15;
 			} );
 		}
@@ -156,7 +156,7 @@ class InterwikiSearcher extends Searcher {
 
 		switch ( $this->config->get( 'CirrusSearchCrossProjectOrder' ) ) {
 		case 'recall':
-			uasort( $retval, function( $a, $b ) {
+			uasort( $retval, function ( $a, $b ) {
 				return $b->getTotalHits() - $a->getTotalHits();
 			} );
 			return $retval;
@@ -213,7 +213,7 @@ class InterwikiSearcher extends Searcher {
 	 */
 	private function prepareContextKey( $overriddenProfiles ) {
 		return implode( '|', array_map(
-			function( $v, $k ) {
+			function ( $v, $k ) {
 				return "$k:$v";
 			},
 			$overriddenProfiles,

@@ -43,7 +43,6 @@ class PreferRecentFeatureText extends CirrusTestCase {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( $expectedRemaining, $expectedDecay, $expectedHalfLife, $term ) {
-
 		$context = $this->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -57,6 +56,5 @@ class PreferRecentFeatureText extends CirrusTestCase {
 		] ) );
 		$remaining = $feature->apply( $context, $term );
 		$this->assertEquals( $expectedRemaining, $remaining );
-
 	}
 }

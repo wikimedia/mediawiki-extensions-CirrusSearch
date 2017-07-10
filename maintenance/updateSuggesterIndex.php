@@ -444,7 +444,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			}
 			$this->outputProgress( $docsDumped, $totalDocsToDump );
 			MWElasticUtils::withRetry( $this->indexRetryAttempts,
-				function() use ( $docIds ) {
+				function () use ( $docIds ) {
 					$this->getType()->deleteIds( $docIds );
 				}
 			);
@@ -577,7 +577,7 @@ class UpdateSuggesterIndex extends Maintenance {
 				$suggestDocs = $this->builder->build( $inputDocs );
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
-					function() use ( $destinationType, $suggestDocs ) {
+					function () use ( $destinationType, $suggestDocs ) {
 						$destinationType->addDocuments( $suggestDocs );
 					}
 				);
@@ -615,7 +615,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $docsDumped <= 0 ) {
 			return;
 		}
-		$pctDone = (int) ( ( $docsDumped / $limit ) * 100 );
+		$pctDone = (int)( ( $docsDumped / $limit ) * 100 );
 		if ( $this->lastProgressPrinted == $pctDone ) {
 			return;
 		}

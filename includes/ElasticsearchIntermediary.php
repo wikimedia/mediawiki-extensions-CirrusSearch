@@ -83,7 +83,7 @@ abstract class ElasticsearchIntermediary {
 			$user = RequestContext::getMain()->getUser();
 		}
 		$this->user = $user;
-		$this->slowMillis = (int) ( 1000 * $slowSeconds );
+		$this->slowMillis = (int)( 1000 * $slowSeconds );
 		$this->extraBackendLatency = $extraBackendLatency;
 		if ( self::$requestLogger === null ) {
 			self::$requestLogger = new RequestLogger;

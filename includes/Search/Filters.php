@@ -104,7 +104,6 @@ class Filters {
 			$bool->addFilter( $scriptFilter );
 		}
 		return $bool;
-
 	}
 
 	/**

@@ -330,7 +330,7 @@ class CirrusSearch extends SearchEngine {
 		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
-		if ( substr( $term, 0, 1 ) === '~' )  {
+		if ( substr( $term, 0, 1 ) === '~' ) {
 			$term = substr( $term, 1 );
 			$searcher->addSuggestPrefix( '~' );
 		}
@@ -403,7 +403,6 @@ class CirrusSearch extends SearchEngine {
 			$config->isCrossProjectSearchEnabled() &&
 			( $searcher->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
-
 			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $highlightingConfig );
 			$iwSearch->setOptionsFromRequest( $this->request );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
@@ -576,7 +575,8 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( count( $this->namespaces ) != 1 ||
-		     reset( $this->namespaces ) != NS_MAIN ) {
+			reset( $this->namespaces ) != NS_MAIN
+		) {
 			// for now, suggester only works for main namespace
 			return $this->prefixSearch( $search );
 		}
@@ -649,7 +649,7 @@ class CirrusSearch extends SearchEngine {
 				// No need to unpack the simple title matches from non-fancy TitleResultsType
 				return SearchSuggestionSet::fromTitles( $status->getValue() );
 			}
-			$results = array_filter( array_map( function( $match ) {
+			$results = array_filter( array_map( function ( $match ) {
 				if ( isset( $match[ 'titleMatch' ] ) ) {
 					return $match[ 'titleMatch' ];
 				} else {
@@ -689,7 +689,6 @@ class CirrusSearch extends SearchEngine {
 					$user->getOption( 'cirrussearch-pref-completion-profile' ),
 					$allowedProfiles )
 			) {
-
 				$userDefault = $user->getOption( 'cirrussearch-pref-completion-profile' );
 			}
 
@@ -787,7 +786,6 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchiveTitle( $term ) {
-
 		if ( !$this->config->get( 'CirrusSearchEnableArchive' ) ) {
 			return Status::newGood( [] );
 		}

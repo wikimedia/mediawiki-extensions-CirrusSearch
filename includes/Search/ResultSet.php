@@ -189,7 +189,6 @@ class ResultSet extends SearchResultSet {
 		$lb = new LinkBatch;
 		foreach ( $resultSet->getResults() as $result ) {
 			if ( !TitleHelper::isExternal( $result ) ) {
-
 				$lb->add( $result->namespace, $result->title );
 			}
 		}

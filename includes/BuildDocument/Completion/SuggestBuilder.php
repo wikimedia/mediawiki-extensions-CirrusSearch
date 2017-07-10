@@ -165,7 +165,7 @@ class SuggestBuilder {
 			$lb->execute();
 			// This is far from perfect:
 			// - we won't try to group similar redirects since we don't know which one
-			//   is the official one
+			// is the official one
 			// - we will certainly suggest multiple times the same pages
 			// - we must not run a second pass at query time: no redirect suggestion
 			foreach ( $crossNsTitles as $data ) {

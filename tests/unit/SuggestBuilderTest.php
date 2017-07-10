@@ -31,7 +31,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 	public function testEinstein() {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
-		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
 			'id' => 123,
 			'title' => 'Albert Einstein',
@@ -88,7 +88,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$this->assertContains( 'defaultsort', $builder->getRequiredFields() );
 		$score = 10;
-		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
 			'id' => 123,
 			'title' => 'Albert Einstein',
@@ -133,7 +133,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 			]
 		];
 
-		$crossNsScore = (int) ( $score * SuggestBuilder::CROSSNS_DISCOUNT );
+		$crossNsScore = (int)( $score * SuggestBuilder::CROSSNS_DISCOUNT );
 
 		$suggestions = $this->buildSuggestions( $builder, $doc );
 		$this->assertSame( $expected, $suggestions );
@@ -191,7 +191,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 	public function testEraq() {
 		$builder = $this->buildBuilder( 'incomingLinks' );
 		$score = 10;
-		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
 			'id' => 123,
 			'title' => 'Iraq',
@@ -253,7 +253,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 			'incoming_links' => $score
 		];
 
-		$score = (int) ( SuggestBuilder::CROSSNS_DISCOUNT * $score );
+		$score = (int)( SuggestBuilder::CROSSNS_DISCOUNT * $score );
 
 		$expected = [
 			[
@@ -294,7 +294,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 	public function testUlm() {
 		$builder = $this->buildBuilder( 'incoming_links' );
 		$score = 10;
-		$redirScore = (int) ( $score * SuggestBuilder::REDIRECT_DISCOUNT );
+		$redirScore = (int)( $score * SuggestBuilder::REDIRECT_DISCOUNT );
 		$doc = [
 			'id' => 123,
 			'title' => 'Ulm',
@@ -351,7 +351,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 		$id = $doc['id'];
 		unset( $doc['id'] );
 		return array_map(
-			function( $x ) {
+			function ( $x ) {
 				$dat = $x->getData();
 				unset( $dat['batch_id'] );
 				return $dat;

@@ -115,7 +115,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	public function __construct( Connection $conn, $limit, $offset = 0, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false, $profileName = null ) {
-
 		if ( is_null( $config ) ) {
 			// @todo connection has an embedded config ... reuse that? somehow should
 			// at least ensure they are the same.
@@ -190,7 +189,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
-			function() use( $index, $suggest, $profiles, $text ) {
+			function () use( $index, $suggest, $profiles, $text ) {
 				$log = $this->newLog( "{queryType} search for '{query}'", $this->queryType, [
 					'query' => $text,
 					'offset' => $this->offset,

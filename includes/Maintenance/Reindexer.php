@@ -40,7 +40,7 @@ class Reindexer {
 	 */
 	private $searchConfig;
 
-	/*** "From" portion ***/
+	/* "From" portion */
 	/**
 	 * @var Index
 	 */
@@ -51,7 +51,7 @@ class Reindexer {
 	 */
 	private $oldConnection;
 
-	/*** "To" portion ***/
+	/* "To" portion */
 
 	/**
 	 * @var Index
@@ -195,9 +195,9 @@ class Reindexer {
 		// the old index while reindexing the new one.
 		foreach ( $this->types as $i => $type ) {
 			$oldType = $this->oldTypes[$i];
-			$oldCount = (float) $oldType->count();
+			$oldCount = (float)$oldType->count();
 			$this->index->refresh();
-			$newCount = (float) $type->count();
+			$newCount = (float)$type->count();
 			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
 			if ( $difference > $acceptableCountDeviation ) {
 				$this->output( "Not close enough!  old=$oldCount new=$newCount difference=$difference\n" );
@@ -298,7 +298,7 @@ class Reindexer {
 		$health = $this->getHealth();
 		$totalNodes = $health[ 'number_of_nodes' ];
 		$totalShards = $this->shardCount * ( $this->getMaxReplicaCount() + 1 );
-		return (int) ceil( 1.0 * $totalShards / $totalNodes );
+		return (int)ceil( 1.0 * $totalShards / $totalNodes );
 	}
 
 	/**
@@ -306,7 +306,7 @@ class Reindexer {
 	 */
 	private function getMaxReplicaCount() {
 		$replica = explode( '-', $this->replicaCount );
-		return (int) $replica[ count( $replica ) - 1 ];
+		return (int)$replica[ count( $replica ) - 1 ];
 	}
 
 	/**

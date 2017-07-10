@@ -147,7 +147,7 @@ class Util {
 
 		$key = "$type:$wgCirrusSearchPoolCounterKey";
 
-		$errorCallback = function( Status $status ) use ( $key, $busyErrorMsg ) {
+		$errorCallback = function ( Status $status ) use ( $key, $busyErrorMsg ) {
 			/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
 			$errors = $status->getErrorsArray();
 			$error = $errors[0][0];
@@ -181,7 +181,7 @@ class Util {
 	public static function parsePotentialPercent( $str ) {
 		$result = floatval( $str );
 		if ( strpos( $str, '%' ) === false ) {
-			return (float) $result;
+			return (float)$result;
 		}
 		return $result / 100;
 	}
@@ -377,7 +377,7 @@ class Util {
 	 */
 	public static function getExecutionId() {
 		if ( self::$executionId === null ) {
-			self::$executionId = (string) mt_rand();
+			self::$executionId = (string)mt_rand();
 		}
 		return self::$executionId;
 	}

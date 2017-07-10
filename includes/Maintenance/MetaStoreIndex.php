@@ -332,7 +332,7 @@ class MetaStoreIndex {
 		if ( !array_search( 'reindex', $plugins ) ) {
 			throw new \Exception( "The reindex module is mandatory to upgrade the metastore" );
 		}
-		$index = $this->createNewIndex( (string) time() );
+		$index = $this->createNewIndex( (string)time() );
 		// Reindex everything except the internal type, it's not clear
 		// yet if we just need to filter the metastore version info or
 		// the whole internal type. Currently we only use the internal
@@ -531,8 +531,8 @@ class MetaStoreIndex {
 			throw $e;
 		}
 		return [
-			(int) $doc->get( 'metastore_major_version' ),
-			(int) $doc->get( 'metastore_minor_version' )
+			(int)$doc->get( 'metastore_major_version' ),
+			(int)$doc->get( 'metastore_minor_version' )
 		];
 	}
 	/**
@@ -543,7 +543,8 @@ class MetaStoreIndex {
 	 * @return \Elastica\Document
 	 */
 	public static function versionData( Connection $connection, $indexBaseName,
-	                                    $indexTypeName ) {
+		$indexTypeName
+	) {
 		global $IP, $wgVersion;
 		if ( $indexTypeName == Connection::TITLE_SUGGEST_TYPE ) {
 			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION );
@@ -577,7 +578,8 @@ class MetaStoreIndex {
 	 * @throws \Exception
 	 */
 	public static function updateMetastoreVersions( Connection $connection, $indexBaseName,
-	                                                $indexTypeName ) {
+		$indexTypeName
+	) {
 		$index = self::getVersionType( $connection );
 		if ( !$index->exists() ) {
 			throw new \Exception( "meta store does not exist, you must index your data first" );
@@ -597,6 +599,5 @@ class MetaStoreIndex {
 			$docs[] = self::versionData( $connection, $baseName, $type );
 		}
 		$versionType->addDocuments( $docs );
-
 	}
 }

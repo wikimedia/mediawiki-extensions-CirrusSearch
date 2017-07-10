@@ -68,7 +68,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	 * @return callable
 	 */
 	private function siteMatrixLoader() {
-		return function() {
+		return function () {
 			global $wgConf;
 
 			$matrix = new \SiteMatrix;

@@ -12,4 +12,3 @@ $wgCirrusSearchCompletionSuggesterSubphrases = [
 ];
 
 $wgCirrusSearchCompletionSettings = 'fuzzy_subphrases';
-

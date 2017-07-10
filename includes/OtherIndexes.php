@@ -103,7 +103,7 @@ class OtherIndexes extends Updater {
 				$query->setSize( 1 );
 
 				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
-				$findIdsClosures[] = function( $docId ) use
+				$findIdsClosures[] = function ( $docId ) use
 						( $otherIndex, &$updates, $title ) {
 					$updates[$otherIndex][] = [
 						'docId' => $docId,
@@ -164,7 +164,7 @@ class OtherIndexes extends Updater {
 	 * @param string $reason
 	 */
 	private function logFailure( array $titles, $reason = '' ) {
-		$articleIDs = array_map( function( Title $title ) {
+		$articleIDs = array_map( function ( Title $title ) {
 			return $title->getArticleID();
 		}, $titles );
 		if ( $reason ) {

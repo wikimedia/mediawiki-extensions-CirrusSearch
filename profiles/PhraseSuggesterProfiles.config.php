@@ -26,12 +26,12 @@ $wgCirrusSearchPhraseSuggestProfiles = [
 	'default' => [
 		// The suggest mode used by the phrase suggester
 		// can be :
-		//  * missing: Only suggest terms in the suggest text that
-		//             aren’t in the index.
-		//  * popular: Only suggest suggestions that occur in more docs
-		//             then the original suggest text term.
-		//  * always: Suggest any matching suggestions based on terms
-		//            in the suggest text.
+		// * missing: Only suggest terms in the suggest text that
+		// aren’t in the index.
+		// * popular: Only suggest suggestions that occur in more docs
+		// then the original suggest text term.
+		// * always: Suggest any matching suggestions based on terms
+		// in the suggest text.
 		'mode' => 'always',
 
 		// Confidence level required to suggest new phrases.

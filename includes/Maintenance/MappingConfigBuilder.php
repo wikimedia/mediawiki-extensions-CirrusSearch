@@ -190,8 +190,7 @@ class MappingConfigBuilder {
 	 * @return array the mapping config
 	 */
 	public function buildConfig( $flags = 0 ) {
-		global $wgCirrusSearchAllFields,
-		              $wgCirrusSearchWeights;
+		global $wgCirrusSearchAllFields, $wgCirrusSearchWeights;
 
 		if ( $this->optimizeForExperimentalHighlighter ) {
 			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
@@ -217,8 +216,8 @@ class MappingConfigBuilder {
 			// Better because theoretically tf/idf based scoring works better this way.
 			// Worse because we have to analyze each field multiple times....  Bleh!
 			// This field can't be used for the fvh/experimental highlighter for several reasons:
-			//  1. It is built with copy_to and not stored.
-			//  2. The term frequency information is all whoppy compared to the "real" source text.
+			// 1. It is built with copy_to and not stored.
+			// 2. The term frequency information is all whoppy compared to the "real" source text.
 			$allField = $this->searchIndexFieldFactory->
 				newStringField( 'all', TextIndexField::ENABLE_NORMS );
 			$page['properties']['all'] =
@@ -344,4 +343,3 @@ class MappingConfigBuilder {
 		return $textFieldMapping;
 	}
 }
-

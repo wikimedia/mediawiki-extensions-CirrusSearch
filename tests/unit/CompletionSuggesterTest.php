@@ -280,29 +280,28 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			'Simple offset 0' => [
 				$resp,
 				5, 0, 'Title1', 'Title5', 5, 50
-			 ],
+			],
 			'Simple offset 5' => [
 				$resp,
 				5, 5, 'Title6', 'Title10', 5, 50
-			 ],
+			],
 			'Reach ES limit' => [
 				$resp,
 				5, $max-3, 'Title198', 'Title200', 3, 300
-			 ],
+			],
 			'Reach Cirrus limit' => [
 				$resp,
 				5, 47, 'Title48', 'Title50', 3, 50
-			 ],
+			],
 			'Out of Cirrus bounds' => [
 				$resp,
 				5, 67, null, null, 0, 50
-			 ],
+			],
 			'Out of elastic results' => [
 				$resp,
 				5, 200, null, null, 0, 300
-			 ],
+			],
 		];
-
 	}
 }
 

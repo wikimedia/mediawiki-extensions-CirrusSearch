@@ -48,7 +48,7 @@ class ShardAllocationValidator extends Validator {
 			}
 			if ( isset( $actual[$type] ) ) {
 				$undesired = array_filter( array_keys( $actual[$type] ),
-					function( $key ) use ( $actual, $type, $desired ) {
+					function ( $key ) use ( $actual, $type, $desired ) {
 						return $actual[$type][$key] !== '' && !isset( $desired[$key] );
 					}
 				);

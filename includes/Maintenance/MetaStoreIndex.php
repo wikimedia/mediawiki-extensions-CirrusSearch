@@ -106,7 +106,9 @@ class MetaStoreIndex {
 	 * @param Maintenance $out
 	 * @param string $masterTimeout
 	 */
-	public function __construct( Connection $connection, Maintenance $out, $masterTimeout = '10000s' ) {
+	public function __construct(
+		Connection $connection, Maintenance $out, $masterTimeout = '10000s'
+	) {
 		$this->connection = $connection;
 		$this->client = $connection->getClient();
 		$this->configUtils = new ConfigUtils( $this->client, $out );
@@ -145,11 +147,20 @@ class MetaStoreIndex {
 			if ( $major < self::METASTORE_MAJOR_VERSION ) {
 				$this->log( self::INDEX_NAME . " major version mismatch upgrading.\n" );
 				$this->majorUpgrade();
-			} elseif ( $major == self::METASTORE_MAJOR_VERSION && $minor < self::METASTORE_MINOR_VERSION ) {
-				$this->log( self::INDEX_NAME . " minor version mismatch trying to upgrade mapping.\n" );
+			} elseif ( $major == self::METASTORE_MAJOR_VERSION &&
+				$minor < self::METASTORE_MINOR_VERSION
+			) {
+				$this->log(
+					self::INDEX_NAME . " minor version mismatch trying to upgrade mapping.\n"
+				);
 				$this->minorUpgrade();
-			} elseif ( $major > self::METASTORE_MAJOR_VERSION || $minor > self::METASTORE_MINOR_VERSION ) {
-				throw new \Exception( "Metastore version $major.$minor found, cannot upgrade to a lower version: " . self::METASTORE_MAJOR_VERSION . "." . self::METASTORE_MINOR_VERSION );
+			} elseif ( $major > self::METASTORE_MAJOR_VERSION ||
+				$minor > self::METASTORE_MINOR_VERSION
+			) {
+				throw new \Exception(
+					"Metastore version $major.$minor found, cannot upgrade to a lower version: " .
+						self::METASTORE_MAJOR_VERSION . "." . self::METASTORE_MINOR_VERSION
+				);
 			}
 		}
 	}
@@ -274,7 +285,9 @@ class MetaStoreIndex {
 		}
 
 		if ( $oldIndexName == $name ) {
-			throw new \Exception( "Cannot switch aliases old and new index names are identical: $name" );
+			throw new \Exception(
+				"Cannot switch aliases old and new index names are identical: $name"
+			);
 		}
 		// Create the alias
 		$path = '_aliases';
@@ -319,7 +332,8 @@ class MetaStoreIndex {
 		foreach ( $resp->getData() as $index => $aliases ) {
 			if ( isset( $aliases['aliases'][self::INDEX_NAME] ) ) {
 				if ( $indexName !== null ) {
-					throw new \Exception( "Multiple indices are aliased with " . self::INDEX_NAME . ", please fix manually." );
+					throw new \Exception( "Multiple indices are aliased with " . self::INDEX_NAME .
+						", please fix manually." );
 				}
 				$indexName = $index;
 			}
@@ -515,7 +529,8 @@ class MetaStoreIndex {
 	 */
 	public static function getMetastoreVersion( Connection $connection ) {
 		try {
-			$doc = self::getInternalType( $connection )->getDocument( self::METASTORE_VERSION_DOCID );
+			$doc = self::getInternalType( $connection )
+				->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return [ 0, 0 ];
 		} catch ( \Elastica\Exception\ResponseException $e ) {

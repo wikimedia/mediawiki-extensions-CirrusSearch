@@ -46,7 +46,18 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	 * @param bool $tooFewReplicas
 	 * @param Maintenance $out
 	 */
-	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, Reindexer $reindexer, array $reindexParams, array $reindexValidators, $reindexAndRemoveOk, $tooFewReplicas, Maintenance $out = null ) {
+	public function __construct(
+		Client $client,
+		$aliasName,
+		$specificIndexName,
+		$startOver,
+		Reindexer $reindexer,
+		array $reindexParams,
+		array $reindexValidators,
+		$reindexAndRemoveOk,
+		$tooFewReplicas,
+		Maintenance $out = null
+	) {
 		// @todo: this constructor takes too many arguments - refactor!
 
 		parent::__construct( $client, $aliasName, $specificIndexName, $startOver, $out );

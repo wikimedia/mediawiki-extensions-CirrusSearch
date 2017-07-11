@@ -34,30 +34,42 @@ class SuggestScoringTest extends CirrusTestCase {
 			$value = mt_rand( 0, 1000000 );
 			$norm = mt_rand( 1, 1000000 );
 			$score = $qs->scoreNorm( $value, $norm );
-			$this->assertLessThanOrEqual( 1, $score, "scoreNorm cannot produce a score greater than 1" );
-			$this->assertGreaterThanOrEqual( 0, $score, "scoreNorm cannot produce a score lower than 0" );
+			$this->assertLessThanOrEqual( 1, $score,
+				"scoreNorm cannot produce a score greater than 1" );
+			$this->assertGreaterThanOrEqual( 0, $score,
+				"scoreNorm cannot produce a score lower than 0" );
 
 			$score = $qs->scoreNormL2( $value, $norm );
-			$this->assertLessThanOrEqual( 1, $score, "scoreNormL2 cannot produce a score greater than 1" );
-			$this->assertGreaterThanOrEqual( 0, $score, "scoreNormL2 cannot produce a score lower than 0" );
+			$this->assertLessThanOrEqual( 1, $score,
+				"scoreNormL2 cannot produce a score greater than 1" );
+			$this->assertGreaterThanOrEqual( 0, $score,
+				"scoreNormL2 cannot produce a score lower than 0" );
 		}
 
 		// Edges
 		$score = $qs->scoreNorm( 1, 1 );
-		$this->assertLessThanOrEqual( 1, $score, "scoreNorm cannot produce a score greater than 1" );
-		$this->assertGreaterThanOrEqual( 0, $score, "scoreNorm cannot produce a score lower than 0" );
+		$this->assertLessThanOrEqual( 1, $score,
+			"scoreNorm cannot produce a score greater than 1" );
+		$this->assertGreaterThanOrEqual( 0, $score,
+			"scoreNorm cannot produce a score lower than 0" );
 
 		$score = $qs->scoreNorm( 0, 1 );
-		$this->assertLessThanOrEqual( 1, $score, "scoreNorm cannot produce a score greater than 1" );
-		$this->assertGreaterThanOrEqual( 0, $score, "scoreNorm cannot produce a score lower than 0" );
+		$this->assertLessThanOrEqual( 1, $score,
+			"scoreNorm cannot produce a score greater than 1" );
+		$this->assertGreaterThanOrEqual( 0, $score,
+			"scoreNorm cannot produce a score lower than 0" );
 
 		$score = $qs->scoreNormL2( 1, 1 );
-		$this->assertLessThanOrEqual( 1, $score, "scoreNormL2 cannot produce a score greater than 1" );
-		$this->assertGreaterThanOrEqual( 0, $score, "scoreNormL2 cannot produce a score lower than 0" );
+		$this->assertLessThanOrEqual( 1, $score,
+			"scoreNormL2 cannot produce a score greater than 1" );
+		$this->assertGreaterThanOrEqual( 0, $score,
+			"scoreNormL2 cannot produce a score lower than 0" );
 
 		$score = $qs->scoreNormL2( 0, 1 );
-		$this->assertLessThanOrEqual( 1, $score, "scoreNormL2 cannot produce a score greater than 1" );
-		$this->assertGreaterThanOrEqual( 0, $score, "scoreNormL2 cannot produce a score lower than 0" );
+		$this->assertLessThanOrEqual( 1, $score,
+			"scoreNormL2 cannot produce a score greater than 1" );
+		$this->assertGreaterThanOrEqual( 0, $score,
+			"scoreNormL2 cannot produce a score lower than 0" );
 	}
 
 	public function testQualityScoreBoostFunction() {
@@ -66,12 +78,16 @@ class SuggestScoringTest extends CirrusTestCase {
 			$score = (float)mt_rand() / (float)mt_getrandmax();
 			$boost = (float)mt_rand( 0, 10000 ) / mt_rand( 1, 10000 );
 			$res = $qs->boost( $score, $boost );
-			$this->assertLessThanOrEqual( 1, $score, "boost cannot produce a score greater than 1" );
-			$this->assertGreaterThanOrEqual( 0, $score, "boost cannot produce a score lower than 0" );
+			$this->assertLessThanOrEqual( 1, $score,
+				"boost cannot produce a score greater than 1" );
+			$this->assertGreaterThanOrEqual( 0, $score,
+				"boost cannot produce a score lower than 0" );
 			if ( $boost > 1 ) {
-				$this->assertGreaterThan( $score, $res, "With a boost ($boost) greater than 1 the boosted score must be greater than the original." );
+				$this->assertGreaterThan( $score, $res, "With a boost ($boost) greater than 1 the" .
+					" boosted score must be greater than the original." );
 			} elseif ( $boost < 1 ) {
-				$this->assertLessThan( $score, $res, "With a boost ($boost) less than 1 the boosted score must be less than the original." );
+				$this->assertLessThan( $score, $res, "With a boost ($boost) less than 1 the " .
+					"boosted score must be less than the original." );
 			} else {
 				$this->assertEquals( $score, $res, "When boost is 1 the score remains unchanged." );
 			}
@@ -98,7 +114,8 @@ class SuggestScoringTest extends CirrusTestCase {
 		$res = $qs->boost( 1, 0 );
 		$this->assertEquals( $res, 0.5, "When boost is 0 the score is divided by 2." );
 		$res = $qs->boost( 1,  2^31-1 );
-		$this->assertEquals( $res, 1, "When score is 1 and boost is very high the score is still 1." );
+		$this->assertEquals( $res, 1,
+			"When score is 1 and boost is very high the score is still 1." );
 		$res = $qs->boost( 0,  0 );
 		$this->assertEquals( $res, 0, "When score is 0 and boost is 0 the score is still 0." );
 	}
@@ -229,7 +246,8 @@ class SuggestScoringTest extends CirrusTestCase {
 				'template' => mt_rand( 0, 1 ) == 1 ? [ 'Good' ] : [ 'Bad' ]
 			];
 			$this->assertGreaterThan( 0, $qs->score( $page ), "Score is always greater than 0" );
-			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ), "Score is always lower than " . QualityScore::SCORE_RANGE );
+			$this->assertLessThan( QualityScore::SCORE_RANGE, $qs->score( $page ),
+				"Score is always lower than " . QualityScore::SCORE_RANGE );
 		}
 
 		// Edges
@@ -241,7 +259,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
 			'template' => []
 		];
-		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "Highest score is " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
+			"Highest score is " . QualityScore::SCORE_RANGE );
 
 		$page = [
 			'incoming_links' => 0,
@@ -267,7 +286,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
 			'template' => []
 		];
-		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
+			"With very small wiki the highest score is also " . QualityScore::SCORE_RANGE );
 
 		// The scoring function should not fail with 0 page
 		$qs = new QualityScore();
@@ -279,7 +299,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			'redirect' => array_fill( 0, QualityScore::REDIRECT_NORM, null ),
 			'template' => []
 		];
-		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ), "With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
+		$this->assertEquals( QualityScore::SCORE_RANGE, $qs->score( $page ),
+			"With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
 	}
 
 	public function testRobustness() {
@@ -310,9 +331,13 @@ class SuggestScoringTest extends CirrusTestCase {
 				$score = $scorer->score( $page );
 				$pagedebug = print_r( $page, true );
 
-				$this->assertTrue( is_int( $score ), "Score is always an integer for " . get_class( $scorer ) . " with these values $pagedebug" );
-				$this->assertTrue( $score >= 0, "Score is always positive " . get_class( $scorer ) . " with these values $pagedebug" );
-				$this->assertTrue( $score <= QualityScore::SCORE_RANGE, "Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) . " with these values $pagedebug" );
+				$this->assertTrue( is_int( $score ), "Score is always an integer for " .
+					get_class( $scorer ) . " with these values $pagedebug" );
+				$this->assertTrue( $score >= 0, "Score is always positive " .
+					get_class( $scorer ) . " with these values $pagedebug" );
+				$this->assertTrue( $score <= QualityScore::SCORE_RANGE,
+					"Score is always lower than QualityScore::SCORE_RANGE " . get_class( $scorer ) .
+					" with these values $pagedebug" );
 			}
 		}
 	}

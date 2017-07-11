@@ -14,7 +14,7 @@
 		[
 			'mediawiki.api.messages',
 			'mediawiki.template.mustache',
-			'jquery.uls.data'
+			'ext.uls.common'
 		] ), $.ready )
 	.then( function () {
 		return new mw.Api().loadMessagesIfMissing( [
@@ -160,26 +160,28 @@
 					params: {
 						action: 'query',
 						format: 'json',
-						prop: 'categories',
+						prop: 'info',
 						titles: articleTitle,
-						cllimit: 10,
-						clshow: '!hidden'
+						generator: 'categories',
+						inprop: 'url',
+						gclshow: '!hidden',
+						gcllimit: 10
 					}
 				},
 				filterApiResponse: function ( reqResponse ) {
-					var templateData;
-
+					var templateData,
+					queryPages = ( reqResponse.query && reqResponse.query.pages ) ?
+						reqResponse.query.pages : [];
 					templateData = {
 						sectionTitle: l10n.categoriesSectionTitle,
 						cssClasses: cssClasses,
-						pageCategories: $.map( reqResponse.query.pages,
-							function ( page ) {
-								return $.map( page.categories,
-									function ( cat ) {
-										cat.title = mw.html.escape( cat.title );
-										cat.humanTitle = cat.title.replace( /.*:/, '' );
-										return cat;
-									} );
+						pageCategories: $.map( queryPages, function ( page ) {
+										var humanTitle = page.title.replace( /.*:/, '' ),
+											url = page.fullurl;
+										return {
+											humanTitle: humanTitle,
+											url: url
+										};
 							} )
 					};
 
@@ -196,7 +198,7 @@
 								'</strong>' +
 								'<div class="{{cssClasses.contentColumns}}">' +
 									'{{#pageCategories}}' +
-										'<a href="/wiki/{{title}}" class="{{cssClasses.category}}" style="display:block;">' +
+										'<a href="{{url}}" class="{{cssClasses.category}}" style="display:block;">' +
 											'{{humanTitle}}' +
 										'</a>' +
 									'{{/pageCategories}}' +
@@ -222,7 +224,8 @@
 						action: 'query',
 						titles: articleTitle,
 						prop: 'langlinks',
-						lllimit: '500'
+						llprop: 'url|autonym',
+						lllimit: '500',
 					}
 				},
 				filterApiResponse: function ( reqResponse ) {
@@ -233,7 +236,6 @@
 								if ( page.langlinks ) {
 									return $.grep( page.langlinks, function ( langlink ) {
 										if ( prefLangs.indexOf( langlink.lang ) >= 0 ) {
-											langlink.autonym = $.uls.data.getAutonym( langlink.lang );
 											return langlink;
 										}
 									} );
@@ -258,7 +260,7 @@
 							'{{#langLinks}}' +
 								'<div class="{{cssClasses.langLink}}" data-lang={{lang}}>' +
 									'<div>{{autonym}}</div>' +
-									'<a href="https://{{lang}}.wikipedia.org/wiki/{{*}}">' +
+									'<a href="{{url}}">' +
 										'{{*}}' +
 									'</a>' +
 								'</div>' +
@@ -283,7 +285,7 @@
 						action: 'query',
 						format: 'json',
 						formatversion: 2,
-						prop: 'pageimages|pageterms',
+						prop: 'pageimages|pageterms|info',
 						piprop: 'thumbnail',
 						pithumbsize: 160,
 						pilimit: 3,
@@ -293,6 +295,7 @@
 						gsrnamespace: 0,
 						gsrlimit: 3,
 						gsrqiprofile: 'classic_noboostlinks',
+						inprop: 'url',
 						uselang: 'content',
 						smaxage: 86400,
 						maxage: 86400
@@ -326,7 +329,7 @@
 								'{{sectionTitle}}' +
 							'</strong>' +
 							'{{#relatedPages}}' +
-								'<a href="/wiki/{{title}}" title="{{title}}" class="{{cssClasses.relatedPage}}">' +
+								'<a href="{{fullurl}}" title="{{title}}" class="{{cssClasses.relatedPage}}">' +
 									'{{#thumbnail}}' +
 										'<div class="{{cssClasses.relatedPageThumb}}" style="background-image:url({{thumbnail.source}});"></div>' +
 									'{{/thumbnail}}' +

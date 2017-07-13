@@ -1408,6 +1408,7 @@ $wgResourceModules += [
 			'resources/ext.cirrus.explore-similar.js',
 		],
 		'dependencies' => [
+			'mediawiki.util',
 			'mediawiki.api.messages',
 			'mediawiki.template.mustache',
 		],

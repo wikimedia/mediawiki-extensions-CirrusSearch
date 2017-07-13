@@ -5,7 +5,7 @@
 
 	// Only run on specialSearch page with default profile
 	if ( mw.config.get( 'wgCanonicalSpecialPageName' ) !== 'Search' &&
-		mw.Uri().query.profile !== 'default'
+		mw.util.getParamValue( 'profile' ) !== 'default'
 	) {
 		return;
 	}

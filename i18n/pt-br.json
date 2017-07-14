@@ -6,7 +6,8 @@
 			"Jefersonmoraes",
 			"HenriqueCrang",
 			"Cainamarques",
-			"Hamilton Abreu"
+			"Hamilton Abreu",
+			"Felipe L. Ewald"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de busca ''Elasticsearch'' para MediaWiki",
@@ -22,9 +23,17 @@
 	"cirrussearch-pref-label": "Nova busca",
 	"cirrussearch-pref-desc": "Experimente o nosso novo mecanismo de busca que suporta um maior número de idiomas, fornece resultados mais atualizados e pode até encontrar textos incluídos em predefinições.",
 	"apihelp-cirrus-config-dump-description": "Dump das configurações do CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Dump das configurações do CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Dump do mapeamento do CirrusSearch para esta wiki.",
+	"apihelp-cirrus-mapping-dump-summary": "Dump do mapeamento do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-description": "Dump das configurações do CirrusSearch para esta wiki.",
+	"apihelp-cirrus-settings-dump-summary": "Dump das configurações do CirrusSearch para esta wiki.",
 	"cirrussearch-give-feedback": "Dê-nos a sua opinião",
+	"cirrussearch-morelikethis-settings": " \\",
+	"cirrussearch-didyoumean-settings": "  \\",
+	"cirrussearch-completionsuggester-pref": "Sugestões de preenchimento",
 	"cirrussearch-pref-completion-section-desc": "Sugestões de completamento",
-	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de completamento] com melhor correção de erros ortográficos e maior relevância das pesquisas."
+	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de completamento] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
+	"cirrussearch-explore-similar-categories": "Categorias",
+	"cirrussearch-explore-similar-languages": "Idiomas"
 }

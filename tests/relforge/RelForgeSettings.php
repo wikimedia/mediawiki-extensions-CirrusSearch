@@ -40,6 +40,7 @@ $wgCirrusSearchICUFoldingUnicodeSetFilter = null;
 // Move to prod like defaults now
 $wgCirrusSearchSimilarityProfile = 'wmf_defaults';
 $wgCirrusSearchRescoreProfile = 'wsum_inclinks';
+$wgCirrusSearchFullTextQueryBuilderProfile = 'perfield_builder';
 
 // Activate devel options useful for relforge
 $wgCirrusSearchDevelOptions = [

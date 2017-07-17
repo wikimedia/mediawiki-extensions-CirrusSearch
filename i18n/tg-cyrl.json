@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"AryanSogd"
+			"AryanSogd",
+			"ToJack"
 		]
 	},
-	"cirrussearch-give-feedback": "Ба мо фикри худро баён кунед"
+	"cirrussearch-give-feedback": "Ба мо фикри худро баён кунед",
+	"cirrussearch-explore-similar-languages": "Забонҳо"
 }

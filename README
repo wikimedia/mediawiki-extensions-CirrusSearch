@@ -3,8 +3,16 @@ MediaWiki extension: CirrusSearch
 
 Installation
 ------------
-Get Elasticsearch up and running somewhere. Elasticsearch v2.x is only supported but 2.3.3 is highly
-recommended if you plan to use the wikimedia elasticsearch plugins.
+Get Elasticsearch up and running somewhere. Elasticsearch v5.x is only supported but 5.3.1 or higher is
+recommended.
+
+KNOWN ISSUES
+------------
+All elastic versions prior to 5.3.1 have bugs that affect CirrusSearch:
+- elastic versions before 5.3.x requires the following config in your LocalSettings.php:
+  $CirrusSearchElasticQuirks = [ 'query_string_max_determinized_states' => true ];
+- elastic versions before 5.3.1 suffer from a bug that prevent an index to be reindexed
+  properly without missing docs when using multiple elasticsearch machines
 
 Place the CirrusSearch extension in your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)

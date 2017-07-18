@@ -91,6 +91,14 @@ if ( is_dir( "$IP/extensions/PoolCounter" ) ) {
 		'workers' => 50,
 		'maxqueue' => 200,
 	];
+	// Very expensive full text search. Needs to be limited separate
+	// from primary full text Search due to the expense.
+	$wgPoolCounterConf[ 'CirrusSearch-MoreLike' ] = [
+		'class' => 'PoolCounter_Client',
+		'timeout' => 5,
+		'workers' => 50,
+		'maxqueue' => 200,
+	];
 }
 
 $wgCirrusSearchIndexDeletes = true;

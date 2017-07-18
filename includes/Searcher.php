@@ -969,6 +969,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$poolCounterTypes = [
 			'regex' => 'CirrusSearch-Regex',
 			'prefix' => 'CirrusSearch-Prefix',
+			'more_like' => 'CirrusSearch-MoreLike',
 		];
 		foreach ( $poolCounterTypes as $type => $counter ) {
 			if ( $this->searchContext->isSyntaxUsed( $type ) ) {

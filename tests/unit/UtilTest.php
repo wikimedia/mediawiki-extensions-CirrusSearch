@@ -233,7 +233,7 @@ class UtilTest extends CirrusTestCase {
 	public function testDisableOverrideBoostTemplatesWithOnWikiConfig() {
 		$configValues = [
 			'CirrusSearchBoostTemplates' => [
-				'Featured' => 2,
+				'Featured' => 3,
 			],
 			// we can disable on wiki customization
 			'CirrusSearchIgnoreOnWikiBoostTemplates' => true,
@@ -243,7 +243,7 @@ class UtilTest extends CirrusTestCase {
 		$cache = $this->makeLocalCache();
 		$this->putDataIntoCache( $cache, 'ruwiki' );
 
-		$ru = Util::getDefaultBoostTemplates( $this->getHashConfig( 'ruwiki' ) );
+		$ru = Util::getDefaultBoostTemplates( $config );
 		$this->assertArrayEquals( $configValues['CirrusSearchBoostTemplates'], $ru );
 	}
 

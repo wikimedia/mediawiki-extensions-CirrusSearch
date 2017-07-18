@@ -716,27 +716,9 @@ STEMMER_RULES
 			$config[ 'filter' ][ 'italian_elision' ] = [
 				'type' => 'elision',
 				'articles' => [
-					'c',
-					'l',
-					'all',
-					'dall',
-					'dell',
-					'nell',
-					'sull',
-					'coll',
-					'pell',
-					'gl',
-					'agl',
-					'dagl',
-					'degl',
-					'negl',
-					'sugl',
-					'un',
-					'm',
-					't',
-					's',
-					'v',
-					'd'
+					'c', 'l', 'all', 'dall', 'dell', 'nell', 'sull',
+					'coll', 'pell', 'gl', 'agl', 'dagl', 'degl', 'negl',
+					'sugl', 'un', 'm', 't', 's', 'v', 'd'
 				],
 			];
 			$config[ 'filter' ][ 'italian_stop' ] = [
@@ -768,6 +750,34 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In Italian text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
+		case 'japanese':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
+			$config[ 'char_filter' ][ 'fullwidthnumfix' ] = [
+				// pre-convert fullwidth numbers because Kuromoji tokenizer treats them weirdly
+				'type' => 'mapping',
+				'mappings' => [
+					"\uff10=>0", "\uff11=>1", "\uff12=>2", "\uff13=>3",
+					"\uff14=>4", "\uff15=>5", "\uff16=>6", "\uff17=>7",
+					"\uff18=>8", "\uff19=>9",
+				],
+			];
+
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'char_filter' => [ 'fullwidthnumfix' ],
+				'tokenizer' => 'kuromoji_tokenizer',
+			];
+
+			$filters = [];
+			$filters[] = 'kuromoji_baseform';
+			$filters[] = 'cjk_width';
+			$filters[] = 'ja_stop';
+			$filters[] = 'kuromoji_stemmer';
+			$filters[] = 'lowercase';
+			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
+
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'russian':
@@ -1050,7 +1060,7 @@ STEMMER_RULES
 		// For Hebrew, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
-		'analysis-kuromoji' => [ 'ja' => 'kuromoji' ],
+		'analysis-kuromoji' => [ 'ja' => 'japanese' ],
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],

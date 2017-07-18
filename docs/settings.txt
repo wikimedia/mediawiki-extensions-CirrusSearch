@@ -1501,3 +1501,14 @@ Default:
 
 Whether deletes are indexed for archive search when page is deleted. Note that searching
 for archived pages can be done by manually indexing them too.
+
+; $wgCirrusSearchInterleaveConfig
+
+Default:
+	$wgCirrusSearchInterleaveConfig = [];
+
+Map of configuration variable name to value used to override cirrus config
+during interleaved full text search. Generally tis should *not* be set
+directly, and instead set via $wgCirrusSearchUserTesting triggers. It is
+usefull to perform Team-Draft interleaved search experiments to compare the
+performance of two different search configurations.

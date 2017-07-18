@@ -5,6 +5,7 @@ use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\Search\FullTextResultsType;
+use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Search\ResultSet;
@@ -175,6 +176,9 @@ class CirrusSearch extends SearchEngine {
 			$status = $this->searchTextSecondTry( $term, $status );
 		}
 		ElasticsearchIntermediary::setResultPages( [ $status->getValue() ] );
+		if ( $status->getValue() instanceof SearchMetricsProvider ) {
+			$this->extraSearchMetrics += $status->getValue()->getMetrics();
+		}
 
 		return $status;
 	}

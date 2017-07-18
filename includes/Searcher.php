@@ -8,11 +8,14 @@ use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use CirrusSearch\Elastica\MultiSearch as MultiSearch;
 use Elastica\Exception\RuntimeException;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
+use Elastica\Search;
 use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -393,17 +396,57 @@ class Searcher extends ElasticsearchIntermediary {
 			return $checkLengthStatus;
 		}
 
-		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
+		// Searcher needs to be cloned before any actual query building is done.
+		$interleaveSearcher = $this->buildInterleaveSearcher();
 
-		$status = $this->searchOne();
-		if ( !$status->isOK() && ElasticaErrorHandler::isParseError( $status ) ) {
-			if ( $qb->buildDegraded( $this->searchContext ) ) {
-				// If that doesn't work we're out of luck but it should.  There no guarantee it'll work properly
-				// with the syntax we've built above but it'll do _something_ and we'll still work on fixing all
-				// the parse errors that come in.
-				$status = $this->searchOne();
+		$searches = [];
+		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
+		$searches[] = $this->buildSearch();
+
+		if ( !$this->searchContext->areResultsPossible() ) {
+			return Status::newGood( new SearchResultSet( true ) );
+		}
+
+		if ( $interleaveSearcher !== null ) {
+			$interleaveSearcher->buildFullTextSearch( $term, $showSuggestion );
+			$interleaveSearch = $interleaveSearcher->buildSearch();
+			if ( $this->areSearchesTheSame( $searches[0], $interleaveSearch ) ) {
+				$interleaveSearcher = null;
+			} else {
+				$searches[] = $interleaveSearch;
 			}
 		}
+
+		$status = $this->searchMulti( $searches );
+		if ( !$status->isOK() ) {
+			if ( ElasticaErrorHandler::isParseError( $status ) ) {
+				if ( $qb->buildDegraded( $this->searchContext ) ) {
+					// If that doesn't work we're out of luck but it should.
+					// There no guarantee it'll work properly with the syntax
+					// we've built above but it'll do _something_ and we'll
+					// still work on fixing all the parse errors that come in.
+					$status = $this->searchOne();
+				}
+			}
+			return $status;
+		}
+
+		if ( $interleaveSearcher === null ) {
+			// Convert array of responses to single value
+			$value = $status->getValue();
+			$response = reset( $value );
+		} else {
+			// Evil hax to support cirrusDumpResult. This is probably
+			// very fragile.
+			$value = $status->getValue();
+			if ( $value[0] instanceof ResultSet ) {
+				$interleaver = new TeamDraftInterleaver();
+				$response = $interleaver->interleave( $value[0], $value[1], $this->limit );
+			} else {
+				$response = $value;
+			}
+		}
+		$status->setResult( true, $response );
 
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			call_user_func_array( [ $status, 'warning' ], $warning );
@@ -1134,4 +1177,70 @@ class Searcher extends ElasticsearchIntermediary {
 		return $this->searchOne();
 	}
 
+	private function buildInterleaveConfig( array $interleave ) {
+	}
+
+	/**
+	 * Tests if two search objects are equivalent
+	 *
+	 * @param Search $a
+	 * @param Search $b
+	 * @return bool
+	 */
+	private function areSearchesTheSame( Search $a, Search $b ) {
+		// same object.
+		if ( $a === $b ) {
+			return true;
+		}
+
+		// Check values not included in toArray()
+		if ( $a->getPath() !== $b->getPath()
+			|| $a->getOptions() != $b->getOptions()
+		) {
+			return false;
+		}
+
+		$aArray = $a->getQuery()->toArray();
+		$bArray = $b->getQuery()->toArray();
+
+		// normalize the 'now' value which contains a timestamp that
+		// may vary.
+		$fixNow = function ( &$value, $key ) {
+			if ( $key === 'now' && is_int( $value ) ) {
+				$value = 12345678;
+			}
+		};
+		array_walk_recursive( $aArray, $fixNow );
+		array_walk_recursive( $bArray, $fixNow );
+
+		// Simplest form, requires both arrays to have exact same ordering,
+		// types, keys, etc. We could try much harder to remove edge cases,
+		// but they probably don't matter too much. The main thing we are
+		// looking for is if configuration used for interleaved search didn't
+		// have an effect query building. If we get it wrong in some rare
+		// cases it should have minimal effects on the interleaved search test.
+		return $aArray === $bArray;
+	}
+
+	private function buildInterleaveSearcher() {
+		// If we aren't on the first page, or the user has specified
+		// some custom magic query options (override rescore profile,
+		// etc) then don't interleave.
+		if ( $this->offset > 0 || $this->searchContext->isDirty() ) {
+			return null;
+		}
+
+		// Is interleaving configured?
+		$overrides = $this->config->get( 'CirrusSearchInterleaveConfig' );
+		if ( $overrides === null ) {
+			return null;
+		}
+
+		$config = new HashSearchConfig( $overrides, [ 'inherit' ] );
+		$other = clone $this;
+		$other->config = $config;
+		$other->searchContext = $other->searchContext->withConfig( $config );
+
+		return $other;
+	}
 }

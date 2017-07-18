@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\HashSearchConfig;
 
 /**
  * @group CirrusSearch

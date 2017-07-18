@@ -5,6 +5,7 @@ namespace CirrusSearch\Test;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusConfigInterwikiResolver;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SiteMatrixInterwikiResolver;
 use CirrusSearch\InterwikiResolverFactory;
 

@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Test\HashSearchConfig;
 use CirrusSearch\Search\CirrusIndexField;
 
 /**

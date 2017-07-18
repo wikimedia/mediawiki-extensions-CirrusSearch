@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jewel457"
+			"Jewel457",
+			"Emem.calist"
 		]
 	},
-	"cirrussearch-parse-error": "Ang pagtatanong ay hindi naintindihan. Mangyaring gawin itong payak. Ang pagtatanong ay naitala upang pag-ibayuhin ang paraan ng paghahanap."
+	"cirrussearch-parse-error": "Ang pagtatanong ay hindi naintindihan. Mangyaring gawin itong payak. Ang pagtatanong ay naitala upang pag-ibayuhin ang paraan ng paghahanap.",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Kapag ginamit itong 'wiki', una-una lang muna ha?! Walang epal."
 }

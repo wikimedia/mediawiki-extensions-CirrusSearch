@@ -54,7 +54,15 @@ class MappingValidator extends Validator {
 	 * @param Type[] $types Array with type names as key & type object as value
 	 * @param Maintenance $out
 	 */
-	public function __construct( Index $index, $masterTimeout, $optimizeIndexForExperimentalHighlighter, array $availablePlugins, array $mappingConfig, array $types, Maintenance $out = null ) {
+	public function __construct(
+		Index $index,
+		$masterTimeout,
+		$optimizeIndexForExperimentalHighlighter,
+		array $availablePlugins,
+		array $mappingConfig,
+		array $types,
+		Maintenance $out = null
+	) {
 		parent::__construct( $out );
 
 		$this->index = $index;

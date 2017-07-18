@@ -157,18 +157,24 @@ class UpdateSuggesterIndex extends Maintenance {
 			'per failure.  Note that failures are not common but if Elasticsearch is in the process ' .
 			'of moving a shard this can time out.  This will retry the attempt after some backoff ' .
 			'rather than failing the whole reindex process.  Defaults to 5.', false, true );
-		$this->addOption( 'optimize', 'Optimize the index to 1 segment. Defaults to false.', false, false );
-		$this->addOption( 'scoringMethod', 'The scoring method to use when computing suggestion weights. ' .
+		$this->addOption( 'optimize',
+			'Optimize the index to 1 segment. Defaults to false.', false, false );
+		$this->addOption( 'scoringMethod',
+			'The scoring method to use when computing suggestion weights. ' .
 			'Defaults to $wgCirrusSearchCompletionDefaultScore or quality if unset.', false, true );
-		$this->addOption( 'masterTimeout', 'The amount of time to wait for the master to respond to mapping ' .
+		$this->addOption( 'masterTimeout',
+			'The amount of time to wait for the master to respond to mapping ' .
 			'updates before failing. Defaults to $wgCirrusSearchMasterTimeout.', false, true );
-		$this->addOption( 'replicationTimeout', 'The amount of time (seconds) to wait for the replica shards to initialize. ' .
+		$this->addOption( 'replicationTimeout',
+			'The amount of time (seconds) to wait for the replica shards to initialize. ' .
 			'Defaults to 3600 seconds.', false, true );
-		$this->addOption( 'allocationIncludeTag', 'Set index.routing.allocation.include.tag on the created index. ' .
-			'Useful if you want to force the suggester index not to be allocated on a specific set of nodes.',
+		$this->addOption( 'allocationIncludeTag',
+			'Set index.routing.allocation.include.tag on the created index. Useful if you want to ' .
+			'force the suggester index not to be allocated on a specific set of nodes.',
 			false, true );
-		$this->addOption( 'allocationExcludeTag', 'Set index.routing.allocation.exclude.tag on the created index. ' .
-			'Useful if you want to force the suggester index not to be allocated on a specific set of nodes.',
+		$this->addOption( 'allocationExcludeTag',
+			'Set index.routing.allocation.exclude.tag on the created index. Useful if you want ' .
+			'to force the suggester index not to be allocated on a specific set of nodes.',
 			false, true );
 	}
 
@@ -188,10 +194,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			$this->getShardCount();
 			$this->getReplicaCount();
 		} catch ( \Exception $e ) {
-			$this->error( "Failed to get shard count and replica count information: {$e->getMessage()}", 1 );
+			$this->error(
+				"Failed to get shard count and replica count information: {$e->getMessage()}", 1
+			);
 		}
 
-		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption(
+			'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME )
+		);
 		$this->indexChunkSize = $this->getOption( 'indexChunkSize', 500 );
 		$this->indexRetryAttempts = $this->getOption( 'reindexRetryAttempts', 5 );
 
@@ -203,20 +213,27 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 
 		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
-		$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
+		$this->analysisConfigBuilder = $this->pickAnalyzer(
+			$this->langCode, $this->availablePlugins
+		);
 
 		$this->utils->checkElasticsearchVersion();
 
-		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] : 'unlimited';
+		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] )
+			? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ]
+			: 'unlimited';
 
-		$this->scoreMethodName = $this->getOption( 'scoringMethod', $wgCirrusSearchCompletionDefaultScore );
+		$this->scoreMethodName = $this->getOption(
+			'scoringMethod', $wgCirrusSearchCompletionDefaultScore
+		);
 		$this->scoreMethod = SuggestScoringMethodFactory::getScoringMethod( $this->scoreMethodName );
 
 		$extraBuilders = [];
 		if ( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
 			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
 		}
-		$subPhrasesConfig =  $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterSubphrases' );
+		$subPhrasesConfig =  $this->getSearchConfig()
+			->get( 'CirrusSearchCompletionSuggesterSubphrases' );
 		if ( $subPhrasesConfig['build'] ) {
 			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );
 		}
@@ -225,7 +242,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		try {
 			// If the version does not exist it's certainly because nothing has been indexed.
 			if ( !MetaStoreIndex::cirrusReady( $this->getConnection() ) ) {
-				throw new \Exception( "Cirrus meta store does not exist, you must index your data first" );
+				throw new \Exception(
+					"Cirrus meta store does not exist, you must index your data first"
+				);
 			}
 
 			if ( !$this->canWrite() ) {
@@ -250,7 +269,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
-			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
+			$this->error( "Elasticsearch failed in an unexpected way.  " .
+				"This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
 				"Trace:\n" . $trace, 1 );
@@ -295,7 +315,8 @@ class UpdateSuggesterIndex extends Maintenance {
 				$this->log( "Deleting broken index {$index->getName()}\n" );
 				$this->deleteIndex( $index );
 			} else {
-				$this->log( "Broken index {$index->getName()} appears to be in use, please check and delete.\n" );
+				$this->log( "Broken index {$index->getName()} appears to be in use, " .
+					"please check and delete.\n" );
 			}
 
 		}
@@ -303,9 +324,15 @@ class UpdateSuggesterIndex extends Maintenance {
 	}
 
 	private function rebuild() {
-		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
-		$this->oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
-		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'now', $this->getIndexTypeName() );
+		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+			'current', $this->getIndexTypeName()
+		);
+		$this->oldIndex = $this->getConnection()->getIndex(
+			$this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier
+		);
+		$this->indexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+			'now', $this->getIndexTypeName()
+		);
 
 		$this->createIndex();
 		$this->indexData();
@@ -325,8 +352,12 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( !$wgCirrusSearchRecycleCompletionSuggesterIndex ) {
 			return false;
 		}
-		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption( 'current', $this->getIndexTypeName() );
-		$oldIndex = $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier );
+		$oldIndexIdentifier = $this->utils->pickIndexIdentifierFromOption(
+			'current', $this->getIndexTypeName()
+		);
+		$oldIndex = $this->getConnection()->getIndex(
+			$this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier
+		);
 		if ( ! $oldIndex->exists() ) {
 			$this->error( 'Index does not exist yet cannot recycle.' );
 			return false;
@@ -344,11 +375,14 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		list( $mMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
-		list( $aMaj ) = explode( '.', \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
+		list( $mMaj ) = explode( '.',
+			\CirrusSearch\Maintenance\SuggesterMappingConfigBuilder::VERSION );
+		list( $aMaj ) = explode( '.',
+			\CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
-			$versionDoc = MetaStoreIndex::getVersionType( $this->getConnection() )->getDocument( $this->getIndexTypeName() );
+			$versionDoc = MetaStoreIndex::getVersionType( $this->getConnection() )
+				->getDocument( $this->getIndexTypeName() );
 		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
@@ -535,7 +569,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		$mSearch = new MultiSearch( $this->getClient() );
 		foreach ( $countIndices as $sourceIndexType ) {
 			$search = new \Elastica\Search( $this->getClient() );
-			$search->addIndex( $this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType ) );
+			$search->addIndex(
+				$this->getConnection()->getIndex( $this->indexBaseName, $sourceIndexType )
+			);
 			$search->getQuery()->setSize( 0 );
 			$mSearch->addSearch( $search );
 		}
@@ -563,7 +599,9 @@ class UpdateSuggesterIndex extends Maintenance {
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
-					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with batchId: {$this->builder->getBatchId()} and scoring method: {$this->scoreMethodName}\n" );
+					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with " .
+						"batchId: {$this->builder->getBatchId()} and scoring method: " .
+						"{$this->scoreMethodName}\n" );
 				}
 				$inputDocs = [];
 				foreach ( $results as $result ) {
@@ -602,7 +640,9 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$data['actions'][] = [ 'add' => [ 'index' => $index->getName(), 'alias' => $name ] ];
 
-		$index->getClient()->request( $path, Request::POST, $data, [ 'master_timeout' => $this->masterTimeout ] );
+		$index->getClient()->request(
+			$path, Request::POST, $data, [ 'master_timeout' => $this->masterTimeout ]
+		);
 	}
 
 	/**
@@ -636,7 +676,9 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return AnalysisConfigBuilder
 	 */
 	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
-		$analysisConfigBuilder = new \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder( $langCode, $availablePlugins );
+		$analysisConfigBuilder = new \CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder(
+			$langCode, $availablePlugins
+		);
 		$this->outputIndented( 'Picking analyzer...' .
 			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
 		return $analysisConfigBuilder;
@@ -665,14 +707,16 @@ class UpdateSuggesterIndex extends Maintenance {
 		];
 
 		if ( $this->hasOption( 'allocationIncludeTag' ) ) {
-			$this->output( "Using routing.allocation.include.tag: {$this->getOption( 'allocationIncludeTag' )}, " .
-				"the index might be stuck in red if the cluster is not properly configured.\n" );
+			$this->output( "Using routing.allocation.include.tag: " .
+				"{$this->getOption( 'allocationIncludeTag' )}, the index might be stuck in red " .
+				"if the cluster is not properly configured.\n" );
 			$settings['routing.allocation.include.tag'] = $this->getOption( 'allocationIncludeTag' );
 		}
 
 		if ( $this->hasOption( 'allocationExcludeTag' ) ) {
-			$this->output( "Using routing.allocation.exclude.tag: {$this->getOption( 'allocationExcludeTag' )}, " .
-				"the index might be stuck in red if the cluster is not properly configured.\n" );
+			$this->output( "Using routing.allocation.exclude.tag: " .
+				"{$this->getOption( 'allocationExcludeTag' )}, the index might be stuck in red " .
+				"if the cluster is not properly configured.\n" );
 			$settings['routing.allocation.exclude.tag'] = $this->getOption( 'allocationExcludeTag' );
 		}
 
@@ -722,7 +766,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Waiting for the index to go green...\n" );
 		// Wait for the index to go green ( default 10 min)
 		if ( !$this->utils->waitForGreen( $this->getIndex()->getName(), $timeout ) ) {
-			$this->error( "Failed to wait for green... please check config and delete the {$this->getIndex()->getName()} index if it was created.", 1 );
+			$this->error( "Failed to wait for green... please check config and " .
+				"delete the {$this->getIndex()->getName()} index if it was created.", 1 );
 		}
 	}
 
@@ -748,7 +793,9 @@ class UpdateSuggesterIndex extends Maintenance {
 	 * @return \Elastica\Index being updated
 	 */
 	public function getIndex() {
-		return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexTypeName, $this->indexIdentifier );
+		return $this->getConnection()->getIndex(
+			$this->indexBaseName, $this->indexTypeName, $this->indexIdentifier
+		);
 	}
 
 	/**

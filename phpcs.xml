@@ -3,7 +3,6 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
-		<exclude name="Generic.Files.LineLength"/>
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures"/>
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
@@ -20,6 +19,12 @@
 		<properties>
 			<property name="ignoreList" type="array" value="main,curl_init_pooled" />
 		</properties>
+	</rule>
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="170" />
+		</properties>
+		<exclude-pattern>tests/unit/resources/wmf</exclude-pattern>
 	</rule>
 	<file>.</file>
 	<arg name="extensions" value="php,php5,inc"/>

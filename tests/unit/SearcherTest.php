@@ -52,6 +52,8 @@ class SearcherTest extends CirrusTestCase {
 	public function testSearchText( array $config, $expected, $queryString ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
+			'wgCirrusSearchExtraIndexes' => [],
+			'wgCirrusSearchExtraIndexBoostTemplates' => [],
 			'wgCirrusSearchIndexBaseName' => 'wiki',
 			'wgCirrusSearchUseExperimentalHighlighter' => true,
 			'wgCirrusSearchWikimediaExtraPlugin' => [

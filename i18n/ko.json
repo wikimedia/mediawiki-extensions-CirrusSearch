@@ -32,6 +32,7 @@
 	"apihelp-cirrus-settings-dump-summary": "이 위키의 CirrusSearch 설정의 덤프입니다.",
 	"apihelp-cirrus-settings-dump-example": "이 위키의 CirrusSearch 설정의 덤프를 가져옵니다.",
 	"cirrussearch-give-feedback": "의견을 주세요",
+	"cirrussearch-query-too-long": "검색 요청이 최대 허용 길이 보다 깁니다. ($1 > $2)",
 	"cirrussearch-completionsuggester-pref": "완성 제안 기능",
 	"cirrussearch-completionsuggester-desc": "새로운 검색 제안 알고리즘. 이 기능을 사용하면 우측 상단에 검색 제안 창이 나타납니다.",
 	"cirrussearch-completion-profile-strict": "엄격한 프로파일에서는 일부 문장기호들이 삭제되지만, 발음기호나 강세기호들은 보존합니다.",
@@ -68,5 +69,5 @@
 	"cirrussearch-explore-similar-languages": "언어",
 	"cirrussearch-explore-similar-related-none": "사용할 수 있는 관련 문서가 없음",
 	"cirrussearch-explore-similar-categories-none": "사용할 수 있는 분류 없음",
-	"cirrussearch-explore-similar-languages-none": "지역 언어에서 사용할 수 없음"
+	"cirrussearch-explore-similar-languages-none": "다른 언어에서 사용할 수 없음"
 }

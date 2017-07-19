@@ -3,7 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\Test\HashSearchConfig;
+use CirrusSearch\HashSearchConfig;
 
 /**
  * @group CirrusSearch

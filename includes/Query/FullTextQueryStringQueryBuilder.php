@@ -160,7 +160,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		}
 
 		// Note that no escaping is required for near_match's match query.
-		$nearMatchQuery = implode( ' ', $nearMatchQuery );
+		$nearMatchQuery = trim( implode( ' ', $nearMatchQuery ) );
 
 		$queryStringRegex =
 			'(' .

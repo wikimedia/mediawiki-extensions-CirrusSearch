@@ -187,7 +187,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "RevDelTest "
+                                "query": "RevDelTest"
                             }
                         },
                         {
@@ -462,7 +462,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "RevDelTest "
+                                "query": "RevDelTest"
                             }
                         },
                         {
@@ -753,7 +753,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "RevDelTest "
+                                "query": "RevDelTest"
                             }
                         },
                         {
@@ -1028,7 +1028,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "RevDelTest "
+                                "query": "RevDelTest"
                             }
                         },
                         {

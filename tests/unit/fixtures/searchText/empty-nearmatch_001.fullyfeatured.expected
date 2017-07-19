@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'catapult !\"two words\"~7~'",
+    "description": "full_text search for '\"xxxxxyyyyy\" \"yyyyyxxxxx\"'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -135,7 +135,7 @@
                     "fuzzy_prefix_length": 2,
                     "max_determinized_states": 500,
                     "phrase_slop": 1,
-                    "query": "catapult  NOT \"two words\"~7",
+                    "query": "(title.plain:\"xxxxxyyyyy\"~0^20 OR redirect.title.plain:\"xxxxxyyyyy\"~0^15 OR category.plain:\"xxxxxyyyyy\"~0^8 OR heading.plain:\"xxxxxyyyyy\"~0^5 OR opening_text.plain:\"xxxxxyyyyy\"~0^3 OR text.plain:\"xxxxxyyyyy\"~0^1 OR auxiliary_text.plain:\"xxxxxyyyyy\"~0^0.5)   (title.plain:\"yyyyyxxxxx\"~0^20 OR redirect.title.plain:\"yyyyyxxxxx\"~0^15 OR category.plain:\"yyyyyxxxxx\"~0^8 OR heading.plain:\"yyyyyxxxxx\"~0^5 OR opening_text.plain:\"yyyyyxxxxx\"~0^3 OR text.plain:\"yyyyyxxxxx\"~0^1 OR auxiliary_text.plain:\"yyyyyxxxxx\"~0^0.5)",
                     "rewrite": "top_terms_blended_freqs_1024"
                 }
             },
@@ -160,16 +160,7 @@
                         }
                     }
                 ],
-                "minimum_should_match": 1,
-                "should": [
-                    {
-                        "multi_match": {
-                            "fields": [
-                                "all_near_match^2"
-                            ],
-                            "query": "catapult"
-                        }
-                    },
+                "must": [
                     {
                         "query_string": {
                             "allow_leading_wildcard": true,
@@ -182,7 +173,7 @@
                             "fuzzy_prefix_length": 2,
                             "max_determinized_states": 500,
                             "phrase_slop": 0,
-                            "query": "catapult  NOT \"two words\"~7",
+                            "query": "(all.plain:\"xxxxxyyyyy\"~0^1)   (all.plain:\"yyyyyxxxxx\"~0^1)",
                             "rewrite": "top_terms_blended_freqs_1024"
                         }
                     }

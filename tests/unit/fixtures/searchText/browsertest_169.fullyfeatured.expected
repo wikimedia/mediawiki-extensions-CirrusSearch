@@ -178,16 +178,7 @@
                         }
                     }
                 ],
-                "minimum_should_match": 1,
-                "should": [
-                    {
-                        "multi_match": {
-                            "fields": [
-                                "all_near_match^2"
-                            ],
-                            "query": " "
-                        }
-                    },
+                "must": [
                     {
                         "query_string": {
                             "allow_leading_wildcard": true,

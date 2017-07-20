@@ -31,6 +31,12 @@ use MWNamespace;
  * Builds a rescore queries by reading a rescore profile.
  */
 class RescoreBuilder {
+
+	/**
+	 * @var int Maximum number of rescore profile fallbacks
+	 */
+	const FALLBACK_LIMIT = 4;
+
 	/**
 	 * List of allowed rescore params
 	 * @todo: refactor to const with php 5.6
@@ -63,9 +69,6 @@ class RescoreBuilder {
 		$this->context = $context;
 		if ( $profile === null ) {
 			$profile = $context->getRescoreProfile();
-		}
-		if ( is_string( $profile ) ) {
-			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profile );
 		}
 		$this->profile = $this->getSupportedProfile( $profile );
 	}
@@ -127,15 +130,65 @@ class RescoreBuilder {
 	/**
 	 * Inspect requested namespaces and return the supported profile
 	 *
-	 * @param array $profile
+	 * @param string $profile
 	 * @return array the supported rescore profile.
 	 * @throws InvalidRescoreProfileException
 	 */
-	private function getSupportedProfile( array $profile ) {
+	private function getSupportedProfile( $profileName ) {
+		if ( is_array( $profileName ) ) {
+			$profile = $profileName;
+			$profileName = '__provided__';
+		} else {
+			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
+		}
+
+		$seen = [];
+		while ( true ) {
+			$seen[$profileName] = true;
+			if ( count( $seen ) > self::FALLBACK_LIMIT ) {
+				throw new InvalidRescoreProfileException(
+					"Fell back more than " . self::FALLBACK_LIMIT . " times"
+				);
+			}
+
+			if ( ! $this->isProfileNamespaceSupported( $profile )
+				|| ! $this->isProfileSyntaxSupported( $profile )
+			) {
+				if ( ! isset( $profile['fallback_profile'] ) ) {
+					throw new InvalidRescoreProfileException(
+						"Invalid rescore profile: fallback_profile is mandatory "
+						. "if supported_namespaces is not 'all' or "
+						. "unsupported_syntax is not null."
+					);
+				}
+				$profileName = $profile['fallback_profile'];
+				if ( isset( $seen[$profileName] ) ) {
+					$chain = implode( '->', $seen ) . "->$profileName";
+					throw new InvalidRescoreProfileException( "Cycle in rescore fallbacks: $chain" );
+				}
+
+				$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
+				if ( !$profile ) {
+					throw new InvalidRescoreProfileException( "Unknown fallback profile: $profileName" );
+				}
+				continue;
+			}
+			return $profile;
+		}
+	}
+
+	/**
+	 * Check if a given profile supports the namespaces used by the current
+	 * search request.
+	 *
+	 * @param array $profile Profile to check
+	 * @return bool True is the profile supports current namespaces
+	 */
+	private function isProfileNamespaceSupported( array $profile ) {
 		if ( !is_array( $profile['supported_namespaces'] ) ) {
 			switch ( $profile['supported_namespaces'] ) {
 			case 'all':
-				return $profile;
+				return true;
 			case 'content':
 				$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
 				break;
@@ -146,41 +199,43 @@ class RescoreBuilder {
 			$profileNs = $profile['supported_namespaces'];
 		}
 
-		if ( ! isset( $profile['fallback_profile'] ) ) {
-			throw new InvalidRescoreProfileException( "Invalid rescore profile: fallback_profile is mandatory if supported_namespaces is not 'all'." );
-		}
-
 		$queryNs = $this->context->getNamespaces();
 
 		if ( !$queryNs ) {
 			// According to comments in Searcher if namespaces is
 			// not set we run the query on all namespaces
 			// @todo: verify comments.
-			return $this->getFallbackProfile( $profile['fallback_profile'] );
+			return false;
 		}
 
 		foreach ( $queryNs as $ns ) {
 			if ( !in_array( $ns, $profileNs ) ) {
-				return $this->getFallbackProfile( $profile['fallback_profile'] );
+				return false;
 			}
 		}
-		return $profile;
+
+		return true;
 	}
 
 	/**
-	 * @param string $profileName the profile to load
-	 * @return array the rescore profile identified by $profileName
-	 * @throws InvalidRescoreProfileException
+	 * Check if the given profile supports the syntax used by the
+	 * current search request.
+	 *
+	 * @param array $profile
+	 * @return bool
 	 */
-	private function getFallbackProfile( $profileName ) {
-		$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
-		if ( !$profile ) {
-			throw new InvalidRescoreProfileException( "Unknown fallback profile $profileName." );
+	private function isProfileSyntaxSupported( array $profile ) {
+		if ( !isset( $profile['unsupported_syntax'] ) ) {
+			return true;
 		}
-		if ( $profile['supported_namespaces'] !== 'all' ) {
-			throw new InvalidRescoreProfileException( "Fallback profile $profileName must support all namespaces." );
+
+		foreach ( $profile['unsupported_syntax'] as $reject ) {
+			if ( $this->context->isSyntaxUsed( $reject ) ) {
+				return false;
+			}
 		}
-		return $profile;
+
+		return true;
 	}
 }
 

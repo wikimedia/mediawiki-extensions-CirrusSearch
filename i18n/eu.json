@@ -8,6 +8,8 @@
 	},
 	"cirrussearch-pref-label": "Bilaketa berria",
 	"cirrussearch-give-feedback": "Egiguzu iruzkina",
+	"cirrussearch-qi-profile-classic": "Heldutako linketan oinarritutako sailkapena, batzuk eredu, orrialdearen hizkuntza eta recencya (eredua/hizkuntza/agian recencya ez dago aktibatuta wiki honetan).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Ereduan oinarritutako sailkapena, orrialdearen hizkuntza eta wiki honetan recencyak aktibatuta daudenean.",
 	"cirrussearch-explore-similar-related": "Erlazionatua",
 	"cirrussearch-explore-similar-categories": "Kategoriak",
 	"cirrussearch-explore-similar-languages": "Hizkuntzak",

@@ -199,7 +199,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "functional "
+                                "query": "functional"
                             }
                         },
                         {
@@ -486,7 +486,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "functional "
+                                "query": "functional"
                             }
                         },
                         {
@@ -789,7 +789,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "functional "
+                                "query": "functional"
                             }
                         },
                         {
@@ -1076,7 +1076,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "functional "
+                                "query": "functional"
                             }
                         },
                         {

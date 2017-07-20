@@ -46,8 +46,6 @@ abstract class Job extends MWJob {
 	private $allowRetries = true;
 
 	/**
-	 * Job constructor.
-	 *
 	 * @param Title $title
 	 * @param array $params
 	 */

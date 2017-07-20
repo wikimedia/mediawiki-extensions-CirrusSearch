@@ -21,18 +21,117 @@ namespace CirrusSearch\Api;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class ConfigDump extends ApiBase {
-	public function execute() {
-		global $wgCirrusSearchConfigDumpWhiteList;
+	public static $WHITE_LIST = [
+		'CirrusSearchServers',
+		'CirrusSearchConnectionAttempts',
+		'CirrusSearchSlowSearch',
+		'CirrusSearchUseExperimentalHighlighter',
+		'CirrusSearchOptimizeIndexForExperimentalHighlighter',
+		'CirrusSearchNamespaceMappings',
+		'CirrusSearchExtraIndexes',
+		'CirrusSearchUpdateShardTimeout',
+		'CirrusSearchClientSideUpdateTimeout',
+		'CirrusSearchSearchShardTimeout',
+		'CirrusSearchClientSizeSearchTimeout',
+		'CirrusSearchMaintenanceTimeout',
+		'CirrusSearchPrefixSearchStartsWithAnyWord',
+		'CirrusSearchPhraseSlop',
+		'CirrusSearchPhraseRescoreBoost',
+		'CirrusSearchPhraseRescoreWindowSize',
+		'CirrusSearchFunctionRescoreWindowSize',
+		'CirrusSearchMoreAccurateScoringMode',
+		'CirrusSearchPhraseSuggestUseText',
+		'CirrusSearchPhraseSuggestUseOpeningText',
+		'CirrusSearchIndexedRedirects',
+		'CirrusSearchLinkedArticlesToUpdate',
+		'CirrusSearchUnlikedArticlesToUpdate',
+		'CirrusSearchWeights',
+		'CirrusSearchAllFields',
+		'CirrusSearchBoostOpening',
+		'CirrusSearchNearMatchWeight',
+		'CirrusSearchStemmedWeight',
+		'CirrusSearchNamespaceWeights',
+		'CirrusSearchDefaultNamespaceWeight',
+		'CirrusSearchTalkNamespaceWeight',
+		'CirrusSearchLanguageWeight',
+		'CirrusSearchPreferRecentDefaultDecayPortion',
+		'CirrusSearchPreferRecentUnspecifiedDecayPortion',
+		'CirrusSearchPreferRecentDefaultHalfLife',
+		'CirrusSearchMoreLikeThisConfig',
+		'CirrusSearchInterwikiSources',
+		'CirrusSearchInterwikiCacheTime',
+		'CirrusSearchRefreshInterval',
+		'CirrusSearchFragmentSize',
+		'CirrusSearchMainPageCacheWarmer',
+		'CirrusSearchCacheWarmers',
+		'CirrusSearchBoostLinks',
+		'CirrusSearchIndexAllocation',
+		'CirrusSearchFullTextQueryBuilderProfile',
+		'CirrusSearchRescoreProfile',
+		'CirrusSearchPrefixSearchRescoreProfile',
+		'CirrusSearchSimilarityProfile',
+		'CirrusSearchCrossProjectProfiles',
+		'CirrusSearchCrossProjectOrder',
+		'CirrusSearchCrossProjectSearchBlackList',
+		'CirrusSearchExtraIndexBoostTemplates',
+		'CirrusSearchEnableCrossProjectSearch',
+		'CirrusSearchEnableAltLanguage',
+		'CirrusSearchEnableArchive',
+		'CirrusSearchUseIcuFolding',
+		'CirrusSearchUseIcuTokenizer',
+		// All the config below was added when moving this data
+		// from CirrusSearch config to a static array in this class
+		'CirrusSearchDevelOptions',
+		'CirrusSearchPrefixIds',
+		'CirrusSearchMoreLikeThisFields',
+		'CirrusSearchMoreLikeThisTTL',
+		'CirrusSearchFiletypeAliases',
+		'CirrusSearchDefaultCluster',
+		'CirrusSearchClientSideConnectTimeout',
+		'CirrusSearchClusters',
+		'CirrusSearchExtraBackendLatency',
+		'CirrusSearchAllowLeadingWildcard',
+		'CirrusSearchClientSideSearchTimeout',
+		'CirrusSearchStripQuestionMarks',
+		'CirrusSearchFullTextQueryBuilderProfiles',
+		'CirrusSearchEnableRegex',
+		'CirrusSearchWikimediaExtraPlugin',
+		'CirrusSearchRegexMaxDeterminizedStates',
+		'CirrusSearchMaxIncategoryOptions',
+		'CirrusSearchEnablePhraseSuggest',
+		'CirrusSearchClusterOverrides',
+		'CirrusSearchRescoreProfiles',
+		'CirrusSearchRescoreFunctionScoreChains',
+		'CirrusSearchNumCrossProjectSearchResults',
+		'CirrusSearchLanguageToWikiMap',
+		'CirrusSearchWikiToNameMap',
+		'CirrusSearchIncLinksAloneW',
+		'CirrusSearchIncLinksAloneK',
+		'CirrusSearchIncLinksAloneA',
+		'CirrusSearchNewCrossProjectPage',
+		'CirrusSearchQueryStringMaxDeterminizedStates',
+		'CirrusSearchElasticQuirks',
+		'CirrusSearchPhraseSuggestSettings',
+		'CirrusSearchPhraseSuggestMaxErrors',
+		'CirrusSearchPhraseSuggestReverseField',
+		'CirrusSearchBoostTemplates',
+		'CirrusSearchIgnoreOnWikiBoostTemplates',
+		'CirrusSearchAllFieldsForRescore',
+		'CirrusSearchIndexBaseName',
+		'LanguageCode',
+		'ContentNamespaces',
+	];
 
-		$prefix = 'wgCirrusSearch';
+	public function execute() {
+		$prefix = 'wg';
 		foreach ( $GLOBALS as $key => $value ) {
 			// Only output cirrus configuration
 			if ( strpos( $key, $prefix ) === false ) {
 				continue;
 			}
-			$key = lcfirst( substr( $key, strlen( $prefix ) ) );
 			// Only output the whitelisted cirrus configuration
-			if ( in_array( $key, $wgCirrusSearchConfigDumpWhiteList ) ) {
+			$key = substr( $key, strlen( $prefix ) );
+			if ( in_array( $key, self::$WHITE_LIST ) ) {
 				$this->getResult()->addValue( null, $key, $value );
 			}
 		}

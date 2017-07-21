@@ -332,7 +332,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'only custom is updated' => [
+			'only tokenizer is updated' => [
 				[
 					'analyzer' => [
 						'chinese' => [

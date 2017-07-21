@@ -6,7 +6,6 @@ use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\Search\CirrusIndexField;
-use ParserCache;
 use TextContent;
 use Title;
 use WikiPage;

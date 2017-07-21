@@ -407,7 +407,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateSpecificAlias() {
 		$connection = $this->getConnection();
 
-		$fieldsToDeleteString = $this->getOption( 'fieldsToDelete', '' );
 		$reindexer = new Reindexer(
 			$this->getSearchConfig(),
 			$connection,

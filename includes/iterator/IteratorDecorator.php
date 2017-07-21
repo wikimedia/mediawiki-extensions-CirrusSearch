@@ -24,11 +24,11 @@ abstract class IteratorDecorator implements Iterator {
 	}
 
 	public function next() {
-		return $this->iterator->next();
+		$this->iterator->next();
 	}
 
 	public function rewind() {
-		return $this->iterator->rewind();
+		$this->iterator->rewind();
 	}
 
 	public function valid() {

@@ -123,16 +123,10 @@ class ConfigDump extends ApiBase {
 	];
 
 	public function execute() {
-		$prefix = 'wg';
-		foreach ( $GLOBALS as $key => $value ) {
-			// Only output cirrus configuration
-			if ( strpos( $key, $prefix ) === false ) {
-				continue;
-			}
-			// Only output the whitelisted cirrus configuration
-			$key = substr( $key, strlen( $prefix ) );
-			if ( in_array( $key, self::$WHITE_LIST ) ) {
-				$this->getResult()->addValue( null, $key, $value );
+		$config = $this->getConfig();
+		foreach ( self::$WHITE_LIST as $key ) {
+			if ( $config->has( $key ) ) {
+				$this->getResult()->addValue( null, $key, $config->get( $key ) );
 			}
 		}
 	}

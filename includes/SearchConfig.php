@@ -32,7 +32,7 @@ class SearchConfig implements \Config {
 	 * Wiki variables prefix.
 	 * @var string
 	 */
-	private $prefix = '';
+	protected $prefix = '';
 
 	/**
 	 * Wiki id or null for current wiki

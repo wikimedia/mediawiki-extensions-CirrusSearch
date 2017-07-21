@@ -51,6 +51,9 @@ class OtherIndex extends Job {
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		$titles = [];
 		foreach ( $this->params[ 'titles' ] as $titleArr ) {
@@ -63,5 +66,7 @@ class OtherIndex extends Job {
 		}
 		$otherIdx = new OtherIndexes( $this->connection, $this->searchConfig, $flags, wfWikiID() );
 		$otherIdx->updateOtherIndex( $titles );
+
+		return true;
 	}
 }

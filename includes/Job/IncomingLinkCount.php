@@ -25,6 +25,9 @@ class IncomingLinkCount extends Job {
 		parent::__construct( $title, $params );
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		// Load the titles and filter out any that no longer exist.
 		$updater = $this->createUpdater();

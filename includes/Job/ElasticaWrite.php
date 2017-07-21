@@ -60,6 +60,9 @@ class ElasticaWrite extends Job {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );

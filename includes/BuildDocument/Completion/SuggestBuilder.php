@@ -268,8 +268,6 @@ class SuggestBuilder {
 	 *
 	 * @param string $suggestionType suggestion type (title or redirect)
 	 * @param string $docId The document id
-	 * @param string[] $titles the suggestion titles
-	 * @param string $type suggestion type
 	 * @param string[] $inputs the suggestion inputs
 	 * @param int $score the weight of the suggestion
 	 * @param mixed[] $inputDoc

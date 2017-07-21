@@ -42,6 +42,9 @@ class LinksUpdate extends Job {
 		// be confusing.
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		global $wgCirrusSearchRefreshInterval;
 

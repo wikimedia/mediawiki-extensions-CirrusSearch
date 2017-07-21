@@ -88,7 +88,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			return false;
 		}
 		foreach ( self::$externalLinks as $conn ) {
-			self::$externalLinks[$conn]->realFinishBatch( $pages );
+			/** @var self $instance */
+			$instance = self::$externalLinks[$conn];
+			$instance->realFinishBatch( $pages );
 		}
 		self::$externalLinks = null;
 		return true;

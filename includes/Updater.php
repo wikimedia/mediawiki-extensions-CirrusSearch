@@ -306,7 +306,7 @@ class Updater extends ElasticsearchIntermediary {
 			$doc = new \Elastica\Document( $delete['page'], [
 				'namespace' => $title->getNamespace(),
 				'title' => $title->getText(),
-				'wiki' => wfWikiId(),
+				'wiki' => wfWikiID(),
 			] );
 			$doc->setDocAsUpsert( true );
 			$doc->setRetryOnConflict( $this->searchConfig->getElement( 'CirrusSearchUpdateConflictRetryCount' ) );

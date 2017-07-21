@@ -39,7 +39,6 @@ class InterwikiSearcher extends Searcher {
 	private $highlightingConfig;
 
 	/**
-	 * Constructor
 	 * @param Connection $connection
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them

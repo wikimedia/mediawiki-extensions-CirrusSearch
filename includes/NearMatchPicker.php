@@ -39,8 +39,6 @@ class NearMatchPicker {
 	private $titles;
 
 	/**
-	 * Constructor
-	 *
 	 * @param Language $language to use during normalization process
 	 * @param string $term the search term
 	 * @param array[] $titles Array of arrays, each with optional keys:

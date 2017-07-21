@@ -40,8 +40,6 @@ abstract class Builder {
 	protected $title;
 
 	/**
-	 * Constructor
-	 *
 	 * @param \Elastica\Document $doc The document we will be building on
 	 * @param Title|null $title The title to build a document for
 	 */
@@ -73,8 +71,6 @@ abstract class ParseBuilder extends Builder {
 	protected $parserOutput;
 
 	/**
-	 * Constructor
-	 *
 	 * @param \Elastica\Document $doc The document we will be building on
 	 * @param Title|null $title The title to build a document for
 	 * @param Content $content The page content to build a document from

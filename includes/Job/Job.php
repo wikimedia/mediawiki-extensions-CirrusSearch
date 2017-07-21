@@ -76,12 +76,14 @@ abstract class Job extends MWJob {
 
 	/**
 	 * Some boilerplate stuff for all jobs goes here
+	 *
+	 * @return bool
 	 */
 	public function run() {
 		global $wgDisableSearchUpdate, $wgPoolCounterConf;
 
 		if ( $wgDisableSearchUpdate ) {
-			return;
+			return true;
 		}
 
 		// Make sure we don't flood the pool counter.  This is safe since this is only used

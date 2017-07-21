@@ -225,7 +225,7 @@
 						titles: articleTitle,
 						prop: 'langlinks',
 						llprop: 'url|autonym',
-						lllimit: '500',
+						lllimit: '500'
 					}
 				},
 				filterApiResponse: function ( reqResponse ) {

@@ -154,7 +154,7 @@ class SourceRegex extends AbstractQuery {
 	*  generated from extracted ngrams.
 	* @return self
 	*/
-	public function setMaxNgramClauses( int $maxNgramClauses ) {
+	public function setMaxNgramClauses( $maxNgramClauses ) {
 		return $this->setParam( 'max_ngram_clauses', $maxNgramClauses );
 	}
 

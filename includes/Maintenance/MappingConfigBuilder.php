@@ -64,7 +64,6 @@ class MappingConfigBuilder {
 	private $searchIndexFieldFactory;
 
 	/**
-	 * Constructor
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
 	 * @param SearchConfig $config
 	 */

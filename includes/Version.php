@@ -25,7 +25,6 @@ use Status;
  */
 class Version extends ElasticsearchIntermediary {
 	/**
-	 * Constructor
 	 * @param Connection $conn
 	 */
 	public function __construct( Connection $conn ) {

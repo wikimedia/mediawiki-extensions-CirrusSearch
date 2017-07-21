@@ -103,7 +103,6 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	private $settings;
 
 	/**
-	 * Constructor
 	 * @param Connection $conn
 	 * @param int $limit Limit the results to this many
 	 * @param int $offset the offset

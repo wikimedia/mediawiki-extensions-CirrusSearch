@@ -36,7 +36,6 @@ class SuggesterMappingConfigBuilder {
 	private $config;
 
 	/**
-	 * Constructor
 	 * @param SearchConfig $config
 	 */
 	public function __construct( SearchConfig $config = null ) {

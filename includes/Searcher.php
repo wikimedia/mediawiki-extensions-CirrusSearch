@@ -132,7 +132,6 @@ class Searcher extends ElasticsearchIntermediary {
 	private $pageType;
 
 	/**
-	 * Constructor
 	 * @param Connection $conn
 	 * @param int $offset Offset the results by this much
 	 * @param int $limit Limit the results to this many

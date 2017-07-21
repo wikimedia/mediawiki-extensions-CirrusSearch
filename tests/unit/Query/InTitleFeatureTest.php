@@ -12,7 +12,7 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		$defaults = [
-			'fields' => [ 'title' ],
+			'fields' => [ 'title', 'redirect.title' ],
 			'default_operator' => 'AND',
 			'allow_leading_wildcard' => true,
 			'fuzzy_prefix_length' => 2,
@@ -50,6 +50,15 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 				'"something or other" ',
 				false,
 				'intitle:"something or other"',
+			],
+			'contains a star' => [
+				[ 'query_string' => [
+					'query' => 'zomg*',
+					'fields' => [ 'title.plain', 'redirect.title.plain' ],
+				] + $defaults ],
+				'zomg* ',
+				false,
+				'intitle:zomg*'
 			],
 		];
 	}

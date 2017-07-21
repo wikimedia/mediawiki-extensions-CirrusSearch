@@ -45,7 +45,7 @@ class SearchContext {
 	private $boostTemplatesFromQuery;
 
 	/**
-	 * @var array set of per-wiki template boosts from extra index handling
+	 * @var array[] set of per-wiki template boosts from extra index handling
 	 */
 	private $extraIndexBoostTemplates = [];
 
@@ -274,7 +274,7 @@ class SearchContext {
 	/**
 	 * Returns list of boosted templates specified by extra indexes query.
 	 *
-	 * @return array Map from wiki id to list of templates to boost
+	 * @return array[] Map from wiki id to list of templates to boost
 	 *  within that wiki
 	 */
 	public function getExtraIndexBoostTemplates() {
@@ -282,8 +282,8 @@ class SearchContext {
 	}
 
 	/**
-	 * @param string $index Index to boost templates within
-	 * @param array Map from template name to weight to apply to that template
+	 * @param string $wiki Index to boost templates within
+	 * @param float[] $extraIndexBoostTemplates Map from template name to weight to apply to that template
 	 */
 	public function addExtraIndexBoostTemplates( $wiki, array $extraIndexBoostTemplates ) {
 		$this->extraIndexBoostTemplates[$wiki] = $extraIndexBoostTemplates;

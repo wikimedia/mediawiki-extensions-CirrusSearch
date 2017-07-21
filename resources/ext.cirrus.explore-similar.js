@@ -81,10 +81,10 @@
 		 *     $('...').append( templateEl );
 		 * })
 		 * ```
-		 * @param {Object}   config
-		 * @param {Object}   config.apiConfig - An object containing a url and params property to fetch.
-		 * @param {function} config.template - A mustache template string.
-		 * @param {function} config.filterApiResponse - function that manipulates AJAX return data and returns data suitable
+		 * @param {Object} userConf
+		 * @param {Object} userConf.apiConfig - An object containing a url and params property to fetch.
+		 * @param {function} userConf.template - A mustache template string.
+		 * @param {function} userConf.filterApiResponse - function that manipulates AJAX return data and returns data suitable
 		 * 						for usage in template.
 		 * @returns {Object} - Returns an object with a single method: getData(). This function returns a promise object
 		 * 						suitable for chaining. ex: getData().then()...
@@ -356,9 +356,8 @@
 		/**
 		 * Instantiates Explore Similar buttons and adds their necessary behaviour.
 		 * Returns a jQuery object containing the Explore Similar HTML to be inserted into DOM.
-		 * @param {*}
-		 * @param {Object}
-		 * @param {String} resultTitle
+		 * @param {jQuery} $searchResult
+		 * @param {string} resultTitle
 		 */
 		function ExploreSimilarButton( $searchResult, resultTitle ) {
 
@@ -424,8 +423,8 @@
 			 * Button can be animated slowely or quickly depending on wether
 			 * it's the first button in the set the user hovers over.
 			 *
-			 * @param {Object} - button element wrapped in jQuery object
-			 * @param {Integer} delay - delay with which content should appear.
+			 * @param {jQuery} $this - button element wrapped in jQuery object
+			 * @param {number} delay - delay with which content should appear.
 			 */
 			function animateButton( $this, delay ) {
 				$( '.' + cssClasses.button ).removeClass( cssClasses.activeButton + ' , ' + cssClasses.activeSlowButton );
@@ -467,16 +466,16 @@
 			 *             Defined as the 'es-content' attribute in the template string.
 			 *  - results: Number of explore similar results.
 			 *
-			 * @param {Object} $button - Button element wrapped in jQuery.
-			 * @param {String} state - 'open' || 'close' || 'click'.
-			 * @param {Object} $eventTarget - $(event.target) passed from event callback.
+			 * @param {jQuery} $button - Button element wrapped in jQuery.
+			 * @param {string} state - 'open' || 'close' || 'click'.
+			 * @param {jQuery} [$eventTarget] - $(event.target) passed from event callback.
 			 *                                Only passed on click event since $button should
 			 *                                the event that triggers the 'open' event.
-			 * @param {Object} $clickTarget - $(this) passed from event callback. Should be
+			 * @param {jQuery} [$clickTarget] - $(this) passed from event callback. Should be
 			 *                                one of the explore similar results. Only passed
 			 *                                on click event.
 			 **/
-			function triggerCustomEvent( $button, state, eventTarget, $clickTarget ) {
+			function triggerCustomEvent( $button, state, $eventTarget, $clickTarget ) {
 				var templateItems = $template.find(
 						'.' + cssClasses.langLink +
 						', .' + cssClasses.relatedPage +
@@ -485,7 +484,7 @@
 						hoverId: $button.data( 'hover-id' ),
 						section: $button.data( 'es-content' ),
 						results: templateItems.length,
-						eventTarget: eventTarget
+						eventTarget: $eventTarget
 					};
 				if ( state === 'click' && $clickTarget.is( '.' + cssClasses.langLink ) ) {
 					eventParams.result = $clickTarget.data( 'lang' );

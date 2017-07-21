@@ -42,6 +42,9 @@ class DeletePages extends Job {
 		$this->removeDuplicates = false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		global $wgCirrusSearchIndexDeletes;
 		$updater = $this->createUpdater();

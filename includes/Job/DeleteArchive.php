@@ -16,6 +16,9 @@ class DeleteArchive extends Job {
 		$this->removeDuplicates = false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function doJob() {
 		$archive = new \PageArchive( $this->title );
 		$docs = $this->params['docIds'];

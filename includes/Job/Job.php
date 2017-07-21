@@ -146,6 +146,8 @@ abstract class Job extends MWJob {
 
 	/**
 	 * Actually perform the labor of the job
+	 *
+	 * @return bool
 	 */
 	abstract protected function doJob();
 

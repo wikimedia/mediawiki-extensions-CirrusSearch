@@ -37,10 +37,12 @@
 	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de completamento] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
 	"cirrussearch-completion-profile-strict-pref-name": "Strict mode (avançado)",
+	"cirrussearch-completion-profile-normal-pref-name": "Modo de redirecionamento (avançado)",
 	"cirrussearch-pref-completion-legacy-section-desc": "Pesquisar prefixo",
 	"cirrussearch-completion-profile-classic-pref-name": "Pesquisar de prefixo classica",
 	"cirrussearch-explore-similar-related": "Relacionado",
 	"cirrussearch-explore-similar-categories": "Categorias",
 	"cirrussearch-explore-similar-languages": "Idiomas",
+	"cirrussearch-explore-similar-related-none": "Nenhuma página relacionada disponível",
 	"cirrussearch-explore-similar-categories-none": "Nenhuma categoria disponível"
 }

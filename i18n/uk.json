@@ -7,7 +7,8 @@
 			"Base",
 			"Dars",
 			"Piramidion",
-			"Similartothissimilartothat"
+			"Similartothissimilartothat",
+			"SimondR"
 		]
 	},
 	"cirrussearch-desc": "Пошук для MediaWiki на базі Elasticsearch",
@@ -78,5 +79,7 @@
 	"cirrussearch-feature-too-many-conditions": "Надто багато умов надано для «$1», обрізаємо до $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Не задано жодних дійсних категорій для «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Не задано жодних дійсних назв для «$1».",
-	"cirrussearch-mlt-not-configured": "Функція «$1» неправильно налаштована. Попросіть адміністратора виправити $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "Функція «$1» неправильно налаштована. Попросіть адміністратора виправити $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-categories": "Категорії",
+	"cirrussearch-explore-similar-languages": "Мови"
 }

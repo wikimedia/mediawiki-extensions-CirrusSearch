@@ -73,12 +73,12 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * @var integer search offset
 	 */
-	private $offset;
+	protected $offset;
 
 	/**
 	 * @var integer maximum number of result
 	 */
-	private $limit;
+	protected $limit;
 
 	/**
 	 * @var Language language of the wiki

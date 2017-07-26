@@ -169,6 +169,7 @@
                                         "allow_leading_wildcard": true,
                                         "default_operator": "AND",
                                         "fields": [
+                                            "redirect.title",
                                             "title"
                                         ],
                                         "fuzzy_prefix_length": 2,

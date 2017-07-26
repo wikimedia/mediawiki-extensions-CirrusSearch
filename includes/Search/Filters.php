@@ -145,7 +145,7 @@ class Filters {
 	 */
 	public static function insource( Escaper $escaper, SearchContext $context, $value ) {
 		return self::insourceOrIntitle( $escaper, $context, $value, function () {
-			return 'source_text.plain';
+			return [ 'source_text.plain' ];
 		} );
 	}
 
@@ -161,9 +161,9 @@ class Filters {
 	public static function intitle( Escaper $escaper, SearchContext $context, $value ) {
 		return self::insourceOrIntitle( $escaper, $context, $value, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
-				return 'title.plain';
+				return [ 'title.plain', 'redirect.title.plain' ];
 			} else {
-				return 'title';
+				return [ 'title', 'redirect.title' ];
 			}
 		} );
 	}
@@ -180,7 +180,7 @@ class Filters {
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
 		$query = new \Elastica\Query\QueryString( $queryString );
-		$query->setFields( [ $field ] );
+		$query->setFields( $field );
 		$query->setDefaultOperator( 'AND' );
 		$query->setAllowLeadingWildcard( $escaper->getAllowLeadingWildcard() );
 		$query->setFuzzyPrefixLength( 2 );

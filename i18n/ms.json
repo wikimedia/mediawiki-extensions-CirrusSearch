@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Anakmalaysia",
-			"Aviator"
+			"Aviator",
+			"Jeluang Terluang"
 		]
 	},
 	"cirrussearch-desc": "Enjin pencarian yang dikuasakan oleh Elasticsearch untuk MediaWiki",
@@ -11,6 +12,6 @@
 	"cirrussearch-too-busy-error": "Enjin carian sekarang terlalu sibuk. Sila cuba lagi nanti.",
 	"cirrussearch-regex-too-busy-error": "Terlalu banyak pencarian ungkapan nalar yang sedang dijalankan. Sila cuba lagi nanti.",
 	"cirrussearch-now-using": "Wiki ini sedang menggunakan enjin pencarian baru. ([[mw:Special:MyLanguage/Help:CirrusSearch|Ketahui lebih lanjut]])",
-	"cirrussearch-ignored-headings": " #<!-- jangan usik baris ini --> <pre>\n# Tajuk yang akan diabaikan oleh pencarian.\n# Suntingannya diperlakukan sebaik sahaja laman yang bertajuk ini diindekskan.\n# Anda boleh memaksakan pengindeksan semula laman dengan melakukan suntingan nol (null edit).\n# Sintaks adalah seperti berikut:\n#   * Semuanya dari aksara \"#\" ke hujung baris dikira komen.\n#   * Setiap baris tak kosong adalah tajuk yang setepatnya untuk diabaikan.\nRujukan\nPautan luar\nLihat juga\n #</pre> <!-- jangan usik baris ini -->",
+	"cirrussearch-ignored-headings": " #<!-- jangan usik baris ini --> <pre>\n# Tajuk yang akan diabaikan oleh pencarian.\n# Suntingannya diperlakukan sebaik sahaja laman yang bertajuk ini diindekskan.\n# Anda boleh memaksakan pengindeksan semula laman dengan melakukan suntingan nol (null edit).\n# Sintaks adalah seperti berikut:\n#   * Semuanya dari aksara \"#\" ke hujung baris dikira komen.\n#   * Setiap baris tak kosong ialah tajuk yang setepatnya untuk diabaikan.\nRujukan\nPautan luar\nLihat juga\n #</pre> <!-- jangan usik baris ini -->",
 	"cirrussearch-pref-label": "Carian baru"
 }

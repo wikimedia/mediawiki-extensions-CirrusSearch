@@ -148,12 +148,12 @@ abstract class Maintenance extends \Maintenance {
 	 */
 	public function loadSpecialVars() {
 		parent::loadSpecialVars();
-		if ( Maintenance::$indent === null ) {
+		if ( self::$indent === null ) {
 			// First script gets no indentation
-			Maintenance::$indent = '';
+			self::$indent = '';
 		} else {
 			// Others get one tab beyond the last
-			Maintenance::$indent = Maintenance::$indent . "\t";
+			self::$indent = self::$indent . "\t";
 		}
 	}
 
@@ -162,7 +162,7 @@ abstract class Maintenance extends \Maintenance {
 	 * the next one gets the right indentation.
 	 */
 	public function done() {
-		Maintenance::$indent = substr( Maintenance::$indent, 1 );
+		self::$indent = substr( self::$indent, 1 );
 	}
 
 	/**
@@ -174,7 +174,7 @@ abstract class Maintenance extends \Maintenance {
 	}
 
 	public function outputIndented( $message ) {
-		$this->output( Maintenance::$indent . $message );
+		$this->output( self::$indent . $message );
 	}
 
 	/**

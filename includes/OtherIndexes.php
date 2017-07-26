@@ -87,7 +87,7 @@ class OtherIndexes extends Updater {
 		$findIdsMultiSearch = new MultiSearch( $this->connection->getClient() );
 		$findIdsClosures = [];
 		foreach ( $titles as $title ) {
-			foreach ( OtherIndexes::getExternalIndexes( $title ) as $otherIndex ) {
+			foreach ( self::getExternalIndexes( $title ) as $otherIndex ) {
 				if ( $otherIndex === null ) {
 					continue;
 				}

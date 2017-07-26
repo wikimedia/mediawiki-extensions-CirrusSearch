@@ -6,7 +6,6 @@
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures"/>
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
-		<exclude name="MediaWiki.Usage.ReferenceThis.Found"/>
 		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
 		<exclude name="MediaWiki.Commenting.FunctionComment"/>
 	</rule>
@@ -29,7 +28,5 @@
 	<file>.</file>
 	<arg name="extensions" value="php,php5,inc"/>
 	<arg name="encoding" value="UTF-8"/>
-	<exclude-pattern>vendor</exclude-pattern>
-	<exclude-pattern>node_modules</exclude-pattern>
 	<exclude-pattern>tests/phan</exclude-pattern>
 </ruleset>

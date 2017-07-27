@@ -169,7 +169,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "Rescore"
+                                "query": "Rescore "
                             }
                         },
                         {
@@ -425,7 +425,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "Rescore"
+                                "query": "Rescore "
                             }
                         },
                         {
@@ -697,7 +697,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "Rescore"
+                                "query": "Rescore "
                             }
                         },
                         {
@@ -953,7 +953,7 @@
                                 "fields": [
                                     "all_near_match^2"
                                 ],
-                                "query": "Rescore"
+                                "query": "Rescore "
                             }
                         },
                         {

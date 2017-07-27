@@ -199,7 +199,7 @@
                             "fields": [
                                 "all_near_match^2"
                             ],
-                            "query": "programming"
+                            "query": " programming"
                         }
                     },
                     {

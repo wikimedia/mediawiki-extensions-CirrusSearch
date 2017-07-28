@@ -197,6 +197,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -418,6 +419,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -623,6 +625,7 @@
             "size": 5,
             "stats": [
                 "boost-templates",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -828,6 +831,7 @@
             "size": 20,
             "stats": [
                 "boost-templates",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [

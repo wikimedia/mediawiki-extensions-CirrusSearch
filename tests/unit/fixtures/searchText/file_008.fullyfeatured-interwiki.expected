@@ -210,6 +210,7 @@
             "size": 5,
             "stats": [
                 "fileh",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -444,6 +445,7 @@
             "size": 5,
             "stats": [
                 "fileh",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -662,6 +664,7 @@
             "size": 5,
             "stats": [
                 "fileh",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [
@@ -880,6 +883,7 @@
             "size": 20,
             "stats": [
                 "fileh",
+                "filter_only",
                 "full_text"
             ],
             "stored_fields": [

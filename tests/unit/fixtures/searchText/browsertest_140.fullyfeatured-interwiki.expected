@@ -215,6 +215,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "incategory"
             ],
@@ -455,6 +456,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "incategory"
             ],
@@ -679,6 +681,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "incategory"
             ],
@@ -903,6 +906,7 @@
             ],
             "size": 20,
             "stats": [
+                "filter_only",
                 "full_text",
                 "incategory"
             ],

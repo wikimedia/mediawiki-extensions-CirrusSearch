@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Elastica\LtrQuery;
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\AbstractQuery;
@@ -50,6 +51,7 @@ class RescoreBuilder {
 	];
 
 	const FUNCTION_SCORE_TYPE = "function_score";
+	const LTR_TYPE = "ltr";
 
 	/**
 	 * @var SearchContext
@@ -99,7 +101,7 @@ class RescoreBuilder {
 	 * builds the 'query' attribute by reading type
 	 *
 	 * @param array $rescoreDef
-	 * @return FunctionScore|null the rescore query
+	 * @return AbstractQuery|null the rescore query
 	 * @throws InvalidRescoreProfileException
 	 */
 	private function buildRescoreQuery( array $rescoreDef ) {
@@ -107,6 +109,11 @@ class RescoreBuilder {
 		case self::FUNCTION_SCORE_TYPE:
 			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
 			return $funcChain->buildRescoreQuery();
+		case self::LTR_TYPE:
+			return new LtrQuery( $rescoreDef['model'], [
+				// TODO: These params probably shouldn't be hard coded
+				'query_string' => $this->context->getCleanedSearchTerm(),
+			] );
 		default:
 			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
 		}

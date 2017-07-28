@@ -173,6 +173,11 @@ class SearchContext {
 	private $originalSearchTerm;
 
 	/**
+	 * @var string The users search term with keywords removed
+	 */
+	private $cleanedSearchTerm;
+
+	/**
 	 * @var Escaper $escaper
 	 */
 	private $escaper;
@@ -803,6 +808,21 @@ class SearchContext {
 		// Intentionally does not set dirty to true. This is used only
 		// for logging, as of july 2017.
 		$this->originalSearchTerm = $term;
+	}
+
+	/**
+	 * @return string The search term with keywords removed
+	 */
+	public function getCleanedSearchTerm() {
+		return $this->cleanedSearchTerm;
+	}
+
+	/**
+	 * @param string The search term with keywords removed
+	 */
+	public function setCleanedSearchTerm( $term ) {
+		$this->isDirty = true;
+		$this->cleanedSearchTerm = $term;
 	}
 
 	/**

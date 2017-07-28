@@ -209,6 +209,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "linksto"
             ],
@@ -443,6 +444,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "linksto"
             ],
@@ -661,6 +663,7 @@
             ],
             "size": 5,
             "stats": [
+                "filter_only",
                 "full_text",
                 "linksto"
             ],
@@ -879,6 +882,7 @@
             ],
             "size": 20,
             "stats": [
+                "filter_only",
                 "full_text",
                 "linksto"
             ],

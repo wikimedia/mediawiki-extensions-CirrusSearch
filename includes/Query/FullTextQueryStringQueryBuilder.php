@@ -155,8 +155,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		list( $this->queryStringQueryString, $fuzzyQuery ) =
 			$searchContext->escaper()->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
 		$searchContext->setFuzzyQuery( $fuzzyQuery );
+		$searchContext->setCleanedSearchTerm( $this->queryStringQueryString );
 
 		if ( $this->queryStringQueryString === '' ) {
+			$searchContext->addSyntaxUsed( 'filter_only' );
 			return;
 		}
 
@@ -561,7 +563,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * query (['escaped'=>'stuff','nonAll'=>'stuff']). If nonAll is not set
 	 * the escaped query will be used.
 	 *
-	 * Piees of $queryPart that do not match the provided $regex are tagged
+	 * Pieces of $queryPart that do not match the provided $regex are tagged
 	 * as 'raw' and may see further parsing. $callable receives pieces of
 	 * the string that match the regex and must return either a raw or escaped
 	 * query piece.

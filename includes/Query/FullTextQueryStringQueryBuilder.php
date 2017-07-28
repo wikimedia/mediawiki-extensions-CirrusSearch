@@ -89,6 +89,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 					$phraseMatch = new \Elastica\Query\MatchPhrasePrefix();
 					$phraseMatch->setFieldQuery( "all.plain", $matches[1] );
 					$searchContext->addNonTextQuery( $phraseMatch );
+					$searchContext->addSyntaxUsed( 'phrase_match_prefix' );
 
 					$phraseHighlightMatch = new \Elastica\Query\QueryString();
 					$phraseHighlightMatch->setQuery( $matches[1] . '*' );

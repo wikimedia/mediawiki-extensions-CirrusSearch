@@ -214,7 +214,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "phrase_match_prefix"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -452,7 +453,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "phrase_match_prefix"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -674,7 +676,8 @@
             ],
             "size": 5,
             "stats": [
-                "full_text"
+                "full_text",
+                "phrase_match_prefix"
             ],
             "stored_fields": [
                 "text.word_count"
@@ -896,7 +899,8 @@
             ],
             "size": 20,
             "stats": [
-                "full_text"
+                "full_text",
+                "phrase_match_prefix"
             ],
             "stored_fields": [
                 "text.word_count"

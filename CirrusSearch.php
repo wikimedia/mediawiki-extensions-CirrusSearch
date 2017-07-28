@@ -1405,6 +1405,15 @@ $wgCirrusSearchIndexDeletes = false;
  */
 $wgCirrusSearchEnableArchive = false;
 
+/**
+ * Map of configuration variable name to value used to override cirrus config
+ * during interleaved full text search. Generally this should *not* be set
+ * directly, and instead set via $wgCirrusSearchUserTesting triggers. It is
+ * useful to perform Team-Draft interleaved search experiments to compare the
+ * performance of two different search configurations.
+ */
+$wgCirrusSearchInterleaveConfig = null;
+
 /*
  * Please update docs/settings.txt if you add new values!
  */

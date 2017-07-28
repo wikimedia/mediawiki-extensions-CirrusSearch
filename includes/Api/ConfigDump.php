@@ -118,6 +118,7 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchIgnoreOnWikiBoostTemplates',
 		'CirrusSearchAllFieldsForRescore',
 		'CirrusSearchIndexBaseName',
+		'CirrusSearchInterleaveConfig',
 		'LanguageCode',
 		'ContentNamespaces',
 	];

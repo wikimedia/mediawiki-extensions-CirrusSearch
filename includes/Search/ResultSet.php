@@ -103,6 +103,28 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
+	 * Copy object state into another object
+	 *
+	 * Copies the state of this object into another class
+	 * (likely extendde from this class). Used in place of a decorator
+	 * because core does not expose an interface for this, and we cannot
+	 * otherwise satisfy type constraints matching this class.
+	 *
+	 * @param ResultSet $other
+	 */
+	protected function copyTo( ResultSet $other ) {
+		$other->result = $this->result;
+		$other->hits = $this->hits;
+		$other->totalHits = $this->totalHits;
+		$other->suggestionQuery = $this->suggestionQuery;
+		$other->suggestionSnippet = $this->suggestionSnippet;
+		$other->searchContainedSyntax = $this->searchContainedSyntax;
+		$other->interwikiResults = $this->interwikiResults;
+		$other->rewrittenQuery = $this->rewrittenQuery;
+		$other->rewrittenQuerySnippet = $this->rewrittenQuerySnippet;
+	}
+
+	/**
 	 * Is rewriting this query OK?
 	 *
 	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.

@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'intitle:catapul* amaz*'",
+    "description": "full_text search for '\"xxxxxyyyyy\" \"yyyyyxxxxx\"'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -135,7 +135,7 @@
                     "fuzzy_prefix_length": 2,
                     "max_determinized_states": 500,
                     "phrase_slop": 1,
-                    "query": "(title.plain:catapul*^20 OR all.plain:catapul*)   (title.plain:amaz*^20 OR all.plain:amaz*)",
+                    "query": "(title.plain:\"xxxxxyyyyy\"~0^20 OR redirect.title.plain:\"xxxxxyyyyy\"~0^15 OR category.plain:\"xxxxxyyyyy\"~0^8 OR heading.plain:\"xxxxxyyyyy\"~0^5 OR opening_text.plain:\"xxxxxyyyyy\"~0^3 OR text.plain:\"xxxxxyyyyy\"~0^1 OR auxiliary_text.plain:\"xxxxxyyyyy\"~0^0.5)   (title.plain:\"yyyyyxxxxx\"~0^20 OR redirect.title.plain:\"yyyyyxxxxx\"~0^15 OR category.plain:\"yyyyyxxxxx\"~0^8 OR heading.plain:\"yyyyyxxxxx\"~0^5 OR opening_text.plain:\"yyyyyxxxxx\"~0^3 OR text.plain:\"yyyyyxxxxx\"~0^1 OR auxiliary_text.plain:\"yyyyyxxxxx\"~0^0.5)",
                     "rewrite": "top_terms_boost_1024"
                 }
             },
@@ -150,31 +150,12 @@
             "bool": {
                 "filter": [
                     {
-                        "bool": {
-                            "must": [
-                                {
-                                    "query_string": {
-                                        "allow_leading_wildcard": true,
-                                        "default_operator": "AND",
-                                        "fields": [
-                                            "redirect.title.plain",
-                                            "title.plain"
-                                        ],
-                                        "fuzzy_prefix_length": 2,
-                                        "query": "catapul*",
-                                        "rewrite": "top_terms_boost_1024"
-                                    }
-                                },
-                                {
-                                    "terms": {
-                                        "namespace": [
-                                            0,
-                                            1,
-                                            2,
-                                            3
-                                        ]
-                                    }
-                                }
+                        "terms": {
+                            "namespace": [
+                                0,
+                                1,
+                                2,
+                                3
                             ]
                         }
                     }
@@ -192,7 +173,7 @@
                             "fuzzy_prefix_length": 2,
                             "max_determinized_states": 500,
                             "phrase_slop": 0,
-                            "query": "(title.plain:catapul*^20 OR all.plain:catapul*)   (title.plain:amaz*^20 OR all.plain:amaz*)",
+                            "query": "(all.plain:\"xxxxxyyyyy\"~0^1)   (all.plain:\"yyyyyxxxxx\"~0^1)",
                             "rewrite": "top_terms_boost_1024"
                         }
                     }
@@ -256,7 +237,6 @@
         "stats": [
             "full_text",
             "full_text_querystring",
-            "intitle",
             "query_string"
         ],
         "stored_fields": [

@@ -161,6 +161,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		// Note that no escaping is required for near_match's match query.
 		$nearMatchQuery = implode( ' ', $nearMatchQuery );
+		// If the near match is made only of spaces disable it.
+		if ( preg_match( '/^\s+$/', $nearMatchQuery ) === 1 ) {
+			$nearMatchQuery = '';
+		}
 
 		$queryStringRegex =
 			'(' .

@@ -186,7 +186,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Check whether we want to try another language.
 	 * @param string $term Search term
-	 * @return string|null dbname for another wiki to try, or null
+	 * @return SearchConfig|null config for another wiki to try, or null
 	 */
 	private function detectSecondaryLanguage( $term ) {
 		if ( !$this->config->isCrossLanguageSearchEnabled() ) {
@@ -227,24 +227,27 @@ class CirrusSearch extends SearchEngine {
 				// ourselves.
 				continue;
 			}
-			$wiki = MediaWikiServices::getInstance()
+			$iwPrefixAndConfig = MediaWikiServices::getInstance()
 				->getService( InterwikiResolver::SERVICE )
-				->getSameProjectWikiByLang( $lang );
-			if ( !empty( $wiki ) ) {
+				->getSameProjectConfigByLang( $lang );
+			if ( !empty( $interwikiConfig ) ) {
 				// it might be more accurate to attach these to the 'next'
 				// log context? It would be inconsistent with the
 				// langdetect => false condition which does not have a next
 				// request though.
 				Searcher::appendLastLogPayload( 'langdetect', $name );
-				$detected = $wiki;
+				$detected = $iwPrefixAndConfig;
 				break;
 			}
 		}
 		if ( is_array( $detected ) ) {
 			// Report language detection with search metrics
 			// TODO: do we still need this metric? (see T151796)
-			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $detected;
-			return reset( $detected );
+			$prefix = reset( array_keys( $detected ) );
+			$config = $detected[$prefix];
+			$metric = [ $config->getWikiId(), $prefix ];
+			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $metric;
+			return $config;
 		} else {
 			Searcher::appendLastLogPayload( 'langdetect', 'failed' );
 			return null;
@@ -286,34 +289,20 @@ class CirrusSearch extends SearchEngine {
 				}
 			}
 		}
-		$altWikiId = $this->detectSecondaryLanguage( $term );
-		if ( $altWikiId ) {
-			try {
-				$config = new SearchConfig( $altWikiId );
-			} catch ( MWException $e ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->info(
-					"Failed to get config for {dbwiki}",
-					[
-						"dbwiki" => $altWikiId,
-						"exception" => $e
-					]
-				);
-				$config = null;
-			}
-			if ( $config ) {
-				$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-				$status = $this->searchTextReal( $term, $config, true );
-				$matches = $status->getValue();
-				if ( $matches instanceof ResultSet ) {
-					$numRows = $matches->numRows();
-					$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
-					// check whether we have second language functionality enabled.
-					// This comes after the actual query is run so we can collect metrics about
-					// users in the control buckets, and provide them the same latency as users
-					// in the test bucket.
-					if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0 ) {
-						$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $altWikiId );
-					}
+		$config = $this->detectSecondaryLanguage( $term );
+		if ( $config !== null ) {
+			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
+			$status = $this->searchTextReal( $term, $config, true );
+			$matches = $status->getValue();
+			if ( $matches instanceof ResultSet ) {
+				$numRows = $matches->numRows();
+				$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
+				// check whether we have second language functionality enabled.
+				// This comes after the actual query is run so we can collect metrics about
+				// users in the control buckets, and provide them the same latency as users
+				// in the test bucket.
+				if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0 ) {
+					$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $config->getWikiId() );
 				}
 			}
 		}

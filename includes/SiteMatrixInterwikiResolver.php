@@ -13,14 +13,14 @@ use MediaWiki\MediaWikiServices;
 class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	const MATRIX_CACHE_TTL = 600;
 
-	private $config;
 	private $cache;
 
 	/**
 	 * @param SearchConfig $config
+	 * @param \MultiHttpClient $client http client to fetch cirrus config
 	 */
-	public function __construct( SearchConfig $config ) {
-		$this->config = $config;
+	public function __construct( SearchConfig $config, \MultiHttpClient $client = null ) {
+		parent::__construct( $config, $client );
 		$this->cache = ObjectCache::getLocalClusterInstance();
 		if ( $config->getWikiId() !== wfWikiID() ) {
 			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID() );

@@ -809,6 +809,15 @@ Default:
 
 Show the notification about this wiki using CirrusSearch on the search page.
 
+; $wgCirrusSearchFetchConfigFromApi
+
+Default: $wgCirrusSearchFetchConfigFromApi = false;
+
+Fetch external wiki config from the cirrus dump api.
+Used by cross language and cross project searches.
+When set to false (default), crossproject configs are approximated
+crosslanguage configs are fetched from SiteConfiguration
+
 ; $wgCirrusSearchInterwikiSources
 
 Default:

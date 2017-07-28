@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Util;
+
 /**
  * Implementation of algorithm 2, Team-Draft Interleaving, from F. Radlinski, M.
  * Kurup, and T. Joachims. How does clickthrough data reflect retrieval
@@ -9,6 +11,16 @@ namespace CirrusSearch\Search;
  * ACM New York, NY, USA, 2008.
  */
 class TeamDraftInterleaver {
+	/** @var string The query provided by the user. */
+	private $searchTerm;
+
+	/**
+	 * @param string $searchTerm The query provided by the user.
+	 */
+	public function __construct( $searchTerm ) {
+		$this->searchTerm = $searchTerm;
+	}
+
 	/**
 	 * @param ResultSet $a Results for team A
 	 * @param ResultSet $b Results for team B
@@ -16,6 +28,13 @@ class TeamDraftInterleaver {
 	 * @return ResultSet
 	 */
 	public function interleave( ResultSet $a, ResultSet $b, $limit ) {
+		// Seed the randomness so an individual user the clicks a result and then
+		// comes back to the search page sees the same interleaving. This is not
+		// strictly necessary for the test, but provides the user a more consistent
+		// experience.
+		$seed = hexdec( substr( Util::generateIdentToken( $this->searchTerm ), 0, 8 ) );
+		mt_srand( $seed );
+
 		$aResults = $this->extractResults( $a );
 		$bResults = $this->extractResults( $b );
 		list( $interleaved, $teamA, $teamB, $aOffset ) = $this->interleaveResults(

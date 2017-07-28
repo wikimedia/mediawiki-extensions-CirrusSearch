@@ -440,7 +440,7 @@ class Searcher extends ElasticsearchIntermediary {
 			// very fragile.
 			$value = $status->getValue();
 			if ( $value[0] instanceof ResultSet ) {
-				$interleaver = new TeamDraftInterleaver();
+				$interleaver = new TeamDraftInterleaver( $this->searchContext->getOriginalSearchTerm() );
 				$response = $interleaver->interleave( $value[0], $value[1], $this->limit );
 			} else {
 				$response = $value;

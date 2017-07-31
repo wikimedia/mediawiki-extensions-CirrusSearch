@@ -11,6 +11,8 @@
 	"cirrussearch-pref-label": "Ricerca nove",
 	"cirrussearch-give-feedback": "Mannane 'nu commende",
 	"cirrussearch-pref-completion-legacy-section-desc": "Ricerche pe prefisse",
+	"cirrussearch-incategory-feature-no-valid-categories": "Nisciuna categorije valide date a '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Nisciune titole valide date a '$1'.",
 	"cirrussearch-explore-similar-related": "Collegate",
 	"cirrussearch-explore-similar-categories": "Categorije",
 	"cirrussearch-explore-similar-languages": "Lènghe",

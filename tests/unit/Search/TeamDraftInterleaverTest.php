@@ -40,7 +40,7 @@ class TeamDraftInterleaverTest extends \PHPUnit_Framework_TestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, $aOffset ) = TeamDraftInterleaver::interleaveResults( $a, $b, 15 );
+		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 15 );
 		$this->assertCount( 15, $interleave );
 		$this->assertCount( 5, $teamA );
 		$this->assertCount( 10, $teamB );
@@ -52,7 +52,7 @@ class TeamDraftInterleaverTest extends \PHPUnit_Framework_TestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, $aOffset ) = TeamDraftInterleaver::interleaveResults( $a, $b, 11 );
+		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 11 );
 		$this->assertCount( 11, $interleave );
 		$this->assertCount( 6, $teamA );
 		$this->assertCount( 5, $teamB );
@@ -64,7 +64,7 @@ class TeamDraftInterleaverTest extends \PHPUnit_Framework_TestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, $aOffset ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
+		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
 		$this->assertCount( 8, $interleave );
 		$this->assertCount( 3, $teamA );
 		$this->assertCount( 5, $teamB );
@@ -76,7 +76,7 @@ class TeamDraftInterleaverTest extends \PHPUnit_Framework_TestCase {
 		$a = array_combine( $a, $a );
 		$b = array_combine( $b, $b );
 
-		list( $interleave, $teamA, $teamB, $aOffset ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
+		list( $interleave, $teamA, $teamB, ) = TeamDraftInterleaver::interleaveResults( $a, $b, 20 );
 		$this->assertCount( 10, $interleave );
 		$this->assertCount( 5, $teamA );
 		$this->assertCount( 5, $teamB );

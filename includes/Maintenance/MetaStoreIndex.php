@@ -469,14 +469,6 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Get the internal index type
-	 * @return \Elastica\Type $type
-	 */
-	private function internalType() {
-		return self::getInternalType( $this->connection );
-	}
-
-	/**
 	 * Get the version tracking index type
 	 * @param Connection $connection
 	 * @return \Elastica\Type $type

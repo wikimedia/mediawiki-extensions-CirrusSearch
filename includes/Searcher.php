@@ -1177,9 +1177,6 @@ class Searcher extends ElasticsearchIntermediary {
 		return $this->searchOne();
 	}
 
-	private function buildInterleaveConfig( array $interleave ) {
-	}
-
 	/**
 	 * Tests if two search objects are equivalent
 	 *

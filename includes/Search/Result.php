@@ -7,6 +7,7 @@ use CirrusSearch\Searcher;
 use MediaWiki\Logger\LoggerFactory;
 use MWTimestamp;
 use SearchResult;
+use Sanitizer;
 use Title;
 
 /**
@@ -231,7 +232,7 @@ class Result extends SearchResult {
 	 * @return Title
 	 */
 	private function findSectionTitle() {
-		return $this->getTitle()->createFragmentTarget( Title::escapeFragmentForURL(
+		return $this->getTitle()->createFragmentTarget( Sanitizer::escapeIdForLink(
 			$this->stripHighlighting( $this->sectionSnippet )
 		) );
 	}

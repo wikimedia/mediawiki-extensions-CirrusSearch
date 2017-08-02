@@ -27,6 +27,7 @@ require_once __DIR__ . "/profiles/RescoreProfiles.config.php";
 require_once __DIR__ . "/profiles/SimilarityProfiles.php";
 require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 require_once __DIR__ . "/profiles/FullTextQueryBuilderProfiles.config.php";
+require_once __DIR__ . "/profiles/CrossProjectBlockScorerProfiles.config.php";
 
 $wgExtensionCredits['other'][] = [
 	'path'           => __FILE__,

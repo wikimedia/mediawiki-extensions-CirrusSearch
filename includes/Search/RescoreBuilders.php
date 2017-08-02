@@ -137,7 +137,7 @@ class RescoreBuilder {
 	/**
 	 * Inspect requested namespaces and return the supported profile
 	 *
-	 * @param string $profile
+	 * @param string|array $profileName
 	 * @return array the supported rescore profile.
 	 * @throws InvalidRescoreProfileException
 	 */

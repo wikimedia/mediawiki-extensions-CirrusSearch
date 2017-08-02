@@ -93,7 +93,7 @@
 		function DeferredContentWidget( userConf ) {
 			var apiEndpoint = mw.util.wikiScript( 'api' ),
 				conf = $.extend( true, {
-					apiConfig: { url: apiEndpoint, params: '' },
+					apiConfig: { url: apiEndpoint, params: {} },
 					template: function ( templateData ) { return templateData; },
 					filterApiResponse: function ( response ) {
 						return response;

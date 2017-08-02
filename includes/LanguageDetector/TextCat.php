@@ -76,5 +76,7 @@ class TextCat implements Detector {
 			reset( $languages );
 			return key( $languages );
 		}
+
+		return null;
 	}
 }

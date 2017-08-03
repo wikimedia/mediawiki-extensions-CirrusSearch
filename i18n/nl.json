@@ -13,7 +13,8 @@
 			"Dinosaur918",
 			"Huhbakker",
 			"Mainframe98",
-			"Mbch331"
+			"Mbch331",
+			"Ooswesthoesbes"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",
@@ -21,7 +22,7 @@
 	"cirrussearch-parse-error": "De vraag werd niet begrepen. Maak het eenvoudiger. De vraag werd vastgelegd voor het verbeteren van de zoekresultaten.",
 	"cirrussearch-too-busy-error": "De zoekfunctie heeft het op dit moment heel druk. Probeer het later opnieuw.",
 	"cirrussearch-regex-syntax-error": "Reguliere expressie-syntaxfout op $2: $1",
-	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie zoekt momenteel worden uitgevoerd. Probeer het later opnieuw.",
+	"cirrussearch-regex-too-busy-error": "Te veel reguliere expressie-zoekopdrachten worden momenteel worden uitgevoerd. Probeer het later opnieuw.",
 	"cirrussearch-regex-too-complex-error": "Een reguliere expressie is te complex. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|Meer informatie over vereenvoudigen]].",
 	"cirrussearch-now-using": "Deze wiki maakt gebruik van een nieuwe zoekmachine. ([[mw:Special:MyLanguage/Help:CirrusSearch|Meer lezen]])",
 	"cirrussearch-ignored-headings": " #<!-- leave this line exactly as it is --> <pre>\n# Koppen die worden genegeerd tijdens het zoeken.\n# Wijzigingen worden van kracht als een kop wordt geïndexeerd.\n# U kunt opnieuw indexeren afdwingen door het uitvoeren van een nullbewerking.\n# De syntaxis is al volgt:\n#   * All tekst vanaf het teken \"#\" tot het einde van de regel wordt gezien als een opmerking;\n#   * Iedere niet-lege regel is de precieze te negeren kop, inclusief hoofdlettergebruik en degelijke.\nReferenties\nExterne koppelingen\nZie ook\n #</pre> <!-- leave this line exactly as it is -->",

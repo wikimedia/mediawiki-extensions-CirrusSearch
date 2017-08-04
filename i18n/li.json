@@ -34,5 +34,20 @@
 	"cirrussearch-completion-profile-normal-subphrases": "E paar laesteikes, sómmige diakritische teikes en stopwäörd eweggesjaf. 't Zal ouch oetdrökkinge vinje (oetdrökking of subpagina's aafhenkelik vanne intern wikiconfiguratie).",
 	"cirrussearch-completion-profile-fuzzy": "Geliek wie normaal typocorrectie (twieë typfoute óngersteundj).",
 	"cirrussearch-completion-profile-fast-fuzzy": "Experimenteel fuzzyprofiel (kan welchen tied denouch waere eweggehaoldj)",
-	"cirrussearch-completion-profile-fuzzy-subphrases": "Geliek wie normaal typocorrectie (twieë typfoute óngersteundj). 't Zal ouch oetdrökkinge vinje (oetdrökkinge en subpagina's aafhenkelik van de intern wikiconfiguratie)."
+	"cirrussearch-completion-profile-fuzzy-subphrases": "Geliek wie normaal typocorrectie (twieë typfoute óngersteundj). 't Zal ouch oetdrökkinge vinje (oetdrökkinge en subpagina's aafhenkelik van de intern wikiconfiguratie).",
+	"cirrussearch-qi-profile-classic": "Rang gebaseerd op 't aantal binnekómmendje links, inkel sjeblone, spraok vanne pagina en recèntelikheid (sjeblone/spraok/recèntelikheid kónne neet-geactiveerdj zeen op deze wiki).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Rang gebaseerdj op inkel sjeblone, spraok vanne pagina en recèntelik wen det is geactiveerdj op deze wiki.",
+	"cirrussearch-qi-profile-empty": "Rang allein gebaseerdj op zeukopdrachaafhenkelike kènmirke (debug).",
+	"cirrussearch-qi-profile-wsum-inclinks-pv": "Gewaoge sóm gebaseerdj op binnekómmende links en waekeliks paginabezeukersaantal",
+	"cirrussearch-qi-profile-wsum-inclinks": "Gewaoge sóm gebaseerdj op binnekómmendje links",
+	"cirrussearch-qi-profile-popular-pv": "Rang veurnamelik gebaseerdj op paginabezeukersaantal",
+	"cirrussearch-qi-profile-popular-inclinks": "Rang veurnamelik gebaseerdj op aantal binnekómmendje links",
+	"cirrussearch-pref-completion-profile-help": "Stèl 't gedraag in veur automatische (zeuk-ónger-tikke) aanvölideeje.",
+	"prefs-completion": "Zeukopdrachaanvölling",
+	"cirrussearch-pref-completion-section-desc": "Zeukaanvölideeje",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Standerd (aanbevaole)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Verbaetertj maximaal twieë tikfoute. Los redireks op.",
+	"cirrussearch-explore-similar-related": "Verwantj",
+	"cirrussearch-explore-similar-categories": "Categorieë",
+	"cirrussearch-explore-similar-languages": "Spraoke"
 }

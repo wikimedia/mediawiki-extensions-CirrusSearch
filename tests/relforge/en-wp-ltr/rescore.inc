@@ -9,8 +9,8 @@ $wgCirrusSearchRescoreProfiles['relforge'] = [
 			'window' => isset( $_GET['cirrusSearchRescoreWindow'] )
 				? intval( $_GET['cirrusSearchRescoreWindow'] )
 				: 1024,
-			'query_weight' => 0.0,
-			'rescore_query_weight' => 1.0,
+			'query_weight' => 1.0,
+			'rescore_query_weight' => 10000.0,
 			'score_mode' => 'total',
 			'type' => 'ltr',
 			'model' => 'enwiki_100t_v1',

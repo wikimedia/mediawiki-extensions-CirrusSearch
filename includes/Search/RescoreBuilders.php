@@ -110,13 +110,30 @@ class RescoreBuilder {
 			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
 			return $funcChain->buildRescoreQuery();
 		case self::LTR_TYPE:
-			return new LtrQuery( $rescoreDef['model'], [
-				// TODO: These params probably shouldn't be hard coded
-				'query_string' => $this->context->getCleanedSearchTerm(),
-			] );
+			return $this->buildLtrQuery( $rescoreDef['model'] );
 		default:
 			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
+	}
+
+	/**
+	 * @param string $model Name of the sltr model to use
+	 * @return AbstractQuery
+	 */
+	private function buildLtrQuery( $model ) {
+		$bool = new \Elastica\Query\BoolQuery();
+		// the ltr query can return negative scores, which mucks with elasticsearch
+		// sorting as that will put these results below documents set to 0. Fix
+		// that up by adding a large constant boost.
+		$constant = new \Elastica\Query\ConstantScore( new \Elastica\Query\MatchAll );
+		$constant->setBoost( 100000 );
+		$bool->addShould( $constant );
+		$bool->addShould( new LtrQuery( $model, [
+				// TODO: These params probably shouldn't be hard coded
+				'query_string' => $this->context->getCleanedSearchTerm(),
+			] ) );
+
+		return $bool;
 	}
 
 	/**
@@ -147,6 +164,11 @@ class RescoreBuilder {
 			$profileName = '__provided__';
 		} else {
 			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
+			if ( !$profile ) {
+				throw new InvalidRescoreProfileException( "Unknown fallback profile: $profileName" );
+			} elseif ( !is_array( $profile ) ) {
+				throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
+			}
 		}
 
 		$seen = [];
@@ -177,6 +199,8 @@ class RescoreBuilder {
 				$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
 				if ( !$profile ) {
 					throw new InvalidRescoreProfileException( "Unknown fallback profile: $profileName" );
+				} elseif ( !is_array( $profile ) ) {
+					throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
 				}
 				continue;
 			}

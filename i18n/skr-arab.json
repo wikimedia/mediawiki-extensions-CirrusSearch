@@ -5,8 +5,11 @@
 		]
 	},
 	"cirrussearch-pref-label": "نویں ڳول",
+	"cirrussearch-give-feedback": "ساکوں آپݨی رائے ݙیوو",
 	"prefs-completion": "ڳولݨ پورا تھیا",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "طے شدہ (سفارش کیتی ویندی ہے)",
+	"cirrussearch-explore-similar-related": "متعلقہ",
 	"cirrussearch-explore-similar-categories": "قسماں",
-	"cirrussearch-explore-similar-languages": "زباناں"
+	"cirrussearch-explore-similar-languages": "زباناں",
+	"cirrussearch-explore-similar-languages-none": "ٻنھاں زباناں وچ کائنی"
 }

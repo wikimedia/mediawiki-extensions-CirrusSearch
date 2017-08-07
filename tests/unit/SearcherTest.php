@@ -189,6 +189,7 @@ class SearcherTest extends CirrusTestCase {
 		}
 		if ( isset( $query[0] ) ) {
 			// list like. Expensive, but sorta-works?
+			// TODO: This breaks things that require a specific ordering, such as the token count router
 			usort( $query, function ( $a, $b ) {
 				return strcmp( json_encode( $a ), json_encode( $b ) );
 			} );

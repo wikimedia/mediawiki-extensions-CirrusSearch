@@ -1415,6 +1415,13 @@ $wgCirrusSearchEnableArchive = false;
  */
 $wgCirrusSearchInterleaveConfig = null;
 
+/**
+ * Maximum number of tokens in a phrase rescore query. Only activated
+ * when token_count_router is enabled in $wgCirrusSearchWikimediaExtraPlugin.
+ * Queries with more tokens than this skip the phrase rescore portion.
+ */
+$wgCirrusSearchMaxPhraseTokens = null;
+
 /*
  * Please update docs/settings.txt if you add new values!
  */

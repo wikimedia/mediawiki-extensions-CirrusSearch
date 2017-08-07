@@ -119,6 +119,7 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchAllFieldsForRescore',
 		'CirrusSearchIndexBaseName',
 		'CirrusSearchInterleaveConfig',
+		'CirrusSearchMaxPhraseTokens',
 		'LanguageCode',
 		'ContentNamespaces',
 	];

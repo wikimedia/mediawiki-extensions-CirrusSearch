@@ -669,6 +669,14 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				// analyzer
 				'text_search'
 			);
+			$maxTokens = $this->config->get( 'CirrusSearchMaxPhraseTokens' );
+			if ( $maxTokens ) {
+				$tokCount->addCondition(
+					TokenCountRouter::GT,
+					$maxTokens,
+					new \CirrusSearch\Elastica\MatchNone()
+				);
+			}
 			$tokCount->addCondition(
 				TokenCountRouter::GT,
 				1,

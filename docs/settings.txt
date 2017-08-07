@@ -1512,3 +1512,12 @@ during interleaved full text search. Generally tis should *not* be set
 directly, and instead set via $wgCirrusSearchUserTesting triggers. It is
 usefull to perform Team-Draft interleaved search experiments to compare the
 performance of two different search configurations.
+
+; $wgCirrusSearchMaxPhraseTokens
+
+Default:
+	$wgCirrusSearchMaxPhraseTokens = null;
+
+Maximum number of tokens in a phrase rescore query. Only activated
+when token_count_router is enabled in $wgCirrusSearchWikimediaExtraPlugin.
+Queries with more tokens than this skip the phrase rescore portion.

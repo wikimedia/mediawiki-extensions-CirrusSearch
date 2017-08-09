@@ -18,12 +18,12 @@ Place the CirrusSearch extension in your extensions directory.
 Make sure you have the curl php library installed (sudo apt-get install php5-curl in Debian.)
 You also need to install the Elastica MediaWiki extension.
 Add this to LocalSettings.php:
- require_once( "$IP/extensions/Elastica/Elastica.php" );
+ wfLoadExtension( 'Elastica' );
  require_once( "$IP/extensions/CirrusSearch/CirrusSearch.php" );
  $wgDisableSearchUpdate = true;
 
 Configure your search servers in LocalSettings.php if you aren't running Elasticsearch on localhost:
- $wgCirrusSearchServers = array( 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' );
+ $wgCirrusSearchServers = [ 'elasticsearch0', 'elasticsearch1', 'elasticsearch2', 'elasticsearch3' ];
 There are other $wgCirrusSearch variables that you might want to change from their defaults.
 
 Now run this script to generate your elasticsearch index:
@@ -110,39 +110,39 @@ PoolCounter
 CirrusSearch can leverage the PoolCounter extension to limit the number of concurrent searches to
 elasticsearch.  You can do this by installing the PoolCounter extension and then configuring it in
 LocalSettings.php like so:
- require_once( "$IP/extensions/PoolCounter/PoolCounterClient.php");
+ wfLoadExtension( 'PoolCounter');
  // Configuration for standard searches.
- $wgPoolCounterConf[ 'CirrusSearch-Search' ] = array(
+ $wgPoolCounterConf[ 'CirrusSearch-Search' ] = [
 	'class' => 'PoolCounter_Client',
 	'timeout' => 30,
 	'workers' => 25,
 	'maxqueue' => 50,
- );
+ ];
  // Configuration for prefix searches.  These are usually quite quick and
  // plentiful.
- $wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = array(
+ $wgPoolCounterConf[ 'CirrusSearch-Prefix' ] = [
 	'class' => 'PoolCounter_Client',
 	'timeout' => 10,
 	'workers' => 50,
 	'maxqueue' => 100,
- );
+ ];
  // Configuration for regex searches.  These are slow and use lots of resources
  // so we only allow a few at a time.
- $wgPoolCounterConf[ 'CirrusSearch-Regex' ] = array(
+ $wgPoolCounterConf[ 'CirrusSearch-Regex' ] = [
 	'class' => 'PoolCounter_Client',
 	'timeout' => 30,
 	'workers' => 10,
 	'maxqueue' => 10,
- );
+ ];
  // Configuration for funky namespace lookups.  These should be reasonably fast
  // and reasonably rare.
- $wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = array(
+ $wgPoolCounterConf[ 'CirrusSearch-NamespaceLookup' ] = [
 		'class' => 'PoolCounter_Client',
 		'timeout' => 10,
 		'workers' => 20,
 		'maxqueue' => 20,
 	),
- );
+ ];
 
 Upgrading
 ---------
@@ -232,22 +232,22 @@ if you switch the job queue to Redis with checkDelay enabled then Cirrus's resul
 correct.  The reason for this is that this configuration allows Cirrus to delay link counts
 until Elasticsearch has appropriately refreshed.  This is an example of configuring it:
  $redisPassword = '<password goes here>';
- $wgJobTypeConf['default'] = array(
+ $wgJobTypeConf['default'] = [
 	'class' => 'JobQueueRedis',
 	'order' => 'fifo',
 	'redisServer' => 'localhost',
 	'checkDelay' => true,
-	'redisConfig' => array(
+	'redisConfig' => [
 		'password' => $redisPassword,
-	),
- );
- $wgJobQueueAggregator = array(
+	],
+ ];
+ $wgJobQueueAggregator = [
 	'class'       => 'JobQueueAggregatorRedis',
 	'redisServer' => 'localhost',
-	'redisConfig' => array(
+	'redisConfig' => [
 		'password' => $redisPassword,
-	),
- );
+	],
+ ];
 
 Note: some MediaWiki setups have trouble running the job queue.  It can be finicky.	 The most
 sure fire way to get it to work is also the slowest.  Add this to your LocalSettings.php:

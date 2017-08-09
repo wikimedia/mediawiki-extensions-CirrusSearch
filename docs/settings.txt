@@ -41,8 +41,8 @@ List of search clusters, the key being cluster name and the value is a list of c
 
 Example:
     $wgCirrusSearchClusters = array(
-        'eqiad' => array( 'es01.eqiad.wmnet', 'es02.eqiad.wmnet' ),
-        'codfw' => array( 'es01.codfw.wmnet', 'es02.codfw.wmnet' ),
+        'dc-foo' => array( 'es01.foo.local', 'es02.foo.local' )
+        'dc-bar' => array( 'es01.bar.local', 'es02.bar.local' )
     );
 
 ; $wgCirrusSearchWriteClusters
@@ -787,10 +787,10 @@ This allows redirecting queries to a separate cluster configured
 in $wgCirrusSearchClusters. Note that queries can use multiple features, in
 the case multiple features have overrides the first match wins.
 
-Example sending more_like queries to codfw and completion to eqiad:
+Example sending more_like queries to dc-foo and completion to dc-bar:
     $wgCirrusSearchClusterOverrides = [
-        'more_like' => 'codfw',
-        'completion' => 'eqiad',
+        'more_like' => 'dc-foo',
+        'completion' => 'dc-bar',
     ];
 
 ; $wgCirrusSearchMoreLikeThisTTL

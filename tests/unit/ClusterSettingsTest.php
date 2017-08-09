@@ -11,14 +11,14 @@ class ClusterSettingsTest extends CirrusTestCase {
 		return [
 			'Handles per-index shard counts' => [
 				[ 'general' => 7 ],
-				'eqiad',
+				'dc-foo',
 				'general',
 				7,
 			],
 
 			'Handles per-cluster shard counts' => [
-				[ 'content' => 6, 'eqiad' => [ 'content' => 9 ] ],
-				'eqiad',
+				[ 'content' => 6, 'dc-foo' => [ 'content' => 9 ] ],
+				'dc-foo',
 				'content',
 				9,
 			],
@@ -45,21 +45,21 @@ class ClusterSettingsTest extends CirrusTestCase {
 		return [
 			'Simple replica config returns exact setting ' => [
 				'0-2',
-				'eqiad',
+				'dc-foo',
 				'content',
 				'0-2',
 			],
 
 			'Accepts array for replica config' => [
 				[ 'content' => '1-2' ],
-				'eqiad',
+				'dc-foo',
 				'content',
 				'1-2',
 			],
 
 			'Accepts per-cluster replica config' => [
-				[ 'content' => '1-2', 'eqiad' => [ 'content' => '2-3' ] ],
-				'eqiad',
+				[ 'content' => '1-2', 'dc-foo' => [ 'content' => '2-3' ] ],
+				'dc-foo',
 				'content',
 				'2-3'
 			],
@@ -85,10 +85,10 @@ class ClusterSettingsTest extends CirrusTestCase {
 	public static function provideDropDelayedJobsAfter() {
 		return [
 			'Simple integer timeout is returned directly' => [
-				60, 'eqiad', 60
+				60, 'dc-foo', 60
 			],
 			'Can set per-cluster timeout' => [
-				[ 'eqiad' => 99, 'labsearch' => 42 ],
+				[ 'dc-foo' => 99, 'labsearch' => 42 ],
 				'labsearch',
 				42
 			],

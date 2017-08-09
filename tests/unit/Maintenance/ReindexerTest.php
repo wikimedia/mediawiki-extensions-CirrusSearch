@@ -11,59 +11,59 @@ class ReindexerTest extends \MediaWikiTestCase {
 		return [
 			'simple configuration' => [
 				// Expected remote info
-				[ 'host' => 'http://search.svc.eqiad.wmnet:9200/' ],
+				[ 'host' => 'http://search.svc.foo.local:9200/' ],
 				// wgCirrusSearchClusters configuration
 				[
-					'eqiad' => [ 'search.svc.eqiad.wmnet' ],
-					'codfw' => [ 'search.svc.codfw.wmnet' ],
+					'dc-foo' => [ 'search.svc.foo.local' ],
+					'dc-bar' => [ 'search.svc.bar.local' ],
 				]
 			],
 			'no remote info if both are same' => [
 				null,
 				[
-					'eqiad' => [ 'search.svc.eqiad.wmnet' ],
-					'codfw' => [ 'search.svc.codfw.wmnet' ],
+					'dc-foo' => [ 'search.svc.foo.local' ],
+					'dc-bar' => [ 'search.svc.bar.local' ],
 				],
-				'eqiad',
-				'eqiad',
+				'dc-foo',
+				'dc-foo',
 			],
 			'handles advanced cluster definitions' => [
-				[ 'host' => 'https://search.svc.eqiad.wmnet:9243/' ],
+				[ 'host' => 'https://search.svc.foo.local:9243/' ],
 				[
-					'eqiad' => [
+					'dc-foo' => [
 						[
 							'transport' => 'CirrusSearch\\Elastica\\PooledHttps',
 							'port' => '9243',
-							'host' => 'search.svc.eqiad.wmnet',
+							'host' => 'search.svc.foo.local',
 						],
 					],
-					'codfw' => [ 'search.svc.codfw.wmnet' ],
+					'dc-bar' => [ 'search.svc.bar.local' ],
 				],
 			],
 			'uses http when http transport is selected' => [
-				[ 'host' => 'http://search.svc.eqiad.wmnet:9200/' ],
+				[ 'host' => 'http://search.svc.foo.local:9200/' ],
 				[
-					'eqiad' => [
+					'dc-foo' => [
 						[
 							'transport' => 'Http',
 							'port' => '9200',
-							'host' => 'search.svc.eqiad.wmnet',
+							'host' => 'search.svc.foo.local',
 						],
 					],
-					'codfw' => [ 'search.svc.codfw.wmnet' ],
+					'dc-bar' => [ 'search.svc.bar.local' ],
 				]
 			],
 			'uses http when pooled http transport is selected' => [
-				[ 'host' => 'http://search.svc.eqiad.wmnet:9200/' ],
+				[ 'host' => 'http://search.svc.foo.local:9200/' ],
 				[
-					'eqiad' => [
+					'dc-foo' => [
 						[
 							'transport' => 'CirrusSearch\\Elastica\\PooledHttp',
 							'port' => 9200,
-							'host' => 'search.svc.eqiad.wmnet',
+							'host' => 'search.svc.foo.local',
 						],
 					],
-					'codfw' => [ 'search.svc.codfw.wmnet' ],
+					'dc-bar' => [ 'search.svc.bar.local' ],
 				]
 			],
 		];
@@ -72,9 +72,9 @@ class ReindexerTest extends \MediaWikiTestCase {
 	/**
 	 * @dataProvider provideDetectRemoteSourceParams
 	 */
-	public function testDetectRemoteSourceParams( $expected, $clustersConfig, $sourceCluster = 'eqiad', $destCluster = 'codfw' ) {
+	public function testDetectRemoteSourceParams( $expected, $clustersConfig, $sourceCluster = 'dc-foo', $destCluster = 'dc-bar' ) {
 		$config = new HashSearchConfig( [
-			'CirrusSearchDefaultCluster' => 'eqiad',
+			'CirrusSearchDefaultCluster' => 'dc-foo',
 			'CirrusSearchClusters' => $clustersConfig
 		] );
 		$source = new Connection( $config, $sourceCluster );

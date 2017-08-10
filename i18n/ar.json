@@ -9,7 +9,8 @@
 			"محمد أحمد عبد الفتاح",
 			"Maroen1990",
 			"Meno25",
-			"Moud hosny"
+			"Moud hosny",
+			"ديفيد"
 		]
 	},
 	"cirrussearch-desc": "عملية البحث مدعومة من قبل Elasticsearch لميدياويكي",
@@ -44,8 +45,8 @@
 	"cirrussearch-completion-profile-fuzzy": "يماثل العادي مع تصحيح الأخطاء الإملائية (خطآن إملائيان مدعومان).",
 	"cirrussearch-completion-profile-fast-fuzzy": "ملف تجريبي (ربما تتم إزالته في أي وقت)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "تماثل العادي مع تصحيح الأخطاء الإملائية (خطآن إملائيان مدعومان). ستطابق أيضا العبارات الفرعية (يمكن أن تكون عبارات فرعية أو صفحات فرعية حسب ضبط الويكي الداخلي).",
-	"cirrussearch-qi-profile-classic": "الرتبة معتمدة على عدد الوصلات الداخلة، بعض القوالب، لغة المقالة والحداثة (القوالب/اللغة/الحداثة ربما تكون غير مفعلة على هذه الويكي).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "الرتبة بناء على بعض القوالب، لغة المقالة والحداثة عند التفعيل على هذه الويكي.",
+	"cirrussearch-qi-profile-classic": "الرتبة معتمدة على عدد الوصلات الداخلة، وبعض القوالب، ولغة المقالة والحداثة (القوالب/اللغة/الحداثة ربما تكون غير مفعلة على هذه الويكي).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "الرتبة بناء على بعض القوالب، ولغة الصفحة والحداثة عند التفعيل على هذه الويكي.",
 	"cirrussearch-qi-profile-empty": "الرتبة بناء على الخواص المعتمدة على الاستعلام (للتصحيح فقط).",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "المجموع الموزون بناء على الوصلات الداخلة ومشاهدات الصفحة الأسبوعية",
 	"cirrussearch-qi-profile-wsum-inclinks": "المجموع الموزون بناء على الوصلات الداخلة",
@@ -57,7 +58,7 @@
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester مقترح الإكمال] هو خوارزمية لاقتراحات البحث مع تصحيح إملائي أفضل وبحث مخصص.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "الافتراضي (موصى به)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "يصحح حتى خطأين إملائيين. يتبع التحويلات القريبة.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "مطابقة العبارات الفرعية (موصى به لعناوين المقالات الطويلة)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "مطابقة العبارات الفرعية (موصى به لعناوين الصفحات الطويلة)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "يصحح حتى خطأين إملائيين. يتبع التحويلات القريبة. يطابق العبارات الفرعية في العناوين.",
 	"cirrussearch-completion-profile-strict-pref-name": "الوضع الدقيق (متقدم)",
 	"cirrussearch-completion-profile-strict-pref-desc": "لا تصحيح إملائي. لا فض للهجات. مطابقة حرفية.",

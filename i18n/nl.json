@@ -67,5 +67,11 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Geen automatische correcties. Vindt overeenkomst aan het begin van de titels.",
 	"cirrussearch-timed-out": "Time-out tijdens het zoeken, alleen gedeeltelijke resultaten zijn beschikbaar.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Geen geldige titels verstrekt aan '$1'.",
-	"cirrussearch-mlt-not-configured": "De '$1'- functie is niet correct geconfigureerd. Vraag een admin te lossen $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "De '$1'- functie is niet correct geconfigureerd. Vraag een admin te lossen $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "Gerelateerd",
+	"cirrussearch-explore-similar-categories": "Categorieën",
+	"cirrussearch-explore-similar-languages": "Talen",
+	"cirrussearch-explore-similar-related-none": "Geen gerelateerde pagina's beschikbaar",
+	"cirrussearch-explore-similar-categories-none": "Geen categorieën beschikbaar",
+	"cirrussearch-explore-similar-languages-none": "Niet beschikbaar in andere talen"
 }

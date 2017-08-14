@@ -10,7 +10,8 @@
 			"Anto",
 			"Candalua",
 			"Redredsonia",
-			"Kaspo"
+			"Kaspo",
+			"Daimona Eaytoy"
 		]
 	},
 	"cirrussearch-desc": "Ricerca realizzata con Elasticsearch per MediaWiki",
@@ -56,6 +57,7 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "L'algoritmo di suggerimento cerca-mentre-scrivi precedente.",
 	"cirrussearch-completion-profile-classic-pref-name": "Ricerca classica per prefisso",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nessuna correzione errori di battitura. Corrispondenze con l'inizio dei titoli.",
+	"cirrussearch-regex-timed-out": "La ricerca ha impiegato troppo tempo, è disponibile solo un elenco parziale di risultati. Prova a semplificare l'espressione regolare per ottenere una lista completa.",
 	"cirrussearch-feature-too-many-conditions": "Troppe condizioni fornite per '$1', trocanto in $2.",
 	"cirrussearch-explore-similar-categories": "Categorie",
 	"cirrussearch-explore-similar-languages": "Lingue",

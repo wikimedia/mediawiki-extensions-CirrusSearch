@@ -351,6 +351,8 @@ class Searcher extends ElasticsearchIntermediary {
 			new Query\FileNumericFeature(),
 			// Content model feature
 			new Query\ContentModelFeature(),
+			// subpageof keyword
+			new Query\SubPageOfFeature(),
 		];
 
 		$extraFeatures = [];

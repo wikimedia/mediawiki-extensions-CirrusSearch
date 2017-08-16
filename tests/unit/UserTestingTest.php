@@ -169,7 +169,7 @@ class UserTestingTest extends CirrusTestCase {
 						'trigger' => 'hi there',
 					],
 					'b' => [
-						'trigger' =>  'or this one',
+						'trigger' => 'or this one',
 					],
 				],
 			],

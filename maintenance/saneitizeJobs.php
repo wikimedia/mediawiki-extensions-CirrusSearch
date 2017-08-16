@@ -224,7 +224,7 @@ EOD
 	}
 
 	private function pushJobs() {
-		$pushJobFreq = $this->getOption( 'refresh-freq', 2*3600 );
+		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
 		if ( !$this->getSearchConfig()->get( 'CirrusSearchSanityCheck' ) ) {
 			$this->error( "Sanity check disabled, abandonning...\n", 1 );
 		}

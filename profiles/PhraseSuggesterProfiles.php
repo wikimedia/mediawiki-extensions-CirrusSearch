@@ -59,7 +59,7 @@ class PhraseSuggesterProfiles {
 		Util::overrideYesNo( $wgCirrusSearchPhraseSuggestSettings['collate'], $request, 'cirrusSuggCollate' );
 
 		$smoothing = $request->getVal( 'cirrusSuggSmoothing' );
-		if ( isset ( $smoothing ) && in_array( $smoothing, $wgCirrusSearchPhraseSuggestAllowedSmoothingModel ) ) {
+		if ( isset( $smoothing ) && in_array( $smoothing, $wgCirrusSearchPhraseSuggestAllowedSmoothingModel ) ) {
 			// We do not support linear_interpolation customization yet, should be added
 			// later if proven useful.
 			switch ( $smoothing ) {
@@ -81,7 +81,7 @@ class PhraseSuggesterProfiles {
 		}
 
 		// Custom discount for stupid_backoff smoothing model
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) ) {
 			$discount = $request->getVal( 'cirrusSuggDiscount' );
 			if ( is_numeric( $discount ) && $discount <= 1 && $discount >= 0 ) {
 				$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff']['discount'] = floatval( $discount );
@@ -89,7 +89,7 @@ class PhraseSuggesterProfiles {
 		}
 
 		// Custom alpha for laplace smoothing model
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) ) {
 			$alpha = $request->getVal( 'cirrusSuggAlpha' );
 			if ( is_numeric( $alpha ) && $alpha <= 1 && $alpha >= 0 ) {
 				$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace']['alpha'] = floatval( $alpha );
@@ -97,10 +97,10 @@ class PhraseSuggesterProfiles {
 		}
 
 		// Support deprecated settings
-		if ( isset ( $wgCirrusSearchPhraseSuggestConfidence ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestConfidence ) ) {
 			Util::overrideNumeric( $wgCirrusSearchPhraseSuggestConfidence, $request, 'cirrusSuggConfidence' );
 		}
-		if ( isset ( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
 			Util::overrideNumeric( $wgCirrusSearchPhraseSuggestMaxErrors, $request, 'cirrusSuggMaxErrors',
 				$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit );
 		}
@@ -147,7 +147,7 @@ class PhraseSuggesterProfiles {
 				if ( is_numeric( $v ) && $v >= 1 && $v <= $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit ) {
 					$wgCirrusSearchPhraseSuggestSettings['max_errors'] = floatval( $v );
 					// Support deprecated settings
-					if ( isset ( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
+					if ( isset( $wgCirrusSearchPhraseSuggestMaxErrors ) ) {
 						$wgCirrusSearchPhraseSuggestMaxErrors = floatval( $v );
 					}
 				}
@@ -155,7 +155,7 @@ class PhraseSuggesterProfiles {
 			case 'confidence' :
 				if ( is_numeric( $v ) && $v >= 0 ) {
 					$wgCirrusSearchPhraseSuggestSettings['confidence'] = floatval( $v );
-					if ( isset ( $wgCirrusSearchPhraseSuggestConfidence ) ) {
+					if ( isset( $wgCirrusSearchPhraseSuggestConfidence ) ) {
 						$wgCirrusSearchPhraseSuggestConfidence = floatval( $v );
 					}
 				}
@@ -216,14 +216,14 @@ class PhraseSuggesterProfiles {
 		}
 
 		// Apply smoothing model options, if none provided we'll use elasticsearch defaults
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) &&
-			isset ( $laplaceAlpha ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] ) &&
+			isset( $laplaceAlpha ) ) {
 			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['laplace'] = [
 				'alpha' => $laplaceAlpha
 			];
 		}
-		if ( isset ( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) &&
-			isset ( $stupidBackoffDiscount ) ) {
+		if ( isset( $wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] ) &&
+			isset( $stupidBackoffDiscount ) ) {
 			$wgCirrusSearchPhraseSuggestSettings['smoothing_model']['stupid_backoff'] = [
 				'discount' => $stupidBackoffDiscount
 			];

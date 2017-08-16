@@ -237,12 +237,12 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		}
 		foreach ( $dismaxQueries as $name => $queries ) {
 			$dismax = new \Elastica\Query\DisMax();
-			if ( isset ( $this->dismaxSettings[$name] ) ) {
+			if ( isset( $this->dismaxSettings[$name] ) ) {
 				$settings = $this->dismaxSettings[$name];
-				if ( isset ( $settings['tie_breaker'] ) ) {
+				if ( isset( $settings['tie_breaker'] ) ) {
 					$dismax->setTieBreaker( $settings['tie_breaker'] );
 				}
-				if ( isset ( $settings['boost'] ) ) {
+				if ( isset( $settings['boost'] ) ) {
 					$dismax->setBoost( $settings['boost'] );
 				}
 			}

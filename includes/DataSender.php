@@ -246,7 +246,7 @@ class DataSender extends ElasticsearchIntermediary {
 					$opRes = $bulk->getData()['result'];
 				}
 			}
-			if ( isset ( $updateStats[$opRes] ) ) {
+			if ( isset( $updateStats[$opRes] ) ) {
 				$updateStats[$opRes]++;
 			} else {
 				$updateStats[$opRes] = 1;

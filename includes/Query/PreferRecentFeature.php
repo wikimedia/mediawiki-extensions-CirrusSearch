@@ -49,7 +49,7 @@ class PreferRecentFeature implements KeywordFeature {
 			'/prefer-recent:(1|0?(?:\.\d+)?)?(?:,(\d*\.?\d+))? ?/',
 			function ( $matches ) use ( $context ) {
 				$decay = isset( $matches[1] ) && strlen( $matches[1] ) > 0
-					?  $decay = floatval( $matches[1] )
+					? $decay = floatval( $matches[1] )
 					: $decay = $this->unspecifiedDecay;
 
 				$halfLife = isset( $matches[2] )

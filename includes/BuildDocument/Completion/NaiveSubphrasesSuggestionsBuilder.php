@@ -106,7 +106,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 		}
 
 		$language = "";
-		if ( isset ( $inputDoc[self::LANG_FIELD] ) ) {
+		if ( isset( $inputDoc[self::LANG_FIELD] ) ) {
 			$language = $inputDoc[self::LANG_FIELD];
 		}
 

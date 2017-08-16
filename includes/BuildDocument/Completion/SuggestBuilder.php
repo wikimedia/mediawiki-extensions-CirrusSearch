@@ -155,7 +155,7 @@ class SuggestBuilder {
 		}
 
 		// Build cross ns suggestions
-		if ( !empty ( $crossNsTitles ) ) {
+		if ( !empty( $crossNsTitles ) ) {
 			$titles = [];
 			foreach ( $crossNsTitles as $data ) {
 				$titles[] = $data['title'];

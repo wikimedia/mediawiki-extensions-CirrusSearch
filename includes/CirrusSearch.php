@@ -725,7 +725,7 @@ class CirrusSearch extends SearchEngine {
 					// It may require a change in core since ApiBase is
 					// strict and won't allow unknown values to be set
 					// here.
-					'desc-message' => isset ( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
+					'desc-message' => isset( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
 					'default' => $default,
 				];
 			}

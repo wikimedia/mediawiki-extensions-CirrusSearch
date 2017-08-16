@@ -301,7 +301,7 @@ class SuggestBuilderTest extends CirrusTestCase {
 			'namespace' => 0,
 			'redirect' => [
 				[ 'title' => 'UN/LOCODE:DEULM', 'namespace' => 0 ],
-				[ 'title'=> 'Ulm, Germany', 'namespace' => 0 ],
+				[ 'title' => 'Ulm, Germany', 'namespace' => 0 ],
 				[ 'title' => "Ulm displaced persons camp", 'namespace' => 0 ],
 				[ 'title' => "Söflingen", 'namespace' => 0 ],
 				[ 'title' => "Should be ignored", 'namespace' => 1 ],

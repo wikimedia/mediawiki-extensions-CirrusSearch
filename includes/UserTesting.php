@@ -228,7 +228,7 @@ class UserTesting {
 			// xor will retain the uniform distribution
 			$sum = $sum ^ $dec;
 		}
-		return $sum / ( ( 1<<16 )-1 );
+		return $sum / ( ( 1 << 16 ) - 1 );
 	}
 
 	/**

@@ -276,7 +276,7 @@ class Reindexer {
 			if ( $upper === 'all' ) {
 				$upper = $nodes - 1;
 			}
-			$expectedReplicas =  min( max( $nodes - 1, $lower ), $upper );
+			$expectedReplicas = min( max( $nodes - 1, $lower ), $upper );
 			$expectedActive = $this->shardCount * ( 1 + $expectedReplicas );
 			if ( $each === 0 || $active === $expectedActive ) {
 				$this->outputIndented( "\t\tactive:$active/$expectedActive relocating:$relocating" .

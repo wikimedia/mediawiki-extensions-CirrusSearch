@@ -22,7 +22,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		if ( isset( $expected['filter'] ) ) {
 			$this->assertEquals( $expected['filter'], $result['filter'] );
 		} else {
-			$this->assertFalse( isset ( $result['filter'] ) );
+			$this->assertFalse( isset( $result['filter'] ) );
 		}
 	}
 

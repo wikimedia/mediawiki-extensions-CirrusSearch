@@ -43,7 +43,7 @@ class RescoreProfiles {
 			$wgCirrusSearchRescoreProfiles;
 
 		$profile = $request->getVal( 'cirrusRescoreProfile' );
-		if ( $profile !== null && isset ( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
+		if ( $profile !== null && isset( $wgCirrusSearchRescoreProfiles[$profile] ) ) {
 			$wgCirrusSearchRescoreProfile = $profile;
 		}
 	}

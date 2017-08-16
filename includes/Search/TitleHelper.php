@@ -76,7 +76,7 @@ class TitleHelper {
 	 * @return bool true if this result refers to an external Title
 	 */
 	public static function isExternal( \Elastica\Result $r ) {
-		if ( isset ( $r->wiki ) && $r->wiki !== wfWikiID() ) {
+		if ( isset( $r->wiki ) && $r->wiki !== wfWikiID() ) {
 			return true;
 		}
 		// no wiki is suspicious, should we log a warning?
@@ -89,7 +89,7 @@ class TitleHelper {
 	 * empty if local.
 	 */
 	public static function identifyInterwikiPrefix( $r ) {
-		if ( isset ( $r->wiki ) && $r->wiki !== wfWikiID() ) {
+		if ( isset( $r->wiki ) && $r->wiki !== wfWikiID() ) {
 			return MediaWikiServices::getInstance()
 				->getService( InterwikiResolver::SERVICE )
 				->getInterwikiPrefix( $r->wiki );

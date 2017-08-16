@@ -328,7 +328,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$variantIndex++;
 			foreach ( $profiles as $name => $profile ) {
 				$variantProfName = $name . '-variant-' . $variantIndex;
-				$profile = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT/$variantIndex );
+				$profile = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT / $variantIndex );
 				$suggest = $this->buildSuggestQuery(
 					$profile, $variant, $queryLen
 				);
@@ -386,7 +386,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 						$targetTitle = $suggest['_source']['target_title']['title'];
 						$targetTitleNS = $suggest['_source']['target_title']['namespace'];
 					}
-					list ( $docId, $type ) = $this->decodeId( $suggest['_id'] );
+					list( $docId, $type ) = $this->decodeId( $suggest['_id'] );
 					$score = $discount * $suggest['_score'];
 					if ( !isset( $suggestionsByDocId[$docId] ) ||
 						$score > $suggestionsByDocId[$docId]->getScore()

@@ -1332,8 +1332,8 @@ $wgResourceModules += [
 		'localBasePath' => __DIR__,
 		'targets' => [ 'desktop', 'mobile' ],
 	],
-	"ext.cirrus.explore-similar" =>  [
-		'scripts' =>  [
+	"ext.cirrus.explore-similar" => [
+		'scripts' => [
 			'resources/ext.cirrus.explore-similar.js',
 		],
 		'dependencies' => [

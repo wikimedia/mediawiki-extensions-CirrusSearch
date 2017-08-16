@@ -184,7 +184,7 @@ abstract class Job extends MWJob {
 	 * @return Connection[] indexed by cluster name
 	 */
 	protected function decideClusters() {
-		$cluster = isset ( $this->params['cluster'] ) ? $this->params['cluster'] : null;
+		$cluster = isset( $this->params['cluster'] ) ? $this->params['cluster'] : null;
 		if ( $cluster === null ) {
 			$conns = Connection::getWritableClusterConnections( $this->searchConfig );
 		} else {
@@ -195,7 +195,7 @@ abstract class Job extends MWJob {
 					"Received {command} job for unwritable cluster {cluster}",
 					[
 						'command' => $this->command,
-						'cluster' =>  $cluster
+						'cluster' => $cluster
 					]
 				);
 				// this job does not allow retries so we just need to throw an exception

@@ -26,7 +26,7 @@ class FullTextQueryBuilderProfiles {
 		global $wgCirrusSearchFullTextQueryBuilderProfiles,
 			$wgCirrusSearchFullTextQueryBuilderProfile;
 		$profile = $request->getVal( 'cirrusFTQBProfile' );
-		if ( $profile != null && isset ( $wgCirrusSearchFullTextQueryBuilderProfiles[$profile] ) ) {
+		if ( $profile != null && isset( $wgCirrusSearchFullTextQueryBuilderProfiles[$profile] ) ) {
 			$wgCirrusSearchFullTextQueryBuilderProfile = $profile;
 		}
 	}

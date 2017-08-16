@@ -103,8 +103,8 @@ class SuggestScoringTest extends CirrusTestCase {
 			$res2 = $qs->boost( $score2, $boost );
 
 			$this->assertGreaterThan( $res1, $res2, "A boost cannot 'overboost' a score" );
-			$res1 = $qs->boost( $score1, (float)1/(float)$boost );
-			$res2 = $qs->boost( $score2, (float)1/(float)$boost );
+			$res1 = $qs->boost( $score1, (float)1 / (float)$boost );
+			$res2 = $qs->boost( $score2, (float)1 / (float)$boost );
 			$this->assertGreaterThan( $res1, $res2, "A boost cannot 'overboost' a score" );
 		}
 
@@ -113,7 +113,7 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( $res, 1, "When boost is 1 the score remains unchanged." );
 		$res = $qs->boost( 1, 0 );
 		$this->assertEquals( $res, 0.5, "When boost is 0 the score is divided by 2." );
-		$res = $qs->boost( 1,  2^31-1 );
+		$res = $qs->boost( 1,  2 ^ 31 - 1 );
 		$this->assertEquals( $res, 1,
 			"When score is 1 and boost is very high the score is still 1." );
 		$res = $qs->boost( 0,  0 );
@@ -238,7 +238,7 @@ class SuggestScoringTest extends CirrusTestCase {
 
 		for ( $i = 0; $i < 1000; $i++ ) {
 			$page = [
-				'incoming_links' => mt_rand( 0, 2^31-1 ),
+				'incoming_links' => mt_rand( 0, 2 ^ 31 - 1 ),
 				'external_link' => array_fill( 0, mt_rand( 1, 2000 ), null ),
 				'text_bytes' => mt_rand( 1, 400000 ),
 				'heading' => array_fill( 0, mt_rand( 1, 1000 ), null ),
@@ -304,7 +304,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	public function testRobustness() {
-		$templates =  [ 'Good' => 2, 'Bad' => 0.5 ];
+		$templates = [ 'Good' => 2, 'Bad' => 0.5 ];
 		$all_templates = array_keys( $templates );
 		$all_templates += [ 'Foo', 'Bar' ];
 		for ( $i = 0; $i < 5000; $i++ ) {

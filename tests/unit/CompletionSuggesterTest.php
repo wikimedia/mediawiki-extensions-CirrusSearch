@@ -140,7 +140,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 					'plain-variant-2' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
-						'discount' => 1.0 * ( CompletionSuggester::VARIANT_EXTRA_DISCOUNT/2 ),
+						'discount' => 1.0 * ( CompletionSuggester::VARIANT_EXTRA_DISCOUNT / 2 ),
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
 					]
@@ -256,7 +256,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			$score = $max - $i;
 			$suggestions[] = [
 				'_id' => $i.'t',
-				'text'=> "Title$i",
+				'text' => "Title$i",
 				'_score' => $score,
 			];
 		}
@@ -286,7 +286,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			],
 			'Reach ES limit' => [
 				$resp,
-				5, $max-3, 'Title198', 'Title200', 3, 300
+				5, $max - 3, 'Title198', 'Title200', 3, 300
 			],
 			'Reach Cirrus limit' => [
 				$resp,

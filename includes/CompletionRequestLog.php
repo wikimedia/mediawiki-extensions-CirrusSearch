@@ -102,7 +102,7 @@ class CompletionRequestLog extends BaseRequestLog {
 			'queryType' => $this->getQueryType(),
 			'index' => $this->index,
 			'elasticTookMs' => $this->getElasticTookMs(),
-			'elasticTook2PassMs' => isset( $this->extra['elasticTook2PassMs'] ) ?  $this->extra['elasticTook2PassMs'] : -1,
+			'elasticTook2PassMs' => isset( $this->extra['elasticTook2PassMs'] ) ? $this->extra['elasticTook2PassMs'] : -1,
 			'hitsTotal' => $this->getTotalHits(),
 			'maxScore' => $this->maxScore,
 			'hitsReturned' => count( $this->hits ),

@@ -232,7 +232,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		if ( $this->getSearchConfig()->get( 'CirrusSearchCompletionSuggesterUseDefaultSort' ) ) {
 			$extraBuilders[] = new DefaultSortSuggestionsBuilder();
 		}
-		$subPhrasesConfig =  $this->getSearchConfig()
+		$subPhrasesConfig = $this->getSearchConfig()
 			->get( 'CirrusSearchCompletionSuggesterSubphrases' );
 		if ( $subPhrasesConfig['build'] ) {
 			$extraBuilders[] = NaiveSubphrasesSuggestionsBuilder::create( $subPhrasesConfig );

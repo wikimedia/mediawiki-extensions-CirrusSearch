@@ -60,9 +60,9 @@ class RequestLoggerTest extends CirrusTestCase {
 
 	private function runFixture( array $query, $responses, $expectedLogs, \Closure $test ) {
 		if ( is_string( $responses ) ) {
-			list ( $loggers, $config, $connection, $transport ) = $this->buildDependencies( null );
+			list( $loggers, $config, $connection, $transport ) = $this->buildDependencies( null );
 		} else {
-			list ( $loggers, $config, $connection, $transport ) = $this->buildDependencies( $responses );
+			list( $loggers, $config, $connection, $transport ) = $this->buildDependencies( $responses );
 		}
 
 		// Disable opportunistic execution of deferred updates
@@ -108,7 +108,7 @@ class RequestLoggerTest extends CirrusTestCase {
 	public function testRequestLogging( array $query, $responses = null, $expectedLogs ) {
 		switch ( $query['type'] ) {
 		case 'fulltext':
-			$work =  function ( $config, $connection ) use ( $query ) {
+			$work = function ( $config, $connection ) use ( $query ) {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;

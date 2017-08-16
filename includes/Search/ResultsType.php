@@ -380,7 +380,7 @@ class FullTextResultsType extends BaseResultsType {
 			unset( $text[ 'options' ][ 'skip_if_last_matched' ] );
 		}
 
-		$config =  [
+		$config = [
 			'pre_tags' => [ Searcher::HIGHLIGHT_PRE ],
 			'post_tags' => [ Searcher::HIGHLIGHT_POST ],
 			'fields' => [],
@@ -468,7 +468,7 @@ class FullTextResultsType extends BaseResultsType {
 	 */
 	private function addMatchedFields( $fields ) {
 		foreach ( array_keys( $fields ) as $name ) {
-			$fields[$name]['matched_fields'] =  [ $name, "$name.plain" ];
+			$fields[$name]['matched_fields'] = [ $name, "$name.plain" ];
 		}
 		return $fields;
 	}

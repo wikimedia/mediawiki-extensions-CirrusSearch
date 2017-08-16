@@ -282,7 +282,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	/** @var string[] */
 	private static $stopwords = [
 		'ar' => '_arabic_',
-		'hy' =>  '_armenian_',
+		'hy' => '_armenian_',
 		'eu' => '_basque_',
 		'pt-br' => '_brazilian_',
 		'bg' => '_bulgarian_',

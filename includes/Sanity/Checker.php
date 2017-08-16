@@ -115,7 +115,7 @@ class Checker {
 				$fromIndex = $pagesFromIndex[$docId];
 			}
 
-			if ( isset ( $pagesFromDb[$pageId] ) ) {
+			if ( isset( $pagesFromDb[$pageId] ) ) {
 				$page = $pagesFromDb[$pageId];
 				$updated = $this->checkExisitingPage( $docId, $pageId, $page, $fromIndex );
 			} else {

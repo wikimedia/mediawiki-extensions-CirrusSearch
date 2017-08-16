@@ -42,7 +42,7 @@ class ElasticSearch implements Detector {
 				// FIXME: here I'm just winging it, should be something
 				// that makes sense for multiple languages
 				if ( count( $langs ) == 2 ) {
-					if ( $langs[0]['probability'] > 2*$langs[1]['probability'] ) {
+					if ( $langs[0]['probability'] > 2 * $langs[1]['probability'] ) {
 						return $langs[0]['language'];
 					}
 				}

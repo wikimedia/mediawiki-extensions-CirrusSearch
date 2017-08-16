@@ -246,7 +246,7 @@ class ConfigUtils {
 		while ( ( $startTime + $timeout ) > time() ) {
 			try {
 				$response = $this->getIndexHealth( $indexName );
-				$status = isset ( $response['status'] ) ? $response['status'] : 'unknown';
+				$status = isset( $response['status'] ) ? $response['status'] : 'unknown';
 				if ( $status == 'green' ) {
 					$this->outputIndented( "\tGreen!\n" );
 					return true;

@@ -26,7 +26,7 @@ class CrossProjectBlockScorerProfiles {
 		global $wgCirrusSearchCrossProjectBlockScoreProfiles,
 			$wgCirrusSearchCrossProjectOrder;
 		$profile = $request->getVal( 'cirrusCrossProjectOrderProfile' );
-		if ( $profile != null && isset ( $wgCirrusSearchCrossProjectBlockScoreProfiles[$profile] ) ) {
+		if ( $profile != null && isset( $wgCirrusSearchCrossProjectBlockScoreProfiles[$profile] ) ) {
 			$wgCirrusSearchCrossProjectOrder = $profile;
 		}
 	}

@@ -17,7 +17,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	public function getSisterProjectPrefixes() {
 		$matrix = $this->getMatrix();
-		return isset ( $matrix['sister_projects'] ) ? $matrix['sister_projects'] : [];
+		return isset( $matrix['sister_projects'] ) ? $matrix['sister_projects'] : [];
 	}
 
 	/**
@@ -26,7 +26,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	public function getInterwikiPrefix( $wikiId ) {
 		$matrix = $this->getMatrix();
-		return isset ( $matrix['prefixes_by_wiki'][$wikiId] ) ? $matrix['prefixes_by_wiki'][$wikiId] : null;
+		return isset( $matrix['prefixes_by_wiki'][$wikiId] ) ? $matrix['prefixes_by_wiki'][$wikiId] : null;
 	}
 
 	/**

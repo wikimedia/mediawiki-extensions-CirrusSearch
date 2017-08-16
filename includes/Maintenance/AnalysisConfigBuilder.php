@@ -186,7 +186,7 @@ class AnalysisConfigBuilder {
 	 * @return array|null the similarity config
 	 */
 	public function buildSimilarityConfig() {
-		if ( $this->similarity != null && isset ( $this->similarity['similarity'] ) ) {
+		if ( $this->similarity != null && isset( $this->similarity['similarity'] ) ) {
 			return $this->similarity['similarity'];
 		}
 		return null;

@@ -362,7 +362,7 @@ class FunctionScoreChain {
 	 * @suppress PhanTypeMismatchReturn phan does not understand hooks and by-ref parameters
 	 */
 	private function getImplementation( $func ) {
-		$weight = isset ( $func['weight'] ) ? $func['weight'] : 1;
+		$weight = isset( $func['weight'] ) ? $func['weight'] : 1;
 		switch ( $func['type'] ) {
 		case 'boostlinks':
 			return new IncomingLinksFunctionScoreBuilder( $this->context, $weight );
@@ -716,7 +716,7 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
 		parent::__construct( $context, $weight );
-		if ( isset ( $profile['factor'] ) ) {
+		if ( isset( $profile['factor'] ) ) {
 			$profile['factor'] = $this->getOverriddenFactor( $profile['factor'] );
 		}
 		$this->profile = $profile;
@@ -771,13 +771,13 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 			throw new InvalidRescoreProfileException( 'midpoint is mandatory' );
 		}
 
-		if ( isset ( $profile['scale'] ) ) {
+		if ( isset( $profile['scale'] ) ) {
 			$this->scale = $this->getOverriddenFactor( $profile['scale'] );
 		} else {
 			throw new InvalidRescoreProfileException( 'scale is mandatory' );
 		}
 
-		if ( isset ( $profile['field' ] ) ) {
+		if ( isset( $profile['field' ] ) ) {
 			$this->field = $profile['field'];
 		} else {
 			throw new InvalidRescoreProfileException( 'field is mandatory' );
@@ -800,10 +800,10 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 		// N²x² + (2N - M)x + 1 = 0
 		// so we we use the quadratic formula:
 		// (-(2N-M) + sqrt((2N-M)²-4N²)) / 2N²
-		if ( 4*$N >= $M ) {
+		if ( 4 * $N >= $M ) {
 			throw new InvalidRescoreProfileException( 'The midpoint point cannot be higher than scale/4' );
 		}
-		return ( -( 2*$N - $M ) + sqrt( ( 2 * $N - $M ) * ( 2 * $N - $M ) - 4 * $N * $N ) ) / ( 2 * $N * $N );
+		return ( -( 2 * $N - $M ) + sqrt( ( 2 * $N - $M ) * ( 2 * $N - $M ) - 4 * $N * $N ) ) / ( 2 * $N * $N );
 	}
 
 	public function append( FunctionScore $functionScore ) {

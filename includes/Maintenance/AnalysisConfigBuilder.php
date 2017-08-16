@@ -605,14 +605,21 @@ class AnalysisConfigBuilder {
 				'keep_both' => false,
 				'convert_type' => 't2s',
 			];
+			$config[ 'filter' ][ 'smartcn_stop' ] = [
+				// SmartCN converts lots of punctuation to "," but we don't want to index it
+				'type' => 'stop',
+				'stopwords' => [ "," ],
+			];
 			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'smartcn_tokenizer',
 				'char_filter' => [ 'stconvertfix', 'tsconvert' ],
-				'filter' => [ 'lowercase' ],
+				'filter' => [ 'smartcn_stop', 'lowercase' ],
 			];
 
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			$config[ 'analyzer' ][ 'plain' ][ 'filter' ] = [ 'smartcn_stop', 'lowercase' ];
+			$config[ 'analyzer' ][ 'plain_search' ][ 'filter' ] = $config[ 'analyzer' ][ 'plain' ][ 'filter' ];
 			break;
 		case 'english':
 			$config[ 'filter' ][ 'possessive_english' ] = [

@@ -8,6 +8,7 @@
                 "tsconvert"
             ],
             "filter": [
+                "smartcn_stop",
                 "lowercase"
             ]
         },
@@ -19,6 +20,7 @@
                 "tsconvert"
             ],
             "filter": [
+                "smartcn_stop",
                 "lowercase"
             ]
         },
@@ -26,6 +28,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "smartcn_stop",
                 "lowercase"
             ],
             "char_filter": [
@@ -36,6 +39,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "smartcn_stop",
                 "lowercase"
             ],
             "char_filter": [
@@ -208,6 +212,12 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "smartcn_stop": {
+            "type": "stop",
+            "stopwords": [
+                ","
+            ]
         },
         "dedup_asciifolding": {
             "type": "unique",

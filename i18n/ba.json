@@ -5,15 +5,14 @@
 			"Lizalizaufa",
 			"Азат Хәлилов",
 			"Банат Валеева-Яубасарова",
-			"Лилиә"
+			"Лилиә",
+			"Ләйсән"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch базаһында MediaWiki өсөн эҙләү",
 	"cirrussearch-backend-error": "Ваҡытлыса проблемалар арҡаһында табып булманы. Бер аҙҙан яңынан эшләп ҡарағыҙ.",
 	"cirrussearch-parse-error": "Һорау аңлашылманы. Һорауҙы аңлайышлыраҡ итеп бирегеҙ. Һорау эҙләү системаһын яҡшыртыу өсөн яҙып алынды.",
 	"cirrussearch-too-busy-error": "Эҙләү элеге ваҡытта мөмкин түгел. Бер аҙҙан яңынан маташып ҡарағыҙ.",
-	"cirrussearch-too-busy-for-you-anonymous-error": "Һеҙҙә бер үк ваҡытта бик күп эҙләү процедуралары ҡуйылған. Әгәр һеҙ башҡа ҡулланыусылар менән бер үк IP-адрес менән файҙаланһағыҙ, һеҙгә система шәхси сикләү ҡуйһын өсөн, танылығыҙ.",
-	"cirrussearch-too-busy-for-you-logged-in-error": "Һеҙҙең эҙләү процедуралары бер юлы артыҡ тоҡандырылған.",
 	"cirrussearch-regex-syntax-error": "Даими әйтемдәр синтаксисында хата $2: $1",
 	"cirrussearch-regex-too-busy-error": "ӘЛЕГЕ ВАҠЫТТА БИК КҮП ҺҮҘ-ҺӨЙЛӘМДӘР ЭШКӘРТЕЛӘ.ҺУҢҒАРАҠ ЯҢЫНАН МАТАШЫП ҠАРАҒЫҘ.",
 	"cirrussearch-regex-too-complex-error": "Даими әйтем бик ҡатмарлы. Нисек ябайлаштырыуҙы яҡшыраҡ белегеҙ. [[mw:Special:MyLanguage/Help:CirrusSearch/RegexTooComplex|бында]].",
@@ -30,5 +29,8 @@
 	"apihelp-cirrus-settings-dump-example": "Был викиға CirrusSearch көйләүҙәр дампын алырға.",
 	"cirrussearch-give-feedback": "Баһа ҡалдырығыҙ",
 	"cirrussearch-query-too-long": "Эҙләгән һорау  мөмкин тиклем булған максималь оҙонлоҡтан арта. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Тамамлауҙарға тәҡдим"
+	"cirrussearch-completionsuggester-pref": "Тамамлауҙарға тәҡдим",
+	"cirrussearch-pref-completion-legacy-section-desc": "Префикс буйынса эҙләү",
+	"cirrussearch-explore-similar-categories": "Категориялар",
+	"cirrussearch-explore-similar-languages": "Телдәр"
 }

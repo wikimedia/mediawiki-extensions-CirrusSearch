@@ -26,10 +26,13 @@
 	"cirrussearch-pref-label": "بحث جديد",
 	"cirrussearch-pref-desc": "جرب طريقة البحث الجديدة التي تدعم عدد أكبر من اللغات وتوفر نتائج أفضل من ناحية التحديثات. كما يمكنها أيضا البحث لك عن نصوص داخل قوالب.",
 	"apihelp-cirrus-config-dump-description": "مخزن ضبط CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "نسخة من ضبط CirrusSearch.",
 	"apihelp-cirrus-config-dump-example": "الحصول على تخرين لضبط CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "مخزن خرائط CirrusSearch لهذه الويكي.",
+	"apihelp-cirrus-mapping-dump-summary": "نسخة من خريطة CirrusSearch لهذه الويكي.",
 	"apihelp-cirrus-mapping-dump-example": "الحصول على مخزن لخرائط CirrusSearch لهذه الويكي.",
 	"apihelp-cirrus-settings-dump-description": "تخزين إعدادات CirrusSearch لهذه الويكي.",
+	"apihelp-cirrus-settings-dump-summary": "نسخة من إعدادات CirrusSearch لهذه الويكي.",
 	"apihelp-cirrus-settings-dump-example": "الحصول على تخزين لإعدادات CirrusSearch لهذه الويكي.",
 	"apierror-cirrus-requesttoolong": "طلب بحث البادئة كان أطول من الطول الأقصى المسموح به. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "اعطنا ملاحظاتك",
@@ -78,5 +81,11 @@
 	"cirrussearch-feature-too-many-conditions": "شروط كثيرة جدا تم توفيرها ل'$1'، اقتطاعها إلى $2.",
 	"cirrussearch-incategory-feature-no-valid-categories": "لا تصنيفات صحيحة تم توفيرها ل'$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "لا عناوين صحيحة تم توفيرها ل'$1'.",
-	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields"
+	"cirrussearch-mlt-not-configured": "الخاصية '$1' مضبوطة بشكل غير صحيح. سل إداريا أن يصلح $wgCirrusSearchMoreLikeThisFields",
+	"cirrussearch-explore-similar-related": "مرتبطة",
+	"cirrussearch-explore-similar-categories": "تصنيفات",
+	"cirrussearch-explore-similar-languages": "اللغات",
+	"cirrussearch-explore-similar-related-none": "لا صفحات مرتبطة متوفرة",
+	"cirrussearch-explore-similar-categories-none": "لا تصنيفات متوفرة",
+	"cirrussearch-explore-similar-languages-none": "غير متوفرة بلغات أخرى"
 }

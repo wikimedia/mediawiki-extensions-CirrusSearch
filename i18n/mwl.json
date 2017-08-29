@@ -8,7 +8,7 @@
 	"cirrussearch-pref-completion-profile-help": "Defenir l cumportamiento de la funcionalidade que fornece sugestones (percurar-anquanto-scribe).",
 	"prefs-completion": "Cuncluson de la percura",
 	"cirrussearch-pref-completion-section-desc": "Sugestones pa cumpletar",
-	"cirrussearch-pref-completion-section-legend": "Un algoritmo pa las [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestones de preenchimento] cun melhor correçon de ls erros ourtográficos i maior relebáncia de las pesquisas.",
+	"cirrussearch-pref-completion-section-legend": "Un algoritmo pa las [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestones de preenchimento] cun melhor correçon de ls erros ourtográficos i maior relebáncia de las percuras.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padron (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dous erros ourtográficos. Resolbe ls ancaminamientos de ls erros ourtográficos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modo rigoroso (abançado)",
@@ -18,6 +18,6 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Sin correçon de ls erros ourtográficos. Resolbe ancaminamientos de ls erros ourtográficos. Eidantifica correspondéncias de subfrases ne ls títalos.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Percurar prefixo",
 	"cirrussearch-pref-completion-legacy-section-legend": "L'antigo algoritmo percurar-anquanto-scribe.",
-	"cirrussearch-completion-profile-classic-pref-name": "Pesquisa clássica de l prefixo",
+	"cirrussearch-completion-profile-classic-pref-name": "Percura clássica de l prefixo",
 	"cirrussearch-completion-profile-classic-pref-desc": "Sin correçon de ls erros ourtográficos. Eidantifica correspondéncias ne l'ampeço de ls títalos."
 }

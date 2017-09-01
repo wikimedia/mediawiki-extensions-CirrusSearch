@@ -20,11 +20,11 @@ class ContentModelFeature extends SimpleKeywordFeature {
 
 	/**
 	 * @param SearchContext $context
-	 * @param string        $key The keyword
-	 * @param string        $value The value attached to the keyword with quotes stripped
-	 * @param string        $quotedValue The original value in the search string, including quotes
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped
+	 * @param string $quotedValue The original value in the search string, including quotes
 	 *     if used
-	 * @param bool          $negated Is the search negated? Not used to generate the returned
+	 * @param bool $negated Is the search negated? Not used to generate the returned
 	 *     AbstractQuery, that will be negated as necessary. Used for any other building/context
 	 *     necessary.
 	 * @return array Two element array, first an AbstractQuery or null to apply to the

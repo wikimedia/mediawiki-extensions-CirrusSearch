@@ -311,7 +311,7 @@ class FunctionScoreChain {
 	 * Builds a new function score chain.
 	 *
 	 * @param SearchContext $context
-	 * @param string        $chainName the name of the chain (must be a valid
+	 * @param string $chainName the name of the chain (must be a valid
 	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
 	 * @throws InvalidRescoreProfileException
 	 */
@@ -425,7 +425,7 @@ class FunctionScoreDecorator extends FunctionScore {
 	}
 
 	/**
-	 * @return boolean true if this function score is empty
+	 * @return bool true if this function score is empty
 	 */
 	public function isEmptyFunction() {
 		return $this->size == 0;
@@ -758,8 +758,8 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float         $weight
-	 * @param array         $profile
+	 * @param float $weight
+	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
@@ -844,8 +844,8 @@ class SatuFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float         $weight
-	 * @param array         $profile
+	 * @param float $weight
+	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
@@ -905,8 +905,8 @@ class LogMultFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float         $weight
-	 * @param array         $profile
+	 * @param float $weight
+	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {
@@ -961,8 +961,8 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param float         $weight
-	 * @param array         $profile
+	 * @param float $weight
+	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $weight, $profile ) {

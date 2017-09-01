@@ -14,25 +14,25 @@ class PreferRecentFeatureText extends CirrusTestCase {
 		return [
 			'uses defaults if nothing provided' => [
 				'',
-				.6,
+				0.6,
 				160,
 				'prefer-recent:'
 			],
 			'doesnt absorb unrelated pieces' => [
 				'other',
-				.6,
+				0.6,
 				160,
 				'prefer-recent: other',
 			],
 			'can specify only decay portion' => [
 				'',
-				.9,
+				0.9,
 				160,
 				'prefer-recent:.9',
 			],
 			'can specify decay and half life' => [
 				'',
-				.01,
+				0.01,
 				123,
 				'prefer-recent:.01,123',
 			],
@@ -52,7 +52,7 @@ class PreferRecentFeatureText extends CirrusTestCase {
 
 		$feature = new PreferRecentFeature( new \HashConfig( [
 			'CirrusSearchPreferRecentDefaultHalfLife' => 160,
-			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => .6,
+			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => 0.6,
 		] ) );
 		$remaining = $feature->apply( $context, $term );
 		$this->assertEquals( $expectedRemaining, $remaining );

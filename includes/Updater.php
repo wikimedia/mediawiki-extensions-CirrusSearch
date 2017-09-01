@@ -100,7 +100,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * memory of titles updated and detects special pages.
 	 *
 	 * @param Title $title title to trace
-	 * @return array(target, redirects)
+	 * @return array(target redirects)
 	 *    - target is WikiPage|null wikipage if the $title either isn't a redirect or resolves
 	 *    to an updatable page that hasn't been updated yet.  Null if the page has been
 	 *    updated, is a special page, or the redirects enter a loop.
@@ -433,7 +433,7 @@ class Updater extends ElasticsearchIntermediary {
 	/**
 	 * Update the search index for newly linked or unlinked articles.
 	 * @param Title[] $titles titles to update
-	 * @return boolean were all pages updated?
+	 * @return bool were all pages updated?
 	 */
 	public function updateLinkedArticles( $titles ) {
 		$pages = [];

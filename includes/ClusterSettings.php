@@ -29,7 +29,7 @@ class ClusterSettings {
 
 	/**
 	 * @param string $indexType
-	 * @return integer Number of shards the index should have
+	 * @return int Number of shards the index should have
 	 */
 	public function getShardCount( $indexType ) {
 		$settings = $this->config->get( 'CirrusSearchShardCount' );
@@ -78,7 +78,7 @@ class ClusterSettings {
 	}
 
 	/**
-	 * @return integer Connect timeout to use when initializing connection.
+	 * @return int Connect timeout to use when initializing connection.
 	 * Fallback to 0 (300 sec) if not specified in cirrus config.
 	 */
 	public function getConnectTimeout() {

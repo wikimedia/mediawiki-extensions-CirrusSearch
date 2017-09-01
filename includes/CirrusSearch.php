@@ -326,7 +326,7 @@ class CirrusSearch extends SearchEngine {
 	 * Do the hard part of the searching - actual Searcher invocation
 	 * @param string $term
 	 * @param SearchConfig $config
-	 * @param boolean $forceLocal set to true to force searching on the
+	 * @param bool $forceLocal set to true to force searching on the
 	 *        local wiki (e.g. avoid searching on commons)
 	 * @return Status
 	 */
@@ -766,7 +766,7 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Create a search field definition
 	 * @param string $name
-	 * @param int    $type
+	 * @param int $type
 	 * @return SearchIndexField
 	 */
 	public function makeSearchFieldMapping( $name, $type ) {

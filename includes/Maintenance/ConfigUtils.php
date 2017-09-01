@@ -239,7 +239,7 @@ class ConfigUtils {
 	 *
 	 * @param string $indexName
 	 * @param int $timeout
-	 * @return boolean true if the index is green false otherwise.
+	 * @return bool true if the index is green false otherwise.
 	 */
 	public function waitForGreen( $indexName, $timeout ) {
 		$startTime = time();

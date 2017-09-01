@@ -124,7 +124,7 @@ class ElasticaErrorHandler {
 	/**
 	 * Does this status represent an Elasticsearch parse error?
 	 * @param Status $status Status to check
-	 * @return boolean is this a parse error?
+	 * @return bool is this a parse error?
 	 */
 	public static function isParseError( Status $status ) {
 		/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */

@@ -956,7 +956,7 @@ STEMMER_RULES
 	}
 
 	/**
-	 * @return boolean true if the icu analyzer is available.
+	 * @return bool true if the icu analyzer is available.
 	 */
 	public function isIcuAvailable() {
 		return $this->icu;

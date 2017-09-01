@@ -609,7 +609,7 @@ $wgCirrusSearchPreferRecentDefaultDecayPortion = 0;
  * doesn't specify a portion.  Defaults to .6 because that approximates the behavior that
  * wikinews has been using for years.  An article 160 days old is worth about 70% of its new score.
  */
-$wgCirrusSearchPreferRecentUnspecifiedDecayPortion = .6;
+$wgCirrusSearchPreferRecentUnspecifiedDecayPortion = 0.6;
 
 /**
  * Default number of days it takes the portion of an article's score that decays with time since

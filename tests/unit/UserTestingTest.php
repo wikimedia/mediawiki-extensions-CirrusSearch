@@ -60,7 +60,7 @@ class UserTestingTest extends CirrusTestCase {
 		$samples = 3000;
 		$expected = $samples / $config['test']['sampleRate'];
 		$expectedPerBucket = $expected / count( $config['test']['buckets'] );
-		$allowedError = .25;
+		$allowedError = 0.25;
 		$buckets = [];
 		for ( $i = 0; $i < $samples; ++$i ) {
 			$ut = new UserTesting( $config );

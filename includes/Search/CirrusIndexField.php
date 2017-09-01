@@ -41,8 +41,8 @@ abstract class CirrusIndexField extends SearchIndexFieldDefinition {
 	protected $mappingFlags;
 
 	/**
-	 * @param string       $name
-	 * @param int          $type
+	 * @param string $name
+	 * @param int $type
 	 * @param SearchConfig $config
 	 */
 	public function __construct( $name, $type, SearchConfig $config ) {

@@ -155,7 +155,7 @@ class Reindexer {
 		$slices = null,
 		$refreshInterval = 1,
 		$chunkSize = 100,
-		$acceptableCountDeviation = .05
+		$acceptableCountDeviation = 0.05
 	) {
 		// Set some settings that should help io load during bulk indexing.  We'll have to
 		// optimize after this to consolidate down to a proper number of segments but that is

@@ -518,7 +518,7 @@ class Hooks {
 	 * Extract namespaces from query string.
 	 * @param array $namespaces
 	 * @param string $search
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
 		$searcher = new Searcher( self::getConnection(), 0, 1, self::getConfig(), $namespaces );
@@ -721,7 +721,7 @@ class Hooks {
 	 * Activate Completion Suggester as a Beta Feature if available
 	 * @param User $user
 	 * @param array &$pref beta feature prefs
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function getBetaFeaturePreferences( User $user, &$pref ) {
 		global $wgCirrusSearchUseCompletionSuggester,

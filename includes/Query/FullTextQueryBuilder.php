@@ -13,7 +13,7 @@ interface FullTextQueryBuilder {
 	 *
 	 * @param SearchContext $searchContext
 	 * @param string $term term to search
-	 * @param boolean $showSuggestion should this search suggest alternative
+	 * @param bool $showSuggestion should this search suggest alternative
 	 * searches that might be better?
 	 */
 	public function build( SearchContext $searchContext, $term, $showSuggestion );

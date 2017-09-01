@@ -141,7 +141,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param SearchConfig|null $config Configuration settings
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
-	 * @param string|boolean $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
+	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
 	 */
 	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
 		User $user = null, $index = false
@@ -167,14 +167,14 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param boolean $returnQuery just return the array that makes up the query instead of searching
+	 * @param bool $returnQuery just return the array that makes up the query instead of searching
 	 */
 	public function setReturnQuery( $returnQuery ) {
 		$this->returnQuery = $returnQuery;
 	}
 
 	/**
-	 * @param boolean $dumpResult return raw Elasticsearch result instead of processing it
+	 * @param bool $dumpResult return raw Elasticsearch result instead of processing it
 	 */
 	public function setDumpResult( $dumpResult ) {
 		$this->returnResult = $dumpResult;
@@ -205,7 +205,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * Should this search limit results to the local wiki?  If not called the default is false.
-	 * @param boolean $limitSearchToLocalWiki should the results be limited?
+	 * @param bool $limitSearchToLocalWiki should the results be limited?
 	 */
 	public function limitSearchToLocalWiki( $limitSearchToLocalWiki ) {
 		$this->searchContext->setLimitSearchToLocalWiki( $limitSearchToLocalWiki );
@@ -300,7 +300,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * builder can be used to build a degraded query if necessary.
 	 *
 	 * @param string $term term to search
-	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
+	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
 	 * @return FullTextQueryBuilder
 	 */
 	protected function buildFullTextSearch( $term, $showSuggestion ) {
@@ -386,7 +386,7 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Search articles with provided term.
 	 * @param string $term term to search
-	 * @param boolean $showSuggestion should this search suggest alternative searches that might be better?
+	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
 	 * @return Status
 	 */
 	public function searchText( $term, $showSuggestion ) {

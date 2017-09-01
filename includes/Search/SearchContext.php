@@ -431,7 +431,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @return boolean true if a special keyword was used in the query
+	 * @return bool true if a special keyword was used in the query
 	 */
 	public function isSpecialKeywordUsed() {
 		// full_text is not considered a special keyword
@@ -458,7 +458,7 @@ class SearchContext {
 
 	/**
 	 * @param string $feature Name of a syntax feature used in the query string
-	 * @param int    $weight How "complex" is this feature.
+	 * @param int $weight How "complex" is this feature.
 	 */
 	public function addSyntaxUsed( $feature, $weight = null ) {
 		$this->isDirty = true;
@@ -760,7 +760,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @return boolean Should this search limit results to the local wiki? If
+	 * @return bool Should this search limit results to the local wiki? If
 	 *  not called the default is false.
 	 */
 	public function getLimitSearchToLocalWiki() {
@@ -768,7 +768,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @param boolean $localWikiOnly Should this search limit results to the local wiki? If
+	 * @param bool $localWikiOnly Should this search limit results to the local wiki? If
 	 *  not called the default is false.
 	 */
 	public function setLimitSearchToLocalWiki( $localWikiOnly ) {

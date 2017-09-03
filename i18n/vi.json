@@ -38,5 +38,13 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Tìm tiền tố",
 	"cirrussearch-pref-completion-legacy-section-legend": "Thuật toán gợi ý tìm kiếm cổ điển.",
 	"cirrussearch-completion-profile-classic-pref-name": "Tìm tiền tố cổ điển",
-	"cirrussearch-completion-profile-classic-pref-desc": "Không sửa lỗi sai. Tìm kiếm từ đầu tên trang."
+	"cirrussearch-completion-profile-classic-pref-desc": "Không sửa lỗi sai. Tìm kiếm từ đầu tên trang.",
+	"cirrussearch-timed-out": "Truy vấn bị hết thời gian. Chỉ có sẵn một số kết quả.",
+	"cirrussearch-feature-not-available": "Từ khóa tìm kiếm “$1” không được kích hoạt trên wiki này.",
+	"cirrussearch-explore-similar-related": "Liên quan",
+	"cirrussearch-explore-similar-categories": "Thể loại",
+	"cirrussearch-explore-similar-languages": "Ngôn ngữ",
+	"cirrussearch-explore-similar-related-none": "Không có sẵn trang liên quan",
+	"cirrussearch-explore-similar-categories-none": "Không có sẵn thể loại",
+	"cirrussearch-explore-similar-languages-none": "Không có sẵn trong ngôn ngữ khác"
 }

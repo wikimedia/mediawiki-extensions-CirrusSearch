@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"MaGa",
-			"Ivi104"
+			"Ivi104",
+			"Bugoslav"
 		]
 	},
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
@@ -10,6 +11,9 @@
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
 	"cirrussearch-completionsuggester-pref": "Prijedlozi pretraživanja",
 	"cirrussearch-completionsuggester-desc": "Novi algoritam koji pretražuje dok upisujete pojmove. Kad je omogućen, prozor za pretragu će rabiti prijedloge pretraživanja novog algoritma.",
+	"cirrussearch-pref-completion-profile-help": "Odredite način na koji se vrši automatsko (pretražuje dok utipkavate) dovršavanje pretraga.",
+	"prefs-completion": "Pretražno dovršavanje",
+	"cirrussearch-pref-completion-section-desc": "Dovršivač pretrage",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Novi algoritam] omogućava bolje prijedloge prilikom pretrage, bolje ispravljanje slovnih pogrešaka te bolju relevantnost rezultata.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Zadano (preporučeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dvije pogreške. Vodi na preusmjeravanja bliska upisanome.",

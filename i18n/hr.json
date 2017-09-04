@@ -6,6 +6,10 @@
 			"Bugoslav"
 		]
 	},
+	"cirrussearch-desc": "Pretraga za MediaWiki pomoću Elasticsearcha",
+	"cirrussearch-backend-error": "Sustav nije mogao dovršiti Vašu pretragu zbog privremenoga problema.\nMolimo Vas, poslije pokušajte ponovo.",
+	"cirrussearch-parse-error": "Upit nije bio razumljiv. Molimo Vas da ga pojednostavite. Upit je bio evidentiran radi unapređenja sustava za pretragu.",
+	"cirrussearch-too-busy-error": "Pretraga je trenutačno prezauzeta. Molimo Vas, pokušajte ponovo kasnije.",
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Novi način pretrage",
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",

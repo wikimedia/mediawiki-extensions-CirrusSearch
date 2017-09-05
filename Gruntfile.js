@@ -10,6 +10,15 @@ module.exports = function ( grunt ) {
 	grunt.loadNpmTasks( 'grunt-jsonlint' );
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
 	grunt.loadNpmTasks( 'grunt-stylelint' );
+	grunt.loadNpmTasks( 'grunt-webdriver' );
+
+	var WebdriverIOconfigFile;
+
+	if ( process.env.JENKINS_HOME ) {
+		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.jenkins.js';
+	} else {
+		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.js';
+	}
 
 	grunt.initConfig( {
 		jshint: {
@@ -42,6 +51,12 @@ module.exports = function ( grunt ) {
 				'!tests/browser/articles/**',
 				'!vendor/**'
 			]
+		},
+		// Configure WebdriverIO Node task
+		webdriver: {
+			test: {
+				configFile: WebdriverIOconfigFile
+			}
 		}
 	} );
 

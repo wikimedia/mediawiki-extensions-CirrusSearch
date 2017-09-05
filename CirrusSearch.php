@@ -176,6 +176,12 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
  * wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
  * $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
  *
+ * As of elastic 5.5 native scripts have been deprecated the super_detect_noop is
+ * now available as a normal script with language "super_detect_noop".
+ * If you run elastic prior to 5.5.2 you must enable this option if using
+ * super_detect_noop.
+ * $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop_enable_native'] = true;
+ *
  * Controls the list of extra handlers to set when the noop script
  * is enabled.
  *

@@ -477,6 +477,9 @@ class UpdateSuggesterIndex extends Maintenance {
 				$docIds[] = $result->getId();
 			}
 			$this->outputProgress( $docsDumped, $totalDocsToDump );
+			if ( empty( $docIds ) ) {
+				continue;
+			}
 			MWElasticUtils::withRetry( $this->indexRetryAttempts,
 				function () use ( $docIds ) {
 					$this->getType()->deleteIds( $docIds );
@@ -613,6 +616,9 @@ class UpdateSuggesterIndex extends Maintenance {
 				}
 
 				$suggestDocs = $this->builder->build( $inputDocs );
+				if ( empty( $suggestDocs ) ) {
+					continue;
+				}
 				$this->outputProgress( $docsDumped, $totalDocsToDump );
 				MWElasticUtils::withRetry( $this->indexRetryAttempts,
 					function () use ( $destinationType, $suggestDocs ) {

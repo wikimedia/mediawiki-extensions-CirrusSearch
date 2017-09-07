@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
+use OrderedStreamingForkController;
 use PageArchive;
 use RequestContext;
 use SearchSuggestionSet;

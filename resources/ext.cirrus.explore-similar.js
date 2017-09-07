@@ -154,6 +154,7 @@
 		 *
 		 * @return {Object} - extended DeferredContentWidget object.
 		 */
+		/*
 		function RelatedCategoriesWidget( articleTitle ) {
 			var config = {
 				apiConfig: {
@@ -208,6 +209,7 @@
 			};
 			return DeferredContentWidget.call( this, config );
 		}
+		*/
 
 		/**
 		 * Extends the DeferredContentWidget function with params
@@ -278,6 +280,7 @@
 		 *
 		 * @return {Object} - extended DeferredContentWidget object.
 		 */
+		/*
 		function RelatedPagesWidget( articleTitle ) {
 			var config = {
 				apiConfig: {
@@ -346,6 +349,7 @@
 			};
 			return DeferredContentWidget.call( this, config );
 		}
+		*/
 
 		/**
 		 * Global array for storing & deleting explore similar buttons
@@ -368,20 +372,10 @@
 			 * This mapping used in openExploreSimilarItem().
 			 */
 			var contentWidgets = {
-					related: new RelatedPagesWidget( resultTitle ),
-					categories: new RelatedCategoriesWidget( resultTitle ),
 					languages: new LangLinksWidget( resultTitle )
 				},
 				$template = $(
 					'<div class="' + cssClasses.buttons + '">' +
-						'<a class="' + cssClasses.button + '" data-es-content="related">' +
-							l10n.relatedLink +
-							'<span class="' + cssClasses.buttonIcon + '"></span>' +
-						'</a>' +
-						'<a class="' + cssClasses.button + '" data-es-content="categories">' +
-							l10n.categoriesLink +
-							'<span class="' + cssClasses.buttonIcon + '"></span>' +
-						'</a>' +
 						'<a class="' + cssClasses.button + '" data-es-content="languages">' +
 							l10n.languagesLink +
 							'<span class="' + cssClasses.buttonIcon + '"></span>' +

@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Bunukwiki"
+			"Bunukwiki",
+			"Benel"
 		]
 	},
+	"cirrussearch-pref-label": "baluhay mikilim",
 	"cirrussearch-explore-similar-related": "mahizaay",
 	"cirrussearch-explore-similar-categories": "kakuniza",
 	"cirrussearch-explore-similar-languages": "kamu"

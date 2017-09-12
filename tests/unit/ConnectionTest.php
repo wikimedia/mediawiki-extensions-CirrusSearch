@@ -26,10 +26,11 @@ class ConnectionTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideNamespacesInIndexType
 	 */
-	public function testNamespacesInIndexType( $contentNamespaces, $namespaceMappings, $indexType, $expected ) {
+	public function testNamespacesInIndexType( $contentNamespaces, $defaultSearchNamespaces, $namespaceMappings, $indexType, $expected ) {
 		$config = new HashSearchConfig( [
 			'ContentNamespaces' => $contentNamespaces,
 			'CirrusSearchNamespaceMappings' => $namespaceMappings,
+			'NamespacesToBeSearchedDefault' => $defaultSearchNamespaces,
 		], [ 'inherit' ] );
 		$conn = new Connection( $config );
 		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
@@ -38,20 +39,24 @@ class ConnectionTest extends CirrusTestCase {
 	public static function provideNamespacesInIndexType() {
 		return [
 			// Standard:
-			[ [ NS_MAIN ], [], 'content', 1 ],
-			[ [ NS_MAIN ], [], 'general', false ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [], 'content', 1 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [], 'general', false ],
 
 			// Commons:
-			[ [ NS_MAIN ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'file', 1 ],
 
 			// Funky:
-			[ [ NS_MAIN ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'file', 2 ],
-			[ [ NS_MAIN ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'conent', false ],
-			[ [ NS_MAIN, NS_FILE ], [], 'content', 2 ],
-			[ [ NS_MAIN, NS_FILE ], [ NS_FILE => 'file' ], 'file', 1 ],
-			[ [ NS_MAIN, NS_FILE ], [ NS_FILE => 'file' ], 'content', 1 ],
-			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_FILE => 'file' ], 'content', 2 ],
-			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [], 'content', 3 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'file', 2 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true ], [ NS_FILE => 'file', NS_FILE_TALK => 'file' ], 'conent', false ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_MAIN => true ], [ NS_FILE => 'file' ], 'content', 2 ],
+			[ [ NS_MAIN, NS_FILE, NS_FILE_TALK ], [ NS_MAIN => true ], [], 'content', 3 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'file', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'content', 1 ],
+			[ [ NS_MAIN, NS_FILE ], [ NS_MAIN => true, NS_FILE => true ], [ NS_FILE => 'file' ], 'file', 1 ],
 		];
 	}
 

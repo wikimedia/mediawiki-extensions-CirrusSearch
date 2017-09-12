@@ -265,6 +265,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		];
 		$profile = [
 			'ContentNamespaces' => [ 1, 2 ],
+			'NamespacesToBeSearchedDefault' => [ 1 => true ],
 			'CirrusSearchRescoreProfiles' => [
 				'full' => [
 					'supported_namespaces' => [ 0, 1 ],

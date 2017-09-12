@@ -20,6 +20,7 @@ class SearchConfig implements \Config {
 	private static $nonCirrusVars = [
 		'wgLanguageCode',
 		'wgContentNamespaces',
+		'wgNamespacesToBeSearchedDefault',
 	];
 
 	/**

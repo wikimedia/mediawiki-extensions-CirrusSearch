@@ -265,6 +265,10 @@ class Connection extends ElasticaConnection {
 		if ( isset( $mappings[$namespace] ) ) {
 			return $mappings[$namespace];
 		}
+		$defaultSearch = $this->config->get( 'NamespacesToBeSearchedDefault' );
+		if ( isset( $defaultSearch[$namespace] ) && $defaultSearch[$namespace] ) {
+			return self::CONTENT_INDEX_TYPE;
+		}
 
 		return MWNamespace::isContent( $namespace ) ?
 			self::CONTENT_INDEX_TYPE : self::GENERAL_INDEX_TYPE;
@@ -282,14 +286,29 @@ class Connection extends ElasticaConnection {
 		}
 
 		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		$count = count( array_keys( $mappings, $indexType ) );
+		$inIndexType = [];
+		foreach ( $mappings as $ns => $type ) {
+			if ( $indexType === $type ) {
+				$inIndexType[$ns] = true;
+			}
+		}
 		if ( $indexType === self::CONTENT_INDEX_TYPE ) {
 			// The content namespace includes everything set in the mappings to content (count right now)
 			// Plus everything in wgContentNamespaces that isn't already in namespace mappings
 			$contentNamespaces = $this->config->get( 'ContentNamespaces' );
-			$count += count( array_diff( $contentNamespaces, array_keys( $mappings ) ) );
+			foreach ( $contentNamespaces as $ns ) {
+				if ( !isset( $mappings[$ns] ) ) {
+					$inIndexType[$ns] = true;
+				}
+			}
+			$defaultSearch = $this->config->get( 'NamespacesToBeSearchedDefault' );
+			foreach ( $defaultSearch as $ns => $shouldSearch ) {
+				if ( $shouldSearch && !isset( $mappings[$ns] ) ) {
+					$inIndexType[$ns] = true;
+				}
+			}
 		}
-		return $count;
+		return count( $inIndexType );
 	}
 
 	/**

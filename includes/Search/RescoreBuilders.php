@@ -222,6 +222,13 @@ class RescoreBuilder {
 				return true;
 			case 'content':
 				$profileNs = $this->context->getConfig()->get( 'ContentNamespaces' );
+				// Default search namespaces are also considered content
+				$defaultSearch = $this->context->getConfig()->get( 'NamespacesToBeSearchedDefault' );
+				foreach ( $defaultSearch as $ns => $isDefault ) {
+					if ( $isDefault ) {
+						$profileNs[] = $ns;
+					}
+				}
 				break;
 			default:
 				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces should be 'all', 'content' or an array of namespaces" );

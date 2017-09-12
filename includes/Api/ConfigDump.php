@@ -122,6 +122,7 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchMaxPhraseTokens',
 		'LanguageCode',
 		'ContentNamespaces',
+		'NamespacesToBeSearchedDefault',
 	];
 
 	public function execute() {

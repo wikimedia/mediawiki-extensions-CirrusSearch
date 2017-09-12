@@ -300,6 +300,10 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				$resp,
 				5, 200, null, null, 0, 300
 			],
+			'Empty index' => [
+				new \Elastica\Response( [] ),
+				5, 200, null, null, 0, 50
+			],
 		];
 	}
 }

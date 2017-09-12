@@ -368,7 +368,13 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	protected function postProcessSuggest( \Elastica\Response $response, $profiles, CompletionRequestLog $log ) {
 		$log->setResponse( $response );
-		$data = $response->getData()['suggest'];
+		$fullResponse = $response->getData();
+		if ( !isset( $fullResponse['suggest'] ) ) {
+			// Edge case where the index contains 0 documents and does not even return the 'suggest' field
+			return SearchSuggestionSet::emptySuggestionSet();
+		}
+
+		$data = $fullResponse['suggest'];
 
 		$limit = $this->getHardLimit();
 		$suggestionsByDocId = [];

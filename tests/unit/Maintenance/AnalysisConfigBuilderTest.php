@@ -387,8 +387,12 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	 *  the results of generation obvious and tracked in git
 	 *
 	 * @dataProvider provideLanguageAnalysis
+	 * @param $expected
+	 * @param $langCode
+	 * @param array $extraConfig
 	 */
 	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {
+		$this->mergeMwGlobalArrayValue( 'wgHooks', [ 'CirrusSearchAnalysisConfig' => [] ] );
 		$config = new HashSearchConfig( $extraConfig + [
 			'CirrusSearchSimilarityProfile' => 'default',
 		] );

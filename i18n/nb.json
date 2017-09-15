@@ -60,5 +60,10 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Ingen skrivefeilsretting. Matcher begynnelsen av titler.",
 	"cirrussearch-timed-out": "Søket overskred tidsbegrensningen, kun delvise resultater er tilgjengelige.",
 	"cirrussearch-regex-timed-out": "Søket med regulære uttrykk overskred tidsbegrensningen, kun delvise resultater er tilgjengelige. Prøv å forenkle det regulære uttrykket for å få fullstendige resultater.",
-	"cirrussearch-explore-similar-categories": "Kategorier"
+	"cirrussearch-explore-similar-related": "Relatert",
+	"cirrussearch-explore-similar-categories": "Kategorier",
+	"cirrussearch-explore-similar-languages": "Språk",
+	"cirrussearch-explore-similar-related-none": "Ingen relaterte sider tilgjengelig",
+	"cirrussearch-explore-similar-categories-none": "Ingen kategorier tilgjengelig",
+	"cirrussearch-explore-similar-languages-none": "Ikke tilgjengelig på andre språk"
 }

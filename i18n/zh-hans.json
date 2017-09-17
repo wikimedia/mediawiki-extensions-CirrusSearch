@@ -14,7 +14,8 @@
 			"御坂美琴",
 			"Cosine02",
 			"Apflu",
-			"EagerLin"
+			"EagerLin",
+			"A2093064"
 		]
 	},
 	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",
@@ -59,7 +60,7 @@
 	"cirrussearch-qi-profile-wsum-inclinks": "基于传入链接的加权和",
 	"cirrussearch-qi-profile-popular-pv": "主要基于页面预览排名",
 	"cirrussearch-qi-profile-popular-inclinks": "主要基于链入链接数排名",
-	"cirrussearch-pref-completion-profile-help": "为自动完成（随打即搜）建议设置行为。",
+	"cirrussearch-pref-completion-profile-help": "设置自动完成（随打即搜）建议的行为。",
 	"prefs-completion": "搜索完成",
 	"cirrussearch-pref-completion-section-desc": "完整搜索建议器",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 完整搜索建议器]是一个有更好的错别字纠正和搜索相关性的搜索建议算法。",

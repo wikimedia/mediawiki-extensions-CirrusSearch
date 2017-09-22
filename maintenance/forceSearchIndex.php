@@ -385,24 +385,28 @@ class ForceSearchIndex extends Maintenance {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$it = new BatchRowIterator(
 			$dbr,
-			'archive',
-			[ 'ar_namespace', 'ar_title', 'ar_timestamp' ],
+			'logging',
+			[ 'log_timestamp' ],
 			$this->mBatchSize
 		);
 
-		$this->attachPageConditions( $dbr, $it, 'ar' );
-		$this->attachTimestampConditions( $dbr, $it, 'ar' );
-		$it->addConditions( [ 'ar_page_id IS NOT NULL' ] );
+		$this->attachPageConditions( $dbr, $it, 'log' );
+		$this->attachTimestampConditions( $dbr, $it, 'log' );
+		$it->addConditions( [
+			'log_type' => 'delete',
+			'log_action' => 'delete',
+			'EXISTS(select * from archive where ar_title = log_title and ar_namespace = log_namespace)',
+		] );
 
-		$it->setFetchColumns( [ 'ar_timestamp', 'ar_namespace', 'ar_title', 'ar_page_id' ] );
+		$it->setFetchColumns( [ 'log_timestamp', 'log_namespace', 'log_title', 'log_page' ] );
 
 		return new CallbackIterator( $it, function ( $batch ) {
 			$titlesToDelete = [];
 			$docIdsToDelete = [];
 			$archive = [];
 			foreach ( $batch as $row ) {
-				$title = Title::makeTitle( $row->ar_namespace, $row->ar_title );
-				$id = $this->getSearchConfig()->makeId( $row->ar_page_id );
+				$title = Title::makeTitle( $row->log_namespace, $row->log_title );
+				$id = $this->getSearchConfig()->makeId( $row->log_page );
 				$titlesToDelete[] = $title;
 				$docIdsToDelete[] = $id;
 				$archive[] = [
@@ -415,10 +419,8 @@ class ForceSearchIndex extends Maintenance {
 				'titlesToDelete' => $titlesToDelete,
 				'docIdsToDelete' => $docIdsToDelete,
 				'archive' => $archive,
-				'endingAt' => isset( $title )
-					? substr( preg_replace(
-						'/[^' . Title::legalChars() . ']/', '_', $title->getPrefixedDBkey()
-					), 0, 30 )
+				'endingAt' => isset( $row )
+					? ( new MWTimestamp( $row->log_timestamp ) )->getTimestamp( TS_ISO_8601 )
 					: 'unknown',
 			];
 		} );

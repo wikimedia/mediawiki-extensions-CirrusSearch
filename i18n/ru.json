@@ -11,7 +11,8 @@
 			"Kareyac",
 			"Alex Great",
 			"Ole Yves",
-			"Facenapalm"
+			"Facenapalm",
+			"Jack who built the house"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -51,7 +52,7 @@
 	"cirrussearch-qi-profile-classic-noboostlinks": "Сортировка на основе некоторых шаблонов, языка страниц и новизны, если она включена на этом вики-сайте.",
 	"cirrussearch-qi-profile-empty": "Сортировка только на основе свойств, основанных на запросе (для отладки)",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Взвешенная сумма на основе входящих ссылок",
-	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для автоматического заполнения предложения (Поиск при вводе).",
+	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для предложений автозаполнения (поиск по мере набора).",
 	"prefs-completion": "Завершение поиска",
 	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester «Подсказчик автозаполнения»] — это алгоритм для поиска названий с наиболее близкими по написанию и релевантными по запросу.",

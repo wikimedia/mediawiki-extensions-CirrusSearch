@@ -7,7 +7,8 @@
 			"فلورانس",
 			"Reza1615",
 			"Huji",
-			"Freshman404"
+			"Freshman404",
+			"Ladsgroup"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -72,5 +73,11 @@
 	"cirrussearch-feature-too-many-conditions": "موارد زیادی برای '$1' پیدا شد که در $2 کوتاه‌سازی شد.",
 	"cirrussearch-incategory-feature-no-valid-categories": "ردهٔ معتبری برای '$1' یافت نشد.",
 	"cirrussearch-mlt-feature-no-valid-titles": "عنوان معتبری برای '$1' یافت نشد.",
-	"cirrussearch-mlt-not-configured": "خصوصیت $1' به نادرست تنظیم شده‌است. از یکی از ادمین‌ها درخواست کنید که $wgCirrusSearchMoreLikeThisFields را اصلاح کنند."
+	"cirrussearch-mlt-not-configured": "خصوصیت $1' به نادرست تنظیم شده‌است. از یکی از ادمین‌ها درخواست کنید که $wgCirrusSearchMoreLikeThisFields را اصلاح کنند.",
+	"cirrussearch-explore-similar-related": "مرتبط",
+	"cirrussearch-explore-similar-categories": "رده‌ها",
+	"cirrussearch-explore-similar-languages": "زبان‌ها",
+	"cirrussearch-explore-similar-related-none": "هیچ صفحه مرتبطی در دسترس نیست",
+	"cirrussearch-explore-similar-categories-none": "هیچ رده‌ای در دسترس نیست",
+	"cirrussearch-explore-similar-languages-none": "در زبان‌های دیگر در دسترس نیست"
 }

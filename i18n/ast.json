@@ -39,8 +39,8 @@
 	"cirrussearch-completion-profile-fuzzy": "Asemeyáu a normal con igua d'errores ortográficos (dos fallos aceutaos).",
 	"cirrussearch-completion-profile-fast-fuzzy": "Perfil aproximáu esperimental (pue desaniciase'n cualquier momentu)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Asemeyao a normal con correición de faltes (hai encontu pa dos faltes). Tamién casa con frases parciales (pueden ser frases parciales o subpáxines dependiendo de la configuración interna de la wiki).",
-	"cirrussearch-qi-profile-classic": "Clasificación basada nel númberu d'enllaces entrantes, delles plantíes, llingua del artículu y actualidá (plantíes/llingua/actualidá pueden nun tar activaes nesta wiki).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación basada en delles plantíes, llingua del artículu y actualidá cuando s'activen nesta wiki.",
+	"cirrussearch-qi-profile-classic": "Clasificación basada nel númberu d'enllaces entrantes, delles plantíes, llingua de la páxina y actualidá (plantíes/llingua/actualidá pueden nun tar activaes nesta wiki).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación basada en delles plantíes, llingua de la páxina y actualidá cuando s'activen nesta wiki.",
 	"cirrussearch-qi-profile-empty": "Clasificación basada sólo en carauterístiques dependientes de la consulta (sólo pa depuración).",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Suma ponderada basada n'enllaces entrantes y visites selmanales",
 	"cirrussearch-qi-profile-wsum-inclinks": "Suma ponderada basada n'enllaces entrantes",
@@ -52,7 +52,7 @@
 	"cirrussearch-pref-completion-section-legend": "El [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suxeridor de completáu] ye un algoritmu de suxerencies de gueta con meyor correición de faltes y relevancia de la gueta.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predetermináu (encamentáu)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Igua fasta dos faltes d'ortografía. Resuelve les redireiciones cercanes.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Casa con partes de la frase (recoméndase pa los títulos d'artículu más llargos)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Casa con partes de la frase (recomendao pa los títulos de páxina más llargos)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Igua fasta dos faltes d'ortografía. Resuelve les redireiciones cercanes. Casa con partes de la frase nos títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Mou estrictu (avanzáu)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Sin igua de faltes. Sin omitir acentos. Correspondencia estricta.",
@@ -78,5 +78,5 @@
 	"cirrussearch-explore-similar-languages": "Llingües",
 	"cirrussearch-explore-similar-related-none": "Nun ta disponible nenguna páxina rellacionada",
 	"cirrussearch-explore-similar-categories-none": "Nun hai nenguna categoría disponible",
-	"cirrussearch-explore-similar-languages-none": "Nun ta disponible en llingües llocales"
+	"cirrussearch-explore-similar-languages-none": "Nun ta disponible n'otres llingües"
 }

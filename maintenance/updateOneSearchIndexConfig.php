@@ -6,7 +6,6 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
-use Elastica;
 
 /**
  * Update the search configuration on the search backend.
@@ -525,7 +524,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * Get the page type being updated by the search config.
 	 *
-	 * @return Elastica\Type
+	 * @return \Elastica\Type
 	 */
 	protected function getPageType() {
 		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
@@ -534,7 +533,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * Get the namespace type being updated by the search config.
 	 *
-	 * @return Elastica\Type
+	 * @return \Elastica\Type
 	 */
 	protected function getNamespaceType() {
 		return $this->getIndex()->getType( Connection::NAMESPACE_TYPE_NAME );
@@ -543,14 +542,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	/**
 	 * Get the namespace type being updated by the search config.
 	 *
-	 * @return Elastica\Type
+	 * @return \Elastica\Type
 	 */
 	protected function getArchiveType() {
 		return $this->getIndex()->getType( Connection::ARCHIVE_TYPE_NAME );
 	}
 
 	/**
-	 * @return Elastica\Type
+	 * @return \Elastica\Type
 	 */
 	protected function getOldPageType() {
 		return $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType );

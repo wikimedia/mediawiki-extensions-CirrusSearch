@@ -4,7 +4,6 @@ namespace CirrusSearch;
 
 use DeferredUpdates;
 use MediaWiki\Logger\LoggerFactory;
-use RequestContext;
 use SearchResultSet;
 use User;
 

@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use BatchRowIterator;
-use CirrusSearch;
 use CirrusSearch\Iterator\CallbackIterator;
 use CirrusSearch\Maintenance\Maintenance;
 use JobQueueGroup;

@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use PoolCounterWorkViaCallback;
-use RequestContext;
 use Status;
 use Title;
 use UIDGenerator;

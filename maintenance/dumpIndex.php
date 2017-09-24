@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\SearchConfig;
 use Elastica;
-use Elastica\Index;
 use Elastica\JSON;
 use Elastica\Query;
 

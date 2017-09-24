@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Maintenance\Maintenance;
-use Elastica;
 
 /**
  * Returns zero status if a Cirrus index needs to be built for this wiki.  If

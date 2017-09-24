@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use Elastica;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MatchAll;

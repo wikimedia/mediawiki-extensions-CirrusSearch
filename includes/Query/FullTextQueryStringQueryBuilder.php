@@ -311,8 +311,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 					],
 				],
 				'highlight' => [
-					'pre_tag' => Searcher::SUGGESTION_HIGHLIGHT_PRE,
-					'post_tag' => Searcher::SUGGESTION_HIGHLIGHT_POST,
+					'pre_tag' => Searcher::HIGHLIGHT_PRE_MARKER,
+					'post_tag' => Searcher::HIGHLIGHT_POST_MARKER,
 				],
 			],
 		];

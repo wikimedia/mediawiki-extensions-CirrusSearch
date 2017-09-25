@@ -142,10 +142,10 @@
                     }
                 },
                 "post_tags": [
-                    "<\/span>"
+                    "\ue001"
                 ],
                 "pre_tags": [
-                    "<span class=\"searchmatch\">"
+                    "\ue000"
                 ]
             },
             "query": {
@@ -548,10 +548,10 @@
                     }
                 },
                 "post_tags": [
-                    "<\/span>"
+                    "\ue001"
                 ],
                 "pre_tags": [
-                    "<span class=\"searchmatch\">"
+                    "\ue000"
                 ]
             },
             "query": {
@@ -997,10 +997,10 @@
                     }
                 },
                 "post_tags": [
-                    "<\/span>"
+                    "\ue001"
                 ],
                 "pre_tags": [
-                    "<span class=\"searchmatch\">"
+                    "\ue000"
                 ]
             },
             "query": {
@@ -1403,10 +1403,10 @@
                     }
                 },
                 "post_tags": [
-                    "<\/span>"
+                    "\ue001"
                 ],
                 "pre_tags": [
-                    "<span class=\"searchmatch\">"
+                    "\ue000"
                 ]
             },
             "query": {
@@ -1689,8 +1689,8 @@
                         ],
                         "field": "suggest",
                         "highlight": {
-                            "post_tag": "<\/em>",
-                            "pre_tag": "<em>"
+                            "post_tag": "\ue001",
+                            "pre_tag": "\ue000"
                         },
                         "max_errors": 2,
                         "real_word_error_likelihood": 0.95,

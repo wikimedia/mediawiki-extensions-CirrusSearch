@@ -381,8 +381,8 @@ class FullTextResultsType extends BaseResultsType {
 		}
 
 		$config = [
-			'pre_tags' => [ Searcher::HIGHLIGHT_PRE ],
-			'post_tags' => [ Searcher::HIGHLIGHT_POST ],
+			'pre_tags' => [ Searcher::HIGHLIGHT_PRE_MARKER ],
+			'post_tags' => [ Searcher::HIGHLIGHT_POST_MARKER ],
 			'fields' => [],
 		];
 

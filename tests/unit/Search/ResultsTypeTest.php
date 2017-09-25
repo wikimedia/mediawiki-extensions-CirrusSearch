@@ -53,8 +53,8 @@ class ResultsTypeTest extends CirrusTestCase {
 				false,
 				[],
 				[
-					'pre_tags' => [ '<span class="searchmatch">' ],
-					'post_tags' => [ '</span>' ],
+					'pre_tags' => [ json_decode( '"\uE000"' ) ],
+					'post_tags' => [ json_decode( '"\uE001"' ) ],
 					'fields' => [
 						'title' => [
 							'number_of_fragments' => 0,
@@ -113,8 +113,8 @@ class ResultsTypeTest extends CirrusTestCase {
 				true,
 				[],
 				[
-					'pre_tags' => [ '<span class="searchmatch">' ],
-					'post_tags' => [ '</span>' ],
+					'pre_tags' => [ json_decode( '"\uE000"' ) ],
+					'post_tags' => [ json_decode( '"\uE001"' ) ],
 					'fields' => [
 						'title' => [
 							'number_of_fragments' => 1,
@@ -199,8 +199,8 @@ class ResultsTypeTest extends CirrusTestCase {
 					],
 				],
 				[
-					'pre_tags' => [ '<span class="searchmatch">' ],
-					'post_tags' => [ '</span>' ],
+					'pre_tags' => [ json_decode( '"\uE000"' ) ],
+					'post_tags' => [ json_decode( '"\uE001"' ) ],
 					'fields' => [
 						'source_text.plain' => [
 							'type' => 'experimental',

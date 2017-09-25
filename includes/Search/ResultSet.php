@@ -170,17 +170,10 @@ class ResultSet extends SearchResultSet {
 	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedSuggestion( $suggestion ) {
-		static $suggestionHighlightPreEscaped = null,
-			$suggestionHighlightPostEscaped = null;
-		if ( $suggestionHighlightPreEscaped === null ) {
-			$suggestionHighlightPreEscaped =
-				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_PRE );
-			$suggestionHighlightPostEscaped =
-				htmlspecialchars( Searcher::SUGGESTION_HIGHLIGHT_POST );
-		}
-		return str_replace( [ $suggestionHighlightPreEscaped, $suggestionHighlightPostEscaped ],
-			[ Searcher::SUGGESTION_HIGHLIGHT_PRE, Searcher::SUGGESTION_HIGHLIGHT_POST ],
-			htmlspecialchars( $suggestion ) );
+		return strtr( htmlspecialchars( $suggestion ), [
+			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
+			Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
+		] );
 	}
 
 	/**
@@ -190,8 +183,9 @@ class ResultSet extends SearchResultSet {
 		foreach ( $this->result->getResults() as $result ) {
 			$highlights = $result->getHighlights();
 			// If the whole string is highlighted then return true
+			$regex = '/' . Searcher::HIGHLIGHT_PRE_MARKER . '.*?' . Searcher::HIGHLIGHT_POST_MARKER . '/';
 			if ( isset( $highlights[ 'title' ] ) &&
-					!trim( preg_replace( Searcher::HIGHLIGHT_REGEX, '', $highlights[ 'title' ][ 0 ] ) ) ) {
+					!trim( preg_replace( $regex, '', $highlights[ 'title' ][ 0 ] ) ) ) {
 				return true;
 			}
 		}

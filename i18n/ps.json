@@ -1,12 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ahmed-Najib-Biabani-Ibrahimkhel"
+			"Ahmed-Najib-Biabani-Ibrahimkhel",
+			"Baloch Khan"
 		]
 	},
 	"cirrussearch-now-using": "دا ويکي يو نوی پلټنماشين کاروي. ([[mw:Special:MyLanguage/Help:CirrusSearch|نور مالومات لوستل]])",
 	"cirrussearch-pref-label": "نوې پلتڼه",
 	"cirrussearch-give-feedback": "تاسې خپل نظر موږ ته راکړئ",
 	"cirrussearch-completionsuggester-pref": "د بشپړولو وړانديزگر",
-	"cirrussearch-completionsuggester-desc": "د ټايپولو پر مهال د پلټنې لپاره يو نوی الگورېتم. کله چې چارن شي نو د پلټلو بکس په سر کې ښي گوټ کې د بشپړولو وړانديزگر وکارېږي."
+	"cirrussearch-completionsuggester-desc": "د ټايپولو پر مهال د پلټنې لپاره يو نوی الگورېتم. کله چې چارن شي نو د پلټلو بکس په سر کې ښي گوټ کې د بشپړولو وړانديزگر وکارېږي.",
+	"cirrussearch-explore-similar-categories": "وېشنيزې"
 }

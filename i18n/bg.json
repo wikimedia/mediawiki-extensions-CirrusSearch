@@ -4,11 +4,13 @@
 			"Borislav",
 			"Vodnokon4e",
 			"Termininja",
-			"StanProg"
+			"StanProg",
+			"ShockD"
 		]
 	},
 	"cirrussearch-now-using": "Това уики ползва нова търсачка. ([[mw:Special:MyLanguage/Help:CirrusSearch|Повече информация]])",
 	"cirrussearch-pref-label": "Ново търсене",
+	"cirrussearch-completionsuggester-pref": "Автоматични предложения",
 	"cirrussearch-pref-completion-profile-help": "Настройки за предложения при търсене по време на писане.",
 	"prefs-completion": "Допълване при търсене",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] е алгоритъм за предложения при търсене с по-добра корекция на правописните грешки и значение при търсене.",

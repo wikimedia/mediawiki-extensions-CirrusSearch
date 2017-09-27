@@ -24,6 +24,7 @@
 	"cirrussearch-pref-label": "جستجوی تازه",
 	"cirrussearch-pref-desc": "جستجوی تازه ما را که از تعداد بیشتر زبان‌ها پشتیبانی می‌کند، نتایج به روز بیشتری فراهم می‌کند، و حتی می‌تواند متن درون الگو را پیدا کند،امتحان کنید.",
 	"apihelp-cirrus-config-dump-description": "روگرفت از پیکربندی CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "دامپ تنظیمات سیروس‌سرچ",
 	"apihelp-cirrus-config-dump-example": "دریافت دامپ از تنظیمات CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "تخلیه نقشه برداری CirrusSearch برای این ویکی.",
 	"apihelp-cirrus-mapping-dump-example": "دریافت دامپ ساختار CirrusSearch برای این ویکی.",

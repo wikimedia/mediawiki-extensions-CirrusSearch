@@ -178,14 +178,10 @@ class Result extends SearchResult {
 	 * @return string $snippet with html escaped _except_ highlighting pre and post tags
 	 */
 	private function escapeHighlightedText( $snippet ) {
-		static $highlightPreEscaped = null, $highlightPostEscaped = null;
-		if ( $highlightPreEscaped === null ) {
-			$highlightPreEscaped = htmlspecialchars( Searcher::HIGHLIGHT_PRE );
-			$highlightPostEscaped = htmlspecialchars( Searcher::HIGHLIGHT_POST );
-		}
-		return str_replace( [ $highlightPreEscaped, $highlightPostEscaped ],
-			[ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ],
-			htmlspecialchars( $snippet ) );
+		return strtr( htmlspecialchars( $snippet ), [
+			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::HIGHLIGHT_PRE,
+			Searcher::HIGHLIGHT_POST_MARKER => Searcher::HIGHLIGHT_POST
+		] );
 	}
 
 	/**
@@ -195,7 +191,7 @@ class Result extends SearchResult {
 	 * @return boolean true if $snippet contains matches, false otherwise
 	 */
 	private function containsMatches( $snippet ) {
-		return strpos( $snippet, Searcher::HIGHLIGHT_PRE ) !== false;
+		return strpos( $snippet, Searcher::HIGHLIGHT_PRE_MARKER ) !== false;
 	}
 
 	/**
@@ -242,7 +238,7 @@ class Result extends SearchResult {
 	 * @return string
 	 */
 	private function stripHighlighting( $highlighted ) {
-		$markers = [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ];
+		$markers = [ Searcher::HIGHLIGHT_PRE_MARKER, Searcher::HIGHLIGHT_POST_MARKER ];
 		return str_replace( $markers, '', $highlighted );
 	}
 

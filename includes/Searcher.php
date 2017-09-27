@@ -50,9 +50,10 @@ use WebRequest;
 class Searcher extends ElasticsearchIntermediary {
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
+	const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
+	const HIGHLIGHT_POST_MARKER = ''; // \uE001
 	const HIGHLIGHT_POST = '</span>';
-	const HIGHLIGHT_REGEX = '/<span class="searchmatch">.*?<\/span>/';
 
 	/**
 	 * Maximum title length that we'll check in prefix and keyword searches.

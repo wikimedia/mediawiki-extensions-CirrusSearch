@@ -1,5 +1,6 @@
 /*jshint esversion: 6, node:true */
 /*global browser, console */
+
 /**
  * The World is a container for global state shared across test steps.
  * The World is instanciated after every scenario, so state cannot be
@@ -71,11 +72,6 @@ function World( { attach, parameters } ) {
 	this.attach = attach;
 	this.parameters = parameters;
 
-	// Binding step helpers to this World.
-	// Step helpers are just step functions that are abstracted
-	// for the purpose of using them outside of the steps themselves (like in hooks).
-	this.stepHelpers = new StepHelpers( this );
-
 	// Since you can't pass values between step definitions directly,
 	// the last Api response is stored here so it can be accessed between steps.
 	// (I have a feeling this is prone to race conditions).
@@ -93,33 +89,34 @@ function World( { attach, parameters } ) {
 	// Extra process tracking what tags have been initialized
 	this.tags = tagClient;
 
+	// Per-wiki api clients
 	this.onWiki = function( wiki = this.config.wikis.default ) {
 		let w = this.config.wikis[ wiki ];
-		return {
-			username: w.username,
-			password: w.password,
+		let client = new Bot();
+		client.setOptions({
+			verbose: true,
+			silent: false,
+			defaultSummary: 'MWBot',
+			concurrency: 1,
 			apiUrl: w.apiUrl
+		});
+		let origLoginGetEditToken = client.loginGetEditToken;
+		client.loginGetEditToken = function () {
+			return origLoginGetEditToken.call( client, {
+				username: w.username,
+				password: w.password,
+				apiUrl: w.apiUrl
+			} );
 		};
-	 };
-
-	// Instanciates new `mwbot` Api Client
-	this.apiClient = new Bot();
-	this.apiClient.setOptions({
-		verbose: true,
-		silent: false,
-		defaultSummary: 'MWBot',
-		concurrency: 1,
-		apiUrl: this.onWiki().apiUrl
-	 });
-
-	/**
-	 * Shortcut to `loginGetEditToken` that sets a default parameter for login.
-	 * Hopefully `mwbot` can handle multiple loggins at once (not yet tested).
-	 */
-	this.apiClient.loginAndEditToken = ( wiki = this.config.wikis.default ) => {
-		let w = this.onWiki( wiki );
-		return this.apiClient.loginGetEditToken( w );
+		return new Promise( ( resolve ) => {
+			resolve( client );
+		} );
 	};
+
+	// Binding step helpers to this World.
+	// Step helpers are just step functions that are abstracted
+	// for the purpose of using them outside of the steps themselves (like in hooks).
+	this.stepHelpers = new StepHelpers( this );
 
 	// Shortcut for browser.url(), accepts a Page object
 	// as well as a string, assumes the Page object
@@ -139,7 +136,6 @@ function World( { attach, parameters } ) {
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
 		console.log( `Visited page: ${browser.getUrl()}` );
-
 	};
 }
 

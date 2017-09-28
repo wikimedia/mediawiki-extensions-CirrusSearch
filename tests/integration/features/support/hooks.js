@@ -49,9 +49,10 @@ defineSupportCode( function( { After, Before } ) {
 				"はーい": "makes sure we do not fail to index empty tokens (T156234)"
 			}
 		};
-		return this.apiClient.loginAndEditToken().then( () => {
-			return this.apiClient.batch(batchJobs, 'CirrusSearch integration test edit');
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
 		} );
 	} );
-
 } );

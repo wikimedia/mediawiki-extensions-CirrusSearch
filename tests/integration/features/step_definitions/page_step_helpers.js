@@ -13,31 +13,42 @@
 const expect = require( 'chai' ).expect;
 
 class StepHelpers {
-	constructor( world ) {
+	constructor( world, wiki ) {
 		this.world = world;
+		this.apiPromise = world.onWiki( wiki || world.config.wikis.default );
+	}
+
+	onWiki( wiki ) {
+		return new StepHelpers( this.world, wiki );
 	}
 
 	deletePage( title ) {
-		return this.world.apiClient.loginAndEditToken().then( () => {
-			return this.world.apiClient.delete( title, "CirrusSearch integration test delete" )
-				.catch( ( err ) => {
-					// still return true if page doesn't exist
-					return expect( err.message ).to.include( "doesn't exist" );
-				} );
+		return this.apiPromise.then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.delete( title, "CirrusSearch integration test delete" )
+					.catch( ( err ) => {
+						// still return true if page doesn't exist
+						return expect( err.message ).to.include( "doesn't exist" );
+					} );
+			} );
 		} );
 	}
 	editPage( title, content ) {
-		return this.world.apiClient.loginAndEditToken().then( () => {
-			return this.world.apiClient.edit( title, content, "CirrusSearch integration test edit" );
+		return this.apiPromise.then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.edit( title, content, "CirrusSearch integration test edit" );
+			} );
 		} );
 	}
 
 	suggestionSearch( query, limit = 'max' ) {
-		return this.world.apiClient.request( {
-			action: 'opensearch',
-			search: query,
-			cirrusUseCompletionSuggester: 'yes',
-			limit: limit
+		return this.apiPromise.then( ( api ) => {
+			return api.request( {
+				action: 'opensearch',
+				search: query,
+				cirrusUseCompletionSuggester: 'yes',
+				limit: limit
+			} );
 		} ).then( ( response ) => this.world.setApiResponse( response ) );
 	}
 

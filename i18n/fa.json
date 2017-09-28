@@ -44,7 +44,7 @@
 	"cirrussearch-completion-profile-fuzzy": "شبیه حالت عادی با اصلاح اشتباه تایپی (دو اشتباه تایپی پشتیبانی می‌شود).",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "شبیه حالت عادی با اصلاح اشتباه تایپی (دو اشتباه تایپی پشتیبانی می‌شود). بخشی از متن یافت می‌شود (بسته به تنظیمات ویکی بخشی از متن یا صفحه)",
 	"cirrussearch-qi-profile-classic": "رتبه‌بندی بر پایهٔ تعداد پیوندهای دریافتی، تعدادی از الگوها، میان‌ویکی و تازه‌ساخت‌ها (templates/language/recency ممکن است در این ویکی تعریف نشده‌باشد).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "رتبه بندی براساس برخی الگوها، زبان مقاله و زمان فعال شدن در این ویکی.",
+	"cirrussearch-qi-profile-classic-noboostlinks": "رتبه بندی براساس برخی الگوها، زبان صفحه و زمان فعال شدن در این ویکی.",
 	"cirrussearch-qi-profile-empty": "رتبه بندی صرفا براساس ویژگی های جستجو (فقط برای دیباگ)",
 	"cirrussearch-qi-profile-popular-pv": "رتبه‌بندی برپایهٔ بازدید صفحه",
 	"cirrussearch-qi-profile-popular-inclinks": "رتبه‌بندی برپایهٔ تعداد پیوند",

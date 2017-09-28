@@ -6,11 +6,14 @@
 /* eslint-disable no-console, comma-dangle */
 'use strict';
 
-const path = require( 'path' );
+const child_process = require( 'child_process' ),
+	path = require( 'path' );
 
 function relPath( foo ) {
 	return path.resolve( __dirname, '../..', foo );
 }
+
+var forkedTracker;
 
 exports.config = {
 
@@ -215,9 +218,23 @@ exports.config = {
 	// methods to it. If one of them returns with a promise, WebdriverIO will wait until that promise got
 	// resolved to continue.
 	//
+	// unix socket path for tag tracker
+	trackerPath: '/tmp/cirrussearch-integration-tagtracker',
+	//
 	// Gets executed once before all workers get launched.
-	// onPrepare: function ( config, capabilities ) {
-	// }
+	onPrepare: function ( config ) {
+		forkedTracker = child_process.fork( relPath( './integration/lib/tracker.js' ) );
+		forkedTracker.send( { config: config } );
+		return new Promise( ( resolve, reject ) => {
+			forkedTracker.on( 'message', ( msg ) => {
+				if ( msg.initialized ) {
+					resolve();
+				} else {
+					reject( msg.error );
+				}
+			} );
+		} );
+	},
 	//
 	// Gets executed before test execution begins. At this point you can access all global
 	// variables, such as `browser`. It is the perfect place to define custom commands.
@@ -276,6 +293,8 @@ exports.config = {
 	//
 	// Gets executed after all workers got shut down and the process is about to exit. It is not
 	// possible to defer the end of the process using a promise.
-	// onComplete: function(exitCode) {
-	// }
+	onComplete: function() {
+		// TODO: Is this method being called a guarantee, or should we handle signals to be sure?
+		forkedTracker.send( { exit: true } );
+	}
 };

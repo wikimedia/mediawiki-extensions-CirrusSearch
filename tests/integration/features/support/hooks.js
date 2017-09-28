@@ -1,32 +1,27 @@
 /*jshint esversion: 6, node:true */
 
-/**
- * Hooks are run before or after Cucumber executes a test scenario.
- * The World object is bound to the hooks as `this`, so any method
- * or property in World is available here.
- */
 var {defineSupportCode} = require( 'cucumber' );
 
-// This file is loaded in the initial cucumbe setup,
-// so these variables are retained across tests.
-var clean = false,
-	suggest = false;
-
 defineSupportCode( function( { After, Before } ) {
+	let BeforeOnce = function ( options, fn ) {
+		Before( options, function () {
+			return this.tags.check( options.tags ).then( ( status ) => {
+				if ( status === 'new' ) {
+					return fn.call ( this ).then( () => this.tags.complete( options.tags ) );
+				}
+			} );
+		} );
+	};
 
-	Before( {tags: "@clean" }, function () {
-		if ( clean ) return true;
-		clean = true;
+	BeforeOnce( { tags: "@clean" }, function () {
 		return this.stepHelpers.deletePage( "DeleteMeRedirect" );
 	} );
 
-	Before( {tags: "@api" }, function () {
+	Before( { tags: "@api" }, function () {
 		return true;
-	});
+	} );
 
-	Before( {tags: "@suggest" }, function () {
-		if ( suggest ) return true;
-		suggest = true;
+	BeforeOnce( { tags: "@suggest" }, function () {
 		let batchJobs = {
 			edit: {
 				"X-Men": "The X-Men are a fictional team of superheroes",

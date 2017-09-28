@@ -1,22 +1,72 @@
 /*jshint esversion: 6, node:true */
 /*global browser, console */
-
 /**
  * The World is a container for global state shared across test steps.
  * The World is instanciated after every scenario, so state cannot be
  * carried over between scenarios.
  *
- * Not: the `StepHelpers` are bound to the World object so that they have access
+ * Note: the `StepHelpers` are bound to the World object so that they have access
  * to the same apiClient instance as `World` (useful because the apiClient
  * keeps a user/login state).
  */
-var {defineSupportCode} = require( 'cucumber' );
-var Bot = require( 'mwbot' );
-var StepHelpers = require( '../step_definitions/page_step_helpers' );
-var Page = require( './pages/page' );
+const {defineSupportCode} = require( 'cucumber' ),
+	net = require( 'net' ),
+	Bot = require( 'mwbot' ),
+	StepHelpers = require( '../step_definitions/page_step_helpers' ),
+	Page = require( './pages/page' );
+
+// Client for the Server implemented in lib/tracker.js. The server
+// tracks what tags have already been initialized so we don't have
+// to do it for every feature file.
+class TagClient {
+	constructor( path ) {
+		this.tags = {};
+		this.connection = new net.Socket();
+		this.connection.connect( path );
+		this.nextRequestId = 0;
+		this.pendingResponses = {};
+		this.connection.on( 'data', ( data ) => {
+			let parsed = JSON.parse( data );
+			console.log( `received response for request ${parsed.requestId}` );
+			if ( parsed && this.pendingResponses[parsed.requestId] ) {
+				this.pendingResponses[parsed.requestId]( parsed );
+				delete this.pendingResponses[parsed.requestId];
+			}
+		} );
+	}
+
+	request( req ) {
+		req.requestId = this.nextRequestId++;
+		return new Promise( ( resolve ) => {
+			let data = JSON.stringify( req );
+			console.log( `Issuing request: ${data}` );
+			this.pendingResponses[req.requestId] = resolve;
+			this.connection.write( data );
+		} );
+	}
+
+	check( tag ) {
+		if ( this.tags[tag] ) {
+			return Promise.resolve( 'complete' );
+		}
+		return this.request( {
+			check: tag
+		} ).then( ( response ) => {
+			this.tags[tag] = true;
+			return response.status;
+		} );
+	}
+
+	complete( tag ) {
+		return this.request( {
+			complete: tag
+		} );
+	}
+}
+
+let tagClient = new TagClient( browser.options.trackerPath );
 
 function World( { attach, parameters } ) {
-
 	// default properties
 	this.attach = attach;
 	this.parameters = parameters;
@@ -40,7 +90,9 @@ function World( { attach, parameters } ) {
 	// Shortcut to environment configs
 	this.config = browser.options;
 
-	// Specified which wiki to use for the API client.
+	// Extra process tracking what tags have been initialized
+	this.tags = tagClient;
+
 	this.onWiki = function( wiki = this.config.wikis.default ) {
 		let w = this.config.wikis[ wiki ];
 		return {

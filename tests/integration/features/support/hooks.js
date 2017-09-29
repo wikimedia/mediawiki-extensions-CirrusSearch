@@ -124,4 +124,62 @@ defineSupportCode( function( { After, Before } ) {
 			} );
 		} );
 	} );
+
+	BeforeOnce( { tags: "@setup_main or @filters or @prefix or @bad_syntax or @wildcard or @exact_quotes or @phrase_prefix" }, function () {
+		let batchJobs = {
+			edit: {
+				"Template:Template Test": "pickles [[Category:TemplateTagged]]",
+				"Catapult/adsf": "catapult subpage [[Catapult]]",
+				"Links To Catapult": "[[Catapult]]",
+				"Catapult": "♙ asdf [[Category:Weaponry]]",
+				"Amazing Catapult": "test [[Catapult]] [[Category:Weaponry]]",
+				"Category:Weaponry": "Weaponry refers to any items designed or used to attack and kill or destroy other people and property.",
+				"Two Words": "ffnonesenseword catapult {{Template_Test}} anotherword [[Category:TwoWords]] [[Category:Categorywith Twowords]] [[Category:Categorywith \" Quote]]",
+				"AlphaBeta": "[[Category:Alpha]] [[Category:Beta]]",
+				"IHaveATwoWordCategory": "[[Category:CategoryWith ASpace]]",
+				"Functional programming": "Functional programming is referential transparency.",
+				"वाङ्मय": "वाङ्मय",
+				"वाङ्\u200dमय": "वाङ्\u200dमय",
+				"वाङ्\u200cमय": "वाङ्\u200cमय",
+				"ChangeMe": "foo",
+				"Wikitext": "{{#tag:somebug}}",
+				"Page with non ascii letters": "ἄνθρωπος, широкий"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
+	BeforeOnce( { tags: "@setup_main or @prefix or @bad_syntax" }, function () {
+		// TODO: File upload
+		// And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
+		let batchJobs = {
+			edit: {
+				"Rdir": "#REDIRECT [[Two Words]]",
+				"IHaveAVideo": "[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]",
+				"IHaveASound": "[[File:Serenade for Strings -mvt-1- Elgar.ogg]]"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
+	BeforeOnce( { tags: "@setup_main or @prefix or @go or @bad_syntax" }, function () {
+		let batchJobs = {
+			edit: {
+				"África": "for testing"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
 } );

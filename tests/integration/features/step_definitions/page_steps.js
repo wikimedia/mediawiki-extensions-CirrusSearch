@@ -197,4 +197,15 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
+	Then( /there are no errors reported by the api/, function () {
+		withApi( this, () => {
+			expect( this.apiError ).to.be.undefined; // jshint ignore:line
+		} );
+	} );
+
+	Then( /there is an api search result/, function () {
+		withApi( this, () => {
+			expect( this.apiResponse.query.search ).to.not.have.lengthOf( 0 );
+		} );
+	} );
 });

@@ -10,7 +10,9 @@
  * https://github.com/cucumber/cucumber-js/issues/634
  */
 
-const expect = require( 'chai' ).expect;
+const expect = require( 'chai' ).expect,
+	fs = require( 'fs' ),
+	path = require( 'path' );
 
 class StepHelpers {
 	constructor( world, wiki ) {
@@ -33,10 +35,39 @@ class StepHelpers {
 			} );
 		} );
 	}
-	editPage( title, content ) {
+
+	editPage( title, text, append = false ) {
 		return this.apiPromise.then( ( api ) => {
-			return api.loginGetEditToken().then( () => {
-				return api.edit( title, content, "CirrusSearch integration test edit" );
+			if ( text[0] === '@' ) {
+				text = fs.readFileSync( path.join( __dirname, 'articles', text.substr( 1 ) ) ).toString();
+			}
+			return this.getWikitext( title ).then( ( fetchedText ) => {
+				if ( append ) {
+					text = fetchedText + text;
+				}
+				if ( text.trim() !== fetchedText.trim() ) {
+					return api.loginGetEditToken().then( () => api.edit( title, text ) );
+				}
+			}, ( error ) => {
+				throw error;
+			} );
+		} );
+	}
+
+	getWikitext( title ) {
+		return this.apiPromise.then( ( api ) => {
+			return api.request( {
+				action: "query",
+				format: "json",
+				formatversion: 2,
+				prop: "revisions",
+				rvprop: "content",
+				titles: title
+			} ).then( ( response ) => {
+				if ( response.query.pages[0].missing ) {
+					return "";
+				}
+				return response.query.pages[0].revisions[0].content;
 			} );
 		} );
 	}
@@ -49,9 +80,36 @@ class StepHelpers {
 				cirrusUseCompletionSuggester: 'yes',
 				limit: limit
 			} );
-		} ).then( ( response ) => this.world.setApiResponse( response ) );
+		} ).then(
+			( response ) => this.world.setApiResponse( response ),
+			( error ) => this.world.setApiError( error ) );
 	}
 
+	suggestionsWithProfile( query, profile ) {
+		return this.apiPromise.then( ( api ) => {
+			return api.request( {
+				action: 'opensearch',
+				search: query,
+				profile: profile
+			} );
+		} ).then(
+			( response ) => this.world.setApiResponse( response ),
+			( error ) => this.world.setApiError( error ) );
+	}
+
+	searchFor( query, options = {} ) {
+		return this.apiPromise.then( ( api ) => {
+			return api.request( Object.assign( options, {
+				action: "query",
+				list: "search",
+				srsearch: query,
+				srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
+				formatversion: 2
+			} ) );
+		} ).then(
+			( response ) => this.world.setApiResponse( response ),
+			( error ) => this.world.setApiError( error ) );
+	}
 }
 
 module.exports = StepHelpers;

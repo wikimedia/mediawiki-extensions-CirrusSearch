@@ -21,6 +21,71 @@ defineSupportCode( function( { After, Before } ) {
 		return true;
 	} );
 
+	BeforeOnce( { tags: "@prefix" }, function () {
+		console.log( 'starting prefix hook' );
+		let batchJobs = {
+			edit: {
+				"L'Oréal": "L'Oréal",
+				"Jean-Yves Le Drian": "Jean-Yves Le Drian"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
+	BeforeOnce( { tags: "@redirect" }, function () {
+		let batchJobs = {
+			edit: {
+				"SEO Redirecttest": "#REDIRECT [[Search Engine Optimization Redirecttest]]",
+				"Redirecttest Yikes": "#REDIRECT [[Redirecttest Yay]]",
+				"User_talk:SEO Redirecttest": "#REDIRECT [[User_talk:Search Engine Optimization Redirecttest]]",
+				"Seo Redirecttest": "Seo Redirecttest",
+				"Search Engine Optimization Redirecttest": "Search Engine Optimization Redirecttest",
+				"Redirecttest Yay": "Redirecttest Yay",
+				"User_talk:Search Engine Optimization Redirecttest": "User_talk:Search Engine Optimization Redirecttest",
+				"PrefixRedirectRanking 1": "PrefixRedirectRanking 1",
+				"LinksToPrefixRedirectRanking 1": "[[PrefixRedirectRanking 1]]",
+				"TargetOfPrefixRedirectRanking 2": "TargetOfPrefixRedirectRanking 2",
+				"PrefixRedirectRanking 2": "#REDIRECT [[TargetOfPrefixRedirectRanking 2]]"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
+	BeforeOnce( { tags: "@accent_squashing" }, function () {
+		let batchJobs = {
+			edit: {
+				"Áccent Sorting": "Áccent Sorting",
+				"Accent Sorting": "Accent Sorting"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
+	BeforeOnce( { tags: "@accented_namespace" }, function () {
+		let batchJobs = {
+			edit: {
+				"Mó:Test": "some text"
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
+
 	BeforeOnce( { tags: "@suggest" }, function () {
 		let batchJobs = {
 			edit: {
@@ -52,6 +117,10 @@ defineSupportCode( function( { After, Before } ) {
 		return this.onWiki().then( ( api ) => {
 			return api.loginGetEditToken().then( () => {
 				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} ).then( () => {
+				return api.request( {
+					action: 'cirrus-suggest-index'
+				} );
 			} );
 		} );
 	} );

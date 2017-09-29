@@ -28,7 +28,7 @@ class TagClient {
 		this.pendingResponses = {};
 		this.connection.on( 'data', ( data ) => {
 			let parsed = JSON.parse( data );
-			console.log( `received response for request ${parsed.requestId}` );
+			console.log( `received response for request ${parsed.requestId}: ${data}` );
 			if ( parsed && this.pendingResponses[parsed.requestId] ) {
 				this.pendingResponses[parsed.requestId]( parsed );
 				delete this.pendingResponses[parsed.requestId];
@@ -77,10 +77,16 @@ function World( { attach, parameters } ) {
 	// (I have a feeling this is prone to race conditions).
 	// By suggestion of this stack overflow question.
 	// https://stackoverflow.com/questions/26372724/pass-variables-between-step-definitions-in-cucumber-groovy
-	this.apiResponse= "";
+	this.apiResponse = "";
+	this.apiError = "";
 
 	this.setApiResponse = function( value ) {
 		this.apiResponse = value;
+		this.apiError = undefined;
+	};
+	this.setApiError = function ( error ) {
+		this.apiResponse = undefined;
+		this.apiError = error;
 	};
 
 	// Shortcut to environment configs
@@ -108,9 +114,19 @@ function World( { attach, parameters } ) {
 				apiUrl: w.apiUrl
 			} );
 		};
-		return new Promise( ( resolve ) => {
-			resolve( client );
-		} );
+
+		// Add a generic method to get access to the request that triggered a response, so we
+		// can add generic error reporting that includes the requested api url
+		let origRawRequest = client.rawRequest;
+		client.rawRequest = function ( requestOptions ) {
+			return origRawRequest.call( client, requestOptions ).then( ( response ) => {
+				response.__request = requestOptions;
+				return response;
+			} );
+		};
+
+		// TODO: Why a promise? I guess it's just easier to chain...
+		return Promise.resolve( client );
 	};
 
 	// Binding step helpers to this World.
@@ -136,6 +152,11 @@ function World( { attach, parameters } ) {
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
 		console.log( `Visited page: ${browser.getUrl()}` );
+	};
+
+	// Variables held between steps and substituted into queries
+	this.searchVars = {
+		"%ideographic_whitspace%": "\u3000"
 	};
 }
 

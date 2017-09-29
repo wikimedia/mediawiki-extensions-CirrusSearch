@@ -182,4 +182,21 @@ defineSupportCode( function( { After, Before } ) {
 			} );
 		} );
 	} );
+
+	BeforeOnce( { tags: "@boost_template" }, function () {
+		let batchJobs = {
+			edit: {
+				"Template:BoostTemplateHigh": "BoostTemplateTest",
+				"Template:BoostTemplateLow": "BoostTemplateTest",
+				"NoTemplates BoostTemplateTest": "nothing important",
+				"HighTemplate": "{{BoostTemplateHigh}}",
+				"LowTemplate": "{{BoostTemplateLow}}",
+			}
+		};
+		return this.onWiki().then( ( api ) => {
+			return api.loginGetEditToken().then( () => {
+				return api.batch(batchJobs, 'CirrusSearch integration test edit');
+			} );
+		} );
+	} );
 } );

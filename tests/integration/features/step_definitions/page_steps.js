@@ -134,30 +134,32 @@ defineSupportCode( function( {Given, When, Then} ) {
 		if ( title === "none" ) {
 			expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
 		} else {
-			withApi( this, () => {
-				let found = indexes.map( pos => {
-					if ( this.apiResponse.query.search[pos] ) {
-						return this.apiResponse.query.search[pos].title;
-					} else {
-						return null;
-					}
-				} );
-				if ( in_ok ) {
-					// What exactly does this do?
-					// expect(found).to include(include(title))
-					throw new Error( 'Not Implemented' );
+			let found = indexes.map( pos => {
+				if ( this.apiResponse.query.search[pos] ) {
+					return this.apiResponse.query.search[pos].title;
 				} else {
-					expect( found ).to.include(title);
+					return null;
 				}
 			} );
+			if ( in_ok ) {
+				// What exactly does this do?
+				// expect(found).to include(include(title))
+				throw new Error( 'Not Implemented' );
+			} else {
+				expect( found ).to.include(title);
+			}
 		}
 	}
-	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, checkApiSearchResultStep );
+	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, function ( title, in_ok, indexes ) {
+		withApi( this, () => {
+			checkApiSearchResultStep.call( this, title, in_ok, indexes );
+		} );
+	} );
 
 	function apiSearchStep( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
 		let options = {
 			srnamespace: (namespaces || "0").split(' '),
-			enablerewrites: enableRewrites ? 1 : 0,
+			srenablerewrites: enableRewrites ? 1 : 0,
 		};
 		if ( offset ) {
 			options.sroffset = offset;

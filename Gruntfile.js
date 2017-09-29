@@ -1,8 +1,11 @@
+/*jshint esversion: 6, node:true */
 /*!
  * Grunt file
  *
  * @package CirrusSearch
  */
+
+const path = require( 'path' );
 
 /*jshint node:true */
 module.exports = function ( grunt ) {
@@ -55,7 +58,17 @@ module.exports = function ( grunt ) {
 		// Configure WebdriverIO Node task
 		webdriver: {
 			test: {
-				configFile: WebdriverIOconfigFile
+				configFile: WebdriverIOconfigFile,
+				spec: ( () => {
+					let spec = grunt.option( 'spec' );
+					if ( !spec ) {
+						return undefined;
+					}
+					if ( spec[0] === '/' ) {
+						return spec;
+					}
+					return path.join(__dirname, 'tests/integration/features', spec);
+				} )()
 			}
 		}
 	} );

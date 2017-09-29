@@ -155,14 +155,19 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, checkApiSearchResultStep );
 
 	function apiSearchStep( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
-		// JSON.stringify will remove keys that have `undefined` as their value
 		let options = {
-			sroffset: offset,
 			srnamespace: (namespaces || "0").split(' '),
-			uselang: lang,
 			enablerewrites: enableRewrites ? 1 : 0,
-			srqiprofile: qiprofile ? qiprofile : undefined
 		};
+		if ( offset ) {
+			options.sroffset = offset;
+		}
+		if ( lang ) {
+			options.uselang = lang;
+		}
+		if ( qiprofile ) {
+			options.srqiprofile = qiprofile;
+		}
 		// This is reset between scenarios
 		if ( this.didyoumeanOptions ) {
 			Object.assign(options, this.didyoumeanOptions );
@@ -206,6 +211,17 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /there is an api search result/, function () {
 		withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.not.have.lengthOf( 0 );
+		} );
+	} );
+
+	Then( /^(.+) is( not)? in the api search results$/, function( title, not ) {
+		withApi( this, () => {
+			let titles = this.apiResponse.query.search.map( res => res.title );
+			if ( not ) {
+				expect( titles ).to.not.include( title );
+			} else {
+				expect( titles ).to.include( title );
+			}
 		} );
 	} );
 });

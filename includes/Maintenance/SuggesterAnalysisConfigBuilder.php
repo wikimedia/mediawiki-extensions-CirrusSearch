@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\SearchConfig;
-
 /**
  * Builds elasticsearch analysis config arrays for the completion suggester
  * index.
@@ -28,20 +26,12 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	const VERSION = "1.4";
 
 	/**
-	 * @param string $langCode The language code to build config for
-	 * @param string[] $plugins list of plugins installed in Elasticsearch
-	 * @param SearchConfig|null $config
-	 */
-	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
-		parent::__construct( $langCode, $plugins, $config );
-	}
-
-	/**
 	 * Build an analysis config with sane defaults
 	 *
+	 * @param string $language Config language
 	 * @return array
 	 */
-	protected function defaults() {
+	protected function defaults( $language ) {
 		// Use default lowercase filter
 		$lowercase_type = [ 'type' => 'lowercase' ];
 		if ( $this->isIcuAvailable() ) {
@@ -52,17 +42,17 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 		}
 		// Use the default Lucene ASCII filter
 		$folding_type = [ 'type' => 'asciifolding' ];
-		if ( $this->isIcuFolding() ) {
+		if ( $this->shouldActivateIcuFolding( $language ) ) {
 			// Use ICU Folding if the plugin is available and activated in the config
 			$folding_type = [ 'type' => 'icu_folding' ];
-			$unicodeSetFilter = $this->getICUSetFilter();
+			$unicodeSetFilter = $this->getICUSetFilter( $language );
 			if ( !empty( $unicodeSetFilter ) ) {
 				$folding_type['unicodeSetFilter'] = $unicodeSetFilter;
 			}
 		}
 		$textTokenizer = 'standard';
 		$plainTokenizer = 'whitespace';
-		if ( $this->icuTokenizer ) {
+		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$textTokenizer = 'icu_tokenizer';
 			// We cannot use the icu_tokenizer for plain here
 			// even if icu tokenization is mostly needed for languages
@@ -226,13 +216,14 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 
 	/**
 	 * @param array $config
+	 * @param string $language
 	 * @return array
 	 */
-	private function customize( array $config ) {
-		$defaultStopSet = $this->getDefaultStopSet( $this->getLanguage() );
+	private function customize( array $config, $language ) {
+		$defaultStopSet = $this->getDefaultStopSet( $language );
 		$config['filter']['stop_filter']['stopwords'] = $defaultStopSet;
 
-		switch ( $this->getDefaultTextAnalyzerType() ) {
+		switch ( $this->getDefaultTextAnalyzerType( $language ) ) {
 		// Please add languages in alphabetical order.
 		case 'russian':
 			// T102298 ignore combining acute / stress accents
@@ -240,7 +231,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 
 			// The Russian analyzer is also used for Ukrainian and Rusyn for now, so processing that's
 			// very specific to Russian should be separated out
-			if ( $this->getLanguage() == 'ru' ) {
+			if ( $language === 'ru' ) {
 				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
 				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0451=>\u0435';
 				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0401=>\u0415';
@@ -272,11 +263,14 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	/**
 	 * Build the analysis config.
 	 *
+	 * @param string|null $language Config language
 	 * @return array the analysis config
 	 */
-	public function buildConfig() {
-		$config = $this->customize( $this->defaults() );
-		return $config;
+	public function buildConfig( $language = null ) {
+		if ( $language === null ) {
+			$language = $this->defaultLanguage;
+		}
+		return $this->customize( $this->defaults( $language ), $language );
 	}
 
 	/** @var string[] */

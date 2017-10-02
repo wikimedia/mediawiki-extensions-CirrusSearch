@@ -41,24 +41,9 @@ class AnalysisConfigBuilder {
 	const KEYWORD_IGNORE_ABOVE = 5000;
 
 	/**
-	 * @var string Language code we're building analysis for
-	 */
-	private $language;
-
-	/**
 	 * @var boolean is the icu plugin available?
 	 */
 	private $icu;
-
-	/**
-	 * @var boolean true if icu folding is requested and available
-	 */
-	protected $icuFolding;
-
-	/**
-	 * @var boolean true if the icu tokenizer is requested and available
-	 */
-	protected $icuTokenizer;
 
 	/**
 	 * @var array Similarity algo (tf/idf, bm25, etc) configuration
@@ -69,6 +54,15 @@ class AnalysisConfigBuilder {
 	 * @var SearchConfig cirrus config
 	 */
 	protected $config;
+	/**
+	 * @var string[]
+	 */
+	private $plugins;
+
+	/**
+	 * @var string
+	 */
+	protected $defaultLanguage;
 
 	/**
 	 * @param string $langCode The language code to build config for
@@ -76,7 +70,8 @@ class AnalysisConfigBuilder {
 	 * @param SearchConfig $config
 	 */
 	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
-		$this->language = $langCode;
+		$this->defaultLanguage = $langCode;
+		$this->plugins = $plugins;
 		foreach ( $this->elasticsearchLanguageAnalyzersFromPlugins as $pluginSpec => $extra ) {
 			$pluginsPresent = 1;
 			$pluginList = explode( ',', $pluginSpec );
@@ -102,17 +97,15 @@ class AnalysisConfigBuilder {
 		);
 
 		$this->config = $config;
-		$this->icuFolding = $this->shouldActivateIcuFolding( $plugins );
-		$this->icuTokenizer = $this->shouldActivateIcuTokenization();
 	}
 
 	/**
 	 * Determine if ascii folding should be used
-	 * @param string[] $plugins list of installed elasticsearch plugins
+	 * @param string $language Config language
 	 * @return bool true if icu folding should be enabled
 	 */
-	private function shouldActivateIcuFolding( array $plugins ) {
-		if ( !$this->icu || !in_array( 'extra', $plugins ) ) {
+	public function shouldActivateIcuFolding( $language ) {
+		if ( !$this->icu || !in_array( 'extra', $this->plugins ) ) {
 			// ICU folding requires the icu plugin and the extra plugin
 			return false;
 		}
@@ -130,8 +123,8 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuFolding[$this->language] ) ) {
-				return $this->languagesWithIcuFolding[$this->language];
+			if ( isset( $this->languagesWithIcuFolding[$language] ) ) {
+				return $this->languagesWithIcuFolding[$language];
 			}
 		default:
 			return false;
@@ -140,9 +133,10 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Determine if the icu tokenizer can be enabled
+	 * @param string $language Config language
 	 * @return bool
 	 */
-	private function shouldActivateIcuTokenization() {
+	public function shouldActivateIcuTokenization( $language ) {
 		if ( !$this->icu ) {
 			// requires the icu plugin
 			return false;
@@ -154,8 +148,8 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuTokenization[$this->language] ) ) {
-				return $this->languagesWithIcuTokenization[$this->language];
+			if ( isset( $this->languagesWithIcuTokenization[$language] ) ) {
+				return $this->languagesWithIcuTokenization[$language];
 			}
 		default:
 			return false;
@@ -165,16 +159,20 @@ class AnalysisConfigBuilder {
 	/**
 	 * Build the analysis config.
 	 *
+	 * @param string $language Config language
 	 * @return array the analysis config
 	 */
-	public function buildConfig() {
-		$config = $this->customize( $this->defaults() );
-		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config ] );
-		if ( $this->icuTokenizer ) {
+	public function buildConfig( $language = null ) {
+		if ( $language === null ) {
+			$language = $this->defaultLanguage;
+		}
+		$config = $this->customize( $this->defaults( $language ), $language );
+		Hooks::run( 'CirrusSearchAnalysisConfig', [ &$config, $this ] );
+		if ( $this->shouldActivateIcuTokenization( $language ) ) {
 			$config = $this->enableICUTokenizer( $config );
 		}
-		if ( $this->icuFolding ) {
-			$config = $this->enableICUFolding( $config );
+		if ( $this->shouldActivateIcuFolding( $language ) ) {
+			$config = $this->enableICUFolding( $config, $language );
 		}
 		$config = $this->fixAsciiFolding( $config );
 		return $config;
@@ -211,10 +209,11 @@ class AnalysisConfigBuilder {
 	/**
 	 * Activate ICU folding instead of asciifolding
 	 * @param mixed[] $config
+	 * @param string $language Config language
 	 * @return mixed[] update config
 	 */
-	public function enableICUFolding( array $config ) {
-		$unicodeSetFilter = $this->getICUSetFilter();
+	public function enableICUFolding( array $config, $language ) {
+		$unicodeSetFilter = $this->getICUSetFilter( $language );
 		$filter = [
 			'type' => 'icu_folding',
 		];
@@ -319,13 +318,14 @@ class AnalysisConfigBuilder {
 
 	/**
 	 * Return the list of chars to exclude from ICU folding
-	 * @return string|null
+	 * @param string $language Config language
+	 * @return null|string
 	 */
-	protected function getICUSetFilter() {
+	protected function getICUSetFilter( $language ) {
 		if ( $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' ) !== null ) {
 			return $this->config->get( 'CirrusSearchICUFoldingUnicodeSetFilter' );
 		}
-		switch ( $this->language ) {
+		switch ( $language ) {
 		// @todo: complete the default filters per language
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 		case 'fi':
@@ -342,23 +342,24 @@ class AnalysisConfigBuilder {
 	/**
 	 * Build an analysis config with sane defaults.
 	 *
+	 * @param string $language Config language
 	 * @return array
 	 */
-	private function defaults() {
+	private function defaults( $language ) {
 		$defaults = [
 			'analyzer' => [
 				'text' => [
 					// These defaults are not applied to non-custom
 					// analysis chains, i.e., those that use the
 					// default language analyzers on 'text'
-					'type' => $this->getDefaultTextAnalyzerType(),
+					'type' => $this->getDefaultTextAnalyzerType( $language ),
 					'char_filter' => [ 'word_break_helper' ],
 				],
 				'text_search' => [
 					// These defaults are not applied to non-custom
 					// analysis chains, i.e., those that use the
 					// default language analyzers on 'text_search'
-					'type' => $this->getDefaultTextAnalyzerType(),
+					'type' => $this->getDefaultTextAnalyzerType( $language ),
 					'char_filter' => [ 'word_break_helper' ],
 				],
 				'plain' => [
@@ -583,10 +584,11 @@ class AnalysisConfigBuilder {
 	 * Customize the default config for the language.
 	 *
 	 * @param array $config
+	 * @param string $language Config language
 	 * @return array
 	 */
-	private function customize( $config ) {
-		switch ( $this->getDefaultTextAnalyzerType() ) {
+	private function customize( $config, $language ) {
+		switch ( $this->getDefaultTextAnalyzerType( $language ) ) {
 		// Please add languages in alphabetical order.
 		case 'chinese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
@@ -800,7 +802,7 @@ STEMMER_RULES
 
 			// The Russian analyzer is also used for Rusyn for now, so processing that's
 			// very specific to Russian should be separated out
-			if ( $this->language == 'ru' ) {
+			if ( $language === 'ru' ) {
 				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
 				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
 				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
@@ -936,16 +938,17 @@ STEMMER_RULES
 	 * this as per language customization you should think of this as an effort to pick a
 	 * reasonably default in case CirrusSearch isn't customized for the language.
 	 *
+	 * @param string $language Config language
 	 * @return string the analyzer type
 	 */
-	public function getDefaultTextAnalyzerType() {
+	public function getDefaultTextAnalyzerType( $language ) {
 		// If we match a language exactly, use it
-		if ( array_key_exists( $this->language, $this->elasticsearchLanguageAnalyzers ) ) {
-			return $this->elasticsearchLanguageAnalyzers[ $this->language ];
+		if ( array_key_exists( $language, $this->elasticsearchLanguageAnalyzers ) ) {
+			return $this->elasticsearchLanguageAnalyzers[ $language ];
 		}
 
 		// Try the fallback chain, excluding English
-		$languages = Language::getFallbacksFor( $this->language );
+		$languages = Language::getFallbacksFor( $language );
 		foreach ( $languages as $code ) {
 			if ( $code !== 'en' && array_key_exists( $code, $this->elasticsearchLanguageAnalyzers ) ) {
 				return $this->elasticsearchLanguageAnalyzers[ $code ];
@@ -1072,18 +1075,4 @@ STEMMER_RULES
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
 	];
-
-	/**
-	 * @return string MediaWiki language code
-	 */
-	public function getLanguage() {
-		return $this->language;
-	}
-
-	/**
-	 * @return bool true if ICU Folding is enabled
-	 */
-	public function isIcuFolding() {
-		return $this->icuFolding;
-	}
 }

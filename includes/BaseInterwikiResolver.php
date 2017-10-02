@@ -2,6 +2,11 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Interwiki\InterwikiLookup;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
+use MultiHttpClient;
+
 /**
  * Base InterwikiResolver class.
  * Subclasses just need to provide the full matrix array
@@ -9,8 +14,40 @@ namespace CirrusSearch;
  * be stored by this base class.
  */
 abstract class BaseInterwikiResolver implements InterwikiResolver {
+	const CONFIG_CACHE_TTL = 600;
+
 	/** @var array[]|null full IW matrix (@see loadMatrix()) */
 	private $matrix;
+
+	/** @var SearchConfig main wiki config */
+	protected $config;
+
+	/** @var bool use cirrus config dump API */
+	private $useConfigDumpApi;
+
+	/**
+	 * @var MultiHttpClient http client to fetch config of other wikis
+	 */
+	private $httpClient;
+
+	/**
+	 * @var InterwikiLookup
+	 */
+	private $interwikiLookup;
+
+	/**
+	 * @param SearchConfig $config
+	 * @param \MultiHttpClient $client http client to fetch cirrus config
+	 */
+	public function __construct( SearchConfig $config, MultiHttpClient $client = null ) {
+		$this->config = $config;
+		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
+		if ( $client === null ) {
+			$client = new MultiHttpClient( [] );
+		}
+		$this->httpClient = $client;
+		$this->interwikiLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
+	}
 
 	/**
 	 * @return string[]
@@ -18,6 +55,14 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	public function getSisterProjectPrefixes() {
 		$matrix = $this->getMatrix();
 		return isset( $matrix['sister_projects'] ) ? $matrix['sister_projects'] : [];
+	}
+
+	/**
+	 * @return SearchConfig[] configs of sister project indexed by interwiki prefix
+	 */
+	public function getSisterProjectConfigs() {
+		$prefixes = $this->getSisterProjectPrefixes();
+		return $this->loadConfigFromAPI( $prefixes, [], [ $this, 'minimalSearchConfig' ] );
 	}
 
 	/**
@@ -31,7 +76,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 
 	/**
 	 * @param string $lang
-	 * @return string[]
+	 * @return string[] a two elements array [ 'prefix', 'language' ]
 	 */
 	public function getSameProjectWikiByLang( $lang ) {
 		$matrix = $this->getMatrix();
@@ -39,6 +84,19 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		// But it's not always the case, use the language_map to identify the interwiki prefix first.
 		$lang = isset( $matrix['language_map'][$lang] ) ? $matrix['language_map'][$lang] : $lang;
 		return isset( $matrix['cross_language'][$lang] ) ? [ $matrix['cross_language'][$lang], $lang ] : [];
+	}
+
+	/**
+	 * @param string $lang
+	 * @return SearchConfig[] single element array: [ interwiki => SearchConfig ]
+	 */
+	public function getSameProjectConfigByLang( $lang ) {
+		$wikiAndPrefix = $this->getSameProjectWikiByLang( $lang );
+		if ( empty( $wikiAndPrefix ) ) {
+			return [];
+		}
+		list( $wiki, $prefix ) = reset( $wikiAndPrefix );
+		return [ $prefix => $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'siteConfSearchConfig' ] ) ];
 	}
 
 	/** @return array[] */
@@ -68,4 +126,160 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 * return array[]
 	 */
 	abstract protected function loadMatrix();
+
+	/**
+	 * @param string[] $wikis
+	 * @param string[] $hashConfigFlags constructor flags for SearchConfig
+	 * @param callable $fallbackConfig function to load the config if the
+	 * api is not usable or if a failure occurs
+	 * @return SearchConfig[] config indexed by iw prefix
+	 */
+	private function loadConfigFromAPI( $wikis, array $hashConfigFlags, $fallbackConfig ) {
+		foreach ( $wikis as $prefix => $wiki ) {
+			$iw = $this->interwikiLookup->fetch( $prefix );
+			if ( !$this->useConfigDumpApi || !$iw->isLocal() ) {
+				continue;
+			}
+			$api = $iw->getAPI();
+			if ( !$api ) {
+				$parts = parse_url( $iw->getURL() );
+				if ( !isset( $parts['host'] ) ) {
+					continue;
+				}
+				$api = isset( $parts['scheme'] ) ? $parts['scheme'] : 'http';
+				$api .= '://' . $parts['host'];
+				$api .= isset( $parts['port'] ) ? ':' + $parts['port'] : '';
+				$api .= '/w/api.php';
+			}
+			$endpoints[$prefix] = [ 'url' => $api, 'wiki' => $wiki ];
+		}
+
+		if ( !empty( $endpoints ) ) {
+			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
+			$prefixes = array_keys( $endpoints );
+			asort( $prefixes );
+			$cacheKey = implode( '-', $prefixes );
+			$configs = $cache->getWithSetCallback(
+				$cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
+				self::CONFIG_CACHE_TTL,
+				function () use ( $endpoints ) {
+					return $this->sendConfigDumpRequest( $endpoints );
+				}
+			);
+		} else {
+			$configs = [];
+		}
+		$retValue = [];
+		foreach ( $wikis as $prefix => $wiki ) {
+			if ( isset( $configs[$prefix] ) ) {
+				$config = $configs[$prefix];
+				$config['_wikiID'] = $wiki;
+
+				$retValue[$prefix] = new HashSearchConfig(
+					$config,
+					array_merge( $hashConfigFlags, [ 'inherit' ] )
+				);
+			} else {
+				$retValue[$prefix] = $fallbackConfig( $wiki, $hashConfigFlags );
+			}
+		}
+		return $retValue;
+	}
+
+	/**
+	 * @param array[] list of arrays containing 'url' and 'wiki', indexed by iw prefix
+	 * @return array[] list of array containing extracted config vars, failed wikis
+	 * are not returned.
+	 */
+	private function sendConfigDumpRequest( $endpoints ) {
+		$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+		foreach ( $endpoints as $prefix => $info ) {
+			$reqs[$prefix] = [
+				'method' => 'GET',
+				'url' => $info['url'],
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			];
+		}
+		if ( empty( $reqs ) ) {
+			return [];
+		}
+		$responses = $this->httpClient->runMulti( $reqs );
+		$configs = [];
+		foreach ( $responses as $prefix => $response ) {
+			if ( $response['response']['code'] !== 200 ) {
+				$logger->warning(
+					'Failed to fetch config for {wiki} at {url}: ' .
+					'http status {httpstatus} : {clienterror}',
+					[
+						'wiki' => $endpoints[$prefix]['wiki'],
+						'url' => $endpoints[$prefix]['url'],
+						'httpstatus' => $response['response']['code'],
+						'clienterror' => $response['error']
+					]
+				);
+				continue;
+			}
+
+			$data = json_decode( $response['response']['body'], true );
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				$logger->warning(
+					'Failed to fetch config for {wiki} at {url}: ' .
+					'json error code {jsonerrorcode}',
+					[
+						'wiki' => $endpoints[$prefix]['wiki'],
+						'url' => $endpoints[$prefix]['url'],
+						'jsonerrorcode' => json_last_error()
+					]
+				);
+				continue;
+			}
+
+			if ( isset( $data['error'] ) ) {
+				$logger->warning(
+					'Failed to fetch config for {wiki} at {url}: {apierrormessage}',
+					[
+						'wiki' => $endpoints[$prefix]['wiki'],
+						'url' => $endpoints[$prefix]['url'],
+						'apierrormessage' => $data['error']
+					]
+				);
+				continue;
+			}
+			unset( $data['warnings'] );
+			$configs[$prefix] = $data;
+		}
+		return $configs;
+	}
+
+	/**
+	 * Minimal config needed to run a search on a target wiki
+	 * living on the same cluster as the host wiki
+	 *
+	 * @param string $wiki
+	 * @param string[] $hashConfigFlags constructor flags for HashSearchConfig
+	 * @return SearchConfig
+	 */
+	protected function minimalSearchConfig( $wiki, array $hashConfigFlags ) {
+		return new HashSearchConfig(
+			[
+				'_wikiID' => $wiki,
+				'CirrusSearchIndexBaseName' => $wiki,
+			],
+			array_merge( [ 'inherit' ], $hashConfigFlags )
+		);
+	}
+
+	/**
+	 * Full config loaded with SiteConfiguration ($wgConf)
+	 * @param string $wiki
+	 * @param string[] $hashConfigFlags constructor flags (ignored)
+	 * @return SearchConfig
+	 */
+	protected function siteConfSearchConfig( $wiki, array $hashConfigFlags ) {
+		return new SearchConfig( $wiki );
+	}
 }

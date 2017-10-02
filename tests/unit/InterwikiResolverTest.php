@@ -213,6 +213,26 @@ class InterwikiResolverTest extends CirrusTestCase {
 		];
 	}
 
+	public function testLoadConfigFromAPI() {
+		if ( !class_exists( \SiteMatrix::class ) ) {
+			$this->markTestSkipped( 'SiteMatrix not available.' );
+		}
+
+		$apiResponse = file_get_contents( __DIR__ . '/fixtures/configDump/enwiki_sisterproject_configs.json' );
+
+		$client = $this->getMockBuilder( '\MultiHttpClient' )
+			->disableOriginalConstructor()
+			->getMock();
+		$client->expects( $this->any() )
+			->method( 'runMulti' )
+			->will( $this->returnValue( json_decode( $apiResponse, true ) ) );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [ 'b' ], $client );
+		$configs = $resolver->getSisterProjectConfigs();
+		$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );
+		$this->assertEquals( $configs['q']->getWikiId(), 'enwikiquote' );
+		$this->assertEquals( $configs['q']->get( 'CirrusSearchIndexBaseName' ), 'enwikiquote' );
+	}
+
 	private function getCirrusConfigInterwikiResolver() {
 		$wikiId = 'enwiki';
 		$myGlobals = [
@@ -246,7 +266,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		return $resolver;
 	}
 
-	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist ) {
+	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist, \MultiHttpClient $client = null ) {
 		$conf = new \SiteConfiguration;
 		$conf->settings = include __DIR__ . '/resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/resources/wmf/suffixes.php';
@@ -266,6 +286,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'wgSiteMatrixPrivateSites' => self::readDbListFile( __DIR__ . '/resources/wmf/private.dblist' ),
 			// Used by SiteMatrix
 			'wgSiteMatrixFishbowlSites' => self::readDbListFile( __DIR__ . '/resources/wmf/fishbowl.dblist' ),
+			'wgCirrusSearchFetchConfigFromApi' => $client !== null,
 
 			// XXX: for the purpose of the test we need
 			// to have wfWikiID() without DBPrefix so we can reuse
@@ -289,7 +310,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $myGlobals, [ 'inherit' ] );
 		$resolver = MediaWikiServices::getInstance()
 			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config );
+			->getResolver( $config, $client );
 		$this->assertEquals( SiteMatrixInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}

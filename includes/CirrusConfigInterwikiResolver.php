@@ -10,15 +10,6 @@ namespace CirrusSearch;
  */
 
 class CirrusConfigInterwikiResolver extends BaseInterwikiResolver {
-	private $config;
-
-	/**
-	 * @param SearchConfig $config
-	 */
-	public function __construct( SearchConfig $config ) {
-		$this->config = $config;
-	}
-
 	/**
 	 * @param $config SearchConfig
 	 * @return bool true if this resolver can run with the specified config

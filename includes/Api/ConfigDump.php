@@ -29,6 +29,7 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchOptimizeIndexForExperimentalHighlighter',
 		'CirrusSearchNamespaceMappings',
 		'CirrusSearchExtraIndexes',
+		'CirrusSearchFetchConfigFromApi',
 		'CirrusSearchUpdateShardTimeout',
 		'CirrusSearchClientSideUpdateTimeout',
 		'CirrusSearchSearchShardTimeout',

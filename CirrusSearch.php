@@ -698,6 +698,14 @@ $wgCirrusSearchClusterOverrides = [];
 $wgCirrusSearchMoreLikeThisTTL = 0;
 
 /**
+ * Fetch external wiki config from the cirrus dump api.
+ * Used by cross language and cross project searches.
+ * When set to false (default), crossproject configs are approximated
+ * crosslanguage configs are fetched from SiteConfiguration
+ */
+$wgCirrusSearchFetchConfigFromApi = false;
+
+/**
  * CirrusSearch interwiki searching
  * Keys are the interwiki prefix, values are the index to search
  * Results are cached.

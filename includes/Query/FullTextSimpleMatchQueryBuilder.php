@@ -272,7 +272,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 
 		switch ( $type ) {
 		case 'default':
-			$filter = $this->buildSimpleAllFilter( $query );
+			$filter = $this->buildSimpleAllFilter( $filterDef, $query );
 			break;
 		case 'constrain_title':
 			$filter = $this->buildTitleFilter( $filterDef, $query );
@@ -287,10 +287,11 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	/**
 	 * Builds a simple filter on all and all.plain when all terms must match
 	 *
+	 * @param array[] $options array containing filter options
 	 * @param string $query
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	private function buildSimpleAllFilter( $query ) {
+	private function buildSimpleAllFilter( $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
 		// FIXME: We can't use solely the stem field here
 		// - Depending on languages it may lack stopwords,
@@ -298,7 +299,15 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		foreach ( [ 'all', 'all.plain' ] as $field ) {
 			$m = new \Elastica\Query\Match();
 			$m->setFieldQuery( $field, $query );
-			$m->setFieldOperator( $field, 'AND' );
+			$minShouldMatch = '100%';
+			if ( isset( $options['settings'][$field]['minimum_should_match'] ) ) {
+				$minShouldMatch = $options['settings'][$field]['minimum_should_match'];
+			}
+			if ( $minShouldMatch === '100%' ) {
+				$m->setFieldOperator( $field, 'AND' );
+			} else {
+				$m->setFieldMinimumShouldMatch( $field, $minShouldMatch );
+			}
 			$filter->addShould( $m );
 		}
 		return $filter;
@@ -318,7 +327,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 */
 	private function buildTitleFilter( $options, $query ) {
 		$filter = new \Elastica\Query\BoolQuery();
-		$filter->addMust( $this->buildSimpleAllFilter( $query ) );
+		$filter->addMust( $this->buildSimpleAllFilter( $options, $query ) );
 		$minShouldMatch = '3<80%';
 		if ( isset( $options['settings']['minimum_should_match'] ) ) {
 			$minShouldMatch = $options['settings']['minimum_should_match'];

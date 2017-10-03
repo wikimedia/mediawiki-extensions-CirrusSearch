@@ -147,7 +147,7 @@ $wgCirrusSearchFullTextQueryBuilderProfiles = [
 				// which can be relaxed with minimum_should_match (defaults
 				// to 3<80%)
 				'type' => 'constrain_title',
-				'params' => [
+				'settings' => [
 					'minimum_should_match' => '3<80%'
 				],
 			],

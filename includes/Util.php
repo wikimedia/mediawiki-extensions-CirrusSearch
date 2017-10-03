@@ -429,7 +429,7 @@ class Util {
 	 * @return string The context the request is in. Either cli, api or web.
 	 */
 	public static function getExecutionContext() {
-		if ( PHP_SAPI === 'cli' ) {
+		if ( PHP_SAPI === 'cli' || defined( 'MEDIAWIKI_JOB_RUNNER' ) ) {
 			return 'cli';
 		} elseif ( defined( 'MW_API' ) ) {
 			return 'api';

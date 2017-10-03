@@ -15,7 +15,9 @@
             "ip": "127.0.0.1",
             "payload": {
                 "acceptLang": "",
-                "queryString": ""
+                "hascookies": "0",
+                "queryString": "",
+                "referer": ""
             },
             "requests": [
                 {

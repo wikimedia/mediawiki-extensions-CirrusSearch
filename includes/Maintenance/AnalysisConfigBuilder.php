@@ -5,7 +5,6 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Hooks;
-use Language;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -947,14 +946,6 @@ STEMMER_RULES
 			return $this->elasticsearchLanguageAnalyzers[ $language ];
 		}
 
-		// Try the fallback chain, excluding English
-		$languages = Language::getFallbacksFor( $language );
-		foreach ( $languages as $code ) {
-			if ( $code !== 'en' && array_key_exists( $code, $this->elasticsearchLanguageAnalyzers ) ) {
-				return $this->elasticsearchLanguageAnalyzers[ $code ];
-			}
-		}
-
 		return 'default';
 	}
 
@@ -1045,7 +1036,7 @@ STEMMER_RULES
 		"wuu" => true,
 		"zh" => true,
 		"lzh" => true, // zh-classical
-		"zh-classical" => true, // deprecated code fo lzh
+		"zh-classical" => true, // deprecated code for lzh
 		"yue" => true, // zh-yue
 		"zh-yue" => true, // deprecated code for yue
 		// This list below are languages that may use use mixed scripts

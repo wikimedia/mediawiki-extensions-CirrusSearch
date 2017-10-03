@@ -663,7 +663,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				// text
 				$queryText,
 				// fallack
-				new \CirrusSearch\Elastica\MatchNone(),
+				new \Elastica\Query\MatchNone(),
 				// field
 				null,
 				// analyzer
@@ -674,7 +674,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				$tokCount->addCondition(
 					TokenCountRouter::GT,
 					$maxTokens,
-					new \CirrusSearch\Elastica\MatchNone()
+					new \Elastica\Query\MatchNone()
 				);
 			}
 			$tokCount->addCondition(

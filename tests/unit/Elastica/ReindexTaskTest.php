@@ -132,13 +132,21 @@ class ReindexTaskTest extends \PHPUnit_Framework_TestCase {
 			->method( 'request' )
 			->will( $this->returnValueMap( [
 				[
-					'_tasks/abc:123', Request::GET, [], [],
+					'_tasks/abc:123',
+					Request::GET,
+					[],
+					[],
+					\Elastica\Request::DEFAULT_CONTENT_TYPE,
 					new Response( json_encode(
 						$this->inProgressWithSlicesTaskResponse
 					), 200 )
 				],
 				[
-					'_tasks', Request::GET, [], [ 'parent_task_id' => 'abc:123', 'detailed' => 1 ],
+					'_tasks',
+					Request::GET,
+					[],
+					[ 'parent_task_id' => 'abc:123', 'detailed' => 1 ],
+					\Elastica\Request::DEFAULT_CONTENT_TYPE,
 					new Response( json_encode(
 						$this->sliceResponse( 2 )
 					), 200 )

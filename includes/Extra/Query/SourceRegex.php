@@ -150,10 +150,10 @@ class SourceRegex extends AbstractQuery {
 	}
 
 	/**
-	* @param int $maxNgramClauses The maximum number of boolean clauses
-	*  generated from extracted ngrams.
-	* @return self
-	*/
+	 * @param int $maxNgramClauses The maximum number of boolean clauses
+	 *  generated from extracted ngrams.
+	 * @return self
+	 */
 	public function setMaxNgramClauses( $maxNgramClauses ) {
 		return $this->setParam( 'max_ngram_clauses', $maxNgramClauses );
 	}

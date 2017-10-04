@@ -462,7 +462,7 @@ class MetaStoreIndex {
 
 	/**
 	 * Update versions for all types on the index.
-	 * @param $baseName
+	 * @param string $baseName
 	 */
 	public function updateAllVersions( $baseName ) {
 		self::updateAllMetastoreVersions( $this->connection, $baseName );
@@ -545,8 +545,8 @@ class MetaStoreIndex {
 	/**
 	 * Create version data for index type.
 	 * @param Connection $connection
-	 * @param $indexBaseName
-	 * @param $indexTypeName
+	 * @param string $indexBaseName
+	 * @param string $indexTypeName
 	 * @return \Elastica\Document
 	 */
 	public static function versionData( Connection $connection, $indexBaseName,
@@ -580,8 +580,8 @@ class MetaStoreIndex {
 	/**
 	 * Update version metastore for certain index.
 	 * @param Connection $connection
-	 * @param $indexBaseName
-	 * @param $indexTypeName
+	 * @param string $indexBaseName
+	 * @param string $indexTypeName
 	 * @throws \Exception
 	 */
 	public static function updateMetastoreVersions( Connection $connection, $indexBaseName,

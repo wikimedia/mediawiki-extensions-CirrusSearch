@@ -216,6 +216,7 @@ class CheckerJob extends Job {
 
 	/**
 	 * This job handles all its own retries internally.
+	 * @return bool
 	 */
 	public function allowRetries() {
 		return false;

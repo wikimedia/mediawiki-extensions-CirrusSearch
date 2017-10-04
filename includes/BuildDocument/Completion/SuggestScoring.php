@@ -71,14 +71,14 @@ interface SuggestScoringMethod {
  */
 class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function score( array $doc ) {
 		return isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function getRequiredFields() {
 		return [ 'incoming_links' ];
@@ -151,7 +151,7 @@ class QualityScore implements SuggestScoringMethod {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function score( array $doc ) {
 		return intval( $this->intermediateScore( $doc ) * self::SCORE_RANGE );
@@ -257,7 +257,7 @@ class QualityScore implements SuggestScoringMethod {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function getRequiredFields() {
 		return [ 'incoming_links', 'external_link', 'text_bytes', 'heading', 'redirect', 'template' ];

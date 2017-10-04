@@ -405,7 +405,7 @@ class Hooks {
 
 	/**
 	 * Hook called to include Elasticsearch version info on Special:Version
-	 * @param array $software Array of wikitext and version numbers
+	 * @param array &$software Array of wikitext and version numbers
 	 * @return bool
 	 */
 	public static function onSoftwareInfo( &$software ) {
@@ -491,7 +491,7 @@ class Hooks {
 
 	/**
 	 * Register Cirrus's unit tests.
-	 * @param array $files containing tests
+	 * @param array &$files containing tests
 	 * @return bool
 	 */
 	public static function onUnitTestsList( &$files ) {
@@ -516,8 +516,8 @@ class Hooks {
 
 	/**
 	 * Extract namespaces from query string.
-	 * @param array $namespaces
-	 * @param string $search
+	 * @param array &$namespaces
+	 * @param string &$search
 	 * @return bool
 	 */
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
@@ -530,7 +530,7 @@ class Hooks {
 	/**
 	 * Let Elasticsearch take a crack at getting near matches once mediawiki has tried all kinds of variants.
 	 * @param string $term the original search term and all language variants
-	 * @param null|Title $titleResult resulting match.  A Title if we found something, unchanged otherwise.
+	 * @param null|Title &$titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 * @throws ApiUsageException
 	 * @throws UsageException
@@ -670,7 +670,7 @@ class Hooks {
 	 * and for variables this should work cross skin
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderGetConfigVars
 	 *
-	 * @param array $vars
+	 * @param array &$vars
 	 * @return bool
 	 */
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
@@ -704,11 +704,11 @@ class Hooks {
 	/**
 	 * Add $wgCirrusSearchInterwikiProv to external results.
 	 * @param Title $title
-	 * @param mixed $text
+	 * @param mixed &$text
 	 * @param mixed $result
 	 * @param mixed $terms
 	 * @param mixed $page
-	 * @param array $query
+	 * @param array &$query
 	 */
 	public static function onShowSearchHitTitle( Title $title, &$text, $result, $terms, $page, &$query = [] ) {
 		global $wgCirrusSearchInterwikiProv;

@@ -152,7 +152,7 @@ abstract class Job extends MWJob {
 	abstract protected function doJob();
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function allowRetries() {
 		return $this->allowRetries;

@@ -50,7 +50,7 @@ class SearchRequestLog extends BaseRequestLog {
 		$this->lastResponse = $client->getLastResponse();
 	}
 
-	/*
+	/**
 	 * @param string[] $extra
 	 */
 	public function setCachedResult( array $extra ) {

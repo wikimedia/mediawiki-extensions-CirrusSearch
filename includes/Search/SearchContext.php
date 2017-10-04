@@ -420,7 +420,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @var string|null $type type of syntax to check, null for any type
+	 * @param string|null $type type of syntax to check, null for any type
 	 * @return bool True when the query uses $type kind of syntax
 	 */
 	public function isSyntaxUsed( $type = null ) {
@@ -818,7 +818,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @param string The search term with keywords removed
+	 * @param string $term The search term with keywords removed
 	 */
 	public function setCleanedSearchTerm( $term ) {
 		$this->isDirty = true;

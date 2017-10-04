@@ -171,9 +171,9 @@ class TextIndexField extends CirrusIndexField {
 
 	/**
 	 * Adapt the field options according to the highlighter used
-	 * @var mixed[] &$field the mapping options being built
-	 * @var string[] $subFields list of subfields to configure
-	 * @var bool $rootField configure the root field (defaults to true)
+	 * @param mixed[] &$field the mapping options being built
+	 * @param string[] $subFields list of subfields to configure
+	 * @param bool $rootField configure the root field (defaults to true)
 	 */
 	protected function configureHighlighting( array &$field, array $subFields, $rootField = true ) {
 		if ( $this->mappingFlags & MappingConfigBuilder::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER ) {

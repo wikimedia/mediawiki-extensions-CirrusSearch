@@ -116,6 +116,7 @@ class TokenCountRouter extends AbstractQuery {
 	 * @param int $value the value to compare
 	 * @param AbstractQuery $query the query to run if the condition is
 	 * true ignoring all remaining conditions
+	 * @return self
 	 */
 	public function addCondition( $type, $value, AbstractQuery $query ) {
 		switch ( $type ) {

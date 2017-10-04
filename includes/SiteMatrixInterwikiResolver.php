@@ -34,7 +34,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	}
 
 	/**
-	 * @param $config SearchConfig
+	 * @param SearchConfig $config
 	 * @return bool true if this resolver can run with the specified config
 	 */
 	public static function accepts( SearchConfig $config ) {

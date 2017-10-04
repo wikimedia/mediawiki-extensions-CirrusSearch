@@ -10,7 +10,7 @@ class DefaultSortSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	const FIELD = 'defaultsort';
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	public function getRequiredFields() {
 		return [ self::FIELD ];

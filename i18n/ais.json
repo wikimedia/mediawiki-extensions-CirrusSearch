@@ -5,7 +5,10 @@
 			"Benel"
 		]
 	},
+	"cirrussearch-too-busy-error": "kilim-inzin makalah ayza. pahalhal satu pitanam aca.",
+	"cirrussearch-regex-syntax-error": "tatungusay pakatineng a zateng kamu-sakilul mungangaw i $2: $1",
 	"cirrussearch-pref-label": "baluhay mikilim",
+	"apihelp-cirrus-config-dump-description": "patahkal CirrusSearch setin.",
 	"cirrussearch-give-feedback": "pabelian kami ku hatizaay nabalucu’an nu misu",
 	"cirrussearch-explore-similar-related": "mahizaay",
 	"cirrussearch-explore-similar-categories": "kakuniza",

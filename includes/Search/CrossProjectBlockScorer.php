@@ -23,8 +23,7 @@ abstract class CrossProjectBlockScorer {
 	/**
 	 * Reorder crossproject blocks using the $scorer
 	 * @param array $resultsets array of ResultSet or empty array if the search was disabled
-	 * @param $scorer CrossProjectBlockScorer scorer to use
-	 * @return array $resultsets reordered
+	 * @return array ResultSet reordered
 	 */
 	public function reorder( array $resultsets ) {
 		$sortKeys = [];

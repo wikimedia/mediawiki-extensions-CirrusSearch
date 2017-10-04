@@ -437,8 +437,8 @@ class SuggestBuilder {
 
 	/**
 	 * Encode the suggestion doc id
-	 * @param string $docId
 	 * @param string $suggestionType
+	 * @param string $docId
 	 * @return string
 	 */
 	public static function encodeDocId( $suggestionType, $docId ) {

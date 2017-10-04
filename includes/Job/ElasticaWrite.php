@@ -55,6 +55,7 @@ class ElasticaWrite extends Job {
 	 * that some point in time around the failure needs to be reindexed
 	 * manually. See https://wikitech.wikimedia.org/wiki/Search for more
 	 * details.
+	 * @return bool
 	 */
 	public function allowRetries() {
 		return false;

@@ -634,7 +634,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 	/**
 	 * Determines if a phrase rescore is needed
-	 * @param SearchContext $searchContext
+	 * @param SearchContext $searchContext
 	 * @return bool true if we can a phrase rescore
 	 */
 	protected function isPhraseRescoreNeeded( SearchContext $searchContext ) {

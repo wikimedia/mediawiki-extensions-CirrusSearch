@@ -172,7 +172,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @inheritDoc
 	 */
 	protected function getMultiTermRewriteMethod() {
 		// Use blended freq as a rewrite method. The

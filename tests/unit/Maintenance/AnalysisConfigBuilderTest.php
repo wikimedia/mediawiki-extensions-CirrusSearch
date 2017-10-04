@@ -8,7 +8,7 @@ use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
- * @covers CirrusSearch\Maintenance\AnalysisConfigBuilder
+ * @covers \CirrusSearch\Maintenance\AnalysisConfigBuilder
  */
 class AnalysisConfigBuilderTest extends CirrusTestCase {
 	/** @dataProvider provideASCIIFoldingFilters */
@@ -31,34 +31,41 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'unknown_language', $plugins, $config );
-		$result = $builder->enableICUFolding( $input );
+		$result = $builder->enableICUFolding( $input, 'unknown_language' );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
+		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
 
 		// Test default
 		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
-		$result = $builder->enableICUFolding( $input );
+		$result = $builder->enableICUFolding( $input, 'unknown_language' );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
+		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
 
 		// test BC code
 		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => true ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
-		$this->assertTrue( $builder->isIcuFolding() );
+		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
+		$this->assertTrue( $builder->shouldActivateIcuFolding( 'en' ) );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
 
 		// Test that we can force disabling ICU folding
 		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'no' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
-		$this->assertFalse( $builder->isIcuFolding() );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'simple' ) );
 
 		// Test that ICU folding cannot be enable without the required plugins
 		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
 		$plugins = [ 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
-		$this->assertFalse( $builder->isIcuFolding() );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'simple' ) );
 	}
 
 	/** @dataProvider provideICUTokenizer */

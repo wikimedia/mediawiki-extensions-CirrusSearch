@@ -474,7 +474,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
 		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder( $langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
-			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
+								$analysisConfigBuilder->getDefaultTextAnalyzerType( $langCode ) .
+								"\n" );
 		return $analysisConfigBuilder;
 	}
 

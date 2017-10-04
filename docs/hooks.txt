@@ -11,6 +11,7 @@ really been settled.
 
 'CirrusSearchAnalysisConfig': Allows to hook into the configuration for analysis
  &$config - multi-dimensional configuration array for analysis of various languages and fields
+ $builder - AnalysisConfigBuilder object handling the building (since 1.31)
 
 'CirrusSearchMappingConfig': Allows configuration of the mapping of fields
  &$config - multi-dimensional configuration array that contains Elasticsearch document configuration.

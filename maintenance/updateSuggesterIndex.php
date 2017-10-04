@@ -686,7 +686,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			$langCode, $availablePlugins
 		);
 		$this->outputIndented( 'Picking analyzer...' .
-			$analysisConfigBuilder->getDefaultTextAnalyzerType() . "\n" );
+								$analysisConfigBuilder->getDefaultTextAnalyzerType( $langCode ) .
+								"\n" );
 		return $analysisConfigBuilder;
 	}
 

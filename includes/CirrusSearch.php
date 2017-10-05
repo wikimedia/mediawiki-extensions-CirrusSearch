@@ -218,7 +218,7 @@ class CirrusSearch extends SearchEngine {
 				continue;
 			}
 			$lang = $detector->detect( $this, $term );
-			if ( $lang === $this->config->get( 'wgLanguageCode' ) ) {
+			if ( $lang === $this->config->get( 'LanguageCode' ) ) {
 				// The query is in the wiki language so we
 				// don't need to actually try another wiki.
 				// Note that this may not be very accurate for

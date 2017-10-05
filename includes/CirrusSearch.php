@@ -230,7 +230,7 @@ class CirrusSearch extends SearchEngine {
 			$iwPrefixAndConfig = MediaWikiServices::getInstance()
 				->getService( InterwikiResolver::SERVICE )
 				->getSameProjectConfigByLang( $lang );
-			if ( !empty( $interwikiConfig ) ) {
+			if ( !empty( $iwPrefixAndConfig ) ) {
 				// it might be more accurate to attach these to the 'next'
 				// log context? It would be inconsistent with the
 				// langdetect => false condition which does not have a next

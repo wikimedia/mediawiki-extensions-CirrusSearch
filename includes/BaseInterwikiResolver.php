@@ -96,7 +96,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			return [];
 		}
 		list( $wiki, $prefix ) = $wikiAndPrefix;
-		return [ $prefix => $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'siteConfSearchConfig' ] ) ];
+		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'siteConfSearchConfig' ] );
 	}
 
 	/** @return array[] */

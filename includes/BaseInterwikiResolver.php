@@ -137,7 +137,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	private function loadConfigFromAPI( $wikis, array $hashConfigFlags, $fallbackConfig ) {
 		foreach ( $wikis as $prefix => $wiki ) {
 			$iw = $this->interwikiLookup->fetch( $prefix );
-			if ( !$this->useConfigDumpApi || !$iw->isLocal() ) {
+			if ( !$iw || !$this->useConfigDumpApi || !$iw->isLocal() ) {
 				continue;
 			}
 			$api = $iw->getAPI();

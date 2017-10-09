@@ -5,12 +5,15 @@
 			"Benel"
 		]
 	},
+	"cirrussearch-backend-error": "izay nanuzuay a munday, la’cus kami pahezek numisyay a kilim. pihalhalen miteneng aca.",
 	"cirrussearch-too-busy-error": "kilim-inzin makalah ayza. pahalhal satu pitanam aca.",
 	"cirrussearch-regex-syntax-error": "tatungusay pakatineng a zateng kamu-sakilul mungangaw i $2: $1",
 	"cirrussearch-regex-too-busy-error": "sayadah tatungusay pakatineng a zateng mikilim saungay imahini miteka, pihalhal sawni mitanam aca",
 	"cirrussearch-pref-label": "baluhay mikilim",
 	"apihelp-cirrus-config-dump-description": "patahkal CirrusSearch setin.",
 	"apihelp-cirrus-config-dump-example": "maala CirrusSearch setin patahkal a tangan.",
+	"apihelp-cirrus-mapping-dump-description": "patahkal CirrusSearch i tina Wiki a patatapalen.",
+	"apihelp-cirrus-settings-dump-description": "patahkal CirrusSearch itiniay Wiki setin.",
 	"cirrussearch-give-feedback": "pabelian kami ku hatizaay nabalucu’an nu misu",
 	"cirrussearch-explore-similar-related": "mahizaay",
 	"cirrussearch-explore-similar-categories": "kakuniza",

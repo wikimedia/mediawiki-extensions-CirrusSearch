@@ -198,9 +198,9 @@ class Updater extends ElasticsearchIntermediary {
 		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) &&
-					$wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) {
-				$document = $this->docToSuperDetectNoopScript( $document );
+			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) ) {
+				$document = $this->docToSuperDetectNoopScript( $document,
+					!empty( $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop_enable_native' ] ) );
 			}
 			// TODO: Move hints reset at a later stage if they appear to be useful
 			// (e.g. in DataSender::sendData)
@@ -403,9 +403,10 @@ class Updater extends ElasticsearchIntermediary {
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
 	 * @internal made public for testing purposes
 	 * @param \Elastica\Document $doc
+	 * @param bool $enableNative enable the use of native scripts (deprecated as of elastic 5.5+)
 	 * @return \Elastica\Script\Script
 	 */
-	public function docToSuperDetectNoopScript( $doc ) {
+	public function docToSuperDetectNoopScript( $doc, $enableNative = false ) {
 		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
 		$params = $doc->getParams();
 		$params['source'] = $doc->getData();
@@ -421,7 +422,11 @@ class Updater extends ElasticsearchIntermediary {
 			$params['handlers'] += $extraHandlers;
 		}
 
-		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
+		if ( $enableNative ) {
+			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
+		} else {
+			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
+		}
 		if ( $doc->getDocAsUpsert() ) {
 			CirrusIndexField::resetHints( $doc );
 			$script->setUpsert( $doc );

@@ -33,7 +33,12 @@ class UpdaterTest extends CirrusTestCase {
 		$conn = new Connection( $config );
 		$updater = new Updater( $conn, $config );
 		$doc = $this->builDoc( $rawDoc, $hints );
-		$script = $updater->docToSuperDetectNoopScript( $doc );
+		$script = $updater->docToSuperDetectNoopScript( $doc, false );
+		$this->assertEquals( 'super_detect_noop', $script->getLang() );
+		$this->assertEquals( $expectedParams['handlers'], $script->getParams()['handlers'] );
+		$this->assertEquals( $expectedParams['_source'], $script->getParams()['source'] );
+		$script = $updater->docToSuperDetectNoopScript( $doc, true );
+		$this->assertEquals( 'native', $script->getLang() );
 		$this->assertEquals( $expectedParams['handlers'], $script->getParams()['handlers'] );
 		$this->assertEquals( $expectedParams['_source'], $script->getParams()['source'] );
 	}

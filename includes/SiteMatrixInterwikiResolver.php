@@ -76,6 +76,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			$wikiDBname = $this->config->get( 'DBname' );
 			list( , $myLang ) = $wgConf->siteFromDB( $wikiDBname );
 			$siteConf = $this->config->get( 'SiteMatrixSites' );
+			$prefixOverrides = $this->config->get( 'CirrusSearchInterwikiPrefixOverrides' );
 			$sisterProjects = [];
 			$crossLanguage = [];
 			$prefixesByWiki = [];
@@ -89,7 +90,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			foreach ( $matrix->getSites() as $site ) {
 				if ( $matrix->getDBName( $myLang, $site ) === $wikiDBname ) {
 					$myProject = $site;
-					continue;
+					break;
 				}
 			}
 
@@ -113,6 +114,10 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				}
 				$dbName = $matrix->getDBName( $myLang, $site );
 				$prefix = $siteConf[$site]['prefix'];
+
+				if ( isset( $prefixOverrides[$prefix] ) ) {
+					$prefix = $prefixOverrides[$prefix];
+				}
 
 				if ( !in_array( $prefix, $this->config->get( 'CirrusSearchCrossProjectSearchBlackList' ) ) ) {
 					$sisterProjects[$prefix] = $dbName;

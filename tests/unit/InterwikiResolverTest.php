@@ -59,13 +59,16 @@ class InterwikiResolverTest extends CirrusTestCase {
 	 * @param string $what method to test
 	 * @param mixed $arg arg to $what
 	 * @param mixed $expected expected result of $what($arg)
+	 * @param string[]|null $blacklist
+	 * @param string[]|null $overrides
 	 */
-	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected, $blacklist = [] ) {
+	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected,
+			$blacklist = [], $overrides = [] ) {
 		if ( !class_exists( \SiteMatrix::class ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
-		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blacklist );
+		$resolver = $this->getSiteMatrixInterwikiResolver( $wiki, $blacklist, $overrides );
 		switch ( $what ) {
 		case 'sisters':
 			asort( $expected );
@@ -109,15 +112,31 @@ class InterwikiResolverTest extends CirrusTestCase {
 					'voy' => 'enwikivoyage'
 				]
 			],
-			'enwiki sisters with blacklist' => [
+			'enwiki sisters with overrides' => [
 				'enwiki',
 				'sisters', null,
 				[
 					'wikt' => 'enwiktionary',
-					's' => 'enwikisource',
+					'b' => 'enwikibooks',
+					'n' => 'enwikinews',
+					'q' => 'enwikiquote',
+					'src' => 'enwikisource',
+					'v' => 'enwikiversity',
 					'voy' => 'enwikivoyage'
 				],
-				[ 'n', 'b', 'q', 'v' ]
+				[],
+				[ 's' => 'src' ]
+			],
+			'enwiki sisters with blacklist and overrides' => [
+				'enwiki',
+				'sisters', null,
+				[
+					'wikt' => 'enwiktionary',
+					'src' => 'enwikisource',
+					'voy' => 'enwikivoyage'
+				],
+				[ 'n', 'books', 'q', 'v' ],
+				[ 's' => 'src', 'b' => 'books' ]
 
 			],
 			'enwikibook sisters' => [
@@ -226,7 +245,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$client->expects( $this->any() )
 			->method( 'runMulti' )
 			->will( $this->returnValue( json_decode( $apiResponse, true ) ) );
-		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [ 'b' ], $client );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [ 'b' ], [], $client );
 		$configs = $resolver->getSisterProjectConfigs();
 		$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );
 		$this->assertEquals( $configs['q']->getWikiId(), 'enwikiquote' );
@@ -266,7 +285,8 @@ class InterwikiResolverTest extends CirrusTestCase {
 		return $resolver;
 	}
 
-	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist, \MultiHttpClient $client = null ) {
+	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist,
+		array $overrides, \MultiHttpClient $client = null ) {
 		$conf = new \SiteConfiguration;
 		$conf->settings = include __DIR__ . '/resources/wmf/SiteMatrix_SiteConf_IS.php';
 		$conf->suffixes = include __DIR__ . '/resources/wmf/suffixes.php';
@@ -301,13 +321,13 @@ class InterwikiResolverTest extends CirrusTestCase {
 			'wgCirrusSearchLanguageToWikiMap' => [],
 			'wgCirrusSearchWikiToNameMap' => [],
 			'wgCirrusSearchCrossProjectSearchBlackList' => $blacklist,
+			'wgCirrusSearchInterwikiPrefixOverrides' => $overrides,
 		];
 		$this->setMwGlobals( $myGlobals );
-		$myGlobals['_wikiID'] = $wikiId;
 		// We need to reset this service so it can load wgInterwikiCache
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
-		$config = new HashSearchConfig( $myGlobals, [ 'inherit' ] );
+		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ 'inherit' ] );
 		$resolver = MediaWikiServices::getInstance()
 			->getService( InterwikiResolverFactory::SERVICE )
 			->getResolver( $config, $client );

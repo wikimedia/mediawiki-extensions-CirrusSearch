@@ -1210,6 +1210,27 @@ Example :
 In WMF context this would remove wikinews and wikiversity from the list of
 crossproject displayed in the sidebar
 
+; $wgCirrusSearchInterwikiPrefixOverrides
+
+Default:
+    $wgCirrusSearchInterwikiPrefixOverrides = [];
+
+List of interwiki prefixes to override. This is only useful when used with
+SiteMatrix. In some cases a specific wiki may want to override the convention used
+by SiteMatrix. E.g. on WMF infrastructure this is used to override the
+interwiki prefix 's' to 'src' on swedish wikipedia.
+
+NOTE: overrides are applied before reading $wgCirrusSearchCrossProjectSearchBlackList
+and $wgCirrusSearchCrossProjectProfiles.
+
+Example:
+    $wgCirrusSearchInterwikiPrefixOverrides = [
+        's' => 'src',
+    ]
+
+
+; $wgCirrusSearchCrossProjectProfiles
+
 Default:
     $wgCirrusSearchCrossProjectProfiles = [];
 

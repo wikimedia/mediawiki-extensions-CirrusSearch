@@ -1034,6 +1034,25 @@ $wgCirrusSearchEnableCrossProjectSearch = false;
 $wgCirrusSearchCrossProjectSearchBlackList = [];
 
 /**
+ * List of interwiki prefixes to override.
+ * This is only useful when used with SiteMatrix.
+ * In some cases a specific wiki may want to override
+ * the convention used in SiteMatrix.
+ * e.g. on WMF infrastructure this is used to override
+ * the interwiki prefix 's' to 'src' on the swedish wikipedia.
+ *
+ * NOTE: overrides are applied before reading
+ * $wgCirrusSearchCrossProjectSearchBlackList and
+ * $wgCirrusSearchCrossProjectProfiles
+ *
+ * Example :
+ * $wgCirrusSearchInterwikiPrefixOverrides = [
+ *     's' => 'src',
+ * ];
+ */
+$wgCirrusSearchInterwikiPrefixOverrides = [];
+
+/**
  * Override various profiles to use for interwiki searching.
  * Example:
  * $wgCirrusSearchCrossProjectProfiles = [

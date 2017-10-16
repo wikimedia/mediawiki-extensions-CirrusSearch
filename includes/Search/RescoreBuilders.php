@@ -393,6 +393,8 @@ class FunctionScoreChain {
 			return new LogMultFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
 		case 'geomean':
 			return new GeoMeanFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+		case 'term_boost':
+			return new TermBoostScoreBuilder( $this->context, $weight,  $func['params'] );
 		default:
 			$builder = null;
 			Hooks::run( 'CirrusSearchScoreBuilder', [ $func, $this->context, &$builder ] );
@@ -1171,6 +1173,38 @@ class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
 		$functionScore->addScriptScoreFunction(
 			new \Elastica\Script\Script( $this->script, null, 'expression' ),
 			null, $this->weight );
+	}
+}
+
+/**
+ * Boost score when certain field is matched with certain term.
+ * Config:
+ * [ 'field_name' => ['match1' => WEIGHT1, ...], ...]
+ * @package CirrusSearch\Search
+ */
+class TermBoostScoreBuilder extends FunctionScoreBuilder {
+	/** @var array[] */
+	private $fields;
+
+	/**
+	 * @param SearchContext $context
+	 * @param float $weight
+	 * @param array $profile
+	 */
+	public function __construct( SearchContext $context, $weight, $profile ) {
+		parent::__construct( $context, $weight );
+		$this->fields = $profile;
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		foreach ( $this->fields as $field => $matches ) {
+			foreach ( $matches as $match => $matchWeight ) {
+				$functionScore->addWeightFunction(
+					$matchWeight * $this->weight,
+					new \Elastica\Query\Term( [ $field => $match ] )
+				);
+			}
+		}
 	}
 }
 

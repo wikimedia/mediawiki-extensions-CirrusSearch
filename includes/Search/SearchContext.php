@@ -211,6 +211,11 @@ class SearchContext {
 	private $isDirty = false;
 
 	/**
+	 * @var ResultsType Type of the result for the context.
+	 */
+	private $resultsType;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 */
@@ -879,4 +884,22 @@ class SearchContext {
 		$this->isDirty = true;
 		$this->fulltextQueryBuilderProfile = $profile;
 	}
+
+	/**
+	 * @param ResultsType $resultsType results type to return
+	 */
+	public function setResultsType( $resultsType ) {
+		$this->resultsType = $resultsType;
+	}
+
+	/**
+	 * @return ResultsType $resultsType results type to return
+	 */
+	public function getResultsType() {
+		if ( $this->resultsType === null ) {
+			return new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
+		}
+		return $this->resultsType;
+	}
+
 }

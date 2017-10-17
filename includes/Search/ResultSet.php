@@ -263,6 +263,18 @@ class ResultSet extends SearchResultSet {
 		return false;
 	}
 
+	/**
+	 * Return next raw (ElasticSearch) result.
+	 * @return \Elastica\Result|false
+	 */
+	public function nextRawResult() {
+		$current = $this->result->current();
+		if ( $current ) {
+			$this->result->next();
+		}
+		return $current;
+	}
+
 	public function rewind() {
 		$this->result->rewind();
 	}

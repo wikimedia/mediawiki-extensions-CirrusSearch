@@ -780,7 +780,11 @@ class Searcher extends ElasticsearchIntermediary {
 						// failure across the board. Should be addressed
 						// at some point.
 						$multiResultSet = $search->search();
-						if ( $multiResultSet->hasError() ) {
+						if ( $multiResultSet->hasError() ||
+							// Catches HTTP errors (ex: 5xx) not reported
+							// by hasError()
+							!$multiResultSet->getResponse()->isOk()
+						) {
 							return $this->multiFailure( $multiResultSet );
 						} else {
 							return $this->success( $multiResultSet );

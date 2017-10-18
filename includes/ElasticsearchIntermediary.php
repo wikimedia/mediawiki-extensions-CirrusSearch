@@ -173,6 +173,14 @@ abstract class ElasticsearchIntermediary {
 	}
 
 	public function multiFailure( \Elastica\Multi\ResultSet $multiResultSet ) {
+		$status = $multiResultSet->getResponse()->getStatus();
+		if ( $status < 200 || $status >= 300 ) {
+			// bad response from server. Should elastica be throwing an exception for this?
+			return $this->failure( new \Elastica\Exception\ResponseException(
+				$this->connection->getClient()->getLastRequest(),
+				$multiResultSet->getResponse()
+			) );
+		}
 		foreach ( $multiResultSet->getResultSets() as $resultSet ) {
 			if ( $resultSet->getResponse()->hasError() ) {
 				return $this->failure( new \Elastica\Exception\ResponseException(

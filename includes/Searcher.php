@@ -3,7 +3,6 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Query\SimpleKeywordFeature;
-use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\RescoreBuilder;
@@ -91,8 +90,10 @@ class Searcher extends ElasticsearchIntermediary {
 
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
+	 * @deprecated
 	 */
 	protected $resultsType;
+
 	/**
 	 * @var string sort type
 	 */
@@ -164,6 +165,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param ResultsType $resultsType results type to return
 	 */
 	public function setResultsType( $resultsType ) {
+		$this->searchContext->setResultsType( $resultsType );
+		// BC, deprecated
+		/** @suppress PhanDeprecatedProperty BC */
 		$this->resultsType = $resultsType;
 	}
 
@@ -552,13 +556,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
-		if ( $this->resultsType === null ) {
-			$this->resultsType = new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
-		}
+		$resultsType = $this->searchContext->getResultsType();
 
 		$query = new \Elastica\Query();
-		$query->setSource( $this->resultsType->getSourceFiltering() );
-		$query->setStoredFields( $this->resultsType->getStoredFields() );
+		$query->setSource( $resultsType->getSourceFiltering() );
+		$query->setStoredFields( $resultsType->getStoredFields() );
 
 		$extraIndexes = [];
 		$namespaces = $this->searchContext->getNamespaces();
@@ -581,7 +583,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->installBoosts();
 		$query->setQuery( $this->searchContext->getQuery() );
 
-		$highlight = $this->searchContext->getHighlight( $this->resultsType );
+		$highlight = $this->searchContext->getHighlight( $resultsType );
 		if ( $highlight ) {
 			$query->setHighlight( $highlight );
 		}
@@ -703,10 +705,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 *
 	 * @param \Elastica\Search[] $searches
 	 * @param ResultsType[] $resultsTypes Specific ResultType instances to use with $searches. Any
-	 *  search without a matching key in this array uses $this->resultsType.
+	 *  search without a matching key in this array uses context result type.
 	 * @return Status results from the query transformed by the resultsType
 	 */
 	protected function searchMulti( $searches, array $resultsTypes = [] ) {
+		$contextResultsType = $this->searchContext->getResultsType();
 		if ( $this->limit <= 0 && ! $this->returnQuery ) {
 			if ( $this->returnResult ) {
 				return Status::newGood( [
@@ -718,7 +721,7 @@ class Searcher extends ElasticsearchIntermediary {
 				$this->searchContext->setResultsPossible( false );
 				$retval = [];
 				foreach ( $searches as $key => $search ) {
-					$retval[$key] = $this->resultsType->createEmptyResult();
+					$retval[$key] = $contextResultsType->createEmptyResult();
 				}
 				return Status::newGood( $retval );
 			}
@@ -801,12 +804,12 @@ class Searcher extends ElasticsearchIntermediary {
 		// Wrap with caching if needed, but don't cache debugging queries
 		$skipCache = $this->returnResult || $this->returnExplain;
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
-			$work = function () use ( $work, $searches, $log, $resultsTypes ) {
+			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 				$cache = ObjectCache::getLocalClusterInstance();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
-					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $this->resultsType;
+					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;
 					$keyParts[] = $search->getPath() .
 						serialize( $search->getOptions() ) .
 						serialize( $search->getQuery()->toArray() ) .
@@ -879,7 +882,7 @@ class Searcher extends ElasticsearchIntermediary {
 				// @todo error handling
 				$retval[$key] = null;
 			} else {
-				$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $this->resultsType;
+				$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;
 				$retval[$key] = $resultsType->transformElasticsearchResult(
 					$this->searchContext,
 					$resultSet

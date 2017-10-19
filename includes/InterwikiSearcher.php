@@ -88,14 +88,16 @@ class InterwikiSearcher extends Searcher {
 
 		$overriddenProfiles = $this->config->get( 'CirrusSearchCrossProjectProfiles' );
 		$contexts = [];
+		$resultsType = new FullTextResultsType( $this->highlightingConfig );
 		foreach ( $sources as $interwiki => $config ) {
 			$overrides = isset( $overriddenProfiles[$interwiki] ) ? $overriddenProfiles[$interwiki] : [];
 			$contexts[$interwiki] = $this->buildOverriddenContext( $overrides, $config );
+			$contexts[$interwiki]->setResultsType( $resultsType );
 		}
 
 		$retval = [];
 		$searches = [];
-		$this->setResultsType( new FullTextResultsType( $this->highlightingConfig ) );
+		$this->setResultsType( $resultsType );
 		foreach ( $contexts as $interwiki => $context ) {
 			$this->searchContext = $context;
 			$this->searchContext->setLimitSearchToLocalWiki( true );

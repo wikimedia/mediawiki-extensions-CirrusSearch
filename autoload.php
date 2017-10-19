@@ -192,6 +192,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\SourceTextIndexField' => __DIR__ . '/includes/Search/SourceTextIndexField.php',
 	'CirrusSearch\\Search\\StaticCrossProjectBlockScorer' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',
 	'CirrusSearch\\Search\\TeamDraftInterleaver' => __DIR__ . '/includes/Search/TeamDraftInterleaver.php',
+	'CirrusSearch\\Search\\TermBoostScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\TextIndexField' => __DIR__ . '/includes/Search/TextIndexField.php',
 	'CirrusSearch\\Search\\TitleHelper' => __DIR__ . '/includes/Search/TitleHelper.php',
 	'CirrusSearch\\Search\\TitleResultsType' => __DIR__ . '/includes/Search/ResultsType.php',

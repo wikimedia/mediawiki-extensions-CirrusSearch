@@ -29,5 +29,10 @@
 	"apihelp-cirrus-settings-dump-example": "Bu viki için CirrusSearch ayarlarının dökümünü al.",
 	"cirrussearch-completionsuggester-pref": "Tamamlama önerici",
 	"cirrussearch-completionsuggester-desc": "Siz yazdıkça arama yapan yeni bir algoritma. Etkinleştirildiğinde, sağ üst köşedeki arama kutusu Tamamlama Önerici'yi kullanacaktır.",
-	"prefs-completion": "Arama tamamlama"
+	"prefs-completion": "Arama tamamlama",
+	"cirrussearch-pref-completion-section-desc": "Tamamlama önerici",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Varsayılan (önerilen)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "İki yazım hatasına kadar düzeltir. Yakın yönelndirmeleri çözer.",
+	"cirrussearch-completion-profile-normal-pref-name": "Yönlendirme düzeni (gelişmiş)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Yazım hatası düzeltmez. Yakın yönlendirmeleri çözer."
 }

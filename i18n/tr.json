@@ -8,7 +8,8 @@
 			"McAang",
 			"Sayginer",
 			"JackUKElliott",
-			"HakanIST"
+			"HakanIST",
+			"Rapsar"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
@@ -29,10 +30,18 @@
 	"apihelp-cirrus-settings-dump-example": "Bu viki için CirrusSearch ayarlarının dökümünü al.",
 	"cirrussearch-completionsuggester-pref": "Tamamlama önerici",
 	"cirrussearch-completionsuggester-desc": "Siz yazdıkça arama yapan yeni bir algoritma. Etkinleştirildiğinde, sağ üst köşedeki arama kutusu Tamamlama Önerici'yi kullanacaktır.",
+	"cirrussearch-pref-completion-profile-help": "Otomatik tamamlama (yazdığınız gibi arama) önerilerinin nasıl olacağını ayarlayın.",
 	"prefs-completion": "Arama tamamlama",
 	"cirrussearch-pref-completion-section-desc": "Tamamlama önerici",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Tamamlama önerici], daha iyi yazım düzeltmeleri ve alakalı arama önerileri sunan bir algoritmadır.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Varsayılan (önerilen)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "İki yazım hatasına kadar düzeltir. Yakın yönelndirmeleri çözer.",
-	"cirrussearch-completion-profile-normal-pref-name": "Yönlendirme düzeni (gelişmiş)",
-	"cirrussearch-completion-profile-normal-pref-desc": "Yazım hatası düzeltmez. Yakın yönlendirmeleri çözer."
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "İki yazım hatasına kadar düzeltilir. Yakın yönlendirmeler tespit edilir.",
+	"cirrussearch-completion-profile-strict-pref-name": "Katı mod (ileri düzey)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Yazım veya aksan düzeltmesi yapılmaz. Birebir sonuçlar gösterilir.",
+	"cirrussearch-completion-profile-normal-pref-name": "Yönlendirme modu (ileri seviye)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Yazım hatası düzeltilmez. Yakın yönlendirmeler tespit edilir.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Ön ek araması",
+	"cirrussearch-pref-completion-legacy-section-legend": "Yazdıkça, eski aramalardan öneriler sunma algoritmasıdır.",
+	"cirrussearch-completion-profile-classic-pref-name": "Klasik ön ek araması",
+	"cirrussearch-completion-profile-classic-pref-desc": "Yazım düzeltmesi yapılmaz. Sayfa adının başından itibaren eşleşen sonuçlar gösterilir."
 }

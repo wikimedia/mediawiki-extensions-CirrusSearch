@@ -251,9 +251,10 @@ class Searcher extends ElasticsearchIntermediary {
 	/**
 	 * Perform a prefix search.
 	 * @param string $term text by which to search
+	 * $param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
 	 */
-	public function prefixSearch( $term ) {
+	public function prefixSearch( $term, $variants = [] ) {
 		$this->checkTitleSearchRequestLength( $term );
 		$this->searchContext->setOriginalSearchTerm( $term );
 		$this->searchContext->setRescoreProfile(
@@ -263,25 +264,47 @@ class Searcher extends ElasticsearchIntermediary {
 		$this->searchContext->addSyntaxUsed( 'prefix' );
 		if ( strlen( $term ) > 0 ) {
 			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
-				$match = new \Elastica\Query\Match();
-				$match->setField( 'title.word_prefix', [
-					'query' => $term,
-					'analyzer' => 'plain',
-					'operator' => 'and',
-				] );
-				$this->searchContext->addFilter( $match );
+				$buildMatch = function ( $searchTerm ) {
+					$match = new \Elastica\Query\Match();
+					$match->setField( 'title.word_prefix', [
+						'query' => $searchTerm,
+						'analyzer' => 'plain',
+						'operator' => 'and',
+					] );
+					return $match;
+				};
+				$query = new \Elastica\Query\BoolQuery();
+				$query->setMinimumShouldMatch( 1 );
+				$query->addShould( $buildMatch( $term ) );
+				foreach ( $variants as $variant ) {
+					// This is a filter we don't really care about
+					// discounting variant matches.
+					$query->addShould( $buildMatch( $variant ) );
+				}
+				$this->searchContext->addFilter( $query );
 			} else {
 				// Elasticsearch seems to have trouble extracting the proper terms to highlight
 				// from the default query we make so we feed it exactly the right query to highlight.
-				$query = new \Elastica\Query\MultiMatch();
-				$query->setQuery( $term );
 				$weights = $this->config->get( 'CirrusSearchPrefixWeights' );
-				$query->setFields( [
-					'title.prefix^' . $weights[ 'title' ],
-					'redirect.title.prefix^' . $weights[ 'redirect' ],
-					'title.prefix_asciifolding^' . $weights[ 'title_asciifolding' ],
-					'redirect.title.prefix_asciifolding^' . $weights[ 'redirect_asciifolding' ],
-				] );
+				$buildMatch = function ( $searchTerm, $weight ) use ( $weights ) {
+					$query = new \Elastica\Query\MultiMatch();
+					$query->setQuery( $searchTerm );
+					$query->setFields( [
+						'title.prefix^' . ( $weights[ 'title' ] * $weight ),
+						'redirect.title.prefix^' . ( $weights[ 'redirect' ] * $weight ),
+						'title.prefix_asciifolding^' . ( $weights[ 'title_asciifolding' ] * $weight ),
+						'redirect.title.prefix_asciifolding^' . ( $weights[ 'redirect_asciifolding' ] * $weight ),
+					] );
+					return $query;
+				};
+				$query = new \Elastica\Query\BoolQuery();
+				$query->setMinimumShouldMatch( 1 );
+				$weight = 1;
+				$query->addShould( $buildMatch( $term, $weight ) );
+				foreach ( $variants as $variant ) {
+					$weight *= 0.2;
+					$query->addShould( $buildMatch( $variant, $weight ) );
+				}
 				$this->searchContext->setMainQuery( $query );
 			}
 		}

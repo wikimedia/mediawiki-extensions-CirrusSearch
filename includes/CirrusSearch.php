@@ -561,34 +561,34 @@ class CirrusSearch extends SearchEngine {
 			return parent::completionSearchBackend( $search );
 		}
 
-		if ( !$this->completionSuggesterEnabled( $this->config ) ) {
-			// Completion suggester is not enabled, fallback to
-			// default implementation
-			return $this->prefixSearch( $search );
-		}
-
-		if ( count( $this->namespaces ) != 1 ||
-			reset( $this->namespaces ) != NS_MAIN
-		) {
-			// for now, suggester only works for main namespace
-			return $this->prefixSearch( $search );
-		}
-
-		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
-			// Fallback to prefixsearch if the classic profile was selected.
-			if ( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] == self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
-				return $this->prefixSearch( $search );
-			}
-		}
-
 		// Not really useful, mostly for testing purpose
-		$variants = $this->request->getArray( 'cirrusCompletionSuggesterVariant' );
+		$variants = $this->request->getArray( 'cirrusCompletionVariant' );
 		if ( empty( $variants ) ) {
 			global $wgContLang;
 			$variants = $wgContLang->autoConvertToAllVariants( $search );
 		} elseif ( count( $variants ) > 3 ) {
 			// We should not allow too many variants
 			$variants = array_slice( $variants, 0, 3 );
+		}
+
+		if ( !$this->completionSuggesterEnabled( $this->config ) ) {
+			// Completion suggester is not enabled, fallback to
+			// default implementation
+			return $this->prefixSearch( $search, $variants );
+		}
+
+		if ( count( $this->namespaces ) != 1 ||
+			reset( $this->namespaces ) != NS_MAIN
+		) {
+			// for now, suggester only works for main namespace
+			return $this->prefixSearch( $search, $variants );
+		}
+
+		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
+			// Fallback to prefixsearch if the classic profile was selected.
+			if ( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] == self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
+				return $this->prefixSearch( $search, $variants );
+			}
 		}
 
 		return $this->getSuggestions( $search, $variants, $this->config );
@@ -608,9 +608,10 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * Older prefix search.
 	 * @param string $search search text
+	 * @param string[] $variants
 	 * @return SearchSuggestionSet
 	 */
-	protected function prefixSearch( $search ) {
+	protected function prefixSearch( $search, $variants ) {
 		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces );
 
 		if ( $search ) {
@@ -621,7 +622,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		try {
-			$status = $searcher->prefixSearch( $search );
+			$status = $searcher->prefixSearch( $search, $variants );
 		} catch ( ApiUsageException $e ) {
 			if ( defined( 'MW_API' ) ) {
 				throw $e;

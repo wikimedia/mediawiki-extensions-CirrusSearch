@@ -46,11 +46,6 @@ class SearchContext {
 	private $boostTemplatesFromQuery;
 
 	/**
-	 * @var array[] set of per-wiki template boosts from extra index handling
-	 */
-	private $extraIndexBoostTemplates = [];
-
-	/**
 	 * @deprecated use rescore profiles instead
 	 * @var bool do we need to boost links
 	 */
@@ -326,16 +321,15 @@ class SearchContext {
 	 *  within that wiki
 	 */
 	public function getExtraIndexBoostTemplates() {
-		return $this->extraIndexBoostTemplates;
-	}
+		$extraIndexBoostTemplates = [];
+		foreach ( $this->getExtraIndices() as $extraIndex ) {
+			$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
+			if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
+				$extraIndexBoostTemplates[$extraIndexBoosts['wiki']] = $extraIndexBoosts['boosts'];
+			}
+		}
 
-	/**
-	 * @param string $wiki Index to boost templates within
-	 * @param float[] $extraIndexBoostTemplates Map from template name to weight to apply to that template
-	 */
-	public function addExtraIndexBoostTemplates( $wiki, array $extraIndexBoostTemplates ) {
-		$this->isDirty = true;
-		$this->extraIndexBoostTemplates[$wiki] = $extraIndexBoostTemplates;
+		return $extraIndexBoostTemplates;
 	}
 
 	/**

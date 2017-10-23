@@ -512,15 +512,6 @@ class Searcher extends ElasticsearchIntermediary {
 					[ 'local_sites_with_dupe' => $this->indexBaseName ]
 				) );
 			}
-			foreach ( $extraIndexes as $extraIndex ) {
-				$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
-				if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
-					$this->searchContext->addExtraIndexBoostTemplates(
-						$extraIndexBoosts['wiki'],
-						$extraIndexBoosts['boosts']
-					);
-				}
-			}
 		}
 
 		$this->installBoosts();

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Query\NearMatchQueryBuilder;
+use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
@@ -22,8 +24,6 @@ use ObjectCache;
 use RequestContext;
 use SearchResultSet;
 use Status;
-use ApiUsageException;
-use UsageException;
 use User;
 use WebRequest;
 
@@ -53,13 +53,6 @@ class Searcher extends ElasticsearchIntermediary {
 	const HIGHLIGHT_PRE = '<span class="searchmatch">';
 	const HIGHLIGHT_POST_MARKER = ''; // \uE001
 	const HIGHLIGHT_POST = '</span>';
-
-	/**
-	 * Maximum title length that we'll check in prefix and keyword searches.
-	 * Since titles can be 255 bytes in length we're setting this to 255
-	 * characters.
-	 */
-	const MAX_TITLE_SEARCH = 255;
 
 	/**
 	 * Maximum length, in characters, allowed in queries sent to searchText.
@@ -222,96 +215,18 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function nearMatchTitleSearch( $term ) {
-		$this->checkTitleSearchRequestLength( $term );
-
-		$this->searchContext->setOriginalSearchTerm( $term );
-		// Elasticsearch seems to have trouble extracting the proper terms to highlight
-		// from the default query we make so we feed it exactly the right query to highlight.
-		$highlightQuery = new \Elastica\Query\MultiMatch();
-		$highlightQuery->setQuery( $term );
-		$highlightQuery->setFields( [
-			'title.near_match', 'redirect.title.near_match',
-			'title.near_match_asciifolding', 'redirect.title.near_match_asciifolding',
-		] );
-		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
-			// Instead of using the highlight query we need to make one like it that uses the all_near_match field.
-			$allQuery = new \Elastica\Query\MultiMatch();
-			$allQuery->setQuery( $term );
-			$allQuery->setFields( [ 'all_near_match', 'all_near_match.asciifolding' ] );
-			$this->searchContext->addFilter( $allQuery );
-		} else {
-			$this->searchContext->addFilter( $highlightQuery );
-		}
-		$this->searchContext->setHighlightQuery( $highlightQuery );
-		$this->searchContext->addSyntaxUsed( 'near_match' );
-
+		( new NearMatchQueryBuilder() )->build( $this->searchContext, $term );
 		return $this->searchOne();
 	}
 
 	/**
 	 * Perform a prefix search.
 	 * @param string $term text by which to search
-	 * $param string[] $variants variants to search for
+	 * @param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
 	 */
 	public function prefixSearch( $term, $variants = [] ) {
-		$this->checkTitleSearchRequestLength( $term );
-		$this->searchContext->setOriginalSearchTerm( $term );
-		$this->searchContext->setRescoreProfile(
-			$this->config->get( 'CirrusSearchPrefixSearchRescoreProfile' )
-		);
-
-		$this->searchContext->addSyntaxUsed( 'prefix' );
-		if ( strlen( $term ) > 0 ) {
-			if ( $this->config->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {
-				$buildMatch = function ( $searchTerm ) {
-					$match = new \Elastica\Query\Match();
-					$match->setField( 'title.word_prefix', [
-						'query' => $searchTerm,
-						'analyzer' => 'plain',
-						'operator' => 'and',
-					] );
-					return $match;
-				};
-				$query = new \Elastica\Query\BoolQuery();
-				$query->setMinimumShouldMatch( 1 );
-				$query->addShould( $buildMatch( $term ) );
-				foreach ( $variants as $variant ) {
-					// This is a filter we don't really care about
-					// discounting variant matches.
-					$query->addShould( $buildMatch( $variant ) );
-				}
-				$this->searchContext->addFilter( $query );
-			} else {
-				// Elasticsearch seems to have trouble extracting the proper terms to highlight
-				// from the default query we make so we feed it exactly the right query to highlight.
-				$weights = $this->config->get( 'CirrusSearchPrefixWeights' );
-				$buildMatch = function ( $searchTerm, $weight ) use ( $weights ) {
-					$query = new \Elastica\Query\MultiMatch();
-					$query->setQuery( $searchTerm );
-					$query->setFields( [
-						'title.prefix^' . ( $weights[ 'title' ] * $weight ),
-						'redirect.title.prefix^' . ( $weights[ 'redirect' ] * $weight ),
-						'title.prefix_asciifolding^' . ( $weights[ 'title_asciifolding' ] * $weight ),
-						'redirect.title.prefix_asciifolding^' . ( $weights[ 'redirect_asciifolding' ] * $weight ),
-					] );
-					return $query;
-				};
-				$query = new \Elastica\Query\BoolQuery();
-				$query->setMinimumShouldMatch( 1 );
-				$weight = 1;
-				$query->addShould( $buildMatch( $term, $weight ) );
-				foreach ( $variants as $variant ) {
-					$weight *= 0.2;
-					$query->addShould( $buildMatch( $variant, $weight ) );
-				}
-				$this->searchContext->setMainQuery( $query );
-			}
-		}
-
-		/** @suppress PhanDeprecatedFunction */
-		$this->searchContext->setBoostLinks( true );
-
+		( new PrefixSearchQueryBuilder() )->build( $this->searchContext, $term, $variants );
 		return $this->searchOne();
 	}
 
@@ -965,30 +880,6 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$builder = new RescoreBuilder( $this->searchContext );
 		$this->searchContext->mergeRescore( $builder->build() );
-	}
-
-	/**
-	 * @param string $term
-	 * @throws ApiUsageException
-	 * @throws UsageException
-	 */
-	private function checkTitleSearchRequestLength( $term ) {
-		$requestLength = mb_strlen( $term );
-		if ( $requestLength > self::MAX_TITLE_SEARCH ) {
-			if ( class_exists( ApiUsageException::class ) ) {
-				throw ApiUsageException::newWithMessage(
-					null,
-					[ 'apierror-cirrus-requesttoolong', $requestLength, self::MAX_TITLE_SEARCH ],
-					'request_too_long',
-					[],
-					400
-				);
-			} else {
-				/** @suppress PhanDeprecatedClass */
-				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
-					" ($requestLength > " . self::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
-			}
-		}
 	}
 
 	/**

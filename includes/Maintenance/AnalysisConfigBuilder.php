@@ -2,8 +2,8 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Searcher;
 use Hooks;
 use MediaWiki\MediaWikiServices;
 
@@ -490,7 +490,7 @@ class AnalysisConfigBuilder {
 				],
 				'prefix_ngram_filter' => [
 					'type' => 'edgeNGram',
-					'max_gram' => Searcher::MAX_TITLE_SEARCH,
+					'max_gram' => CirrusSearch::MAX_TITLE_SEARCH,
 				],
 				'asciifolding' => [
 					'type' => 'asciifolding',
@@ -512,7 +512,7 @@ class AnalysisConfigBuilder {
 			'tokenizer' => [
 				'prefix' => [
 					'type' => 'edgeNGram',
-					'max_gram' => Searcher::MAX_TITLE_SEARCH,
+					'max_gram' => CirrusSearch::MAX_TITLE_SEARCH,
 				],
 				'no_splitting' => [ // Just grab the whole term.
 					'type' => 'keyword',

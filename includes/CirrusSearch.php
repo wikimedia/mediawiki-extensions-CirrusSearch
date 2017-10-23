@@ -45,6 +45,13 @@ class CirrusSearch extends SearchEngine {
 	const COMPLETION_PREFIX_FALLBACK_PROFILE = 'classic';
 
 	/**
+	 * @const int Maximum title length that we'll check in prefix and keyword searches.
+	 * Since titles can be 255 bytes in length we're setting this to 255
+	 * characters.
+	 */
+	const MAX_TITLE_SEARCH = 255;
+
+	/**
 	 * @var string The last prefix substituted by replacePrefixes.
 	 */
 	private $lastNamespacePrefix;

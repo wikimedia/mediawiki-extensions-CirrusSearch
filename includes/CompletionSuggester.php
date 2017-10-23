@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch;
 use Elastica\Request;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use CirrusSearch\Search\SearchContext;
@@ -140,11 +141,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 */
 	private function checkRequestLength( $search ) {
 		$requestLength = mb_strlen( $search );
-		if ( $requestLength > Searcher::MAX_TITLE_SEARCH ) {
+		if ( $requestLength > CirrusSearch::MAX_TITLE_SEARCH ) {
 			if ( class_exists( ApiUsageException::class ) ) {
 				throw ApiUsageException::newWithMessage(
 					null,
-					[ 'apierror-cirrus-requesttoolong', $requestLength, Searcher::MAX_TITLE_SEARCH ],
+					[ 'apierror-cirrus-requesttoolong', $requestLength, CirrusSearch::MAX_TITLE_SEARCH ],
 					'request_too_long',
 					[],
 					400
@@ -152,7 +153,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			} else {
 				/** @suppress PhanDeprecatedClass */
 				throw new UsageException( 'Prefix search request was longer than the maximum allowed length.' .
-					" ($requestLength > " . Searcher::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
+					" ($requestLength > " . CirrusSearch::MAX_TITLE_SEARCH . ')', 'request_too_long', 400 );
 			}
 		}
 	}

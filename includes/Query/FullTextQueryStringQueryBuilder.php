@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\SearchContext;
@@ -316,17 +315,11 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				],
 			],
 		];
-		$extraIndexes = null;
-		if ( $searchContext->getNamespaces() ) {
-			$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces(
-				$searchContext->getNamespaces()
-			);
-		}
 		// Add a second generator with the reverse field
 		// Only do this for local queries, we don't know if it's activated
 		// on other wikis.
-		if ( empty( $extraIndexes )
-			&& $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
+		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
+			&& empty( $searchContext->getExtraIndices() )
 		) {
 			$settings['phrase']['direct_generator'][] = [
 				'field' => $field . '.reverse',

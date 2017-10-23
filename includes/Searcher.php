@@ -505,8 +505,13 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$this->overrideConnectionIfNeeded();
 		if ( $namespaces ) {
-			$extraIndexes = $this->getAndFilterExtraIndexes();
 			$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
+			$extraIndexes = $this->searchContext->getExtraIndices();
+			if ( !empty( $extraIndexes ) ) {
+				$this->searchContext->addNotFilter( new \Elastica\Query\Term(
+					[ 'local_sites_with_dupe' => $this->indexBaseName ]
+				) );
+			}
 			foreach ( $extraIndexes as $extraIndex ) {
 				$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
 				if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
@@ -845,28 +850,6 @@ class Searcher extends ElasticsearchIntermediary {
 		$status->setResult( true, $retval );
 
 		return $status;
-	}
-
-	/**
-	 * Retrieve the extra indexes for our searchable namespaces, if any
-	 * exist. If they do exist, also add our wiki to our notFilters so
-	 * we can filter out duplicates properly.
-	 *
-	 * @return string[]
-	 */
-	protected function getAndFilterExtraIndexes() {
-		if ( $this->searchContext->getLimitSearchToLocalWiki() ) {
-			return [];
-		}
-		$extraIndexes = OtherIndexes::getExtraIndexesForNamespaces(
-			$this->searchContext->getNamespaces()
-		);
-		if ( $extraIndexes ) {
-			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
-				[ 'local_sites_with_dupe' => $this->indexBaseName ]
-			) );
-		}
-		return $extraIndexes;
 	}
 
 	/**

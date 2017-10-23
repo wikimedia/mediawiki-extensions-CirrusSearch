@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
 
@@ -902,4 +903,20 @@ class SearchContext {
 		return $this->resultsType;
 	}
 
+	/**
+	 * Get the list of extra indices to query.
+	 * Generally needed to query externilized file index.
+	 * Must be called only once the list of namespaces has been set.
+	 *
+	 * @return string[]
+	 * @see OtherIndexes::getExtraIndexesForNamespaces()
+	 */
+	public function getExtraIndices() {
+		if ( $this->getLimitSearchToLocalWiki() || !$this->getNamespaces() ) {
+			return [];
+		}
+		return OtherIndexes::getExtraIndexesForNamespaces(
+			$this->getNamespaces()
+		);
+	}
 }

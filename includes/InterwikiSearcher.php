@@ -129,16 +129,6 @@ class InterwikiSearcher extends Searcher {
 	}
 
 	/**
-	 * We don't support extra indices when we're doing interwiki searches
-	 *
-	 * @see Searcher::getAndFilterExtraIndexes()
-	 * @return array
-	 */
-	protected function getAndFilterExtraIndexes() {
-		return [];
-	}
-
-	/**
 	 * @return string The stats key used for reporting hit/miss rates of the
 	 *  application side query cache.
 	 */

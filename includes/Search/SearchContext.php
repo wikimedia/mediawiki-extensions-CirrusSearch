@@ -64,7 +64,7 @@ class SearchContext {
 	private $preferRecentHalfLife = 0;
 
 	/**
-	 * @var string rescore profile to use
+	 * @var string|array rescore profile to use
 	 */
 	private $rescoreProfile;
 
@@ -389,14 +389,14 @@ class SearchContext {
 	}
 
 	/**
-	 * @return string the rescore profile to use
+	 * @return string|array the rescore profile to use
 	 */
 	public function getRescoreProfile() {
 		return $this->rescoreProfile;
 	}
 
 	/**
-	 * @param string $rescoreProfile the rescore profile to use
+	 * @param string|array $rescoreProfile the rescore profile to use
 	 */
 	public function setRescoreProfile( $rescoreProfile ) {
 		$this->isDirty = true;
@@ -626,6 +626,11 @@ class SearchContext {
 	 */
 	public function getRescore() {
 		$result = [];
+		// XXX: remove this hack once Searcher::installBoosts is removed
+		if ( empty( $this->rescore ) ) {
+			$builder = new RescoreBuilder( $this );
+			$this->rescore = $builder->build();
+		}
 		foreach ( $this->rescore as $rescore ) {
 			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
 			$result[] = $rescore;

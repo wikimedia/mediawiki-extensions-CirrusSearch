@@ -52,6 +52,7 @@ class RescoreBuilder {
 
 	const FUNCTION_SCORE_TYPE = "function_score";
 	const LTR_TYPE = "ltr";
+	const PHRASE = "phrase";
 
 	/**
 	 * @var SearchContext
@@ -82,11 +83,14 @@ class RescoreBuilder {
 		$rescores = [];
 		foreach ( $this->profile['rescore'] as $rescoreDef ) {
 			$windowSize = $this->windowSize( $rescoreDef );
+			if ( $windowSize <= 0 ) {
+				continue;
+			}
 			$rescore = [
 				'window_size' => $windowSize,
 			];
 
-			$rescore['query'] = array_intersect_key( $rescoreDef, array_flip( self::$rescoreMainParams ) );
+			$rescore['query'] = $this->prepareQueryParams( $rescoreDef );
 			$rescoreQuery = $this->buildRescoreQuery( $rescoreDef );
 			if ( $rescoreQuery === null ) {
 				continue;
@@ -111,6 +115,8 @@ class RescoreBuilder {
 			return $funcChain->buildRescoreQuery();
 		case self::LTR_TYPE:
 			return $this->buildLtrQuery( $rescoreDef['model'] );
+		case self::PHRASE:
+			return $this->context->getPhraseRescoreQuery();
 		default:
 			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
@@ -149,6 +155,30 @@ class RescoreBuilder {
 			}
 		}
 		return $rescore['window'];
+	}
+
+	/**
+	 * Assemble query params in the rescore block
+	 * Only self::$rescoreMainParams are allowed.
+	 * @param array $settings
+	 * @return array
+	 */
+	private function prepareQueryParams( array $settings ) {
+		$def = [];
+		foreach ( self::$rescoreMainParams as $param ) {
+			if ( !isset( $settings[$param] ) ) {
+				continue;
+			}
+			$value = $settings[$param];
+			if ( isset( $settings[$param . '_override'] ) ) {
+				$oValue = $this->context->getConfig()->get( $settings[$param . '_override'] );
+				if ( $oValue !== null ) {
+					$value = $oValue;
+				}
+			}
+			$def[$param] = $value;
+		}
+		return $def;
 	}
 
 	/**

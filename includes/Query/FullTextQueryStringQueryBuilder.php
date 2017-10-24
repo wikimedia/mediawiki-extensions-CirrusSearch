@@ -223,19 +223,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 				$rescoreFields = $nonAllFields;
 			}
 
-			$searchContext->addRescore( [
-				'window_size' => $this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ),
-				'query' => [
-					'rescore_query' => $this->buildPhraseRescoreQuery(
+			$searchContext->setPhraseRescoreQuery( $this->buildPhraseRescoreQuery(
 						$searchContext,
 						$rescoreFields,
 						$this->queryStringQueryString,
 						$this->config->getElement( 'CirrusSearchPhraseSlop', 'boost' )
-					),
-					'query_weight' => 1.0,
-					'rescore_query_weight' => $this->config->get( 'CirrusSearchPhraseRescoreBoost' ),
-				]
-			] );
+					) );
 		}
 
 		if ( $showSuggestion ) {
@@ -269,7 +262,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			'query' => $this->queryStringQueryString,
 			'default_operator' => 'AND',
 		] ] ) );
-		$searchContext->clearRescore();
 
 		return true;
 	}
@@ -639,9 +631,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		// Queries with the quote already contain a phrase query and we
 		// can't build phrase queries out of phrase queries at this
 		// point.
-		if ( $this->config->get( 'CirrusSearchPhraseRescoreBoost' ) > 0.0 &&
-			$this->config->get( 'CirrusSearchPhraseRescoreWindowSize' ) &&
-			!$searchContext->isSpecialKeywordUsed() &&
+		if ( !$searchContext->isSpecialKeywordUsed() &&
 			strpos( $this->queryStringQueryString, '"' ) === false &&
 			( $this->useTokenCountRouter || strpos( $this->queryStringQueryString, ' ' ) !== false )
 		) {

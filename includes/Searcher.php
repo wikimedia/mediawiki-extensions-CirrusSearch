@@ -7,7 +7,6 @@ use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
-use CirrusSearch\Search\RescoreBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\TeamDraftInterleaver;
@@ -514,7 +513,6 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
-		$this->installBoosts();
 		$query->setQuery( $this->searchContext->getQuery() );
 
 		$highlight = $this->searchContext->getHighlight( $resultsType );
@@ -542,20 +540,18 @@ class Searcher extends ElasticsearchIntermediary {
 			$query->setSize( $this->limit );
 		}
 
-		if ( $this->sort != 'relevance' ) {
-			// Clear rescores if we aren't using relevance as the search sort because they aren't used.
-			$this->searchContext->clearRescore();
-		} elseif ( $this->searchContext->hasRescore() ) {
-			$query->setParam( 'rescore', $this->searchContext->getRescore() );
-		}
-
 		foreach ( $this->searchContext->getSyntaxUsed() as $syntax ) {
 			$query->addParam( 'stats', $syntax );
 		}
 		switch ( $this->sort ) {
 		case 'just_match':
 			// Use just matching scores, without any rescoring, and default sort.
+			break;
 		case 'relevance':
+			$rescores = $this->searchContext->getRescore();
+			if ( $rescores !== [] ) {
+				$query->setParam( 'rescore', $rescores );
+			}
 			break;  // The default
 		case 'title_asc':
 			$query->setSort( [ 'title.keyword' => 'asc' ] );
@@ -844,19 +840,6 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * If there is any boosting to be done munge the the current query to get it right.
-	 */
-	private function installBoosts() {
-		if ( $this->sort !== 'relevance' ) {
-			// Boosts are irrelevant if you aren't sorting by, well, relevance
-			return;
-		}
-
-		$builder = new RescoreBuilder( $this->searchContext );
-		$this->searchContext->mergeRescore( $builder->build() );
-	}
-
-	/**
 	 * @param string $term
 	 * @return Status
 	 */
@@ -1071,6 +1054,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$this->searchContext->setMainQuery( $query );
 		$this->searchContext->addSyntaxUsed( 'archive' );
+		$this->searchContext->setRescoreProfile( 'empty' );
 
 		return $this->searchOne();
 	}

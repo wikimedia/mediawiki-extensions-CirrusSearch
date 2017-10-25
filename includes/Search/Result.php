@@ -111,7 +111,7 @@ class Result extends SearchResult {
 
 		if ( isset( $highlights[ 'heading' ] ) ) {
 			$this->sectionSnippet = $this->escapeHighlightedText( $highlights[ 'heading' ][ 0 ] );
-			$this->sectionTitle = $this->findSectionTitle();
+			$this->sectionTitle = $this->findSectionTitle( $highlights[ 'heading' ][ 0 ] );
 		}
 
 		if ( isset( $highlights[ 'category' ] ) ) {
@@ -227,9 +227,9 @@ class Result extends SearchResult {
 	/**
 	 * @return Title
 	 */
-	private function findSectionTitle() {
+	private function findSectionTitle( $highlighted ) {
 		return $this->getTitle()->createFragmentTarget( Sanitizer::escapeIdForLink(
-			$this->stripHighlighting( $this->sectionSnippet )
+			$this->stripHighlighting( $highlighted )
 		) );
 	}
 

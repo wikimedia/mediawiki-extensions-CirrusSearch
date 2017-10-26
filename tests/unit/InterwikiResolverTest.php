@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Test;
 
+use CirrusSearch\EmptyInterwikiResolver;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusConfigInterwikiResolver;
@@ -347,4 +348,13 @@ class InterwikiResolverTest extends CirrusTestCase {
 		\MediaWiki\restoreWarnings();
 		return $fileContent;
 	}
+
+	public function testEmptyResolver() {
+		$config = new HashSearchConfig( [ '_wikiID' => 'dummy' ] );
+		$resolver = MediaWikiServices::getInstance()
+			->getService( InterwikiResolverFactory::SERVICE )
+			->getResolver( $config );
+		$this->assertInstanceOf( EmptyInterwikiResolver::class, $resolver );
+	}
+
 }

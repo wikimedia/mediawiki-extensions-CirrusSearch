@@ -17,7 +17,7 @@ namespace CirrusSearch;
  *             ),
  *             'b' => array(
  *                 'globals' => array(
- *                     'wgCirrusSearchBoostLinks' => 42,
+ *                     'wgCirrusSearchRescoreProfile' => 'classic',
  *                 ),
  *             ),
  *             ...

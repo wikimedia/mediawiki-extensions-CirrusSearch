@@ -781,12 +781,6 @@ $wgCirrusSearchUpdateConflictRetryCount = 5;
 $wgCirrusSearchFragmentSize = 150;
 
 /**
- * Whether to boost searches based on link counts. Default is true
- * which most wikis will want. Edge cases will want to turn this off.
- */
-$wgCirrusSearchBoostLinks = true;
-
-/**
  * Shard allocation settings. The include/exclude/require top level keys are
  * the type of rule to use, the names should be self explanatory. The values
  * are an array of keys and values of different rules to apply to an index.

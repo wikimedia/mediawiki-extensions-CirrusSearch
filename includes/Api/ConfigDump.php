@@ -65,7 +65,6 @@ class ConfigDump extends ApiBase {
 		'CirrusSearchFragmentSize',
 		'CirrusSearchMainPageCacheWarmer',
 		'CirrusSearchCacheWarmers',
-		'CirrusSearchBoostLinks',
 		'CirrusSearchIndexAllocation',
 		'CirrusSearchFullTextQueryBuilderProfile',
 		'CirrusSearchRescoreProfile',

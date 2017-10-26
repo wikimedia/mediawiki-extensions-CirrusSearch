@@ -148,7 +148,6 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$settings = [];
 		$config = new HashSearchConfig( $settings );
 		$context = new SearchContext( $config, null );
-		$context->setBoostLinks( true );
 		$builder = new IncomingLinksFunctionScoreBuilder( $context, 1 );
 		$fScore = new FunctionScoreDecorator();
 
@@ -158,11 +157,6 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertTrue( isset( $array['function_score']['functions'][0] ) );
 		$array = $array['function_score']['functions'][0];
 		$this->assertTrue( isset( $array['field_value_factor'] ) );
-
-		$context->setBoostLinks( false );
-		$fScore = new FunctionScoreDecorator();
-		$builder->append( $fScore );
-		$this->assertTrue( $fScore->isEmptyFunction() );
 	}
 
 	public function testNamespacesBoost() {
@@ -242,7 +236,6 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $settings );
 
 		$context = new SearchContext( $config, $namespaces );
-		$context->setBoostLinks( true );
 		$context->setBoostTemplatesFromQuery( [ 'Good' => 1.3 ] );
 		$builder = new RescoreBuilder( $context, $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
@@ -345,7 +338,6 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $settings );
 
 		$context = new SearchContext( $config, null );
-		$context->setBoostLinks( true );
 		$builder = new RescoreBuilder( $context, $config->getElement( 'CirrusSearchRescoreProfiles', 'default' ) );
 		$rescore = $builder->build();
 		$this->assertEquals( $expected, $rescore[0]['window_size'] );

@@ -93,51 +93,51 @@ class UserTestingTest extends CirrusTestCase {
 
 	public function testActiveTestOverridesGlobalVariables() {
 		$config = $this->config( 'test', 10, [
-			'wgCirrusSearchBoostLinks' => true,
+			'wgCirrusSearchRescoreProfile' => 'test',
 			'dontsetthisvariable' => true,
 		] );
 
-		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
+		$this->setMwGlobals( 'wgCirrusSearchRescoreProfile', 'global' );
 		$this->ut( $config, true );
-		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
+		$this->assertEquals( 'test', $GLOBALS['wgCirrusSearchRescoreProfile'] );
 		$this->assertArrayNotHasKey( 'dontsetthisvariable', $GLOBALS );
-		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
+		$this->setMwGlobals( 'wgCirrusSearchRescoreProfile', 'global' );
 		$this->ut( $config, false );
-		$this->assertEquals( false, $GLOBALS['wgCirrusSearchBoostLinks'] );
+		$this->assertEquals( 'global', $GLOBALS['wgCirrusSearchRescoreProfile'] );
 	}
 
 	public function testDoesNotReinitializeFromGetInstance() {
 		$this->setMwGlobals( [
 			'wgCirrusSearchUserTesting' => $this->config( 'test', 10, [
-				'wgCirrusSearchBoostLinks' => true,
+				'wgCirrusSearchRescoreProfile' => 'test',
 			] ),
-			'wgCirrusSearchBoostLinks' => false,
+			'wgCirrusSearchRescoreProfile' => 'global',
 		] );
 		UserTesting::getInstance(
 			function () {
 				return true;
 			}
 		);
-		$this->assertEquals( true, $GLOBALS['wgCirrusSearchBoostLinks'] );
-		$GLOBALS['wgCirrusSearchBoostLinks'] = false;
+		$this->assertEquals( 'test', $GLOBALS['wgCirrusSearchRescoreProfile'] );
+		$GLOBALS['wgCirrusSearchRescoreProfile'] = 'global';
 		UserTesting::getInstance(
 			function () {
 				return true;
 			}
 		);
-		$this->assertEquals( false, $GLOBALS['wgCirrusSearchBoostLinks'] );
+		$this->assertEquals( 'global', $GLOBALS['wgCirrusSearchRescoreProfile'] );
 	}
 
 	public function testPerBucketGlobalsOverridePerTestGlobals() {
-		$this->setMwGlobals( 'wgCirrusSearchBoostLinks', false );
+		$this->setMwGlobals( 'wgCirrusSearchRescoreProfile', 'global' );
 		$config = $this->config( 'test', 10, [
-			'wgCirrusSearchBoostLinks' => 'test',
+			'wgCirrusSearchRescoreProfile' => 'test',
 		] );
-		$config['test']['buckets']['a']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
-		$config['test']['buckets']['b']['globals']['wgCirrusSearchBoostLinks'] = 'bucket';
+		$config['test']['buckets']['a']['globals']['wgCirrusSearchRescoreProfile'] = 'bucket';
+		$config['test']['buckets']['b']['globals']['wgCirrusSearchRescoreProfile'] = 'bucket';
 
 		$this->ut( $config, true );
-		$this->assertEquals( 'bucket', $GLOBALS['wgCirrusSearchBoostLinks'] );
+		$this->assertEquals( 'bucket', $GLOBALS['wgCirrusSearchRescoreProfile'] );
 	}
 
 	public function providerChooseBucket() {

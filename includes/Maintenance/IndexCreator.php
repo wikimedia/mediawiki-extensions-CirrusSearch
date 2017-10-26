@@ -62,9 +62,15 @@ class IndexCreator {
 			$response = $this->index->create( $args, $rebuild );
 
 			/** @suppress PhanNonClassMethodCall library is mis-annotated */
-			if ( $response->hasError() === true ) {
+			if ( $response->hasError() ) {
 				/** @suppress PhanNonClassMethodCall library is mis-annotated */
 				return Status::newFatal( $response->getError() );
+			}
+			if ( !$response->isOk() ) {
+				// Some other type of error that didn't return an error response,
+				// like perhaps a 5xx
+				$status = $response->getStatus();
+				return Status::newFatal( "Response not Ok. Status code: $status" );
 			}
 		} catch ( \Elastica\Exception\InvalidException $ex ) {
 			return Status::newFatal( $ex->getMessage() );

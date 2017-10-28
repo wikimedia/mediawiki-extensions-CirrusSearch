@@ -39,7 +39,7 @@
 	"cirrussearch-completion-profile-classic": "전통적인 접두사와 일부 문장 기호, 일부 발음 기호들이 삭제됩니다.",
 	"cirrussearch-completion-profile-normal": "몇몇의 문장 부호, 일부 발음 기호, 제외어를 삭제합니다.",
 	"cirrussearch-completion-profile-fuzzy": "오타 수정 기능이 있는 일반 방식과 유사합니다. (두 개의 오타를 지원)",
-	"cirrussearch-completion-profile-fast-fuzzy": "실험적인 퍼지 프로파일 (추후 제거될 수 있습니다)",
+	"cirrussearch-completion-profile-fast-fuzzy": "실험적인 퍼지 프로파일 (언제든지 제거될 수 있습니다)",
 	"cirrussearch-qi-profile-classic": "들어오는 링크 수, 일부 틀, 문서의 언어와 최신화 정도에 기반한 순위 (틀, 언어, 최신화 정도는 이 위키에서 활성화되지 않을 수 있습니다.)",
 	"cirrussearch-qi-profile-classic-noboostlinks": "이 위키에 활성화될 때 일부 틀과 문서의 언어, 최신 정도를 바탕으로 순위를 매김.",
 	"cirrussearch-qi-profile-empty": "쿼리와 독립적인 기능에 기반한 순위 (디버그 전용)",

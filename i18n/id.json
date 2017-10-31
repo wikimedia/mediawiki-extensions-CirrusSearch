@@ -4,7 +4,8 @@
 			"Ahdan",
 			"Iwan Novirion",
 			"Rachmat.Wahidi",
-			"Rachmat04"
+			"Rachmat04",
+			"Kenrick95"
 		]
 	},
 	"cirrussearch-too-busy-error": "Pencarian sedang terlalu sibuk. Mohon coba lagi nanti.",
@@ -29,5 +30,17 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "Algoritma saranan pencarian-yang-Anda-ketikkan lawas.",
 	"cirrussearch-completion-profile-classic-pref-name": "Pencarian awalan klasik",
 	"cirrussearch-completion-profile-classic-pref-desc": "Tanpa koreksi salah tik. Cocokkan awalan dari judul.",
-	"cirrussearch-timed-out": "Waktu pencarian telah habis, hanya sebagian hasil yang tersedia."
+	"cirrussearch-timed-out": "Waktu pencarian telah habis, hanya sebagian hasil yang tersedia.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Kata kunci pencarian '$1' harus berupa angka, namun '$2' diberikan.",
+	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Kata kunci pencarian '$1' tidak mengizinkan lebih dari satu argumen dan tanda dengan '$2'.",
+	"cirrussearch-feature-not-available": "Kata kunci pencarian '$1' belum diaktifkan di wiki ini.",
+	"cirrussearch-feature-too-many-conditions": "Terlalu banyak kondisi diberikan untuk '$1', menyingkati menjadi $2.",
+	"cirrussearch-incategory-feature-no-valid-categories": "Tidak ada kategori valid yang diberikan untuk '$1'.",
+	"cirrussearch-mlt-feature-no-valid-titles": "Tidak ada judul valid yang diberikan untuk '$1'.",
+	"cirrussearch-explore-similar-related": "Terkait",
+	"cirrussearch-explore-similar-categories": "Kategori",
+	"cirrussearch-explore-similar-languages": "Bahasa",
+	"cirrussearch-explore-similar-related-none": "Tidak tersedia halaman terkait",
+	"cirrussearch-explore-similar-categories-none": "Tidak ada kategori yang tersedia",
+	"cirrussearch-explore-similar-languages-none": "Tidak tersedia dalam bahasa lain"
 }

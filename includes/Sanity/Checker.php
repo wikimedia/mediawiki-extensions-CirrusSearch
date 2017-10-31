@@ -303,11 +303,24 @@ class Checker {
 		}
 		$dbr = $this->getDB();
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
+		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
+			/** @suppress PhanUndeclaredStaticMethod Static call to undeclared method */
+			$pageQuery = WikiPage::getQueryInfo();
+		} else {
+			$pageQuery = [
+				'tables' => [ 'page' ],
+				/** @suppress PhanDeprecatedFunction fallback to deprecated function */
+				'fields' => WikiPage::selectFields(),
+				'joins' => [],
+			];
+		}
 		$res = $dbr->select(
-			[ 'page' ],
-			WikiPage::selectFields(),
+			$pageQuery['tables'],
+			$pageQuery['fields'],
 			$where,
-			__METHOD__
+			__METHOD__,
+			[],
+			$pageQuery['joins']
 		);
 		foreach ( $res as $row ) {
 			$page = WikiPage::newFromRow( $row );

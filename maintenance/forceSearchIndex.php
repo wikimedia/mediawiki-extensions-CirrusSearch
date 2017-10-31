@@ -427,7 +427,10 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
-		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
+		$pageQuery = self::getPageQueryInfo();
+		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->mBatchSize );
+		$it->setFetchColumns( $pageQuery['fields'] );
+		$it->addJoinConditions( $pageQuery['joins'] );
 		$it->addConditions( [
 			'page_id in (' . $dbr->makeList( $this->pageIds, LIST_COMMA ) . ')',
 		] );
@@ -438,15 +441,17 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getUpdatesByDateIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
+		$pageQuery = self::getPageQueryInfo();
 		$it = new BatchRowIterator(
 			$dbr,
-			[ 'page', 'revision' ],
+			array_merge( $pageQuery['tables'], [ 'revision' ] ),
 			[ 'rev_timestamp', 'page_id' ],
 			$this->mBatchSize
 		);
-		$it->addConditions( [
-			'rev_page = page_id',
-			'rev_id = page_latest',
+		$it->setFetchColumns( $pageQuery['fields'] );
+		$it->addJoinConditions( $pageQuery['joins'] );
+		$it->addJoinConditions( [
+			'revision' => [ 'JOIN', [ 'rev_page = page_id', 'rev_id = page_latest' ] ]
 		] );
 
 		$this->attachTimestampConditions( $dbr, $it, 'rev' );
@@ -457,7 +462,10 @@ class ForceSearchIndex extends Maintenance {
 
 	protected function getUpdatesByIdIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
-		$it = new BatchRowIterator( $dbr, 'page', 'page_id', $this->mBatchSize );
+		$pageQuery = self::getPageQueryInfo();
+		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->mBatchSize );
+		$it->setFetchColumns( $pageQuery['fields'] );
+		$it->addJoinConditions( $pageQuery['joins'] );
 		$fromId = $this->getOption( 'fromId', 0 );
 		if ( $fromId > 0 ) {
 			$it->addConditions( [
@@ -490,10 +498,26 @@ class ForceSearchIndex extends Maintenance {
 		}
 	}
 
-	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
-		if ( $columnPrefix === 'page' ) {
-			$it->setFetchColumns( WikiPage::selectFields() );
+	/**
+	 * Back-compat for WikiPage::getQueryInfo()
+	 * @todo Remove this in favor of calling WikiPage::getQueryInfo() directly
+	 *  when support for MediaWiki before 1.31 is dropped.
+	 */
+	private static function getPageQueryInfo() {
+		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
+			/** @suppress PhanUndeclaredStaticMethod Static call to undeclared method */
+			return WikiPage::getQueryInfo();
 		}
+
+		return [
+			'tables' => [ 'page' ],
+			/** @suppress PhanDeprecatedFunction fallback to deprecated function */
+			'fields' => WikiPage::selectFields(),
+			'joins' => [],
+		];
+	}
+
+	private function attachPageConditions( IDatabase $dbr, BatchRowIterator $it, $columnPrefix ) {
 		if ( $this->namespace ) {
 			$it->addConditions( [
 				"{$columnPrefix}_namespace" => $this->namespace,

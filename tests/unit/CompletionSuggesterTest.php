@@ -2,8 +2,12 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Test\DummyConnection;
+use CirrusSearch\Query\CompSuggestQueryBuilder;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
+use Elastica\Query;
+use Elastica\Response;
+use Elastica\ResultSet;
 
 /**
  * Completion Suggester Tests
@@ -31,10 +35,18 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	 * @dataProvider provideQueries
 	 */
 	public function testQueries( $config, $limit, $search, $variants, $expectedProfiles, $expectedQueries ) {
-		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), $limit );
-		list( $profiles, $suggest ) = $completion->testBuildQuery( $search, $variants );
+		$config = new HashSearchConfig( $config );
+		$compSuggestBuilder = new CompSuggestQueryBuilder(
+			new SearchContext( $config ),
+			$config->getElement( 'CirrusSearchCompletionProfiles',
+				$config->get( 'CirrusSearchCompletionSettings' ) ),
+			$limit
+		);
+
+		$suggest = $compSuggestBuilder->build( $search, $variants );
+		$profiles = $compSuggestBuilder->getMergedProfiles();
 		$this->assertEquals( $expectedProfiles, $profiles );
-		$this->assertEquals( $expectedQueries, $suggest );
+		$this->assertEquals( $expectedQueries, $suggest->toArray()['suggest'] );
 	}
 
 	public function provideQueries() {
@@ -133,14 +145,14 @@ class CompletionSuggesterTest extends CirrusTestCase {
 					'plain-variant-1' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
-						'discount' => 1.0 * CompletionSuggester::VARIANT_EXTRA_DISCOUNT,
+						'discount' => 1.0 * CompSuggestQueryBuilder::VARIANT_EXTRA_DISCOUNT,
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
 					],
 					'plain-variant-2' => [
 						'field' => 'suggest',
 						'min_query_len' => 0,
-						'discount' => 1.0 * ( CompletionSuggester::VARIANT_EXTRA_DISCOUNT / 2 ),
+						'discount' => 1.0 * ( CompSuggestQueryBuilder::VARIANT_EXTRA_DISCOUNT / 2 ),
 						'fetch_limit_factor' => 2,
 						'fallback' => true, // extra key added, not used for now
 					]
@@ -182,8 +194,12 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
 		];
 		// Test that we generate at most 4 profiles
-		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), 1 );
-		list( $profiles, $suggest ) = $completion->testBuildQuery( $query, [] );
+		$completion = new CompSuggestQueryBuilder(
+			new SearchContext( new HashSearchConfig( $config ) ),
+			$wgCirrusSearchCompletionProfiles['fuzzy'],
+		1 );
+		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
+		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
 		$this->assertEquals( count( $wgCirrusSearchCompletionProfiles['fuzzy'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
@@ -225,20 +241,21 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideResponse
 	 */
-	public function testOffsets( \Elastica\Response $resp, $limit, $offset, $first, $last, $size, $hardLimit ) {
+	public function testOffsets( ResultSet $results, $limit, $offset, $first, $last, $size, $hardLimit ) {
 		global $wgCirrusSearchCompletionProfiles;
-		$config = [
-			'CirrusSearchCompletionSettings' => 'fuzzy',
-			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
-			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
-		];
-		// Test that we generate at most 4 profiles
-		$completion = new MyCompletionSuggester( new HashSearchConfig( $config ), $limit, $offset );
-
+		$builder = new CompSuggestQueryBuilder(
+			new SearchContext( new HashSearchConfig( [
+				'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit
+			] ) ),
+			$wgCirrusSearchCompletionProfiles['fuzzy'],
+			$limit, $offset );
+		$builder->build( "ignored", null );
 		$log = $this->getMockBuilder( CompletionRequestLog::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$suggestions = $completion->testPostProcess( 'Tit', $resp, $log );
+
+		$suggestions = $builder->postProcess( $results,
+			"wiki_titlesuggest", $log );
 		$this->assertEquals( $size, $suggestions->getSize() );
 		if ( $size > 0 ) {
 			$suggestions = $suggestions->getSuggestions();
@@ -274,7 +291,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				'plain_stop_fuzzy_2' => $suggestData,
 			],
 		];
-		$resp = new \Elastica\Response( $data );
+		$resp = new ResultSet( new Response( $data ), new Query(), [] );
 		return [
 			'Simple offset 0' => [
 				$resp,
@@ -301,29 +318,9 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				5, 200, null, null, 0, 300
 			],
 			'Empty index' => [
-				new \Elastica\Response( [] ),
+				new ResultSet( new Response( [] ), new Query(), [] ),
 				5, 200, null, null, 0, 50
 			],
 		];
-	}
-}
-
-/**
- * No package visibility in with PHP so we have to subclass...
- */
-class MyCompletionSuggester extends CompletionSuggester {
-	public function __construct( SearchConfig $config, $limit, $offset=0 ) {
-		parent::__construct( new DummyConnection(), $limit, $offset, $config, [ NS_MAIN ], null, "dummy" );
-	}
-
-	public function testBuildQuery( $search, $variants ) {
-		$this->setTermAndVariants( $search, $variants );
-		return $this->buildQuery();
-	}
-
-	public function testPostProcess( $search, \Elastica\Response $resp, CompletionRequestLog $log ) {
-		$this->setTermAndVariants( $search );
-		list( $profiles ) = $this->buildQuery();
-		return $this->postProcessSuggest( $resp, $profiles, $log );
 	}
 }

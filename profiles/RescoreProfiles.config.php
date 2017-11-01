@@ -30,6 +30,21 @@ namespace CirrusSearch;
  *
  */
 
+/**
+ * Transient var used to position the phrase rescore
+ * This block is externalized inot this var so it can be reused in the various profiles and then
+ * forgotten.
+ */
+$phraseRescorePlaceHolder = [
+	'window' => 512,
+	'window_size_override' => 'CirrusSearchPhraseRescoreWindowSize',
+	'rescore_query_weight' => 10,
+	'rescore_query_weight_override' => 'CirrusSearchPhraseRescoreBoost',
+	'query_weight' => 1.0,
+	'type' => 'phrase',
+	// defaults: 'score_mode' => 'total'
+];
+
 $wgCirrusSearchRescoreProfiles = [
 	// Default profile which uses an all in one function score chain
 	'classic' => [
@@ -48,6 +63,7 @@ $wgCirrusSearchRescoreProfiles = [
 		// List of rescores
 		// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-rescore.html
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				// the rescore window size
 				'window' => 8192,
@@ -81,6 +97,7 @@ $wgCirrusSearchRescoreProfiles = [
 		'i18n_msg' => 'cirrussearch-qi-profile-classic-noboostlinks',
 		'supported_namespaces' => 'all',
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
@@ -105,6 +122,7 @@ $wgCirrusSearchRescoreProfiles = [
 		'i18n_msg' => 'cirrussearch-qi-profile-wsum-inclinks',
 		'supported_namespaces' => 'all',
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
@@ -133,6 +151,7 @@ $wgCirrusSearchRescoreProfiles = [
 		'supported_namespaces' => 'content',
 		'fallback_profile' => 'wsum_inclinks',
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
@@ -162,6 +181,7 @@ $wgCirrusSearchRescoreProfiles = [
 		'fallback_profile' => 'popular_inclinks',
 		'i18n_msg' => 'cirrussearch-qi-profile-popular-pv',
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
@@ -187,6 +207,7 @@ $wgCirrusSearchRescoreProfiles = [
 		'supported_namespaces' => 'all',
 		'i18n_msg' => 'cirrussearch-qi-profile-popular-inclinks',
 		'rescore' => [
+			$phraseRescorePlaceHolder,
 			[
 				'window' => 8192,
 				'window_size_override' => 'CirrusSearchFunctionRescoreWindowSize',
@@ -209,6 +230,9 @@ $wgCirrusSearchRescoreProfiles = [
 	],
 
 ];
+
+// Throw away this var
+unset( $phraseRescorePlaceHolder );
 
 /**
  * List of function score chains

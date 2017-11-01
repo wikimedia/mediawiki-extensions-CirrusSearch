@@ -120,10 +120,9 @@ class SearchContext {
 	private $nonTextHighlightQueries = [];
 
 	/**
-	 * @var array Set of rescore configurations as used by elasticsearch. The query needs
-	 *  to be an Elastica query.
+	 * @var AbstractQuery|null phrase rescore query
 	 */
-	private $rescore = [];
+	private $phraseRescoreQuery;
 
 	/**
 	 * @var string[] array of prefixes that should be prepended to suggestions. Can be added
@@ -612,59 +611,20 @@ class SearchContext {
 	}
 
 	/**
-	 * @return bool True if rescore queries are attached
-	 */
-	public function hasRescore() {
-		return count( $this->rescore ) > 0;
-	}
-
-	/**
 	 * rescore_query has to be in array form before we send it to Elasticsearch but it is way
 	 * easier to work with if we leave it in query form until now
 	 *
 	 * @return array[] Rescore configurations as used by elasticsearch.
 	 */
 	public function getRescore() {
+		$rescores = ( new RescoreBuilder( $this ) )->build();
 		$result = [];
-		// XXX: remove this hack once Searcher::installBoosts is removed
-		if ( empty( $this->rescore ) ) {
-			$builder = new RescoreBuilder( $this );
-			$this->rescore = $builder->build();
-		}
-		foreach ( $this->rescore as $rescore ) {
+		foreach ( $rescores as $rescore ) {
 			$rescore['query']['rescore_query'] = $rescore['query']['rescore_query']->toArray();
 			$result[] = $rescore;
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @param array[] $rescore Rescore configuration as used by elasticsearch. The query needs
-	 *  to be an Elastica query.
-	 */
-	public function addRescore( array $rescore ) {
-		$this->isDirty = true;
-		$this->rescore[] = $rescore;
-	}
-
-	/**
-	 * Remove all rescores from the query. Used when it is known that extra work scoring
-	 * results will not be useful or necessary. Only effective if done *after* all rescores
-	 * have been added.
-	 */
-	public function clearRescore() {
-		$this->isDirty = true;
-		$this->rescore = [];
-	}
-
-	/**
-	 * @param array[] $rescores A set of rescore configurations as used by elasticsearch. The
-	 *  query needs to be an Elastica query.
-	 */
-	public function mergeRescore( $rescores ) {
-		$this->isDirty = true;
-		$this->rescore = array_merge( $this->rescore, $rescores );
 	}
 
 	/**
@@ -917,5 +877,22 @@ class SearchContext {
 		return OtherIndexes::getExtraIndexesForNamespaces(
 			$this->getNamespaces()
 		);
+	}
+
+	/**
+	 * Get the phrase rescore query if available
+	 * @return AbstractQuery|null
+	 */
+	public function getPhraseRescoreQuery() {
+		return $this->phraseRescoreQuery;
+	}
+
+	/**
+	 * Set the phrase rescore query
+	 * @param AbstractQuery|null $phraseRescoreQuery
+	 */
+	public function setPhraseRescoreQuery( $phraseRescoreQuery ) {
+		$this->phraseRescoreQuery = $phraseRescoreQuery;
+		$this->isDirty = true;
 	}
 }

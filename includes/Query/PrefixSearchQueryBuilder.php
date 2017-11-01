@@ -74,8 +74,5 @@ class PrefixSearchQueryBuilder {
 				$searchContext->setMainQuery( $query );
 			}
 		}
-
-		/** @suppress PhanDeprecatedFunction */
-		$searchContext->setBoostLinks( true );
 	}
 }

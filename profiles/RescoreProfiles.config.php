@@ -243,7 +243,6 @@ $wgCirrusSearchRescoreFunctionScoreChains = [
 	'classic_allinone_chain' => [
 		'functions' => [
 			// Scores documents with log(incoming_link + 2)
-			// Activated if $wgCirrusSearchBoostLinks is set
 			[ 'type' => 'boostlinks' ],
 
 			// Scores documents according to their timestamp

@@ -46,12 +46,6 @@ class SearchContext {
 	private $boostTemplatesFromQuery;
 
 	/**
-	 * @deprecated use rescore profiles instead
-	 * @var bool do we need to boost links
-	 */
-	private $boostLinks = false;
-
-	/**
 	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
 	 *  with time since the last update.
 	 */
@@ -236,8 +230,6 @@ class SearchContext {
 	}
 
 	private function loadConfig() {
-		/** @suppress PhanDeprecatedProperty */
-		$this->boostLinks = $this->config->get( 'CirrusSearchBoostLinks' );
 		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
 		$this->fulltextQueryBuilderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
 
@@ -329,25 +321,6 @@ class SearchContext {
 		}
 
 		return $extraIndexBoostTemplates;
-	}
-
-	/**
-	 * @deprecated use rescore profiles
-	 * @param bool $boostLinks Deactivate IncomingLinksFunctionScoreBuilder if present in the rescore profile
-	 */
-	public function setBoostLinks( $boostLinks ) {
-		$this->isDirty = true;
-		/** @suppress PhanDeprecatedProperty */
-		$this->boostLinks = $boostLinks;
-	}
-
-	/**
-	 * @deprecated use custom rescore profile
-	 * @return bool
-	 * @suppress PhanDeprecatedProperty
-	 */
-	public function isBoostLinks() {
-		return $this->boostLinks;
 	}
 
 	/**

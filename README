@@ -6,6 +6,13 @@ Installation
 Get Elasticsearch up and running somewhere. Elasticsearch v5.x is only supported but 5.3.1 or higher is
 recommended.
 
+CONFIG CHANGES
+--------------
+
+- 1.31
+  - The config var wgCirrusSearchBoostLinks has been removed, to disable link boosting
+    set $wgCirrusSearchRescoreProfile = 'classic_noboostlinks'
+
 KNOWN ISSUES
 ------------
 All elastic versions prior to 5.3.1 have bugs that affect CirrusSearch:

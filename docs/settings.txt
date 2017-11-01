@@ -922,14 +922,6 @@ Default:
 
 Number of characters to include in article fragments.
 
-; $wgCirrusSearchBoostLinks
-
-Default:
-    $wgCirrusSearchBoostLinks = true;
-
-Whether to boost searches based on link counts. Default is true
-which most wikis will want. Edge cases will want to turn this off.
-
 ; $wgCirrusSearchIndexAllocation
 
 Default:

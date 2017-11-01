@@ -724,11 +724,6 @@ class IncomingLinksFunctionScoreBuilder extends FunctionScoreBuilder {
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		// Backward compat code, allows to disable this function
-		// even if specified in the rescore profile
-		if ( !$this->context->isBoostLinks() ) {
-			return;
-		}
 		$functionScore->addFunction( 'field_value_factor', [
 			'field' => 'incoming_links',
 			'modifier' => 'log2p',

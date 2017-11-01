@@ -499,18 +499,14 @@ class Searcher extends ElasticsearchIntermediary {
 		$query->setSource( $resultsType->getSourceFiltering() );
 		$query->setStoredFields( $resultsType->getStoredFields() );
 
-		$extraIndexes = [];
-		$namespaces = $this->searchContext->getNamespaces();
+		$extraIndexes = $this->searchContext->getExtraIndices();
 
 		$this->overrideConnectionIfNeeded();
-		if ( $namespaces ) {
-			$this->searchContext->addFilter( new \Elastica\Query\Terms( 'namespace', $namespaces ) );
-			$extraIndexes = $this->searchContext->getExtraIndices();
-			if ( !empty( $extraIndexes ) ) {
-				$this->searchContext->addNotFilter( new \Elastica\Query\Term(
-					[ 'local_sites_with_dupe' => $this->indexBaseName ]
-				) );
-			}
+
+		if ( !empty( $extraIndexes ) ) {
+			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
+				[ 'local_sites_with_dupe' => $this->indexBaseName ]
+			) );
 		}
 
 		$query->setQuery( $this->searchContext->getQuery() );
@@ -593,7 +589,7 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $this->pageType ) {
 			$pageType = $this->pageType;
 		} else {
-			$indexType = $this->connection->pickIndexTypeForNamespaces( $namespaces );
+			$indexType = $this->connection->pickIndexTypeForNamespaces( $this->searchContext->getNamespaces() );
 			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
 		}
 

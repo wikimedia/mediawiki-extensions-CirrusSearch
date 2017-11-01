@@ -676,8 +676,13 @@ class SearchContext {
 				$mainQuery->addMust( $nonTextQuery );
 			}
 		}
+		$filters = $this->filters;
+		if ( $this->getNamespaces() ) {
+			$filters[] = new \Elastica\Query\Terms( 'namespace', $this->getNamespaces() );
+		}
+
 		// Wrap $mainQuery in a filtered query if there are any filters
-		$unifiedFilter = Filters::unify( $this->filters, $this->notFilters );
+		$unifiedFilter = Filters::unify( $filters, $this->notFilters );
 		if ( $unifiedFilter !== null ) {
 			if ( ! ( $mainQuery instanceof \Elastica\Query\BoolQuery ) ) {
 				$bool = new \Elastica\Query\BoolQuery();

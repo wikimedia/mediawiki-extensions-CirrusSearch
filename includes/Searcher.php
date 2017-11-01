@@ -408,13 +408,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 *    or an error if there was an error
 	 */
 	public function get( array $docIds, $sourceFiltering ) {
-		$indexType = $this->connection->pickIndexTypeForNamespaces(
+		$connection = $this->getOverriddenConnection();
+		$indexType = $connection->pickIndexTypeForNamespaces(
 			$this->searchContext->getNamespaces()
 		);
 
 		// The worst case would be to have all ids duplicated in all available indices.
 		// We set the limit accordingly
-		$size = count( $this->connection->getAllIndexSuffixesForNamespaces(
+		$size = count( $connection->getAllIndexSuffixesForNamespaces(
 			$this->searchContext->getNamespaces()
 		) );
 		$size *= count( $docIds );
@@ -422,18 +423,18 @@ class Searcher extends ElasticsearchIntermediary {
 		return Util::doPoolCounterWork(
 			$this->getPoolCounterType(),
 			$this->user,
-			function () use ( $docIds, $sourceFiltering, $indexType, $size ) {
+			function () use ( $docIds, $sourceFiltering, $indexType, $size, $connection ) {
 				try {
 					$this->startNewLog( 'get of {indexType}.{docIds}', 'get', [
 						'indexType' => $indexType,
 						'docIds' => $docIds,
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$this->connection->setTimeout( $this->getClientTimeout() );
+					$connection->setTimeout( $this->getClientTimeout() );
 					// We use a search query instead of _get/_mget, these methods are
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
-					$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+					$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
 					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $docIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
@@ -472,9 +473,9 @@ class Searcher extends ElasticsearchIntermediary {
 						'search_type' => 'query_then_fetch',
 						'timeout' => $this->getTimeout(),
 					];
-
-					$this->connection->setTimeout( $this->getClientTimeout() );
-					$pageType = $this->connection->getNamespaceType( $this->indexBaseName );
+					$connection = $this->getOverriddenConnection();
+					$connection->setTimeout( $this->getClientTimeout() );
+					$pageType = $connection->getNamespaceType( $this->indexBaseName );
 					$match = new \Elastica\Query\Match();
 					$match->setField( 'name', $name );
 					$query = new \Elastica\Query( $match );
@@ -501,7 +502,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$extraIndexes = $this->searchContext->getExtraIndices();
 
-		$this->overrideConnectionIfNeeded();
+		$connection = $this->getOverriddenConnection();
 
 		if ( !empty( $extraIndexes ) ) {
 			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
@@ -582,15 +583,16 @@ class Searcher extends ElasticsearchIntermediary {
 			\Elastica\Search::OPTION_TIMEOUT => $this->getTimeout(),
 		];
 		// @todo when switching to multi-search this has to be provided at the top level
-		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
+		if ( $this->searchContext->getConfig()->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
 		if ( $this->pageType ) {
 			$pageType = $this->pageType;
 		} else {
-			$indexType = $this->connection->pickIndexTypeForNamespaces( $this->searchContext->getNamespaces() );
-			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
+			$indexType = $connection->pickIndexTypeForNamespaces(
+				$this->searchContext->getNamespaces() );
+			$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
 		}
 
 		$search = $pageType->createSearch( $query, $queryOptions );
@@ -653,8 +655,9 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
+		$connection = $this->getOverriddenConnection();
 		$log = new MultiSearchRequestLog(
-			$this->connection->getClient(),
+			$connection->getClient(),
 			"{queryType} search for '{query}'",
 			$this->searchContext->getSearchType(),
 			[
@@ -687,10 +690,10 @@ class Searcher extends ElasticsearchIntermediary {
 		// Similar to indexing support only the bulk code path, rather than
 		// single and bulk. The extra overhead should be minimal, and the
 		// reduced complexity is welcomed.
-		$search = new MultiSearch( $this->connection->getClient() );
+		$search = new MultiSearch( $connection->getClient() );
 		$search->addSearches( $searches );
 
-		$this->connection->setTimeout( $this->getClientTimeout() );
+		$connection->setTimeout( $this->getClientTimeout() );
 
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
@@ -928,15 +931,16 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Some queries, like more like this, are quite expensive and can cause
 	 * latency spikes. This allows redirecting queries using particular
 	 * features to specific clusters.
+	 * @return Connection
 	 */
-	private function overrideConnectionIfNeeded() {
+	private function getOverriddenConnection() {
 		$overrides = $this->config->get( 'CirrusSearchClusterOverrides' );
 		foreach ( $overrides as $feature => $cluster ) {
 			if ( $this->searchContext->isSyntaxUsed( $feature ) ) {
-				$this->connection = Connection::getPool( $this->config, $cluster );
-				return;
+				return Connection::getPool( $this->config, $cluster );
 			}
 		}
+		return $this->connection;
 	}
 
 	/**
@@ -956,7 +960,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function newLog( $description, $queryType, array $extra = [] ) {
 		return new SearchRequestLog(
-			$this->connection->getClient(),
+			$this->getOverriddenConnection()->getClient(),
 			$description,
 			$queryType,
 			$extra
@@ -1020,7 +1024,7 @@ class Searcher extends ElasticsearchIntermediary {
 		list( $term, ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 
-		$this->pageType = $this->connection->getArchiveType( $this->indexBaseName );
+		$this->pageType = $this->getOverriddenConnection()->getArchiveType( $this->indexBaseName );
 
 		// Setup the search query
 		$query = new BoolQuery();

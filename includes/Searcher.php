@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Query\SimpleKeywordFeature;
+use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\SearchContext;
@@ -494,117 +495,14 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
-		$resultsType = $this->searchContext->getResultsType();
-
-		$query = new \Elastica\Query();
-		$query->setSource( $resultsType->getSourceFiltering() );
-		$query->setStoredFields( $resultsType->getStoredFields() );
-
-		$extraIndexes = $this->searchContext->getExtraIndices();
-
-		$connection = $this->getOverriddenConnection();
-
-		if ( !empty( $extraIndexes ) ) {
-			$this->searchContext->addNotFilter( new \Elastica\Query\Term(
-				[ 'local_sites_with_dupe' => $this->indexBaseName ]
-			) );
-		}
-
-		$query->setQuery( $this->searchContext->getQuery() );
-
-		$highlight = $this->searchContext->getHighlight( $resultsType );
-		if ( $highlight ) {
-			$query->setHighlight( $highlight );
-		}
-
-		if ( $this->searchContext->getSuggest() ) {
-			if ( interface_exists( 'Elastica\\ArrayableInterface' ) ) {
-				// Elastica 2.3.x.  For some reason it unwraps our suggest
-				// query when we don't want it to, so wrap it one more time
-				// to make the unwrap do nothing.
-				$query->setParam( 'suggest', [
-					'suggest' => $this->searchContext->getSuggest()
-				] );
-			} else {
-				$query->setParam( 'suggest', $this->searchContext->getSuggest() );
-			}
-			$query->addParam( 'stats', 'suggest' );
-		}
-		if ( $this->offset ) {
-			$query->setFrom( $this->offset );
-		}
-		if ( $this->limit ) {
-			$query->setSize( $this->limit );
-		}
-
-		foreach ( $this->searchContext->getSyntaxUsed() as $syntax ) {
-			$query->addParam( 'stats', $syntax );
-		}
-		switch ( $this->sort ) {
-		case 'just_match':
-			// Use just matching scores, without any rescoring, and default sort.
-			break;
-		case 'relevance':
-			$rescores = $this->searchContext->getRescore();
-			if ( $rescores !== [] ) {
-				$query->setParam( 'rescore', $rescores );
-			}
-			break;  // The default
-		case 'title_asc':
-			$query->setSort( [ 'title.keyword' => 'asc' ] );
-			break;
-		case 'title_desc':
-			$query->setSort( [ 'title.keyword' => 'desc' ] );
-			break;
-		case 'incoming_links_asc':
-			$query->setSort( [ 'incoming_links' => [
-				'order' => 'asc',
-				'missing' => '_first',
-			] ] );
-			break;
-		case 'incoming_links_desc':
-			$query->setSort( [ 'incoming_links' => [
-				'order' => 'desc',
-				'missing' => '_last',
-			] ] );
-			break;
-		case 'none':
-			$query->setSort( [ '_doc' ] );
-			break;
-		default:
-			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-				"Invalid sort type: {sort}",
-				[ 'sort' => $this->sort ]
-			);
-		}
-
-		// Setup the search
-		$queryOptions = [
-			\Elastica\Search::OPTION_TIMEOUT => $this->getTimeout(),
-		];
-		// @todo when switching to multi-search this has to be provided at the top level
-		if ( $this->searchContext->getConfig()->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
-			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
-		}
-
-		if ( $this->pageType ) {
-			$pageType = $this->pageType;
-		} else {
-			$indexType = $connection->pickIndexTypeForNamespaces(
-				$this->searchContext->getNamespaces() );
-			$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
-		}
-
-		$search = $pageType->createSearch( $query, $queryOptions );
-		foreach ( $extraIndexes as $i ) {
-			$search->addIndex( $i );
-		}
-
-		if ( $this->returnExplain ) {
-			$query->setExplain( true );
-		}
-
-		return $search;
+		$builder = new SearchRequestBuilder( $this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
+		return $builder->setLimit( $this->limit )
+			->setOffset( $this->offset )
+			->setPageType( $this->pageType )
+			->setReturnExplain( !is_null( $this->returnExplain ) )
+			->setSort( $this->sort )
+			->setTimeout( $this->getTimeout() )
+			->build();
 	}
 
 	/**

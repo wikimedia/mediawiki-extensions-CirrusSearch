@@ -3,10 +3,14 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Query\CompSuggestQueryBuilder;
+use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
+use Elastica\Multi\ResultSet;
+use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Search;
 use MediaWiki\MediaWikiServices;
 use SearchSuggestionSet;
 use Status;
@@ -56,6 +60,11 @@ use User;
  */
 class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
+	 * @const string multisearch key to identify the comp suggest request
+	 */
+	const MSEARCH_KEY_SUGGEST = "suggest";
+
+	/**
 	 * @var integer maximum number of result (final)
 	 */
 	private $limit;
@@ -90,6 +99,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @var CompSuggestQueryBuilder $compSuggestBuilder (final)
 	 */
 	private $compSuggestBuilder;
+
+	/**
+	 * @var PrefixSearchQueryBuilder $prefixSearchQueryBuilder (final)
+	 */
+	private $prefixSearchQueryBuilder;
 
 	/**
 	 * @param Connection $conn
@@ -129,6 +143,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$limit,
 			$offset
 		);
+		$this->prefixSearchQueryBuilder = new PrefixSearchQueryBuilder();
 	}
 
 	/**
@@ -143,36 +158,82 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function suggest( $text, $variants = null ) {
-		if ( !$this->compSuggestBuilder->areResultsPossible() ) {
+		$suggestSearch = $this->getSuggestSearchRequest( $text, $variants );
+		$msearch = new MultiSearch( $this->connection->getClient() );
+		if ( $suggestSearch !== null ) {
+			$msearch->addSearch( $suggestSearch, self::MSEARCH_KEY_SUGGEST );
+		}
+
+		if ( empty( $msearch->getSearches() ) ) {
 			return Status::newGood( SearchSuggestionSet::emptySuggestionSet() );
 		}
 
-		$suggest = $this->compSuggestBuilder->build( $text, $variants );
 		$this->connection->setTimeout( $this->config->getElement( 'wgCirrusSearchClientSideSearchTimeout', 'default' ) );
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
-			function () use( $suggest, $text ) {
+			function () use( $msearch, $text ) {
 				$log = $this->newLog( "{queryType} search for '{query}'", "comp_suggest", [
 					'query' => $text,
 					'offset' => $this->offset,
 				] );
 				$this->start( $log );
 				try {
-					$query = new Query( new Query\MatchNone() );
-					$query->setSize( 0 );
-					$query->setSuggest( $suggest );
-					$query->setSource( [ 'target_title' ] );
-					$result = $this->completionIndex->search( $query );
-					$result = $this->compSuggestBuilder->postProcess( $result,
-						$this->completionIndex->getName(), $log );
-					return $this->success( $result );
+					$results = $msearch->search();
+					if ( $results->hasError() ||
+						// Catches HTTP errors (ex: 5xx) not reported
+						// by hasError()
+						!$results->getResponse()->isOk()
+					) {
+						return $this->multiFailure( $results );
+					}
+					return $this->success( $this->processMSearchResponse( $results, $log ) );
 				} catch ( ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
 			}
 		);
 		return $result;
+	}
+
+	/**
+	 * @param ResultSet $results
+	 * @param CompletionRequestLog $log
+	 * @return SearchSuggestionSet
+	 */
+	private function processMSearchResponse( ResultSet $results, CompletionRequestLog $log ) {
+		if ( isset( $results->getResultSets()[self::MSEARCH_KEY_SUGGEST] ) ) {
+			$suggestSet = $this->compSuggestBuilder->postProcess(
+				$results->getResultSets()[self::MSEARCH_KEY_SUGGEST],
+				$this->completionIndex->getName(),
+				$log
+			);
+
+			return $suggestSet;
+		}
+		return SearchSuggestionSet::emptySuggestionSet();
+	}
+
+	/**
+	 * @param string $text Search term
+	 * @param string[]|null $variants Search term variants
+	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
+	 * @return Search|null
+	 */
+	private function getSuggestSearchRequest( $text, $variants ) {
+		if ( !$this->compSuggestBuilder->areResultsPossible() ) {
+			return null;
+		}
+
+		$suggest = $this->compSuggestBuilder->build( $text, $variants );
+		$query = new Query( new Query\MatchNone() );
+		$query->setSize( 0 );
+		$query->setSuggest( $suggest );
+		$query->setSource( [ 'target_title' ] );
+		$search = new Search( $this->connection->getClient() );
+		$search->addIndex( $this->completionIndex );
+		$search->setQuery( $query );
+		return $search;
 	}
 
 	/**

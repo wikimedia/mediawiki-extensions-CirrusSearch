@@ -154,6 +154,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\BoostTemplatesFunctionScoreBuilder' => __DIR__ . '/includes/Search/RescoreBuilders.php',
 	'CirrusSearch\\Search\\CirrusIndexField' => __DIR__ . '/includes/Search/CirrusIndexField.php',
 	'CirrusSearch\\Search\\CirrusSearchIndexFieldFactory' => __DIR__ . '/includes/Search/CirrusSearchIndexFieldFactory.php',
+	'CirrusSearch\\Search\\CompletionResultsCollector' => __DIR__ . '/includes/Search/CompletionResultsCollector.php',
 	'CirrusSearch\\Search\\CompositeCrossProjectBlockScorer' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',
 	'CirrusSearch\\Search\\CrossProjectBlockScorer' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',
 	'CirrusSearch\\Search\\CrossProjectBlockScorerFactory' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',

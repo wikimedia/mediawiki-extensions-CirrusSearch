@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use SearchSuggestion;
+
 class CompletionRequestLog extends BaseRequestLog {
 
 	/**
@@ -10,77 +12,60 @@ class CompletionRequestLog extends BaseRequestLog {
 	private $hits = [];
 
 	/**
-	 * @var \Elastica\Response|null
+	 * @var float|null
 	 */
-	private $response;
+	private $maxScore = null;
 
 	/**
-	 * @var float
+	 * @var string[]
 	 */
-	private $maxScore = 0.0;
+	private $indices = [];
 
 	/**
-	 * @var string
+	 * @var int
 	 */
-	private $index = '';
+	private $suggestTookMs = 0;
 
 	/**
-	 * @param string $indexName The name of the elasticsearch index the
-	 *  suggestions were sourced from.
+	 * @var int
+	 */
+	private $hitsTotal;
+
+	/**
 	 * @param SearchSuggestion[] $result The set of suggestion results that
 	 *  will be returned to the user.
-	 * @param string[] $suggestionProfileByDocId A map from elasticsearch
+	 * @param string[] $suggestionMetadataByDocId A map from elasticsearch
 	 *  document id to the completion profile that provided the highest score
 	 *  for that document id.
 	 */
-	public function setResult( $indexName, array $result, array $suggestionProfileByDocId ) {
-		$maxScore = 0;
-		$this->index = $indexName;
+	public function setResult( array $result, array $suggestionMetadataByDocId ) {
+		$maxScore = $this->maxScore;
 		foreach ( $result as $docId => $suggestion ) {
+			$index = '';
+			if ( isset( $suggestionMetadataByDocId[$docId]['index'] ) ) {
+				$index = $suggestionMetadataByDocId[$docId]['index'];
+			}
 			$title = $suggestion->getSuggestedTitle();
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
-			$maxScore = max( $maxScore, $suggestion->getScore() );
+			$maxScore = $maxScore !== null ? max( $maxScore, $suggestion->getScore() ) : $suggestion->getScore();
 			$this->hits[] = [
 				'title' => $title ? (string)$title : $suggestion->getText(),
-				'index' => $indexName,
+				'index' => $index,
 				'pageId' => (int)$pageId,
 				'score' => $suggestion->getScore(),
-				'profileName' => isset( $suggestionProfileByDocId[$docId] )
-					? $suggestionProfileByDocId[$docId]
+				'profileName' => isset( $suggestionMetadataByDocId[$docId]['profile'] )
+					? $suggestionMetadataByDocId[$docId]['profile']
 					: "",
 			];
 		}
-		$this->maxScore = (float)$maxScore;
-	}
-
-	/**
-	 * @param \Elastica\Response $response
-	 */
-	public function setResponse( \Elastica\Response $response ) {
-		$this->response = $response;
-	}
-
-	/**
-	 * Provides the elasticsearch response used when the completion suggester
-	 * needs to do a second pass query to fetch redirects. This is optional and
-	 * not all completion requests will need to perform a 2nd pass to resolve
-	 * redirects.
-	 *
-	 * @param \Elastica\Response $response
-	 */
-	public function set2ndPassResponse( \Elastica\Response $response ) {
-		$this->extra['elasticTook2PassMs'] = (string)round( $response->getQueryTime() * 1000 );
+		$this->maxScore = $maxScore !== null ? (float)$maxScore : null;
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getElasticTookMs() {
-		if ( $this->response ) {
-			return intval( $this->response->getQueryTime() * 1000 );
-		} else {
-			return -1;
-		}
+		return $this->suggestTookMs;
 	}
 
 	/**
@@ -100,11 +85,10 @@ class CompletionRequestLog extends BaseRequestLog {
 		return [
 			'query' => isset( $this->extra['query'] ) ? $this->extra['query'] : '',
 			'queryType' => $this->getQueryType(),
-			'index' => $this->index,
+			'index' => implode( ',', $this->indices ),
 			'elasticTookMs' => $this->getElasticTookMs(),
-			'elasticTook2PassMs' => isset( $this->extra['elasticTook2PassMs'] ) ? $this->extra['elasticTook2PassMs'] : -1,
-			'hitsTotal' => $this->getTotalHits(),
-			'maxScore' => $this->maxScore,
+			'hitsTotal' => $this->hitsTotal,
+			'maxScore' => $this->maxScore !== null ? $this->maxScore : 0.0,
 			'hitsReturned' => count( $this->hits ),
 			'hitsOffset' => isset( $this->extra['offset'] ) ? $this->extra['offset'] : 0,
 			'tookMs' => $this->getTookMs(),
@@ -123,23 +107,24 @@ class CompletionRequestLog extends BaseRequestLog {
 	}
 
 	/**
-	 * @return int The total number of hits returned by elasticsearch to
-	 *  cirrussearch. This includes duplicate titles that were returned by
-	 *  multiple profiles.
+	 * @param int $totalHits
 	 */
-	private function getTotalHits() {
-		if ( !$this->response ) {
-			return 0;
-		}
-		$hitsTotal = 0;
-		$data = $this->response->getData();
-		if ( isset( $data['suggest'] ) ) {
-			foreach ( $data['suggest'] as $type ) {
-				foreach ( $type as $results ) {
-					$hitsTotal += count( $results['options'] );
-				}
-			}
-		}
-		return $hitsTotal;
+	public function setTotalHits( $totalHits ) {
+		$this->hitsTotal = $totalHits;
+	}
+
+	/**
+	 * @param int $suggestTookMs
+	 */
+	public function setSuggestTookMs( $suggestTookMs ) {
+		$this->suggestTookMs = $suggestTookMs;
+	}
+
+	/**
+	 * Add an index used by this request
+	 * @param string $indexName
+	 */
+	public function addIndex( $indexName ) {
+		$this->indices[$indexName] = $indexName;
 	}
 }

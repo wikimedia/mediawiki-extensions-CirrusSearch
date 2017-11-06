@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
+use CirrusSearch\Search\CompletionResultsCollector;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Multi\ResultSet;
@@ -202,16 +203,20 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @return SearchSuggestionSet
 	 */
 	private function processMSearchResponse( ResultSet $results, CompletionRequestLog $log ) {
+		$collector = new CompletionResultsCollector( $this->limit, $this->offset );
 		if ( isset( $results->getResultSets()[self::MSEARCH_KEY_SUGGEST] ) ) {
-			$suggestSet = $this->compSuggestBuilder->postProcess(
-				$results->getResultSets()[self::MSEARCH_KEY_SUGGEST],
-				$this->completionIndex->getName(),
-				$log
+			$log->addIndex( $this->completionIndex->getName() );
+			$suggestResults = $results->getResultSets()[self::MSEARCH_KEY_SUGGEST];
+			$log->setSuggestTookMs( intval( $suggestResults->getResponse()->getQueryTime() * 1000 ) );
+			$totalHits = $this->compSuggestBuilder->postProcess(
+				$collector,
+				$suggestResults,
+				$this->completionIndex->getName()
 			);
 
-			return $suggestSet;
+			$log->setTotalHits( $totalHits );
 		}
-		return SearchSuggestionSet::emptySuggestionSet();
+		return $collector->logAndGetSet( $log );
 	}
 
 	/**

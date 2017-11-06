@@ -3,14 +3,13 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
-use CirrusSearch\CompletionRequestLog;
+use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\ResultSet;
 use Elastica\Suggest;
 use Elastica\Suggest\Completion;
 use SearchSuggestion;
-use SearchSuggestionSet;
 
 /**
  * Suggest (Completion) query builder.
@@ -51,9 +50,12 @@ class CompSuggestQueryBuilder {
 	public function __construct( SearchContext $context, array $profile, $limit, $offset = 0 ) {
 		$this->searchContext = $context;
 		$this->profile = $profile;
-		$this->limit = $limit;
-		$this->offset = $offset;
 		$this->hardLimit = self::computeHardLimit( $limit, $offset, $context->getConfig() );
+		if ( $limit > $this->hardLimit - $offset ) {
+			$limit = $this->hardLimit - $offset;
+		}
+		$this->limit = $limit > 0 ? $limit : 0;
+		$this->offset = $offset;
 	}
 
 	/**
@@ -66,7 +68,7 @@ class CompSuggestQueryBuilder {
 		// If the offset requested is greater than the hard limit
 		// allowed we will always return an empty set so let's do it
 		// asap.
-		return $this->offset < $this->hardLimit;
+		return $this->limit > 0;
 	}
 
 	/**
@@ -193,20 +195,17 @@ class CompSuggestQueryBuilder {
 	 *
 	 * Merge top level multi-queries and resolve returned pageIds into Title objects.
 	 *
+	 * @param CompletionResultsCollector $collector
 	 * @param ResultSet $results
 	 * @param $indexName
-	 * @param CompletionRequestLog $log
-	 * @return SearchSuggestionSet a set of Suggestions
+	 * @return int total hits
 	 */
-	public function postProcess( ResultSet $results, $indexName, CompletionRequestLog $log ) {
-		$log->setResponse( $results->getResponse() );
+	public function postProcess( CompletionResultsCollector $collector, ResultSet $results, $indexName ) {
 		$suggestResp = $results->getSuggests();
 		if ( $suggestResp === [] ) {
 			// Edge case where the index contains 0 documents and does not even return the 'suggest' field
-			return SearchSuggestionSet::emptySuggestionSet();
+			return 0;
 		}
-		$suggestionsByDocId = [];
-		$suggestionProfileByDocId = [];
 		$hitsTotal = 0;
 		foreach ( $suggestResp as $name => $sug ) {
 			$discount = $this->mergedProfiles[$name]['discount'];
@@ -222,12 +221,9 @@ class CompSuggestQueryBuilder {
 					}
 					list( $docId, $type ) = $this->decodeId( $suggest['_id'] );
 					$score = $discount * $suggest['_score'];
-					if ( !isset( $suggestionsByDocId[$docId] ) ||
-						$score > $suggestionsByDocId[$docId]->getScore()
-					) {
-						$pageId = $this->searchContext->getConfig()->makePageId( $docId );
-						$suggestion = new SearchSuggestion( $score, null, null, $pageId );
-						// Use setText, it'll build the Title
+					$pageId = $this->searchContext->getConfig()->makePageId( $docId );
+					$suggestion = new SearchSuggestion( $score, null, null, $pageId );
+					if ( $collector->collect( $suggestion, $name, $indexName ) ) {
 						if ( $type === SuggestBuilder::TITLE_SUGGESTION && $targetTitleNS === NS_MAIN ) {
 							// For title suggestions we always use the target_title
 							// This is because we may encounter default_sort or subphrases that are not valid titles...
@@ -238,26 +234,17 @@ class CompSuggestQueryBuilder {
 						} else {
 							$suggestion->setText( $page );
 						}
-						$suggestionsByDocId[$docId] = $suggestion;
-						$suggestionProfileByDocId[$docId] = $name;
+					} else {
+						// Results are returned in order by elastic skip the rest if no more
+						// results from this suggest can be collected
+						if ( $collector->isFull() && $collector->getMinScore() > $score ) {
+							break;
+						}
 					}
 				}
 			}
 		}
-
-		// simply sort by existing scores
-		uasort( $suggestionsByDocId, function ( SearchSuggestion $a, SearchSuggestion $b ) {
-			return $b->getScore() - $a->getScore();
-		} );
-
-		$suggestionsByDocId = $this->offset < $this->hardLimit
-			? array_slice( $suggestionsByDocId, $this->offset, $this->hardLimit - $this->offset,
-				true )
-			: [];
-
-		$log->setResult( $indexName, $suggestionsByDocId, $suggestionProfileByDocId );
-
-		return new SearchSuggestionSet( $suggestionsByDocId );
+		return $hitsTotal;
 	}
 
 	/**
@@ -298,5 +285,13 @@ class CompSuggestQueryBuilder {
 			return $hardLimit;
 		}
 		return $limit;
+	}
+
+	/**
+	 * Number of results we could display
+	 * @return int
+	 */
+	public function getLimit() {
+		return $this->limit;
 	}
 }

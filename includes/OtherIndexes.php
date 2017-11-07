@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use MediaWiki\Logger\LoggerFactory;
-use CirrusSearch\Elastica\MultiSearch as MultiSearch;
+use Elastica\Multi\Search as MultiSearch;
 use Title;
 
 /**

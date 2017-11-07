@@ -1,0 +1,99 @@
+[
+    {
+        "channel": "CirrusSearchRequestSet",
+        "context": {
+            "backendUserTests": [],
+            "hits": [],
+            "ip": "127.0.0.1",
+            "payload": {
+                "acceptLang": "",
+                "hascookies": "0",
+                "queryString": "",
+                "referer": ""
+            },
+            "requests": [
+                {
+                    "elasticTookMs": 0,
+                    "hits": [
+                        {
+                            "index": "wiki_titlesuggest",
+                            "pageId": 14,
+                            "profileName": "plain",
+                            "score": 4713,
+                            "title": "Test2"
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "pageId": 17,
+                            "profileName": "plain",
+                            "score": 132,
+                            "title": "Test2\/en"
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "pageId": 19,
+                            "profileName": "plain",
+                            "score": 131,
+                            "title": "Test2\/fr"
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "pageId": 20,
+                            "profileName": "plain",
+                            "score": 78,
+                            "title": "Test\/Subpage 1"
+                        },
+                        {
+                            "index": "wiki_general",
+                            "pageId": 34,
+                            "profileName": "prefix",
+                            "score": 77,
+                            "title": "Help:Test"
+                        }
+                    ],
+                    "hitsOffset": 0,
+                    "hitsReturned": 5,
+                    "hitsTotal": 9,
+                    "indices": [
+                        "wiki_titlesuggest",
+                        "wiki_general"
+                    ],
+                    "limit": -1,
+                    "maxScore": 4713,
+                    "namespaces": [
+                        0,
+                        12
+                    ],
+                    "payload": [],
+                    "query": "Te",
+                    "queryType": "comp_suggest",
+                    "suggestion": "",
+                    "suggestionRequested": false
+                }
+            ],
+            "source": "cli",
+            "userAgent": ""
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
+        "channel": "CirrusSearchRequests",
+        "context": {
+            "elasticTookMs": 0,
+            "executor": "123456789",
+            "hitsOffset": 0,
+            "hitsReturned": 5,
+            "hitsTotal": 9,
+            "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
+            "index": "wiki_titlesuggest,wiki_general",
+            "maxScore": 4713,
+            "query": "Te",
+            "queryType": "comp_suggest",
+            "source": "cli",
+            "tookMs": 0
+        },
+        "level": "debug",
+        "message": "{queryType} search for '{query}' against {index} took {tookMs} millis and {elasticTookMs} Elasticsearch millis. Found {hitsTotal} total results and returned {hitsReturned} of them starting at {hitsOffset}. Requested via {source} for {identity} by executor {executor}"
+    }
+]

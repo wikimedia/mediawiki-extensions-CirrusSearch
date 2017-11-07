@@ -85,6 +85,7 @@ class CompletionResultsCollector {
 	 * is better than a suggestion already collected.
 	 * @param SearchSuggestion $suggestion
 	 * @param string $profileName
+	 * @param string $index
 	 * @return bool true if the doc was added false otherwise
 	 */
 	public function collect( SearchSuggestion $suggestion, $profileName, $index ) {

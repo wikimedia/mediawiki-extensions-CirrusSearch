@@ -63,10 +63,10 @@ When(/^I api search on (\w+) for (.*)$/) do |wiki, search|
     @api_error = e
   end
 end
-When(/^I get api suggestions for (.*?)(?: using the (.*) profile)?$/) do |search, profile|
+When(/^^I get api suggestions for (.*?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/) do |search, profile, namespaces|
   begin
     profile = profile ? profile : "fuzzy"
-    @api_result = suggestions_with_profile(search, profile)
+    @api_result = suggestions_with_profile(search, profile, namespaces)
   rescue MediawikiApi::ApiError => e
     @api_error = e
   rescue MediawikiApi::HttpError => e

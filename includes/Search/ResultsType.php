@@ -189,53 +189,27 @@ class FancyTitleResultsType extends TitleResultsType {
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
 		$results = [];
 		foreach ( $resultSet->getResults() as $r ) {
-			$title = TitleHelper::makeTitle( $r );
-			$highlights = $r->getHighlights();
-			$resultForTitle = [];
-
-			// Now we have to use the highlights to figure out whether it was the title or the redirect
-			// that matched.  It is kind of a shame we can't really give the highlighting to the client
-			// though.
-			if ( isset( $highlights[ "title.$this->matchedAnalyzer" ] ) ) {
-				$resultForTitle[ 'titleMatch' ] = $title;
-			} elseif ( isset( $highlights[ "title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
-				$resultForTitle[ 'titleMatch' ] = $title;
-			}
-			$redirectHighlights = [];
-
-			if ( isset( $highlights[ "redirect.title.$this->matchedAnalyzer" ] ) ) {
-				$redirectHighlights = $highlights[ "redirect.title.$this->matchedAnalyzer" ];
-			}
-			if ( isset( $highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] ) ) {
-				$redirectHighlights = array_merge( $redirectHighlights,
-					$highlights[ "redirect.title.{$this->matchedAnalyzer}_asciifolding" ] );
-			}
-			if ( count( $redirectHighlights ) !== 0 ) {
-				foreach ( $redirectHighlights as $redirectTitle ) {
-					// The match was against a redirect so we should replace the $title with one that
-					// represents the redirect.
-					// The first step is to strip the actual highlighting from the title.
-					$redirectTitle = str_replace( Searcher::HIGHLIGHT_PRE, '', $redirectTitle );
-					$redirectTitle = str_replace( Searcher::HIGHLIGHT_POST, '', $redirectTitle );
-
-					// Instead of getting the redirect's real namespace we're going to just use the namespace
-					// of the title.  This is not great but OK given that we can't find cross namespace
-					// redirects properly any way.
-					$redirectTitle = TitleHelper::makeRedirectTitle( $r, $redirectTitle, $r->namespace );
-					$resultForTitle[ 'redirectMatches' ][] = $redirectTitle;
-				}
-			}
-			if ( count( $resultForTitle ) === 0 ) {
-				// We're not really sure where the match came from so lets just pretend it was the title.
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Title search result type hit a match but we can't " .
-					"figure out what caused the match:  $r->namespace:$r->title"
-				);
-				$resultForTitle[ 'titleMatch' ] = $title;
-			}
-			$results[] = $resultForTitle;
+			$results[] = $this->transformOneElasticResult( $r );
 		}
 		return $results;
+	}
+
+	/**
+	 * Finds best title or redirect
+	 * @param array $match array returned by self::transformOneElasticResult
+	 * @return \Title|false choose best
+	 */
+	public static function chooseBestTitleOrRedirect( array $match ) {
+		if ( isset( $match['titleMatch'] ) ) {
+			return $match['titleMatch'];
+		} else {
+			if ( isset( $match['redirectMatches'][0] ) ) {
+				// TODO maybe dig around in the redirect matches and find the best one?
+				return $match['redirectMatches'][0];
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -243,6 +217,66 @@ class FancyTitleResultsType extends TitleResultsType {
 	 */
 	public function createEmptyResult() {
 		return [];
+	}
+
+	/**
+	 * Transform a result from elastic into an array of Titles.
+	 *
+	 * @param \Elastica\Result $r
+	 * @return \Title[] with the following keys :
+	 *   titleMatch => a title if the title matched
+	 *   redirectMatches => an array of redirect matches, one per matched redirect
+	 */
+	public function transformOneElasticResult( \Elastica\Result $r ) {
+		$title = TitleHelper::makeTitle( $r );
+		$highlights = $r->getHighlights();
+		$resultForTitle = [];
+
+		// Now we have to use the highlights to figure out whether it was the title or the redirect
+		// that matched.  It is kind of a shame we can't really give the highlighting to the client
+		// though.
+		if ( isset( $highlights["title.$this->matchedAnalyzer"] ) ) {
+			$resultForTitle['titleMatch'] = $title;
+		} elseif ( isset( $highlights["title.{$this->matchedAnalyzer}_asciifolding"] ) ) {
+			$resultForTitle['titleMatch'] = $title;
+		}
+		$redirectHighlights = [];
+
+		if ( isset( $highlights["redirect.title.$this->matchedAnalyzer"] ) ) {
+			$redirectHighlights = $highlights["redirect.title.$this->matchedAnalyzer"];
+		}
+		if ( isset( $highlights["redirect.title.{$this->matchedAnalyzer}_asciifolding"] ) ) {
+			$redirectHighlights =
+				array_merge( $redirectHighlights,
+					$highlights["redirect.title.{$this->matchedAnalyzer}_asciifolding"] );
+		}
+		if ( count( $redirectHighlights ) !== 0 ) {
+			foreach ( $redirectHighlights as $redirectTitle ) {
+				// The match was against a redirect so we should replace the $title with one that
+				// represents the redirect.
+				// The first step is to strip the actual highlighting from the title.
+				$redirectTitle = str_replace( [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ],
+					'', $redirectTitle );
+
+				// Instead of getting the redirect's real namespace we're going to just use the namespace
+				// of the title.  This is not great but OK given that we can't find cross namespace
+				// redirects properly any way.
+				// TODO: ask the highlighter to return the namespace for this kind of matches
+				// this would perhaps help to partially fix T115756
+				$redirectTitle =
+					TitleHelper::makeRedirectTitle( $r, $redirectTitle, $r->namespace );
+				$resultForTitle['redirectMatches'][] = $redirectTitle;
+			}
+		}
+		if ( count( $resultForTitle ) === 0 ) {
+			// We're not really sure where the match came from so lets just pretend it was the title.
+			LoggerFactory::getInstance( 'CirrusSearch' )
+				->warning( "Title search result type hit a match but we can't " .
+						   "figure out what caused the match:  $r->namespace:$r->title" );
+			$resultForTitle['titleMatch'] = $title;
+		}
+
+		return $resultForTitle;
 	}
 }
 

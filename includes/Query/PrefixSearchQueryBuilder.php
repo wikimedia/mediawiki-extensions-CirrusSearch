@@ -17,10 +17,10 @@ class PrefixSearchQueryBuilder {
 	/**
 	 * @param SearchContext $searchContext the search context
 	 * @param $term string the original search term
-	 * @param array $variants list of variants
+	 * @param array|null $variants list of variants
 	 * @throws \ApiUsageException if the query is too long
 	 */
-	public function build( SearchContext $searchContext, $term, $variants = [] ) {
+	public function build( SearchContext $searchContext, $term, $variants = null ) {
 		$this->checkTitleSearchRequestLength( $term );
 		$searchContext->setOriginalSearchTerm( $term );
 		$searchContext->setRescoreProfile(
@@ -67,9 +67,11 @@ class PrefixSearchQueryBuilder {
 				$query->setMinimumShouldMatch( 1 );
 				$weight = 1;
 				$query->addShould( $buildMatch( $term, $weight ) );
-				foreach ( $variants as $variant ) {
-					$weight *= 0.2;
-					$query->addShould( $buildMatch( $variant, $weight ) );
+				if ( $variants ) {
+					foreach ( $variants as $variant ) {
+						$weight *= 0.2;
+						$query->addShould( $buildMatch( $variant, $weight ) );
+					}
 				}
 				$searchContext->setMainQuery( $query );
 			}

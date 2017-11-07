@@ -5,9 +5,11 @@ namespace CirrusSearch;
 use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\CompletionResultsCollector;
+use CirrusSearch\Search\FancyTitleResultsType;
+use CirrusSearch\Search\SearchRequestBuilder;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
-use Elastica\Multi\ResultSet;
+use Elastica\ResultSet;
 use Elastica\Multi\Search as MultiSearch;
 use Elastica\Query;
 use CirrusSearch\Search\SearchContext;
@@ -58,12 +60,24 @@ use User;
  * 2. The redirect suggestions
  * Because the same canonical title can be returned twice we support fetch_limit_factor
  * in suggest profiles to fetch more than what the use asked.
+ *
+ * Additionally if the namespaces request include non NS_MAIN a prefix search query
+ * is sent to the main index. Results are appended to the suggest results. Appending
+ * is far from ideal but in the current state scores between the suggest index and prefix
+ * search are not comparable.
+ * TODO: investigate computing the comp suggest score on main indices to properly merge
+ * results.
  */
 class CompletionSuggester extends ElasticsearchIntermediary {
 	/**
 	 * @const string multisearch key to identify the comp suggest request
 	 */
 	const MSEARCH_KEY_SUGGEST = "suggest";
+
+	/**
+	 * @const string multisearch key to identify the prefix search request
+	 */
+	const MSEARCH_KEY_PREFIX = "prefix";
 
 	/**
 	 * @var integer maximum number of result (final)
@@ -105,6 +119,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @var PrefixSearchQueryBuilder $prefixSearchQueryBuilder (final)
 	 */
 	private $prefixSearchQueryBuilder;
+
+	/**
+	 * @var SearchRequestBuilder the builder to build the search for prefix search queries
+	 */
+	private $prefixSearchRequestBuilder;
 
 	/**
 	 * @param Connection $conn
@@ -165,11 +184,16 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			$msearch->addSearch( $suggestSearch, self::MSEARCH_KEY_SUGGEST );
 		}
 
+		$prefixSearch = $this->getPrefixSearchRequest( $text, $variants );
+		if ( $prefixSearch !== null ) {
+			$msearch->addSearch( $prefixSearch, self::MSEARCH_KEY_PREFIX );
+		}
+
 		if ( empty( $msearch->getSearches() ) ) {
 			return Status::newGood( SearchSuggestionSet::emptySuggestionSet() );
 		}
 
-		$this->connection->setTimeout( $this->config->getElement( 'wgCirrusSearchClientSideSearchTimeout', 'default' ) );
+		$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
@@ -188,7 +212,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 					) {
 						return $this->multiFailure( $results );
 					}
-					return $this->success( $this->processMSearchResponse( $results, $log ) );
+					return $this->success( $this->processMSearchResponse( $results->getResultSets(), $log ) );
 				} catch ( ExceptionInterface $e ) {
 					return $this->failure( $e );
 				}
@@ -198,25 +222,79 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param ResultSet $results
+	 * @param ResultSet[] $results
 	 * @param CompletionRequestLog $log
 	 * @return SearchSuggestionSet
 	 */
-	private function processMSearchResponse( ResultSet $results, CompletionRequestLog $log ) {
+	private function processMSearchResponse( array $results, CompletionRequestLog $log ) {
 		$collector = new CompletionResultsCollector( $this->limit, $this->offset );
-		if ( isset( $results->getResultSets()[self::MSEARCH_KEY_SUGGEST] ) ) {
-			$log->addIndex( $this->completionIndex->getName() );
-			$suggestResults = $results->getResultSets()[self::MSEARCH_KEY_SUGGEST];
-			$log->setSuggestTookMs( intval( $suggestResults->getResponse()->getQueryTime() * 1000 ) );
-			$totalHits = $this->compSuggestBuilder->postProcess(
-				$collector,
-				$suggestResults,
-				$this->completionIndex->getName()
-			);
-
-			$log->setTotalHits( $totalHits );
-		}
+		$totalHits = $this->collectCompSuggestResults( $collector, $results, $log );
+		$totalHits += $this->collectPrefixSearchResults( $collector, $results, $log );
+		$log->setTotalHits( $totalHits );
 		return $collector->logAndGetSet( $log );
+	}
+
+	/**
+	 * @param CompletionResultsCollector $collector
+	 * @param ResultSet[] $results
+	 * @param CompletionRequestLog $log
+	 * @return int
+	 */
+	private function collectCompSuggestResults( CompletionResultsCollector $collector, array $results, CompletionRequestLog $log ) {
+		if ( !isset( $results[self::MSEARCH_KEY_SUGGEST] ) ) {
+			return 0;
+		}
+		$log->addIndex( $this->completionIndex->getName() );
+		$suggestResults = $results[self::MSEARCH_KEY_SUGGEST];
+		$log->setSuggestTookMs( intval( $suggestResults->getResponse()->getQueryTime() * 1000 ) );
+		return $this->compSuggestBuilder->postProcess(
+			$collector,
+			$suggestResults,
+			$this->completionIndex->getName()
+		);
+	}
+
+	/**
+	 * @param CompletionResultsCollector $collector
+	 * @param ResultSet[] $results
+	 * @param CompletionRequestLog $log
+	 * @return int
+	 */
+	private function collectPrefixSearchResults( CompletionResultsCollector $collector, array $results, CompletionRequestLog $log ) {
+		if ( !isset( $results[self::MSEARCH_KEY_PREFIX] ) ) {
+			return 0;
+		}
+		$indexName = $this->prefixSearchRequestBuilder->getPageType()->getIndex()->getName();
+		$prefixResults = $results[self::MSEARCH_KEY_PREFIX];
+		$totalHits = $prefixResults->getTotalHits();
+		$log->addIndex( $indexName );
+		$log->setPrefixTookMs( intval( $prefixResults->getResponse()->getQueryTime() * 1000 ) );
+		// We only append as we can't really compare scores without more complex code/evaluation
+		if ( $collector->isFull() ) {
+			return $totalHits;
+		}
+		$rType = $this->prefixSearchRequestBuilder->getSearchContext()->getResultsType();
+		// the code below highly depends on the array format built by
+		// FancyTitleResultsType::transformOneElasticResult assert that this type
+		// is properly set so that we fail during unit tests if someone changes it
+		// inadvertently.
+		assert( $rType instanceof FancyTitleResultsType );
+		// scores can go negative, it's not a problem we only use scores for sorting
+		// they'll be forgotten in client response
+		$score = $collector->getMinScore() !== null ? $collector->getMinScore() - 1 : count( $prefixResults->getResults() );
+
+		foreach ( $prefixResults->getResults() as $res ) {
+			$pageId = $this->config->makePageId( $res->getId() );
+			$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $rType->transformOneElasticResult( $res ) );
+			if ( $title === false ) {
+				continue;
+			}
+			$suggestion = new \SearchSuggestion( $score--, $title->getPrefixedText(), $title, $pageId );
+			if ( !$collector->collect( $suggestion, 'prefix', $indexName ) && $collector->isFull() ) {
+				break;
+			}
+		}
+		return $totalHits;
 	}
 
 	/**
@@ -242,6 +320,43 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * @param string $term Search term
+	 * @param string[]|null $variants Search term variants
+	 * (usually issued from $wgContLang->autoConvertToAllVariants( $text ) )
+	 * @return Search|null
+	 */
+	private function getPrefixSearchRequest( $term, $variants ) {
+		$namespaces = $this->searchContext->getNamespaces();
+		if ( $namespaces === null ) {
+			return null;
+		}
+
+		foreach ( $namespaces as $k => $v ) {
+			// non-strict comparison, it can be strings
+			if ( $v == NS_MAIN ) {
+				unset( $namespaces[$k] );
+			}
+		}
+
+		if ( $namespaces === [] ) {
+			return null;
+		}
+		$limit = CompSuggestQueryBuilder::computeHardLimit( $this->limit, $this->offset, $this->config );
+		if ( $this->offset > $limit ) {
+			return null;
+		}
+		$prefixSearchContext = new SearchContext( $this->config, $namespaces );
+		$prefixSearchContext->setResultsType( new FancyTitleResultsType( 'prefix' ) );
+		$this->prefixSearchQueryBuilder->build( $prefixSearchContext, $term, $variants );
+		$this->prefixSearchRequestBuilder = new SearchRequestBuilder( $prefixSearchContext, $this->connection, $this->indexBaseName );
+		return $this->prefixSearchRequestBuilder->setLimit( $limit )
+			// collect all results up to $limit, $this->offset is the offset the client wants
+			// not the offset in prefix search results.
+			->setOffset( 0 )
+			->build();
+	}
+
+	/**
 	 * @param string $description
 	 * @param string $queryType
 	 * @param string[] $extra
@@ -251,7 +366,8 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		return new CompletionRequestLog(
 			$description,
 			$queryType,
-			$extra
+			$extra,
+			$this->searchContext->getNamespaces()
 		);
 	}
 

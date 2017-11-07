@@ -107,7 +107,7 @@ class ConfigUtils {
 	public function getAllIndicesByType( $typeName ) {
 		$found = null;
 		$response = $this->client->request( $typeName . '*' );
-		if ( $response->isOK() ) {
+		if ( $response->isOK() && !$response->hasError() ) {
 			$found = array_keys( $response->getData() );
 		} else {
 			$this->error( "Cannot fetch index names for $typeName: "
@@ -228,7 +228,8 @@ class ConfigUtils {
 	public function getIndexHealth( $indexName ) {
 		$path = "_cluster/health/$indexName";
 		$response = $this->client->request( $path );
-		if ( $response->hasError() ) {
+		$http2xx = $response->getStatus() >= 200 && $response->getStatus() < 300;
+		if ( !$http2xx || $response->hasError() ) {
 			throw new \Exception( "Error while fetching index health status: ". $response->getError() );
 		}
 		return $response->getData();
@@ -273,7 +274,7 @@ class ConfigUtils {
 		}
 
 		$response = $this->client->request( $indexName . '/_aliases' );
-		if ( $response->isOK() ) {
+		if ( $response->isOK() && !$response->hasError() ) {
 			// Only index names are listed as top level keys So if
 			// HEAD /$indexName returns HTTP 200 but $indexName is
 			// not a top level json key then it's an alias
@@ -297,7 +298,7 @@ class ConfigUtils {
 			return [];
 		}
 		$response = $this->client->request( $aliasName . '/_aliases' );
-		if ( $response->isOK() ) {
+		if ( $response->isOK() && !$response->hasError() ) {
 			return array_keys( $response->getData() );
 		} else {
 			$this->error( "Cannot fetch indices with alias $aliasName: "

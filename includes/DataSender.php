@@ -416,14 +416,24 @@ class DataSender extends ElasticsearchIntermediary {
 	) {
 		$justDocumentMissing = true;
 		foreach ( $exception->getResponseSet()->getBulkResponses() as $bulkResponse ) {
-			if ( $bulkResponse->isOK() && !$bulkResponse->hasError() ) {
+			if ( !$bulkResponse->hasError() ) {
 				continue;
 			}
 
 			$error = $bulkResponse->getFullError();
-			if ( isset( $error['type'] ) && $error['type'] !== 'document_missing_exception' ) {
-				$justDocumentMissing = false;
-				continue;
+			if ( is_string( $error ) ) {
+				// es 1.7 cluster
+				$message = $bulkResponse->getError();
+				if ( false === strpos( $message, 'DocumentMissingException' ) ) {
+					$justDocumentMissing = false;
+					continue;
+				}
+			} else {
+				// es 2.x cluster
+				if ( $error['type'] !== 'document_missing_exception' ) {
+					$justDocumentMissing = false;
+					continue;
+				}
 			}
 
 			if ( $logCallback ) {

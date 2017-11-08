@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Query\CompSuggestQueryBuilder;
+use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\BuildDocument\Completion\SuggestBuilder;
 use Elastica\Query;
@@ -253,9 +254,13 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$log = $this->getMockBuilder( CompletionRequestLog::class )
 			->disableOriginalConstructor()
 			->getMock();
-
-		$suggestions = $builder->postProcess( $results,
-			"wiki_titlesuggest", $log );
+		if ( $builder->areResultsPossible() ) {
+			$collector = new CompletionResultsCollector( $builder->getLimit(), $offset );
+			$builder->postProcess( $collector, $results, "wiki_titlesuggest" );
+			$suggestions = $collector->logAndGetSet( $log );
+		} else {
+			$suggestions = \SearchSuggestionSet::emptySuggestionSet();
+		}
 		$this->assertEquals( $size, $suggestions->getSize() );
 		if ( $size > 0 ) {
 			$suggestions = $suggestions->getSuggestions();

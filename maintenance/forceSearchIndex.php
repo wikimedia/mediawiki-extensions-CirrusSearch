@@ -386,7 +386,7 @@ class ForceSearchIndex extends Maintenance {
 			$dbr,
 			'logging',
 			[ 'log_timestamp' ],
-			$this->mBatchSize
+			$this->getBatchSize()
 		);
 
 		$this->attachPageConditions( $dbr, $it, 'log' );
@@ -428,7 +428,7 @@ class ForceSearchIndex extends Maintenance {
 	protected function getIdsIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = self::getPageQueryInfo();
-		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->mBatchSize );
+		$it = new BatchRowIterator( $dbr, $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
 		$it->addConditions( [
@@ -446,7 +446,7 @@ class ForceSearchIndex extends Maintenance {
 			$dbr,
 			array_merge( $pageQuery['tables'], [ 'revision' ] ),
 			[ 'rev_timestamp', 'page_id' ],
-			$this->mBatchSize
+			$this->getBatchSize()
 		);
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
@@ -463,7 +463,7 @@ class ForceSearchIndex extends Maintenance {
 	protected function getUpdatesByIdIterator() {
 		$dbr = $this->getDB( DB_REPLICA, [ 'vslow' ] );
 		$pageQuery = self::getPageQueryInfo();
-		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->mBatchSize );
+		$it = new BatchRowIterator( $dbr,  $pageQuery['tables'], 'page_id', $this->getBatchSize() );
 		$it->setFetchColumns( $pageQuery['fields'] );
 		$it->addJoinConditions( $pageQuery['joins'] );
 		$fromId = $this->getOption( 'fromId', 0 );

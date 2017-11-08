@@ -77,9 +77,9 @@ class Saneitize extends Maintenance {
 
 		if ( $this->hasOption( 'batch-size' ) ) {
 			$this->setBatchSize( $this->getOption( 'batch-size' ) );
-			if ( $this->mBatchSize > 5000 ) {
+			if ( $this->getBatchSize() > 5000 ) {
 				$this->error( "--batch-size too high!", 1 );
-			} elseif ( $this->mBatchSize <= 0 ) {
+			} elseif ( $this->getBatchSize() <= 0 ) {
 				$this->error( "--batch-size must be > 0!", 1 );
 			}
 		}
@@ -103,8 +103,11 @@ class Saneitize extends Maintenance {
 	 */
 	private function check() {
 		$updated = 0;
-		for ( $pageId = $this->fromPageId; $pageId <= $this->toPageId; $pageId += $this->mBatchSize ) {
-			$max = min( $this->toPageId, $pageId + $this->mBatchSize - 1 );
+		for ( $pageId = $this->fromPageId;
+			$pageId <= $this->toPageId;
+			$pageId += $this->getBatchSize()
+		) {
+			$max = min( $this->toPageId, $pageId + $this->getBatchSize() - 1 );
 			$updated += $this->checkChunk( range( $pageId, $max ) );
 		}
 		return $updated;

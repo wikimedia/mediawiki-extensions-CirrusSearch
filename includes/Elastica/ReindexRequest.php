@@ -112,7 +112,7 @@ class ReindexRequest {
 		$query['slices'] = $this->slices;
 		$response = $this->client->request( '_reindex', Request::POST, $this->toArray(), $query );
 
-		if ( !$response->isOk() ) {
+		if ( !$response->isOK() ) {
 			throw new \Exception( $response->hasError()
 				? 'Failed reindex request: ' . $response->getErrorMessage()
 				: 'Unknown reindex failure: ' . $response->getStatus()

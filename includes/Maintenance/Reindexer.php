@@ -300,7 +300,7 @@ class Reindexer {
 			$indexName = $this->index->getName();
 			$path = "_cluster/health/$indexName";
 			$response = $this->index->getClient()->request( $path );
-			if ( !$response->isOK() || $response->hasError() ) {
+			if ( $response->hasError() ) {
 				$this->error( 'Error fetching index health but going to retry.  Message: ' .
 					$response->getError() );
 				sleep( 1 );

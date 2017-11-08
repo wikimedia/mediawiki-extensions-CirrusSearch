@@ -250,7 +250,8 @@ class CirrusSearch extends SearchEngine {
 		if ( is_array( $detected ) ) {
 			// Report language detection with search metrics
 			// TODO: do we still need this metric? (see T151796)
-			$prefix = reset( array_keys( $detected ) );
+			reset( $detected );
+			$prefix = key( $detected );
 			$config = $detected[$prefix];
 			$metric = [ $config->getWikiId(), $prefix ];
 			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $metric;

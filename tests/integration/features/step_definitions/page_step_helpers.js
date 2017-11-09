@@ -128,13 +128,18 @@ class StepHelpers {
 		} ).call( this );
 	}
 
+	waitForMs( ms ) {
+		return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+	}
+
 	waitForOperation( operation, title ) {
 		return Promise.coroutine( function* () {
 			let expect = operation === 'delete' ? false : true;
-			let exists;
-			do {
+			let exists = yield this.checkExists( title );
+			while ( expect !== exists ) {
+				yield this.waitForMs( 100 );
 				exists = yield this.checkExists( title );
-			} while ( expect !== exists );
+			}
 		} ).call( this );
 	}
 

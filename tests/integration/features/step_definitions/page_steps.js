@@ -21,11 +21,15 @@ function withApi( world, fn ) {
 	try {
 		return fn.call( world );
 	} catch ( e ) {
-		let request = world.apiResponse ? world.apiResponse.__request : world.apiError.request,
-			qs = Object.assign( {}, request.qs, request.form ),
-			href = request.uri + '?' + querystring.stringify( qs );
+		let request = world.apiResponse ? world.apiResponse.__request : world.apiError.request;
+		if ( request ) {
+			let qs = Object.assign( {}, request.qs, request.form ),
+			    href = request.uri + '?' + querystring.stringify( qs );
 
-		e.message += `\nLast Api: ${href}`;
+			e.message += `\nLast Api: ${href}`;
+		} else {
+			e.message += '\nLast Api: UNKNOWN';
+		}
 		if ( world.apiError ) {
 			e.message += `\nError reported: ${JSON.stringify(world.apiError)}`;
 		}
@@ -218,4 +222,36 @@ defineSupportCode( function( {Given, When, Then} ) {
 			expect( this.apiError.info ).to.equal( expected_error.trim() );
 		} );
 	} );
+
+	When( /^I reset did you mean suggester options$/, function () {
+		delete this.didyoumeanOptions;
+	} );
+
+	When( /^I set did you mean suggester option (.+) to (.+)$/, function (varname, value) {
+		this.didyoumeanOptions = this.didyoumeanOptions || {};
+		this.didyoumeanOptions[varname] = value;
+	} );
+
+	Then( /^there are no did you mean suggestions from the api$/, function () {
+		// TODO: This is actually a *did you mean* suggestion
+		return withApi( this, () => {
+			expect( this.apiResponse.query.searchinfo ).to.not.include.keys( 'suggestion' );
+		} );
+	} );
+
+	Then( /^(.+?)(?: or (.+))? is the did you mean suggestion from the api$/, function ( first, second ) {
+		// TODO: This is actually a *did you mean* suggestion
+		return withApi( this, () => {
+			expect( this.apiResponse.query.searchinfo ).to.include.any.keys( 'suggestionsnippet', 'rewrittenquerysnippet' );
+			var suggestion = this.apiResponse.query.searchinfo.suggestionsnippet ||
+				this.apiResponse.query.searchinfo.rewrittenquerysnippet;
+			suggestion = suggestion.replace(/<em>/g, "*").replace(/<\/em>/g, "*").replace(/&quot;/g, '"');
+			if ( second ) {
+				expect( suggestion ).to.be.oneOf( [ first, second ] );
+			} else {
+				expect( suggestion ).to.equal( first );
+			}
+		} );
+	} );
+
 });

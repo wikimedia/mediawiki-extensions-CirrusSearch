@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'linksto:\"LinksToTest Target\" text'",
+    "description": "full_text search for 'linksto:\"linksToTest Target\" text'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"

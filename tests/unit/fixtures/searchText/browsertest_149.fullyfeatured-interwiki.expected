@@ -132,7 +132,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "templatetagged"
+                                                            "query": "Templatetagged"
                                                         }
                                                     }
                                                 }
@@ -145,7 +145,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "twowords"
+                                                            "query": "Twowords"
                                                         }
                                                     }
                                                 }
@@ -370,7 +370,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "templatetagged"
+                                                            "query": "Templatetagged"
                                                         }
                                                     }
                                                 }
@@ -383,7 +383,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "twowords"
+                                                            "query": "Twowords"
                                                         }
                                                     }
                                                 }
@@ -624,7 +624,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "templatetagged"
+                                                            "query": "Templatetagged"
                                                         }
                                                     }
                                                 }
@@ -637,7 +637,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "twowords"
+                                                            "query": "Twowords"
                                                         }
                                                     }
                                                 }
@@ -862,7 +862,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "templatetagged"
+                                                            "query": "Templatetagged"
                                                         }
                                                     }
                                                 }
@@ -875,7 +875,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "twowords"
+                                                            "query": "Twowords"
                                                         }
                                                     }
                                                 }

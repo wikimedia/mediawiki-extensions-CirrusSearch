@@ -1,6 +1,6 @@
 [
     {
-        "description": "full_text search for 'linksto:\"LinksToTest Target\"'",
+        "description": "full_text search for 'linksto:\"linksToTest Target\"'",
         "options": {
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
@@ -219,7 +219,7 @@
         }
     },
     {
-        "description": "full_text search for 'linksto:\"LinksToTest Target\"'",
+        "description": "full_text search for 'linksto:\"linksToTest Target\"'",
         "options": {
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
@@ -454,7 +454,7 @@
         }
     },
     {
-        "description": "full_text search for 'linksto:\"LinksToTest Target\"'",
+        "description": "full_text search for 'linksto:\"linksToTest Target\"'",
         "options": {
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
@@ -673,7 +673,7 @@
         }
     },
     {
-        "description": "full_text search for 'linksto:\"LinksToTest Target\"'",
+        "description": "full_text search for 'linksto:\"linksToTest Target\"'",
         "options": {
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"

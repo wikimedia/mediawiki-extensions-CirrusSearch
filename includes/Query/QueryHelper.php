@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use Title;
 
 /**
  * helpers for building queries
@@ -19,10 +20,12 @@ class QueryHelper {
 	 * @return \Elastica\Query\Match For matching $title to $field
 	 */
 	public static function matchPage( $field, $title, $underscores = false ) {
+		$t = Title::newFromText( $title );
+		if ( $t ) {
+			$title = $t->getPrefixedText();
+		}
 		if ( $underscores ) {
 			$title = str_replace( ' ', '_', $title );
-		} else {
-			$title = str_replace( '_', ' ', $title );
 		}
 		$match = new \Elastica\Query\Match();
 		$match->setFieldQuery( $field, $title );

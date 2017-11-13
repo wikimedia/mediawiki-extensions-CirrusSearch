@@ -132,7 +132,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "doesnotexistatleastihopenot"
+                                                            "query": "Doesnotexistatleastihopenot"
                                                         }
                                                     }
                                                 }
@@ -357,7 +357,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "doesnotexistatleastihopenot"
+                                                            "query": "Doesnotexistatleastihopenot"
                                                         }
                                                     }
                                                 }
@@ -598,7 +598,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "doesnotexistatleastihopenot"
+                                                            "query": "Doesnotexistatleastihopenot"
                                                         }
                                                     }
                                                 }
@@ -823,7 +823,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "doesnotexistatleastihopenot"
+                                                            "query": "Doesnotexistatleastihopenot"
                                                         }
                                                     }
                                                 }

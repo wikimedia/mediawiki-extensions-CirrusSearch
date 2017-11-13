@@ -130,7 +130,7 @@
                                             {
                                                 "match": {
                                                     "category.lowercase_keyword": {
-                                                        "query": "doesnotexistatleastihopenot"
+                                                        "query": "Doesnotexistatleastihopenot"
                                                     }
                                                 }
                                             }

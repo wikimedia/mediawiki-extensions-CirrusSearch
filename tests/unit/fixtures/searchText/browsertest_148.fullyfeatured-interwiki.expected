@@ -160,7 +160,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "prize"
+                                                            "query": "Prize"
                                                         }
                                                     }
                                                 }
@@ -570,7 +570,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "prize"
+                                                            "query": "Prize"
                                                         }
                                                     }
                                                 }
@@ -1023,7 +1023,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "prize"
+                                                            "query": "Prize"
                                                         }
                                                     }
                                                 }
@@ -1433,7 +1433,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "prize"
+                                                            "query": "Prize"
                                                         }
                                                     }
                                                 }

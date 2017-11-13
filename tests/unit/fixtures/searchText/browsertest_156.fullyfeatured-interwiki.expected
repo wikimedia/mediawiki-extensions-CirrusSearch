@@ -132,14 +132,14 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "nothing"
+                                                            "query": "Nothing"
                                                         }
                                                     }
                                                 },
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -364,14 +364,14 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "nothing"
+                                                            "query": "Nothing"
                                                         }
                                                     }
                                                 },
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -612,14 +612,14 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "nothing"
+                                                            "query": "Nothing"
                                                         }
                                                     }
                                                 },
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -844,14 +844,14 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "nothing"
+                                                            "query": "Nothing"
                                                         }
                                                     }
                                                 },
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }

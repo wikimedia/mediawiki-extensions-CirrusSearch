@@ -132,7 +132,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -357,7 +357,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -598,7 +598,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }
@@ -823,7 +823,7 @@
                                                 {
                                                     "match": {
                                                         "category.lowercase_keyword": {
-                                                            "query": "weaponry"
+                                                            "query": "Weaponry"
                                                         }
                                                     }
                                                 }

@@ -203,10 +203,13 @@ class DataSender extends ElasticsearchIntermediary {
 			$exception = $e;
 		}
 
+		// TODO: rewrite error handling, the logic here is hard to follow
 		$validResponse = $responseSet !== null && count( $responseSet->getBulkResponses() ) > 0;
 		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
 			$this->success();
-			$this->reportUpdateMetrics( $responseSet, $indexType, count( $data ) );
+			if ( $validResponse ) {
+				$this->reportUpdateMetrics( $responseSet, $indexType, count( $data ) );
+			}
 			return Status::newGood();
 		} else {
 			$this->failure( $exception );

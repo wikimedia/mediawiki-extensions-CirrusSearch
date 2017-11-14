@@ -87,31 +87,26 @@ class TagTrackerServer extends Server {
 	}
 
 	dispatch( data ) {
-		return new Promise( ( resolve ) => {
-			if ( data.complete ) {
+		return new Promise( ( resolve, reject ) => {
+			if ( this.resolvers[data.complete] ) {
 				// tag completed, resolve pending
-				if ( this.pending[data.complete] ) {
-					this.resolvers[data.complete]( {
-						tag: data.complete,
-						status: 'complete'
-					} );
-				} else {
-					// Happens if things are called out of order. Not sure
-					// why that would happen ... but whatever.
-					console.log( `Resolving tag ${data.complete} before it was requested` );
-					this.resolvers[data.complete] = () => {};
-					this.pending[data.complete] = Promise.resolve( {
-						tag: data.complete,
-						status: 'complete'
-					} );
-				}
+				this.resolvers[data.complete]( {
+					tag: data.complete,
+					status: 'complete'
+				} );
 				// Just echo it back. Not used for anything.
+				resolve( data );
+			} else if ( this.resolvers[data.reject] ) {
+				this.resolvers[data.reject]( {
+					tag: data.reject,
+					status: 'reject'
+				} );
 				resolve( data );
 			} else if ( this.pending[data.check] ) {
 				// Another process is initializing this tag. Wait for it
 				// to signal completion
 				this.pending[data.check].then( resolve );
-			} else {
+			} else if ( data.check ) {
 				// New tag
 				this.pending[data.check] = new Promise( ( resolve ) => {
 					this.resolvers[data.check] = resolve;
@@ -120,6 +115,9 @@ class TagTrackerServer extends Server {
 					tag: data.check,
 					status: 'new'
 				} );
+			} else {
+				console.log( 'Unrecognized tag server request: ', data );
+				reject();
 			}
 		} );
 	}

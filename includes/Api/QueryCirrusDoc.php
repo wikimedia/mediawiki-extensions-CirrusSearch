@@ -4,6 +4,7 @@ namespace CirrusSearch\Api;
 
 use CirrusSearch\Searcher;
 use CirrusSearch\Updater;
+use Title;
 
 /**
  * Dump stored CirrusSearch document for page.
@@ -51,6 +52,15 @@ class QueryCirrusDoc extends \ApiQueryBase {
 				$esSources = $searcher->get( [ $docId ], true );
 				if ( $esSources->isOK() ) {
 					foreach ( $esSources->getValue() as $i => $esSource ) {
+						// If we have followed redirects only report the
+						// article dump if the redirect has been indexed. If it
+						// hasn't been indexed this document does not represent
+						// the original title.
+						if ( count( $redirects ) &&
+							!$this->hasRedirect( $esSource->getData(), $title )
+						) {
+							continue;
+						}
 						$result[] = [
 							'index' => $esSource->getIndex(),
 							'type' => $esSource->getType(),
@@ -66,6 +76,25 @@ class QueryCirrusDoc extends \ApiQueryBase {
 				'cirrusdoc', $result
 			);
 		}
+	}
+
+	/**
+	 * @param array $source _source document from elasticsearch
+	 * @param Title $title Title to check for redirect
+	 * @return bool True when $title is stored as a redirect in $source
+	 */
+	private function hasRedirect( array $source, Title $title ) {
+		if ( !isset( $source['redirect'] ) ) {
+			return false;
+		}
+		foreach ( $source['redirect'] as $redirect ) {
+			if ( $redirect['namespace'] === $title->getNamespace()
+				&& $redirect['title'] === $title->getText()
+			) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function getAllowedParams() {

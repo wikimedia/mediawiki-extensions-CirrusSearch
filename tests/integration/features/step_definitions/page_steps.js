@@ -260,4 +260,28 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
+	Then( /^(.+) is( in)? the highlighted (.+) of the (.+) api search result$/, function ( expected, in_ok, key, index ) {
+		withApi( this, () => {
+			let position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
+			expect( this.apiResponse.query.search ).to.have.lengthOf.gt( position );
+
+			if ( key === 'title' && expected.indexOf( '*' ) > -1) {
+				key = 'titlesnippet';
+			}
+			expect( this.apiResponse.query.search[position] ).to.include.keys( key );
+			let snippet = this.apiResponse.query.search[position][key].replace(
+				/<span class="searchmatch">(.*?)<\/span>/g, '*$1*');
+			if ( in_ok ) {
+				expect( snippet ).to.include( expected );
+			} else {
+				expect( snippet ).to.equal( expected );
+			}
+		} );
+	} );
+
+	Then( /^the first api search result is a match to file content$/, function () {
+		withApi( this, () => {
+			expect( this.apiResponse.query.search[0].isfilematch ).to.equal(true);
+		} );
+	} );
 });

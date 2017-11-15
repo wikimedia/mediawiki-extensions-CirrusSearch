@@ -226,11 +226,7 @@ class Util {
 	public static function overrideYesNo( &$dest, $request, $name ) {
 		$val = $request->getVal( $name );
 		if ( $val !== null ) {
-			if ( $val === 'yes' ) {
-				$dest = true;
-			} elseif ( $val === 'no' ) {
-				$dest = false;
-			}
+			$dest = wfStringToBool( $val );
 		}
 	}
 

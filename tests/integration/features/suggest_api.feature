@@ -66,3 +66,30 @@ Feature: Suggestion API test
     |   term      |   first  | other  |
     | Ic          |  Iceman  |  Ice   |
     | Ice         |   Ice    | Iceman |
+
+  Scenario: Ordering & limit
+    When I ask suggestion API at most 1 item for x-m
+      Then the API should produce list starting with X-Men
+      And the API should produce list of length 1
+
+  Scenario Outline: Search fallback to prefix search if namespace is provided
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested        |
+    | Special:    | Special:ActiveUsers |
+    | Special:Act | Special:ActiveUsers |
+
+  Scenario Outline: Search prefers main namespace over crossns redirects
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | V           | Venom             |
+    | V:          | V:N               |
+    | Z           | Zam Wilson        |
+    | Z:          | Z:Navigation      |
+
+  Scenario: Default sort can be used as search input
+    When I ask suggestion API for Wilson
+      Then the API should produce list starting with Sam Wilson

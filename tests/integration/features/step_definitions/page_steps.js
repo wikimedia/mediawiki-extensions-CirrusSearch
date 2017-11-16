@@ -216,6 +216,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
+	Then( /there are no api search results/, function () {
+		withApi( this, () => {
+			expect( this.apiResponse.query.search ).to.have.lengthOf( 0 );
+		} );
+	} );
+
 	Then( /^(.+) is( not)? in the api search results$/, function( title, not ) {
 		withApi( this, () => {
 			let titles = this.apiResponse.query.search.map( res => res.title );
@@ -224,6 +230,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 			} else {
 				expect( titles ).to.include( title );
 			}
+		} );
+	} );
+
+	Then( /^this error is reported by api: (.+)$/, function ( expected_error ) {
+		withApi( this, () => {
+			expect( this.apiError.info ).to.equal( expected_error.trim() );
 		} );
 	} );
 });

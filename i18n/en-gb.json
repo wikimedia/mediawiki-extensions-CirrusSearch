@@ -4,7 +4,8 @@
 			"Chase me ladies, I'm the Cavalry",
 			"Andibing",
 			"Codynguyen1116",
-			"Dejavu"
+			"Dejavu",
+			"Jdforrester"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
@@ -46,7 +47,7 @@
 	"cirrussearch-qi-profile-wsum-inclinks": "Weighted sum based on incoming links",
 	"cirrussearch-qi-profile-popular-pv": "Ranking based primarily on page views",
 	"cirrussearch-qi-profile-popular-inclinks": "Ranking based primarily on incoming link counts",
-	"cirrussearch-pref-completion-profile-help": "Set the behavior for autocomplete (search-as-you-type) suggestions.",
+	"cirrussearch-pref-completion-profile-help": "Set the behaviour for auto-complete (search-as-you-type) suggestions.",
 	"prefs-completion": "Search completion",
 	"cirrussearch-pref-completion-section-desc": "Completion suggester",
 	"cirrussearch-pref-completion-section-legend": "The [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester completion suggester] is an algorithm for search suggestions with better typo correction and search relevance.",

@@ -5,10 +5,11 @@ global $wgAutoloadClasses;
 
 $wgAutoloadClasses += [
 	'CirrusSearch' => __DIR__ . '/includes/CirrusSearch.php',
-	'CirrusSearch\\Api\\ApiBase' => __DIR__ . '/includes/Api/ApiBase.php',
+	'CirrusSearch\\Api\\ApiTrait' => __DIR__ . '/includes/Api/ApiTrait.php',
 	'CirrusSearch\\Api\\ConfigDump' => __DIR__ . '/includes/Api/ConfigDump.php',
 	'CirrusSearch\\Api\\FreezeWritesToCluster' => __DIR__ . '/includes/Api/FreezeWritesToCluster.php',
 	'CirrusSearch\\Api\\MappingDump' => __DIR__ . '/includes/Api/MappingDump.php',
+	'CirrusSearch\\Api\\QueryCirrusDoc' => __DIR__ . '/includes/Api/QueryCirrusDoc.php',
 	'CirrusSearch\\Api\\SettingsDump' => __DIR__ . '/includes/Api/SettingsDump.php',
 	'CirrusSearch\\Api\\SuggestIndex' => __DIR__ . '/includes/Api/SuggestIndex.php',
 	'CirrusSearch\\BaseInterwikiResolver' => __DIR__ . '/includes/BaseInterwikiResolver.php',

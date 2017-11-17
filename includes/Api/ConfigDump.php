@@ -20,7 +20,9 @@ namespace CirrusSearch\Api;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class ConfigDump extends ApiBase {
+class ConfigDump extends \ApiBase {
+	use ApiTrait;
+
 	public static $WHITE_LIST = [
 		'CirrusSearchServers',
 		'CirrusSearchConnectionAttempts',

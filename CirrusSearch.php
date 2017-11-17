@@ -1336,6 +1336,7 @@ $wgActions[ 'cirrusdump' ] = 'CirrusSearch\Dump';
 $wgAPIModules['cirrus-config-dump'] = 'CirrusSearch\Api\ConfigDump';
 $wgAPIModules['cirrus-mapping-dump'] = 'CirrusSearch\Api\MappingDump';
 $wgAPIModules['cirrus-settings-dump'] = 'CirrusSearch\Api\SettingsDump';
+$wgAPIPropModules['cirrusdoc'] = 'CirrusSearch\Api\QueryCirrusDoc';
 
 /**
  * Configs

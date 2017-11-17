@@ -23,7 +23,9 @@ use CirrusSearch\DataSender;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class FreezeWritesToCluster extends ApiBase {
+class FreezeWritesToCluster extends \ApiBase {
+	use ApiTrait;
+
 	public function execute() {
 		$sender = new DataSender( $this->getCirrusConnection(), $this->getSearchConfig() );
 

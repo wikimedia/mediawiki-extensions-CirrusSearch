@@ -12,7 +12,8 @@
 
 const expect = require( 'chai' ).expect,
 	fs = require( 'fs' ),
-	path = require( 'path' );
+	path = require( 'path' ),
+	Promise = require( 'bluebird' ); // jshint ignore:line
 
 class StepHelpers {
 	constructor( world, wiki ) {
@@ -109,6 +110,44 @@ class StepHelpers {
 		} ).then(
 			( response ) => this.world.setApiResponse( response ),
 			( error ) => this.world.setApiError( error ) );
+	}
+
+	waitForOperation( operation, title ) {
+		return Promise.coroutine( function* () {
+			let expect = operation === 'delete' ? false : true;
+			let exists;
+			do {
+				exists = yield this.checkExists( title );
+			} while ( expect !== exists );
+		} ).call( this );
+	}
+
+	checkExists( title ) {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			let response = yield client.request( {
+				action: 'query',
+				prop: 'cirrusdoc',
+				titles: title,
+				format: 'json',
+				formatversion: 2
+			} );
+			if ( response.query.normalized ) {
+				for ( let norm of response.query.normalized ) {
+					if ( norm.from === title ) {
+						title = norm.to;
+						break;
+					}
+				}
+			}
+			for ( let page of response.query.pages ) {
+				if ( page.title === title ) {
+					// without boolean cast we could return undefined
+					return Boolean( page.cirrusdoc && page.cirrusdoc.length > 0 );
+				}
+			}
+			return false;
+		} ).call( this );
 	}
 }
 

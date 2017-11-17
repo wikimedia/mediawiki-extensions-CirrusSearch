@@ -2,12 +2,11 @@
 
 namespace CirrusSearch\Api;
 
-use ApiBase as CoreApiBase;
 use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 
-abstract class ApiBase extends CoreApiBase {
+trait ApiTrait {
 	/** @var Connection */
 	private $connection;
 	/** @var SearchConfig */

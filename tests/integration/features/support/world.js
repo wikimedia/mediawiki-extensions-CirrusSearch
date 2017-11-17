@@ -14,7 +14,8 @@ const {defineSupportCode} = require( 'cucumber' ),
 	net = require( 'net' ),
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
-	Page = require( './pages/page' );
+	Page = require( './pages/page' ),
+	Promise = require( 'bluebird' ); // jshint ignore:line
 
 // Client for the Server implemented in lib/tracker.js. The server
 // tracks what tags have already been initialized so we don't have
@@ -47,15 +48,16 @@ class TagClient {
 	}
 
 	check( tag ) {
-		if ( this.tags[tag] ) {
-			return Promise.resolve( 'complete' );
-		}
-		return this.request( {
-			check: tag
-		} ).then( ( response ) => {
+		return Promise.coroutine( function* () {
+			if ( this.tags[tag] ) {
+				return 'complete';
+			}
+			let response = yield this.request( {
+				check: tag
+			} );
 			this.tags[tag] = true;
 			return response.status;
-		} );
+		} ).call( this );
 	}
 
 	complete( tag ) {
@@ -66,6 +68,9 @@ class TagClient {
 }
 
 let tagClient = new TagClient( browser.options.trackerPath );
+// world gets re-created all the time. Try and save some time logging
+// in by sharing api clients
+let apiClients = {};
 
 function World( { attach, parameters } ) {
 	// default properties
@@ -77,8 +82,8 @@ function World( { attach, parameters } ) {
 	// (I have a feeling this is prone to race conditions).
 	// By suggestion of this stack overflow question.
 	// https://stackoverflow.com/questions/26372724/pass-variables-between-step-definitions-in-cucumber-groovy
-	this.apiResponse = "";
-	this.apiError = "";
+	this.apiResponse = undefined;
+	this.apiError = undefined;
 
 	this.setApiResponse = function( value ) {
 		this.apiResponse = value;
@@ -97,6 +102,10 @@ function World( { attach, parameters } ) {
 
 	// Per-wiki api clients
 	this.onWiki = function( wiki = this.config.wikis.default ) {
+		if ( apiClients[wiki] ) {
+			return apiClients[wiki];
+		}
+
 		let w = this.config.wikis[ wiki ];
 		let client = new Bot();
 		client.setOptions({
@@ -106,14 +115,6 @@ function World( { attach, parameters } ) {
 			concurrency: 1,
 			apiUrl: w.apiUrl
 		});
-		let origLoginGetEditToken = client.loginGetEditToken;
-		client.loginGetEditToken = function () {
-			return origLoginGetEditToken.call( client, {
-				username: w.username,
-				password: w.password,
-				apiUrl: w.apiUrl
-			} );
-		};
 
 		// Add a generic method to get access to the request that triggered a response, so we
 		// can add generic error reporting that includes the requested api url
@@ -125,8 +126,16 @@ function World( { attach, parameters } ) {
 			} );
 		};
 
-		// TODO: Why a promise? I guess it's just easier to chain...
-		return Promise.resolve( client );
+		apiClients[wiki] = client.loginGetEditToken( {
+			username: w.username,
+			password: w.password,
+			apiUrl: w.apiUrl
+		} ).then( () => client );
+
+		// Catch anything trying to re-login and break everything
+		client.loginGetEditToken = undefined;
+
+		return apiClients[wiki];
 	};
 
 	// Binding step helpers to this World.

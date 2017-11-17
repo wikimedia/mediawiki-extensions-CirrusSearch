@@ -45,7 +45,6 @@ Feature: Prefix search via api
 
   Scenario: Searching for a bare namespace finds everything in the namespace
     Given a page named Template talk:Foo exists
-      And within 20 seconds api searching for Template talk:Foo yields Template talk:Foo as the first result
     When I get api suggestions for template talk:
     Then Template talk:Foo is in the api suggestions
 
@@ -155,3 +154,85 @@ Feature: Prefix search via api
   #     And there are 1000 redirects to IHaveTonsOfRedirects of the form TonsOfRedirects%s
   #   When I type TonsOfRedirects into the search box
   #   Then suggestions should appear
+
+  Scenario: Search suggestions
+    When I ask suggestion API for main
+     Then the API should produce list containing Main Page
+
+  Scenario: Created pages suggestions
+    When I ask suggestion API for x-m
+      Then the API should produce list containing X-Men
+
+  Scenario: Nothing to suggest
+    When I ask suggestion API for jabberwocky
+      Then the API should produce empty list
+
+  Scenario: Ordering
+    When I ask suggestion API for x-m
+      Then the API should produce list starting with X-Men
+
+  Scenario: Fuzzy
+    When I ask suggestion API for xmen
+      Then the API should produce list starting with X-Men
+
+  Scenario: Empty tokens
+    When I ask suggestion API for はー
+      Then the API should produce list starting with はーい
+      And I ask suggestion API for はい
+      Then the API should produce list starting with はーい
+
+  Scenario Outline: Search redirects shows the best redirect
+    When I ask suggestion API for <term>
+      Then the API should produce list containing <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | eise        | Eisenhardt, Max   |
+    | max         | Max Eisenhardt    |
+    | magnetu     | Magneto           |
+
+  Scenario Outline: Search prefers exact match over fuzzy match and ascii folded
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | max         | Max Eisenhardt    |
+    | mai         | Main Page         |
+    | eis         | Eisenhardt, Max   |
+    | ele         | Elektra           |
+    | éle         | Électricité       |
+
+  Scenario Outline: Search prefers exact db match over partial prefix match
+    When I ask suggestion API at most 2 items for <term>
+      Then the API should produce list starting with <first>
+      And the API should produce list containing <other>
+  Examples:
+    |   term      |   first  | other  |
+    | Ic          |  Iceman  |  Ice   |
+    | Ice         |   Ice    | Iceman |
+
+  Scenario: Ordering & limit
+    When I ask suggestion API at most 1 item for x-m
+      Then the API should produce list starting with X-Men
+      And the API should produce list of length 1
+
+  Scenario Outline: Search fallback to prefix search if namespace is provided
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested        |
+    | Special:    | Special:ActiveUsers |
+    | Special:Act | Special:ActiveUsers |
+
+  Scenario Outline: Search prefers main namespace over crossns redirects
+    When I ask suggestion API for <term>
+      Then the API should produce list starting with <suggested>
+  Examples:
+    |   term      |    suggested      |
+    | V           | Venom             |
+    | V:          | V:N               |
+    | Z           | Zam Wilson        |
+    | Z:          | Z:Navigation      |
+
+  Scenario: Default sort can be used as search input
+    When I ask suggestion API for Wilson
+      Then the API should produce list starting with Sam Wilson

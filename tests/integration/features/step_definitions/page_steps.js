@@ -13,12 +13,13 @@ const defineSupportCode = require('cucumber').defineSupportCode,
 	SpecialVersion = require('../support/pages/special_version'),
 	ArticlePage = require('../support/pages/article_page'),
 	expect = require( 'chai' ).expect,
-	querystring = require( 'querystring' );
+	querystring = require( 'querystring' ),
+	Promise = require( 'bluebird' ); // jshint ignore:line
 
 // Attach extra information to assertion errors about what api call triggered the problem
 function withApi( world, fn ) {
 	try {
-		return fn();
+		return fn.call( world );
 	} catch ( e ) {
 		let request = world.apiResponse ? world.apiResponse.__request : world.apiError.request,
 			qs = Object.assign( {}, request.qs, request.form ),
@@ -34,7 +35,7 @@ function withApi( world, fn ) {
 defineSupportCode( function( {Given, When, Then} ) {
 
 	When( /^I go to (.*)$/, function ( title ) {
-		this.visit( ArticlePage.title( title ) );
+		return this.visit( ArticlePage.title( title ) );
 	} );
 
 	When( /^I ask suggestion API for (.*)$/, function ( query ) {
@@ -50,31 +51,31 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^the API should produce list containing (.*)/, function( term ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.include( term );
 		} );
 	} );
 
 	Then( /^the API should produce empty list/, function() {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.have.length( 0 );
 		} );
 	} );
 
 	Then( /^the API should produce list starting with (.*)/, function( term ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ][ 0 ] ).to.equal( term );
 		} );
 	} );
 
 	Then( /^the API should produce list of length (\d+)/, function( length ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.have.length( parseInt( length, 10 ) );
 		} );
 	} );
 
 	When( /^the api returns error code (.*)$/, function ( code ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiError ).to.include( {
 				code: code
 			} );
@@ -87,7 +88,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^(.+) is the (.+) api suggestion$/, function ( title, position ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			let pos = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth'].indexOf( position );
 			if ( title === "none" ) {
 				if ( this.apiError && pos === 1 ) {
@@ -104,7 +105,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^(.+) is( not)? in the api suggestions$/, function ( title, should_not ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			if ( should_not ) {
 				expect( this.apiResponse[1] ).to.not.include( title );
 			} else {
@@ -114,7 +115,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^the api should offer to search for pages containing (.+)$/, function( term ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse[0] ).to.equal( term );
 		} );
 	} );
@@ -151,12 +152,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 		}
 	}
 	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, function ( title, in_ok, indexes ) {
-		withApi( this, () => {
-			checkApiSearchResultStep.call( this, title, in_ok, indexes );
+		return withApi( this, () => {
+			return checkApiSearchResultStep.call( this, title, in_ok, indexes );
 		} );
 	} );
 
-	function apiSearchStep( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
+	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
 		let options = {
 			srnamespace: (namespaces || "0").split(' '),
 			srenablerewrites: enableRewrites ? 1 : 0,
@@ -181,49 +182,28 @@ defineSupportCode( function( {Given, When, Then} ) {
 		search = search.replace(/%\{\\i([\dA-Fa-f]{4,6})\}%/, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
 
 		return this.stepHelpers.searchFor( search, options );
-	}
-	When(/^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/, apiSearchStep );
-
-	Then( /^within (\d+) seconds api searching for (.+) yields (.+) as the (.+) result$/, function( seconds, query, title, indexes ) {
-		let timeout = Date.now() + ( 1000 * seconds );
-		let runSteps = ( resolve, reject ) => {
-			apiSearchStep.call( this, undefined, undefined, undefined, undefined, 0, query ).then( () => {
-				checkApiSearchResultStep.call( this, title, false, indexes );
-			} ).then( resolve, ( error ) => {
-				if ( Date.now() > timeout ) {
-					console.log( 'within rejected due to timeout' );
-					reject( error );
-				}
-				console.log( 're-running within' );
-				// Use process.nextTick to keep from exploding the stack.
-				process.nextTick( () => runSteps( resolve, reject ) );
-			} );
-		};
-		withApi( this, () => {
-			return new Promise( runSteps );
-		} );
 	} );
 
 	Then( /there are no errors reported by the api/, function () {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiError ).to.be.undefined; // jshint ignore:line
 		} );
 	} );
 
 	Then( /there is an api search result/, function () {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.not.have.lengthOf( 0 );
 		} );
 	} );
 
 	Then( /there are no api search results/, function () {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.have.lengthOf( 0 );
 		} );
 	} );
 
 	Then( /^(.+) is( not)? in the api search results$/, function( title, not ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			let titles = this.apiResponse.query.search.map( res => res.title );
 			if ( not ) {
 				expect( titles ).to.not.include( title );
@@ -234,7 +214,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^this error is reported by api: (.+)$/, function ( expected_error ) {
-		withApi( this, () => {
+		return withApi( this, () => {
 			expect( this.apiError.info ).to.equal( expected_error.trim() );
 		} );
 	} );

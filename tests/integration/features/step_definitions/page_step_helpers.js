@@ -26,90 +26,106 @@ class StepHelpers {
 	}
 
 	deletePage( title ) {
-		return this.apiPromise.then( ( api ) => {
-			return api.loginGetEditToken().then( () => {
-				return api.delete( title, "CirrusSearch integration test delete" )
-					.catch( ( err ) => {
-						// still return true if page doesn't exist
-						return expect( err.message ).to.include( "doesn't exist" );
-					} );
-			} );
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			try {
+				yield client.delete( title, "CirrusSearch integration test delete" );
+				yield this.waitForOperation( 'delete', title );
+			} catch ( err ) {
+				// still return true if page doesn't exist
+				expect( err.message ).to.include( "doesn't exist" );
+			}
 		} );
 	}
 
 	editPage( title, text, append = false ) {
-		return this.apiPromise.then( ( api ) => {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+
 			if ( text[0] === '@' ) {
 				text = fs.readFileSync( path.join( __dirname, 'articles', text.substr( 1 ) ) ).toString();
 			}
-			return this.getWikitext( title ).then( ( fetchedText ) => {
-				if ( append ) {
-					text = fetchedText + text;
-				}
-				if ( text.trim() !== fetchedText.trim() ) {
-					return api.loginGetEditToken().then( () => api.edit( title, text ) );
-				}
-			}, ( error ) => {
-				throw error;
-			} );
-		} );
+			let fetchedText = yield this.getWikitext( title );
+			if ( append ) {
+				text = fetchedText + text;
+			}
+			if ( text.trim() !== fetchedText.trim() ) {
+				yield client.edit( title, text );
+				yield this.waitForOperation( 'edit', title );
+			}
+		} ).call( this );
 	}
 
 	getWikitext( title ) {
-		return this.apiPromise.then( ( api ) => {
-			return api.request( {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			let response = yield client.request( {
 				action: "query",
 				format: "json",
 				formatversion: 2,
 				prop: "revisions",
 				rvprop: "content",
 				titles: title
-			} ).then( ( response ) => {
-				if ( response.query.pages[0].missing ) {
-					return "";
-				}
-				return response.query.pages[0].revisions[0].content;
 			} );
-		} );
+			if ( response.query.pages[0].missing ) {
+				return "";
+			}
+			return response.query.pages[0].revisions[0].content;
+		} ).call( this );
 	}
 
 	suggestionSearch( query, limit = 'max' ) {
-		return this.apiPromise.then( ( api ) => {
-			return api.request( {
-				action: 'opensearch',
-				search: query,
-				cirrusUseCompletionSuggester: 'yes',
-				limit: limit
-			} );
-		} ).then(
-			( response ) => this.world.setApiResponse( response ),
-			( error ) => this.world.setApiError( error ) );
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+
+			try {
+				let response = yield client.request( {
+					action: 'opensearch',
+					search: query,
+					cirrusUseCompletionSuggester: 'yes',
+					limit: limit
+				} );
+				this.world.setApiResponse( response );
+			} catch ( err ) {
+				this.world.setApiError( err );
+			}
+		} ).call( this );
 	}
 
 	suggestionsWithProfile( query, profile ) {
-		return this.apiPromise.then( ( api ) => {
-			return api.request( {
-				action: 'opensearch',
-				search: query,
-				profile: profile
-			} );
-		} ).then(
-			( response ) => this.world.setApiResponse( response ),
-			( error ) => this.world.setApiError( error ) );
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+
+			try {
+				let response = yield client.request( {
+					action: 'opensearch',
+					search: query,
+					profile: profile
+				} );
+				this.world.setApiResponse( response );
+			} catch ( err ) {
+				this.world.setApiError( err );
+			}
+		} ).call( this );
 	}
 
 	searchFor( query, options = {} ) {
-		return this.apiPromise.then( ( api ) => {
-			return api.request( Object.assign( options, {
-				action: "query",
-				list: "search",
-				srsearch: query,
-				srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
-				formatversion: 2
-			} ) );
-		} ).then(
-			( response ) => this.world.setApiResponse( response ),
-			( error ) => this.world.setApiError( error ) );
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+
+			try {
+				let response = yield client.request( Object.assign( options, {
+					action: "query",
+					list: "search",
+					srsearch: query,
+					srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
+					formatversion: 2
+				} ) );
+				this.world.setApiResponse( response );
+			} catch ( err ) {
+				this.world.setApiError( err );
+			}
+		} ).call( this );
 	}
 
 	waitForOperation( operation, title ) {

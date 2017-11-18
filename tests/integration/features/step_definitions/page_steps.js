@@ -163,7 +163,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
 		let options = {
-			srnamespace: (namespaces || "0").split(' '),
+			srnamespace: (namespaces || "0").split(' ').join(','),
 			srenablerewrites: enableRewrites ? 1 : 0,
 		};
 		if ( offset ) {
@@ -203,6 +203,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /there are no api search results/, function () {
 		return withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.have.lengthOf( 0 );
+		} );
+	} );
+
+	Then( /^there are (\d+) api search results$/, function ( num_results ) {
+		return withApi( this, () => {
+			expect( this.apiResponse.query.search ).to.have.lengthOf( parseInt( num_results, 10 ) );
 		} );
 	} );
 

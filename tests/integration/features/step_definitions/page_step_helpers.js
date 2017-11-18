@@ -134,6 +134,9 @@ class StepHelpers {
 
 	waitForOperation( operation, title ) {
 		return Promise.coroutine( function* () {
+			if ( operation === 'upload' && title.substr( 0, 5 ) !== 'File:' ) {
+				title = 'File:' + title;
+			}
 			let expect = operation === 'delete' ? false : true;
 			let exists = yield this.checkExists( title );
 			while ( expect !== exists ) {

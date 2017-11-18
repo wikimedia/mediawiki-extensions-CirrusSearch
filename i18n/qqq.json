@@ -86,5 +86,6 @@
 	"cirrussearch-explore-similar-languages": "Label for the 'Languages' section of the Explore Similar search results.\n{{Identical|Language}}",
 	"cirrussearch-explore-similar-related-none": "Text shown when there are no related pages in the Explore Similar search results.",
 	"cirrussearch-explore-similar-categories-none": "Text shown when there are no categories in the Explore Similar search results.",
-	"cirrussearch-explore-similar-languages-none": "Text shown when there are no other languages in the Explore Similar search results."
+	"cirrussearch-explore-similar-languages-none": "Text shown when there are no other languages in the Explore Similar search results.",
+	"cirrussearch-article-words": "Text shown on Special:Statistics along with a count of the number of words across all articles (mostly main namespace, but some wikis may have configured additional content namespaces)"
 }

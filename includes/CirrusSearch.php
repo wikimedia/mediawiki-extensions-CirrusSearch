@@ -798,10 +798,7 @@ class CirrusSearch extends SearchEngine {
 			return Status::newGood( [] );
 		}
 
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces,
-				null, $this->indexBaseName );
-		$searcher->setOptionsFromRequest( $this->request );
-
+		$searcher = $this->makeSearcher();
 		$status = $searcher->searchArchive( $term );
 		if ( $status->isOK() && $searcher->isReturnRaw() ) {
 			$status->setResult( true,
@@ -810,4 +807,26 @@ class CirrusSearch extends SearchEngine {
 		return $status;
 	}
 
+	/**
+	 * @return Status Contains a single integer indicating the number
+	 *  of content words in the wiki
+	 */
+	public function countContentWords() {
+		$this->limit = 1;
+		$searcher = $this->makeSearcher();
+		$status = $searcher->countContentWords();
+
+		if ( $status->isOK() && $searcher->isReturnRaw() ) {
+			$status->setResult( true,
+				$searcher->processRawReturn( $status->getValue(), $this->request, $this->dumpAndDie ) );
+		}
+		return $status;
+	}
+
+	private function makeSearcher() {
+		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces,
+				null, $this->indexBaseName );
+		$searcher->setOptionsFromRequest( $this->request );
+		return $searcher;
+	}
 }

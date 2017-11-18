@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\SearchConfig;
+use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
 
 /**
@@ -203,6 +204,11 @@ class SearchContext {
 	 * @var ResultsType Type of the result for the context.
 	 */
 	private $resultsType;
+
+	/**
+	 * @var AbstractAggregation[] Aggregations to perform
+	 */
+	private $aggs = [];
 
 	/**
 	 * @param SearchConfig $config
@@ -872,5 +878,14 @@ class SearchContext {
 	public function setPhraseRescoreQuery( $phraseRescoreQuery ) {
 		$this->phraseRescoreQuery = $phraseRescoreQuery;
 		$this->isDirty = true;
+	}
+
+	public function addAggregation( AbstractAggregation $agg ) {
+		$this->aggs[] = $agg;
+		$this->isDirty = true;
+	}
+
+	public function getAggregations() {
+		return $this->aggs;
 	}
 }

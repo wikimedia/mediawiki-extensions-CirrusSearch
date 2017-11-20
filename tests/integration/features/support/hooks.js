@@ -279,12 +279,19 @@ defineSupportCode( function( { After, Before } ) {
 
 	} ) );
 
-	BeforeOnce( { tags: "@redirect_loop" }, runBatchFn( {
-		edit: {
-			"Redirect Loop": "#REDIRECT [[Redirect Loop 1]]",
-			"Redirect Loop 1": "#REDIRECT [[Redirect Loop 2]]",
-			"Redirect Loop 2": "#REDIRECT [[Redirect Loop 1]]",
-		}
+	BeforeOnce( { tags: "@redirect_loop" }, Promise.coroutine( function* () {
+		// These can't go through the normal runBatch because, as redirects that never
+		// end up at an article, they don't actually make it into elasticsearch.
+		let client = yield this.onWiki();
+		yield client.batch( {
+			edit: {
+				"Redirect Loop": "#REDIRECT [[Redirect Loop 1]]",
+				"Redirect Loop 1": "#REDIRECT [[Redirect Loop 2]]",
+				"Redirect Loop 2": "#REDIRECT [[Redirect Loop 1]]",
+			}
+		} );
+		// Randomly guess at how long to wait ...
+		yield this.stepHelpers.waitForMs( 3000 );
 	} ) );
 
 	BeforeOnce( { tags: "@headings" }, runBatchFn( {
@@ -561,16 +568,23 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@linksto" }, runBatchFn( {
-		edit: {
-			'LinksToTest Target': 'LinksToTest Target',
-			'LinksToTest Plain': '[[LinksToTest Target]]',
-			'LinksToTest OtherText': '[[LinksToTest Target]] and more text',
-			'LinksToTest No Link': 'LinksToTest Target',
-			'Template:LinksToTest Template': '[[LinksToTest Target]]',
-			'LinksToTest Using Template':  '{{LinksToTest Template}}',
-			'LinksToTest LinksToTemplate': '[[Template:LinksToTest Template]]',
-		}
+	BeforeOnce( { tags: "@linksto" }, Promise.coroutine( function* () {
+		yield runBatch( this, false, {
+			edit: {
+				'LinksToTest Target': 'LinksToTest Target',
+				'LinksToTest Plain': '[[LinksToTest Target]]',
+				'LinksToTest OtherText': '[[LinksToTest Target]] and more text',
+				'LinksToTest No Link': 'LinksToTest Target',
+				'Template:LinksToTest Template': '[[LinksToTest Target]]',
+				'LinksToTest LinksToTemplate': '[[Template:LinksToTest Template]]',
+			}
+		} );
+		// We need to guarantee the template exists before this edit goes through.
+		yield runBatch( this, false, {
+			edit: {
+				'LinksToTest Using Template':  '{{LinksToTest Template}}',
+			}
+		} );
 	} ) );
 
 	BeforeOnce( { tags: "@filenames" }, runBatchFn( [

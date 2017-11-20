@@ -147,9 +147,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 				}
 			} );
 			if ( in_ok ) {
-				// What exactly does this do?
-				// expect(found).to include(include(title))
-				throw new Error( 'Not Implemented' );
+				// Asserts that title is found within the strings that make up found.
+				// ex: found = ['foo bar baz'], title = 'bar' should pass.
+				// Chai doesnt (yet) have a native assertion for this:
+				// https://github.com/chaijs/chai/issues/858
+				let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+				expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.be.true; // jshint ignore:line
 			} else {
 				expect( found ).to.include(title);
 			}
@@ -158,6 +161,22 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, function ( title, in_ok, indexes ) {
 		return withApi( this, () => {
 			return checkApiSearchResultStep.call( this, title, in_ok, indexes );
+		} );
+	} );
+
+	Then( /^(.*) is( not)? part of the api search result$/, function ( title, not_searching ) {
+		return withApi( this, () => {
+			// Chai doesnt (yet) have a native assertion for this:
+			// https://github.com/chaijs/chai/issues/858
+			let found = this.apiResponse.query.search.map( ( result ) => result.title );
+			let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
+			let msg = `Expected ${JSON.stringify(found)} to${not_searching ? ' not' : ''} include ${title}`;
+
+			if ( not_searching ) {
+				expect( ok, msg ).to.be.false; // jshint ignore:line
+			} else {
+				expect( ok, msg ).to.be.true; // jshint ignore:line
+			}
 		} );
 	} );
 

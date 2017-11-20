@@ -37,7 +37,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 	 */
 	public function getInputHTML( $value ) {
 		$html = Html::openElement( 'div' );
-		$html .= Html::element( 'legend',
+		$html .= Html::element( 'p',
 			[],
 			wfMessage( 'cirrussearch-pref-completion-profile-help' )
 		);
@@ -46,7 +46,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 			[],
 			wfMessage( 'cirrussearch-pref-completion-section-desc' )->text()
 		);
-		$html .= Html::rawElement( 'legend',
+		$html .= Html::rawElement( 'p',
 			[],
 			wfMessage( 'cirrussearch-pref-completion-section-legend' )->parse()
 		);
@@ -61,7 +61,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 			[],
 			wfMessage( 'cirrussearch-pref-completion-legacy-section-desc' )->text()
 		);
-		$html .= Html::rawElement( 'legend',
+		$html .= Html::rawElement( 'p',
 			[],
 			wfMessage( 'cirrussearch-pref-completion-legacy-section-legend' )->parse()
 		);

@@ -31,14 +31,10 @@ defineSupportCode( function( { After, Before } ) {
 		} ) );
 	};
 
+	const articleText = ( fileName ) => fs.readFileSync( articlePath + fileName ).toString();
+
 	const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
-		let stepHelpers;
-		if ( batchJobs === undefined ) {
-			stepHelpers = this.stepHelpers;
-			batchJobs = wiki;
-		} else {
-			stepHelpers = this.stepHelpers.onWiki( wiki );
-		}
+		let stepHelpers = this.stepHelpers.onWiki( wiki );
 		const queue = [];
 		if ( Array.isArray( batchJobs ) ) {
 			for ( let job of batchJobs ) {
@@ -67,20 +63,25 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} );
 
+	// Run both in parallel so we don't have to wait for the batch to finish
+	// to start checking things. Hopefully they run in the same order...
+	const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
+		wiki = wiki || world.config.wikis.default;
+		let client = yield world.onWiki( wiki );
+		// TODO: If the batch operation fails the waitForBatch will never complete,
+		// it will just stick around forever ...
+		yield Promise.all( [
+			client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
+			waitForBatch.call( world, wiki, batchJobs )
+		] );
+	} );
+
 	const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
-		let client;
 		if ( batchJobs === undefined ) {
 			batchJobs = wiki;
 			wiki = this.config.wikis.default;
 		}
-		client = yield this.onWiki( wiki );
-
-		// Run both in parallel so we don't have to wait for the batch to finish
-		// to start checking things. Hopefully they run in the same order...
-		yield Promise.all( [
-			client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
-			waitForBatch.call( this, wiki, batchJobs )
-		] );
+		yield runBatch( this, wiki, batchJobs );
 	} );
 
 	// Helpers for defining mwbot jobs in array syntax. Mostly needed
@@ -96,6 +97,10 @@ defineSupportCode( function( { After, Before } ) {
 		upload: ( fileName, text ) => {
 			const pathToFile = articlePath + fileName;
 			return [ 'upload', fileName, pathToFile, '', { text: text } ];
+		},
+		uploadOverwrite: ( fileName, text ) => {
+			const pathToFile = articlePath + fileName;
+			return [ 'uploadOverwrite', fileName, pathToFile, '', { text: text } ];
 		}
 	};
 
@@ -151,9 +156,10 @@ defineSupportCode( function( { After, Before } ) {
 			"AlphaBeta": "[[Category:Alpha]] [[Category:Beta]]",
 			"IHaveATwoWordCategory": "[[Category:CategoryWith ASpace]]",
 			"Functional programming": "Functional programming is referential transparency.",
-			"वाङ्मय": "वाङ्मय",
-			"वाङ्\u200dमय": "वाङ्\u200dमय",
-			"वाङ्\u200cमय": "वाङ्\u200cमय",
+			"\u0935\u093e\u0919\u094d\u092e\u092f": "\u0935\u093e\u0919\u094d\u092e\u092f",
+			"\u0935\u093e\u0919\u094d\u200d\u092e\u092f": "\u0935\u093e\u0919\u094d\u200d\u092e\u092f",
+			"\u0935\u093e\u0919\u200d\u094d\u092e\u092f": "\u0935\u093e\u0919\u200d\u094d\u092e\u092f",
+			"\u0935\u093e\u0919\u094d\u200c\u092e\u092f": "\u0935\u093e\u0919\u094d\u200c\u092e\u092f",
 			"ChangeMe": "foo",
 			"Wikitext": "{{#tag:somebug}}",
 			"Page with non ascii letters": "ἄνθρωπος, широкий"
@@ -161,8 +167,6 @@ defineSupportCode( function( { After, Before } ) {
 	} ) );
 
 	BeforeOnce( { tags: "@setup_main or @prefix or @bad_syntax" }, runBatchFn( [
-		// TODO: File upload
-		// And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
 		job.edit( "Rdir", "#REDIRECT [[Two Words]]" ),
 		job.edit( "IHaveAVideo", "[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]" ),
 		job.edit( "IHaveASound", "[[File:Serenade for Strings -mvt-1- Elgar.ogg]]" ),
@@ -224,7 +228,7 @@ defineSupportCode( function( { After, Before } ) {
 		for ( let i = 1; i <= 14; i++ ) {
 			edits['Grammo Awards ed. ' + i] = 'bogus grammy awards page';
 		}
-		return runBatchFn( { edit: edits } ).call( this );
+		return runBatch( this, false, { edit: edits } );
 	} );
 
 	BeforeOnce( { tags: "@did_you_mean or @stemming", timeout: 60000 }, runBatchFn( {
@@ -255,12 +259,385 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
+	BeforeOnce( { tags: "@filesearch" }, Promise.coroutine( function* () {
+		// Unfortunatly the current deduplication between wikis requires a file
+		// be uploaded to commons before it's uploaded to any other wiki, or the
+		// other wiki isn't tagged.
+		yield runBatch( this, 'commons', [
+			job.upload( "DuplicatedLocally.svg", "File stored on commons and duplicated locally" ),
+			job.upload( "OnCommons.svg", "File stored on commons for test purposes" ),
+		] );
+
+		yield runBatch( this, false, [
+			job.upload( 'No_SVG.svg', "[[Category:Red circle with left slash]]" ),
+			job.upload( 'Somethingelse_svg_SVG.svg', "[[Category:Red circle with left slash]]" ),
+			job.upload( 'Linux_Distribution_Timeline_text_version.pdf', "Linux distribution timeline." ),
+			job.upload( 'Savepage-greyed.png', "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." ),
+			job.upload( 'DuplicatedLocally.svg', "Locally stored file duplicated on commons" ),
+			job.delete( 'File:Frozen.svg' ),
+		] );
+
+	} ) );
+
+	BeforeOnce( { tags: "@redirect_loop" }, runBatchFn( {
+		edit: {
+			"Redirect Loop": "#REDIRECT [[Redirect Loop 1]]",
+			"Redirect Loop 1": "#REDIRECT [[Redirect Loop 2]]",
+			"Redirect Loop 2": "#REDIRECT [[Redirect Loop 1]]",
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@headings" }, runBatchFn( {
+		edit: {
+			'HasHeadings': articleText( 'has_headings.txt' ),
+			'HasReferencesInText': 'References [[Category:HeadingsTest]]',
+			'HasHeadingsWithHtmlComment': articleText( 'has_headings_with_html_comment.txt' ),
+			'HasHeadingsWithReference': articleText( 'has_headings_with_reference.txt' ),
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@javascript_injection" }, runBatchFn( {
+		edit: {
+			'Javascript Direct Inclusion': articleText( 'javascript.txt' ),
+			'Javascript Pre Tag Inclusion': articleText( 'javascript_in_pre.txt' ),
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@setup_namespaces" }, runBatchFn( {
+		edit: {
+			'Talk:Two Words': 'why is this page about catapults?',
+			'Help:Smoosh': 'test',
+			'File:Nothingasdf': 'nothingasdf',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@highlighting" }, runBatchFn( {
+		edit: {
+			'Rashidun Caliphate': articleText( 'rashidun_caliphate.txt' ),
+			'Crazy Rdir': '#REDIRECT [[Two Words]]',
+			'Insane Rdir': '#REDIRECT [[Two Words]]',
+			'The Once and Future King': 'The Once and Future King',
+			'User_talk:Test': 'User_talk:Test',
+			'Rose Trellis Faberge Egg': articleText( 'rose_trellis_faberge_egg.txt' ),
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@highlighting or @references" }, runBatchFn( {
+		edit: {
+			'References Highlight Test': articleText( 'references_highlight_test.txt' ),
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@more_like_this" }, runBatchFn( {
+		edit: {
+			'More Like Me 1': 'morelikesetone morelikesetone',
+			'More Like Me 2': 'morelikesetone morelikesetone morelikesetone morelikesetone',
+			'More Like Me 3': 'morelikesetone morelikesetone morelikesetone morelikesetone',
+			'More Like Me 4': 'morelikesetone morelikesetone morelikesetone morelikesetone',
+			'More Like Me 5': 'morelikesetone morelikesetone morelikesetone morelikesetone',
+			'More Like Me Rdir': '#REDIRECT [[More Like Me 1]]',
+			'More Like Me Set 2 Page 1': 'morelikesettwo morelikesettwo morelikesettwo',
+			'More Like Me Set 2 Page 2': 'morelikesettwo morelikesettwo morelikesettwo',
+			'More Like Me Set 2 Page 3': 'morelikesettwo morelikesettwo morelikesettwo',
+			'More Like Me Set 2 Page 4': 'morelikesettwo morelikesettwo morelikesettwo',
+			'More Like Me Set 2 Page 5': 'morelikesettwo morelikesettwo morelikesettwo',
+			'More Like Me Set 3 Page 1': 'morelikesetthree morelikesetthree',
+			'More Like Me Set 3 Page 2': 'morelikesetthree morelikesetthree',
+			'More Like Me Set 3 Page 3': 'morelikesetthree morelikesetthree',
+			'More Like Me Set 3 Page 4': 'morelikesetthree morelikesetthree',
+			'More Like Me Set 3 Page 5': 'morelikesetthree morelikesetthree',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@setup_phrase_rescore" }, runBatchFn( {
+		edit: {
+			'Rescore Test Words Chaff': 'Words Test Rescore Chaff',
+			'Test Words Rescore Rescore Test Words': 'Test Words Rescore Rescore Test Words',
+			'Rescore Test TextContent': 'Chaff',
+			'Rescore Test HasTextContent': 'Rescore Test TextContent',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@programmer_friendly" }, runBatchFn( {
+		edit: {
+			'$wgNamespaceAliases': '$wgNamespaceAliases',
+			'PFSC': 'snake_case',
+			'PascalCase': 'PascalCase',
+			'NumericCase7': 'NumericCase7',
+			'this.getInitial': 'this.getInitial',
+			'RefToolbarBase.js': 'RefToolbarBase.js',
+			'PFTest Paren': 'this.isCamelCased()',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@stemmer" }, runBatchFn( {
+		edit: {
+			'StemmerTest Aliases': 'StemmerTest Aliases',
+			'StemmerTest Alias': 'StemmerTest Alias',
+			'StemmerTest Used': 'StemmerTest Used',
+			'StemmerTest Guidelines': 'StemmerTest Guidelines',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@prefix_filter" }, runBatchFn( {
+		edit: {
+			'Prefix Test': 'Prefix Test',
+			'Prefix Test Redirect': '#REDIRECT [[Prefix Test]]',
+			'Foo Prefix Test': '[[Prefix Test]]',
+			'Prefix Test/AAAA': '[[Prefix Test]]',
+			'Prefix Test AAAA': '[[Prefix Test]]',
+			'Talk:Prefix Test': '[[Prefix Test]]',
+			'User_talk:Prefix Test': '[[Prefix Text]]',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@prefer_recent", timeout: 60000 }, Promise.coroutine( function* () {
+		yield runBatch( this, false, {
+			edit: {
+				// Using epochs as content ensures the page is edited.
+				'PreferRecent First': "" + ( new Date() / 1 ),
+				'PreferRecent Second Second': "" + ( new Date() / 1 ),
+			}
+		} );
+
+		// We need to wait around to ensure the next page has enough time difference
+		// for prefer-recent to reorder things
+		yield this.stepHelpers.waitForMs( 20000 );
+
+		yield runBatch( this, false, {
+			edit: {
+				'PreferRecent Third': "" + ( new Date() / 1 )
+			}
+		} );
+		// TODO: Why are we waiting here?
+		yield this.stepHelpers.waitForMs( 10000 );
+	} ) );
+
+	BeforeOnce( { tags: "@hastemplate" }, runBatchFn( {
+		edit: {
+			'MainNamespaceTemplate': 'MainNamespaceTemplate',
+			'HasMainNSTemplate': '{{:MainNamespaceTemplate}}',
+			'Talk:TalkTemplate': 'Talk:TalkTemplate',
+			'HasTTemplate': '{{Talk:TalkTemplate}}',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@go" }, runBatchFn( {
+		edit: {
+			'MixedCapsAndLowerCase': 'MixedCapsAndLowerCase'
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@go or @options", timeout: 60000 }, runBatchFn( {
+		edit: {
+			'son Nearmatchflattentest': 'son Nearmatchflattentest',
+			'Son Nearmatchflattentest': 'Son Nearmatchflattentest',
+			'SON Nearmatchflattentest': 'SON Nearmatchflattentest',
+			'soñ Nearmatchflattentest': 'soñ Nearmatchflattentest',
+			'Son Nolower Nearmatchflattentest': 'Son Nolower Nearmatchflattentest',
+			'SON Nolower Nearmatchflattentest': 'SON Nolower Nearmatchflattentest',
+			'Soñ Nolower Nearmatchflattentest': 'Soñ Nolower Nearmatchflattentest',
+			'Son Titlecase Nearmatchflattentest': 'Son Titlecase Nearmatchflattentest',
+			'Soñ Titlecase Nearmatchflattentest': 'Soñ Titlecase Nearmatchflattentest',
+			'Soñ Onlyaccent Nearmatchflattentest': 'Soñ Onlyaccent Nearmatchflattentest',
+			'Soñ Twoaccents Nearmatchflattentest': 'Soñ Twoaccents Nearmatchflattentest',
+			'Són Twoaccents Nearmatchflattentest': 'Són Twoaccents Nearmatchflattentest',
+			'son Double Nearmatchflattentest': 'son Double Nearmatchflattentest',
+			'SON Double Nearmatchflattentest': 'SON Double Nearmatchflattentest',
+			'Bach Nearmatchflattentest': '#REDIRECT [[Johann Sebastian Bach Nearmatchflattentest]]',
+			'Bạch Nearmatchflattentest': 'Notice the dot under the a.',
+			'Johann Sebastian Bach Nearmatchflattentest': 'Johann Sebastian Bach Nearmatchflattentest',
+			'KOAN Nearmatchflattentest': 'KOAN Nearmatchflattentest',
+			'Kōan Nearmatchflattentest': 'Kōan Nearmatchflattentest',
+			'Koan Nearmatchflattentest': '#REDIRECT [[Kōan Nearmatchflattentest]]',
+			'Soñ Redirect Nearmatchflattentest': 'Soñ Redirect Nearmatchflattentest',
+			'Són Redirect Nearmatchflattentest': 'Són Redirect Nearmatchflattentest',
+			'Son Redirect Nearmatchflattentest': '#REDIRECT [[Soñ Redirect Nearmatchflattentest]]',
+			'Són Redirectnotbetter Nearmatchflattentest': 'Són Redirectnotbetter Nearmatchflattentest',
+			'Soñ Redirectnotbetter Nearmatchflattentest': '#REDIRECT [[Són Redirectnotbetter Nearmatchflattentest]]',
+			'Són Redirecttoomany Nearmatchflattentest': 'Són Redirecttoomany Nearmatchflattentest',
+			'Soñ Redirecttoomany Nearmatchflattentest': '#REDIRECT [[Són Redirecttoomany Nearmatchflattentest]]',
+			'Søn Redirecttoomany Nearmatchflattentest': 'Søn Redirecttoomany Nearmatchflattentest',
+			'Blah Redirectnoncompete Nearmatchflattentest': 'Blah Redirectnoncompete Nearmatchflattentest',
+			'Soñ Redirectnoncompete Nearmatchflattentest': '#REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]',
+			'Søn Redirectnoncompete Nearmatchflattentest': '#REDIRECT [[Blah Redirectnoncompete Nearmatchflattentest]]',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@file_text" }, runBatchFn( [
+		job.upload( 'Linux_Distribution_Timeline_text_version.pdf', 'Linux distribution timeline.' ),
+	] ) );
+
+	BeforeOnce( { tags: "@match_stopwords" }, runBatchFn( {
+		edit: {
+			'To': 'To'
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@many_redirects" }, runBatchFn( {
+		edit: {
+			'Manyredirectstarget': '[[Category:ManyRedirectsTest]]',
+			'Fewredirectstarget':  '[[Category:ManyRedirectsTest]]',
+			'Many Redirects Test 1': '#REDIRECT [[Manyredirectstarget]]',
+			'Many Redirects Test 2': '#REDIRECT [[Manyredirectstarget]]',
+			'Useless redirect to target 1': '#REDIRECT [[Manyredirectstarget]]',
+			'Useless redirect to target 2': '#REDIRECT [[Manyredirectstarget]]',
+			'Useless redirect to target 3': '#REDIRECT [[Manyredirectstarget]]',
+			'Useless redirect to target 4': '#REDIRECT [[Manyredirectstarget]]',
+			'Useless redirect to target 5': '#REDIRECT [[Manyredirectstarget]]',
+			'Many Redirects Test ToFew': '#REDIRECT [[Fewredirectstarget]]',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@relevancy" }, runBatchFn( {
+		edit: {
+			'Relevancytest': 'it is not relevant',
+			'Relevancytestviaredirect': 'not relevant',
+			'Relevancytest Redirect':  '#REDIRECT [[Relevancytestviaredirect]]',
+			'Relevancytestviacategory': 'Some opening text. [[Category:Relevancytest]]',
+			'Relevancytestviaheading': '==Relevancytest==',
+			'Relevancytestviaopening': articleText( 'Relevancytestviaopening.txt' ),
+			'Relevancytestviatext': '[[Relevancytest]]',
+			'Relevancytestviaauxtext': articleText( 'Relevancytestviaauxtext.txt' ),
+			'Relevancytestphrase phrase':  'not relevant',
+			'Relevancytestphraseviaredirect':  'not relevant',
+			'Relevancytestphrase Phrase Redirect': '#REDIRECT [[Relevancytestphraseviaredirect]]',
+			'Relevancytestphraseviacategory':  'not relevant [[Category:Relevancytestphrase phrase category]]',
+			'Relevancytestphraseviaheading': '==Relevancytestphrase phrase heading==',
+			'Relevancytestphraseviaopening': articleText( 'Relevancytestphraseviaopening.txt' ),
+			'Relevancytestphraseviatext':  '[[Relevancytestphrase phrase]] text',
+			'Relevancytestphraseviaauxtext': articleText( 'Relevancytestphraseviaauxtext.txt' ),
+			'Relevancytwo Wordtest': 'relevance is bliss',
+			'Wordtest Relevancytwo': 'relevance is cool',
+			'Relevancynamespacetest': 'Relevancynamespacetest',
+			'Talk:Relevancynamespacetest': 'Talk:Relevancynamespacetest',
+			'File:Relevancynamespacetest': 'File:Relevancynamespacetest',
+			'Help:Relevancynamespacetest': 'Help:Relevancynamespacetest',
+			'File talk:Relevancynamespacetest': 'File talk:Relevancynamespacetest',
+			'User talk:Relevancynamespacetest': 'User talk:Relevancynamespacetest',
+			'Template:Relevancynamespacetest': 'Template:Relevancynamespacetest',
+			'Relevancylanguagetest/ja': 'Relevancylanguagetest/ja',
+			'Relevancylanguagetest/en': 'Relevancylanguagetest/en',
+			'Relevancylanguagetest/ar': 'Relevancylanguagetest/ar',
+			'Relevancyclosetest Foô': 'Relevancyclosetest Foô',
+			'Relevancyclosetest Foo': 'Relevancyclosetest Foo',
+			'Foo Relevancyclosetest': 'Foo Relevancyclosetest',
+			'William Shakespeare': 'William Shakespeare',
+			'William Shakespeare Works': 'To be or not to be is a famous quote from Hamlet',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@fallback_finder" }, runBatchFn( {
+		edit: {
+			'$US': '$US',
+			'US': 'US',
+			'Uslink':  '[[US]]',
+			'Cent (currency)': 'Cent (currency)',
+			'¢': '#REDIRECT [[Cent (currency)]]',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@js_and_css" }, runBatchFn( {
+		edit: {
+			'User:Tools/Some.js':  articleText( 'some.js' ),
+			'User:Tools/Some.css': articleText( 'some.css' ),
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@special_random" }, runBatchFn( {
+		edit: {
+			'User:Random Test': 'User:Random Test',
+			'User_talk:Random Test': 'User_talk:Random Test',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@regex" }, runBatchFn( {
+		edit: {
+			'RegexEscapedForwardSlash': 'a/b',
+			'RegexEscapedBackslash': 'a\\b',
+			'RegexEscapedDot': 'a.b',
+			'RegexSpaces': 'a b c',
+			'RegexComplexResult':  'aaabacccccccccccccccdcccccccccccccccccccccccccccccdcccc',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@linksto" }, runBatchFn( {
+		edit: {
+			'LinksToTest Target': 'LinksToTest Target',
+			'LinksToTest Plain': '[[LinksToTest Target]]',
+			'LinksToTest OtherText': '[[LinksToTest Target]] and more text',
+			'LinksToTest No Link': 'LinksToTest Target',
+			'Template:LinksToTest Template': '[[LinksToTest Target]]',
+			'LinksToTest Using Template':  '{{LinksToTest Template}}',
+			'LinksToTest LinksToTemplate': '[[Template:LinksToTest Template]]',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@filenames" }, runBatchFn( [
+		job.upload( 'No_SVG.svg', '[[Category:Red circle with left slash]]' ),
+		job.upload( 'Somethingelse_svg_SVG.svg', '[[Category:Red circle with left slash]]' )
+	] ) );
+
+	BeforeOnce( { tags: "@removed_text" }, runBatchFn( {
+		edit: {
+			'Autocollapse Example': '<div class="autocollapse">inside autocollapse</div>',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@setup_main or @commons" }, Promise.coroutine( function* () {
+		yield runBatch( this, 'commons', {
+			delete: [
+				'File:OnCommons.svg',
+				'File:DuplicatedLocally.svg',
+			]
+		} );
+		yield runBatch( this, false, {
+			delete: [ 'File:DuplicatedLocally.svg' ]
+		} );
+
+		yield runBatch( this, 'commons', [
+			// TODO: Why is overwrite necessary here? Otherwise the upload is rejected
+			// with was-deleted or some such?
+			job.uploadOverwrite( 'OnCommons.svg', "File stored on commons for test purposes" ),
+			job.uploadOverwrite( 'DuplicatedLocally.svg', 'File stored on commons and duplicated locally' ),
+		] );
+		// For duplications to track correctly commons has to be uploaded first. This is a bug
+		// in cirrus, but no current plans to fix.
+		yield runBatch( this, false, [
+			job.uploadOverwrite( 'DuplicatedLocally.svg','Locally stored file duplicated on commons' )
+		] );
+	} ) );
+
+
+	BeforeOnce( { tags: "@ru" }, runBatchFn( {
+		edit: {
+			'ru named Черная дыра':  'Черная дыра́ — область пространства-времени',
+			'ru named Саша Чёрный': 'настоящее имя Алекса́ндр Миха́йлович Гли́кберг',
+			'ru named Бразер': 'белорусский советский скульптор',
+		}
+	} ) );
+
+	BeforeOnce( { tags: "@geo" }, runBatchFn( {
+		edit: {
+			'San Jose':  'San Jose is a nice city located at {{#coordinates:primary|37.333333|-121.9}}.',
+			'Santa Clara': 'Santa Clara is a nice city located at {{#coordinates:primary|37.354444|-121.969167}}.',
+			'Cupertino': 'Cupertino is a nice city located at {{#coordinates:primary|37.3175|-122.041944}}.',
+		}
+	} ) );
+
+	After( { tags: "@frozen" }, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		yield client.request( {
+			action: 'cirrus-freeze-writes',
+			thaw: 1
+		} );
+	} ) );
+
 	// This needs to be the *last* hook added. That gives us some hope that everything
 	// else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 	// the completion suggester
 	BeforeOnce( { tags: "@suggest", timeout: 90000 }, Promise.coroutine( function* () {
-		let client = yield this.onWiki();
-		let batchJobs = {
+		yield runBatch( this, false, {
 			edit: {
 				"X-Men": "The X-Men are a fictional team of superheroes",
 				"Xavier: Charles": "Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]",
@@ -286,33 +663,12 @@ defineSupportCode( function( { After, Before } ) {
 				"Hyperion Cantos/Endymion": "Endymion is the third science fiction novel by Dan Simmons.",
 				"はーい": "makes sure we do not fail to index empty tokens (T156234)"
 			}
-		};
-		yield Promise.all( [
-			client.batch( batchJobs ),
-			waitForBatch.call( this, batchJobs )
-		] );
+		} );
+
+		let client = yield this.onWiki();
 		yield client.request( {
 			action: 'cirrus-suggest-index'
 		} );
 	} ) );
 
-	BeforeOnce( { tags: "@filesearch" }, Promise.coroutine( function* () {
-		// Unfortunatly the current deduplication between wikis requires a file
-		// be uploaded to commons before it's uploaded to any other wiki, or the
-		// other wiki isn't tagged.
-		yield runBatchFn( 'commons', [
-			job.upload( "DuplicatedLocally.svg", "File stored on commons and duplicated locally" ),
-			job.upload( "OnCommons.svg", "File stored on commons for test purposes" ),
-		] ).call( this );
-
-		yield runBatchFn( [
-			job.upload( 'No_SVG.svg', "[[Category:Red circle with left slash]]" ),
-			job.upload( 'Somethingelse_svg_SVG.svg', "[[Category:Red circle with left slash]]" ),
-			job.upload( 'Linux_Distribution_Timeline_text_version.pdf', "Linux distribution timeline." ),
-			job.upload( 'Savepage-greyed.png', "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." ),
-			job.upload( 'DuplicatedLocally.svg', "Locally stored file duplicated on commons" ),
-			job.delete( 'File:Frozen.svg' ),
-		] ).call( this );
-
-	} ) );
 } );

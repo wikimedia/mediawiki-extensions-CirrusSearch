@@ -196,7 +196,7 @@ Feature: Prefix search via api
   Examples:
     |   term      |    suggested      |
     | max         | Max Eisenhardt    |
-    | mai         | Main Page         |
+    | main p      | Main Page         |
     | eis         | Eisenhardt, Max   |
     | ele         | Elektra           |
     | éle         | Électricité       |

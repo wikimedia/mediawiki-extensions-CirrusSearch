@@ -18,7 +18,8 @@ const expect = require( 'chai' ).expect,
 class StepHelpers {
 	constructor( world, wiki ) {
 		this.world = world;
-		this.apiPromise = world.onWiki( wiki || world.config.wikis.default );
+		this.wiki = wiki || world.config.wikis.default;
+		this.apiPromise = world.onWiki( this.wiki );
 	}
 
 	onWiki( wiki ) {
@@ -132,14 +133,18 @@ class StepHelpers {
 		return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 	}
 
-	waitForOperation( operation, title ) {
+	waitForOperation( operation, title, timeoutMs = 30000 ) {
 		return Promise.coroutine( function* () {
-			if ( operation === 'upload' && title.substr( 0, 5 ) !== 'File:' ) {
+			let start = new Date();
+			if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
 				title = 'File:' + title;
 			}
 			let expect = operation === 'delete' ? false : true;
 			let exists = yield this.checkExists( title );
 			while ( expect !== exists ) {
+				if ( new Date() - start >= timeoutMs ) {
+					throw new Error( `Timed out waiting for ${operation} on ${this.wiki} ${title}` );
+				}
 				yield this.waitForMs( 100 );
 				exists = yield this.checkExists( title );
 			}

@@ -26,7 +26,7 @@ function withApi( world, fn ) {
 			let qs = Object.assign( {}, request.qs, request.form ),
 			    href = request.uri + '?' + querystring.stringify( qs );
 
-			e.message += `\nLast Api: ${href}`;
+			e.message += `\nLast Api: ${href}\nExtra: ` + JSON.stringify( world.apiResponse || world.apiError );
 		} else {
 			e.message += '\nLast Api: UNKNOWN';
 		}

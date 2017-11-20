@@ -183,7 +183,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		// Generic string replacement of patterns stored in this.searchVars
 		search = Object.keys(this.searchVars).reduce( ( str, pattern ) => str.replace( pattern, this.searchVars[pattern] ), search );
 		// Replace %{\uXXXX}% with the appropriate unicode code point
-		search = search.replace(/%\{\\i([\dA-Fa-f]{4,6})\}%/, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
+		search = search.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
 
 		return this.stepHelpers.searchFor( search, options );
 	} );
@@ -283,5 +283,11 @@ defineSupportCode( function( {Given, When, Then} ) {
 		withApi( this, () => {
 			expect( this.apiResponse.query.search[0].isfilematch ).to.equal(true);
 		} );
+	} );
+
+	Then( /^I locate the page id of (.*) and store it as (%.*%)$/, function ( title, varname ) {
+		return Promise.coroutine( function* () {
+			this.searchVars[varname] = yield this.stepHelpers.pageIdOf( title );
+		} ).call( this );
 	} );
 });

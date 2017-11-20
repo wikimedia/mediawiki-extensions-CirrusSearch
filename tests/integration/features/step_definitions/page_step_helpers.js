@@ -178,6 +178,14 @@ class StepHelpers {
 			return false;
 		} ).call( this );
 	}
+
+	pageIdOf( title ) {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			let response = yield client.request( { action: "query", titles: title, formatversion: 2 } );
+			return response.query.pages[0].pageid;
+		} ).call( this );
+	}
 }
 
 module.exports = StepHelpers;

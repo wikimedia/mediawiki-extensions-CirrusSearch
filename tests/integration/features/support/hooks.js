@@ -446,26 +446,15 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@prefer_recent", timeout: 60000 }, Promise.coroutine( function* () {
-		yield runBatch( this, false, {
-			edit: {
-				// Using epochs as content ensures the page is edited.
-				'PreferRecent First': "" + ( new Date() / 1 ),
-				'PreferRecent Second Second': "" + ( new Date() / 1 ),
-			}
-		} );
-
-		// We need to wait around to ensure the next page has enough time difference
-		// for prefer-recent to reorder things
-		yield this.stepHelpers.waitForMs( 20000 );
-
-		yield runBatch( this, false, {
-			edit: {
-				'PreferRecent Third': "" + ( new Date() / 1 )
-			}
-		} );
-		// TODO: Why are we waiting here?
-		yield this.stepHelpers.waitForMs( 10000 );
+	BeforeOnce( { tags: "@prefer_recent", timeout: 60000 }, runBatchFn( {
+		// NOTE: this was originally a real test for testing recency with prefer-recent
+		// it was transformed into a simple smoke test because it was too unreliable,
+		// (it's why PreferRecent Third is created in the same batch).
+		edit: {
+			'PreferRecent First': 'PreferRecent random text for field norm ' + ( new Date() / 1 ),
+			'PreferRecent Second': 'PreferRecent ' + ( new Date() / 1 ),
+			'PreferRecent Third': 'PreferRecent random text for field norm ' + ( new Date() / 1 )
+		}
 	} ) );
 
 	BeforeOnce( { tags: "@hastemplate" }, runBatchFn( {

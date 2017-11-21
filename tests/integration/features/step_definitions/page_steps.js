@@ -309,4 +309,35 @@ defineSupportCode( function( {Given, When, Then} ) {
 			this.searchVars[varname] = yield this.stepHelpers.pageIdOf( title );
 		} ).call( this );
 	} );
+
+	Then( /^I wait (\d+) seconds/, function ( seconds ) {
+		return this.stepHelpers.waitForMs( seconds * 1000 );
+	} );
+
+	Then( /^I delete (.*)$/, function ( title ) {
+		return this.stepHelpers.deletePage( title );
+	} );
+
+	Then( /^I globally freeze indexing$/, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		yield client.request( {
+			action: 'cirrus-freeze-writes',
+		} );
+	} ) );
+
+	Then( /^I globally thaw indexing$/, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		yield client.request( {
+			action: 'cirrus-freeze-writes',
+			thaw: true
+		} );
+	} ) );
+
+	Then( /^a file named (.*) exists( on commons)? with contents (.*) and description (.*)$/, function (title, on_commons, fileName, description) {
+		let stepHelpers = this.stepHelpers;
+		if ( on_commons ) {
+			stepHelpers = stepHelpers.onWiki( 'commons' );
+		}
+		return stepHelpers.uploadFile( title, fileName, description );
+	} );
 });

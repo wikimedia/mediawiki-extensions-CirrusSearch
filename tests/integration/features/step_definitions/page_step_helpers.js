@@ -13,7 +13,8 @@
 const expect = require( 'chai' ).expect,
 	fs = require( 'fs' ),
 	path = require( 'path' ),
-	Promise = require( 'bluebird' ); // jshint ignore:line
+	Promise = require( 'bluebird' ), // jshint ignore:line
+	articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/browser/articles/';
 
 class StepHelpers {
 	constructor( world, wiki ) {
@@ -39,12 +40,23 @@ class StepHelpers {
 		} );
 	}
 
+	uploadFile( title, fileName, description ) {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			let filePath = path.join( articlePath, fileName );
+			yield client.batch( [
+				[ 'upload', fileName, filePath, '', { text: description } ]
+			] );
+			yield this.waitForOperation( 'upload', fileName );
+		} ).call( this );
+	}
+
 	editPage( title, text, append = false ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 
 			if ( text[0] === '@' ) {
-				text = fs.readFileSync( path.join( __dirname, 'articles', text.substr( 1 ) ) ).toString();
+				text = fs.readFileSync( path.join( articlePath, text.substr( 1 ) ) ).toString();
 			}
 			let fetchedText = yield this.getWikitext( title );
 			if ( append ) {

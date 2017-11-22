@@ -217,6 +217,14 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
+	BeforeOnce( { tags: "@exact_quotes" }, runBatchFn( {
+		edit: {
+			"Contains A Stop Word": "Contains A Stop Word",
+			"Doesn't Actually Contain Stop Words": "Doesn't Actually Contain Stop Words",
+			"Pick*": "Pick*"
+		}
+	} ) );
+
 	// This needs to be the *last* hook added. That gives us some hope that everything
 	// else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 	// the completion suggester

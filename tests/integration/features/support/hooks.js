@@ -2,6 +2,7 @@
 
 var {defineSupportCode} = require( 'cucumber' );
 var Promise = require( 'bluebird' );
+var MWBot = require( 'mwbot' );
 
 defineSupportCode( function( { After, Before } ) {
 	let BeforeOnce = function ( options, fn ) {
@@ -22,24 +23,31 @@ defineSupportCode( function( { After, Before } ) {
 		} else {
 			stepHelpers = this.stepHelpers.onWiki( wiki );
 		}
-
+		let queue = [];
 		if ( Array.isArray( batchJobs ) ) {
 			for ( let job of batchJobs ) {
-				yield stepHelpers.waitForOperation( job[0], job[1] );
+				queue.push( [ job[0], job[1] ] );
 			}
 		} else {
 			for ( let operation in batchJobs ) {
 				let operationJobs = batchJobs[operation];
 				if ( Array.isArray( operationJobs ) ) {
 					for ( let title of operationJobs ) {
-						yield stepHelpers.waitForOperation( operation, title );
+						queue.push( [ operation, title ] );
 					}
 				} else {
 					for ( let title in operationJobs ) {
-						yield stepHelpers.waitForOperation( operation, title );
+						queue.push( [ operation, title ] );
 					}
 				}
 			}
+		}
+
+		let i = 0;
+		for ( let args of queue ) {
+			yield stepHelpers.waitForOperation( ...args );
+			i += 1;
+			MWBot.logStatus( '[=] ', i, queue.length, 'incirrus', args[1] );
 		}
 	} );
 
@@ -52,8 +60,12 @@ defineSupportCode( function( { After, Before } ) {
 			client = yield this.onWiki( wiki );
 		}
 
-		yield client.batch( batchJobs, 'CirrusSearch integration test edit' );
-		yield waitForBatch.call( this, batchJobs );
+		// Run both in parallel so we don't have to wait for the batch to finish
+		// to start checking things. Hopefully they run in the same order...
+		yield Promise.all( [
+			client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
+			waitForBatch.call( this, batchJobs )
+		] );
 	} );
 
 	BeforeOnce( { tags: "@clean" }, runBatchFn( {
@@ -143,6 +155,68 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
+	BeforeOnce( { tags: "@did_you_mean", timeout: 120000 }, function () {
+		let edits = {
+			'Popular Culture': 'popular culture',
+			'Nobel Prize': 'nobel prize',
+			'Noble Gasses': 'noble gasses',
+			'Noble Somethingelse': 'noble somethingelse',
+			'Noble Somethingelse2': 'noble somethingelse',
+			'Noble Somethingelse3': 'noble somethingelse',
+			'Noble Somethingelse4': 'noble somethingelse',
+			'Noble Somethingelse5': 'noble somethingelse',
+			'Noble Somethingelse6': 'noble somethingelse',
+			'Noble Somethingelse7': 'noble somethingelse',
+			'Template:Noble Pipe 1': 'pipes are so noble',
+			'Template:Noble Pipe 2': 'pipes are so noble',
+			'Template:Noble Pipe 3': 'pipes are so noble',
+			'Template:Noble Pipe 4': 'pipes are so noble',
+			'Template:Noble Pipe 5': 'pipes are so noble',
+			'Rrr Word 1': '#REDIRECT [[Popular Culture]]',
+			'Rrr Word 2': '#REDIRECT [[Popular Culture]]',
+			'Rrr Word 3': '#REDIRECT [[Noble Somethingelse3]]',
+			'Rrr Word 4': '#REDIRECT [[Noble Somethingelse4]]',
+			'Rrr Word 5': '#REDIRECT [[Noble Somethingelse5]]',
+			'Nobel Gassez': '#REDIRECT [[Noble Gasses]]',
+			'my suggest1 suggest2': 'list of grammy awards winners',
+			'my suggest2 suggest3': 'list of grammy awards winners',
+			'my suggest3 suggest4': 'list of grammy awards winners',
+			'my suggest4 suggest5': 'list of grammy awards winners',
+			'my suggest5 suggest6': 'list of grammy awards winners',
+			'my suggest6 suggest1': 'list of grammy awards winners',
+			'suggest1 suggest2 suggest3': 'list of grammy awards winners',
+			'suggest2 suggest3 suggest4': 'list of grammy awards winners',
+			'suggest3 suggest4 suggest5': 'list of grammy awards winners',
+		};
+		for ( let i = 1; i <= 30; i++ ) {
+			edits['Grammy Awards ed. ' + i] = 'grammy awards';
+		}
+		for ( let i = 1; i <= 14; i++ ) {
+			edits['Grammo Awards ed. ' + i] = 'bogus grammy awards page';
+		}
+		return runBatchFn( { edit: edits } ).call( this );
+	} );
+
+	BeforeOnce( { tags: "@did_you_mean or @stemming", timeout: 60000 }, runBatchFn( {
+		edit: {
+			'Stemming Multiwords': 'Stemming Multiwords',
+			'Stemming Possessive’s': 'Stemming Possessive’s',
+			'Stemmingsinglewords': 'Stemmingsinglewords',
+			'Stemmingsinglewords Other 1': 'Stemmingsinglewords Other 1',
+			'Stemmingsinglewords Other 2': 'Stemmingsinglewords Other 2',
+			'Stemmingsinglewords Other 3': 'Stemmingsinglewords Other 3',
+			'Stemmingsinglewords Other 4': 'Stemmingsinglewords Other 4',
+			'Stemmingsinglewords Other 5': 'Stemmingsinglewords Other 5',
+			'Stemmingsinglewords Other 6': 'Stemmingsinglewords Other 6',
+			'Stemmingsinglewords Other 7': 'Stemmingsinglewords Other 7',
+			'Stemmingsinglewords Other 8': 'Stemmingsinglewords Other 8',
+			'Stemmingsinglewords Other 9': 'Stemmingsinglewords Other 9',
+			'Stemmingsinglewords Other 10': 'Stemmingsinglewords Other 10',
+			'Stemmingsinglewords Other 11': 'Stemmingsinglewords Other 11',
+			'Stemmingsinglewords Other 12': 'Stemmingsinglewords Other 12',
+		}
+	} ) );
+
 	// This needs to be the *last* hook added. That gives us some hope that everything
 	// else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 	// the completion suggester
@@ -175,8 +249,10 @@ defineSupportCode( function( { After, Before } ) {
 				"はーい": "makes sure we do not fail to index empty tokens (T156234)"
 			}
 		};
-		yield client.batch( batchJobs );
-		yield waitForBatch.call( this, batchJobs );
+		yield Promise.all( [
+			client.batch( batchJobs ),
+			waitForBatch.call( this, batchJobs )
+		] );
 		yield client.request( {
 			action: 'cirrus-suggest-index'
 		} );

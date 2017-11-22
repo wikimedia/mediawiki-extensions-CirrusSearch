@@ -1,13 +1,17 @@
 /*jshint esversion: 6, node:true */
 
-var {defineSupportCode} = require( 'cucumber' );
-var Promise = require( 'bluebird' );
-var MWBot = require( 'mwbot' );
+const {defineSupportCode} = require( 'cucumber' );
+const Promise = require( 'bluebird' ); // jshint ignore:line
+const MWBot = require( 'mwbot' );
+const fs = require( 'fs' );
+const path = require( 'path' );
+// TODO: Move all the articles from browser to integration
+const articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/browser/articles/';
 
 defineSupportCode( function( { After, Before } ) {
-	let BeforeOnce = function ( options, fn ) {
+	const BeforeOnce = function ( options, fn ) {
 		Before( options, Promise.coroutine( function* () {
-			let response = yield this.tags.check( options.tags );
+			const response = yield this.tags.check( options.tags );
 			if ( response === 'new' ) {
 				yield fn.call( this );
 				yield this.tags.complete( options.tags );
@@ -15,7 +19,7 @@ defineSupportCode( function( { After, Before } ) {
 		} ) );
 	};
 
-	let waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
+	const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
 		let stepHelpers;
 		if ( batchJobs === undefined ) {
 			stepHelpers = this.stepHelpers;
@@ -23,7 +27,7 @@ defineSupportCode( function( { After, Before } ) {
 		} else {
 			stepHelpers = this.stepHelpers.onWiki( wiki );
 		}
-		let queue = [];
+		const queue = [];
 		if ( Array.isArray( batchJobs ) ) {
 			for ( let job of batchJobs ) {
 				queue.push( [ job[0], job[1] ] );
@@ -51,22 +55,37 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} );
 
-	let runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
+	const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
 		let client;
 		if ( batchJobs === undefined ) {
 			batchJobs = wiki;
-			client = yield this.onWiki();
-		} else {
-			client = yield this.onWiki( wiki );
+			wiki = this.config.wikis.default;
 		}
+		client = yield this.onWiki( wiki );
 
 		// Run both in parallel so we don't have to wait for the batch to finish
 		// to start checking things. Hopefully they run in the same order...
 		yield Promise.all( [
 			client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
-			waitForBatch.call( this, batchJobs )
+			waitForBatch.call( this, wiki, batchJobs )
 		] );
 	} );
+
+	// Helpers for defining mwbot jobs in array syntax. Mostly needed
+	// for upload to specify text, but others come along for the ride
+	const job = {
+		delete: (title) => ['delete', title],
+		edit: ( title, text ) => {
+			if ( text[0] === '@' ) {
+				text = fs.readFileSync( articlePath + text.substr( 1 ) ).toString();
+			}
+			return [ 'edit', title, text ];
+		},
+		upload: ( fileName, text ) => {
+			const pathToFile = articlePath + fileName;
+			return [ 'upload', fileName, pathToFile, '', { text: text } ];
+		}
+	};
 
 	BeforeOnce( { tags: "@clean" }, runBatchFn( {
 		delete: [ 'DeleteMeRedirect' ]
@@ -129,15 +148,14 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@setup_main or @prefix or @bad_syntax" }, runBatchFn( {
+	BeforeOnce( { tags: "@setup_main or @prefix or @bad_syntax" }, runBatchFn( [
 		// TODO: File upload
 		// And a file named File:Savepage-greyed.png exists with contents Savepage-greyed.png and description Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 .
-		edit: {
-			"Rdir": "#REDIRECT [[Two Words]]",
-			"IHaveAVideo": "[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]",
-			"IHaveASound": "[[File:Serenade for Strings -mvt-1- Elgar.ogg]]"
-		}
-	} ) );
+		job.edit( "Rdir", "#REDIRECT [[Two Words]]" ),
+		job.edit( "IHaveAVideo", "[[File:How to Edit Article in Arabic Wikipedia.ogg|thumb|267x267px]]" ),
+		job.edit( "IHaveASound", "[[File:Serenade for Strings -mvt-1- Elgar.ogg]]" ),
+		job.upload(  "Savepage-greyed.png", "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." )
+	] ) );
 
 	BeforeOnce( { tags: "@setup_main or @prefix or @go or @bad_syntax" }, runBatchFn( {
 		edit: {
@@ -228,7 +246,7 @@ defineSupportCode( function( { After, Before } ) {
 	// This needs to be the *last* hook added. That gives us some hope that everything
 	// else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 	// the completion suggester
-	BeforeOnce( { tags: "@suggest", timeout: 60000 }, Promise.coroutine( function* () {
+	BeforeOnce( { tags: "@suggest", timeout: 90000 }, Promise.coroutine( function* () {
 		let client = yield this.onWiki();
 		let batchJobs = {
 			edit: {
@@ -266,4 +284,23 @@ defineSupportCode( function( { After, Before } ) {
 		} );
 	} ) );
 
+	BeforeOnce( { tags: "@filesearch" }, Promise.coroutine( function* () {
+		// Unfortunatly the current deduplication between wikis requires a file
+		// be uploaded to commons before it's uploaded to any other wiki, or the
+		// other wiki isn't tagged.
+		yield runBatchFn( 'commons', [
+			job.upload( "DuplicatedLocally.svg", "File stored on commons and duplicated locally" ),
+			job.upload( "OnCommons.svg", "File stored on commons for test purposes" ),
+		] ).call( this );
+
+		yield runBatchFn( [
+			job.upload( 'No_SVG.svg', "[[Category:Red circle with left slash]]" ),
+			job.upload( 'Somethingelse_svg_SVG.svg', "[[Category:Red circle with left slash]]" ),
+			job.upload( 'Linux_Distribution_Timeline_text_version.pdf', "Linux distribution timeline." ),
+			job.upload( 'Savepage-greyed.png', "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." ),
+			job.upload( 'DuplicatedLocally.svg', "Locally stored file duplicated on commons" ),
+			job.delete( 'File:Frozen.svg' ),
+		] ).call( this );
+
+	} ) );
 } );

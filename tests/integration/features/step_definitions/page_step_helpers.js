@@ -163,7 +163,17 @@ class StepHelpers {
 		} ).call( this );
 	}
 
-	checkExists( title ) {
+	/**
+	 * Call query api with cirrusdoc prop to return the docs identified
+	 * by title that are indexed in elasticsearch.
+	 *
+	 * NOTE: Multiple docs can be returned if the doc identified by title is indexed
+	 * over multiple indices (content/general).
+	 *
+	 * @param {string} title page title
+	 * @returns {Promise.<[]>} resolves to an array of indexed docs or null if title not indexed
+	 */
+	getCirrusIndexedContent( title ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 			let response = yield client.request( {
@@ -183,11 +193,23 @@ class StepHelpers {
 			}
 			for ( let page of response.query.pages ) {
 				if ( page.title === title ) {
-					// without boolean cast we could return undefined
-					return Boolean( page.cirrusdoc && page.cirrusdoc.length > 0 );
+					return page.cirrusdoc;
 				}
 			}
-			return false;
+			return null;
+		} ).call( this );
+	}
+
+	/**
+	 * Check if title is indexed
+	 * @param {string} title
+	 * @returns {Promise.<boolean>} resolves to a boolean
+	 */
+	checkExists( title ) {
+		return Promise.coroutine( function* () {
+			let content = yield this.getCirrusIndexedContent( title );
+			// without boolean cast we could return undefined
+			return Boolean(content && content.length > 0);
 		} ).call( this );
 	}
 

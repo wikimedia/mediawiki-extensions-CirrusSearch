@@ -79,6 +79,7 @@ exports.config = {
 	],
 	cucumberOpts: {
 		tagsInTitle: true,
+		timeout: 60000,
 		require: [
 			relPath('./integration/features/support/world.js'),
 			relPath('./integration/features/support/hooks.js'),

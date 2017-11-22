@@ -12,9 +12,21 @@ defineSupportCode( function( { After, Before } ) {
 	const BeforeOnce = function ( options, fn ) {
 		Before( options, Promise.coroutine( function* () {
 			const response = yield this.tags.check( options.tags );
-			if ( response === 'new' ) {
-				yield fn.call( this );
+			if ( response  === 'complete' ) {
+				return;
+			} else if ( response === 'new' ) {
+				try {
+					yield fn.call( this );
+				} catch ( err ) {
+					console.log( `Failed initializing tag ${ options.tags }: `, err );
+					yield this.tags.reject( options.tags );
+					return;
+				}
 				yield this.tags.complete( options.tags );
+			} else if ( response === 'reject' ) {
+				throw new Error( 'Tag failed to initialize previously' );
+			} else {
+				throw new Error( 'Unknown tag check response: ' + response );
 			}
 		} ) );
 	};

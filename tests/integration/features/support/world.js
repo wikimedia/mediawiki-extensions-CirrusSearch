@@ -1,5 +1,5 @@
 /*jshint esversion: 6, node:true */
-/*global browser, console */
+/*global browser */
 
 /**
  * The World is a container for global state shared across test steps.
@@ -12,6 +12,7 @@
  */
 const {defineSupportCode} = require( 'cucumber' ),
 	net = require( 'net' ),
+	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
 	Page = require( './pages/page' ),
@@ -29,7 +30,7 @@ class TagClient {
 		this.pendingResponses = {};
 		this.connection.on( 'data', ( data ) => {
 			let parsed = JSON.parse( data );
-			console.log( `received response for request ${parsed.requestId}: ${data}` );
+			log( `received response for request ${parsed.requestId}: ${data}` );
 			if ( parsed && this.pendingResponses[parsed.requestId] ) {
 				this.pendingResponses[parsed.requestId]( parsed );
 				delete this.pendingResponses[parsed.requestId];
@@ -41,7 +42,7 @@ class TagClient {
 		req.requestId = this.nextRequestId++;
 		return new Promise( ( resolve ) => {
 			let data = JSON.stringify( req );
-			console.log( `Issuing request: ${data}` );
+			log( `Issuing request: ${data}` );
 			this.pendingResponses[req.requestId] = resolve;
 			this.connection.write( data );
 		} );
@@ -50,17 +51,27 @@ class TagClient {
 	check( tag ) {
 		return Promise.coroutine( function* () {
 			if ( this.tags[tag] ) {
-				return 'complete';
+				return this.tags[tag];
 			}
 			let response = yield this.request( {
 				check: tag
 			} );
-			this.tags[tag] = true;
+			if ( response.status === 'complete' || response.status === 'reject' ) {
+				this.tags[tag] = response.status;
+			}
 			return response.status;
 		} ).call( this );
 	}
 
+	reject( tag ) {
+		this.tags[tag] = 'reject';
+		return this.request( {
+			reject: tag
+		} );
+	}
+
 	complete( tag ) {
+		this.tags[tag] = 'complete';
 		return this.request( {
 			complete: tag
 		} );
@@ -157,10 +168,10 @@ function World( { attach, parameters } ) {
 		if ( !tmpUrl ) {
 			throw Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
-		console.log( `Visiting page: ${tmpUrl}` );
+		log( `Visiting page: ${tmpUrl}` );
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
-		console.log( `Visited page: ${browser.getUrl()}` );
+		log( `Visited page: ${browser.getUrl()}` );
 	};
 
 	// Variables held between steps and substituted into queries

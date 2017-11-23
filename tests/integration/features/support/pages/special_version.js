@@ -1,10 +1,10 @@
 /*jshint esversion: 6, node:true */
 
-var Page = require('./page');
+const TitlePage = require('./title_page');
 
-class SpecialVersion extends Page {
-	constructor() {
-		super();
+class SpecialVersion extends TitlePage {
+	constructor( title ) {
+		super( title );
 	}
 
 	software_table_row( name ) {

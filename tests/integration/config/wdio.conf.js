@@ -39,17 +39,20 @@ exports.config = {
 		cirrustest: {
 			username: 'Admin',
 			password: 'vagrant',
-			apiUrl: 'http://cirrustest.wiki.local.wmftest.net:8080/w/api.php'
+			apiUrl: 'http://cirrustest.wiki.local.wmftest.net:8080/w/api.php',
+			baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
 		},
 		commons: {
 			username: 'Admin',
 			password: 'vagrant',
-			apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php'
+			apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php',
+			baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
 		},
 		ru: {
 			username: 'Admin',
 			password: 'vagrant',
-			apiUrl: 'http://ru.wiki.local.wmftest.net:8080/w/api.php'
+			apiUrl: 'http://ru.wiki.local.wmftest.net:8080/w/api.php',
+			baseUrl: 'http://ru.wiki.local.wmftest.net:8080'
 		},
 		beta: {},
 		test2: {},
@@ -84,7 +87,8 @@ exports.config = {
 			relPath('./integration/features/support/world.js'),
 			relPath('./integration/features/support/hooks.js'),
 			relPath('./integration/features/step_definitions/page_step_helpers.js'),
-			relPath('./integration/features/step_definitions/page_steps.js')
+			relPath('./integration/features/step_definitions/page_steps.js'),
+			relPath('./integration/features/step_definitions/search_steps.js')
 		]
 	},
 	// Patterns to exclude.
@@ -145,18 +149,6 @@ exports.config = {
 	//
 	// Saves a screenshot to a given path if a command fails.
 	screenshotPath: './log/',
-	//
-	// Set a base URL in order to shorten url command calls. If your url parameter starts
-	// with "/", then the base url gets prepended.
-	baseUrl: (
-		process.env.MW_SERVER === undefined ?
-			'http://dev.wiki.local.wmftest.net:8080' :
-			process.env.MW_SERVER
-	) + (
-		process.env.MW_SCRIPT_PATH === undefined ?
-			'/w' :
-			process.env.MW_SCRIPT_PATH
-	),
 	//
 	// Default timeout for all waitFor* commands.
 	waitforTimeout: 20000,

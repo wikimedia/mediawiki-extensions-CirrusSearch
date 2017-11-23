@@ -361,4 +361,8 @@ defineSupportCode( function( {Given, When, Then} ) {
 			return expect( found, msg ).to.be.true;
 		} ).call( this );
 	} );
+
+	Then(/^I am on a page titled (.*)$/, function( title ) {
+		expect(ArticlePage.articleTitle, `I am on ${title}`).to.equal(title);
+	} );
 });

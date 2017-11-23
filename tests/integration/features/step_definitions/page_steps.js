@@ -12,6 +12,7 @@
 const defineSupportCode = require('cucumber').defineSupportCode,
 	SpecialVersion = require('../support/pages/special_version'),
 	ArticlePage = require('../support/pages/article_page'),
+	TitlePage = require('../support/pages/title_page'),
 	expect = require( 'chai' ).expect,
 	querystring = require( 'querystring' ),
 	Promise = require( 'bluebird' ); // jshint ignore:line
@@ -39,7 +40,7 @@ function withApi( world, fn ) {
 defineSupportCode( function( {Given, When, Then} ) {
 
 	When( /^I go to (.*)$/, function ( title ) {
-		return this.visit( ArticlePage.title( title ) );
+		return this.visit( new TitlePage( title ) );
 	} );
 
 	When( /^I ask suggestion API for (.*)$/, function ( query ) {
@@ -152,9 +153,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 				// Chai doesnt (yet) have a native assertion for this:
 				// https://github.com/chaijs/chai/issues/858
 				let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
-				return expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.be.true;
+				expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.equal(true);
 			} else {
-				return expect( found ).to.include(title);
+				expect( found ).to.include(title);
 			}
 		}
 	}
@@ -173,9 +174,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 			let msg = `Expected ${JSON.stringify(found)} to${not_searching ? ' not' : ''} include ${title}`;
 
 			if ( not_searching ) {
-				return expect( ok, msg ).to.be.false;
+				expect( ok, msg ).to.equal(false);
 			} else {
-				return expect( ok, msg ).to.be.true;
+				expect( ok, msg ).to.equal(true);
 			}
 		} );
 	} );
@@ -209,7 +210,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	Then( /there are no errors reported by the api/, function () {
 		return withApi( this, () => {
-			return expect( this.apiError ).to.be.undefined;
+			expect( this.apiError ).to.equal(undefined);
 		} );
 	} );
 
@@ -358,11 +359,15 @@ defineSupportCode( function( {Given, When, Then} ) {
 				yield stepHelpers.waitForMs( 100 );
 			} while ( ( new Date() - time ) < ( seconds * 1000 ) );
 			let msg = `Expected ${page} on commons to have ${value} in local_sites_with_dupe within ${seconds}s.`;
-			return expect( found, msg ).to.be.true;
+			expect( found, msg ).to.equal(true);
 		} ).call( this );
 	} );
 
 	Then(/^I am on a page titled (.*)$/, function( title ) {
 		expect(ArticlePage.articleTitle, `I am on ${title}`).to.equal(title);
+	} );
+
+	Given(/^I am at a random page$/, function() {
+		return this.visit( new TitlePage( 'Special:Random' ) );
 	} );
 });

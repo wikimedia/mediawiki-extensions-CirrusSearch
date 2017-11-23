@@ -25,6 +25,9 @@
 	"apihelp-cirrus-settings-dump-description": "Резервен склад на поставките на CirrusSearch за ова вики.",
 	"apihelp-cirrus-settings-dump-summary": "Резервен склад на поставките на CirrusSearch за ова вики.",
 	"apihelp-cirrus-settings-dump-example": "Дај резервен склад на поставките на CirrusSearch за ова вики.",
+	"apihelp-query+cirrusdoc-description": "Склад за статиски документ на CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Резервен склад на статиски документ на CirrusSearch",
+	"apihelp-query+cirrusdoc-example": "Дја резервен склад на поединечна статија на CirrusSearch.",
 	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Дајте ни ваше мислење",
 	"cirrussearch-morelikethis-settings": " #<!-- не го менувајте редов --> <pre>\n# Поракава ви овозможува да ги наместите поставките за функцијата „повеќе вакви“.\n# Направените промени во поставките веднаш стапуваат на сила.\n# Синтаксата е следнава:\n#   * Сето она од знакот „#“ до крајот на редот е коментар.\n#   * Секој непразен ред е име на поставката последено од знак „:“ проследен од вредноста на поставката\n# Поставките се :\n#   * min_doc_freq (цел број): Најмал број на документи (по одделок) на кои ќе им треба израз за да се земат предвид.\n#   * max_doc_freq (цел број): Најмал број на документи (по одделок) што имаат израз за земање предвид.\n#                   Позастапени поими начелно се „шумни зборови“.\n#   * max_query_terms (цел број): Најголем број на изрази за земање предвид. Оваа вредност е ограничена на $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n#   * min_term_freq (цел број): Најмалку јавувања на изразот во вносот на документот што се зема предвид. За мали полиња (наслов) оваа вредност треба да биде 1.\n#   * minimum_should_match (постоток од -100% до 100%, или цел број во изрази). По основно: 30%.\n#   * min_word_len (цел број): Најмала должина на изразот што се зема предвид. По основно: 0.\n#   * max_word_len (цел број): Најголема должина на зборовите над која истите ќе бидат занемарени. По основно: без ограничување (0).\n#   * fields (список на вредности одделени со запирка): Ова се полињата што ќе се користат. Допуштени се наслов, текст, auxiliary_text (помошен текст), opening_text (воведен текст), заглавија и сите.\n# Примери за добри редови:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# percent_terms_to_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# use_fields:true\n# </pre> <!-- не го менувајте редов -->",
@@ -39,8 +42,8 @@
 	"cirrussearch-completion-profile-fuzzy": "Сличен на нормалниот, со исправка на грешки при пишување (поддржани се две)",
 	"cirrussearch-completion-profile-fast-fuzzy": "Пробен неодреден профил (може да се отстрани во секое време)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Слично на нормалното, со исправка на грешки (поддржани се две грешки). Наоѓа и потфрази (можат да бидат потфрази или потстраници зависно од внатрешната поставеност на викито).",
-	"cirrussearch-qi-profile-classic": "Котирање според бројот на дојдовни врски, некои шаблони, јазик на статијата и скорешност (шаблоните/јазикот/скорешноста може да не се активираат на ова вики).",
-	"cirrussearch-qi-profile-classic-noboostlinks": "Котирање според бројот на дојдовни врски, некои шаблони, јазик на статијата и скорешност кога ќе се активираат на ова вики.",
+	"cirrussearch-qi-profile-classic": "Котирање според бројот на дојдовни врски, некои шаблони, јазик на јазикот на страницата и скорешност (шаблоните/јазикот/скорешноста може да не се активираат на ова вики).",
+	"cirrussearch-qi-profile-classic-noboostlinks": "Котирање според бројот на дојдовни врски, некои шаблони, јазик на страницата и скорешност кога ќе се активираат на ова вики.",
 	"cirrussearch-qi-profile-empty": "Котирање исклучиво според функции зависни од барањето (само за отстранување грешки).",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Натежнат збир според дојдовни врски и неделни посети",
 	"cirrussearch-qi-profile-wsum-inclinks": "Натежнат збир според дојдовни врски",
@@ -52,7 +55,7 @@
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Допишувачки предлагач] е алгоротам за предлози при пребарување со подобра исправка на погрешно внесеното и унапредена релевантност на најденото.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По основно (препорачано)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправува до два грешни знака. Ги решава блиските пренасочувања.",
-	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Наоѓање подизрази (препорачано за подолги наслови на статии)",
+	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Наоѓање подизрази (препорачано за подолги наслови на страници)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Исправува до два грешни знака. Ги решава блиските пренасочувања. Наоѓа подизраз во насловите.",
 	"cirrussearch-completion-profile-strict-pref-name": "Строг режим (напредно)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Без исправка на погрешно внесеното. Без исправка за надредни/подредни знаци. Строго совпаѓање.",
@@ -78,5 +81,5 @@
 	"cirrussearch-explore-similar-languages": "Јазици",
 	"cirrussearch-explore-similar-related-none": "Нема поврзани страници на располагање",
 	"cirrussearch-explore-similar-categories-none": "Нема категории на располагање",
-	"cirrussearch-explore-similar-languages-none": "Не е достапно во месните јазици"
+	"cirrussearch-explore-similar-languages-none": "Не е достапно на други јазици"
 }

@@ -16,5 +16,8 @@
 	"cirrussearch-boost-templates": " #<!-- non modificar in alcun modo iste linea --> <pre>\n# Si un pagina contine un de iste patronos alora su punctage de recerca es multiplicate per le percentage configurate.\n# Cambios a isto essera effective immediatemente.\n# Le syntaxe es le sequente:\n#   * Toto ab un character \"#\" al fin del linea es un commento\n#   * Cata linea non vacue debe continer le nomine exacte del patrono a promover, incluse le spatio de nomines, majusculas e minusculas correcte e toto altere, sequite per un character \"|\", un numero e un character \"%\".\n# Exemplos de bon lineas:\n# Patrono:Bon|150%\n# Patrono:Multo multo bon|300%\n# Patrono:Mal|50%\n# Exemplos de lineas que non functiona:\n# Patrono:Exemplo|150.234234% <-- decimales non permittite!\n# Exemplo|150% <--- functiona technicamente, ma solo pro transclusiones del pagina Exemplo ab le spatio de nomines principal\n# Pro testar le cambios de configuration, exeque un recerca prefixate con boost-templates:\"XX\" ubi XX representa tote le patronos que tu vole promover, separate per spatios e non saltas de linea.\n# Le recercas que specifica boost-templates:\"XX\" ignora le contento de iste campo.\n #</pre> <!-- non modificar in alcun modo iste linea -->",
 	"cirrussearch-pref-label": "Nove recerca",
 	"cirrussearch-pref-desc": "Essaya nostre nove motor de recerca que supporta un numero major de linguas, forni resultatos plus actual e pote mesmo cercar texto intra patronos.",
-	"apihelp-cirrus-config-dump-summary": "Copia del configuration CirrusSearch."
+	"apihelp-cirrus-config-dump-summary": "Copia del configuration CirrusSearch.",
+	"apihelp-query+cirrusdoc-description": "Instantaneo del documento de un articulo CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Instantaneo del documento de un articulo CirrusSearch",
+	"apihelp-query+cirrusdoc-example": "Obtener un instantaneo de un articulo CirrusSearch individual."
 }

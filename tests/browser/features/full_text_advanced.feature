@@ -26,9 +26,9 @@ Feature: Full text search advanced features
       And I click the <filters> labels
       And I search for <term>
     Then I am on a page titled Search results
-      And <first_result> the first search result
+      And <first_result> is the first search result
   Examples:
-    | filters             | term     | first_result      |
-    | Talk, Help          | catapult | Talk:Two Words is |
-    | Help, Help talk     | catapult | none is           |
-    | (Main) or (Article) | catapult | Catapult is in    |
+    | filters             | term     | first_result   |
+    | Talk, Help          | catapult | Talk:Two Words |
+    | Help, Help talk     | catapult | none           |
+    | (Main) or (Article) | catapult | Catapult       |

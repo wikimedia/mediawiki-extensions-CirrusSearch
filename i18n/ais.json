@@ -6,7 +6,7 @@
 		]
 	},
 	"cirrussearch-desc": "sapihica Elasticsearch kalapalana’an MediaWiki sapikilim sakaluk",
-	"cirrussearch-backend-error": "izay nanuzuay a munday, la’cus kami pahezek numisyay a kilim. pihalhalen miteneng aca.",
+	"cirrussearch-backend-error": "izay nanuzuay a munday, la’cus kami pahezek numisyay a kilim. pihalhalen mitanam aca.",
 	"cirrussearch-parse-error": "la’cus matineng palalitemuh tu kawaw sakacucek, pimadayumay palalitemuh tu kawaw sakacucek. kya palalitemuh tu kawaw amapasulitan apasakapah mikilim  sisetyimo.",
 	"cirrussearch-too-busy-error": "kilim-inzin makalah ayza. pahalhal satu pitanam aca.",
 	"cirrussearch-regex-syntax-error": "tatungusay pakatineng a zateng kamu-sakilul mungangaw i $2: $1",

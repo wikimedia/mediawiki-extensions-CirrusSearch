@@ -162,7 +162,9 @@ defineSupportCode( function( { After, Before } ) {
 			"\u0935\u093e\u0919\u094d\u200c\u092e\u092f": "\u0935\u093e\u0919\u094d\u200c\u092e\u092f",
 			"ChangeMe": "foo",
 			"Wikitext": "{{#tag:somebug}}",
-			"Page with non ascii letters": "ἄνθρωπος, широкий"
+			"Page with non ascii letters": "ἄνθρωπος, широкий",
+			"Waffle Squash": articleText("wafflesquash.txt"),
+			"Waffle Squash 2": "waffle<br>squash"
 		}
 	} ) );
 

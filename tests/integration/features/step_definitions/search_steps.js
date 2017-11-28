@@ -3,9 +3,10 @@
 const defineSupportCode = require('cucumber').defineSupportCode,
 	SearchResultsPage = require('../support/pages/search_results_page'),
 	ArticlePage = require('../support/pages/article_page'),
+	TitlePage = require('../support/pages/title_page'),
 	expect = require( 'chai' ).expect;
 
-defineSupportCode( function( {Then,When} ) {
+defineSupportCode( function( {Then,When,Given} ) {
 	When( /^I go search for (.*)$/, function ( title ) {
 		return this.visit( SearchResultsPage.search( title ) );
 	} );
@@ -37,8 +38,28 @@ defineSupportCode( function( {Then,When} ) {
 
 	Then( /^(.*) is the first search result$/, function (result) {
 		let msg = `${result} is the first search result`;
-		expect(SearchResultsPage.is_on_srp(), msg).to.equal(true);
-		expect(SearchResultsPage.has_search_results(), msg).to.equal(true);
-		expect(SearchResultsPage.get_result_at(1), msg).to.equal( result );
+		if ( result === "none" ) {
+			expect(SearchResultsPage.has_search_results(), msg).to.equal(false);
+		} else {
+			expect(SearchResultsPage.is_on_srp(), msg).to.equal(true);
+			expect(SearchResultsPage.has_search_results(), msg).to.equal(true);
+			expect(SearchResultsPage.get_result_at(1), msg).to.equal(result);
+		}
+	} );
+
+	Given( /^I am at the search results page$/, function() {
+		this.visit( new TitlePage( 'Special:Search' ) );
+	} );
+
+	When( /^I click the (.*) link$/, function( filter ) {
+		SearchResultsPage.click_filter( filter );
+	} );
+
+	When( /^I click the (.*) labels?$/, function( filter ) {
+		let and_labels = filter.split(/, /, 10);
+		for ( let labels of and_labels ) {
+			let or_labels = labels.split(/ or /, 10);
+			SearchResultsPage.select_namespaces( or_labels, true );
+		}
 	} );
 });

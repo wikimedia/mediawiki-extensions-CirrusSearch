@@ -32,8 +32,8 @@ class SearchResultsPage extends Page {
 	}
 
 	is_on_srp() {
-		// Q: why selecting form.search div.mw-search-top-table does not work?
-		return browser.elements("form#search div#mw-search-top-table").value.length > 0;
+		return browser.elements("form#search div#mw-search-top-table").value.length > 0 ||
+			browser.elements("form#powersearch div#mw-search-top-table").value.length > 0;
 	}
 
 	set search_query(search ) {
@@ -45,11 +45,53 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_at( nth ) {
-		return browser.getText( `ul.mw-search-results li div.mw-search-result-heading a[data-serp-pos=\"${nth-1}\"]` );
+		return browser.getAttribute( `ul.mw-search-results li div.mw-search-result-heading a[data-serp-pos=\"${nth-1}\"]`, 'title' );
 	}
 
 	click_search() {
-		browser.click( "#simpleSearch #searchButton" );
+		let forms = ['form#powersearch', 'form#search'];
+		for( let form of forms ) {
+			let elt = browser.element( form );
+			if ( elt.value ) {
+				elt.click('button[type="submit"]');
+				return;
+			}
+		}
+		throw new Error("Cannot click the search button, are you on the Search page?");
+	}
+
+	/**
+	 * @param {string} filter
+	 */
+	click_filter( filter ) {
+		let linkSel = `a=${filter}`;
+		browser.element( 'div.search-types' ).click( linkSel );
+	}
+
+	/**
+	 * @param {Array.<string>} namespaceLabels
+	 * @param {boolean} first true to select first, false to select all
+	 */
+	select_namespaces( namespaceLabels, first ) {
+		let elt = browser.element( 'form#powersearch fieldset#mw-searchoptions' );
+		if ( !elt.value ) {
+			throw new Error( "Cannot find the namespace filters, did you click on 'Advanced' first?" );
+		}
+		for ( let nsLabel of namespaceLabels ) {
+			let labelSel = `label=${nsLabel}`;
+			let label = elt.element( labelSel );
+			if ( label.value ) {
+				label.click();
+				if ( first ) {
+					return;
+				}
+			} else if ( !first ) {
+				throw new Error( `Count not find namespace labeled as ${nsLabel}` );
+			}
+		}
+		if ( first ) {
+			throw new Error( `Count not find any namespace link labeled as ${namespaceLabels.join()}` );
+		}
 	}
 }
 

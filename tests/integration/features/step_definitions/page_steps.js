@@ -152,9 +152,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 				// Chai doesnt (yet) have a native assertion for this:
 				// https://github.com/chaijs/chai/issues/858
 				let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
-				expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.be.true; // jshint ignore:line
+				return expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.be.true;
 			} else {
-				expect( found ).to.include(title);
+				return expect( found ).to.include(title);
 			}
 		}
 	}
@@ -173,9 +173,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 			let msg = `Expected ${JSON.stringify(found)} to${not_searching ? ' not' : ''} include ${title}`;
 
 			if ( not_searching ) {
-				expect( ok, msg ).to.be.false; // jshint ignore:line
+				return expect( ok, msg ).to.be.false;
 			} else {
-				expect( ok, msg ).to.be.true; // jshint ignore:line
+				return expect( ok, msg ).to.be.true;
 			}
 		} );
 	} );
@@ -209,7 +209,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	Then( /there are no errors reported by the api/, function () {
 		return withApi( this, () => {
-			expect( this.apiError ).to.be.undefined; // jshint ignore:line
+			return expect( this.apiError ).to.be.undefined;
 		} );
 	} );
 
@@ -268,7 +268,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		// TODO: This is actually a *did you mean* suggestion
 		return withApi( this, () => {
 			expect( this.apiResponse.query.searchinfo ).to.include.any.keys( 'suggestionsnippet', 'rewrittenquerysnippet' );
-			var suggestion = this.apiResponse.query.searchinfo.suggestionsnippet ||
+			let suggestion = this.apiResponse.query.searchinfo.suggestionsnippet ||
 				this.apiResponse.query.searchinfo.rewrittenquerysnippet;
 			suggestion = suggestion.replace(/<em>/g, "*").replace(/<\/em>/g, "*").replace(/&quot;/g, '"');
 			if ( second ) {
@@ -339,5 +339,26 @@ defineSupportCode( function( {Given, When, Then} ) {
 			stepHelpers = stepHelpers.onWiki( 'commons' );
 		}
 		return stepHelpers.uploadFile( title, fileName, description );
+	} );
+
+	Then(/^within (\d+) seconds (.*) has (.*) as local_sites_with_dupe$/, function (seconds, page, value) {
+		return Promise.coroutine( function* () {
+			let stepHelpers = this.stepHelpers.onWiki( 'commons' );
+			let time = new Date();
+			let found = false;
+			main: do {
+				let content = yield stepHelpers.getCirrusIndexedContent( page );
+				if ( content ) {
+					for ( let doc of content ) {
+						found = doc.source && doc.source.local_sites_with_dupe &&
+							doc.source.local_sites_with_dupe.indexOf( value ) > -1;
+						if ( found ) break main;
+					}
+				}
+				yield stepHelpers.waitForMs( 100 );
+			} while ( ( new Date() - time ) < ( seconds * 1000 ) );
+			let msg = `Expected ${page} on commons to have ${value} in local_sites_with_dupe within ${seconds}s.`;
+			return expect( found, msg ).to.be.true;
+		} ).call( this );
 	} );
 });

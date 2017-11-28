@@ -418,4 +418,101 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			$this->assertEquals( $expected, $builder->buildConfig() );
 		}
 	}
+
+	public function languageConfigDataProvider() {
+		$emptyConfig = [
+			'analyzer' => [],
+			'filter' => [],
+			'char_filter' => []
+		];
+		$allPlugins = [
+			'extra',
+			'analysis-icu',
+			'analysis-stempel',
+			'analysis-kuromoji',
+			'analysis-smartcn',
+			'analysis-hebrew',
+			'analysis-ukrainian',
+			'analysis-stconvert'
+		];
+
+		return [
+			"some languages" => [
+				[ 'en', 'ru', 'es', 'de', 'zh' ],
+				$emptyConfig,
+				$allPlugins,
+				'en-ru-es-de-zh',
+			],
+			// sv has custom icu_folding filter
+			"sv" => [
+				[ 'en', 'zh', 'sv' ],
+				$emptyConfig,
+				$allPlugins,
+				'en-zh-sv',
+			],
+			"with plugins" => [
+				[ 'he', 'uk' ],
+				$emptyConfig,
+				$allPlugins,
+				'he-uk',
+			],
+			"without language plugins" => [
+				[ 'he', 'uk' ],
+				$emptyConfig,
+				[ 'extra', 'analysis-icu' ],
+				'he-uk-nolang',
+			],
+			"without any plugins" => [
+				[ 'he', 'uk' ],
+				$emptyConfig,
+				[],
+				'he-uk-noplug',
+			],
+			"all default languages" => [
+				[ 'ch', 'fy', 'kab', 'ti', 'xmf' ],
+				$emptyConfig,
+				[ 'extra', 'analysis-icu' ],
+				'all_defaults',
+			],
+		];
+	}
+
+	/**
+	 * @param string[] $languages
+	 * @param array $oldConfig
+	 * @param string[] $plugins
+	 * @param string $expectedConfig Filename with expected config
+	 * @dataProvider languageConfigDataProvider
+	 */
+	public function testAnalysisConfig( $languages, $oldConfig, $plugins, $expectedConfig ) {
+		// We use these static settings because we rely on tests in main
+		// AnalysisConfigBuilderTest to handle variations
+		$config = new HashSearchConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
+
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
+		$prevConfig = $oldConfig;
+		$builder->buildLanguageConfigs( $oldConfig, $languages,
+			[ 'plain', 'plain_search', 'text', 'text_search' ] );
+		$expectedFile = __DIR__ . "/../fixtures/analyzer/$expectedConfig.expected";
+		if ( is_file( $expectedFile ) ) {
+			$expected = json_decode( file_get_contents( $expectedFile ), true );
+			$this->assertEquals( $expected, $oldConfig );
+		} else {
+			file_put_contents( $expectedFile, json_encode( $oldConfig, JSON_PRETTY_PRINT ) );
+			$this->markTestSkipped( "Generated new fixture" );
+		}
+
+		$oldConfig = $prevConfig;
+		$builder->buildLanguageConfigs( $oldConfig, $languages,
+			[ 'plain', 'plain_search' ] );
+		$expectedFile = __DIR__ . "/../fixtures/analyzer/$expectedConfig.plain.expected";
+		if ( is_file( $expectedFile ) ) {
+			$expected = json_decode( file_get_contents( $expectedFile ), true );
+			$this->assertEquals( $expected, $oldConfig );
+		} else {
+			file_put_contents( $expectedFile, json_encode( $oldConfig, JSON_PRETTY_PRINT ) );
+			$this->markTestSkipped( "Generated new fixture" );
+		}
+	}
+
 }

@@ -157,7 +157,7 @@ function World( { attach, parameters } ) {
 	// Shortcut for browser.url(), accepts a Page object
 	// as well as a string, assumes the Page object
 	// has a url property
-	this.visit = function( page ) {
+	this.visit = function( page, wiki = this.config.wikis.default ) {
 		var tmpUrl;
 		if ( page instanceof Page && page.url ) {
 			tmpUrl = page.url;
@@ -168,6 +168,7 @@ function World( { attach, parameters } ) {
 		if ( !tmpUrl ) {
 			throw Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
+		tmpUrl = this.config.wikis[wiki].baseUrl + tmpUrl;
 		log( `Visiting page: ${tmpUrl}` );
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.

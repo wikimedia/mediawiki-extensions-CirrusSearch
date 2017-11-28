@@ -2,13 +2,12 @@
 /*global browser */
 
 /**
- * The Page object contains shortcuts and properties you would expect
- * to find on a wiki page such as title, url.
+ * The Page object contains shortcuts and properties
  */
 
 class Page {
 
-	constructor( title ){
+	constructor( url ){
 		// tag selector shortcut.
 		// analogous to Ruby's link(:create_link, text: "Create") etc.
 		// assuming first param is a selector, second is text.
@@ -46,25 +45,14 @@ class Page {
 				return elems;
 			};
 		} );
-		this._title = title || '';
-		this._url = `/wiki/${this._title}`;
+		this._url = url;
 	}
 
 	get url() {
 		return this._url;
 	}
-	set url( title ) {
-		this._url = `/wiki/${title}`;
-	}
-
-	title( title ) {
-		if ( !title ) {
-			return this._title;
-		} else {
-			this.url = title;
-			this._title = title;
-			return this;
-		}
+	set url( url ) {
+		this._url = url;
 	}
 }
 module.exports = Page;

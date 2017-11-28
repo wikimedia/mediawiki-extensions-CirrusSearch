@@ -55,16 +55,10 @@ defineSupportCode( function( { After, Before } ) {
 			}
 		}
 
-		let i = 0;
-		for ( let args of queue ) {
-			yield stepHelpers.waitForOperation( ...args );
-			i += 1;
-			MWBot.logStatus( '[=] ', i, queue.length, 'incirrus', args[1] );
-		}
+		yield stepHelpers.waitForOperations(queue, (title, i) => MWBot.logStatus( '[=] ', i, queue.length, 'incirrus', title ));
 	} );
 
-	const chunkifyBatch = ( batchJobs, chunkSize = 10 ) => {
-		let jobs = [];
+	const flattenJobs = ( batchJobs ) => {
 		if ( !Array.isArray(batchJobs) ) {
 			let flatJobs = [];
 			for ( let op in batchJobs ) {
@@ -82,20 +76,9 @@ defineSupportCode( function( { After, Before } ) {
 					}
 				}
 			}
-			batchJobs = flatJobs;
+			return flatJobs;
 		}
-		let chunk = [];
-		for ( let job of batchJobs ) {
-			chunk.push(job);
-			if ( chunk.length === chunkSize ) {
-				jobs.push(chunk);
-				chunk = [];
-			}
-		}
-		if ( chunk.length > 0 ) {
-			jobs.push(chunk);
-		}
-		return jobs;
+		return batchJobs;
 	};
 
 	// Run both in parallel so we don't have to wait for the batch to finish
@@ -103,22 +86,13 @@ defineSupportCode( function( { After, Before } ) {
 	const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 		wiki = wiki || world.config.wikis.default;
 		let client = yield world.onWiki( wiki );
-		// if the batch is too large we may wait too long for a page
-		// that will be added too late.
-		// This is perhaps because when we iterate over object properties
-		// ordering may not be the same when running in mwbot and waitForBatch
-		// We create small chunks to avoid this situation
-		let jobChunks = chunkifyBatch(batchJobs);
-		let i = 0;
-		for ( let chunk of jobChunks ) {
+		batchJobs = flattenJobs(batchJobs);
 			// TODO: If the batch operation fails the waitForBatch will never complete,
 			// it will just stick around forever ...
-			MWBot.logStatus( '[=] ', ++i, jobChunks.length, 'BATCH', `Running ${chunk.length} jobs on ${wiki}` );
-			yield Promise.all([
-				client.batch(chunk, 'CirrusSearch integration test edit', 2),
-				waitForBatch.call(world, wiki, chunk)
-			]);
-		}
+		yield Promise.all([
+			client.batch(batchJobs, 'CirrusSearch integration test edit', 2),
+			waitForBatch.call(world, wiki, batchJobs)
+		]);
 	} );
 
 	const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
@@ -205,7 +179,6 @@ defineSupportCode( function( { After, Before } ) {
 			"\u0935\u093e\u0919\u094d\u200d\u092e\u092f": "\u0935\u093e\u0919\u094d\u200d\u092e\u092f",
 			"\u0935\u093e\u0919\u200d\u094d\u092e\u092f": "\u0935\u093e\u0919\u200d\u094d\u092e\u092f",
 			"\u0935\u093e\u0919\u094d\u200c\u092e\u092f": "\u0935\u093e\u0919\u094d\u200c\u092e\u092f",
-			"ChangeMe": "foo",
 			"Wikitext": "{{#tag:somebug}}",
 			"Page with non ascii letters": "ἄνθρωπος, широкий",
 			"Waffle Squash": articleText("wafflesquash.txt"),
@@ -319,7 +292,6 @@ defineSupportCode( function( { After, Before } ) {
 		yield runBatch( this, false, [
 			job.upload( 'No_SVG.svg', "[[Category:Red circle with left slash]]" ),
 			job.upload( 'Somethingelse_svg_SVG.svg', "[[Category:Red circle with left slash]]" ),
-			job.upload( 'Linux_Distribution_Timeline_text_version.pdf', "Linux distribution timeline." ),
 			job.upload( 'Savepage-greyed.png', "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." ),
 			job.upload( 'DuplicatedLocally.svg', "Locally stored file duplicated on commons" ),
 			job.delete( 'File:Frozen.svg' ),
@@ -401,6 +373,7 @@ defineSupportCode( function( { After, Before } ) {
 			'More Like Me Set 3 Page 3': 'morelikesetthree morelikesetthree',
 			'More Like Me Set 3 Page 4': 'morelikesetthree morelikesetthree',
 			'More Like Me Set 3 Page 5': 'morelikesetthree morelikesetthree',
+			"This is Me": "this is me"
 		}
 	} ) );
 
@@ -508,9 +481,21 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@file_text" }, runBatchFn( [
-		job.upload( 'Linux_Distribution_Timeline_text_version.pdf', 'Linux distribution timeline.' ),
-	] ) );
+	BeforeOnce( { tags: "@file_text or @filesearch" }, Promise.coroutine( function* () {
+		// TODO: this one is really unclear to me, figure out why we need such hack
+		// This file is available on commons.wikimedia.org and because $wgUseInstantCommons is set to true
+		// mwbot may think it's a dup and won't upload it. Use uploadOverwrite to avoid that.
+		// But to use uploadOverwrite we first make sure that the file is not here otherwise mwbot
+		// will complain about perfect duplicate...
+		yield runBatch(this, false, {
+			delete: [
+				'File:Linux_Distribution_Timeline_text_version.pdf',
+			]
+		});
+		yield runBatch(this, false, [
+				job.uploadOverwrite('Linux_Distribution_Timeline_text_version.pdf', 'Linux distribution timeline.')
+		] );
+	} ) );
 
 	BeforeOnce( { tags: "@match_stopwords" }, runBatchFn( {
 		edit: {
@@ -533,8 +518,22 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@relevancy", timeout: 120000 }, runBatchFn( {
+	BeforeOnce( { tags: "@relevancy", timeout: 160000 }, runBatchFn( {
 		edit: {
+			'Relevancyredirecttest Smaller': 'Relevancyredirecttest A text text text text text text text text text text text text text',
+			'Relevancyredirecttest Smaller/A': '[[Relevancyredirecttest Smaller]]',
+			'Relevancyredirecttest Smaller/B': '[[Relevancyredirecttest Smaller]]',
+			'Relevancyredirecttest Larger': 'Relevancyredirecttest B text text text text text text text text text text text text text',
+			'Relevancyredirecttest Larger/Redirect': '#REDIRECT [[Relevancyredirecttest Larger]]',
+			'Relevancyredirecttest Larger/A': '[[Relevancyredirecttest Larger]]',
+			'Relevancyredirecttest Larger/B': '[[Relevancyredirecttest Larger/Redirect]]',
+			'Relevancyredirecttest Larger/C': '[[Relevancyredirecttest Larger/Redirect]]',
+			'Relevancylinktest Smaller': 'Relevancylinktest Smaller',
+			'Relevancylinktest Larger Extraword': 'Relevancylinktest needs 5 extra words',
+			'Relevancylinktest Larger/Link A': '[[Relevancylinktest Larger Extraword]]',
+			'Relevancylinktest Larger/Link B': '[[Relevancylinktest Larger Extraword]]',
+			'Relevancylinktest Larger/Link C': '[[Relevancylinktest Larger Extraword]]',
+			'Relevancylinktest Larger/Link D': '[[Relevancylinktest Larger Extraword]]',
 			'Relevancytest': 'it is not relevant',
 			'Relevancytestviaredirect': 'not relevant',
 			'Relevancytest Redirect':  '#REDIRECT [[Relevancytestviaredirect]]',
@@ -687,7 +686,7 @@ defineSupportCode( function( { After, Before } ) {
 	// This needs to be the *last* hook added. That gives us some hope that everything
 	// else is inside elasticsearch by the time cirrus-suggest-index runs and builds
 	// the completion suggester
-	BeforeOnce( { tags: "@suggest", timeout: 90000 }, Promise.coroutine( function* () {
+	BeforeOnce( { tags: "@suggest", timeout: 120000 }, Promise.coroutine( function* () {
 		yield runBatch( this, false, {
 			edit: {
 				"X-Men": "The X-Men are a fictional team of superheroes",

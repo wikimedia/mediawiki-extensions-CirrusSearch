@@ -1,16 +1,10 @@
 /*jshint esversion: 6,  node:true */
 
-const {defineSupportCode, defineParameterType} = require('cucumber'),
+const defineSupportCode = require('cucumber').defineSupportCode,
 	SearchResultsPage = require('../support/pages/search_results_page'),
 	ArticlePage = require('../support/pages/article_page'),
 	TitlePage = require('../support/pages/title_page'),
 	expect = require( 'chai' ).expect;
-
-defineParameterType( {
-	regexp: /.+/,
-	transformer: s => s === 'the empty string' ? '' : s.replace( /%{exact:([^}]*)}/g, '$1' ),
-	name: 'exact'
-} );
 
 defineSupportCode( function( {Then,When,Given} ) {
 	When( /^I go search for (.+)$/, function ( title ) {

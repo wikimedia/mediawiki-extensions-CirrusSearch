@@ -27,17 +27,19 @@ class StepHelpers {
 		return new StepHelpers( this.world, wiki );
 	}
 
-	deletePage( title ) {
+	deletePage( title, options = {} ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 			try {
 				yield client.delete( title, "CirrusSearch integration test delete" );
-				yield this.waitForOperation( 'delete', title );
+				if ( !options.skipWaitForOperatoin ) {
+					yield this.waitForOperation( 'delete', title );
+				}
 			} catch ( err ) {
 				// still return true if page doesn't exist
 				expect( err.message ).to.include( "doesn't exist" );
 			}
-		} );
+		} ).call( this );
 	}
 
 	uploadFile( title, fileName, description ) {
@@ -51,7 +53,7 @@ class StepHelpers {
 		} ).call( this );
 	}
 
-	editPage( title, text, append = false ) {
+	editPage( title, text, options = {} ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 
@@ -59,12 +61,14 @@ class StepHelpers {
 				text = fs.readFileSync( path.join( articlePath, text.substr( 1 ) ) ).toString();
 			}
 			let fetchedText = yield this.getWikitext( title );
-			if ( append ) {
+			if ( options.append ) {
 				text = fetchedText + text;
 			}
 			if ( text.trim() !== fetchedText.trim() ) {
-				yield client.edit( title, text );
-				yield this.waitForOperation( 'edit', title );
+				let editResponse = yield client.edit( title, text );
+				if ( !options.skipWaitForOperation ) {
+					yield this.waitForOperation( 'edit', title, null, editResponse.edit.newrevid );
+				}
 			}
 		} ).call( this );
 	}
@@ -84,6 +88,29 @@ class StepHelpers {
 				return "";
 			}
 			return response.query.pages[0].revisions[0].content;
+		} ).call( this );
+	}
+
+	movePage( from, to, noRedirect = true ) {
+		return Promise.coroutine( function* () {
+			let client = yield this.apiPromise;
+			yield client.request( {
+				action: 'move',
+				from: from,
+				to: to,
+				noredirect: noRedirect ? 1 : 0,
+				token: client.editToken,
+			} );
+			// If no redirect was left behind we have no way to check the
+			// old page has been removed from elasticsearch. The page table
+			// entry itself was renamed leaving nothing (except a log) for
+			// the api to find. Post-processing in cirrus will remove deleted
+			// pages that elastic returns though, so perhaps not a big deal
+			// (except we cant test it was really deleted...).
+			yield this.waitForOperation( 'edit', to );
+			if ( !noRedirect ) {
+				yield this.waitForOperation( 'edit', from );
+			}
 		} ).call( this );
 	}
 
@@ -148,20 +175,71 @@ class StepHelpers {
 		return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 	}
 
-	waitForOperation( operation, title, timeoutMs = 60000 ) {
+	waitForOperation( operation, title, timeoutMs = null, revisionId = null ) {
+		return this.waitForOperations([[operation, title, revisionId]], null, timeoutMs );
+	}
+
+	/**
+	 * Wait by scanning the cirrus indices to check if the list of operations
+	 * has been done and are effective in elastic.
+	 *
+	 * @param operations {Array.<Array>} list of operations to wait for. Array elements are
+	 * [ operation, title, revisionId (optional) ]
+	 * @param log {callback} log callback when an operation is done
+	 * @param timeoutMs {int} max time to wait, default to Xsec*number of operations. Where X is 10 for simple operations
+	 * and 30s for uploads.
+	 * @returns {Promise} that resolves when everything is done or fails otherwise.
+	 */
+	waitForOperations( operations, log = null, timeoutMs = null ) {
 		return Promise.coroutine( function* () {
-			let start = new Date();
-			if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
-				title = 'File:' + title;
+			if ( !timeoutMs ) {
+				timeoutMs = operations.reduce((total, v) => total + ( v[0].match(/^upload/) ? 30000 : 10000 ), 0 );
 			}
-			let expect = operation === 'delete' ? false : true;
-			let exists = yield this.checkExists( title );
-			while ( expect !== exists ) {
-				if ( new Date() - start >= timeoutMs ) {
-					throw new Error( `Timed out waiting for ${operation} on ${this.wiki} ${title}` );
+			let start = new Date();
+
+			let done = [];
+			let failedOps = (ops, doneOps) => ops.filter((v, idx) => doneOps.indexOf(idx) === -1).map(v => `[${v[0]}:${v[1]}]`).join();
+			while (done.length !== operations.length) {
+				let consecutiveFailures = 0;
+				for (let i = 0; i < operations.length; i++) {
+					let operation = operations[i][0];
+					let title = operations[i][1];
+					let revisionId = operations[i][2];
+					if ( done.indexOf(i) !== -1 ) {
+						continue;
+					}
+					if (consecutiveFailures > 10) {
+						// restart the loop when we fail too many times
+						// next pages, let's retry from the beginning.
+						// mwbot is perhaps behind so instead of continuing to check
+						consecutiveFailures = 0;
+						break;
+					}
+					if ((operation === 'upload' || operation === 'uploadOverwrite') && title.substr(0, 5) !== 'File:') {
+						title = 'File:' + title;
+					}
+					let expect = operation !== 'delete';
+					let exists = yield this.checkExists(title, revisionId);
+					if ( exists === expect ) {
+						if (log) {
+							log(title, done.length + 1);
+						}
+						done.push(i);
+						consecutiveFailures = 0;
+					} else {
+						consecutiveFailures++;
+					}
+					yield this.waitForMs(10);
 				}
-				yield this.waitForMs( 100 );
-				exists = yield this.checkExists( title );
+				if (done.length === operations.length) {
+					break;
+				}
+
+				if (new Date() - start >= timeoutMs) {
+					let failed_ops = failedOps(operations, done);
+					throw new Error(`Timed out waiting for ${failed_ops}`);
+				}
+				yield this.waitForMs(50);
 			}
 		} ).call( this );
 	}
@@ -196,7 +274,7 @@ class StepHelpers {
 			}
 			for ( let page of response.query.pages ) {
 				if ( page.title === title ) {
-					return page.cirrusdoc;
+					return page;
 				}
 			}
 			return null;
@@ -206,13 +284,23 @@ class StepHelpers {
 	/**
 	 * Check if title is indexed
 	 * @param {string} title
+	 * @param {string} revisionId
 	 * @returns {Promise.<boolean>} resolves to a boolean
 	 */
-	checkExists( title ) {
+	checkExists( title, revisionId = null ) {
 		return Promise.coroutine( function* () {
-			let content = yield this.getCirrusIndexedContent( title );
+			let page = yield this.getCirrusIndexedContent( title );
+			let content = page.cirrusdoc;
 			// without boolean cast we could return undefined
-			return Boolean(content && content.length > 0);
+			let isOk = Boolean( content && content.length > 0 );
+			// Is the requested page and the returned document dont have the same
+			// title that means we have a redirect. In that case the revision id
+			// wont match, but the backend api ensures the redirect is now contained
+			// within the document.
+			if ( isOk && revisionId && content[0].source.title === page.title ) {
+				isOk = parseInt( content[0].source.version, 10 ) === revisionId;
+			}
+			return isOk;
 		} ).call( this );
 	}
 

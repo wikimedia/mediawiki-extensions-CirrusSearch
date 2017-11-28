@@ -71,5 +71,15 @@ class Page {
 	set url( url ) {
 		this._url = url;
 	}
+
+	login( world, wiki = false ) {
+		let config = wiki ?
+			world.config.wikis[wiki] :
+			world.config.wikis[ world.config.wikis.default ];
+		world.visit( '/wiki/Special:UserLogin' );
+		browser.setValue( '#wpName1', config.username );
+		browser.setValue( '#wpPassword1', config.password );
+		browser.click( '#wpLoginAttempt' );
+	}
 }
 module.exports = Page;

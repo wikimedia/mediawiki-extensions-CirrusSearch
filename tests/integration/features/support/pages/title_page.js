@@ -7,10 +7,11 @@
 const Page = require('./page');
 
 class TitlePage extends Page {
-
-	constructor( title ){
-		super( `/wiki/${title}` );
-		this._title = title || '';
+	constructor( title ) {
+		super();
+		if ( title ) {
+			this.url = title;
+		}
 	}
 
 	get url() {
@@ -18,16 +19,6 @@ class TitlePage extends Page {
 	}
 	set url( title ) {
 		super.url =  `/wiki/${title}`;
-	}
-
-	title( title ) {
-		if ( !title ) {
-			return this._title;
-		} else {
-			this.url = title;
-			this._title = title;
-			return this;
-		}
 	}
 }
 module.exports = TitlePage;

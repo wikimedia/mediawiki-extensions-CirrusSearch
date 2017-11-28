@@ -22,15 +22,16 @@ const {defineSupportCode} = require( 'cucumber' ),
 // tracks what tags have already been initialized so we don't have
 // to do it for every feature file.
 class TagClient {
-	constructor( path ) {
+	constructor( options ) {
 		this.tags = {};
 		this.connection = new net.Socket();
-		this.connection.connect( path );
+		this.connection.connect( options.trackerPath );
 		this.nextRequestId = 0;
 		this.pendingResponses = {};
+		this.silentLog = options.logLevel !== 'verbose';
 		this.connection.on( 'data', ( data ) => {
 			let parsed = JSON.parse( data );
-			log( `received response for request ${parsed.requestId}: ${data}` );
+			log( `[D] TAG << ${parsed.requestId}: ${data}`, this.silentLog );
 			if ( parsed && this.pendingResponses[parsed.requestId] ) {
 				this.pendingResponses[parsed.requestId]( parsed );
 				delete this.pendingResponses[parsed.requestId];
@@ -42,7 +43,7 @@ class TagClient {
 		req.requestId = this.nextRequestId++;
 		return new Promise( ( resolve ) => {
 			let data = JSON.stringify( req );
-			log( `Issuing request: ${data}` );
+			log( `[D] TAG >> ${data}`, this.silentLog );
 			this.pendingResponses[req.requestId] = resolve;
 			this.connection.write( data );
 		} );
@@ -78,7 +79,7 @@ class TagClient {
 	}
 }
 
-let tagClient = new TagClient( browser.options.trackerPath );
+let tagClient = new TagClient( browser.options );
 // world gets re-created all the time. Try and save some time logging
 // in by sharing api clients
 let apiClients = {};
@@ -158,7 +159,7 @@ function World( { attach, parameters } ) {
 	// as well as a string, assumes the Page object
 	// has a url property
 	this.visit = function( page, wiki = this.config.wikis.default ) {
-		var tmpUrl;
+		let tmpUrl;
 		if ( page instanceof Page && page.url ) {
 			tmpUrl = page.url;
 		}
@@ -169,10 +170,10 @@ function World( { attach, parameters } ) {
 			throw Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
 		tmpUrl = this.config.wikis[wiki].baseUrl + tmpUrl;
-		log( `Visiting page: ${tmpUrl}` );
+		log( `[D] Visiting page: ${tmpUrl}`, this.tags.silentLog );
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
-		log( `Visited page: ${browser.getUrl()}` );
+		log( `[D] Visited page: ${browser.getUrl()}`, this.tags.silentLog );
 	};
 
 	// Variables held between steps and substituted into queries

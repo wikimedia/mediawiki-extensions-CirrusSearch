@@ -6,8 +6,7 @@
  */
 
 class Page {
-
-	constructor( url ){
+	constructor(){
 		// tag selector shortcut.
 		// analogous to Ruby's link(:create_link, text: "Create") etc.
 		// assuming first param is a selector, second is text.
@@ -45,7 +44,6 @@ class Page {
 				return elems;
 			};
 		} );
-		this._url = url;
 	}
 
 	get url() {

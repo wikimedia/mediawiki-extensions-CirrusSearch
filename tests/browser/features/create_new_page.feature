@@ -23,65 +23,65 @@ Feature: Searches that prompt, or not, for new page creation
   Scenario Outline: boolean operators in bad positions in the query are ignored so you get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And Catapult is in the first search result
+      And <page> is the first search result
       And there is a link to create a new page from the search result
   Examples:
-  |         query          |
-  | catapult +             |
-  | catapult -             |
-  | catapult !             |
+  |         query          |     page         |
+  | catapult +             | Catapult         |
+  | catapult -             | Catapult         |
+  | catapult !             | Catapult         |
   # Bug 60362
-  #| catapult AND           |
-  #| catapult OR            |
-  #| catapult NOT           |
-  | + catapult             |
-  | - catapult             |
-  | ! catapult             |
+  #| catapult AND           | Catapult         |
+  #| catapult OR            | Catapult         |
+  #| catapult NOT           | Catapult         |
+  | + catapult             | Catapult         |
+  | - catapult             | Catapult         |
+  | ! catapult             | Catapult         |
   # Bug 60362
-  #| AND catapult           |
-  #| OR catapult            |
-  | catapult + amazing     |
-  | catapult - amazing     |
-  | catapult ! amazing     |
-  | amazing+catapult       |
-  | amazing-catapult       |
-  | amazing!catapult       |
-  | catapult!!!!!!!        |
-  | catapult !!!!!!!!      |
-  | !!!! catapult          |
-  | ------- catapult       |
-  | ++++ catapult ++++     |
-  | ++amazing++++catapult  |
-  | catapult ~/            |
-  | catapult ~/            |
-  | amazing~◆~catapult     |
-  | ******* catapult       |
+  #| AND catapult           | Catapult         |
+  #| OR catapult            | Catapult         |
+  | catapult + amazing     | Amazing Catapult |
+  | catapult - amazing     | Amazing Catapult |
+  | catapult ! amazing     | Amazing Catapult |
+  | amazing+catapult       | Amazing Catapult |
+  | catapult-amazing       | Amazing Catapult |
+  | amazing!catapult       | Amazing Catapult |
+  | catapult!!!!!!!        | Catapult         |
+  | catapult !!!!!!!!      | Catapult         |
+  | !!!! catapult          | Catapult         |
+  | ------- catapult       | Catapult         |
+  | ++++ catapult ++++     | Catapult         |
+  | ++amazing++++catapult  | Amazing Catapult |
+  | catapult ~/            | Catapult         |
+  | catapult ~/            | Catapult         |
+  | amazing~◆~catapult     | Amazing Catapult |
+  | ******* catapult       | Catapult         |
 
   @boolean_operators
   Scenario Outline: boolean operators in bad positions in the query are ignored but if there are other valid operators then you don't get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And Catapult is in the first search result
+      And <page> is the first search result
       And there is no link to create a new page from the search result
   Examples:
-  |         query          |
-  | catapult AND + amazing |
-  | catapult AND - amazing |
-  | catapult AND ! amazing |
-  | catapult \|\|---       |
-  | catapult~~~~....[[\|\|.\|\|\|\|\|\|+\|+\|=\\\\=\\*.$.$.$. |
-  | T:8~=~¥9:77:7:57;7;76;6346- OR catapult |
-  | catapult OR T:8~=~¥9:77:7:57;7;76;6346- |
-  | --- AND catapult       |
-  | *catapult*             |
-  | ***catapult*           |
-  | ****** catapult*       |
+  |         query          |     page         |
+  | catapult AND + amazing | Amazing Catapult |
+  | catapult AND - amazing | Amazing Catapult |
+  | catapult AND ! amazing | Amazing Catapult |
+  | catapult \|\|---       | Catapult         |
+  | catapult~~~~....[[\|\|.\|\|\|\|\|\|+\|+\|=\\\\=\\*.$.$.$. | Catapult |
+  | T:8~=~¥9:77:7:57;7;76;6346- OR catapult | Catapult |
+  | catapult OR T:8~=~¥9:77:7:57;7;76;6346- | Catapult |
+  | --- AND catapult       | Catapult |
+  | *catapult*             | Catapult |
+  | ***catapult*           | Catapult |
+  | ****** catapult*       | Catapult |
 
   @boolean_operators
   Scenario Outline: boolean operators in bad positions in the query are ignored and if the title isn't a valid article title then you don't get the option to create a new page
     When I search for <query>
     Then there is no warning
-      And Catapult is in the first search result
+      And Catapult is the first search result
       And there is no link to create a new page from the search result
   Examples:
   |         query          |

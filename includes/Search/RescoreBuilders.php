@@ -127,6 +127,17 @@ class RescoreBuilder {
 	 * @return AbstractQuery
 	 */
 	private function buildLtrQuery( $model ) {
+		// This is a bit fragile, and makes the bold assumption
+		// only a single level of rescore will be used. This is
+		// strictly for debugging/testing before shipping a model
+		// live so shouldn't be a big deal.
+		$override = \RequestContext::getMain()
+			->getRequest()
+			->getVal( 'cirrusMLRModel' );
+		if ( $override ) {
+			$model = $override;
+		}
+
 		$bool = new \Elastica\Query\BoolQuery();
 		// the ltr query can return negative scores, which mucks with elasticsearch
 		// sorting as that will put these results below documents set to 0. Fix

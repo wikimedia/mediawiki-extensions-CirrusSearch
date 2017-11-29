@@ -370,4 +370,42 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Given(/^I am at a random page$/, function() {
 		return this.visit( new TitlePage( 'Special:Random' ) );
 	} );
+
+	When(/^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I api search for (.+)$/, function ( field, length, search ) {
+		let options = {
+			cirrusMtlUseFields: 'yes',
+			cirrusMltFields: field,
+			cirrusMltMinTermFreq: 1,
+			cirrusMltMinDocFreq: 1,
+			cirrusMltMinWordLength: length,
+			srlimit: 20
+		};
+		return this.stepHelpers.searchFor( search, options );
+	} );
+
+	When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (\d+%) and I api search for (.+)$/, function( field, percent, search ) {
+		let options = {
+			cirrusMtlUseFields: 'yes',
+			cirrusMltFields: field,
+			cirrusMltMinTermFreq: 1,
+			cirrusMltMinDocFreq: 1,
+			cirrusMltMinWordLength: 0,
+			cirrusMltMinimumShouldMatch: percent,
+			srlimit: 20
+		};
+		return this.stepHelpers.searchFor( search, options );
+	} );
+
+	When(/^I set More Like This Options to bad settings and I api search for (.+)$/, function ( search ) {
+		let options = {
+			cirrusMtlUseFields: 'yes',
+			cirrusMltFields: 'title',
+			cirrusMltMinTermFreq: 100,
+			cirrusMltMinDocFreq: 200000,
+			cirrusMltMinWordLength: 190,
+			cirrusMltMinimumShouldMatch: '100%',
+			srlimit: 20
+		};
+		return this.stepHelpers.searchFor( search, options );
+	} );
 });

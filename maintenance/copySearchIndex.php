@@ -76,7 +76,7 @@ class CopySearchIndex extends Maintenance {
 		$targetConnection = $this->getConnection( $targetCluster );
 
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
-			$this->error( "Target cluster should be different from current cluster.", 1 );
+			$this->fatalError( "Target cluster should be different from current cluster." );
 		}
 		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 

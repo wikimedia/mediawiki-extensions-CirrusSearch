@@ -106,8 +106,8 @@ class DumpIndex extends Maintenance {
 
 		$indexTypes = $this->getConnection()->getAllIndexTypes();
 		if ( !in_array( $this->indexType, $indexTypes ) ) {
-			$this->error( 'indexType option must be one of ' .
-				implode( ', ', $indexTypes ), 1 );
+			$this->fatalError( 'indexType option must be one of ' .
+				implode( ', ', $indexTypes ) );
 		}
 
 		$this->indexIdentifier = $this->getOption( 'indexIdentifier' );

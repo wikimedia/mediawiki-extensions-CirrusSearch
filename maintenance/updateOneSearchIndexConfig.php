@@ -220,8 +220,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		try{
 			$indexTypes = $this->getConnection()->getAllIndexTypes();
 			if ( !in_array( $this->indexType, $indexTypes ) ) {
-				$this->error( 'indexType option must be one of ' .
-					implode( ', ', $indexTypes ), 1 );
+				$this->fatalError( 'indexType option must be one of ' .
+					implode( ', ', $indexTypes ) );
 			}
 
 			$utils->checkElasticsearchVersion();
@@ -248,17 +248,17 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
-			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
+			$this->fatalError( "Http error communicating with Elasticsearch:  $message.\n" );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticaErrorHandler::extractMessage( $e );
 			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
-			$this->error( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
+			$this->fatalError( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
-				"Trace:\n" . $trace, 1 );
+				"Trace:\n" . $trace );
 		}
 	}
 
@@ -334,7 +334,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		);
 
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		} else {
 			$this->output( "ok\n" );
 		}
@@ -357,7 +357,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		foreach ( $validators as $validator ) {
 			$status = $validator->validate();
 			if ( !$status->isOK() ) {
-				$this->error( $status->getMessage()->text(), 1 );
+				$this->fatalError( $status->getMessage()->text() );
 			}
 		}
 	}
@@ -367,7 +367,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		}
 	}
 
@@ -388,7 +388,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		}
 	}
 
@@ -433,7 +433,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		);
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		}
 	}
 
@@ -442,7 +442,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getIndexName(), $this->getSpecificIndexName(), $this->startOver, $this->getIndexTypeName(), $this );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		}
 
 		if ( $this->tooFewReplicas ) {
@@ -462,7 +462,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$validator = $this->getShardAllocationValidator();
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
-			$this->error( $status->getMessage()->text(), 1 );
+			$this->fatalError( $status->getMessage()->text() );
 		}
 	}
 

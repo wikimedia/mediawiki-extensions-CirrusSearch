@@ -194,8 +194,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			$this->getShardCount();
 			$this->getReplicaCount();
 		} catch ( \Exception $e ) {
-			$this->error(
-				"Failed to get shard count and replica count information: {$e->getMessage()}", 1
+			$this->fatalError(
+				"Failed to get shard count and replica count information: {$e->getMessage()}"
 			);
 		}
 
@@ -248,7 +248,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			}
 
 			if ( !$this->canWrite() ) {
-				$this->error( 'Index/Cluster is frozen. Giving up.', 1 );
+				$this->fatalError( 'Index/Cluster is frozen. Giving up.' );
 			}
 
 			# check for broken indices and delete them
@@ -262,18 +262,18 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
-			$this->error( "Http error communicating with Elasticsearch:  $message.\n", 1 );
+			$this->fatalError( "Http error communicating with Elasticsearch:  $message.\n" );
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticaErrorHandler::extractMessage( $e );
 			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
-			$this->error( "Elasticsearch failed in an unexpected way.  " .
+			$this->fatalError( "Elasticsearch failed in an unexpected way.  " .
 				"This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
-				"Trace:\n" . $trace, 1 );
+				"Trace:\n" . $trace );
 		}
 	}
 
@@ -773,8 +773,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->log( "Waiting for the index to go green...\n" );
 		// Wait for the index to go green ( default 10 min)
 		if ( !$this->utils->waitForGreen( $this->getIndex()->getName(), $timeout ) ) {
-			$this->error( "Failed to wait for green... please check config and " .
-				"delete the {$this->getIndex()->getName()} index if it was created.", 1 );
+			$this->fatalError( "Failed to wait for green... please check config and " .
+				"delete the {$this->getIndex()->getName()} index if it was created." );
 		}
 	}
 

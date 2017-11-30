@@ -53,11 +53,11 @@ class CirrusIsSetup extends Maintenance {
 					$this->getConnection()->destroyClient();
 				} else {
 					// The two exit code here makes puppet fail with an error.
-					$this->error( 'Connection error:  ' . $e->getMessage(), 2 );
+					$this->fatalError( 'Connection error:  ' . $e->getMessage(), 2 );
 				}
 			}
 			if ( $end < microtime( true ) ) {
-				$this->error( 'Elasticsearch was not ready in time.', 1 );
+				$this->fatalError( 'Elasticsearch was not ready in time.' );
 			}
 			sleep( 1 );
 		}

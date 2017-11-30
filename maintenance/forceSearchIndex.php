@@ -133,8 +133,8 @@ class ForceSearchIndex extends Maintenance {
 
 		// Make sure we've actually got indices to populate
 		if ( !$this->simpleCheckIndexes() ) {
-			$this->error(
-				"$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?", 1
+			$this->fatalError(
+				"$wiki index(es) do not exist. Did you forget to run updateSearchIndexConfig?"
 			);
 		}
 
@@ -245,8 +245,8 @@ class ForceSearchIndex extends Maintenance {
 			|| $this->hasOption( 'from' ) || $this->hasOption( 'to' )
 			|| $this->hasOption( 'fromId' ) || $this->hasOption( 'toId' )
 		) {
-			$this->error(
-				'--ids cannot be used with deletes/archive/from/to/fromId/toId/limit', 1
+			$this->fatalError(
+				'--ids cannot be used with deletes/archive/from/to/fromId/toId/limit'
 			);
 		}
 
@@ -254,8 +254,8 @@ class ForceSearchIndex extends Maintenance {
 			function ( $pageId ) {
 				$pageId = trim( $pageId );
 				if ( !ctype_digit( $pageId ) ) {
-					$this->error( "Invalid page id provided in --ids, got '$pageId', " .
-						"expected a positive integer", 1 );
+					$this->fatalError( "Invalid page id provided in --ids, got '$pageId', " .
+						"expected a positive integer" );
 				}
 				return intval( $pageId );
 			},
@@ -636,19 +636,19 @@ class ForceSearchIndex extends Maintenance {
 		if ( $this->toId === null ) {
 			$this->toId = $dbr->selectField( 'page', 'MAX(page_id)' );
 			if ( $this->toId === false ) {
-				$this->error( "Couldn't find any pages to index.  toId = $this->toId.", 1 );
+				$this->fatalError( "Couldn't find any pages to index.  toId = $this->toId." );
 			}
 		}
 		$fromId = $this->getOption( 'fromId' );
 		if ( $fromId === null ) {
 			$fromId = $dbr->selectField( 'page', 'MIN(page_id) - 1' );
 			if ( $fromId === false ) {
-				$this->error( "Couldn't find any pages to index.  fromId = $fromId.", 1 );
+				$this->fatalError( "Couldn't find any pages to index.  fromId = $fromId." );
 			}
 		}
 		if ( $fromId === $this->toId ) {
-			$this->error(
-				"Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId.", 1
+			$this->fatalError(
+				"Couldn't find any pages to index.  fromId = $fromId = $this->toId = toId."
 			);
 		}
 		$builder = new \CirrusSearch\Maintenance\ChunkBuilder();

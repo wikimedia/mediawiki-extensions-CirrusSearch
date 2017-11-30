@@ -102,4 +102,20 @@ defineSupportCode( function( {Then,When,Given} ) {
 		expect(SearchResultsPage.has_search_results(), msg).to.equal(true);
 		expect(SearchResultsPage.has_search_data_in_results(what), msg).to.equal(true);
 	} );
+
+	Then( /^I type (.+) into the search box$/, function(search) {
+		ArticlePage.search_query_top_right = search;
+	} );
+
+	Then (/^suggestions should appear$/, function() {
+		expect(ArticlePage.has_search_suggestions()).to.equal(true);
+	} );
+
+	Then (/^(.+) is the first suggestion$/, function (page) {
+		expect(ArticlePage.get_search_suggestion_at(1)).to.equal(page);
+	} );
+
+	Then (/^I click the search button$/, function () {
+		ArticlePage.click_search_top_right();
+	} );
 });

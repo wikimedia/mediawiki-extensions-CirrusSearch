@@ -24,6 +24,22 @@ class ArticlePage extends TitlePage {
 		browser.click( "#simpleSearch #searchButton" );
 	}
 
+	has_search_suggestions() {
+		return this.get_search_suggestions().length > 0;
+	}
+
+	get_search_suggestion_at(nth) {
+		nth--;
+		let suggestions = this.get_search_suggestions();
+		return suggestions.length > nth ? suggestions[nth] : null;
+	}
+
+	get_search_suggestions() {
+		let selector = '.suggestions .suggestions-results a.mw-searchSuggest-link';
+		browser.waitForVisible(selector, 5000);
+		return this.collect_element_attribute('title', selector);
+	}
+
 	set search_query_top_right( search ) {
 		browser.setValue( "#simpleSearch #searchInput", search );
 	}

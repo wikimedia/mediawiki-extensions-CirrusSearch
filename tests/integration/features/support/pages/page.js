@@ -55,6 +55,16 @@ class Page {
 		return texts;
 	}
 
+	collect_element_attribute( attr, selector ) {
+		let elements = browser.elements(selector).value;
+		let texts = [];
+		for ( let elt of elements ) {
+			texts.push(elt.getAttribute(attr));
+		}
+		return texts;
+	}
+
+
 	get url() {
 		return this._url;
 	}

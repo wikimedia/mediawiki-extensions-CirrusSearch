@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Protnet",
-			"Twopix"
+			"Twopix",
+			"KATRINE1992"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch- αναζήτηση για το MediaWiki",
@@ -23,6 +24,9 @@
 	"apihelp-cirrus-mapping-dump-example": "Λάβετε αρχείο αντιστοίχισης του CirrusSearch για αυτό το wiki.",
 	"apihelp-cirrus-settings-dump-description": "Αρχείο ρυθμίσεων του CirrusSearch για αυτό το wiki.",
 	"apihelp-cirrus-settings-dump-example": "Λάβετε αρχέιο ρυθμήσεων του CirrusSearch για αυτό το wiki",
+	"apihelp-query+cirrusdoc-description": "Έγγραφο άρθρου Dump ενός CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Έγγραφο άρθρου Dump ενός CirrusSearch",
+	"apihelp-query+cirrusdoc-example": "Συλλέξετε ένα άρθρο κενό ενός απλού CirrusSearch.",
 	"apierror-cirrus-requesttoolong": "Αναζήτηση με πρόθεμα ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. ($1 > $2)",
 	"cirrussearch-give-feedback": "Πείτε μας τη γνώμη σας",
 	"cirrussearch-query-too-long": "Αναζήτηση με πρόθεμα ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. ($1 > $2)",

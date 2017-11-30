@@ -138,7 +138,7 @@ class Metastore extends Maintenance {
 	private function dump() {
 		$index = $this->getConnection()->getIndex( MetaStoreIndex::INDEX_NAME );
 		if ( !$index->exists() ) {
-			$this->error( "Cannot dump metastore: index does not exists. Please run --upgrade first", 1 );
+			$this->fatalError( "Cannot dump metastore: index does not exists. Please run --upgrade first" );
 		}
 		$scrollOptions = [
 			'search_type' => 'scan',

@@ -78,9 +78,9 @@ class Saneitize extends Maintenance {
 		if ( $this->hasOption( 'batch-size' ) ) {
 			$this->setBatchSize( $this->getOption( 'batch-size' ) );
 			if ( $this->getBatchSize() > 5000 ) {
-				$this->error( "--batch-size too high!", 1 );
+				$this->fatalError( "--batch-size too high!" );
 			} elseif ( $this->getBatchSize() <= 0 ) {
-				$this->error( "--batch-size must be > 0!", 1 );
+				$this->fatalError( "--batch-size must be > 0!" );
 			}
 		}
 

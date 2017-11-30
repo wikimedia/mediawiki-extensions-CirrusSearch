@@ -15,16 +15,23 @@ class SearchResultsPage extends Page {
 	}
 
 	has_search_results() {
-		return browser.elements(".searchresults p.mw-search-nonefound").value.length === 0;
+		return browser.elements(".searchresults ul.mw-search-results").value.length > 0;
 	}
 
 	get_warnings() {
-		let elements = browser.elements(".searchresults div.warningbox p").value;
-		let warnings = [];
-		for ( let warning of elements ) {
-			warnings.push( warning.getText() );
-		}
-		return warnings;
+		return this.collect_element_texts(".searchresults div.warningbox p");
+	}
+
+	has_warnings() {
+		return this.get_warnings().length > 0;
+	}
+
+	get_errors() {
+		return this.collect_element_texts(".searchresults div.errorbox p");
+	}
+
+	has_errors() {
+		return this.get_errors().length > 0;
 	}
 
 	has_create_page_link() {
@@ -36,16 +43,78 @@ class SearchResultsPage extends Page {
 			browser.elements("form#powersearch div#mw-search-top-table").value.length > 0;
 	}
 
-	set search_query(search ) {
+	set search_query( search ) {
 		browser.setValue( 'div#searchText input[name="search"]', search );
 	}
 
 	get search_query() {
-		browser.getValue( 'div#searchText input[name="search"]' );
+		return browser.getValue( 'div#searchText input[name="search"]' );
+	}
+
+	get_result_element_at( nth ) {
+		let resultLink = this.results_block().element( `a[data-serp-pos=\"${nth-1}\"]` );
+		if ( !resultLink.isExisting() ) {
+			return null;
+		}
+		return resultLink.element("..");
+	}
+
+	get_result_image_link_at( nth ) {
+		let resElem = this.get_result_element_at( nth );
+		if ( resElem === null ) {
+			return null;
+		}
+		// Image links are inside a table
+		// move to the tr parent to switch the td holding the images
+		// <tbody>
+		//  <tr>
+		//    <td>[THUMB IMAGE LINK BLOCK]</td>
+		//    <td>[RESULT ELEMENT BLOCK] position returned by get_result_element_at</td>
+		//  </tr>
+		// </tbody>
+		let tr = resElem.element("..");
+		if ( tr.getTagName() !== 'tr' ) {
+			return null;
+		}
+		let imageTag = tr.element( 'td a.image img' );
+		if ( imageTag.isExisting() ) {
+			return imageTag.getAttribute( 'src' );
+		}
+		return null;
+	}
+
+	has_search_data_in_results( data ) {
+		return this.results_block().element( `div.mw-search-result-data*=${data}`).isExisting();
+	}
+
+	get_search_alt_title_at( nth ) {
+		let resultBlock = this.get_result_element_at( nth );
+		if ( resultBlock === null ) {
+			return null;
+		}
+		let elt = resultBlock.element("span.searchalttitle");
+		if ( elt.isExisting() ) {
+			return elt.getText();
+		}
+		return null;
 	}
 
 	get_result_at( nth ) {
-		return browser.getAttribute( `ul.mw-search-results li div.mw-search-result-heading a[data-serp-pos=\"${nth-1}\"]`, 'title' );
+		return this.results_block().getAttribute( `a[data-serp-pos=\"${nth-1}\"]`, 'title' );
+	}
+
+	in_search_results( title ) {
+		let elt = this.results_block().element(`a[title="${title}"]` );
+		return elt.isExisting();
+	}
+
+	results_block() {
+		let elt = browser.elements( "div.searchresults" );
+
+		if ( !elt.value ) {
+			throw new Error("Cannot locate search results block, are you on the SRP?");
+		}
+		return elt;
 	}
 
 	click_search() {

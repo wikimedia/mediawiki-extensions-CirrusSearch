@@ -46,6 +46,15 @@ class Page {
 		} );
 	}
 
+	collect_element_texts( selector ) {
+		let elements = browser.elements(selector).value;
+		let texts = [];
+		for ( let text of elements ) {
+			texts.push( text.getText() );
+		}
+		return texts;
+	}
+
 	get url() {
 		return this._url;
 	}

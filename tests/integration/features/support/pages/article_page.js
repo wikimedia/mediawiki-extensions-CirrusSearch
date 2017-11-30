@@ -10,7 +10,11 @@ const TitlePage = require('./title_page');
 class ArticlePage extends TitlePage {
 
 	get articleTitle() {
-		return browser.getText("h1#firstHeading");
+		return this.title_element().getText();
+	}
+
+	title_element() {
+		return browser.element( "h1#firstHeading" );
 	}
 
 	/**

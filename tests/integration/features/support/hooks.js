@@ -35,7 +35,7 @@ defineSupportCode( function( { After, Before } ) {
 
 	const waitForBatch = Promise.coroutine( function* ( wiki, batchJobs ) {
 		let stepHelpers = this.stepHelpers.onWiki( wiki );
-		const queue = [];
+		let queue = [];
 		if ( Array.isArray( batchJobs ) ) {
 			for ( let job of batchJobs ) {
 				queue.push( [ job[0], job[1] ] );
@@ -63,17 +63,62 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} );
 
+	const chunkifyBatch = ( batchJobs, chunkSize = 10 ) => {
+		let jobs = [];
+		if ( !Array.isArray(batchJobs) ) {
+			let flatJobs = [];
+			for ( let op in batchJobs ) {
+				let data = batchJobs[op];
+				let jobData = [ op ];
+				if ( Array.isArray(data) ) {
+					for ( let title of data ) {
+						flatJobs.push( jobData.concat( Array.isArray( title ) ? title : [ title ] ) );
+					}
+				} else {
+					for ( let title in data ) {
+						let d = data[title];
+						flatJobs.push( jobData.concat( [ title ] )
+							.concat( Array.isArray(d) ? d : [ d ] ) );
+					}
+				}
+			}
+			batchJobs = flatJobs;
+		}
+		let chunk = [];
+		for ( let job of batchJobs ) {
+			chunk.push(job);
+			if ( chunk.length === chunkSize ) {
+				jobs.push(chunk);
+				chunk = [];
+			}
+		}
+		if ( chunk.length > 0 ) {
+			jobs.push(chunk);
+		}
+		return jobs;
+	};
+
 	// Run both in parallel so we don't have to wait for the batch to finish
 	// to start checking things. Hopefully they run in the same order...
 	const runBatch = Promise.coroutine( function* ( world, wiki, batchJobs ) {
 		wiki = wiki || world.config.wikis.default;
 		let client = yield world.onWiki( wiki );
-		// TODO: If the batch operation fails the waitForBatch will never complete,
-		// it will just stick around forever ...
-		yield Promise.all( [
-			client.batch( batchJobs, 'CirrusSearch integration test edit', 2 ),
-			waitForBatch.call( world, wiki, batchJobs )
-		] );
+		// if the batch is too large we may wait too long for a page
+		// that will be added too late.
+		// This is perhaps because when we iterate over object properties
+		// ordering may not be the same when running in mwbot and waitForBatch
+		// We create small chunks to avoid this situation
+		let jobChunks = chunkifyBatch(batchJobs);
+		let i = 0;
+		for ( let chunk of jobChunks ) {
+			// TODO: If the batch operation fails the waitForBatch will never complete,
+			// it will just stick around forever ...
+			MWBot.logStatus( '[=] ', ++i, jobChunks.length, 'BATCH', `Running ${chunk.length} jobs on ${wiki}` );
+			yield Promise.all([
+				client.batch(chunk, 'CirrusSearch integration test edit', 2),
+				waitForBatch.call(world, wiki, chunk)
+			]);
+		}
 	} );
 
 	const runBatchFn = ( wiki, batchJobs ) => Promise.coroutine( function* () {
@@ -191,7 +236,7 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@did_you_mean", timeout: 120000 }, function () {
+	BeforeOnce( { tags: "@did_you_mean", timeout: 240000 }, function () {
 		let edits = {
 			'Popular Culture': 'popular culture',
 			'Nobel Prize': 'nobel prize',
@@ -224,6 +269,7 @@ defineSupportCode( function( { After, Before } ) {
 			'suggest2 suggest3 suggest4': 'list of grammy awards winners',
 			'suggest3 suggest4 suggest5': 'list of grammy awards winners',
 		};
+		// TODO: investigate getting rid of this
 		for ( let i = 1; i <= 30; i++ ) {
 			edits['Grammy Awards ed. ' + i] = 'grammy awards';
 		}

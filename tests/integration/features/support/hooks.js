@@ -483,7 +483,7 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@go or @options", timeout: 60000 }, runBatchFn( {
+	BeforeOnce( { tags: "@go or @options", timeout: 120000 }, runBatchFn( {
 		edit: {
 			'son Nearmatchflattentest': 'son Nearmatchflattentest',
 			'Son Nearmatchflattentest': 'Son Nearmatchflattentest',
@@ -544,7 +544,7 @@ defineSupportCode( function( { After, Before } ) {
 		}
 	} ) );
 
-	BeforeOnce( { tags: "@relevancy" }, runBatchFn( {
+	BeforeOnce( { tags: "@relevancy", timeout: 120000 }, runBatchFn( {
 		edit: {
 			'Relevancytest': 'it is not relevant',
 			'Relevancytestviaredirect': 'not relevant',

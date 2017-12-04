@@ -11,7 +11,7 @@
  * keeps a user/login state).
  */
 const {defineSupportCode} = require( 'cucumber' ),
-	net = require( 'net' ),
+	request = require('request-promise-native'),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
@@ -24,29 +24,8 @@ const {defineSupportCode} = require( 'cucumber' ),
 class TagClient {
 	constructor( options ) {
 		this.tags = {};
-		this.connection = new net.Socket();
-		this.connection.connect( options.trackerPath );
-		this.nextRequestId = 0;
-		this.pendingResponses = {};
+		this.unixSocketPath = options.trackerPath;
 		this.silentLog = options.logLevel !== 'verbose';
-		this.connection.on( 'data', ( data ) => {
-			let parsed = JSON.parse( data );
-			log( `[D] TAG << ${parsed.requestId}: ${data}`, this.silentLog );
-			if ( parsed && this.pendingResponses[parsed.requestId] ) {
-				this.pendingResponses[parsed.requestId]( parsed );
-				delete this.pendingResponses[parsed.requestId];
-			}
-		} );
-	}
-
-	request( req ) {
-		req.requestId = this.nextRequestId++;
-		return new Promise( ( resolve ) => {
-			let data = JSON.stringify( req );
-			log( `[D] TAG >> ${data}`, this.silentLog );
-			this.pendingResponses[req.requestId] = resolve;
-			this.connection.write( data );
-		} );
 	}
 
 	check( tag ) {
@@ -54,9 +33,9 @@ class TagClient {
 			if ( this.tags[tag] ) {
 				return this.tags[tag];
 			}
-			let response = yield this.request( {
-				check: tag
-			} );
+			log( `[D] TAG >> ${tag}`, this.silentLog );
+			let response = yield this.post( { check: tag } );
+			log( `[D] TAG << ${tag}`, this.silentLog );
 			if ( response.status === 'complete' || response.status === 'reject' ) {
 				this.tags[tag] = response.status;
 			}
@@ -66,15 +45,18 @@ class TagClient {
 
 	reject( tag ) {
 		this.tags[tag] = 'reject';
-		return this.request( {
-			reject: tag
-		} );
+		return this.post( { reject: tag } );
 	}
 
 	complete( tag ) {
 		this.tags[tag] = 'complete';
-		return this.request( {
-			complete: tag
+		return this.post( { complete: tag } );
+	}
+
+	post( data ) {
+		return request.post( {
+			uri: `http://unix:${this.unixSocketPath}:/tracker`,
+			json: data
 		} );
 	}
 }

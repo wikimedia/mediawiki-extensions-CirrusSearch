@@ -7,13 +7,15 @@
 'use strict';
 
 const child_process = require( 'child_process' ),
-	path = require( 'path' );
+	path = require( 'path' ),
+	fs = require('fs');
 
 function relPath( foo ) {
 	return path.resolve( __dirname, '../..', foo );
 }
 
-var forkedTracker;
+let forkedTracker;
+let unixSocket;
 
 exports.config = {
 
@@ -217,7 +219,7 @@ exports.config = {
 	// Gets executed once before all workers get launched.
 	onPrepare: function ( config ) {
 		forkedTracker = child_process.fork( relPath( './integration/lib/tracker.js' ) );
-		forkedTracker.send( { config: config } );
+		unixSocket = config.trackerPath;
 		return new Promise( ( resolve, reject ) => {
 			forkedTracker.on( 'message', ( msg ) => {
 				if ( msg.initialized ) {
@@ -226,6 +228,7 @@ exports.config = {
 					reject( msg.error );
 				}
 			} );
+			forkedTracker.send( { config: config } );
 		} );
 	},
 	//
@@ -288,6 +291,12 @@ exports.config = {
 	// possible to defer the end of the process using a promise.
 	onComplete: function() {
 		// TODO: Is this method being called a guarantee, or should we handle signals to be sure?
-		forkedTracker.send( { exit: true } );
+		try {
+			forkedTracker.send({exit: true});
+		} catch (err) {
+			console.log( `Failed to send exit signal to tracker: ${err}`);
+			// Force unlinking the socket
+			fs.unlinkSync(unixSocket);
+		}
 	}
 };

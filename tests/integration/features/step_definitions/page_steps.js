@@ -181,7 +181,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))? for (.*)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, search ) {
+	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.*)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
 		let options = {
 			srnamespace: (namespaces || "0").split(' ').join(','),
 			srenablerewrites: enableRewrites ? 1 : 0,
@@ -204,8 +204,11 @@ defineSupportCode( function( {Given, When, Then} ) {
 		search = Object.keys(this.searchVars).reduce( ( str, pattern ) => str.replace( pattern, this.searchVars[pattern] ), search );
 		// Replace %{\uXXXX}% with the appropriate unicode code point
 		search = search.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
-
-		return this.stepHelpers.searchFor( search, options );
+		let stepHelpers = this.stepHelpers;
+		if ( wiki ) {
+			stepHelpers = this.stepHelpers.onWiki(wiki);
+		}
+		return stepHelpers.searchFor( search, options );
 	} );
 
 	Then( /there are no errors reported by the api/, function () {

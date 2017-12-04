@@ -175,7 +175,7 @@ defineSupportCode( function( { After, Before } ) {
 		job.upload(  "Savepage-greyed.png", "Screenshot, for test purposes, associated with https://bugzilla.wikimedia.org/show_bug.cgi?id=52908 ." )
 	] ) );
 
-	BeforeOnce( { tags: "@setup_main or @prefix or @go or @bad_syntax" }, runBatchFn( {
+	BeforeOnce( { tags: "@setup_main or @prefix or @go or @bad_syntax or @smoke" }, runBatchFn( {
 		edit: {
 			"África": "for testing"
 		}

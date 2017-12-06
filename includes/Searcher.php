@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Query\SimpleKeywordFeature;
@@ -216,6 +217,16 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function nearMatchTitleSearch( $term ) {
 		( new NearMatchQueryBuilder() )->build( $this->searchContext, $term );
+		return $this->searchOne();
+	}
+
+	/**
+	 * Perform a sum over the number of words in the content index
+	 * @return Status status containing a single integer
+	 */
+	public function countContentWords() {
+		( new CountContentWordsBuilder() )->build( $this->searchContext );
+		$this->limit = 1;
 		return $this->searchOne();
 	}
 

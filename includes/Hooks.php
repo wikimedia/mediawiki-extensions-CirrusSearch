@@ -853,4 +853,16 @@ class Hooks {
 		return true;
 	}
 
+	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {
+		$search = new CirrusSearch();
+
+		$status = $search->countContentWords();
+		if ( !$status->isOK() ) {
+			return;
+		}
+		$wordCount = $status->getValue();
+		if ( $wordCount !== null ) {
+			$extraStats['cirrussearch-article-words'] = $wordCount;
+		}
+	}
 }

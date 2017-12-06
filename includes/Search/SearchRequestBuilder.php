@@ -69,6 +69,10 @@ class SearchRequestBuilder {
 
 		$query->setQuery( $this->searchContext->getQuery() );
 
+		foreach ( $this->searchContext->getAggregations() as $agg ) {
+			$query->addAggregation( $agg );
+		}
+
 		$highlight = $this->searchContext->getHighlight( $resultsType );
 		if ( $highlight ) {
 			$query->setHighlight( $highlight );

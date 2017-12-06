@@ -15,7 +15,7 @@ Feature: Smoke test
   @en.wikipedia.beta.wmflabs.org
   Scenario: Search suggestions
     Given I am at a random page
-    When I type main into the search box
+    When I type main p into the search box
     Then suggestions should appear
     And Main Page is the first suggestion
 

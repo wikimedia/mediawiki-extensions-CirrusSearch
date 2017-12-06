@@ -145,7 +145,7 @@ class StepHelpers {
 		return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 	}
 
-	waitForOperation( operation, title, timeoutMs = 30000 ) {
+	waitForOperation( operation, title, timeoutMs = 60000 ) {
 		return Promise.coroutine( function* () {
 			let start = new Date();
 			if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {

@@ -174,6 +174,11 @@ class SearchRequestLog extends BaseRequestLog {
 			$vars['suggestion'] = $responseData['suggest']['suggest'][0]['options'][0]['text'];
 		}
 
+		// in case of failures from Elastica
+		if ( isset( $responseData['message'] ) ) {
+			$vars['message'] = $responseData['message'];
+		}
+
 		return $vars;
 	}
 

@@ -157,6 +157,7 @@ class RunSearch extends Maintenance {
 					'category' => $result->getCategorySnippet(),
 				],
 				'explanation' => $result->getExplanation(),
+				'extra' => $result->getExtensionData(),
 			];
 			$result = $value->next();
 		}

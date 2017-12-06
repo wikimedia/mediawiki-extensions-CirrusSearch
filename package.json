@@ -20,6 +20,9 @@
     "stylelint": "7.8.0",
     "stylelint-config-wikimedia": "0.4.1",
     "wdio-cucumber-framework": "^1.0.1",
-    "webdriverio": "^4.8.0"
+    "webdriverio": "^4.8.0",
+    "restify": "^6.3.4",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5"
   }
 }

@@ -1,129 +1,77 @@
 /*jshint esversion: 6, node:true */
-/*global console */
+const restify = require('restify'),
+	Promise = require( 'bluebird' ); // jshint ignore:line
 
-const fs = require( 'fs' ),
-	net = require( 'net' );
-
-// Somewhat generic unix socket server. Is there perhaps a package
-// we could source this from instead?
 class Server {
-	constructor( path ) {
-		if ( !this.dispatch ) {
-			this.ready = Promise.reject( 'Dispatch not implemented' );
-			return;
-		}
+	constructor(options) {
+		this.server = restify.createServer({
+			name: 'tracker',
+			version: '1.0.0',
+		});
 
-		console.log( `Starting server to listen on ${path}` );
-		this.ready = new Promise( ( resolve, reject ) => {
-			this.unixServer = net.createServer( ( c ) => this.onClient( c ) );
-			this.unixServer.on( 'error', this.onInitializationError( reject ) );
-			this.unixServer.on( 'listening', this.onListening( resolve ) );
-			this.unixServer.listen( path );
-		} );
-	}
+		this.unixSocketPath = options.trackerPath;
 
-	onInitializationError( reject ) {
-		return ( e ) => {
-			console.log( 'Server initialization failed' );
-			if ( e.code === 'EADDRINUSE' ) {
-				// prevent unlinking the file we never took ownership of
-				this.unixServer.unref();
-				this.unixServer = undefined;
-			}
-			reject( e.code );
+		this.server.use(restify.plugins.acceptParser(this.server.acceptable));
+		this.server.use(restify.plugins.queryParser());
+		this.server.use(restify.plugins.bodyParser());
+
+		const globals = {
+			tags: {},
+			pending: {},
+			resolvers: {},
 		};
-	}
 
-	onListening( resolve ) {
-		return () => {
-			console.log( 'Server initialized' );
-			this.unixServer.on( 'close', this.shutdown );
-			// TODO: Are these needed? Or is the 'close' listener enough?
-			process.on( 'SIGTERM', this.shutdown );
-			process.on( 'SIGINT', this.shutdown );
-			// TODO: Do we need another handler for this?
-			this.unixServer.removeListener( 'error', this.onInitializationError );
-			resolve();
-		};
-	}
+		this.server.post('/tracker', function (req, res, next) {
+			let data = req.body;
 
-	onClient( socket ) {
-		socket.on('data', ( data ) => {
-			var parsed;
-			try {
-				parsed = JSON.parse( data );
-			} catch ( e ) {
-				// Invalid JSON. Ignore? May lead to
-				// timeouts on the other end...
-				return;
-			}
-			this.dispatch( parsed ).then( ( response ) => {
-				if ( response ) {
-					response.requestId = parsed.requestId;
-					socket.write( JSON.stringify( response ) );
-				}
-			} );
-		} );
-	}
-
-	shutdown() {
-		console.log( 'Running server shutdown' );
-		if ( this.unixServer ) {
-			console.log( 'cleaning up' );
-			this.unixServer.unref();
-			fs.unlinkSync( this.unixServer.address() );
-			delete this.unixServer;
-		}
-	}
-}
-
-// Communication protocol with clients
-class TagTrackerServer extends Server {
-	constructor( path ) {
-		super( path );
-		this.tags = {};
-		this.pending = {};
-		this.resolvers = {};
-	}
-
-	dispatch( data ) {
-		return new Promise( ( resolve, reject ) => {
-			if ( this.resolvers[data.complete] ) {
+			if (globals.resolvers[data.complete]) {
 				// tag completed, resolve pending
-				this.resolvers[data.complete]( {
+				globals.resolvers[data.complete]({
 					tag: data.complete,
 					status: 'complete'
-				} );
-				// Just echo it back. Not used for anything.
-				resolve( data );
-			} else if ( this.resolvers[data.reject] ) {
-				this.resolvers[data.reject]( {
+				});
+				res.send(data);
+				return next();
+			}
+
+			if (globals.resolvers[data.reject]) {
+				globals.resolvers[data.reject]({
 					tag: data.reject,
 					status: 'reject'
-				} );
-				resolve( data );
-			} else if ( this.pending[data.check] ) {
-				// Another process is initializing this tag. Wait for it
-				// to signal completion
-				this.pending[data.check].then( resolve );
-			} else if ( data.check ) {
-				// New tag
-				this.pending[data.check] = new Promise( ( resolve ) => {
-					this.resolvers[data.check] = resolve;
-				} );
-				resolve( {
+				});
+				res.send(data);
+				return next();
+			}
+
+			if (globals.pending[data.check]) {
+				globals.pending[data.check].then(function (data) {
+					res.send(data);
+					next();
+				});
+			} else if (data.check) {
+				globals.pending[data.check] = new Promise((resolve) => {
+					globals.resolvers[data.check] = resolve;
+				});
+				res.send({
 					tag: data.check,
 					status: 'new'
-				} );
+				});
+				return next();
 			} else {
-				console.log( 'Unrecognized tag server request: ', data );
-				reject();
+				return next(new Error('Unrecognized tag server request: ' + JSON.stringify(data)));
 			}
-		} );
+		});
+	}
+
+	close() {
+		this.server.close();
+	}
+
+	start(success) {
+		this.server.listen(this.unixSocketPath, success);
 	}
 }
 
-// Communication protocol with host process
 (() => {
 	var server;
 	process.on( 'message', ( msg ) => {
@@ -131,14 +79,24 @@ class TagTrackerServer extends Server {
 			if ( server ) {
 				process.send( { error: "Already initialized" } );
 			} else {
-				server = new TagTrackerServer( msg.config.trackerPath );
-				server.ready.then(
-					() =>  process.send( { initialized: true } ),
-					( e ) => process.send( { error: e } ) );
+				server = new Server( msg.config );
+				server.server.on( 'error', (err) => {
+					process.send( { error: err.message } );
+					server = undefined;
+				} );
+
+				server.start(
+					() => {
+						console.log( 'Server initialized' );
+						process.send( {initialized: true} );
+					}
+				);
 			}
 		}
+		// TODO: figure out why the process channel is closed when cucumber tries to send
+		// the exit signal...
 		if ( msg.exit && server ) {
-			server.shutdown();
+			server.close();
 		}
 	} );
 } )();

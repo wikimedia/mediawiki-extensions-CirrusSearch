@@ -105,16 +105,19 @@ class StepHelpers {
 		} ).call( this );
 	}
 
-	suggestionsWithProfile( query, profile ) {
+	suggestionsWithProfile( query, profile, namespaces = undefined ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
-
+			let request = {
+				action: 'opensearch',
+				search: query,
+				profile: profile,
+			};
+			if ( namespaces ) {
+				request.namespace = namespaces.replace( /','/g, '|' );
+			}
 			try {
-				let response = yield client.request( {
-					action: 'opensearch',
-					search: query,
-					profile: profile
-				} );
+				let response = yield client.request( request );
 				this.world.setApiResponse( response );
 			} catch ( err ) {
 				this.world.setApiError( err );

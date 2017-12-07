@@ -29,7 +29,22 @@ class CompletionRequestLog extends BaseRequestLog {
 	/**
 	 * @var int
 	 */
+	private $prefixTookMs = 0;
+
+	/**
+	 * @var int
+	 */
 	private $hitsTotal;
+
+	/**
+	 * @var int[]|null
+	 */
+	private $namespaces;
+
+	public function __construct( $description, $queryType, $extra = [], $namespaces = null ) {
+		parent::__construct( $description, $queryType, $extra );
+		$this->namespaces = $namespaces;
+	}
 
 	/**
 	 * @param SearchSuggestion[] $result The set of suggestion results that
@@ -49,7 +64,7 @@ class CompletionRequestLog extends BaseRequestLog {
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
 			$maxScore = $maxScore !== null ? max( $maxScore, $suggestion->getScore() ) : $suggestion->getScore();
 			$this->hits[] = [
-				'title' => $title ? (string)$title : $suggestion->getText(),
+				'title' => $title ? $title->getPrefixedText() : $suggestion->getText(),
 				'index' => $index,
 				'pageId' => (int)$pageId,
 				'score' => $suggestion->getScore(),
@@ -101,8 +116,8 @@ class CompletionRequestLog extends BaseRequestLog {
 	public function getRequests() {
 		$vars = $this->getLogVariables() + [
 			'hits' => $this->hits,
+			'namespaces' => $this->namespaces,
 		];
-
 		return [ $vars ];
 	}
 
@@ -118,6 +133,13 @@ class CompletionRequestLog extends BaseRequestLog {
 	 */
 	public function setSuggestTookMs( $suggestTookMs ) {
 		$this->suggestTookMs = $suggestTookMs;
+	}
+
+	/**
+	 * @param int $prefixTookMs
+	 */
+	public function setPrefixTookMs( $prefixTookMs ) {
+		$this->prefixTookMs = $prefixTookMs;
 	}
 
 	/**

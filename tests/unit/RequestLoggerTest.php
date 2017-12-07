@@ -106,22 +106,22 @@ class RequestLoggerTest extends CirrusTestCase {
 	 * @dataProvider requestLoggingProvider
 	 */
 	public function testRequestLogging( array $query, $responses = null, $expectedLogs ) {
+		$globals = [
+			'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
+			'wgCirrusSearchInterwikiSources' => [],
+		];
+		if ( isset( $query['interwiki'] ) ) {
+			$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
+			$globals['wgCirrusSearchEnableCrossProjectSearch'] = true;
+		}
+		$this->setMwGlobals( $globals );
+
 		switch ( $query['type'] ) {
 		case 'fulltext':
 			$work = function ( $config, $connection ) use ( $query ) {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
-
-				$globals = [
-					'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
-					'wgCirrusSearchInterwikiSources' => [],
-				];
-				if ( isset( $query['interwiki'] ) ) {
-					$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];
-					$globals['wgCirrusSearchEnableCrossProjectSearch'] = true;
-				}
-				$this->setMwGlobals( $globals );
 
 				$searchEngine = new CirrusSearch( 'wiki' );
 				$searchEngine->setConnection( $connection );
@@ -160,8 +160,8 @@ class RequestLoggerTest extends CirrusTestCase {
 			$work = function ( $config, $connection ) use ( $query ) {
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 5;
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
-
-				$suggester = new CompletionSuggester( $connection, $limit, $offset, $config, null, null, 'wiki' );
+				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
+				$suggester = new CompletionSuggester( $connection, $limit, $offset, $config, $namespaces, null, 'wiki' );
 				$suggester->suggest( $query['term'] );
 			};
 			break;

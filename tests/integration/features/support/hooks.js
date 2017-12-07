@@ -694,6 +694,7 @@ defineSupportCode( function( { After, Before } ) {
 				"Xavier: Charles": "Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]",
 				"X-Force": "X-Force is a fictional team of of [[X-Men]]",
 				"Magneto": "Magneto is a fictional character appearing in American comic books",
+				"Help:Magneto": "Help:Magneto",
 				"Max Eisenhardt": "#REDIRECT [[Magneto]]",
 				"Eisenhardt, Max": "#REDIRECT [[Magneto]]",
 				"Magnetu": "#REDIRECT [[Magneto]]",

@@ -149,13 +149,7 @@ class SearchRequestBuilder {
 			$queryOptions[\Elastica\Search::OPTION_SEARCH_TYPE] = \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH;
 		}
 
-		if ( $this->pageType ) {
-			$pageType = $this->pageType;
-		} else {
-			$indexType = $this->connection->pickIndexTypeForNamespaces(
-				$this->searchContext->getNamespaces() );
-			$pageType = $this->connection->getPageType( $this->indexBaseName, $indexType );
-		}
+		$pageType = $this->getPageType();
 
 		$search = $pageType->createSearch( $query, $queryOptions );
 		foreach ( $extraIndexes as $i ) {
@@ -238,10 +232,16 @@ class SearchRequestBuilder {
 	}
 
 	/**
-	 * @return Type|null
+	 * @return Type
 	 */
 	public function getPageType() {
-		return $this->pageType;
+		if ( $this->pageType ) {
+			return $this->pageType;
+		} else {
+			$indexType = $this->connection->pickIndexTypeForNamespaces(
+				$this->searchContext->getNamespaces() );
+			return $this->connection->getPageType( $this->indexBaseName, $indexType );
+		}
 	}
 
 	/**
@@ -269,5 +269,12 @@ class SearchRequestBuilder {
 		$this->sort = $sort;
 
 		return $this;
+	}
+
+	/**
+	 * @return SearchContext
+	 */
+	public function getSearchContext() {
+		return $this->searchContext;
 	}
 }

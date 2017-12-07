@@ -585,10 +585,8 @@ class CirrusSearch extends SearchEngine {
 			return $this->prefixSearch( $search, $variants );
 		}
 
-		if ( count( $this->namespaces ) != 1 ||
-			reset( $this->namespaces ) != NS_MAIN
-		) {
-			// for now, suggester only works for main namespace
+		// the completion suggester is only worth a try if NS_MAIN is requested
+		if ( !in_array( NS_MAIN, $this->namespaces ) ) {
 			return $this->prefixSearch( $search, $variants );
 		}
 
@@ -651,17 +649,9 @@ class CirrusSearch extends SearchEngine {
 				// No need to unpack the simple title matches from non-fancy TitleResultsType
 				return SearchSuggestionSet::fromTitles( $status->getValue() );
 			}
-			$results = array_filter( array_map( function ( $match ) {
-				if ( isset( $match[ 'titleMatch' ] ) ) {
-					return $match[ 'titleMatch' ];
-				} else {
-					if ( isset( $match[ 'redirectMatches' ][ 0 ] ) ) {
-						// TODO maybe dig around in the redirect matches and find the best one?
-						return $match[ 'redirectMatches' ][0];
-					}
-				}
-				return false;
-			}, $status->getValue() ) );
+			$results = array_filter( array_map(
+				[ FancyTitleResultsType::class, 'chooseBestTitleOrRedirect' ],
+				$status->getValue() ) );
 			return SearchSuggestionSet::fromTitles( $results );
 		}
 

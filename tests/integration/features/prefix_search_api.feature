@@ -236,3 +236,22 @@ Feature: Prefix search via api
   Scenario: Default sort can be used as search input
     When I ask suggestion API for Wilson
       Then the API should produce list starting with Sam Wilson
+
+  Scenario Outline: Completion and prefixsearch both allow to search over multiple namespaces
+    When I get api suggestions for <term> using the <profile> profile on namespaces <namespaces>
+      Then <result>
+      And the api should offer to search for pages containing <term>
+  Examples:
+    |   term      |   profile   | namespaces |          result                            |
+    | Magnet      | strict      |     0,12   | Magneto is in the api suggestions          |
+    | Magnet      | strict      |     0,12   | Help:Magneto is in the api suggestions     |
+    | Magnet      | fuzzy       |     0,12   | Magneto is in the api suggestions          |
+    | Magnet      | fuzzy       |     0,12   | Help:Magneto is in the api suggestions     |
+    | Magnet      | normal      |     0,12   | Magneto is in the api suggestions          |
+    | Magnet      | normal      |     0,12   | Help:Magneto is in the api suggestions     |
+    | Magnet      | classic     |     0,12   | Magneto is in the api suggestions          |
+    | Magnet      | classic     |     0,12   | Help:Magneto is in the api suggestions     |
+    | Magnet      | strict      |     0      | Help:Magneto is not in the api suggestions |
+    | Magnet      | fuzzy       |     0      | Help:Magneto is not in the api suggestions |
+    | Magnet      | normal      |     0      | Help:Magneto is not in the api suggestions |
+    | Magnet      | classic     |     0      | Help:Magneto is not in the api suggestions |

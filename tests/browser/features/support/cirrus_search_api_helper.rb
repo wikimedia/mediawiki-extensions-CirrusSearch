@@ -77,12 +77,16 @@ module CirrusSearchApiHelper
   end
 
   # Get suggestions for a particular string using the api
-  def suggestions_with_profile(search, profile)
-    api.action(
-      :opensearch,
+  def suggestions_with_profile(search, profile, namespaces = nil)
+    req = {
       search: search,
       profile: profile,
       token_type: false
+    }
+    req["namespace"] = namespaces.gsub(/,/, "|") if namespaces
+    api.action(
+      :opensearch,
+      req
     )
   end
 

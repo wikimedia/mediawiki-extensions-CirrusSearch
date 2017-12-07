@@ -65,6 +65,10 @@ class CompSuggestQueryBuilder {
 	 * @return bool true if results are possible false otherwise
 	 */
 	public function areResultsPossible() {
+		$namespaces = $this->searchContext->getNamespaces();
+		if ( $namespaces !== null && !in_array( NS_MAIN, $namespaces ) ) {
+			return false;
+		}
 		// If the offset requested is greater than the hard limit
 		// allowed we will always return an empty set so let's do it
 		// asap.
@@ -275,7 +279,7 @@ class CompSuggestQueryBuilder {
 	 * @param SearchConfig $config
 	 * @return int the number of results to fetch from elastic
 	 */
-	private static function computeHardLimit( $limit, $offset, SearchConfig $config ) {
+	public static function computeHardLimit( $limit, $offset, SearchConfig $config ) {
 		$limit = $limit + $offset;
 		$hardLimit = $config->get( 'CirrusSearchCompletionSuggesterHardLimit' );
 		if ( $hardLimit === null ) {

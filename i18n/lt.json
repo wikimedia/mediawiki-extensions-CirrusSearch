@@ -3,7 +3,8 @@
 		"authors": [
 			"Hugo.arg",
 			"Albertas",
-			"Eitvys200"
+			"Eitvys200",
+			"Agne1992"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-įgalinta MediaWiki paieška",
@@ -30,5 +31,6 @@
 	"prefs-completion": "Paieškos užbaigimas",
 	"cirrussearch-pref-completion-section-desc": "Užbaigimo siūlytojas",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Numatytasis (rekomenduojama)",
-	"cirrussearch-completion-profile-strict-pref-name": "Griežtas režimas (pažengusiems)"
+	"cirrussearch-completion-profile-strict-pref-name": "Griežtas režimas (pažengusiems)",
+	"cirrussearch-article-words": "Žodžiai visuose straipsniuose"
 }

@@ -27,6 +27,9 @@
 	"apihelp-cirrus-settings-dump-description": "Dump av CirrusSearch-innstillinger for denne wikien.",
 	"apihelp-cirrus-settings-dump-summary": "Dump av CirrusSearch-innstillinger for denne wikien.",
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-innstillingene for denne wiien.",
+	"apihelp-query+cirrusdoc-description": "Kopi av et CirrusSearch-artikkeldokument",
+	"apihelp-query+cirrusdoc-summary": "Kopi av et CirrusSearch-artikkeldokument",
+	"apihelp-query+cirrusdoc-example": "Hent en kopi av én CirrusSearch-artikkel.",
 	"apierror-cirrus-requesttoolong": "Prefikssøkforespørselen var lengre enn den tillatte makslengden. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Gi oss tilbakemelding",
 	"cirrussearch-morelikethis-settings": "#<!-- la denne linja være akkurat som den er --> <pre>\n# Denne beskjeden lar deg konfigurere innstillingene i funksjonen «mer som dette».\n# Endringer som gjøres her trer i kraft umiddelbart.\n# Syntaksen er som følger:\n# * Alt fra et «#»-tegn til slutten av linja er en kommentar.\n# * Hver ikke-blanke linje er innstillingen fulgt av et «:»-tegn, fulgt av innstillingens verdi\n# Innstillingene er:\n# * min_doc_freq (heltall): Minimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n# * max_doc_freq (heltall): Maksimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n#           Begreper med høy frekvens er som regel «stopp-ord».\n# * max_query_terms (heltall): Maksimalt antall begreper som skal vurderes. Verdien er begrenset til $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n# *min_term_freq (heltall): Minimalt antall ganger begrepet dukker opp i innputten til dokumentet som skal vurderes. For små felt (titler) bør denne verdien være 1.\n# * minimum_should_match (prosent, -100% til 100%, eller heltall): Prosenten av begreper det skal treffes på. Standard er 30%.\n# * min_word_len (heltall): Minimal lengde for at et begrep skal vurderes. Standard er 0.\n# * max_word_len (heltall): Maksimal lengde for at et ord skal ignoreres. Standard er ingen grense (0).\n# * fields (kommaskilt liste over verdier): Dette er feltene som skal brukes. Tillatte felt er title, text, auxiliary_text, opening_text, headings.\n# Eksempler på riktige linjer:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_erms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- la denne linja være akkurat som den er -->",
@@ -80,5 +83,6 @@
 	"cirrussearch-explore-similar-languages": "Språk",
 	"cirrussearch-explore-similar-related-none": "Ingen relaterte sider tilgjengelig",
 	"cirrussearch-explore-similar-categories-none": "Ingen kategorier tilgjengelig",
-	"cirrussearch-explore-similar-languages-none": "Ikke tilgjengelig på andre språk"
+	"cirrussearch-explore-similar-languages-none": "Ikke tilgjengelig på andre språk",
+	"cirrussearch-article-words": "Ord i alle artikler"
 }

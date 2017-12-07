@@ -74,5 +74,6 @@
 	"cirrussearch-explore-similar-languages": "언어",
 	"cirrussearch-explore-similar-related-none": "사용할 수 있는 관련 문서가 없음",
 	"cirrussearch-explore-similar-categories-none": "사용할 수 있는 분류 없음",
-	"cirrussearch-explore-similar-languages-none": "다른 언어에서 사용할 수 없음"
+	"cirrussearch-explore-similar-languages-none": "다른 언어에서 사용할 수 없음",
+	"cirrussearch-article-words": "모든 문서의 단어"
 }

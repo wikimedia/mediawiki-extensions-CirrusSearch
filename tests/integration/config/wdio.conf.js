@@ -48,7 +48,7 @@ exports.config = {
 			username: 'Admin',
 			password: 'vagrant',
 			apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php',
-			baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
+			baseUrl: 'http://commons.wiki.local.wmftest.net:8080'
 		},
 		ru: {
 			username: 'Admin',

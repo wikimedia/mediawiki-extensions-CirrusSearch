@@ -20,21 +20,12 @@ Feature: Results are ordered from most relevant to least.
     Then Relevancylanguagetest/en is the first api search result
 
   Scenario: Redirects count as incoming links
-    Given a page named Relevancyredirecttest Smaller exists with contents Relevancyredirecttest A text text text text text text text text text text text text text
-      And a page named Relevancyredirecttest Smaller/A exists with contents [[Relevancyredirecttest Smaller]]
-      And a page named Relevancyredirecttest Smaller/B exists with contents [[Relevancyredirecttest Smaller]]
-      And a page named Relevancyredirecttest Larger exists with contents Relevancyredirecttest B text text text text text text text text text text text text text
-      And a page named Relevancyredirecttest Larger/Redirect exists with contents #REDIRECT [[Relevancyredirecttest Larger]]
-      And a page named Relevancyredirecttest Larger/A exists with contents [[Relevancyredirecttest Larger]]
-      And a page named Relevancyredirecttest Larger/B exists with contents [[Relevancyredirecttest Larger/Redirect]]
-      And a page named Relevancyredirecttest Larger/C exists with contents [[Relevancyredirecttest Larger/Redirect]]
-      And I api search for Relevancyredirecttest
+     When I api search for Relevancyredirecttest
      Then Relevancyredirecttest Larger is the first api search result
       And Relevancyredirecttest Smaller is the second api search result
     # Note that this test can fail spuriously in two ways:
     # 1. If the required pages are created as part of the hook for @relevancy its quite possible for the large influx
-    # of jobs to cause the counting jobs to not pick up all the counts. I'm not super sure why that is but moving the
-    # creation into its own section makes it pretty consistent.
+    # of jobs to cause the counting jobs to not pick up all the counts.
     # 2. Its quite possible for the second result to be deeper in the result list for a few seconds after the pages are
     # created. It gets its position updated by the link counting job which has to wait for refreshing and undelaying.
 
@@ -60,17 +51,11 @@ Feature: Results are ordered from most relevant to least.
       And Relevancylanguagetest/ar is the third api search result
 
   Scenario: Incoming links count in page weight
-    Given a page named Relevancylinktest Smaller exists
-      And a page named Relevancylinktest Larger Extraword exists with contents Relevancylinktest needs 5 extra words
-      And a page named Relevancylinktest Larger/Link A exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link B exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link C exists with contents [[Relevancylinktest Larger Extraword]]
-      And a page named Relevancylinktest Larger/Link D exists with contents [[Relevancylinktest Larger Extraword]]
-      And I api search for Relevancylinktest -intitle:link
+    When I api search for Relevancylinktest -intitle:link
      Then Relevancylinktest Larger Extraword is the first api search result
       And Relevancylinktest Smaller is the second api search result
       And I api search with query independent profile classic_noboostlinks for Relevancylinktest -intitle:link
-     Then Relevancylinktest Smaller is the first api search result
+      Then Relevancylinktest Smaller is the first api search result
       And Relevancylinktest Larger Extraword is the second api search result
     # This test can fail spuriously for the same reasons that "Redirects count as incoming links" can fail
     # With the allfield Relevancylinktest Smaller will get 21 freq for the term Relevancylinktest and a

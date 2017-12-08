@@ -9,8 +9,9 @@
  * bind `this` to the parent function instead, which is not what we want.
  */
 
-const defineSupportCode = require('cucumber').defineSupportCode,
+const {defineSupportCode, defineParameterType} = require('cucumber'),
 	SpecialVersion = require('../support/pages/special_version'),
+	SpecialUndelete = require('../support/pages/special_undelete'),
 	ArticlePage = require('../support/pages/article_page'),
 	TitlePage = require('../support/pages/title_page'),
 	expect = require( 'chai' ).expect,
@@ -37,17 +38,44 @@ function withApi( world, fn ) {
 		throw e;
 	}
 }
+
+// TODO: We might need to share this epoch between wdio runner processes?
+const epoch = +new Date();
+const searchVars = {};
+defineParameterType( {
+	// Quite annoyingly this isn't a regexp to match in the step name, rather
+	// it is a string literal to match a capture group of the step definition.
+	// So basically this only replaces epochs in parameters defined as (.+).
+	regexp: /.+/,
+	transformer: (s) => {
+		if ( s === undefined ) {
+			return s;
+		}
+		if ( s === 'the empty string' ) {
+			return '';
+		}
+		s = s.replace( /%{epoch}/g, epoch );
+		s = s.replace( /%ideographic_whitspace%/g, "\u3000" );
+
+		// Replace %{\uXXXX}% with the appropriate unicode code point
+		s = s.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
+		s = Object.keys(searchVars).reduce( ( str, pattern ) => str.replace( pattern, searchVars[pattern] ), s );
+		return s.replace( /%{exact:([^}]*)}/g, '$1' );
+	},
+	name: 'replacements',
+} );
+
 defineSupportCode( function( {Given, When, Then} ) {
 
-	When( /^I go to (.*)$/, function ( title ) {
+	When( /^I go to (.+)$/, function ( title ) {
 		return this.visit( new TitlePage( title ) );
 	} );
 
-	When( /^I ask suggestion API for (.*)$/, function ( query ) {
+	When( /^I ask suggestion API for (.+)$/, function ( query ) {
 		return this.stepHelpers.suggestionSearch( query );
 	} );
 
-	When( /^I ask suggestion API at most (\d+) items? for (.*)$/, function( limit, query ) {
+	When( /^I ask suggestion API at most (\d+) items? for (.+)$/, function( limit, query ) {
 		return this.stepHelpers.suggestionSearch( query, limit );
 	} );
 
@@ -55,7 +83,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		expect( SpecialVersion.software_table_row( name ) ).not.to.equal( null );
 	} );
 
-	Then( /^the API should produce list containing (.*)/, function( term ) {
+	Then( /^the API should produce list containing (.+)/, function( term ) {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.include( term );
 		} );
@@ -67,7 +95,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	Then( /^the API should produce list starting with (.*)/, function( term ) {
+	Then( /^the API should produce list starting with (.+)/, function( term ) {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ][ 0 ] ).to.equal( term );
 		} );
@@ -79,7 +107,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	When( /^the api returns error code (.*)$/, function ( code ) {
+	When( /^the api returns error code (.+)$/, function ( code ) {
 		return withApi( this, () => {
 			expect( this.apiError ).to.include( {
 				code: code
@@ -87,7 +115,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	When( /^I get api suggestions for (.*?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/, function( search, profile, namespaces ) {
+	When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/, function( search, profile, namespaces ) {
 		// TODO: Add step helper
 		return this.stepHelpers.suggestionsWithProfile( search, profile || "fuzzy", namespaces );
 	} );
@@ -126,8 +154,15 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	When( /^a page named (.+) exists(?: with contents (.+))?$/, function ( title, text ) {
-		return this.stepHelpers.editPage( title, text || title, false );
+		return this.stepHelpers.editPage( title, text || title );
 	} );
+
+	When( /^I don't wait for a page named (.+) to exist(?: with contents (.+))?$/, function ( title, text ) {
+		return this.stepHelpers.editPage( title, text || title, {
+			skipWaitForOperation: true
+		} );
+	} );
+
 
 	Then( /^I get api near matches for (.+)$/, function ( search ) {
 		return this.stepHelpers.searchFor( search, { srwhat: "nearmatch" } );
@@ -159,13 +194,14 @@ defineSupportCode( function( {Given, When, Then} ) {
 			}
 		}
 	}
+
 	Then( /^(.+) is( in)? the ((?:[^ ])+(?: or (?:[^ ])+)*) api search result$/, function ( title, in_ok, indexes ) {
 		return withApi( this, () => {
 			return checkApiSearchResultStep.call( this, title, in_ok, indexes );
 		} );
 	} );
 
-	Then( /^(.*) is( not)? part of the api search result$/, function ( title, not_searching ) {
+	Then( /^(.+) is( not)? part of the api search result$/, function ( title, not_searching ) {
 		return withApi( this, () => {
 			// Chai doesnt (yet) have a native assertion for this:
 			// https://github.com/chaijs/chai/issues/858
@@ -181,7 +217,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.*) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.*)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
+	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.+) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.+)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
 		let options = {
 			srnamespace: (namespaces || "0").split(' ').join(','),
 			srenablerewrites: enableRewrites ? 1 : 0,
@@ -200,10 +236,6 @@ defineSupportCode( function( {Given, When, Then} ) {
 			Object.assign(options, this.didyoumeanOptions );
 		}
 
-		// Generic string replacement of patterns stored in this.searchVars
-		search = Object.keys(this.searchVars).reduce( ( str, pattern ) => str.replace( pattern, this.searchVars[pattern] ), search );
-		// Replace %{\uXXXX}% with the appropriate unicode code point
-		search = search.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
 		let stepHelpers = this.stepHelpers;
 		if ( wiki ) {
 			stepHelpers = this.stepHelpers.onWiki(wiki);
@@ -293,7 +325,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 			}
 			expect( this.apiResponse.query.search[position] ).to.include.keys( key );
 			let snippet = this.apiResponse.query.search[position][key].replace(
-				/<span class="searchmatch">(.*?)<\/span>/g, '*$1*');
+				/<span class="searchmatch">(.+?)<\/span>/g, '*$1*');
 			if ( in_ok ) {
 				expect( snippet ).to.include( expected );
 			} else {
@@ -308,9 +340,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	Then( /^I locate the page id of (.*) and store it as (%.*%)$/, function ( title, varname ) {
+	Then( /^I locate the page id of (.+) and store it as (%.+%)$/, function ( title, varname ) {
 		return Promise.coroutine( function* () {
-			this.searchVars[varname] = yield this.stepHelpers.pageIdOf( title );
+			searchVars[varname] = yield this.stepHelpers.pageIdOf( title );
 		} ).call( this );
 	} );
 
@@ -318,8 +350,10 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.waitForMs( seconds * 1000 );
 	} );
 
-	Then( /^I delete (.*)$/, function ( title ) {
-		return this.stepHelpers.deletePage( title );
+	Then( /^I delete (.+)( without waiting)?$/, function ( title, withoutWaiting ) {
+		return this.stepHelpers.deletePage( title, {
+			skipWaitForOperation: Boolean( withoutWaiting )
+		} );
 	} );
 
 	Then( /^I globally freeze indexing$/, Promise.coroutine( function* () {
@@ -337,7 +371,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} ) );
 
-	Then( /^a file named (.*) exists( on commons)? with contents (.*) and description (.*)$/, function (title, on_commons, fileName, description) {
+	Then( /^a file named (.+) exists( on commons)? with contents (.+) and description (.+)$/, function ( title, on_commons, fileName, description ) {
 		let stepHelpers = this.stepHelpers;
 		if ( on_commons ) {
 			stepHelpers = stepHelpers.onWiki( 'commons' );
@@ -345,15 +379,15 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return stepHelpers.uploadFile( title, fileName, description );
 	} );
 
-	Then(/^within (\d+) seconds (.*) has (.*) as local_sites_with_dupe$/, function (seconds, page, value) {
+	Then(/^within (\d+) seconds (.+) has (.+) as local_sites_with_dupe$/, function (seconds, title, value) {
 		return Promise.coroutine( function* () {
 			let stepHelpers = this.stepHelpers.onWiki( 'commons' );
 			let time = new Date();
 			let found = false;
 			main: do {
-				let content = yield stepHelpers.getCirrusIndexedContent( page );
-				if ( content ) {
-					for ( let doc of content ) {
+				let page = yield stepHelpers.getCirrusIndexedContent( title );
+				if ( page ) {
+					for ( let doc of page.cirrusdoc ) {
 						found = doc.source && doc.source.local_sites_with_dupe &&
 							doc.source.local_sites_with_dupe.indexOf( value ) > -1;
 						if ( found ) break main;
@@ -361,12 +395,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 				}
 				yield stepHelpers.waitForMs( 100 );
 			} while ( ( new Date() - time ) < ( seconds * 1000 ) );
-			let msg = `Expected ${page} on commons to have ${value} in local_sites_with_dupe within ${seconds}s.`;
+			let msg = `Expected ${title} on commons to have ${value} in local_sites_with_dupe within ${seconds}s.`;
 			expect( found, msg ).to.equal(true);
 		} ).call( this );
 	} );
 
-	Then(/^I am on a page titled (.*)$/, function( title ) {
+	Then(/^I am on a page titled (.+)$/, function( title ) {
 		expect(ArticlePage.articleTitle, `I am on ${title}`).to.equal(title);
 	} );
 
@@ -410,5 +444,25 @@ defineSupportCode( function( {Given, When, Then} ) {
 			srlimit: 20
 		};
 		return this.stepHelpers.searchFor( search, options );
+	} );
+
+	Then( /^I edit (.+) to add (.+)$/, function ( title, content ) {
+		// Add a space before content to ensure it tokenizes separately
+		return this.stepHelpers.editPage( title, ' ' + content, { append: true } );
+	} );
+
+	Then( /^I move (.+) to (.+) and( do not)? leave a redirect via api$/, function ( from, to, noRedirect ) {
+		return this.stepHelpers.movePage( from, to, noRedirect );
+	} );
+
+	Then( /^I search deleted pages for (.+)$/, function( title ) {
+		SpecialUndelete.login( this );
+		this.visit( SpecialUndelete );
+		SpecialUndelete.search_input = title;
+		SpecialUndelete.click_search_button();
+	} );
+
+	Then( /^deleted page search returns (.+) as first result$/, function ( title ) {
+		expect( SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
 	} );
 });

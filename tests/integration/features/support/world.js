@@ -145,7 +145,7 @@ function World( { attach, parameters } ) {
 		if ( page instanceof Page && page.url ) {
 			tmpUrl = page.url;
 		}
-		if ( page instanceof String && page ) {
+		if ( typeof page === 'string' && page ) {
 			tmpUrl = page;
 		}
 		if ( !tmpUrl ) {
@@ -156,11 +156,6 @@ function World( { attach, parameters } ) {
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
 		log( `[D] Visited page: ${browser.getUrl()}`, this.tags.silentLog );
-	};
-
-	// Variables held between steps and substituted into queries
-	this.searchVars = {
-		"%ideographic_whitspace%": "\u3000"
 	};
 }
 

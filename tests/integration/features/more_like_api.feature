@@ -28,7 +28,6 @@ Feature: More like an article
       And More Like Me Set 2 Page 1 is not in the api search results
       And More Like Me Set 3 Page 1 is not in the api search results
 
-  @setup_main
   Scenario: Searching for morelike:<page> with the title field and filtering with the word length
     When I set More Like This Options to title field, word length to 3 and I api search for morelike:More Like Me 1
     Then More Like Me 2 is part of the api search result
@@ -37,9 +36,8 @@ Feature: More like an article
     And More Like Me 5 is part of the api search result
     And More Like Me Set 3 Page 3 is part of the api search result
     But More Like Me 1 is not part of the api search result
-    And ChangeMe is not is not part of the api search result
+    And This is Me is not is not part of the api search result
 
-  @setup_main
   Scenario: Searching for morelike:<page> with the title field and filtering with the percent terms to match
     When I set More Like This Options to title field, percent terms to match to 70% and I api search for morelike:More Like Me 1
     Then More Like Me 2 is part of the api search result
@@ -48,14 +46,12 @@ Feature: More like an article
     And More Like Me 5 is part of the api search result
     And More Like Me Set 3 Page 3 is part of the api search result
     But More Like Me 1 is not part of the api search result
-    And ChangeMe is not part of the api search result
+    And This is Me is not part of the api search result
 
-  @setup_main
   Scenario: Searching for morelike:<page> with the title field and bad settings give no results
     When I set More Like This Options to bad settings and I api search for morelike:More Like Me 1
     Then there are no api search results
 
-  @setup_main
   Scenario: Searching for morelike:<page> with the title field and settings with poor precision
     When I set More Like This Options to title field, word length to 2 and I api search for morelike:More Like Me 1
-    Then ChangeMe is part of the api search result
+    Then This is Me is part of the api search result

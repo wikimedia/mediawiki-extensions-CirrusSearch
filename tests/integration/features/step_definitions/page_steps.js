@@ -486,4 +486,24 @@ defineSupportCode( function( {Given, When, Then} ) {
 		let found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
 		expect( found ).to.equal( !should_not );
 	} );
+
+	Then( /^I wait for (.+) to not be included in the redirects of (.+)$/, function ( source, redirect ) {
+		return Promise.coroutine( function* () {
+			let timeoutMs = 20000;
+			let start = new Date();
+			while (true) {
+				let doc = yield this.stepHelpers.getCirrusIndexedContent( redirect );
+				if ( doc.cirrusdoc.length > 0 ) {
+					let exists = doc.cirrusdoc[0].source.redirect.reduce( ( a, b ) => a || b.title === source, false ); // jshint ignore:line
+					if ( !exists ) {
+						break;
+					}
+				}
+				if (new Date() - start >= timeoutMs) {
+					throw new Error( `Timed out waiting for ${source} to not exist in document of ${redirect}` );
+				}
+				yield this.stepHelpers.waitForMs( 200 );
+			}
+		} ).call( this );
+	} );
 });

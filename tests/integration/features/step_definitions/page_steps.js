@@ -386,27 +386,6 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return stepHelpers.uploadFile( title, fileName, description );
 	} );
 
-	Then(/^within (\d+) seconds (.+) has (.+) as local_sites_with_dupe$/, function (seconds, title, value) {
-		return Promise.coroutine( function* () {
-			let stepHelpers = this.stepHelpers.onWiki( 'commons' );
-			let time = new Date();
-			let found = false;
-			main: do {
-				let page = yield stepHelpers.getCirrusIndexedContent( title );
-				if ( page ) {
-					for ( let doc of page.cirrusdoc ) {
-						found = doc.source && doc.source.local_sites_with_dupe &&
-							doc.source.local_sites_with_dupe.indexOf( value ) > -1;
-						if ( found ) break main;
-					}
-				}
-				yield stepHelpers.waitForMs( 100 );
-			} while ( ( new Date() - time ) < ( seconds * 1000 ) );
-			let msg = `Expected ${title} on commons to have ${value} in local_sites_with_dupe within ${seconds}s.`;
-			expect( found, msg ).to.equal(true);
-		} ).call( this );
-	} );
-
 	Then(/^I am on a page titled (.+)$/, function( title ) {
 		expect(ArticlePage.articleTitle, `I am on ${title}`).to.equal(title);
 	} );
@@ -482,28 +461,39 @@ defineSupportCode( function( {Given, When, Then} ) {
 	} );
 
 	Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {
-		let snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
-		let found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
-		expect( found ).to.equal( !should_not );
+		return withApi( this, () => {
+			let snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
+			let found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
+			expect( found ).to.equal( !should_not );
+		} );
 	} );
 
-	Then( /^I wait for (.+) to not be included in the redirects of (.+)$/, function ( source, redirect ) {
-		return Promise.coroutine( function* () {
-			let timeoutMs = 20000;
-			let start = new Date();
-			while (true) {
-				let doc = yield this.stepHelpers.getCirrusIndexedContent( redirect );
-				if ( doc.cirrusdoc.length > 0 ) {
-					let exists = doc.cirrusdoc[0].source.redirect.reduce( ( a, b ) => a || b.title === source, false ); // jshint ignore:line
-					if ( !exists ) {
-						break;
-					}
-				}
-				if (new Date() - start >= timeoutMs) {
-					throw new Error( `Timed out waiting for ${source} to not exist in document of ${redirect}` );
-				}
-				yield this.stepHelpers.waitForMs( 200 );
+	Then( /^I wait for (.+) to not include (.+) in redirects$/, function ( title, source ) {
+		return withApi( this, () => {
+			return this.stepHelpers.waitForDocument( title, ( doc ) => {
+				let titles = doc.source.redirect.map( ( redirect ) => redirect.title );
+				expect( titles ).to.not.include( source );
+			} );
+		} );
+	} );
+
+	Then( /^I wait for (.+?)(?: on (.+))? to include (.+) in (.+)$/, function ( title, wiki, value, field ) {
+		return withApi( this, () => {
+			let stepHelpers = this.stepHelpers;
+			if ( wiki ) {
+				stepHelpers = this.stepHelpers.onWiki( wiki );
 			}
-		} ).call( this );
+			return stepHelpers.waitForDocument( title, ( doc ) => {
+				expect( doc.source[field] ).to.include( value );
+			} );
+		} );
+	} );
+
+	Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value ) {
+		return withApi( this, () => {
+			return this.stepHelpers.waitForDocument( title, ( doc ) => {
+				expect( String( doc.source[field] ) ).to.equal( value );
+			} );
+		} );
 	} );
 });

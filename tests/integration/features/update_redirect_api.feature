@@ -16,7 +16,10 @@ Feature: Updating a page from or to a redirect
       And I api search for StartsAsRedirect%{epoch}
      Then RedirectTarget is the first api search result
      When a page named StartsAsRedirect%{epoch} exists
-	  And I wait for StartsAsRedirect%{epoch} to not be included in the redirects of RedirectTarget
+      And I wait for RedirectTarget to not include StartsAsRedirect%{epoch} in redirects
+      # Waiting for the redirect to become not-a-redirect doesn't seem to reliably wait. This
+      # is still not reliable ... but hopefully it helps.
+      And I wait 2 seconds
       And I api search for StartsAsRedirect%{epoch}
      Then StartsAsRedirect%{epoch} is the first api search result
       And RedirectTarget is not in the api search results

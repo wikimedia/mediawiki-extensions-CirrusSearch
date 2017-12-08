@@ -1,4 +1,5 @@
 /*jshint esversion: 6,  node:true */
+/*global browser */
 
 /**
  * Step definitions. Each step definition is bound to the World object,
@@ -464,5 +465,13 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	Then( /^deleted page search returns (.+) as first result$/, function ( title ) {
 		expect( SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
+	} );
+
+	When( /^I dump the cirrus data for (.+)$/, function( title ) {
+		this.visit(new TitlePage(title + '?action=cirrusDump'));
+	} );
+
+	Then ( /^the page text contains (.+)$/, function( text ) {
+		expect(browser.getSource()).to.contains(text);
 	} );
 });

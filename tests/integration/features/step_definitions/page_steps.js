@@ -496,4 +496,101 @@ defineSupportCode( function( {Given, When, Then} ) {
 			} );
 		} );
 	} );
+
+	When( /^I dump the cirrus config$/, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		try {
+			let response = yield client.request( {
+				action: 'cirrus-config-dump',
+			} );
+			this.setApiResponse( response );
+		} catch ( err ) {
+			this.setApiError( err );
+		}
+	} ) );
+
+	Then( /^the config dump contains (.+)$/, function ( key ) {
+		return withApi( this, () => {
+			expect( this.apiResponse ).to.have.any.keys( key );
+		} );
+	} );
+
+	Then( /^the config dump text does not contain (.+)$/, function ( key ) {
+		return withApi( this, () => {
+			let text = JSON.stringify( this.apiResponse );
+			expect( text ).to.not.include( key );
+		} );
+	} );
+
+	When( /^I dump the cirrus mapping$/, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		try {
+			let response = yield client.request( {
+				action: 'cirrus-mapping-dump',
+			} );
+			this.setApiResponse( response );
+		} catch ( err ) {
+			this.setApiError( err );
+		}
+	} ) );
+
+	Then( /^A valid mapping dump is produced$/, function () {
+		return withApi( this, () => {
+			expect( this.apiError ).to.equal( undefined );
+			expect( this.apiResponse ).to.include.all.keys( 'content', 'general' );
+			expect( this.apiResponse.content ).to.have.all.keys( 'archive', 'namespace', 'page' );
+			expect( this.apiResponse.content.page ).to.have.all.keys(
+				'dynamic', '_all', 'properties' );
+			expect( this.apiResponse.content.page.properties ).to.include.keys(
+				'all', 'all_near_match', 'title', 'category', 'redirect' );
+		} );
+	} );
+
+	When( /^I dump the cirrus settings$/, Promise.coroutine( function* () {
+		let client = yield this.onWiki();
+		try {
+			let response = yield client.request( {
+				action: 'cirrus-settings-dump',
+			} );
+			this.setApiResponse( response );
+		} catch ( err ) {
+			this.setApiError( err );
+		}
+	} ) );
+
+	Then( /^A valid settings dump is produced$/, function () {
+		return withApi( this, () => {
+			expect( this.apiError ).to.equal( undefined );
+			expect( this.apiResponse ).to.include.all.keys( 'content', 'general' );
+			expect( this.apiResponse.content ).to.include.all.keys( 'page' );
+			expect( this.apiResponse.content.page.index ).to.include.all.keys( 'refresh_interval' );
+		} );
+	} );
+
+	Given( /^I request a query dump for (.+)$/, function ( query ) {
+		return Promise.coroutine( function* () {
+			let client = yield this.onWiki();
+			try {
+				let response = yield client.request( {
+					action: 'query',
+					list: 'search',
+					srsearch: query,
+					cirrusDumpQuery: 1
+				} );
+				this.setApiResponse( response );
+			} catch ( err ) {
+				this.setApiError( err );
+			}
+		} ).call( this );
+	} );
+
+	Then( /^A valid query dump for (.+) is produced$/, function ( query ) {
+		return withApi( this, () => {
+			expect( this.apiResponse ).to.be.an( 'object' );
+			expect( this.apiResponse ).to.include.keys(
+				'description', 'path', 'params', 'query', 'options' );
+			expect( this.apiResponse.description ).to.equal(
+				`full_text search for '${query}'` );
+		} );
+	} );
 });

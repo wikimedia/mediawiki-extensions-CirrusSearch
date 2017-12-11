@@ -171,6 +171,29 @@ class StepHelpers {
 		} ).call( this );
 	}
 
+	waitForDocument( title, check ) {
+		return Promise.coroutine( function* () {
+			let timeoutMs = 20000;
+			let start = new Date();
+			let lastError;
+			while ( true ) {
+				let doc = yield this.getCirrusIndexedContent( title );
+				if ( doc.cirrusdoc && doc.cirrusdoc.length > 0 ) {
+					try {
+						check( doc.cirrusdoc[0] );
+						break;
+					} catch ( err ) {
+						lastError = err;
+					}
+				}
+				if ( new Date() - start >= timeoutMs ) {
+					throw lastError || new Error( `Timeout out waiting for ${title}` );
+				}
+				yield this.waitForMs( 200 );
+			}
+		} ).call( this );
+	}
+
 	waitForMs( ms ) {
 		return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 	}

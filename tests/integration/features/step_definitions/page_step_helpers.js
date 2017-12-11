@@ -296,7 +296,8 @@ class StepHelpers {
 			// Is the requested page and the returned document dont have the same
 			// title that means we have a redirect. In that case the revision id
 			// wont match, but the backend api ensures the redirect is now contained
-			// within the document.
+			// within the document. Unfortunately if the page was just edited to
+			// now be a redirect anymore this is wrong ...
 			if ( isOk && revisionId && content[0].source.title === page.title ) {
 				isOk = parseInt( content[0].source.version, 10 ) === revisionId;
 			}

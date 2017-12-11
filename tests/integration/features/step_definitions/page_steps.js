@@ -43,28 +43,34 @@ function withApi( world, fn ) {
 // TODO: We might need to share this epoch between wdio runner processes?
 const epoch = +new Date();
 const searchVars = {};
-defineParameterType( {
-	// Quite annoyingly this isn't a regexp to match in the step name, rather
-	// it is a string literal to match a capture group of the step definition.
-	// So basically this only replaces epochs in parameters defined as (.+).
-	regexp: /.+/,
-	transformer: (s) => {
-		if ( s === undefined ) {
-			return s;
-		}
-		if ( s === 'the empty string' ) {
-			return '';
-		}
-		s = s.replace( /%{epoch}/g, epoch );
-		s = s.replace( /%ideographic_whitspace%/g, "\u3000" );
+// These expressions are string matches against capture groups in steps. Yes, .+)
+// is intentional. Cucumber's matching of capture groups is broken so (?:foo (.+))
+// has to be matched as .+). That broken matching also means (?:foo (.+) bar)
+// would have to be matched as '.+) bar' but we don't bother.
+let expressions = [ '.+', '.+?', '.+)' ];
+let transformer = (s) => {
+	if ( s === undefined ) {
+		return s;
+	}
+	if ( s === 'the empty string' ) {
+		return '';
+	}
+	s = s.replace( /%{epoch}/g, epoch );
+	s = s.replace( /%ideographic_whitspace%/g, "\u3000" );
 
-		// Replace %{\uXXXX}% with the appropriate unicode code point
-		s = s.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
-		s = Object.keys(searchVars).reduce( ( str, pattern ) => str.replace( pattern, searchVars[pattern] ), s );
-		return s.replace( /%{exact:([^}]*)}/g, '$1' );
-	},
-	name: 'replacements',
-} );
+	// Replace %{\uXXXX}% with the appropriate unicode code point
+	s = s.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
+	s = Object.keys(searchVars).reduce( ( str, pattern ) => str.replace( pattern, searchVars[pattern] ), s );
+	return s.replace( /%{exact:([^}]*)}/g, '$1' );
+};
+
+for ( let expression of expressions ) {
+	defineParameterType( {
+		regexp: expression,
+		transformer: transformer,
+		typeName: 'replacements_' + expression ,
+	} );
+}
 
 defineSupportCode( function( {Given, When, Then} ) {
 
@@ -244,19 +250,19 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return stepHelpers.searchFor( search, options );
 	} );
 
-	Then( /there are no errors reported by the api/, function () {
+	Then( /^there are no errors reported by the api$/, function () {
 		return withApi( this, () => {
 			expect( this.apiError ).to.equal(undefined);
 		} );
 	} );
 
-	Then( /there is an api search result/, function () {
+	Then( /^there is an api search result$/, function () {
 		return withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.not.have.lengthOf( 0 );
 		} );
 	} );
 
-	Then( /there are no api search results/, function () {
+	Then( /^there are no api search results$/, function () {
 		return withApi( this, () => {
 			expect( this.apiResponse.query.search ).to.have.lengthOf( 0 );
 		} );
@@ -473,5 +479,11 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	Then ( /^the page text contains (.+)$/, function( text ) {
 		expect(browser.getSource()).to.contains(text);
+	} );
+
+	Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {
+		let snippets = this.apiResponse.query.search.map( ( result ) => result.snippet );
+		let found = snippets.reduce( ( a, b ) => a || b.indexOf( within ) > -1, false );
+		expect( found ).to.equal( !should_not );
 	} );
 });

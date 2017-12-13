@@ -19,6 +19,8 @@ module.exports = function ( grunt ) {
 
 	if ( process.env.JENKINS_HOME ) {
 		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.jenkins.js';
+	} else if ( process.env.MWV_LABS_HOSTNAME ) {
+		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.mwvlabs.js';
 	} else {
 		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.js';
 	}
@@ -59,6 +61,13 @@ module.exports = function ( grunt ) {
 		webdriver: {
 			test: {
 				configFile: WebdriverIOconfigFile,
+				cucumberOpts: {
+					tagExpression: ( () => grunt.option( 'tags' ) )()
+				},
+				maxInstances: ( () => {
+					let max = grunt.option( 'maxInstances' );
+					return max ? parseInt( max, 10 ) : 1;
+				} )(),
 				spec: ( () => {
 					let spec = grunt.option( 'spec' );
 					if ( !spec ) {

@@ -128,6 +128,10 @@ class FancyTitleResultsType extends TitleResultsType {
 		$this->matchedAnalyzer = $matchedAnalyzer;
 	}
 
+	public function getSourceFiltering() {
+		return [ 'namespace', 'title', 'namespace_text', 'wiki', 'redirect' ];
+	}
+
 	/**
 	 * @param array $extraHighlightFields
 	 * @return array|null
@@ -223,11 +227,12 @@ class FancyTitleResultsType extends TitleResultsType {
 	 * Transform a result from elastic into an array of Titles.
 	 *
 	 * @param \Elastica\Result $r
+	 * @param int[] $namespaces Prefer
 	 * @return \Title[] with the following keys :
 	 *   titleMatch => a title if the title matched
 	 *   redirectMatches => an array of redirect matches, one per matched redirect
 	 */
-	public function transformOneElasticResult( \Elastica\Result $r ) {
+	public function transformOneElasticResult( \Elastica\Result $r, array $namespaces = [] ) {
 		$title = TitleHelper::makeTitle( $r );
 		$highlights = $r->getHighlights();
 		$resultForTitle = [];
@@ -251,21 +256,16 @@ class FancyTitleResultsType extends TitleResultsType {
 					$highlights["redirect.title.{$this->matchedAnalyzer}_asciifolding"] );
 		}
 		if ( count( $redirectHighlights ) !== 0 ) {
-			foreach ( $redirectHighlights as $redirectTitle ) {
-				// The match was against a redirect so we should replace the $title with one that
-				// represents the redirect.
-				// The first step is to strip the actual highlighting from the title.
-				$redirectTitle = str_replace( [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ],
-					'', $redirectTitle );
-
-				// Instead of getting the redirect's real namespace we're going to just use the namespace
-				// of the title.  This is not great but OK given that we can't find cross namespace
-				// redirects properly any way.
-				// TODO: ask the highlighter to return the namespace for this kind of matches
-				// this would perhaps help to partially fix T115756
-				$redirectTitle =
-					TitleHelper::makeRedirectTitle( $r, $redirectTitle, $r->namespace );
-				$resultForTitle['redirectMatches'][] = $redirectTitle;
+			$source = $r->getSource();
+			$docRedirects = [];
+			if ( isset( $source['redirect'] ) ) {
+				foreach ( $source['redirect'] as $docRedir ) {
+					$docRedirects[$docRedir['title']][] = $docRedir;
+				}
+			}
+			foreach ( $redirectHighlights as $redirectTitleString ) {
+				$resultForTitle['redirectMatches'][] = $this->resolveRedirectHighlight(
+					$r, $redirectTitleString, $docRedirects, $namespaces );
 			}
 		}
 		if ( count( $resultForTitle ) === 0 ) {
@@ -278,6 +278,43 @@ class FancyTitleResultsType extends TitleResultsType {
 		}
 
 		return $resultForTitle;
+	}
+
+	/**
+	 * @param \Elastica\Result $r Elasticsearch result
+	 * @param string $redirectTitleString Highlighted string returned from elasticsearch
+	 * @param array $docRedirects Map from title string to list of redirects from elasticsearch source document
+	 * @param int[] $namespaces Prefered namespaces to source redirects from
+	 */
+	private function resolveRedirectHighlight( \Elastica\Result $r, $redirectTitleString, array $docRedirects, $namespaces ) {
+		// The match was against a redirect so we should replace the $title with one that
+		// represents the redirect.
+		// The first step is to strip the actual highlighting from the title.
+		$redirectTitleString = str_replace( [ Searcher::HIGHLIGHT_PRE, Searcher::HIGHLIGHT_POST ],
+			'', $redirectTitleString );
+
+		if ( !isset( $docRedirects[$redirectTitleString] ) ) {
+			// Instead of getting the redirect's real namespace we're going to just use the namespace
+			// of the title.  This is not great.
+			// TODO: Should we just bail at this point?
+			return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $r->namespace );
+		}
+
+		$redirs = $docRedirects[$redirectTitleString];
+		if ( count( $redirs ) === 1 ) {
+			// may or may not be the right namespace, but we don't seem to have any other options.
+			return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
+		}
+
+		if ( $namespaces ) {
+			foreach ( $redirs as $redir ) {
+				if ( array_search( $redir['namespace'], $namespaces ) ) {
+					return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redir['namespace'] );
+				}
+			}
+		}
+		// Multiple redirects with same text from different namespaces, but none of them match the requested namespaces. What now?
+		return TitleHelper::makeRedirectTitle( $r, $redirectTitleString, $redirs[0]['namespace'] );
 	}
 }
 

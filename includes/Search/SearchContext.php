@@ -529,7 +529,7 @@ class SearchContext {
 	 * @param AbstractQuery $query Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
-	public function setHighlightQuery( AbstractQuery $query ) {
+	public function setHighlightQuery( AbstractQuery $query = null ) {
 		$this->isDirty = true;
 		$this->highlightQuery = $query;
 	}

@@ -39,7 +39,7 @@ Feature: More like an article
     And This is Me is not is not part of the api search result
 
   Scenario: Searching for morelike:<page> with the title field and filtering with the percent terms to match
-    When I set More Like This Options to title field, percent terms to match to 70% and I api search for morelike:More Like Me 1
+    When I set More Like This Options to title field, percent terms to match to -30% and I api search for morelike:More Like Me 1
     Then More Like Me 2 is part of the api search result
     And More Like Me 3 is part of the api search result
     And More Like Me 4 is part of the api search result

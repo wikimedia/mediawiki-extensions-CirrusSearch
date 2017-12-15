@@ -406,7 +406,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.searchFor( search, options );
 	} );
 
-	When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (\d+%) and I api search for (.+)$/, function( field, percent, search ) {
+	When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (-?\d+%) and I api search for (.+)$/, function( field, percent, search ) {
 		let options = {
 			cirrusMtlUseFields: 'yes',
 			cirrusMltFields: field,

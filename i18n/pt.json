@@ -4,7 +4,8 @@
 			"Hamilton Abreu",
 			"Vitorvicentevalente",
 			"Fúlvio",
-			"He7d3r"
+			"He7d3r",
+			"MokaAkashiyaPT"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de pesquisa \"Elasticsearch\" para o MediaWiki",
@@ -85,5 +86,5 @@
 	"cirrussearch-explore-similar-related-none": "Não existem páginas relacionadas",
 	"cirrussearch-explore-similar-categories-none": "Não existem categorias",
 	"cirrussearch-explore-similar-languages-none": "Não disponibilizado noutras línguas",
-	"cirrussearch-article-words": "Palavras em todos os artigos"
+	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo"
 }

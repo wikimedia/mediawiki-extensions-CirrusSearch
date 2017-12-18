@@ -138,6 +138,7 @@ class ForceSearchIndex extends Maintenance {
 			);
 		}
 
+		$this->indexUpdates = !$this->getOption( 'deletes', false );
 		// We need to check ids options early otherwise hasOption may return
 		// true even if the user did not set the option on the commandline
 		if ( $this->hasOption( 'ids' ) ) {
@@ -151,7 +152,6 @@ class ForceSearchIndex extends Maintenance {
 			$this->toDate = new MWTimestamp( $this->getOption( 'to', false ) );
 		}
 		$this->toId = $this->getOption( 'toId' );
-		$this->indexUpdates = !$this->getOption( 'deletes', false );
 		$this->archive = (bool)$this->getOption( 'archive', false );
 		if ( $this->archive ) {
 			// If we're indexing only for archive, this implies deletes

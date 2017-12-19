@@ -5,8 +5,7 @@ const Promise = require( 'bluebird' ); // jshint ignore:line
 const MWBot = require( 'mwbot' );
 const fs = require( 'fs' );
 const path = require( 'path' );
-// TODO: Move all the articles from browser to integration
-const articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/browser/articles/';
+const articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/integration/articles/';
 
 defineSupportCode( function( { After, Before } ) {
 	const BeforeOnce = function ( options, fn ) {

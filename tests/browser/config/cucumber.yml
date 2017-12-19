@@ -1,1 +1,0 @@
-parallel: --format progress --format ParallelTests::Cucumber::FailuresLogger --out cucumber_failures.log

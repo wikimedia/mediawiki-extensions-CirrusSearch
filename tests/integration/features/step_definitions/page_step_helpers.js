@@ -14,7 +14,7 @@ const expect = require( 'chai' ).expect,
 	fs = require( 'fs' ),
 	path = require( 'path' ),
 	Promise = require( 'bluebird' ), // jshint ignore:line
-	articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/browser/articles/';
+	articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/integration/articles/';
 
 class StepHelpers {
 	constructor( world, wiki ) {

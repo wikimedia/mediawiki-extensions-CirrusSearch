@@ -3,9 +3,6 @@
 *.kate-swp
 .*.swp
 .indexed
-tests/browser/cucumber_failures.log
-tests/browser/.bundle
-tests/browser/screenshots
 node_modules/
 vendor/
 composer.lock

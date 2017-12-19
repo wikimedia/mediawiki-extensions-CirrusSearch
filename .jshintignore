@@ -1,3 +1,2 @@
 # Everything in this directory is just test data.
-tests/browser/articles/*
 tests/integration/articles/*

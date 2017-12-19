@@ -448,11 +448,20 @@ EOD
 
 	/**
 	 * @param string $msg The error to display
-	 * @param int $die If > 0, go ahead and die out using this int as the code
+	 * @param int $die deprecated do not use
 	 */
 	public function error( $msg, $die = 0 ) {
 		$date = new \DateTime();
-		parent::error( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $die );
+		parent::error( $date->format( 'Y-m-d H:i:s' ) . " " . $msg );
+	}
+
+	/**
+	 * @param string $msg The error to display
+	 * @param int $exitCode die out using this int as the code
+	 */
+	public function fatalError( $msg, $exitCode = 1 ) {
+		$date = new \DateTime();
+		parent::fatalError( $date->format( 'Y-m-d H:i:s' ) . " " . $msg, $exitCode );
 	}
 }
 

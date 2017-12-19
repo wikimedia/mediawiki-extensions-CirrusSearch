@@ -192,16 +192,15 @@ class Reindexer {
 			try {
 				$task = $request->reindexTask();
 			} catch ( \Exception $e ) {
-				$this->error( $e->getMessage(), 1 );
+				$this->fatalError( $e->getMessage() );
 			}
 
 			$this->out->outputIndented( "Started reindex task: " . $task->getId() . "\n" );
 			$response = $this->monitorReindexTask( $task, $type );
 			$task->delete();
 			if ( !$response->isSuccessful() ) {
-				$this->error(
-					"Reindex task was not successfull: " . $response->getUnsuccessfulReason(),
-					1
+				$this->fatalError(
+					"Reindex task was not successfull: " . $response->getUnsuccessfulReason()
 				);
 			}
 		}
@@ -219,9 +218,9 @@ class Reindexer {
 				$this->output(
 					"Not close enough!  old=$oldCount new=$newCount difference=$difference\n"
 				);
-				$this->error( 'Failed to load index - counts not close enough.  ' .
+				$this->fatalError( 'Failed to load index - counts not close enough.  ' .
 					"old=$oldCount new=$newCount difference=$difference.  " .
-					'Check for warnings above.', 1 );
+					'Check for warnings above.' );
 			}
 		}
 		$this->output( "done\n" );
@@ -269,8 +268,8 @@ class Reindexer {
 			$unassigned = $health[ 'unassigned_shards' ];
 			$nodes = $health[ 'number_of_nodes' ];
 			if ( $nodes < $lower ) {
-				$this->error( "Require $lower replicas but only have $nodes nodes. "
-					. "This is almost always due to misconfiguration, aborting.", 1 );
+				$this->fatalError( "Require $lower replicas but only have $nodes nodes. "
+					. "This is almost always due to misconfiguration, aborting." );
 			}
 			// If the upper range is all, expect the upper bound to be the number of nodes
 			if ( $upper === 'all' ) {
@@ -368,20 +367,20 @@ class Reindexer {
 
 	/**
 	 * @param string $message
-	 * @param int $die
 	 */
-	private function error( $message, $die = 0 ) {
-		// @todo: I'll want to get rid of this method, but this patch will be big enough already
-		// @todo: I'll probably want to throw exceptions and/or return Status objects instead, later
-
+	private function error( $message ) {
 		if ( $this->out ) {
-			$this->out->error( $message, $die );
+			$this->out->error( $message );
 		}
+	}
 
-		$die = intval( $die );
-		if ( $die > 0 ) {
-			die( $die );
-		}
+	/**
+	 * @param string $message
+	 * @param int $exitCode
+	 */
+	private function fatalError( $message, $exitCode = 1 ) {
+		$this->error( $message );
+		exit( $exitCode );
 	}
 
 	/**
@@ -471,14 +470,13 @@ class Reindexer {
 			} catch ( \Exception $e ) {
 				if ( ++$consecutiveErrors > self::MAX_CONSECUTIVE_ERRORS ) {
 					$this->out->outputIndented( "\n" );
-					$this->error(
+					$this->fatalError(
 						"$e\n\n" .
 						"Lost connection to elasticsearch cluster. The reindex task "
 						. "{$task->getId()} is still running.\nThe task should be manually "
 						. "canceled, and the index {$target->getIndex()->getName()}\n"
 						. "should be removed.\n" .
-						$e->getMessage(),
-						1
+						$e->getMessage()
 					);
 				}
 				if ( $e instanceof HttpException ) {

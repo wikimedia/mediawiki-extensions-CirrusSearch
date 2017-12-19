@@ -69,7 +69,7 @@ abstract class Maintenance extends \Maintenance {
 		$trigger = $this->getOption( 'userTestTrigger' );
 		$ut = UserTesting::getInstance( null, $trigger );
 		if ( !$ut->getActiveTestNames() ) {
-			$this->error( "Unknown user test trigger: $trigger", 1 );
+			$this->fatalError( "Unknown user test trigger: $trigger" );
 		}
 	}
 
@@ -99,7 +99,7 @@ abstract class Maintenance extends \Maintenance {
 				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $this->getSearchConfig() ) );
 			}
 			if ( !$this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster ) ) {
-				$this->error( 'Unknown cluster.', 1 );
+				$this->fatalError( 'Unknown cluster.' );
 			}
 			$connection = Connection::getPool( $this->getSearchConfig(), $cluster );
 		} else {
@@ -133,11 +133,11 @@ abstract class Maintenance extends \Maintenance {
 			return null;
 		}
 		if ( $this->getSearchConfig()->has( 'CirrusSearchServers' ) ) {
-			$this->error( 'Not configured for cluster operations.', 1 );
+			$this->fatalError( 'Not configured for cluster operations.' );
 		}
 		$hosts = $this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster );
 		if ( $hosts === null ) {
-			$this->error( 'Unknown cluster.', 1 );
+			$this->fatalError( 'Unknown cluster.' );
 		}
 		return $cluster;
 	}
@@ -178,7 +178,7 @@ abstract class Maintenance extends \Maintenance {
 
 	/**
 	 * @param string $err
-	 * @param int $die
+	 * @param int $die deprecated, do not use
 	 */
 	public function error( $err, $die = 0 ) {
 		parent::error( $err, $die );

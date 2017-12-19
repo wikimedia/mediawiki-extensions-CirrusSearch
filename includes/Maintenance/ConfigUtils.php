@@ -45,13 +45,13 @@ class ConfigUtils {
 		$result = $this->client->request( '' );
 		$result = $result->getData();
 		if ( !isset( $result['version']['number'] ) ) {
-			$this->error( 'unable to determine, aborting.', 1 );
+			$this->fatalError( 'unable to determine, aborting.' );
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
 		if ( !preg_match( '/^5./', $result ) ) {
 			$this->output( "Not supported!\n" );
-			$this->error( "Only Elasticsearch 5.x is supported.  Your version: $result.", 1 );
+			$this->fatalError( "Only Elasticsearch 5.x is supported.  Your version: $result." );
 		} else {
 			$this->output( "ok\n" );
 		}
@@ -78,8 +78,8 @@ class ConfigUtils {
 			$found = $this->getAllIndicesByType( $typeName );
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
-				$this->error( "Looks like the index has more than one identifier. You should delete all\n" .
-					"but the one of them currently active. Here is the list: " .  implode( ',', $found ), 1 );
+				$this->fatalError( "Looks like the index has more than one identifier. You should delete all\n" .
+					"but the one of them currently active. Here is the list: " .  implode( ',', $found ) );
 			}
 			if ( $found ) {
 				$identifier = substr( $found[0], strlen( $typeName ) + 1 );
@@ -110,8 +110,8 @@ class ConfigUtils {
 		if ( $response->isOK() ) {
 			$found = array_keys( $response->getData() );
 		} else {
-			$this->error( "Cannot fetch index names for $typeName: "
-				. $response->getError(), 1 );
+			$this->fatalError( "Cannot fetch index names for $typeName: "
+				. $response->getError() );
 		}
 		return $found;
 	}
@@ -203,20 +203,22 @@ class ConfigUtils {
 
 	/**
 	 * @param string $message
-	 * @param int $die
 	 */
-	private function error( $message, $die = 0 ) {
-		// @todo: I'll want to get rid of this method, but this patch will be big enough already
-		// @todo: I'll probably want to throw exceptions and/or return Status objects instead, later
-
+	private function error( $message ) {
 		if ( $this->out ) {
-			$this->out->error( $message, $die );
+			$this->out->error( $message );
 		}
+	}
 
-		$die = intval( $die );
-		if ( $die > 0 ) {
-			die( $die );
+	/**
+	 * @param string $message
+	 * @param int $exitCode
+	 */
+	private function fatalError( $message, $exitCode = 1 ) {
+		if ( $this->out ) {
+			$this->out->error( $message );
 		}
+		exit( $exitCode );
 	}
 
 	/**
@@ -279,8 +281,8 @@ class ConfigUtils {
 			// not a top level json key then it's an alias
 			return isset( $response->getData()[$indexName] );
 		} else {
-			$this->error( "Cannot determine if $indexName is an index: "
-				. $response->getError(), 1 );
+			$this->fatalError( "Cannot determine if $indexName is an index: "
+				. $response->getError() );
 		}
 		return false;
 	}
@@ -300,8 +302,8 @@ class ConfigUtils {
 		if ( $response->isOK() ) {
 			return array_keys( $response->getData() );
 		} else {
-			$this->error( "Cannot fetch indices with alias $aliasName: "
-				. $response->getError(), 1 );
+			$this->fatalError( "Cannot fetch indices with alias $aliasName: "
+				. $response->getError() );
 		}
 		return [];
 	}

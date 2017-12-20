@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\SearchConfig;
 use Elastica\JSON;
-use MWElasticUtils;
 
 /**
  * Update and check the CirrusSearch metastore index.
@@ -140,25 +139,26 @@ class Metastore extends Maintenance {
 		if ( !$index->exists() ) {
 			$this->fatalError( "Cannot dump metastore: index does not exists. Please run --upgrade first" );
 		}
-		$scrollOptions = [
-			'search_type' => 'query_then_fetch',
-			'scroll' => "15m",
-			'size' => 100
-		];
-		$result = $index->search( new \Elastica\Query(), $scrollOptions );
-		MWElasticUtils::iterateOverScroll( $index, $result->getResponse()->getScrollId(), '15m',
-			function ( $results ) {
-				foreach ( $results as $result ) {
-					$indexOp = [
-						'index' => [
-							'_type' => $result->getType(),
-							'_id' => $result->getId(),
-						]
-					];
-					fwrite( STDOUT, JSON::stringify( $indexOp ) . "\n" );
-					fwrite( STDOUT, JSON::stringify( $result->getSource() ) . "\n" );
-				}
-			}, 0, 5 );
+
+		$query = new \Elastica\Query();
+		$query->setQuery( new \Elastica\Query\MatchAll() );
+		$query->setSize( 100 );
+		$query->setSource( true );
+		$query->setSort( [ '_doc' ] );
+		$search = $index->createSearch( $query );
+		$scroll = new \Elastica\Scroll( $search, '15m' );
+		foreach ( $scroll as $results ) {
+			foreach ( $results as $result ) {
+				$indexOp = [
+					'index' => [
+						'_type' => $result->getType(),
+						'_id' => $result->getId(),
+					]
+				];
+				fwrite( STDOUT, JSON::stringify( $indexOp ) . "\n" );
+				fwrite( STDOUT, JSON::stringify( $result->getSource() ) . "\n" );
+			}
+		}
 	}
 }
 

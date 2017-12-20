@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Match;
@@ -23,10 +24,7 @@ class PrefixSearchQueryBuilder {
 	public function build( SearchContext $searchContext, $term, $variants = null ) {
 		$this->checkTitleSearchRequestLength( $term );
 		$searchContext->setOriginalSearchTerm( $term );
-		$searchContext->setRescoreProfile(
-			$searchContext->getConfig()->get( 'CirrusSearchPrefixSearchRescoreProfile' )
-		);
-
+		$searchContext->setProfileContext( SearchProfileService::CONTEXT_PREFIXSEARCH );
 		$searchContext->addSyntaxUsed( 'prefix' );
 		if ( strlen( $term ) > 0 ) {
 			if ( $searchContext->getConfig()->get( 'CirrusSearchPrefixSearchStartsWithAnyWord' ) ) {

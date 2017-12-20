@@ -4,6 +4,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Searcher;
@@ -341,7 +342,7 @@ class CirrusSearch extends SearchEngine {
 
 		if ( isset( $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE] ) ) {
 			$profile = $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE];
-			if ( $config->getElement( 'CirrusSearchRescoreProfiles', $profile ) !== null ) {
+			if ( $config->getProfileService()->hasProfile( SearchProfileService::RESCORE, $profile ) ) {
 				$searcher->getSearchContext()->setRescoreProfile( $profile );
 			}
 		}
@@ -637,8 +638,10 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $profileType
 	 * @param User|null $user
 	 * @return array|null
+	 * @see SearchEngine::getProfiles()
 	 */
 	public function getProfiles( $profileType, User $user = null ) {
+		$profileService = $this->config->getProfileService();
 		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
 			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
@@ -646,39 +649,24 @@ class CirrusSearch extends SearchEngine {
 				return [];
 			}
 
-			$userDefault = $this->config->get( 'CirrusSearchCompletionSettings' );
-			$allowedProfiles = $this->getAllowedCompletionProfiles();
-			// Only check user options if the user is logged to avoid loading
-			// default user options.
-			if ( $user !== null && $user->getId() !== 0 &&
-				$user->getOption( 'cirrussearch-pref-completion-profile' ) !== null &&
-				array_key_exists(
-					$user->getOption( 'cirrussearch-pref-completion-profile' ),
-					$allowedProfiles )
-			) {
-				$userDefault = $user->getOption( 'cirrussearch-pref-completion-profile' );
-			}
+			$allowedProfiles = $profileService->listExposedProfiles( SearchProfileService::COMPLETION );
+			$cirrusDefault = $profileService->getProfileName( SearchProfileService::COMPLETION,
+				SearchProfileService::CONTEXT_DEFAULT );
 
 			$profiles = [];
 			foreach ( array_keys( $allowedProfiles ) as $name ) {
 				$profiles[] = [
 					'name' => $name,
 					'desc-message' => 'cirrussearch-completion-profile-' . $name,
-					'default' => $userDefault === $name,
+					'default' => $cirrusDefault === $name,
 				];
 			}
 			return $profiles;
 		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
 			$profiles = [];
-			// The Hook should run profiles/RescoreProfiles.php before
-			// any consumer call to getProfiles, so that the default
-			// will be properly set when the curstom request param
-			// cirrusRescoreProfile=profile is set.
-			$cirrusDefault = $this->config->get( 'CirrusSearchRescoreProfile' );
-			$defaultFound = false;
-			foreach ( $this->config->get( 'CirrusSearchRescoreProfiles' ) as $name => $profile ) {
+			$cirrusDefault = $profileService->getProfileName( SearchProfileService::RESCORE, SearchProfileService::CONTEXT_DEFAULT );
+			foreach ( $profileService->listExposedProfiles( SearchProfileService::RESCORE ) as $name => $profile ) {
 				$default = $cirrusDefault === $name;
-				$defaultFound |= $default;
 				$profiles[] = [
 					'name' => $name,
 					// @todo: decide what to with profiles we declare
@@ -695,35 +683,6 @@ class CirrusSearch extends SearchEngine {
 			return $profiles;
 		}
 		return null;
-	}
-
-	/**
-	 * Return the list of completion profiles allowed
-	 * @return array[] list of profiles indexed by profile name
-	 */
-	private function getAllowedCompletionProfiles() {
-		$profiles = [];
-		$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
-		// Check that we can use the subphrases FST
-		if ( $this->config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
-			$allowedFields['suggest-subphrases'] = true;
-		}
-		foreach ( $this->config->get( 'CirrusSearchCompletionProfiles' ) as $name => $settings ) {
-			$allowed = true;
-			foreach ( $settings as $value ) {
-				if ( !array_key_exists( $value['field'], $allowedFields ) ) {
-					$allowed = false;
-					break;
-				}
-			}
-			if ( !$allowed ) {
-				continue;
-			}
-			$profiles[$name] = $settings;
-		}
-		// Add fallback to prefixsearch
-		$profiles[self::COMPLETION_PREFIX_FALLBACK_PROFILE] = [];
-		return $profiles;
 	}
 
 	/**

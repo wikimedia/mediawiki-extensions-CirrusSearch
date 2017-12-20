@@ -46,3 +46,6 @@ really been settled.
    For other parameter examples, see RescoreProfiles.config.php
  $context - SearchContext object
  &$builder - object implementing the function. Should be placed in this variable if this extension has it.
+
+'CirrusSearchProfileService': Allows extensions to register search profile repositories
+$service - \CirrusSearch\Profile\SearchProfileService the profile service being built

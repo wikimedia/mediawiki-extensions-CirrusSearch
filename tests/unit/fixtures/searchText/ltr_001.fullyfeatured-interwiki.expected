@@ -781,9 +781,32 @@
                             }
                         },
                         "rescore_query_weight": 1,
-                        "score_mode": "wsum_inclinks"
+                        "score_mode": "multiply"
                     },
-                    "window_size": 8196
+                    "window_size": 8192
+                },
+                {
+                    "query": {
+                        "query_weight": 1,
+                        "rescore_query": {
+                            "function_score": {
+                                "functions": [
+                                    {
+                                        "script_score": {
+                                            "script": {
+                                                "inline": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))",
+                                                "lang": "expression"
+                                            }
+                                        },
+                                        "weight": 13
+                                    }
+                                ]
+                            }
+                        },
+                        "rescore_query_weight": 1,
+                        "score_mode": "total"
+                    },
+                    "window_size": 8192
                 },
                 {
                     "query": {

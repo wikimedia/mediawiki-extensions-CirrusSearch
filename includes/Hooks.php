@@ -6,6 +6,7 @@ use ApiBase;
 use ApiMain;
 use ApiOpenSearch;
 use CirrusSearch;
+use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use DeferredUpdates;
 use JobQueueGroup;
@@ -118,7 +119,6 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
-			RescoreProfiles::overrideOptions( $request );
 			FullTextQueryBuilderProfiles::overrideOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
 			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
@@ -799,7 +799,11 @@ class Hooks {
 					->getResolver( $config );
 			}
 		);
-		return true;
+		$container->defineService( SearchProfileServiceFactory::SERVICE_NAME,
+			function ( MediaWikiServices $serviceContainer ) {
+				return new SearchProfileServiceFactory();
+			}
+		);
 	}
 
 	/**

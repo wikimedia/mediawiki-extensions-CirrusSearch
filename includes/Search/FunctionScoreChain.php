@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\Profile\SearchProfileService;
 use Elastica\Query\FunctionScore;
 use Hooks;
 
@@ -65,16 +66,14 @@ class FunctionScoreChain {
 	 * @param SearchContext $context
 	 * @param string $chainName the name of the chain (must be a valid
 	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
-	 * @throws InvalidRescoreProfileException
 	 */
 	public function __construct( SearchContext $context, $chainName ) {
 		$this->chainName = $chainName;
 		$this->context = $context;
 		$this->functionScore = new FunctionScoreDecorator();
-		$this->chain = $context->getConfig()->getElement( 'CirrusSearchRescoreFunctionScoreChains', $chainName );
-		if ( $this->chain === null ) {
-			throw new InvalidRescoreProfileException( "Unknown rescore function chain $chainName" );
-		}
+		$this->chain = $context->getConfig()
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::RESCORE_FUNCTION_CHAINS, $chainName );
 
 		$params = array_intersect_key( $this->chain, array_flip( self::$functionScoreParams ) );
 		foreach ( $params as $param => $value ) {

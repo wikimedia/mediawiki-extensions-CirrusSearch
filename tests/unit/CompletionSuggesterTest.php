@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Search\CompletionResultsCollector;
 use CirrusSearch\Search\SearchContext;
@@ -39,8 +40,11 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $config );
 		$compSuggestBuilder = new CompSuggestQueryBuilder(
 			new SearchContext( $config ),
-			$config->getElement( 'CirrusSearchCompletionProfiles',
-				$config->get( 'CirrusSearchCompletionSettings' ) ),
+			// Need to explicitly access the profile like that
+			// hook for setting user preference by default is run too early
+			// and have set this to "fuzzy"
+			$config->getProfileService()
+				->loadProfileByName( SearchProfileService::COMPLETION, $config->get( 'CirrusSearchCompletionSettings' ) ),
 			$limit
 		);
 
@@ -75,14 +79,14 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		];
 
 		$profile = [
-			'simple' => $simpleProfile,
-			'fuzzy' => $simpleFuzzy,
+			'test-simple' => $simpleProfile,
+			'test-fuzzy' => $simpleFuzzy,
 		];
 
 		return [
 			"simple" => [
 				[
-					'CirrusSearchCompletionSettings' => 'simple',
+					'CirrusSearchCompletionSettings' => 'test-simple',
 					'CirrusSearchCompletionProfiles' => $profile,
 				],
 				10,
@@ -101,7 +105,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			],
 			"simple with fuzzy" => [
 				[
-					'CirrusSearchCompletionSettings' => 'fuzzy',
+					'CirrusSearchCompletionSettings' => 'test-fuzzy',
 					'CirrusSearchCompletionProfiles' => $profile,
 				],
 				10,
@@ -133,7 +137,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			],
 			"simple with variants" => [
 				[
-					'CirrusSearchCompletionSettings' => 'simple',
+					'CirrusSearchCompletionSettings' => 'test-simple',
 					'CirrusSearchCompletionProfiles' => $profile,
 				],
 				10,
@@ -189,20 +193,19 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	 * @dataProvider provideMinMaxQueries
 	 */
 	public function testMinMaxDefaultProfile( $len, $query ) {
-		global $wgCirrusSearchCompletionProfiles;
-		$config = [
+		$config = new HashSearchConfig( [
 			'CirrusSearchCompletionSettings' => 'fuzzy',
-			'CirrusSearchCompletionProfiles' => $wgCirrusSearchCompletionProfiles,
-		];
+		], [ 'inherit' ] );
 		// Test that we generate at most 4 profiles
 		$completion = new CompSuggestQueryBuilder(
-			new SearchContext( new HashSearchConfig( $config ) ),
-			$wgCirrusSearchCompletionProfiles['fuzzy'],
+			new SearchContext( $config ),
+			$config->getProfileService()
+				->loadProfile( SearchProfileService::COMPLETION ),
 		1 );
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertEquals( count( $wgCirrusSearchCompletionProfiles['fuzzy'] ), count( $profiles ) );
+		$this->assertEquals( count( $config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ) ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertTrue( count( $suggest ) <= 4 );
 		// small queries
@@ -243,12 +246,13 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	 * @dataProvider provideResponse
 	 */
 	public function testOffsets( ResultSet $results, $limit, $offset, $first, $last, $size, $hardLimit ) {
-		global $wgCirrusSearchCompletionProfiles;
+		$config = new HashSearchConfig( [
+			'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit,
+			'CirrusSearchCompletionSettings' => 'fuzzy',
+		] );
 		$builder = new CompSuggestQueryBuilder(
-			new SearchContext( new HashSearchConfig( [
-				'CirrusSearchCompletionSuggesterHardLimit' => $hardLimit
-			] ) ),
-			$wgCirrusSearchCompletionProfiles['fuzzy'],
+			new SearchContext( $config ),
+			$config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ),
 			$limit, $offset );
 		$builder->build( "ignored", null );
 		$log = $this->getMockBuilder( CompletionRequestLog::class )

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\OtherIndexes;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
@@ -40,6 +41,11 @@ class SearchContext {
 	 * @var int[]|null list of namespaces
 	 */
 	private $namespaces;
+
+	/**
+	 * @var string
+	 */
+	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
 	 * @var array|null list of boost templates extracted from the query string
@@ -236,7 +242,6 @@ class SearchContext {
 	}
 
 	private function loadConfig() {
-		$this->rescoreProfile = $this->config->get( 'CirrusSearchRescoreProfile' );
 		$this->fulltextQueryBuilderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
 
 		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
@@ -288,6 +293,21 @@ class SearchContext {
 	public function setNamespaces( $namespaces ) {
 		$this->isDirty = true;
 		$this->namespaces = $namespaces;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getProfileContext() {
+		return $this->profileContext;
+	}
+
+	/**
+	 * @param string $profileContext
+	 */
+	public function setProfileContext( $profileContext ) {
+		$this->isDirty |= $this->profileContext !== $profileContext;
+		$this->profileContext = $profileContext;
 	}
 
 	/**
@@ -370,6 +390,10 @@ class SearchContext {
 	 * @return string|array the rescore profile to use
 	 */
 	public function getRescoreProfile() {
+		if ( $this->rescoreProfile === null ) {
+			$this->rescoreProfile = $this->config->getProfileService()
+				->getProfileName( SearchProfileService::RESCORE, $this->profileContext );
+		}
 		return $this->rescoreProfile;
 	}
 

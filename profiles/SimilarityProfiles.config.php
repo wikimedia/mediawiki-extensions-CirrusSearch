@@ -25,7 +25,7 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-$wgCirrusSearchSimilarityProfiles = [
+return [
 	// default profile, uses the classic TF/IDF from Lucene.
 	// deprecated the use of the name default is confusing
 	'default' => [

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use Hooks;
 use MediaWiki\MediaWikiServices;
@@ -90,10 +91,7 @@ class AnalysisConfigBuilder {
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
 		}
-		$this->similarity = $config->getElement(
-			'CirrusSearchSimilarityProfiles',
-			$config->get( 'CirrusSearchSimilarityProfile' )
-		);
+		$this->similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
 
 		$this->config = $config;
 	}

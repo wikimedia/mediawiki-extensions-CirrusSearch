@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Profile\SearchProfileException;
 
 /**
  * @group CirrusSearch
@@ -335,10 +336,10 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @dataProvider provideRescoreProfilesWithWindowSize
 	 */
 	public function testWindowSizeOverride( $settings, $expected ) {
-		$config = new HashSearchConfig( $settings );
+		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
 
 		$context = new SearchContext( $config, null );
-		$builder = new RescoreBuilder( $context, $config->getElement( 'CirrusSearchRescoreProfiles', 'default' ) );
+		$builder = new RescoreBuilder( $context, 'default' );
 		$rescore = $builder->build();
 		$this->assertEquals( $expected, $rescore[0]['window_size'] );
 	}
@@ -414,15 +415,19 @@ class RescoreBuilderTest extends CirrusTestCase {
 		];
 	}
 	/**
-	 * @expectedException \CirrusSearch\Search\InvalidRescoreProfileException
 	 * @dataProvider provideInvalidRescoreProfiles
 	 */
-	public function testBadRescoreProfile( $settings ) {
-		$config = new HashSearchConfig( $settings );
+	public function testBadRescoreProfile( $settings, $expectedException ) {
+		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
 
 		$context = new SearchContext( $config, null );
-		$builder = new RescoreBuilder( $context, $config->getElement( 'CirrusSearchRescoreProfiles', 'default' ) );
-		$builder->build();
+		try {
+			$builder = new RescoreBuilder( $context, 'default' );
+			$builder->build();
+			$this->fail( "Expected exception of type: $expectedException" );
+		} catch ( \Exception $e ) {
+			$this->assertInstanceOf( $expectedException, $e );
+		}
 	}
 
 	public static function provideInvalidRescoreProfiles() {
@@ -441,6 +446,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						]
 					],
 				],
+				InvalidRescoreProfileException::class
 			],
 			"Invalid rescore profile: supported_namespaces should be 'all' or an array of namespaces" => [
 				[
@@ -450,6 +456,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						]
 					],
 				],
+				InvalidRescoreProfileException::class
 			],
 			"Invalid rescore profile: fallback_profile is mandatory" => [
 				[
@@ -459,6 +466,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						]
 					],
 				],
+				InvalidRescoreProfileException::class
 			],
 			"Unknown fallback profile" => [
 				[
@@ -469,6 +477,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						]
 					],
 				],
+				SearchProfileException::class
 			],
 			"Fallback profile must support all namespaces" => [
 				[
@@ -482,6 +491,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						]
 					],
 				],
+				InvalidRescoreProfileException::class
 			],
 			"Unknown rescore function chain" => [
 				[
@@ -489,11 +499,6 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'default' => [
 							'supported_namespaces' => 'all',
 							'rescore' => [
-								[
-									'window' => 123,
-									'type' => 'function_score',
-									'function_chain' => 'test',
-								],
 								[
 									'window' => 123,
 									'type' => 'function_score',
@@ -506,6 +511,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'test' => []
 					]
 				],
+				SearchProfileException::class
 			],
 			"Invalid function chain (none defined)" => [
 				[
@@ -525,6 +531,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'test' => []
 					]
 				],
+				InvalidRescoreProfileException::class
 			],
 			"Invalid function score type" => [
 				[
@@ -544,6 +551,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 						'test' => [ 'functions' => [ [ 'type' => 'foobar' ] ] ]
 					]
 				],
+				InvalidRescoreProfileException::class
 			],
 		];
 	}

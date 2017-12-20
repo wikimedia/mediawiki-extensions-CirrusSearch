@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Maintenance\MappingConfigBuilder;
+use CirrusSearch\Profile\SearchProfileService;
 use SearchIndexField;
 use CirrusSearch\SearchConfig;
 use SearchEngine;
@@ -216,10 +217,7 @@ class TextIndexField extends CirrusIndexField {
 	 * @return string
 	 */
 	public static function getSimilarity( SearchConfig $config, $field, $analyzer = null ) {
-		$similarity = $config->getElement(
-			'CirrusSearchSimilarityProfiles',
-			$config->get( 'CirrusSearchSimilarityProfile' )
-		);
+		$similarity = $config->getProfileService()->loadProfile( SearchProfileService::SIMILARITY );
 		$fieldSimilarity = null;
 		if ( isset( $similarity['fields'] ) ) {
 			if ( isset( $similarity['fields'][$field] ) ) {

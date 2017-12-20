@@ -1280,11 +1280,6 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 /**
- * Check if curl is installed
- */
-$wgExtensionFunctions[] = 'CirrusSearch\Hooks::checkCurlInstallation';
-
-/**
  * Hooks
  */
 $wgHooks[ 'CirrusSearchBuildDocumentFinishBatch'][] = 'CirrusSearch\BuildDocument\RedirectsAndIncomingLinks::finishBatch';

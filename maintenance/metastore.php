@@ -141,7 +141,7 @@ class Metastore extends Maintenance {
 			$this->fatalError( "Cannot dump metastore: index does not exists. Please run --upgrade first" );
 		}
 		$scrollOptions = [
-			'search_type' => 'scan',
+			'search_type' => 'query_then_fetch',
 			'scroll' => "15m",
 			'size' => 100
 		];

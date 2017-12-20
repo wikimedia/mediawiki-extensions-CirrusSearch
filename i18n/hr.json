@@ -27,5 +27,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Prefiksna pretraga",
 	"cirrussearch-pref-completion-legacy-section-legend": "Stari algoritam s prijedlozima prema utipkanom pojmu.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična prefiksna pretraga",
-	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja pogreške. Traži početke naziva."
+	"cirrussearch-completion-profile-classic-pref-desc": "Ne ispravlja pogreške. Traži početke naziva.",
+	"cirrussearch-article-words": "Riječi u svim stranicama sa sadržajem"
 }

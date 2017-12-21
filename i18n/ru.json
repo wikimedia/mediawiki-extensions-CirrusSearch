@@ -70,5 +70,6 @@
 	"cirrussearch-regex-timed-out": "Поиск по регулярному выражению завершил работу раньше своего полного выполнения. Попробуйте упростить регулярное выражение для получения всех результатов.",
 	"cirrussearch-feature-not-available": "Ключевое слово '$1' не активировано в этой вики.",
 	"cirrussearch-explore-similar-categories": "Категории",
-	"cirrussearch-explore-similar-languages": "Языки"
+	"cirrussearch-explore-similar-languages": "Языки",
+	"cirrussearch-article-words": "Слов во всех статьях"
 }

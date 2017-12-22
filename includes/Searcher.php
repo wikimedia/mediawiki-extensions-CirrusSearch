@@ -900,9 +900,9 @@ class Searcher extends ElasticsearchIntermediary {
 	public function processRawReturn( $result, WebRequest $request, $dumpAndDie = true ) {
 		$header = null;
 
-		if ( $this->returnExplain === 'pretty' ) {
+		if ( in_array( $this->returnExplain, [ 'verbose', 'pretty', 'hot' ] ) ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
-			$printer = new ExplainPrinter();
+			$printer = new ExplainPrinter( $this->returnExplain );
 			$result = $printer->format( $result );
 		} else {
 			$header = 'Content-type: application/json; charset=UTF-8';

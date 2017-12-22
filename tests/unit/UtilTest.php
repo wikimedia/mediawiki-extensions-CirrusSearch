@@ -158,7 +158,7 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Utils::getDefaultBoostTemplates
+	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testgetDefaultBoostTemplates() {
 		$cache = $this->makeLocalCache();
@@ -176,7 +176,7 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Utils::getDefaultBoostTemplates
+	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testCustomizeBoostTemplatesByConfig() {
 		$configValues = [
@@ -190,7 +190,7 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Utils::getDefaultBoostTemplates
+	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testOverrideBoostTemplatesWithOnWikiConfig() {
 		$configValues = [
@@ -208,7 +208,7 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Utils::getDefaultBoostTemplates
+	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testOverrideBoostTemplatesWithOnCurrentWikiConfig() {
 		$configValues = [
@@ -227,7 +227,7 @@ class UtilTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers \CirrusSearch\Utils::getDefaultBoostTemplates
+	 * @covers \CirrusSearch\Util::getDefaultBoostTemplates
 	 */
 	public function testDisableOverrideBoostTemplatesWithOnWikiConfig() {
 		$configValues = [

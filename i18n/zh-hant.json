@@ -35,6 +35,7 @@
 	"cirrussearch-completionsuggester-pref": "完整建議搜尋工具",
 	"cirrussearch-completionsuggester-desc": "這是一套新的搜尋演算法作為您的輸入模式，一旦啟用該功能，位於右上角搜尋框輸入關鍵字時，會出現搜尋結果以及根據您輸入的關鍵字所給出的搜尋建議。",
 	"cirrussearch-pref-completion-profile-help": "設定自動完成（隨打即搜）建議的行為。",
+	"prefs-completion": "搜尋完成",
 	"cirrussearch-pref-completion-section-desc": "完整搜尋建議器",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 完整搜尋建議器]是一個有更好的錯別字糾正和搜索相關性的搜尋建議演算法。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "預設（推薦）",

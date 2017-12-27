@@ -3,7 +3,8 @@
 		"authors": [
 			"Protnet",
 			"Twopix",
-			"KATRINE1992"
+			"KATRINE1992",
+			"Nikosgranturismogt"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch- αναζήτηση για το MediaWiki",
@@ -44,5 +45,6 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Μη διόρθωση τυπογραφικού λάθος. Επιλύει κλείσιμο ανακατευθυνσεών. Τέριασμα υποφράσεις σε τίτλους.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Αναζήτηση πρόθεματος",
 	"cirrussearch-completion-profile-classic-pref-name": "Κλασικό πρόθεμα αναζήτησης",
-	"cirrussearch-completion-profile-classic-pref-desc": "Μη διόρθωση τυπογραφικού λάθους. Ταιριάζει με την αρχή των τίτλων."
+	"cirrussearch-completion-profile-classic-pref-desc": "Μη διόρθωση τυπογραφικού λάθους. Ταιριάζει με την αρχή των τίτλων.",
+	"cirrussearch-article-words": "Λέξεις σε όλες τις σελίδες περιεχομένου"
 }

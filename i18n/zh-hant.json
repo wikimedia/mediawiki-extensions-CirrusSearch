@@ -48,5 +48,6 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "傳統隨打即搜建議演算法。",
 	"cirrussearch-completion-profile-classic-pref-name": "傳統前綴搜尋",
 	"cirrussearch-completion-profile-classic-pref-desc": "無錯別字糾正。匹配標題開頭。",
+	"cirrussearch-regex-timed-out": "正規表達式搜尋逾時，只找到部分結果。請嘗試簡化您的正規表達式以獲取完整搜尋結果。",
 	"cirrussearch-explore-similar-languages": "語言"
 }

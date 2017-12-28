@@ -3,7 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
-use \Elastica\Query;
+use Elastica\Query;
 
 /**
  * File features:

@@ -545,7 +545,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( $useCompletion === 'beta' ) {
-			return class_exists( '\BetaFeatures' ) &&
+			return ExtensionRegistry::getInstance()->isLoaded( 'BetaFeatures' ) &&
 				\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' );
 		}
 

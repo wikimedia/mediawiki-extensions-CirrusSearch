@@ -3,6 +3,8 @@
 namespace CirrusSearch\Test;
 
 use CirrusSearch\EmptyInterwikiResolver;
+use CirrusSearch\InterwikiResolver;
+use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CirrusConfigInterwikiResolver;
@@ -65,7 +67,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 	 */
 	public function testSiteMatrixResolver( $wiki, $what, $arg, $expected,
 			$blacklist = [], $overrides = [] ) {
-		if ( !class_exists( \SiteMatrix::class ) ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
@@ -234,7 +236,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 	}
 
 	public function testLoadConfigFromAPI() {
-		if ( !class_exists( \SiteMatrix::class ) ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
@@ -253,6 +255,9 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$this->assertEquals( $configs['q']->get( 'CirrusSearchIndexBaseName' ), 'enwikiquote' );
 	}
 
+	/**
+	 * @return InterwikiResolver
+	 */
 	private function getCirrusConfigInterwikiResolver() {
 		$wikiId = 'enwiki';
 		$myGlobals = [
@@ -286,6 +291,9 @@ class InterwikiResolverTest extends CirrusTestCase {
 		return $resolver;
 	}
 
+	/**
+	 * @return InterwikiResolver
+	 */
 	private function getSiteMatrixInterwikiResolver( $wikiId, array $blacklist,
 		array $overrides, \MultiHttpClient $client = null ) {
 		$conf = new \SiteConfiguration;

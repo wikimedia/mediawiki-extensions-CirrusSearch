@@ -2,15 +2,15 @@
 
 namespace CirrusSearch;
 
-use \ObjectCache;
-use \SiteMatrix;
+use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
+use ObjectCache;
 
 /**
  * InterwikiResolver suited for WMF context and uses SiteMatrix.
  */
-
 class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
+
 	const MATRIX_CACHE_TTL = 600;
 
 	private $cache;
@@ -25,7 +25,7 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		if ( $config->getWikiId() !== wfWikiID() ) {
 			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID() );
 		}
-		if ( !class_exists( SiteMatrix::class ) ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			throw new \RuntimeException( "SiteMatrix is required" );
 		}
 		if ( !$this->config->has( 'SiteMatrixSites' ) ) {
@@ -38,16 +38,9 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 	 * @return bool true if this resolver can run with the specified config
 	 */
 	public static function accepts( SearchConfig $config ) {
-		if ( $config->getWikiId() !== wfWikiID() ) {
-			return false;
-		}
-		if ( !class_exists( SiteMatrix::class ) ) {
-			return false;
-		}
-		if ( !$config->has( 'SiteMatrixSites' ) ) {
-			return false;
-		}
-		return true;
+		return $config->getWikiId() === wfWikiID()
+			&& ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' )
+			&& $config->has( 'SiteMatrixSites' );
 	}
 
 	protected function loadMatrix() {
@@ -186,4 +179,5 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 			];
 		};
 	}
+
 }

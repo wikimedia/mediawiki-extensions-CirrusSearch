@@ -88,7 +88,7 @@ $wgCirrusSearchUseCompletionSuggester = "yes";
 class Jenkins {
 	/**
 	 * Installs maintenance scripts that provide a clean Elasticsearch index for testing.
-	 * @param DatabaseUpdater $updater database updater
+	 * @param DatabaseUpdater $updater
 	 * @return bool true so we let other extensions install more maintenance actions
 	 */
 	public static function installDatabaseUpdatePostActions( $updater ) {
@@ -99,7 +99,7 @@ class Jenkins {
 
 	/**
 	 * If the page ends in '/<language code>' then set the page's language to that code.
-	 * @param Title $title page title object
+	 * @param Title $title
 	 * @param string|Language &$pageLang the page content language (either an object or a language code)
 	 * @param Language $wgLang the user language
 	 * @return bool

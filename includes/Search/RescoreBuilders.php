@@ -668,7 +668,7 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	/**
 	 * Get the weight of a namespace.
 	 *
-	 * @param int $namespace the namespace
+	 * @param int $namespace
 	 * @return float the weight of the namespace
 	 */
 	private function getBoostForNamespace( $namespace ) {

@@ -388,8 +388,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * The query 'the query' and the fields all and all.plain will be like
 	 * (all:the OR all.plain:the) AND (all:query OR all.plain:query)
 	 *
-	 * @param string[] $fields the fields
-	 * @param string $queryString the query
+	 * @param string[] $fields
+	 * @param string $queryString
 	 * @param integer $phraseSlop phrase slop
 	 * @return \Elastica\Query\QueryString
 	 */

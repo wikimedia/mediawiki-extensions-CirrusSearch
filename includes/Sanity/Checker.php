@@ -163,7 +163,7 @@ class Checker {
 
 	/**
 	 * Check if the page is a redirect
-	 * @param WikiPage $page the page
+	 * @param WikiPage $page
 	 * @return bool true if $page is a redirect
 	 */
 	private function checkIfRedirect( $page ) {

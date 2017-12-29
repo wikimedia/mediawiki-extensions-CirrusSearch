@@ -414,7 +414,7 @@
 
 			/**
 			 * Sets a CSS class to animate the Explore Similar button.
-			 * Button can be animated slowely or quickly depending on wether
+			 * Button can be animated slowly or quickly depending on whether
 			 * it's the first button in the set the user hovers over.
 			 *
 			 * @param {jQuery} $this - button element wrapped in jQuery object

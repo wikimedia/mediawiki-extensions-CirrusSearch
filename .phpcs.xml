@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingParamComment" />
@@ -8,9 +9,8 @@
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag" />
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures" />
 		<exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch" />
-		<exclude name="MediaWiki.Files.ClassMatchesFilename.WrongCase" />
-		<exclude name="MediaWiki.Files.OneClassPerFile.MultipleFound" />
-		<exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
+		<exclude name="Squiz.Scope.MethodScope.Missing" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>

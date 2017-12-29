@@ -84,8 +84,8 @@ abstract class Validator {
 	 * false so we normalize everything.  Sometimes, oddly, it'll through back false
 	 * for false....
 	 *
-	 * @param mixed $value config value
-	 * @return mixed value normalized
+	 * @param mixed $value
+	 * @return mixed
 	 */
 	private function normalizeConfigValue( $value ) {
 		if ( $value === true ) {

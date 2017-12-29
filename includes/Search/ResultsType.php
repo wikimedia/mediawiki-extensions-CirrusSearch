@@ -510,7 +510,7 @@ class FullTextResultsType extends BaseResultsType {
 	/**
 	 * @param array &$config
 	 * @param array $highlightSource
-	 * @param array $options various options
+	 * @param array $options
 	 */
 	private function configureHighlightingForSource( array &$config, array $highlightSource, array $options ) {
 		global $wgCirrusSearchRegexMaxDeterminizedStates,

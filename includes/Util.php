@@ -204,7 +204,7 @@ class Util {
 	 * Test if $string ends with $suffix
 	 *
 	 * @param string $string string to test
-	 * @param string $suffix the suffix
+	 * @param string $suffix
 	 * @return bool true if $string ends with $suffix
 	 */
 	public static function endsWith( $string, $suffix ) {

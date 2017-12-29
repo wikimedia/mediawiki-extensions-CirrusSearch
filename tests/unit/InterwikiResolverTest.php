@@ -58,7 +58,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideSiteMatrixTestCases
-	 * @param string $wiki string
+	 * @param string $wiki
 	 * @param string $what method to test
 	 * @param mixed $arg arg to $what
 	 * @param mixed $expected expected result of $what($arg)

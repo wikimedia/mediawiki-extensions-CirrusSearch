@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use MediaWiki\Logger\LoggerFactory;
+
 /**
  * Extending from SearchRequestLog doesn't quite feel right, but there
  * is a good amount of shared code. think about best way.
@@ -50,6 +52,11 @@ class MultiSearchRequestLog extends SearchRequestLog {
 			) + $vars;
 		}
 
+		// in case of failures from Elastica
+		if ( isset( $responseData['message'] ) ) {
+			$vars['message'] = $responseData['message'];
+		}
+
 		return $vars;
 	}
 
@@ -63,6 +70,16 @@ class MultiSearchRequestLog extends SearchRequestLog {
 			return [];
 		}
 
+		$responseData = $this->response->getData();
+		if ( !$responseData || !isset( $responseData['responses'] ) ) {
+			$message = isset( $responseData['message'] ) ? $responseData['message'] : 'no message';
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				'Response does not has any data. {message}',
+				[ 'message' => $message ]
+			);
+			return [];
+		}
+
 		// In a multi-search instance the plain string, as sent to elasticsearch,
 		// is returned by Request::getData(). Each single request is represented
 		// by two lines, first a metadata line about the request and second the
@@ -70,7 +87,6 @@ class MultiSearchRequestLog extends SearchRequestLog {
 		/** @suppress PhanTypeMismatchArgumentInternal getData() actually returns array|string */
 		$lines = explode( "\n", trim( $this->request->getData(), "\n" ) );
 		$requestData = array_chunk( $lines, 2 );
-		$responseData = $this->response->getData();
 
 		if ( count( $requestData ) !== count( $responseData['responses'] ) ) {
 			// The world has ended...:(

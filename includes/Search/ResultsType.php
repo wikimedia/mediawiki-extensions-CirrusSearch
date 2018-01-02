@@ -272,7 +272,8 @@ class FancyTitleResultsType extends TitleResultsType {
 			// We're not really sure where the match came from so lets just pretend it was the title.
 			LoggerFactory::getInstance( 'CirrusSearch' )
 				->warning( "Title search result type hit a match but we can't " .
-						   "figure out what caused the match:  $r->namespace:$r->title" );
+					"figure out what caused the match: {namespace}:{title}",
+					[ 'namespace' => $r->namespace, 'title' => $r->title ] );
 			$resultForTitle['titleMatch'] = $title;
 		}
 

@@ -1062,22 +1062,6 @@ $wgCirrusSearchInterwikiPrefixOverrides = [];
 $wgCirrusSearchCrossProjectProfiles = [];
 
 /**
- * When wgCirrusSearchEnableCrossProjectSearch is true
- * Setting wgCirrusSearchHideCrossProjectResults will
- * tell SpecialSearch to run normally without displaying
- * interwiki results.
- * Useful to report how many results we could have been
- * displayed (For analytics purpose).
- */
-$wgCirrusSearchHideCrossProjectResults = false;
-
-/**
- * Informs SpeciaSearch in core that we want
- * to use the new cross project result page
- */
-$wgCirrusSearchNewCrossProjectPage = false;
-
-/**
  * Enables the explore similar feature for search results
  * which adds links to related pages (morelike), categories and
  * languages beside each search result on the SERP.

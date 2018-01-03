@@ -407,34 +407,19 @@ class CirrusSearch extends SearchEngine {
 			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $highlightingConfig );
 			$iwSearch->setOptionsFromRequest( $this->request );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
-
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to
-				$recallMetrics = [];
 				if ( $iwSearch->isReturnRaw() ) {
 					$result = [ $result ];
 				}
 				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
-					$recallMetrics[$interwiki] = "$interwiki:0";
 					if ( $iwSearch->isReturnRaw() ) {
 						$result[] = $interwikiResult;
 					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
-						$recallMetrics[$interwiki] = "$interwiki:" . $interwikiResult->getTotalHits();
-						// Hide the search results, we are only
-						// running the query for analytic purposes
-						if ( $this->config->get( 'CirrusSearchHideCrossProjectResults' ) ) {
-							continue;
-						}
 						$result->addInterwikiResults(
 							$interwikiResult, SearchResultSet::SECONDARY_RESULTS, $interwiki
 						);
 					}
-				}
-				$this->extraSearchMetrics['wgCirrusSearchCrossProjectRecall'] = implode( '|', $recallMetrics );
-				if ( $this->config->get( 'CirrusSearchNewCrossProjectPage' ) &&
-					!$this->config->get( 'CirrusSearchHideCrossProjectResults' ) ) {
-					$this->features['enable-new-crossproject-page'] = true;
-					$this->features['show-multimedia-search-results'] = $this->config->get( 'CirrusSearchCrossProjectShowMultimedia' );
 				}
 			}
 		}

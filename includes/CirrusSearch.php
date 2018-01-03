@@ -346,7 +346,7 @@ class CirrusSearch extends SearchEngine {
 
 		if ( isset( $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE] ) ) {
 			$profile = $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE];
-			if ( $this->config->getElement( 'CirrusSearchRescoreProfiles', $profile ) !== null ) {
+			if ( $config->getElement( 'CirrusSearchRescoreProfiles', $profile ) !== null ) {
 				$searcher->getSearchContext()->setRescoreProfile( $profile );
 			}
 		}

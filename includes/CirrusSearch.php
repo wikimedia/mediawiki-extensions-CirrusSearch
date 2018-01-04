@@ -505,7 +505,7 @@ class CirrusSearch extends SearchEngine {
 
 	protected function completionSuggesterEnabled( SearchConfig $config ) {
 		$useCompletion = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
-		if ( $useCompletion !== 'yes' && $useCompletion !== 'beta' ) {
+		if ( $useCompletion !== 'yes' ) {
 			return false;
 		}
 
@@ -522,11 +522,6 @@ class CirrusSearch extends SearchEngine {
 		// Allow experimentation with query parameters
 		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
 			return true;
-		}
-
-		if ( $useCompletion === 'beta' ) {
-			return ExtensionRegistry::getInstance()->isLoaded( 'BetaFeatures' ) &&
-				\BetaFeatures::isFeatureEnabled( $GLOBALS['wgUser'], 'cirrussearch-completionsuggester' );
 		}
 
 		return true;

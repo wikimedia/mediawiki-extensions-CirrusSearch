@@ -931,7 +931,6 @@ $wgCirrusSearchCompletionDefaultScore = 'quality';
  * namespace. PrefixSearch will be used in all other cases.
  * Valid values, all unknown values map to 'no':
  *   yes  - Use completion suggester as the default
- *   beta - Allow users to enable completion suggester as a BetaFeature
  *   no   - Don't use completion suggester
  */
 $wgCirrusSearchUseCompletionSuggester = 'no';
@@ -1277,7 +1276,6 @@ $wgHooks[ 'ArticleDeleteComplete' ][] = 'CirrusSearch\Hooks::onArticleDeleteComp
 $wgHooks[ 'ArticleRevisionVisibilitySet' ][] = 'CirrusSearch\Hooks::onRevisionDelete';
 $wgHooks[ 'ArticleUndelete' ][] = 'CirrusSearch\Hooks::onArticleUndelete';
 $wgHooks[ 'BeforeInitialize' ][] = 'CirrusSearch\Hooks::onBeforeInitialize';
-$wgHooks[ 'GetBetaFeaturePreferences' ][] = 'CirrusSearch\Hooks::getBetaFeaturePreferences';
 $wgHooks[ 'GetPreferences' ][] = 'CirrusSearch\Hooks::onGetPreferences';
 $wgHooks[ 'LinksUpdateComplete' ][] = 'CirrusSearch\Hooks::onLinksUpdateCompleted';
 $wgHooks[ 'MediaWikiServices' ][] = 'CirrusSearch\Hooks::onMediaWikiServices';

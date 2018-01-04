@@ -1083,7 +1083,6 @@ namespace. PrefixSearch will be used in all other cases.
 
 Valid values, all unknown values map to 'no':
 *  yes  - Use completion suggester as the default
-*  beta - Allow users to enable completion suggester as a BetaFeature
 *  no   - Don't use completion suggester
 
 ; $wgCirrusSearchCompletionSuggesterSubphrases

@@ -716,33 +716,6 @@ class Hooks {
 	}
 
 	/**
-	 * Activate Completion Suggester as a Beta Feature if available
-	 * @param User $user
-	 * @param array &$pref beta feature prefs
-	 * @return bool
-	 */
-	public static function getBetaFeaturePreferences( User $user, &$pref ) {
-		global $wgCirrusSearchUseCompletionSuggester,
-			$wgExtensionAssetsPath;
-
-		if ( $wgCirrusSearchUseCompletionSuggester !== 'beta' ) {
-			return true;
-		}
-
-		$pref['cirrussearch-completionsuggester'] = [
-			'label-message' => 'cirrussearch-completionsuggester-pref',
-			'desc-message' => 'cirrussearch-completionsuggester-desc',
-			'info-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester',
-			'discussion-link' => '//mediawiki.org/wiki/Special:MyLanguage/Extension_talk:CirrusSearch/CompletionSuggester',
-			'screenshot' => [
-				'ltr' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-ltr.svg",
-				'rtl' => "$wgExtensionAssetsPath/CirrusSearch/resources/images/cirrus-beta-rtl.svg",
-			]
-		];
-		return true;
-	}
-
-	/**
 	 * @param ApiBase $module
 	 * @return bool
 	 */

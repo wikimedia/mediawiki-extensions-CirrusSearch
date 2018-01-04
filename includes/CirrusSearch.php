@@ -337,12 +337,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		$searcher->getSearchContext()->setLimitSearchToLocalWiki( $forceLocal );
-
-		// TODO remove this when we no longer have to support core versions without
-		// Ie946150c6796139201221dfa6f7750c210e97166
-		if ( method_exists( $this, 'getSort' ) ) {
-			$searcher->setSort( $this->getSort() );
-		}
+		$searcher->setSort( $this->getSort() );
 
 		if ( isset( $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE] ) ) {
 			$profile = $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE];

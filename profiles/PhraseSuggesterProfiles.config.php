@@ -1,7 +1,5 @@
 <?php
 
-namespace CirrusSearch;
-
 /**
  * CirrusSearch - List of profiles for "Did you mean" suggestions
  *
@@ -21,7 +19,7 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-$wgCirrusSearchPhraseSuggestProfiles = [
+return [
 	// This is the default settings
 	'default' => [
 		// The suggest mode used by the phrase suggester

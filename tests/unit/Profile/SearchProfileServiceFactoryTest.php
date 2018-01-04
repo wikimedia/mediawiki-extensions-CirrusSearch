@@ -36,6 +36,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'similarity prefix' => [ SearchProfileService::SIMILARITY, SearchProfileService::CONTEXT_DEFAULT ],
 			'crossproject block order' => [ SearchProfileService::CROSS_PROJECT_BLOCK_SCORER, SearchProfileService::CONTEXT_DEFAULT ],
 			'completion' => [ SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT ],
+			'phrase suggester' => [ SearchProfileService::PHRASE_SUGGESTER, SearchProfileService::CONTEXT_DEFAULT ],
 		];
 	}
 
@@ -120,6 +121,10 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			'completion by config' => [
 				SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT,
 				'config', 'CirrusSearchCompletionSettings', [ 'unittest' => [] ],
+			],
+			'phrase suggest by config' => [
+				SearchProfileService::PHRASE_SUGGESTER, SearchProfileService::CONTEXT_DEFAULT,
+				'config', 'CirrusSearchPhraseSuggestSettings', [ 'unittest' => [] ],
 			],
 		];
 	}

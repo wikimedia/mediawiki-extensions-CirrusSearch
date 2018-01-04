@@ -238,10 +238,6 @@ defineSupportCode( function( {Given, When, Then} ) {
 		if ( qiprofile ) {
 			options.srqiprofile = qiprofile;
 		}
-		// This is reset between scenarios
-		if ( this.didyoumeanOptions ) {
-			Object.assign(options, this.didyoumeanOptions );
-		}
 
 		let stepHelpers = this.stepHelpers;
 		if ( wiki ) {
@@ -289,15 +285,6 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return withApi( this, () => {
 			expect( this.apiError.info ).to.equal( expected_error.trim() );
 		} );
-	} );
-
-	When( /^I reset did you mean suggester options$/, function () {
-		delete this.didyoumeanOptions;
-	} );
-
-	When( /^I set did you mean suggester option (.+) to (.+)$/, function (varname, value) {
-		this.didyoumeanOptions = this.didyoumeanOptions || {};
-		this.didyoumeanOptions[varname] = value;
 	} );
 
 	Then( /^there are no did you mean suggestions from the api$/, function () {

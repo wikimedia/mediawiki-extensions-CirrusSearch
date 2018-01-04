@@ -432,49 +432,10 @@ Default:
 
 Should the phrase suggester (did you mean) be enabled?
 
-; $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit
-
-Default:
-    $wgCirrusSearchPhraseSuggestMaxErrorsHardLimit = 2;
-
-Set the hard limit for $wgCirrusSearchPhraseSuggestMaxErrors. This prevents customizing
-this setting in a way that could hurt the system performances.
-
-; $wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit
-
-Default:
-    $wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit = 0.6;
-
-Set the hard limit for $wgCirrusSearchPhraseMaxTermFreq. This prevents customizing
-this setting in a way that could hurt the system performances.
-
-; $wgCirrusSearchPhraseSuggestAllowedMode
-
-Default:
-    $wgCirrusSearchPhraseSuggestAllowedMode = [ 'missing', 'popular', 'always' ];
-
-List of allowed values for the suggest mode.
-
-; $wgCirrusSearchPhraseSuggestAllowedSmoothingModel
-
-Default:
-    $wgCirrusSearchPhraseSuggestAllowedSmoothingModel = [ 'stupid_backoff', 'laplace', 'linear' ];
-
-List of allowed smoothing models.
-
-; $wgCirrusSearchPhraseSuggestPrefixLengthHardLimit
-
-Default:
-    $wgCirrusSearchPhraseSuggestPrefixLengthHardLimit = 2;
-
-Set the hard limit for $wgCirrusSearchPhraseSuggestPrefixLength. This prevents customizing
-this setting in a way that could hurt the system performances.
-(This is the minimal value)
-
 ; $wgCirrusSearchPhraseSuggestSettings
 
 Default:
-    $wgCirrusSearchPhraseSuggestSettings = $wgCirrusSearchPhraseSuggestProfiles['default'];
+    $wgCirrusSearchPhraseSuggestSettings = 'default';
 
 Set the Phrase suggester settings using the default profile.
 see profiles/PhraseSuggesterProfiles.php
@@ -1476,28 +1437,6 @@ Default:
 Customize certain fields with a specific implementation.
 Useful to apply CirrusSearch specific config to fields
 controlled by MediaWiki core.
-
-=== Deprecated settings ===
-
-; $wgCirrusSearchPhraseSuggestMaxErrors
-
-Default:
-    $wgCirrusSearchPhraseSuggestMaxErrors = 2;
-
-NOTE: This setting is deprecated: update or create your own PhraseSuggester profile.
-
-Maximum number of terms that we ask phrase suggest to correct.
-See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
-
-; $wgCirrusSearchPhraseSuggestConfidence
-
-Default:
-    $wgCirrusSearchPhraseSuggestConfidence = 2.0;
-
-NOTE: This setting is deprecated: update or create your own PhraseSuggester profile.
-
-Confidence level required to suggest new phrases.
-See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
 
 ; $wgCirrusSearchExtraIndexSettings
 

@@ -60,25 +60,3 @@ Feature: Did you mean
     | -hastemplate:prize noble prize            | -hastemplate:prize *nobel* prize            |
     | boost-templates:"prize\|150%" noble prize | boost-templates:"prize\|150%" *nobel* prize |
     | noble prize prefix:n                      | *nobel* prize prefix:n                      |
-
-  Scenario: Customize prefix length of did you mean suggestions
-    When I set did you mean suggester option cirrusSuggPrefixLength to 5
-    And I api search for noble prize
-    Then there are no did you mean suggestions from the api
-
-  Scenario: Customize prefix length of did you mean suggestions below the hard limit
-    When I reset did you mean suggester options
-    And I set did you mean suggester option cirrusSuggPrefixLength to 1
-    And I api search for nabol prize
-  Then there are no did you mean suggestions from the api
-
-  Scenario: Disable the reverse field
-    When I reset did you mean suggester options
-    And I set did you mean suggester option cirrusSuggUseReverse to no
-    And I api search for nabel prize
-    Then there are no did you mean suggestions from the api
-
-  Scenario: When I use the collate option: awards suggest1 suggest4 returns no suggestion
-    When I set did you mean suggester option cirrusSuggCollate to yes
-    And I api search for awards suggest1 suggest4
-    Then there are no did you mean suggestions from the api

@@ -102,7 +102,6 @@ class Hooks {
 		}
 
 		self::overrideMoreLikeThisOptionsFromMessage();
-		PhraseSuggesterProfiles::overrideOptionsFromMessage();
 
 		if ( $request ) {
 			// Engage the experimental highlighter if a url parameter requests it
@@ -119,7 +118,6 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
-			PhraseSuggesterProfiles::overrideOptions( $request );
 			RescoreProfiles::overrideOptions( $request );
 			FullTextQueryBuilderProfiles::overrideOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );

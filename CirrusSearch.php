@@ -397,53 +397,10 @@ $wgCirrusSearchMoreAccurateScoringMode = true;
 $wgCirrusSearchEnablePhraseSuggest = true;
 
 /**
- * NOTE: This settings is deprecated: update or create your own PhraseSuggester profile.
- * Maximum number of terms that we ask phrase suggest to correct.
- * See max_errors on http://www.elasticsearch.org/guide/reference/api/search/suggest/
- * $wgCirrusSearchPhraseSuggestMaxErrors = 2;
- */
-
-/**
- * NOTE: This settings is deprecated: update or create your own PhraseSuggester profile.
- * Confidence level required to suggest new phrases.
- * See confidence on http://www.elasticsearch.org/guide/reference/api/search/suggest/
- * $wgCirrusSearchPhraseSuggestConfidence = 2.0;
- */
-
-/**
- * Set the hard limit for $wgCirrusSearchPhraseSuggestMaxErrors. This prevents customizing
- * this setting in a way that could hurt the system performances.
- */
-$wgCirrusSearchPhraseSuggestMaxErrorsHardLimit = 2;
-
-/**
- * Set the hard limit for $wgCirrusSearchPhraseMaxTermFreq. This prevents customizing
- * this setting in a way that could hurt the system performances.
- */
-$wgCirrusSearchPhraseSuggestMaxTermFreqHardLimit = 0.6;
-
-/**
- * List of allowed values for the suggest mode
- */
-$wgCirrusSearchPhraseSuggestAllowedMode = [ 'missing', 'popular', 'always' ];
-
-/**
- * List of allowed smoothing models
- */
-$wgCirrusSearchPhraseSuggestAllowedSmoothingModel = [ 'stupid_backoff', 'laplace', 'linear' ];
-
-/**
- * Set the hard limit for $wgCirrusSearchPhraseSuggestPrefixLength. This prevents customizing
- * this setting in a way that could hurt the system performances.
- * (This is the minimal value)
- */
-$wgCirrusSearchPhraseSuggestPrefixLengthHardLimit = 2;
-
-/**
  * Set the Phrase suggester settings using the default profile.
  * see profiles/PhraseSuggesterProfiles.php
  */
-$wgCirrusSearchPhraseSuggestSettings = $wgCirrusSearchPhraseSuggestProfiles['default'];
+$wgCirrusSearchPhraseSuggestSettings = 'default';
 
 /**
  * Use a reverse field to build the did you mean suggestions.

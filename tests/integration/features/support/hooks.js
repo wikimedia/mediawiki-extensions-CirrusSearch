@@ -230,24 +230,8 @@ defineSupportCode( function( { After, Before } ) {
 			'Rrr Word 3': '#REDIRECT [[Noble Somethingelse3]]',
 			'Rrr Word 4': '#REDIRECT [[Noble Somethingelse4]]',
 			'Rrr Word 5': '#REDIRECT [[Noble Somethingelse5]]',
-			'Nobel Gassez': '#REDIRECT [[Noble Gasses]]',
-			'my suggest1 suggest2': 'list of grammy awards winners',
-			'my suggest2 suggest3': 'list of grammy awards winners',
-			'my suggest3 suggest4': 'list of grammy awards winners',
-			'my suggest4 suggest5': 'list of grammy awards winners',
-			'my suggest5 suggest6': 'list of grammy awards winners',
-			'my suggest6 suggest1': 'list of grammy awards winners',
-			'suggest1 suggest2 suggest3': 'list of grammy awards winners',
-			'suggest2 suggest3 suggest4': 'list of grammy awards winners',
-			'suggest3 suggest4 suggest5': 'list of grammy awards winners',
+			'Nobel Gassez': '#REDIRECT [[Noble Gasses]]'
 		};
-		// TODO: investigate getting rid of this
-		for ( let i = 1; i <= 30; i++ ) {
-			edits['Grammy Awards ed. ' + i] = 'grammy awards';
-		}
-		for ( let i = 1; i <= 14; i++ ) {
-			edits['Grammo Awards ed. ' + i] = 'bogus grammy awards page';
-		}
 		return runBatch( this, false, { edit: edits } );
 	} );
 

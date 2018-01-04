@@ -81,6 +81,7 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchEnableArchive',
 		'CirrusSearchUseIcuFolding',
 		'CirrusSearchUseIcuTokenizer',
+		'CirrusSearchPhraseSuggestProfiles',
 		// All the config below was added when moving this data
 		// from CirrusSearch config to a static array in this class
 		'CirrusSearchDevelOptions',

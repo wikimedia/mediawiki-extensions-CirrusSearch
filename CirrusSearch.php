@@ -36,7 +36,7 @@ $wgExtensionCredits['other'][] = [
 	'descriptionmsg' => 'cirrussearch-desc',
 	'url'            => 'https://www.mediawiki.org/wiki/Extension:CirrusSearch',
 	'version'        => '0.2',
-	'license-name'   => 'GPL-2.0+'
+	'license-name'   => 'GPL-2.0-or-later'
 ];
 
 /**

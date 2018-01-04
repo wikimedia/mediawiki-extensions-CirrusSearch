@@ -108,7 +108,9 @@ abstract class ElasticsearchIntermediary {
 	 */
 	public static function setResultPages( array $matches ) {
 		if ( self::$requestLogger === null ) {
-			throw new \RuntimeException( 'No search request was made' );
+			// This could happen if Cirrus is not the active engine,
+			// but the hook is still loaded. In this case, do nothing.
+			return;
 		} else {
 			self::$requestLogger->setResultPages( $matches );
 		}

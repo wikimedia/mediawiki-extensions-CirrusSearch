@@ -21,7 +21,5 @@
 	"cirrussearch-pref-desc": "Proveu el nostre cercador nou que suporta un nombre de llengües més gran, proporciona resultats més actualitzats i fins i tot pot trobar text dins de plantilles.",
 	"cirrussearch-give-feedback": "Doneu-nos la vostra opinió",
 	"cirrussearch-query-too-long": "La sol·licitud de cerca és superior a la longitud màxima permesa. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Suggeridor completori",
-	"cirrussearch-completionsuggester-desc": "Nou algorisme de cerca a mesura que escriviu. Un cop activat la casella de cerca de dalt a la dreta utilitzarà el suggeridor completori.",
 	"prefs-completion": "Compleció de cerques"
 }

@@ -25,8 +25,6 @@
 	"apihelp-cirrus-mapping-dump-description": "このウィキの CirrusSearch のマッピングをダンプします。",
 	"apihelp-cirrus-settings-dump-description": "このウィキの CirrusSearch の設定をダンプします。",
 	"cirrussearch-give-feedback": "フィードバックをください",
-	"cirrussearch-completionsuggester-pref": "Completion suggester",
-	"cirrussearch-completionsuggester-desc": "新しいアルゴリズムの検索候補表示を入力時に使用します。もし、これを有効化した場合、ページ右上などにある検索ボックスで Completion Suggester が使用されます。",
 	"cirrussearch-pref-completion-profile-help": "（あなたが入力した検索文字列による）自動補完の提案時の挙動を設定します。",
 	"prefs-completion": "検索の補完",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester]は、タイプミスの補正と関連性を重視した検索結果を提供する、素敵なサジェスト機能をもつ検索のためのアルゴリズムです。",

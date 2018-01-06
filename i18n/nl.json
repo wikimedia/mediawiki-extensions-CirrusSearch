@@ -41,8 +41,6 @@
 	"apihelp-cirrus-settings-dump-example": "Maak een dump van CirrusSearch-instellingen voor deze wiki.",
 	"cirrussearch-give-feedback": "Geef ons uw mening",
 	"cirrussearch-query-too-long": "Zoekopdracht is langer dan de maximaal toegestane lengte. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Aanvulsuggesties voor zoekopdrachten",
-	"cirrussearch-completionsuggester-desc": "Nieuw algoritme voor zoeken terwijl je typt. Indien ingeschakeld zal het zoekveld in de rechterbovenhoek aanvullingssuggesties geven.",
 	"cirrussearch-completion-profile-strict": "Strikt profiel met enkele leestekens verwijderd, maar diakritische tekens en klemtoontekens zijn behouden.",
 	"cirrussearch-completion-profile-classic": "Klassieke prefix, een paar leestekens en sommige leestekens verwijderd.",
 	"cirrussearch-completion-profile-normal": "Een paar leestekens, een aantal diakritische tekens en stopwoorden verwijderd.",

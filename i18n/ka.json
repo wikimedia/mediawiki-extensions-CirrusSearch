@@ -23,7 +23,6 @@
 	"apihelp-cirrus-config-dump-example": "CirrusSearch-ის კონფიგურაციის დამპის მიღება.",
 	"apihelp-cirrus-mapping-dump-description": "ამ ვიკის CirrusSearch-მაპინგის დამპი.",
 	"cirrussearch-give-feedback": "გამოგვეხმაურე",
-	"cirrussearch-completionsuggester-pref": "დასრულების წინადადება",
 	"cirrussearch-pref-completion-profile-help": "ადგენს მოქცევას წინადადების ავტომატურად შევსებისას (ძიება შეყვანისას).",
 	"prefs-completion": "ძიების დასრულება",
 	"cirrussearch-pref-completion-section-desc": "ავტოშევსების კარნახი",

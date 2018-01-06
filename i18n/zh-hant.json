@@ -32,8 +32,6 @@
 	"apihelp-cirrus-settings-dump-description": "匯出 CirrusSearch 於此 Wiki 的設定。",
 	"apihelp-cirrus-settings-dump-example": "取得此 wiki 的 CirrusSearch 設定匯出檔。",
 	"cirrussearch-give-feedback": "給我們您的意見回饋",
-	"cirrussearch-completionsuggester-pref": "完整建議搜尋工具",
-	"cirrussearch-completionsuggester-desc": "這是一套新的搜尋演算法作為您的輸入模式，一旦啟用該功能，位於右上角搜尋框輸入關鍵字時，會出現搜尋結果以及根據您輸入的關鍵字所給出的搜尋建議。",
 	"cirrussearch-pref-completion-profile-help": "設定自動完成（隨打即搜）建議的行為。",
 	"prefs-completion": "搜尋完成",
 	"cirrussearch-pref-completion-section-desc": "完整搜尋建議器",

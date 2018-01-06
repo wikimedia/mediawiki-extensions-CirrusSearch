@@ -19,7 +19,6 @@
 	"apihelp-cirrus-settings-dump-summary": "'Mbostaziune d'u dump de CirrusSearch pe sta uicchi.",
 	"apihelp-cirrus-settings-dump-example": "Pigghie 'nu dump de CirrusSearch pe sta uicchi.",
 	"cirrussearch-give-feedback": "Mannane 'nu commende",
-	"cirrussearch-completionsuggester-pref": "Suggeritore de combletamende",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinite (conzigliate)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corregge 'mbonde a doje errore de battiture. Resolve le redirezionaminde vecine.",
 	"cirrussearch-pref-completion-legacy-section-desc": "Ricerche pe prefisse",

@@ -31,7 +31,6 @@
 	"apierror-cirrus-requesttoolong": "Αναζήτηση με πρόθεμα ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. ($1 > $2)",
 	"cirrussearch-give-feedback": "Πείτε μας τη γνώμη σας",
 	"cirrussearch-query-too-long": "Αναζήτηση με πρόθεμα ήταν μεγαλύτερο από το μέγιστο επιτρεπόμενο μήκος. ($1 > $2)",
-	"cirrussearch-completionsuggester-desc": "Νέος αλγόριθμος αναζήτησης καθώς πληκτρολογείτε. Μόλις ενεργοποιηθεί το πλαίσιο αναζήτησης στην επάνω δεξιά γωνία θα χρησιμοποιήσει την λειτουργία του Completion Suggester.",
 	"cirrussearch-completion-profile-classic": "Τυπικό πρόθεμα, μερικά σημεία στίξης και κάποια διακριτικά αφαιρέθηκαν.",
 	"cirrussearch-completion-profile-normal": "Μερικά σημεία στίξης, κάποια διακριτικά και stopwords αφαιρέθηκαν.",
 	"cirrussearch-completion-profile-normal-subphrases": "Μερικά σημεία στίξης, κάποια διακριτικά και stopwords αφαιρέθηκαν.Θα ταιριάζουν επίσης υποφράσεις (μπορεί να είναι υποφράσεις ή υποσελίδες ανάλογα με εσωτερική wiki διαμόρφωση).",

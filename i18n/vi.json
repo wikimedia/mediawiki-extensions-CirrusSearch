@@ -23,8 +23,6 @@
 	"apihelp-cirrus-settings-dump-description": "Cấu hình thô của CirrusSearch tại wiki này.",
 	"cirrussearch-give-feedback": "Hãy gửi cho chúng tôi nhận xét của bạn",
 	"cirrussearch-query-too-long": "Yêu cầu tìm kiếm vượt quá số ký tự tối đa được cho phép. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Trình gợi ý tìm kiếm",
-	"cirrussearch-completionsuggester-desc": "Tính năng tìm kiếm trực tiếp mới. Khi được kích hoạt, hộp tìm kiếm ở góc phải bên trên sẽ sử dụng Trình gợi ý tìm kiếm.",
 	"cirrussearch-pref-completion-profile-help": "Đặt hành vi cho các gợi ý tìm kiếm (tìm kiếm ngay khi nhập).",
 	"prefs-completion": "Hoàn tất từ khóa tìm kiếm",
 	"cirrussearch-pref-completion-section-desc": "Gợi ý hoàn tất tìm kiếm",

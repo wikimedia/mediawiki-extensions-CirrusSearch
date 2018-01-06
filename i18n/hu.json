@@ -20,8 +20,6 @@
 	"cirrussearch-pref-desc": "Próbáld ki az új keresőt, ami több nyelvet támogat, hamarabb frissül, és a sablonok révén bekerülő szövegre is lehet keresni vele.",
 	"cirrussearch-give-feedback": "Visszajelzés",
 	"cirrussearch-query-too-long": "A keresőkifejezés hosszabb a megengedettnél ($1 > $2).",
-	"cirrussearch-completionsuggester-pref": "Automatikus kiegészítés",
-	"cirrussearch-completionsuggester-desc": "Új algoritmus a keresőkifejezés automatikus kiegészítésére. Ha engedélyezed, a jobb felső sarokban lévő keresőmező ezt fogja használni.",
 	"cirrussearch-completion-profile-strict": "Szigorú profil, egy pár írásjelet eltávolít, de az ékezeteket és hangsúlyjeleket meghagyja.",
 	"cirrussearch-completion-profile-classic": "Klasszikus előtag, néhány írásjelet és bizonyos ékezeteket eltávolít.",
 	"cirrussearch-completion-profile-normal": "Néhány írásjel, bizonyos ékezetek és szavak eltávolítása.",

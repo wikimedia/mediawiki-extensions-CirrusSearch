@@ -31,8 +31,6 @@
 	"apihelp-cirrus-settings-dump-example": "Pobierz zrzut ustawień CirrusSearch dla tej wiki.",
 	"cirrussearch-give-feedback": "Wyślij nam opinię",
 	"cirrussearch-query-too-long": "Żądanie wyszukiwania jest dłuższe niż maksymalna dozwolona długość. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Podpowiadacz wyszukiwania",
-	"cirrussearch-completionsuggester-desc": "Nowy algorytm dla wyszukiwania podczas wpisywania. Po włączeniu, pole wyszukiwania w prawym górnym rogu będzie korzystać z Podpowiedzi Uzupełniania.",
 	"cirrussearch-qi-profile-popular-pv": "Ranking oparty głównie na wyświetleniach stron",
 	"cirrussearch-qi-profile-popular-inclinks": "Ranking oparty głównie na liczbie linkujących",
 	"cirrussearch-pref-completion-profile-help": "Ustaw zachowanie podpowiedzi autouzupełniania (wyszukiwanie podczas wpisywania).",

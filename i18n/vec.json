@@ -8,8 +8,6 @@
 	"cirrussearch-now-using": "Sto projeto el dòpara un motor de riserca novo ([[mw:Special:MyLanguage/Help:CirrusSearch|piassè informassion]]).",
 	"cirrussearch-pref-label": "Riserca nova",
 	"cirrussearch-give-feedback": "Dìne 'sa te par",
-	"cirrussearch-completionsuggester-pref": "Sugeridor de conpletamento",
-	"cirrussearch-completionsuggester-desc": "El xe un algoritmo novo par mejorar la riserca fin che te scrivi. Na olta intacà la casèla de riserca in tel canton in alto a destra, vegnarà doparà sta fonsion che te sugerisse el possibile completamento de la parola che te sì drio inserir par la riserca.",
 	"prefs-completion": "Conpletamento de la riserca",
 	"cirrussearch-pref-completion-section-desc": "Sugeridor de conpletamento",
 	"cirrussearch-pref-completion-section-legend": "El [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugeridor de conpletamento] el xe un algoritmo par sugerirte la riserca fin che te scrivi, con coression dei erori de batidura e rilevansa de la riserca.",

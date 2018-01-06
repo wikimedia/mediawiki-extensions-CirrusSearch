@@ -26,8 +26,6 @@
 	"apierror-cirrus-requesttoolong": "De zeukopdrach veur 't veurveugsel waas lenger es de maximaal tougestange lingde. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Gaef ós dien meining",
 	"cirrussearch-query-too-long": "De zeukopdrach is lenger es de maximaal tougestange lingde. ($1 > $2)",
-	"cirrussearch-completionsuggester-pref": "Zeukaanvölideeje",
-	"cirrussearch-completionsuggester-desc": "Nuuj algoritme veur zeuke wen se typs. Wen aangezatte zal 't zeukveld in de rechse baovenhook aanvölideeje gaeve.",
 	"cirrussearch-completion-profile-strict": "Strik profiel mit inkel laesteikes eweggesjaf, meh diakritische teikes en klemtoeanteikes blieve behaje.",
 	"cirrussearch-completion-profile-classic": "Klassiek veurveugsel, e paar laesteikes en sómmige laesteikes eweggesjaf.",
 	"cirrussearch-completion-profile-normal": "E paar laesteikes, 'n aantal diakritische teikes en stopwäörd eweggesjaf.",

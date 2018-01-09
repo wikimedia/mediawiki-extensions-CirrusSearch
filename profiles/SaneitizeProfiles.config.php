@@ -26,7 +26,7 @@
  * The first profile that verifies max(page_id)-min(page_id) < max_wiki_size
  * will be chosen (the array is sorted before applying profile selection)
  */
-$wgCirrusSearchSanitizationProfiles = [
+return [
 	// Loop in 9 days for 11k ids, 0.00014 jobs/sec, with 18% ids wrong
 	// it's 0.0025 updates/sec per cluster
 	'XS' => [

@@ -15,6 +15,7 @@ use \WebRequest;
  * - PHRASE_SUGGESTER: Controls the behavior of the phrase suggester (did you mean suggestions)
  * - RESCORE: Controls how elasticsearch rescore queries are built
  * - RESCORE_FUNCTION_CHAINS: Controls the list of functions used by a rescore profile
+ * - SANEITIZER: Controls the saneitizer
  * - SIMILARITY: Defines similarity profiles used when building the index
  *
  * Multiple repository per type can be declared, in general we have:
@@ -74,6 +75,12 @@ class SearchProfileService {
 	 * @see \CirrusSearch\Query\FullTextQueryStringQueryBuilder::buildSuggestConfig()
 	 */
 	const PHRASE_SUGGESTER = 'phrase_suggester';
+
+	/**
+	 * Profile type used by saneitizer
+	 * @see \CirrusSearch\Maintenance\SaneitizeJobs
+	 */
+	const SANEITIZER = 'saneitizer';
 
 	/**
 	 * Profile context used for prefix search queries

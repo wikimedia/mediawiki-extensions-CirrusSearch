@@ -16,7 +16,7 @@
 			"Od1n"
 		]
 	},
-	"cirrussearch-desc": "Fait effectuer la recherche par Solr",
+	"cirrussearch-desc": "Fait effectuer la recherche dans MediaWiki par Elasticsearch",
 	"cirrussearch-backend-error": "Nous n’avons pas pu mener à bien votre recherche à cause d’un problème temporaire. Veuillez réessayer ultérieurement.",
 	"cirrussearch-parse-error": "La demande n’a pas été comprise. Veuillez la simplifier. La requête a été tracée pour améliorer le système de recherche.",
 	"cirrussearch-too-busy-error": "Le service de recherche est actuellement saturé. Veuillez réessayer ultérieurement.",

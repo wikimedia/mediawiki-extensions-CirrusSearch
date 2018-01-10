@@ -126,10 +126,10 @@ class MetaStoreIndex {
 	 *  requirements
 	 */
 	public function versionIsAtLeast( array $expected ) {
-		// $expected >= $version
+		// $version >= $expected
 		return (bool)version_compare(
-			implode( '.', $expected ),
 			implode( '.', $this->metastoreVersion() ),
+			implode( '.', $expected ),
 			'>='
 		);
 	}

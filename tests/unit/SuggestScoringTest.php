@@ -343,7 +343,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @param $max integer max element in the array
+	 * @param int $max max element in the array
 	 * @return array|null randomly null or an array of size [0, $max]
 	 */
 	private function randomArray( $max ) {

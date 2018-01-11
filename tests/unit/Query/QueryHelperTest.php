@@ -11,10 +11,10 @@ class QueryHelperTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideMatchPage
 	 *
-	 * @param $expected
-	 * @param $field
-	 * @param $title
-	 * @param $underscores
+	 * @param mixed $expected
+	 * @param string $field
+	 * @param string $title
+	 * @param string $underscores
 	 */
 	public function testMatchPage( $expected, $field, $title, $underscores ) {
 		$match = QueryHelper::matchPage( $field, $title, $underscores );

@@ -16,7 +16,7 @@ class PrefixSearchQueryBuilder {
 
 	/**
 	 * @param SearchContext $searchContext the search context
-	 * @param $term string the original search term
+	 * @param string $term the original search term
 	 * @param array|null $variants list of variants
 	 * @throws \ApiUsageException if the query is too long
 	 */

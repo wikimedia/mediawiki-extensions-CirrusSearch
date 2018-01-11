@@ -123,6 +123,8 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider syntaxUsedProvider
+	 * @param string $term
+	 * @param array $expected
 	 */
 	public function testSyntaxUsed( $term, $expected ) {
 		// To make things a little more consistent with how it is

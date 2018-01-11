@@ -394,8 +394,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 	 *  the results of generation obvious and tracked in git
 	 *
 	 * @dataProvider provideLanguageAnalysis
-	 * @param $expected
-	 * @param $langCode
+	 * @param mixed $expected
+	 * @param string $langCode
 	 * @param array $extraConfig
 	 */
 	public function testLanguageAnalysis( $expected, $langCode, array $extraConfig ) {

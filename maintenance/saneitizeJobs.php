@@ -307,8 +307,8 @@ EOD
 	}
 
 	/**
-	 * @param $lastLoop int|null last loop start time
-	 * @param $minLoopDuration int minimal duration of a loop
+	 * @param int|null $lastLoop last loop start time
+	 * @param int $minLoopDuration minimal duration of a loop
 	 * @return bool true if minLoopDuration is not reached false otherwize
 	 */
 	private function checkMinLoopDuration( $lastLoop, $minLoopDuration ) {

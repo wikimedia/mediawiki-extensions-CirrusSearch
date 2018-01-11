@@ -236,8 +236,8 @@ class SearcherTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider archiveFixtureProvider
-	 * @param $expected
-	 * @param $query
+	 * @param mixed $expected
+	 * @param array $query
 	 */
 	public function testArchiveQuery( $expected, $query ) {
 		$this->setMwGlobals( [

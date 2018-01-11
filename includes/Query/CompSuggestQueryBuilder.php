@@ -201,7 +201,7 @@ class CompSuggestQueryBuilder {
 	 *
 	 * @param CompletionResultsCollector $collector
 	 * @param ResultSet $results
-	 * @param $indexName
+	 * @param string $indexName
 	 * @return int total hits
 	 */
 	public function postProcess( CompletionResultsCollector $collector, ResultSet $results, $indexName ) {

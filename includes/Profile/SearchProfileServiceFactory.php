@@ -24,6 +24,13 @@ use WebRequest;
  *   <li>config override: <var>CirrusSearchCrossProjectOrder</var></li>
  *  </ul>
  * </li>
+ * <li>FT_QUERY_BUILDER in CONTEXT_DEFAULT
+ *  <ul>
+ *   <li>default: <i>default</i></li>
+ *   <li>config override: <var>CirrusSearchFullTextQueryBuilderProfile</var></li>
+ *   <li>uri param override: <var>cirrusFTQBProfile</var></li>
+ *  </ul>
+ * </li>
  * <li>PHRASE_SUGGESTER in CONTEXT_DEFAULT
  *  <ul>
  *   <li>default: <i>default</i></li>
@@ -90,6 +97,7 @@ class SearchProfileServiceFactory {
 		$this->loadCompletionProfiles( $service, $config );
 		$this->loadPhraseSuggesterProfiles( $service, $config );
 		$this->loadSaneitizerProfiles( $service );
+		$this->loadFullTextQueryProfiles( $service, $config );
 
 		// Register extension profiles only if running on the host wiki.
 		// Only cirrus search is aware that we are running a crosswiki search
@@ -212,5 +220,24 @@ class SearchProfileServiceFactory {
 		$service->registerFileRepository( SearchProfileService::SANEITIZER, self::CIRRUS_BASE,
 			__DIR__ . '/../../profiles/SaneitizeProfiles.config.php' );
 		// no name resolver, profile is automatically chosen based on wiki
+	}
+
+	/**
+	 * @param SearchProfileService $service
+	 * @param SearchConfig $config
+	 */
+	private function loadFullTextQueryProfiles( SearchProfileService $service, SearchConfig $config ) {
+		$service->registerFileRepository( SearchProfileService::FT_QUERY_BUILDER, self::CIRRUS_BASE,
+			__DIR__ . '/../../profiles/FullTextQueryBuilderProfiles.config.php' );
+
+		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::FT_QUERY_BUILDER, self::CIRRUS_CONFIG,
+			'CirrusSearchFullTextQueryBuilderProfiles', $config ) );
+
+		$service->registerDefaultProfile( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_DEFAULT, 'default' );
+		$service->registerConfigOverride( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchFullTextQueryBuilderProfile' );
+		$service->registerUriParamOverride( SearchProfileService::FT_QUERY_BUILDER,
+			SearchProfileService::CONTEXT_DEFAULT, 'cirrusFTQBProfile' );
 	}
 }

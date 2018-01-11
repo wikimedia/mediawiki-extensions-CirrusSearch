@@ -1341,6 +1341,14 @@ Default:
 
 Elasticsearch QueryBuilder to use when when building FullText queries.
 
+; $wgCirrusSearchFullTextQueryBuilderProfiles
+
+Default:
+    $wgCirrusSearchFullTextQueryBuilderProfiles = [];
+
+List of additional fulltext query builder profiles
+see profiles/FullTextQueryBuilderProfiles.config.php
+
 ; $wgCirrusSearchPrefixIds
 
 Default:

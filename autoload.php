@@ -52,7 +52,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Extra\\Query\\SourceRegex' => __DIR__ . '/includes/Extra/Query/SourceRegex.php',
 	'CirrusSearch\\Extra\\Query\\TokenCountRouter' => __DIR__ . '/includes/Extra/Query/TokenCountRouter.php',
 	'CirrusSearch\\ForceSearchIndex' => __DIR__ . '/maintenance/forceSearchIndex.php',
-	'CirrusSearch\\FullTextQueryBuilderProfiles' => __DIR__ . '/profiles/FullTextQueryBuilderProfiles.php',
 	'CirrusSearch\\HTMLCompletionProfileSettings' => __DIR__ . '/includes/HTMLCompletionProfileSettings.php',
 	'CirrusSearch\\HashSearchConfig' => __DIR__ . '/includes/HashSearchConfig.php',
 	'CirrusSearch\\Hooks' => __DIR__ . '/includes/Hooks.php',

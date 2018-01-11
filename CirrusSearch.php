@@ -21,8 +21,6 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-require_once __DIR__ . "/profiles/FullTextQueryBuilderProfiles.config.php";
-
 $wgExtensionCredits['other'][] = [
 	'path'           => __FILE__,
 	'name'           => 'CirrusSearch',
@@ -1165,6 +1163,12 @@ $wgCirrusSearchStripQuestionMarks = 'all';
  * FullText queries
  */
 $wgCirrusSearchFullTextQueryBuilderProfile = 'default';
+
+/**
+ * List of additional fulltext query builder profiles
+ * see profiles/FullTextQueryBuilderProfiles.config.php
+ */
+$wgCirrusSearchFullTextQueryBuilderProfiles = [];
 
 /**
  * Transitionary flag for converting between older style

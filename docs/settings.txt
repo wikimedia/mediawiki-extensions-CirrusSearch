@@ -1304,11 +1304,12 @@ pushing new jobs even if it's still scheduled by cron.
 ; $wgCirrusSearchIndexBaseName
 
 Default:
-    $wgCirrusSearchIndexBaseName = wfWikiID();
+    $wgCirrusSearchIndexBaseName = '__wikiid__';
 
 The base name of indexes used on this wiki. This value must be
 unique across all wiki's sharing an elasticsearch cluster unless
 $wgCirrusSearchMultiWikiIndices is set to true.
+The value '__wikiid__' will be resolved at runtime to wfWikiId().
 
 ; $wgCirrusSearchStripQuestionMarks
 

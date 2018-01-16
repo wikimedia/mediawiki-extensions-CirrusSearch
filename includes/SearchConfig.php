@@ -16,6 +16,9 @@ class SearchConfig implements \Config {
 	const PREFIX_IDS = 'CirrusSearchPrefixIds';
 	const CIRRUS_VAR_PREFIX = 'wgCirrus';
 
+	// Magic word to tell the SearchConfig to translate INDEX_BASE_NAME into wfWikiID()
+	const WIKI_ID_MAGIC_WORD = '__wikiid__';
+
 	/** @static string[] non cirrus vars to load when loading external wiki config */
 	private static $nonCirrusVars = [
 		'wgLanguageCode',
@@ -120,7 +123,11 @@ class SearchConfig implements \Config {
 		if ( !$this->source->has( $this->prefix . $name ) ) {
 			return null;
 		}
-		return $this->source->get( $this->prefix . $name );
+		$value = $this->source->get( $this->prefix . $name );
+		if ( $name === self::INDEX_BASE_NAME && $value === self::WIKI_ID_MAGIC_WORD ) {
+			return $this->getWikiId();
+		}
+		return $value;
 	}
 
 	/**

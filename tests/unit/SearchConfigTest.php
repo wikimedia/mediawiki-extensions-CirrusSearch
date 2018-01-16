@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\SearchConfig
  */
 class SearchConfigTest extends CirrusTestCase {
 	public function testInterWikiConfig() {
@@ -20,5 +21,12 @@ class SearchConfigTest extends CirrusTestCase {
 				$this->assertEquals( $v, $config->get( $n ), "Var $n" );
 			}
 		}
+	}
+
+	public function testIndexBaseName() {
+		$config = new SearchConfig();
+		$this->assertEquals( wfWikiID(), $config->get( 'CirrusSearchIndexBaseName' ) );
+		$config = new HashSearchConfig( [ 'CirrusSearchIndexBaseName' => 'foobar' ] );
+		$this->assertEquals( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
 	}
 }

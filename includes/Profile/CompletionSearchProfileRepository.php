@@ -70,7 +70,10 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 			}
 			foreach ( $originalProfiles as $name => $settings ) {
 				$allowed = true;
-				foreach ( $settings as $value ) {
+				if ( !isset( $settings['fst'] ) ) {
+					throw new SearchProfileException( "Completion profile $name must have a fst key defined" );
+				}
+				foreach ( $settings['fst'] as $value ) {
 					if ( empty( $allowedFields[$value['field']] ) ) {
 						$allowed = false;
 						break;

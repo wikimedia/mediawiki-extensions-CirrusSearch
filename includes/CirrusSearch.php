@@ -642,47 +642,43 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function getProfiles( $profileType, User $user = null ) {
 		$profileService = $this->config->getProfileService();
+		$serviceProfileType = null;
+		$profileContext = SearchProfileService::CONTEXT_DEFAULT;
 		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
-			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) == 'no' ) {
-				// No profile selection if completion suggester is disabled.
-				return [];
+			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) !== 'no' ) {
+				$serviceProfileType = SearchProfileService::COMPLETION;
 			}
-
-			$allowedProfiles = $profileService->listExposedProfiles( SearchProfileService::COMPLETION );
-			$cirrusDefault = $profileService->getProfileName( SearchProfileService::COMPLETION,
-				SearchProfileService::CONTEXT_DEFAULT );
-
-			$profiles = [];
-			foreach ( array_keys( $allowedProfiles ) as $name ) {
-				$profiles[] = [
-					'name' => $name,
-					'desc-message' => 'cirrussearch-completion-profile-' . $name,
-					'default' => $cirrusDefault === $name,
-				];
-			}
-			return $profiles;
+			break;
 		case SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE:
-			$profiles = [];
-			$cirrusDefault = $profileService->getProfileName( SearchProfileService::RESCORE, SearchProfileService::CONTEXT_DEFAULT );
-			foreach ( $profileService->listExposedProfiles( SearchProfileService::RESCORE ) as $name => $profile ) {
-				$default = $cirrusDefault === $name;
-				$profiles[] = [
-					'name' => $name,
-					// @todo: decide what to with profiles we declare
-					// in wmf-config with no i18n messages.
-					// Do we want to expose them anyway, or simply
-					// hide them but still allow Api to pass them to us.
-					// It may require a change in core since ApiBase is
-					// strict and won't allow unknown values to be set
-					// here.
-					'desc-message' => isset( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
-					'default' => $default,
-				];
-			}
-			return $profiles;
+			$serviceProfileType = SearchProfileService::RESCORE;
+			break;
 		}
-		return null;
+
+		if ( $serviceProfileType === null ) {
+			return null;
+		}
+
+		$allowedProfiles = $profileService->listExposedProfiles( $serviceProfileType );
+		$default = $profileService->getProfileName( $serviceProfileType,
+			$profileContext );
+
+		$profiles = [];
+		foreach ( $allowedProfiles as $name => $profile ) {
+			// @todo: decide what to with profiles we declare
+			// in wmf-config with no i18n messages.
+			// Do we want to expose them anyway, or simply
+			// hide them but still allow Api to pass them to us.
+			// It may require a change in core since ApiBase is
+			// strict and won't allow unknown values to be set
+			// here.
+			$profiles[] = [
+				'name' => $name,
+				'desc-message' => isset( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
+				'default' => $default === $name,
+			];
+		}
+		return $profiles;
 	}
 
 	/**

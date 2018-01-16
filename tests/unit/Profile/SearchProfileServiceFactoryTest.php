@@ -123,4 +123,40 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	/**
+	 * @dataProvider provideExposedProfileType
+	 * @throws \Exception
+	 * @throws \FatalError
+	 * @throws \MWException
+	 */
+	public function testExportedProfilesWithI18N( $type, array $must_have ) {
+		$factory = new SearchProfileServiceFactory();
+		$service = $factory->loadService( new HashSearchConfig( [] ) );
+		$profiles = $service->listExposedProfiles( $type );
+
+		$seen = [];
+		foreach ( $profiles as $name => $profile ) {
+			$this->assertArrayHasKey( 'i18n_msg', $profile, "Profile $name in $type has i18n_msg key" );
+			$this->assertTrue( wfMessage( $profile['i18n_msg'] )->exists(),
+				"Profile $name in $type has i18n message set" );
+			$seen[] = $name;
+		}
+		$missing = array_diff( $must_have, $seen );
+		$this->assertEmpty( $missing, "Profiles of type $type must include all must_have profiles" );
+	}
+
+	public static function provideExposedProfileType() {
+		return [
+			'rescore' => [
+				SearchProfileService::RESCORE,
+				[ 'classic', 'empty', 'classic_noboostlinks', 'wsum_inclinks',
+				  'wsum_inclinks_pv', 'popular_inclinks_pv', 'popular_inclinks' ]
+			],
+			'completion' => [
+				SearchProfileService::COMPLETION,
+				[ 'classic', 'fuzzy', 'normal', 'strict' ]
+			]
+		];
+	}
 }

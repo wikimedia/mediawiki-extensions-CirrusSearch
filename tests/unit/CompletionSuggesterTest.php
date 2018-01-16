@@ -79,8 +79,12 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		];
 
 		$profile = [
-			'test-simple' => $simpleProfile,
-			'test-fuzzy' => $simpleFuzzy,
+			'test-simple' => [
+				'fst' => $simpleProfile
+			],
+			'test-fuzzy' => [
+				'fst' => $simpleFuzzy,
+			]
 		];
 
 		return [
@@ -205,7 +209,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertEquals( count( $config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ) ), count( $profiles ) );
+		$this->assertEquals( count( $config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertTrue( count( $suggest ) <= 4 );
 		// small queries

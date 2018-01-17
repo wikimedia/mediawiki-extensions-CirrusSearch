@@ -1118,8 +1118,9 @@ $wgCirrusSearchSanityCheck = true;
  * The base name of indexes used on this wiki. This value must be
  * unique across all wiki's sharing an elasticsearch cluster unless
  * $wgCirrusSearchMultiWikiIndices is set to true.
+ * The value '__wikiid__' will be resolved at runtime to wfWikiId().
  */
-$wgCirrusSearchIndexBaseName = wfWikiID();
+$wgCirrusSearchIndexBaseName = '__wikiid__';
 
 /**
  * Treat question marks in simple queries as question marks, not

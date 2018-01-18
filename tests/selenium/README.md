@@ -8,7 +8,7 @@ Tests here are running daily in selenium-CirrusSearch-jessie Jenkins job. For do
 
 In one terminal window or tab start Chromedriver:
 
-    chromedriver --url-base=/wd/hub --port=4444
+    chromedriver --url-base=wd/hub --port=4444
 
 In another terminal tab or window go to mediawiki/core folder:
 

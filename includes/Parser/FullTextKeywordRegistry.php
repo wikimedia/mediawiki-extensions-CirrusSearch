@@ -4,6 +4,7 @@ namespace CirrusSearch\Parser;
 
 use CirrusSearch\Query\BoostTemplatesFeature;
 use CirrusSearch\Query\ContentModelFeature;
+use CirrusSearch\Query\DeepcatFeature;
 use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\FileTypeFeature;
 use CirrusSearch\Query\HasTemplateFeature;
@@ -22,6 +23,7 @@ use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\SubPageOfFeature;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Registry of keywords suited for fulltext searches
@@ -68,6 +70,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			new ContentModelFeature(),
 			// subpageof keyword
 			new SubPageOfFeature(),
+			// deepcat feature
+			new DeepcatFeature( $config,
+				MediaWikiServices::getInstance()->getService( 'CirrusCategoriesClient' ) ),
 		];
 
 		$extraFeatures = [];

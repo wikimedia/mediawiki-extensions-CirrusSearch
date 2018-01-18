@@ -135,6 +135,9 @@ class ConfigDump extends \ApiBase {
 		'LanguageCode',
 		'ContentNamespaces',
 		'NamespacesToBeSearchedDefault',
+		'CirrusSearchCategoryDepth',
+		'CirrusSearchCategoryMax',
+		'CirrusSearchCategoryEndpoint',
 	];
 
 	public function execute() {

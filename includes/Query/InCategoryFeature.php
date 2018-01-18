@@ -12,7 +12,7 @@ use Title;
  * must follow the syntax `id:<id>`.
  *
  * We emulate template syntax here as best as possible, so things in NS_MAIN
- * are prefixed with ":" and things in NS_TEMPATE don't have a prefix at all.
+ * are prefixed with ":" and things in NS_TEMPLATE don't have a prefix at all.
  * Since we don't actually index templates like that, munge the query here.
  *
  * Examples:

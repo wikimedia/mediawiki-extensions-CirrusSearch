@@ -188,6 +188,9 @@ class SearchContext {
 		'more_like' => 100,
 		'near_match' => 10,
 		'prefix' => 2,
+		// Deep category searches
+		'deepcat' => 20,
+		'deepcategory' => 20,
 	];
 
 	/**

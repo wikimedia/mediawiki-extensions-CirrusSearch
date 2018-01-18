@@ -1419,6 +1419,20 @@ $wgCirrusSearchInterleaveConfig = null;
  */
 $wgCirrusSearchMaxPhraseTokens = null;
 
+/**
+ * URL of the endpoint to look for categories, for deepcat keyword.
+ */
+$wgCirrusSearchCategoryEndpoint = '';
+/**
+ * Max depth for deep category query.
+ */
+$wgCirrusSearchCategoryDepth = 5;
+/**
+ * Max result count for deep category query.
+ */
+$wgCirrusSearchCategoryMax = 256;
+
+$wgServiceWiringFiles[] = __DIR__ . '/includes/ServiceWiring.php';
 /*
  * Please update docs/settings.txt if you add new values!
  */

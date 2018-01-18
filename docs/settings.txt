@@ -1504,3 +1504,26 @@ Default:
 Maximum number of tokens in a phrase rescore query. Only activated
 when token_count_router is enabled in $wgCirrusSearchWikimediaExtraPlugin.
 Queries with more tokens than this skip the phrase rescore portion.
+
+; $wgCirrusSearchCategoryEndpoint
+
+Default:
+    $wgCirrusSearchCategoryEndpoint = '';
+
+SPARQL endpoint URL to use in deep category search feature.
+
+; $wgCirrusSearchCategoryDepth
+
+Default:
+    $wgCirrusSearchCategoryDepth = 5;
+
+Maximum tree depth to descend when using deep category queries.
+
+; $wgCirrusSearchCategoryMax
+
+Default:
+    $wgCirrusSearchCategoryMax = 256;
+
+Maximum overall category count for deep category query. Note that ElasticSearch
+has limit of 1024 boolean clauses by default, so this limit should be well under
+Elastic limits.

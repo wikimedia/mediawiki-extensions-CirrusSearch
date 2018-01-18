@@ -80,6 +80,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Warning shown to users when a search keyword for numeric file features used multiple arguments with an invalid sign qualifier.",
 	"cirrussearch-feature-not-available": "Warning shown to users when an unavailable search keyword is used.",
 	"cirrussearch-feature-too-many-conditions": "Warning shown to users when more conditions than are allowed were provided to a keyword feature.",
+	"cirrussearch-feature-deepcat-endpoint": "Warning shown when SPARQL endpoint for deepcat search is not defined.",
+	"cirrussearch-feature-deepcat-exception": "Warning shown when SPARQL query for deepcat search has failed.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Warning shown to users when no valid categories were found with their incategory keyword.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Warning shown to users when no valid titles were found with the provided 'morelike' keyword.",
 	"cirrussearch-mlt-not-configured": "Warning shown to users when issuing a 'more like this' query and the wiki hasn't configured it.",

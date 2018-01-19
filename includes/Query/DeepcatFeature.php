@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Search\SearchContext;
 use Config;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
 use Title;
@@ -46,6 +47,11 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	 */
 	const TIMEOUT = 3;
 	/**
+	 * Stats key for SPARQL requests
+	 */
+	const STATSD_KEY = 'CirrusSearch.deepcat.sparql';
+
+	/**
 	 * @param Config $config
 	 * @param SparqlClient $client
 	 */
@@ -87,6 +93,7 @@ class DeepcatFeature extends SimpleKeywordFeature {
 			return [ null, false ];
 		}
 
+		$startQueryTime = microtime( true );
 		try {
 			$categories = $this->fetchCategories( $value );
 		} catch ( SparqlException $e ) {
@@ -96,6 +103,7 @@ class DeepcatFeature extends SimpleKeywordFeature {
 				->warning( 'Deepcat SPARQL Exception: ' . $e->getMessage() );
 			$categories = [ $value ];
 		}
+		$this->logRequest( $startQueryTime );
 
 		if ( empty( $categories ) ) {
 			return [ null, false ];
@@ -117,6 +125,18 @@ class DeepcatFeature extends SimpleKeywordFeature {
 		$title = Title::makeTitle( NS_CATEGORY, 'ZZ' );
 		$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
 		return substr( $fullName, 0, - 2 );
+	}
+
+	/**
+	 * Record stats data for the request.
+	 * @param float $startQueryTime
+	 * @param array $results
+	 */
+	private function logRequest( $startQueryTime ) {
+		$timeTaken = intval( 1000 * ( microtime( true ) - $startQueryTime ) );
+		MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
+			self::STATSD_KEY, $timeTaken
+		);
 	}
 
 	/**

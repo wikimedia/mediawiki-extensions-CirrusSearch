@@ -8,7 +8,7 @@ use Wikimedia\Rdbms\LoadBalancer;
 /**
  * @group CirrusSearch
  */
-class InCategoryFeatureText extends BaseSimpleKeywordFeatureTest {
+class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		return [

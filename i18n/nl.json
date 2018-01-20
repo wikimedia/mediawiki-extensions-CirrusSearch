@@ -66,7 +66,7 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Zoeken op prefix",
 	"cirrussearch-pref-completion-legacy-section-legend": "Het oude zoeken-terwijl-je-typt-algoritme.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassieke zoeken op prefix",
-	"cirrussearch-completion-profile-classic-pref-desc": "Geen automatische correcties. Vindt overeenkomst aan het begin van de titels.",
+	"cirrussearch-completion-profile-classic-pref-desc": "Geen spellingcorrectie. Vindt overeenkomst aan het begin van de titels.",
 	"cirrussearch-timed-out": "Time-out tijdens het zoeken, alleen gedeeltelijke resultaten zijn beschikbaar.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Geen geldige titels verstrekt aan '$1'.",
 	"cirrussearch-mlt-not-configured": "De '$1'- functie is niet correct geconfigureerd. Vraag een admin te lossen $wgCirrusSearchMoreLikeThisFields",

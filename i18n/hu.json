@@ -3,7 +3,8 @@
 		"authors": [
 			"Tgr",
 			"Csega",
-			"Tacsipacsi"
+			"Tacsipacsi",
+			"Bencemac"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch alapú MediaWiki kereső",
@@ -35,5 +36,6 @@
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Legfeljebb két elütést javít. Feloldja a közeli átirányításokat.",
 	"cirrussearch-completion-profile-strict-pref-name": "Szigorú mód (haladó)",
 	"cirrussearch-completion-profile-normal-pref-name": "Átirányítás mód (haladó)",
-	"cirrussearch-completion-profile-normal-pref-desc": "Nincs elütésjavítás. Feloldja a közeli átirányításokat."
+	"cirrussearch-completion-profile-normal-pref-desc": "Nincs elütésjavítás. Feloldja a közeli átirányításokat.",
+	"cirrussearch-article-words": "Szavak száma az összes tartalmi lapon"
 }

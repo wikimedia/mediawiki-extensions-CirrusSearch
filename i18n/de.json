@@ -23,6 +23,7 @@
 	"apihelp-cirrus-config-dump-summary": "Auszug der CirrusSearch-Konfiguration.",
 	"apihelp-cirrus-config-dump-example": "Ruft einen Auszug der CirrusSearch-Konfiguration ab.",
 	"apihelp-cirrus-mapping-dump-description": "Speicherauszug der CirrusSearch-Zuordnung für dieses Wiki.",
+	"apihelp-cirrus-mapping-dump-summary": "Speicherauszug der CirrusSearch-Zuordnungen für dieses Wiki.",
 	"apihelp-cirrus-mapping-dump-example": "Ruft einen Auszug der CirrusSearch-Zuordnung für dieses Wiki ab.",
 	"apihelp-cirrus-settings-dump-description": "Speicherauszug der CirrusSearch-Einstellungen für dieses Wiki.",
 	"apihelp-cirrus-settings-dump-summary": "Auszug der CirrusSearch-Einstellungen für dieses Wiki.",

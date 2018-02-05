@@ -49,7 +49,7 @@ class CompSuggestQueryBuilder {
 	 */
 	public function __construct( SearchContext $context, array $profile, $limit, $offset = 0 ) {
 		$this->searchContext = $context;
-		$this->profile = $profile;
+		$this->profile = $profile['fst'];
 		$this->hardLimit = self::computeHardLimit( $limit, $offset, $context->getConfig() );
 		if ( $limit > $this->hardLimit - $offset ) {
 			$limit = $this->hardLimit - $offset;

@@ -15,22 +15,26 @@ class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 		// Without subphrases the normal-subphrases is hidden
 		$profiles = [
 			'normal' => [
-				'plain-normal' => [
-					'field' => 'suggest',
-				],
-				'plain-stop-normal' => [
-					'field' => 'suggest-stop'
+				'fst' => [
+					'plain-normal' => [
+						'field' => 'suggest',
+					],
+					'plain-stop-normal' => [
+						'field' => 'suggest-stop'
+					],
 				],
 			],
 			'normal-subphrases' => [
-				'plain-normal' => [
-					'field' => 'suggest',
-				],
-				'plain-stop-normal' => [
-					'field' => 'suggest-stop',
-				],
-				'plain-subphrase' => [
-					'field' => 'suggest-subphrases',
+				'fst' => [
+					'plain-normal' => [
+						'field' => 'suggest',
+					],
+					'plain-stop-normal' => [
+						'field' => 'suggest-stop',
+					],
+					'plain-subphrase' => [
+						'field' => 'suggest-subphrases',
+					],
 				],
 			],
 		];

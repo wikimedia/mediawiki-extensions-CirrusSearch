@@ -2,12 +2,11 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\PhraseSuggesterProfiles;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Extra\Query\TokenCountRouter;
-use Elastica\Exception\RuntimeException;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
@@ -277,18 +276,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 */
 	private function buildSuggestConfig( $field, $searchContext ) {
 		// check deprecated settings
-		$profile = $this->config->get( 'CirrusSearchPhraseSuggestSettings' );
-		if ( is_array( $profile ) ) {
-			// BC code to support profiles set as array in this config var
-			$suggestSettings = $profile;
-		} else {
-			$suggestSettings = $this->config->getElement( 'CirrusSearchPhraseSuggestProfiles', $profile );
-			if ( !$suggestSettings ) {
-				throw new RuntimeException( "Unkown phrase_suggest profile $profile" );
-			}
-		}
-
-		$suggestSettings = PhraseSuggesterProfiles::overrideOptionsFromMessage( $suggestSettings );
+		$suggestSettings = $this->config->getProfileService()
+			->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
 		$settings = [
 			'phrase' => [
 				'field' => $field,

@@ -438,7 +438,14 @@ Default:
     $wgCirrusSearchPhraseSuggestSettings = 'default';
 
 Set the Phrase suggester settings using the default profile.
-see profiles/PhraseSuggesterProfiles.php
+
+; $wgCirrusSearchPhraseSuggestProfiles
+
+Default:
+    $wgCirrusSearchPhraseSuggestProfiles = []
+
+Set additional phrase suggester profiles
+(see profiles/PhraseSuggesterProfiles.config.php)
 
 ; $wgCirrusSearchPhraseSuggestReverseField
 

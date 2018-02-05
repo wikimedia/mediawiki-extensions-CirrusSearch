@@ -21,7 +21,6 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.config.php";
 require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 require_once __DIR__ . "/profiles/FullTextQueryBuilderProfiles.config.php";
 
@@ -393,8 +392,13 @@ $wgCirrusSearchMoreAccurateScoringMode = true;
 $wgCirrusSearchEnablePhraseSuggest = true;
 
 /**
+ * List of additional phrase suggester profiles
+ * see profiles/PhraseSuggesterProfiles.config.php
+ */
+$wgCirrusSearchPhraseSuggestProfiles = [];
+
+/**
  * Set the Phrase suggester settings using the default profile.
- * see profiles/PhraseSuggesterProfiles.php
  */
 $wgCirrusSearchPhraseSuggestSettings = 'default';
 

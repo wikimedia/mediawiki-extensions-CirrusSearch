@@ -24,6 +24,12 @@ use WebRequest;
  *   <li>config override: <var>CirrusSearchCrossProjectOrder</var></li>
  *  </ul>
  * </li>
+ * <li>PHRASE_SUGGESTER in CONTEXT_DEFAULT
+ *  <ul>
+ *   <li>default: <i>default</i></li>
+ *   <li>config override: <var>CirrusSearchPhraseSuggestSettings</var></li>
+ *  </ul>
+ * </li>
  * <li>RESCORE in CONTEXT_DEFAULT and CONTEXT_PREFIXSEARCH
  *  <ul>
  *   <li>default (CONTEXT_DEFAULT & CONTEXT_PREFIXSEARCH): <i>classic</i></li>
@@ -77,6 +83,7 @@ class SearchProfileServiceFactory {
 		$this->loadSimilarityProfiles( $service, $config );
 		$this->loadRescoreProfiles( $service, $config );
 		$this->loadCompletionProfiles( $service, $config );
+		$this->loadPhraseSuggesterProfiles( $service, $config );
 
 		// Register extension profiles only if running on the host wiki.
 		// Only cirrus search is aware that we are running a crosswiki search
@@ -130,10 +137,8 @@ class SearchProfileServiceFactory {
 	private function loadRescoreProfiles( SearchProfileService $service, SearchConfig $config ) {
 		$service->registerFileRepository( SearchProfileService::RESCORE,
 			self::CIRRUS_BASE, __DIR__ . '/../../profiles/RescoreProfiles.config.php' );
-
 		$service->registerRepository( new ConfigProfileRepository( SearchProfileService::RESCORE,
 			self::CIRRUS_CONFIG, 'CirrusSearchRescoreProfiles', $config ) );
-
 		$service->registerDefaultProfile( SearchProfileService::RESCORE,
 			SearchProfileService::CONTEXT_DEFAULT, 'classic' );
 		$service->registerDefaultProfile( SearchProfileService::RESCORE,
@@ -175,5 +180,22 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchCompletionSettings' );
 		$service->registerUserPrefOverride( SearchProfileService::COMPLETION,
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrussearch-pref-completion-profile' );
+	}
+
+	/**
+	 * @param SearchProfileService $service
+	 * @param SearchConfig $config
+	 */
+	private function loadPhraseSuggesterProfiles( SearchProfileService $service, SearchConfig $config ) {
+		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromFile( SearchProfileService::PHRASE_SUGGESTER,
+			self::CIRRUS_BASE, __DIR__ . '/../../profiles/PhraseSuggesterProfiles.config.php' ) );
+
+		$service->registerRepository( PhraseSuggesterProfileRepoWrapper::fromConfig( SearchProfileService::PHRASE_SUGGESTER,
+			self::CIRRUS_CONFIG, 'CirrusSearchPhraseSuggestProfiles', $config ) );
+
+		$service->registerDefaultProfile( SearchProfileService::PHRASE_SUGGESTER,
+			SearchProfileService::CONTEXT_DEFAULT, 'default' );
+		$service->registerConfigOverride( SearchProfileService::PHRASE_SUGGESTER,
+			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchPhraseSuggestSettings' );
 	}
 }

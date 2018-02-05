@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use ArrayObject;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Searcher;
 use CirrusSearch\Sanity\Checker;
 use CirrusSearch\Sanity\QueueingRemediator;
@@ -79,7 +80,9 @@ class CheckerJob extends Job {
 	 * @throws \MWException
 	 */
 	protected function doJob() {
-		$profile = $this->searchConfig->getElement( 'CirrusSearchSanitizationProfiles', $this->params['profile'] );
+		$profile = $this->searchConfig
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::SANEITIZER, $this->params['profile'], false );
 		if ( !$profile ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid profile {profile} provided, check CirrusSearchSanityCheck config.",

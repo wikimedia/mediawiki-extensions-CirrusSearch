@@ -38,6 +38,11 @@ use WebRequest;
  *   <li>uri param override (CONTEXT_PREFIXSEARCH & CONTEXT_PREFIXSEARCH): <var>cirrusRescoreProfile</var></li>
  *  </ul>
  * </li>
+ * <li>SANEITIZER
+ *  <ul>
+ *   <li>default: <i>no defaults (automatically detected based on wiki size)</i></li>
+ *  </ul>
+ * </li>
  * <li>SIMILARITY in CONTEXT_DEFAULT
  *  <ul>
  *   <li>default: <i>default</i></li>
@@ -84,6 +89,7 @@ class SearchProfileServiceFactory {
 		$this->loadRescoreProfiles( $service, $config );
 		$this->loadCompletionProfiles( $service, $config );
 		$this->loadPhraseSuggesterProfiles( $service, $config );
+		$this->loadSaneitizerProfiles( $service );
 
 		// Register extension profiles only if running on the host wiki.
 		// Only cirrus search is aware that we are running a crosswiki search
@@ -197,5 +203,14 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, 'default' );
 		$service->registerConfigOverride( SearchProfileService::PHRASE_SUGGESTER,
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchPhraseSuggestSettings' );
+	}
+
+	/**
+	 * @param SearchProfileService $service
+	 */
+	private function loadSaneitizerProfiles( SearchProfileService $service ) {
+		$service->registerFileRepository( SearchProfileService::SANEITIZER, self::CIRRUS_BASE,
+			__DIR__ . '/../../profiles/SaneitizeProfiles.config.php' );
+		// no name resolver, profile is automatically chosen based on wiki
 	}
 }

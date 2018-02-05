@@ -21,7 +21,6 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 require_once __DIR__ . "/profiles/FullTextQueryBuilderProfiles.config.php";
 
 $wgExtensionCredits['other'][] = [
@@ -1130,7 +1129,7 @@ $wgCirrusSearchMasterTimeout = '30s';
  * The process will scan and check discrepancies between mysql and
  * elasticsearch for all possible ids in the database.
  * Settings will be automatically chosen according to wiki size (see
- * profiles/SaneitizeProfiles.php)
+ * profiles/SaneitizeProfiles.config.php)
  * The script responsible for pushing sanitization jobs is saneitizeJobs.php.
  * It needs to be scheduled by cron, default settings provided are suited
  * for a bi-hourly schedule (--refresh-freq=7200).

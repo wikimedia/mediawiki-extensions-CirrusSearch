@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
 
+use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
 
 /**
@@ -95,7 +96,8 @@ class SaneitizeJobs extends Maintenance {
 		$this->minId = $row->min_id;
 		/** @suppress PhanUndeclaredProperty */
 		$this->maxId = $row->max_id;
-		$profiles = $this->getSearchConfig()->get( 'CirrusSearchSanitizationProfiles' );
+		$profiles = $this->getSearchConfig()->getProfileService()
+			->listExposedProfiles( SearchProfileService::SANEITIZER );
 		uasort( $profiles, function ( $a, $b ) {
 			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
 		} );
@@ -145,7 +147,9 @@ class SaneitizeJobs extends Maintenance {
 	}
 
 	private function showJobDetail() {
-		$profile = $this->getSearchConfig()->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$profile = $this->getSearchConfig()
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
 		$minLoopDuration = $profile['min_loop_duration'];
 		$maxJobs = $profile['max_checker_jobs'];
 		$maxUpdates = $profile['update_jobs_max_pressure'];
@@ -228,7 +232,9 @@ EOD
 		if ( !$this->getSearchConfig()->get( 'CirrusSearchSanityCheck' ) ) {
 			$this->fatalError( "Sanity check disabled, abandonning...\n" );
 		}
-		$profile = $this->getSearchConfig()->getElement( 'CirrusSearchSanitizationProfiles', $this->profileName );
+		$profile = $this->getSearchConfig()
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
 		$chunkSize = $profile['jobs_chunk_size'];
 		$maxJobs = $profile['max_checker_jobs'];
 		if ( !$maxJobs || $maxJobs <= 0 ) {

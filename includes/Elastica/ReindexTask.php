@@ -99,7 +99,8 @@ class ReindexTask {
 
 		if ( isset( $data['response'] ) ) {
 			// task complete
-			return $this->response = new ReindexResponse( $data['response'] );
+			$this->response = new ReindexResponse( $data['response'] );
+			return $this->response;
 		}
 
 		/**

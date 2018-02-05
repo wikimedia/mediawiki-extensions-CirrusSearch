@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
@@ -270,7 +271,8 @@ class Searcher extends ElasticsearchIntermediary {
 		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 
-		$builderSettings = $this->config->getElement( 'CirrusSearchFullTextQueryBuilderProfiles', $this->searchContext->getFulltextQueryBuilderProfile() );
+		$builderSettings = $this->config->getProfileService()
+			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER, $this->searchContext->getFulltextQueryBuilderProfile() );
 
 		$features = [
 			// Handle morelike keyword (greedy). This needs to be the

@@ -12,6 +12,7 @@ use \WebRequest;
  * Search profiles are arranged by type identified by a string constant:
  * - COMPLETION: profiles used for autocomplete search when running the completion suggester
  * - CROSS_PROJECT_BLOCK_SCORER: used when reordering blocks of crossproject search results
+ * - FT_QUERY_BUILDER: used when building fulltext search queries
  * - PHRASE_SUGGESTER: Controls the behavior of the phrase suggester (did you mean suggestions)
  * - RESCORE: Controls how elasticsearch rescore queries are built
  * - RESCORE_FUNCTION_CHAINS: Controls the list of functions used by a rescore profile
@@ -81,6 +82,12 @@ class SearchProfileService {
 	 * @see \CirrusSearch\Maintenance\SaneitizeJobs
 	 */
 	const SANEITIZER = 'saneitizer';
+
+	/**
+	 * Profiles used for building fulltext search queries
+	 * @see \CirrusSearch\Search\SearchContext::getFulltextQueryBuilderProfile()
+	 */
+	const FT_QUERY_BUILDER = 'ft_query_builder';
 
 	/**
 	 * Profile context used for prefix search queries

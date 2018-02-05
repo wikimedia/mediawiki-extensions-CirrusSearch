@@ -842,6 +842,10 @@ class SearchContext {
 	 * @return string the name of the fulltext query builder profile
 	 */
 	public function getFulltextQueryBuilderProfile() {
+		if ( $this->fulltextQueryBuilderProfile === null ) {
+			$this->fulltextQueryBuilderProfile = $this->config->getProfileService()
+				->getProfileName( SearchProfileService::FT_QUERY_BUILDER, $this->profileContext );
+		}
 		return $this->fulltextQueryBuilderProfile;
 	}
 

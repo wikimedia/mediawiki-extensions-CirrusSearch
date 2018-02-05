@@ -119,7 +119,6 @@ class Hooks {
 			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
 			self::overrideUseExtraPluginForRegex( $request );
 			self::overrideMoreLikeThisOptions( $request );
-			FullTextQueryBuilderProfiles::overrideOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
 			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
 		}

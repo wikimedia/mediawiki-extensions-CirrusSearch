@@ -22,7 +22,7 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-$wgCirrusSearchFullTextQueryBuilderProfiles = [
+return [
 	// default query builder, based on top of QueryString
 	'default' => [
 		'builder_class' => Query\FullTextQueryStringQueryBuilder::class,

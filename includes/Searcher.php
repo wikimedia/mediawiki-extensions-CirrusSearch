@@ -2,11 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
-use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Search\ResultsType;
@@ -273,56 +273,7 @@ class Searcher extends ElasticsearchIntermediary {
 
 		$builderSettings = $this->config->getProfileService()
 			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER, $this->searchContext->getFulltextQueryBuilderProfile() );
-
-		$features = [
-			// Handle morelike keyword (greedy). This needs to be the
-			// very first item until combining with other queries
-			// is worked out.
-			new Query\MoreLikeFeature( $this->config ),
-			// Handle title prefix notation (greedy)
-			new Query\PrefixFeature(),
-			// Handle prefer-recent keyword
-			new Query\PreferRecentFeature( $this->config ),
-			// Handle local keyword
-			new Query\LocalFeature(),
-			// Handle insource keyword using regex
-			new Query\RegexInSourceFeature( $this->config ),
-			// Handle boost-templates keyword
-			new Query\BoostTemplatesFeature(),
-			// Handle hastemplate keyword
-			new Query\HasTemplateFeature(),
-			// Handle linksto keyword
-			new Query\LinksToFeature(),
-			// Handle incategory keyword
-			new Query\InCategoryFeature( $this->config ),
-			// Handle non-regex insource keyword
-			new Query\SimpleInSourceFeature(),
-			// Handle intitle keyword
-			new Query\InTitleFeature(),
-			// inlanguage keyword
-			new Query\LanguageFeature(),
-			// File types
-			new Query\FileTypeFeature(),
-			// File numeric characteristics - size, resolution, etc.
-			new Query\FileNumericFeature(),
-			// Content model feature
-			new Query\ContentModelFeature(),
-			// subpageof keyword
-			new Query\SubPageOfFeature(),
-		];
-
-		$extraFeatures = [];
-		\Hooks::run( 'CirrusSearchAddQueryFeatures', [ $this->config, &$extraFeatures ] );
-		foreach ( $extraFeatures as $extra ) {
-			if ( $extra instanceof SimpleKeywordFeature ) {
-				$features[] = $extra;
-			} else {
-				LoggerFactory::getInstance( 'CirrusSearch' )
-					->warning( 'Skipped invalid feature of class ' . get_class( $extra ) .
-						' - should be instanceof SimpleKeywordFeature' );
-			}
-		}
-
+		$features = ( new FullTextKeywordRegistry( $this->config ) )->getKeywords();
 		/** @var FullTextQueryBuilder $qb */
 		$qb = new $builderSettings['builder_class'](
 			$this->config,

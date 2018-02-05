@@ -124,8 +124,7 @@ class InterwikiSearcher extends Searcher {
 			return $retval;
 		}
 
-		return CrossProjectBlockScorerFactory::load( $this->config )
-			->reorder( $retval );
+		return CrossProjectBlockScorerFactory::load( $this->config )->reorder( $retval );
 	}
 
 	/**

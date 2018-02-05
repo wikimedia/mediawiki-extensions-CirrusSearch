@@ -1,7 +1,5 @@
 <?php
 
-namespace CirrusSearch;
-
 /**
  * CirrusSearch - List of FullTextQueryBuilderProfiles used to generate an elasticsearch
  * query by parsing user input.
@@ -30,7 +28,7 @@ namespace CirrusSearch;
  * - 'type' the scorer to use (static, recall, random)
  * - settings is scorer specific config
  */
-$wgCirrusSearchCrossProjectBlockScorerProfiles = [
+return [
 	// static ordering, scores are provided in the 'settings' key
 	// with a score (value) per 'wiki prefix (key)
 	'static' => [

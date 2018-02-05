@@ -21,13 +21,9 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-require_once __DIR__ . "/profiles/SuggestProfiles.php";
 require_once __DIR__ . "/profiles/PhraseSuggesterProfiles.config.php";
-require_once __DIR__ . "/profiles/RescoreProfiles.config.php";
-require_once __DIR__ . "/profiles/SimilarityProfiles.php";
 require_once __DIR__ . "/profiles/SaneitizeProfiles.php";
 require_once __DIR__ . "/profiles/FullTextQueryBuilderProfiles.config.php";
-require_once __DIR__ . "/profiles/CrossProjectBlockScorerProfiles.config.php";
 
 $wgExtensionCredits['other'][] = [
 	'path'           => __FILE__,
@@ -450,9 +446,14 @@ $wgCirrusSearchUnlinkedArticlesToUpdate = 25;
 
 /**
  * Configure the similarity module
- * see profile/SimilarityProfiles.php for more details
+ * see profile/SimilarityProfiles.config.php for more details
  */
 $wgCirrusSearchSimilarityProfile = 'classic';
+
+/**
+ * Extra similarity profiles
+ */
+$wgCirrusSearchSimilarityProfiles = [];
 
 /**
  * Weight of fields.  Must be integers not decimals.  If $wgCirrusSearchAllFields['use']
@@ -691,6 +692,11 @@ $wgCirrusSearchInterwikiCacheTime = 7200;
 $wgCirrusSearchCrossProjectOrder = 'static';
 
 /**
+ * Profiles to control ordering of blocks of CrossProject searchresults.
+ */
+$wgCirrusSearchCrossProjectBlockScorerProfiles = [];
+
+/**
  * The seconds Elasticsearch will wait to batch index changes before making
  * them available for search.  Lower values make search more real time but put
  * more load on Elasticsearch.  Defaults to 1 second because that is the default
@@ -835,8 +841,13 @@ $wgCirrusSearchWriteBackoffExponent = 6;
 $wgCirrusSearchUserTesting = [];
 
 /**
+ * Additional completion profiles
+ */
+$wgCirrusSearchCompletionProfiles = [];
+
+/**
  * Profile for search as you type suggestion (completion suggestion)
- * (see profiles/SuggestProfiles.php for more details.)
+ * (see profiles/SuggestProfiles.config.php for more details.)
  */
 $wgCirrusSearchCompletionSettings = 'fuzzy';
 
@@ -1040,14 +1051,24 @@ $wgCirrusSearchNumCrossProjectSearchResults = 5;
 $wgCirrusSearchInterwikiProv = false;
 
 /**
+ * Custom rescore profiles
+ */
+$wgCirrusSearchRescoreProfiles = [];
+
+/**
+ * Custom rescore function chains
+ */
+$wgCirrusSearchRescoreFunctionChains = [];
+
+/**
  * Set the full text rescore profile to default.
- * see profile/RescoreProfiles.php for more info
+ * see profile/RescoreProfiles.config.php for more info
  */
 $wgCirrusSearchRescoreProfile = 'classic';
 
 /**
  * Set the prefix search rescore profile to default.
- * see profile/RescoreProfiles.php for more info
+ * see profile/RescoreProfiles.config.php for more info
  */
 $wgCirrusSearchPrefixSearchRescoreProfile = 'classic';
 

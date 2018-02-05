@@ -43,7 +43,7 @@ class CompSuggestQueryBuilder {
 
 	/**
 	 * @param SearchContext $context
-	 * @param array $profile settings as definied in profiles/SuggestProfiles.php
+	 * @param array $profile settings as definied in profiles/SuggestProfiles.config.php
 	 * @param int $limit the number of results to display
 	 * @param int $offset
 	 */

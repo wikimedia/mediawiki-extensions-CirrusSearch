@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CompSuggestQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\CompletionResultsCollector;
@@ -133,7 +134,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
-	 * @param string|null $profileName
+	 * @param string|null $profileName force the profile to use otherwise SearchProfileService defaults will be used
 	 */
 	public function __construct( Connection $conn, $limit, $offset = 0, SearchConfig $config = null, array $namespaces = null,
 		User $user = null, $index = false, $profileName = null ) {
@@ -154,12 +155,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			Connection::TITLE_SUGGEST_TYPE );
 		$this->searchContext = new SearchContext( $this->config, $namespaces );
 
-		if ( $profileName == null ) {
-			$profileName = $this->config->get( 'CirrusSearchCompletionSettings' );
-		}
+		$profileDefinition = $this->config->getProfileService()
+			->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT, $profileName );
 		$this->compSuggestBuilder = new CompSuggestQueryBuilder(
 			$this->searchContext,
-			$this->config->getElement( 'CirrusSearchCompletionProfiles', $profileName ),
+			$profileDefinition,
 			$limit,
 			$offset
 		);

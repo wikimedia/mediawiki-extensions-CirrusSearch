@@ -28,7 +28,7 @@
  * If you add new profiles you may want to add the corresponding i18n messages with the following name:
  * cirrussearch-completion-profile-profilename
  */
-$wgCirrusSearchCompletionProfiles = [
+return [
 	// Strict profile (no accent squasing)
 	'strict' => [
 		'plain-strict' => [
@@ -268,4 +268,6 @@ $wgCirrusSearchCompletionProfiles = [
 			]
 		]
 	],
+	// Special profile to fallback to prefix search
+	'classic' => [],
 ];

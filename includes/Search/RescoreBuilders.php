@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\Elastica\LtrQuery;
+use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\AbstractQuery;
@@ -203,10 +204,10 @@ class RescoreBuilder {
 			$profile = $profileName;
 			$profileName = '__provided__';
 		} else {
-			$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
-			if ( !$profile ) {
-				throw new InvalidRescoreProfileException( "Unknown fallback profile: $profileName" );
-			} elseif ( !is_array( $profile ) ) {
+			$profile = $this->context->getConfig()
+				->getProfileService()
+				->loadProfileByName( SearchProfileService::RESCORE, $profileName );
+			if ( !is_array( $profile ) ) {
 				throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
 			}
 		}
@@ -236,10 +237,10 @@ class RescoreBuilder {
 					throw new InvalidRescoreProfileException( "Cycle in rescore fallbacks: $chain" );
 				}
 
-				$profile = $this->context->getConfig()->getElement( 'CirrusSearchRescoreProfiles', $profileName );
-				if ( !$profile ) {
-					throw new InvalidRescoreProfileException( "Unknown fallback profile: $profileName" );
-				} elseif ( !is_array( $profile ) ) {
+				$profile = $this->context->getConfig()
+					->getProfileService()
+					->loadProfileByName( SearchProfileService::RESCORE,  $profileName );
+				if ( !is_array( $profile ) ) {
 					throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
 				}
 				continue;

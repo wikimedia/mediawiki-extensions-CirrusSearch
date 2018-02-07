@@ -2,6 +2,10 @@
 
 namespace CirrusSearch\Api;
 
+use ApiResult;
+use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\SearchConfig;
+
 /**
  * Dumps CirrusSearch configuration for easy viewing.
  *
@@ -139,6 +143,34 @@ class ConfigDump extends \ApiBase {
 			if ( $config->has( $key ) ) {
 				$this->getResult()->addValue( null, $key, $config->get( $key ) );
 			}
+		}
+		$this->addProfiles( $this->getResult() );
+	}
+
+	/**
+	 * Profile names and types
+	 * @var string[]
+	 */
+	private static $PROFILES = [
+		'CirrusSearchPhraseSuggestProfiles' => SearchProfileService::PHRASE_SUGGESTER,
+		'CirrusSearchCrossProjectBlockScorerProfiles' => SearchProfileService::CROSS_PROJECT_BLOCK_SCORER,
+		'CirrusSearchSimilarityProfiles' => SearchProfileService::SIMILARITY,
+		'CirrusSearchRescoreFunctionChains' => SearchProfileService::RESCORE_FUNCTION_CHAINS,
+		'CirrusSearchCompletionProfiles' => SearchProfileService::COMPLETION,
+		'CirrusSearchFullTextQueryBuilderProfiles' => SearchProfileService::FT_QUERY_BUILDER,
+		'CirrusSearchRescoreProfiles' => SearchProfileService::RESCORE,
+	];
+
+	/**
+	 * Add data from profiles
+	 * @param ApiResult $result
+	 */
+	private function addProfiles( ApiResult $result ) {
+		$config = new SearchConfig();
+		$profileService = $config->getProfileService();
+		foreach ( self::$PROFILES as $var => $profileType ) {
+			$data = $profileService->listExposedProfiles( $profileType );
+			$this->getResult()->addValue( null, $var, $data, ApiResult::OVERRIDE );
 		}
 	}
 

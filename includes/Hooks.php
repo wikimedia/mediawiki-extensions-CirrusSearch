@@ -493,7 +493,7 @@ class Hooks {
 		// This is pretty much exactly how the Translate extension declares its
 		// multiple test directories.  There really isn't any excuse for doing
 		// it any other way.
-		$dir = __DIR__ . '/../tests/unit';
+		$dir = __DIR__ . '/../tests/phpunit';
 		$directoryIterator = new RecursiveDirectoryIterator( $dir );
 		$fileIterator = new RecursiveIteratorIterator( $directoryIterator );
 

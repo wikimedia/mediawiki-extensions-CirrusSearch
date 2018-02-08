@@ -19,7 +19,7 @@ grunt: nodecheck
 	@npm test
 
 phpunit:
-	@${PHP} ${MW_INSTALL_PATH}/tests/phpunit/phpunit.php ${MW_INSTALL_PATH}/extensions/CirrusSearch/tests/unit/
+	@${PHP} ${MW_INSTALL_PATH}/tests/phpunit/phpunit.php ${MW_INSTALL_PATH}/extensions/CirrusSearch/tests/phpunit/
 
 installhooks:
 	ln -s ../../scripts/pre-commit .git/hooks/pre-commit

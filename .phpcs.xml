@@ -29,7 +29,7 @@
 		<properties>
 			<property name="lineLimit" value="170" />
 		</properties>
-		<exclude-pattern>tests/unit/resources/wmf</exclude-pattern>
+		<exclude-pattern>tests/phpunit/resources/wmf</exclude-pattern>
 	</rule>
 	<file>.</file>
 	<arg name="extensions" value="php,php5,inc"/>

@@ -334,6 +334,12 @@ class Searcher extends ElasticsearchIntermediary {
 			throw new RuntimeException( "Bad builder class configured: {$builderSettings['builder_class']}" );
 		}
 
+		\Hooks::run( 'CirrusSearchFulltextQueryBuilder', [ &$qb, $this->searchContext ] );
+		// Query builder could be replaced here!
+		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
+			throw new RuntimeException( "Bad query builder object override, must implement FullTextQueryBuilder!" );
+		}
+
 		$showSuggestion = $showSuggestion && $this->offset == 0
 			&& $this->config->get( 'CirrusSearchEnablePhraseSuggest' );
 		$qb->build( $this->searchContext, $term, $showSuggestion );

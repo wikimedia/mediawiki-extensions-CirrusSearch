@@ -25,6 +25,23 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	}
 
 	/**
+	 * Whether this keyword can have a value
+	 * @return bool
+	 */
+	public function hasValue() {
+		return true;
+	}
+
+	/**
+	 * Whether this keyword can appear only at the beginning of the query
+	 * (excluding spaces)
+	 * @return bool
+	 */
+	public function queryHeader() {
+		return false;
+	}
+
+	/**
 	 * Captures either a quoted or unquoted string. Quoted strings may have
 	 * escaped (\") quotes embedded in them.
 	 *
@@ -33,6 +50,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * unquoted capture groups.
 	 */
 	protected function getValueRegex() {
+		assert( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
 		$quantifier = $this->allowEmptyValue() ? '*' : '+';
 		return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
 	}
@@ -69,25 +87,36 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 				$this->getKeywords()
 			)
 		);
+		// Hook to the beginning allowing optional spaces if we are a queryHeader
+		// otherwise lookbehind allowing begin or space.
+		$begin = $this->queryHeader() ? '(?:^\s*)' : '(?<=^|\s)';
 		$keywordRegex = '(?<key>-?' . $keyListRegex . ')';
-		$valueRegex = '(?<value>' . $this->getValueRegex() . ')';
+		$valueSideRegex = '';
+		if ( $this->hasValue() ) {
+			$valueRegex = '(?<value>' . $this->getValueRegex() . ')';
+			// If we allow empty values we don't allow spaces between
+			// the keyword and its value, a space would mean "empty value"
+			$spacesAfterSep = $this->allowEmptyValue() ? '' : '\s*';
+			$valueSideRegex = "${spacesAfterSep}{$valueRegex}\\s?";
+		}
 
-		// If we allow empty values we don't allow spaces between
-		// the keyword and its value
-		$spacesAfterColon = $this->allowEmptyValue() ? '' : '\s*';
 		return QueryHelper::extractSpecialSyntaxFromTerm(
 			$context,
 			$term,
 			// initial positive lookbehind ensures keyword doesn't
 			// match in the middle of a word.
-			"/(?<=^|\\s){$keywordRegex}:${spacesAfterColon}{$valueRegex}\\s?/",
+			"/{$begin}{$keywordRegex}:${valueSideRegex}/",
 			function ( $match ) use ( $context ) {
 				$key = $match['key'];
-				$quotedValue = $match['value'];
-				$value = isset( $match['unquoted'] )
-					? $match['unquoted']
-					: str_replace( '\"', '"', $match['quoted'] );
-
+				assert( $this->hasValue() === isset( $match['value'] ) );
+				$quotedValue = '';
+				$value = '';
+				if ( $this->hasValue() ) {
+					$quotedValue = $match['value'];
+					$value =
+						isset( $match['unquoted'] )
+							? $match['unquoted'] : str_replace( '\"', '"', $match['quoted'] );
+				}
 				if ( $key[0] === '-' ) {
 					$negated = true;
 					$key = substr( $key, 1 );

@@ -1,5 +1,5 @@
 {
-    "description": "full_text search for 'pictures local:'",
+    "description": "full_text search for 'local:pictures'",
     "options": {
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
@@ -135,7 +135,7 @@
                     "fuzzy_prefix_length": 2,
                     "max_determinized_states": 500,
                     "phrase_slop": 1,
-                    "query": "pictures local\\:",
+                    "query": "pictures",
                     "rewrite": "top_terms_blended_freqs_1024"
                 }
             },
@@ -150,25 +150,12 @@
             "bool": {
                 "filter": [
                     {
-                        "bool": {
-                            "must": [
-                                {
-                                    "terms": {
-                                        "namespace": [
-                                            0,
-                                            1,
-                                            2,
-                                            3
-                                        ]
-                                    }
-                                }
-                            ],
-                            "must_not": [
-                                {
-                                    "term": {
-                                        "local_sites_with_dupe": "wiki"
-                                    }
-                                }
+                        "terms": {
+                            "namespace": [
+                                0,
+                                1,
+                                2,
+                                3
                             ]
                         }
                     }
@@ -186,7 +173,7 @@
                                                 "match": {
                                                     "all": {
                                                         "operator": "AND",
-                                                        "query": "pictures local\\:"
+                                                        "query": "pictures"
                                                     }
                                                 }
                                             },
@@ -194,7 +181,7 @@
                                                 "match": {
                                                     "all.plain": {
                                                         "operator": "AND",
-                                                        "query": "pictures local\\:"
+                                                        "query": "pictures"
                                                     }
                                                 }
                                             }
@@ -214,7 +201,7 @@
                                                         "text^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
-                                                    "query": "pictures local\\:",
+                                                    "query": "pictures",
                                                     "type": "most_fields"
                                                 }
                                             },
@@ -226,7 +213,7 @@
                                                         "opening_text^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
-                                                    "query": "pictures local\\:",
+                                                    "query": "pictures",
                                                     "type": "most_fields"
                                                 }
                                             }
@@ -244,7 +231,7 @@
                                                         "suggest"
                                                     ],
                                                     "minimum_should_match": "1",
-                                                    "query": "pictures local\\:",
+                                                    "query": "pictures",
                                                     "type": "most_fields"
                                                 }
                                             },
@@ -256,7 +243,7 @@
                                                         "redirect.title^0.3"
                                                     ],
                                                     "minimum_should_match": "1",
-                                                    "query": "pictures local\\:",
+                                                    "query": "pictures",
                                                     "type": "most_fields"
                                                 }
                                             }
@@ -271,7 +258,7 @@
                                             "auxiliary_text^0.3"
                                         ],
                                         "minimum_should_match": "1",
-                                        "query": "pictures local\\:",
+                                        "query": "pictures",
                                         "type": "most_fields"
                                     }
                                 },
@@ -283,7 +270,7 @@
                                             "file_text^0.3"
                                         ],
                                         "minimum_should_match": "1",
-                                        "query": "pictures local\\:",
+                                        "query": "pictures",
                                         "type": "most_fields"
                                     }
                                 },
@@ -295,7 +282,7 @@
                                             "heading^0.3"
                                         ],
                                         "minimum_should_match": "1",
-                                        "query": "pictures local\\:",
+                                        "query": "pictures",
                                         "type": "most_fields"
                                     }
                                 },
@@ -307,7 +294,7 @@
                                             "category^0.3"
                                         ],
                                         "minimum_should_match": "1",
-                                        "query": "pictures local\\:",
+                                        "query": "pictures",
                                         "type": "most_fields"
                                     }
                                 },
@@ -319,7 +306,7 @@
                                             "title^0.3"
                                         ],
                                         "minimum_should_match": "1",
-                                        "query": "pictures local\\:",
+                                        "query": "pictures",
                                         "type": "most_fields"
                                     }
                                 }
@@ -331,7 +318,7 @@
                             "fields": [
                                 "all_near_match^2"
                             ],
-                            "query": "pictures local:"
+                            "query": "pictures"
                         }
                     }
                 ]
@@ -388,30 +375,13 @@
                     "score_mode": "multiply"
                 },
                 "window_size": 8192
-            },
-            {
-                "query": {
-                    "query_weight": 1,
-                    "rescore_query": {
-                        "multi_match": {
-                            "fields": [
-                                "text.plain^0.2",
-                                "text^0.14"
-                            ],
-                            "query": "pictures local\\:",
-                            "slop": 1,
-                            "type": "phrase"
-                        }
-                    },
-                    "rescore_query_weight": 10
-                },
-                "window_size": 512
             }
         ],
         "size": 20,
         "stats": [
             "full_text",
             "full_text_simple_match",
+            "local",
             "suggest"
         ],
         "stored_fields": [
@@ -426,6 +396,15 @@
                             "field": "suggest",
                             "max_term_freq": 0.5,
                             "min_doc_freq": 0,
+                            "prefix_length": 2,
+                            "suggest_mode": "always"
+                        },
+                        {
+                            "field": "suggest.reverse",
+                            "max_term_freq": 0.5,
+                            "min_doc_freq": 0,
+                            "post_filter": "token_reverse",
+                            "pre_filter": "token_reverse",
                             "prefix_length": 2,
                             "suggest_mode": "always"
                         }
@@ -445,7 +424,7 @@
                     }
                 }
             },
-            "text": "pictures local:"
+            "text": "pictures"
         }
     }
 }

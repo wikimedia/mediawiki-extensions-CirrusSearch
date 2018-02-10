@@ -11,6 +11,8 @@
 	"cirrussearch-now-using": "ХӀокху викис лелош ю керла лахаран таро. ([[mw:Special:MyLanguage/Help:CirrusSearch|Мадарра]])",
 	"cirrussearch-pref-label": "Керла лахар",
 	"cirrussearch-pref-desc": "Леладе Википедин керла лахар, цо дукху меттанаш ловш ду, керла хилам а гойту, кхин тӀе кепаш чура йоза карадо.",
+	"apierror-cirrus-requesttoolong": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)",
+	"cirrussearch-query-too-long": "Лахаран дехар максимум магийначул деха ду. ($1 > $2)",
 	"cirrussearch-pref-completion-profile-help": "Лохуш дерг ша кховдадо (Лоху чуйоккхушехь).",
 	"prefs-completion": "Лахар чекхдаккхар",
 	"cirrussearch-pref-completion-section-desc": "АвтотӀеюзаран гӀоьнча",

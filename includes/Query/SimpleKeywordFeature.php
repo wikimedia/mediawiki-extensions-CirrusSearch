@@ -49,7 +49,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * matches the acceptable values for this feature. Must contain quoted and
 	 * unquoted capture groups.
 	 */
-	protected function getValueRegex() {
+	private function getValueRegex() {
 		assert( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
 		$quantifier = $this->allowEmptyValue() ? '*' : '+';
 		return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';

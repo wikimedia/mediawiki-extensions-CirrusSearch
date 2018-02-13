@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 use MediaWiki\MediaWikiServices;
@@ -25,6 +26,8 @@ use Title;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  *
+ * @covers \CirrusSearch\Query\MoreLikeFeature
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
 class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
@@ -34,10 +37,17 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 			'doesnt eat unrelated queries' => [
 				'other stuff',
 				new \Elastica\Query\MatchAll(),
+				false,
+			],
+			'morelike is a queryHeader but ideally should not' => [
+				'other stuff morelike:Test',
+				new \Elastica\Query\MatchAll(),
+				false,
 			],
 			'no query given for unknown page' => [
 				'morelike:Does not exist or at least I hope not',
 				null,
+				true,
 			],
 			'single page morelike' => [
 				'morelike:Some page',
@@ -55,6 +65,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 					->setLike( [
 						[ '_id' => '12345' ],
 					] ),
+				true,
 			],
 			'single page morelike w/wikibase' => [
 				'morelikewithwikibase:Some page',
@@ -75,6 +86,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 							[ '_id' => '12345' ],
 						] )
 					),
+				true,
 			],
 			'multi page morelike' => [
 				'morelike:Some page|Other page',
@@ -93,6 +105,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 						[ '_id' => '23456' ],
 						[ '_id' => '12345' ],
 					] ),
+				true,
 			],
 			'multi page morelike with only one valid' => [
 				'morelike:Some page|Does not exist or at least I hope not',
@@ -110,6 +123,7 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 					->setLike( [
 						[ '_id' => '12345' ],
 					] ),
+				true,
 			],
 		];
 	}
@@ -117,14 +131,14 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider applyProvider
 	 */
-	public function testApply( $term, $expectedQuery ) {
+	public function testApply( $term, $expectedQuery, $mltUsed ) {
 		// Inject fake pages for MoreLikeFeature::collectTitles() to find
 		$linkCache = MediaWikiServices::getInstance()->getLinkCache();
 		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
 
 		// @todo Use a HashConfig with explicit values?
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
+		$config = new HashSearchConfig( [ 'CirrusSearchMoreLikeThisTTL' => 600 ], [ 'inherit' ] );
 
 		$context = new SearchContext( $config );
 
@@ -133,6 +147,12 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		$result = $feature->apply( $context, $term );
 
+		$this->assertEquals( $mltUsed, $context->isSyntaxUsed( 'more_like' ) );
+		if ( $mltUsed ) {
+			$this->assertGreaterThan( 0, $context->getCacheTtl() );
+		} else {
+			$this->assertEquals( 0, $context->getCacheTtl() );
+		}
 		if ( $expectedQuery === null ) {
 			$this->assertFalse( $context->areResultsPossible() );
 		} else {

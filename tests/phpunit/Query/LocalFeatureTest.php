@@ -8,6 +8,8 @@ use CirrusSearch\Search\SearchContext;
 
 /**
  * @covers \CirrusSearch\Query\LocalFeature
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
+ * @group CirrusSearch
  */
 class LocalFeatureTest extends CirrusTestCase {
 	public function parseProvider() {

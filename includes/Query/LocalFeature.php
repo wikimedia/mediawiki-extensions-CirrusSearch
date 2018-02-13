@@ -9,22 +9,45 @@ use CirrusSearch\Search\SearchContext;
  * commons when searching the NS_FILE namespace. No value may be provided
  * along with this keyword, it is a simple boolean flag.
  */
-class LocalFeature implements KeywordFeature {
+class LocalFeature extends SimpleKeywordFeature {
+
 	/**
-	 * @param SearchContext $context
-	 * @param string $term
-	 * @return string
+	 * @return string[] The list of keywords this feature is supposed to match
 	 */
-	public function apply( SearchContext $context, $term ) {
-		return QueryHelper::extractSpecialSyntaxFromTerm(
-			$context,
-			$term,
-			'/^\s*local:/',
-			function () use ( $context ) {
-				$context->setLimitSearchToLocalWiki( true );
-				$context->addSyntaxUsed( 'local' );
-				return '';
-			}
-		);
+	protected function getKeywords() {
+		return [ 'local' ];
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasValue() {
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function queryHeader() {
+		return true;
+	}
+
+	/**
+	 * Applies the detected keyword from the search term. May apply changes
+	 * either to $context directly, or return a filter to be added.
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped and escaped
+	 *  quotes un-escaped.
+	 * @param string $quotedValue The original value in the search string, including quotes if used
+	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
+	 *  that will be negated as necessary. Used for any other building/context necessary.
+	 * @return array Two element array, first an AbstractQuery or null to apply to the
+	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
+	 *  string.
+	 */
+	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		$context->setLimitSearchToLocalWiki( true );
 	}
 }

@@ -42,6 +42,20 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	}
 
 	/**
+	 * Determine the name of the feature being set in SearchContext::addSyntaxUsed
+	 * Defaults to $key
+	 *
+	 * @param string $key
+	 * @param string $valueDelimiter the delimiter used to wrap the value
+	 * @return string
+	 *  '"' when parsing keyword:"test"
+	 *  '' when parsing keyword:test
+	 */
+	public function getFeatureName( $key, $valueDelimiter ) {
+		return $key;
+	}
+
+	/**
 	 * Captures either a quoted or unquoted string. Quoted strings may have
 	 * escaped (\") quotes embedded in them.
 	 *
@@ -111,11 +125,15 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 				assert( $this->hasValue() === isset( $match['value'] ) );
 				$quotedValue = '';
 				$value = '';
+				$valueDelimiter = '';
 				if ( $this->hasValue() ) {
 					$quotedValue = $match['value'];
-					$value =
-						isset( $match['unquoted'] )
-							? $match['unquoted'] : str_replace( '\"', '"', $match['quoted'] );
+					if ( isset( $match['unquoted'] ) ) {
+						$value = $match['unquoted'];
+						$valueDelimiter = '"';
+					} else {
+						$value = str_replace( '\"', '"', $match['quoted'] );
+					}
 				}
 				if ( $key[0] === '-' ) {
 					$negated = true;
@@ -124,7 +142,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 					$negated = false;
 				}
 
-				$context->addSyntaxUsed( $key );
+				$context->addSyntaxUsed( $this->getFeatureName( $key, $valueDelimiter ) );
 				list( $filter, $keepText ) = $this->doApply(
 					$context,
 					$key,

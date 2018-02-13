@@ -33,6 +33,15 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	}
 
 	/**
+	 * Whether this keyword is greedy consuming the rest of the string.
+	 * NOTE: do not override, greedy keywords will eventually be removed in the future
+	 * @return bool
+	 */
+	public function greedy() {
+		return false;
+	}
+
+	/**
 	 * Whether this keyword can appear only at the beginning of the query
 	 * (excluding spaces)
 	 * @return bool
@@ -65,8 +74,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 */
 	private function getValueRegex() {
 		assert( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
-		$quantifier = $this->allowEmptyValue() ? '*' : '+';
-		return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
+		if ( $this->greedy() ) {
+			assert( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
+			// XXX: we send raw value to the keyword
+			return '(?<unquoted>.*)';
+		} else {
+			$quantifier = $this->allowEmptyValue() ? '*' : '+';
+			return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
+		}
 	}
 
 	/**

@@ -7,12 +7,9 @@ use CirrusSearch\SearchConfig;
 use Title;
 use WikiPage;
 
-class MoreLikeFeature implements KeywordFeature {
-	const MORE_LIKE_THIS_PREFIX = 'morelike:';
-	const MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX = 'morelikewithwikibase:';
-
-	const MORE_LIKE_THESE_NONE = 0;
-	const MORE_LIKE_THESE_ONLY_WIKIBASE = 1;
+class MoreLikeFeature extends SimpleKeywordFeature {
+	const MORE_LIKE_THIS = 'morelike';
+	const MORE_LIKE_THIS_JUST_WIKIBASE = 'morelikewithwikibase';
 
 	/**
 	 * @var SearchConfig
@@ -27,64 +24,73 @@ class MoreLikeFeature implements KeywordFeature {
 	}
 
 	/**
-	 * Greedily match the entire $term as a morelike query.
-	 *
-	 * @param SearchContext $context
-	 * @param string $term
-	 * @return string
+	 * TODO: switch to non-greedy
+	 * @return bool
 	 */
-	public function apply( SearchContext $context, $term ) {
-		$keywords = [
-			self::MORE_LIKE_THESE_NONE => self::MORE_LIKE_THIS_PREFIX,
-			self::MORE_LIKE_THESE_ONLY_WIKIBASE => self::MORE_LIKE_THIS_JUST_WIKIBASE_PREFIX,
-		];
-		foreach ( $keywords as $options => $prefix ) {
-			$pos = strpos( $term, $prefix );
-			// Currently requires morelike to be first (and only) feature, to match
-			// behaviour prior to the keyword feature refactor. Allowing other
-			// keywords works fine, but there are some problems to be worked
-			// out for combined text + morelike queries.
-			// When removing this restriction also need to consider how stable
-			// the query output is, such that when the query is hashed for the
-			// application side query cache the hashes are the same regardless
-			// of input order when the result would be the same.
-			if ( $pos === 0 ) {
-				$titleString = substr( $term, $pos + strlen( $prefix ) );
-				$this->doApply( $context, $prefix, $titleString, $options );
-
-				return "";
-			}
-		}
-
-		// No keyword given
-		return $term;
+	public function greedy() {
+		return true;
 	}
 
-	private function doApply( SearchContext $context, $prefix, $titleString, $options ) {
-		$titles = $this->collectTitles( $titleString );
+	/**
+	 * morelike is only allowed at the beginning of the query
+	 * TODO: allow morelike everywhere
+	 * @return bool
+	 */
+	public function queryHeader() {
+		return true;
+	}
+
+	protected function getKeywords() {
+		return [ self::MORE_LIKE_THIS, self::MORE_LIKE_THIS_JUST_WIKIBASE ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $valueDelimiter
+	 * @return string
+	 */
+	public function getFeatureName( $key, $valueDelimiter ) {
+		return "more_like";
+	}
+
+	/**
+	 * @param SearchContext $context
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param bool $negated
+	 * @return array|void
+	 */
+	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		$context->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
+		$titles = $this->collectTitles( $value );
 		if ( !count( $titles ) ) {
 			$context->addWarning(
 				"cirrussearch-mlt-feature-no-valid-titles",
-				substr( $prefix, 0, -1 )
+				$key
 			);
 			$context->setResultsPossible( false );
 			return;
 		}
-		$query = $this->buildMoreLikeQuery( $context, $titles, $options );
+		$query = $this->buildMoreLikeQuery( $context, $titles );
 		if ( $query === null ) {
 			$context->addWarning(
 				"cirrussearch-mlt-not-configured",
-				$prefix
+				$key
 			);
 			$context->setResultsPossible( false );
 			return;
 		}
 
-		// @todo Does this cause problems with other keywords?
+		// FIXME: this erases the main query making it impossible to combine with
+		// other keywords/search query
 		$context->setMainQuery( $query );
-		$context->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
+		$wbFilter = null;
 
-		$context->addSyntaxUsed( 'more_like' );
+		if ( $key === self::MORE_LIKE_THIS_JUST_WIKIBASE ) {
+				$wbFilter = new \Elastica\Query\Exists( 'wikibase_item' );
+		}
+		return [ $wbFilter, false ];
 	}
 
 	/**
@@ -164,10 +170,9 @@ class MoreLikeFeature implements KeywordFeature {
 	 *
 	 * @param SearchContext $context
 	 * @param Title[] $titles
-	 * @param int $options
 	 * @return \Elastica\Query\MoreLikeThis|null
 	 */
-	private function buildMoreLikeQuery( SearchContext $context, array $titles, $options ) {
+	private function buildMoreLikeQuery( SearchContext $context, array $titles ) {
 		sort( $titles, SORT_STRING );
 		$docIds = [];
 		$likeDocs = [];
@@ -193,10 +198,6 @@ class MoreLikeFeature implements KeywordFeature {
 
 		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
 		$query->setLike( $likeDocs );
-
-		if ( $options & self::MORE_LIKE_THESE_ONLY_WIKIBASE ) {
-			$context->addFilter( new \Elastica\Query\Exists( 'wikibase_item' ) );
-		}
 
 		// highlight snippets are not great so it's worth running a match all query
 		// to save cpu cycles

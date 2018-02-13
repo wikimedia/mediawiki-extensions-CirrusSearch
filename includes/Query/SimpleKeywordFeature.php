@@ -17,6 +17,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	abstract protected function getKeywords();
 
 	/**
+	 * Whether this keyword allows empty value.
+	 * @return bool true to allow the keyword to appear in an empty form
+	 */
+	public function allowEmptyValue() {
+		return false;
+	}
+
+	/**
 	 * Captures either a quoted or unquoted string. Quoted strings may have
 	 * escaped (\") quotes embedded in them.
 	 *
@@ -25,7 +33,8 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * unquoted capture groups.
 	 */
 	protected function getValueRegex() {
-		return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]+)';
+		$quantifier = $this->allowEmptyValue() ? '*' : '+';
+		return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
 	}
 
 	/**
@@ -63,12 +72,15 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		$keywordRegex = '(?<key>-?' . $keyListRegex . ')';
 		$valueRegex = '(?<value>' . $this->getValueRegex() . ')';
 
+		// If we allow empty values we don't allow spaces between
+		// the keyword and its value
+		$spacesAfterColon = $this->allowEmptyValue() ? '' : '\s*';
 		return QueryHelper::extractSpecialSyntaxFromTerm(
 			$context,
 			$term,
 			// initial positive lookbehind ensures keyword doesn't
 			// match in the middle of a word.
-			"/(?<=^|\\s){$keywordRegex}:\\s*{$valueRegex}\\s?/",
+			"/(?<=^|\\s){$keywordRegex}:${spacesAfterColon}{$valueRegex}\\s?/",
 			function ( $match ) use ( $context ) {
 				$key = $match['key'];
 				$quotedValue = $match['value'];
@@ -98,7 +110,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 						$context->addFilter( $filter );
 					}
 				}
-
+				// FIXME: this adds a trailing space if this is the last keyword
 				return $keepText ? "$quotedValue " : '';
 			}
 		);

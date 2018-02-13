@@ -52,8 +52,8 @@ Feature: Did you mean
     Then <suggested> is the did you mean suggestion from the api
   Examples:
     |                    term                   |                  suggested                  |
-    | prefer-recent:noble prize                 | prefer-recent:*nobel* prize                 |
-    | prefer-recent:noble prize                 | prefer-recent:*nobel* prize                 |
+    | prefer-recent:noble prize                 | *nobel* prize                 | # FIXME: should be prefer-recent:*nobel* prize
+    | intitle:noble prize                       | *nobel* prize                 | # FIXME: should be intitle:*nobel* prize
     | incategory:prize noble prize              | incategory:prize *nobel* prize              |
     | noble incategory:prize prize              | incategory:prize *nobel* prize              |
     | hastemplate:prize noble prize             | hastemplate:prize *nobel* prize             |

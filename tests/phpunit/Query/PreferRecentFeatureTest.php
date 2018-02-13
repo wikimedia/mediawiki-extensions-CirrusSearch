@@ -6,9 +6,11 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchContext;
 
 /**
+ * @covers \CirrusSearch\Query\PreferRecentFeature
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
-class PreferRecentFeatureText extends CirrusTestCase {
+class PreferRecentFeatureTest extends CirrusTestCase {
 
 	public function parseProvider() {
 		return [
@@ -23,6 +25,13 @@ class PreferRecentFeatureText extends CirrusTestCase {
 				0.6,
 				160,
 				'prefer-recent: other',
+			],
+			'doesnt absorb unrelated pieces even if collapsed' => [
+				// trailing space is arbitrarily added by SimpleKeywordFeature
+				'other ',
+				0.6,
+				160,
+				'prefer-recent:other',
 			],
 			'can specify only decay portion' => [
 				'',

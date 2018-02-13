@@ -4,7 +4,12 @@
 			"Ramjit Tudu"
 		]
 	},
+	"cirrussearch-pref-label": "ᱱᱟᱣᱟ ᱥᱮᱸᱫᱽᱨᱟ",
+	"cirrussearch-explore-similar-related": "ᱥᱟᱹᱜᱟᱹᱭᱟᱱ",
+	"cirrussearch-explore-similar-categories": "ᱛᱷᱚᱠ ᱠᱚ",
 	"cirrussearch-explore-similar-languages": "ᱯᱟᱹᱨᱥᱤ ᱠᱚ",
+	"cirrussearch-explore-similar-related-none": "ᱥᱟᱹᱜᱟᱹᱭᱟᱱ ᱥᱟᱦᱴᱟ ᱵᱟᱹᱱᱩᱜ-ᱟ",
 	"cirrussearch-explore-similar-categories-none": "ᱛᱷᱚᱠ ᱠᱚ ᱵᱟᱹᱱᱩᱜ-ᱟ",
-	"cirrussearch-explore-similar-languages-none": "ᱮᱴᱟᱜ ᱯᱟᱹᱨᱥᱤᱛᱮ ᱵᱟᱹᱱᱩᱜ-ᱟ"
+	"cirrussearch-explore-similar-languages-none": "ᱮᱴᱟᱜ ᱯᱟᱹᱨᱥᱤᱛᱮ ᱵᱟᱹᱱᱩᱜ-ᱟ",
+	"cirrussearch-article-words": "ᱟᱹᱲᱟᱹ ᱠᱚ ᱡᱚᱛᱚ ᱩᱱᱩᱫᱩᱜ ᱥᱟᱦᱴᱟᱨᱮ"
 }

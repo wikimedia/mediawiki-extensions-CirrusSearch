@@ -74,6 +74,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Der Suchbegriff „$1“ erlaubt keine Angabe mehrerer Argumente und kein Zeichen mit „$2“.",
 	"cirrussearch-feature-not-available": "Das Such-Schlüsselwort „$1“ ist auf diesem Wiki nicht aktiviert.",
 	"cirrussearch-feature-too-many-conditions": "Es wurden zu viele Bedingungen für „$1“ angegeben. Die Anzahl wird auf $2 beschränkt.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint sollte auf einen gültigen SPARQL-Endpunkt festgelegt werden, um die Deepcat-Suche zu verwenden.",
+	"cirrussearch-feature-deepcat-exception": "Die SPARQL-Abfrage für die Deepcat-Suche ist fehlgeschlagen",
 	"cirrussearch-incategory-feature-no-valid-categories": "Es wurden keine gültigen Kategorien für „$1“ angegeben.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Keine gültigen Titel für „$1“ angegeben.",
 	"cirrussearch-mlt-not-configured": "Die Funktion „$1“ ist falsch konfiguriert. Bitte einen Administrator, $wgCirrusSearchMoreLikeThisFields anzupassen.",

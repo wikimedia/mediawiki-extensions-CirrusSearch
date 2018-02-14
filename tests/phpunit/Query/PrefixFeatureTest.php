@@ -117,7 +117,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 				'foo'
 			],
 			'FIXME: sadly prefix ignores negation' => [
-				'foo !prefix:"foo bar"',
+				'foo -prefix:"foo bar"',
 				'foo bar',
 				NS_MAIN,
 				'foo '

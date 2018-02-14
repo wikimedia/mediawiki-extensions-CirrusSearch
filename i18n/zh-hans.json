@@ -85,6 +85,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "搜索关键词“$1”不允许提供多个参数和标识“$2”。",
 	"cirrussearch-feature-not-available": "搜索关键词“$1”未在此wiki启用。",
 	"cirrussearch-feature-too-many-conditions": "为“$1”提供了太多条件，截短为$2。",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint应设置为有效的SPARQL端点以使用深度分类搜索。",
+	"cirrussearch-feature-deepcat-exception": "深度分类搜索SPARQL查询失败",
 	"cirrussearch-incategory-feature-no-valid-categories": "没有为“$1”提供有效分类。",
 	"cirrussearch-mlt-feature-no-valid-titles": "没有为“$1”提供有效标题。",
 	"cirrussearch-mlt-not-configured": "“$1”功能未被配置。请向管理员请求修复$wgCirrusSearchMoreLikeThisFields",

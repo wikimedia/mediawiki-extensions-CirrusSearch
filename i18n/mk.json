@@ -71,6 +71,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Пребараниот текст „$1“ не дозволува укажување на повеќе аргументи и знак со „$2“.",
 	"cirrussearch-feature-not-available": "Пребараниот клучен збор „$1“ не е овозможен на ова вики.",
 	"cirrussearch-feature-too-many-conditions": "Укажани се премногу услови за „$1“. Скратувам на $2.",
+	"cirrussearch-feature-deepcat-endpoint": "На $wgCirrusSearchCategoryEndpoint треба да му се зададе важечка SPARQL-завршница за да се користи длабоко пребарување на категории.",
+	"cirrussearch-feature-deepcat-exception": "Не успеа длабокото SPARQL-пребарување на категории",
 	"cirrussearch-incategory-feature-no-valid-categories": "Нема укажано важечки категории за „$1“.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Нема укажано важечки наслови за „$1“.",
 	"cirrussearch-mlt-not-configured": "Можноста „$1“ е погрешно поставена. Обратете се кај администратор за да го исправи $wgCirrusSearchMoreLikeThisFields",

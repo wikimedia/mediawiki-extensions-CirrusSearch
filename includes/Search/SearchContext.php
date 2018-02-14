@@ -189,7 +189,6 @@ class SearchContext {
 		'near_match' => 10,
 		'prefix' => 2,
 		// Deep category searches
-		'deepcat' => 20,
 		'deepcategory' => 20,
 	];
 

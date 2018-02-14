@@ -73,6 +73,15 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	}
 
 	/**
+	 * @param string $key
+	 * @param string $valueDelimiter
+	 * @return string
+	 */
+	public function getFeatureName( $key, $valueDelimiter ) {
+		return 'deepcategory';
+	}
+
+	/**
 	 * Applies the detected keyword from the search term. May apply changes
 	 * either to $context directly, or return a filter to be added.
 	 *

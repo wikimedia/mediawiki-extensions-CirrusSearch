@@ -47,15 +47,18 @@ class QueryHelper {
 	 *  $regex. This function will be provided with $matches from
 	 *  preg_replace_callback and must return a string which will replace the
 	 *  match in $term.
+	 * @param bool $suggestPrefix when true (default) append the result of the callback to SearchContext::addSuggestPrefix.
 	 * @return string The search term after extracting special syntax
 	 */
-	public static function extractSpecialSyntaxFromTerm( SearchContext $context, $term, $regex, $callback ) {
+	public static function extractSpecialSyntaxFromTerm( SearchContext $context, $term, $regex, $callback, $suggestPrefix = true ) {
 		return preg_replace_callback(
 			$regex,
-			function ( $matches ) use ( $context, $callback ) {
+			function ( $matches ) use ( $context, $callback, $suggestPrefix ) {
 				$result = $callback( $matches );
 				if ( $result === '' ) {
-					$context->addSuggestPrefix( $matches[0] );
+					if ( $suggestPrefix ) {
+						$context->addSuggestPrefix( $matches[0] );
+					}
 				}
 				return $result;
 			},

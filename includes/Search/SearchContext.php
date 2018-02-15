@@ -244,8 +244,6 @@ class SearchContext {
 	}
 
 	private function loadConfig() {
-		$this->fulltextQueryBuilderProfile = $this->config->get( 'CirrusSearchFullTextQueryBuilderProfile' );
-
 		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
 		if ( $decay > 0 ) {
 			$this->preferRecentDecayPortion = $decay;
@@ -308,7 +306,7 @@ class SearchContext {
 	 * @param string $profileContext
 	 */
 	public function setProfileContext( $profileContext ) {
-		$this->isDirty |= $this->profileContext !== $profileContext;
+		$this->isDirty = $this->isDirty || $this->profileContext !== $profileContext;
 		$this->profileContext = $profileContext;
 	}
 

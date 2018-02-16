@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-class TeamDraftInterleaverTest extends \PHPUnit_Framework_TestCase {
+class TeamDraftInterleaverTest extends \PHPUnit\Framework\TestCase {
 	public function testInterleaveResults() {
 		// Construct some pointless array with all overlapping values
 		$limit = 20;

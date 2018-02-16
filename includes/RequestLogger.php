@@ -196,7 +196,7 @@ class RequestLogger {
 					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],
 				];
 				if ( !empty( $context['syntax'] ) ) {
-					$request['payload']['syntax'] = join( ',', $context['syntax'] );
+					$request['payload']['syntax'] = implode( ',', $context['syntax'] );
 				}
 				$allHits = array_merge( $allHits, $request['hits'] );
 				if ( $log->isCachedResponse() ) {

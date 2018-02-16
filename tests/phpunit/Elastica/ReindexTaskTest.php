@@ -8,7 +8,7 @@ use Elastica\Response;
 
 // This class is a bit fragile. Would be much better to build this into
 // Elastica and use their test framework that sets up a live server to talk to.
-class ReindexTaskTest extends \PHPUnit_Framework_TestCase {
+class ReindexTaskTest extends \PHPUnit\Framework\TestCase {
 	// example status response to in-progress task
 	private $inProgressTaskResponse = [
 		"completed" => false,

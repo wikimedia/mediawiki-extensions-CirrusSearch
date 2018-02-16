@@ -228,7 +228,7 @@ class SearchConfig implements \Config {
 	/**
 	 * Get chain of elements from config array
 	 * @param string $configName
-	 * @param string ... list of path elements
+	 * @param string $path,... list of path elements
 	 * @return mixed Returns value or null if not present
 	 */
 	public function getElement( $configName ) {

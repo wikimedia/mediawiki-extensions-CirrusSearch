@@ -434,7 +434,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$fields = [];
 			$fields[] = "title.plain:$term^${titleWeight}";
 			$fields[] = "all.plain:$term";
-			$exact = join( ' OR ', $fields );
+			$exact = implode( ' OR ', $fields );
 			return "($exact)";
 		} else {
 			return self::switchSearchToExact( $context, $term, false );
@@ -453,7 +453,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @return string
 	 */
 	private static function switchSearchToExact( SearchContext $context, $term, $allFieldAllowed ) {
-		$exact = join( ' OR ', self::buildFullTextSearchFields( $context, 1, ".plain:$term", $allFieldAllowed ) );
+		$exact = implode( ' OR ', self::buildFullTextSearchFields( $context, 1, ".plain:$term", $allFieldAllowed ) );
 		return "($exact)";
 	}
 

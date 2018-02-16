@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\HashSearchConfig;
 
-class CrossProjectBlockScorerTest extends \PHPUnit_Framework_TestCase {
+class CrossProjectBlockScorerTest extends \PHPUnit\Framework\TestCase {
 	public function testRecallScorer() {
 		$retval = [
 			'b' => $this->mockRS( 5 ),

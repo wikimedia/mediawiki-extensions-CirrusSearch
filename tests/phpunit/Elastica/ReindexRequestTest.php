@@ -8,7 +8,7 @@ use Elastica\Request;
 use Elastica\Response;
 use Elastica\Type;
 
-class ReindexRequestTest extends \PHPUnit_Framework_TestCase {
+class ReindexRequestTest extends \PHPUnit\Framework\TestCase {
 	public function testAcceptsIndexSourceAndDest() {
 		$client = $this->getMockBuilder( Client::class )
 			->disableOriginalConstructor()

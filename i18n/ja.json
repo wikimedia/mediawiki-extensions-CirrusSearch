@@ -7,7 +7,8 @@
 			"Sujiniku",
 			"Takot",
 			"Mirinano",
-			"Iwai.masaharu"
+			"Iwai.masaharu",
+			"Yusuke1109"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
@@ -22,8 +23,14 @@
 	"cirrussearch-pref-label": "新しい検索",
 	"cirrussearch-pref-desc": "数多くの言語に対応、より新しい検索結果を提供、テンプレート内のテキストも検索可能、という特徴がある新しい検索を試用",
 	"apihelp-cirrus-config-dump-description": "CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-config-dump-summary": "CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-config-dump-example": "CirrusSearch の設定のダンプを取得します。",
 	"apihelp-cirrus-mapping-dump-description": "このウィキの CirrusSearch のマッピングをダンプします。",
+	"apihelp-cirrus-mapping-dump-summary": "このウィキの CirrusSearch のマッピングをダンプします。",
+	"apihelp-cirrus-mapping-dump-example": "このウィキの CirrusSearch のマッピングのダンプを取得します。",
 	"apihelp-cirrus-settings-dump-description": "このウィキの CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-settings-dump-summary": "このウィキの CirrusSearch の設定をダンプします。",
+	"apihelp-cirrus-settings-dump-example": "このウィキの CirrusSearch の設定のダンプを取得します。",
 	"cirrussearch-give-feedback": "フィードバックをください",
 	"cirrussearch-pref-completion-profile-help": "（あなたが入力した検索文字列による）自動補完の提案時の挙動を設定します。",
 	"prefs-completion": "検索の補完",
@@ -38,5 +45,8 @@
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "タイプミスは修正しません。よく似たリダイレクトを解決します。タイトルの一部と一致します。",
 	"cirrussearch-pref-completion-legacy-section-legend": "検索文字列をそのまま使ってサジェストするレガシーなアルゴリズム。",
 	"cirrussearch-completion-profile-classic-pref-name": "クラシックな前方一致検索",
-	"cirrussearch-completion-profile-classic-pref-desc": "タイプミスは修正しません。タイトルに対して前方一致で検索します。"
+	"cirrussearch-completion-profile-classic-pref-desc": "タイプミスは修正しません。タイトルに対して前方一致で検索します。",
+	"cirrussearch-explore-similar-related": "関連",
+	"cirrussearch-explore-similar-categories": "カテゴリ",
+	"cirrussearch-explore-similar-languages": "言語"
 }

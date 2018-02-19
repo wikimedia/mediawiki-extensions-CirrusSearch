@@ -13,10 +13,13 @@
 	"cirrussearch-parse-error": "Kysely ei ollut ymmärrettävä. Tee siitä yksinkertaisempi. Kysely oli merkitty lokikirjaan hakujärjestelmän parantamiseksi.",
 	"cirrussearch-too-busy-error": "Hakutoiminnossa on nyt ruuhkaa. Yritä myöhemmin uudelleen.",
 	"cirrussearch-regex-syntax-error": "Säännöllisen lausekkeen syntaksi virhe $2: $1",
+	"cirrussearch-regex-too-busy-error": "Liian monta säännöllistä lauseketta käynnissä tällä hetkellä. Yritä myöhemmin uudelleen.",
 	"cirrussearch-now-using": "Tämä wiki käyttää uutta hakukonetta. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lue lisää]])",
 	"cirrussearch-ignored-headings": "#<!-- jätä tämä rivi sellaiseksi kuin se on --> <pre>\n# Otsikot, jotka haku ohittaa.\n# Muutokset tulevat voimaan heti, kun otsikon sivu indeksoidaan.\n# Voit pakottaa sivun indeksoimisen tekemällä nollamuokkauksen.\n# Syntaksi on seuraava:\n#   * Kaikki \"#\"-merkistä rivin loppuun asti on kommenttia\n#   * Kaikki ei-tyhjät rivit ovat otsikoita, jotka ohitetaan.\nLähteet\nAiheesta muualla\nKatso myös\n#</pre> <!-- jätä tämä rivi sellaiseksi kuin se on -->",
 	"cirrussearch-pref-label": "Uusi haku",
 	"cirrussearch-give-feedback": "Anna meille palautetta",
+	"cirrussearch-pref-completion-profile-help": "Aseta käyttäytyminen automaattisen täydennyksen (hae-kun-sinä-kirjoitat) ehdotuksille.",
+	"prefs-completion": "Haun täydentäminen",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Oletus (suositeltu)",
 	"cirrussearch-completion-profile-strict-pref-name": "Tiukka tila (edistynyt)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Ei kirjoitusvirheiden korjausta. Ei korostuksen taittamista. Tiukka vastaavuus.",
@@ -27,5 +30,7 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Ei kirjoitusvirheiden korjausta. Vastaa otsikoiden alkua.",
 	"cirrussearch-explore-similar-categories": "Luokat",
 	"cirrussearch-explore-similar-languages": "Kielet",
+	"cirrussearch-explore-similar-categories-none": "Ei luokkia käytettävissä",
+	"cirrussearch-explore-similar-languages-none": "Ei käytettävissä muilla kielillä",
 	"cirrussearch-article-words": "Sanat kaikilla sisältösivuilla"
 }

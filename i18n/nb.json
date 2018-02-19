@@ -73,6 +73,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Søketermen «$1» tillater ikke flere argumenter og et tegn med «$2».",
 	"cirrussearch-feature-not-available": "Søkeordet «$1» er ikke slått på på denne wikien.",
 	"cirrussearch-feature-too-many-conditions": "For mange vilkår gitt til «$1», forkortes til $2.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint må settes til et gyldig SPARQL-endpoint for å bruke dypt kategorisøk.",
+	"cirrussearch-feature-deepcat-exception": "SPARQL-spørring for dypt kategorisøk feilet",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",

@@ -105,11 +105,13 @@ class ElasticaWrite extends Job {
 			}
 		}
 
-		foreach ( $retry as $conn ) {
-			$this->requeueRetry( $conn );
-		}
-		foreach ( $error as $conn ) {
-			$this->requeueError( $conn );
+		if ( empty( $this->params['doNotRetry'] ) ) {
+			foreach ( $retry as $conn ) {
+				$this->requeueRetry( $conn );
+			}
+			foreach ( $error as $conn ) {
+				$this->requeueError( $conn );
+			}
 		}
 		if ( !empty( $error ) ) {
 			$this->setLastError( "ElasticaWrite job reported " . count( $error ) . " failure(s) and " . count( $retry ) . " frozen." );

@@ -37,6 +37,7 @@ class Updater extends ElasticsearchIntermediary {
 	const SKIP_PARSE = 2;
 	const SKIP_LINKS = 4;
 	const FORCE_PARSE = 8;
+	const INSTANT_INDEX = 16;
 
 	/**
 	 * Full title text of pages updated in this process.  Used for deduplication
@@ -173,6 +174,9 @@ class Updater extends ElasticsearchIntermediary {
 	 *     index.  Indexing with any portion of the document skipped is dangerous because it
 	 *     can put half created pages in the index.  This is only a good idea during the first
 	 *     half of the two phase index build.
+	 *   INSTANT_INDEX Do quick index of initial data, without waiting. Do not retry the job
+	 *     if it failed. This is useful for fast-index updates which can later be picked up by
+	 *     main update if they fail.
 	 *
 	 * @param WikiPage[] $pages pages to update
 	 * @param int $flags Bit field containing instructions about how the document should be built
@@ -191,9 +195,12 @@ class Updater extends ElasticsearchIntermediary {
 			}
 			return false;
 		} );
+		$isInstantIndex = ( $flags & self::INSTANT_INDEX ) !== 0;
 
 		$titles = $this->pagesToTitles( $pages );
-		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
+		if ( !$isInstantIndex ) {
+			Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
+		}
 
 		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
@@ -219,6 +226,7 @@ class Updater extends ElasticsearchIntermediary {
 						'method' => 'sendData',
 						'arguments' => [ $indexType, $chunked ],
 						'cluster' => $this->writeToClusterName,
+						'doNotRetry' => $isInstantIndex,
 					]
 				);
 				// This job type will insert itself into the job queue

@@ -343,7 +343,8 @@ class Util {
 	public static function stripQuestionMarks( $term, $strippingLevel ) {
 		// strip question marks
 		$more_punct = "[¿]";
-		if ( strpos( $term, 'insource:' ) === false &&
+		if ( strpos( $term, 'insource:/' ) === false &&
+			 strpos( $term, 'intitle:/' ) === false &&
 			preg_match( "/^([[:punct:]]|\s|$more_punct)+$/", $term ) === 0
 		) {
 			if ( $strippingLevel === 'final' ) {

@@ -4,20 +4,31 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 
 /**
- * Implements an insource: keyword supporting regular expression matching
- * against wikitext source. Works best when combined with the wikimedia-extra
- * plugin for elasticsearch, but can also fallback to a groovy based
- * implementation. Can be really expensive, but mostly ok if you have the extra
- * plugin enabled.
+ * Implements an in{foo}: keyword supporting regular expression matching
+ * against properly indexed fields. Works best when combined with the
+ * wikimedia-extra plugin for elasticsearch, but can also fallback to a groovy
+ * based implementation. Can be really expensive, but mostly ok if you have the
+ * extra plugin enabled.
  *
  * Examples:
  *   insource:/abc?/
  */
-class RegexInSourceFeature implements KeywordFeature {
+class RegexFeature implements KeywordFeature {
+	/**
+	 * @var string used as keyword such as 'source' for insource:
+	 */
+	private $name;
+
+	/**
+	 * @var string[] Elasticsearch field(s) to search against
+	 */
+	private $fields;
+
 	/**
 	 * @var bool Is this feature enabled?
 	 */
@@ -44,12 +55,17 @@ class RegexInSourceFeature implements KeywordFeature {
 
 	/**
 	 * @param SearchConfig $config
+	 * @param string $name
+	 * @param string[]|string|null $fields
 	 */
-	public function __construct( SearchConfig $config ) {
+	public function __construct( SearchConfig $config, $name, $fields = null ) {
 		$this->enabled = $config->get( 'CirrusSearchEnableRegex' );
 		$this->languageCode = $config->get( 'LanguageCode' );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
+		$this->name = $name;
+		$fields = $fields == null ? $name : $fields;
+		$this->fields = is_array( $fields ) ? $fields : [ $fields ];
 	}
 
 	/**
@@ -61,12 +77,12 @@ class RegexInSourceFeature implements KeywordFeature {
 		return QueryHelper::extractSpecialSyntaxFromTerm(
 			$context,
 			$term,
-			'/(?<not>-)?insource:\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
+			'/(?<not>-)?in' . $this->name . ':\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
 			function ( $matches ) use ( $context ) {
 				if ( !$this->enabled ) {
 					$context->addWarning(
 						'cirrussearch-feature-not-available',
-						'insource regex'
+						"in{$this->name} regex"
 					);
 					return '';
 				}
@@ -80,11 +96,13 @@ class RegexInSourceFeature implements KeywordFeature {
 
 				if ( empty( $matches['not'] ) ) {
 					$context->addFilter( $filter );
-					$context->addHighlightSource( [
-						'pattern' => $matches['pattern'],
-						'locale' => $this->languageCode,
-						'insensitive' => $insensitive,
-					] );
+					foreach ( $this->fields as $field ) {
+						$context->addHighlightField( $field, [
+							'pattern' => $matches['pattern'],
+							'locale' => $this->languageCode,
+							'insensitive' => $insensitive,
+						] );
+					}
 				} else {
 					$context->addNotFilter( $filter );
 				}
@@ -101,24 +119,32 @@ class RegexInSourceFeature implements KeywordFeature {
 	 * @return AbstractQuery Regular expression query
 	 */
 	private function buildRegexWithPlugin( $pattern, $insensitive, SearchContext $context ) {
-		$filter = new SourceRegex( $pattern, 'source_text', 'source_text.trigram' );
-		// set some defaults
-		$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );
-		if ( isset( $this->regexPlugin['max_ngrams_extracted'] ) ) {
-			$filter->setMaxNgramsExtracted( $this->regexPlugin['max_ngrams_extracted'] );
-		}
-		if ( isset( $this->regexPlugin['max_ngram_clauses'] ) && is_numeric( $this->regexPlugin['max_ngram_clauses'] ) ) {
-			$filter->setMaxNgramClauses( (int)$this->regexPlugin['max_ngram_clauses'] );
-		}
-		$filter->setCaseSensitive( !$insensitive );
-		$filter->setLocale( $this->languageCode );
-
+		$filters = [];
 		$timeout = $context->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
-		if ( $timeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
-			$filter->setTimeout( $timeout );
+		// TODO: Update plugin to accept multiple values for the field property
+		// so that at index time we can create a single trigram index with
+		// copy_to instead of creating multiple queries.
+		foreach ( $this->fields as $field ) {
+			$filter = new SourceRegex( $pattern, $field, $field . '.trigram' );
+			// set some defaults
+			$filter->setMaxDeterminizedStates( $this->maxDeterminizedStates );
+			if ( isset( $this->regexPlugin['max_ngrams_extracted'] ) ) {
+				$filter->setMaxNgramsExtracted( $this->regexPlugin['max_ngrams_extracted'] );
+			}
+			if ( isset( $this->regexPlugin['max_ngram_clauses'] ) && is_numeric( $this->regexPlugin['max_ngram_clauses'] ) ) {
+				$filter->setMaxNgramClauses( (int)$this->regexPlugin['max_ngram_clauses'] );
+			}
+			$filter->setCaseSensitive( !$insensitive );
+			$filter->setLocale( $this->languageCode );
+
+			if ( $timeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
+				$filter->setTimeout( $timeout );
+			}
+
+			$filters[] = $filter;
 		}
 
-		return $filter;
+		return Filters::booleanOr( $filters );
 	}
 
 	/**
@@ -130,9 +156,11 @@ class RegexInSourceFeature implements KeywordFeature {
 	 * @return AbstractQuery Regular expression query
 	 */
 	private function buildRegexWithGroovy( $pattern, $insensitive ) {
-		$script = <<<GROOVY
+		$filters = [];
+		foreach ( $this->fields as $field ) {
+			$script = <<<GROOVY
 import org.apache.lucene.util.automaton.*;
-sourceText = _source.get("source_text");
+sourceText = _source.get("{$field}");
 if (sourceText == null) {
     false;
 } else {
@@ -152,18 +180,21 @@ if (sourceText == null) {
 
 GROOVY;
 
-		return new \Elastica\Query\Script( new \Elastica\Script\Script(
-			$script,
-			[
-				'pattern' => '.*(' . $pattern . ').*',
-				'insensitive' => $insensitive,
-				'language' => $this->languageCode,
-				// The null here creates a slot in which the script will shove
-				// an automaton while executing.
-				'automaton' => null,
-				'locale' => null,
-			],
-			'groovy'
-		) );
+			$filters[] = new \Elastica\Query\Script( new \Elastica\Script\Script(
+				$script,
+				[
+					'pattern' => '.*(' . $pattern . ').*',
+					'insensitive' => $insensitive,
+					'language' => $this->languageCode,
+					// The null here creates a slot in which the script will shove
+					// an automaton while executing.
+					'automaton' => null,
+					'locale' => null,
+				],
+				'groovy'
+			) );
+		}
+
+		return Filters::booleanOr( $filters );
 	}
 }

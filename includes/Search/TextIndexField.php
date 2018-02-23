@@ -26,11 +26,14 @@ class TextIndexField extends CirrusIndexField {
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".
 	 *   SPEED_UP_HIGHLIGHTING: Store extra data in the field to speed up highlighting.  This is important for long
 	 *     strings or fields with many values.
+	 *   SUPPORT_REGEX: If the wikimedia-extra plugin is available add a trigram
+	 *     index to speed up search.
 	 */
 	const ENABLE_NORMS = 0x1000000;
 	// FIXME: when exactly we want to disable norms for text fields?
 	const COPY_TO_SUGGEST = 0x2000000;
 	const SPEED_UP_HIGHLIGHTING = 0x4000000;
+	const SUPPORT_REGEX = 0x8000000;
 	const STRING_FIELD_MASK = 0xFFFFFF;
 
 	/**
@@ -50,10 +53,22 @@ class TextIndexField extends CirrusIndexField {
 	 */
 	protected $typeName = 'text';
 
+	/**
+	 * Are trigrams useful?
+	 * @var bool
+	 */
+	protected $allowTrigrams = false;
+
 	public function __construct( $name, $type, SearchConfig $config, $extra = [] ) {
 		parent::__construct( $name, $type, $config );
 
 		$this->extra = $extra;
+
+		if ( $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) &&
+			in_array( 'build', $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' ) )
+		) {
+			$this->allowTrigrams = true;
+		}
 	}
 
 	/**
@@ -128,6 +143,15 @@ class TextIndexField extends CirrusIndexField {
 				'index_options' => 'docs',
 				// TODO: Re-enable in ES 5.2 with keyword type and s/analyzer/normalizer/
 				// 'ignore_above' => KeywordIndexField::KEYWORD_IGNORE_ABOVE,
+			];
+		}
+
+		if ( $this->allowTrigrams && $this->checkFlag( self::SUPPORT_REGEX ) ) {
+			$extra[] = [
+				'norms' => false,
+				'type' => 'text',
+				'analyzer' => 'trigram',
+				'index_options' => 'docs',
 			];
 		}
 

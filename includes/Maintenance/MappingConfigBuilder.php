@@ -140,7 +140,8 @@ class MappingConfigBuilder {
 					->newKeywordField( 'namespace_text' )
 					->getMapping( $this->engine ),
 				'title' => $this->searchIndexFieldFactory->newStringField( 'title',
-					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST,
+					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST |
+					TextIndexField::SUPPORT_REGEX,
 					$titleExtraAnalyzers )->setMappingFlags( $flags )->getMapping( $this->engine ),
 				'text' => $this->getTextFieldMapping( $flags ),
 				'text_bytes' => $this->searchIndexFieldFactory
@@ -158,7 +159,8 @@ class MappingConfigBuilder {
 						'title' => $this->searchIndexFieldFactory
 							->newStringField( 'redirect.title', TextIndexField::ENABLE_NORMS
 								| TextIndexField::SPEED_UP_HIGHLIGHTING
-								| TextIndexField::COPY_TO_SUGGEST,
+								| TextIndexField::COPY_TO_SUGGEST
+								| TextIndexField::SUPPORT_REGEX,
 								$titleExtraAnalyzers
 							)
 							->setMappingFlags( $flags )

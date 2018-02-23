@@ -96,11 +96,11 @@ class SearchContext {
 	private $notFilters = [];
 
 	/**
-	 * @var array[] $config List of configurations for highlighting the article
-	 *  source. Passed to ResultType::getHighlightingConfiguration to generate
-	 *  final highlighting configuration. Empty if source is ignored.
+	 * @var array[][] $config List of configurations for highlighting additional
+	 *  fields such as source_text. Passed to ResultType::getHighlightingConfiguration
+	 *  to generate final highlighting configuration.
 	 */
-	private $highlightSource = [];
+	private $extraHighlightFields = [];
 
 	/**
 	 * @var boolean is this a fuzzy query?
@@ -540,13 +540,14 @@ class SearchContext {
 	}
 
 	/**
+	 * @param string $field The field to add highlighting configuration for.
 	 * @param array $config Configuration for highlighting the article source. Passed
 	 *  to ResultType::getHighlightingConfiguration to generate final highlighting
 	 *  configuration.
 	 */
-	public function addHighlightSource( array $config ) {
+	public function addHighlightField( $field, array $config ) {
 		$this->isDirty = true;
-		$this->highlightSource[] = $config;
+		$this->extraHighlightFields[$field][] = $config;
 	}
 
 	/**
@@ -573,7 +574,7 @@ class SearchContext {
 	 * @return array|null Highlight portion of query to be sent to elasticsearch
 	 */
 	public function getHighlight( ResultsType $resultsType ) {
-		$highlight = $resultsType->getHighlightingConfiguration( $this->highlightSource );
+		$highlight = $resultsType->getHighlightingConfiguration( $this->extraHighlightFields );
 		if ( !$highlight ) {
 			return null;
 		}

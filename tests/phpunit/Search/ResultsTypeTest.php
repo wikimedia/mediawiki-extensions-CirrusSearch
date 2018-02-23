@@ -22,6 +22,7 @@ use CirrusSearch\CirrusTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  *
+ * @covers \CirrusSearch\Search\FullTextResultsType
  * @group CirrusSearch
  */
 class ResultsTypeTest extends CirrusTestCase {
@@ -192,10 +193,12 @@ class ResultsTypeTest extends CirrusTestCase {
 				FullTextResultsType::HIGHLIGHT_ALL,
 				true,
 				[
-					[
-						'pattern' => '(some|thing)',
-						'locale' => 'testlocale',
-						'insensitive' => false,
+					'source_text' => [
+						[
+							'pattern' => '(some|thing)',
+							'locale' => 'testlocale',
+							'insensitive' => false,
+						]
 					],
 				],
 				[

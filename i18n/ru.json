@@ -12,7 +12,8 @@
 			"Alex Great",
 			"Ole Yves",
 			"Facenapalm",
-			"Jack who built the house"
+			"Jack who built the house",
+			"Mouse21"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -82,6 +83,8 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Поисковое слово '$1' не позволяет передачу нескольких аргументов и присваивания '$2'.",
 	"cirrussearch-feature-not-available": "Ключевое слово '$1' не активировано в этой вики.",
 	"cirrussearch-feature-too-many-conditions": "Слишком много условий передано в '$1', обрезано до '$2'.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint должен быть установлен на действительную конечную точку SPARQL для использования поиска глубокой категории.",
+	"cirrussearch-feature-deepcat-exception": "Не удалось получить запрос SPARQL с глубокой категорией",
 	"cirrussearch-incategory-feature-no-valid-categories": "Не передано корректных категорий в '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Не передано корректных заголовков в '$1'.",
 	"cirrussearch-mlt-not-configured": "Функция '$1' не настроена. Попросите администратора исправить $wgCirrusSearchMoreLikeThisFields",

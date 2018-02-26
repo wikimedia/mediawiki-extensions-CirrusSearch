@@ -22,5 +22,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Търсене по представка",
 	"cirrussearch-pref-completion-legacy-section-legend": "Алгоритъм за търсене по време на писане.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класическо търсене по представка",
-	"cirrussearch-completion-profile-classic-pref-desc": "Не коригира правописни грешки. Търси по съвпадение на началото на заглавията."
+	"cirrussearch-completion-profile-classic-pref-desc": "Не коригира правописни грешки. Търси по съвпадение на началото на заглавията.",
+	"cirrussearch-article-words": "Думи във всички страници със съдържание"
 }

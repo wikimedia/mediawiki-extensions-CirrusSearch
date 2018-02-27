@@ -49,7 +49,11 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	/**
 	 * Stats key for SPARQL requests
 	 */
-	const STATSD_KEY = 'CirrusSearch.deepcat.sparql';
+	const STATSD_SPARQL_KEY = 'CirrusSearch.deepcat.sparql';
+	/**
+	 * Stats key for reporting too many categories
+	 */
+	const STATSD_TOOMANY_KEY = 'CirrusSearch.deepcat.toomany';
 
 	/**
 	 * @param Config $config
@@ -104,7 +108,7 @@ class DeepcatFeature extends SimpleKeywordFeature {
 
 		$startQueryTime = microtime( true );
 		try {
-			$categories = $this->fetchCategories( $value );
+			$categories = $this->fetchCategories( $value, $context );
 		} catch ( SparqlException $e ) {
 			// Not publishing exception here because it can contain too many details including IPs, etc.
 			$context->addWarning( 'cirrussearch-feature-deepcat-exception' );
@@ -139,12 +143,11 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	/**
 	 * Record stats data for the request.
 	 * @param float $startQueryTime
-	 * @param array $results
 	 */
 	private function logRequest( $startQueryTime ) {
 		$timeTaken = intval( 1000 * ( microtime( true ) - $startQueryTime ) );
 		MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
-			self::STATSD_KEY, $timeTaken
+			self::STATSD_SPARQL_KEY, $timeTaken
 		);
 	}
 
@@ -155,10 +158,11 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	 * Note that the list may be incomplete due to limitations of the service.
 	 * @throws SparqlException
 	 */
-	private function fetchCategories( $rootCategory ) {
+	private function fetchCategories( $rootCategory, SearchContext $context ) {
 		/** @var SparqlClient $client */
 		$title = Title::makeTitle( NS_CATEGORY, $rootCategory );
 		$fullName = $title->getFullURL( '', false, PROTO_CANONICAL );
+		$limit1 = $this->limit + 1;
 		$query = <<<SPARQL
 SELECT ?out WHERE {
       SERVICE mediawiki:categoryTree {
@@ -167,9 +171,19 @@ SELECT ?out WHERE {
           bd:serviceParam mediawiki:depth {$this->depth} .
       }
 } ORDER BY ASC(?depth)
-LIMIT {$this->limit}
+LIMIT $limit1
 SPARQL;
 		$result = $this->client->query( $query );
+
+		if ( count( $result ) > $this->limit ) {
+			// We went over the limit.
+			// According to T181549 this means we fail the filter application
+			$context->addWarning( 'cirrussearch-feature-deepcat-toomany' );
+			MediaWikiServices::getInstance()
+				->getStatsdDataFactory()
+				->increment( self::STATSD_TOOMANY_KEY );
+			return [];
+		}
 
 		$prefixLen = strlen( $this->prefix );
 		return array_map( function ( $row ) use ( $prefixLen ) {

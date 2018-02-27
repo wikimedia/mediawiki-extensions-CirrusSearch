@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 
 /**
  * Handles non-regexp version of insource: keyword.  The value
@@ -17,11 +18,27 @@ use CirrusSearch\Search\SearchContext;
  *   insource:Foo*
  *   insource:"gold rush"
  *
+ * Regex support:
+ *   insource:/abc?/
+ *
  * Things that don't work:
  *   insource:"foo*"
  *   insource:"foo OR bar"
  */
-class SimpleInSourceFeature extends SimpleKeywordFeature {
+class InSourceFeature extends BaseRegexFeature {
+
+	/**
+	 * Source field
+	 */
+	const FIELD = 'source_text';
+
+	/**
+	 * @param SearchConfig $config
+	 */
+	public function __construct( SearchConfig $config ) {
+		parent::__construct( $config, [ self::FIELD ] );
+	}
+
 	/**
 	 * @return string[]
 	 */
@@ -31,19 +48,15 @@ class SimpleInSourceFeature extends SimpleKeywordFeature {
 
 	/**
 	 * @param SearchContext $context
-	 * @param string $key The keyword
-	 * @param string $value The value attached to the keyword with quotes stripped
-	 * @param string $quotedValue The original value in the search string, including quotes if used
-	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
-	 *  that will be negated as necessary. Used for any other building/context necessary.
-	 * @return array Two element array, first an AbstractQuery or null to apply to the
-	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
-	 *  string.
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param bool $negated
+	 * @return array
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$filter = Filters::insource( $context->escaper(), $context, $quotedValue );
-		$context->addHighlightField( 'source_text', [ 'query' => $filter ] );
-
+		$context->addHighlightField( self::FIELD, [ 'query' => $filter ] );
 		return [ $filter, false ];
 	}
 }

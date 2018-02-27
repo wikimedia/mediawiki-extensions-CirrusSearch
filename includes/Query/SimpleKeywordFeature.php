@@ -65,6 +65,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	}
 
 	/**
+	 * List of value delimiters supported (must be an array of single byte char)
+	 * @return string[][] list of delimiters options
+	 */
+	public function getValueDelimiters() {
+		return [ [ 'delimiter' => '"' ] ];
+	}
+
+	/**
 	 * Captures either a quoted or unquoted string. Quoted strings may have
 	 * escaped (\") quotes embedded in them.
 	 *
@@ -76,11 +84,36 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		assert( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
 		if ( $this->greedy() ) {
 			assert( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
+			// XXX: we ignore value delimiter for greedy keywords
+			assert( $this->getValueDelimiters() === [ [ 'delimiter' => '"' ] ], "getValueDelimiters() must not be overridden with greedy keywords" );
 			// XXX: we send raw value to the keyword
 			return '(?<unquoted>.+)';
 		} else {
 			$quantifier = $this->allowEmptyValue() ? '*' : '+';
-			return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
+			// Collect all quoted vlaue delimiter (usually only " but can be / for regexes)
+			$allDelims = '';
+			$optionalSuffixes = [];
+			foreach ( $this->getValueDelimiters() as $delimConfig ) {
+				assert( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
+				$delim = preg_quote( $delimConfig['delimiter'], '/' );
+				$allDelims .= $delim;
+				if ( isset( $delimConfig['suffixes'] ) ) {
+					// Use lookbehind to only match the suffix if it was used with the proper delimiter
+					// i.e i should only be matched in /regex/i not "regex"i
+					$optionalSuffixes[] = "(?<=$delim)" . preg_quote( $delimConfig['suffixes'], '/' );
+				}
+			}
+			$quotedValue = "(?<delim>[$allDelims])" . // Capture the delimiter used to use in backreferences
+				// use negative lookbehind to consume any char that is not the captured delimiter
+				// but also accept to escape the captured delimiter
+				"(?<quoted>(?:\\\\\g{delim}|(?!\g{delim}).)*)" .
+				"\g{delim}";
+			if ( !empty( $optionalSuffixes ) ) {
+				$quotedValue .= "(?<suffixes>" . implode( '|', $optionalSuffixes ) . ')?';
+			}
+			// XXX: we support only " to break the unquoted value
+			$unquotedValue = "(?<unquoted>[^\"\s]$quantifier)";
+			return $quotedValue . '|' . $unquotedValue;
 		}
 	}
 
@@ -100,6 +133,26 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 *  string.
 	 */
 	abstract protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated );
+
+	/**
+	 * Fully featured apply method which delegates to doApply by default.
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped and escaped
+	 *  quotes un-escaped.
+	 * @param string $quotedValue The original value in the search string, including quotes if used
+	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
+	 *  that will be negated as necessary. Used for any other building/context necessary.
+	 * @param string $delimiter the delimiter char used to wrap the keyword value ('"' in intitle:"test")
+	 * @param string $suffix the optional suffix used after the value ('i' in insource:/regex/i)
+	 * @return array Two element array, first an AbstractQuery or null to apply to the
+	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
+	 *  string.
+	 */
+	public function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated, $delimiter, $suffix ) {
+		return $this->doApply( $context, $key, $value, $quotedValue, $negated );
+	}
 
 	/**
 	 * @param SearchContext $context
@@ -135,13 +188,18 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			$quotedValue = '';
 			$value = '';
 			$valueDelimiter = '';
+			$valueSuffix = '';
 			if ( $this->hasValue() ) {
 				$quotedValue = $match['value'];
-				if ( isset( $match['unquoted'] ) ) {
-					$value = $match['unquoted'];
-					$valueDelimiter = '"';
+				if ( isset( $match["unquoted"] ) ) {
+					$value = $match["unquoted"];
 				} else {
-					$value = str_replace( '\"', '"', $match['quoted'] );
+					$valueDelimiter = $match['delim'];
+					$value = str_replace( "\\$valueDelimiter", $valueDelimiter, $match["quoted"] );
+				}
+				if ( isset( $match["suffixes"] ) ) {
+					$valueSuffix = $match["suffixes"];
+					$quotedValue = rtrim( $quotedValue, $valueSuffix );
 				}
 			}
 			if ( $key[0] === '-' ) {
@@ -152,12 +210,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			}
 
 			$context->addSyntaxUsed( $this->getFeatureName( $key, $valueDelimiter ) );
-			list( $filter, $keepText ) = $this->doApply(
+			list( $filter, $keepText ) = $this->doApplyExtended(
 				$context,
 				$key,
 				$value,
 				$quotedValue,
-				$negated
+				$negated,
+				$valueDelimiter,
+				$valueSuffix
 			);
 			if ( $filter !== null ) {
 				if ( $negated ) {

@@ -9,6 +9,7 @@ use CirrusSearch\Query\FileNumericFeature;
 use CirrusSearch\Query\FileTypeFeature;
 use CirrusSearch\Query\HasTemplateFeature;
 use CirrusSearch\Query\InCategoryFeature;
+use CirrusSearch\Query\InSourceFeature;
 use CirrusSearch\Query\InTitleFeature;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\LanguageFeature;
@@ -17,8 +18,6 @@ use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
 use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
-use CirrusSearch\Query\RegexFeature;
-use CirrusSearch\Query\SimpleInSourceFeature;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\SubPageOfFeature;
 use CirrusSearch\SearchConfig;
@@ -46,10 +45,6 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			new PreferRecentFeature( $config ),
 			// Handle local keyword
 			new LocalFeature(),
-			// Handle insource keyword using regex
-			new RegexFeature( $config, 'source', 'source_text' ),
-			// Handle intitle keyword using regex
-			new RegexFeature( $config, 'title', [ 'title', 'redirect.title' ] ),
 			// Handle boost-templates keyword
 			new BoostTemplatesFeature(),
 			// Handle hastemplate keyword
@@ -59,9 +54,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// Handle incategory keyword
 			new InCategoryFeature( $config ),
 			// Handle non-regex insource keyword
-			new SimpleInSourceFeature(),
+			new InSourceFeature( $config ),
 			// Handle intitle keyword
-			new InTitleFeature(),
+			new InTitleFeature( $config ),
 			// inlanguage keyword
 			new LanguageFeature(),
 			// File types

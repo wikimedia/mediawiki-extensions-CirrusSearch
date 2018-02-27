@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\SearchConfig;
@@ -12,11 +13,15 @@ use CirrusSearch\SearchConfig;
  */
 abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 
+	/**
+	 * @return SearchContext
+	 */
 	protected function mockContext() {
 		$context = $this->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$context->expects( $this->any() )->method( 'getConfig' )->willReturn( new SearchConfig() );
+		$context->expects( $this->any() )->method( 'escaper' )->willReturn( new Escaper( 'en', true ) );
 
 		return $context;
 	}

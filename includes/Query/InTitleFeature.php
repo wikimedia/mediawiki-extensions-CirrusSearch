@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 
 /**
  * Applies a filter against the title field in elasticsearch. When not negated
@@ -22,7 +23,12 @@ use CirrusSearch\Search\SearchContext;
  *   intitle:"foo*"
  *   intitle:"foo OR bar"
  */
-class InTitleFeature extends SimpleKeywordFeature {
+class InTitleFeature extends BaseRegexFeature {
+
+	public function __construct( SearchConfig $config ) {
+		parent::__construct( $config, [ 'title', 'redirect.title' ] );
+	}
+
 	/**
 	 * @return string[]
 	 */

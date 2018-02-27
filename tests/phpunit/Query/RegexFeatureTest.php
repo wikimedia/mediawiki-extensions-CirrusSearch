@@ -6,18 +6,18 @@ use CirrusSearch\HashSearchConfig;
 
 /**
  * @group CirrusSearch
- * @covers \CirrusSearch\Query\RegexFeature
+ * @covers \CirrusSearch\Query\BaseRegexFeature
  */
-class RegexFeatureText extends BaseSimpleKeywordFeatureTest {
+class RegexFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function testGivesWarningIfNotEnabled() {
 		$config = new HashSearchConfig( [
 			'CirrusSearchEnableRegex' => false,
 		], [ 'inherit' ] );
 		$this->assertWarnings(
-			new RegexFeature( $config, 'source', 'source_text' ),
+			new InSourceFeature( $config ),
 			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ],
-			'insource:/abc/'
+			'insource:/abc/i'
 		);
 	}
 }

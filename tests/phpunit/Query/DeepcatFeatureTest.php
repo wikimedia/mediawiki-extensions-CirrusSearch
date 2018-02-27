@@ -76,7 +76,17 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 				'Ducks',
 				[],
 				null
-			]
+			],
+			'too many results' => [
+				'Duck',
+				[
+					[ 'out' => 'Ducks' ],
+					[ 'out' => 'Wigeons' ],
+					[ 'out' => 'More ducks' ],
+					[ 'out' => 'There is no such thing as too many ducks' ],
+				],
+				null
+			],
 		];
 	}
 
@@ -99,14 +109,14 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function testFilter( $term, $result, $filters ) {
 		$config = new \HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => 100,
+			'CirrusSearchCategoryMax' => 3,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
 
 		$client = $this->getSparqlClient( [
 			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( trim( $term, '"' ) ) . '>',
 			'bd:serviceParam mediawiki:depth 3 ',
-			'LIMIT 100'
+			'LIMIT 4'
 		], $result );
 		$feature = new DeepcatFeature( $config, $client );
 

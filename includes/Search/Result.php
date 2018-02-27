@@ -91,6 +91,13 @@ class Result extends SearchResult {
 		$this->byteSize = $result->text_bytes;
 		$this->timestamp = new MWTimestamp( $result->timestamp );
 		$highlights = $result->getHighlights();
+		// Evil hax to not special case .plain fields for intitle regex
+		foreach ( [ 'title', 'redirect.title' ] as $field ) {
+			if ( isset( $highlights["$field.plain"] ) && !isset( $highlights[$field] ) ) {
+				$highlights[$field] = $highlights["$field.plain"];
+				unset( $highlights["$field.plain"] );
+			}
+		}
 		if ( isset( $highlights[ 'title' ] ) ) {
 			$nstext = $this->getTitle()->getNamespace() === 0 ? '' :
 				Util::getNamespaceText( $this->getTitle() ) . ':';

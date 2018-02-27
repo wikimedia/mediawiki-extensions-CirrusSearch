@@ -42,7 +42,7 @@ class SimpleInSourceFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$filter = Filters::insource( $context->escaper(), $context, $quotedValue );
-		$context->addHighlightSource( [ 'query' => $filter ] );
+		$context->addHighlightField( 'source_text', [ 'query' => $filter ] );
 
 		return [ $filter, false ];
 	}

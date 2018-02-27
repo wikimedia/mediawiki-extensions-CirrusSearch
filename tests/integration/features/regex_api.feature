@@ -118,3 +118,22 @@ Feature: Searches with the insource filter
     |%{\u0020}%%{\u0020}%|
     |%{\u0020}%%{\u0009}%|
     |%{\u3000}%%{\u3000}%|
+
+  @regex
+  Scenario: intitle:// matches titles
+    When I api search for intitle:/in Pa/
+    Then Main Page is the first api search result
+     And Ma*in Pa*ge is the highlighted title of the first api search result
+
+  @regex @redirect
+  Scenario: intitle:// matches redirects
+    When I api search for intitle:/EO Redir/
+    Then Search Engine Optimization Redirecttest is the first api search result
+     And S*EO Redir*ecttest is the highlighted redirectsnippet of the first api search result
+
+  @regex @redirect
+  Scenario: intitle:// and insource:// can be combined
+    When I api search for intitle:/EO Redir/ insource:/rch Eng/
+    Then Search Engine Optimization Redirecttest is the first api search result
+     And S*EO Redir*ecttest is the highlighted redirectsnippet of the first api search result
+     And Sea*rch Eng*ine Optimization Redirecttest is the highlighted snippet of the first api search result

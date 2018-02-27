@@ -9,7 +9,7 @@ use CirrusSearch\Query\InTitleFeature;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\MoreLikeFeature;
 use CirrusSearch\Query\PrefixFeature;
-use CirrusSearch\Query\RegexInSourceFeature;
+use CirrusSearch\Query\RegexFeature;
 
 /**
  * @covers \CirrusSearch\Parser\FullTextKeywordRegistry
@@ -21,7 +21,7 @@ class FullTextKeywordRegistryTest extends CirrusTestCase {
 		// Just verify that some important keywords are provided
 		$missingKw = [
 			InTitleFeature::class => true,
-			RegexInSourceFeature::class => true,
+			RegexFeature::class => true,
 			InCategoryFeature::class => true,
 			MoreLikeFeature::class => true,
 			PrefixFeature::class => true,

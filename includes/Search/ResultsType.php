@@ -42,11 +42,11 @@ interface ResultsType {
 	/**
 	 * Get the highlighting configuration.
 	 *
-	 * @param array $highlightSource configuration for how to highlight the source.
-	 *  Empty if source should be ignored.
+	 * @param array $extraHighlightFields configuration for how to highlight regex matches.
+	 *  Empty if regex should be ignored.
 	 * @return array|null highlighting configuration for elasticsearch
 	 */
-	function getHighlightingConfiguration( array $highlightSource );
+	function getHighlightingConfiguration( array $extraHighlightFields );
 
 	/**
 	 * @param SearchContext $context
@@ -83,10 +83,10 @@ class TitleResultsType extends BaseResultsType {
 	}
 
 	/**
-	 * @param array $highlightSource
+	 * @param array $extraHighlightFields
 	 * @return array|null
 	 */
-	public function getHighlightingConfiguration( array $highlightSource ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		return null;
 	}
 
@@ -129,10 +129,10 @@ class FancyTitleResultsType extends TitleResultsType {
 	}
 
 	/**
-	 * @param array $highlightSource
+	 * @param array $extraHighlightFields
 	 * @return array|null
 	 */
-	public function getHighlightingConfiguration( array $highlightSource ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		global $wgCirrusSearchUseExperimentalHighlighter;
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {
@@ -336,10 +336,10 @@ class FullTextResultsType extends BaseResultsType {
 	 * Get one fragment from redirect title and heading each or else they
 	 * won't be sorted by score.
 	 *
-	 * @param array $highlightSource
+	 * @param array $extraHighlightFields
 	 * @return array|null of highlighting configuration
 	 */
-	public function getHighlightingConfiguration( array $highlightSource ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		global $wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchFragmentSize;
 
@@ -410,10 +410,6 @@ class FullTextResultsType extends BaseResultsType {
 		}
 		// If there isn't a match just return a match sized chunk from the beginning of the page.
 		$text = $remainingText;
-		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
-		if ( isset( $text[ 'options' ][ 'skip_if_last_matched' ] ) ) {
-			unset( $text[ 'options' ][ 'skip_if_last_matched' ] );
-		}
 
 		$config = [
 			'pre_tags' => [ Searcher::HIGHLIGHT_PRE_MARKER ],
@@ -421,10 +417,14 @@ class FullTextResultsType extends BaseResultsType {
 			'fields' => [],
 		];
 
-		if ( count( $highlightSource ) ) {
-			$this->configureHighlightingForSource( $config, $highlightSource, $text );
+		unset( $text[ 'options' ][ 'skip_if_last_matched' ] );
+		if ( count( $extraHighlightFields ) ) {
+			$this->configureHighlightingForRegex( $config, $extraHighlightFields, $text );
 			return $config;
 		}
+
+		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
+
 		$experimental = [];
 		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
 			$config[ 'fields' ][ 'title' ] = $entireValue;
@@ -510,57 +510,75 @@ class FullTextResultsType extends BaseResultsType {
 
 	/**
 	 * @param array &$config
-	 * @param array $highlightSource
+	 * @param array $extraHighlightFields
 	 * @param array $options
 	 */
-	private function configureHighlightingForSource( array &$config, array $highlightSource, array $options ) {
+	private function configureHighlightingForRegex( array &$config, array $extraHighlightFields, array $options ) {
 		global $wgCirrusSearchRegexMaxDeterminizedStates,
 			$wgCirrusSearchUseExperimentalHighlighter;
-		$patterns = [];
-		$locale = null;
-		$caseInsensitive = false;
-		foreach ( $highlightSource as $part ) {
-			if ( isset( $part[ 'pattern' ] ) ) {
-				$patterns[] = $part[ 'pattern' ];
-				$locale = $part[ 'locale' ];
-				$caseInsensitive |= $part[ 'insensitive' ];
+
+		$includes_text = false;
+		foreach ( $extraHighlightFields as $field => $parts ) {
+			$isTextField = $field == 'text' || $field == 'source_text';
+			$fieldOptions = $options;
+			if ( $isTextField ) {
+				$includes_text = true;
+				$fieldOptions['no_match_size'] = $fieldOptions['fragment_size'];
+			}
+			$patterns = [];
+			$locale = null;
+			$caseInsensitive = false;
+			foreach ( $parts as $part ) {
+				if ( isset( $part[ 'pattern' ] ) ) {
+					$patterns[] = $part[ 'pattern' ];
+					$locale = $part[ 'locale' ];
+					$caseInsensitive |= $part[ 'insensitive' ];
+				}
+			}
+			if ( count( $patterns ) && $wgCirrusSearchUseExperimentalHighlighter ) {
+				// highlight for regex queries is only supported by the experimental
+				// highlighter.
+				$config['fields']["$field.plain"] = $fieldOptions;
+				$fieldOptions = [
+					'regex' => $patterns,
+					'locale' => $locale,
+					'regex_flavor' => 'lucene',
+					'skip_query' => true,
+					'regex_case_insensitive' => (bool)$caseInsensitive,
+					'max_determinized_states' => $wgCirrusSearchRegexMaxDeterminizedStates,
+				];
+				if ( isset( $config['fields']["$field.plain"]['options'] ) ) {
+					$config[ 'fields' ][ "$field.plain" ][ 'options' ] = array_merge(
+						$config[ 'fields' ][ "$field.plain" ][ 'options' ],
+						$fieldOptions
+					);
+				} else {
+					$config[ 'fields' ][ "$field.plain" ][ 'options' ] = $fieldOptions;
+				}
+			} else {
+				foreach ( $extraHighlightFields as $field => $parts ) {
+					$queryStrings = [];
+					foreach ( $parts as $part ) {
+						if ( isset( $part[ 'query' ] ) ) {
+							$queryStrings[] = $part[ 'query' ];
+						}
+					}
+					if ( count( $queryStrings ) ) {
+						$config['fields']["$field.plain"] = $fieldOptions;
+						$bool = new \Elastica\Query\BoolQuery();
+						foreach ( $queryStrings as $queryString ) {
+							$bool->addShould( $queryString );
+						}
+						$config[ 'fields' ][ "$field.plain" ][ 'highlight_query' ] = $bool->toArray();
+					}
+				}
 			}
 		}
-		if ( count( $patterns ) && $wgCirrusSearchUseExperimentalHighlighter ) {
-			// highlight for regex queries is only supported by the experimental
-			// highlighter.
-			$config['fields']['source_text.plain'] = $options;
-			$options = [
-				'regex' => $patterns,
-				'locale' => $locale,
-				'regex_flavor' => 'lucene',
-				'skip_query' => true,
-				'regex_case_insensitive' => (bool)$caseInsensitive,
-				'max_determinized_states' => $wgCirrusSearchRegexMaxDeterminizedStates,
-			];
-			if ( isset( $config['fields']['source_text.plain']['options'] ) ) {
-				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = array_merge(
-					$config[ 'fields' ][ 'source_text.plain' ][ 'options' ],
-					$options
-				);
-			} else {
-				$config[ 'fields' ][ 'source_text.plain' ][ 'options' ] = $options;
-			}
-		} else {
-			$queryStrings = [];
-			foreach ( $highlightSource as $part ) {
-				if ( isset( $part[ 'query' ] ) ) {
-					$queryStrings[] = $part[ 'query' ];
-				}
-			}
-			if ( count( $queryStrings ) ) {
-				$config['fields']['source_text.plain'] = $options;
-				$bool = new \Elastica\Query\BoolQuery();
-				foreach ( $queryStrings as $queryString ) {
-					$bool->addShould( $queryString );
-				}
-				$config[ 'fields' ][ 'source_text.plain' ][ 'highlight_query' ] = $bool->toArray();
-			}
+		if ( !$includes_text ) {
+			// Return the beginning of text as the content snippet
+			$config['fields']['text'] = $options;
+			$config['fields']['text']['no_match_size'] = $options[ 'fragment_size' ];
+			unset( $config['fields']['text']['options']['skip_if_last_matched'] );
 		}
 	}
 }
@@ -581,7 +599,7 @@ class IdResultsType implements ResultsType {
 		return [];
 	}
 
-	public function getHighlightingConfiguration( array $highlightSource ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		return null;
 	}
 
@@ -626,7 +644,7 @@ class SingleAggResultsType implements ResultsType {
 		return [];
 	}
 
-	public function getHighlightingConfiguration( array $highlightSource ) {
+	public function getHighlightingConfiguration( array $extraHighlightFields ) {
 		return null;
 	}
 

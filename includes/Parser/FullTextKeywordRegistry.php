@@ -17,7 +17,7 @@ use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
 use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
-use CirrusSearch\Query\RegexInSourceFeature;
+use CirrusSearch\Query\RegexFeature;
 use CirrusSearch\Query\SimpleInSourceFeature;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\SubPageOfFeature;
@@ -47,7 +47,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// Handle local keyword
 			new LocalFeature(),
 			// Handle insource keyword using regex
-			new RegexInSourceFeature( $config ),
+			new RegexFeature( $config, 'source', 'source_text' ),
+			// Handle intitle keyword using regex
+			new RegexFeature( $config, 'title', [ 'title', 'redirect.title' ] ),
 			// Handle boost-templates keyword
 			new BoostTemplatesFeature(),
 			// Handle hastemplate keyword

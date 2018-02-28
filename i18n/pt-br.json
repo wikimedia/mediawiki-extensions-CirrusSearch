@@ -80,6 +80,7 @@
 	"cirrussearch-feature-too-many-conditions": "Muitas condições fornecidas para '$1', truncando para $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint deve ser configurado para um ponto de extremidade SPARQL válido para usar a pesquisa de categoria profunda.",
 	"cirrussearch-feature-deepcat-exception": "Consulta SPARQL de pesquisa de categoria profunda falhou",
+	"cirrussearch-feature-deepcat-toomany": "A consulta profunda da categoria retornou muitas categorias",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nenhuma categoria válida fornecida a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nenhum título válido fornecido a '$1'.",
 	"cirrussearch-mlt-not-configured": "O recurso \"$1\" está mal configurado. Peça a um administrador para consertar $wgCirrusSearchMoreLikeThisFields",

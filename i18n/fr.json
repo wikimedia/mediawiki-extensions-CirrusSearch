@@ -85,6 +85,7 @@
 	"cirrussearch-feature-too-many-conditions": "Trop de conditions fournies pour '$1', troncature à $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint doit être positionné avec une cible SPARQL valide pour utiliser la recherche de catégorie en profondeur.",
 	"cirrussearch-feature-deepcat-exception": "La requête SPARQL de recherche de catégorie en profondeur a échoué",
+	"cirrussearch-feature-deepcat-toomany": "La requête profonde de catégorie a renvoyé trop de catégories",
 	"cirrussearch-incategory-feature-no-valid-categories": "Pas catégories valides fournies pour '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Pas de titres valides associés à '$1'.",
 	"cirrussearch-mlt-not-configured": "La fonctionalité '$1' est mal configurée. Demandez à un administrateur de corriger $wgCirrusSearchMoreLikeThisFields",

@@ -9,6 +9,7 @@ use CirrusSearch\Search\SearchContext;
 
 /**
  * @covers \CirrusSearch\Query\PrefixFeature
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
 class PrefixFeatureTest extends CirrusTestCase {
@@ -18,109 +19,142 @@ class PrefixFeatureTest extends CirrusTestCase {
 				'foo bar',
 				null,
 				null,
-				'foo bar'
+				'foo bar',
+				false,
 			],
 			'simple' => [
 				'prefix:test',
 				'test',
 				NS_MAIN,
-				''
+				'',
+				false,
 			],
 			'simple quoted' => [
 				'prefix:"foo bar"',
 				"foo bar",
 				NS_MAIN,
-				''
+				'',
+				false,
 			],
-			'FIXME: simple quoted empty is completely ignored' => [
+			'simple quoted empty will only set the NS_MAIN filter' => [
 				'prefix:""',
 				null,
-				null,
-				'prefix:""'
+				NS_MAIN,
+				'',
+				false,
 			],
 			'simple namespaced' => [
 				'prefix:help:test',
 				'test',
 				NS_HELP,
-				''
+				'',
+				false,
 			],
-			'FIXME: simple quoted & namespaced partially trims quotes' => [
+			'simple quoted & namespaced can trim quotes' => [
 				'prefix:help:"foo bar"',
-				'"foo bar',
+				'foo bar',
 				NS_HELP,
-				''
+				'',
+				false,
+			],
+			'simple all quoted & namespaced can trim quotes' => [
+				'prefix:"help:foo bar"',
+				'foo bar',
+				NS_HELP,
+				'',
+				false,
 			],
 			'simple quoted empty & namespaced is not completely ignored' => [
 				'prefix:help:""',
 				null,
 				NS_HELP,
-				''
+				'',
+				false,
 			],
 			'combined' => [
 				'foo prefix:test',
 				'test',
 				NS_MAIN,
-				'foo'
+				// trailing space explicitly added by SimpleKeywordFeature
+				'foo ',
+				false,
 			],
 			'combined quoted' => [
 				'baz prefix:"foo bar"',
 				"foo bar",
 				NS_MAIN,
-				'baz',
+				'baz ',
+				false,
 			],
-			'FIXME: combined quoted empty is completly ignored' => [
+			'combined quoted empty only sets NS_MAIN' => [
 				'foo prefix:""',
 				null,
-				null,
-				'foo prefix:""'
+				NS_MAIN,
+				'foo ',
+				false,
 			],
 			'combined namespaced' => [
 				'foo prefix:help:test',
 				'test',
 				NS_HELP,
-				'foo'
+				'foo ',
+				false,
 			],
-			'FIXME: combined quoted & namespaced handle quotes in a weird way' => [
+			'combined quoted & namespaced can trim the title' => [
 				'foo prefix:help:"test"',
-				'"test',
+				'test',
 				NS_HELP,
-				'foo'
+				'foo ',
+				false,
+			],
+			'combined all quoted & namespaced can trim the title' => [
+				'foo prefix:"help:test"',
+				'test',
+				NS_HELP,
+				'foo ',
+				false,
 			],
 			'combined quoted empty & namespaced' => [
 				'foo prefix:help:""',
 				null,
 				NS_HELP,
-				'foo'
+				'foo ',
+				false,
 			],
 			'prefix is greedy' => [
 				'foo prefix:foo bar',
 				'foo bar',
 				NS_MAIN,
-				'foo'
+				'foo ',
+				false,
 			],
-			'prefix converts _ to space' => [
+			'prefix does not need to convert _ to space since it is handled by elastic' => [
 				'foo prefix:foo_bar',
-				'foo bar',
+				'foo_bar',
 				NS_MAIN,
-				'foo'
+				'foo ',
+				false,
 			],
 			'prefix can also be used as a simple namespace filter' => [
 				'foo prefix:help:',
 				null,
 				NS_HELP,
-				'foo'
+				'foo ',
+				false,
 			],
-			'FIXME: prefix does handle quotes in a weird way' => [
+			'prefix does not trim quotes if the query is ambiguous regarding greedy behaviors' => [
 				'foo prefix:"foo bar" test',
-				'foo bar" test',
+				'"foo bar" test',
 				NS_MAIN,
-				'foo'
+				'foo ',
+				false,
 			],
-			'FIXME: sadly prefix ignores negation' => [
+			'prefix does not ignore negation' => [
 				'foo -prefix:"foo bar"',
 				'foo bar',
 				NS_MAIN,
-				'foo '
+				'foo ',
+				true,
 			]
 
 		];
@@ -129,7 +163,7 @@ class PrefixFeatureTest extends CirrusTestCase {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( $query, $filterValue, $namespace, $expectedRemaining ) {
+	public function testParse( $query, $filterValue, $namespace, $expectedRemaining, $negated ) {
 		$context = $this->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
@@ -137,11 +171,15 @@ class PrefixFeatureTest extends CirrusTestCase {
 			$prefixQuery = new \Elastica\Query\Match();
 			$prefixQuery->setFieldQuery( 'title.prefix', $filterValue );
 			$context->expects( $this->once() )
-				->method( 'addFilter' )
+				->method( $negated ? 'addNotFilter' : 'addFilter' )
 				->with( $prefixQuery );
+			$context->expects( $this->never() )
+				->method( $negated ? 'addFilter' : 'addNotFilter' );
 		} else {
 			$context->expects( $this->never() )
 				->method( 'addFilter' );
+			$context->expects( $this->never() )
+				->method( 'addNotFilter' );
 		}
 
 		if ( $namespace !== null ) {

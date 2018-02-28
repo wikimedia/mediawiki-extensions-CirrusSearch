@@ -20,49 +20,62 @@ use CirrusSearch\Search\SearchContext;
  *   prefix:California Cou
  *   prefix:"California Cou"
  */
-class PrefixFeature implements KeywordFeature {
+class PrefixFeature extends SimpleKeywordFeature {
+
+	/**
+	 * @return bool
+	 */
+	public function greedy() {
+		return true;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function getKeywords() {
+		return [ "prefix" ];
+	}
 
 	/**
 	 * @param SearchContext $context
-	 * @param string $term
-	 * @return string
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param bool $negated
+	 * @return array
 	 */
-	public function apply( SearchContext $context, $term ) {
-		$prefixPos = strpos( $term, 'prefix:' );
-		if ( $prefixPos === false ) {
-			return $term;
-		}
-
-		$value = substr( $term, 7 + $prefixPos );
-		// Trim quotes in case the user wanted to quote the prefix
-		$value = trim( $value, '"' );
-		if ( strlen( $value ) === 0 ) {
-			return $term;
-		}
-
-		$context->addSyntaxUsed( 'prefix' );
+	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		// XXX: only works because it's greedy
 		$context->addSuggestSuffix( ' prefix:' . $value );
+		// best effort quote trimming in case the query is simply wrapped in quotes
+		// but ignores corner/ambiguous cases
+		$trimQuote = '/^"([^"]*)"\s*$/';
+		$value = preg_replace( $trimQuote, "$1", $value );
+		// NS_MAIN by default
+		$namespaces = [ NS_MAIN ];
 
 		// Suck namespaces out of $value. Note that this overrides provided
 		// namespace filters.
 		$queryAndNamespace = SearchEngine::parseNamespacePrefixes( $value );
-		if ( $queryAndNamespace === false ) {
-			// If no namespaces is extracted we force to NS_MAIN
-			$context->setNamespaces( [ NS_MAIN ] );
-		} else {
+		if ( $queryAndNamespace !== false ) {
 			$value = $queryAndNamespace[0];
-			$context->setNamespaces( $queryAndNamespace[1] );
+			$namespaces = $queryAndNamespace[1];
+			// Redo best effort quote trimming on the resulting value
+			$value = preg_replace( $trimQuote, "$1", $value );
 		}
 		$value = trim( $value );
-
-		// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
-		if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
-			$value = str_replace( '_', ' ', $value );
-			$prefixQuery = new \Elastica\Query\Match();
-			$prefixQuery->setFieldQuery( 'title.prefix', $value );
-			$context->addFilter( $prefixQuery );
+		$context->setNamespaces( $namespaces );
+		if ( strlen( $value ) === 0 ) {
+			return [ null, false ];
 		}
 
-		return substr( $term, 0, max( 0, $prefixPos - 1 ) );
+		// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
+		$prefixQuery = null;
+		if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
+			$prefixQuery = new \Elastica\Query\Match();
+			$prefixQuery->setFieldQuery( 'title.prefix', $value );
+		}
+
+		return [ $prefixQuery, false ];
 	}
 }

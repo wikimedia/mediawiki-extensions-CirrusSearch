@@ -77,7 +77,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		if ( $this->greedy() ) {
 			assert( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
 			// XXX: we send raw value to the keyword
-			return '(?<unquoted>.*)';
+			return '(?<unquoted>.+)';
 		} else {
 			$quantifier = $this->allowEmptyValue() ? '*' : '+';
 			return '"(?<quoted>(?:\\\\"|[^"])*)"|(?<unquoted>[^"\s]' . $quantifier . ')';
@@ -129,52 +129,55 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			$valueSideRegex = "${spacesAfterSep}{$valueRegex}\\s?";
 		}
 
+		$callback = function ( $match ) use ( $context ) {
+			$key = $match['key'];
+			assert( $this->hasValue() === isset( $match['value'] ) );
+			$quotedValue = '';
+			$value = '';
+			$valueDelimiter = '';
+			if ( $this->hasValue() ) {
+				$quotedValue = $match['value'];
+				if ( isset( $match['unquoted'] ) ) {
+					$value = $match['unquoted'];
+					$valueDelimiter = '"';
+				} else {
+					$value = str_replace( '\"', '"', $match['quoted'] );
+				}
+			}
+			if ( $key[0] === '-' ) {
+				$negated = true;
+				$key = substr( $key, 1 );
+			} else {
+				$negated = false;
+			}
+
+			$context->addSyntaxUsed( $this->getFeatureName( $key, $valueDelimiter ) );
+			list( $filter, $keepText ) = $this->doApply(
+				$context,
+				$key,
+				$value,
+				$quotedValue,
+				$negated
+			);
+			if ( $filter !== null ) {
+				if ( $negated ) {
+					$context->addNotFilter( $filter );
+				} else {
+					$context->addFilter( $filter );
+				}
+			}
+			// FIXME: this adds a trailing space if this is the last keyword
+			return $keepText ? "$quotedValue " : '';
+		};
+
 		return QueryHelper::extractSpecialSyntaxFromTerm(
 			$context,
 			$term,
 			// initial positive lookbehind ensures keyword doesn't
 			// match in the middle of a word.
 			"/{$begin}{$keywordRegex}:${valueSideRegex}/",
-			function ( $match ) use ( $context ) {
-				$key = $match['key'];
-				assert( $this->hasValue() === isset( $match['value'] ) );
-				$quotedValue = '';
-				$value = '';
-				$valueDelimiter = '';
-				if ( $this->hasValue() ) {
-					$quotedValue = $match['value'];
-					if ( isset( $match['unquoted'] ) ) {
-						$value = $match['unquoted'];
-						$valueDelimiter = '"';
-					} else {
-						$value = str_replace( '\"', '"', $match['quoted'] );
-					}
-				}
-				if ( $key[0] === '-' ) {
-					$negated = true;
-					$key = substr( $key, 1 );
-				} else {
-					$negated = false;
-				}
-
-				$context->addSyntaxUsed( $this->getFeatureName( $key, $valueDelimiter ) );
-				list( $filter, $keepText ) = $this->doApply(
-					$context,
-					$key,
-					$value,
-					$quotedValue,
-					$negated
-				);
-				if ( $filter !== null ) {
-					if ( $negated ) {
-						$context->addNotFilter( $filter );
-					} else {
-						$context->addFilter( $filter );
-					}
-				}
-				// FIXME: this adds a trailing space if this is the last keyword
-				return $keepText ? "$quotedValue " : '';
-			}
+			$callback,
+			!$this->greedy() // greedy needs to be suffixed not prefixed
 		);
 	}
 }

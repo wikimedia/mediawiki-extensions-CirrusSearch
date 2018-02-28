@@ -12,9 +12,18 @@ use CirrusSearch\Search\SearchContext;
  */
 abstract class SimpleKeywordFeature implements KeywordFeature {
 	/**
+	 * NOTE: will be removed once all implementations implement getKeywordStrings
+	 * (transitional state to change the visibility of getKeywords())
 	 * @return string[] The list of keywords this feature is supposed to match
 	 */
 	abstract protected function getKeywords();
+
+	/**
+	 * @return string[]
+	 */
+	public function getKeywordPrefixes() {
+		return $this->getKeywords();
+	}
 
 	/**
 	 * Whether this keyword allows empty value.

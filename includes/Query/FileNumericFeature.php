@@ -105,7 +105,7 @@ class FileNumericFeature extends SimpleKeywordFeature {
 			$valid = false;
 		} elseif ( $sign || strpos( $number, ',' ) === false ) {
 			if ( !is_numeric( $number ) ) {
-				$this->nanWarning( $context, $key, $number === false ? $value : $number );
+				$this->nanWarning( $context, $key, empty( $number ) ? $value : $number );
 				$valid = false;
 			}
 		} else {

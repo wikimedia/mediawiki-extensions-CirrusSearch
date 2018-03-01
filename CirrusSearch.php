@@ -1275,6 +1275,7 @@ $wgHooks[ 'TitleMove' ][] = 'CirrusSearch\Hooks::onTitleMove';
 $wgHooks[ 'TitleMoveComplete' ][] = 'CirrusSearch\Hooks::onTitleMoveComplete';
 $wgHooks[ 'UnitTestsList' ][] = 'CirrusSearch\Hooks::onUnitTestsList';
 $wgHooks[ 'UserGetDefaultOptions' ][] = 'CirrusSearch\Hooks::onUserGetDefaultOptions';
+$wgHooks[ 'PageContentInsertComplete' ][] = 'CirrusSearch\Hooks::onPageContentInsertComplete';
 
 /**
  * i18n
@@ -1432,10 +1433,18 @@ $wgCirrusSearchCategoryDepth = 5;
  */
 $wgCirrusSearchCategoryMax = 256;
 
-$wgServiceWiringFiles[] = __DIR__ . '/includes/ServiceWiring.php';
+/**
+ * Immediately index new pages, not waiting for LinksUpdate job to finish.
+ * This may be desireable if users want new pages to be searchable e.g by title
+ * faster than LinkUpdate jobs finish.
+ * Set to true to index all pages on wiki, or array of namespaces to index specific namespaces.
+ */
+$wgCirrusSearchInstantIndexNew = false;
 /*
  * Please update docs/settings.txt if you add new values!
  */
+
+$wgServiceWiringFiles[] = __DIR__ . '/includes/ServiceWiring.php';
 
 /**
  * Jenkins configuration required to get all the browser tests passing cleanly.

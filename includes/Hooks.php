@@ -8,11 +8,13 @@ use ApiOpenSearch;
 use CirrusSearch;
 use CirrusSearch\Profile\SearchProfileServiceFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
+use Content;
 use DeferredUpdates;
 use JobQueueGroup;
 use LinksUpdate;
 use OutputPage;
 use MediaWiki\MediaWikiServices;
+use Revision;
 use SearchResultSet;
 use SpecialSearch;
 use Title;
@@ -839,4 +841,42 @@ class Hooks {
 			$extraStats['cirrussearch-article-words'] = $wordCount;
 		}
 	}
+
+	/**
+	 * @param WikiPage $wikiPage
+	 * @param User $user
+	 * @param Content $content
+	 * @param string $summary
+	 * @param bool $isMinor
+	 * @param bool $isWatch
+	 * @param string $section
+	 * @param int $flags
+	 * @param Revision $revision
+	 */
+	public static function onPageContentInsertComplete( WikiPage $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision ) {
+		global $wgCirrusSearchInstantIndexNew;
+		if ( empty( $wgCirrusSearchInstantIndexNew ) ) {
+			return;
+		}
+		if ( $wikiPage->isRedirect() ) {
+			// Not much point to instant-index redirects since they usually won't have
+			// much useful content.
+			return;
+		}
+		if ( is_array( $wgCirrusSearchInstantIndexNew ) ) {
+			$namespace = $wikiPage->getTitle()->getNamespace();
+			if ( !in_array( $namespace, $wgCirrusSearchInstantIndexNew ) ) {
+				// Index only in namespaces specified in the config
+				return;
+			}
+		}
+		// Update newly created page. This may not have all the correct link data, etc.
+		// but that will be picked up later by the LinkUpdate job.
+		DeferredUpdates::addCallableUpdate( function () use ( $wikiPage ) {
+			$updater = new Updater( self::getConnection(), self::getConfig() );
+			$updater->updatePages( [ $wikiPage ],
+				Updater::SKIP_LINKS | Updater::INDEX_ON_SKIP | Updater::INSTANT_INDEX );
+		} );
+	}
+
 }

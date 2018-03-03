@@ -45,5 +45,11 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Αναζήτηση πρόθεματος",
 	"cirrussearch-completion-profile-classic-pref-name": "Κλασικό πρόθεμα αναζήτησης",
 	"cirrussearch-completion-profile-classic-pref-desc": "Μη διόρθωση τυπογραφικού λάθους. Ταιριάζει με την αρχή των τίτλων.",
+	"cirrussearch-explore-similar-related": "Σχετικά",
+	"cirrussearch-explore-similar-categories": "Κατηγορίες",
+	"cirrussearch-explore-similar-languages": "Γλώσσες",
+	"cirrussearch-explore-similar-related-none": "Δεν υπάρχουν διαθέσιμες σχετικές σελίδες",
+	"cirrussearch-explore-similar-categories-none": "Δεν υπάρχουν διαθέσιμες κατηγορίες",
+	"cirrussearch-explore-similar-languages-none": "Δεν είναι διαθέσιμο σε άλλες γλώσσες",
 	"cirrussearch-article-words": "Λέξεις σε όλες τις σελίδες περιεχομένου"
 }

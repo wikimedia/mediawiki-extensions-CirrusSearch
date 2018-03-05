@@ -60,5 +60,6 @@
 	"cirrussearch-timed-out": "Čas pro vyhledávání vypršel, dostupné výsledky nejsou úplné.",
 	"cirrussearch-regex-timed-out": "Čas pro vyhledávání regulárním výrazem vypršel, dostupné výsledky nejsou úplné. Pro získání úplných výsledků se pokuste regulární výraz zjednodušit.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint by měl být nastaven na platném konečném bodu SPARQL k použití hlubokého prohledání kategorií.",
-	"cirrussearch-feature-deepcat-exception": "Hluboké prohledávání kategorií pomocí SPARQL se nezdařilo"
+	"cirrussearch-feature-deepcat-exception": "Hluboké prohledávání kategorií pomocí SPARQL se nezdařilo",
+	"cirrussearch-feature-deepcat-toomany": "Hluboké prohledávání kategorií vrátilo příliš mnoho kategorií"
 }

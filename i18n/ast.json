@@ -73,6 +73,7 @@
 	"cirrussearch-feature-too-many-conditions": "Diéronse demasiaes condiciones a '$1', truncando a $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint tendría de configurase como un puntu de salida SPARQL válidu pa usar la gueta fonda en categoríes.",
 	"cirrussearch-feature-deepcat-exception": "Falló la consulta SPARQL de gueta fonda en categoríes.",
+	"cirrussearch-feature-deepcat-toomany": "La consulta fonda de categoríes devolvió demasiaes categoríes",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nun se dieron categoríes válides a '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Nun se dieron títulos válidos a '$1'.",
 	"cirrussearch-mlt-not-configured": "La carauterística '$1' ta mal configurada. Pide a un alministrador qu'igüe $wgCirrusSearchMoreLikeThisFields",

@@ -182,26 +182,47 @@ class Escaper {
 	 * @return string
 	 */
 	public function balanceQuotes( $text ) {
+		if ( $this->unbalancedQuotes( $text ) ) {
+			$text = $text . '"';
+		}
+		return $text;
+	}
+
+	/**
+	 * @param string $text
+	 * @param int $from
+	 * @param int $to
+	 * @return bool true if there are unbalanced quotes in the [$from, $to] range.
+	 */
+	public function unbalancedQuotes( $text, $from = 0, $to = -1 ) {
+		$to = $to < 0 ? strlen( $text ) : $to;
 		$inQuote = false;
 		$inEscape = false;
-		$len = strlen( $text );
-		for ( $i = 0; $i < $len; $i++ ) {
+		for ( $i = $from; $i < $to; $i++ ) {
 			if ( $inEscape ) {
 				$inEscape = false;
 				continue;
 			}
 			switch ( $text[ $i ] ) {
-			case '"':
-				$inQuote = !$inQuote;
-				break;
-			case '\\':
-				$inEscape = true;
+				case '"':
+					$inQuote = !$inQuote;
+					break;
+				case '\\':
+					$inEscape = true;
 			}
 		}
-		if ( $inQuote ) {
-			$text = $text . '"';
-		}
-		return $text;
+		return $inQuote;
+	}
+
+	/**
+	 * Unescape a given string
+	 * @param string $query string to unescape
+	 * @param string $escapeChar escape sequence
+	 * @return string
+	 */
+	public function unescape( $query, $escapeChar  = '\\' ) {
+		$escapeChar = preg_quote( $escapeChar );
+		return preg_replace( "/$escapeChar(.)/", '$1', $query );
 	}
 
 	/**
@@ -211,5 +232,12 @@ class Escaper {
 	 */
 	public function getAllowLeadingWildcard() {
 		return $this->allowLeadingWildcard;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLanguage() {
+		return $this->language;
 	}
 }

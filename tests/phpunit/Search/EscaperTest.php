@@ -22,6 +22,7 @@ use CirrusSearch\CirrusTestCase;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  *
+ * @covers \CirrusSearch\Search\Escaper
  * @group CirrusSearch
  */
 class EscaperTest extends CirrusTestCase {
@@ -93,6 +94,25 @@ class EscaperTest extends CirrusTestCase {
 			[ '"foo\\" ba\\"r', '"foo\\" ba\\"r"' ],
 			[ '\\"foo\\" ba\\"r', '\\"foo\\" ba\\"r' ],
 			[ '"fo\\o bar', '"fo\\o bar"' ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideEscapedSequence
+	 * @param string $escaped
+	 * @param string $unescaped
+	 */
+	public function testUnescape( $escaped, $unescaped ) {
+		$escaper = new Escaper( 'en', false );
+		$this->assertEquals( $unescaped, $escaper->unescape( $escaped ) );
+	}
+
+	public static function provideEscapedSequence() {
+		return [
+			'unchanged' => [ 'foo', 'foo' ],
+			'simple' => [ 'foo\\"', 'foo"' ],
+			'escaped escape' => [ 'foo\\\\"', 'foo\\"' ],
+			'both' => [ 'foo\\\\\\"', 'foo\\"' ],
 		];
 	}
 }

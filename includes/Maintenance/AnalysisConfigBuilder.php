@@ -325,12 +325,15 @@ class AnalysisConfigBuilder {
 		switch ( $language ) {
 		// @todo: complete the default filters per language
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
+		// For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':
 			return '[^йЙ]';
 		case 'sv':
 			return '[^åäöÅÄÖ]';
+		case 'sr':
+			return '[^ĐđŽžĆćŠšČč]';
 		default:
 			return null;
 		}
@@ -881,6 +884,26 @@ STEMMER_RULES
 			// In Russian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'serbian':
+			// Unpack default analyzer to add Serbian stemming and custom folding
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+			$config[ 'filter' ][ 'scstemmer' ] = [
+				'type' => 'serbian_stemmer',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'asciifolding',
+					'scstemmer',
+				],
+			];
+
+			// In Serbian text_search is just a copy of text
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'swedish':
 			// Add asciifolding_preserve to filters
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
@@ -1197,6 +1220,7 @@ STEMMER_RULES
 		'fr' => true,
 		'he' => true,
 		'sv' => true,
+		'sr' => true,
 	];
 
 	/**
@@ -1244,5 +1268,6 @@ STEMMER_RULES
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
+		'extra-analysis' => [ 'sr' => 'serbian' ],
 	];
 }

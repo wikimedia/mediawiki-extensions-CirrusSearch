@@ -69,7 +69,7 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Geen spellingcorrectie. Lost doorverwijzingen op.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Redirect-modus met subphrase matching (geavanceerd)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Geen tikfout correctie. Verhelpt gesloten omleidingen. Welke subphrase overeenkomen in de titels.",
-	"cirrussearch-pref-completion-legacy-section-desc": "Zoeken op prefix",
+	"cirrussearch-pref-completion-legacy-section-desc": "Zoeken op voorvoegsel",
 	"cirrussearch-pref-completion-legacy-section-legend": "Het oude zoeken-terwijl-je-typt-algoritme.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klassieke zoeken op prefix",
 	"cirrussearch-completion-profile-classic-pref-desc": "Geen spellingcorrectie. Vindt overeenkomst aan het begin van de titels.",

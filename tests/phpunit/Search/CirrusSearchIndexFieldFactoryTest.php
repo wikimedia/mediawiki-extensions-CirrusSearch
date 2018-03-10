@@ -7,7 +7,7 @@ use CirrusSearch\CirrusTestCase;
 /**
  * @group CirrusSearch
  */
-class CirrusSearchFieldIndexFactoryTest extends CirrusTestCase {
+class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 
 	public function testNewStringField() {
 		$searchConfig = $this->getSearchConfig();

@@ -5,7 +5,7 @@ namespace CirrusSearch\Query;
 /**
  * @group CirrusSearch
  */
-class LanguageFeatureText extends BaseSimpleKeywordFeatureTest {
+class LanguageFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function testTooManyLanguagesWarning() {
 		$this->assertWarnings(

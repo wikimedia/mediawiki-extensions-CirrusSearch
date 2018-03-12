@@ -8,7 +8,7 @@ use CirrusSearch\HashSearchConfig;
  * @group CirrusSearch
  * @covers \CirrusSearch\Query\RegexFeature
  */
-class RegexFeatureText extends BaseSimpleKeywordFeatureTest {
+class RegexFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function testGivesWarningIfNotEnabled() {
 		$config = new HashSearchConfig( [

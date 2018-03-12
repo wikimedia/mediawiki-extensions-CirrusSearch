@@ -5,7 +5,7 @@ namespace CirrusSearch\Query;
 /**
  * @group CirrusSearch
  */
-class HasTemplateFeatureText extends BaseSimpleKeywordFeatureTest {
+class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		return [

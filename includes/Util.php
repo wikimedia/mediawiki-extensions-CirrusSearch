@@ -347,6 +347,8 @@ class Util {
 			 strpos( $term, 'intitle:/' ) === false &&
 			preg_match( "/^([[:punct:]]|\s|$more_punct)+$/", $term ) === 0
 		) {
+			// FIXME: get rid of negative lookbehinds on (?<!\\\\)
+			// it may improperly transform \\? into \? instead of \\ and destroy properly escaped \
 			if ( $strippingLevel === 'final' ) {
 				// strip only query-final question marks that are not escaped
 				$term = preg_replace( "/((?<!\\\\)\?|\s)+$/", '', $term );

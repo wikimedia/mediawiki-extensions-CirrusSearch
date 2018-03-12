@@ -221,8 +221,8 @@ class Escaper {
 	 * @return string
 	 */
 	public function unescape( $query, $escapeChar  = '\\' ) {
-		$escapeChar = preg_quote( $escapeChar );
-		return preg_replace( "/$escapeChar(.)/", '$1', $query );
+		$escapeChar = preg_quote( $escapeChar, '/' );
+		return preg_replace( "/$escapeChar(.)/u", '$1', $query );
 	}
 
 	/**

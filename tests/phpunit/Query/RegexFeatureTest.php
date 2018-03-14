@@ -6,7 +6,7 @@ use CirrusSearch\HashSearchConfig;
 
 /**
  * @group CirrusSearch
- * @covers \CirrusSearch\Query\RegexFeature
+ * @covers \CirrusSearch\Query\BaseRegexFeature
  */
 class RegexFeatureTest extends BaseSimpleKeywordFeatureTest {
 
@@ -15,9 +15,9 @@ class RegexFeatureTest extends BaseSimpleKeywordFeatureTest {
 			'CirrusSearchEnableRegex' => false,
 		], [ 'inherit' ] );
 		$this->assertWarnings(
-			new RegexFeature( $config, 'source', 'source_text' ),
+			new InSourceFeature( $config ),
 			[ [ 'cirrussearch-feature-not-available', 'insource regex' ] ],
-			'insource:/abc/'
+			'insource:/abc/i'
 		);
 	}
 }

@@ -9,8 +9,7 @@ use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 
 /**
- * Implements an in{foo}: keyword supporting regular expression matching
- * against properly indexed fields. Works best when combined with the
+ * Base class supporting regex searches. Works best when combined with the
  * wikimedia-extra plugin for elasticsearch, but can also fallback to a groovy
  * based implementation. Can be really expensive, but mostly ok if you have the
  * extra plugin enabled.
@@ -18,12 +17,7 @@ use Elastica\Query\AbstractQuery;
  * Examples:
  *   insource:/abc?/
  */
-class RegexFeature implements KeywordFeature {
-	/**
-	 * @var string used as keyword such as 'source' for insource:
-	 */
-	private $name;
-
+abstract class BaseRegexFeature extends SimpleKeywordFeature {
 	/**
 	 * @var string[] Elasticsearch field(s) to search against
 	 */
@@ -55,61 +49,100 @@ class RegexFeature implements KeywordFeature {
 
 	/**
 	 * @param SearchConfig $config
-	 * @param string $name
-	 * @param string[]|string|null $fields
+	 * @param string[] $fields
 	 */
-	public function __construct( SearchConfig $config, $name, $fields = null ) {
+	public function __construct( SearchConfig $config, array $fields ) {
 		$this->enabled = $config->get( 'CirrusSearchEnableRegex' );
 		$this->languageCode = $config->get( 'LanguageCode' );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
-		$this->name = $name;
-		$fields = $fields == null ? $name : $fields;
-		$this->fields = is_array( $fields ) ? $fields : [ $fields ];
+		assert( count( $fields ) > 0 );
+		$this->fields = $fields;
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public function getValueDelimiters() {
+		return [
+			[
+				// simple search
+				'delimiter' => '"'
+			],
+			[
+				// regex searches
+				'delimiter' => '/',
+				// optional case insensitive suffix
+				'suffixes' => 'i'
+			]
+		];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $valueDelimiter
+	 * @return string
+	 */
+	public function getFeatureName( $key, $valueDelimiter ) {
+		if ( $valueDelimiter === '/' ) {
+			return 'regex';
+		}
+		return parent::getFeatureName( $key, $valueDelimiter );
 	}
 
 	/**
 	 * @param SearchContext $context
-	 * @param string $term
-	 * @return string
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $negated
+	 * @param string $delimiter
+	 * @param string $suffix
+	 * @return array
 	 */
-	public function apply( SearchContext $context, $term ) {
-		return QueryHelper::extractSpecialSyntaxFromTerm(
-			$context,
-			$term,
-			'/(?<not>-)?in' . $this->name . ':\/(?<pattern>(?:[^\\\\\/]|\\\\.)+)\/(?<insensitive>i)? ?/',
-			function ( $matches ) use ( $context ) {
-				if ( !$this->enabled ) {
-					$context->addWarning(
-						'cirrussearch-feature-not-available',
-						"in{$this->name} regex"
-					);
-					return '';
-				}
-
-				$context->addSyntaxUsed( 'regex' );
-				$insensitive = !empty( $matches['insensitive'] );
-
-				$filter = $this->regexPlugin && in_array( 'use', $this->regexPlugin )
-					? $this->buildRegexWithPlugin( $matches['pattern'], $insensitive, $context )
-					: $this->buildRegexWithGroovy( $matches['pattern'], $insensitive );
-
-				if ( empty( $matches['not'] ) ) {
-					$context->addFilter( $filter );
-					foreach ( $this->fields as $field ) {
-						$context->addHighlightField( $field, [
-							'pattern' => $matches['pattern'],
-							'locale' => $this->languageCode,
-							'insensitive' => $insensitive,
-						] );
-					}
-				} else {
-					$context->addNotFilter( $filter );
-				}
+	public function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated, $delimiter, $suffix ) {
+		if ( $delimiter === '/' ) {
+			if ( !$this->enabled ) {
+				$context->addWarning(
+					'cirrussearch-feature-not-available',
+					"$key regex"
+				);
+				return [ null, false ];
 			}
-		);
+
+			$pattern = trim( $quotedValue, '/' );
+			$insensitive = $suffix === 'i';
+			$filter = $this->buildRegexQuery( $pattern, $insensitive, $context );
+			if ( !$negated ) {
+				$this->configureHighlighting( $pattern, $insensitive, $context );
+			}
+			return [ $filter, false ];
+		} else {
+			return $this->doApply( $context, $key, $value, $quotedValue, $negated );
+		}
 	}
 
+	/**
+	 * @param $pattern
+	 * @param $insensitive
+	 * @param SearchContext $context
+	 * @return AbstractQuery
+	 */
+	private function buildRegexQuery( $pattern, $insensitive, SearchContext $context ) {
+		return $this->regexPlugin && in_array( 'use', $this->regexPlugin )
+			? $this->buildRegexWithPlugin( $pattern, $insensitive, $context )
+			: $this->buildRegexWithGroovy( $pattern, $insensitive );
+	}
+
+	private function configureHighlighting( $pattern, $insensitive, SearchContext $context ) {
+		foreach ( $this->fields as $field ) {
+			$context->addHighlightField( $field, [
+				'pattern' => $pattern,
+				'locale' => $this->languageCode,
+				'insensitive' => $insensitive,
+			] );
+		}
+	}
 	/**
 	 * Builds a regular expression query using the wikimedia-extra plugin.
 	 *

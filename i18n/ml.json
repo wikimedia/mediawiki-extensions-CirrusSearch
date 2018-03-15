@@ -19,5 +19,12 @@
 	"apihelp-cirrus-mapping-dump-description": "ഈ വിക്കിയിലെ സിറസ്‌തിരച്ചിൽ അടയാളപ്പെടുത്തലുകൾ ഒഴിവാക്കുക.",
 	"apihelp-cirrus-settings-dump-description": "സിറസ്‌തിരച്ചിൽ സജ്ജീകരണങ്ങൾ ഈ വിക്കിയിൽ ഒഴിവാക്കുക.",
 	"cirrussearch-give-feedback": "അഭിപ്രായങ്ങൾ അറിയിക്കുക",
-	"cirrussearch-query-too-long": "അനുവദിച്ചിട്ടുള്ള നീളത്തിലും കൂടുതലാണ് തിരച്ചിൽ അഭ്യർത്ഥനയുടെ നീളം. ($1 > $2)"
+	"cirrussearch-query-too-long": "അനുവദിച്ചിട്ടുള്ള നീളത്തിലും കൂടുതലാണ് തിരച്ചിൽ അഭ്യർത്ഥനയുടെ നീളം. ($1 > $2)",
+	"cirrussearch-explore-similar-related": "ബന്ധപ്പെട്ടവ",
+	"cirrussearch-explore-similar-categories": "വർഗ്ഗങ്ങൾ",
+	"cirrussearch-explore-similar-languages": "ഭാഷകൾ",
+	"cirrussearch-explore-similar-related-none": "ബന്ധപ്പെട്ട താളുകൾ ലഭ്യമല്ല",
+	"cirrussearch-explore-similar-categories-none": "വർഗ്ഗങ്ങൾ ലഭ്യമല്ല",
+	"cirrussearch-explore-similar-languages-none": "മറ്റ് ഭാഷകളിൽ ലഭ്യമല്ല",
+	"cirrussearch-article-words": "എല്ലാ ഉള്ളടക്ക താളുകളിലും ഉള്ള വാക്കുകൾ"
 }

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use Wikimedia\Assert\Assert;
 
 /**
  * Implements abstract handling of keyword features that are composed of a
@@ -90,11 +91,11 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * unquoted capture groups.
 	 */
 	private function getValueRegex() {
-		assert( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
+		Assert::invariant( $this->hasValue(), __METHOD__ . ' called but hasValue() is false' );
 		if ( $this->greedy() ) {
-			assert( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
+			Assert::precondition( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
 			// XXX: we ignore value delimiter for greedy keywords
-			assert( $this->getValueDelimiters() === [ [ 'delimiter' => '"' ] ], "getValueDelimiters() must not be overridden with greedy keywords" );
+			Assert::precondition( $this->getValueDelimiters() === [ [ 'delimiter' => '"' ] ], "getValueDelimiters() must not be overridden with greedy keywords" );
 			// XXX: we send raw value to the keyword
 			return '(?<unquoted>.+)';
 		} else {
@@ -103,7 +104,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			$allDelims = '';
 			$optionalSuffixes = [];
 			foreach ( $this->getValueDelimiters() as $delimConfig ) {
-				assert( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
+				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
 				$delim = preg_quote( $delimConfig['delimiter'], '/' );
 				$allDelims .= $delim;
 				if ( isset( $delimConfig['suffixes'] ) ) {
@@ -173,7 +174,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			'|',
 			array_map(
 				function ( $kw ) {
-					return preg_quote( $kw );
+					return preg_quote( $kw, '/' );
 				},
 				$this->getKeywords()
 			)
@@ -193,7 +194,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 
 		$callback = function ( $match ) use ( $context ) {
 			$key = $match['key'];
-			assert( $this->hasValue() === isset( $match['value'] ) );
+			Assert::invariant( $this->hasValue() === isset( $match['value'] ), 'a value must have matched' );
 			$quotedValue = '';
 			$value = '';
 			$valueDelimiter = '';

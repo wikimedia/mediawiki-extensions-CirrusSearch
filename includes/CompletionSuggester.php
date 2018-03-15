@@ -19,6 +19,7 @@ use MediaWiki\MediaWikiServices;
 use SearchSuggestionSet;
 use Status;
 use User;
+use Wikimedia\Assert\Assert;
 
 /**
  * Performs search as you type queries using Completion Suggester.
@@ -273,18 +274,20 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		if ( $collector->isFull() ) {
 			return $totalHits;
 		}
+		/** @var FancyTitleResultsType $rType */
 		$rType = $this->prefixSearchRequestBuilder->getSearchContext()->getResultsType();
 		// the code below highly depends on the array format built by
 		// FancyTitleResultsType::transformOneElasticResult assert that this type
 		// is properly set so that we fail during unit tests if someone changes it
 		// inadvertently.
-		assert( $rType instanceof FancyTitleResultsType );
+		Assert::precondition( $rType instanceof FancyTitleResultsType, '$rType must be a FancyTitleResultsType' );
 		// scores can go negative, it's not a problem we only use scores for sorting
 		// they'll be forgotten in client response
 		$score = $collector->getMinScore() !== null ? $collector->getMinScore() - 1 : count( $prefixResults->getResults() );
 
 		foreach ( $prefixResults->getResults() as $res ) {
 			$pageId = $this->config->makePageId( $res->getId() );
+			/** @suppress PhanUndeclaredMethod transformOneElasticResult exists (FancyTitleResultsType asserted) */
 			$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $rType->transformOneElasticResult( $res ) );
 			if ( $title === false ) {
 				continue;

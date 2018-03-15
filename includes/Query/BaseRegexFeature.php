@@ -7,6 +7,7 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
+use Wikimedia\Assert\Assert;
 
 /**
  * Base class supporting regex searches. Works best when combined with the
@@ -56,7 +57,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 		$this->languageCode = $config->get( 'LanguageCode' );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
-		assert( count( $fields ) > 0 );
+		Assert::precondition( count( $fields ) > 0, 'must have at least one field' );
 		$this->fields = $fields;
 	}
 

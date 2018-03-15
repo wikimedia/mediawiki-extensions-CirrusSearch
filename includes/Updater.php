@@ -8,6 +8,7 @@ use MediaWiki\MediaWikiServices;
 use CirrusSearch\Search\CirrusIndexField;
 use TextContent;
 use Title;
+use Wikimedia\Assert\Assert;
 use WikiPage;
 
 /**
@@ -420,7 +421,7 @@ class Updater extends ElasticsearchIntermediary {
 		$params['source'] = $doc->getData();
 
 		if ( $handlers ) {
-			assert( is_array( $handlers ), "Noop hints must be an array" );
+			Assert::precondition( is_array( $handlers ), "Noop hints must be an array" );
 			$params['handlers'] = $handlers;
 		} else {
 			$params['handlers'] = [];

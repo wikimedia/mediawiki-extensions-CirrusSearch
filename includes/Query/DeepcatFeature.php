@@ -182,6 +182,7 @@ SPARQL;
 			MediaWikiServices::getInstance()
 				->getStatsdDataFactory()
 				->increment( self::STATSD_TOOMANY_KEY );
+			$context->setResultsPossible( false );
 			return [];
 		}
 

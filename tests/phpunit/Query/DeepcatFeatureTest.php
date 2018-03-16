@@ -124,6 +124,31 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$feature->apply( $context, "deepcat:$term" );
 	}
 
+	public function testTooManyCats() {
+		$config = new \HashConfig( [
+			'CirrusSearchCategoryDepth' => '3',
+			'CirrusSearchCategoryMax' => 3,
+			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
+		] );
+
+		$client = $this->getSparqlClient( [
+			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( 'Ducks' ) . '>',
+			'bd:serviceParam mediawiki:depth 3 ',
+			'LIMIT 4'
+		], 	[
+				[ 'out' => 'Ducks' ],
+				[ 'out' => 'Wigeons' ],
+				[ 'out' => 'More ducks' ],
+				[ 'out' => 'There is no such thing as too many ducks' ],
+			]
+		);
+		$feature = new DeepcatFeature( $config, $client );
+
+		$context = $this->mockContextExpectingAddFilter( null );
+		$context->expects( $this->atLeastOnce() )->method( 'setResultsPossible' )->with( false );
+		$feature->apply( $context, "deepcat:Ducks" );
+	}
+
 	/**
 	 * @dataProvider provideQueries
 	 * @param $term

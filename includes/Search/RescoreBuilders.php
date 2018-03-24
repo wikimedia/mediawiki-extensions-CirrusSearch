@@ -513,14 +513,17 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				continue;
 			}
 			if ( !isset( $weightToNs[$key] ) ) {
-				$weightToNs[$key] = [ $ns ];
+				$weightToNs[$key] = [
+					'weight' => $weight,
+					'ns' => [ $ns ]
+				];
 			} else {
-				$weightToNs[$key][] = $ns;
+				$weightToNs[$key]['ns'][] = $ns;
 			}
 		}
-		foreach ( $weightToNs as $weight => $namespaces ) {
-			$filter = new \Elastica\Query\Terms( 'namespace', $namespaces );
-			$functionScore->addWeightFunction( $weight, $filter );
+		foreach ( $weightToNs as $weight => $namespacesAndWeight ) {
+			$filter = new \Elastica\Query\Terms( 'namespace', $namespacesAndWeight['ns'] );
+			$functionScore->addWeightFunction( $namespacesAndWeight['weight'], $filter );
 		}
 	}
 }

@@ -49,6 +49,12 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 	private $maxDeterminizedStates;
 
 	/**
+	 * @var string $shardTimeout timeout for regex queries
+	 * with the extra plugin
+	 */
+	private $shardTimeout;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param string[] $fields
 	 */
@@ -59,6 +65,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
 		Assert::precondition( count( $fields ) > 0, 'must have at least one field' );
 		$this->fields = $fields;
+		$this->shardTimeout = $config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
 	}
 
 	/**
@@ -113,7 +120,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 
 			$pattern = trim( $quotedValue, '/' );
 			$insensitive = $suffix === 'i';
-			$filter = $this->buildRegexQuery( $pattern, $insensitive, $context );
+			$filter = $this->buildRegexQuery( $pattern, $insensitive );
 			if ( !$negated ) {
 				$this->configureHighlighting( $pattern, $insensitive, $context );
 			}
@@ -126,12 +133,11 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 	/**
 	 * @param $pattern
 	 * @param $insensitive
-	 * @param SearchContext $context
 	 * @return AbstractQuery
 	 */
-	private function buildRegexQuery( $pattern, $insensitive, SearchContext $context ) {
+	private function buildRegexQuery( $pattern, $insensitive ) {
 		return $this->regexPlugin && in_array( 'use', $this->regexPlugin )
-			? $this->buildRegexWithPlugin( $pattern, $insensitive, $context )
+			? $this->buildRegexWithPlugin( $pattern, $insensitive )
 			: $this->buildRegexWithGroovy( $pattern, $insensitive );
 	}
 
@@ -149,12 +155,10 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 	 *
 	 * @param string $pattern The regular expression to match
 	 * @param bool $insensitive Should the match be case insensitive?
-	 * @param SearchContext $context
 	 * @return AbstractQuery Regular expression query
 	 */
-	private function buildRegexWithPlugin( $pattern, $insensitive, SearchContext $context ) {
+	private function buildRegexWithPlugin( $pattern, $insensitive ) {
 		$filters = [];
-		$timeout = $context->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
 		// TODO: Update plugin to accept multiple values for the field property
 		// so that at index time we can create a single trigram index with
 		// copy_to instead of creating multiple queries.
@@ -171,8 +175,8 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 			$filter->setCaseSensitive( !$insensitive );
 			$filter->setLocale( $this->languageCode );
 
-			if ( $timeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
-				$filter->setTimeout( $timeout );
+			if ( $this->shardTimeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
+				$filter->setTimeout( $this->shardTimeout );
 			}
 
 			$filters[] = $filter;

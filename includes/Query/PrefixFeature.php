@@ -27,7 +27,7 @@ use Wikimedia\Assert\Assert;
  *   prefix:California Cou
  *   prefix:"California Cou"
  */
-class PrefixFeature extends SimpleKeywordFeature {
+class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 
 	/**
 	 * @return bool

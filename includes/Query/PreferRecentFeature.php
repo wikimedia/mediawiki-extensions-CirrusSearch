@@ -18,7 +18,7 @@ use CirrusSearch\Search\SearchContext;
  *  prefer-recent:.6
  *  prefer-recent:0.5,.0001
  */
-class PreferRecentFeature extends SimpleKeywordFeature {
+class PreferRecentFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @var float Default number of days for the portion of the score effected
 	 *  by this feature to be cut in half. Used when `prefer-recent:` is present

@@ -20,7 +20,7 @@ use Title;
  * Syntax:
  *  deepcat:Vehicles
  */
-class DeepcatFeature extends SimpleKeywordFeature {
+class DeepcatFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * Max lookup depth
 	 * @var int

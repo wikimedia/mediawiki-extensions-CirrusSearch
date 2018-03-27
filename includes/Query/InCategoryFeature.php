@@ -27,7 +27,7 @@ use Title;
  *   incategory:Animals|id:54321
  *   incategory::Something_in_NS_MAIN
  */
-class InCategoryFeature extends SimpleKeywordFeature {
+class InCategoryFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @var int
 	 */

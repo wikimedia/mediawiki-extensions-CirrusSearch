@@ -188,7 +188,7 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 	}
 }
 
-class MockSimpleKeywordFeature extends SimpleKeywordFeature {
+class MockSimpleKeywordFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	private $calls = [];
 
 	protected function getKeywords() {

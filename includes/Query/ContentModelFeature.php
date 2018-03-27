@@ -12,7 +12,7 @@ use Elastica\Query;
  *  contentmodel:wikitext
  * Selects only articles having this content model.
  */
-class ContentModelFeature extends SimpleKeywordFeature {
+class ContentModelFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

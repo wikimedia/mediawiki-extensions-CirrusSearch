@@ -10,7 +10,7 @@ use CirrusSearch\WarningCollector;
 use Title;
 use WikiPage;
 
-class MoreLikeFeature extends SimpleKeywordFeature {
+class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	const MORE_LIKE_THIS = 'morelike';
 	const MORE_LIKE_THIS_JUST_WIKIBASE = 'morelikewithwikibase';
 

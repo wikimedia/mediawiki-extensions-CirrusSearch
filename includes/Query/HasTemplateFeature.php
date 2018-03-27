@@ -13,7 +13,7 @@ use Title;
  * are prefixed with ":" and things in NS_TEMPATE don't have a prefix at all.
  * Since we don't actually index templates like that, munge the query here.
  */
-class HasTemplateFeature extends SimpleKeywordFeature {
+class HasTemplateFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

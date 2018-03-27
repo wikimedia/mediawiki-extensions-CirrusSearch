@@ -19,7 +19,7 @@ use CirrusSearch\WarningCollector;
  *  boost-templates:"Featured sound|150%"
  *  boost-templates:"Main_article|250% List_of_lists|10%"
  */
-class BoostTemplatesFeature extends SimpleKeywordFeature {
+class BoostTemplatesFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

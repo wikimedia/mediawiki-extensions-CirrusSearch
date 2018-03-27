@@ -15,7 +15,7 @@ use CirrusSearch\Search\SearchContext;
  *   linksto:Wake_Island
  *   linksto:Shanghai
  */
-class LinksToFeature extends SimpleKeywordFeature {
+class LinksToFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

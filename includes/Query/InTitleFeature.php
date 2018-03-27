@@ -23,7 +23,7 @@ use CirrusSearch\SearchConfig;
  *   intitle:"foo*"
  *   intitle:"foo OR bar"
  */
-class InTitleFeature extends BaseRegexFeature {
+class InTitleFeature extends BaseRegexFeature implements LegacyKeywordFeature {
 
 	public function __construct( SearchConfig $config ) {
 		parent::__construct( $config, [ 'title', 'redirect.title' ] );

@@ -17,7 +17,7 @@ use CirrusSearch\WarningCollector;
  *   inlanguage:en
  *   inlanguage:fr,en
  */
-class LanguageFeature extends SimpleKeywordFeature {
+class LanguageFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * Limit search to 20 languages. Arbitrarily chosen, but should be more
 	 * than enough and some sort of limit has to be enforced.

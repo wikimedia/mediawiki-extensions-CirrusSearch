@@ -11,7 +11,7 @@ use CirrusSearch\Search\SearchContext;
  * commons when searching the NS_FILE namespace. No value may be provided
  * along with this keyword, it is a simple boolean flag.
  */
-class LocalFeature extends SimpleKeywordFeature {
+class LocalFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 
 	/**
 	 * @return string[] The list of keywords this feature is supposed to match

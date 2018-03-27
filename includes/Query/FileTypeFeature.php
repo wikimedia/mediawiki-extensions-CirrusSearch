@@ -13,7 +13,7 @@ use Elastica\Query;
  *  filemime:application/pdf
  * Selects only files of these specified features.
  */
-class FileTypeFeature extends SimpleKeywordFeature {
+class FileTypeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

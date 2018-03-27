@@ -25,7 +25,7 @@ use CirrusSearch\SearchConfig;
  *   insource:"foo*"
  *   insource:"foo OR bar"
  */
-class InSourceFeature extends BaseRegexFeature {
+class InSourceFeature extends BaseRegexFeature implements LegacyKeywordFeature {
 
 	/**
 	 * Source field

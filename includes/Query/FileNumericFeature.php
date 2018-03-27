@@ -16,7 +16,7 @@ use Wikimedia\Assert\Assert;
  *  filew:100,300 - search of 100 <= file_width <= 300
  * Selects only files of these specified features.
  */
-class FileNumericFeature extends SimpleKeywordFeature {
+class FileNumericFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

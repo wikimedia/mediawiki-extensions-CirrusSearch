@@ -11,7 +11,7 @@ use CirrusSearch\Search\SearchContext;
  * uses the prefix field, very similar to the prefix except
  * that it enforces a trailing / and is not a greedy keyword
  */
-class SubPageOfFeature extends SimpleKeywordFeature {
+class SubPageOfFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	/**
 	 * @return string[]
 	 */

@@ -2,7 +2,8 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\OtherIndexes;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 use Elastica\Query\FunctionScore;
 
@@ -12,52 +13,66 @@ use Elastica\Query\FunctionScore;
  * The list of boosted templates is read from SearchContext
  */
 class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
-	/**
-	 * @var float[] Template boost values keyed by template name
-	 */
-	private $boostTemplates;
 
 	/**
-	 * @var float[][] Template boost values with wiki id at top level,
-	 *  template at second level, and boost as the value.
+	 * @var BoostedQueriesFunction
 	 */
-	private $extraIndexBoostTemplates;
+	private $boostedQueries;
 
 	/**
-	 * @param SearchContext $context
+	 * BoostTemplatesFunctionScoreBuilder constructor.
+	 * @param SearchConfig $config
+	 * @param int[]|null $requestedNamespaces
+	 * @param bool $localSearch
+	 * @param bool $withDefaultBoosts false to disable the use of default boost templates
 	 * @param float $weight
 	 */
-	public function __construct( SearchContext $context, $weight ) {
-		parent::__construct( $context->getConfig(), $weight );
-		// Use the boosted template from query string if available
-		$this->boostTemplates = $context->getBoostTemplatesFromQuery();
+	public function __construct( SearchConfig $config, $requestedNamespaces, $localSearch, $withDefaultBoosts, $weight ) {
+		parent::__construct( $config, $weight );
 		// Use the boosted templates from extra indexes if available
-		$this->extraIndexBoostTemplates = $context->getExtraIndexBoostTemplates();
-		// empty array may be returned here in the case of a syntax error
-		// @todo: verify that this is what we want: in case of a syntax error
-		// we disable default boost templates.
-		if ( $this->boostTemplates === null ) {
-			// Fallback to default otherwise
-			$this->boostTemplates = Util::getDefaultBoostTemplates( $context->getConfig() );
-		}
-	}
-
-	public function append( FunctionScore $functionScore ) {
-		if ( $this->boostTemplates ) {
-			foreach ( $this->boostTemplates as $name => $weight ) {
-				$match = new \Elastica\Query\Match();
-				$match->setFieldQuery( 'template', $name );
-				$functionScore->addWeightFunction( $weight * $this->weight, $match );
+		$queries = [];
+		$weights = [];
+		if ( $withDefaultBoosts ) {
+			$boostTemplates = Util::getDefaultBoostTemplates( $config );
+			if ( $boostTemplates ) {
+				foreach ( $boostTemplates as $name => $weight ) {
+					$match = new \Elastica\Query\Match();
+					$match->setFieldQuery( 'template', $name );
+					$weights[] = $weight * $this->weight;
+					$queries[] = $match;
+				}
 			}
 		}
-		foreach ( $this->extraIndexBoostTemplates as $wiki => $boostTemplates ) {
+
+		$otherIndices = [];
+		if ( $requestedNamespaces && !$localSearch ) {
+			$otherIndices = OtherIndexes::getExtraIndexesForNamespaces(
+				$requestedNamespaces
+			);
+		}
+
+		$extraIndexBoostTemplates = [];
+		foreach ( $otherIndices as $extraIndex ) {
+			$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
+			if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
+				$extraIndexBoostTemplates[$extraIndexBoosts['wiki']] = $extraIndexBoosts['boosts'];
+			}
+		}
+
+		foreach ( $extraIndexBoostTemplates as $wiki => $boostTemplates ) {
 			foreach ( $boostTemplates as $name => $weight ) {
 				$bool = new \Elastica\Query\BoolQuery();
 				$bool->addMust( ( new \Elastica\Query\Match() )->setFieldQuery( 'wiki', $wiki ) );
 				$bool->addMust( ( new \Elastica\Query\Match() )->setFieldQuery( 'template',
 					$name ) );
-				$functionScore->addWeightFunction( $weight * $this->weight, $bool );
+				$weights[] = $weight * $this->weight;
+				$queries[] = $bool;
 			}
 		}
+		$this->boostedQueries = new BoostedQueriesFunction( $queries, $weights );
+	}
+
+	public function append( FunctionScore $functionScore ) {
+		$this->boostedQueries->append( $functionScore );
 	}
 }

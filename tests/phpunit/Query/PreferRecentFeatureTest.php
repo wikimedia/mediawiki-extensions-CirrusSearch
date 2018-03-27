@@ -3,7 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
 
 /**
  * @covers \CirrusSearch\Query\PreferRecentFeature
@@ -69,13 +69,30 @@ class PreferRecentFeatureTest extends BaseSimpleKeywordFeatureTest {
 			$expectedParsedValue['halfLife'] = $expectedHalfLife;
 		}
 		$this->assertParsedValue( $feature, $term, $expectedParsedValue === [] ? null : $expectedParsedValue, [] );
-		$context = new SearchContext( $config );
-		$feature->apply( $context, $term );
-		if ( $expectedDecay !== null ) {
-			$this->assertEquals( $context->getPreferRecentDecayPortion(), $expectedDecay );
+	}
+
+	/**
+	 * @dataProvider parseProvider
+	 */
+	public function testBoost( $expectedRemaining, $expectedDecay, $expectedHalfLife, $term ) {
+		$defaultHalfLife = 160;
+		$defaultDecay = 0.6;
+
+		if ( $expectedDecay === null ) {
+			$expectedDecay = $defaultDecay;
 		}
-		if ( $expectedHalfLife !== null ) {
-			$this->assertEquals( $context->getPreferRecentHalfLife(), $expectedHalfLife );
+		if ( $expectedHalfLife === null ) {
+			$expectedHalfLife = $defaultHalfLife;
 		}
+
+		$config = new HashSearchConfig( [
+			'CirrusSearchPreferRecentDefaultHalfLife' => $defaultHalfLife,
+			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => $defaultDecay,
+		] );
+		$feature = new PreferRecentFeature( $config );
+
+		$this->assertBoost( $feature, $term,
+			new PreferRecentFunctionScoreBuilder( $config, 1, $expectedHalfLife, $expectedDecay ),
+			[], $config );
 	}
 }

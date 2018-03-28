@@ -46,7 +46,7 @@ class CheckerJob extends Job {
 	 * @return CheckerJob
 	 */
 	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster ) {
-		$job = new self( Title::makeTitle( 0, "" ), [
+		$job = new self( Title::makeTitle( NS_SPECIAL, "Badtitle/" . __CLASS__ ), [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,
 			'createdAt' => time(),

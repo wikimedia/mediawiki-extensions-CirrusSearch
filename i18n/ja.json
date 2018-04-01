@@ -34,6 +34,7 @@
 	"apihelp-cirrus-settings-dump-example": "このウィキの CirrusSearch の設定のダンプを取得します。",
 	"apierror-cirrus-requesttoolong": "前方一致の文字列が長すぎます。（$1 &gt; $2）",
 	"cirrussearch-give-feedback": "フィードバックをください",
+	"cirrussearch-query-too-long": "検索リクエストが許可されている最大長を超えています。($1> $2)",
 	"cirrussearch-qi-profile-popular-pv": "ページ閲覧数による順位",
 	"cirrussearch-qi-profile-popular-inclinks": "リンク元の件数による順位",
 	"cirrussearch-pref-completion-profile-help": "（あなたが入力した検索文字列による）自動補完の提案時の挙動を設定します。",

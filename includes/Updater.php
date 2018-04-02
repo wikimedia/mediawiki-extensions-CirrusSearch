@@ -8,7 +8,6 @@ use MediaWiki\MediaWikiServices;
 use CirrusSearch\Search\CirrusIndexField;
 use TextContent;
 use Title;
-use Wikimedia\Assert\Assert;
 use WikiPage;
 
 /**
@@ -185,8 +184,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return int Number of documents updated of -1 if there was an error
 	 */
 	public function updatePages( $pages, $flags ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
 		// Don't update the same page twice. We shouldn't, but meh
 		$pageIds = [];
 		$pages = array_filter( $pages, function ( WikiPage $page ) use ( &$pageIds ) {
@@ -206,13 +203,6 @@ class Updater extends ElasticsearchIntermediary {
 		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			if ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] ) ) {
-				$document = $this->docToSuperDetectNoopScript( $document,
-					!empty( $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop_enable_native' ] ) );
-			}
-			// TODO: Move hints reset at a later stage if they appear to be useful
-			// (e.g. in DataSender::sendData)
-			CirrusIndexField::resetHints( $document );
 			$allData[$suffix][] = $document;
 		}
 
@@ -406,42 +396,6 @@ class Updater extends ElasticsearchIntermediary {
 		MWHooks::run( 'CirrusSearchBuildDocumentFinishBatch', [ $pages ] );
 
 		return $documents;
-	}
-
-	/**
-	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
-	 * @internal made public for testing purposes
-	 * @param \Elastica\Document $doc
-	 * @param bool $enableNative enable the use of native scripts (deprecated as of elastic 5.5+)
-	 * @return \Elastica\Script\Script
-	 */
-	public function docToSuperDetectNoopScript( $doc, $enableNative = false ) {
-		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
-		$params = $doc->getParams();
-		$params['source'] = $doc->getData();
-
-		if ( $handlers ) {
-			Assert::precondition( is_array( $handlers ), "Noop hints must be an array" );
-			$params['handlers'] = $handlers;
-		} else {
-			$params['handlers'] = [];
-		}
-		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
-		if ( is_array( $extraHandlers ) ) {
-			$params['handlers'] += $extraHandlers;
-		}
-
-		if ( $enableNative ) {
-			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
-		} else {
-			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
-		}
-		if ( $doc->getDocAsUpsert() ) {
-			CirrusIndexField::resetHints( $doc );
-			$script->setUpsert( $doc );
-		}
-
-		return $script;
 	}
 
 	/**

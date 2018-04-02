@@ -24,14 +24,14 @@ use CirrusSearch\Search\CirrusIndexField;
  *
  * @group CirrusSearch
  */
-class UpdaterTest extends CirrusTestCase {
+class DataSenderTest extends CirrusTestCase {
 	/**
 	 * @dataProvider provideDocs
 	 */
 	public function testSuperNoopExtraHandlers( array $rawDoc, array $hints, array $extraHandlers, array $expectedParams ) {
 		$config = $this->buildConfig( $extraHandlers );
 		$conn = new Connection( $config );
-		$updater = new Updater( $conn, $config );
+		$updater = new DataSender( $conn, $config );
 		$doc = $this->builDoc( $rawDoc, $hints );
 		$script = $updater->docToSuperDetectNoopScript( $doc, false );
 		$this->assertEquals( 'super_detect_noop', $script->getLang() );

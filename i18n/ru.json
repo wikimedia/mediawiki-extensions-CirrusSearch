@@ -62,7 +62,7 @@
 	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для предложений автодополнения (поиска по мере набора).",
 	"prefs-completion": "Дополнение поиска",
 	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
-	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester «Подсказчик автозаполнения»] — это алгоритм для поиска названий с наиболее близкими по написанию и релевантными по запросу.",
+	"cirrussearch-pref-completion-section-legend": "«[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Подсказчик автозаполнения]» — это алгоритм для поиска названий с наиболее близкими по написанию и релевантными по запросу.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправляет до двух опечаток. Подставляет подходящие перенаправления.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Поиск по подвыражениям (рекоммендуется для длинных заголовков страниц)",

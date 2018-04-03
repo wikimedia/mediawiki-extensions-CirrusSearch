@@ -1,8 +1,9 @@
 <?php
 
-namespace CirrusSearch\Search;
+namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\SearchContext;
 use Elastica\Query\FunctionScore;
 use Hooks;
 

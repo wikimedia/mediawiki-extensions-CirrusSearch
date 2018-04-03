@@ -5,11 +5,24 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Profile\SearchProfileException;
+use CirrusSearch\Search\Rescore\BoostTemplatesFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\CustomFieldFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\FunctionScoreDecorator;
+use CirrusSearch\Search\Rescore\IncomingLinksFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\InvalidRescoreProfileException;
+use CirrusSearch\Search\Rescore\LangWeightFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\NamespacesFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\RescoreBuilder;
+use CirrusSearch\Search\Rescore\ScriptScoreFunctionScoreBuilder;
 
 /**
  * @group CirrusSearch
  */
 class RescoreBuilderTest extends CirrusTestCase {
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\FunctionScoreDecorator
+	 */
 	public function testFunctionScoreDecorator() {
 		$func = new FunctionScoreDecorator();
 		$this->assertTrue( $func->isEmptyFunction() );
@@ -37,6 +50,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertEquals( 1, count( $array['function_score']['functions'] ) );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder
+	 */
 	public function testPreferRecent() {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
@@ -51,6 +67,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $fScore->isEmptyFunction() );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\LangWeightFunctionScoreBuilder
+	 */
 	public function testLangWeight() {
 		// Default user lang seems to be en with unit tests
 		// Test that we generate 2 filters
@@ -98,6 +117,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertTrue( $fScore->isEmptyFunction() );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\BoostTemplatesFunctionScoreBuilder
+	 */
 	public function testBoostTemplates() {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
@@ -112,6 +134,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $fScore->isEmptyFunction() );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\CustomFieldFunctionScoreBuilder
+	 */
 	public function testCustomField() {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
@@ -130,6 +155,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertEquals( $profile, $array['function_score']['functions'][0]['field_value_factor'] );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\ScriptScoreFunctionScoreBuilder
+	 */
 	public function testScriptScore() {
 		$config = new HashSearchConfig( [] );
 		$context = new SearchContext( $config, null );
@@ -145,6 +173,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertEquals( 2, $array['function_score']['functions'][0]['weight'] );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\IncomingLinksFunctionScoreBuilder
+	 */
 	public function testBoostLinks() {
 		$settings = [];
 		$config = new HashSearchConfig( $settings );
@@ -160,6 +191,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertTrue( isset( $array['field_value_factor'] ) );
 	}
 
+	/**
+	 * @covers \CirrusSearch\Search\Rescore\NamespacesFunctionScoreBuilder
+	 */
 	public function testNamespacesBoost() {
 		$settings = [
 			'CirrusSearchNamespaceWeights' => [
@@ -232,6 +266,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideRescoreProfilesWithFallback
+	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testFallbackProfile( $settings, $namespaces, $expectedFunctionCount ) {
 		$config = new HashSearchConfig( $settings );
@@ -334,6 +369,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	}
 	/**
 	 * @dataProvider provideRescoreProfilesWithWindowSize
+	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testWindowSizeOverride( $settings, $expected ) {
 		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );
@@ -456,6 +492,8 @@ class RescoreBuilderTest extends CirrusTestCase {
 	}
 
 	/**
+	 * @covers \CirrusSearch\Search\TermBoostScoreBuilder
+	 * @covers \CirrusSearch\Search\Rescore\TermBoostScoreBuilder
 	 * @dataProvider termBoostProvider
 	 */
 	public function testTermBoosts( $weight, array $settings, array $functions ) {
@@ -475,6 +513,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideInvalidRescoreProfiles
+	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testBadRescoreProfile( $settings, $expectedException ) {
 		$config = new HashSearchConfig( $settings + [ 'CirrusSearchRescoreProfile' => 'default' ] );

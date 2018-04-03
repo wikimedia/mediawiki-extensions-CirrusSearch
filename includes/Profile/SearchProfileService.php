@@ -54,14 +54,14 @@ class SearchProfileService {
 	/**
 	 * Profile type for rescoring components
 	 * Used at query when building elastic queries
-	 * @see \CirrusSearch\Search\RescoreBuilder
+	 * @see \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	const RESCORE = 'rescore';
 
 	/**
 	 * Profile type used to build function chains
 	 * Used at query time by rescore builders
-	 * @see \CirrusSearch\Search\RescoreBuilder
+	 * @see \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	const RESCORE_FUNCTION_CHAINS = 'rescore_function_chains';
 

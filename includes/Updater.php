@@ -200,22 +200,22 @@ class Updater extends ElasticsearchIntermediary {
 			Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
 		}
 
-		$allData = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
+		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
 		foreach ( $this->buildDocumentsForPages( $pages, $flags ) as $document ) {
 			$suffix = $this->connection->getIndexSuffixForNamespace( $document->get( 'namespace' ) );
-			$allData[$suffix][] = $document;
+			$allDocuments[$suffix][] = $document;
 		}
 
 		$count = 0;
-		foreach ( $allData as $indexType => $data ) {
-			// Elasticsearch has a queue capacity of 50 so if $data contains 50 pages it could bump up against
+		foreach ( $allDocuments as $indexType => $documents ) {
+			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up against
 			// the max.  So we chunk it and do them sequentially.
-			foreach ( array_chunk( $data, 10 ) as $chunked ) {
-				$job = new Job\ElasticaWrite(
+			foreach ( array_chunk( $documents, 10 ) as $chunked ) {
+				$job = Job\ElasticaWrite::build(
 					reset( $titles ),
+					'sendData',
+					[ $indexType, $chunked ],
 					[
-						'method' => 'sendData',
-						'arguments' => [ $indexType, $chunked ],
 						'cluster' => $this->writeToClusterName,
 						'doNotRetry' => $isInstantIndex,
 					]
@@ -224,7 +224,7 @@ class Updater extends ElasticsearchIntermediary {
 				// with a delay if writes to ES are currently unavailable
 				$job->run();
 			}
-			$count += count( $data );
+			$count += count( $documents );
 		}
 
 		return $count;
@@ -243,13 +243,11 @@ class Updater extends ElasticsearchIntermediary {
 	 */
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
 		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
-		$job = new Job\ElasticaWrite(
+		$job = Job\ElasticaWrite::build(
 			$titles ? reset( $titles ) : Title::makeTitle( NS_SPECIAL, "Badtitle/" . Job\ElasticaWrite::class ),
-			[
-				'method' => 'sendDeletes',
-				'arguments' => [ $docIds, $indexType, $elasticType ],
-				'cluster' => $this->writeToClusterName,
-			]
+			'sendDeletes',
+			[ $docIds, $indexType, $elasticType ],
+			[ 'cluster' => $this->writeToClusterName ]
 		);
 		// This job type will insert itself into the job queue
 		// with a delay if writes to ES are currently paused
@@ -272,13 +270,11 @@ class Updater extends ElasticsearchIntermediary {
 		$docs = $this->buildArchiveDocuments( $archived );
 		$head = reset( $archived );
 		foreach ( array_chunk( $docs, 10 ) as $chunked ) {
-			$job = new Job\ElasticaWrite(
+			$job = Job\ElasticaWrite::build(
 				$head['title'],
-				[
-					'method' => 'sendData',
-					'arguments' => [ Connection::GENERAL_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
-					'cluster' => $this->writeToClusterName
-				]
+				'sendData',
+				[ Connection::GENERAL_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
+				[ 'cluster' => $this->writeToClusterName ]
 			);
 			$job->run();
 		}

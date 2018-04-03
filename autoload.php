@@ -63,6 +63,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Job\\CheckerJob' => __DIR__ . '/includes/Job/CheckerJob.php',
 	'CirrusSearch\\Job\\DeleteArchive' => __DIR__ . '/includes/Job/DeleteArchive.php',
 	'CirrusSearch\\Job\\DeletePages' => __DIR__ . '/includes/Job/DeletePages.php',
+	'CirrusSearch\\Job\\ElasticaDocumentsJsonSerde' => __DIR__ . '/includes/Job/ElasticaDocumentsJsonSerde.php',
 	'CirrusSearch\\Job\\ElasticaWrite' => __DIR__ . '/includes/Job/ElasticaWrite.php',
 	'CirrusSearch\\Job\\IncomingLinkCount' => __DIR__ . '/includes/Job/IncomingLinkCount.php',
 	'CirrusSearch\\Job\\Job' => __DIR__ . '/includes/Job/Job.php',

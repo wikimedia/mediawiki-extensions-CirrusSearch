@@ -150,11 +150,12 @@ class OtherIndexes extends Updater {
 		// being frozen doesn't block updates to other indexes
 		// in the same update.
 		foreach ( $updates as $indexName => $actions ) {
-			$job = new Job\ElasticaWrite( reset( $titles ), [
-				'method' => 'sendOtherIndexUpdates',
-				'arguments' => [ $this->localSite, $indexName, $actions ],
-				'cluster' => $this->writeToClusterName,
-			] );
+			$job = Job\ElasticaWrite::build(
+				reset( $titles ),
+				'sendOtherIndexUpdates',
+				[ $this->localSite, $indexName, $actions ],
+				[ 'cluster' => $this->writeToClusterName ]
+			);
 			$job->run();
 		}
 	}

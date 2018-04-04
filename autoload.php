@@ -248,4 +248,5 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\UserTesting' => __DIR__ . '/includes/UserTesting.php',
 	'CirrusSearch\\Util' => __DIR__ . '/includes/Util.php',
 	'CirrusSearch\\Version' => __DIR__ . '/includes/Version.php',
+	'CirrusSearch\\WarningCollector' => __DIR__ . '/includes/WarningCollector.php',
 ];

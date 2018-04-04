@@ -7,6 +7,7 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\WarningCollector;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;
 
@@ -33,7 +34,7 @@ use Elastica\Query\AbstractQuery;
  * The SearchContext stores the various states maintained
  * during the query building process.
  */
-class SearchContext {
+class SearchContext implements WarningCollector {
 	/**
 	 * @var SearchConfig
 	 */
@@ -668,7 +669,7 @@ class SearchContext {
 
 	/**
 	 * @return AbstractQuery The primary query to be sent to elasticsearch. Includes
-	 *  the main query, non text queries, and any additional filters.
+	 *  the main quedry, non text queries, and any additional filters.
 	 */
 	public function getQuery() {
 		if ( empty( $this->nonTextQueries ) ) {
@@ -827,10 +828,15 @@ class SearchContext {
 
 	/**
 	 * @param string $message i18n message key
+	 * @param string|null $param1
+	 * @param string|null $param2
+	 * @param string|null $param3
 	 */
-	public function addWarning( $message /*, parameters... */ ) {
+	public function addWarning( $message, $param1 = null,  $param2 = null, $param3 = null ) {
 		$this->isDirty = true;
-		$this->warnings[] = func_get_args();
+		$this->warnings[] = array_filter( func_get_args(), function ( $v ) {
+			return $v !== null;
+		} );
 	}
 
 	/**

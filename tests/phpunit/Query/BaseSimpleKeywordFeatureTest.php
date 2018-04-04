@@ -49,7 +49,7 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 		$context->expects( $this->any() )
 			->method( 'addWarning' )
 			->will( $this->returnCallback( function () use ( &$warnings ) {
-				$warnings[] = func_get_args();
+				$warnings[] = array_filter( func_get_args() );
 			} ) );
 		$feature->apply( $context, $term );
 		$this->assertEquals( $expected, $warnings );

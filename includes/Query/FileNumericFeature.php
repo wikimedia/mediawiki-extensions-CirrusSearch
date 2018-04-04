@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 use Elastica\Query;
 
 /**
@@ -87,17 +88,17 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	/**
 	 * Validate that input arguments will construct a valid query
 	 *
-	 * @param SearchContext $context
+	 * @param WarningCollector $warningCollector
 	 * @param string $key The matched query keyword
 	 * @param string $value The original value provided by user
 	 * @param int $sign
 	 * @param string $number
 	 * @return bool
 	 */
-	protected function validate( SearchContext $context, $key, $value, $sign, $number ) {
+	protected function validate( WarningCollector $warningCollector, $key, $value, $sign, $number ) {
 		$valid = true;
 		if ( $sign && strpos( $number, ',' ) !== false ) {
-			$context->addWarning(
+			$warningCollector->addWarning(
 				'cirrussearch-file-numeric-feature-multi-argument-w-sign',
 				$key,
 				$number
@@ -105,17 +106,17 @@ class FileNumericFeature extends SimpleKeywordFeature {
 			$valid = false;
 		} elseif ( $sign || strpos( $number, ',' ) === false ) {
 			if ( !is_numeric( $number ) ) {
-				$this->nanWarning( $context, $key, empty( $number ) ? $value : $number );
+				$this->nanWarning( $warningCollector, $key, empty( $number ) ? $value : $number );
 				$valid = false;
 			}
 		} else {
 			$numbers = explode( ',', $number, 2 );
 			if ( !is_numeric( $numbers[0] ) ) {
-				$this->nanWarning( $context, $key, $numbers[0] );
+				$this->nanWarning( $warningCollector, $key, $numbers[0] );
 				$valid = false;
 			}
 			if ( !is_numeric( $numbers[1] ) ) {
-				$this->nanWarning( $context, $key, $numbers[1] );
+				$this->nanWarning( $warningCollector, $key, $numbers[1] );
 				$valid = false;
 			}
 		}
@@ -127,12 +128,12 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 * Adds a warning to the search context that the $key keyword
 	 * was provided with the invalid value $notANumber.
 	 *
-	 * @param SearchContext $context
+	 * @param WarningCollector $warningCollector
 	 * @param string $key
 	 * @param string $notANumber
 	 */
-	protected function nanWarning( SearchContext $context, $key, $notANumber ) {
-		$context->addWarning(
+	protected function nanWarning( WarningCollector $warningCollector, $key, $notANumber ) {
+		$warningCollector->addWarning(
 			'cirrussearch-file-numeric-feature-not-a-number',
 			$key,
 			$notANumber

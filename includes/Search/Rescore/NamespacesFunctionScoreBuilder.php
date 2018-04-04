@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 use MWNamespace;
 
@@ -24,20 +24,21 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $namespacesToBoost;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
+	 * @param int[]|null $namespaces
 	 * @param float $weight
 	 */
-	public function __construct( SearchContext $context, $weight ) {
-		parent::__construct( $context, $weight );
+	public function __construct( SearchConfig $config, $namespaces, $weight ) {
+		parent::__construct( $config, $weight );
 		$this->namespacesToBoost =
-			$this->context->getNamespaces() ?: MWNamespace::getValidNamespaces();
+			$namespaces ?: MWNamespace::getValidNamespaces();
 		if ( !$this->namespacesToBoost || count( $this->namespacesToBoost ) == 1 ) {
 			// nothing to boost, no need to initialize anything else.
 			return;
 		}
 		$this->normalizedNamespaceWeights = [];
-		$language = $this->context->getConfig()->get( 'ContLang' );
-		foreach ( $this->context->getConfig()->get( 'CirrusSearchNamespaceWeights' ) as $ns =>
+		$language = $config->get( 'ContLang' );
+		foreach ( $config->get( 'CirrusSearchNamespaceWeights' ) as $ns =>
 				  $weight
 		) {
 			if ( is_string( $ns ) ) {
@@ -67,19 +68,19 @@ class NamespacesFunctionScoreBuilder extends FunctionScoreBuilder {
 				return 1;
 			}
 
-			return $this->context->getConfig()->get( 'CirrusSearchDefaultNamespaceWeight' );
+			return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' );
 		}
 		$subjectNs = MWNamespace::getSubject( $namespace );
 		if ( isset( $this->normalizedNamespaceWeights[$subjectNs] ) ) {
-			return $this->context->getConfig()->get( 'CirrusSearchTalkNamespaceWeight' ) *
+			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' ) *
 				   $this->normalizedNamespaceWeights[$subjectNs];
 		}
 		if ( $namespace === NS_TALK ) {
-			return $this->context->getConfig()->get( 'CirrusSearchTalkNamespaceWeight' );
+			return $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
 		}
 
-		return $this->context->getConfig()->get( 'CirrusSearchDefaultNamespaceWeight' ) *
-			   $this->context->getConfig()->get( 'CirrusSearchTalkNamespaceWeight' );
+		return $this->config->get( 'CirrusSearchDefaultNamespaceWeight' ) *
+			   $this->config->get( 'CirrusSearchTalkNamespaceWeight' );
 	}
 
 	public function append( FunctionScore $functionScore ) {

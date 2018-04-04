@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -10,22 +11,46 @@ use Elastica\Query\FunctionScore;
  * Can be initialized by config for full text and by special syntax in user query
  */
 class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
+
+	/**
+	 * @var float
+	 */
+	private $halfLife;
+
+	/**
+	 * @var float
+	 */
+	private $decayPortion;
+
+	/**
+	 * PreferRecentFunctionScoreBuilder constructor.
+	 * @param SearchConfig $config
+	 * @param int $weight
+	 * @param float $halfLife
+	 * @param float $decayPortion
+	 */
+	public function __construct( SearchConfig $config, $weight, $halfLife, $decayPortion ) {
+		parent::__construct( $config, $weight );
+		$this->halfLife = $halfLife;
+		$this->decayPortion = $decayPortion;
+	}
+
 	public function append( FunctionScore $functionScore ) {
-		if ( !$this->context->hasPreferRecentOptions() ) {
+		if ( !( $this->halfLife > 0 && $this->decayPortion > 0 ) ) {
 			return;
 		}
 		// Convert half life for time in days to decay constant for time in milliseconds.
-		$decayConstant = log( 2 ) / $this->context->getPreferRecentHalfLife() / 86400000;
+		$decayConstant = log( 2 ) / $this->halfLife / 86400000;
 		$parameters = [
 			'decayConstant' => $decayConstant,
-			'decayPortion' => $this->context->getPreferRecentDecayPortion(),
-			'nonDecayPortion' => 1 - $this->context->getPreferRecentDecayPortion(),
+			'decayPortion' => $this->decayPortion,
+			'nonDecayPortion' => 1 - $this->decayPortion,
 			'now' => time() * 1000,
 		];
 
 		// e^ct where t is last modified time - now which is negative
 		$exponentialDecayExpression = "exp(decayConstant * (doc['timestamp'].value - now))";
-		if ( $this->context->getPreferRecentDecayPortion() !== 1.0 ) {
+		if ( $this->decayPortion !== 1.0 ) {
 			$exponentialDecayExpression =
 				"$exponentialDecayExpression * decayPortion + nonDecayPortion";
 		}

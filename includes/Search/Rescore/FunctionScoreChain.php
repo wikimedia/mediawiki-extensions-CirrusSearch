@@ -109,45 +109,50 @@ class FunctionScoreChain {
 
 	/**
 	 * @param array $func
-	 * @return FunctionScoreBuilder
+	 * @return BoostFunctionBuilder
 	 * @throws InvalidRescoreProfileException
-	 * @suppress PhanTypeMismatchReturn phan does not understand hooks and by-ref parameters
 	 */
 	private function getImplementation( $func ) {
 		$weight = isset( $func['weight'] ) ? $func['weight'] : 1;
+		$config = $this->context->getConfig();
 		switch ( $func['type'] ) {
 			case 'boostlinks':
-				return new IncomingLinksFunctionScoreBuilder( $this->context, $weight );
+				return new IncomingLinksFunctionScoreBuilder();
 			case 'recency':
-				return new PreferRecentFunctionScoreBuilder( $this->context, $weight );
+				return new PreferRecentFunctionScoreBuilder( $config, $weight,
+					$this->context->getPreferRecentHalfLife(), $this->context->getPreferRecentDecayPortion() );
 			case 'templates':
 				return new BoostTemplatesFunctionScoreBuilder( $this->context, $weight );
 			case 'namespaces':
-				return new NamespacesFunctionScoreBuilder( $this->context, $weight );
+				return new NamespacesFunctionScoreBuilder( $config, $this->context->getNamespaces(), $weight );
 			case 'language':
-				return new LangWeightFunctionScoreBuilder( $this->context, $weight );
+				return new LangWeightFunctionScoreBuilder( $config, $weight );
 			case 'custom_field':
-				return new CustomFieldFunctionScoreBuilder( $this->context, $weight, $func['params'] );
+				return new CustomFieldFunctionScoreBuilder( $config, $weight, $func['params'] );
 			case 'script':
-				return new ScriptScoreFunctionScoreBuilder( $this->context, $weight, $func['script'] );
+				return new ScriptScoreFunctionScoreBuilder( $config, $weight, $func['script'] );
 			case 'logscale_boost':
-				return new LogScaleBoostFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+				return new LogScaleBoostFunctionScoreBuilder( $config, $weight,  $func['params'] );
 			case 'satu':
-				return new SatuFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+				return new SatuFunctionScoreBuilder( $config, $weight,  $func['params'] );
 			case 'log_multi':
-				return new LogMultFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+				return new LogMultFunctionScoreBuilder( $config, $weight,  $func['params'] );
 			case 'geomean':
-				return new GeoMeanFunctionScoreBuilder( $this->context, $weight,  $func['params'] );
+				return new GeoMeanFunctionScoreBuilder( $config, $weight,  $func['params'] );
 			case 'term_boost':
-				return new TermBoostScoreBuilder( $this->context, $weight,  $func['params'] );
+				return new TermBoostScoreBuilder( $config, $weight,  $func['params'] );
 			default:
 				$builder = null;
 				Hooks::run( 'CirrusSearchScoreBuilder', [ $func, $this->context, &$builder ] );
 				if ( !$builder ) {
 					throw new InvalidRescoreProfileException( "Unknown function score type {$func['type']}." );
 				}
+				if ( !( $builder instanceof BoostFunctionBuilder ) ) {
+					throw new InvalidRescoreProfileException( "Invalid function score type {$func['type']}: expected " .
+						BoostFunctionBuilder::class . " but was " . get_class( $builder ) );
+				}
 				/**
-				 * @var $builder FunctionScoreBuilder
+				 * @var $builder BoostFunctionBuilder
 				 */
 				return $builder;
 		}

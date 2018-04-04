@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -31,13 +31,13 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $scale;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
-	public function __construct( SearchContext $context, $weight, $profile ) {
-		parent::__construct( $context, $weight );
+	public function __construct( SearchConfig $config, $weight, $profile ) {
+		parent::__construct( $config, $weight );
 
 		if ( isset( $profile['midpoint'] ) ) {
 			$this->midpoint = $this->getOverriddenFactor( $profile['midpoint'] );

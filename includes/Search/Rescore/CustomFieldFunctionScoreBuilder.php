@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -17,12 +17,12 @@ class CustomFieldFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $profile;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param array $profile
 	 */
-	public function __construct( SearchContext $context, $weight, $profile ) {
-		parent::__construct( $context, $weight );
+	public function __construct( SearchConfig $config, $weight, $profile ) {
+		parent::__construct( $config, $weight );
 		if ( isset( $profile['factor'] ) ) {
 			$profile['factor'] = $this->getOverriddenFactor( $profile['factor'] );
 		}

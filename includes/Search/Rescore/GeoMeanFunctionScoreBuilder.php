@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -23,13 +23,13 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $epsilon = 0.0000001;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param array $profile
 	 * @throws InvalidRescoreProfileException
 	 */
-	public function __construct( SearchContext $context, $weight, $profile ) {
-		parent::__construct( $context, $weight );
+	public function __construct( SearchConfig $config, $weight, $profile ) {
+		parent::__construct( $config, $weight );
 
 		if ( isset( $profile['impact'] ) ) {
 			$this->impact = $this->getOverriddenFactor( $profile['impact'] );
@@ -60,12 +60,12 @@ class GeoMeanFunctionScoreBuilder extends FunctionScoreBuilder {
 			switch ( $member['type'] ) {
 				case 'satu':
 					$function['script'] =
-						new SatuFunctionScoreBuilder( $this->context, 1,
+						new SatuFunctionScoreBuilder( $this->config, 1,
 							$member['params'] );
 					break;
 				case 'logscale_boost':
 					$function['script'] =
-						new LogScaleBoostFunctionScoreBuilder( $this->context, 1,
+						new LogScaleBoostFunctionScoreBuilder( $this->config, 1,
 							$member['params'] );
 					break;
 				default:

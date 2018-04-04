@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -17,12 +17,12 @@ class ScriptScoreFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $script;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param string $script
 	 */
-	public function __construct( SearchContext $context, $weight, $script ) {
-		parent::__construct( $context, $weight );
+	public function __construct( SearchConfig $config, $weight, $script ) {
+		parent::__construct( $config, $weight );
 		$this->script = $script;
 	}
 

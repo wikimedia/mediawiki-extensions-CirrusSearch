@@ -3,7 +3,8 @@
 namespace CirrusSearch\Search\Rescore;
 
 use CirrusSearch\Search\SearchContext;
-use Elastica\Query\FunctionScore;
+use CirrusSearch\SearchConfig;
+use Wikimedia\Assert\Assert;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -22,11 +23,11 @@ use Elastica\Query\FunctionScore;
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-abstract class FunctionScoreBuilder {
+abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 */
-	protected $context;
+	protected $config;
 
 	/**
 	 * @var float global weight of this function score builder
@@ -34,20 +35,28 @@ abstract class FunctionScoreBuilder {
 	protected $weight;
 
 	/**
-	 * @param SearchContext $context the search context
-	 * @param float $weight the global weight
+	 * @deprecated you should not depend on the SearchContext
+	 * @var SearchContext|null
 	 */
-	public function __construct( SearchContext $context, $weight ) {
-		$this->context = $context;
-		$this->weight = $this->getOverriddenFactor( $weight );
-	}
+	protected $context;
 
 	/**
-	 * Append functions to the function score $container
-	 *
-	 * @param FunctionScore $container
+	 * @param SearchConfig|SearchContext $contextOrConfig the search config
+	 * @param float $weight the global weight
+	 * NOTE: SearchContext usage is being deprecated
 	 */
-	abstract public function append( FunctionScore $container );
+	public function __construct( $contextOrConfig, $weight ) {
+		if ( $contextOrConfig instanceof SearchContext ) {
+			/** @suppress PhanDeprecatedProperty */
+			$this->context = $contextOrConfig;
+			$this->config = $contextOrConfig->getConfig();
+		} elseif ( $contextOrConfig instanceof SearchConfig ) {
+			$this->config = $contextOrConfig;
+		} else {
+			Assert::parameter( false, '$contextOrConfig', 'must be a SearchConfig' );
+		}
+		$this->weight = $this->getOverriddenFactor( $weight );
+	}
 
 	/**
 	 * Utility method to extract a factor (float) that can
@@ -62,7 +71,7 @@ abstract class FunctionScoreBuilder {
 
 			if ( isset( $value['config_override'] ) ) {
 				// Override factor with config
-				$fromConfig = $this->context->getConfig()->get( $value['config_override'] );
+				$fromConfig = $this->config->get( $value['config_override'] );
 				if ( $fromConfig !== null ) {
 					$returnValue = (float)$fromConfig;
 				}

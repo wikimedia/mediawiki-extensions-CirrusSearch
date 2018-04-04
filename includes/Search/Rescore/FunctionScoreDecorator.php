@@ -29,7 +29,8 @@ class FunctionScoreDecorator extends FunctionScore {
 	) {
 		$this->size ++;
 
-		return parent::addFunction( $functionType, $functionParams, $filter, $weight );
+		parent::addFunction( $functionType, $functionParams, $filter, $weight );
+		return $this;
 	}
 
 	/**

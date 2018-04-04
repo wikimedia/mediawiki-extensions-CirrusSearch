@@ -4,7 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\Rescore\FunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\SearchConfig;
 use Elastica\Aggregation\AbstractAggregation;
@@ -72,7 +72,7 @@ class SearchContext {
 	private $rescoreProfile;
 
 	/**
-	 * @var FunctionScoreBuilder[] Extra scoring builders to use.
+	 * @var BoostFunctionBuilder[] Extra scoring builders to use.
 	 */
 	private $extraScoreBuilders = [];
 
@@ -371,7 +371,7 @@ class SearchContext {
 	}
 
 	/**
-	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 * Parameter used by Search\Rescore\PreferRecentFunctionScoreBuilder
 	 *
 	 * @return float the decay portion for prefer recent
 	 */
@@ -380,7 +380,7 @@ class SearchContext {
 	}
 
 	/**
-	 * Parameter used by Search\PreferRecentFunctionScoreBuilder
+	 * Parameter used by Search\Rescore\PreferRecentFunctionScoreBuilder
 	 *
 	 * @return float the half life for prefer recent
 	 */
@@ -809,7 +809,7 @@ class SearchContext {
 	}
 
 	/**
-	 * @return FunctionScoreBuilder[]
+	 * @return BoostFunctionBuilder[]
 	 */
 	public function getExtraScoreBuilders() {
 		return $this->extraScoreBuilders;
@@ -818,9 +818,9 @@ class SearchContext {
 	/**
 	 * Add custom scoring function to the context.
 	 * The rescore builder will pick it up.
-	 * @param FunctionScoreBuilder $rescore
+	 * @param BoostFunctionBuilder $rescore
 	 */
-	public function addCustomRescoreComponent( FunctionScoreBuilder $rescore ) {
+	public function addCustomRescoreComponent( BoostFunctionBuilder $rescore ) {
 		$this->isDirty = true;
 		$this->extraScoreBuilders[] = $rescore;
 	}

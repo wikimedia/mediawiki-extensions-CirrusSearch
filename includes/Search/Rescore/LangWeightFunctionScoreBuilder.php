@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -32,17 +32,17 @@ class LangWeightFunctionScoreBuilder extends FunctionScoreBuilder {
 	private $wikiWeight;
 
 	/**
-	 * @param SearchContext $context
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 */
-	public function __construct( SearchContext $context, $weight ) {
-		parent::__construct( $context, $weight );
-		$this->userLang = $this->context->getConfig()->getUserLanguage();
+	public function __construct( SearchConfig $config, $weight ) {
+		parent::__construct( $config, $weight );
+		$this->userLang = $config->getUserLanguage();
 		$this->userWeight =
-			$this->context->getConfig()->getElement( 'CirrusSearchLanguageWeight', 'user' );
-		$this->wikiLang = $this->context->getConfig()->get( 'LanguageCode' );
+			$config->getElement( 'CirrusSearchLanguageWeight', 'user' );
+		$this->wikiLang = $config->get( 'LanguageCode' );
 		$this->wikiWeight =
-			$this->context->getConfig()->getElement( 'CirrusSearchLanguageWeight', 'wiki' );
+			$config->getElement( 'CirrusSearchLanguageWeight', 'wiki' );
 	}
 
 	public function append( FunctionScore $functionScore ) {

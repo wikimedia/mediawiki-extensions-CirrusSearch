@@ -208,6 +208,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\OpeningTextIndexField' => __DIR__ . '/includes/Search/OpeningTextIndexField.php',
 	'CirrusSearch\\Search\\RandomCrossProjectBlockScorer' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',
 	'CirrusSearch\\Search\\RecallCrossProjectBlockScorer' => __DIR__ . '/includes/Search/CrossProjectBlockScorer.php',
+	'CirrusSearch\\Search\\Rescore\\BoostFunctionBuilder' => __DIR__ . '/includes/Search/Rescore/BoostFunctionBuilder.php',
 	'CirrusSearch\\Search\\Rescore\\BoostTemplatesFunctionScoreBuilder' => __DIR__ . '/includes/Search/Rescore/BoostTemplatesFunctionScoreBuilder.php',
 	'CirrusSearch\\Search\\Rescore\\CustomFieldFunctionScoreBuilder' => __DIR__ . '/includes/Search/Rescore/CustomFieldFunctionScoreBuilder.php',
 	'CirrusSearch\\Search\\Rescore\\FunctionScoreBuilder' => __DIR__ . '/includes/Search/Rescore/FunctionScoreBuilder.php',

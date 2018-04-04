@@ -28,7 +28,7 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 	 * @param float $weight
 	 */
 	public function __construct( SearchContext $context, $weight ) {
-		parent::__construct( $context, $weight );
+		parent::__construct( $context->getConfig(), $weight );
 		// Use the boosted template from query string if available
 		$this->boostTemplates = $context->getBoostTemplatesFromQuery();
 		// Use the boosted templates from extra indexes if available

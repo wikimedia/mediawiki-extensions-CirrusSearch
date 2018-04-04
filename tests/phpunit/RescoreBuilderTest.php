@@ -55,13 +55,12 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testPreferRecent() {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, null );
-		$builder = new PreferRecentFunctionScoreBuilder( $context, 1 );
+		$builder = new PreferRecentFunctionScoreBuilder( $config, 1, -1, -1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
-		$context->setPreferRecentOptions( 1, 0.6 );
+		$builder = new PreferRecentFunctionScoreBuilder( $config, 1, 1, 0.6 );
 
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -80,8 +79,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 			'LanguageCode' => 'de'
 		] );
-		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -97,8 +95,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			'LanguageCode' => 'en'
 		] );
 
-		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -110,8 +107,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			'CirrusSearchLanguageWeight' => [],
 			'LanguageCode' => 'de'
 		] );
-		$context = new SearchContext( $config, null );
-		$builder = new LangWeightFunctionScoreBuilder( $context, 1 );
+		$builder = new LangWeightFunctionScoreBuilder( $config, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
@@ -139,14 +135,13 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testCustomField() {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, null );
 		$profile = [
 			'field' => 'test',
 			'factor' => 5,
 			'modifier' => 'sqrt',
 			'missing' => 1,
 		];
-		$builder = new CustomFieldFunctionScoreBuilder( $context, 1, $profile );
+		$builder = new CustomFieldFunctionScoreBuilder( $config, 1, $profile );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -160,9 +155,8 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 */
 	public function testScriptScore() {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, null );
 		$script = "sqrt( doc['incoming_links'].value )";
-		$builder = new ScriptScoreFunctionScoreBuilder( $context, 2, $script );
+		$builder = new ScriptScoreFunctionScoreBuilder( $config, 2, $script );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -177,10 +171,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\IncomingLinksFunctionScoreBuilder
 	 */
 	public function testBoostLinks() {
-		$settings = [];
-		$config = new HashSearchConfig( $settings );
-		$context = new SearchContext( $config, null );
-		$builder = new IncomingLinksFunctionScoreBuilder( $context, 1 );
+		$builder = new IncomingLinksFunctionScoreBuilder();
 		$fScore = new FunctionScoreDecorator();
 
 		$builder->append( $fScore );
@@ -207,8 +198,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( $settings );
 
 		// 5 namespaces in the query generates 5 filters
-		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ] );
-		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP, NS_MEDIAWIKI, NS_TALK ], 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -216,13 +206,13 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertEquals( 5, count( $array['function_score']['functions'] ) );
 
 		// With a single namespace the function score is empty
-		$context->setNamespaces( [ 0 ] );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ 0 ], 1 );
 		$fScore = new FunctionScoreDecorator();
+		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
 		// with 2 namespaces we have 2 functions
-		$context->setNamespaces( [ NS_MAIN, NS_HELP ] );
-		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_HELP ], 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -238,8 +228,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $settings );
-		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ] );
-		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
@@ -255,8 +244,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $settings );
-		$context = new SearchContext( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ] );
-		$builder = new NamespacesFunctionScoreBuilder( $context, 1 );
+		$builder = new NamespacesFunctionScoreBuilder( $config, [ NS_MAIN, NS_PROJECT, NS_HELP ], 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );

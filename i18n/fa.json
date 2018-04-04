@@ -9,7 +9,8 @@
 			"Huji",
 			"Freshman404",
 			"Ladsgroup",
-			"Arash"
+			"Arash",
+			"Mardetanha"
 		]
 	},
 	"cirrussearch-desc": "جستجوی قدرت‌گرفته از Elasticsearch برای مدیاویکی",
@@ -31,6 +32,7 @@
 	"apihelp-cirrus-mapping-dump-summary": "روگرفت از نقشه‌برداری CirrusSearch برای این ویکی.",
 	"apihelp-cirrus-mapping-dump-example": "دریافت دامپ ساختار CirrusSearch برای این ویکی.",
 	"apihelp-cirrus-settings-dump-description": "تخلیه تنظیمات CirrusSearch برای این ویکی.",
+	"apihelp-cirrus-settings-dump-summary": "تخلیه تنظیمات CirrusSearch برای این ویکی.",
 	"apihelp-cirrus-settings-dump-example": "دریافت دامپ تنظیمات CirrusSearch برای این ویکی.",
 	"apihelp-query+cirrusdoc-description": "روگرفت از سند مقالهٔ CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "روگرفت از سند مقالهٔ CirrusSearch",

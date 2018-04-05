@@ -414,6 +414,65 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	public function termBoostProvider() {
+		return [
+			"one statement" => [
+				1.5,
+				[ 'statement_keywords' => [ 'P31=Q123' => 2 ] ],
+				[
+					[
+						'weight' => 3.0,
+						'filter' => [ 'term' => [ 'statement_keywords' => 'P31=Q123' ] ]
+					]
+				]
+			],
+			"nothing" => [
+				2,
+				[ 'statement_keywords' => [] ],
+				[]
+			],
+			"nothing 2" => [
+				2,
+				[],
+				[]
+			],
+			"multiple statements" => [
+				0.1,
+				[ 'statement_keywords' => [ 'P31=Q1234' => -2, 'P279=Q345' => -7 ] ],
+				[
+					[
+						'weight' => -0.2,
+						'filter' => [ 'term' => [ 'statement_keywords' => 'P31=Q1234' ] ]
+					],
+					[
+						'weight' => -0.7,
+						'filter' => [ 'term' => [ 'statement_keywords' => 'P279=Q345' ] ]
+					],
+				]
+
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider termBoostProvider
+	 */
+	public function testTermBoosts( $weight, array $settings, array $functions ) {
+		$config = new HashSearchConfig( [] );
+		$context = new SearchContext( $config, null );
+		$builder = new TermBoostScoreBuilder( $context, $weight, $settings );
+		$fScore = new FunctionScoreDecorator();
+		$builder->append( $fScore );
+		$array = $fScore->toArray();
+		if ( empty( $functions ) ) {
+			$this->assertTrue( $fScore->isEmptyFunction() );
+		} else {
+			$this->assertFalse( $fScore->isEmptyFunction() );
+			$this->assertEquals( $functions, $array['function_score']['functions'] );
+		}
+	}
+
 	/**
 	 * @dataProvider provideInvalidRescoreProfiles
 	 */

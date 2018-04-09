@@ -13,7 +13,8 @@
 			"Ole Yves",
 			"Facenapalm",
 			"Jack who built the house",
-			"Mouse21"
+			"Mouse21",
+			"Happy13241"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -85,6 +86,7 @@
 	"cirrussearch-feature-too-many-conditions": "Слишком много условий передано в '$1', обрезано до '$2'.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint должен быть установлен на действительную конечную точку SPARQL для использования поиска глубокой категории.",
 	"cirrussearch-feature-deepcat-exception": "Не удалось получить запрос SPARQL с глубокой категорией",
+	"cirrussearch-feature-deepcat-toomany": "Запрос в глубокой категории возвращал слишком много категорий",
 	"cirrussearch-incategory-feature-no-valid-categories": "Не передано корректных категорий в '$1'.",
 	"cirrussearch-mlt-feature-no-valid-titles": "Не передано корректных заголовков в '$1'.",
 	"cirrussearch-mlt-not-configured": "Функция '$1' не настроена. Попросите администратора исправить $wgCirrusSearchMoreLikeThisFields",

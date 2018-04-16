@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
 
@@ -52,6 +53,33 @@ class PreferRecentFeature extends SimpleKeywordFeature {
 	}
 
 	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|null|false
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		$matches = [];
+		$retValue = [];
+		// FIXME: we should probably no longer accept the empty string and simply return false
+		// instead of null
+		if ( preg_match( '/^(1|0?(?:\.\d+)?)?(?:,(\d*\.?\d+))?$/', $value, $matches ) === 1 ) {
+			if ( isset( $matches[1] ) && strlen( $matches[1] ) > 0 ) {
+				$retValue['decay'] = floatval( $matches[1] );
+			}
+
+			if ( isset( $matches[2] ) ) {
+				$retValue['halfLife'] = floatval( $matches[2] );
+			}
+			return count( $retValue ) > 0 ? $retValue : null;
+		}
+		return false;
+	}
+
+	/**
 	 * Applies the detected keyword from the search term. May apply changes
 	 * either to $context directly, or return a filter to be added.
 	 *
@@ -67,26 +95,18 @@ class PreferRecentFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$matched = false;
 		$decay = $this->unspecifiedDecay;
 		$halfLife = $this->halfLife;
-		// note: this regex matches the empty string
-		preg_replace_callback( '/^(1|0?(?:\.\d+)?)?(?:,(\d*\.?\d+))?$/',
-			function ( $matches ) use ( $context, &$matched, &$decay, &$halfLife ) {
-				$matched = true;
-				$decay = isset( $matches[1] ) && strlen( $matches[1] ) > 0
-					? $decay = floatval( $matches[1] )
-					: $decay = $this->unspecifiedDecay;
-
-				$halfLife = isset( $matches[2] )
-					? floatval( $matches[2] )
-					: $this->halfLife;
-			}, $value );
-		$context->setPreferRecentOptions( $decay, $halfLife );
-		// If we did not match we keep the value in the query
-		// TODO: should we emit a warning instead?
-		// in that case we silently ignore this but this can be a user
-		// who mistyped the prefer-rencent syntax.
-		return [ null, !$matched ];
+		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		if ( $parsedValue === false ) {
+			$context->setPreferRecentOptions( $decay, $halfLife );
+			return [ null, true ];
+		} elseif ( $parsedValue === null ) {
+			$context->setPreferRecentOptions( $this->unspecifiedDecay, $this->halfLife );
+		} else {
+			$context->setPreferRecentOptions( isset( $parsedValue['decay'] ) ? $parsedValue['decay'] : $this->unspecifiedDecay,
+				isset( $parsedValue['halfLife'] ) ? $parsedValue['halfLife'] : $this->halfLife );
+			return [ null, false ];
+		}
 	}
 }

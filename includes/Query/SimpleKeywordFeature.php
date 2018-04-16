@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -80,6 +81,23 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 */
 	public function getValueDelimiters() {
 		return [ [ 'delimiter' => '"' ] ];
+	}
+
+	/**
+	 * Parse the value of the keyword.
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|null|false null when nothing is to be kept, false when the value is refused
+	 * (only allowed for keywords that allows empty value)
+	 * @see self::allowEmptyValue
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		return null;
 	}
 
 	/**

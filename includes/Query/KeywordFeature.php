@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 
 interface KeywordFeature {
 	/**
@@ -54,6 +55,27 @@ interface KeywordFeature {
 	 * @return string[][] list of delimiters options
 	 */
 	public function getValueDelimiters();
+
+	/**
+	 * Parse the value of the keyword.
+	 * NOTE: this function called prior to creating the node in the AST.
+	 * It is not allowed to call external resources here (db, elastic, others).
+	 * The data known by this method should only be the value contained in the user query string
+	 * and maybe few config vars for sanity check purposes.
+	 *
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped and escaped
+	 *  quotes un-escaped.
+	 * @param string $quotedValue The original value in the search string, including quotes if used
+	 * @param string $valueDelimiter the delimiter char used to wrap the keyword value ('"' in intitle:"test")
+	 * @param string $suffix the optional suffix used after the value ('i' in insource:/regex/i)
+	 * @param WarningCollector $warningCollector
+	 * @return array|null|false an array kept containing the information parsed,
+	 * 	null when nothing is to be kept
+	 * 	false when the value is refused (only allowed for keywords that allows empty value)
+	 * @see self::allowEmptyValue
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector );
 
 	/**
 	 * Checks $term for usage of the feature, and applies necessary filters,

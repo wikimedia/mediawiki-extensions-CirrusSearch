@@ -26,17 +26,24 @@ class ParseWarning {
 	private $start;
 
 	/**
+	 * @var string[]
+	 */
+	private $messageParams;
+
+	/**
 	 * ParseWarning constructor.
 	 * @param string $message
 	 * @param int $start
 	 * @param string[] $expectedTokens
 	 * @param string|null $actualToken
+	 * @param string[] $messageParams
 	 */
-	public function __construct( $message, $start, array $expectedTokens = [], $actualToken = null ) {
+	public function __construct( $message, $start, array $expectedTokens = [], $actualToken = null, array $messageParams = [] ) {
 		$this->message = $message;
 		$this->expectedTokens = $expectedTokens;
 		$this->actualToken = $actualToken;
 		$this->start = $start;
+		$this->messageParams = $messageParams;
 	}
 
 	/**
@@ -75,6 +82,13 @@ class ParseWarning {
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function getMessageParams() {
+		return $this->messageParams;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function toArray() {
@@ -87,6 +101,9 @@ class ParseWarning {
 		}
 		if ( $this->actualToken !== null ) {
 			$ar['actual'] = $this->actualToken;
+		}
+		if ( count( $this->messageParams ) > 0 ) {
+			$ar['message_params'] = $this->messageParams;
 		}
 		return $ar;
 	}

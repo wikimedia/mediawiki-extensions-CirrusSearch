@@ -220,19 +220,27 @@ class QueryStringRegexParser implements QueryParser {
 		$nonGreedyHeaders = [];
 		$greedyHeaders = [];
 		$greedy = [];
+		$allowingEmpty = [];
 		$normalKeywords = [];
 		foreach ( $this->keywordRegistry->getKeywords() as $keyword ) {
 			// Parsing depends on the nature of the keyword
 			// 1. non greedy query headers
 			// 2. greedy query headers
 			// 3. greedy
-			// 4. normal
+			// 4. allowed empty values (see prefer-recent)
+			// 5. normal
+			// FIXME: refactor this so that parsing is less dependent on keyword ordering
+			// we could try to identify all keyword prefixes in a single regex like /(?<=\G|[\pZ\pC])(intitle|prefer-recent|...):/
+			// and iterate over there. Currently we workaround this issue by separating keywords into categories but that is not
+			// sufficient it's still dependent on ordering within a specific category.
 			if ( !$keyword->greedy() && $keyword->queryHeader() ) {
 				$nonGreedyHeaders[] = $keyword;
 			} elseif ( $keyword->greedy() && $keyword->queryHeader() ) {
 				$greedyHeaders[] = $keyword;
 			} elseif ( $keyword->greedy() ) {
 				$greedy[] = $keyword;
+			} elseif ( $keyword->allowEmptyValue() ) {
+				$allowingEmpty[] = $keyword;
 			} else {
 				$normalKeywords[] = $keyword;
 			}
@@ -240,7 +248,9 @@ class QueryStringRegexParser implements QueryParser {
 		$this->parseKeywords( $nonGreedyHeaders );
 		$this->parseKeywords( $greedyHeaders );
 		$this->parseKeywords( $greedy );
+		$this->parseKeywords( $allowingEmpty );
 		$this->parseKeywords( $normalKeywords );
+		$this->warnings = array_merge( $this->warnings, $this->keywordParser->getWarnings() );
 		// All parsed keywords have their offsets marked in $this->keywordOffsetsTracker
 		// We then reparse the query from the beginning finding holes between keyword offsets
 		uasort( $this->preTaggedNodes, function ( ParsedNode $a, ParsedNode $b ) {

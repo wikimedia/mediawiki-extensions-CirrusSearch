@@ -5,13 +5,25 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParsedNode;
+use CirrusSearch\Parser\AST\ParseWarning;
 use CirrusSearch\Query\KeywordFeature;
+use CirrusSearch\WarningCollector;
 use Wikimedia\Assert\Assert;
 
 /**
  * Parser for KeywordFeature
  */
-class KeywordParser {
+class KeywordParser implements WarningCollector {
+
+	/**
+	 * @var int
+	 */
+	private $currentOffset;
+
+	/**
+	 * @var ParseWarning[]
+	 */
+	private $warnings = [];
 
 	/**
 	 * @param string $query
@@ -51,7 +63,7 @@ class KeywordParser {
 			$valueSideRegex = "${spacesAfterSep}{$valueRegex}";
 		}
 		$matches = [];
-		preg_match_all( "/{$begin}{$keywordRegex}:${valueSideRegex}/u", $query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
+		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u", $query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
 		$output = [];
 		foreach ( $matches as $match ) {
 			$key = $match['key'][0];
@@ -60,6 +72,7 @@ class KeywordParser {
 			$value = '';
 			$valueDelimiter = '';
 			$valueSuffix = '';
+			$valueStart = $match['colon'][1] + strlen( $match['colon'][0] );
 			if ( $feature->hasValue() ) {
 				$quotedValue = $match['value'][0];
 				if ( isset( $match['unquoted'] ) && $match['unquoted'][1] >= 0 ) {
@@ -85,9 +98,22 @@ class KeywordParser {
 			$wholeStart = $match['key'][1];
 			// $end is whole match length minus chars between start and key
 			$end = $wholeStart + strlen( $match[0][0] ) - ( $wholeStart - $match[0][1] );
+			$parsedValue = null;
+			if ( $feature->hasValue() && $quotedValue !== '' ) {
+				// Set the current offset so that we can collect warnings at the keyword offset
+				$this->currentOffset = $valueStart;
+				$parsedValue = $feature->parseValue( $key, $value, $quotedValue, $valueDelimiter, $valueSuffix, $this );
+				if ( $parsedValue === false ) {
+					Assert::postcondition( $feature->allowEmptyValue(), 'Only features accepting empty value can reject a value' );
+					$value = '';
+					$quotedValue = '';
+					$end = $valueStart;
+					$parsedValue = null;
+				}
+			}
 			if ( !$tracker->overlap( $wholeStart, $end ) ) {
 				$node = new KeywordFeatureNode( $kwStart, $end, $feature, $key, $value, $quotedValue,
-					$valueDelimiter, $valueSuffix );
+					$valueDelimiter, $valueSuffix, $parsedValue );
 				if ( $negationChar !== '' ) {
 					$node = new NegatedNode( $wholeStart, $end, $node, $negationChar );
 				}
@@ -133,5 +159,29 @@ class KeywordParser {
 			$unquotedValue = "(?<unquoted>[^\"\pZ\pC]$quantifier)";
 			return "(?:$quotedValue|$unquotedValue)";
 		}
+	}
+
+	/**
+	 * @return ParseWarning[]
+	 */
+	public function getWarnings() {
+		return $this->warnings;
+	}
+
+	/**
+	 * Add a warning
+	 *
+	 * NOTE: $param1 $param2 and $param3 are just poor-man variadic args
+	 *
+	 * TODO: switch to variadic args once php 5.5 support is dropped
+	 * @param string $message i18n message key
+	 * @param string|null $param1
+	 * @param string|null $param2
+	 * @param string|null $param3
+	 */
+	function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
+		$args = array_filter( func_get_args() );
+		array_shift( $args );
+		$this->warnings[] = new ParseWarning( $message, $this->currentOffset, [], null, $args );
 	}
 }

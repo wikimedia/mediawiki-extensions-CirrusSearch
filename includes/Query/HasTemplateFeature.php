@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 use Title;
 
 /**
@@ -30,6 +31,19 @@ class HasTemplateFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		return [ QueryHelper::matchPage( 'template', $this->parseValue( $key, $value, $quotedValue, '', '', $context )['value'] ), false ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		if ( strpos( $value, ':' ) === 0 ) {
 			$value = substr( $value, 1 );
 		} else {
@@ -39,6 +53,6 @@ class HasTemplateFeature extends SimpleKeywordFeature {
 					->getPrefixedText();
 			}
 		}
-		return [ QueryHelper::matchPage( 'template', $value ), false ];
+		return [ 'value' => $value ];
 	}
 }

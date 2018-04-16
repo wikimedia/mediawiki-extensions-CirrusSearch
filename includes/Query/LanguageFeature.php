@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 
 /**
  * Filters the result set based on pages labeled with the provided language.
@@ -41,17 +42,8 @@ class LanguageFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$queries = [];
-
-		$langs = explode( ',', $value );
-		if ( count( $langs ) > self::QUERY_LIMIT ) {
-			$context->addWarning(
-				'cirrussearch-feature-too-many-conditions',
-				$key,
-				self::QUERY_LIMIT
-			);
-			$langs = array_slice( $langs, 0, self::QUERY_LIMIT );
-		}
-		foreach ( $langs as $lang ) {
+		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		foreach ( $parsedValue['langs'] as $lang ) {
 			if ( strlen( trim( $lang ) ) > 0 ) {
 				$query = new \Elastica\Query\Match();
 				$query->setFieldQuery( 'language', $lang );
@@ -60,5 +52,27 @@ class LanguageFeature extends SimpleKeywordFeature {
 		}
 
 		return [ Filters::booleanOr( $queries, false ), false ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		$langs = explode( ',', $value );
+		if ( count( $langs ) > self::QUERY_LIMIT ) {
+			$warningCollector->addWarning(
+				'cirrussearch-feature-too-many-conditions',
+				$key,
+				self::QUERY_LIMIT
+			);
+			$langs = array_slice( $langs, 0, self::QUERY_LIMIT );
+		}
+		return [ 'langs' => $langs ];
 	}
 }

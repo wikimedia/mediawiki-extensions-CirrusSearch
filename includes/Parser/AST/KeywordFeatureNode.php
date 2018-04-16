@@ -40,6 +40,13 @@ class KeywordFeatureNode extends ParsedNode {
 	private $suffix;
 
 	/**
+	 * Parsed value
+	 * @see KeywordFeature::parseValue()
+	 * @var array|null
+	 */
+	private $parsedValue;
+
+	/**
 	 * SimpleKeywordFeatureNode constructor.
 	 * @param int $startOffset
 	 * @param int $endOffset
@@ -49,6 +56,8 @@ class KeywordFeatureNode extends ParsedNode {
 	 * @param string $quotedValue
 	 * @param string $delimiter
 	 * @param string $suffix
+	 * @param array|null $parsedValue value as parsed by KeywordFeature::parseValue()
+	 * @see KeywordFeature::parseValue()
 	 */
 	public function __construct(
 		$startOffset,
@@ -58,7 +67,8 @@ class KeywordFeatureNode extends ParsedNode {
 		$value,
 		$quotedValue,
 		$delimiter,
-		$suffix
+		$suffix,
+		array $parsedValue = null
 	) {
 		parent::__construct( $startOffset, $endOffset );
 		$this->keyword = $keyword;
@@ -67,6 +77,7 @@ class KeywordFeatureNode extends ParsedNode {
 		$this->quotedValue = $quotedValue;
 		$this->delimiter = $delimiter;
 		$this->suffix = $suffix;
+		$this->parsedValue = $parsedValue;
 	}
 
 	/**
@@ -118,20 +129,35 @@ class KeywordFeatureNode extends ParsedNode {
 	}
 
 	/**
+	 * Return the value parsed by the KeywordFeature implementation
+	 *
+	 * NOTE: Only the keyword implementation knows what to do with this data
+	 * @return array|null
+	 * @see KeywordFeature::parseValue()
+	 */
+	public function getParsedValue() {
+		return $this->parsedValue;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function toArray() {
 		return [
 			"keyword" => array_merge(
 				$this->baseParams(),
-				[
-					"keyword" => get_class( $this->keyword ),
-					"key" => $this->key,
-					"value" => $this->value,
-					"quotedValue" => $this->quotedValue,
-					"delimiter" => $this->delimiter,
-					"suffix" => $this->suffix,
-				]
+				array_filter( [
+						"keyword" => get_class( $this->keyword ),
+						"key" => $this->key,
+						"value" => $this->value,
+						"quotedValue" => $this->quotedValue,
+						"delimiter" => $this->delimiter,
+						"suffix" => $this->suffix,
+						"parsedValue" => $this->parsedValue,
+					], function ( $x ) {
+						return $x !== null;
+					}
+				)
 			)
 		];
 	}

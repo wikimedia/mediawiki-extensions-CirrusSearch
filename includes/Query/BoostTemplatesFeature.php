@@ -3,6 +3,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 
 /**
  * Handles the boost-templates keyword in full text search. Allows user
@@ -67,5 +68,18 @@ class BoostTemplatesFeature extends SimpleKeywordFeature {
 			}
 		}
 		return $boostTemplates;
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|float[]|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		return [ 'boost-templates' => self::parseBoostTemplates( $value ) ];
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
 use Title;
@@ -55,9 +56,41 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		if ( $parsedValue === null ) {
+			$context->setResultsPossible( false );
+			return [ null, false ];
+		}
+		$names = $parsedValue['names'];
+		$pageIds = $parsedValue['pageIds'];
+
+		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
+			$names[] = $title->getText();
+		}
+
+		if ( count( $names ) === 0 ) {
+			$context->addWarning( 'cirrussearch-incategory-feature-no-valid-categories', $key );
+			$context->setResultsPossible( false );
+			return [ null, false ];
+		}
+
+		$filter = $this->matchPageCategories( $names );
+		return [ $filter, false ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		$categories = explode( '|', $value );
 		if ( count( $categories ) > $this->maxConditions ) {
-			$context->addWarning(
+			$warningCollector->addWarning(
 				'cirrussearch-feature-too-many-conditions',
 				$key,
 				$this->maxConditions
@@ -68,29 +101,10 @@ class InCategoryFeature extends SimpleKeywordFeature {
 				$this->maxConditions
 			);
 		}
-		$filter = $this->matchPageCategories( $categories );
-		if ( $filter === null ) {
-			$context->setResultsPossible( false );
-			$context->addWarning(
-				'cirrussearch-incategory-feature-no-valid-categories',
-				$key
-			);
-		}
 
-		return [ $filter, false ];
-	}
-
-	/**
-	 * Builds an or between many categories that the page could be in.
-	 *
-	 * @param string[] $categories categories to match
-	 * @return \Elastica\Query\BoolQuery|null A null return value means all values are filtered
-	 *  and an empty result set should be returned.
-	 */
-	private function matchPageCategories( array $categories ) {
-		$filter = new \Elastica\Query\BoolQuery();
 		$pageIds = [];
 		$names = [];
+
 		foreach ( $categories as $category ) {
 			if ( substr( $category, 0, 3 ) === 'id:' ) {
 				$pageId = substr( $category, 3 );
@@ -102,12 +116,19 @@ class InCategoryFeature extends SimpleKeywordFeature {
 			}
 		}
 
-		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
-			$names[] = $title->getText();
-		}
-		if ( !$names ) {
-			return null;
-		}
+		return [ 'names' => $names, 'pageIds' => $pageIds ];
+	}
+
+	/**
+	 * Builds an or between many categories that the page could be in.
+	 *
+	 * @param string[] $names categories to match
+	 * @return \Elastica\Query\BoolQuery|null A null return value means all values are filtered
+	 *  and an empty result set should be returned.
+	 */
+	private function matchPageCategories( array $names ) {
+		$filter = new \Elastica\Query\BoolQuery();
+
 		foreach ( $names as $name ) {
 			$filter->addShould( QueryHelper::matchPage( 'category.lowercase_keyword', $name ) );
 		}

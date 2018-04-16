@@ -10,11 +10,13 @@ use CirrusSearch\Query\InSourceFeature;
 use CirrusSearch\Query\InTitleFeature;
 use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
+use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\SearchConfig;
 
 /**
  * @covers \CirrusSearch\Parser\QueryStringRegex\KeywordParser
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
  */
 class KeywordParserTest extends CirrusTestCase {
 	public function testSimple() {
@@ -137,5 +139,57 @@ class KeywordParserTest extends CirrusTestCase {
 		$this->assertEquals( 'insource', $kw->getKey() );
 		$this->assertEquals( 'test/"', $kw->getValue() );
 		$this->assertEquals( '/test\\/"/', $kw->getQuotedValue() );
+	}
+
+	public function testOptionalValue() {
+		$parser = new KeywordParser();
+		// .      0000000000111111111122222222223333333333
+		// .      0123456789012345678901234567890123456789
+		$query = 'prefer-recent:intitle:test';
+		$config = new HashSearchConfig( [], [ 'inherit' ] );
+
+		$assertFunc = function ( array $nodes ) {
+			uasort( $nodes, function ( KeywordFeatureNode $a, KeywordFeatureNode $b ) {
+				return $a->getStartOffset() - $b->getStartOffset();
+			} );
+			$this->assertEquals( 2, count( $nodes ) );
+
+			/**
+			 * @var KeywordFeatureNode $kw
+			 */
+			$kw = $nodes[0];
+			$this->assertEquals( 0, $kw->getStartOffset() );
+			$this->assertEquals( 14, $kw->getEndOffset() );
+			$this->assertEquals( '', $kw->getDelimiter() );
+			$this->assertEquals( '', $kw->getSuffix() );
+			$this->assertEquals( 'prefer-recent', $kw->getKey() );
+			$this->assertEquals( '', $kw->getValue() );
+			$this->assertEquals( '', $kw->getQuotedValue() );
+			$this->assertEquals( null, $kw->getParsedValue() );
+
+			$kw = $nodes[1];
+			$this->assertEquals( 14, $kw->getStartOffset() );
+			$this->assertEquals( 26, $kw->getEndOffset() );
+			$this->assertEquals( '', $kw->getDelimiter() );
+			$this->assertEquals( '', $kw->getSuffix() );
+			$this->assertEquals( 'intitle', $kw->getKey() );
+			$this->assertEquals( 'test', $kw->getValue() );
+			$this->assertEquals( 'test', $kw->getQuotedValue() );
+			$this->assertEquals( null, $kw->getParsedValue() );
+		};
+
+		$ot = new OffsetTracker();
+		$nodes = $parser->parse( $query, new PreferRecentFeature( $config ), $ot );
+		$ot->appendNodes( $nodes );
+		$nodes = array_merge( $nodes, $parser->parse( $query, new InTitleFeature( $config ), $ot ) );
+		$assertFunc( $nodes );
+
+		// XXX: currently keyword parsing is order dependent
+		/*
+		$ot = new OffsetTracker();
+		$nodes = $parser->parse( $query, new InTitleFeature( $config ), $ot );
+		$nodes = array_merge( $nodes, $parser->parse( $query, new PreferRecentFeature( $config ), $ot ) );
+		$assertFunc( $nodes );
+		*/
 	}
 }

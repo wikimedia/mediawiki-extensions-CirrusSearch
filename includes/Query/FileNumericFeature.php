@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query;
+use Wikimedia\Assert\Assert;
 
 /**
  * File features:
@@ -49,24 +50,80 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		if ( $parsedValue === null ) {
+			$context->setResultsPossible( false );
+			return [ null, false ];
+		}
+
+		$field = $parsedValue['field'];
+		$sign = $parsedValue['sign'];
+		$multiplier = ( $key === 'filesize' ) ? 1024 : 1;
+
+		if ( isset( $parsedValue['range'] ) ) {
+			$query = $this->buildBoundedIntervalQuery( $parsedValue['field'], $parsedValue['range'][0], $parsedValue['range'][1], $multiplier );
+		} elseif ( $sign === 0 ) {
+			$query = $this->buildMatchQuery( $field, $parsedValue['value'], $multiplier );
+		} else {
+			$query = $this->buildIntervalQuery( $field, $sign, $parsedValue['value'], $multiplier );
+		}
+		return [ $query, false ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		$parsedValue = [];
+
 		$field = $this->keyTable[$key];
-
+		$parsedValue['field'] = $field;
 		list( $sign, $number ) = $this->extractSign( $value );
-
 		// filesize treats no sign as >, since exact file size matches make no sense
 		if ( !$sign && $key === 'filesize' && strpos( $number, ',' ) === false ) {
 			$sign = 1;
 		}
 
-		if ( !$this->validate( $context, $key, $value, $sign, $number ) ) {
-			$context->setResultsPossible( false );
-			return [ null, false ];
+		$parsedValue['sign'] = $sign;
+
+		if ( $sign && strpos( $number, ',' ) !== false ) {
+			$warningCollector->addWarning(
+				'cirrussearch-file-numeric-feature-multi-argument-w-sign',
+				$key,
+				$number
+			);
+			return null;
+		} elseif ( $sign || strpos( $number, ',' ) === false ) {
+			if ( !is_numeric( $number ) ) {
+				$this->nanWarning( $warningCollector, $key, empty( $number ) ? $value : $number );
+				return null;
+			}
+			$parsedValue['value'] = intval( $number );
+		} else {
+			$numbers = explode( ',', $number, 2 );
+			$valid = true;
+			if ( !is_numeric( $numbers[0] ) ) {
+				$this->nanWarning( $warningCollector, $key, $numbers[0] );
+				$valid = false;
+			}
+
+			if ( !is_numeric( $numbers[1] ) ) {
+				$this->nanWarning( $warningCollector, $key, $numbers[1] );
+				$valid = false;
+			}
+			if ( !$valid ) {
+				return null;
+			}
+			$parsedValue['range'] = [ intval( $numbers[0] ), intval( $numbers[1] ) ];
 		}
 
-		$query =
-			$this->buildNumericQuery( $field, $sign, $number, ( $key === 'filesize' ) ? 1024 : 1 );
-
-		return [ $query, false ];
+		return $parsedValue;
 	}
 
 	/**
@@ -86,45 +143,6 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	}
 
 	/**
-	 * Validate that input arguments will construct a valid query
-	 *
-	 * @param WarningCollector $warningCollector
-	 * @param string $key The matched query keyword
-	 * @param string $value The original value provided by user
-	 * @param int $sign
-	 * @param string $number
-	 * @return bool
-	 */
-	protected function validate( WarningCollector $warningCollector, $key, $value, $sign, $number ) {
-		$valid = true;
-		if ( $sign && strpos( $number, ',' ) !== false ) {
-			$warningCollector->addWarning(
-				'cirrussearch-file-numeric-feature-multi-argument-w-sign',
-				$key,
-				$number
-			);
-			$valid = false;
-		} elseif ( $sign || strpos( $number, ',' ) === false ) {
-			if ( !is_numeric( $number ) ) {
-				$this->nanWarning( $warningCollector, $key, empty( $number ) ? $value : $number );
-				$valid = false;
-			}
-		} else {
-			$numbers = explode( ',', $number, 2 );
-			if ( !is_numeric( $numbers[0] ) ) {
-				$this->nanWarning( $warningCollector, $key, $numbers[0] );
-				$valid = false;
-			}
-			if ( !is_numeric( $numbers[1] ) ) {
-				$this->nanWarning( $warningCollector, $key, $numbers[1] );
-				$valid = false;
-			}
-		}
-
-		return $valid;
-	}
-
-	/**
 	 * Adds a warning to the search context that the $key keyword
 	 * was provided with the invalid value $notANumber.
 	 *
@@ -141,34 +159,44 @@ class FileNumericFeature extends SimpleKeywordFeature {
 	}
 
 	/**
-	 * Build a query which is either range match or exact match.
 	 * @param string $field
-	 * @param int $sign 0 is equal, 1 is more, -1 is less
-	 * @param string $number number to compare to
-	 * @param int $multiplier Multiplier for the number
-	 * @return Query\AbstractQuery|null
+	 * @param int $from
+	 * @param int $to
+	 * @param int $multiplier
+	 * @return Query\AbstractQuery
 	 */
-	protected function buildNumericQuery( $field, $sign, $number, $multiplier = 1 ) {
-		if ( $sign ) {
-			$number = intval( $number );
-			if ( $sign < 0 ) {
-				$range = [ 'lte' => $number * $multiplier ];
-			} else {
-				$range = [ 'gte' => $number * $multiplier ];
-			}
-			return new Query\Range( $field, $range );
-		} else {
-			if ( strpos( $number, ',' ) !== false ) {
-				$numbers = explode( ',', $number, 2 );
-				return new Query\Range( $field, [
-					'gte' => intval( $numbers[0] ) * $multiplier,
-					'lte' => intval( $numbers[1] ) * $multiplier
-				] );
-			}
-			$query = new Query\Match();
-			$query->setFieldQuery( $field, (string)( $number * $multiplier ) );
-		}
-		return $query;
+	private function buildBoundedIntervalQuery( $field, $from, $to, $multiplier = 1 ) {
+		return new Query\Range( $field, [
+			'gte' => $from * $multiplier,
+			'lte' => $to * $multiplier
+		] );
 	}
 
+	/**
+	 * @param string $field
+	 * @param int $sign
+	 * @param int $value
+	 * @param int $multiplier
+	 * @return Query\AbstractQuery
+	 */
+	private function buildIntervalQuery( $field, $sign, $value, $multiplier = 1 ) {
+		Assert::parameter( $sign != 0, 'sign', 'sign must be non zero' );
+		if ( $sign > 0 ) {
+			$range = [ 'gte' => $value * $multiplier ];
+		} else {
+			$range = [ 'lte' => $value * $multiplier ];
+		}
+		return new Query\Range( $field, $range );
+	}
+	/**
+	 * @param string $field
+	 * @param int $value
+	 * @param int $multiplier
+	 * @return Query\AbstractQuery
+	 */
+	private function buildMatchQuery( $field, $value, $multiplier = 1 ) {
+		$query = new Query\Match();
+		$query->setFieldQuery( $field, (string)( $value * $multiplier ) );
+		return $query;
+	}
 }

@@ -1949,6 +1949,859 @@
             }
         }
     },
+    "keyword: morelike": {
+        "query": "morelike:Help:Help",
+        "expected": {
+            "query": "morelike:Help:Help",
+            "rawQuery": "morelike:Help:Help",
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 18,
+                    "keyword": "CirrusSearch\\Query\\MoreLikeFeature",
+                    "key": "morelike",
+                    "value": "Help:Help",
+                    "quotedValue": "Help:Help",
+                    "delimiter": "",
+                    "suffix": ""
+                }
+            }
+        }
+    },
+    "keyword: prefix": {
+        "query": "prefix:Help:Help",
+        "expected": {
+            "query": "prefix:Help:Help",
+            "rawQuery": "prefix:Help:Help",
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 16,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "Help:Help",
+                    "quotedValue": "Help:Help",
+                    "delimiter": "",
+                    "suffix": ""
+                }
+            }
+        }
+    },
+    "keyword: intitle": {
+        "query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
+        "expected": {
+            "query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
+            "rawQuery": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 50,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 12,
+                                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                                    "key": "intitle",
+                                    "value": "test",
+                                    "quotedValue": "test",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 13,
+                                    "endOffset": 30,
+                                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                                    "key": "intitle",
+                                    "value": "foo bar",
+                                    "quotedValue": "\"foo bar\"",
+                                    "delimiter": "\"",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 31,
+                                    "endOffset": 50,
+                                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                                    "key": "intitle",
+                                    "value": "201[0-9]",
+                                    "quotedValue": "\/201[0-9]\/",
+                                    "delimiter": "\/",
+                                    "suffix": "i"
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: intitle regex": {
+        "query": "intitle:test intitle:\"foo bar\"",
+        "expected": {
+            "query": "intitle:test intitle:\"foo bar\"",
+            "rawQuery": "intitle:test intitle:\"foo bar\"",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 30,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 12,
+                                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                                    "key": "intitle",
+                                    "value": "test",
+                                    "quotedValue": "test",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 13,
+                                    "endOffset": 30,
+                                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                                    "key": "intitle",
+                                    "value": "foo bar",
+                                    "quotedValue": "\"foo bar\"",
+                                    "delimiter": "\"",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: prefer-recent simple": {
+        "query": "prefer-recent:0.3,0.5",
+        "expected": {
+            "query": "prefer-recent:0.3,0.5",
+            "rawQuery": "prefer-recent:0.3,0.5",
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 21,
+                    "keyword": "CirrusSearch\\Query\\PreferRecentFeature",
+                    "key": "prefer-recent",
+                    "value": "0.3,0.5",
+                    "quotedValue": "0.3,0.5",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "decay": 0.3,
+                        "halfLife": 0.5
+                    }
+                }
+            }
+        }
+    },
+    "keyword: prefer-recent decay only": {
+        "query": "prefer-recent:0.3",
+        "expected": {
+            "query": "prefer-recent:0.3",
+            "rawQuery": "prefer-recent:0.3",
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 17,
+                    "keyword": "CirrusSearch\\Query\\PreferRecentFeature",
+                    "key": "prefer-recent",
+                    "value": "0.3",
+                    "quotedValue": "0.3",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "decay": 0.3
+                    }
+                }
+            }
+        }
+    },
+    "keyword: prefer-recent defaults": {
+        "query": "prefer-recent:hello",
+        "expected": {
+            "query": "prefer-recent:hello",
+            "rawQuery": "prefer-recent:hello",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 19,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 14,
+                                    "keyword": "CirrusSearch\\Query\\PreferRecentFeature",
+                                    "key": "prefer-recent",
+                                    "value": "",
+                                    "quotedValue": "",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "words": {
+                                    "startOffset": 14,
+                                    "endOffset": 19,
+                                    "words": "hello"
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: prefer-recent combined": {
+        "query": "prefer-recent:hastemplate:hello",
+        "expected": {
+            "query": "prefer-recent:hastemplate:hello",
+            "rawQuery": "prefer-recent:hastemplate:hello",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 31,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 14,
+                                    "keyword": "CirrusSearch\\Query\\PreferRecentFeature",
+                                    "key": "prefer-recent",
+                                    "value": "",
+                                    "quotedValue": "",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 14,
+                                    "endOffset": 31,
+                                    "keyword": "CirrusSearch\\Query\\HasTemplateFeature",
+                                    "key": "hastemplate",
+                                    "value": "hello",
+                                    "quotedValue": "hello",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "value": "Template:Hello"
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: hastemplate": {
+        "query": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
+        "expected": {
+            "query": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
+            "rawQuery": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 55,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 16,
+                                    "keyword": "CirrusSearch\\Query\\HasTemplateFeature",
+                                    "key": "hastemplate",
+                                    "value": ":foo",
+                                    "quotedValue": ":foo",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "value": "foo"
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 17,
+                                    "endOffset": 33,
+                                    "keyword": "CirrusSearch\\Query\\HasTemplateFeature",
+                                    "key": "hastemplate",
+                                    "value": "test",
+                                    "quotedValue": "test",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "value": "Template:Test"
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 34,
+                                    "endOffset": 55,
+                                    "keyword": "CirrusSearch\\Query\\HasTemplateFeature",
+                                    "key": "hastemplate",
+                                    "value": "Help:Test",
+                                    "quotedValue": "Help:Test",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "value": "Help:Test"
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: insource": {
+        "query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
+        "expected": {
+            "query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
+            "rawQuery": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 53,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 13,
+                                    "keyword": "CirrusSearch\\Query\\InSourceFeature",
+                                    "key": "insource",
+                                    "value": "test",
+                                    "quotedValue": "test",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 14,
+                                    "endOffset": 32,
+                                    "keyword": "CirrusSearch\\Query\\InSourceFeature",
+                                    "key": "insource",
+                                    "value": "foo bar",
+                                    "quotedValue": "\"foo bar\"",
+                                    "delimiter": "\"",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 33,
+                                    "endOffset": 53,
+                                    "keyword": "CirrusSearch\\Query\\InSourceFeature",
+                                    "key": "insource",
+                                    "value": "201[0-0]",
+                                    "quotedValue": "\/201[0-0]\/",
+                                    "delimiter": "\/",
+                                    "suffix": "i"
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: linksto": {
+        "query": "linksto:foobar linksto:\"foobar\"",
+        "expected": {
+            "query": "linksto:foobar linksto:\"foobar\"",
+            "rawQuery": "linksto:foobar linksto:\"foobar\"",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 31,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 14,
+                                    "keyword": "CirrusSearch\\Query\\LinksToFeature",
+                                    "key": "linksto",
+                                    "value": "foobar",
+                                    "quotedValue": "foobar",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 15,
+                                    "endOffset": 31,
+                                    "keyword": "CirrusSearch\\Query\\LinksToFeature",
+                                    "key": "linksto",
+                                    "value": "foobar",
+                                    "quotedValue": "\"foobar\"",
+                                    "delimiter": "\"",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: inlanguage": {
+        "query": "inlanguage:fr,en inlanguage:\"fr,en\"",
+        "expected": {
+            "query": "inlanguage:fr,en inlanguage:\"fr,en\"",
+            "rawQuery": "inlanguage:fr,en inlanguage:\"fr,en\"",
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 35,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 16,
+                                    "keyword": "CirrusSearch\\Query\\LanguageFeature",
+                                    "key": "inlanguage",
+                                    "value": "fr,en",
+                                    "quotedValue": "fr,en",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "langs": [
+                                            "fr",
+                                            "en"
+                                        ]
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 17,
+                                    "endOffset": 35,
+                                    "keyword": "CirrusSearch\\Query\\LanguageFeature",
+                                    "key": "inlanguage",
+                                    "value": "fr,en",
+                                    "quotedValue": "\"fr,en\"",
+                                    "delimiter": "\"",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "langs": [
+                                            "fr",
+                                            "en"
+                                        ]
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: filenumeric filesize": {
+        "query": "filesize:>30 filesize:<30 filesize:30,50 filesize:ab",
+        "expected": {
+            "query": "filesize:>30 filesize:<30 filesize:30,50 filesize:ab",
+            "rawQuery": "filesize:>30 filesize:<30 filesize:30,50 filesize:ab",
+            "warnings": [
+                {
+                    "msg": "cirrussearch-file-numeric-feature-not-a-number",
+                    "start": 50,
+                    "message_params": [
+                        "filesize",
+                        "ab"
+                    ]
+                }
+            ],
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 52,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 12,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filesize",
+                                    "value": ">30",
+                                    "quotedValue": ">30",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_size",
+                                        "sign": 1,
+                                        "value": 30
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 13,
+                                    "endOffset": 25,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filesize",
+                                    "value": "<30",
+                                    "quotedValue": "<30",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_size",
+                                        "sign": -1,
+                                        "value": 30
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 26,
+                                    "endOffset": 40,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filesize",
+                                    "value": "30,50",
+                                    "quotedValue": "30,50",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_size",
+                                        "sign": 0,
+                                        "range": [
+                                            30,
+                                            50
+                                        ]
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 41,
+                                    "endOffset": 52,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filesize",
+                                    "value": "ab",
+                                    "quotedValue": "ab",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: filenumeric filebits (assuming same behavior for fileh, filew, fileheight, filewidth, fileres)": {
+        "query": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
+        "expected": {
+            "query": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
+            "rawQuery": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
+            "warnings": [
+                {
+                    "msg": "cirrussearch-file-numeric-feature-not-a-number",
+                    "start": 62,
+                    "message_params": [
+                        "filebits",
+                        "ab"
+                    ]
+                }
+            ],
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 64,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 11,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filebits",
+                                    "value": "30",
+                                    "quotedValue": "30",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_bits",
+                                        "sign": 0,
+                                        "value": 30
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 12,
+                                    "endOffset": 24,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filebits",
+                                    "value": ">30",
+                                    "quotedValue": ">30",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_bits",
+                                        "sign": 1,
+                                        "value": 30
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 25,
+                                    "endOffset": 37,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filebits",
+                                    "value": "<30",
+                                    "quotedValue": "<30",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_bits",
+                                        "sign": -1,
+                                        "value": 30
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 38,
+                                    "endOffset": 52,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filebits",
+                                    "value": "30,50",
+                                    "quotedValue": "30,50",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "field": "file_bits",
+                                        "sign": 0,
+                                        "range": [
+                                            30,
+                                            50
+                                        ]
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 53,
+                                    "endOffset": 64,
+                                    "keyword": "CirrusSearch\\Query\\FileNumericFeature",
+                                    "key": "filebits",
+                                    "value": "ab",
+                                    "quotedValue": "ab",
+                                    "delimiter": "",
+                                    "suffix": ""
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: incategory": {
+        "query": "incategory:foo incategory:foo|id:123 incategory:foo|bar|baz|qux",
+        "config": {
+            "CirrusSearchMaxIncategoryOptions": 3
+        },
+        "expected": {
+            "query": "incategory:foo incategory:foo|id:123 incategory:foo|bar|baz|qux",
+            "rawQuery": "incategory:foo incategory:foo|id:123 incategory:foo|bar|baz|qux",
+            "warnings": [
+                {
+                    "msg": "cirrussearch-feature-too-many-conditions",
+                    "start": 48,
+                    "message_params": [
+                        "incategory",
+                        3
+                    ]
+                }
+            ],
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 63,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 0,
+                                    "endOffset": 14,
+                                    "keyword": "CirrusSearch\\Query\\InCategoryFeature",
+                                    "key": "incategory",
+                                    "value": "foo",
+                                    "quotedValue": "foo",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "names": [
+                                            "foo"
+                                        ],
+                                        "pageIds": []
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 15,
+                                    "endOffset": 36,
+                                    "keyword": "CirrusSearch\\Query\\InCategoryFeature",
+                                    "key": "incategory",
+                                    "value": "foo|id:123",
+                                    "quotedValue": "foo|id:123",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "names": [
+                                            "foo"
+                                        ],
+                                        "pageIds": [
+                                            "123"
+                                        ]
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        },
+                        {
+                            "MUST": {
+                                "keyword": {
+                                    "startOffset": 37,
+                                    "endOffset": 63,
+                                    "keyword": "CirrusSearch\\Query\\InCategoryFeature",
+                                    "key": "incategory",
+                                    "value": "foo|bar|baz|qux",
+                                    "quotedValue": "foo|bar|baz|qux",
+                                    "delimiter": "",
+                                    "suffix": "",
+                                    "parsedValue": {
+                                        "names": [
+                                            "foo",
+                                            "bar",
+                                            "baz"
+                                        ],
+                                        "pageIds": []
+                                    }
+                                }
+                            },
+                            "explicit": false
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "keyword: boost-templates": {
+        "query": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
+        "expected": {
+            "query": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
+            "rawQuery": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 70,
+                    "keyword": "CirrusSearch\\Query\\BoostTemplatesFeature",
+                    "key": "boost-templates",
+                    "value": "Template:Quality Image|200% Template:Low Quality|50%",
+                    "quotedValue": "\"Template:Quality Image|200% Template:Low Quality|50%\"",
+                    "delimiter": "\"",
+                    "suffix": "",
+                    "parsedValue": {
+                        "boost-templates": {
+                            "Template:Quality Image": 2,
+                            "Template:Low Quality": 0.5
+                        }
+                    }
+                }
+            }
+        }
+    },
     "fixups: unexpected bool operator is eaten as a word and produce a warning": {
         "query": "foo AND AND bar",
         "expected": {

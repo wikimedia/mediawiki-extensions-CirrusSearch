@@ -1,7 +1,8 @@
 <?php
 
-namespace CirrusSearch\Search;
+namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\Search\SearchContext;
 use Elastica\Query\FunctionScore;
 
 /**
@@ -84,3 +85,5 @@ abstract class FunctionScoreBuilder {
 		}
 	}
 }
+
+class_alias( FunctionScoreBuilder::class, 'CirrusSearch\Search\FunctionScoreBuilder' );

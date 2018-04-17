@@ -4,6 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Search\Rescore\FunctionScoreBuilder;
+use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\SearchConfig;
 use Elastica\Aggregation\AbstractAggregation;
 use Elastica\Query\AbstractQuery;

@@ -9,7 +9,8 @@
 			"Mirinano",
 			"Iwai.masaharu",
 			"Yusuke1109",
-			"Omotecho"
+			"Omotecho",
+			"Aefgh39622"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki 用の Elasticsearch 検索",
@@ -57,5 +58,6 @@
 	"cirrussearch-explore-similar-languages": "言語",
 	"cirrussearch-explore-similar-related-none": "関連するページが見つかりません",
 	"cirrussearch-explore-similar-categories-none": "カテゴリが見つかりません",
-	"cirrussearch-explore-similar-languages-none": "他の言語で見つかりません"
+	"cirrussearch-explore-similar-languages-none": "他の言語で見つかりません",
+	"cirrussearch-article-words": "すべてのコンテンツページの単語数"
 }

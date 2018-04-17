@@ -2,10 +2,12 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
 use Status;
 use Title;
+use Wikimedia\Assert\Assert;
 use WikiPage;
 
 /**
@@ -159,19 +161,41 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param string $indexType type of index to which to send $data
-	 * @param (\Elastica\Script|\Elastica\Document)[] $data documents to send
+	 * @param string $indexType type of index to which to send $documents
+	 * @param \Elastica\Document[] $documents documents to send
 	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
-	public function sendData( $indexType, $data, $elasticType = Connection::PAGE_TYPE_NAME ) {
-		$documentCount = count( $data );
+	public function sendData( $indexType, $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
+		$documentCount = count( $documents );
 		if ( $documentCount === 0 ) {
 			return Status::newGood();
 		}
 
 		if ( !$this->areIndexesAvailableForWrites( [ $indexType ] ) ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
+		}
+
+		/**
+		 * Does this go here? Probably not. But we need job parameters
+		 * to serialize to json compatible types, and document is a
+		 * significantly simpler object to define a round trip with.
+		 */
+		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
+			$enableNative = !empty( $this->searchConfig->getElement(
+				'CirrusSearchWikimediaExtraPlugin',
+				'super_detect_noop_enable_native'
+			) );
+			foreach ( $documents as $i => $doc ) {
+				// BC Check for jobs that used to contain Document|Script
+				if ( $doc instanceof \Elastica\Document ) {
+					$documents[$i] = $this->docToSuperDetectNoopScript( $doc, $enableNative );
+				}
+			}
+		}
+		// Hints need to be retained until after building noop script
+		foreach ( $documents as $doc ) {
+			CirrusIndexField::resetHints( $doc );
 		}
 
 		$exception = null;
@@ -189,7 +213,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$bulk = new \Elastica\Bulk( $this->connection->getClient() );
 			$bulk->setShardTimeout( $this->searchConfig->get( 'CirrusSearchUpdateShardTimeout' ) );
 			$bulk->setType( $pageType );
-			$bulk->addData( $data, 'update' );
+			$bulk->addData( $documents, 'update' );
 			$responseSet = $bulk->send();
 		} catch ( ResponseException $e ) {
 			$justDocumentMissing = $this->bulkResponseExceptionIsJustDocumentMissing( $e,
@@ -212,14 +236,14 @@ class DataSender extends ElasticsearchIntermediary {
 		if ( $exception === null && ( $justDocumentMissing || $validResponse ) ) {
 			$this->success();
 			if ( $validResponse ) {
-				$this->reportUpdateMetrics( $responseSet, $indexType, count( $data ) );
+				$this->reportUpdateMetrics( $responseSet, $indexType, count( $documents ) );
 			}
 			return Status::newGood();
 		} else {
 			$this->failure( $exception );
 			$documentIds = array_map( function ( $d ) {
 				return $d->getId();
-			}, $data );
+			}, $documents );
 			$this->failedLog->warning(
 				'Update for doc ids: ' . implode( ',', $documentIds ),
 				$exception ? [ 'exception' => $exception ] : []
@@ -478,5 +502,41 @@ class DataSender extends ElasticsearchIntermediary {
 			$queryType,
 			$extra
 		);
+	}
+
+	/**
+	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
+	 * @internal made public for testing purposes
+	 * @param \Elastica\Document $doc
+	 * @param bool $enableNative enable the use of native scripts (deprecated as of elastic 5.5+)
+	 * @return \Elastica\Script\Script
+	 */
+	public function docToSuperDetectNoopScript( \Elastica\Document $doc, $enableNative = false ) {
+		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
+		$params = $doc->getParams();
+		$params['source'] = $doc->getData();
+
+		if ( $handlers ) {
+			Assert::precondition( is_array( $handlers ), "Noop hints must be an array" );
+			$params['handlers'] = $handlers;
+		} else {
+			$params['handlers'] = [];
+		}
+		$extraHandlers = $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop_handlers' );
+		if ( is_array( $extraHandlers ) ) {
+			$params['handlers'] += $extraHandlers;
+		}
+
+		if ( $enableNative ) {
+			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
+		} else {
+			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
+		}
+		if ( $doc->getDocAsUpsert() ) {
+			CirrusIndexField::resetHints( $doc );
+			$script->setUpsert( $doc );
+		}
+
+		return $script;
 	}
 }

@@ -64,5 +64,9 @@
 	"cirrussearch-timed-out": "Tiedoet tiejes 't zeuke, allein gedeiltelike rizzeltaote zint besjikbaar.",
 	"cirrussearch-explore-similar-related": "Verwantj",
 	"cirrussearch-explore-similar-categories": "Categorieë",
-	"cirrussearch-explore-similar-languages": "Spraoke"
+	"cirrussearch-explore-similar-languages": "Spraoke",
+	"cirrussearch-explore-similar-related-none": "Gein verwantje pagina's besjikbaar",
+	"cirrussearch-explore-similar-categories-none": "Gein categorieje besjikbaar",
+	"cirrussearch-explore-similar-languages-none": "Neet besjikbaar in anger spraoke",
+	"cirrussearch-article-words": "Wäörd in alle inhawdspagina's"
 }

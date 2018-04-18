@@ -319,7 +319,11 @@ class Searcher extends ElasticsearchIntermediary {
 		$searches[] = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
-			return Status::newGood( new SearchResultSet( true ) );
+			$status = Status::newGood( new SearchResultSet( true ) );
+			foreach ( $this->searchContext->getWarnings() as $warning ) {
+				call_user_func_array( [ $status, 'warning' ], $warning );
+			}
+			return $status;
 		}
 
 		if ( $interleaveSearcher !== null ) {
@@ -483,7 +487,11 @@ class Searcher extends ElasticsearchIntermediary {
 		$search = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
-			return Status::newGood( new SearchResultSet( true ) );
+			$status = Status::newGood( new SearchResultSet( true ) );
+			foreach ( $this->searchContext->getWarnings() as $warning ) {
+				call_user_func_array( [ $status, 'warning' ], $warning );
+			}
+			return $status;
 		}
 
 		$result = $this->searchMulti( [ $search ] );

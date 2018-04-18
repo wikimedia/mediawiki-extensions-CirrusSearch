@@ -87,6 +87,29 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 				],
 				null
 			],
+			'url encoding' => [
+				'Duck',
+				[
+					[ 'out' => 'Утки' ],
+					[ 'out' => 'Vögel' ],
+				],
+				[
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'category.lowercase_keyword' => [ 'query' => 'Утки' ]
+								]
+							],
+							[
+								'match' => [
+									'category.lowercase_keyword' => [ 'query' => 'Vögel' ]
+								]
+							],
+						]
+					]
+				]
+			],
 		];
 	}
 

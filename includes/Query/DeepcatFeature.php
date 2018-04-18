@@ -190,7 +190,7 @@ SPARQL;
 		return array_map( function ( $row ) use ( $prefixLen ) {
 			// TODO: maybe we want to check the prefix is indeed the same?
 			// It should be but who knows...
-			return substr( $row['out'], $prefixLen );
+			return rawurldecode( substr( $row['out'], $prefixLen ) );
 		}, $result );
 	}
 

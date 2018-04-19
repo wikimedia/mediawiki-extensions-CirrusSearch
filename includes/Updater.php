@@ -316,8 +316,6 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return \Elastica\Document[]
 	 */
 	private function buildDocumentsForPages( $pages, $flags ) {
-		global $wgCirrusSearchUpdateConflictRetryCount;
-
 		$indexOnSkip = $flags & self::INDEX_ON_SKIP;
 		$skipParse = $flags & self::SKIP_PARSE;
 		$skipLinks = $flags & self::SKIP_LINKS;
@@ -355,7 +353,7 @@ class Updater extends ElasticsearchIntermediary {
 			// are objects in both doc and the indexed source.  We're ok with this because all of our fields are either
 			// regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
-			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
+			$doc->setRetryOnConflict( $this->searchConfig->get( 'CirrusSearchUpdateConflictRetryCount' ) );
 
 			if ( !$skipParse ) {
 				$contentHandler = $page->getContentHandler();

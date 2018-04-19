@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
@@ -27,6 +29,14 @@ class LanguageFeature extends SimpleKeywordFeature {
 	 */
 	protected function getKeywords() {
 		return [ 'inlanguage' ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::allWikisStrategy();
 	}
 
 	/**

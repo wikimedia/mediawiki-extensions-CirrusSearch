@@ -2,7 +2,10 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+
 /**
+ * @covers \CirrusSearch\Query\LanguageFeature
  * @group CirrusSearch
  */
 class LanguageFeatureTest extends BaseSimpleKeywordFeatureTest {
@@ -15,13 +18,8 @@ class LanguageFeatureTest extends BaseSimpleKeywordFeatureTest {
 		);
 	}
 
-	public function testCategoriesMustExistWarning() {
-		$this->assertWarnings(
-			new InCategoryFeature( new \HashConfig( [
-				'CirrusSearchMaxIncategoryOptions' => 2,
-			] ) ),
-			[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ],
-			'incategory:id:74,id:18'
-		);
+	public function testCrossSearchStrategy() {
+		$feature = new LanguageFeature();
+		$this->assertCrossSearchStrategy( $feature, "inlanguage:fr,en", CrossSearchStrategy::allWikisStrategy() );
 	}
 }

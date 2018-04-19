@@ -2,7 +2,11 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+
 /**
+ * @covers \CirrusSearch\Query\FileNumericFeature
+ * @covers \CirrusSearch\Query\FileTypeFeature
  * @group CirrusSearch
  */
 class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
@@ -84,6 +88,11 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function testParseNumeric( $expected, $term ) {
 		$context = $this->mockContextExpectingAddFilter( $expected );
 		$feature = new FileNumericFeature();
+
+		if ( $expected !== null ) {
+			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
+		}
+
 		$feature->apply( $context, $term );
 	}
 
@@ -131,6 +140,9 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function testParseType( $expected, $term ) {
 		$context = $this->mockContextExpectingAddFilter( $expected );
 		$feature = new FileTypeFeature();
+		if ( $expected !== null ) {
+			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
+		}
 		$feature->apply( $context, $term );
 	}
 

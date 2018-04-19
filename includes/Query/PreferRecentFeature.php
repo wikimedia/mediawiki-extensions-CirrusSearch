@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
@@ -77,6 +79,14 @@ class PreferRecentFeature extends SimpleKeywordFeature {
 			return count( $retValue ) > 0 ? $retValue : null;
 		}
 		return false;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::allWikisStrategy();
 	}
 
 	/**

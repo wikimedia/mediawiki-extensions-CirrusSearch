@@ -35,6 +35,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\CompletionRequestLog' => __DIR__ . '/includes/CompletionRequestLog.php',
 	'CirrusSearch\\CompletionSuggester' => __DIR__ . '/includes/CompletionSuggester.php',
 	'CirrusSearch\\Connection' => __DIR__ . '/includes/Connection.php',
+	'CirrusSearch\\CrossSearchStrategy' => __DIR__ . '/includes/CrossSearchStrategy.php',
 	'CirrusSearch\\DataSender' => __DIR__ . '/includes/DataSender.php',
 	'CirrusSearch\\Dump' => __DIR__ . '/includes/Dump.php',
 	'CirrusSearch\\ElasticaErrorHandler' => __DIR__ . '/includes/ElasticaErrorHandler.php',

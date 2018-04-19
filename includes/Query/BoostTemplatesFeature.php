@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 
@@ -23,6 +25,14 @@ class BoostTemplatesFeature extends SimpleKeywordFeature {
 	 */
 	protected function getKeywords() {
 		return [ 'boost-templates' ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::allWikisStrategy();
 	}
 
 	/**

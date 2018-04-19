@@ -1,6 +1,8 @@
 <?php
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use Config;
 use MediaWiki\Logger\LoggerFactory;
@@ -67,6 +69,15 @@ class DeepcatFeature extends SimpleKeywordFeature {
 		if ( !empty( $endpoint ) ) {
 			$this->client = $client;
 		}
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		// the category tree is wiki specific
+		return CrossSearchStrategy::hostWikiOnlyStrategy();
 	}
 
 	/**

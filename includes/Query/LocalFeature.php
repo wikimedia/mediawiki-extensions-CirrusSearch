@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -30,6 +32,14 @@ class LocalFeature extends SimpleKeywordFeature {
 	 */
 	public function queryHeader() {
 		return true;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::hostWikiOnlyStrategy();
 	}
 
 	/**

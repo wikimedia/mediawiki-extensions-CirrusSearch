@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -15,6 +17,14 @@ class SubPageOfFeature extends SimpleKeywordFeature {
 	 */
 	protected function getKeywords() {
 		return [ 'subpageof' ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::allWikisStrategy();
 	}
 
 	/**

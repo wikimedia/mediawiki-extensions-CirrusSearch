@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 
@@ -76,6 +78,13 @@ interface KeywordFeature {
 	 * @see self::allowEmptyValue
 	 */
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector );
+
+	/**
+	 * Get support strategy for cross searching
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node );
 
 	/**
 	 * Checks $term for usage of the feature, and applies necessary filters,

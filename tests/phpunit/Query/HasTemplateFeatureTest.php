@@ -2,7 +2,10 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+
 /**
+ * @covers \CirrusSearch\Query\HasTemplateFeature
  * @group CirrusSearch
  */
 class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
@@ -50,6 +53,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function testParse( array $expected, $term ) {
 		$context = $this->mockContextExpectingAddFilter( $expected );
 		$feature = new HasTemplateFeature();
+		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$feature->apply( $context, $term );
 	}
 }

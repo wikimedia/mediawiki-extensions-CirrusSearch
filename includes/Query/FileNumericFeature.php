@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query;
@@ -35,6 +37,14 @@ class FileNumericFeature extends SimpleKeywordFeature {
 		'filewidth' => 'file_width',
 		'fileres' => 'file_resolution',
 	];
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		return CrossSearchStrategy::allWikisStrategy();
+	}
 
 	/**
 	 * @param SearchContext $context

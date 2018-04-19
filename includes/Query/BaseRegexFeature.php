@@ -2,7 +2,9 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
@@ -96,6 +98,18 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 			return 'regex';
 		}
 		return parent::getFeatureName( $key, $valueDelimiter );
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		if ( $node->getDelimiter() === '/' ) {
+			return CrossSearchStrategy::hostWikiOnlyStrategy();
+		} else {
+			return CrossSearchStrategy::allWikisStrategy();
+		}
 	}
 
 	/**

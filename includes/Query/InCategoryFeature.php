@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
@@ -42,6 +44,19 @@ class InCategoryFeature extends SimpleKeywordFeature {
 	 */
 	protected function getKeywords() {
 		return [ 'incategory' ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		if ( empty( $node->getParsedValue()['pageIds'] ) ) {
+			// We depend on the db to fetch the category by id
+			return CrossSearchStrategy::allWikisStrategy();
+		} else {
+			return CrossSearchStrategy::hostWikiOnlyStrategy();
+		}
 	}
 
 	/**

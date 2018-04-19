@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use SearchEngine;
 use CirrusSearch\Search\SearchContext;
 
@@ -34,6 +36,15 @@ class PrefixFeature extends SimpleKeywordFeature {
 	 */
 	protected function getKeywords() {
 		return [ "prefix" ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		// Namespace handling seems to be wiki specific
+		return CrossSearchStrategy::hostWikiOnlyStrategy();
 	}
 
 	/**

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
@@ -144,6 +145,10 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		// Finally run the test
 		$feature = new MoreLikeFeature( $config );
+
+		if ( $mltUsed ) {
+			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::hostWikiOnlyStrategy() );
+		}
 
 		$result = $feature->apply( $context, $term );
 

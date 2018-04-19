@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
 use MediaWiki\Sparql\SparqlClient;
 use MediaWiki\Sparql\SparqlException;
 use Title;
@@ -143,8 +144,11 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 		], $result );
 		$feature = new DeepcatFeature( $config, $client );
 
+		$query = "deepcat:$term";
+		$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+
 		$context = $this->mockContextExpectingAddFilter( $filters );
-		$feature->apply( $context, "deepcat:$term" );
+		$feature->apply( $context, $query );
 	}
 
 	public function testTooManyCats() {

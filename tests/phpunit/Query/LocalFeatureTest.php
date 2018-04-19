@@ -3,7 +3,7 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -11,7 +11,7 @@ use CirrusSearch\Search\SearchContext;
  * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
-class LocalFeatureTest extends CirrusTestCase {
+class LocalFeatureTest extends BaseSimpleKeywordFeatureTest {
 	public function parseProvider() {
 		return [
 			'simple local' => [
@@ -52,7 +52,10 @@ class LocalFeatureTest extends CirrusTestCase {
 			$context->expects( $this->never() )
 				->method( 'setLimitSearchToLocalWiki' );
 		}
-		$feature = new LocalFeature( new \HashConfig( [] ) );
+		$feature = new LocalFeature();
+		if ( $isLocal ) {
+			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::hostWikiOnlyStrategy() );
+		}
 		$remaining = $feature->apply( $context, $term );
 		$this->assertEquals( $expectedRemaining, $remaining );
 	}

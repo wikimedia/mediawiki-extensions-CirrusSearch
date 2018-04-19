@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Title;
@@ -51,6 +53,15 @@ class MoreLikeFeature extends SimpleKeywordFeature {
 	 */
 	public function getFeatureName( $key, $valueDelimiter ) {
 		return "more_like";
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
+		// We depend on the db to fetch the title
+		return CrossSearchStrategy::hostWikiOnlyStrategy();
 	}
 
 	/**

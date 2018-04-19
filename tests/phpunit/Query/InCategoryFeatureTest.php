@@ -2,10 +2,13 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\HashSearchConfig;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
 /**
+ * @covers \CirrusSearch\Query\InCategoryFeature
  * @group CirrusSearch
  */
 class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
@@ -126,7 +129,17 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$feature = new InCategoryFeature( new \HashConfig( [
 			'CirrusSearchMaxIncategoryOptions' => 2,
 		] ) );
+
 		$feature->apply( $context, $term );
+	}
+
+	public function testCrossSearchStrategy() {
+		$feature = new InCategoryFeature( new HashSearchConfig( [] ) );
+
+		$this->assertCrossSearchStrategy( $feature, "incategory:foo", CrossSearchStrategy::allWikisStrategy() );
+		$this->assertCrossSearchStrategy( $feature, "incategory:foo|bar", CrossSearchStrategy::allWikisStrategy() );
+		$this->assertCrossSearchStrategy( $feature, "incategory:id:123", CrossSearchStrategy::hostWikiOnlyStrategy() );
+		$this->assertCrossSearchStrategy( $feature, "incategory:foo|id:123", CrossSearchStrategy::hostWikiOnlyStrategy() );
 	}
 
 	/**

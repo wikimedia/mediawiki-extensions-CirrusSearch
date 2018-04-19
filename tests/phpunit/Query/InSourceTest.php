@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\Filters;
@@ -43,6 +44,9 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 		}
 
 		$feature = new InSourceFeature( new HashSearchConfig( [] ) );
+		if ( $filterValue !== null ) {
+			$this->assertCrossSearchStrategy( $feature, $query,	CrossSearchStrategy::allWikisStrategy() );
+		}
 		$remaining = $feature->apply( $context, $query );
 		$this->assertEquals( $expectedRemaining, $remaining );
 	}
@@ -178,6 +182,11 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 				'CirrusSearchEnableRegex' => true,
 				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
 			], [ 'inherit' ] ) );
+
+		if ( $filterValue !== null ) {
+			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+		}
+
 		$remaining = $feature->apply( $context, $query );
 		$this->assertEquals( $expectedRemaining, $remaining );
 	}

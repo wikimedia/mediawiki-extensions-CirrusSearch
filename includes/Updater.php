@@ -310,6 +310,64 @@ class Updater extends ElasticsearchIntermediary {
 
 		return $docs;
 	}
+
+	/**
+	 * @param \CirrusSearch $engine
+	 * @param WikiPage $page Page to build document for
+	 * @param Connection $connection Elasticsearch connection to calculate some
+	 *  derived properties.
+	 * @param bool $forceParse see self::updatePages $flags
+	 * @param bool $skipParse see self::updatePages $flags
+	 * @param bool $skipLinks see self::updatePages $flags
+	 * @return \Elastica\Document Partial elasticsearch document representing only
+	 *  the fields.
+	 */
+	public static function buildDocument( \CirrusSearch $engine, WikiPage $page, Connection $connection, $forceParse, $skipParse, $skipLinks ) {
+		$title = $page->getTitle();
+		$doc = new \Elastica\Document( null, [
+			'version' => $page->getLatest(),
+			'wiki' => wfWikiID(),
+			'namespace' => $title->getNamespace(),
+			'namespace_text' => Util::getNamespaceText( $title ),
+			'title' => $title->getText(),
+			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
+			'create_timestamp' => wfTimestamp( TS_ISO_8601, $page->getOldestRevision()->getTimestamp() ),
+		] );
+		CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
+		if ( !$skipParse ) {
+			$contentHandler = $page->getContentHandler();
+			$parserCache = $forceParse ? null : MediaWikiServices::getInstance()->getParserCache();
+			$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
+
+			$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
+			foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as
+				$field => $fieldData ) {
+				$doc->set( $field, $fieldData );
+				if ( isset( $fieldDefinitions[$field] ) ) {
+					$hints = $fieldDefinitions[$field]->getEngineHints( $engine );
+					CirrusIndexField::addIndexingHints( $doc, $field, $hints );
+				}
+			}
+
+			// Then let hooks have a go
+			MWHooks::run( 'CirrusSearchBuildDocumentParse', [
+				$doc,
+				$title,
+				$page->getContent(),
+				$output,
+				$connection
+			] );
+		}
+
+		if ( !$skipLinks ) {
+			// TODO: Does anything else use this? It's an awfully specific hook, maybe
+			// call out directly to appropriate code.
+			MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $connection ] );
+		}
+
+		return $doc;
+	}
+
 	/**
 	 * @param \WikiPage[] $pages
 	 * @param int $flags
@@ -335,16 +393,9 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$doc = new \Elastica\Document( $this->searchConfig->makeId( $page->getId() ), [
-				'version' => $page->getLatest(),
-				'wiki' => wfWikiID(),
-				'namespace' => $title->getNamespace(),
-				'namespace_text' => Util::getNamespaceText( $title ),
-				'title' => $title->getText(),
-				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-				'create_timestamp' => wfTimestamp( TS_ISO_8601, $page->getOldestRevision()->getTimestamp() ),
-			] );
-			CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
+			$doc = self::buildDocument( $engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
+			$doc->setId( $this->searchConfig->makeId( $page->getId() ) );
+
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
 			// OtherIndex::updateOtherIndex.
 			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
@@ -355,35 +406,6 @@ class Updater extends ElasticsearchIntermediary {
 			// regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$doc->setRetryOnConflict( $this->searchConfig->get( 'CirrusSearchUpdateConflictRetryCount' ) );
-
-			if ( !$skipParse ) {
-				$contentHandler = $page->getContentHandler();
-				$parserCache = $forceParse ? null : MediaWikiServices::getInstance()->getParserCache();
-				$output = $contentHandler->getParserOutputForIndexing( $page, $parserCache );
-
-				$fieldDefinitions = $contentHandler->getFieldsForSearchIndex( $engine );
-				foreach ( $contentHandler->getDataForSearchIndex( $page, $output, $engine ) as
-					$field => $fieldData ) {
-					$doc->set( $field, $fieldData );
-					if ( isset( $fieldDefinitions[$field] ) ) {
-						$hints = $fieldDefinitions[$field]->getEngineHints( $engine );
-						CirrusIndexField::addIndexingHints( $doc, $field, $hints );
-					}
-				}
-
-				// Then let hooks have a go
-				MWHooks::run( 'CirrusSearchBuildDocumentParse', [
-					$doc,
-					$title,
-					$page->getContent(),
-					$output,
-					$this->connection
-				] );
-			}
-
-			if ( !$skipLinks ) {
-				MWHooks::run( 'CirrusSearchBuildDocumentLinks', [ $doc, $title, $this->connection ] );
-			}
 
 			$documents[] = $doc;
 		}

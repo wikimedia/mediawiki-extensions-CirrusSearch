@@ -53,7 +53,7 @@ module.exports = function ( grunt ) {
 				'**/*.css',
 				'**/*.less',
 				'!node_modules/**',
-				'!tests/browser/articles/**',
+				'!tests/integration/articles/**',
 				'!vendor/**'
 			]
 		},

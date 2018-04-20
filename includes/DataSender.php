@@ -176,6 +176,13 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
+		// Copy the docs so that modifications made in this method are not propagated up to the caller
+		$docsCopy = [];
+		foreach ( $documents as $doc ) {
+			$docsCopy[] = clone $doc;
+		}
+		$documents = $docsCopy;
+
 		/**
 		 * Does this go here? Probably not. But we need job parameters
 		 * to serialize to json compatible types, and document is a
@@ -527,6 +534,12 @@ class DataSender extends ElasticsearchIntermediary {
 			$params['handlers'] += $extraHandlers;
 		}
 
+		if ( empty( $params['handlers'] ) ) {
+			// The noop script only supports Map but an empty array
+			// may be transformed to [] instead of {} when serialized to json
+			// causing class cast exception failures
+			$params['handlers'] = new \stdClass();
+		}
 		if ( $enableNative ) {
 			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
 		} else {

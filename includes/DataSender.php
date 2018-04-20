@@ -534,7 +534,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$params['handlers'] += $extraHandlers;
 		}
 
-		if ( empty( $params['handlers'] ) ) {
+		if ( $params['handlers'] === [] ) {
 			// The noop script only supports Map but an empty array
 			// may be transformed to [] instead of {} when serialized to json
 			// causing class cast exception failures

@@ -5,8 +5,48 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 
+/**
+ * Definition of a search keyword.
+ *
+ * This interface is being actively refactored, the initial behavior is to do all the
+ * work in the function apply( SearchContext $context, $term ).
+ *
+ * The aim is to clearly separate the parsing logic from the query building logic.
+ *
+ *  - AST generation and parsing: must be idempotent and depend as little as possible on
+ *    configuration variables. Output of the parsing will be KeywordFeatureNode.
+ *  - CrossSearchStrategy evaluation
+ *  - Expansion: for keyword needing to fetch external resources.
+ *  - Query building
+ *
+ * The parsing behavior can be defined using the following methods:
+ *  - getKeywordPrefixes()
+ *  - allowEmptyValue()
+ *  - hasValue()
+ *  - greedy()
+ *  - queryHeader()
+ *  - getValueDelimiters()
+ *  - parseValue()
+ *
+ * The keyword can define its CrossSearchStrategy to decide whether or not a query
+ * using this keyword can be applied to external wikis indices.
+ *
+ * For keywords that need to fetch data from external resource the method
+ * expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector )
+ * can be used. Its return value will be made in a context available during query building.
+ *
+ * A keyword must not directly implement this interface but extends SimpleKeywordFeature.
+ *
+ * NOTE: since this interface is being refactored it's highly recommended to use and implement
+ * the dedicated method in the old all-in-one apply strategy (This "apply" strategy will be removed).
+ *
+ * @see SimpleKeywordFeature
+ * @see CrossSearchStrategy
+ * @see KeywordFeatureNode
+ */
 interface KeywordFeature {
 	/**
 	 * List of keyword strings this implementation consumes
@@ -85,6 +125,21 @@ interface KeywordFeature {
 	 * @return CrossSearchStrategy
 	 */
 	public function getCrossSearchStrategy( KeywordFeatureNode $node );
+
+	/**
+	 * Expand the keyword potentially accessing external resources.
+	 * Keywords that need to access the DB or any other external resources
+	 * should implement this method.
+	 * NOTE: this method will be called on every external wikis the search
+	 * request will be made to.
+	 * @param KeywordFeatureNode $node
+	 * @param SearchConfig $config
+	 * @param WarningCollector $warningCollector
+	 * @return array a state containing the data the keyword fetched from an external resource
+	 * The format of this array is only known by the keyword implementation and is stored in
+	 * the query building context.
+	 */
+	public function expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector );
 
 	/**
 	 * Checks $term for usage of the feature, and applies necessary filters,

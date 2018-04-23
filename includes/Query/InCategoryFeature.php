@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
@@ -76,15 +77,10 @@ class InCategoryFeature extends SimpleKeywordFeature {
 			$context->setResultsPossible( false );
 			return [ null, false ];
 		}
-		$names = $parsedValue['names'];
-		$pageIds = $parsedValue['pageIds'];
 
-		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
-			$names[] = $title->getText();
-		}
+		$names = $this->doExpand( $key, $parsedValue, $context );
 
-		if ( count( $names ) === 0 ) {
-			$context->addWarning( 'cirrussearch-incategory-feature-no-valid-categories', $key );
+		if ( $names === [] ) {
 			$context->setResultsPossible( false );
 			return [ null, false ];
 		}
@@ -132,6 +128,36 @@ class InCategoryFeature extends SimpleKeywordFeature {
 		}
 
 		return [ 'names' => $names, 'pageIds' => $pageIds ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param SearchConfig $config
+	 * @param WarningCollector $warningCollector
+	 * @return array
+	 */
+	public function expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector ) {
+		return $this->doExpand( $node->getKey(), $node->getParsedValue(), $warningCollector );
+	}
+
+	/**
+	 * @param string $key
+	 * @param array $parsedValue
+	 * @param WarningCollector $warningCollector
+	 * @return array
+	 */
+	private function doExpand( $key, array $parsedValue, WarningCollector $warningCollector ) {
+		$names = $parsedValue['names'];
+		$pageIds = $parsedValue['pageIds'];
+
+		foreach ( Title::newFromIDs( $pageIds ) as $title ) {
+			$names[] = $title->getText();
+		}
+
+		if ( count( $names ) === 0 ) {
+			$warningCollector->addWarning( 'cirrussearch-incategory-feature-no-valid-categories', $key );
+		}
+		return $names;
 	}
 
 	/**

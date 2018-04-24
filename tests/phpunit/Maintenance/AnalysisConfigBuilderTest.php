@@ -35,6 +35,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
+		$this->assertTrue( $builder->isIcuAvailable() );
 
 		// Test default
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'default' ] );
@@ -45,7 +46,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
 
-		// test BC code
+		// test BC code: true = 'yes'
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => true ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
@@ -59,6 +60,13 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'simple' ) );
+
+		// test BC code: false = 'no'
+		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => false ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
+		$this->assertFalse( $builder->shouldActivateIcuFolding( 'en' ) );
 
 		// Test that ICU folding cannot be enable without the required plugins
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'yes' ] );
@@ -74,7 +82,21 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->enableICUTokenizer( $input );
+		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'en' ) );
+		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
 		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+
+		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'no' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
+		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
+		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'en' ) );
+		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'bo' ) );
+
+		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'default' ] );
+		$plugins = [ 'extra', 'analysis-icu' ];
+		$builder = new AnalysisConfigBuilder( 'bo', $plugins, $config );
+		$this->assertFalse( $builder->shouldActivateIcuTokenization( 'en' ) );
+		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
 	}
 
 	public static function provideASCIIFoldingFilters() {

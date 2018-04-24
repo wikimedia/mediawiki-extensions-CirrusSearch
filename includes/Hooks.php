@@ -359,28 +359,6 @@ class Hooks {
 	}
 
 	/**
-	 * Called when a page is imported. Force a full index of the page. Use the MassIndex
-	 * job since there's likely to be a bunch and we'll prioritize them well but use
-	 * INDEX_EVERYTHING since we won't get a chance at a second pass.
-	 *
-	 * @param Title $title The page title we've just imported
-	 * @return bool
-	 */
-	public static function onAfterImportPage( $title ) {
-		// The title can be null if the import failed.  Nothing to do in that case.
-		if ( $title === null ) {
-			return false;
-		}
-		JobQueueGroup::singleton()->push(
-			Job\MassIndex::build(
-				[ WikiPage::factory( $title ) ],
-				Updater::INDEX_EVERYTHING
-			)
-		);
-		return true;
-	}
-
-	/**
 	 * Called when a revision is deleted. In theory, we shouldn't need to to this since
 	 * you can't delete the current text of a page (so we should've already updated when
 	 * the page was updated last). But we're paranoid, because deleted revisions absolutely

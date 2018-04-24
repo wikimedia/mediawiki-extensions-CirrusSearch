@@ -582,9 +582,14 @@ class Hooks {
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.
-		if ( $title->getNamespace() !== $newTitle->getNamespace() ) {
-			$conn = self::getConnection();
-			$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
+		if ( $title->getNamespace() === $newTitle->getNamespace() ) {
+			return true;
+		}
+
+		$conn = self::getConnection();
+		$oldIndexType = $conn->getIndexSuffixForNamespace( $title->getNamespace() );
+		$newIndexType = $conn->getIndexSuffixForNamespace( $newTitle->getNamespace() );
+		if ( $oldIndexType !== $newIndexType ) {
 			$job = new Job\DeletePages( $title, [
 				'indexType' => $oldIndexType,
 				'docId' => self::getConfig()->makeId( $oldId )

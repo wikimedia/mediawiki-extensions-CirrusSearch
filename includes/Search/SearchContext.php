@@ -106,11 +106,6 @@ class SearchContext implements WarningCollector {
 	private $extraHighlightFields = [];
 
 	/**
-	 * @var boolean is this a fuzzy query?
-	 */
-	private $fuzzyQuery = false;
-
-	/**
 	 * @var AbstractQuery|null Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
@@ -527,22 +522,6 @@ class SearchContext implements WarningCollector {
 	}
 
 	/**
-	 * @param bool $isFuzzy is this a fuzzy query?
-	 */
-	public function setFuzzyQuery( $isFuzzy ) {
-		$this->isDirty = true;
-		$this->fuzzyQuery = $isFuzzy;
-	}
-
-	/**
-	 * @return bool is this a fuzzy query?
-	 */
-	public function isFuzzyQuery() {
-		$this->isDirty = true;
-		return $this->fuzzyQuery;
-	}
-
-	/**
 	 * @param string $field The field to add highlighting configuration for.
 	 * @param array $config Configuration for highlighting the article source. Passed
 	 *  to ResultType::getHighlightingConfiguration to generate final highlighting
@@ -581,14 +560,7 @@ class SearchContext implements WarningCollector {
 		if ( !$highlight ) {
 			return null;
 		}
-		if ( $this->fuzzyQuery ) {
-			$highlight['fields'] = array_filter(
-				$highlight['fields'],
-				function ( $field ) {
-					return $field['type'] !== 'plain';
-				}
-			);
-		}
+
 		$query = $this->getHighlightQuery();
 		if ( $query ) {
 			$highlight['highlight_query'] = $query->toArray();

@@ -25,7 +25,7 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 	public function testSimple( $query, $expectedRemaining, $negated, $filterValue ) {
 		$context = $this->mockContext();
 		if ( $filterValue !== null ) {
-			$qsQuery = Filters::insource( $context->escaper(), $context, $filterValue );
+			$qsQuery = Filters::insource( $context->escaper(), $filterValue );
 			$context->expects( $this->once() )
 				->method( $negated ? 'addNotFilter' : 'addFilter' )
 				->with( $qsQuery );

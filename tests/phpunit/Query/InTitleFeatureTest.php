@@ -31,7 +31,6 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 					'query' => 'bridge',
 				] ],
 				'bridge ',
-				false,
 				'intitle:bridge',
 			],
 			'fuzzy search' => [
@@ -39,7 +38,6 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 					'query' => 'bridge~2',
 				] ],
 				'bridge~2 ',
-				true,
 				'intitle:bridge~2',
 			],
 			'gracefully handles titles including ~' => [
@@ -47,7 +45,6 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 					'query' => 'this\~that',
 				] ],
 				'this~that ',
-				false,
 				'intitle:this~that',
 			],
 			'maintains provided quotes' => [
@@ -55,7 +52,6 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 					'query' => '"something or other"',
 				] ],
 				'"something or other" ',
-				false,
 				'intitle:"something or other"',
 			],
 			'contains a star' => [
@@ -64,7 +60,6 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 					'fields' => [ 'title.plain', 'redirect.title.plain' ],
 				] + $defaults ],
 				'zomg* ',
-				false,
 				'intitle:zomg*'
 			],
 		];
@@ -73,11 +68,8 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( array $expectedQuery, $expectedTerm, $isFuzzy, $term ) {
+	public function testParse( array $expectedQuery, $expectedTerm, $term ) {
 		$context = $this->mockContextExpectingAddFilter( $expectedQuery );
-		$context->expects( $this->once() )
-			->method( 'setFuzzyQuery' )
-			->with( $isFuzzy );
 
 		// This test is kinda-sorta testing the escaper too ... maybe not optimal but simple
 		$context->expects( $this->once() )

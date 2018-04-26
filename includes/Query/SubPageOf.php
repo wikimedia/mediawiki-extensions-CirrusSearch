@@ -39,7 +39,7 @@ class SubPageOfFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		if ( empty( $value ) ) {
+		if ( $value === '' ) {
 			return [ null, false ];
 		}
 		if ( substr( $value, -1 ) != '/' ) {

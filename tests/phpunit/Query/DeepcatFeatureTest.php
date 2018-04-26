@@ -13,7 +13,15 @@ use Title;
  */
 class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 
+	/**
+	 * @param array $expectInQuery
+	 * @param array $result
+	 * @return SparqlClient
+	 */
 	private function getSparqlClient( array $expectInQuery, array $result ) {
+		/**
+		 * @var SparqlClient $client
+		 */
 		$client = $this->getMockBuilder( SparqlClient::class )
 			->disableOriginalConstructor()->getMock();
 		$client->expects( $this->atMost( 1 ) )->method( 'query' )->willReturnCallback(
@@ -131,24 +139,41 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @param array $filters
 	 */
 	public function testFilter( $term, $result, $filters ) {
+		$maxRes = 3;
 		$config = new \HashConfig( [
 			'CirrusSearchCategoryDepth' => '3',
-			'CirrusSearchCategoryMax' => 3,
+			'CirrusSearchCategoryMax' => $maxRes,
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
-
-		$client = $this->getSparqlClient( [
+		$sparqlQuery = [
 			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( trim( $term, '"' ) ) . '>',
 			'bd:serviceParam mediawiki:depth 3 ',
 			'LIMIT 4'
-		], $result );
-		$feature = new DeepcatFeature( $config, $client );
-
+		];
 		$query = "deepcat:$term";
-		$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 
-		$context = $this->mockContextExpectingAddFilter( $filters );
-		$feature->apply( $context, $query );
+		if ( count( $result ) > $maxRes ) {
+			$expectedData = [];
+			$warnings = [ [ 'cirrussearch-feature-deepcat-toomany' ] ];
+		} else {
+			$expectedData = array_map(
+				function ( $data ) {
+					return $data['out'];
+				},
+				$result
+			);
+			$warnings = [];
+		}
+		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+		$this->assertParsedValue( $feature, $query, null, [] );
+		$this->assertExpandedData( $feature, $query, $expectedData, $warnings );
+
+		// Rebuild the client to comply atMost assertion on the query method
+		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertFilter( $feature, $query, $filters, $warnings );
 	}
 
 	public function testTooManyCats() {
@@ -158,22 +183,28 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 			'CirrusSearchCategoryEndpoint' => 'http://acme.test/sparql'
 		] );
 
-		$client = $this->getSparqlClient( [
+		$sparqlQuery = [
 			'bd:serviceParam mediawiki:start <' . $this->categoryToUrl( 'Ducks' ) . '>',
 			'bd:serviceParam mediawiki:depth 3 ',
 			'LIMIT 4'
-		], 	[
-				[ 'out' => 'Ducks' ],
-				[ 'out' => 'Wigeons' ],
-				[ 'out' => 'More ducks' ],
-				[ 'out' => 'There is no such thing as too many ducks' ],
-			]
-		);
-		$feature = new DeepcatFeature( $config, $client );
+		];
+		$result = [
+			[ 'out' => 'Ducks' ],
+			[ 'out' => 'Wigeons' ],
+			[ 'out' => 'More ducks' ],
+			[ 'out' => 'There is no such thing as too many ducks' ],
+		];
 
-		$context = $this->mockContextExpectingAddFilter( null );
-		$context->expects( $this->atLeastOnce() )->method( 'setResultsPossible' )->with( false );
-		$feature->apply( $context, "deepcat:Ducks" );
+		$query = "deepcat:Ducks";
+		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertFilter( $feature, "deepcat:Ducks", null, [ [ 'cirrussearch-feature-deepcat-toomany' ] ] );
+		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertNoResultsPossible( $feature, $query );
+		$client = $this->getSparqlClient( $sparqlQuery, $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertExpandedData( $feature, "deepcat:Ducks", [], [ [ 'cirrussearch-feature-deepcat-toomany' ] ] );
 	}
 
 	/**
@@ -191,11 +222,11 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		$client = $this->getSparqlClient( [], $result );
 		$feature = new DeepcatFeature( $config, $client );
-
-		$context = $this->mockContextExpectingAddFilter( null );
-		$feature->apply( $context, "deepcat:$term" );
-		$this->assertWarnings( $feature, [ [ 'cirrussearch-feature-deepcat-endpoint' ] ],
-			"deepcat:$term" );
+		$query = "deepcat:$term";
+		$this->assertFilter( $feature, $query, null, [ [ 'cirrussearch-feature-deepcat-endpoint' ] ] );
+		$client = $this->getSparqlClient( [], $result );
+		$feature = new DeepcatFeature( $config, $client );
+		$this->assertExpandedData( $feature, $query, [], [ [ 'cirrussearch-feature-deepcat-endpoint' ] ] );
 	}
 
 	public function testSparqlError() {
@@ -212,10 +243,18 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 			}
 		);
 		$feature = new DeepcatFeature( $config, $client );
-		$context = $this->mockContext();
-		$feature->apply( $context, "deepcat:Test" );
-		$this->assertWarnings( $feature, [ [ 'cirrussearch-feature-deepcat-exception' ] ],
-			"deepcat:Test" );
+		$filter = [
+			'bool' => [
+				'should' => [ [
+					'match' => [
+						'category.lowercase_keyword' => [ 'query' => 'Test' ]
+					]
+				] ]
+			]
+		];
+		$this->assertFilter( $feature, "deepcat:Test", $filter, [ [ 'cirrussearch-feature-deepcat-exception' ] ] );
+		// When there is no endpoint we emit a simple incategory
+		$this->assertExpandedData( $feature, "deepcat:Test", [ "Test" ], [ [ 'cirrussearch-feature-deepcat-exception' ] ] );
 	}
 
 }

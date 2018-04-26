@@ -25,7 +25,8 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ]
 					]
 				] ],
-				'incategory:Zomg'
+				[],
+				'incategory:Zomg',
 			],
 			'multiple categories' => [
 				[ 'bool' => [
@@ -42,6 +43,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ]
 					]
 				] ],
+				[],
 				'incategory:Zomg|Wowzers'
 			],
 			'resolves id: prefix' => [
@@ -54,14 +56,17 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ],
 					]
 				] ],
+				[],
 				'incategory:id:2',
 			],
 			'throws away invalid id: values' => [
 				null,
+				[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ],
 				'incategory:id:qwerty',
 			],
 			'throws away unknown id: values' => [
 				null,
+				[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ],
 				'incategory:id:7654321'
 			],
 			'allows mixing id: with names' => [
@@ -79,6 +84,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ],
 					],
 				] ],
+				[],
 				'incategory:Cirrus|id:2',
 			],
 			'applies supplied category limit' => [
@@ -96,6 +102,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ]
 					]
 				] ],
+				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory' ] ],
 				'incategory:This|That|Other',
 			],
 			'invalid id: counts towards category limit' => [
@@ -108,6 +115,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ],
 					]
 				] ],
+				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory' ] ],
 				'incategory:id:qwerty|Test|Case',
 			],
 		];
@@ -116,21 +124,15 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( array $expected = null, $term ) {
+	public function testParse( array $expected = null, array $warnings, $term ) {
 		$this->mockDB();
-
-		$context = $this->mockContextExpectingAddFilter( $expected );
-		$context->expects( $this->exactly(
-				$expected === null ? 1 : 0
-			) )
-			->method( 'setResultsPossible' )
-			->with( false );
-
 		$feature = new InCategoryFeature( new \HashConfig( [
 			'CirrusSearchMaxIncategoryOptions' => 2,
 		] ) );
-
-		$feature->apply( $context, $term );
+		$this->assertFilter( $feature, $term, $expected, $warnings );
+		if ( $expected === null ) {
+			$this->assertNoResultsPossible( $feature, $term );
+		}
 	}
 
 	public function testCrossSearchStrategy() {
@@ -171,23 +173,44 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$this->setService( 'DBLoadBalancer', $lb );
 	}
 
+	public function testParsedValue() {
+		$feature = new InCategoryFeature( new HashSearchConfig( [], [ 'inherit' ] ) );
+		$this->assertParsedValue( $feature, 'incategory:test',
+			[ 'names' => [ 'test' ], 'pageIds' => [] ] );
+		$this->assertParsedValue( $feature, 'incategory:foo|bar',
+			[ 'names' => [ 'foo', 'bar' ], 'pageIds' => [] ] );
+		$this->assertParsedValue( $feature, 'incategory:id:123',
+			[ 'names' => [], 'pageIds' => [ '123' ] ] );
+		$this->assertParsedValue( $feature, 'incategory:id:123|id:321',
+			[ 'names' => [], 'pageIds' => [ '123', '321' ] ] );
+	}
+
+	public function testExpandedData() {
+		$this->mockDB();
+		$feature = new InCategoryFeature( new HashSearchConfig( [], [ 'inherit' ] ) );
+		$this->assertExpandedData( $feature, "incategory:test|id:2",
+			[ 'test', 'Cat2' ] );
+	}
+
 	public function testTooManyCategoriesWarning() {
-		$this->assertWarnings(
+		$this->assertParsedValue(
 			new InCategoryFeature( new \HashConfig( [
 				'CirrusSearchMaxIncategoryOptions' => 2,
 			] ) ),
-			[ [ 'cirrussearch-feature-too-many-conditions', 'incategory', 2 ] ],
-			'incategory:a|b|c'
+			'incategory:a|b|c',
+			[ 'names' => [ 'a', 'b' ], 'pageIds' => [] ],
+			[ [ 'cirrussearch-feature-too-many-conditions', 'incategory', 2 ] ]
 		);
 	}
 
 	public function testCategoriesMustExistWarning() {
-		$this->assertWarnings(
+		$this->assertExpandedData(
 			new InCategoryFeature( new \HashConfig( [
 				'CirrusSearchMaxIncategoryOptions' => 2,
 			] ) ),
-			[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ],
-			'incategory:id:74,id:18'
+			'incategory:id:23892835|id:23892834',
+			[],
+			[ [ 'cirrussearch-incategory-feature-no-valid-categories', 'incategory' ] ]
 		);
 	}
 }

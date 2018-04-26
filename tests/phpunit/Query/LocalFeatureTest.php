@@ -4,6 +4,7 @@
 namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -41,22 +42,13 @@ class LocalFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( $expectedRemaining, $isLocal, $term ) {
-		$context = $this->getMockBuilder( SearchContext::class )
-			->disableOriginalConstructor()
-			->getMock();
-		if ( $isLocal ) {
-			$context->expects( $this->once() )
-				->method( 'setLimitSearchToLocalWiki' )
-				->with( true );
-		} else {
-			$context->expects( $this->never() )
-				->method( 'setLimitSearchToLocalWiki' );
-		}
 		$feature = new LocalFeature();
 		if ( $isLocal ) {
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::hostWikiOnlyStrategy() );
 		}
-		$remaining = $feature->apply( $context, $term );
-		$this->assertEquals( $expectedRemaining, $remaining );
+		$this->assertRemaining( $feature, $term, $expectedRemaining );
+		$context = new SearchContext( new HashSearchConfig( [] ) );
+		$feature->apply( $context, $term );
+		$this->assertEquals( $isLocal, $context->getLimitSearchToLocalWiki() );
 	}
 }

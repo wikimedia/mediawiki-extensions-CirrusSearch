@@ -5,8 +5,6 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Search\Escaper;
-use CirrusSearch\Search\SearchContext;
 use Elastica\Query\BoolQuery;
 
 /**
@@ -69,34 +67,16 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( array $expectedQuery, $expectedTerm, $term ) {
-		$context = $this->mockContextExpectingAddFilter( $expectedQuery );
-
-		// This test is kinda-sorta testing the escaper too ... maybe not optimal but simple
-		$context->expects( $this->once() )
-			->method( 'escaper' )
-			->will( $this->returnValue( new Escaper( 'en' ) ) );
-
 		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
-
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
+		$this->assertFilter( $feature, $term, $expectedQuery, [] );
 
-		$this->assertEquals(
-			$expectedTerm,
-			$feature->apply( $context, $term )
-		);
+		$this->assertRemaining( $feature, $term, $expectedTerm );
 	}
 
 	public function testNegatingDoesntKeepTerm() {
-		$context = $this->getMockBuilder( SearchContext::class )
-			->disableOriginalConstructor()
-			->getMock();
-
-		$context->expects( $this->once() )
-			->method( 'escaper' )
-			->will( $this->returnValue( new Escaper( 'en' ) ) );
-
 		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
-		$this->assertEquals( '', $feature->apply( $context, '-intitle:mediawiki' ) );
+		$this->assertRemaining( $feature, '-intitle:mediawiki', '' );
 	}
 
 	/**
@@ -107,79 +87,56 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @param $filterValue
 	 */
 	public function testRegex( $query, $expectedRemaining, $negated, $filterValue, $insensitive ) {
-		$context = $this->mockContext();
-
+		$filterCallback = null;
 		if ( $filterValue !== null ) {
-			$context->expects( $this->once() )
-				->method( $negated ? 'addNotFilter' : 'addFilter' )
-				->with( $this->callback( function ( BoolQuery $x ) use ( $filterValue, $insensitive ) {
-					$this->assertTrue( $x->hasParam( 'should' ) );
-					$this->assertTrue( is_array( $x->getParam( 'should' ) ) );
-					$this->assertEquals( 2, count( $x->getParam( 'should' ) ) );
-					$regex = $x->getParam( 'should' )[0];
-					$this->assertInstanceOf( SourceRegex::class, $regex );
-					$this->assertEquals( $filterValue, $regex->getParam( 'regex' ) );
-					$this->assertEquals( 'title.trigram', $regex->getParam( 'ngram_field' ) );
-					$this->assertEquals( !$insensitive, $regex->getParam( 'case_sensitive' ) );
-					$regex = $x->getParam( 'should' )[1];
-					$this->assertInstanceOf( SourceRegex::class, $regex );
-					$this->assertEquals( $filterValue, $regex->getParam( 'regex' ) );
-					$this->assertEquals( 'redirect.title.trigram', $regex->getParam( 'ngram_field' ) );
-					$this->assertEquals( !$insensitive, $regex->getParam( 'case_sensitive' ) );
-					return true;
-				} ) );
-			$context->expects( $this->never() )
-				->method( $negated ? 'addFilter' : 'addNotFilter' );
-			if ( !$negated ) {
-				$context->expects( $this->exactly( 2 ) )
-					->method( 'addHighlightField' )
-					->withConsecutive(
-						[
-							'title', [
-								'pattern' => $filterValue,
-								'locale' => 'en',
-								'insensitive' => $insensitive
-							]
-						],
-						[
-							'redirect.title',
-							[
-								'pattern' => $filterValue,
-								'locale' => 'en',
-								'insensitive' => $insensitive
-							]
-						]
-					);
-			}
-		} else {
-			$context->expects( $this->never() )
-				->method( 'addFilter' );
-			$context->expects( $this->never() )
-				->method( 'addNotFilter' );
+			$filterCallback = function ( BoolQuery $x ) use ( $filterValue, $insensitive ) {
+				$this->assertTrue( $x->hasParam( 'should' ) );
+				$this->assertTrue( is_array( $x->getParam( 'should' ) ) );
+				$this->assertEquals( 2, count( $x->getParam( 'should' ) ) );
+				$regex = $x->getParam( 'should' )[0];
+				$this->assertInstanceOf( SourceRegex::class, $regex );
+				$this->assertEquals( $filterValue, $regex->getParam( 'regex' ) );
+				$this->assertEquals( 'title.trigram', $regex->getParam( 'ngram_field' ) );
+				$this->assertEquals( !$insensitive, $regex->getParam( 'case_sensitive' ) );
+				$regex = $x->getParam( 'should' )[1];
+				$this->assertInstanceOf( SourceRegex::class, $regex );
+				$this->assertEquals( $filterValue, $regex->getParam( 'regex' ) );
+				$this->assertEquals( 'redirect.title.trigram', $regex->getParam( 'ngram_field' ) );
+				$this->assertEquals( !$insensitive, $regex->getParam( 'case_sensitive' ) );
+
+				return true;
+			};
 		}
+
 		$feature = new InTitleFeature( new HashSearchConfig(
 			[
 				'CirrusSearchEnableRegex' => true,
 				'CirrusSearchWikimediaExtraPlugin' => [ 'regex' => [ 'use' => true ] ]
-			], [ 'inherit' ] ) );
+			],
+			[ 'inherit' ]
+		) );
 
+		$this->assertFilter( $feature, $query, $filterCallback, [] );
+		$this->assertParsedValue( $feature, $query, null, [] );
+		$this->assertExpandedData( $feature, $query, [], [] );
 		if ( $filterValue !== null ) {
 			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+			$highlightQuery = [
+				'pattern' => $filterValue,
+				'locale' => 'en',
+				'insensitive' => $insensitive
+			];
+
+			$this->assertHighlighting( $feature, $query, [ 'title', 'redirect.title' ],
+				[ $highlightQuery, $highlightQuery ] );
 		}
 
-		$remaining = $feature->apply( $context, $query );
-		$this->assertEquals( $expectedRemaining, $remaining );
+		// TODO: remove, should be a parser test
+		$this->assertRemaining( $feature, $query, $expectedRemaining );
 	}
 
 	public static function provideRegexQueries() {
 		return [
-			'doesnt absord unrelated things' => [
-				'foo bar',
-				'foo bar',
-				false,
-				null,
-				false,
-			],
 			'supports simple regex' => [
 				'intitle:/bar/',
 				'',
@@ -223,5 +180,11 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 				true,
 			],
 		];
+	}
+
+	public function testEmpty() {
+		// TODO: remove, should be a parser test
+		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
+		$this->assertNotConsumed( $feature, "foo bar" );
 	}
 }

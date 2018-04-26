@@ -66,6 +66,7 @@
 	"cirrussearch-file-numeric-feature-not-a-number": "De zeukterm '$1' haet numerieke waerd nuuedig, meh '$2' waas opgegaeve.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "De zeukterm '$1' steit 't neet toe det 't mieëder argumente geuf en teikent mit '$2'.",
 	"cirrussearch-feature-not-available": "De zeuksleutelwaord '$1' steit neet aan op deze wiki.",
+	"cirrussearch-feature-too-many-conditions": "Te väöl ómstenjigheje aangebaoje aan '$1', getrunceerd nao $2.",
 	"cirrussearch-explore-similar-related": "Verwantj",
 	"cirrussearch-explore-similar-categories": "Categorieë",
 	"cirrussearch-explore-similar-languages": "Spraoke",

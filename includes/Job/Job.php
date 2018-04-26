@@ -173,7 +173,12 @@ abstract class Job extends MWJob {
 	 */
 	public static function backoffDelay( $retryCount ) {
 		global $wgCirrusSearchWriteBackoffExponent;
-		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand( 0, min( $retryCount, 4 ) ) ) );
+		$minIncrease = 0;
+		if ( $retryCount > 1 ) {
+			// Delay at least 2 minutes for everything that fails more than once
+			$minIncrease = 1;
+		}
+		return ceil( pow( 2, $wgCirrusSearchWriteBackoffExponent + rand( $minIncrease, min( $retryCount, 4 ) ) ) );
 	}
 
 	/**

@@ -4,8 +4,13 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\WarningCollector;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\Term;
 use SearchEngine;
 use CirrusSearch\Search\SearchContext;
+use Wikimedia\Assert\Assert;
 
 /**
  * Handles the prefix: keyword for matching titles. Can be used to
@@ -58,8 +63,27 @@ class PrefixFeature extends SimpleKeywordFeature {
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		// XXX: only works because it's greedy
 		$context->addSuggestSuffix( ' prefix:' . $value );
-		// best effort quote trimming in case the query is simply wrapped in quotes
-		// but ignores corner/ambiguous cases
+		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		$namespace = null;
+		if ( isset( $parsedValue['namespace'] ) ) {
+			$namespace = $parsedValue['namespace'];
+		}
+		$this->deprecationWarning( $context, $context->getNamespaces(), $namespace );
+
+		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
+		return [ $prefixQuery, false ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		$trimQuote = '/^"([^"]*)"\s*$/';
 		$value = preg_replace( $trimQuote, "$1", $value );
 		// NS_MAIN by default
@@ -69,24 +93,64 @@ class PrefixFeature extends SimpleKeywordFeature {
 		// namespace filters.
 		$queryAndNamespace = SearchEngine::parseNamespacePrefixes( $value );
 		if ( $queryAndNamespace !== false ) {
-			$value = $queryAndNamespace[0];
+			// parseNamespacePrefixes returns the whole query if it's made of single namespace prefix
+			$value = $value === $queryAndNamespace[0] ? '' : $queryAndNamespace[0];
 			$namespaces = $queryAndNamespace[1];
+
 			// Redo best effort quote trimming on the resulting value
 			$value = preg_replace( $trimQuote, "$1", $value );
 		}
+		Assert::postcondition( $namespaces === null || count( $namespaces ) === 1,
+			"namespace can only be an array with one value or null" );
 		$value = trim( $value );
-		$context->setNamespaces( $namespaces );
-		if ( strlen( $value ) === 0 ) {
-			return [ null, false ];
+		// All titles in namespace
+		if ( $value === '' ) {
+			$value = null;
 		}
+		if ( $namespaces !== null ) {
+			return [ 'namespace' => reset( $namespaces ), 'value' => $value ];
+		} else {
+			return [ 'value' => $value ];
+		}
+	}
 
-		// If the namespace prefix wasn't the entire prefix filter then add a filter for the title
+	/**
+	 * @param string $value
+	 * @param int|null $namespace
+	 * @return AbstractQuery|null null in the case of prefix:all:
+	 */
+	private function buildQuery( $value = null, $namespace = null ) {
+		$nsFilter = null;
 		$prefixQuery = null;
-		if ( strpos( $value, ':' ) !== strlen( $value ) - 1 ) {
+		if ( $value !== null ) {
 			$prefixQuery = new \Elastica\Query\Match();
 			$prefixQuery->setFieldQuery( 'title.prefix', $value );
 		}
+		if ( $namespace !== null ) {
+			$nsFilter = new Term( [ 'namespace' => $namespace ] );
+		}
+		if ( $prefixQuery !== null && $nsFilter !== null ) {
+			$query = new BoolQuery();
+			$query->addMust( $prefixQuery );
+			$query->addMust( $nsFilter );
+			return $query;
+		}
 
-		return [ $prefixQuery, false ];
+		return $nsFilter !== null ? $nsFilter : $prefixQuery;
+	}
+
+	/**
+	 * @param array|null $searchNamespaces
+	 * @param int|null $namespace
+	 * @param WarningCollector $warningCollector
+	 */
+	private function deprecationWarning( WarningCollector $warningCollector, array $searchNamespaces = null, $namespace = null ) {
+		if ( ( $searchNamespaces === [] || $searchNamespaces === null ) ) {
+			return;
+		}
+		if ( $namespace !== null && in_array( $namespace, $searchNamespaces ) ) {
+			return;
+		}
+		$warningCollector->addWarning( 'cirrussearch-keyword-prefix-ns-mismatch' );
 	}
 }

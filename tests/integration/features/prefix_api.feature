@@ -17,22 +17,22 @@ Feature: Searches with a prefix filter
     Then Prefix Test is the first api search result
 
   Scenario: The prefix: filter can be used to apply a namespace and a title prefix
-    When I api search for prefix:talk:prefix tes
+    When I api search for all:prefix:talk:prefix tes
     Then Talk:Prefix Test is the first api search result
     But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can be used to apply a namespace without a title prefix
-    When I api search for prefix test prefix:talk:
+    When I api search for all:prefix test prefix:talk:
     Then Talk:Prefix Test is the first api search result
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can apply a namespace containing a space
-    When I api search for prefix test prefix:user talk:
+    When I api search for all:prefix test prefix:user talk:
     Then User talk:Prefix Test is the first api search result
       But Prefix Test is not in the api search results
 
   Scenario: The prefix: filter can apply a namespace containing an underscore
-    When I api search for prefix test prefix:user_talk:
+    When I api search for all:prefix test prefix:user_talk:
     Then User talk:Prefix Test is the first api search result
       But Prefix Test is not in the api search results
 
@@ -47,7 +47,7 @@ Feature: Searches with a prefix filter
       But Prefix Test AAAA is not in the api search results
 
   Scenario: The prefix: filter can be quoted
-    When I api search for prefix test prefix:"user_talk:"
+    When I api search for all:prefix test prefix:"user_talk:"
     Then User talk:Prefix Test is the first api search result
       But Prefix Test is not in the api search results
 

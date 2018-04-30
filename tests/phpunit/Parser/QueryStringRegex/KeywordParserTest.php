@@ -12,6 +12,8 @@ use CirrusSearch\Query\LocalFeature;
 use CirrusSearch\Query\MoreLikeFeature;
 use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
+use CirrusSearch\Query\SimpleKeywordFeature;
+use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -52,6 +54,43 @@ class KeywordParserTest extends CirrusTestCase {
 		$this->assertEquals( '"', $kw->getDelimiter() );
 		$this->assertEquals( '', $kw->getSuffix() );
 		$this->assertEquals( 'intitle', $kw->getKey() );
+		$this->assertEquals( 'hop"foo', $kw->getValue() );
+		$this->assertEquals( '"hop\"foo"', $kw->getQuotedValue() );
+	}
+
+	public function testWithAlias() {
+		$parser = new KeywordParser();
+		// .      0000000000111111111122222222223333333333
+		// .      0123456789012345678901234567890123456789
+		$query = 'mock2:test foo bar -mock2:"hop\"foo" ';
+		$nodes = $parser->parse( $query, new MockKeyword(), new OffsetTracker() );
+		$this->assertEquals( 2, count( $nodes ) );
+
+		/** @var KeywordFeatureNode $kw */
+		$kw = $nodes[0];
+		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
+		$this->assertEquals( 0, $kw->getStartOffset() );
+		$this->assertEquals( 10, $kw->getEndOffset() );
+		$this->assertEquals( '', $kw->getDelimiter() );
+		$this->assertEquals( '', $kw->getSuffix() );
+		$this->assertEquals( 'mock2', $kw->getKey() );
+		$this->assertEquals( 'test', $kw->getValue() );
+		$this->assertEquals( 'test', $kw->getQuotedValue() );
+
+		/** @var NegatedNode $kw */
+		$kw = $nodes[1];
+		$this->assertInstanceOf( NegatedNode::class, $kw );
+		$this->assertEquals( 19, $kw->getStartOffset() );
+		$this->assertEquals( 36, $kw->getEndOffset() );
+
+		$kw = $kw->getChild();
+		/** @var KeywordFeatureNode $kw */
+		$this->assertInstanceOf( KeywordFeatureNode::class, $kw );
+		$this->assertEquals( 20, $kw->getStartOffset() );
+		$this->assertEquals( 36, $kw->getEndOffset() );
+		$this->assertEquals( '"', $kw->getDelimiter() );
+		$this->assertEquals( '', $kw->getSuffix() );
+		$this->assertEquals( 'mock2', $kw->getKey() );
 		$this->assertEquals( 'hop"foo', $kw->getValue() );
 		$this->assertEquals( '"hop\"foo"', $kw->getQuotedValue() );
 	}
@@ -191,5 +230,36 @@ class KeywordParserTest extends CirrusTestCase {
 		$nodes = array_merge( $nodes, $parser->parse( $query, new PreferRecentFeature( $config ), $ot ) );
 		$assertFunc( $nodes );
 		*/
+	}
+}
+
+class MockKeyword extends SimpleKeywordFeature {
+
+	/**
+	 * NOTE: will be removed once all implementations implement getKeywordStrings
+	 * (transitional state to change the visibility of getKeywords())
+	 * @return string[] The list of keywords this feature is supposed to match
+	 */
+	protected function getKeywords() {
+		return [ 'mock1', 'mock2' ];
+	}
+
+	/**
+	 * Applies the detected keyword from the search term. May apply changes
+	 * either to $context directly, or return a filter to be added.
+	 *
+	 * @param SearchContext $context
+	 * @param string $key The keyword
+	 * @param string $value The value attached to the keyword with quotes stripped and escaped
+	 *  quotes un-escaped.
+	 * @param string $quotedValue The original value in the search string, including quotes if used
+	 * @param bool $negated Is the search negated? Not used to generate the returned AbstractQuery,
+	 *  that will be negated as necessary. Used for any other building/context necessary.
+	 * @return array Two element array, first an AbstractQuery or null to apply to the
+	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
+	 *  string.
+	 */
+	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		// never called
 	}
 }

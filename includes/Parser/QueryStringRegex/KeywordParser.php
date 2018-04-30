@@ -53,7 +53,7 @@ class KeywordParser implements WarningCollector {
 		// otherwise lookbehind allowing begin or space.
 		// \G is similar to ^ but also works when offset is set is if we ran substr on it
 		$begin = $feature->queryHeader() ? '(?:\G[\pZ\pC]*)' : '(?<=\G|[\pZ\pC])';
-		$keywordRegex = '(?<key>-?' . $keyListRegex . ')';
+		$keywordRegex = '(?<key>-?(?:' . $keyListRegex . '))';
 		$valueSideRegex = '';
 		if ( $feature->hasValue() ) {
 			$valueRegex = '(?<value>' . $this->getValueRegex( $feature ) . ')';

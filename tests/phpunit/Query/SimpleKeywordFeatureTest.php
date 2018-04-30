@@ -81,6 +81,16 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 				// input term
 				'-mock:things'
 			],
+			'negation on alias' => [
+				// expected doApply calls
+				[
+					[ 'mock2', 'things', 'things', true ],
+				],
+				// expected remaining term
+				'',
+				// input term
+				'-mock2:things'
+			],
 			'handles space between keyword and value' => [
 				// expected doApply calls
 				[
@@ -182,7 +192,7 @@ class MockSimpleKeywordFeature extends SimpleKeywordFeature {
 	private $calls = [];
 
 	protected function getKeywords() {
-		return [ 'mock' ];
+		return [ 'mock', 'mock2' ];
 	}
 
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {

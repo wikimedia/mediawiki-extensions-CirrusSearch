@@ -210,7 +210,7 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		// Hook to the beginning allowing optional spaces if we are a queryHeader
 		// otherwise lookbehind allowing begin or space.
 		$begin = $this->queryHeader() ? '(?:^\s*)' : '(?<=^|\s)';
-		$keywordRegex = '(?<key>-?' . $keyListRegex . ')';
+		$keywordRegex = '(?<key>-?(?:' . $keyListRegex . '))';
 		$valueSideRegex = '';
 		if ( $this->hasValue() ) {
 			$valueRegex = '(?<value>' . $this->getValueRegex() . ')';

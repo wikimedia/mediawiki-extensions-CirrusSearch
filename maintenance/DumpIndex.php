@@ -101,6 +101,7 @@ class DumpIndex extends Maintenance {
 			false, true );
 		$this->addOption( 'indexIdentifier', 'Force the index identifier, use the alias otherwise.', false, true );
 		$this->addOption( 'sourceFields', 'List of comma separated source fields to extract.', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

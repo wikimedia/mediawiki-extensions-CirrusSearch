@@ -62,6 +62,7 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'decode', 'urldecode() queries before running them', false, false );
 		$this->addOption( 'explain', 'Include lucene explanation in the results', false, false );
 		$this->addOption( 'limit', 'Set the max number of results returned by query (defaults to 10)', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function finalSetup() {

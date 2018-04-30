@@ -70,6 +70,7 @@ class Saneitize extends Maintenance {
 			'different processes or machines to check the index.  If specified as a number then chunks no larger than ' .
 			'that size are spat out.  If specified as a number followed by the word "total" without a space between them ' .
 			'then that many chunks will be spat out sized to cover the entire wiki.', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

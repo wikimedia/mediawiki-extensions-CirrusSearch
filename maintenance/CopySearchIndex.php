@@ -63,6 +63,7 @@ class CopySearchIndex extends Maintenance {
 			'singles works then lower this number.  Defaults to 100.', false, true );
 		$this->addOption( 'reindexSlices', 'Number of pieces to slice the scan into, roughly ' .
 			'equivilent to concurrency. Defaults to the number of shards', false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

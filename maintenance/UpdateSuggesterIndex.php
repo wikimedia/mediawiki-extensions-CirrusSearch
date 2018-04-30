@@ -158,6 +158,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			'Set index.routing.allocation.exclude.tag on the created index. Useful if you want ' .
 			'to force the suggester index not to be allocated on a specific set of nodes.',
 			false, true );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

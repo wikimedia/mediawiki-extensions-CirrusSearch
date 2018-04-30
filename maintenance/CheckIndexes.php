@@ -57,6 +57,7 @@ class CheckIndexes extends Maintenance {
 			'a single cluster.' );
 
 		$this->addOption( 'nagios', 'Output in nagios format' );
+		$this->requireExtension( 'CirrusSearch' );
 	}
 
 	public function execute() {

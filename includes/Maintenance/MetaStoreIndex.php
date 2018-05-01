@@ -208,14 +208,14 @@ class MetaStoreIndex {
 		return [
 			self::VERSION_TYPE => [
 				'properties' => [
-					'analysis_maj' => [ 'type' => 'long', 'include_in_all' => false ],
-					'analysis_min' => [ 'type' => 'long', 'include_in_all' => false ],
-					'mapping_maj' => [ 'type' => 'long', 'include_in_all' => false ],
-					'mapping_min' => [ 'type' => 'long', 'include_in_all' => false ],
-					'shard_count' => [ 'type' => 'long', 'include_in_all' => false ],
-					'mediawiki_version' => [ 'type' => 'keyword', 'include_in_all' => false ],
-					'mediawiki_commit' => [ 'type' => 'keyword', 'include_in_all' => false ],
-					'cirrus_commit' => [ 'type' => 'keyword', 'include_in_all' => false ],
+					'analysis_maj' => [ 'type' => 'long' ],
+					'analysis_min' => [ 'type' => 'long' ],
+					'mapping_maj' => [ 'type' => 'long' ],
+					'mapping_min' => [ 'type' => 'long' ],
+					'shard_count' => [ 'type' => 'long' ],
+					'mediawiki_version' => [ 'type' => 'keyword' ],
+					'mediawiki_commit' => [ 'type' => 'keyword' ],
+					'cirrus_commit' => [ 'type' => 'keyword' ],
 				],
 			],
 			self::FROZEN_TYPE => [

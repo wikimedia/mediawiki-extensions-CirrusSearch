@@ -370,7 +370,7 @@ class MetaStoreIndex {
 		$this->client->request( '_reindex',
 			\Elastica\Request::POST,
 			$reindex,
-			[ 'wait_for_completion' => true ]
+			[ 'wait_for_completion' => 'true' ]
 		);
 		$index->refresh();
 		$this->switchAliasTo( $index );

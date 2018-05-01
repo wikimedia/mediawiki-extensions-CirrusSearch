@@ -537,7 +537,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function expungeDeletes() {
 		$this->log( "Purging deleted docs..." );
-		$this->getIndex()->forcemerge( [ 'only_expunge_deletes' => true, 'flush' => false ] );
+		$this->getIndex()->forcemerge( [ 'only_expunge_deletes' => 'true', 'flush' => 'false' ] );
 		$this->output( "ok.\n" );
 	}
 

@@ -5,7 +5,8 @@
 			"Jopparn",
 			"Lokal Profil",
 			"WikiPhoenix",
-			"Ainali"
+			"Ainali",
+			"Bengtsson96"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-driven sökning för MediaWiki",
@@ -70,7 +71,7 @@
 	"cirrussearch-completion-profile-classic-pref-name": "Klassisk prefixsök",
 	"cirrussearch-completion-profile-classic-pref-desc": "Ingen korrigering av stavfel. Matchar början av titlar.",
 	"cirrussearch-timed-out": "Sökningen överstred tidsgränsen, endast delvisa resultat finns tillgängliga.",
-	"cirrussearch-regex-timed-out": "Den reguljära sökningen överstred tidsgränsen, endast delvisa resultat finns tillgängliga. Försök att förenkla ditt reguljära uttryck för att få fullständiga resultat.",
+	"cirrussearch-regex-timed-out": "Sökningen med reguljära uttryck överstred tidsgränsen, alla resultat kan inte visas. Försök förenkla ditt reguljära uttryck för att få samtliga resultat.",
 	"cirrussearch-file-numeric-feature-not-a-number": "Söktermen \"$1\" kräver numeriska värden, men \"$2\" tillhandahölls.",
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Söktermen \"$1\" tillåter inte flera argument  och ett tecken med \"$2\".",
 	"cirrussearch-feature-not-available": "Sökningsnyckelordet \"$1\" är inte aktiverat på denna wiki.",

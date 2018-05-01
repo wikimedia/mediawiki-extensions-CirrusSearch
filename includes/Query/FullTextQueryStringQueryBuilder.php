@@ -152,9 +152,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		}
 
 		// Actual text query
-		list( $this->queryStringQueryString, $fuzzyQuery ) =
+		$this->queryStringQueryString =
 			$searchContext->escaper()->fixupWholeQueryString( implode( ' ', $escapedQuery ) );
-		$searchContext->setFuzzyQuery( $fuzzyQuery );
 		$searchContext->setCleanedSearchTerm( $this->queryStringQueryString );
 
 		if ( $this->queryStringQueryString === '' ) {
@@ -210,7 +209,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 			$nonAllFields = array_merge(
 				self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
 				self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-			list( $nonAllQueryString, /*_*/ ) = $searchContext->escaper()->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+			$nonAllQueryString = $searchContext->escaper()->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 			$searchContext->setHighlightQuery(
 				$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
 			);

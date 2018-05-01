@@ -897,7 +897,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchive( $term ) {
-		list( $term, ) = $this->searchContext->escaper()->fixupWholeQueryString( $term );
+		$term = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 
 		$this->pageType = $this->getOverriddenConnection()->getArchiveType( $this->indexBaseName );

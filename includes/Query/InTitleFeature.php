@@ -48,7 +48,7 @@ class InTitleFeature extends BaseRegexFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::intitle( $context->escaper(), $context, $quotedValue );
+		$filter = Filters::intitle( $context->escaper(), $quotedValue );
 
 		return [ $filter, !$negated ];
 	}

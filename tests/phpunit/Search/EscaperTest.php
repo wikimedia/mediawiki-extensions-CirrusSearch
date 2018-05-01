@@ -30,24 +30,24 @@ class EscaperTest extends CirrusTestCase {
 	/**
 	 * @dataProvider fuzzyEscapeTestCases
 	 */
-	public function testFuzzyEscape( $input, $expected, $isFuzzy ) {
+	public function testFuzzyEscape( $input, $expected ) {
 		$escaper = new Escaper( 'unittest' );
 		$actual = $escaper->fixupWholeQueryString( $input );
-		$this->assertEquals( [ $expected, $isFuzzy ], $actual );
+		$this->assertEquals( $expected, $actual );
 	}
 
 	public static function fuzzyEscapeTestCases() {
 		return [
-			'Default fuzziness is allowed' => [ 'fuzzy~', 'fuzzy~', true ],
-			'No fuzziness is allowed' => [ 'fuzzy~0', 'fuzzy~0', true ],
-			'One char edit distance is allowed' => [ 'fuzzy~1', 'fuzzy~1', true ],
-			'Two char edit distance is allowed' => [ 'fuzzy~2', 'fuzzy~2', true ],
-			'Three char edit distance is disallowed' => [ 'fuzzy~3', 'fuzzy\\~3', false ],
-			'non-integer edit distance is disallowed' => [ 'fuzzy~1.0', 'fuzzy\\~1.0', false ],
-			'Larger edit distances are disallowed' => [ 'fuzzy~10', 'fuzzy\\~10', false ],
-			'Proximity searches are allowed' => [ '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10', false ],
-			'Float fuzziness with leading 0 is disallowed' => [ 'fuzzy~0.8', 'fuzzy\\~0.8', false ],
-			'Float fuzziness is disallowed' => [ 'fuzzy~.8', 'fuzzy\\~.8', false ],
+			'Default fuzziness is allowed' => [ 'fuzzy~', 'fuzzy~' ],
+			'No fuzziness is allowed' => [ 'fuzzy~0', 'fuzzy~0' ],
+			'One char edit distance is allowed' => [ 'fuzzy~1', 'fuzzy~1' ],
+			'Two char edit distance is allowed' => [ 'fuzzy~2', 'fuzzy~2' ],
+			'Three char edit distance is disallowed' => [ 'fuzzy~3', 'fuzzy\\~3' ],
+			'non-integer edit distance is disallowed' => [ 'fuzzy~1.0', 'fuzzy\\~1.0' ],
+			'Larger edit distances are disallowed' => [ 'fuzzy~10', 'fuzzy\\~10' ],
+			'Proximity searches are allowed' => [ '"fuzzy wuzzy"~10', '"fuzzy wuzzy"~10' ],
+			'Float fuzziness with leading 0 is disallowed' => [ 'fuzzy~0.8', 'fuzzy\\~0.8' ],
+			'Float fuzziness is disallowed' => [ 'fuzzy~.8', 'fuzzy\\~.8' ],
 		];
 	}
 

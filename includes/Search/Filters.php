@@ -138,12 +138,11 @@ class Filters {
 	 * changes to the reference-updating return function.
 	 *
 	 * @param Escaper $escaper
-	 * @param SearchContext $context
 	 * @param string $value
 	 * @return AbstractQuery
 	 */
-	public static function insource( Escaper $escaper, SearchContext $context, $value ) {
-		return self::insourceOrIntitle( $escaper, $context, $value, function () {
+	public static function insource( Escaper $escaper, $value ) {
+		return self::insourceOrIntitle( $escaper, $value, function () {
 			return [ 'source_text.plain' ];
 		} );
 	}
@@ -153,12 +152,11 @@ class Filters {
 	 * switch block in Searcher.php.
 	 *
 	 * @param Escaper $escaper
-	 * @param SearchContext $context
 	 * @param string $value
 	 * @return AbstractQuery
 	 */
-	public static function intitle( Escaper $escaper, SearchContext $context, $value ) {
-		return self::insourceOrIntitle( $escaper, $context, $value, function ( $queryString ) {
+	public static function intitle( Escaper $escaper, $value ) {
+		return self::insourceOrIntitle( $escaper, $value, function ( $queryString ) {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return [ 'title.plain', 'redirect.title.plain' ];
 			} else {
@@ -169,13 +167,12 @@ class Filters {
 
 	/**
 	 * @param Escaper $escaper
-	 * @param SearchContext $context
 	 * @param string $value
 	 * @param callable $fieldF
 	 * @return AbstractQuery
 	 */
-	private static function insourceOrIntitle( Escaper $escaper, SearchContext $context, $value, $fieldF ) {
-		list( $queryString, $fuzzyQuery ) = $escaper->fixupWholeQueryString(
+	private static function insourceOrIntitle( Escaper $escaper, $value, $fieldF ) {
+		$queryString = $escaper->fixupWholeQueryString(
 			$escaper->fixupQueryStringPart( $value ) );
 		$field = $fieldF( $queryString );
 		$query = new \Elastica\Query\QueryString( $queryString );
@@ -184,9 +181,6 @@ class Filters {
 		$query->setAllowLeadingWildcard( $escaper->getAllowLeadingWildcard() );
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( 'top_terms_boost_1024' );
-
-		// @todo use a multi-return instead of passing in context?
-		$context->setFuzzyQuery( $fuzzyQuery );
 
 		return $query;
 	}

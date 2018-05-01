@@ -100,7 +100,7 @@ class Escaper {
 	 * If it isn't then the syntax escaped so it becomes part of the query text.
 	 *
 	 * @param string $string
-	 * @return array(string boolean) (fixed up query string, is this a fuzzy query?)
+	 * @return string fixed up query string
 	 */
 	public function fixupWholeQueryString( $string ) {
 		$escapeBadSyntax = [ self::class, 'escapeBadSyntax' ];
@@ -120,11 +120,9 @@ class Escaper {
 		$string = preg_replace( '/(?:<|>)+([^\s])/u', '$1', $string );
 
 		// Turn bad fuzzy searches into searches that contain a ~ and set $this->fuzzyQuery for good ones.
-		$fuzzyQuery = false;
 		$string = preg_replace_callback( '/(?<leading>\w)~(?<trailing>\S*)/u',
 			function ( $matches ) use ( &$fuzzyQuery ) {
 				if ( preg_match( '/^(|[0-2])$/', $matches[ 'trailing' ] ) ) {
-					$fuzzyQuery = true;
 					return $matches[ 0 ];
 				} else {
 					return $matches[ 'leading' ] . '\\~' .
@@ -158,7 +156,7 @@ class Escaper {
 		$string = preg_replace_callback( '/(?:AND|OR|NOT)\s*$/u',
 			[ self::class, 'lowercaseMatched' ], $string );
 
-		return [ $string, $fuzzyQuery ];
+		return $string;
 	}
 
 	/**

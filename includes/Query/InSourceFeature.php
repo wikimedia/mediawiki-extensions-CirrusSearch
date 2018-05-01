@@ -55,7 +55,7 @@ class InSourceFeature extends BaseRegexFeature {
 	 * @return array
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$filter = Filters::insource( $context->escaper(), $context, $quotedValue );
+		$filter = Filters::insource( $context->escaper(), $quotedValue );
 		$context->addHighlightField( self::FIELD, [ 'query' => $filter ] );
 		return [ $filter, false ];
 	}

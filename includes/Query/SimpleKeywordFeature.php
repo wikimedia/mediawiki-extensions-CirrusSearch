@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Wikimedia\Assert\Assert;
 
@@ -108,6 +109,16 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 */
 	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
 		return CrossSearchStrategy::hostWikiOnlyStrategy();
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param SearchConfig $config
+	 * @param WarningCollector $warningCollector
+	 * @return array
+	 */
+	public function expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector ) {
+		return [];
 	}
 
 	/**

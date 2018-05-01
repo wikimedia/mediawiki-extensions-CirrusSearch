@@ -6,6 +6,7 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\WarningCollector;
 use Title;
 use WikiPage;
 
@@ -74,34 +75,59 @@ class MoreLikeFeature extends SimpleKeywordFeature {
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$context->setCacheTtl( $this->config->get( 'CirrusSearchMoreLikeThisTTL' ) );
-		$titles = $this->collectTitles( $value );
-		if ( !count( $titles ) ) {
-			$context->addWarning(
-				"cirrussearch-mlt-feature-no-valid-titles",
-				$key
-			);
+		$titles = $this->doExpand( $key, $value, $context );
+		if ( $titles === [] ) {
 			$context->setResultsPossible( false );
 			return;
 		}
-		$query = $this->buildMoreLikeQuery( $context, $titles );
-		if ( $query === null ) {
-			$context->addWarning(
-				"cirrussearch-mlt-not-configured",
-				$key
-			);
-			$context->setResultsPossible( false );
-			return;
-		}
+		$query = $this->buildMoreLikeQuery( $titles );
 
 		// FIXME: this erases the main query making it impossible to combine with
 		// other keywords/search query
 		$context->setMainQuery( $query );
+
+		// highlight snippets are not great so it's worth running a match all query
+		// to save cpu cycles
+		$context->setHighlightQuery( new \Elastica\Query\MatchAll() );
+
 		$wbFilter = null;
 
 		if ( $key === self::MORE_LIKE_THIS_JUST_WIKIBASE ) {
 				$wbFilter = new \Elastica\Query\Exists( 'wikibase_item' );
 		}
 		return [ $wbFilter, false ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param SearchConfig $config
+	 * @param WarningCollector $warningCollector
+	 * @return array|Title[]
+	 */
+	public function expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector ) {
+		return $this->doExpand( $node->getKey(), $node->getValue(), $warningCollector );
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $term
+	 * @param WarningCollector $warningCollector
+	 * @return Title[]
+	 */
+	private function doExpand( $key, $term, WarningCollector $warningCollector ) {
+		// If no fields have been set we return no results. This can happen if
+		// the user override this setting with field names that are not allowed
+		// in $this->config->get( 'CirrusSearchMoreLikeThisAllowedFields' )
+		// (see Hooks.php)
+		if ( !$this->config->get( 'CirrusSearchMoreLikeThisFields' ) ) {
+			$warningCollector->addWarning( "cirrussearch-mlt-not-configured",  $key );
+			return [];
+		}
+		$titles = $this->collectTitles( $term );
+		if ( $titles === [] ) {
+			$warningCollector->addWarning( "cirrussearch-mlt-feature-no-valid-titles", $key );
+		}
+		return $titles;
 	}
 
 	/**
@@ -181,9 +207,9 @@ class MoreLikeFeature extends SimpleKeywordFeature {
 	 *
 	 * @param SearchContext $context
 	 * @param Title[] $titles
-	 * @return \Elastica\Query\MoreLikeThis|null
+	 * @return \Elastica\Query\MoreLikeThis
 	 */
-	private function buildMoreLikeQuery( SearchContext $context, array $titles ) {
+	private function buildMoreLikeQuery( array $titles ) {
 		sort( $titles, SORT_STRING );
 		$docIds = [];
 		$likeDocs = [];
@@ -191,14 +217,6 @@ class MoreLikeFeature extends SimpleKeywordFeature {
 			$docId = $this->config->makeId( $title->getArticleID() );
 			$docIds[] = $docId;
 			$likeDocs[] = [ '_id' => $docId ];
-		}
-
-		// If no fields have been set we return no results. This can happen if
-		// the user override this setting with field names that are not allowed
-		// in $this->config->get( 'CirrusSearchMoreLikeThisAllowedFields' )
-		// (see Hooks.php)
-		if ( !$this->config->get( 'CirrusSearchMoreLikeThisFields' ) ) {
-			return null;
 		}
 
 		$moreLikeThisFields = $this->config->get( 'CirrusSearchMoreLikeThisFields' );
@@ -209,10 +227,6 @@ class MoreLikeFeature extends SimpleKeywordFeature {
 
 		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
 		$query->setLike( $likeDocs );
-
-		// highlight snippets are not great so it's worth running a match all query
-		// to save cpu cycles
-		$context->setHighlightQuery( new \Elastica\Query\MatchAll() );
 
 		return $query;
 	}

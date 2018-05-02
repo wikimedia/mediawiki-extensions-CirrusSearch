@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
 
 /**
@@ -10,33 +10,33 @@ use CirrusSearch\Search\SearchContext;
  * @covers \CirrusSearch\Query\SimpleKeywordFeature
  * @group CirrusSearch
  */
-class PreferRecentFeatureTest extends CirrusTestCase {
+class PreferRecentFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		return [
 			'uses defaults if nothing provided' => [
 				'',
-				0.6,
-				160,
+				null,
+				null,
 				'prefer-recent:'
 			],
 			'doesnt absorb unrelated pieces' => [
 				'other',
-				0.6,
-				160,
+				null,
+				null,
 				'prefer-recent: other',
 			],
 			'doesnt absorb unrelated pieces even if collapsed' => [
 				// trailing space is arbitrarily added by SimpleKeywordFeature
 				'other ',
-				0.6,
-				160,
+				null,
+				null,
 				'prefer-recent:other',
 			],
 			'can specify only decay portion' => [
 				'',
 				0.9,
-				160,
+				null,
 				'prefer-recent:.9',
 			],
 			'can specify decay and half life' => [
@@ -52,18 +52,30 @@ class PreferRecentFeatureTest extends CirrusTestCase {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( $expectedRemaining, $expectedDecay, $expectedHalfLife, $term ) {
-		$context = $this->getMockBuilder( SearchContext::class )
-			->disableOriginalConstructor()
-			->getMock();
-		$context->expects( $this->once() )
-			->method( 'setPreferRecentOptions' )
-			->with( $expectedDecay, $expectedHalfLife );
+		$defaultHalfLife = 160;
+		$defaultDecay = 0.6;
 
-		$feature = new PreferRecentFeature( new \HashConfig( [
-			'CirrusSearchPreferRecentDefaultHalfLife' => 160,
-			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => 0.6,
-		] ) );
-		$remaining = $feature->apply( $context, $term );
-		$this->assertEquals( $expectedRemaining, $remaining );
+		$config = new HashSearchConfig( [
+			'CirrusSearchPreferRecentDefaultHalfLife' => $defaultHalfLife,
+			'CirrusSearchPreferRecentUnspecifiedDecayPortion' => $defaultDecay,
+		] );
+		$feature = new PreferRecentFeature( $config );
+		$this->assertRemaining( $feature, $term, $expectedRemaining );
+		$expectedParsedValue = [];
+		if ( $expectedDecay !== null ) {
+			$expectedParsedValue['decay'] = $expectedDecay;
+		}
+		if ( $expectedHalfLife !== null ) {
+			$expectedParsedValue['halfLife'] = $expectedHalfLife;
+		}
+		$this->assertParsedValue( $feature, $term, $expectedParsedValue === [] ? null : $expectedParsedValue, [] );
+		$context = new SearchContext( $config );
+		$feature->apply( $context, $term );
+		if ( $expectedDecay !== null ) {
+			$this->assertEquals( $context->getPreferRecentDecayPortion(), $expectedDecay );
+		}
+		if ( $expectedHalfLife !== null ) {
+			$this->assertEquals( $context->getPreferRecentHalfLife(), $expectedHalfLife );
+		}
 	}
 }

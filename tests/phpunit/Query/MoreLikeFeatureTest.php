@@ -170,23 +170,35 @@ class MoreLikeFeatureTest extends BaseSimpleKeywordFeatureTest {
 		}
 	}
 
-	public function testWarningsForUnknownPages() {
+	public function testExpandedData() {
+		$config = new SearchConfig();
+		$title = Title::newFromText( 'Some page' );
 		MediaWikiServices::getInstance()->getLinkCache()
-			->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
-		$this->assertWarnings(
-			new MoreLikeFeature( new SearchConfig() ),
+			->addGoodLinkObj( 12345, $title );
+		$feature = new MoreLikeFeature( $config );
+
+		$this->assertExpandedData(
+			$feature,
+			'morelike:Some page',
+			[ $title ],
 			[],
-			'morelike:Some page'
+			$config
 		);
-		$this->assertWarnings(
-			new MoreLikeFeature( new SearchConfig() ),
+
+		$this->assertExpandedData(
+			$feature,
+			'morelike:Some page|Title that doesnt exist',
+			[ $title ],
 			[],
-			'morelike:Some page|Title that doesnt exist'
+			$config
 		);
-		$this->assertWarnings(
-			new MoreLikeFeature( new SearchConfig() ),
+
+		$this->assertExpandedData(
+			$feature,
+			'morelike:Title that doesnt exist',
+			[],
 			[ [ 'cirrussearch-mlt-feature-no-valid-titles', 'morelike' ] ],
-			'morelike:Title that doesnt exist'
+			$config
 		);
 	}
 }

@@ -114,11 +114,6 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		if ( empty( $this->client ) ) {
-			$context->addWarning( 'cirrussearch-feature-deepcat-endpoint' );
-			return [ null, false ];
-		}
-
 		$categories = $this->doExpand( $value, $context );
 		if ( $categories === [] ) {
 			$context->setResultsPossible( false );
@@ -149,6 +144,11 @@ class DeepcatFeature extends SimpleKeywordFeature {
 	 * @return array
 	 */
 	private function doExpand( $value, WarningCollector $warningCollector ) {
+		if ( empty( $this->client ) ) {
+			$warningCollector->addWarning( 'cirrussearch-feature-deepcat-endpoint' );
+			return [];
+		}
+
 		$startQueryTime = microtime( true );
 		try {
 			$categories = $this->fetchCategories( $value, $warningCollector );

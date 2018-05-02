@@ -18,6 +18,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Template:Coord',
 					],
 				] ],
+				[ 'value' => 'Template:Coord' ],
 				'hastemplate:Coord',
 			],
 			'calling out Template NS directly' => [
@@ -26,6 +27,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Template:Coord',
 					],
 				] ],
+				[ 'value' => 'Template:Coord' ],
 				'hastemplate:Template:Coord',
 			],
 			'with namespace' => [
@@ -34,6 +36,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'User talk:Zomg',
 					],
 				] ],
+				[ 'value' => 'User_talk:Zomg' ],
 				'hastemplate:User_talk:Zomg',
 			],
 			'using colon prefix to indicate NS_MAIN' => [
@@ -42,6 +45,7 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => 'Main page',
 					],
 				] ],
+				[ 'value' => 'Main_page' ],
 				'hastemplate::Main_page',
 			],
 		];
@@ -50,10 +54,11 @@ class HasTemplateFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider parseProvider
 	 */
-	public function testParse( array $expected, $term ) {
-		$context = $this->mockContextExpectingAddFilter( $expected );
+	public function testParse( array $expected, array $expectedParsedValue, $term ) {
 		$feature = new HasTemplateFeature();
+		$this->assertParsedValue( $feature, $term, $expectedParsedValue, [] );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
-		$feature->apply( $context, $term );
+		$this->assertExpandedData( $feature, $term, [], [] );
+		$this->assertFilter( $feature, $term, $expected, [] );
 	}
 }

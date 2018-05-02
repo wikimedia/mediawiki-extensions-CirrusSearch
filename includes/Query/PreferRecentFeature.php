@@ -113,6 +113,7 @@ class PreferRecentFeature extends SimpleKeywordFeature {
 			return [ null, true ];
 		} elseif ( $parsedValue === null ) {
 			$context->setPreferRecentOptions( $this->unspecifiedDecay, $this->halfLife );
+			return [ null, false ];
 		} else {
 			$context->setPreferRecentOptions( isset( $parsedValue['decay'] ) ? $parsedValue['decay'] : $this->unspecifiedDecay,
 				isset( $parsedValue['halfLife'] ) ? $parsedValue['halfLife'] : $this->halfLife );

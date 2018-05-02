@@ -2,14 +2,14 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\CirrusTestCase;
+use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\SearchContext;
 
 /**
  * @group CirrusSearch
  */
-class BoostTemplatesFeatureTest extends CirrusTestCase {
+class BoostTemplatesFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		return [
@@ -29,6 +29,10 @@ class BoostTemplatesFeatureTest extends CirrusTestCase {
 				[ 'Thing' => 0.01 ],
 				'boost-templates:Thing|1%'
 			],
+			'invalid' => [
+				[],
+				'boost-templates:Thing-1%'
+			],
 		];
 	}
 
@@ -40,6 +44,9 @@ class BoostTemplatesFeatureTest extends CirrusTestCase {
 		$context = new SearchContext( $config );
 
 		$feature = new BoostTemplatesFeature();
+		$this->assertParsedValue( $feature, $term, [ 'boost-templates' => $expect ], [] );
+		$this->assertExpandedData( $feature, $term, [], [] );
+		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$feature->apply( $context, $term );
 
 		$this->assertEquals(

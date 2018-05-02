@@ -19,6 +19,12 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'gte' => '10240',
 					],
 				] ],
+				[
+					'sign' => 1,
+					'value' => 10,
+					'field' => 'file_size'
+				],
+				[],
 				'filesize:10',
 			],
 			'filesize allows multi-argument' => [
@@ -28,6 +34,12 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'lte' => 328704,
 					]
 				] ],
+				[
+					'sign' => 0,
+					'range' => [ 123, 321 ],
+					'field' => 'file_size'
+				],
+				[],
 				'filesize:123,321',
 			],
 			'numeric with with no sign - exact match' => [
@@ -36,6 +48,12 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'query' => '16',
 					],
 				] ],
+				[
+					'sign' => 0,
+					'value' => 16,
+					'field' => 'file_bits',
+				],
+				[],
 				'filebits:16',
 			],
 			'numeric with >' => [
@@ -44,6 +62,12 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'gte' => '10',
 					],
 				] ],
+				[
+					'sign' => 1,
+					'value' => 10,
+					'field' => 'file_width',
+				],
+				[],
 				'filew:>10',
 			],
 			'numeric with <' => [
@@ -52,6 +76,12 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'lte' => '100',
 					],
 				] ],
+				[
+					'sign' => -1,
+					'value' => 100,
+					'field' => 'file_height',
+				],
+				[],
 				'fileh:<100',
 			],
 			'numeric with range' => [
@@ -61,22 +91,30 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 						'lte' => '300',
 					],
 				] ],
+				[
+					'sign' => 0,
+					'range' => [ 200, 300 ],
+					'field' => 'file_resolution',
+				],
+				[],
 				'fileres:200,300',
-			],
-			'nothing' => [
-				null,
-				'fileres:',
 			],
 			'not a number' => [
 				null,
+				null,
+				[ [ 'cirrussearch-file-numeric-feature-not-a-number', 'filesize', 'blah' ] ],
 				'filesize:blah',
 			],
 			'one of the two is bad' => [
 				null,
+				null,
+				[ [ 'cirrussearch-file-numeric-feature-not-a-number', 'filewidth', 'notnumber' ] ],
 				'filewidth:100,notnumber',
 			],
 			'another of the two is bad' => [
 				null,
+				null,
+				[ [ 'cirrussearch-file-numeric-feature-not-a-number', 'fileheight', 'notevenclose' ] ],
 				'fileheight:notevenclose,100',
 			],
 		];
@@ -85,15 +123,21 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider parseProviderNumeric
 	 */
-	public function testParseNumeric( $expected, $term ) {
-		$context = $this->mockContextExpectingAddFilter( $expected );
+	public function testParseNumeric( $expected, $expectedParsedValue, $expectedWarnings, $term ) {
 		$feature = new FileNumericFeature();
 
-		if ( $expected !== null ) {
+		if ( $expectedParsedValue !== false ) {
+			$this->assertParsedValue( $feature, $term, $expectedParsedValue, $expectedWarnings );
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
+			$this->assertExpandedData( $feature, $term, [], [] );
 		}
 
-		$feature->apply( $context, $term );
+		$this->assertFilter( $feature, $term, $expected, $expectedWarnings );
+	}
+
+	public function testNothing() {
+		$this->assertNotConsumed( new FileNumericFeature(), 'fileres:' );
+		$this->assertNotConsumed( new FileNumericFeature(), 'filetype:' );
 	}
 
 	public function parseProviderType() {
@@ -126,11 +170,7 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 					]
 				],
 				'filemime:pdf',
-			],
-			'nothing' => [
-				null,
-				'filetype: ',
-			],
+			]
 		];
 	}
 
@@ -138,12 +178,13 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider parseProviderType
 	 */
 	public function testParseType( $expected, $term ) {
-		$context = $this->mockContextExpectingAddFilter( $expected );
 		$feature = new FileTypeFeature();
 		if ( $expected !== null ) {
+			$this->assertParsedValue( $feature, $term, null, [] );
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
+			$this->assertExpandedData( $feature, $term, [], [] );
 		}
-		$feature->apply( $context, $term );
+		$this->assertFilter( $feature, $term, $expected, [] );
 	}
 
 	public function warningNumericProvider() {
@@ -174,6 +215,6 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider warningNumericProvider
 	 */
 	public function testWarningNumeric( $expected, $term ) {
-		$this->assertWarnings( new FileNumericFeature(), $expected, $term );
+		$this->assertParsedValue( new FileNumericFeature(), $term, null, $expected );
 	}
 }

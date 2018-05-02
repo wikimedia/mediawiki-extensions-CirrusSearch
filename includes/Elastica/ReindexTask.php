@@ -110,7 +110,7 @@ class ReindexTask {
 		if ( isset( $data['task']['status']['slices'] ) ) {
 			$childResponse = $this->client->request( "_tasks", Request::GET, [], [
 				'parent_task_id' => $this->taskId,
-				'detailed' => 1,
+				'detailed' => 'true',
 			] );
 			if ( $childResponse->isOK() ) {
 				$status = $this->mergeStatusWithChildren( $status, $childResponse->getData() );

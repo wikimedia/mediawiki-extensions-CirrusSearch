@@ -77,7 +77,7 @@ class DataSender extends ElasticsearchIntermediary {
 		$doc->setDocAsUpsert( true );
 		$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
 
-		$type = MetaStoreIndex::getFrozenType( $this->connection );
+		$type = MetaStoreIndex::getElasticaType( $this->connection );
 		$type->addDocument( $doc );
 		// Ensure our freeze is immediately seen (mostly for testing purposes)
 		$type->getIndex()->refresh();
@@ -89,7 +89,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function thawIndexes() {
 		$this->log->info( "Thawing writes to all indices" );
-		MetaStoreIndex::getFrozenType( $this->connection )->deleteIds( [
+		MetaStoreIndex::getElasticaType( $this->connection )->deleteIds( [
 			self::ALL_INDEXES_FROZEN_NAME,
 		] );
 	}
@@ -102,7 +102,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return bool
 	 */
 	public function isAvailableForWrites() {
-		$response = MetaStoreIndex::getFrozenType( $this->connection )
+		$response = MetaStoreIndex::getElasticaType( $this->connection )
 			->request( self::ALL_INDEXES_FROZEN_NAME, 'GET', [], [
 				'_source' => 'false',
 			] );

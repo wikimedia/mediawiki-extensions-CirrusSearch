@@ -32,13 +32,13 @@ class MetaStoreIndex {
 	 * @const int major version, increment when adding an incompatible change
 	 * to settings or mappings
 	 */
-	const METASTORE_MAJOR_VERSION = 0;
+	const METASTORE_MAJOR_VERSION = 1;
 
 	/**
 	 * @const int minor version increment only when adding a new field to
 	 * an existing mapping or a new mapping
 	 */
-	const METASTORE_MINOR_VERSION = 3;
+	const METASTORE_MINOR_VERSION = 0;
 
 	/**
 	 * @const string the doc id used to store version information related
@@ -206,8 +206,14 @@ class MetaStoreIndex {
 	 */
 	private function buildMapping() {
 		return [
-			self::VERSION_TYPE => [
+			self::INDEX_NAME => [
+				'dynamic' => false,
 				'properties' => [
+					'type' => [ 'type' => 'keyword' ],
+					'wiki' => [ 'type' => 'keyword' ],
+
+					// self::VERSION_TYPE
+					'index_name' => [ 'type' => 'keyword' ],
 					'analysis_maj' => [ 'type' => 'long' ],
 					'analysis_min' => [ 'type' => 'long' ],
 					'mapping_maj' => [ 'type' => 'long' ],
@@ -216,13 +222,11 @@ class MetaStoreIndex {
 					'mediawiki_version' => [ 'type' => 'keyword' ],
 					'mediawiki_commit' => [ 'type' => 'keyword' ],
 					'cirrus_commit' => [ 'type' => 'keyword' ],
-				],
-			],
-			self::FROZEN_TYPE => [
-				'properties' => [],
-			],
-			self::SANITIZE_TYPE => [
-				'properties' => [
+
+					// self::FROZEN_TYPE
+					// no searchable propeties, always referenced by doc id
+
+					// self::SANITIZE_TYPE => [
 					'sanitize_job_wiki' => [ 'type' => 'keyword' ],
 					'sanitize_job_created' => [
 						'type' => 'date',
@@ -241,16 +245,9 @@ class MetaStoreIndex {
 					'sanitize_job_ids_sent' => [ 'type' => 'long' ],
 					'sanitize_job_jobs_sent' => [ 'type' => 'long' ],
 					'sanitize_job_jobs_sent_total' => [ 'type' => 'long' ],
-				],
-			],
-			self::INTERNAL_TYPE => [
-				'properties' => [
-					'metastore_major_version' => [
-						'type' => 'integer'
-					],
-					'metastore_minor_version' => [
-						'type' => 'integer'
-					],
+
+					// self::INTERNAL_TYPE
+					// no searchable propeties, always referenced by doc id
 				],
 			],
 		];
@@ -357,13 +354,40 @@ class MetaStoreIndex {
 				'query' => [
 					'bool' => [
 						'must_not' => [
-							'type' => [ 'value' => self::INTERNAL_TYPE ]
+							[ 'term' => [ 'type' => self::INTERNAL_TYPE ] ],
+							// metastore prior to 1.0 used elasticsearch index
+							// 'type' instead of a type field
+							[ 'type' => [ 'value' => self::INTERNAL_TYPE ] ],
 						],
 					]
 				],
 			],
 			'dest' => [ 'index' => $index->getName() ],
 		];
+		if ( !$this->versionIsAtLeast( [ 1, 0 ] ) ) {
+			// FROZEN_TYPE assumed to be empty
+			// VERSION_TYPE docs need the index_name field added
+			// and doc id's prefixed.
+			// SANITIZE_TYPE already prefixed
+			// INTERNAL_TYPE is not copied
+			$version = self::VERSION_TYPE;
+			$sanitize = self::SANITIZE_TYPE;
+			$indexName = self::INDEX_NAME;
+			$reindex['script'] = [
+				'lang' => 'painless',
+				'inline' => <<<EOD
+ctx._source.type = ctx._type;
+if (ctx._type == '{$version}') {
+	ctx._source.index_name = ctx._id;
+	ctx._id = ctx._type + '-' + ctx._id;
+}
+if (ctx._type == '{$sanitize}') {
+	ctx._source.wiki = ctx._source.sanitize_job_wiki;
+}
+ctx._type = '{$indexName}';
+EOD
+			];
+		}
 		// reindex is extremely fast so we can wait for it
 		// we might consider using the task manager if this process
 		// becomes longer and/or prone to curl timeouts
@@ -416,10 +440,11 @@ class MetaStoreIndex {
 	 * @param \Elastica\Index $index new index
 	 */
 	private function storeMetastoreVersion( $index ) {
-		$index->getType( self::INTERNAL_TYPE )->addDocument(
+		$index->getType( self::INDEX_NAME )->addDocument(
 			new \Elastica\Document(
 				self::METASTORE_VERSION_DOCID,
 				[
+					'type' => self::INTERNAL_TYPE,
 					'metastore_major_version' => self::METASTORE_MAJOR_VERSION,
 					'metastore_minor_version' => self::METASTORE_MINOR_VERSION,
 				]
@@ -437,30 +462,6 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * Get the version tracking index type
-	 * @return \Elastica\Type
-	 */
-	public function versionType() {
-		return self::getVersionType( $this->connection );
-	}
-
-	/**
-	 * Get the frozen indices tracking index type
-	 * @return \Elastica\Type $type
-	 */
-	public function frozenType() {
-		return self::getFrozenType( $this->connection );
-	}
-
-	/**
-	 * Get the sanitize tracking index type
-	 * @return \Elastica\Type $type
-	 */
-	public function sanitizeType() {
-		return self::getSanitizeType( $this->connection );
-	}
-
-	/**
 	 * Update versions for all types on the index.
 	 * @param string $baseName
 	 */
@@ -468,40 +469,12 @@ class MetaStoreIndex {
 		self::updateAllMetastoreVersions( $this->connection, $baseName );
 	}
 
-	/**
-	 * Get the version tracking index type
-	 * @param Connection $connection
-	 * @return \Elastica\Type $type
-	 */
-	public static function getVersionType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::VERSION_TYPE );
+	public static function getElasticaType( Connection $connection ) {
+		return $connection->getIndex( self::INDEX_NAME )->getType( self::INDEX_NAME );
 	}
 
-	/**
-	 * Get the sanitize tracking index type
-	 * @param Connection $connection
-	 * @return \Elastica\Type $type
-	 */
-	public static function getSanitizeType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::SANITIZE_TYPE );
-	}
-
-	/**
-	 * Get the frozen indices tracking index type
-	 * @param Connection $connection
-	 * @return \Elastica\Type $type
-	 */
-	public static function getFrozenType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::FROZEN_TYPE );
-	}
-
-	/**
-	 * Get the sanitize tracking index type
-	 * @param Connection $connection
-	 * @return \Elastica\Type $type
-	 */
-	private static function getInternalType( Connection $connection ) {
-		return $connection->getIndex( self::INDEX_NAME )->getType( self::INTERNAL_TYPE );
+	public function elasticaType() {
+		return self::getElasticaType( $this->connection );
 	}
 
 	/**
@@ -521,7 +494,7 @@ class MetaStoreIndex {
 	 */
 	public static function getMetastoreVersion( Connection $connection ) {
 		try {
-			$doc = self::getInternalType( $connection )
+			$doc = self::getElasticaType( $connection )
 				->getDocument( self::METASTORE_VERSION_DOCID );
 		} catch ( \Elastica\Exception\NotFoundException $e ) {
 			return [ 0, 0 ];
@@ -542,6 +515,23 @@ class MetaStoreIndex {
 			(int)$doc->get( 'metastore_minor_version' )
 		];
 	}
+
+	/**
+	 * @param Connection $connection
+	 * @param string $indexBaseName
+	 * @param string $indexTypeName
+	 * @return string docid for metastore version document of
+	 *  specified index.
+	 */
+	public static function versionDocId( Connection $connection, $indexBaseName,
+		$indexTypeName
+	) {
+		return implode( '-', [
+			self::VERSION_TYPE,
+			$connection->getIndexName( $indexBaseName, $indexTypeName )
+		] );
+	}
+
 	/**
 	 * Create version data for index type.
 	 * @param Connection $connection
@@ -562,7 +552,11 @@ class MetaStoreIndex {
 		}
 		$mwInfo = new GitInfo( $IP );
 		$cirrusInfo = new GitInfo( __DIR__ .  '/../..' );
+		$docId = self::versionDocId( $connection, $indexBaseName, $indexTypeName );
 		$data = [
+			'type' => self::VERSION_TYPE,
+			'wiki' => wfWikiId(),
+			'index_name' => $connection->getIndexName( $indexBaseName, $indexTypeName ),
 			'analysis_maj' => $aMaj,
 			'analysis_min' => $aMin,
 			'mapping_maj' => $mMaj,
@@ -573,8 +567,7 @@ class MetaStoreIndex {
 			'cirrus_commit' => $cirrusInfo->getHeadSHA1(),
 		];
 
-		return new \Elastica\Document( $connection->getIndexName( $indexBaseName, $indexTypeName ),
-			$data );
+		return new \Elastica\Document( $docId, $data );
 	}
 
 	/**
@@ -587,7 +580,7 @@ class MetaStoreIndex {
 	public static function updateMetastoreVersions( Connection $connection, $indexBaseName,
 		$indexTypeName
 	) {
-		$index = self::getVersionType( $connection );
+		$index = self::getElasticaType( $connection );
 		if ( !$index->exists() ) {
 			throw new \Exception( "meta store does not exist, you must index your data first" );
 		}
@@ -600,11 +593,14 @@ class MetaStoreIndex {
 	 * @param string $baseName Base name of the index.
 	 */
 	public static function updateAllMetastoreVersions( Connection $connection, $baseName ) {
-		$versionType = self::getVersionType( $connection );
+		$index = self::getElasticaType( $connection );
+		if ( !$index->exists() ) {
+			throw new \Exception( "meta store does not exist, you must index your data first" );
+		}
 		$docs = [];
 		foreach ( $connection->getAllIndexTypes() as $type ) {
 			$docs[] = self::versionData( $connection, $baseName, $type );
 		}
-		$versionType->addDocuments( $docs );
+		$index->addDocuments( $docs );
 	}
 }

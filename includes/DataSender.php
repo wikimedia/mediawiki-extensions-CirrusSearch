@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Maintenance\MetaStoreIndex;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;
@@ -29,7 +30,7 @@ use WikiPage;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class DataSender extends ElasticsearchIntermediary {
-	const ALL_INDEXES_FROZEN_NAME = 'freeze_everything';
+	const ALL_INDEXES_FROZEN_NAME = 'freeze-everything';
 
 	/** @var \Psr\Log\LoggerInterface */
 	private $log;
@@ -60,71 +61,37 @@ class DataSender extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Disallow writes to the specified indexes.
+	 * Disallow writes to all indices
 	 *
-	 * @param string[]|null $indexes List of index types to disallow writes to.
-	 *  null means to prevent indexing in all indexes across all wikis.
+	 * @param string $reason Why writes are being paused
 	 */
-	public function freezeIndexes( array $indexes = null ) {
+	public function freezeIndexes( $reason ) {
 		global $wgCirrusSearchUpdateConflictRetryCount;
 
-		if ( $indexes === null ) {
-			$names = [ self::ALL_INDEXES_FROZEN_NAME ];
-		} else {
-			if ( count( $indexes ) === 0 ) {
-				return;
-			}
-			$names = $this->indexesToIndexNames( $indexes );
-		}
+		$this->log->info( "Freezing writes to all indices" );
+		$doc = new \Elastica\Document( self::ALL_INDEXES_FROZEN_NAME, [
+			'host' => gethostname(),
+			'timestamp' => time(),
+			'reason' => strval( $reason ),
+		] );
+		$doc->setDocAsUpsert( true );
+		$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
 
-		$this->log->info( "Freezing writes to: " . implode( ',', $names ) );
-
-		$documents = [];
-		foreach ( $names as $indexName ) {
-			$doc = new \Elastica\Document( $indexName, [
-				'name' => $indexName,
-			] );
-			$doc->setDocAsUpsert( true );
-			$doc->setRetryOnConflict( $wgCirrusSearchUpdateConflictRetryCount );
-			$documents[] = $doc;
-		}
-
-		$client = $this->connection->getClient();
-		$type = $this->connection->getFrozenIndexNameType();
-		// Elasticsearch has a queue capacity of 50 so if $data
-		// contains 50 documents it could bump up against the max.  So
-		// we chunk it and do them sequentially.
-		foreach ( array_chunk( $documents, 30 ) as $data ) {
-			$bulk = new \Elastica\Bulk( $client );
-			$bulk->setType( $type );
-			$bulk->addData( $data, 'update' );
-			$bulk->send();
-		}
-
-		// Ensure our freeze is immediately seen (mostly for testing
-		// purposes)
+		$type = MetaStoreIndex::getFrozenType( $this->connection );
+		$type->addDocument( $doc );
+		// Ensure our freeze is immediately seen (mostly for testing purposes)
 		$type->getIndex()->refresh();
 	}
 
 	/**
-	 * Allow writes to the specified indexes.
+	 * Allow writes
 	 *
-	 * @param string[]|null $indexes List of index types to allow writes to.
-	 *  null means to remove the global freeze on all indexes. Null does not
-	 *  thaw indexes that were individually frozen.
 	 */
-	public function thawIndexes( array $indexes = null ) {
-		if ( $indexes === null ) {
-			$names = [ self::ALL_INDEXES_FROZEN_NAME ];
-		} else {
-			if ( count( $indexes ) === 0 ) {
-				return;
-			}
-			$names = $this->indexesToIndexNames( $indexes );
-		}
-
-		$this->log->info( "Thawing writes to " . implode( ',', $names ) );
-		$this->connection->getFrozenIndexNameType()->deleteIds( $names );
+	public function thawIndexes() {
+		$this->log->info( "Thawing writes to all indices" );
+		MetaStoreIndex::getFrozenType( $this->connection )->deleteIds( [
+			self::ALL_INDEXES_FROZEN_NAME,
+		] );
 	}
 
 	/**
@@ -132,32 +99,19 @@ class DataSender extends ElasticsearchIntermediary {
 	 * not currently allow writes during procedures like reindexing or rolling
 	 * restarts.
 	 *
-	 * @param string[] $indexes List of index names to check for availability.
-	 * @param bool $areIndexesFullyQualified Set to true if the provided $indexes are
-	 *  already fully qualified elasticsearch index names.
 	 * @return bool
 	 */
-	public function areIndexesAvailableForWrites(
-		array $indexes, $areIndexesFullyQualified = false
-	) {
-		if ( count( $indexes ) === 0 ) {
+	public function isAvailableForWrites() {
+		$response = MetaStoreIndex::getFrozenType( $this->connection )
+			->request( self::ALL_INDEXES_FROZEN_NAME, 'GET', [], [
+				'_source' => 'false',
+			] );
+		$result = $response->getData();
+		if ( !isset( $result['found'] ) ) {
+			// Some sort of error response ..what now?
 			return true;
 		}
-		if ( !$areIndexesFullyQualified ) {
-			$indexes = $this->indexesToIndexNames( $indexes );
-		}
-
-		$ids = new \Elastica\Query\Ids( null, $indexes );
-		$ids->addId( self::ALL_INDEXES_FROZEN_NAME );
-		$resp = $this->connection->getFrozenIndexNameType()->search(
-			\Elastica\Query::create( $ids )
-		);
-
-		if ( $resp->count() === 0 ) {
-			return true;
-		} else {
-			return false;
-		}
+		return $result['found'] === false;
 	}
 
 	/**
@@ -172,7 +126,7 @@ class DataSender extends ElasticsearchIntermediary {
 			return Status::newGood();
 		}
 
-		if ( !$this->areIndexesAvailableForWrites( [ $indexType ] ) ) {
+		if ( !$this->isAvailableForWrites() ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
@@ -316,7 +270,7 @@ class DataSender extends ElasticsearchIntermediary {
 			$elasticType = Connection::PAGE_TYPE_NAME;
 		}
 
-		if ( !$this->areIndexesAvailableForWrites( $indexes ) ) {
+		if ( !$this->isAvailableForWrites() ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
@@ -358,7 +312,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @return Status
 	 */
 	public function sendOtherIndexUpdates( $localSite, $indexName, array $otherActions ) {
-		if ( !$this->areIndexesAvailableForWrites( [ $indexName ], true ) ) {
+		if ( !$this->isAvailableForWrites() ) {
 			return Status::newFatal( 'cirrussearch-indexes-frozen' );
 		}
 
@@ -482,18 +436,6 @@ class DataSender extends ElasticsearchIntermediary {
 			}
 		}
 		return $justDocumentMissing;
-	}
-
-	/**
-	 * @param string[] $indexes
-	 * @return string[]
-	 */
-	public function indexesToIndexNames( array $indexes ) {
-		$names = [];
-		foreach ( $indexes as $indexType ) {
-			$names[] = $this->connection->getIndexName( $this->indexBaseName, $indexType );
-		}
-		return $names;
 	}
 
 	/**

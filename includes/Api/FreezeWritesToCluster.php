@@ -32,7 +32,7 @@ class FreezeWritesToCluster extends \ApiBase {
 		if ( $this->getParameter( 'thaw' ) ) {
 			$sender->thawIndexes();
 		} else {
-			$sender->freezeIndexes();
+			$sender->freezeIndexes( 'frozen via api' );
 		}
 	}
 

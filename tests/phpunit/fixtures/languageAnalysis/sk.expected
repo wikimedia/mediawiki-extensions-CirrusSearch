@@ -4,14 +4,18 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "lowercase",
+                "asciifolding",
+                "skstemmer"
             ]
         },
         "text_search": {
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
-                "lowercase"
+                "lowercase",
+                "asciifolding",
+                "skstemmer"
             ]
         },
         "plain": {
@@ -200,6 +204,9 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "skstemmer": {
+            "type": "slovak_stemmer"
         },
         "dedup_asciifolding": {
             "type": "unique",

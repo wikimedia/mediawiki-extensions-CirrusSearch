@@ -326,14 +326,17 @@ class AnalysisConfigBuilder {
 		// @todo: complete the default filters per language
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 		// For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+		// For Slovak (sk), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':
 			return '[^йЙ]';
-		case 'sv':
-			return '[^åäöÅÄÖ]';
+		case 'sk':
+			return '[^ÁáÄäČčĎďÉéÍíĹĺĽľŇňÓóÔôŔŕŠšŤťÚúÝýŽž]';
 		case 'sr':
 			return '[^ĐđŽžĆćŠšČč]';
+		case 'sv':
+			return '[^åäöÅÄÖ]';
 		default:
 			return null;
 		}
@@ -904,6 +907,25 @@ STEMMER_RULES
 			// In Serbian text_search is just a copy of text
 			$config['analyzer']['text_search'] = $config['analyzer']['text'];
 			break;
+		case 'slovak':
+			// Unpack default analyzer to add Slovak stemming and custom folding
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+			$config[ 'filter' ][ 'skstemmer' ] = [
+				'type' => 'slovak_stemmer',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'asciifolding',
+					'skstemmer',
+				],
+			];
+
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'swedish':
 			// Add asciifolding_preserve to filters
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
@@ -1219,8 +1241,9 @@ STEMMER_RULES
 		'simple' => true,
 		'fr' => true,
 		'he' => true,
-		'sv' => true,
+		'sk' => true,
 		'sr' => true,
+		'sv' => true,
 	];
 
 	/**
@@ -1269,5 +1292,6 @@ STEMMER_RULES
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
 		'extra-analysis' => [ 'sr' => 'serbian' ],
+		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
 	];
 }

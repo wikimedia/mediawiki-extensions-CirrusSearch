@@ -5,6 +5,10 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\Match;
+use Elastica\Query\Term;
 
 /**
  * @covers \CirrusSearch\Query\PrefixFeature
@@ -117,6 +121,18 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 				NS_HELP,
 				'foo ',
 			],
+			'prefix can also be used to open on all namespaces' => [
+				'foo prefix:all:',
+				null,
+				null, // null is all
+				'foo ',
+			],
+			'prefix does not misinterpret a trailing :' => [
+				'foo prefix:Help:Wikipedia:',
+				'Wikipedia:',
+				NS_HELP, // null is everything
+				'foo ',
+			],
 			'prefix does not trim quotes if the query is ambiguous regarding greedy behaviors' => [
 				'foo prefix:"foo bar" test',
 				'"foo bar" test',
@@ -136,32 +152,111 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( $query, $filterValue, $namespace, $expectedRemaining ) {
-		$prefixQuery = null;
-		if ( $filterValue !== null ) {
-			$prefixQuery = new \Elastica\Query\Match();
-			$prefixQuery->setFieldQuery( 'title.prefix', $filterValue );
+		$assertions = null;
+
+		$assertFilter = function ( AbstractQuery $filter ) use ( $filterValue ) {
+			$this->assertInstanceOf( Match::class, $filter );
+			$this->assertArrayEquals( [ 'query' => $filterValue ], $filter->getParam( 'title.prefix' ) );
+			return true;
+		};
+
+		$assertNsFilter = function ( AbstractQuery $filter ) use ( $namespace ) {
+			$this->assertInstanceOf( Term::class, $filter );
+			$this->assertEquals( $namespace, $filter->getParam( 'namespace' ) );
+			return true;
+		};
+
+		if ( $filterValue !== null && $namespace !== null ) {
+			$assertions = function ( AbstractQuery $filter ) use (
+				$filterValue,
+				$namespace,
+				$assertFilter,
+				$assertNsFilter
+			) {
+				$this->assertInstanceOf( BoolQuery::class, $filter );
+				$boolQuery = $filter;
+				$queries = $boolQuery->getParam( 'must' );
+				$this->assertCount( 2, $queries );
+				$valueFilter = $queries[0];
+				$nsFilter = $queries[1];
+				$assertFilter( $valueFilter );
+				$assertNsFilter( $nsFilter );
+				return true;
+			};
+		} elseif ( $filterValue !== null ) {
+			$assertions = $assertFilter;
+		} elseif ( $namespace !== null ) {
+			$assertions = $assertNsFilter;
 		}
 
 		$feature = new PrefixFeature();
-		if ( $prefixQuery !== null ) {
+		if ( $assertions !== null ) {
 			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
 		}
-		$this->assertParsedValue( $feature, $query, null, [] );
+		$parsedValue = [ 'value' => $filterValue ];
+		if ( $namespace !== null ) {
+			$parsedValue['namespace'] = $namespace;
+		}
+		$this->assertParsedValue( $feature, $query, $parsedValue, [] );
 		$this->assertExpandedData( $feature, $query, [], [] );
-		$this->assertFilter( $feature, $query, $prefixQuery, [] );
+		$this->assertFilter( $feature, $query, $assertions, [] );
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 
-		$originalNs = [ NS_FILE_TALK ];
-		$context = new SearchContext( new HashSearchConfig( [] ), $originalNs );
+		$context = new SearchContext( new HashSearchConfig( [] ),
+			$namespace !== null ? [ $namespace ] : null );
 		$feature->apply( $context, $query );
-		if ( $namespace !== null ) {
-			$this->assertArrayEquals( $context->getNamespaces(), [ $namespace ] );
-		} else {
-			$this->assertArrayEquals( $context->getNamespaces(), $originalNs );
-		}
+		$this->assertEmpty( $context->getWarnings() );
 	}
 
 	public function testEmpty() {
 		$this->assertNotConsumed( new PrefixFeature(), 'foo bar' );
+	}
+
+	public function provideBadPrefixQueries() {
+		return [
+			'prefix wants all but context is NS_MAIN' => [
+				'prefix:all:',
+				[ NS_MAIN ],
+				true,
+			],
+			'prefix wants Help but context is NS_MAIN' => [
+				'prefix:Help:Test',
+				[ NS_MAIN, NS_TALK ],
+				true,
+			],
+			'prefix wants main but context is Help' => [
+				'prefix:Test',
+				[ NS_HELP ],
+				true,
+			],
+			'prefix wants NS_MAIN and context has it' => [
+				'prefix:Test',
+				[ NS_MAIN, NS_HELP ],
+				false,
+			],
+			'prefix wants all and context is all' => [
+				'prefix:all:',
+				[],
+				false,
+			],
+			'prefix wants all and context is null' => [
+				'prefix:all:',
+				null, // means all
+				false,
+			],
+		];
+	}
+	/**
+	 * @dataProvider provideBadPrefixQueries()
+	 */
+	public function testDeprecationWarning( $query, $namespace, $hasWarning ) {
+		$context = new SearchContext( new HashSearchConfig( [] ), $namespace );
+		$feature = new PrefixFeature();
+		$feature->apply( $context, $query );
+		$expectedWarnings = [];
+		if ( $hasWarning ) {
+			$expectedWarnings[] = [ 'cirrussearch-keyword-prefix-ns-mismatch' ];
+		}
+		$this->assertArrayEquals( $expectedWarnings, $context->getWarnings() );
 	}
 }

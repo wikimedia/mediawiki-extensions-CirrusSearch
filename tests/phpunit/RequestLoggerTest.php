@@ -68,6 +68,8 @@ class RequestLoggerTest extends CirrusTestCase {
 		// Disable opportunistic execution of deferred updates
 		// in CLI mode
 		$this->setMwGlobals( 'wgCommandLineMode', false );
+		// Default config of SiteMatrix in vagrant is broken
+		$this->setMwGlobals( 'wgSiteMatrixSites', [] );
 		// This ends up breaking WebRequest::getIP(), so
 		// provide an explicit value
 		\RequestContext::getMain()->getRequest()->setIP( '127.0.0.1' );

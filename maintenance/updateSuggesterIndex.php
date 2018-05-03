@@ -284,7 +284,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private function canWrite() {
 		// Reuse DataSender even if we don't send anything with it.
 		$sender = new DataSender( $this->getConnection(), $this->getSearchConfig() );
-		return $sender->areIndexesAvailableForWrites( [ $this->getIndexTypeName() ] );
+		return $sender->isAvailableForWrites();
 	}
 
 	/**

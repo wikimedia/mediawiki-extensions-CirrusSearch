@@ -45,7 +45,9 @@ class FreezeWritesToCluster extends Maintenance {
 			$sender->thawIndexes();
 			$this->output( "Thawed any existing cluster-wide freeze\n\n" );
 		} else {
-			$sender->freezeIndexes();
+			// Any additional input is considered the 'reason'
+			$reason = implode( ' ', $this->mArgs );
+			$sender->freezeIndexes( $reason );
 			$this->output( "Applied cluster-wide freeze\n\n" );
 		}
 	}

@@ -5,7 +5,6 @@ namespace CirrusSearch;
 use ElasticaConnection;
 use Exception;
 use MWNamespace;
-use CirrusSearch\Maintenance\MetaStoreIndex;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
@@ -181,13 +180,6 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getMaxConnectionAttempts() {
 		return $this->config->get( 'CirrusSearchConnectionAttempts' );
-	}
-
-	/**
-	 * @return \Elastica\Type
-	 */
-	public function getFrozenIndexNameType() {
-		return MetaStoreIndex::getFrozenType( $this );
 	}
 
 	/**

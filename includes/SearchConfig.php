@@ -281,7 +281,7 @@ class SearchConfig implements \Config {
 	 * frozen.
 	 * Before sending any writes in this cluster, the forzen index status
 	 * must be checked fr the  target index.
-	 * @see DataSender::areIndexesAvailableForWrites()
+	 * @see DataSender::isAvailableForWrites()
 	 *
 	 * @param string $cluster
 	 * @return bool

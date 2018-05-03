@@ -145,7 +145,7 @@ class ReindexTaskTest extends \PHPUnit\Framework\TestCase {
 					'_tasks',
 					Request::GET,
 					[],
-					[ 'parent_task_id' => 'abc:123', 'detailed' => 1 ],
+					[ 'parent_task_id' => 'abc:123', 'detailed' => 'true' ],
 					\Elastica\Request::DEFAULT_CONTENT_TYPE,
 					new Response( json_encode(
 						$this->sliceResponse( 2 )

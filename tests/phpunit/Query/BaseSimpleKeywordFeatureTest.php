@@ -40,7 +40,7 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param bool $negated
 	 * @return SearchContext
 	 */
-	protected function mockContextExpectingAddFilter( $expectedQuery = null, array $warnings = null, $negated = false ) {
+	private function mockContextExpectingAddFilter( $expectedQuery = null, array $warnings = null, $negated = false ) {
 		$context = $this->mockContext();
 
 		if ( $expectedQuery === null ) {

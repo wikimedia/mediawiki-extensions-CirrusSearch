@@ -88,5 +88,6 @@
 	"cirrussearch-explore-similar-related-none": "Não existem páginas relacionadas",
 	"cirrussearch-explore-similar-categories-none": "Não existem categorias",
 	"cirrussearch-explore-similar-languages-none": "Não disponibilizado noutras línguas",
-	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo"
+	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo",
+	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>."
 }

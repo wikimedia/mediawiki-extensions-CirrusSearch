@@ -8,7 +8,8 @@
 			"Saper",
 			"Woytecr",
 			"Nux",
-			"InternerowyGołąb"
+			"InternerowyGołąb",
+			"Rzuwig"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
@@ -61,5 +62,6 @@
 	"cirrussearch-explore-similar-categories": "Kategorie",
 	"cirrussearch-explore-similar-languages": "Języki",
 	"cirrussearch-explore-similar-categories-none": "Brak dostępnych kategorii",
-	"cirrussearch-explore-similar-languages-none": "Niedostępne w innych językach"
+	"cirrussearch-explore-similar-languages-none": "Niedostępne w innych językach",
+	"cirrussearch-article-words": "Ilość wyrazów na wszystkich stronach"
 }

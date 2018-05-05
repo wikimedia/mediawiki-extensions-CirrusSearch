@@ -8,6 +8,7 @@
 	"cirrussearch-completion-profile-normal": "З выдаленнем некалькіх сімвалаў пунктуацыі, некаторых дыякрытычных знакаў і шумавых слоў.",
 	"cirrussearch-pref-completion-profile-help": "Задае паводзіны для прапаноў аўтадапаўнення (пошуку па меры набору).",
 	"prefs-completion": "Дапаўненне пошуку",
+	"cirrussearch-pref-completion-section-desc": "Прапанова канчаткаў",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Падказчык аўтадапаўнення] — гэта алгарытм для пошуку назваў з найбольш блізкімі паводле напісання і рэлевантнымі паводле запросу.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Па змоўчанні (рэкамендуецца)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да двух абдруковак. Падстаўляе адпаведныя перасылкі.",

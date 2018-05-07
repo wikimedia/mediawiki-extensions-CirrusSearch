@@ -51,12 +51,6 @@ class Connection extends ElasticaConnection {
 	const PAGE_TYPE_NAME = 'page';
 
 	/**
-	 * Name of the namespace type.
-	 * @var string
-	 */
-	const NAMESPACE_TYPE_NAME = 'namespace';
-
-	/**
 	 * Name of the title suggest type
 	 * @var string
 	 */
@@ -201,16 +195,6 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getIndexType( $name, $cirrusType, $elasticType ) {
 		return $this->getIndex( $name, $cirrusType )->getType( $elasticType );
-	}
-
-	/**
-	 * Fetch the Elastica Type for namespaces.
-	 * @param mixed $name basename of index
-	 * @return \Elastica\Type
-	 */
-	public function getNamespaceType( $name ) {
-		$type = 'general'; // Namespaces are always stored in the 'general' index.
-		return $this->getIndex( $name, $type )->getType( self::NAMESPACE_TYPE_NAME );
 	}
 
 	/**

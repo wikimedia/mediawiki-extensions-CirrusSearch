@@ -244,7 +244,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->validateMapping();
 			$this->validateAlias();
 			$this->updateVersions();
-			$this->indexNamespaces();
 		} catch ( \Elastica\Exception\Connection\HttpException $e ) {
 			$message = $e->getMessage();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
@@ -277,21 +276,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$child->mOptions['update-index-version'] = true;
 		$child->execute();
 		$child->done();
-	}
-
-	/**
-	 * @suppress PhanUndeclaredMethod runChild technically returns a
-	 *  \Maintenance instance but only \CirrusSearch\Maintenance\Maintenance
-	 *  classes have the done method. Just allow it since we know what type of
-	 *  maint class is being created
-	 */
-	private function indexNamespaces() {
-		// Only index namespaces if we're doing the general index
-		if ( $this->indexType === 'general' ) {
-			$child = $this->runChild( 'CirrusSearch\Maintenance\IndexNamespaces' );
-			$child->execute();
-			$child->done();
-		}
 	}
 
 	private function validateIndex() {
@@ -380,7 +364,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getMappingConfig(),
 			[
 				'page' => $this->getPageType(),
-				'namespace' => $this->getNamespaceType(),
 				'archive' => $this->getArchiveType()
 			],
 			$this
@@ -529,15 +512,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	protected function getPageType() {
 		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
-	}
-
-	/**
-	 * Get the namespace type being updated by the search config.
-	 *
-	 * @return \Elastica\Type
-	 */
-	protected function getNamespaceType() {
-		return $this->getIndex()->getType( Connection::NAMESPACE_TYPE_NAME );
 	}
 
 	/**

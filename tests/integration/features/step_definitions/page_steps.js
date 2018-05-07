@@ -525,7 +525,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return withApi( this, () => {
 			expect( this.apiError ).to.equal( undefined );
 			expect( this.apiResponse ).to.include.all.keys( 'content', 'general' );
-			expect( this.apiResponse.content ).to.have.all.keys( 'archive', 'namespace', 'page' );
+			expect( this.apiResponse.content ).to.have.all.keys( 'archive', 'page' );
 			expect( this.apiResponse.content.page ).to.have.all.keys(
 				'dynamic', '_all', 'properties' );
 			expect( this.apiResponse.content.page.properties ).to.include.keys(

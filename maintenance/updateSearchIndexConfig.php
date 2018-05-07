@@ -51,6 +51,11 @@ class UpdateSearchIndexConfig extends Maintenance {
 	 *  maint class is being created
 	 */
 	public function execute() {
+		$this->outputIndented( "indexing namespaces...\n" );
+		$child = $this->runChild( IndexNamespaces::class );
+		$child->execute();
+		$child->done();
+
 		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
 			$this->outputIndented( "$indexType index...\n" );
 			$child = $this->runChild( UpdateOneSearchIndexConfig::class );

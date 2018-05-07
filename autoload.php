@@ -110,7 +110,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\MetaStore\\MetaNamespaceStore' => __DIR__ . '/includes/MetaStore/MetaNamespaceStore.php',
 	'CirrusSearch\\MetaStore\\MetaStoreIndex' => __DIR__ . '/includes/MetaStore/MetaStoreIndex.php',
 	'CirrusSearch\\MultiSearchRequestLog' => __DIR__ . '/includes/MultiSearchRequestLog.php',
-	'CirrusSearch\\NamespaceStore' => __DIR__ . '/includes/NamespaceStore.php',
 	'CirrusSearch\\NearMatchPicker' => __DIR__ . '/includes/NearMatchPicker.php',
 	'CirrusSearch\\OtherIndexes' => __DIR__ . '/includes/OtherIndexes.php',
 	'CirrusSearch\\Parser\\AST\\BooleanClause' => __DIR__ . '/includes/Parser/AST/BooleanClause.php',

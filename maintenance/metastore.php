@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\SearchConfig;
 use Elastica\JSON;
@@ -54,7 +55,7 @@ class Metastore extends Maintenance {
 	}
 
 	public function execute() {
-		$this->metaStore = new MetaStoreIndex( $this->getConnection(), $this );
+		$this->metaStore = new MetaStoreIndex( $this->getConnection(), $this, $this->getSearchConfig() );
 
 		if ( $this->hasOption( 'dump' ) ) {
 			$this->dump();

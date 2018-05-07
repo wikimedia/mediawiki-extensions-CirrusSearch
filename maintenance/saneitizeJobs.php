@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
 
@@ -350,7 +351,7 @@ EOD
 			if ( !MetaStoreIndex::cirrusReady( $connection ) ) {
 				$this->fatalError( "No metastore found in cluster $cluster" );
 			}
-			$store = new MetaStoreIndex( $connection, $this );
+			$store = new MetaStoreIndex( $connection, $this, $this->getSearchConfig() );
 			if ( !$store->versionIsAtLeast( [ 1, 0 ] ) ) {
 				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
 			}

@@ -1,8 +1,16 @@
 <?php
 
-namespace CirrusSearch\Maintenance;
+namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\Connection;
+use CirrusSearch\Maintenance\AnalysisConfigBuilder;
+use CirrusSearch\Maintenance\AnalysisFilter;
+use CirrusSearch\Maintenance\ConfigUtils;
+use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\MappingConfigBuilder;
+use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
+use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
+use CirrusSearch\SearchConfig;
 use GitInfo;
 
 /**
@@ -30,13 +38,13 @@ use GitInfo;
 class MetaStoreIndex {
 	/**
 	 * @const int major version, increment when adding an incompatible change
-	 * to settings or mappings
+	 * to settings or mappings.
 	 */
-	const METASTORE_MAJOR_VERSION = 1;
+	const METASTORE_MAJOR_VERSION = 2;
 
 	/**
 	 * @const int minor version increment only when adding a new field to
-	 * an existing mapping or a new mapping
+	 * an existing mapping or a new mapping.
 	 */
 	const METASTORE_MINOR_VERSION = 0;
 
@@ -92,9 +100,9 @@ class MetaStoreIndex {
 	private $out;
 
 	/**
-	 * @var string master operation timeout
+	 * @var SearchConfig
 	 */
-	private $masterTimeout;
+	private $config;
 
 	/**
 	 * @var ConfigUtils
@@ -104,16 +112,32 @@ class MetaStoreIndex {
 	/**
 	 * @param Connection $connection
 	 * @param Maintenance $out
-	 * @param string $masterTimeout
+	 * @param SearchConfig $config
 	 */
 	public function __construct(
-		Connection $connection, Maintenance $out, $masterTimeout = '10000s'
+		Connection $connection, Maintenance $out, SearchConfig $config
 	) {
 		$this->connection = $connection;
 		$this->client = $connection->getClient();
 		$this->configUtils = new ConfigUtils( $this->client, $out );
 		$this->out = $out;
-		$this->masterTimeout = $masterTimeout;
+		$this->config = $config;
+	}
+
+	/**
+	 * @return MetaNamespaceStore
+	 */
+	public function namespaceStore() {
+		return new MetaNamespaceStore( $this->connection, $this->config->getWikiId() );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function stores() {
+		return [
+			'namespace' => $this->namespaceStore(),
+		];
 	}
 
 	/**
@@ -165,6 +189,28 @@ class MetaStoreIndex {
 		}
 	}
 
+	private function buildIndexConfiguration() {
+		$plugins = $this->configUtils->scanAvailablePlugins(
+			$this->config->get( 'CirrusSearchBannedPlugins' ) );
+		$filter = new AnalysisFilter();
+		list( $analysis, $mappings ) = $filter->filterAnalysis(
+			// Why 'aa'? It comes first? Hoping it receives generic language treatment.
+			( new AnalysisConfigBuilder( 'aa', $plugins ) )->buildConfig(),
+			$this->buildMapping()
+		);
+
+		return [
+			// Don't forget to update METASTORE_MAJOR_VERSION when changing something
+			// in the settings.
+			'settings' => [
+				'number_of_shards' => 1,
+				'auto_expand_replicas' => '0-2',
+				'analysis' => $analysis,
+			],
+			'mappings' => $mappings,
+		];
+	}
+
 	/**
 	 * Create a new metastore index.
 	 * @param string $suffix index suffix
@@ -173,24 +219,14 @@ class MetaStoreIndex {
 	public function createNewIndex( $suffix = 'first' ) {
 		$name = self::INDEX_NAME . '_' . $suffix;
 		$this->log( "Creating metastore index... $name" );
-		// Don't forget to update METASTORE_MAJOR_VERSION when changing something
-		// in the settings
-		$settings = [
-			'number_of_shards' => 1,
-			'auto_expand_replicas' => '0-2'
-		];
-		$args = [
-			'settings' => $settings,
-			'mappings' => $this->buildMapping(),
-		];
 		// @todo utilize $this->getIndex()->create(...) once it supports setting
 		// the master_timeout parameter.
 		$index = $this->client->getIndex( $name );
 		$index->request(
 			'',
 			\Elastica\Request::PUT,
-			$args,
-			[ 'master_timeout' => $this->masterTimeout ]
+			$this->buildIndexConfiguration(),
+			[ 'master_timeout' => $this->getMasterTimeout() ]
 		);
 		$this->log( " ok\n" );
 		$this->configUtils->waitForGreen( $index->getName(), 3600 );
@@ -205,63 +241,82 @@ class MetaStoreIndex {
 	 * @return array[] the mapping
 	 */
 	private function buildMapping() {
+		$properties = [
+			'type' => [ 'type' => 'keyword' ],
+			'wiki' => [ 'type' => 'keyword' ],
+
+			// self::VERSION_TYPE
+			'index_name' => [ 'type' => 'keyword' ],
+			'analysis_maj' => [ 'type' => 'long' ],
+			'analysis_min' => [ 'type' => 'long' ],
+			'mapping_maj' => [ 'type' => 'long' ],
+			'mapping_min' => [ 'type' => 'long' ],
+			'shard_count' => [ 'type' => 'long' ],
+			'mediawiki_version' => [ 'type' => 'keyword' ],
+			'mediawiki_commit' => [ 'type' => 'keyword' ],
+			'cirrus_commit' => [ 'type' => 'keyword' ],
+
+			// self::FROZEN_TYPE
+			// no searchable propeties, always referenced by doc id
+
+			// self::SANITIZE_TYPE => [
+			'sanitize_job_wiki' => [ 'type' => 'keyword' ],
+			'sanitize_job_created' => [
+				'type' => 'date',
+				'format' => 'epoch_second',
+			],
+			'sanitize_job_updated' => [
+				'type' => 'date',
+				'format' => 'epoch_second',
+			],
+			'sanitize_job_last_loop' => [
+				'type' => 'date',
+				'format' => 'epoch_second',
+			],
+			'sanitize_job_cluster' => [ 'type' => 'keyword' ],
+			'sanitize_job_id_offset' => [ 'type' => 'long' ],
+			'sanitize_job_ids_sent' => [ 'type' => 'long' ],
+			'sanitize_job_jobs_sent' => [ 'type' => 'long' ],
+			'sanitize_job_jobs_sent_total' => [ 'type' => 'long' ],
+
+			// self::INTERNAL_TYPE
+			// no searchable propeties, always referenced by doc id
+
+			// MetaNamespaceStore::METASTORE_TYPE
+			// Added separately from MetaNamespaceStore
+		];
+
+		foreach ( $this->stores() as $store ) {
+			// TODO: Reuse field definition implementations from page indices?
+			$storeProperties = $store->buildIndexProperties();
+			if ( !$storeProperties ) {
+				continue;
+			}
+			$overlap = array_intersect_key( $properties, $storeProperties );
+			if ( $overlap ) {
+				throw new \Exception( 'Metastore property overlap on: ' . implode( ', ', $overlap ) );
+			}
+			$properties += $storeProperties;
+		}
+
 		return [
 			self::INDEX_NAME => [
 				'dynamic' => false,
-				'properties' => [
-					'type' => [ 'type' => 'keyword' ],
-					'wiki' => [ 'type' => 'keyword' ],
-
-					// self::VERSION_TYPE
-					'index_name' => [ 'type' => 'keyword' ],
-					'analysis_maj' => [ 'type' => 'long' ],
-					'analysis_min' => [ 'type' => 'long' ],
-					'mapping_maj' => [ 'type' => 'long' ],
-					'mapping_min' => [ 'type' => 'long' ],
-					'shard_count' => [ 'type' => 'long' ],
-					'mediawiki_version' => [ 'type' => 'keyword' ],
-					'mediawiki_commit' => [ 'type' => 'keyword' ],
-					'cirrus_commit' => [ 'type' => 'keyword' ],
-
-					// self::FROZEN_TYPE
-					// no searchable propeties, always referenced by doc id
-
-					// self::SANITIZE_TYPE => [
-					'sanitize_job_wiki' => [ 'type' => 'keyword' ],
-					'sanitize_job_created' => [
-						'type' => 'date',
-						'format' => 'epoch_second',
-					],
-					'sanitize_job_updated' => [
-						'type' => 'date',
-						'format' => 'epoch_second',
-					],
-					'sanitize_job_last_loop' => [
-						'type' => 'date',
-						'format' => 'epoch_second',
-					],
-					'sanitize_job_cluster' => [ 'type' => 'keyword' ],
-					'sanitize_job_id_offset' => [ 'type' => 'long' ],
-					'sanitize_job_ids_sent' => [ 'type' => 'long' ],
-					'sanitize_job_jobs_sent' => [ 'type' => 'long' ],
-					'sanitize_job_jobs_sent_total' => [ 'type' => 'long' ],
-
-					// self::INTERNAL_TYPE
-					// no searchable propeties, always referenced by doc id
-				],
+				'properties' => $properties,
 			],
 		];
 	}
 
 	private function minorUpgrade() {
+		$config = $this->buildIndexConfiguration();
 		$index = $this->connection->getIndex( self::INDEX_NAME );
 		foreach ( $this->buildMapping() as $type => $mapping ) {
 			$index->getType( $type )->request(
 				'_mapping',
 				\Elastica\Request::PUT,
-				$mapping,
+				$config['mappings'],
 				[
-					'master_timeout' => $this->masterTimeout,
+					'master_timeout' => $this->getMasterTimeout(),
 				]
 			);
 		}
@@ -305,7 +360,7 @@ class MetaStoreIndex {
 				];
 		}
 		$this->client->request( $path, \Elastica\Request::POST, $data,
-			[ 'master_timeout' => $this->masterTimeout ] );
+			[ 'master_timeout' => $this->getMasterTimeout() ] );
 		if ( $oldIndexName !== null ) {
 			$this->log( "Deleting old index $oldIndexName\n" );
 			$this->connection->getIndex( $oldIndexName )->delete();
@@ -602,5 +657,9 @@ EOD
 			$docs[] = self::versionData( $connection, $baseName, $type );
 		}
 		$index->addDocuments( $docs );
+	}
+
+	private function getMasterTimeout() {
+		return $this->config->get( 'CirrusSearchMasterTimeout' );
 	}
 }

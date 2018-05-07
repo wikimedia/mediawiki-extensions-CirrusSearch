@@ -440,19 +440,13 @@ class Searcher extends ElasticsearchIntermediary {
 						'namespaceName' => $name,
 						'query' => $name,
 					] );
-					$queryOptions = [
-						'search_type' => 'query_then_fetch',
-						'timeout' => $this->getTimeout(),
-					];
 					$connection = $this->getOverriddenConnection();
 					$connection->setTimeout( $this->getClientTimeout() );
-					$pageType = $connection->getNamespaceType( $this->indexBaseName );
-					$match = new \Elastica\Query\Match();
-					$match->setField( 'name', $name );
-					$query = new \Elastica\Query( $match );
-					$query->setParam( '_source', false );
-					$query->addParam( 'stats', 'namespace' );
-					$resultSet = $pageType->search( $query, $queryOptions );
+
+					$store = new NamespaceStore( $connection, $this->config );
+					$resultSet = $store->find( $name, $this->indexBaseName, [
+						'timeout' => $this->getTimeout(),
+					] );
 					// @todo check for partial results due to timeout?
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {

@@ -31,7 +31,10 @@ class AnalysisConfigBuilder {
 	 * Version number for the core analysis. Increment the major
 	 * version when the analysis changes in an incompatible way,
 	 * and change the minor version when it changes but isn't
-	 * incompatible
+	 * incompatible.
+	 *
+	 * You may also need to increment MetaStoreIndex::METASTORE_MAJOR_VERSION
+	 * manually as well.
 	 */
 	const VERSION = '0.12';
 

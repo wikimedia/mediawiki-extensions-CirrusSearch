@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Maintenance\Maintenance;
-use CirrusSearch\Maintenance\MetaStoreIndex;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 
 /**
  * Check that all Cirrus indexes report OK.

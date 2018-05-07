@@ -181,7 +181,8 @@ class RequestLoggerTest extends CirrusTestCase {
 		case 'findNamespace':
 			$work = function ( $config, $connection ) use ( $query ) {
 				$searcher = new Searcher( $connection, 0, 20, $config, null, null, 'wiki' );
-				$searcher->findNamespace( $query['name'] );
+				// ugly ... but whatever
+				$searcher->updateNamespacesFromQuery( $query['name'] );
 			};
 			break;
 

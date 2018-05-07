@@ -2,7 +2,7 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Maintenance\MetaStoreIndex;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\Search\CirrusIndexField;
 use Elastica\Exception\Bulk\ResponseException;
 use MediaWiki\Logger\LoggerFactory;

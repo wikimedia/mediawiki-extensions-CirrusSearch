@@ -2,9 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\SearchConfig;
-use Elastica\Document;
-use Elastica\Query\MatchAll;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 
 /**
  * Index all namespaces for quick lookup.
@@ -36,28 +34,20 @@ class IndexNamespaces extends Maintenance {
 	public function execute() {
 		global $wgContLang;
 
-		$type = $this->getConnection()->getNamespaceType( $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
-
-		$this->outputIndented( "Deleting namespaces..." );
-		$type->deleteByQuery( \Elastica\Query::create( new MatchAll() ) );
-		$this->output( "done\n" );
-
-		$this->outputIndented( "Indexing namespaces..." );
-		$namesByNsId = [];
-		foreach ( $wgContLang->getNamespaceIds() as $name => $nsId ) {
-			if ( $name ) {
-				$namesByNsId[$nsId][] = $name;
-			}
+		$conn = $this->getConnection();
+		$stores = [
+			'old' => new \CirrusSearch\NamespaceStore( $conn, $this->getSearchConfig() ),
+		];
+		$metaStore = new MetaStoreIndex( $conn, $this, $this->getSearchConfig() );
+		if ( $metaStore->versionIsAtLeast( [ 2, 0 ] ) ) {
+			$stores['new'] = $metaStore->namespaceStore();
 		}
-		$documents = [];
-		foreach ( $namesByNsId as $nsId => $names ) {
-			$documents[] = new Document( $nsId, [
-				'name' => $names,
-				'wiki' => $this->getSearchConfig()->getWikiId(),
-			] );
+
+		foreach ( $stores as $age => $store ) {
+			$this->outputIndented( "Indexing namespaces in $age store..." );
+			$store->reindex( $wgContLang );
+			$this->output( "done\n" );
 		}
-		$type->addDocuments( $documents );
-		$this->output( "done\n" );
 	}
 }
 

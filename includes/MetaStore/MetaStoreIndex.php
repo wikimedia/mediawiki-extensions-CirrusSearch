@@ -7,11 +7,7 @@ use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\AnalysisFilter;
 use CirrusSearch\Maintenance\ConfigUtils;
 use CirrusSearch\Maintenance\Maintenance;
-use CirrusSearch\Maintenance\MappingConfigBuilder;
-use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
-use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use CirrusSearch\SearchConfig;
-use GitInfo;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -63,11 +59,6 @@ class MetaStoreIndex {
 	 * @const string previous index name (bc code)
 	 */
 	const OLD_INDEX_NAME = 'mw_cirrus_versions';
-
-	/**
-	 * @const string type for storing version tracking info
-	 */
-	const VERSION_TYPE = 'version';
 
 	/**
 	 * @const string type for storing sanitze jobs tracking info
@@ -125,6 +116,13 @@ class MetaStoreIndex {
 	}
 
 	/**
+	 * @return MetaVersionStore
+	 */
+	public function versionStore() {
+		return new MetaVersionStore( $this->connection );
+	}
+
+	/**
 	 * @return MetaNamespaceStore
 	 */
 	public function namespaceStore() {
@@ -136,6 +134,7 @@ class MetaStoreIndex {
 	 */
 	public function stores() {
 		return [
+			'version' => $this->versionStore(),
 			'namespace' => $this->namespaceStore(),
 		];
 	}
@@ -245,16 +244,8 @@ class MetaStoreIndex {
 			'type' => [ 'type' => 'keyword' ],
 			'wiki' => [ 'type' => 'keyword' ],
 
-			// self::VERSION_TYPE
-			'index_name' => [ 'type' => 'keyword' ],
-			'analysis_maj' => [ 'type' => 'long' ],
-			'analysis_min' => [ 'type' => 'long' ],
-			'mapping_maj' => [ 'type' => 'long' ],
-			'mapping_min' => [ 'type' => 'long' ],
-			'shard_count' => [ 'type' => 'long' ],
-			'mediawiki_version' => [ 'type' => 'keyword' ],
-			'mediawiki_commit' => [ 'type' => 'keyword' ],
-			'cirrus_commit' => [ 'type' => 'keyword' ],
+			// MetaVersionStore::METASTORE_TYPE
+			// Added separately from MetaVersionStore
 
 			// self::FROZEN_TYPE
 			// no searchable propeties, always referenced by doc id
@@ -421,11 +412,11 @@ class MetaStoreIndex {
 		];
 		if ( !$this->versionIsAtLeast( [ 1, 0 ] ) ) {
 			// FROZEN_TYPE assumed to be empty
-			// VERSION_TYPE docs need the index_name field added
+			// MetaVersionStore docs need the index_name field added
 			// and doc id's prefixed.
 			// SANITIZE_TYPE already prefixed
 			// INTERNAL_TYPE is not copied
-			$version = self::VERSION_TYPE;
+			$version = MetaVersionStore::METASTORE_TYPE;
 			$sanitize = self::SANITIZE_TYPE;
 			$indexName = self::INDEX_NAME;
 			$reindex['script'] = [
@@ -516,14 +507,6 @@ EOD
 		}
 	}
 
-	/**
-	 * Update versions for all types on the index.
-	 * @param string $baseName
-	 */
-	public function updateAllVersions( $baseName ) {
-		self::updateAllMetastoreVersions( $this->connection, $baseName );
-	}
-
 	public static function getElasticaType( Connection $connection ) {
 		return $connection->getIndex( self::INDEX_NAME )->getType( self::INDEX_NAME );
 	}
@@ -569,94 +552,6 @@ EOD
 			(int)$doc->get( 'metastore_major_version' ),
 			(int)$doc->get( 'metastore_minor_version' )
 		];
-	}
-
-	/**
-	 * @param Connection $connection
-	 * @param string $indexBaseName
-	 * @param string $indexTypeName
-	 * @return string docid for metastore version document of
-	 *  specified index.
-	 */
-	public static function versionDocId( Connection $connection, $indexBaseName,
-		$indexTypeName
-	) {
-		return implode( '-', [
-			self::VERSION_TYPE,
-			$connection->getIndexName( $indexBaseName, $indexTypeName )
-		] );
-	}
-
-	/**
-	 * Create version data for index type.
-	 * @param Connection $connection
-	 * @param string $indexBaseName
-	 * @param string $indexTypeName
-	 * @return \Elastica\Document
-	 */
-	public static function versionData( Connection $connection, $indexBaseName,
-		$indexTypeName
-	) {
-		global $IP, $wgVersion;
-		if ( $indexTypeName == Connection::TITLE_SUGGEST_TYPE ) {
-			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION );
-			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION );
-		} else {
-			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
-			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
-		}
-		$mwInfo = new GitInfo( $IP );
-		$cirrusInfo = new GitInfo( __DIR__ .  '/../..' );
-		$docId = self::versionDocId( $connection, $indexBaseName, $indexTypeName );
-		$data = [
-			'type' => self::VERSION_TYPE,
-			'wiki' => wfWikiId(),
-			'index_name' => $connection->getIndexName( $indexBaseName, $indexTypeName ),
-			'analysis_maj' => $aMaj,
-			'analysis_min' => $aMin,
-			'mapping_maj' => $mMaj,
-			'mapping_min' => $mMin,
-			'shard_count' => $connection->getSettings()->getShardCount( $indexTypeName ),
-			'mediawiki_version' => $wgVersion,
-			'mediawiki_commit' => $mwInfo->getHeadSHA1(),
-			'cirrus_commit' => $cirrusInfo->getHeadSHA1(),
-		];
-
-		return new \Elastica\Document( $docId, $data );
-	}
-
-	/**
-	 * Update version metastore for certain index.
-	 * @param Connection $connection
-	 * @param string $indexBaseName
-	 * @param string $indexTypeName
-	 * @throws \Exception
-	 */
-	public static function updateMetastoreVersions( Connection $connection, $indexBaseName,
-		$indexTypeName
-	) {
-		$index = self::getElasticaType( $connection );
-		if ( !$index->exists() ) {
-			throw new \Exception( "meta store does not exist, you must index your data first" );
-		}
-		$index->addDocument( self::versionData( $connection, $indexBaseName, $indexTypeName ) );
-	}
-
-	/**
-	 * Update metastore versions for all types of certain index.
-	 * @param Connection $connection
-	 * @param string $baseName Base name of the index.
-	 */
-	public static function updateAllMetastoreVersions( Connection $connection, $baseName ) {
-		$index = self::getElasticaType( $connection );
-		if ( !$index->exists() ) {
-			throw new \Exception( "meta store does not exist, you must index your data first" );
-		}
-		$docs = [];
-		foreach ( $connection->getAllIndexTypes() as $type ) {
-			$docs[] = self::versionData( $connection, $baseName, $type );
-		}
-		$index->addDocuments( $docs );
 	}
 
 	private function getMasterTimeout() {

@@ -39,6 +39,8 @@
 	"cirrussearch-completion-profile-normal-subphrases": "Μερικά σημεία στίξης, κάποια διακριτικά και stopwords αφαιρέθηκαν.Θα ταιριάζουν επίσης υποφράσεις (μπορεί να είναι υποφράσεις ή υποσελίδες ανάλογα με εσωτερική wiki διαμόρφωση).",
 	"cirrussearch-completion-profile-fuzzy": "Παρόμοια του κανονικού με τυπογραφικό έλεγχο (υποστηρίζονται μέχρι δύο λάθη).",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Παρόμοια με την κανονική διόρθωση με τυπογραφικό λάθος (υποστηρίζει δύο λάθη). Θα ταιριάζει επίσης υποφράσεις (μπορεί να είναι υποφράσεις ή υποσελίδες ανάλογα με εσωτερική ρύθμιση του wiki).",
+	"prefs-completion": "Ολοκλήρωση αναζήτησης",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Προεπιλεγμένο (συνιστάται)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Διορθώνει έως και δύο λάθη. Επιλύει κλειστές ανακατευθύνσεις.",
 	"cirrussearch-completion-profile-strict-pref-name": "Αυστηρή λειτουργία (για προχωρημένους)",
 	"cirrussearch-completion-profile-normal-pref-name": "Λειτουργία ανακατεύθυνσης  (για προχωρημένους)",

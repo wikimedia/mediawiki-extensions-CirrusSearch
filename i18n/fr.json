@@ -62,7 +62,7 @@
 	"cirrussearch-pref-completion-profile-help": "Définit le comportement des suggestions d’auto-complétion (recherche en cours de frappe).",
 	"prefs-completion": "Recherche approfondie",
 	"cirrussearch-pref-completion-section-desc": "Outil de suggestion de complétion",
-	"cirrussearch-pref-completion-section-legend": "L’[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester outil de suggestion de complétion] est un algorithme pour chercher des suggestions avec une meilleur correction des fautes de frappe et de la pertinence des recherches.",
+	"cirrussearch-pref-completion-section-legend": "L’[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester outil de suggestion de complétion] est un algorithme pour chercher des suggestions avec une meilleure correction des fautes de frappe et de la pertinence des recherches.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Par défaut (recommandé)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige jusqu’à deux fautes. Résout les redirections proches.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondance de partie de phrase (recommandé pour les titres de page plus longs)",

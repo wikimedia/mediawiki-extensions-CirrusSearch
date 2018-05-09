@@ -61,16 +61,6 @@ class MetaStoreIndex {
 	const OLD_INDEX_NAME = 'mw_cirrus_versions';
 
 	/**
-	 * @const string type for storing sanitze jobs tracking info
-	 */
-	const SANITIZE_TYPE = 'sanitize';
-
-	/**
-	 * @const string type for storing frozen indices tracking info
-	 */
-	const FROZEN_TYPE = 'frozen';
-
-	/**
 	 * @const string type for storing internal data
 	 */
 	const INTERNAL_TYPE = 'internal';
@@ -130,12 +120,20 @@ class MetaStoreIndex {
 	}
 
 	/**
+	 * @return MetaSaneitizeJobStore
+	 */
+	public function saneitizeJobStore() {
+		return new MetaSaneitizeJobStore( $this->connection );
+	}
+
+	/**
 	 * @return array
 	 */
 	public function stores() {
 		return [
 			'version' => $this->versionStore(),
 			'namespace' => $this->namespaceStore(),
+			'saneitize' => $this->saneitizeJobStore(),
 		];
 	}
 
@@ -243,38 +241,6 @@ class MetaStoreIndex {
 		$properties = [
 			'type' => [ 'type' => 'keyword' ],
 			'wiki' => [ 'type' => 'keyword' ],
-
-			// MetaVersionStore::METASTORE_TYPE
-			// Added separately from MetaVersionStore
-
-			// self::FROZEN_TYPE
-			// no searchable propeties, always referenced by doc id
-
-			// self::SANITIZE_TYPE => [
-			'sanitize_job_wiki' => [ 'type' => 'keyword' ],
-			'sanitize_job_created' => [
-				'type' => 'date',
-				'format' => 'epoch_second',
-			],
-			'sanitize_job_updated' => [
-				'type' => 'date',
-				'format' => 'epoch_second',
-			],
-			'sanitize_job_last_loop' => [
-				'type' => 'date',
-				'format' => 'epoch_second',
-			],
-			'sanitize_job_cluster' => [ 'type' => 'keyword' ],
-			'sanitize_job_id_offset' => [ 'type' => 'long' ],
-			'sanitize_job_ids_sent' => [ 'type' => 'long' ],
-			'sanitize_job_jobs_sent' => [ 'type' => 'long' ],
-			'sanitize_job_jobs_sent_total' => [ 'type' => 'long' ],
-
-			// self::INTERNAL_TYPE
-			// no searchable propeties, always referenced by doc id
-
-			// MetaNamespaceStore::METASTORE_TYPE
-			// Added separately from MetaNamespaceStore
 		];
 
 		foreach ( $this->stores() as $store ) {
@@ -414,10 +380,10 @@ class MetaStoreIndex {
 			// FROZEN_TYPE assumed to be empty
 			// MetaVersionStore docs need the index_name field added
 			// and doc id's prefixed.
-			// SANITIZE_TYPE already prefixed
+			// MetaSaneitizeJobStore  already prefixed
 			// INTERNAL_TYPE is not copied
 			$version = MetaVersionStore::METASTORE_TYPE;
-			$sanitize = self::SANITIZE_TYPE;
+			$sanitize = MetaSaneitizeJobStore::METASTORE_TYPE;
 			$indexName = self::INDEX_NAME;
 			$reindex['script'] = [
 				'lang' => 'painless',

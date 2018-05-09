@@ -5,6 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
 use CirrusSearch\MetaStore\MetaStoreIndex;
+use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
 
@@ -36,7 +37,7 @@ require_once __DIR__ . '/../includes/Maintenance/Maintenance.php';
 
 class SaneitizeJobs extends Maintenance {
 	/**
-	 * @var MetaStoreIndex[] all metastores for write clusters
+	 * @var MetaSaneitizeJobStore[] all metastores for write clusters
 	 */
 	private $metaStores;
 
@@ -111,19 +112,6 @@ class SaneitizeJobs extends Maintenance {
 		}
 		if ( !$this->profileName ) {
 			$this->fatalError( "No profile found for $wikiSize ids, please check sanitization profiles" );
-		}
-	}
-
-	private function deleteJob() {
-		$jobName = $this->getOption( 'job-name', 'default' );
-		$this->initMetaStores();
-		$jobInfo = $this->getJobInfo( $jobName );
-		if ( $jobInfo === null ) {
-			$this->fatalError( "Unknown job $jobName\n" );
-		}
-		foreach ( $this->metaStores as $cluster => $store ) {
-			$store->elasticaType()->deleteDocument( $jobInfo );
-			$this->log( "Deleted job $jobName from $cluster.\n" );
 		}
 	}
 
@@ -362,7 +350,7 @@ EOD
 			if ( !$store->versionIsAtLeast( [ 1, 0 ] ) ) {
 				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
 			}
-			$this->metaStores[$cluster] = $store;
+			$this->metaStores[$cluster] = $store->saneitizeJobStore();
 		}
 	}
 
@@ -375,21 +363,17 @@ EOD
 		// Fetch the lastest jobInfo from the metastore. Ideally all
 		// jobInfo should be the same but in the case a cluster has
 		// been decommissioned and re-added its job info may be outdated
-		foreach ( $this->metaStores as $metastore ) {
-			$current = null;
-			try {
-				// Try to fetch the JobInfo from one of the metastore
-				$current = $metastore->elasticaType()->getDocument(
-					$this->jobId( $jobName )
-				);
-				$this->checkJobClusterMismatch( $current );
-				if ( $latest == null ) {
-					$latest = $current;
-				/** @suppress PhanNonClassMethodCall $current cannot be null */
-				} elseif ( $current->get( 'sanitize_job_updated' ) > $latest->get( 'sanitize_job_updated' ) ) {
-					$latest = $current;
-				}
-			} catch ( \Elastica\Exception\NotFoundException $e ) {
+		foreach ( $this->metaStores as $store ) {
+			$current = $store->get( $jobName );
+			if ( $current === null ) {
+				continue;
+			}
+			$this->checkJobClusterMismatch( $current );
+			if ( $latest == null ) {
+				$latest = $current;
+			/** @suppress PhanNonClassMethodCall $current cannot be null */
+			} elseif ( $current->get( 'sanitize_job_updated' ) > $latest->get( 'sanitize_job_updated' ) ) {
+				$latest = $current;
 			}
 		}
 		return $latest;
@@ -407,14 +391,8 @@ EOD
 	 * @param \Elastica\Document $jobInfo
 	 */
 	private function updateJob( \Elastica\Document $jobInfo ) {
-		$version = time();
-		$jobInfo->set( 'sanitize_job_updated', $version );
-		$jobInfo->setVersion( $version );
-		// @todo: remove this suppress (https://github.com/ruflin/Elastica/pull/1134)
-		/** @suppress PhanTypeMismatchArgument this method is improperly annotated */
-		$jobInfo->setVersionType( 'external' );
 		foreach ( $this->metaStores as $store ) {
-			$store->elasticaType()->addDocument( $jobInfo );
+			$store->update( $jobInfo );
 		}
 	}
 
@@ -423,29 +401,25 @@ EOD
 	 * @return \Elastica\Document
 	 */
 	private function createNewJob( $jobName ) {
-		reset( $this->metaStores );
-		$cluster = $this->getOption( 'cluster' );
-		$job = new \Elastica\Document(
-			$this->jobId( $jobName ),
-			[
-				'type' => MetaStoreIndex::SANITIZE_TYPE,
-				'wiki' => wfWikiID(),
-				'sanitize_job_wiki' => wfWikiID(), // Deprecated, use common wiki field
-				'sanitize_job_created' => time(),
-				'sanitize_job_updated' => time(),
-				'sanitize_job_last_loop' => null,
-				'sanitize_job_cluster' => $cluster,
-				'sanitize_job_id_offset' => $this->minId,
-				'sanitize_job_ids_sent' => 0,
-				'sanitize_job_ids_sent_total' => 0,
-				'sanitize_job_jobs_sent' => 0,
-				'sanitize_job_jobs_sent_total' => 0
-			]
-		);
 		foreach ( $this->metaStores as $store ) {
-			$store->elasticaType()->addDocument( $job );
+			// TODO: It's a little awkward to let each cluster make
+			// it's own job, but it also seems sane to put all
+			// the doc building in the store?
+			$job = $store->create( $jobName, $this->minId );
 		}
 		return $job;
+	}
+
+	private function deleteJob() {
+		$jobName = $this->getOption( 'job-name', 'default' );
+		$jobInfo = $this->getJobInfo( $jobName );
+		if ( $jobInfo === null ) {
+			$this->fatalError( "Unknown job $jobName" );
+		}
+		foreach ( $this->metaStores as $cluster => $store ) {
+			$store->delete( $jobName );
+			$this->log( "Deleted job $jobName from $cluster.\n" );
+		}
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\Maintenance\Reindexer;
 use Elastica\Client;
 use RawMessage;
@@ -44,7 +44,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	 * @param Validator[] $reindexValidators
 	 * @param bool $reindexAndRemoveOk
 	 * @param bool $tooFewReplicas
-	 * @param Maintenance|null $out
+	 * @param Printer|null $out
 	 */
 	public function __construct(
 		Client $client,
@@ -56,7 +56,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		array $reindexValidators,
 		$reindexAndRemoveOk,
 		$tooFewReplicas,
-		Maintenance $out = null
+		Printer $out = null
 	) {
 		// @todo: this constructor takes too many arguments - refactor!
 

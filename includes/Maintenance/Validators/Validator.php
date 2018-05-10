@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 
 abstract class Validator {
 	/**
-	 * @var Maintenance
+	 * @var Printer
 	 */
-	protected $maint;
+	protected $out;
 
 	/**
 	 * @var bool
@@ -16,10 +16,10 @@ abstract class Validator {
 	protected $printDebugCheckConfig = false;
 
 	/**
-	 * @param Maintenance $maint Maintenance object, to relay output to.
+	 * @param Printer $out to relay output to.
 	 */
-	public function __construct( Maintenance $maint ) {
-		$this->maint = $maint;
+	public function __construct( Printer $out ) {
+		$this->out = $out;
 	}
 
 	/**
@@ -110,8 +110,8 @@ abstract class Validator {
 	 * @param mixed|null $channel
 	 */
 	protected function output( $message, $channel = null ) {
-		if ( $this->maint ) {
-			$this->maint->output( $message, $channel );
+		if ( $this->out ) {
+			$this->out->output( $message, $channel );
 		}
 	}
 
@@ -119,8 +119,8 @@ abstract class Validator {
 	 * @param string $message
 	 */
 	protected function outputIndented( $message ) {
-		if ( $this->maint ) {
-			$this->maint->outputIndented( $message );
+		if ( $this->out ) {
+			$this->out->outputIndented( $message );
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\Maintenance\ConfigUtils;
 use Elastica\Client;
 use RawMessage;
@@ -49,9 +49,9 @@ abstract class IndexAliasValidator extends Validator {
 	 * @param string $aliasName
 	 * @param string $specificIndexName
 	 * @param bool $startOver
-	 * @param Maintenance $out
+	 * @param Printer $out
 	 */
-	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, Maintenance $out ) {
+	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, Printer $out ) {
 		parent::__construct( $out );
 
 		$this->client = $client;

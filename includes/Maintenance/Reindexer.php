@@ -89,7 +89,7 @@ class Reindexer {
 	private $mergeSettings;
 
 	/**
-	 * @var Maintenance
+	 * @var Printer
 	 */
 	private $out;
 
@@ -107,7 +107,7 @@ class Reindexer {
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param array $mergeSettings
-	 * @param Maintenance|null $out
+	 * @param Printer|null $out
 	 * @param string[] $fieldsToDelete
 	 * @throws \Exception
 	 */
@@ -120,7 +120,7 @@ class Reindexer {
 		$shardCount,
 		$replicaCount,
 		array $mergeSettings,
-		Maintenance $out = null,
+		Printer $out = null,
 		$fieldsToDelete = []
 	) {
 		// @todo: this constructor has too many arguments - refactor!

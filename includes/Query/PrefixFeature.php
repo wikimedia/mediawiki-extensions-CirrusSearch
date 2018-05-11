@@ -68,8 +68,9 @@ class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature
 		if ( isset( $parsedValue['namespace'] ) ) {
 			$namespace = $parsedValue['namespace'];
 		}
-		$this->deprecationWarning( $context, $context->getNamespaces(), $namespace );
-
+		// Re-activate once InputBox is fixed to generate proper prefix queries
+		// $this->deprecationWarning( $context, $context->getNamespaces(), $namespace );
+		$context->setNamespaces( $namespace !== null ? [ $namespace ] : $namespace );
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
 		return [ $prefixQuery, false ];
 	}

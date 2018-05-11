@@ -250,6 +250,7 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider provideBadPrefixQueries()
 	 */
 	public function testDeprecationWarning( $query, $namespace, $hasWarning ) {
+		$this->markTestSkipped( "Not activated yet" );
 		$context = new SearchContext( new HashSearchConfig( [] ), $namespace );
 		$feature = new PrefixFeature();
 		$feature->apply( $context, $query );

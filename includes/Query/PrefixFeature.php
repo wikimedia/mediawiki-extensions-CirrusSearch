@@ -28,6 +28,8 @@ use Wikimedia\Assert\Assert;
  *   prefix:"California Cou"
  */
 class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+	/** @var string name of the keyword used in the syntax */
+	const KEYWORD = 'prefix';
 
 	/**
 	 * @return bool
@@ -40,7 +42,7 @@ class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return [ "prefix" ];
+		return [ self::KEYWORD ];
 	}
 
 	/**

@@ -468,7 +468,7 @@ class CirrusSearch extends SearchEngine {
 	public function transformSearchTerm( $term ) {
 		if ( $this->prefix != '' ) {
 			// Slap the standard prefix notation onto the query
-			$term = $term . ' prefix:' . $this->prefix;
+			$term = $term . ' ' . \CirrusSearch\Query\PrefixFeature::KEYWORD . ':' . $this->prefix;
 		}
 		return $term;
 	}

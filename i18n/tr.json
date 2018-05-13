@@ -9,7 +9,8 @@
 			"Sayginer",
 			"JackUKElliott",
 			"HakanIST",
-			"Rapsar"
+			"Rapsar",
+			"Diyapazon"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
@@ -41,5 +42,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Ön ek araması",
 	"cirrussearch-pref-completion-legacy-section-legend": "Yazdıkça, eski aramalardan öneriler sunma algoritmasıdır.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasik ön ek araması",
-	"cirrussearch-completion-profile-classic-pref-desc": "Yazım düzeltmesi yapılmaz. Sayfa adının başından itibaren eşleşen sonuçlar gösterilir."
+	"cirrussearch-completion-profile-classic-pref-desc": "Yazım düzeltmesi yapılmaz. Sayfa adının başından itibaren eşleşen sonuçlar gösterilir.",
+	"cirrussearch-article-words": "Tüm içerik sayfalarındaki kelimeler"
 }

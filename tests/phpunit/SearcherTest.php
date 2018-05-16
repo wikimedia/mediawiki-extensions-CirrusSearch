@@ -279,6 +279,16 @@ class SearcherTest extends CirrusTestCase {
 			$this->assertEquals( $expected, $decodedQuery, $elasticQuery );
 		}
 	}
+
+	public function testImpossibleQueryResults() {
+		$engine = new \CirrusSearch();
+		// query is invalid, filesize:> needs an integer
+		$status = $engine->searchText( 'filesize:>q' );
+		$this->assertTrue( $status->isOK(), 'search didnt fail' );
+		$this->assertFalse( $status->isGood(), 'but it has warnings' );
+		$this->assertTrue( $status->getValue()->searchContainedSyntax(), 'it used special syntax' );
+		$this->assertEquals( 0, $status->getValue()->numRows(), 'and returned no results' );
+	}
 }
 
 class SearchConfigUsageDecorator extends SearchConfig {

@@ -24,9 +24,15 @@ use SearchResultSet;
  */
 class EmptyResultSet extends ResultSet {
 	/**
-	 * Override parent constructor with empty one
+	 * @param bool $containedSyntax Did the search use special syntax?
 	 */
-	public function __construct() {
+	public function __construct( $containedSyntax = false ) {
+		// Skip our direct parent constructor and go straight
+		// to grandparent. The parent constructor sources a
+		// bunch of info from an elasticsearch result set that
+		// we don't have available.
+		/** @suppress PhanUndeclaredStaticMethod this is an allowed way to call parent class */
+		SearchResultSet::__construct( $containedSyntax );
 	}
 
 	/**
@@ -106,14 +112,6 @@ class EmptyResultSet extends ResultSet {
 	 * @return bool
 	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function searchContainedSyntax() {
-		// actually unknown, but close enough
 		return false;
 	}
 

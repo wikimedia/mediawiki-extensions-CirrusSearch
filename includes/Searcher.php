@@ -7,12 +7,13 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
-use CirrusSearch\Search\SearchRequestBuilder;
-use CirrusSearch\Search\TitleResultsType;
+use CirrusSearch\Search\EmptyResultSet;
 use CirrusSearch\Search\ResultsType;
-use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Search\ResultSet;
+use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
+use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use Elastica\Exception\RuntimeException;
 use Elastica\Multi\Search as MultiSearch;
@@ -24,7 +25,6 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use ObjectCache;
 use RequestContext;
-use SearchResultSet;
 use Status;
 use User;
 use WebRequest;
@@ -319,11 +319,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$searches[] = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
-			$status = Status::newGood( new SearchResultSet( true ) );
-			foreach ( $this->searchContext->getWarnings() as $warning ) {
-				call_user_func_array( [ $status, 'warning' ], $warning );
-			}
-			return $status;
+			return $this->emptyResultSet();
 		}
 
 		if ( $interleaveSearcher !== null ) {
@@ -487,11 +483,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$search = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
-			$status = Status::newGood( new SearchResultSet( true ) );
-			foreach ( $this->searchContext->getWarnings() as $warning ) {
-				call_user_func_array( [ $status, 'warning' ], $warning );
-			}
-			return $status;
+			return $this->emptyResultSet();
 		}
 
 		$result = $this->searchMulti( [ $search ] );
@@ -997,5 +989,13 @@ class Searcher extends ElasticsearchIntermediary {
 		$other->searchContext = $other->searchContext->withConfig( $config );
 
 		return $other;
+	}
+
+	private function emptyResultSet() {
+		$status = Status::newGood( new EmptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
+		foreach ( $this->searchContext->getWarnings() as $warning ) {
+			call_user_func_array( [ $status, 'warning' ], $warning );
+		}
+		return $status;
 	}
 }

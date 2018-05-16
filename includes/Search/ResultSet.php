@@ -52,11 +52,6 @@ class ResultSet extends SearchResultSet {
 	private $suggestionSnippet;
 
 	/**
-	 * @var bool
-	 */
-	private $searchContainedSyntax;
-
-	/**
 	 * @var array
 	 */
 	private $interwikiResults = [];
@@ -78,8 +73,8 @@ class ResultSet extends SearchResultSet {
 	 * @param bool $searchContainedSyntax
 	 */
 	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax ) {
+		parent::__construct( $searchContainedSyntax );
 		$this->result = $res;
-		$this->searchContainedSyntax = $searchContainedSyntax;
 		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->preCacheContainedTitles( $this->result );
@@ -118,7 +113,6 @@ class ResultSet extends SearchResultSet {
 		$other->totalHits = $this->totalHits;
 		$other->suggestionQuery = $this->suggestionQuery;
 		$other->suggestionSnippet = $this->suggestionSnippet;
-		$other->searchContainedSyntax = $this->searchContainedSyntax;
 		$other->interwikiResults = $this->interwikiResults;
 		$other->rewrittenQuery = $this->rewrittenQuery;
 		$other->rewrittenQuerySnippet = $this->rewrittenQuerySnippet;
@@ -302,13 +296,6 @@ class ResultSet extends SearchResultSet {
 	 */
 	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
 		return isset( $this->interwikiResults[$type] );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function searchContainedSyntax() {
-		return $this->searchContainedSyntax;
 	}
 
 	/**

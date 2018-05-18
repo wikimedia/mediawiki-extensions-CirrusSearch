@@ -76,6 +76,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 	 * @param string $prof profile name
 	 * @param string $value selected profile name
 	 * @return string html
+	 * @suppress SecurityCheck-DoubleEscaped Issue with OOUI, see T193837 for more information
 	 */
 	private function addCompSuggestOption( $prof, $value ) {
 		if ( $this->mParent instanceof OOUIHTMLForm ) {

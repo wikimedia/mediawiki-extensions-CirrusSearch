@@ -101,21 +101,30 @@ class SearchRequestBuilder {
 		foreach ( $this->searchContext->getSyntaxUsed() as $syntax ) {
 			$query->addParam( 'stats', $syntax );
 		}
+
+		// See also CirrusSearch::getValidSorts()
 		switch ( $this->sort ) {
 			case 'just_match':
 				// Use just matching scores, without any rescoring, and default sort.
 				break;
 			case 'relevance':
+				// Add some rescores to improve relevance
 				$rescores = $this->searchContext->getRescore();
 				if ( $rescores !== [] ) {
 					$query->setParam( 'rescore', $rescores );
 				}
 				break;  // The default
-			case 'title_asc':
-				$query->setSort( [ 'title.keyword' => 'asc' ] );
+			case 'create_timestamp_asc':
+				$query->setSort( [ 'create_timestamp' => 'asc' ] );
 				break;
-			case 'title_desc':
-				$query->setSort( [ 'title.keyword' => 'desc' ] );
+			case 'create_timestamp_desc':
+				$query->setSort( [ 'create_timestamp' => 'desc' ] );
+				break;
+			case 'last_edit_asc':
+				$query->setSort( [ 'timestamp' => 'asc' ] );
+				break;
+			case 'last_edit_desc':
+				$query->setSort( [ 'timestamp' => 'desc' ] );
 				break;
 			case 'incoming_links_asc':
 				$query->setSort( [ 'incoming_links' => [
@@ -130,9 +139,11 @@ class SearchRequestBuilder {
 				] ] );
 				break;
 			case 'none':
+				// Return documents in index order
 				$query->setSort( [ '_doc' ] );
 				break;
 			default:
+				// Same as just_match.
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Invalid sort type: {sort}",
 					[ 'sort' => $this->sort ]

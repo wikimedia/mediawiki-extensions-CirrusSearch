@@ -492,7 +492,13 @@ class CirrusSearch extends SearchEngine {
 	 * @return string[]
 	 */
 	public function getValidSorts() {
-		return [ 'relevance', 'title_asc', 'title_desc' ];
+		return [
+			'relevance', 'just_match', 'none',
+			'incoming_links_asc', 'incoming_links_desc',
+			'last_edit_asc', 'last_edit_desc',
+			// This should not be exposed until the indices have been populated
+			// 'create_timestamp_asc', 'create_timestamp_desc',
+		];
 	}
 
 	/**

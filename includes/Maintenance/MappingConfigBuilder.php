@@ -130,6 +130,10 @@ class MappingConfigBuilder {
 					'type' => 'date',
 					'format' => 'dateOptionalTime',
 				],
+				'create_timestamp' => [
+					'type' => 'date',
+					'format' => 'dateOptionalTime',
+				],
 				'wiki' => $this->searchIndexFieldFactory
 					->newKeywordField( 'wiki' )
 					->getMapping( $this->engine ),

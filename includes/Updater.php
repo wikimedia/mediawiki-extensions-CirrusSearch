@@ -342,6 +342,7 @@ class Updater extends ElasticsearchIntermediary {
 				'namespace_text' => Util::getNamespaceText( $title ),
 				'title' => $title->getText(),
 				'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
+				'create_timestamp' => wfTimestamp( TS_ISO_8601, $page->getOldestRevision()->getTimestamp() ),
 			] );
 			CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
 			// Everything as sent as an update to prevent overwriting fields maintained in other processes like

@@ -241,16 +241,14 @@ class CheckIndexes extends Maintenance {
 
 	private function ensureCirrusInfoFetched() {
 		if ( $this->cirrusInfo === null ) {
-			$query = new \Elastica\Query();
+			$query = new \Elastica\Query( ( new \Elastica\Query\Term() )
+				->setTerm( 'type', MetaStoreIndex::VERSION_TYPE ) );
 			$query->setSize( 5000 );
-			$res = $this->getConnection()
-				->getIndex( MetaStoreIndex::INDEX_NAME )
-				->getType( 'version' )
-				->search( $query );
+			$res = MetaStoreIndex::getElasticaType( $this->getConnection() )->search( $query );
 			$this->cirrusInfo = [];
 			foreach ( $res as $r ) {
 				$data = $r->getData();
-				$this->cirrusInfo[ $r->getId() ] = [
+				$this->cirrusInfo[ $data['index_name'] ] = [
 					'shard_count' => $data[ 'shard_count' ],
 				];
 			}

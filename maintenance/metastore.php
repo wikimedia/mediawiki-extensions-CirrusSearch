@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Search\Filters;
 use CirrusSearch\SearchConfig;
 use Elastica\JSON;
 
@@ -93,7 +94,7 @@ class Metastore extends Maintenance {
 			$filter = new \Elastica\Query\BoolQuery();
 			$ids = new \Elastica\Query\Ids();
 			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {
-				$ids->addId( $this->getConnection()->getIndexName( $baseName, $type ) );
+				$ids->addId( MetaStoreIndex::versionDocId( $this->getConnection(), $baseName, $type ) );
 			}
 			$filter->addFilter( $ids );
 			$this->showIndexVersions( $filter );
@@ -105,17 +106,23 @@ class Metastore extends Maintenance {
 	/**
 	 * @param array|\Elastica\Query\AbstractQuery|null $filter
 	 */
-	private function showIndexVersions( $filter = null ) {
-		$query = new \Elastica\Query();
-		if ( $filter ) {
-			$query->setQuery( $filter );
+	private function showIndexVersions( $extraFilter = null ) {
+		$filters = [
+			( new \Elastica\Query\Term() )
+				->setTerm( 'type', MetaStoreIndex::VERSION_TYPE )
+		];
+		if ( $extraFilter ) {
+			$filters[] = $extraFilter;
 		}
+
+		$query = new \Elastica\Query();
+		$query->setQuery( Filters::unify( $filters, [] ) );
 		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
 		$query->setSize( 5000 );
-		$res = $this->metaStore->versionType()->search( $query );
+		$res = $this->metaStore->elasticaType()->search( $query );
 		foreach ( $res as $r ) {
 			$data = $r->getData();
-			$this->outputIndented( "index name: " . $r->getId() . "\n" );
+			$this->outputIndented( "index name: " . $data['index_name'] . "\n" );
 			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
 			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
 			if ( isset( $data['mediawiki_version'] ) ) {

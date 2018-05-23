@@ -4,7 +4,6 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Job\CheckerJob;
-
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
 
@@ -122,7 +121,7 @@ class SaneitizeJobs extends Maintenance {
 			$this->fatalError( "Unknown job $jobName\n" );
 		}
 		foreach ( $this->metaStores as $cluster => $store ) {
-			$store->sanitizeType()->deleteDocument( $jobInfo );
+			$store->elasticaType()->deleteDocument( $jobInfo );
 			$this->log( "Deleted job $jobName from $cluster.\n" );
 		}
 	}
@@ -334,7 +333,7 @@ EOD
 			if ( !$this->getSearchConfig()->clusterExists( $cluster ) ) {
 				$this->fatalError( "Unknown cluster $cluster\n" );
 			}
-			if ( $this->getSearchConfig()->canWriteToCluster( $cluster ) ) {
+			if ( !$this->getSearchConfig()->canWriteToCluster( $cluster ) ) {
 				$this->fatalError( "$cluster is not writable\n" );
 			}
 			$connections[$cluster] = Connection::getPool( $this->getSearchConfig(), $cluster );
@@ -352,8 +351,8 @@ EOD
 				$this->fatalError( "No metastore found in cluster $cluster" );
 			}
 			$store = new MetaStoreIndex( $connection, $this );
-			if ( !$store->versionIsAtLeast( [ 0, 2 ] ) ) {
-				$this->fatalError( 'Metastore version is too old, expected at least 0.2' );
+			if ( !$store->versionIsAtLeast( [ 1, 0 ] ) ) {
+				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
 			}
 			$this->metaStores[$cluster] = $store;
 		}
@@ -372,7 +371,7 @@ EOD
 			$current = null;
 			try {
 				// Try to fetch the JobInfo from one of the metastore
-				$current = $metastore->sanitizeType()->getDocument(
+				$current = $metastore->elasticaType()->getDocument(
 					$this->jobId( $jobName )
 				);
 				$this->checkJobClusterMismatch( $current );
@@ -407,7 +406,7 @@ EOD
 		/** @suppress PhanTypeMismatchArgument this method is improperly annotated */
 		$jobInfo->setVersionType( 'external' );
 		foreach ( $this->metaStores as $store ) {
-			$store->sanitizeType()->addDocument( $jobInfo );
+			$store->elasticaType()->addDocument( $jobInfo );
 		}
 	}
 
@@ -421,7 +420,9 @@ EOD
 		$job = new \Elastica\Document(
 			$this->jobId( $jobName ),
 			[
-				'sanitize_job_wiki' => wfWikiID(),
+				'type' => MetaStoreIndex::SANITIZE_TYPE,
+				'wiki' => wfWikiID(),
+				'sanitize_job_wiki' => wfWikiID(), // Deprecated, use common wiki field
 				'sanitize_job_created' => time(),
 				'sanitize_job_updated' => time(),
 				'sanitize_job_last_loop' => null,
@@ -434,7 +435,7 @@ EOD
 			]
 		);
 		foreach ( $this->metaStores as $store ) {
-			$store->sanitizeType()->addDocument( $job );
+			$store->elasticaType()->addDocument( $job );
 		}
 		return $job;
 	}

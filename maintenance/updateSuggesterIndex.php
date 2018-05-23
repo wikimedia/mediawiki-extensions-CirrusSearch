@@ -381,8 +381,10 @@ class UpdateSuggesterIndex extends Maintenance {
 			\CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
-			$versionDoc = MetaStoreIndex::getVersionType( $this->getConnection() )
-				->getDocument( $this->getIndexTypeName() );
+			$indexDocId = MetaStoreIndex::versionDocId(
+				$this->getConnection(), $this->indexBaseName, $this->indexTypeName );
+			$versionDoc = MetaStoreIndex::getElasticaType( $this->getConnection() )
+				->getDocument( $indexDocId );
 		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;

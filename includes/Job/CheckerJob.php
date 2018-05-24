@@ -3,7 +3,6 @@
 namespace CirrusSearch\Job;
 
 use ArrayObject;
-use CirrusSearch\Maintenance\MetaStoreIndex;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Searcher;
 use CirrusSearch\Sanity\Checker;
@@ -148,13 +147,6 @@ class CheckerJob extends Job {
 				]
 			);
 			return false;
-		}
-
-		if ( !MetaStoreIndex::versionIsAtLeast( [ 1, 0 ] ) ) {
-			// Likely in a short transition between deploying new metastore
-			// and upgrading the index. Retry the job in a little bit.
-			$this->retry( "metastore version too low", $from );
-			return true;
 		}
 
 		$connections = $this->decideClusters();

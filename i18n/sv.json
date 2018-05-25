@@ -76,6 +76,9 @@
 	"cirrusesarch-file-numeric-feature-multi-argument-w-sign": "Söktermen \"$1\" tillåter inte flera argument  och ett tecken med \"$2\".",
 	"cirrussearch-feature-not-available": "Sökningsnyckelordet \"$1\" är inte aktiverat på denna wiki.",
 	"cirrussearch-feature-too-many-conditions": "För många villkor tillhandahålls till \"$1\", kortas av till $2.",
+	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint bör ändras till en giltig SPARQL-endpoint för att använda djup kategorisökning.",
+	"cirrussearch-feature-deepcat-exception": "Djup kategorisökning med SPARQL-fråga misslyckades",
+	"cirrussearch-feature-deepcat-toomany": "Frågan för djup kategori returnerade för många svar",
 	"cirrussearch-incategory-feature-no-valid-categories": "Inga giltiga kategorier tillhandahölls i \"$1\".",
 	"cirrussearch-mlt-feature-no-valid-titles": "Inga giltiga titlar tillhandahölls för \"$1\".",
 	"cirrussearch-mlt-not-configured": "Funktionen \"$1\" är felkonfigurerad. Be en administratör att åtgärda $wgCirrusSearchMoreLikeThisFields",
@@ -85,5 +88,6 @@
 	"cirrussearch-explore-similar-related-none": "Inga relaterade sidor tillgängliga",
 	"cirrussearch-explore-similar-categories-none": "Inga kategorier tillgängliga",
 	"cirrussearch-explore-similar-languages-none": "Inte tillgänglig på andra språk",
-	"cirrussearch-article-words": "Ord i alla innehållssidor"
+	"cirrussearch-article-words": "Ord i alla innehållssidor",
+	"cirrussearch-keyword-prefix-ns-mismatch": "Namnrymden som hittas i söktermen <code>prefix:</code> är inte kompatibel med den begärda namnrymden. Du kan åtgärda detta genom att lägga till <code>all:</code> som ett prefix i din fråga."
 }

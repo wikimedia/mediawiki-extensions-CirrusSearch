@@ -69,7 +69,7 @@ class CirrusSearchIndexFieldFactory {
 	/**
 	 * Build a string field that does standard analysis for the language.
 	 * @param string $fieldName the field name
-	 * @param int $options Field options:
+	 * @param int|null $options Field options:
 	 *   ENABLE_NORMS: Enable norms on the field.  Good for text you search against but bad for array fields and useless
 	 *     for fields that don't get involved in the score.
 	 *   COPY_TO_SUGGEST: Copy the contents of this field to the suggest field for "Did you mean".

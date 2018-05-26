@@ -44,7 +44,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 	 * @param Validator[] $reindexValidators
 	 * @param bool $reindexAndRemoveOk
 	 * @param bool $tooFewReplicas
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct(
 		Client $client,

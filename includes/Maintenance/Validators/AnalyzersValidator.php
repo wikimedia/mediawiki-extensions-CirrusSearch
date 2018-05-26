@@ -22,7 +22,7 @@ class AnalyzersValidator extends Validator {
 	/**
 	 * @param Index $index
 	 * @param AnalysisConfigBuilder $analysisConfigBuilder
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct( Index $index, AnalysisConfigBuilder $analysisConfigBuilder, Maintenance $out = null ) {
 		parent::__construct( $out );

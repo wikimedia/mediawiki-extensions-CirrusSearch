@@ -17,7 +17,7 @@ class IndexAllAliasValidator extends IndexAliasValidator {
 	 * @param string $specificIndexName
 	 * @param bool $startOver
 	 * @param string $type
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct( Client $client, $aliasName, $specificIndexName, $startOver, $type, Maintenance $out = null ) {
 		parent::__construct( $client, $aliasName, $specificIndexName, $startOver, $out );

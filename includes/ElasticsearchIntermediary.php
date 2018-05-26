@@ -152,7 +152,7 @@ abstract class ElasticsearchIntermediary {
 	 * Status.  If you don't need the status just ignore the return.  Public so
 	 * it can be called from pool counter methods.
 	 *
-	 * @param mixed $result result of the request.  defaults to null in case
+	 * @param mixed|null $result result of the request.  defaults to null in case
 	 *  the request doesn't have a result
 	 * @return Status wrapping $result
 	 */

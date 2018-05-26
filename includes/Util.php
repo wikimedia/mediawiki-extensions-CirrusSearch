@@ -255,7 +255,7 @@ class Util {
 
 	/**
 	 * Get boost templates configured in messages.
-	 * @param SearchConfig $config Search config requesting the templates
+	 * @param SearchConfig|null $config Search config requesting the templates
 	 * @return \float[]
 	 */
 	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {

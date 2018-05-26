@@ -36,7 +36,7 @@ class SuggesterMappingConfigBuilder {
 	private $config;
 
 	/**
-	 * @param SearchConfig $config
+	 * @param SearchConfig|null $config
 	 */
 	public function __construct( SearchConfig $config = null ) {
 		if ( is_null( $config ) ) {

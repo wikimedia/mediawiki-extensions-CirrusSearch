@@ -107,7 +107,7 @@ abstract class Validator {
 
 	/**
 	 * @param string $message
-	 * @param mixed $channel
+	 * @param mixed|null $channel
 	 */
 	protected function output( $message, $channel = null ) {
 		if ( $this->maint ) {

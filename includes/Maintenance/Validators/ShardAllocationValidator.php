@@ -20,7 +20,7 @@ class ShardAllocationValidator extends Validator {
 	/**
 	 * @param Index $index
 	 * @param array $indexAllocation
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct( Index $index, array $indexAllocation, Maintenance $out = null ) {
 		parent::__construct( $out );

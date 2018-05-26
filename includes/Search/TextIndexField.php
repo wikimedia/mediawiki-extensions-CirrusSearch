@@ -237,7 +237,7 @@ class TextIndexField extends CirrusIndexField {
 	 * Get the field similarity
 	 * @param SearchConfig $config
 	 * @param string $field
-	 * @param string $analyzer
+	 * @param string|null $analyzer
 	 * @return string
 	 */
 	public static function getSimilarity( SearchConfig $config, $field, $analyzer = null ) {

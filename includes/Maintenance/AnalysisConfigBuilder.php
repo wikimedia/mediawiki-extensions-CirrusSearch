@@ -67,7 +67,7 @@ class AnalysisConfigBuilder {
 	/**
 	 * @param string $langCode The language code to build config for
 	 * @param string[] $plugins list of plugins installed in Elasticsearch
-	 * @param SearchConfig $config
+	 * @param SearchConfig|null $config
 	 */
 	public function __construct( $langCode, array $plugins, SearchConfig $config = null ) {
 		$this->defaultLanguage = $langCode;
@@ -156,7 +156,7 @@ class AnalysisConfigBuilder {
 	/**
 	 * Build the analysis config.
 	 *
-	 * @param string $language Config language
+	 * @param string|null $language Config language
 	 * @return array the analysis config
 	 */
 	public function buildConfig( $language = null ) {

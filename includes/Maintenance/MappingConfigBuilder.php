@@ -65,7 +65,7 @@ class MappingConfigBuilder {
 
 	/**
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
-	 * @param SearchConfig $config
+	 * @param SearchConfig|null $config
 	 */
 	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;

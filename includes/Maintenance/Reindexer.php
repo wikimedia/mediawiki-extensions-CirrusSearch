@@ -107,7 +107,7 @@ class Reindexer {
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param array $mergeSettings
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 * @param string[] $fieldsToDelete
 	 * @throws \Exception
 	 */
@@ -348,7 +348,7 @@ class Reindexer {
 
 	/**
 	 * @param string $message
-	 * @param mixed $channel
+	 * @param mixed|null $channel
 	 */
 	protected function output( $message, $channel = null ) {
 		if ( $this->out ) {

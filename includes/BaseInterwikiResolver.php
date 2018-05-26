@@ -37,7 +37,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 
 	/**
 	 * @param SearchConfig $config
-	 * @param \MultiHttpClient $client http client to fetch cirrus config
+	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
 	 */
 	public function __construct( SearchConfig $config, MultiHttpClient $client = null ) {
 		$this->config = $config;

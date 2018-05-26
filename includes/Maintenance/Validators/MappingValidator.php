@@ -52,7 +52,7 @@ class MappingValidator extends Validator {
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
 	 * @param Type[] $types Array with type names as key & type object as value
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct(
 		Index $index,

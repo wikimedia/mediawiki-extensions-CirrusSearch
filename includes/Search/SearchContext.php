@@ -458,7 +458,7 @@ class SearchContext implements WarningCollector {
 
 	/**
 	 * @param string $feature Name of a syntax feature used in the query string
-	 * @param int $weight How "complex" is this feature.
+	 * @param int|null $weight How "complex" is this feature.
 	 */
 	public function addSyntaxUsed( $feature, $weight = null ) {
 		$this->isDirty = true;
@@ -533,7 +533,7 @@ class SearchContext implements WarningCollector {
 	}
 
 	/**
-	 * @param AbstractQuery $query Query that should be used for highlighting if different
+	 * @param AbstractQuery|null $query Query that should be used for highlighting if different
 	 *  from the query used for selecting.
 	 */
 	public function setHighlightQuery( AbstractQuery $query = null ) {

@@ -238,7 +238,7 @@ class Updater extends ElasticsearchIntermediary {
 	 *      maintenance is skipped.
 	 * @param int[]|string[] $docIds List of elasticsearch document ids to delete
 	 * @param string|null $indexType index from which to delete.  null means all.
-	 * @param string $elasticType Mapping type to use for the document
+	 * @param string|null $elasticType Mapping type to use for the document
 	 * @return bool Always returns true.
 	 */
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {

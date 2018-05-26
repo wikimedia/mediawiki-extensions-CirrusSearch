@@ -26,7 +26,7 @@ class MaxShardsPerNodeValidator extends Validator {
 	 * @param Index $index
 	 * @param string $indexType
 	 * @param int|string $maxShardsPerNode
-	 * @param Maintenance $out
+	 * @param Maintenance|null $out
 	 */
 	public function __construct( Index $index, $indexType, $maxShardsPerNode, Maintenance $out = null ) {
 		parent::__construct( $out );

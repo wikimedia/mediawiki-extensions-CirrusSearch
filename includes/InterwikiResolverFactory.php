@@ -25,7 +25,7 @@ class InterwikiResolverFactory {
 	 * Fallback to EmptyInterwikiResolver.
 	 *
 	 * @param SearchConfig $config
-	 * @param \MultiHttpClient $client http client to fetch cirrus config
+	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
 	 * @return InterwikiResolver
 	 * @see CirrusSearchInterwikiResolverFactory::accepts()
 	 * @see SiteMatrixInterwikiResolver::accepts()

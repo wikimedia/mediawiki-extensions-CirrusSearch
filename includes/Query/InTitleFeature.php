@@ -2,9 +2,12 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Applies a filter against the title field in elasticsearch. When not negated
@@ -23,7 +26,7 @@ use CirrusSearch\SearchConfig;
  *   intitle:"foo*"
  *   intitle:"foo OR bar"
  */
-class InTitleFeature extends BaseRegexFeature implements LegacyKeywordFeature {
+class InTitleFeature extends BaseRegexFeature {
 
 	public function __construct( SearchConfig $config ) {
 		parent::__construct( $config, [ 'title', 'redirect.title' ] );
@@ -51,5 +54,14 @@ class InTitleFeature extends BaseRegexFeature implements LegacyKeywordFeature {
 		$filter = Filters::intitle( $context->escaper(), $quotedValue );
 
 		return [ $filter, !$negated ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return Filters::intitle( $this->escaper, $node->getQuotedValue() );
 	}
 }

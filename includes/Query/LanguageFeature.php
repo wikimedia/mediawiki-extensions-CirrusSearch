@@ -4,9 +4,11 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Filters the result set based on pages labeled with the provided language.
@@ -17,7 +19,7 @@ use CirrusSearch\WarningCollector;
  *   inlanguage:en
  *   inlanguage:fr,en
  */
-class LanguageFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class LanguageFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * Limit search to 20 languages. Arbitrarily chosen, but should be more
 	 * than enough and some sort of limit has to be enforced.
@@ -51,17 +53,8 @@ class LanguageFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$queries = [];
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		foreach ( $parsedValue['langs'] as $lang ) {
-			if ( strlen( trim( $lang ) ) > 0 ) {
-				$query = new \Elastica\Query\Match();
-				$query->setFieldQuery( 'language', $lang );
-				$queries[] = $query;
-			}
-		}
-
-		return [ Filters::booleanOr( $queries, false ), false ];
+		return [ $this->doGetFilterQuery( $parsedValue ), false ];
 	}
 
 	/**
@@ -84,5 +77,32 @@ class LanguageFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 			$langs = array_slice( $langs, 0, self::QUERY_LIMIT );
 		}
 		return [ 'langs' => $langs ];
+	}
+
+	/**
+	 * @param $parsedValue
+	 * @return \Elastica\Query\AbstractQuery|\Elastica\Query\Match|null
+	 */
+	private function doGetFilterQuery( $parsedValue ) {
+		$queries = [];
+		foreach ( $parsedValue['langs'] as $lang ) {
+			if ( strlen( trim( $lang ) ) > 0 ) {
+				$query = new \Elastica\Query\Match();
+				$query->setFieldQuery( 'language', $lang );
+				$queries[] = $query;
+			}
+		}
+		$query = Filters::booleanOr( $queries, false );
+
+		return $query;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetFilterQuery( $node->getParsedValue() );
 	}
 }

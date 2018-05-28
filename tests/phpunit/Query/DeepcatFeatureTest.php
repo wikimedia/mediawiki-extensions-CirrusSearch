@@ -24,7 +24,8 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 		 */
 		$client = $this->getMockBuilder( SparqlClient::class )
 			->disableOriginalConstructor()->getMock();
-		$client->expects( $this->atMost( 1 ) )->method( 'query' )->willReturnCallback(
+		// 2 calls we still test old and new parsing behaviors
+		$client->expects( $this->atMost( 2 ) )->method( 'query' )->willReturnCallback(
 			function ( $sparql ) use ( $expectInQuery, $result ) {
 				foreach ( $expectInQuery as $expect ) {
 					$this->assertContains( $expect, $sparql );
@@ -237,7 +238,10 @@ class DeepcatFeatureTest extends BaseSimpleKeywordFeatureTest {
 		] );
 		$client = $this->getMockBuilder( SparqlClient::class )
 			->disableOriginalConstructor()->getMock();
-		$client->expects( $this->exactly( 2 ) )->method( 'query' )->willReturnCallback(
+		// 3 runs:
+		// 1: for asserting expandData
+		// 2: for asserting old & new parsing techniques
+		$client->expects( $this->exactly( 3 ) )->method( 'query' )->willReturnCallback(
 			function () {
 				throw new SparqlException( "Bad SPARQL error!" );
 			}

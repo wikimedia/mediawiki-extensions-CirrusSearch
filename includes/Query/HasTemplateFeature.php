@@ -4,8 +4,10 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
+use Elastica\Query\AbstractQuery;
 use Title;
 
 /**
@@ -13,7 +15,7 @@ use Title;
  * are prefixed with ":" and things in NS_TEMPATE don't have a prefix at all.
  * Since we don't actually index templates like that, munge the query here.
  */
-class HasTemplateFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -64,5 +66,14 @@ class HasTemplateFeature extends SimpleKeywordFeature implements LegacyKeywordFe
 	 */
 	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
 		return CrossSearchStrategy::allWikisStrategy();
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return QueryHelper::matchPage( 'template', $node->getParsedValue()['value'] );
 	}
 }

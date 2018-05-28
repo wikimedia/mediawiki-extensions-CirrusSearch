@@ -5,9 +5,12 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Wikimedia\Assert\Assert;
 
@@ -20,7 +23,7 @@ use Wikimedia\Assert\Assert;
  * Examples:
  *   insource:/abc?/
  */
-abstract class BaseRegexFeature extends SimpleKeywordFeature {
+abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @var string[] Elasticsearch field(s) to search against
 	 */
@@ -57,6 +60,11 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 	private $shardTimeout;
 
 	/**
+	 * @var Escaper
+	 */
+	protected $escaper;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param string[] $fields
 	 */
@@ -68,6 +76,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 		Assert::precondition( count( $fields ) > 0, 'must have at least one field' );
 		$this->fields = $fields;
 		$this->shardTimeout = $config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
+		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
 	/**
@@ -86,6 +95,22 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 				'suffixes' => 'i'
 			]
 		];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
+	 */
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		if ( $valueDelimiter === '/' && !$this->enabled ) {
+			$warningCollector->addWarning( 'cirrussearch-feature-not-available', "$key regex" );
+		}
+		return parent::parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, $warningCollector );
 	}
 
 	/**
@@ -143,6 +168,27 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature {
 			return $this->doApply( $context, $key, $value, $quotedValue, $negated );
 		}
 	}
+
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		if ( $node->getDelimiter() === '/' ) {
+			if ( !$this->enabled ) {
+				return null;
+			}
+
+			$pattern = trim( $node->getQuotedValue(), '/' );
+			$insensitive = $node->getSuffix() === 'i';
+			return $this->buildRegexQuery( $pattern, $insensitive );
+		} else {
+			return $this->getNonRegexFilterQuery( $node, $context );
+		}
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	abstract public function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context );
 
 	/**
 	 * @param $pattern

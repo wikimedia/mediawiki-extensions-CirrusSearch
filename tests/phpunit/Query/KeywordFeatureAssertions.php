@@ -55,9 +55,10 @@ class KeywordFeatureAssertions {
 	 * @param bool $negated
 	 * @return SearchContext
 	 */
-	private function mockContextExpectingAddFilter( $expectedQuery = null, array $warnings = null, $negated = false ) {
+	private function mockContextExpectingAddFilter( $expectedQuery = null, $negated = false, SearchConfig $config ) {
 		$context = $this->mockContext();
 
+		$context->method( 'getConfig' )->willReturn( $config );
 		if ( $expectedQuery === null ) {
 			$context->expects( $this->testCase->never() )
 				->method( 'addFilter' );
@@ -80,13 +81,16 @@ class KeywordFeatureAssertions {
 				->method( $negated ? 'addNotFilter' : 'addFilter' )
 				->with( $this->testCase->callback( $filterCallback ) );
 		}
-		if ( $warnings !== null ) {
-			$context->expects( $this->testCase->any() )
-				->method( 'addWarning' )
-				->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
-					$warnings[] = array_filter( func_get_args() );
-				} ) );
-		}
+		$warnings = [];
+		$context->method( 'addWarning' )
+			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+				$warnings[] = array_filter( func_get_args() );
+			} ) );
+
+		$context->method( 'getWarnings' )
+			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+				return $warnings;
+			} ) );
 
 		return $context;
 	}
@@ -96,7 +100,7 @@ class KeywordFeatureAssertions {
 	 * @param array|null $warnings
 	 * @return SearchContext
 	 */
-	private function mockContextExpectingBoost( $expectedBoost = null, array $warnings = null, SearchConfig $config = null ) {
+	private function mockContextExpectingBoost( $expectedBoost = null, SearchConfig $config = null ) {
 		$context = $this->mockContext( $config );
 
 		if ( $expectedBoost === null ) {
@@ -116,13 +120,15 @@ class KeywordFeatureAssertions {
 				->method( 'addCustomRescoreComponent' )
 				->with( $this->testCase->callback( $boostCallback ) );
 		}
-		if ( $warnings !== null ) {
-			$context->expects( $this->testCase->any() )
-				->method( 'addWarning' )
-				->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
-					$warnings[] = array_filter( func_get_args() );
-				} ) );
-		}
+		$warnings = [];
+
+		$context->method( 'addWarning' )
+			->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+				$warnings[] = array_filter( func_get_args() );
+			} ) );
+
+		$context->method( 'getWarnings' )
+			->willReturn( $warnings );
 
 		return $context;
 	}
@@ -161,12 +167,7 @@ class KeywordFeatureAssertions {
 			$this->testCase->assertEquals( $node->getParsedValue(), $expected );
 		}
 		if ( $expectedWarnings !== null ) {
-			$actualWarnings = array_map(
-				function ( ParseWarning $warning ) {
-					return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
-				},
-				$parser->getWarnings()
-			);
+			$actualWarnings = $this->extractWarnings( $parser );
 			$this->testCase->assertEquals( $expectedWarnings, $actualWarnings );
 		}
 	}
@@ -187,12 +188,7 @@ class KeywordFeatureAssertions {
 		$this->testCase->assertEquals( $expected, $feature->expand( $node, $config, $parser ) );
 		if ( $expectedWarnings !== null ) {
 			// Use KeywordParser as a WarningCollector
-			$actualWarnings = array_map(
-				function ( ParseWarning $warning ) {
-					return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
-				},
-				$parser->getWarnings()
-			);
+			$actualWarnings = $this->extractWarnings( $parser );
 			$this->testCase->assertEquals( $expectedWarnings, $actualWarnings );
 		}
 	}
@@ -218,13 +214,59 @@ class KeywordFeatureAssertions {
 	 * @param string $term
 	 * @param array|callable|null $filter
 	 * @param array|null $warnings
+	 * @param SearchConfig|null $config
 	 */
-	public function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null ) {
-		$context = $this->mockContextExpectingAddFilter( $filter, $warnings, $this->isNegated( $feature, $term ) );
+	public function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null, SearchConfig $config = null ) {
+		if ( $config === null ) {
+			$config = new SearchConfig();
+		}
+		$context =
+			$this->mockContextExpectingAddFilter( $filter,
+				$this->isNegated( $feature, $term ), $config );
 		if ( $filter !== null ) {
 			$context->expects( $this->testCase->never() )->method( 'setResultsPossible' );
 		}
 		$feature->apply( $context, $term );
+		if ( $warnings != null ) {
+			$this->testCase->assertEquals( $warnings, $context->getWarnings() );
+		}
+
+		// TODO: remove once all extensions have been migrated
+		if ( !$feature instanceof FilterQueryFeature ) {
+			return;
+		}
+
+		$this->testCase->assertInstanceOf( FilterQueryFeature::class, $feature );
+		/**
+		 * @var FilterQueryFeature $feature
+		 */
+
+		$parser = new KeywordParser();
+		$node = $this->getParsedKeyword( $term, $feature, $parser );
+		$context =
+			$this->mockBuilderContext( $feature->expand( $node, $config, $parser ), $config );
+
+		if ( is_callable( $filter ) ) {
+			$filterCallback = $filter;
+		} else {
+			if ( $filter instanceof AbstractQuery ) {
+				$filter = $filter->toArray();
+			}
+			$filterCallback = function ( $query ) use ( $filter ) {
+				if ( $query === null ) {
+					$this->testCase->assertNull( $filter );
+				} else {
+					$this->testCase->assertInstanceOf( AbstractQuery::class, $query );
+					$this->testCase->assertEquals( $filter, $query->toArray() );
+				}
+
+				return true;
+			};
+		}
+		$this->testCase->assertTrue( $filterCallback( $feature->getFilterQuery( $node, $context ) ) );
+		if ( $warnings !== null ) {
+			$this->testCase->assertEquals( $warnings, $this->extractWarnings( $parser ) );
+		}
 	}
 
 	/**
@@ -241,14 +283,17 @@ class KeywordFeatureAssertions {
 			$config = new SearchConfig();
 		}
 
-		$context = $this->mockContextExpectingBoost( $boostAssertion, $warnings, $config );
+		$context = $this->mockContextExpectingBoost( $boostAssertion, $config );
 		$feature->apply( $context, $term );
+		if ( $warnings != null ) {
+			$this->testCase->assertEquals( $warnings, $context->getWarnings() );
+		}
 
 		$parser = new KeywordParser();
 		$node = $this->getParsedKeyword( $term, $feature, $parser );
 		$data = $feature->expand( $node, $config, $parser );
 		if ( $warnings !== null ) {
-			$this->testCase->assertEquals( $warnings, $parser->getWarnings() );
+			$this->testCase->assertEquals( $warnings, $this->extractWarnings( $parser ) );
 		}
 		$builderContext = $this->mockBuilderContext( $data, $config );
 		/**
@@ -381,5 +426,15 @@ class KeywordFeatureAssertions {
 		$mock->method( 'getSearchConfig' )
 			->willReturn( $config );
 		return $mock;
+	}
+
+	/**
+	 * @param KeywordParser $parser
+	 * @return array
+	 */
+	protected function extractWarnings( $parser ) {
+		return array_map( function ( ParseWarning $warning ) {
+			return array_merge( [ $warning->getMessage() ], $warning->getMessageParams() );
+		}, $parser->getWarnings() );
 	}
 }

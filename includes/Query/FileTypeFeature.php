@@ -4,8 +4,11 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\SearchConfig;
 use Elastica\Query;
+use Elastica\Query\AbstractQuery;
 
 /**
  * File type features:
@@ -13,7 +16,7 @@ use Elastica\Query;
  *  filemime:application/pdf
  * Selects only files of these specified features.
  */
-class FileTypeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -43,8 +46,21 @@ class FileTypeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
+		$query = $this->doGetFilterQuery( $context->getConfig(), $key, $value, $quotedValue );
+
+		return [ $query, false ];
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param string $key
+	 * @param string $value
+	 * @param string $quotedValue
+	 * @return Query\Match|Query\MatchPhrase
+	 */
+	protected function doGetFilterQuery( SearchConfig $config, $key, $value, $quotedValue ) {
 		if ( $key == 'filetype' ) {
-			$aliases = $context->getConfig()->get( 'CirrusSearchFiletypeAliases' );
+			$aliases = $config->get( 'CirrusSearchFiletypeAliases' );
 			if ( is_array( $aliases ) && isset( $aliases[$value] ) ) {
 				$value = $aliases[$value];
 			}
@@ -59,6 +75,16 @@ class FileTypeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 			}
 		}
 
-		return [ $query, false ];
+		return $query;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetFilterQuery( $context->getSearchConfig(), $node->getKey(),
+			$node->getValue(), $node->getQuotedValue() );
 	}
 }

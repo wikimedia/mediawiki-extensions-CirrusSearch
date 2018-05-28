@@ -4,9 +4,11 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query;
+use Elastica\Query\AbstractQuery;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -16,7 +18,7 @@ use Wikimedia\Assert\Assert;
  *  filew:100,300 - search of 100 <= file_width <= 300
  * Selects only files of these specified features.
  */
-class FileNumericFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -66,17 +68,7 @@ class FileNumericFeature extends SimpleKeywordFeature implements LegacyKeywordFe
 			return [ null, false ];
 		}
 
-		$field = $parsedValue['field'];
-		$sign = $parsedValue['sign'];
-		$multiplier = ( $key === 'filesize' ) ? 1024 : 1;
-
-		if ( isset( $parsedValue['range'] ) ) {
-			$query = $this->buildBoundedIntervalQuery( $parsedValue['field'], $parsedValue['range'][0], $parsedValue['range'][1], $multiplier );
-		} elseif ( $sign === 0 ) {
-			$query = $this->buildMatchQuery( $field, $parsedValue['value'], $multiplier );
-		} else {
-			$query = $this->buildIntervalQuery( $field, $sign, $parsedValue['value'], $multiplier );
-		}
+		$query = $this->doGetFilterQuery( $key, $parsedValue );
 		return [ $query, false ];
 	}
 
@@ -208,5 +200,40 @@ class FileNumericFeature extends SimpleKeywordFeature implements LegacyKeywordFe
 		$query = new Query\Match();
 		$query->setFieldQuery( $field, (string)( $value * $multiplier ) );
 		return $query;
+	}
+
+	/**
+	 * @param string $key
+	 * @param array $parsedValue
+	 * @return Query\AbstractQuery
+	 */
+	protected function doGetFilterQuery( $key, $parsedValue ) {
+		$field = $parsedValue['field'];
+		$sign = $parsedValue['sign'];
+		$multiplier = ( $key === 'filesize' ) ? 1024 : 1;
+
+		if ( isset( $parsedValue['range'] ) ) {
+			$query =
+				$this->buildBoundedIntervalQuery( $parsedValue['field'], $parsedValue['range'][0],
+					$parsedValue['range'][1], $multiplier );
+		} elseif ( $sign === 0 ) {
+			$query = $this->buildMatchQuery( $field, $parsedValue['value'], $multiplier );
+		} else {
+			$query = $this->buildIntervalQuery( $field, $sign, $parsedValue['value'], $multiplier );
+		}
+
+		return $query;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		if ( $node->getParsedValue() === null ) {
+			return null;
+		}
+		return $this->doGetFilterQuery( $node->getKey(), $node->getParsedValue() );
 	}
 }

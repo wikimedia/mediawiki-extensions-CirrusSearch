@@ -2,9 +2,12 @@
 
 namespace CirrusSearch\Query;
 
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Handles non-regexp version of insource: keyword.  The value
@@ -25,7 +28,7 @@ use CirrusSearch\SearchConfig;
  *   insource:"foo*"
  *   insource:"foo OR bar"
  */
-class InSourceFeature extends BaseRegexFeature implements LegacyKeywordFeature {
+class InSourceFeature extends BaseRegexFeature {
 
 	/**
 	 * Source field
@@ -60,5 +63,14 @@ class InSourceFeature extends BaseRegexFeature implements LegacyKeywordFeature {
 			$context->addHighlightField( self::FIELD, [ 'query' => $filter ] );
 		}
 		return [ $filter, false ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return Filters::insource( $this->escaper, $node->getQuotedValue() );
 	}
 }

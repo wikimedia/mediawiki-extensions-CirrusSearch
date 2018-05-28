@@ -22,16 +22,27 @@ class LanguageFeatureTest extends BaseSimpleKeywordFeatureTest {
 			'simple' => [
 				'inlanguage:fr',
 				[ 'langs' => [ 'fr' ] ],
+				[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
 				[]
 			],
 			'multiple' => [
 				'inlanguage:fr,en',
 				[ 'langs' => [ 'fr', 'en' ] ],
+				[ 'bool' => [ 'should' => [
+					[ 'match' => [ 'language' => [ 'query' => 'fr' ] ] ],
+					[ 'match' => [ 'language' => [ 'query' => 'en' ] ] ],
+				] ] ],
 				[]
 			],
 			'too many' => [
 				'inlanguage:' . implode( ',', $tooMany ),
 				[ 'langs' => $actualLangs ],
+				[ 'bool' => [ 'should' => array_map(
+					function ( $l ) {
+						return [ 'match' => [ 'language' => [ 'query' => (string)$l ] ] ];
+					},
+					range( 1, LanguageFeature::QUERY_LIMIT )
+				) ] ],
 				[ [ 'cirrussearch-feature-too-many-conditions', 'inlanguage', LanguageFeature::QUERY_LIMIT ] ]
 			],
 		];
@@ -41,13 +52,15 @@ class LanguageFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider provideQueries()
 	 * @param string $term
 	 * @param array $expected
+	 * @param $filter
 	 * @param array $warnings
 	 */
-	public function testTooManyLanguagesWarning( $term, $expected, $warnings ) {
+	public function testTooManyLanguagesWarning( $term, $expected, array $filter, $warnings ) {
 		$feature = new LanguageFeature();
 		$this->assertParsedValue( $feature, $term, $expected, $warnings );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 		$this->assertExpandedData( $feature, $term, [], [] );
 		$this->assertWarnings( $feature, $warnings, $term );
+		$this->assertFilter( $feature, $term, $filter, $warnings );
 	}
 }

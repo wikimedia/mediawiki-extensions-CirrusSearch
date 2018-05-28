@@ -4,15 +4,17 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Content model feature:
  *  contentmodel:wikitext
  * Selects only articles having this content model.
  */
-class ContentModelFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class ContentModelFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -42,8 +44,23 @@ class ContentModelFeature extends SimpleKeywordFeature implements LegacyKeywordF
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$query = new Query\Match( 'content_model', [ 'query' => $value ] );
+		return [ $this->doGetFilterQuery( $value ), false ];
+	}
 
-		return [ $query, false ];
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetFilterQuery( $node->getValue() );
+	}
+
+	/**
+	 * @param $value
+	 * @return Query\Match
+	 */
+	private function doGetFilterQuery( $value ) {
+		return new Query\Match( 'content_model', [ 'query' => $value ] );
 	}
 }

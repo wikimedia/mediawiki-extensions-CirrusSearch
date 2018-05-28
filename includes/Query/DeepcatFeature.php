@@ -3,10 +3,12 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
+use Elastica\Query\AbstractQuery;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Sparql\SparqlClient;
@@ -20,7 +22,7 @@ use Title;
  * Syntax:
  *  deepcat:Vehicles
  */
-class DeepcatFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * Max lookup depth
 	 * @var int
@@ -120,10 +122,7 @@ class DeepcatFeature extends SimpleKeywordFeature implements LegacyKeywordFeatur
 			return [ null, false ];
 		}
 
-		$filter = new \Elastica\Query\BoolQuery();
-		foreach ( $categories as $cat ) {
-			$filter->addShould( QueryHelper::matchPage( 'category.lowercase_keyword', $cat ) );
-		}
+		$filter = $this->doGetFilterQuery( $categories );
 
 		return [ $filter, false ];
 	}
@@ -226,4 +225,29 @@ SPARQL;
 		}, $result );
 	}
 
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		$categories = $context->getKeywordExpandedData( $node );
+		if ( $categories == [] ) {
+			return null;
+		}
+		return $this->doGetFilterQuery( $categories );
+	}
+
+	/**
+	 * @param array $categories
+	 * @return \Elastica\Query\BoolQuery
+	 */
+	protected function doGetFilterQuery( array $categories ) {
+		$filter = new \Elastica\Query\BoolQuery();
+		foreach ( $categories as $cat ) {
+			$filter->addShould( QueryHelper::matchPage( 'category.lowercase_keyword', $cat ) );
+		}
+
+		return $filter;
+	}
 }

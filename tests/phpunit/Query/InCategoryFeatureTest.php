@@ -102,7 +102,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ]
 					]
 				] ],
-				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory' ] ],
+				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory', 2 ] ],
 				'incategory:This|That|Other',
 			],
 			'invalid id: counts towards category limit' => [
@@ -115,7 +115,7 @@ class InCategoryFeatureTest extends BaseSimpleKeywordFeatureTest {
 						] ],
 					]
 				] ],
-				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory' ] ],
+				[ [ 'cirrussearch-feature-too-many-conditions', 'incategory', 2 ] ],
 				'incategory:id:qwerty|Test|Case',
 			],
 		];

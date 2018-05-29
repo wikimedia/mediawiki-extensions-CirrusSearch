@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam-Yourist"
+		]
+	},
+	"cirrussearch-pref-completion-profile-help": "Лехаш дар ши-шегIа Iоязъю (лаха аьнна хьо Iочуязъе волавелча).",
+	"prefs-completion": "Лахара кхыдола оттамаш",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester «Автохьалдизар хьалхадоахар] — вIаши тара дола дешаш лахара алгоритм я.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Юххьанцара хиннача тайпара (дикагIа да)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ши гӀалат нисду. Мегаш дола юхаластараш белгалду.",
+	"cirrussearch-completion-profile-strict-pref-name": "Хила ма дезара Iояздара режим (халагIа да)",
+	"cirrussearch-completion-profile-strict-pref-desc": "ГӀалаташ нийсдец. Юхаластараш белгалъюц. Iояздар нийсса хила деза кораде чам болчунца.",
+	"cirrussearch-completion-profile-normal-pref-name": "Юхаластарий режим (халагIа да)",
+	"cirrussearch-completion-profile-normal-pref-desc": "ГӀалаташ нийсдец. Мегаш дола юхаластараш белгалду.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Дешхьалхенах лахар",
+	"cirrussearch-pref-completion-legacy-section-legend": "Дукха хана денз йола Iочуязъешше хьалахара алгоритм",
+	"cirrussearch-completion-profile-classic-pref-name": "Классикай йола дешхьалхенах лахар",
+	"cirrussearch-completion-profile-classic-pref-desc": "ГӀалаташ нийсдец. Iочуязъешше хьагойт цӀераш.",
+	"cirrussearch-explore-similar-languages": "Метташ"
+}

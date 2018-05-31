@@ -67,9 +67,13 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 * @dataProvider parseProvider
 	 */
 	public function testParse( array $expectedQuery, $expectedTerm, $term ) {
-		$feature = new InTitleFeature( new HashSearchConfig( [] ) );
+		$config = new HashSearchConfig( [
+			'LanguageCode' => 'en',
+			'CirrusSearchAllowLeadingWildcard' => true,
+		] );
+		$feature = new InTitleFeature( $config );
 		$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
-		$this->assertFilter( $feature, $term, $expectedQuery, [] );
+		$this->assertFilter( $feature, $term, $expectedQuery, [], $config );
 
 		$this->assertRemaining( $feature, $term, $expectedTerm );
 	}

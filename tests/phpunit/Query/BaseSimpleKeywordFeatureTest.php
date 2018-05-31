@@ -68,9 +68,10 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param string $term
 	 * @param array|callable|null $filter
 	 * @param array|null $warnings
+	 * @param SearchConfig|null
 	 */
-	protected function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null ) {
-		$this->kwAssertions->assertFilter( $feature, $term, $filter, $warnings );
+	protected function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null, SearchConfig $config = null ) {
+		$this->kwAssertions->assertFilter( $feature, $term, $filter, $warnings, $config );
 	}
 
 	/**

@@ -157,6 +157,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Query\\DeepcatFeature' => __DIR__ . '/includes/Query/DeepcatFeature.php',
 	'CirrusSearch\\Query\\FileNumericFeature' => __DIR__ . '/includes/Query/FileNumericFeature.php',
 	'CirrusSearch\\Query\\FileTypeFeature' => __DIR__ . '/includes/Query/FileTypeFeature.php',
+	'CirrusSearch\\Query\\FilterQueryFeature' => __DIR__ . '/includes/Query/FilterQueryFeature.php',
 	'CirrusSearch\\Query\\FullTextQueryBuilder' => __DIR__ . '/includes/Query/FullTextQueryBuilder.php',
 	'CirrusSearch\\Query\\FullTextQueryStringQueryBuilder' => __DIR__ . '/includes/Query/FullTextQueryStringQueryBuilder.php',
 	'CirrusSearch\\Query\\FullTextSimpleMatchQueryBuilder' => __DIR__ . '/includes/Query/FullTextSimpleMatchQueryBuilder.php',

@@ -4,10 +4,12 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
 use Title;
 
 /**
@@ -27,7 +29,7 @@ use Title;
  *   incategory:Animals|id:54321
  *   incategory::Something_in_NS_MAIN
  */
-class InCategoryFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @var int
 	 */
@@ -175,5 +177,18 @@ class InCategoryFeature extends SimpleKeywordFeature implements LegacyKeywordFea
 		}
 
 		return $filter;
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		$names = $context->getKeywordExpandedData( $node );
+		if ( $names === [] ) {
+			return null;
+		}
+		return $this->matchPageCategories( $names );
 	}
 }

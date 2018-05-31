@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
@@ -27,7 +28,7 @@ use Wikimedia\Assert\Assert;
  *   prefix:California Cou
  *   prefix:"California Cou"
  */
-class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/** @var string name of the keyword used in the syntax */
 	const KEYWORD = 'prefix';
 
@@ -155,5 +156,19 @@ class PrefixFeature extends SimpleKeywordFeature implements LegacyKeywordFeature
 			return;
 		}
 		$warningCollector->addWarning( 'cirrussearch-keyword-prefix-ns-mismatch' );
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		$namespace = null;
+
+		if ( isset( $node->getParsedValue()['namespace'] ) ) {
+			$namespace = $node->getParsedValue()['namespace'];
+		}
+		return $this->buildQuery( $node->getParsedValue()['value'], $namespace );
 	}
 }

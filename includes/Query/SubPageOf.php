@@ -4,14 +4,16 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
 
 /**
  * subpagesof, find subpages of a given page
  * uses the prefix field, very similar to the prefix except
  * that it enforces a trailing / and is not a greedy keyword
  */
-class SubPageOfFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class SubPageOfFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -39,15 +41,33 @@ class SubPageOfFeature extends SimpleKeywordFeature implements LegacyKeywordFeat
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		if ( $value === '' ) {
-			return [ null, false ];
+		return [ $this->doGetFilterQuery( $value ), false ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetFilterQuery( $node->getValue() );
+	}
+
+	/**
+	 * @param string $value
+	 * @return \Elastica\Query\MultiMatch|null
+	 */
+	private function doGetFilterQuery( $value ) {
+		$query = null;
+		if ( $value !== '' ) {
+			if ( substr( $value, - 1 ) != '/' ) {
+				$value .= '/';
+			}
+			$query = new \Elastica\Query\MultiMatch();
+			$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );
+			$query->setQuery( $value );
 		}
-		if ( substr( $value, -1 ) != '/' ) {
-			$value .= '/';
-		}
-		$query = new \Elastica\Query\MultiMatch();
-		$query->setFields( [ 'title.prefix', 'redirect.title.prefix' ] );
-		$query->setQuery( $value );
-		return [ $query, false ];
+
+		return $query;
 	}
 }

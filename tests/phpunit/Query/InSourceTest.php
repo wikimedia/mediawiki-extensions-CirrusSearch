@@ -29,12 +29,15 @@ class InSourceTest extends BaseSimpleKeywordFeatureTest {
 				$filterValue );
 		}
 
-		$config = new HashSearchConfig( [] );
+		$config = new HashSearchConfig( [
+			'LanguageCode' => 'en',
+			'CirrusSearchAllowLeadingWildcard' => true,
+		] );
 		$feature = new InSourceFeature( $config );
 		if ( $filterValue !== null ) {
 			$this->assertCrossSearchStrategy( $feature, $query,	CrossSearchStrategy::allWikisStrategy() );
 		}
-		$this->assertFilter( $feature, $query, $qsQuery, [] );
+		$this->assertFilter( $feature, $query, $qsQuery, [], $config );
 		$this->assertHighlighting( $feature, $query, 'source_text', [ 'query' => $qsQuery ] );
 		// TODO: remove should be a parser test, the keyword is not responsible for this
 		$this->assertRemaining( $feature, $query, $expectedRemaining );

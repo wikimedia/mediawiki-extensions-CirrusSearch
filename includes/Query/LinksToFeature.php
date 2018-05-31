@@ -4,7 +4,9 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
+use Elastica\Query\AbstractQuery;
 
 /**
  * Filters the result set based on pages containing outgoing wiki links to the
@@ -15,7 +17,7 @@ use CirrusSearch\Search\SearchContext;
  *   linksto:Wake_Island
  *   linksto:Shanghai
  */
-class LinksToFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class LinksToFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
 	 * @return string[]
 	 */
@@ -43,6 +45,24 @@ class LinksToFeature extends SimpleKeywordFeature implements LegacyKeywordFeatur
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		return [ QueryHelper::matchPage( 'outgoing_link', $value, true ), false ];
+		return [ $this->doGetFilterQuery( $value ), false ];
 	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return AbstractQuery|null
+	 */
+	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->doGetFilterQuery( $node->getValue() );
+	}
+
+	/**
+	 * @param string $value
+	 * @return \Elastica\Query\Match
+	 */
+	protected function doGetFilterQuery( $value ) {
+		return QueryHelper::matchPage( 'outgoing_link', $value, true );
+	}
+
 }

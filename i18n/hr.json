@@ -14,7 +14,7 @@
 	"cirrussearch-now-using": "Ovaj wiki koristi novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Novi način pretrage",
 	"cirrussearch-pref-desc": "Isprobajte novi način pretrage koji podržava veliki broj jezika, ažurirane rezultate, a omogućava i pretraživanje unutar predložaka.",
-	"cirrussearch-pref-completion-profile-help": "Odredite način na koji se vrši automatsko (pretražuje dok utipkavate) dovršavanje pretraga.",
+	"cirrussearch-pref-completion-profile-help": "Odredite način na koji se vrši automatsko dovršavanje pretraga (pretražuje dok utipkavate).",
 	"prefs-completion": "Pretražno dovršavanje",
 	"cirrussearch-pref-completion-section-desc": "Dovršivač pretrage",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Novi algoritam] omogućava bolje prijedloge prilikom pretrage, bolje ispravljanje slovnih pogrešaka te bolju relevantnost rezultata.",

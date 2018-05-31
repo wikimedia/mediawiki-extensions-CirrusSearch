@@ -231,11 +231,6 @@ class KeywordFeatureAssertions {
 			$this->testCase->assertEquals( $warnings, $context->getWarnings() );
 		}
 
-		// TODO: remove once all extensions have been migrated
-		if ( !$feature instanceof FilterQueryFeature ) {
-			return;
-		}
-
 		$this->testCase->assertInstanceOf( FilterQueryFeature::class, $feature );
 		/**
 		 * @var FilterQueryFeature $feature

@@ -4,6 +4,8 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Rescore\ByKeywordTemplateBoostFunction;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\WarningCollector;
 
@@ -19,7 +21,7 @@ use CirrusSearch\WarningCollector;
  *  boost-templates:"Featured sound|150%"
  *  boost-templates:"Main_article|250% List_of_lists|10%"
  */
-class BoostTemplatesFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class BoostTemplatesFeature extends SimpleKeywordFeature implements BoostFunctionFeature {
 	/**
 	 * @return string[]
 	 */
@@ -47,8 +49,8 @@ class BoostTemplatesFeature extends SimpleKeywordFeature implements LegacyKeywor
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$context->setBoostTemplatesFromQuery(
-			self::parseBoostTemplates( $value )
+		$context->addCustomRescoreComponent(
+			$this->buildBoostFunction( [ 'boost-templates' => self::parseBoostTemplates( $value ) ] )
 		);
 
 		return [ null, false ];
@@ -91,5 +93,22 @@ class BoostTemplatesFeature extends SimpleKeywordFeature implements LegacyKeywor
 	 */
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
 		return [ 'boost-templates' => self::parseBoostTemplates( $value ) ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return \CirrusSearch\Search\Rescore\BoostFunctionBuilder|null
+	 */
+	public function getBoostFunctionBuilder( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->buildBoostFunction( $node->getParsedValue() );
+	}
+
+	/**
+	 * @param array $parsedValue
+	 * @return ByKeywordTemplateBoostFunction
+	 */
+	private function buildBoostFunction( array $parsedValue ) {
+		return new ByKeywordTemplateBoostFunction( $parsedValue['boost-templates'] );
 	}
 }

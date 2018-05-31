@@ -115,19 +115,24 @@ class RescoreBuilderTest extends CirrusTestCase {
 
 	/**
 	 * @covers \CirrusSearch\Search\Rescore\BoostTemplatesFunctionScoreBuilder
+	 * @covers \CirrusSearch\Search\Rescore\BoostedQueriesFunction
 	 */
 	public function testBoostTemplates() {
 		$config = new HashSearchConfig( [] );
-		$context = new SearchContext( $config, null );
-		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$fScore = new FunctionScoreDecorator();
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
 
-		$context->setBoostTemplatesFromQuery( [ 'test' => 3.2 ] );
-		$builder = new BoostTemplatesFunctionScoreBuilder( $context, 1 );
+		$config = new HashSearchConfig( [ 'CirrusSearchBoostTemplates' => [ 'test' => 3.2 ] ] );
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
 		$builder->append( $fScore );
 		$this->assertFalse( $fScore->isEmptyFunction() );
+
+		$fScore = new FunctionScoreDecorator();
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, false, 1 );
+		$builder->append( $fScore );
+		$this->assertTrue( $fScore->isEmptyFunction() );
 	}
 
 	/**
@@ -257,10 +262,9 @@ class RescoreBuilderTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testFallbackProfile( $settings, $namespaces, $expectedFunctionCount ) {
-		$config = new HashSearchConfig( $settings );
+		$config = new HashSearchConfig( $settings + [ 'CirrusSearchBoostTemplates' => [ 'Good' => 1.3 ] ] );
 
 		$context = new SearchContext( $config, $namespaces );
-		$context->setBoostTemplatesFromQuery( [ 'Good' => 1.3 ] );
 		$builder = new RescoreBuilder( $context, $config->get( 'CirrusSearchRescoreProfile' ) );
 		$rescore = $builder->build();
 		$array = $rescore[0]['query']['rescore_query'];
@@ -482,6 +486,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	/**
 	 * @covers \CirrusSearch\Search\TermBoostScoreBuilder
 	 * @covers \CirrusSearch\Search\Rescore\TermBoostScoreBuilder
+	 * @covers \CirrusSearch\Search\Rescore\BoostedQueriesFunction
 	 * @dataProvider termBoostProvider
 	 */
 	public function testTermBoosts( $weight, array $settings, array $functions ) {

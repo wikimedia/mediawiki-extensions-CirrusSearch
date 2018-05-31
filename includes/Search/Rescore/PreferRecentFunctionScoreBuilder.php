@@ -7,7 +7,6 @@ use Elastica\Query\FunctionScore;
 
 /**
  * Builds a script score boost documents on the timestamp field.
- * Reads its param from SearchContext: preferRecentDecayPortion and preferRecentHalfLife
  * Can be initialized by config for full text and by special syntax in user query
  */
 class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
@@ -25,7 +24,7 @@ class PreferRecentFunctionScoreBuilder extends FunctionScoreBuilder {
 	/**
 	 * PreferRecentFunctionScoreBuilder constructor.
 	 * @param SearchConfig $config
-	 * @param int $weight
+	 * @param float $weight
 	 * @param float $halfLife
 	 * @param float $decayPortion
 	 */

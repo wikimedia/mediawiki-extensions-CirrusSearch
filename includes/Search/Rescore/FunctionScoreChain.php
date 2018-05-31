@@ -119,10 +119,32 @@ class FunctionScoreChain {
 			case 'boostlinks':
 				return new IncomingLinksFunctionScoreBuilder();
 			case 'recency':
+				foreach ( $this->context->getExtraScoreBuilders() as $boostFunctionBuilder ) {
+					if ( $boostFunctionBuilder instanceof PreferRecentFunctionScoreBuilder ) {
+						// If prefer-recent was used as a keyword we don't send the one
+						// from the profile
+						return new BoostedQueriesFunction( [], [] );
+					}
+				}
+
+				$preferRecentDecayPortion = $config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
+				$preferRecentHalfLife = 0;
+				if ( $preferRecentDecayPortion > 0 ) {
+					$preferRecentHalfLife = $config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
+				}
 				return new PreferRecentFunctionScoreBuilder( $config, $weight,
-					$this->context->getPreferRecentHalfLife(), $this->context->getPreferRecentDecayPortion() );
+					$preferRecentHalfLife, $preferRecentDecayPortion );
 			case 'templates':
-				return new BoostTemplatesFunctionScoreBuilder( $this->context, $weight );
+				$withDefaultBoosts = true;
+				foreach ( $this->context->getExtraScoreBuilders() as $boostFunctionBuilder ) {
+					if ( $boostFunctionBuilder instanceof ByKeywordTemplateBoostFunction ) {
+						$withDefaultBoosts = false;
+						break;
+					}
+				}
+
+				return new BoostTemplatesFunctionScoreBuilder( $config, $this->context->getNamespaces(),
+					$this->context->getLimitSearchToLocalWiki(), $withDefaultBoosts, $weight );
 			case 'namespaces':
 				return new NamespacesFunctionScoreBuilder( $config, $this->context->getNamespaces(), $weight );
 			case 'language':

@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -107,5 +108,22 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 */
 	protected function assertRemaining( KeywordFeature $feature, $term, $remaining ) {
 		$this->kwAssertions->assertRemaining( $feature, $term, $remaining );
+	}
+
+	/**
+	 * @param KeywordFeature $feature
+	 * @param string $term
+	 * @param callable|BoostFunctionBuilder|null $boostAssertions
+	 * @param array|null $warnings
+	 * @param SearchConfig|null $config
+	 * @param bool $disableSearchContextAssertion
+	 */
+	protected function assertBoost(
+		KeywordFeature $feature,
+		$term, $boostAssertions = null,
+		array $warnings = null,
+		SearchConfig $config = null
+	) {
+		$this->kwAssertions->assertBoost( $feature, $term, $boostAssertions, $warnings, $config );
 	}
 }

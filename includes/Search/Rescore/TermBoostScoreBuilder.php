@@ -13,8 +13,8 @@ use Elastica\Query\FunctionScore;
  * @package CirrusSearch\Search
  */
 class TermBoostScoreBuilder extends FunctionScoreBuilder {
-	/** @var array[] */
-	private $fields;
+	/** @var BoostedQueriesFunction */
+	private $boostedQueries;
 
 	/**
 	 * @param SearchConfig|SearchContext $contextOrConfig
@@ -23,16 +23,19 @@ class TermBoostScoreBuilder extends FunctionScoreBuilder {
 	 */
 	public function __construct( $contextOrConfig, $weight, $profile ) {
 		parent::__construct( $contextOrConfig, $weight );
-		$this->fields = $profile;
+		$queries = [];
+		$weights = [];
+		foreach ( $profile as $field => $matches ) {
+			foreach ( $matches as $match => $matchWeight ) {
+				$queries[] = new \Elastica\Query\Term( [ $field => $match ] );
+				$weights[] = $matchWeight * $this->weight;
+			}
+		}
+		$this->boostedQueries = new BoostedQueriesFunction( $queries, $weights );
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		foreach ( $this->fields as $field => $matches ) {
-			foreach ( $matches as $match => $matchWeight ) {
-				$functionScore->addWeightFunction( $matchWeight * $this->weight,
-					new \Elastica\Query\Term( [ $field => $match ] ) );
-			}
-		}
+		$this->boostedQueries->append( $functionScore );
 	}
 }
 

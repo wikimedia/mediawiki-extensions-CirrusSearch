@@ -9,7 +9,9 @@ use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParseWarning;
 use CirrusSearch\Parser\QueryStringRegex\KeywordParser;
 use CirrusSearch\Parser\QueryStringRegex\OffsetTracker;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\Escaper;
+use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\AbstractQuery;
@@ -34,15 +36,19 @@ class KeywordFeatureAssertions {
 	/**
 	 * @return SearchContext
 	 */
-	private function mockContext() {
+	private function mockContext( SearchConfig $config = null ) {
 		$context = $this->testCase->getMockBuilder( SearchContext::class )
 			->disableOriginalConstructor()
 			->getMock();
-		$context->expects( $this->testCase->any() )->method( 'getConfig' )->willReturn( new SearchConfig() );
+		if ( $config == null ) {
+			$config = new SearchConfig();
+		}
+		$context->expects( $this->testCase->any() )->method( 'getConfig' )->willReturn( $config );
 		$context->expects( $this->testCase->any() )->method( 'escaper' )->willReturn( new Escaper( 'en', true ) );
 
 		return $context;
 	}
+
 	/**
 	 * @param null $expectedQuery
 	 * @param array|callback|null $warnings
@@ -73,6 +79,42 @@ class KeywordFeatureAssertions {
 			$context->expects( $this->testCase->once() )
 				->method( $negated ? 'addNotFilter' : 'addFilter' )
 				->with( $this->testCase->callback( $filterCallback ) );
+		}
+		if ( $warnings !== null ) {
+			$context->expects( $this->testCase->any() )
+				->method( 'addWarning' )
+				->will( $this->testCase->returnCallback( function () use ( &$warnings ) {
+					$warnings[] = array_filter( func_get_args() );
+				} ) );
+		}
+
+		return $context;
+	}
+
+	/**
+	 * @param BoostFunctionBuilder|callback|null $expectedQuery
+	 * @param array|null $warnings
+	 * @return SearchContext
+	 */
+	private function mockContextExpectingBoost( $expectedBoost = null, array $warnings = null, SearchConfig $config = null ) {
+		$context = $this->mockContext( $config );
+
+		if ( $expectedBoost === null ) {
+			$context->expects( $this->testCase->never() )
+				->method( 'addCustomRescoreComponent' );
+		} else {
+			if ( is_callable( $expectedBoost ) ) {
+				$boostCallback = $expectedBoost;
+			} else {
+				$boostCallback = function ( BoostFunctionBuilder $actualBoost ) use ( $expectedBoost ) {
+					$this->testCase->assertEquals( $expectedBoost, $actualBoost );
+					return true;
+				};
+			}
+
+			$context->expects( $this->testCase->once() )
+				->method( 'addCustomRescoreComponent' )
+				->with( $this->testCase->callback( $boostCallback ) );
 		}
 		if ( $warnings !== null ) {
 			$context->expects( $this->testCase->any() )
@@ -188,6 +230,44 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
+	 * @param callable|BoostFunctionBuilder|null $boostAssertion
+	 * @param array|null $warnings
+	 * @param SearchConfig|null $config
+	 */
+	public function assertBoost( KeywordFeature $feature, $term, $boostAssertion, $warnings = null, SearchConfig $config = null ) {
+		$this->testCase->assertInstanceOf( BoostFunctionFeature::class, $feature );
+
+		if ( $config === null ) {
+			$config = new SearchConfig();
+		}
+
+		$context = $this->mockContextExpectingBoost( $boostAssertion, $warnings, $config );
+		$feature->apply( $context, $term );
+
+		$parser = new KeywordParser();
+		$node = $this->getParsedKeyword( $term, $feature, $parser );
+		$data = $feature->expand( $node, $config, $parser );
+		if ( $warnings !== null ) {
+			$this->testCase->assertEquals( $warnings, $parser->getWarnings() );
+		}
+		$builderContext = $this->mockBuilderContext( $data, $config );
+		/**
+		 * @var BoostFunctionFeature $boostingKeyword
+		 */
+		$boostingKeyword = $feature;
+		$func = $boostingKeyword->getBoostFunctionBuilder( $node, $builderContext );
+		if ( $boostAssertion == null ) {
+			$this->testCase->assertNull( $func );
+		} elseif ( is_callable( $boostAssertion ) ) {
+			call_user_func( $boostAssertion, $func );
+		} else {
+			$this->testCase->assertEquals( $boostAssertion, $func );
+		}
+	}
+
+	/**
+	 * @param KeywordFeature $feature
+	 * @param string $term
 	 */
 	public function assertNoResultsPossible( KeywordFeature $feature, $term ) {
 		$context = $this->mockContext();
@@ -287,5 +367,19 @@ class KeywordFeatureAssertions {
 		$this->testCase->assertCount( 1, $nodes, "A single keyword expression must be provided for this test" );
 		$node = $nodes[0];
 		return $node instanceof NegatedNode;
+	}
+
+	/**
+	 * @param $data
+	 * @param SearchConfig $config
+	 * @return QueryBuildingContext
+	 */
+	private function mockBuilderContext( $data, SearchConfig $config ) {
+		$mock = $this->testCase->createMock( QueryBuildingContext::class );
+		$mock->method( 'getKeywordExpandedData' )
+			->willReturn( $data );
+		$mock->method( 'getSearchConfig' )
+			->willReturn( $config );
+		return $mock;
 	}
 }

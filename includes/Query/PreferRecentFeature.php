@@ -4,6 +4,10 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
+use CirrusSearch\Search\Rescore\PreferRecentFunctionScoreBuilder;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\WarningCollector;
 use Config;
 use CirrusSearch\Search\SearchContext;
@@ -18,7 +22,7 @@ use CirrusSearch\Search\SearchContext;
  *  prefer-recent:.6
  *  prefer-recent:0.5,.0001
  */
-class PreferRecentFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
+class PreferRecentFeature extends SimpleKeywordFeature implements BoostFunctionFeature {
 	/**
 	 * @var float Default number of days for the portion of the score effected
 	 *  by this feature to be cut in half. Used when `prefer-recent:` is present
@@ -105,19 +109,36 @@ class PreferRecentFeature extends SimpleKeywordFeature implements LegacyKeywordF
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$decay = $this->unspecifiedDecay;
-		$halfLife = $this->halfLife;
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		if ( $parsedValue === false ) {
-			$context->setPreferRecentOptions( $decay, $halfLife );
-			return [ null, true ];
-		} elseif ( $parsedValue === null ) {
-			$context->setPreferRecentOptions( $this->unspecifiedDecay, $this->halfLife );
-			return [ null, false ];
-		} else {
-			$context->setPreferRecentOptions( isset( $parsedValue['decay'] ) ? $parsedValue['decay'] : $this->unspecifiedDecay,
-				isset( $parsedValue['halfLife'] ) ? $parsedValue['halfLife'] : $this->halfLife );
-			return [ null, false ];
+		$context->addCustomRescoreComponent( $this->buildBoost( $parsedValue, $context->getConfig() ) );
+		return [ null, $parsedValue === false ];
+	}
+
+	/**
+	 * @param KeywordFeatureNode $node
+	 * @param QueryBuildingContext $context
+	 * @return BoostFunctionBuilder|null
+	 */
+	public function getBoostFunctionBuilder( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+		return $this->buildBoost( $node->getParsedValue(), $context->getSearchConfig() );
+	}
+
+	/**
+	 * @param array|null|false $parsedValue
+	 * @param SearchConfig $config
+	 * @return PreferRecentFunctionScoreBuilder
+	 */
+	private function buildBoost( $parsedValue, SearchConfig $config ) {
+		$halfLife = $this->halfLife;
+		$decay = $this->unspecifiedDecay;
+		if ( is_array( $parsedValue ) ) {
+			if ( isset( $parsedValue['halfLife'] ) ) {
+				$halfLife = $parsedValue['halfLife'];
+			}
+			if ( isset( $parsedValue['decay'] ) ) {
+				$decay = $parsedValue['decay'];
+			}
 		}
+		return new PreferRecentFunctionScoreBuilder( $config, 1, $halfLife, $decay );
 	}
 }

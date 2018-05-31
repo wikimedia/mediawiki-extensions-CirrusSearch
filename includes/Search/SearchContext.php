@@ -51,23 +51,6 @@ class SearchContext implements WarningCollector {
 	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
-	 * @var array|null list of boost templates extracted from the query string
-	 */
-	private $boostTemplatesFromQuery;
-
-	/**
-	 * @var float portion of article's score which decays with time.  Defaults to 0 meaning don't decay the score
-	 *  with time since the last update.
-	 */
-	private $preferRecentDecayPortion = 0;
-
-	/**
-	 * @var float number of days it takes an the portion of an article score that will decay with time
-	 *  since last update to decay half way.  Defaults to 0 meaning don't decay the score with time.
-	 */
-	private $preferRecentHalfLife = 0;
-
-	/**
 	 * @var string|array rescore profile to use
 	 */
 	private $rescoreProfile;
@@ -242,11 +225,6 @@ class SearchContext implements WarningCollector {
 	}
 
 	private function loadConfig() {
-		$decay = $this->config->get( 'CirrusSearchPreferRecentDefaultDecayPortion' );
-		if ( $decay > 0 ) {
-			$this->preferRecentDecayPortion = $decay;
-			$this->preferRecentHalfLife = $this->config->get( 'CirrusSearchPreferRecentDefaultHalfLife' );
-		}
 		$this->escaper = new Escaper( $this->config->get( 'LanguageCode' ), $this->config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
@@ -306,82 +284,6 @@ class SearchContext implements WarningCollector {
 	public function setProfileContext( $profileContext ) {
 		$this->isDirty = $this->isDirty || $this->profileContext !== $profileContext;
 		$this->profileContext = $profileContext;
-	}
-
-	/**
-	 * Return the list of boosted templates specified in the user query (special syntax)
-	 * null if not used in the query or an empty array if there was a syntax error.
-	 * Initialized after special syntax extraction.
-	 *
-	 * @return array|null of boosted templates, key is the template value is the weight.
-	 *  null indicates the default template boosts should be used.
-	 */
-	public function getBoostTemplatesFromQuery() {
-		return $this->boostTemplatesFromQuery;
-	}
-
-	/**
-	 * @param array|null $boostTemplatesFromQuery boosted templates extracted from query.
-	 *  null indicates the default template boosts should be used.
-	 */
-	public function setBoostTemplatesFromQuery( $boostTemplatesFromQuery ) {
-		$this->isDirty = true;
-		$this->boostTemplatesFromQuery = $boostTemplatesFromQuery;
-	}
-
-	/**
-	 * Returns list of boosted templates specified by extra indexes query.
-	 *
-	 * @return array[] Map from wiki id to list of templates to boost
-	 *  within that wiki
-	 */
-	public function getExtraIndexBoostTemplates() {
-		$extraIndexBoostTemplates = [];
-		foreach ( $this->getExtraIndices() as $extraIndex ) {
-			$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
-			if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
-				$extraIndexBoostTemplates[$extraIndexBoosts['wiki']] = $extraIndexBoosts['boosts'];
-			}
-		}
-
-		return $extraIndexBoostTemplates;
-	}
-
-	/**
-	 * Set prefer recent options
-	 *
-	 * @param float $preferRecentDecayPortion
-	 * @param float $preferRecentHalfLife
-	 */
-	public function setPreferRecentOptions( $preferRecentDecayPortion, $preferRecentHalfLife ) {
-		$this->isDirty = true;
-		$this->preferRecentDecayPortion = $preferRecentDecayPortion;
-		$this->preferRecentHalfLife = $preferRecentHalfLife;
-	}
-
-	/**
-	 * @return bool true if preferRecent options have been set.
-	 */
-	public function hasPreferRecentOptions() {
-		return $this->preferRecentHalfLife > 0 && $this->preferRecentDecayPortion > 0;
-	}
-
-	/**
-	 * Parameter used by Search\Rescore\PreferRecentFunctionScoreBuilder
-	 *
-	 * @return float the decay portion for prefer recent
-	 */
-	public function getPreferRecentDecayPortion() {
-		return $this->preferRecentDecayPortion;
-	}
-
-	/**
-	 * Parameter used by Search\Rescore\PreferRecentFunctionScoreBuilder
-	 *
-	 * @return float the half life for prefer recent
-	 */
-	public function getPreferRecentHalfLife() {
-		return $this->preferRecentHalfLife;
 	}
 
 	/**

@@ -285,32 +285,6 @@ class FancyTitleResultsType extends TitleResultsType {
  * Result type for a full text search.
  */
 class FullTextResultsType extends BaseResultsType {
-	const HIGHLIGHT_NONE = 0;
-	const HIGHLIGHT_TITLE = 1;
-	const HIGHLIGHT_ALT_TITLE = 2;
-	const HIGHLIGHT_SNIPPET = 4;
-	/**
-	 * Should we highlight the file text?  Only used if HIGHLIGHT_SNIPPET is set.
-	 */
-	const HIGHLIGHT_FILE_TEXT = 8;
-	const HIGHLIGHT_WITH_DEFAULT_SIMILARITY = 16;
-	/**
-	 * Should the alt title fields (heading and redirect) use postings or be reanalyzed?
-	 */
-	const HIGHLIGHT_ALT_TITLES_WITH_POSTINGS = 32;
-	const HIGHLIGHT_ALL = 63;
-
-	/**
-	 * @var int Bitmask, see HIGHLIGHT_* consts
-	 */
-	private $highlightingConfig;
-
-	/**
-	 * @param int $highlightingConfig Bitmask, see HIGHLIGHT_* consts
-	 */
-	public function __construct( $highlightingConfig ) {
-		$this->highlightingConfig = $highlightingConfig;
-	}
 
 	/**
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
@@ -381,14 +355,6 @@ class FullTextResultsType extends BaseResultsType {
 					'skip_if_last_matched' => true,
 				],
 			];
-			if ( !( $this->highlightingConfig & self::HIGHLIGHT_WITH_DEFAULT_SIMILARITY ) ) {
-				$entireValue[ 'options' ][ 'default_similarity' ] = false;
-				$redirectAndHeading[ 'options' ][ 'default_similarity' ] = false;
-				$remainingText[ 'options' ][ 'default_similarity' ] = false;
-			}
-			if ( !( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS ) ) {
-				$redirectAndHeading[ 'options' ][ 'hit_source' ] = 'analyze';
-			}
 		} else {
 			$entireValue = [
 				'number_of_fragments' => 0,
@@ -426,26 +392,18 @@ class FullTextResultsType extends BaseResultsType {
 		$text[ 'no_match_size' ] = $text[ 'fragment_size' ];
 
 		$experimental = [];
-		if ( $this->highlightingConfig & self::HIGHLIGHT_TITLE ) {
-			$config[ 'fields' ][ 'title' ] = $entireValue;
-		}
-		if ( $this->highlightingConfig & self::HIGHLIGHT_ALT_TITLE ) {
-			$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
-			$experimental[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
-			$config[ 'fields' ][ 'category' ] = $redirectAndHeading;
-			$experimental[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
-			$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
-			$experimental[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
-		}
-		if ( $this->highlightingConfig & self::HIGHLIGHT_SNIPPET ) {
-			$config[ 'fields' ][ 'text' ] = $text;
-			$config[ 'fields' ][ 'auxiliary_text' ] = $remainingText;
-			$experimental[ 'fields' ][ 'auxiliary_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
-			if ( $this->highlightingConfig & self::HIGHLIGHT_FILE_TEXT ) {
-				$config[ 'fields' ][ 'file_text' ] = $remainingText;
-				$experimental[ 'fields' ][ 'file_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
-			}
-		}
+		$config[ 'fields' ][ 'title' ] = $entireValue;
+		$config[ 'fields' ][ 'redirect.title' ] = $redirectAndHeading;
+		$experimental[ 'fields' ][ 'redirect.title' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+		$config[ 'fields' ][ 'category' ] = $redirectAndHeading;
+		$experimental[ 'fields' ][ 'category' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+		$config[ 'fields' ][ 'heading' ] = $redirectAndHeading;
+		$experimental[ 'fields' ][ 'heading' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+		$config[ 'fields' ][ 'text' ] = $text;
+		$config[ 'fields' ][ 'auxiliary_text' ] = $remainingText;
+		$experimental[ 'fields' ][ 'auxiliary_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
+		$config[ 'fields' ][ 'file_text' ] = $remainingText;
+		$experimental[ 'fields' ][ 'file_text' ][ 'options' ][ 'skip_if_last_matched' ] = true;
 		$config[ 'fields' ] = $this->addMatchedFields( $config[ 'fields' ] );
 
 		if ( $wgCirrusSearchUseExperimentalHighlighter ) {

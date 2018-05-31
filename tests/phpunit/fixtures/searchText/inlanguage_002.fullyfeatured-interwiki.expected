@@ -56,6 +56,27 @@
                         "order": "score",
                         "type": "experimental"
                     },
+                    "file_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "file_text",
+                            "file_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
                     "heading": {
                         "fragmenter": "none",
                         "matched_fields": [
@@ -286,6 +307,27 @@
                             "skip_if_last_matched": true
                         },
                         "order": "score",
+                        "type": "experimental"
+                    },
+                    "file_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "file_text",
+                            "file_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
                         "type": "experimental"
                     },
                     "heading": {
@@ -536,6 +578,27 @@
                         "order": "score",
                         "type": "experimental"
                     },
+                    "file_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "file_text",
+                            "file_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
+                        "type": "experimental"
+                    },
                     "heading": {
                         "fragmenter": "none",
                         "matched_fields": [
@@ -766,6 +829,27 @@
                             "skip_if_last_matched": true
                         },
                         "order": "score",
+                        "type": "experimental"
+                    },
+                    "file_text": {
+                        "fragment_size": 150,
+                        "fragmenter": "scan",
+                        "matched_fields": [
+                            "file_text",
+                            "file_text.plain"
+                        ],
+                        "number_of_fragments": 1,
+                        "options": {
+                            "boost_before": {
+                                "20": 2,
+                                "50": 1.8,
+                                "200": 1.5,
+                                "1000": 1.2
+                            },
+                            "max_fragments_scored": 5000,
+                            "skip_if_last_matched": true,
+                            "top_scoring": true
+                        },
                         "type": "experimental"
                     },
                     "heading": {

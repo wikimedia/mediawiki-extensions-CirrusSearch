@@ -29,7 +29,7 @@ class BoostedQueriesFunction implements BoostFunctionBuilder {
 	 */
 	public function __construct( array $boostedQueries, array $weights ) {
 		Assert::parameter( count( $boostedQueries ) === count( $weights ), '$weights',
-			'$weights must have the same number of elements than $boostedQueries' );
+			'$weights must have the same number of elements as $boostedQueries' );
 		$this->boostedQueries = $boostedQueries;
 		$this->weights = $weights;
 	}

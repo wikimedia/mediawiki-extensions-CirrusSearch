@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitor;
+
 /**
  * Wildcard query
  */
@@ -41,5 +43,12 @@ class WildcardNode extends ParsedNode {
 	 */
 	public function getWildcardQuery() {
 		return $this->wildcardQuery;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitWildcardNode( $this );
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 use CirrusSearch\Query\KeywordFeature;
 
 /**
@@ -160,5 +161,12 @@ class KeywordFeatureNode extends ParsedNode {
 				)
 			)
 		];
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitKeywordFeatureNode( $this );
 	}
 }

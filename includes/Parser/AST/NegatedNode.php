@@ -1,8 +1,8 @@
 <?php
 
-
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -70,5 +70,12 @@ class NegatedNode extends ParsedNode {
 	 */
 	public function getNegationType() {
 		return $this->negationType;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitNegatedNode( $this );
 	}
 }

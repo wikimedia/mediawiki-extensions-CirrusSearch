@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 use Wikimedia\Assert\Assert;
 
 class FuzzyNode extends ParsedNode {
@@ -53,5 +54,12 @@ class FuzzyNode extends ParsedNode {
 	 */
 	public function getFuzziness() {
 		return $this->fuzziness;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitFuzzyNode( $this );
 	}
 }

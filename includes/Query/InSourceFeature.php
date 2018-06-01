@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
@@ -36,10 +37,19 @@ class InSourceFeature extends BaseRegexFeature {
 	const FIELD = 'source_text';
 
 	/**
+	 * @var Escaper $escaper an escaper used to sanitize queries when not used as regular expression
+	 *
+	 * TODO: do not rely on escaper here, this should be consistent with what the Parser does.
+	 * @see Filters::intitle()
+	 */
+	private $escaper;
+
+	/**
 	 * @param SearchConfig $config
 	 */
 	public function __construct( SearchConfig $config ) {
 		parent::__construct( $config, [ self::FIELD ] );
+		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
 	/**
@@ -70,7 +80,7 @@ class InSourceFeature extends BaseRegexFeature {
 	 * @param QueryBuildingContext $context
 	 * @return AbstractQuery|null
 	 */
-	public function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
+	protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
 		return Filters::insource( $this->escaper, $node->getQuotedValue() );
 	}
 }

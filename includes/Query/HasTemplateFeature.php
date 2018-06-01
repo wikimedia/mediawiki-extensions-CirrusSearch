@@ -35,7 +35,9 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		return [ QueryHelper::matchPage( 'template', $this->parseValue( $key, $value, $quotedValue, '', '', $context )['value'] ), false ];
+		$filter = $this->doGetFilterQuery(
+			$this->parseValue( $key, $value, $quotedValue, '', '', $context ) );
+		return [ $filter, false ];
 	}
 
 	/**
@@ -69,11 +71,18 @@ class HasTemplateFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	}
 
 	/**
+	 * @param string[] $parsedValue
+	 * @return AbstractQuery
+	 */
+	protected function doGetFilterQuery( array $parsedValue ) {
+		return QueryHelper::matchPage( 'template', $parsedValue['value'] );
+	}
+	/**
 	 * @param KeywordFeatureNode $node
 	 * @param QueryBuildingContext $context
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return QueryHelper::matchPage( 'template', $node->getParsedValue()['value'] );
+		return $this->doGetFilterQuery( $node->getParsedValue() );
 	}
 }

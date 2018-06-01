@@ -62,13 +62,12 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		if ( $parsedValue === null ) {
+		$query = $this->doGetFilterQuery( $key,
+			$this->parseValue( $key, $value, $quotedValue, '', '', $context ) );
+		if ( $query === null ) {
 			$context->setResultsPossible( false );
-			return [ null, false ];
 		}
 
-		$query = $this->doGetFilterQuery( $key, $parsedValue );
 		return [ $query, false ];
 	}
 
@@ -205,9 +204,12 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	/**
 	 * @param string $key
 	 * @param array $parsedValue
-	 * @return Query\AbstractQuery
+	 * @return Query\AbstractQuery|null
 	 */
 	protected function doGetFilterQuery( $key, $parsedValue ) {
+		if ( $parsedValue === null ) {
+			return null;
+		}
 		$field = $parsedValue['field'];
 		$sign = $parsedValue['sign'];
 		$multiplier = ( $key === 'filesize' ) ? 1024 : 1;
@@ -231,9 +233,6 @@ class FileNumericFeature extends SimpleKeywordFeature implements FilterQueryFeat
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		if ( $node->getParsedValue() === null ) {
-			return null;
-		}
 		return $this->doGetFilterQuery( $node->getKey(), $node->getParsedValue() );
 	}
 }

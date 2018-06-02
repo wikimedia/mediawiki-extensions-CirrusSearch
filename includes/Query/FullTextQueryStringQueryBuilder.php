@@ -50,10 +50,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *
 	 * @param SearchContext $searchContext
 	 * @param string $term term to search
-	 * @param bool $showSuggestion should this search suggest alternative
 	 * searches that might be better?
 	 */
-	public function build( SearchContext $searchContext, $term, $showSuggestion ) {
+	public function build( SearchContext $searchContext, $term ) {
+		$showSuggestion = $searchContext->suggestionEnabled();
 		$searchContext->addSyntaxUsed( 'full_text' );
 		// Transform Mediawiki specific syntax to filters and extra
 		// (pre-escaped) query string

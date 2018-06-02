@@ -160,6 +160,12 @@ class SearchContext implements WarningCollector {
 	private $escaper;
 
 	/**
+	 * Should this search suggest alternative searches that might be better?
+	 * @var boolean
+	 */
+	private $suggestion;
+
+	/**
 	 * @var int[] weights of different syntaxes
 	 */
 	private static $syntaxWeights = [
@@ -791,12 +797,37 @@ class SearchContext implements WarningCollector {
 		$this->isDirty = true;
 	}
 
+	/**
+	 * Add aggregation to perform on search.
+	 * @param AbstractAggregation $agg
+	 */
 	public function addAggregation( AbstractAggregation $agg ) {
 		$this->aggs[] = $agg;
 		$this->isDirty = true;
 	}
 
+	/**
+	 * Get the list of aggregations.
+	 * @return AbstractAggregation[]
+	 */
 	public function getAggregations() {
 		return $this->aggs;
 	}
+
+	/**
+	 * Whether to supply search suggestions for better search terms.
+	 * @return bool
+	 */
+	public function suggestionEnabled() {
+		return $this->suggestion;
+	}
+
+	/**
+	 * Whether to supply search suggestions for better search terms.
+	 * @param bool $suggestion
+	 */
+	public function setSuggestion( $suggestion ) {
+		$this->suggestion = $suggestion;
+	}
+
 }

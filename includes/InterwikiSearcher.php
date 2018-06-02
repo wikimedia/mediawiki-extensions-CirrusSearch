@@ -102,7 +102,8 @@ class InterwikiSearcher extends Searcher {
 			$this->searchContext = $context;
 			$this->searchContext->setLimitSearchToLocalWiki( true );
 			$this->searchContext->setOriginalSearchTerm( $term );
-			$this->buildFullTextSearch( $term, false );
+			$this->searchContext->setSuggestion( false );
+			$this->buildFullTextSearch( $term );
 			$this->searchContext = $context;
 			$this->indexBaseName = $context->getConfig()->get( 'CirrusSearchIndexBaseName' );
 			$search = $this->buildSearch();

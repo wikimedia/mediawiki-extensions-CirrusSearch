@@ -9,14 +9,15 @@ use CirrusSearch\Search\SearchContext;
  */
 interface FullTextQueryBuilder {
 	/**
-	 * Search articles with provided term.
+	 * Build a query for supplied term.
+	 *
+	 * The method will setup the query and accompanying environment within
+	 * the supplied context.
 	 *
 	 * @param SearchContext $searchContext
 	 * @param string $term term to search
-	 * @param bool $showSuggestion should this search suggest alternative
-	 * searches that might be better?
 	 */
-	public function build( SearchContext $searchContext, $term, $showSuggestion );
+	public function build( SearchContext $searchContext, $term );
 
 	/**
 	 * Attempt to build a degraded query from the query already built into $context. Must be

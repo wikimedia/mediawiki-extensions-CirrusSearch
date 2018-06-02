@@ -295,6 +295,10 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		$qb->build( $this->searchContext, $term );
 
+		// Give other builder opportunity to override
+		\Hooks::run( 'CirrusSearchFulltextQueryBuilderComplete',
+			[ $qb, $term, $this->searchContext ] );
+
 		return $qb;
 	}
 

@@ -9,7 +9,8 @@
 			"Nixtonin",
 			"Matěj Suchánek",
 			"Dvorapa",
-			"Ilimanaq29"
+			"Ilimanaq29",
+			"Danny B."
 		]
 	},
 	"cirrussearch-desc": "Vyhledávání v MediaWiki běžící na Elasticsearch",
@@ -61,5 +62,6 @@
 	"cirrussearch-regex-timed-out": "Čas pro vyhledávání regulárním výrazem vypršel, dostupné výsledky nejsou úplné. Pro získání úplných výsledků se pokuste regulární výraz zjednodušit.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint by měl být nastaven na platném konečném bodu SPARQL k použití hlubokého prohledání kategorií.",
 	"cirrussearch-feature-deepcat-exception": "Hluboké prohledávání kategorií pomocí SPARQL se nezdařilo",
-	"cirrussearch-feature-deepcat-toomany": "Rekurzivní prohledávání kategorií vrátilo příliš mnoho kategorií"
+	"cirrussearch-feature-deepcat-toomany": "Rekurzivní prohledávání kategorií vrátilo příliš mnoho kategorií",
+	"cirrussearch-article-words": "Slova ve všech obsahových stránkách"
 }

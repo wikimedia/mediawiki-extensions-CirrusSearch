@@ -51,7 +51,7 @@
                     "indices": [
                         "wiki"
                     ],
-                    "limit": 20,
+                    "limit": 21,
                     "maxScore": 7.9185534,
                     "namespaces": [],
                     "payload": {
@@ -79,7 +79,7 @@
             "hitsTotal": 2,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
             "index": "wiki",
-            "limit": 20,
+            "limit": 21,
             "maxScore": 7.9185534,
             "query": "main",
             "queryType": "full_text",

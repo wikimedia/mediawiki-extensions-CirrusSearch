@@ -224,7 +224,7 @@
                 "window_size": 8192
             }
         ],
-        "size": 20,
+        "size": 21,
         "stats": [
             "filemime",
             "filter_only",

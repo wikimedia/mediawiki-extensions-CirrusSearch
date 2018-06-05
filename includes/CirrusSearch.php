@@ -167,7 +167,7 @@ class CirrusSearch extends SearchEngine {
 	 * @param string $term text to search
 	 * @return Status Value is either SearchResultSet, or null on error.
 	 */
-	public function searchText( $term ) {
+	protected function doSearchText( $term ) {
 		$status = $this->searchTextReal( $term, $this->config );
 		$matches = $status->getValue();
 		if ( !$status->isOK() || !$matches instanceof ResultSet ) {

@@ -30,21 +30,18 @@ class SearcherTest extends CirrusTestCase {
 			'default' => [],
 		];
 		// globals overrides. All tests will be run for each defined configuration
-		foreach ( glob( __DIR__ . '/fixtures/searchText/*.config' ) as $configFile ) {
+		foreach ( CirrusTestCase::findFixtures( 'searchText/*.config' ) as $configFile ) {
 			$configName = substr( basename( $configFile ), 0, -7 );
-			$configs[$configName] = json_decode( file_get_contents( $configFile ), true );
+			$configs[$configName] = CirrusTestCase::loadFixture( $configFile );
 		}
 		$tests = [];
-		foreach ( glob( __DIR__ . '/fixtures/searchText/*.query' ) as $queryFile ) {
+		foreach ( CirrusTestCase::findFixtures( 'searchText/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, -6 );
-			$querySettings = json_decode( file_get_contents( $queryFile ), true );
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				throw new \RuntimeException( "Failed parsing query fixture: $queryFile" );
-			}
+			$querySettings = CirrusTestCase::loadFixture( $queryFile );
 			foreach ( $configs as $configName => $config ) {
 				$expectedFile = substr( $queryFile, 0, -5 ) . $configName . '.expected';
-				$expected = is_file( $expectedFile )
-					? json_decode( file_get_contents( $expectedFile ), true )
+				$expected = CirrusTestCase::hasFixture( $expectedFile )
+					? CirrusTestCase::loadFixture( $expectedFile )
 					// Flags test to generate a new fixture
 					: $expectedFile;
 				if ( isset( $querySettings['config'] ) ) {
@@ -137,8 +134,7 @@ class SearcherTest extends CirrusTestCase {
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
-			$encodedQuery = json_encode( $elasticQuery, JSON_PRETTY_PRINT );
-			file_put_contents( $expected, $encodedQuery );
+			CirrusTestCase::saveFixture( $expected, $elasticQuery );
 		} else {
 			// Repeat normalizations applied to $elasticQuery
 			$expected = $this->normalizeNow( $expected );
@@ -215,14 +211,14 @@ class SearcherTest extends CirrusTestCase {
 
 	public function archiveFixtureProvider() {
 		$tests = [];
-		foreach ( glob( __DIR__ . '/fixtures/archiveSearch/*.query' ) as $queryFile ) {
+		foreach ( CirrusTestCase::findFixtures( 'archiveSearch/*.query' ) as $queryFile ) {
 			$testName = substr( basename( $queryFile ), 0, - 6 );
-			$query = file_get_contents( $queryFile );
+			$query = file_get_contents( CirrusTestCase::FIXTURE_DIR . $queryFile );
 			// Remove trailing newline
 			$query = preg_replace( '/\n$/', '', $query );
-			$expectedFile = substr( $queryFile, 0, - 5 ) . 'expected';
-			$expected =
-				is_file( $expectedFile ) ? json_decode( file_get_contents( $expectedFile ), true )
+			$expectedFile = substr( $queryFile, 0, -5 ) . 'expected';
+			$expected = CirrusTestCase::hasFixture( $expectedFile )
+					? CirrusTestCase::loadFixture( $expectedFile )
 					// Flags test to generate a new fixture
 					: $expectedFile;
 			$tests[$testName] = [
@@ -270,7 +266,7 @@ class SearcherTest extends CirrusTestCase {
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
-			file_put_contents( $expected, json_encode( $decodedQuery, JSON_PRETTY_PRINT ) );
+			CirrusTestCase::saveFixture( $expected, $decodedQuery );
 		} else {
 			// Repeat normalizations applied to $elasticQuery
 			unset( $expected['path'] );

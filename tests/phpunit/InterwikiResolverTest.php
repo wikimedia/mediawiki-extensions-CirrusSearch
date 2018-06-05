@@ -240,14 +240,14 @@ class InterwikiResolverTest extends CirrusTestCase {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
 
-		$apiResponse = file_get_contents( __DIR__ . '/fixtures/configDump/enwiki_sisterproject_configs.json' );
+		$apiResponse = CirrusTestCase::loadFixture( 'configDump/enwiki_sisterproject_configs.json' );
 
 		$client = $this->getMockBuilder( '\MultiHttpClient' )
 			->disableOriginalConstructor()
 			->getMock();
 		$client->expects( $this->any() )
 			->method( 'runMulti' )
-			->will( $this->returnValue( json_decode( $apiResponse, true ) ) );
+			->will( $this->returnValue( $apiResponse ) );
 		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [ 'b' ], [], $client );
 		$configs = $resolver->getSisterProjectConfigs();
 		$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );

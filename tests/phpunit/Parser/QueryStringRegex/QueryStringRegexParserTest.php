@@ -68,11 +68,8 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	}
 
 	public function provideQueries( $filename ) {
-		$file = __DIR__ . '/../../fixtures/regexParser/' . $filename;
-		$tests = json_decode( file_get_contents( $file ), JSON_OBJECT_AS_ARRAY );
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new \RuntimeException( "Failed parsing query fixture: $file" );
-		}
+		$file = 'regexParser/' . $filename;
+		$tests = CirrusTestCase::loadFixture( $file );
 		if ( getenv( 'REGEN_PARSER_TESTS' ) === $filename || getenv( 'REGEN_PARSER_TESTS' ) === 'all' ) {
 			$ntests = [];
 			foreach ( $tests as $name => $data ) {
@@ -86,7 +83,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 				$ntest['expected'] = $this->parse( $data['query'], $config )->toArray();
 				$ntests[$name] = $ntest;
 			}
-			file_put_contents( $file, json_encode( $ntests, JSON_PRETTY_PRINT ) );
+			CirrusTestCase::saveFixture( $file, $ntests );
 			return [];
 		}
 		$unittests = [];

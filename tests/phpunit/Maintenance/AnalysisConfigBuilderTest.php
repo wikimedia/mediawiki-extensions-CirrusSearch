@@ -386,23 +386,17 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 	public function provideLanguageAnalysis() {
 		$tests = [];
-		foreach ( glob( __DIR__ . '/../fixtures/languageAnalysis/*.config' ) as $testFile ) {
+		foreach ( CirrusTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
-			$extraConfig = json_decode( file_get_contents( $testFile ), true );
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				throw new \RuntimeException( "Failed decoding fixture config: $testFile" );
-			}
+			$extraConfig = CirrusTestCase::loadFixture( $testFile );
 			if ( isset( $extraConfig['LangCode'] ) ) {
 				$langCode = $extraConfig['LangCode'];
 			} else {
 				$langCode = $testName;
 			}
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			if ( file_exists( $expectedFile ) ) {
-				$expected = json_decode( file_get_contents( $expectedFile ), true );
-				if ( json_last_error() !== JSON_ERROR_NONE ) {
-					throw new \RuntimeException( "Failed decoding fixture: $expectedFile" );
-				}
+			if ( CirrusTestCase::hasFixture( $expectedFile ) ) {
+				$expected = CirrusTestCase::loadFixture( $expectedFile );
 			} else {
 				$expected = $expectedFile;
 			}
@@ -432,8 +426,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( is_string( $expected ) ) {
 			// generate fixture
-			$fixture = json_encode( $builder->buildConfig(), JSON_PRETTY_PRINT );
-			file_put_contents( $expected, $fixture );
+			CirrusTestCase::saveFixture( $expected, $builder->buildConfig() );
 			$this->markTestSkipped( "Generated new fixture" );
 		} else {
 			$this->assertEquals( $expected, $builder->buildConfig() );
@@ -515,24 +508,24 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$prevConfig = $oldConfig;
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search', 'text', 'text_search' ] );
-		$expectedFile = __DIR__ . "/../fixtures/analyzer/$expectedConfig.expected";
-		if ( is_file( $expectedFile ) ) {
-			$expected = json_decode( file_get_contents( $expectedFile ), true );
+		$expectedFile = "analyzer/$expectedConfig.expected";
+		if ( CirrusTestCase::hasFixture( $expectedFile ) ) {
+			$expected = CirrusTestCase::loadFixture( $expectedFile );
 			$this->assertEquals( $expected, $oldConfig );
 		} else {
-			file_put_contents( $expectedFile, json_encode( $oldConfig, JSON_PRETTY_PRINT ) );
+			CirrusTestCase::saveFixture( $expectedFile, $oldConfig );
 			$this->markTestSkipped( "Generated new fixture" );
 		}
 
 		$oldConfig = $prevConfig;
 		$builder->buildLanguageConfigs( $oldConfig, $languages,
 			[ 'plain', 'plain_search' ] );
-		$expectedFile = __DIR__ . "/../fixtures/analyzer/$expectedConfig.plain.expected";
-		if ( is_file( $expectedFile ) ) {
-			$expected = json_decode( file_get_contents( $expectedFile ), true );
+		$expectedFile = "analyzer/$expectedConfig.plain.expected";
+		if ( CirrusTestCase::hasFixture( $expectedFile ) ) {
+			$expected = CirrusTestCase::loadFixture( $expectedFile );
 			$this->assertEquals( $expected, $oldConfig );
 		} else {
-			file_put_contents( $expectedFile, json_encode( $oldConfig, JSON_PRETTY_PRINT ) );
+			CirrusTestCase::saveFixture( $expectedFile, $oldConfig );
 			$this->markTestSkipped( "Generated new fixture" );
 		}
 	}

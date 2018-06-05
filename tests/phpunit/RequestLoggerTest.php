@@ -26,10 +26,10 @@ class RequestLoggerTest extends CirrusTestCase {
 	public function requestLoggingProvider() {
 		$tests = [];
 
-		foreach ( glob( __DIR__ . "/fixtures/requestLogging/*.request" ) as $requestFile ) {
+		foreach ( CirrusTestCase::findFixtures( 'requestLogging/*.request' ) as $requestFile ) {
 			$testBase = substr( $requestFile, 0, -8 );
 			$testName = basename( $testBase );
-			$request = $this->decodeJson( $requestFile, "Invalid request fixture" );
+			$request = CirrusTestCase::loadFixture( $requestFile );
 			$responseFile = $testBase . '.response';
 			$expectedLogsFile = $testBase . '.expected';
 
@@ -37,17 +37,17 @@ class RequestLoggerTest extends CirrusTestCase {
 				$testName = "$testName - " . $request['_comment'];
 			}
 
-			if ( is_file( $expectedLogsFile ) ) {
+			if ( CirrusTestCase::hasFixture( $expectedLogsFile ) ) {
 				// Test fixtures exist. Ensure all of them exist and add the test case
-				if ( !is_file( $responseFile ) ) {
+				if ( !CirrusTestCase::hasFixture( $responseFile ) ) {
 					throw new \RuntimeException( "Missing response fixture: $responseFile" );
 				}
-				$responses = $this->decodeJson( $responseFile, "Invalid response fixture" );
-				$expectedLogs = $this->decodeJson( $expectedLogsFile, "Invalid expected logs fixture" );
+				$responses = CirrusTestCase::loadFixture( $responseFile, "response fixture" );
+				$expectedLogs = CirrusTestCase::loadFixture( $expectedLogsFile, "expected logs fixture" );
 				$tests[$testName] = [ $request, $responses, $expectedLogs ];
-			} elseif ( is_file( $responseFile ) ) {
+			} elseif ( CirrusTestCase::hasFixture( $responseFile ) ) {
 				// have response but no expected logs, regenerate expected logs fixture
-				$responses = $this->decodeJson( $responseFile, "Invalid response fixture" );
+				$responses = CirrusTestCase::loadFixture( $responseFile, "response fixture" );
 				$tests[$testName] = [ $request, $responses, $expectedLogsFile ];
 			} else {
 				// have neither response or expected logs, generate both fixtures
@@ -87,7 +87,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		$logs = $this->collectLogs( $loggers );
 		if ( is_string( $expectedLogs ) ) {
 			// store a fixture about the generated logs
-			file_put_contents( $expectedLogs, json_encode( $logs, JSON_PRETTY_PRINT ) );
+			CirrusTestCase::saveFixture( $expectedLogs, $logs );
 			if ( is_string( $responses ) ) {
 				// store a fixture about the elasticsearch response
 				$responseFile = $responses;
@@ -95,7 +95,7 @@ class RequestLoggerTest extends CirrusTestCase {
 				foreach ( $transport->getResponses() as $response ) {
 					$responses[] = $response->getData();
 				}
-				file_put_contents( $responseFile, json_encode( $responses, JSON_PRETTY_PRINT ) );
+				CirrusTestCase::saveFixture( $responseFile, $responses );
 			}
 			$this->markTestSkipped( 'Stored fixtures for query' );
 		} else {
@@ -355,15 +355,6 @@ class RequestLoggerTest extends CirrusTestCase {
 			unset( $log['context']['requests'][$idx]['tookMs'] );
 		}
 		return $log;
-	}
-
-	private function decodeJson( $file, $errorMessage ) {
-		$data = json_decode( file_get_contents( $file ), true );
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new \RuntimeException( "$errorMessage: $file" );
-		}
-
-		return $data;
 	}
 }
 

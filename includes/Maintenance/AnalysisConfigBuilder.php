@@ -330,14 +330,19 @@ class AnalysisConfigBuilder {
 		// For Swedish (sv), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160562
 		// For Serbian (sr), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
 		// For Slovak (sk), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+		// For Bosnian (bs), Croatian (hr), and Serbo-Croatian (sh),
+		// see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+		case 'bs':
+		case 'hr':
+		case 'sh':
+		case 'sr':
+			return '[^ĐđŽžĆćŠšČč]';
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':
 			return '[^йЙ]';
 		case 'sk':
 			return '[^ÁáÄäČčĎďÉéÍíĹĺĽľŇňÓóÔôŔŕŠšŤťÚúÝýŽž]';
-		case 'sr':
-			return '[^ĐđŽžĆćŠšČč]';
 		case 'sv':
 			return '[^åäöÅÄÖ]';
 		default:
@@ -596,6 +601,30 @@ class AnalysisConfigBuilder {
 	private function customize( $config, $language ) {
 		switch ( $this->getDefaultTextAnalyzerType( $language ) ) {
 		// Please add languages in alphabetical order.
+		case 'bosnian':
+		case 'croatian':
+		case 'serbian':
+		case 'serbo-croatian':
+			// Unpack default analyzer to add Serbian stemming and custom folding
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+			// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+			$config[ 'filter' ][ 'scstemmer' ] = [
+				'type' => 'serbian_stemmer',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'asciifolding',
+					'scstemmer',
+				],
+			];
+
+			// For BCS, text_search is just a copy of text
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'chinese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
 			$config[ 'char_filter' ][ 'stconvertfix' ] = [
@@ -889,26 +918,6 @@ STEMMER_RULES
 
 			// In Russian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
-			break;
-		case 'serbian':
-			// Unpack default analyzer to add Serbian stemming and custom folding
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
-			$config[ 'filter' ][ 'scstemmer' ] = [
-				'type' => 'serbian_stemmer',
-			];
-
-			$config['analyzer']['text'] = [
-				'type' => 'custom',
-				'tokenizer' => 'standard',
-				'filter' => [
-					'lowercase',
-					'asciifolding',
-					'scstemmer',
-				],
-			];
-
-			// In Serbian text_search is just a copy of text
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
 			break;
 		case 'slovak':
 			// Unpack default analyzer to add Slovak stemming and custom folding
@@ -1237,6 +1246,7 @@ STEMMER_RULES
 	 * can be enabled by default
 	 */
 	private $languagesWithIcuFolding = [
+		'bs' => true,
 		'el' => true,
 		'en' => true,
 		'en-ca' => true,
@@ -1244,6 +1254,8 @@ STEMMER_RULES
 		'simple' => true,
 		'fr' => true,
 		'he' => true,
+		'hr' => true,
+		'sh' => true,
 		'sk' => true,
 		'sr' => true,
 		'sv' => true,
@@ -1283,18 +1295,24 @@ STEMMER_RULES
 	 */
 	private $elasticsearchLanguageAnalyzersFromPlugins = [
 		// multiple plugin requirement can be comma separated
-
-		// For Polish, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
-		// For Ukrainian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
-		// For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
-		// For Hebrew, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
+		/**
+		 * For Polish, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T154517
+		 * For Ukrainian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T160106
+		 * For Chinese, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T158203
+		 * For Hebrew, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T162741
+		 * For Serbian, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
+		 * For Bosnian, Croatian, and Serbo-Croatian, see
+		 *    https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+		 * For Slovak, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
 		'analysis-kuromoji' => [ 'ja' => 'japanese' ],
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
-		'extra-analysis-serbian' => [ 'sr' => 'serbian' ],
+		'extra-analysis-serbian' => [ 'bs' => 'bosnian', 'hr' => 'croatian',
+			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
 	];
 }

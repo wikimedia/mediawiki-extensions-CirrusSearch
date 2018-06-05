@@ -160,7 +160,10 @@
                                 {
                                     "terms": {
                                         "namespace": [
-                                            1
+                                            0,
+                                            1,
+                                            2,
+                                            3
                                         ]
                                     }
                                 }
@@ -345,6 +348,36 @@
                                         "missing": 0,
                                         "modifier": "log2p"
                                     }
+                                },
+                                {
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                1
+                                            ]
+                                        }
+                                    },
+                                    "weight": 0.25
+                                },
+                                {
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                2
+                                            ]
+                                        }
+                                    },
+                                    "weight": 0.05
+                                },
+                                {
+                                    "filter": {
+                                        "terms": {
+                                            "namespace": [
+                                                3
+                                            ]
+                                        }
+                                    },
+                                    "weight": 0.0125
                                 }
                             ]
                         }

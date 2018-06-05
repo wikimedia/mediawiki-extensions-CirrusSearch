@@ -33,6 +33,16 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	const KEYWORD = 'prefix';
 
 	/**
+	 * key value to set in the array returned by KeywordFeature::parsedValue()
+	 * to instruct the parser that additional namespaces are needed
+	 * for the query to function properly.
+	 * NOTE: a value of 'all' means that all namespaces are required
+	 * are required.
+	 * @see KeywordFeature::parsedValue()
+	 */
+	const PARSED_NAMESPACES = 'parsed_namespaces';
+
+	/**
 	 * @return bool
 	 */
 	public function greedy() {
@@ -71,9 +81,14 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		if ( isset( $parsedValue['namespace'] ) ) {
 			$namespace = $parsedValue['namespace'];
 		}
-		// Re-activate once InputBox is fixed to generate proper prefix queries
-		// $this->deprecationWarning( $context, $context->getNamespaces(), $namespace );
-		$context->setNamespaces( $namespace !== null ? [ $namespace ] : $namespace );
+		if ( $namespace === null && $context->getNamespaces() ) {
+			$context->setNamespaces( null );
+		} elseif ( $context->getNamespaces() && !in_array( $namespace, $context->getNamespaces() ) ) {
+			$namespaces = $context->getNamespaces();
+			$namespaces[] = $namespace;
+			$context->setNamespaces( $namespaces );
+		}
+
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
 		return [ $prefixQuery, false ];
 	}
@@ -112,9 +127,16 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 			$value = null;
 		}
 		if ( $namespaces !== null ) {
-			return [ 'namespace' => reset( $namespaces ), 'value' => $value ];
+			return [
+				'namespace' => reset( $namespaces ),
+				'value' => $value,
+				self::PARSED_NAMESPACES => $namespaces,
+			];
 		} else {
-			return [ 'value' => $value ];
+			return [
+				'value' => $value,
+				self::PARSED_NAMESPACES => 'all',
+			];
 		}
 	}
 
@@ -141,21 +163,6 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		}
 
 		return $nsFilter !== null ? $nsFilter : $prefixQuery;
-	}
-
-	/**
-	 * @param array|null $searchNamespaces
-	 * @param int|null $namespace
-	 * @param WarningCollector $warningCollector
-	 */
-	private function deprecationWarning( WarningCollector $warningCollector, array $searchNamespaces = null, $namespace = null ) {
-		if ( ( $searchNamespaces === [] || $searchNamespaces === null ) ) {
-			return;
-		}
-		if ( $namespace !== null && in_array( $namespace, $searchNamespaces ) ) {
-			return;
-		}
-		$warningCollector->addWarning( 'cirrussearch-keyword-prefix-ns-mismatch' );
 	}
 
 	/**

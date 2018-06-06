@@ -116,13 +116,10 @@ class DeepcatFeature extends SimpleKeywordFeature implements FilterQueryFeature 
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$categories = $this->doExpand( $value, $context );
-		if ( $categories === [] ) {
+		$filter = $this->doGetFilterQuery( $this->doExpand( $value, $context ) );
+		if ( $filter === null ) {
 			$context->setResultsPossible( false );
-			return [ null, false ];
 		}
-
-		$filter = $this->doGetFilterQuery( $categories );
 
 		return [ $filter, false ];
 	}
@@ -231,18 +228,18 @@ SPARQL;
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		$categories = $context->getKeywordExpandedData( $node );
-		if ( $categories == [] ) {
-			return null;
-		}
-		return $this->doGetFilterQuery( $categories );
+		return $this->doGetFilterQuery( $context->getKeywordExpandedData( $node ) );
 	}
 
 	/**
 	 * @param array $categories
-	 * @return \Elastica\Query\BoolQuery
+	 * @return \Elastica\Query\BoolQuery|null
 	 */
 	protected function doGetFilterQuery( array $categories ) {
+		if ( $categories == [] ) {
+			return null;
+		}
+
 		$filter = new \Elastica\Query\BoolQuery();
 		foreach ( $categories as $cat ) {
 			$filter->addShould( QueryHelper::matchPage( 'category.lowercase_keyword', $cat ) );

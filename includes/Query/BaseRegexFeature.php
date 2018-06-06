@@ -6,7 +6,6 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Extra\Query\SourceRegex;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
-use CirrusSearch\Search\Escaper;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
@@ -22,6 +21,8 @@ use Wikimedia\Assert\Assert;
  *
  * Examples:
  *   insource:/abc?/
+ *
+ * @see SourceRegex
  */
 abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	/**
@@ -60,11 +61,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	private $shardTimeout;
 
 	/**
-	 * @var Escaper
-	 */
-	protected $escaper;
-
-	/**
 	 * @param SearchConfig $config
 	 * @param string[] $fields
 	 */
@@ -76,7 +72,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		Assert::precondition( count( $fields ) > 0, 'must have at least one field' );
 		$this->fields = $fields;
 		$this->shardTimeout = $config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
-		$this->escaper = new Escaper( $config->get( 'LanguageCode' ), $config->get( 'CirrusSearchAllowLeadingWildcard' ) );
 	}
 
 	/**
@@ -184,11 +179,13 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	}
 
 	/**
+	 * Obtain the filter when the keyword is used in non regex mode.
+	 * This method will be called on syntax like keyword:word or keyword:"phrase"
 	 * @param KeywordFeatureNode $node
 	 * @param QueryBuildingContext $context
 	 * @return AbstractQuery|null
 	 */
-	abstract public function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context );
+	abstract protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context );
 
 	/**
 	 * @param $pattern

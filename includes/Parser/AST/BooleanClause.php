@@ -1,14 +1,15 @@
 <?php
 
-
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitable;
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 use Wikimedia\Assert\Assert;
 
 /**
  * A boolean clause
  */
-class BooleanClause {
+class BooleanClause implements Visitable {
 	const MUST = 'MUST';
 	const SHOULD = 'SHOULD';
 	const MUST_NOT = 'MUST_NOT';
@@ -38,9 +39,8 @@ class BooleanClause {
 	 */
 	public function __construct( ParsedNode $node, $occur, $explicit ) {
 		$this->node = $node;
-		Assert::parameter( $occur === self::MUST || $occur === self::SHOULD || $occur === self::MUST_NOT,
-			'$occur', 'occur param must be either: MUST, SHOULD or MUST_NOT' );
 		$this->occur = $occur;
+		self::validateOccur( $occur );
 		$this->explicit = $explicit;
 	}
 
@@ -51,6 +51,14 @@ class BooleanClause {
 		return $this->node;
 	}
 
+	/**
+	 * Check if $occur is valid
+	 * @param int $occur
+	 */
+	public static function validateOccur( $occur ) {
+		Assert::parameter( $occur === self::MUST || $occur === self::SHOULD || $occur === self::MUST_NOT,
+			'$occur', 'must be either: MUST, SHOULD or MUST_NOT' );
+	}
 	/**
 	 * Specifies how this clause is to occur in matching documents
 	 * @return string
@@ -64,5 +72,12 @@ class BooleanClause {
 	 */
 	public function isExplicit() {
 		return $this->explicit;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitBooleanClause( $this );
 	}
 }

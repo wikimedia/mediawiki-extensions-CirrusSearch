@@ -1,7 +1,8 @@
 <?php
 
-
 namespace CirrusSearch\Parser\AST;
+
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 
 /**
  * A phrase
@@ -100,5 +101,12 @@ class PhraseQueryNode extends ParsedNode {
 	 */
 	public function isUnbalanced() {
 		return $this->unbalanced;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitPhraseQueryNode( $this );
 	}
 }

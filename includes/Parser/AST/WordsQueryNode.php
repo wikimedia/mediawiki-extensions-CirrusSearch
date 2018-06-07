@@ -3,6 +3,8 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitor;
+
 /**
  * Simple query node made of words.
  */
@@ -40,5 +42,12 @@ class WordsQueryNode extends ParsedNode {
 	 */
 	public function getWords() {
 		return $this->words;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitWordsQueryNode( $this );
 	}
 }

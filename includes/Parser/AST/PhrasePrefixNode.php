@@ -1,7 +1,8 @@
 <?php
 
-
 namespace CirrusSearch\Parser\AST;
+
+use CirrusSearch\Parser\AST\Visitor\Visitor;
 
 /**
  * A phrase prefix.
@@ -39,5 +40,12 @@ class PhrasePrefixNode extends ParsedNode {
 	 */
 	public function getPhrase() {
 		return $this->phrase;
+	}
+
+	/**
+	 * @param Visitor $visitor
+	 */
+	function accept( Visitor $visitor ) {
+		$visitor->visitPhrasePrefixNode( $this );
 	}
 }

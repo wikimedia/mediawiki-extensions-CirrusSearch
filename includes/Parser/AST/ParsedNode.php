@@ -2,12 +2,13 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\Parser\AST\Visitor\Visitable;
 use Wikimedia\Assert\Assert;
 
 /**
  * Base class representing a "node" in the query AST.
  */
-abstract class ParsedNode {
+abstract class ParsedNode implements Visitable {
 	/**
 	 * @var int
 	 */

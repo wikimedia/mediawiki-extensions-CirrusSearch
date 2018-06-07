@@ -464,7 +464,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @param string        $fieldSuffix suffix to add to field names
 	 * @param boolean       $allFieldAllowed can we use the all field?  False for
 	 *  collecting phrases for the highlighter.
-	 * @return \string[] array of fields to query
+	 * @return string[] array of fields to query
 	 */
 	private static function buildFullTextSearchFields( SearchContext $context, $weight, $fieldSuffix, $allFieldAllowed ) {
 		$searchWeights = $context->getConfig()->get( 'CirrusSearchWeights' );

@@ -8,7 +8,6 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\Search\SourceTextIndexField;
 use Hooks;
-use MediaWiki\MediaWikiServices;
 use SearchIndexField;
 
 /**
@@ -69,15 +68,9 @@ class MappingConfigBuilder {
 	 */
 	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
-		if ( is_null( $config ) ) {
-			$config =
-				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
-		}
-
-		$this->config = $config;
-		$this->engine = new \CirrusSearch();
-		$this->engine->setConfig( $config );
-		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $config );
+		$this->engine = new \CirrusSearch( null, $config );
+		$this->config = $this->engine->getConfig();
+		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 	}
 
 	/**

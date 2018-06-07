@@ -80,7 +80,7 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Search configuration.
-	 * @var SearchConfig
+	 * @var SearchConfig immutable
 	 */
 	private $config;
 
@@ -104,16 +104,20 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private $dumpAndDie = true;
 
-	public function __construct( $baseName = null ) {
+	/**
+	 * CirrusSearch constructor.
+	 * @param string|null $baseName
+	 * @param SearchConfig|null $config
+	 * @throws ConfigException
+	 */
+	public function __construct( $baseName = null, SearchConfig $config = null ) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests accross multiple clusters
 		UserTesting::getInstance();
-		$this->config = MediaWikiServices::getInstance()
+		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		$this->indexBaseName = $baseName === null
-			? $this->config->get( SearchConfig::INDEX_BASE_NAME )
-			: $baseName;
+		$this->indexBaseName = $baseName ?? $this->config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
@@ -131,14 +135,6 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function getConnection() {
 		return $this->connection;
-	}
-
-	/**
-	 * Set search config
-	 * @param SearchConfig $config
-	 */
-	public function setConfig( SearchConfig $config ) {
-		$this->config = $config;
 	}
 
 	/**

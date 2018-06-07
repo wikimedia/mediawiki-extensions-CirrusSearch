@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -52,6 +54,11 @@ class ParsedQuery {
 	 * @var array|string
 	 */
 	private $requiredNamespaces;
+
+	/**
+	 * @var CrossSearchStrategy|null (lazy loaded)
+	 */
+	private $crossSearchStrategy;
 
 	/**
 	 * ParsedQuery constructor.
@@ -121,6 +128,35 @@ class ParsedQuery {
 	 */
 	public function getRequiredNamespaces() {
 		return $this->requiredNamespaces;
+	}
+
+	/**
+	 * Get the cross search strategy supported by this query.
+	 *
+	 * @return CrossSearchStrategy
+	 */
+	public function getCrossSearchStrategy() {
+		if ( $this->crossSearchStrategy === null ) {
+			$visitor = new class() extends KeywordNodeVisitor {
+				public $strategy;
+
+				public function __construct( array $excludeOccurs = [], array $keywordClasses = [] ) {
+					parent::__construct( $excludeOccurs, $keywordClasses );
+					$this->strategy = CrossSearchStrategy::allWikisStrategy();
+				}
+
+				/**
+				 * @param KeywordFeatureNode $node
+				 */
+				function doVisitKeyword( KeywordFeatureNode $node ) {
+					$this->strategy = $this->strategy
+						->intersect( $node->getKeyword()->getCrossSearchStrategy( $node ) );
+				}
+			};
+			$this->root->accept( $visitor );
+			$this->crossSearchStrategy = $visitor->strategy;
+		}
+		return $this->crossSearchStrategy;
 	}
 
 	/**

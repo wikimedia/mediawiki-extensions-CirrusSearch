@@ -70,7 +70,7 @@ class CrossSearchStrategy {
 	 * @param bool $crossLanguageSearchSupported
 	 * @param bool $extraIndicesSupported
 	 */
-	private function __construct( $crossProjectSearchSupported, $crossLanguageSearchSupported, $extraIndicesSupported ) {
+	public function __construct( $crossProjectSearchSupported, $crossLanguageSearchSupported, $extraIndicesSupported ) {
 		$this->crossProjectSearchSupported = $crossProjectSearchSupported;
 		$this->crossLanguageSearchSupported = $crossLanguageSearchSupported;
 		$this->extraIndicesSearchSupported = $extraIndicesSupported;
@@ -102,5 +102,27 @@ class CrossSearchStrategy {
 	 */
 	public function isExtraIndicesSearchSupported() {
 		return $this->extraIndicesSearchSupported;
+	}
+
+	/**
+	 * Intersect this strategy with other.
+	 * @param CrossSearchStrategy $other
+	 * @return CrossSearchStrategy
+	 */
+	public function intersect( CrossSearchStrategy $other ) {
+		if ( $other === self::hostWikiOnlyStrategy() || $this === self::hostWikiOnlyStrategy() ) {
+			return self::hostWikiOnlyStrategy();
+		}
+		$crossL = $other->crossLanguageSearchSupported && $this->crossLanguageSearchSupported;
+		$crossP = $other->crossProjectSearchSupported && $this->crossProjectSearchSupported;
+		$otherI = $other->extraIndicesSearchSupported && $this->extraIndicesSearchSupported;
+		if ( $crossL === $crossP && $crossP === $otherI ) {
+			if ( $crossL ) {
+				return self::allWikisStrategy();
+			} else {
+				return self::hostWikiOnlyStrategy();
+			}
+		}
+		return new CrossSearchStrategy( $crossP, $crossL, $otherI );
 	}
 }

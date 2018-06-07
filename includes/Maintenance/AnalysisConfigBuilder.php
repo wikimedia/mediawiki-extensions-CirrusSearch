@@ -1294,7 +1294,7 @@ STEMMER_RULES
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
-		'extra-analysis' => [ 'sr' => 'serbian' ],
+		'extra-analysis-serbian' => [ 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
 	];
 }

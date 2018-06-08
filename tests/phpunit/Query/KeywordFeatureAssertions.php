@@ -344,7 +344,7 @@ class KeywordFeatureAssertions {
 
 				$mock = $context->expects( $this->testCase->exactly( count( $highlightField ) ) )
 					->method( 'addHighlightField' );
-				call_user_func_array( [ $mock, 'withConsecutive' ], $calls );
+				$mock->withConsecutive( ...$calls );
 			}
 		} else {
 			$context->expects( $this->testCase->never() )

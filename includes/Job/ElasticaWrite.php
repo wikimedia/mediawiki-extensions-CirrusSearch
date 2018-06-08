@@ -123,10 +123,7 @@ class ElasticaWrite extends Job {
 		foreach ( $connections as $clusterName => $conn ) {
 			$sender = new DataSender( $conn, $this->searchConfig );
 			try {
-				$status = call_user_func_array(
-					[ $sender, $this->params['method'] ],
-					$arguments
-				);
+				$status = $sender->{$this->params['method']}( ...$arguments );
 			} catch ( \Exception $e ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 					"Exception thrown while running DataSender::{method} in cluster {cluster}: {errorMessage}",

@@ -105,14 +105,18 @@ class Util {
 	 * @param callable $callback The function to wrap
 	 * @return callable The original callback wrapped to collect pool counter stats
 	 */
-	private static function wrapWithPoolStats( $startPoolWork, $type, $isSuccess, $callback ) {
+	private static function wrapWithPoolStats( $startPoolWork,
+		$type,
+		$isSuccess,
+		callable $callback
+	) {
 		return function () use ( $type, $isSuccess, $callback, $startPoolWork ) {
 			MediaWikiServices::getInstance()->getStatsdDataFactory()->timing(
 				self::getPoolStatsKey( $type, $isSuccess ),
 				intval( 1000 * ( microtime( true ) - $startPoolWork ) )
 			);
 
-			return call_user_func_array( $callback, func_get_args() );
+			return $callback( ...func_get_args() );
 		};
 	}
 

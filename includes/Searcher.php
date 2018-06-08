@@ -364,7 +364,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$status->setResult( true, $response );
 
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
-			call_user_func_array( [ $status, 'warning' ], $warning );
+			$status->warning( ...$warning );
 		}
 
 		return $status;
@@ -988,7 +988,7 @@ class Searcher extends ElasticsearchIntermediary {
 	private function emptyResultSet() {
 		$status = Status::newGood( new EmptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
-			call_user_func_array( [ $status, 'warning' ], $warning );
+			$status->warning( ...$warning );
 		}
 		return $status;
 	}

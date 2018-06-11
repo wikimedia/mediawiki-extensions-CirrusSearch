@@ -255,10 +255,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * builder can be used to build a degraded query if necessary.
 	 *
 	 * @param string $term term to search
-	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
 	 * @return FullTextQueryBuilder
 	 */
-	protected function buildFullTextSearch( $term, $showSuggestion ) {
+	protected function buildFullTextSearch( $term ) {
 		// Convert the unicode character 'ideographic whitespace' into standard
 		// whitespace. Cirrussearch treats them both as normal whitespace, but
 		// the preceding isn't appropriately trimmed.
@@ -291,9 +290,10 @@ class Searcher extends ElasticsearchIntermediary {
 			throw new RuntimeException( "Bad query builder object override, must implement FullTextQueryBuilder!" );
 		}
 
-		$showSuggestion = $showSuggestion && $this->offset == 0
-			&& $this->config->get( 'CirrusSearchEnablePhraseSuggest' );
-		$qb->build( $this->searchContext, $term, $showSuggestion );
+		if ( $this->offset != 0 || !$this->config->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
+			$this->searchContext->setSuggestion( false );
+		}
+		$qb->build( $this->searchContext, $term );
 
 		return $qb;
 	}
@@ -307,6 +307,7 @@ class Searcher extends ElasticsearchIntermediary {
 	public function searchText( $term, $showSuggestion ) {
 		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
 		$this->searchContext->setOriginalSearchTerm( $term );
+		$this->searchContext->setSuggestion( $showSuggestion );
 		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}
@@ -315,7 +316,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$interleaveSearcher = $this->buildInterleaveSearcher();
 
 		$searches = [];
-		$qb = $this->buildFullTextSearch( $term, $showSuggestion );
+		$qb = $this->buildFullTextSearch( $term );
 		$searches[] = $this->buildSearch();
 
 		if ( !$this->searchContext->areResultsPossible() ) {
@@ -323,7 +324,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		if ( $interleaveSearcher !== null ) {
-			$interleaveSearcher->buildFullTextSearch( $term, $showSuggestion );
+			$interleaveSearcher->buildFullTextSearch( $term );
 			$interleaveSearch = $interleaveSearcher->buildSearch();
 			if ( $this->areSearchesTheSame( $searches[0], $interleaveSearch ) ) {
 				$interleaveSearcher = null;

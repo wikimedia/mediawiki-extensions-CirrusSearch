@@ -4,15 +4,18 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
+use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\ParsedNode;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\AST\ParseWarning;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
+use CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor;
 use CirrusSearch\Parser\AST\WordsQueryNode;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\KeywordFeature;
+use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Search\Escaper;
 use CirrusSearch\Util;
 use Wikimedia\Assert\Assert;
@@ -263,7 +266,8 @@ class QueryStringRegexParser implements QueryParser {
 		} );
 		reset( $this->preTaggedNodes );
 		$root = $this->expression();
-		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups, $this->warnings );
+		$additionalNamespaces = $this->extractRequiredNamespaces( $root );
+		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups, $additionalNamespaces, $this->warnings );
 	}
 
 	private function createClause( ParsedNode $node, $explicit = false, $occur = null ) {
@@ -478,6 +482,7 @@ class QueryStringRegexParser implements QueryParser {
 		}
 		return $this->leaf();
 	}
+
 	private function leaf() {
 		$node = $this->token->getNode();
 		$this->advance();
@@ -681,5 +686,41 @@ class QueryStringRegexParser implements QueryParser {
 	 */
 	private function boolToOccur( $boolOperator ) {
 		return $boolOperator === Token::BOOL_OR ? BooleanClause::SHOULD : BooleanClause::MUST;
+	}
+
+	/**
+	 * @param ParsedNode $root
+	 * @return array|string array of additional namespaces, 'all' for everything
+	 */
+	private function extractRequiredNamespaces( ParsedNode $root ) {
+		$total = [];
+		$visitor = new class( [], [ PrefixFeature::class ] ) extends KeywordNodeVisitor {
+			/** @var string|int[] */
+			public $total = [];
+
+			/**
+			 * @param KeywordFeatureNode $node
+			 */
+			function doVisitKeyword( KeywordFeatureNode $node ) {
+				if ( $this->total === 'all' ) {
+					return;
+				}
+
+				Assert::parameter( $node->getKeyword() instanceof PrefixFeature, '$node', 'must be parsed from PrefixFeature' );
+				$additional = $node->getParsedValue()[PrefixFeature::PARSED_NAMESPACES];
+				if ( $additional === 'all' ) {
+					$this->total = 'all';
+					return;
+				}
+				Assert::precondition( is_array( $additional ),
+					'PrefixFeature::PARSED_NAMESPACES key must point to an array or "all"' );
+
+				$this->total = array_merge( $this->total, array_filter( $additional, function ( $v ) {
+					return !in_array( $v, $this->total );
+				} ) );
+			}
+		};
+		$root->accept( $visitor );
+		return $visitor->total;
 	}
 }

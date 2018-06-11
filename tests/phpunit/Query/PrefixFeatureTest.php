@@ -4,6 +4,9 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Parser\FullTextKeywordRegistry;
+use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
+use CirrusSearch\Search\Escaper;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
@@ -196,6 +199,9 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$parsedValue = [ 'value' => $filterValue ];
 		if ( $namespace !== null ) {
 			$parsedValue['namespace'] = $namespace;
+			$parsedValue[PrefixFeature::PARSED_NAMESPACES] = [ $namespace ];
+		} else {
+			$parsedValue[PrefixFeature::PARSED_NAMESPACES] = 'all';
 		}
 		$this->assertParsedValue( $feature, $query, $parsedValue, [] );
 		$this->assertExpandedData( $feature, $query, [], [] );
@@ -203,8 +209,13 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$this->assertRemaining( $feature, $query, $expectedRemaining );
 
 		$context = new SearchContext( new HashSearchConfig( [] ),
-			$namespace !== null ? [ $namespace ] : null );
+			[ -1 ] );
 		$feature->apply( $context, $query );
+		if ( $namespace === null ) {
+			$this->assertNull( $context->getNamespaces() );
+		} else {
+			$this->assertContains( $namespace, $context->getNamespaces() );
+		}
 		$this->assertEmpty( $context->getWarnings() );
 	}
 
@@ -217,47 +228,67 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 			'prefix wants all but context is NS_MAIN' => [
 				'prefix:all:',
 				[ NS_MAIN ],
-				true,
+				null,
+				'all'
 			],
 			'prefix wants Help but context is NS_MAIN' => [
 				'prefix:Help:Test',
 				[ NS_MAIN, NS_TALK ],
-				true,
+				[ NS_MAIN, NS_TALK, NS_HELP ],
+				[ NS_HELP ],
 			],
 			'prefix wants main but context is Help' => [
 				'prefix:Test',
 				[ NS_HELP ],
-				true,
+				[ NS_HELP, NS_MAIN ],
+				[ NS_MAIN ]
 			],
 			'prefix wants NS_MAIN and context has it' => [
 				'prefix:Test',
 				[ NS_MAIN, NS_HELP ],
-				false,
+				[ NS_MAIN, NS_HELP ],
+				[ NS_MAIN ]
 			],
 			'prefix wants all and context is all' => [
 				'prefix:all:',
 				[],
-				false,
+				[],
+				'all'
 			],
 			'prefix wants all and context is null' => [
 				'prefix:all:',
 				null, // means all
-				false,
+				null,
+				'all'
+			],
+			'combined prefix wants main but context is Help' => [
+				'foo prefix:Test',
+				[ NS_HELP ],
+				[ NS_HELP, NS_MAIN ],
+				[ NS_MAIN ]
+			],
+			'combined negated prefix wants main but context is Help' => [
+				'foo -prefix:Test',
+				[ NS_HELP ],
+				[ NS_HELP, NS_MAIN ],
+				[ NS_MAIN ]
 			],
 		];
 	}
 	/**
 	 * @dataProvider provideBadPrefixQueries()
+	 * @covers \CirrusSearch\Parser\AST\KeywordFeatureNode
+	 * @covers \CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
 	 */
-	public function testDeprecationWarning( $query, $namespace, $hasWarning ) {
-		$this->markTestSkipped( "Not activated yet" );
-		$context = new SearchContext( new HashSearchConfig( [] ), $namespace );
+	public function testRequiredNamespaces( $query, $namespace, $expectedNamespaces, $additionalNs ) {
+		$config = new HashSearchConfig( [] );
+		$context = new SearchContext( $config, $namespace );
 		$feature = new PrefixFeature();
 		$feature->apply( $context, $query );
-		$expectedWarnings = [];
-		if ( $hasWarning ) {
-			$expectedWarnings[] = [ 'cirrussearch-keyword-prefix-ns-mismatch' ];
-		}
-		$this->assertArrayEquals( $expectedWarnings, $context->getWarnings() );
+		$this->assertEquals( $expectedNamespaces, $context->getNamespaces() );
+		$parser = new QueryStringRegexParser( new FullTextKeywordRegistry( $config ), new Escaper( 'en',
+			true ), 'none' );
+		$parsedQuery = $parser->parse( $query );
+		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
 	}
 }

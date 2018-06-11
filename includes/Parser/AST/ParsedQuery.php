@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Parser\AST;
 
+use Wikimedia\Assert\Assert;
+
 /**
  * Parsed query
  */
@@ -47,19 +49,28 @@ class ParsedQuery {
 	private $parseWarnings;
 
 	/**
+	 * @var array|string
+	 */
+	private $requiredNamespaces;
+
+	/**
 	 * ParsedQuery constructor.
 	 * @param ParsedNode $root
 	 * @param string $query cleaned up query string
 	 * @param string $rawQuery original query as received by the search engine
 	 * @param bool[] $queryCleanups indexed by cleanup type (non-empty when $query !== $rawQuery)
+	 * @param array|string $requiredNamespaces
 	 * @param ParseWarning[] $parseWarnings list of warnings detected during parsing
 	 */
-	public function __construct( ParsedNode $root, $query, $rawQuery, $queryCleanups, array $parseWarnings = [] ) {
+	public function __construct( ParsedNode $root, $query, $rawQuery, $queryCleanups, $requiredNamespaces, array $parseWarnings = [] ) {
 		$this->root = $root;
 		$this->query = $query;
 		$this->rawQuery = $rawQuery;
 		$this->queryCleanups = $queryCleanups;
 		$this->parseWarnings = $parseWarnings;
+		Assert::parameter( is_array( $requiredNamespaces ) || $requiredNamespaces === 'all',
+			'$requiredNamespaces', 'must be an array or "all"' );
+		$this->requiredNamespaces = $requiredNamespaces;
 	}
 
 	/**
@@ -106,6 +117,13 @@ class ParsedQuery {
 	}
 
 	/**
+	 * @return array|string array of additional namespaces or 'all' if all namespaces required
+	 */
+	public function getRequiredNamespaces() {
+		return $this->requiredNamespaces;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function toArray() {
@@ -113,6 +131,9 @@ class ParsedQuery {
 			'query' => $this->query,
 			'rawQuery' => $this->rawQuery
 		];
+		if ( !empty( $this->requiredNamespaces ) ) {
+			$ar['requiredNamespaces'] = $this->requiredNamespaces;
+		}
 		if ( !empty( $this->queryCleanups ) ) {
 			$ar['queryCleanups'] = $this->queryCleanups;
 		}

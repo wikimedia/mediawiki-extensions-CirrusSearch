@@ -9,7 +9,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwikibooks_content\/page\/_search",
+        "path": "itwikibooks\/page\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -147,7 +147,10 @@
                                     {
                                         "terms": {
                                             "namespace": [
-                                                0
+                                                0,
+                                                1,
+                                                2,
+                                                3
                                             ]
                                         }
                                     }
@@ -175,6 +178,36 @@
                                             "missing": 0,
                                             "modifier": "log2p"
                                         }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.25
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.05
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.0125
                                     }
                                 ]
                             }
@@ -206,7 +239,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwikivoyage_content\/page\/_search",
+        "path": "itwikivoyage\/page\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -344,7 +377,10 @@
                                     {
                                         "terms": {
                                             "namespace": [
-                                                0
+                                                0,
+                                                1,
+                                                2,
+                                                3
                                             ]
                                         }
                                     }
@@ -360,6 +396,50 @@
                 }
             },
             "rescore": [
+                {
+                    "query": {
+                        "query_weight": 1,
+                        "rescore_query": {
+                            "function_score": {
+                                "functions": [
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.25
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.05
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.0125
+                                    }
+                                ]
+                            }
+                        },
+                        "rescore_query_weight": 1,
+                        "score_mode": "multiply"
+                    },
+                    "window_size": 8192
+                },
                 {
                     "query": {
                         "query_weight": 1,
@@ -405,7 +485,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "itwiktionary_content\/page\/_search",
+        "path": "itwiktionary\/page\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -543,7 +623,10 @@
                                     {
                                         "terms": {
                                             "namespace": [
-                                                0
+                                                0,
+                                                1,
+                                                2,
+                                                3
                                             ]
                                         }
                                     }
@@ -571,6 +654,36 @@
                                             "missing": 0,
                                             "modifier": "log2p"
                                         }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.25
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.05
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.0125
                                     }
                                 ]
                             }
@@ -602,7 +715,7 @@
             "search_type": "dfs_query_then_fetch",
             "timeout": "20s"
         },
-        "path": "wiki_content\/page\/_search",
+        "path": "wiki\/page\/_search",
         "query": {
             "_source": [
                 "namespace",
@@ -740,7 +853,10 @@
                                     {
                                         "terms": {
                                             "namespace": [
-                                                0
+                                                0,
+                                                1,
+                                                2,
+                                                3
                                             ]
                                         }
                                     }
@@ -768,6 +884,36 @@
                                             "missing": 0,
                                             "modifier": "log2p"
                                         }
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    1
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.25
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    2
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.05
+                                    },
+                                    {
+                                        "filter": {
+                                            "terms": {
+                                                "namespace": [
+                                                    3
+                                                ]
+                                            }
+                                        },
+                                        "weight": 0.0125
                                     }
                                 ]
                             }

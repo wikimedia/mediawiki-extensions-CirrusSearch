@@ -4,9 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Parser\FullTextKeywordRegistry;
-use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
-use CirrusSearch\Search\Escaper;
+use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
@@ -286,8 +284,7 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$feature = new PrefixFeature();
 		$feature->apply( $context, $query );
 		$this->assertEquals( $expectedNamespaces, $context->getNamespaces() );
-		$parser = new QueryStringRegexParser( new FullTextKeywordRegistry( $config ), new Escaper( 'en',
-			true ), 'none' );
+		$parser = QueryParserFactory::newFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
 	}

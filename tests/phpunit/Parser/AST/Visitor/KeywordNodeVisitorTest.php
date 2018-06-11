@@ -6,11 +6,9 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
-use CirrusSearch\Parser\FullTextKeywordRegistry;
-use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
+use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\FilterQueryFeature;
 use CirrusSearch\Query\InTitleFeature;
-use CirrusSearch\Search\Escaper;
 use PHPUnit\Framework\TestCase;
 
 class KeywordNodeVisitorTest extends CirrusTestCase {
@@ -103,9 +101,7 @@ class KeywordNodeVisitorTest extends CirrusTestCase {
 	 * @dataProvider provideQueries
 	 */
 	public function test( $term, array $states, $classFilter, $exlusionFilter ) {
-		$config = new HashSearchConfig( [] );
-		$escaper = new Escaper( 'en', true );
-		$parser = new QueryStringRegexParser( new FullTextKeywordRegistry( $config ), $escaper, 'all' );
+		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$visitor = new class( $exlusionFilter, $classFilter, $states ) extends KeywordNodeVisitor {
 			/**
 			 * @var int

@@ -134,6 +134,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Parser\\FullTextKeywordRegistry' => __DIR__ . '/includes/Parser/FullTextKeywordRegistry.php',
 	'CirrusSearch\\Parser\\KeywordRegistry' => __DIR__ . '/includes/Parser/KeywordRegistry.php',
 	'CirrusSearch\\Parser\\QueryParser' => __DIR__ . '/includes/Parser/QueryParser.php',
+	'CirrusSearch\\Parser\\QueryParserFactory' => __DIR__ . '/includes/Parser/QueryParserFactory.php',
 	'CirrusSearch\\Parser\\QueryStringRegex\\KeywordParser' => __DIR__ . '/includes/Parser/QueryStringRegex/KeywordParser.php',
 	'CirrusSearch\\Parser\\QueryStringRegex\\NonPhraseParser' => __DIR__ . '/includes/Parser/QueryStringRegex/NonPhraseParser.php',
 	'CirrusSearch\\Parser\\QueryStringRegex\\OffsetTracker' => __DIR__ . '/includes/Parser/QueryStringRegex/OffsetTracker.php',

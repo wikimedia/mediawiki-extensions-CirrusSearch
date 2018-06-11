@@ -583,47 +583,6 @@ class FullTextResultsType extends BaseResultsType {
 	}
 }
 
-/**
- * Returns page ids. Less CPU load on Elasticsearch since all we're returning
- * is an id.
- */
-class IdResultsType implements ResultsType {
-	/**
-	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
-	 */
-	public function getSourceFiltering() {
-		return false;
-	}
-
-	public function getStoredFields() {
-		return [];
-	}
-
-	public function getHighlightingConfiguration( array $extraHighlightFields ) {
-		return null;
-	}
-
-	/**
-	 * @param SearchContext $context
-	 * @param \Elastica\ResultSet $resultSet
-	 * @return string[]
-	 */
-	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $resultSet ) {
-		$results = [];
-		foreach ( $resultSet->getResults() as $r ) {
-			$results[] = $r->getId();
-		}
-		return $results;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function createEmptyResult() {
-		return [];
-	}
-}
-
 class SingleAggResultsType implements ResultsType {
 	/** @var string Name of aggregation */
 	private $name;

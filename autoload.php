@@ -213,7 +213,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Search\\Filters' => __DIR__ . '/includes/Search/Filters.php',
 	'CirrusSearch\\Search\\FullTextResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\FunctionScoreBuilder' => __DIR__ . '/includes/Search/Rescore/FunctionScoreBuilder.php',
-	'CirrusSearch\\Search\\IdResultsType' => __DIR__ . '/includes/Search/ResultsType.php',
 	'CirrusSearch\\Search\\IntegerIndexField' => __DIR__ . '/includes/Search/IntegerIndexField.php',
 	'CirrusSearch\\Search\\InterleavedResultSet' => __DIR__ . '/includes/Search/InterleavedResultSet.php',
 	'CirrusSearch\\Search\\KeywordIndexField' => __DIR__ . '/includes/Search/KeywordIndexField.php',

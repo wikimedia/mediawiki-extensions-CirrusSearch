@@ -752,7 +752,7 @@ class SearchContext implements WarningCollector {
 	 */
 	public function getResultsType() {
 		if ( $this->resultsType === null ) {
-			return new FullTextResultsType( FullTextResultsType::HIGHLIGHT_ALL );
+			return new FullTextResultsType();
 		}
 		return $this->resultsType;
 	}

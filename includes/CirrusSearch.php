@@ -354,33 +354,13 @@ class CirrusSearch extends SearchEngine {
 		} else {
 			$searcher->updateNamespacesFromQuery( $term );
 		}
-		$highlightingConfig = FullTextResultsType::HIGHLIGHT_ALL;
 		if ( $this->request ) {
 			if ( $this->request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
 				$this->showSuggestion = false;
 			}
-			if ( $this->request->getVal( 'cirrusSuppressTitleHighlight' ) !== null ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_TITLE;
-			}
-			if ( $this->request->getVal( 'cirrusSuppressAltTitle' ) !== null ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLE;
-			}
-			if ( $this->request->getVal( 'cirrusSuppressSnippet' ) !== null ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_SNIPPET;
-			}
-			if ( $this->request->getVal( 'cirrusHighlightDefaultSimilarity' ) === 'no' ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_WITH_DEFAULT_SIMILARITY;
-			}
-			if ( $this->request->getVal( 'cirrusHighlightAltTitleWithPostings' ) === 'no' ) {
-				$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_ALT_TITLES_WITH_POSTINGS;
-			}
-		}
-		if ( $this->namespaces && !in_array( NS_FILE, $this->namespaces ) ) {
-			$highlightingConfig ^= FullTextResultsType::HIGHLIGHT_FILE_TEXT;
 		}
 
-		$resultsType = new FullTextResultsType( $highlightingConfig );
-		$searcher->setResultsType( $resultsType );
+		$searcher->setResultsType( new FullTextResultsType() );
 		$status = $searcher->searchText( $term, $this->showSuggestion );
 
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();
@@ -400,7 +380,7 @@ class CirrusSearch extends SearchEngine {
 			$config->isCrossProjectSearchEnabled() &&
 			( $searcher->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
-			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $highlightingConfig );
+			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces );
 			$iwSearch->setOptionsFromRequest( $this->request );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
 			if ( $interwikiResults !== null ) {

@@ -30,13 +30,12 @@ class ResultsTypeTest extends CirrusTestCase {
 	 * @dataProvider fullTextHighlightingConfigurationTestCases
 	 */
 	public function testFullTextHighlightingConfiguration(
-		$highlightingConfig,
 		$useExperimentalHighlighter,
 		array $highlightSource,
 		array $expected
 	) {
 		$this->setMwGlobals( 'wgCirrusSearchUseExperimentalHighlighter', $useExperimentalHighlighter );
-		$type = new FullTextResultsType( $highlightingConfig );
+		$type = new FullTextResultsType();
 		$this->assertEquals( $expected, $type->getHighlightingConfiguration( $highlightSource ) );
 	}
 
@@ -50,7 +49,6 @@ class ResultsTypeTest extends CirrusTestCase {
 
 		return [
 			'default configuration' => [
-				FullTextResultsType::HIGHLIGHT_ALL,
 				false,
 				[],
 				[
@@ -110,7 +108,6 @@ class ResultsTypeTest extends CirrusTestCase {
 				]
 			],
 			'default configuration with experimental highlighter' => [
-				FullTextResultsType::HIGHLIGHT_ALL,
 				true,
 				[],
 				[
@@ -190,7 +187,6 @@ class ResultsTypeTest extends CirrusTestCase {
 				],
 			],
 			'source configuration with experimental-highlighter' => [
-				FullTextResultsType::HIGHLIGHT_ALL,
 				true,
 				[
 					'source_text' => [

@@ -34,23 +34,16 @@ class InterwikiSearcher extends Searcher {
 	const MAX_COMPLEXITY = 10;
 
 	/**
-	 * @var int Highlighting bitfield
-	 */
-	private $highlightingConfig;
-
-	/**
 	 * @param Connection $connection
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
 	 * @param User|null $user
-	 * @param int $highlightingConfig Bitmask of FullTextResultsType::HIGHLIGHT_… constants
 	 */
 	public function __construct(
 		Connection $connection,
 		SearchConfig $config,
 		array $namespaces = null,
-		User $user = null,
-		$highlightingConfig = FullTextResultsType::HIGHLIGHT_NONE
+		User $user = null
 	) {
 		// Only allow core namespaces. We can't be sure any others exist
 		// TODO: possibly move this later and try to detect if we run the default
@@ -62,7 +55,6 @@ class InterwikiSearcher extends Searcher {
 		}
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user );
-		$this->highlightingConfig = $highlightingConfig;
 	}
 
 	/**
@@ -88,7 +80,7 @@ class InterwikiSearcher extends Searcher {
 
 		$overriddenProfiles = $this->config->get( 'CirrusSearchCrossProjectProfiles' );
 		$contexts = [];
-		$resultsType = new FullTextResultsType( $this->highlightingConfig );
+		$resultsType = new FullTextResultsType();
 		foreach ( $sources as $interwiki => $config ) {
 			$overrides = isset( $overriddenProfiles[$interwiki] ) ? $overriddenProfiles[$interwiki] : [];
 			$contexts[$interwiki] = $this->buildOverriddenContext( $overrides, $config );

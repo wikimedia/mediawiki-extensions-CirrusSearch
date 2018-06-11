@@ -49,7 +49,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\ElasticsearchIntermediary' => __DIR__ . '/includes/ElasticsearchIntermediary.php',
 	'CirrusSearch\\EmptyInterwikiResolver' => __DIR__ . '/includes/EmptyInterwikiResolver.php',
 	'CirrusSearch\\ExplainPrinter' => __DIR__ . '/includes/ExplainPrinter.php',
-	'CirrusSearch\\Extra\\Query\\IdHashMod' => __DIR__ . '/includes/Extra/Query/IdHashMod.php',
 	'CirrusSearch\\Extra\\Query\\SourceRegex' => __DIR__ . '/includes/Extra/Query/SourceRegex.php',
 	'CirrusSearch\\Extra\\Query\\TokenCountRouter' => __DIR__ . '/includes/Extra/Query/TokenCountRouter.php',
 	'CirrusSearch\\ForceSearchIndex' => __DIR__ . '/maintenance/forceSearchIndex.php',

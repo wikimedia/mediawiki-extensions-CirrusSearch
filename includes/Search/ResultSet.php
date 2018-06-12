@@ -101,7 +101,7 @@ class ResultSet extends SearchResultSet {
 	 * Copy object state into another object
 	 *
 	 * Copies the state of this object into another class
-	 * (likely extendde from this class). Used in place of a decorator
+	 * (likely extended from this class). Used in place of a decorator
 	 * because core does not expose an interface for this, and we cannot
 	 * otherwise satisfy type constraints matching this class.
 	 *
@@ -243,34 +243,25 @@ class ResultSet extends SearchResultSet {
 		return $this->suggestionSnippet;
 	}
 
-	/**
-	 * @return Result|false
-	 */
-	public function next() {
-		$current = $this->result->current();
-		if ( $current ) {
-			$this->result->next();
-			$result = new Result( $this->result, $current );
-			$this->augmentResult( $result );
-			return $result;
+	public function extractResults() {
+		if ( $this->results === null ) {
+			$this->results = [];
+			foreach ( $this->result->getResults() as $result ) {
+				$transformed = $this->transformOneResult( $result );
+				$this->augmentResult( $transformed );
+				$this->results[] = $transformed;
+			}
 		}
-		return false;
+		return $this->results;
 	}
 
 	/**
-	 * Return next raw (ElasticSearch) result.
-	 * @return \Elastica\Result|false
+	 * @param \Elastica\Result $result Result from search engine
+	 * @return Result Elasticsearch result transformed into mediawiki
+	 *  search result object.
 	 */
-	public function nextRawResult() {
-		$current = $this->result->current();
-		if ( $current ) {
-			$this->result->next();
-		}
-		return $current;
-	}
-
-	public function rewind() {
-		$this->result->rewind();
+	protected function transformOneResult( \Elastica\Result $result ) {
+		return new Result( $this->result, $result );
 	}
 
 	/**

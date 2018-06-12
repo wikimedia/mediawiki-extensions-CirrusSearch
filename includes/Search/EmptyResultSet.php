@@ -33,6 +33,7 @@ class EmptyResultSet extends ResultSet {
 		// we don't have available.
 		/** @suppress PhanUndeclaredStaticMethod this is an allowed way to call parent class */
 		SearchResultSet::__construct( $containedSyntax );
+		$this->results = [];
 	}
 
 	/**
@@ -78,16 +79,6 @@ class EmptyResultSet extends ResultSet {
 	 */
 	public function getSuggestionSnippet() {
 		return null;
-	}
-
-	/**
-	 * @return false
-	 */
-	public function next() {
-		return false;
-	}
-
-	public function rewind() {
 	}
 
 	/**

@@ -141,8 +141,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$data['totalHits'] = $value->getTotalHits();
 		$data['rows'] = [];
-		$result = $value->next();
-		while ( $result ) {
+		foreach ( $value as $result ) {
 			$data['rows'][] = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance
@@ -159,7 +158,6 @@ class RunSearch extends Maintenance {
 				'explanation' => $result->getExplanation(),
 				'extra' => $result->getExtensionData(),
 			];
-			$result = $value->next();
 		}
 		return $data;
 	}

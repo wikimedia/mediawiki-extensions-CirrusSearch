@@ -292,15 +292,9 @@ class RequestLogger {
 	 */
 	private function extractTitleStrings( SearchResultSet $matches ) {
 		$strings = [];
-		$matches->rewind();
-		$result = $matches->next();
-		while ( $result ) {
+		foreach ( $matches as $result ) {
 			$strings[] = (string)$result->getTitle();
-			$result = $matches->next();
 		}
-		// not everything rewinds before working through the matches, so
-		// be nice and rewind it for them.
-		$matches->rewind();
 
 		return $strings;
 	}

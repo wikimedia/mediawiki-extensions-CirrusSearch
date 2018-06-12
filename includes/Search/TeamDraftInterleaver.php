@@ -46,17 +46,12 @@ class TeamDraftInterleaver {
 		return new InterleavedResultSet( $a, $interleaved, $teamA, $teamB, $aOffset );
 	}
 
-	private function extractResults( ResultSet $results ) {
-		$results->rewind();
-		$res = [];
-		while ( true ) {
-			$next = $results->next();
-			if ( $next === false ) {
-				break;
-			}
-			$res[$next->getDocId()] = $next;
+	private function extractResults( ResultSet $resultSet ) {
+		$extracted = [];
+		foreach ( $resultSet as $result ) {
+			$extracted[$result->getDocId()] = $result;
 		}
-		return $res;
+		return $extracted;
 	}
 
 	/**

@@ -2,11 +2,7 @@
 
 namespace CirrusSearch\Search;
 
-use ArrayIterator;
-
 class InterleavedResultSet extends ResultSet implements SearchMetricsProvider {
-	/** @var ArrayIterator */
-	private $interleaved;
 	/** @var string[] Doc ID's belonging to team A */
 	private $teamA;
 	/** @var string[] Doc ID's belonging to team B */
@@ -28,25 +24,12 @@ class InterleavedResultSet extends ResultSet implements SearchMetricsProvider {
 		array $teamB,
 		$offset
 	) {
-		$this->interleaved = new ArrayIterator( $interleaved );
+		$this->results = $interleaved;
 		$this->teamA = $teamA;
 		$this->teamB = $teamB;
 		$this->offset = $offset;
 
 		$nested->copyTo( $this );
-	}
-
-	public function next() {
-		$current = $this->interleaved->current();
-		if ( $current ) {
-			$this->interleaved->next();
-			return $current;
-		}
-		return false;
-	}
-
-	public function rewind() {
-		$this->interleaved->rewind();
 	}
 
 	public function getMetrics() {

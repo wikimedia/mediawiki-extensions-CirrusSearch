@@ -82,5 +82,6 @@
 	"cirrussearch-explore-similar-categories-none": "No categories available",
 	"cirrussearch-explore-similar-languages-none": "Not available in other languages",
 	"cirrussearch-article-words": "Words in all content pages",
-	"cirrussearch-keyword-prefix-ns-mismatch": "The namespace found in the search term <code>prefix:</code> is not compatible with the namespaces requested. You can fix it by prefixing your query with <code>all:</code>."
+	"cirrussearch-keyword-prefix-ns-mismatch": "The namespace found in the search term <code>prefix:</code> is not compatible with the namespaces requested. You can fix it by prefixing your query with <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Let the search engine decide on the best profile to use."
 }

@@ -270,9 +270,11 @@ EOD
 		$jobsSentTotal = $jobInfo->get( 'sanitize_job_jobs_sent_total' );
 		$idsSent = $jobInfo->get( 'sanitize_job_ids_sent' );
 		$idsSentTotal = $jobInfo->get( 'sanitize_job_ids_sent_total' );
+		$jobs = [];
 		for ( $i = 0; $i < $maxJobs; $i++ ) {
 			$to = min( $from + $chunkSize - 1, $this->maxId );
-			$this->sendJob( $from, $to, $pushJobFreq, $jobInfo->get( 'sanitize_job_cluster' ) );
+			$job = $this->createCheckerJob( $from, $to, $pushJobFreq, $jobInfo->get( 'sanitize_job_cluster' ) );
+			array_push( $jobs, $job );
 			$jobsSent++;
 			$jobsSentTotal++;
 			$idsSent += $to - $from;
@@ -290,6 +292,10 @@ EOD
 				$from++;
 			}
 		}
+		usort( $jobs, function ( CheckerJob $job1, CheckerJob $job2 ) {
+			return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
+		} );
+		JobQueueGroup::singleton()->push( $jobs );
 		$this->log( "Sent $jobsSent jobs, setting from offset to $from.\n" );
 		$jobInfo->set( 'sanitize_job_last_loop', $lastLoop );
 		$jobInfo->set( 'sanitize_job_id_offset', $from );
@@ -305,11 +311,12 @@ EOD
 	 * @param int $to
 	 * @param int $refreshRate
 	 * @param string|null $cluster
+	 * @return CheckerJob
 	 */
-	private function sendJob( $from, $to, $refreshRate, $cluster ) {
+	private function createCheckerJob( $from, $to, $refreshRate, $cluster ) {
 		$delay = mt_rand( 0, $refreshRate );
-		$this->log( "Pushing CheckerJob( $from, $to, $delay, $cluster )\n" );
-		JobQueueGroup::singleton()->push( CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster ) );
+		$this->log( "Creating CheckerJob( $from, $to, $delay, $cluster )\n" );
+		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster );
 	}
 
 	/**

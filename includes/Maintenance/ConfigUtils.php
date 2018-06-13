@@ -27,15 +27,15 @@ class ConfigUtils {
 	private $client;
 
 	/**
-	 * @var Maintenance
+	 * @var Printer
 	 */
 	private $out;
 
 	/**
 	 * @param Client $client
-	 * @param Maintenance $out
+	 * @param Printer $out
 	 */
-	public function __construct( Client $client, Maintenance $out ) {
+	public function __construct( Client $client, Printer $out ) {
 		$this->client = $client;
 		$this->out = $out;
 	}

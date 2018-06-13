@@ -88,6 +88,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Maintenance\\Maintenance' => __DIR__ . '/includes/Maintenance/Maintenance.php',
 	'CirrusSearch\\Maintenance\\MappingConfigBuilder' => __DIR__ . '/includes/Maintenance/MappingConfigBuilder.php',
 	'CirrusSearch\\Maintenance\\Metastore' => __DIR__ . '/maintenance/metastore.php',
+	'CirrusSearch\\Maintenance\\Printer' => __DIR__ . '/includes/Maintenance/Printer.php',
 	'CirrusSearch\\Maintenance\\Reindexer' => __DIR__ . '/includes/Maintenance/Reindexer.php',
 	'CirrusSearch\\Maintenance\\RunSearch' => __DIR__ . '/maintenance/runSearch.php',
 	'CirrusSearch\\Maintenance\\SaneitizeJobs' => __DIR__ . '/maintenance/saneitizeJobs.php',

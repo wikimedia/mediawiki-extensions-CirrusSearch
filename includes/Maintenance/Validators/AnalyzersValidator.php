@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use Elastica\Index;
 use RawMessage;
 use Status;
@@ -22,9 +22,9 @@ class AnalyzersValidator extends Validator {
 	/**
 	 * @param Index $index
 	 * @param AnalysisConfigBuilder $analysisConfigBuilder
-	 * @param Maintenance|null $out
+	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, AnalysisConfigBuilder $analysisConfigBuilder, Maintenance $out = null ) {
+	public function __construct( Index $index, AnalysisConfigBuilder $analysisConfigBuilder, Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

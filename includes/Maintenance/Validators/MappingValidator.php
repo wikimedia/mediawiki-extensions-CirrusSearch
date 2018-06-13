@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance\Validators;
 
 use CirrusSearch\ElasticaErrorHandler;
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use Elastica\Exception\ExceptionInterface;
 use Elastica\Index;
 use Elastica\Request;
@@ -52,7 +52,7 @@ class MappingValidator extends Validator {
 	 * @param array $availablePlugins
 	 * @param array $mappingConfig
 	 * @param Type[] $types Array with type names as key & type object as value
-	 * @param Maintenance|null $out
+	 * @param Printer|null $out
 	 */
 	public function __construct(
 		Index $index,
@@ -61,7 +61,7 @@ class MappingValidator extends Validator {
 		array $availablePlugins,
 		array $mappingConfig,
 		array $types,
-		Maintenance $out = null
+		Printer $out = null
 	) {
 		parent::__construct( $out );
 

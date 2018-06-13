@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use Elastica\Index;
 use Status;
 
@@ -20,9 +20,9 @@ class ShardAllocationValidator extends Validator {
 	/**
 	 * @param Index $index
 	 * @param array $indexAllocation
-	 * @param Maintenance|null $out
+	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, array $indexAllocation, Maintenance $out = null ) {
+	public function __construct( Index $index, array $indexAllocation, Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;

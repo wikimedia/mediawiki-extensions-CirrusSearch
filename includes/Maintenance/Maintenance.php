@@ -7,6 +7,9 @@ use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\UserTesting;
 
+// Maintenance class is loaded before autoload, so we need to pull the interface
+require_once __DIR__ . '/Printer.php';
+
 /**
  * Cirrus helpful extensions to Maintenance.
  *
@@ -25,7 +28,7 @@ use CirrusSearch\UserTesting;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-abstract class Maintenance extends \Maintenance {
+abstract class Maintenance extends \Maintenance implements Printer {
 	/**
 	 * @var string The string to indent output with
 	 */

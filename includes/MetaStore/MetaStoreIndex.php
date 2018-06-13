@@ -6,7 +6,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\AnalysisFilter;
 use CirrusSearch\Maintenance\ConfigUtils;
-use CirrusSearch\Maintenance\Maintenance;
+use CirrusSearch\Maintenance\Printer;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -76,7 +76,7 @@ class MetaStoreIndex {
 	private $client;
 
 	/**
-	 * @var Maintenance|null initiator maintenance script
+	 * @var Printer|null output handler
 	*/
 	private $out;
 
@@ -92,11 +92,11 @@ class MetaStoreIndex {
 
 	/**
 	 * @param Connection $connection
-	 * @param Maintenance $out
+	 * @param Printer $out
 	 * @param SearchConfig $config
 	 */
 	public function __construct(
-		Connection $connection, Maintenance $out, SearchConfig $config
+		Connection $connection, Printer $out, SearchConfig $config
 	) {
 		$this->connection = $connection;
 		$this->client = $connection->getClient();

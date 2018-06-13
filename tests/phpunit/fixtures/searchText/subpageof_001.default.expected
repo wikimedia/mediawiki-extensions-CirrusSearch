@@ -228,7 +228,7 @@
                 "window_size": 8192
             }
         ],
-        "size": 20,
+        "size": 21,
         "stats": [
             "filter_only",
             "full_text",

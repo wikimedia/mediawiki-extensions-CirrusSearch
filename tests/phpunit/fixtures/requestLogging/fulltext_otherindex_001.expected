@@ -52,7 +52,7 @@
                         "wiki_general",
                         "commonswiki_file"
                     ],
-                    "limit": 20,
+                    "limit": 21,
                     "maxScore": 2.7669134,
                     "namespaces": [],
                     "payload": {
@@ -80,7 +80,7 @@
             "hitsTotal": 2,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
             "index": "wiki_general,commonswiki_file",
-            "limit": 20,
+            "limit": 21,
             "maxScore": 2.7669134,
             "query": "svg",
             "queryType": "full_text",

@@ -395,7 +395,7 @@
                 "window_size": 512
             }
         ],
-        "size": 20,
+        "size": 21,
         "stats": [
             "full_text",
             "full_text_simple_match",

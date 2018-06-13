@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\Searcher;
 
 /**
  * Test escaping search strings.
@@ -223,5 +224,121 @@ class ResultsTypeTest extends CirrusTestCase {
 				],
 			],
 		];
+	}
+
+	public function fancyRedirectHandlingProvider() {
+		return [
+			'typical title only match' => [
+				'Trebuchet',
+				[
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+					],
+				],
+			],
+			'partial title match' => [
+				'Trebuchet',
+				[
+					'highlight' => [
+						'title.prefix' => [
+							Searcher::HIGHLIGHT_PRE . 'Trebu' . Searcher::HIGHLIGHT_POST . 'chet',
+						],
+					],
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+					],
+				],
+			],
+			'full redirect match same namespace' => [
+				'Pierriere',
+				[
+					'highlight' => [
+						'redirect.title.prefix' => [
+							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+						],
+					],
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+						'redirect' => [
+							[ 'namespace' => 0, 'title' => 'Pierriere' ]
+						],
+					],
+				],
+			],
+			'full redirect match other namespace' => [
+				'Category:Pierriere',
+				[
+					'highlight' => [
+						'redirect.title.prefix' => [
+							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+						],
+					],
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+						'redirect' => [
+							[ 'namespace' => 14, 'title' => 'Pierriere' ]
+						],
+					],
+				],
+			],
+			'partial redirect match other namespace' => [
+				'Category:Pierriere',
+				[
+					'highlight' => [
+						'redirect.title.prefix' => [
+							Searcher::HIGHLIGHT_PRE . 'Pi' . Searcher::HIGHLIGHT_POST . 'erriere',
+						],
+					],
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+						'redirect' => [
+							[ 'namespace' => 14, 'title' => 'Pierriere' ]
+						],
+					],
+				],
+			],
+			'multiple redirect namespace matches' => [
+				'User:Pierriere',
+				[
+					'highlight' => [
+						'redirect.title.prefix' => [
+							Searcher::HIGHLIGHT_PRE . 'Pierriere' . Searcher::HIGHLIGHT_POST,
+						],
+					],
+					'_source' => [
+						'namespace_text' => '',
+						'namespace' => 0,
+						'title' => 'Trebuchet',
+						'redirect' => [
+							[ 'namespace' => 14, 'title' => 'Pierriere' ],
+							[ 'namespace' => 2, 'title' => 'Pierriere' ],
+						],
+					],
+				],
+				[ 0, 2 ]
+			],
+		];
+	}
+
+	/**
+	 * @covers \CirrusSearch\Search\FancyTitleResultsType
+	 * @dataProvider fancyRedirectHandlingProvider
+	 */
+	public function testFancyRedirectHandling( $expected, $hit, array $namespaces = [] ) {
+		$type = new FancyTitleResultsType( 'prefix' );
+		$result = new \Elastica\Result( $hit );
+		$matches = $type->transformOneElasticResult( $result, $namespaces );
+		$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $matches );
+		$this->assertEquals( $expected, $title->getPrefixedText() );
 	}
 }

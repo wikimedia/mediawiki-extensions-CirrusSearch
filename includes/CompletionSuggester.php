@@ -285,10 +285,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		// they'll be forgotten in client response
 		$score = $collector->getMinScore() !== null ? $collector->getMinScore() - 1 : count( $prefixResults->getResults() );
 
+		$namespaces = $this->prefixSearchRequestBuilder->getSearchContext()->getNamespaces();
 		foreach ( $prefixResults->getResults() as $res ) {
 			$pageId = $this->config->makePageId( $res->getId() );
 			/** @suppress PhanUndeclaredMethod transformOneElasticResult exists (FancyTitleResultsType asserted) */
-			$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $rType->transformOneElasticResult( $res ) );
+			$title = FancyTitleResultsType::chooseBestTitleOrRedirect( $rType->transformOneElasticResult( $res, $namespaces ) );
 			if ( $title === false ) {
 				continue;
 			}

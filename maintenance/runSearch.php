@@ -248,7 +248,6 @@ class RunSearch extends Maintenance {
 			return Status::newGood( $resultSet );
 
 		case 'suggest':
-			$engine->setFeatureData( CirrusSearch::COMPLETION_SUGGESTER_FEATURE, true );
 			$result = $engine->completionSearch( $query );
 			if ( $result instanceof Status ) {
 				return $result;

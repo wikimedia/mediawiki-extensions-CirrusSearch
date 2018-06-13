@@ -32,7 +32,8 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @covers \CirrusSearch::getProfiles()
 	 */
 	public function testGetProfiles( $profileType, $default, array $expectedProfiles ) {
-		$profiles = $this->getMinimalSearchEngine()->getProfiles( $profileType );
+		$profiles = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] )
+			->getProfiles( $profileType );
 		if ( $default === null ) {
 			$this->assertNull( $profiles );
 		} else {
@@ -82,24 +83,60 @@ class CirrusSearchTest extends CirrusTestCase {
 	 * @throws \ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
-		$engine = $this->getMinimalSearchEngine();
+		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => 'yes' ] );
 		$engine->setFeatureData( $type, $setValue );
 		$this->assertEquals( $expected, $engine->extractProfileFromFeatureData( $type ) );
 	}
 
+	public function provideCompletionSuggesterEnabled() {
+		return [
+			'enabled' => [
+				'yes', true
+			],
+			'enabled with bool' => [
+				true, true
+			],
+			'disabled' => [
+				'no', false
+			],
+			'disabled with bool' => [
+				false, false
+			],
+			'disabled with random' => [
+				'foo', false
+			],
+		];
+	}
+
 	/**
+	 * @dataProvider provideCompletionSuggesterEnabled
+	 * @covers CirrusSearch::completionSuggesterEnabled()
+	 */
+	public function testCompletionSuggesterEnabled( $configValue, $expected ) {
+		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => $configValue ] );
+		$this->assertEquals( !empty( $engine->getProfiles( \CirrusSearch::COMPLETION_PROFILE_TYPE ) ),
+			$expected );
+	}
+	/**
+	 * @param array|null $config
 	 * @return \CirrusSearch
 	 * @throws \ConfigException
 	 */
-	private function getMinimalSearchEngine() {
+	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
-		$config = [
+		return new \CirrusSearch( null, new HashSearchConfig( $config + $this->getMinimalConfig() ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getMinimalConfig() {
+		return [
 			'CirrusSearchClusters' => [
 				'default' => [ 'localhost' ],
 			],
 			'CirrusSearchDefaultCluster' => 'default',
 		];
-		return new \CirrusSearch( null, new HashSearchConfig( $config ) );
 	}
 }

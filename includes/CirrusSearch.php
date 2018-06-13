@@ -51,8 +51,6 @@ class CirrusSearch extends SearchEngine {
 	 */
 	const AUTOSELECT_PROFILE = 'engine_autoselect';
 
-	const COMPLETION_SUGGESTER_FEATURE = 'completionSuggester';
-
 	/** @const string name of the prefixsearch fallback profile */
 	const COMPLETION_PREFIX_FALLBACK_PROFILE = 'classic';
 
@@ -493,28 +491,15 @@ class CirrusSearch extends SearchEngine {
 		return $this->lastSearchMetrics + $this->extraSearchMetrics;
 	}
 
-	protected function completionSuggesterEnabled( SearchConfig $config ) {
-		$useCompletion = $config->getElement( 'CirrusSearchUseCompletionSuggester' );
-		if ( $useCompletion !== 'yes' ) {
-			return false;
+	/**
+	 * @return bool
+	 */
+	private function completionSuggesterEnabled() {
+		$useCompletion = $this->config->getElement( 'CirrusSearchUseCompletionSuggester' );
+		if ( is_string( $useCompletion ) ) {
+			return wfStringToBool( $useCompletion );
 		}
-
-		// This way API can force-enable completion suggester
-		if ( $this->isFeatureEnabled( self::COMPLETION_SUGGESTER_FEATURE ) ) {
-			return true;
-		}
-
-		// Allow falling back to prefix search with query param
-		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'no' ) {
-			return false;
-		}
-
-		// Allow experimentation with query parameters
-		if ( $this->request && $this->request->getVal( 'cirrusUseCompletionSuggester' ) === 'yes' ) {
-			return true;
-		}
-
-		return true;
+		return $useCompletion === true;
 	}
 
 	/**
@@ -544,7 +529,7 @@ class CirrusSearch extends SearchEngine {
 			$variants = array_slice( $variants, 0, 3 );
 		}
 
-		if ( !$this->completionSuggesterEnabled( $this->config ) ) {
+		if ( !$this->completionSuggesterEnabled() ) {
 			// Completion suggester is not enabled, fallback to
 			// default implementation
 			return $this->prefixSearch( $search, $variants );
@@ -639,7 +624,7 @@ class CirrusSearch extends SearchEngine {
 		$serviceProfileType = null;
 		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
-			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) !== 'no' ) {
+			if ( $this->completionSuggesterEnabled() ) {
 				$serviceProfileType = SearchProfileService::COMPLETION;
 			}
 			break;

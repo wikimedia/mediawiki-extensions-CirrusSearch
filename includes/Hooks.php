@@ -84,19 +84,18 @@ class Hooks {
 	 *
 	 * @param WebRequest $request
 	 */
-	private static function initializeForRequest( WebRequest $request ) {
+	public static function initializeForRequest( WebRequest $request ) {
 		global $wgSearchType, $wgHooks,
-			$wgCirrusSearchUseExperimentalHighlighter,
 			$wgCirrusSearchPhraseRescoreWindowSize,
 			$wgCirrusSearchFunctionRescoreWindowSize,
 			$wgCirrusSearchFragmentSize,
 			$wgCirrusSearchAllFields,
-			$wgCirrusSearchAllFieldsForRescore,
 			$wgCirrusSearchPhraseRescoreBoost,
 			$wgCirrusSearchPhraseSlop,
 			$wgCirrusSearchLogElasticRequests,
 			$wgCirrusSearchLogElasticRequestsSecret,
-			$wgCirrusSearchEnableAltLanguage;
+			$wgCirrusSearchEnableAltLanguage,
+			$wgCirrusSearchUseCompletionSuggester;
 
 		// Install our prefix search hook only if we're enabled.
 		if ( $wgSearchType === 'CirrusSearch' ) {
@@ -107,19 +106,13 @@ class Hooks {
 		self::overrideMoreLikeThisOptionsFromMessage();
 
 		if ( $request ) {
-			// Engage the experimental highlighter if a url parameter requests it
-			if ( !$wgCirrusSearchUseExperimentalHighlighter &&
-					$request->getVal( 'cirrusHighlighter' ) === 'experimental' ) {
-				$wgCirrusSearchUseExperimentalHighlighter = true;
-			}
 			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWindow', 10000 );
 			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost, $request, 'cirrusPhraseBoost' );
 			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
 			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
 			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );
 			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
-			self::overrideYesNo( $wgCirrusSearchAllFieldsForRescore, $request, 'cirrusUseAllFieldsForRescore' );
-			self::overrideUseExtraPluginForRegex( $request );
+			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester, $request, 'cirrusUseCompletionSuggester' );
 			self::overrideMoreLikeThisOptions( $request );
 			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
 			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
@@ -176,24 +169,6 @@ class Hooks {
 	 */
 	private static function overrideYesNo( &$dest, WebRequest $request, $name ) {
 		Util::overrideYesNo( $dest, $request, $name );
-	}
-
-	/**
-	 * @param WebRequest $request
-	 */
-	private static function overrideUseExtraPluginForRegex( WebRequest $request ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
-		if ( $request->getCheck( 'cirrusAccelerateRegex' ) ) {
-			if ( $request->getFuzzyBool( 'cirrusAccelerateRegex' ) ) {
-				$wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][] = 'use';
-			} elseif ( isset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] ) ) {
-				$useLocation = array_search( 'use', $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] );
-				if ( $useLocation !== false ) {
-					unset( $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ][ $useLocation ] );
-				}
-			}
-		}
 	}
 
 	/**

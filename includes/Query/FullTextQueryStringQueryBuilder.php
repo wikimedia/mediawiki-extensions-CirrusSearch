@@ -219,7 +219,7 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		if ( $this->isPhraseRescoreNeeded( $searchContext ) ) {
 			$rescoreFields = $fields;
-			if ( !$this->config->get( 'CirrusSearchAllFieldsForRescore' ) ) {
+			if ( !$this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 				$rescoreFields = $nonAllFields;
 			}
 

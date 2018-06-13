@@ -20,7 +20,7 @@ class MetaNamespaceStore {
 
 	public function __construct( Connection $connection, $wikiId = null ) {
 		$this->connection = $connection;
-		$this->wikiId = $wikiId === null ? wfWikiId() : $wikiId;
+		$this->wikiId = $wikiId ?? wfWikiId();
 	}
 
 	/**

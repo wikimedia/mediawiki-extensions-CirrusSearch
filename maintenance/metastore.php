@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\MetaStore\MetaStoreIndex;
-use CirrusSearch\Search\Filters;
+use CirrusSearch\MetaStore\MetaVersionStore;
 use CirrusSearch\SearchConfig;
 use Elastica\JSON;
 
@@ -91,36 +91,21 @@ class Metastore extends Maintenance {
 			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 			$this->updateIndexVersion( $baseName );
 		} elseif ( $this->hasOption( 'show-index-version' ) ) {
+			// While it might seem like wiki would be a better option than basename, the update
+			// needs basename to generate document id's and we want
 			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
-			$filter = new \Elastica\Query\BoolQuery();
-			$ids = new \Elastica\Query\Ids();
-			foreach ( $this->getConnection()->getAllIndexTypes() as $type ) {
-				$ids->addId( MetaStoreIndex::versionDocId( $this->getConnection(), $baseName, $type ) );
-			}
-			$filter->addFilter( $ids );
-			$this->showIndexVersions( $filter );
+			$this->showIndexVersions( $baseName );
 		} else {
 			$this->maybeHelp( true );
 		}
 	}
 
 	/**
-	 * @param array|\Elastica\Query\AbstractQuery|null $filter
+	 * @param string|null $baseName
 	 */
-	private function showIndexVersions( $extraFilter = null ) {
-		$filters = [
-			( new \Elastica\Query\Term() )
-				->setTerm( 'type', MetaStoreIndex::VERSION_TYPE )
-		];
-		if ( $extraFilter ) {
-			$filters[] = $extraFilter;
-		}
-
-		$query = new \Elastica\Query();
-		$query->setQuery( Filters::unify( $filters, [] ) );
-		// WHAT ARE YOU DOING TRACKING MORE THAN 5000 INDEXES?!?
-		$query->setSize( 5000 );
-		$res = $this->metaStore->elasticaType()->search( $query );
+	private function showIndexVersions( $baseName = null ) {
+		$store = new MetaVersionStore( $this->getConnection() );
+		$res = $store->findAll( $baseName );
 		foreach ( $res as $r ) {
 			$data = $r->getData();
 			$this->outputIndented( "index name: " . $data['index_name'] . "\n" );
@@ -138,7 +123,7 @@ class Metastore extends Maintenance {
 	 */
 	private function updateIndexVersion( $baseName ) {
 		$this->outputIndented( "Updating tracking indexes..." );
-		$this->metaStore->updateAllVersions( $baseName );
+		$this->metaStore->versionStore()->updateAll( $baseName );
 		$this->output( "done\n" );
 	}
 

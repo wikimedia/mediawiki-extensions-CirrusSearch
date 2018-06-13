@@ -12,6 +12,7 @@ use CirrusSearch\BuildDocument\Completion\SuggestScoringMethodFactory;
 use CirrusSearch\BuildDocument\Completion\SuggestScoringMethod;
 use CirrusSearch\Maintenance\Validators\AnalyzersValidator;
 use CirrusSearch\MetaStore\MetaStoreIndex;
+use CirrusSearch\MetaStore\MetaVersionStore;
 use CirrusSearch\SearchConfig;
 use Elastica;
 use Elastica\Index;
@@ -382,10 +383,8 @@ class UpdateSuggesterIndex extends Maintenance {
 			\CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder::VERSION );
 
 		try {
-			$indexDocId = MetaStoreIndex::versionDocId(
-				$this->getConnection(), $this->indexBaseName, $this->indexTypeName );
-			$versionDoc = MetaStoreIndex::getElasticaType( $this->getConnection() )
-				->getDocument( $indexDocId );
+			$store = new MetaVersionStore( $this->getConnection() );
+			$versionDoc = $store->find( $this->indexBaseName, $this->indexTypeName );
 		} catch ( \Elastica\Exception\NotFoundException $nfe ) {
 			$this->error( 'Index missing in mw_cirrus_metastore::version, cannot recycle.' );
 			return false;
@@ -794,8 +793,8 @@ class UpdateSuggesterIndex extends Maintenance {
 
 	private function updateVersions() {
 		$this->log( "Updating tracking indexes..." );
-		MetaStoreIndex::updateMetastoreVersions( $this->getConnection(), $this->indexBaseName,
-			$this->indexTypeName );
+		$store = new MetaVersionStore( $this->getConnection() );
+		$store->update( $this->indexBaseName, $this->indexTypeName );
 		$this->output( "ok.\n" );
 	}
 

@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\Maintenance\Maintenance;
 use CirrusSearch\MetaStore\MetaStoreIndex;
+use CirrusSearch\MetaStore\MetaVersionStore;
 
 /**
  * Check that all Cirrus indexes report OK.
@@ -241,12 +242,9 @@ class CheckIndexes extends Maintenance {
 
 	private function ensureCirrusInfoFetched() {
 		if ( $this->cirrusInfo === null ) {
-			$query = new \Elastica\Query( ( new \Elastica\Query\Term() )
-				->setTerm( 'type', MetaStoreIndex::VERSION_TYPE ) );
-			$query->setSize( 5000 );
-			$res = MetaStoreIndex::getElasticaType( $this->getConnection() )->search( $query );
+			$store = new MetaVersionStore( $this->getConnection() );
 			$this->cirrusInfo = [];
-			foreach ( $res as $r ) {
+			foreach ( $store->findAll() as $r ) {
 				$data = $r->getData();
 				$this->cirrusInfo[ $data['index_name'] ] = [
 					'shard_count' => $data[ 'shard_count' ],

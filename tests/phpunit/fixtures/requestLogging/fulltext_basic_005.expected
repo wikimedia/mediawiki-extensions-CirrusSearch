@@ -19,7 +19,7 @@
                     "hitsReturned": 0,
                     "hitsTotal": 0,
                     "indices": [
-                        "wiki_general"
+                        "mw_cirrus_metastore"
                     ],
                     "limit": -1,
                     "maxScore": -1,
@@ -66,7 +66,7 @@
             "hitsReturned": 0,
             "hitsTotal": 0,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
-            "index": "wiki_general",
+            "index": "mw_cirrus_metastore",
             "namespaceName": "intitle",
             "query": "intitle",
             "queryType": "namespace",

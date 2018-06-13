@@ -19,10 +19,10 @@
                     "hitsReturned": 1,
                     "hitsTotal": 1,
                     "indices": [
-                        "wiki_general"
+                        "mw_cirrus_metastore"
                     ],
                     "limit": -1,
-                    "maxScore": 1.6931472,
+                    "maxScore": 1.6931472000000001,
                     "namespaces": [],
                     "payload": [],
                     "query": "file",
@@ -46,8 +46,8 @@
             "hitsReturned": 1,
             "hitsTotal": 1,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
-            "index": "wiki_general",
-            "maxScore": 1.6931472,
+            "index": "mw_cirrus_metastore",
+            "maxScore": 1.6931472000000001,
             "namespaceName": "file",
             "query": "file",
             "queryType": "namespace",

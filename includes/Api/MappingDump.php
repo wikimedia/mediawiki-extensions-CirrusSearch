@@ -33,7 +33,6 @@ class MappingDump extends \ApiBase {
 			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
 			$this->getResult()->addPreserveKeysList( [ $index, Connection::PAGE_TYPE_NAME ], '_all' );
-			$this->getResult()->addPreserveKeysList( [ $index, Connection::NAMESPACE_TYPE_NAME ], '_all' );
 		}
 	}
 

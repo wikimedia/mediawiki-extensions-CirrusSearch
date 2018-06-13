@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\MetaStore\MetaNamespaceStore;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
@@ -435,7 +436,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $name
 	 * @return Status
 	 */
-	public function findNamespace( $name ) {
+	private function findNamespace( $name ) {
 		return Util::doPoolCounterWork(
 			'CirrusSearch-NamespaceLookup',
 			$this->user,
@@ -448,11 +449,10 @@ class Searcher extends ElasticsearchIntermediary {
 					$connection = $this->getOverriddenConnection();
 					$connection->setTimeout( $this->getClientTimeout() );
 
-					$store = new NamespaceStore( $connection, $this->config );
-					$resultSet = $store->find( $name, $this->indexBaseName, [
+					$store = new MetaNamespaceStore( $connection, $this->config->getWikiId() );
+					$resultSet = $store->find( $name, [
 						'timeout' => $this->getTimeout(),
 					] );
-					// @todo check for partial results due to timeout?
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 					return $this->failure( $e );
@@ -744,7 +744,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		$foundNamespace = $foundNamespace[ 0 ];
 		$query = substr( $query, $colon + 1 );
-		$this->searchContext->setNamespaces( [ $foundNamespace->getId() ] );
+		$this->searchContext->setNamespaces( [ $foundNamespace->namespace_id ] );
 	}
 
 	/**

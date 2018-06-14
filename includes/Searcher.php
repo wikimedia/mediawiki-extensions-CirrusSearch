@@ -806,10 +806,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 * or output it and finish.
 	 * @param mixed $result Search result data
 	 * @param WebRequest $request Request context
-	 * @param bool $dumpAndDie (deprecated) Whether we should dump result to output or just return it.
 	 * @return string The new raw result.
 	 */
-	public function processRawReturn( $result, WebRequest $request, $dumpAndDie = true ) {
+	public function processRawReturn( $result, WebRequest $request ) {
 		$header = null;
 
 		if ( in_array( $this->searchContext->getDebugOptions()->getCirrusExplain(), [ 'verbose', 'pretty', 'hot' ] ) ) {

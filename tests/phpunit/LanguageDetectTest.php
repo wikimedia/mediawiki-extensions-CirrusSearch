@@ -133,17 +133,13 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * wiki.
 	 */
 	public function testLocalSearch() {
-		\RequestContext::getMain()->setRequest( new \FauxRequest( [
-			'cirrusDumpQuery' => 1,
-		] ) );
 		$this->setMwGlobals( [
 			'wgCirrusSearchInterwikiSources' => null,
 			'wgCirrusSearchIndexBaseName' => 'mywiki',
 			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
 		] );
-		$cirrus = new MyCirrusSearch();
+		$cirrus = new MyCirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$cirrus->setNamespaces( [ NS_FILE ] );
-		$cirrus->setDumpAndDie( false );
 		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true )->getValue();
 		$result = json_decode( $result, true );
 		$this->assertEquals( 'mywiki_general/page/_search', $result['path'] );

@@ -18,6 +18,7 @@ use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\Query\FullTextQueryBuilder;
 use Elastica\Exception\RuntimeException;
 use Elastica\Multi\Search as MultiSearch;
+use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Search;
@@ -101,21 +102,6 @@ class Searcher extends ElasticsearchIntermediary {
 	protected $indexBaseName;
 
 	/**
-	 * @var boolean just return the array that makes up the query instead of searching
-	 */
-	protected $returnQuery = false;
-
-	/**
-	 * @var boolean return raw Elasticsearch result instead of processing it
-	 */
-	protected $returnResult = false;
-
-	/**
-	 * @var string|null return explanation with results
-	 */
-	protected $returnExplain;
-
-	/**
 	 * Search environment configuration
 	 * @var SearchConfig
 	 */
@@ -140,9 +126,11 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param int[]|null $namespaces Array of namespace numbers to search or null to search all namespaces.
 	 * @param User|null $user user for which this search is being performed.  Attached to slow request logs.
 	 * @param string|bool $index Base name for index to search from, defaults to $wgCirrusSearchIndexBaseName
+	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
+	 * @see CirrusDebugOptions::defaultOptions()
 	 */
 	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
-		User $user = null, $index = false
+		User $user = null, $index = false, CirrusDebugOptions $options = null
 	) {
 		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
 		$this->config = $config;
@@ -154,7 +142,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->language = $config->get( 'ContLang' );
-		$this->searchContext = new SearchContext( $this->config, $namespaces );
+		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
 	}
 
 	/**
@@ -168,32 +156,11 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * @param bool $returnQuery just return the array that makes up the query instead of searching
-	 */
-	public function setReturnQuery( $returnQuery ) {
-		$this->returnQuery = $returnQuery;
-	}
-
-	/**
-	 * @param bool $dumpResult return raw Elasticsearch result instead of processing it
-	 */
-	public function setDumpResult( $dumpResult ) {
-		$this->returnResult = $dumpResult;
-	}
-
-	/**
-	 * @param string|null $returnExplain return query explanation
-	 */
-	public function setReturnExplain( $returnExplain ) {
-		$this->returnExplain = $returnExplain;
-	}
-
-	/**
 	 * Is this searcher used to return debugging info?
 	 * @return bool true if the search will return raw output
 	 */
 	public function isReturnRaw() {
-		return $this->returnResult || $this->returnQuery;
+		return $this->searchContext->getDebugOptions()->isReturnRaw();
 	}
 
 	/**
@@ -465,13 +432,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function buildSearch() {
 		$builder = new SearchRequestBuilder( $this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
-		return $builder->setLimit( $this->limit )
+		return $this->applyDebugOptions( $builder->setLimit( $this->limit )
 			->setOffset( $this->offset )
 			->setPageType( $this->pageType )
-			->setReturnExplain( !is_null( $this->returnExplain ) )
 			->setSort( $this->sort )
 			->setTimeout( $this->getTimeout() )
-			->build();
+		)->build();
 	}
 
 	/**
@@ -505,8 +471,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function searchMulti( $searches, array $resultsTypes = [] ) {
 		$contextResultsType = $this->searchContext->getResultsType();
-		if ( $this->limit <= 0 && ! $this->returnQuery ) {
-			if ( $this->returnResult ) {
+		if ( $this->limit <= 0 && ! $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+			if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
 				return Status::newGood( [
 						'description' => 'Canceled due to offset out of bounds',
 						'path' => '',
@@ -539,7 +505,7 @@ class Searcher extends ElasticsearchIntermediary {
 			]
 		);
 
-		if ( $this->returnQuery ) {
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
 			$retval = [];
 			$description = $log->formatDescription();
 			foreach ( $searches as $key => $search ) {
@@ -598,7 +564,8 @@ class Searcher extends ElasticsearchIntermediary {
 		};
 
 		// Wrap with caching if needed, but don't cache debugging queries
-		$skipCache = $this->returnResult || $this->returnExplain;
+		$skipCache = $this->searchContext->getDebugOptions()->isCirrusDumpResult()
+				|| $this->searchContext->getDebugOptions()->getCirrusExplain();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
@@ -659,7 +626,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		$retval = [];
-		if ( $this->returnResult ) {
+		if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
 			$description = $log->formatDescription();
 			foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
 				$retval[$key] = [
@@ -835,32 +802,19 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Set search options from request params
-	 * @param WebRequest|null $request
-	 */
-	public function setOptionsFromRequest( WebRequest $request = null ) {
-		if ( !$request ) {
-			return;
-		}
-		$this->returnQuery = $request->getVal( 'cirrusDumpQuery' ) !== null;
-		$this->returnResult = $request->getVal( 'cirrusDumpResult' ) !== null;
-		$this->returnExplain = $request->getVal( 'cirrusExplain' );
-	}
-
-	/**
 	 * If we're supposed to create raw result, create and return it,
 	 * or output it and finish.
 	 * @param mixed $result Search result data
 	 * @param WebRequest $request Request context
-	 * @param bool $dumpAndDie Whether we should dump result to output or just return it.
+	 * @param bool $dumpAndDie (deprecated) Whether we should dump result to output or just return it.
 	 * @return string The new raw result.
 	 */
 	public function processRawReturn( $result, WebRequest $request, $dumpAndDie = true ) {
 		$header = null;
 
-		if ( in_array( $this->returnExplain, [ 'verbose', 'pretty', 'hot' ] ) ) {
+		if ( in_array( $this->searchContext->getDebugOptions()->getCirrusExplain(), [ 'verbose', 'pretty', 'hot' ] ) ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
-			$printer = new ExplainPrinter( $this->returnExplain );
+			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplain() );
 			$result = $printer->format( $result );
 		} else {
 			$header = 'Content-type: application/json; charset=UTF-8';
@@ -871,14 +825,13 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 
-		if ( $dumpAndDie ) {
+		if ( $this->searchContext->getDebugOptions()->isDumpAndDie() ) {
 			// When dumping the query we skip _everything_ but echoing the query.
 			RequestContext::getMain()->getOutput()->disable();
 			$request->response()->header( $header );
 			echo $result;
 			exit();
 		}
-
 		return $result;
 	}
 
@@ -996,5 +949,27 @@ class Searcher extends ElasticsearchIntermediary {
 			$status->warning( ...$warning );
 		}
 		return $status;
+	}
+
+	/**
+	 * Apply debug options to the search request builder
+	 * @param SearchRequestBuilder $search
+	 * @return SearchRequestBuilder
+	 */
+	public function applyDebugOptions( SearchRequestBuilder $search ) {
+		$search->setReturnExplain( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null );
+		return $search;
+	}
+
+	/**
+	 * Apply debug options to the elastica query
+	 * @param Query $query
+	 * @return Query
+	 */
+	public function applyDebugOptionsToQuery( Query $query ) {
+		if ( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null ) {
+			$query->setExplain( true );
+		}
+		return $query;
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
@@ -105,21 +106,17 @@ class CirrusSearch extends SearchEngine {
 	private $searchIndexFieldFactory;
 
 	/**
-	 * Sets the behaviour for the dump query, dump result, etc debugging features.
-	 * By default echo's and dies. If this is set to false it will be returned
-	 * from Searcher::searchText, which breaks the type signature contracts and should
-	 * only be used from unit tests.
-	 * @var bool
+	 * @var CirrusDebugOptions
 	 */
-	private $dumpAndDie = true;
-
+	private $debugOptions;
 	/**
 	 * CirrusSearch constructor.
 	 * @param string|null $baseName
 	 * @param SearchConfig|null $config
+	 * @param CirrusDebugOptions|null $debugOptions
 	 * @throws ConfigException
 	 */
-	public function __construct( $baseName = null, SearchConfig $config = null ) {
+	public function __construct( $baseName = null, SearchConfig $config = null, CirrusDebugOptions $debugOptions = null ) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests accross multiple clusters
 		UserTesting::getInstance();
@@ -133,6 +130,7 @@ class CirrusSearch extends SearchEngine {
 
 		// enable interwiki by default
 		$this->features['interwiki'] = true;
+		$this->debugOptions = $debugOptions ?? CirrusDebugOptions::fromRequest( $this->request );
 	}
 
 	public function setConnection( Connection $connection ) {
@@ -334,7 +332,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status
 	 */
 	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $config, $this->namespaces, null, $this->indexBaseName );
+		$searcher = $this->makeSearcher( $config );
 
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
 		if ( substr( $term, 0, 1 ) === '~' ) {
@@ -350,18 +348,12 @@ class CirrusSearch extends SearchEngine {
 			$searcher->getSearchContext()->setRescoreProfile( $profile );
 		}
 
-		$searcher->setOptionsFromRequest( $this->request );
-
 		if ( $this->lastNamespacePrefix ) {
 			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
 		} else {
 			$searcher->updateNamespacesFromQuery( $term );
 		}
-		if ( $this->request ) {
-			if ( $this->request->getVal( 'cirrusSuppressSuggest' ) !== null ) {
-				$this->showSuggestion = false;
-			}
-		}
+		$this->showSuggestion = $this->debugOptions->isCirrusSuppressSuggest() ? false : $this->showSuggestion;
 
 		$searcher->setResultsType( new FullTextResultsType() );
 		$status = $searcher->searchText( $term, $this->showSuggestion );
@@ -381,18 +373,17 @@ class CirrusSearch extends SearchEngine {
 			$searcher->getSearchContext()->areResultsPossible() &&
 			$searcher->getSearchContext()->getSearchComplexity() <= InterwikiSearcher::MAX_COMPLEXITY &&
 			$config->isCrossProjectSearchEnabled() &&
-			( $searcher->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
+			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
-			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces );
-			$iwSearch->setOptionsFromRequest( $this->request );
+			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $this->debugOptions );
 			$interwikiResults = $iwSearch->getInterwikiResults( $term );
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to
-				if ( $iwSearch->isReturnRaw() ) {
+				if ( $this->debugOptions->isReturnRaw() ) {
 					$result = [ $result ];
 				}
 				foreach ( $interwikiResults as $interwiki => $interwikiResult ) {
-					if ( $iwSearch->isReturnRaw() ) {
+					if ( $this->debugOptions->isReturnRaw() ) {
 						$result[] = $interwikiResult;
 					} elseif ( $interwikiResult && $interwikiResult->numRows() > 0 ) {
 						$result->addInterwikiResults(
@@ -403,9 +394,9 @@ class CirrusSearch extends SearchEngine {
 			}
 		}
 
-		if ( $searcher->isReturnRaw() ) {
+		if ( $this->debugOptions->isReturnRaw() ) {
 			$status->setResult( true,
-				$searcher->processRawReturn( $result, $this->request, $this->dumpAndDie ) );
+				$searcher->processRawReturn( $result, $this->request ) );
 		}
 
 		return $status;
@@ -520,7 +511,7 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		// Not really useful, mostly for testing purpose
-		$variants = $this->request->getArray( 'cirrusCompletionVariant' );
+		$variants = $this->debugOptions->getCirrusCompletionVariant();
 		if ( empty( $variants ) ) {
 			global $wgContLang;
 			$variants = $wgContLang->autoConvertToAllVariants( $search );
@@ -573,7 +564,7 @@ class CirrusSearch extends SearchEngine {
 	 * @return SearchSuggestionSet
 	 */
 	protected function prefixSearch( $search, $variants ) {
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces );
+		$searcher = $this->makeSearcher();
 
 		if ( $search ) {
 			$searcher->setResultsType( new FancyTitleResultsType( 'prefix' ) );
@@ -689,16 +680,6 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @param bool $dumpAndDie Sets the behaviour for the dump query, dump
-	 *  result, etc debugging features. By default echo's and dies. If this is
-	 *  set to false it will be returned from Searcher::searchText, which breaks
-	 *  the type signature contracts and should only be used from unit tests.
-	 */
-	public function setDumpAndDie( $dumpAndDie ) {
-		$this->dumpAndDie = $dumpAndDie;
-	}
-
-	/**
 	 * Perform a title search in the article archive.
 	 *
 	 * @param string $term Raw search term
@@ -719,7 +700,7 @@ class CirrusSearch extends SearchEngine {
 		$status = $searcher->searchArchive( $term );
 		if ( $status->isOK() && $searcher->isReturnRaw() ) {
 			$status->setResult( true,
-				$searcher->processRawReturn( $status->getValue(), $this->request, $this->dumpAndDie ) );
+				$searcher->processRawReturn( $status->getValue(), $this->request ) );
 		}
 		return $status;
 	}
@@ -735,15 +716,17 @@ class CirrusSearch extends SearchEngine {
 
 		if ( $status->isOK() && $searcher->isReturnRaw() ) {
 			$status->setResult( true,
-				$searcher->processRawReturn( $status->getValue(), $this->request, $this->dumpAndDie ) );
+				$searcher->processRawReturn( $status->getValue(), $this->request ) );
 		}
 		return $status;
 	}
 
-	private function makeSearcher() {
-		$searcher = new Searcher( $this->connection, $this->offset, $this->limit, $this->config, $this->namespaces,
-				null, $this->indexBaseName );
-		$searcher->setOptionsFromRequest( $this->request );
-		return $searcher;
+	/**
+	 * @param SearchConfig|null $config
+	 * @return Searcher
+	 */
+	private function makeSearcher( SearchConfig $config = null ) {
+		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
+				null, $this->indexBaseName, $this->debugOptions );
 	}
 }

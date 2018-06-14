@@ -129,9 +129,7 @@ class RescoreBuilder {
 		// only a single level of rescore will be used. This is
 		// strictly for debugging/testing before shipping a model
 		// live so shouldn't be a big deal.
-		$override = \RequestContext::getMain()
-			->getRequest()
-			->getVal( 'cirrusMLRModel' );
+		$override = $this->context->getDebugOptions()->getCirrusMLRModel();
 		if ( $override ) {
 			$model = $override;
 		}

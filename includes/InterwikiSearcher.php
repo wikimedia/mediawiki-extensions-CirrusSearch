@@ -38,12 +38,14 @@ class InterwikiSearcher extends Searcher {
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
 	 * @param User|null $user
+	 * @param CirrusDebugOptions|null $debugOptions
 	 */
 	public function __construct(
 		Connection $connection,
 		SearchConfig $config,
 		array $namespaces = null,
-		User $user = null
+		User $user = null,
+		CirrusDebugOptions $debugOptions = null
 	) {
 		// Only allow core namespaces. We can't be sure any others exist
 		// TODO: possibly move this later and try to detect if we run the default
@@ -54,7 +56,7 @@ class InterwikiSearcher extends Searcher {
 			} );
 		}
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
-		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user );
+		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false, $debugOptions );
 	}
 
 	/**
@@ -113,7 +115,7 @@ class InterwikiSearcher extends Searcher {
 
 		$retval = array_merge( $retval, $results->getValue() );
 
-		if ( $this->isReturnRaw() ) {
+		if ( $this->searchContext->getDebugOptions()->isReturnRaw() ) {
 			return $retval;
 		}
 
@@ -138,7 +140,7 @@ class InterwikiSearcher extends Searcher {
 	 * @return SearchContext a search context ready to run a query on the target wiki
 	 */
 	private function buildOverriddenContext( array $overrides, SearchConfig $config ) {
-		$searchContext = new SearchContext( $config, $this->searchContext->getNamespaces() );
+		$searchContext = new SearchContext( $config, $this->searchContext->getNamespaces(), $this->searchContext->getDebugOptions() );
 		foreach ( $overrides as $name => $profile ) {
 			switch ( $name ) {
 			case 'ftbuilder':

@@ -2,10 +2,15 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchRequestBuilder;
+use CirrusSearch\Test\DummyConnection;
+use Elastica\Query;
 use MediaWiki\MediaWikiServices;
 use Title;
 
 /**
+ * @covers \CirrusSearch\Searcher
  * @group CirrusSearch
  */
 class SearcherTest extends CirrusTestCase {
@@ -107,11 +112,7 @@ class SearcherTest extends CirrusTestCase {
 		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
 
-		\RequestContext::getMain()->setRequest( new \FauxRequest( [
-			'cirrusDumpQuery' => 1,
-		] ) );
-
-		$engine = new \CirrusSearch();
+		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
 		$engine->setNamespaces( [
@@ -119,7 +120,6 @@ class SearcherTest extends CirrusTestCase {
 		] );
 		$engine->setShowSuggestion( true );
 		$engine->setLimitOffset( 20, 0 );
-		$engine->setDumpAndDie( false );
 		$encodedQuery = $engine->searchText( $queryString )->getValue();
 		$elasticQuery = json_decode( $encodedQuery, true );
 		// For extra fun, prefer-recent queries include a 'now' timestamp. We need to normalize that so
@@ -243,10 +243,6 @@ class SearcherTest extends CirrusTestCase {
 				'wgCirrusSearchEnableArchive' => true,
 		] );
 
-		\RequestContext::getMain()->setRequest( new \FauxRequest( [
-			'cirrusDumpQuery' => 1,
-		] ) );
-
 		$title = Title::newFromText( $query );
 		if ( $title ) {
 			$ns = $title->getNamespace();
@@ -256,10 +252,9 @@ class SearcherTest extends CirrusTestCase {
 			$termMain = $query;
 		}
 
-		$engine = new \CirrusSearch();
+		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setNamespaces( [ $ns ] );
-		$engine->setDumpAndDie( false );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
 		$decodedQuery = json_decode( $elasticQuery, true );
 		unset( $decodedQuery['path'] );
@@ -284,6 +279,29 @@ class SearcherTest extends CirrusTestCase {
 		$this->assertFalse( $status->isGood(), 'but it has warnings' );
 		$this->assertTrue( $status->getValue()->searchContainedSyntax(), 'it used special syntax' );
 		$this->assertEquals( 0, $status->getValue()->numRows(), 'and returned no results' );
+	}
+
+	public function testApplyDebugOptions() {
+		$config = new HashSearchConfig( [] );
+		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
+			[], null, false,
+			CirrusDebugOptions::fromRequest( new \FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) ) );
+		$builder = new SearchRequestBuilder( new SearchContext( $config ), new DummyConnection(), 'test' );
+		$query = new Query();
+		$searcher->applyDebugOptions( $builder );
+		$searcher->applyDebugOptionsToQuery( $query );
+		$this->assertTrue( $builder->isReturnExplain() );
+		$this->assertTrue( $query->getParam( 'explain' ) );
+
+		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
+			[], null, null,
+			CirrusDebugOptions::fromRequest( new \FauxRequest() ) );
+		$builder = new SearchRequestBuilder( new SearchContext( $config ), new DummyConnection(), 'test' );
+		$query = new Query();
+		$searcher->applyDebugOptions( $builder );
+		$searcher->applyDebugOptionsToQuery( $query );
+		$this->assertFalse( $builder->isReturnExplain() );
+		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
 }
 

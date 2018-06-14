@@ -30,6 +30,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\BulkUpdateRequestLog' => __DIR__ . '/includes/BulkUpdateRequestLog.php',
 	'CirrusSearch\\CheckIndexes' => __DIR__ . '/maintenance/checkIndexes.php',
 	'CirrusSearch\\CirrusConfigInterwikiResolver' => __DIR__ . '/includes/CirrusConfigInterwikiResolver.php',
+	'CirrusSearch\\CirrusDebugOptions' => __DIR__ . '/includes/CirrusDebugOptions.php',
 	'CirrusSearch\\CirrusIsSetup' => __DIR__ . '/maintenance/cirrusNeedsToBeBuilt.php',
 	'CirrusSearch\\CirrusTestCase' => __DIR__ . '/tests/phpunit/CirrusTestCase.php',
 	'CirrusSearch\\ClusterSettings' => __DIR__ . '/includes/ClusterSettings.php',

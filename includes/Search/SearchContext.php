@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search;
 
+use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
@@ -206,13 +207,20 @@ class SearchContext implements WarningCollector {
 	private $aggs = [];
 
 	/**
+	 * @var CirrusDebugOptions $debugOptions
+	 */
+	private $debugOptions;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
+	 * @param CirrusDebugOptions|null $options
 	 */
-	public function __construct( SearchConfig $config, array $namespaces = null ) {
+	public function __construct( SearchConfig $config, array $namespaces = null, CirrusDebugOptions $options = null ) {
 		$this->config = $config;
 		/** @suppress PhanDeprecatedProperty */
 		$this->namespaces = $namespaces;
+		$this->debugOptions = $options ?? CirrusDebugOptions::defaultOptions();
 		$this->loadConfig();
 	}
 
@@ -830,4 +838,10 @@ class SearchContext implements WarningCollector {
 		$this->suggestion = $suggestion;
 	}
 
+	/**
+	 * @return CirrusDebugOptions
+	 */
+	public function getDebugOptions() {
+		return $this->debugOptions;
+	}
 }

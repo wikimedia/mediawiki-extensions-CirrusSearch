@@ -833,6 +833,39 @@ STEMMER_RULES
 			// In Italian text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'indonesian':
+		case 'malay':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
+			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
+				],
+			];
+
+			$config[ 'filter' ][ 'indonesian_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => '_indonesian_',
+			];
+			$config[ 'filter' ][ 'indonesian_stemmer' ] = [
+				'type' => 'stemmer',
+				'language' => 'indonesian',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'char_filter' => [ 'indonesian_charfilter' ],
+				'filter' => [
+					'lowercase',
+					'indonesian_stop',
+					'indonesian_stemmer',
+				],
+			];
+
+			// In Indonesian/Malay text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'japanese':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T166731
 			$config[ 'char_filter' ][ 'fullwidthnumfix' ] = [
@@ -1314,6 +1347,7 @@ STEMMER_RULES
 		'it' => 'italian',
 		'lt' => 'lithuanian',
 		'lv' => 'latvian',
+		'ms' => 'malay',
 		'mwl' => 'mirandese',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',

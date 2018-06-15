@@ -40,6 +40,17 @@ use MediaWiki\MediaWikiServices;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class CirrusSearch extends SearchEngine {
+
+	/**
+	 * Special profile to instruct this class to use profile
+	 * selection mechanism.
+	 * This allows to defer profile selection to when we actually perform
+	 * the search. The reason is that the list of possible profiles
+	 * is returned by self::getProfiles so instead of assigning a default
+	 * profile at this point we use this special profile.
+	 */
+	const AUTOSELECT_PROFILE = 'engine_autoselect';
+
 	const COMPLETION_SUGGESTER_FEATURE = 'completionSuggester';
 
 	/** @const string name of the prefixsearch fallback profile */
@@ -336,11 +347,9 @@ class CirrusSearch extends SearchEngine {
 		$searcher->getSearchContext()->setLimitSearchToLocalWiki( $forceLocal );
 		$searcher->setSort( $this->getSort() );
 
-		if ( isset( $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE] ) ) {
-			$profile = $this->features[SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE];
-			if ( $config->getProfileService()->hasProfile( SearchProfileService::RESCORE, $profile ) ) {
-				$searcher->getSearchContext()->setRescoreProfile( $profile );
-			}
+		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
+		if ( $profile !== null ) {
+			$searcher->getSearchContext()->setRescoreProfile( $profile );
 		}
 
 		$searcher->setOptionsFromRequest( $this->request );
@@ -413,10 +422,8 @@ class CirrusSearch extends SearchEngine {
 	 */
 	protected function getSuggestions( $search, $variants, SearchConfig $config ) {
 		// Inspect features to check if the user selected a specific profile
-		$profile = null;
-		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
-			$profile = $this->features[SearchEngine::COMPLETION_PROFILE_TYPE];
-		}
+		$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
+
 		$clusterOverride = $config->getElement( 'CirrusSearchClusterOverrides', 'completion' );
 		if ( $clusterOverride !== null ) {
 			$connection = Connection::getPool( $config, $clusterOverride );
@@ -548,11 +555,16 @@ class CirrusSearch extends SearchEngine {
 			return $this->prefixSearch( $search, $variants );
 		}
 
-		if ( isset( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] ) ) {
+		$profile = $this->extractProfileFromFeatureData( SearchEngine::COMPLETION_PROFILE_TYPE );
+		if ( $profile === null ) {
+			// Need to fetch the name to fallback to prefix (not ideal)
+			// We should probably refactor this to have a single code path for prefix and completion suggester.
+			$profile = $this->config->getProfileService()
+				->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT, $profile );
+		}
+		if ( $profile === self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
 			// Fallback to prefixsearch if the classic profile was selected.
-			if ( $this->features[SearchEngine::COMPLETION_PROFILE_TYPE] == self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
-				return $this->prefixSearch( $search, $variants );
-			}
+			return $this->prefixSearch( $search, $variants );
 		}
 
 		return $this->getSuggestions( $search, $variants, $this->config );
@@ -625,7 +637,6 @@ class CirrusSearch extends SearchEngine {
 	public function getProfiles( $profileType, User $user = null ) {
 		$profileService = $this->config->getProfileService();
 		$serviceProfileType = null;
-		$profileContext = SearchProfileService::CONTEXT_DEFAULT;
 		switch ( $profileType ) {
 		case SearchEngine::COMPLETION_PROFILE_TYPE:
 			if ( $this->config->get( 'CirrusSearchUseCompletionSuggester' ) !== 'no' ) {
@@ -642,8 +653,6 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		$allowedProfiles = $profileService->listExposedProfiles( $serviceProfileType );
-		$default = $profileService->getProfileName( $serviceProfileType,
-			$profileContext );
 
 		$profiles = [];
 		foreach ( $allowedProfiles as $name => $profile ) {
@@ -657,10 +666,31 @@ class CirrusSearch extends SearchEngine {
 			$profiles[] = [
 				'name' => $name,
 				'desc-message' => isset( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
-				'default' => $default === $name,
+			];
+		}
+		if ( $profiles !== [] ) {
+			$profiles[] = [
+				'name' => self::AUTOSELECT_PROFILE,
+				'desc-message' => 'cirrussearch-autoselect-profile',
+				'default' => true,
 			];
 		}
 		return $profiles;
+	}
+
+	/**
+	 * (public for testing purposes)
+	 * @param string $profileType
+	 * @return string|null the profile name set in SearchEngine::features
+	 * null if none present or equal to self::AUTOSELECT_PROFILE
+	 */
+	public function extractProfileFromFeatureData( $profileType ) {
+		if ( isset( $this->features[$profileType] )
+			&& $this->features[$profileType] !== self::AUTOSELECT_PROFILE
+		) {
+			return $this->features[$profileType];
+		}
+		return null;
 	}
 
 	/**

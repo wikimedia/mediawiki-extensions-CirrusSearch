@@ -6,7 +6,8 @@
 			"Fúlvio",
 			"He7d3r",
 			"MokaAkashiyaPT",
-			"Athena in Wonderland"
+			"Athena in Wonderland",
+			"Eduardo Addad de Oliveira"
 		]
 	},
 	"cirrussearch-desc": "Mecanismo de pesquisa \"Elasticsearch\" para o MediaWiki",
@@ -86,10 +87,11 @@
 	"cirrussearch-mlt-not-configured": "A funcionalidade '$1' está mal configurada. Peça a um administrador para corrigir $wgCirrusSearchMoreLikeThisFields",
 	"cirrussearch-explore-similar-related": "Relacionadas",
 	"cirrussearch-explore-similar-categories": "Categorias",
-	"cirrussearch-explore-similar-languages": "Línguas",
+	"cirrussearch-explore-similar-languages": "Idiomas",
 	"cirrussearch-explore-similar-related-none": "Não existem páginas relacionadas",
 	"cirrussearch-explore-similar-categories-none": "Não existem categorias",
 	"cirrussearch-explore-similar-languages-none": "Não disponibilizado noutras línguas",
 	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo",
-	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>."
+	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Deixar o motor de pesquisa decidir qual o melhor perfil a usar."
 }

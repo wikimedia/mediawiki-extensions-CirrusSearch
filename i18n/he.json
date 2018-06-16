@@ -87,5 +87,6 @@
 	"cirrussearch-explore-similar-categories-none": "אין קטגוריות זמינות",
 	"cirrussearch-explore-similar-languages-none": "לא זמין בשפות אחרות",
 	"cirrussearch-article-words": "מילים בכל דפי התוכן",
-	"cirrussearch-keyword-prefix-ns-mismatch": "מרחב השם שנמצא בביטוי החיפוש <code dir=\"ltr\">prefix:</code> אינו תואם למרחבי השם המבוקשים. באפשרותך לתקן זאת באמצעות שימוש בתחילית <code dir=\"ltr\">all:</code> בשאילתה שלך."
+	"cirrussearch-keyword-prefix-ns-mismatch": "מרחב השם שנמצא בביטוי החיפוש <code dir=\"ltr\">prefix:</code> אינו תואם למרחבי השם המבוקשים. באפשרותך לתקן זאת באמצעות שימוש בתחילית <code dir=\"ltr\">all:</code> בשאילתה שלך.",
+	"cirrussearch-autoselect-profile": "לתת למנוע החיפוש לבחור את הפרופיל הטוב ביותר לשימוש."
 }

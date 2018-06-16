@@ -83,5 +83,6 @@
 	"cirrussearch-explore-similar-categories-none": "사용할 수 있는 분류 없음",
 	"cirrussearch-explore-similar-languages-none": "다른 언어에서 사용할 수 없음",
 	"cirrussearch-article-words": "모든 콘텐츠 문서의 단어",
-	"cirrussearch-keyword-prefix-ns-mismatch": "<code>prefix:</code> 검색 용어로 찾은 이름공간은 요청된 이름공간과 호환되지 않습니다. 쿼리 앞에 <code>all:</code>를 붙임으로써 해결할 수 있습니다."
+	"cirrussearch-keyword-prefix-ns-mismatch": "<code>prefix:</code> 검색 용어로 찾은 이름공간은 요청된 이름공간과 호환되지 않습니다. 쿼리 앞에 <code>all:</code>를 붙임으로써 해결할 수 있습니다.",
+	"cirrussearch-autoselect-profile": "검색 엔진이 최상의 프로필을 사용하도록 결정하게 합니다."
 }

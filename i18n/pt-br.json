@@ -33,8 +33,10 @@
 	"apihelp-cirrus-settings-dump-summary": "Dump das configurações do CirrusSearch para esta wiki.",
 	"apihelp-cirrus-settings-dump-example": "Obtenha um dump das configurações do CirrusSearch para esta wiki.",
 	"apihelp-query+cirrusdoc-description": "Cópia em arquivo do documento de um artigo CirrusSearch",
-	"apihelp-query+cirrusdoc-summary": "Cópia em arquivo do documento de um artigo CirrusSearch",
-	"apihelp-query+cirrusdoc-example": "Obter cópia em arquivo de um artigo CirrusSearch individual.",
+	"apihelp-query+cirrusdoc-summary": "Cópia em arquivo do documento de um artigo CirrusSearch dos servidores de pesquisa",
+	"apihelp-query+cirrusdoc-example": "Obter cópia em arquivo de um artigo CirrusSearch individual tal como atualmente indexado na pesquisa.",
+	"apihelp-query+cirrusbuilddoc-summary": "Cópia em arquivo do documento de um artigo CirrusSearch dos servidores da base de dados",
+	"apihelp-query+cirrusbuilddoc-example": "Obter cópia em arquivo de um artigo CirrusSearch individual gerado da base de dados.",
 	"apierror-cirrus-requesttoolong": "A solicitação de pesquisa de prefixo foi maior do que o comprimento máximo permitido. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Dê-nos a sua opinião",
 	"cirrussearch-morelikethis-settings": "#<!-- deixe esta linha exatamente como ela está --> <pre>\n# Esta mensagem permite que você configure as configurações do recurso \"mais como este\".\n# Mudanças aqui tomam efeito imediatamente.\n# A sintaxe é a seguinte:\n#   * Tudo a partir de um caractere \"#\" até o final da linha é um comentário.\n#   * Toda linha não-branca é o nome da configuração seguido de um caractere \":\" seguido do valor de definição\n# As configurações são:\n#   * min_doc_freq (inteiro): Número mínimo de documentos (por fragmento) que precisam de um termo para ser considerado.\n#   * max_doc_freq (inteiro): Número máximo de documentos (por pedaço) que tem um termo para ser considerado.\n# Os termos de alta freqüência são geralmente \"palavras de parada\".\n#   * max_query_terms (inteiro): Número máximo de termos a serem considerados. Esse valor está limitado a $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n#   * min_term_freq (inteiro): O número mínimo de vezes que o termo aparece na entrada do documento deve ser considerado. Para campos pequenos (título), este valor deve ser 1.\n#   * minimum_should_match (porcentagem -100% a 100% ou número inteiro de termos): A porcentagem de termos para coincidir. Padrões para 30%.\n#   * min_word_len (inteiro): Comprimento mínimo de um termo a ser considerado. Padrões para 0.\n#   * max_word_len (inteiro): O comprimento máximo da palavra acima do qual as palavras serão ignoradas. Padrões para campos ilimitados (0).\n#   * campos (lista separada por vírgula de valores): Estes são os campos a serem usados. Os campos permitidos são título, texto, texto auxiliar, texto de abertura, títulos.\n# Exemplos de boas linhas:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_terms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- deixe esta linha exatamente como ela está -->",
@@ -89,7 +91,8 @@
 	"cirrussearch-explore-similar-languages": "Idiomas",
 	"cirrussearch-explore-similar-related-none": "Nenhuma página relacionada disponível",
 	"cirrussearch-explore-similar-categories-none": "Nenhuma categoria disponível",
-	"cirrussearch-explore-similar-languages-none": "Não disponível em outras línguas",
+	"cirrussearch-explore-similar-languages-none": "Não disponível em outras idiomas",
 	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo",
-	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>."
+	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Deixe o mecanismo de pesquisa decidir o melhor perfil a ser usado."
 }

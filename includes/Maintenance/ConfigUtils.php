@@ -147,7 +147,7 @@ class ConfigUtils {
 	public function scanAvailablePlugins( array $bannedPlugins = [] ) {
 		$this->outputIndented( "Scanning available plugins..." );
 		$availablePlugins = $this->scanModulesOrPlugins( 'plugins' );
-		if ( count( $availablePlugins ) === 0 ) {
+		if ( $availablePlugins === [] ) {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );
@@ -168,7 +168,7 @@ class ConfigUtils {
 	public function scanAvailableModules() {
 		$this->outputIndented( "Scanning available modules..." );
 		$availableModules = $this->scanModulesOrPlugins( 'modules' );
-		if ( count( $availableModules ) === 0 ) {
+		if ( $availableModules === [] ) {
 			$this->output( 'none' );
 		}
 		$this->output( "\n" );

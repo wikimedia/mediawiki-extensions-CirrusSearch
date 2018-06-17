@@ -96,13 +96,13 @@ class ParseWarning {
 			'msg' => $this->message,
 			'start' => $this->getStart(),
 		];
-		if ( count( $this->expectedTokens ) > 0 ) {
+		if ( $this->expectedTokens !== [] ) {
 			$ar['expected'] = $this->expectedTokens;
 		}
 		if ( $this->actualToken !== null ) {
 			$ar['actual'] = $this->actualToken;
 		}
-		if ( count( $this->messageParams ) > 0 ) {
+		if ( $this->messageParams !== [] ) {
 			$ar['message_params'] = $this->messageParams;
 		}
 		return $ar;

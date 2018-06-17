@@ -69,7 +69,7 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 		$this->languageCode = $config->get( 'LanguageCode' );
 		$this->regexPlugin = $config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'regex' );
 		$this->maxDeterminizedStates = $config->get( 'CirrusSearchRegexMaxDeterminizedStates' );
-		Assert::precondition( count( $fields ) > 0, 'must have at least one field' );
+		Assert::precondition( $fields !== [], 'must have at least one field' );
 		$this->fields = $fields;
 		$this->shardTimeout = $config->getElement( 'CirrusSearchSearchShardTimeout', 'regex' );
 	}

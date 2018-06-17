@@ -255,7 +255,7 @@ class FancyTitleResultsType extends TitleResultsType {
 				array_merge( $redirectHighlights,
 					$highlights["redirect.title.{$this->matchedAnalyzer}_asciifolding"] );
 		}
-		if ( count( $redirectHighlights ) !== 0 ) {
+		if ( $redirectHighlights !== [] ) {
 			$source = $r->getSource();
 			$docRedirects = [];
 			if ( isset( $source['redirect'] ) ) {
@@ -268,7 +268,7 @@ class FancyTitleResultsType extends TitleResultsType {
 					$r, $redirectTitleString, $docRedirects, $namespaces );
 			}
 		}
-		if ( count( $resultForTitle ) === 0 ) {
+		if ( $resultForTitle === [] ) {
 			// We're not really sure where the match came from so lets just pretend it was the title.
 			LoggerFactory::getInstance( 'CirrusSearch' )
 				->warning( "Title search result type hit a match but we can't " .

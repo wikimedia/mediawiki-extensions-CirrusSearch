@@ -210,7 +210,7 @@ class SearchProfileRepositoryTransformer implements SearchProfileRepository {
 				$matches = [];
 				$ret = preg_match_all( self::PATTERN, $repl, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );
 				Assert::postcondition( $ret !== false, 'preg_match_all should not fail' );
-				if ( count( $matches ) > 0 ) {
+				if ( $matches !== [] ) {
 					$lastMatch = end( $matches )[0];
 					// Make sure that we matched the whole input if not it means we perhaps matched
 					// the beginning but some components at the end

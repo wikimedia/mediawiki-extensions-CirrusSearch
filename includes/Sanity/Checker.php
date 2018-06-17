@@ -144,8 +144,8 @@ class Checker {
 	 * @param \Elastica\Result[] $fromIndex
 	 * @return bool true if a modification was needed
 	 */
-	private function checkExisitingPage( $docId, $pageId, $page, $fromIndex ) {
-		$inIndex = count( $fromIndex ) > 0;
+	private function checkExisitingPage( $docId, $pageId, $page, array $fromIndex ) {
+		$inIndex = $fromIndex !== [];
 		if ( $this->checkIfRedirect( $page ) ) {
 			if ( $inIndex ) {
 				$this->remediator->redirectInIndex( $page );
@@ -190,8 +190,8 @@ class Checker {
 	 * @param \Elastica\Result[] $fromIndex
 	 * @return bool true if a modification was needed
 	 */
-	private function checkInexistentPage( $docId, $pageId, $fromIndex ) {
-		$inIndex = count( $fromIndex ) > 0;
+	private function checkInexistentPage( $docId, $pageId, array $fromIndex ) {
+		$inIndex = $fromIndex !== [];
 		if ( $inIndex ) {
 			foreach ( $fromIndex as $r ) {
 				$title = Title::makeTitle( $r->namespace, $r->title );

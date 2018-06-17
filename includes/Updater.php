@@ -86,7 +86,7 @@ class Updater extends ElasticsearchIntermediary {
 			}
 		}
 
-		if ( count( $redirects ) === 0 ) {
+		if ( $redirects === [] ) {
 			return true;
 		}
 		$redirectDocIds = [];

@@ -80,7 +80,7 @@ class PreferRecentFeature extends SimpleKeywordFeature implements BoostFunctionF
 			if ( isset( $matches[2] ) ) {
 				$retValue['halfLife'] = floatval( $matches[2] );
 			}
-			return count( $retValue ) > 0 ? $retValue : null;
+			return $retValue !== [] ? $retValue : null;
 		}
 		return false;
 	}

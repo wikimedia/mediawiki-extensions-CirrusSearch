@@ -333,7 +333,7 @@ class SearchContext implements WarningCollector {
 	 */
 	public function isSyntaxUsed( $type = null ) {
 		if ( $type === null ) {
-			return count( $this->syntaxUsed ) > 0;
+			return $this->syntaxUsed !== [];
 		}
 		return isset( $this->syntaxUsed[$type] );
 	}

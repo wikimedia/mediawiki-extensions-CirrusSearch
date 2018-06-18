@@ -98,5 +98,6 @@
 	"cirrussearch-explore-similar-categories-none": "Aucune catégorie disponible",
 	"cirrussearch-explore-similar-languages-none": "Non disponible dans les autres langues",
 	"cirrussearch-article-words": "Mots de toutes les pages de contenu",
-	"cirrussearch-keyword-prefix-ns-mismatch": "L’espace de noms trouvé dans la condition de recherche <code>prefix:</code> n’est pas compatible avec les espaces de noms demandés. Vous pouvez corriger cela en préfixant votre requête par <code>all:</code>."
+	"cirrussearch-keyword-prefix-ns-mismatch": "L’espace de noms trouvé dans la condition de recherche <code>prefix:</code> n’est pas compatible avec les espaces de noms demandés. Vous pouvez corriger cela en préfixant votre requête par <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Laisser le moteur de recherche décider du meilleur profil à utiliser."
 }

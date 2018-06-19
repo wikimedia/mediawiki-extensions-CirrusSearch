@@ -156,7 +156,7 @@ class InCategoryFeature extends SimpleKeywordFeature implements FilterQueryFeatu
 			$names[] = $title->getText();
 		}
 
-		if ( count( $names ) === 0 ) {
+		if ( $names === [] ) {
 			$warningCollector->addWarning( 'cirrussearch-incategory-feature-no-valid-categories', $key );
 		}
 		return $names;

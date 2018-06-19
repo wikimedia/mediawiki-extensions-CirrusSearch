@@ -395,7 +395,7 @@ class QueryStringRegexParser implements QueryParser {
 		if ( $left === null ) {
 			return new EmptyQueryNode( 0, strlen( $this->query ) );
 		}
-		if ( count( $clauses ) > 0 ) {
+		if ( $clauses !== [] ) {
 			if ( $lastBoolType !== - 1 ) {
 				$occur = $this->boolToOccur( $lastBoolType );
 				$clauses[] = $this->createClause( $left, true, $occur );

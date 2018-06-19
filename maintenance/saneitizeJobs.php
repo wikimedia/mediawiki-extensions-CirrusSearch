@@ -90,6 +90,7 @@ class SaneitizeJobs extends Maintenance {
 	}
 
 	private function init() {
+		$this->initMetaStores();
 		$res = $this->getDB( DB_REPLICA )->select( 'page',
 			[ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
 		$row = $res->next();
@@ -142,7 +143,6 @@ class SaneitizeJobs extends Maintenance {
 		$maxJobs = $profile['max_checker_jobs'];
 		$maxUpdates = $profile['update_jobs_max_pressure'];
 
-		$this->initMetaStores();
 		$jobName = $this->getOption( 'job-name', 'default' );
 		$jobInfo = $this->getJobInfo( $jobName );
 		if ( $jobInfo === null ) {
@@ -401,11 +401,12 @@ EOD
 	 * @return \Elastica\Document
 	 */
 	private function createNewJob( $jobName ) {
+		$scriptCluster = $this->getOption( 'cluster' );
 		foreach ( $this->metaStores as $store ) {
 			// TODO: It's a little awkward to let each cluster make
 			// it's own job, but it also seems sane to put all
 			// the doc building in the store?
-			$job = $store->create( $jobName, $this->minId );
+			$job = $store->create( $jobName, $this->minId, $scriptCluster );
 		}
 		return $job;
 	}

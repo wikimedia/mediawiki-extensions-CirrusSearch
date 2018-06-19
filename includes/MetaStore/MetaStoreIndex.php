@@ -127,7 +127,7 @@ class MetaStoreIndex {
 	}
 
 	/**
-	 * @return array
+	 * @return MetaStore[]
 	 */
 	public function stores() {
 		return [

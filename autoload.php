@@ -111,6 +111,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Maintenance\\Validators\\Validator' => __DIR__ . '/includes/Maintenance/Validators/Validator.php',
 	'CirrusSearch\\MetaStore\\MetaNamespaceStore' => __DIR__ . '/includes/MetaStore/MetaNamespaceStore.php',
 	'CirrusSearch\\MetaStore\\MetaSaneitizeJobStore' => __DIR__ . '/includes/MetaStore/MetaSaneitizeJobStore.php',
+	'CirrusSearch\\MetaStore\\MetaStore' => __DIR__ . '/includes/MetaStore/MetaStore.php',
 	'CirrusSearch\\MetaStore\\MetaStoreIndex' => __DIR__ . '/includes/MetaStore/MetaStoreIndex.php',
 	'CirrusSearch\\MetaStore\\MetaVersionStore' => __DIR__ . '/includes/MetaStore/MetaVersionStore.php',
 	'CirrusSearch\\MultiSearchRequestLog' => __DIR__ . '/includes/MultiSearchRequestLog.php',

@@ -8,7 +8,7 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\Ids;
 use Elastica\Query\Match;
 
-class MetaNamespaceStore {
+class MetaNamespaceStore implements MetaStore {
 	/** @const Value of metastore 'type' field for our documents */
 	const METASTORE_TYPE = 'namespace';
 

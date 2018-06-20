@@ -4,8 +4,8 @@ namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\Connection;
 
-class MetaSaneitizeJobStore {
-	const METASTORE_TYPE = "sanitize-job";
+class MetaSaneitizeJobStore implements MetaStore {
+	const METASTORE_TYPE = "sanitize";
 
 	/** @var Connection */
 	private $connection;
@@ -29,9 +29,10 @@ class MetaSaneitizeJobStore {
 	/**
 	 * @param string $jobName
 	 * @param int $idOffset The starting page id of the job
+	 * @param string|null $cluster target cluster for this job (null for all writable clusters)
 	 * @return \Elastica\Document
 	 */
-	public function create( $jobName, $idOffset ) {
+	public function create( $jobName, $idOffset, $cluster = null ) {
 		$doc = new \Elastica\Document(
 			self::docId( $jobName ),
 			[
@@ -41,7 +42,7 @@ class MetaSaneitizeJobStore {
 				'sanitize_job_created' => time(),
 				'sanitize_job_updated' => time(),
 				'sanitize_job_last_loop' => null,
-				'sanitize_job_cluster' => $this->connection->getClusterName(),
+				'sanitize_job_cluster' => $cluster,
 				'sanitize_job_id_offset' => $idOffset,
 				'sanitize_job_ids_sent' => 0,
 				'sanitize_job_ids_sent_total' => 0,
@@ -95,6 +96,13 @@ class MetaSaneitizeJobStore {
 
 	private function getType() {
 		return MetaStoreIndex::getElasticaType( $this->connection );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function buildIndexProperties() {
+		return [];
 	}
 }
 

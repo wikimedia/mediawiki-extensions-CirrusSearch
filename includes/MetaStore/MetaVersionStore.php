@@ -10,7 +10,7 @@ use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
 use Elastica\Query\BoolQuery;
 use GitInfo;
 
-class MetaVersionStore {
+class MetaVersionStore implements MetaStore {
 	const METASTORE_TYPE = 'version';
 
 	/** @var Connection */

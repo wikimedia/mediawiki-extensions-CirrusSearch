@@ -188,8 +188,8 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 	abstract protected function getNonRegexFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context );
 
 	/**
-	 * @param $pattern
-	 * @param $insensitive
+	 * @param string $pattern
+	 * @param bool $insensitive
 	 * @return AbstractQuery
 	 */
 	private function buildRegexQuery( $pattern, $insensitive ) {

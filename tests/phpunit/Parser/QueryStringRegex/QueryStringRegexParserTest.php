@@ -39,20 +39,17 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideRefImplQueries
-	 * @param array $config
-	 * @param $expected
-	 * @param $queryString
 	 */
-	public function testRefImplFixtures( $expected, $queryString, array $config = [] ) {
+	public function testRefImplFixtures( array $expected, $queryString, array $config = [] ) {
 		$this->assertQuery( $expected, $queryString, $config );
 	}
 
 	/**
+	 * @param array $expected
+	 * @param string $queryString
 	 * @param array $config
-	 * @param $expected
-	 * @param $queryString
 	 */
-	public function assertQuery( $expected, $queryString, array $config = [] ) {
+	public function assertQuery( array $expected, $queryString, array $config = [] ) {
 		$config = new HashSearchConfig(
 			$config + [ 'CirrusSearchStripQuestionMarks' => 'all' ],
 			[ 'inherit' ]

@@ -169,7 +169,7 @@ class QueryStringRegexParser implements QueryParser {
 
 	/**
 	 * Reinit internal parser states
-	 * @param $rawQuery
+	 * @param string $rawQuery
 	 */
 	private function reInit( $rawQuery ) {
 		$this->rawQuery = $rawQuery;

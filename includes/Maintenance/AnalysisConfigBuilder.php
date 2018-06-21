@@ -861,6 +861,35 @@ STEMMER_RULES
 
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'mirandese':
+			// Unpack default analyzer to add Mirandese-specific elision and stop words
+
+			$config[ 'filter' ][ 'mirandese_elision' ] = [
+				'type' => 'elision',
+				'articles_case' => true,
+				'articles' => [
+					'l', 'd', 'qu'
+				],
+			];
+
+			$config[ 'filter' ][ 'mirandese_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => require __DIR__ . '/AnalysisLanguageData/mirandeseStopwords.php',
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'mirandese_elision',
+					'mirandese_stop',
+				],
+			];
+
+			// Text_search is just a copy of text
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'russian':
 			$config[ 'char_filter' ][ 'russian_charfilter' ] = [
 				'type' => 'mapping',
@@ -1224,10 +1253,11 @@ STEMMER_RULES
 		'hi' => 'hindi',
 		'hu' => 'hungarian',
 		'id' => 'indonesian',
-		'lt' => 'lithuanian',
-		'lv' => 'latvian',
 		'ga' => 'irish',
 		'it' => 'italian',
+		'lt' => 'lithuanian',
+		'lv' => 'latvian',
+		'mwl' => 'mirandese',
 		'nb' => 'norwegian',
 		'nn' => 'norwegian',
 		'fa' => 'persian',

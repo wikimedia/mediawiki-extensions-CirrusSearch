@@ -2,8 +2,6 @@
 
 namespace CirrusSearch;
 
-use CirrusSearch\Search\SearchContext;
-use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
 use MediaWiki\MediaWikiServices;
@@ -286,21 +284,15 @@ class SearcherTest extends CirrusTestCase {
 		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
 			[], null, false,
 			CirrusDebugOptions::fromRequest( new \FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) ) );
-		$builder = new SearchRequestBuilder( new SearchContext( $config ), new DummyConnection(), 'test' );
 		$query = new Query();
-		$searcher->applyDebugOptions( $builder );
 		$searcher->applyDebugOptionsToQuery( $query );
-		$this->assertTrue( $builder->isReturnExplain() );
 		$this->assertTrue( $query->getParam( 'explain' ) );
 
 		$searcher = new Searcher( new DummyConnection(), 0, 20, $config,
 			[], null, null,
 			CirrusDebugOptions::fromRequest( new \FauxRequest() ) );
-		$builder = new SearchRequestBuilder( new SearchContext( $config ), new DummyConnection(), 'test' );
 		$query = new Query();
-		$searcher->applyDebugOptions( $builder );
 		$searcher->applyDebugOptionsToQuery( $query );
-		$this->assertFalse( $builder->isReturnExplain() );
 		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
 }

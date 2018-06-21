@@ -30,6 +30,9 @@
         "expected": {
             "query": "word",
             "rawQuery": "word",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -44,6 +47,9 @@
         "expected": {
             "query": "Louise Michel (Paris M\u00e9tro)",
             "rawQuery": "Louise Michel (Paris M\u00e9tro)",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -58,6 +64,9 @@
         "expected": {
             "query": "(word1 OR word2) AND (word3 OR word4)",
             "rawQuery": "(word1 OR word2) AND (word3 OR word4)",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -113,6 +122,9 @@
         "expected": {
             "query": "word1 word2",
             "rawQuery": "word1 word2",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -133,6 +145,9 @@
             "queryCleanups": {
                 "stripped_qmark": true
             },
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -153,6 +168,9 @@
             "queryCleanups": {
                 "stripped_qmark": true
             },
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "wildcard": {
                     "startOffset": 0,
@@ -167,6 +185,9 @@
         "expected": {
             "query": "\\AND \\\" \\NOT \\!word word\\* word\\",
             "rawQuery": "\\AND \\\" \\NOT \\!word word\\* word\\",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -181,6 +202,9 @@
         "expected": {
             "query": "w1\t-w2\u3000-w3\ufeff-w4\u0000-w5",
             "rawQuery": "w1\t-w2\u3000-w3\ufeff-w4\u0000-w5",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -246,6 +270,9 @@
         "expected": {
             "query": "!word1",
             "rawQuery": "!word1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 1,
@@ -271,6 +298,9 @@
         "expected": {
             "query": "-word1",
             "rawQuery": "-word1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 1,
@@ -296,6 +326,9 @@
         "expected": {
             "query": "foo-bar",
             "rawQuery": "foo-bar",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -310,6 +343,9 @@
         "expected": {
             "query": "foo!bar",
             "rawQuery": "foo!bar",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -324,6 +360,9 @@
         "expected": {
             "query": "NOT word1",
             "rawQuery": "NOT word1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 4,
@@ -349,6 +388,9 @@
         "expected": {
             "query": "word0 !word1 word1",
             "rawQuery": "word0 !word1 word1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -394,6 +436,9 @@
         "expected": {
             "query": "!@word1",
             "rawQuery": "!@word1",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -408,6 +453,9 @@
         "expected": {
             "query": "-@word1",
             "rawQuery": "-@word1",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -422,6 +470,9 @@
         "expected": {
             "query": "NOT @word1",
             "rawQuery": "NOT @word1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 4,
@@ -447,6 +498,9 @@
         "expected": {
             "query": "word1 AND word2",
             "rawQuery": "word1 AND word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -482,6 +536,9 @@
         "expected": {
             "query": "word1 && word2",
             "rawQuery": "word1 && word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -517,6 +574,9 @@
         "expected": {
             "query": "word1 OR word2",
             "rawQuery": "word1 OR word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -552,6 +612,9 @@
         "expected": {
             "query": "word1 || word2",
             "rawQuery": "word1 || word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -587,6 +650,9 @@
         "expected": {
             "query": "word1 AND word2 OR word3",
             "rawQuery": "word1 AND word2 OR word3",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -632,6 +698,9 @@
         "expected": {
             "query": "word1 OR word2 AND word3",
             "rawQuery": "word1 OR word2 AND word3",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -677,6 +746,9 @@
         "expected": {
             "query": "word1 word2 OR word3 word4",
             "rawQuery": "word1 word2 OR word3 word4",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -712,6 +784,9 @@
         "expected": {
             "query": "word1 AND NOT word2",
             "rawQuery": "word1 AND NOT word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -747,6 +822,9 @@
         "expected": {
             "query": "word1 OR NOT word2",
             "rawQuery": "word1 OR NOT word2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -782,6 +860,9 @@
         "expected": {
             "query": "\"word1 word2\"",
             "rawQuery": "\"word1 word2\"",
+            "queryClassCache": [
+                "simple_phrase_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -799,6 +880,9 @@
         "expected": {
             "query": "\"!happy\" \"-happy\" happy",
             "rawQuery": "\"!happy\" \"-happy\" happy",
+            "queryClassCache": [
+                "bag_of_words_with_phrase_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -850,6 +934,9 @@
         "expected": {
             "query": "\"word1 word2\"~",
             "rawQuery": "\"word1 word2\"~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -867,6 +954,9 @@
         "expected": {
             "query": "\"word1 word2\"~0",
             "rawQuery": "\"word1 word2\"~0",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -884,6 +974,9 @@
         "expected": {
             "query": "\"word1 word2\"~1",
             "rawQuery": "\"word1 word2\"~1",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -901,6 +994,9 @@
         "expected": {
             "query": "\"word1 word2\"~0~",
             "rawQuery": "\"word1 word2\"~0~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -918,6 +1014,9 @@
         "expected": {
             "query": "\"word1 word2\"~1~",
             "rawQuery": "\"word1 word2\"~1~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -935,6 +1034,9 @@
         "expected": {
             "query": "\"word1 word2*\"",
             "rawQuery": "\"word1 word2*\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase_prefix": {
                     "startOffset": 0,
@@ -949,6 +1051,9 @@
         "expected": {
             "query": "\"word1 word2*\"~",
             "rawQuery": "\"word1 word2*\"~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -966,6 +1071,9 @@
         "expected": {
             "query": "\"word1 word2*\"~1~",
             "rawQuery": "\"word1 word2*\"~1~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -983,6 +1091,9 @@
         "expected": {
             "query": "\"word1 word2*\"~2",
             "rawQuery": "\"word1 word2*\"~2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -1000,6 +1111,9 @@
         "expected": {
             "query": "foo\"bar\"baz",
             "rawQuery": "foo\"bar\"baz",
+            "queryClassCache": [
+                "bag_of_words_with_phrase_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1054,6 +1168,9 @@
             "queryCleanups": {
                 "gershayim_quirks": true
             },
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1068,6 +1185,9 @@
         "expected": {
             "query": "\"foo AND NOT bar OR baz\"",
             "rawQuery": "\"foo AND NOT bar OR baz\"",
+            "queryClassCache": [
+                "simple_phrase_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -1085,6 +1205,9 @@
         "expected": {
             "query": "foo OR\"bar baz\"OR buz",
             "rawQuery": "foo OR\"bar baz\"OR buz",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1133,6 +1256,9 @@
         "expected": {
             "query": "foo AND-bar NOT!baz",
             "rawQuery": "foo AND-bar NOT!baz",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1147,6 +1273,9 @@
         "expected": {
             "query": "word~",
             "rawQuery": "word~",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "fuzzy": {
                     "startOffset": 0,
@@ -1162,6 +1291,9 @@
         "expected": {
             "query": "word~0 2word~1 word~2",
             "rawQuery": "word~0 2word~1 word~2",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1210,6 +1342,9 @@
         "expected": {
             "query": "w@rd~ w-ord~1 word~.9 word~a ~",
             "rawQuery": "w@rd~ w-ord~1 word~.9 word~a ~",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1224,6 +1359,9 @@
         "expected": {
             "query": "1* 1w** @notaprefix*",
             "rawQuery": "1* 1w** @notaprefix*",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1277,6 +1415,9 @@
         "expected": {
             "query": "*w* *1?2*3 *@not*a*wildcard no?*awildcard",
             "rawQuery": "*w* *1?2*3 *@not*a*wildcard no?*awildcard",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1326,6 +1467,9 @@
         "expected": {
             "query": "*w* *1?2*3 1*2*3*4* *@not*a*wildcard",
             "rawQuery": "*w* *1?2*3 1*2*3*4* *@not*a*wildcard",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1340,6 +1484,9 @@
         "expected": {
             "query": "\t\u0000 \u3000local:word\t\u0000 \u3000",
             "rawQuery": "\t\u0000 \u3000local:word\t\u0000 \u3000",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 6,
@@ -1380,6 +1527,9 @@
         "expected": {
             "query": "local:word",
             "rawQuery": "local:word",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1420,6 +1570,9 @@
         "expected": {
             "query": "intitle: word",
             "rawQuery": "intitle: word",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1439,6 +1592,9 @@
         "expected": {
             "query": "intitle: ",
             "rawQuery": "intitle: ",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1453,6 +1609,9 @@
         "expected": {
             "query": "foo prefer-recent:",
             "rawQuery": "foo prefer-recent:",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1496,6 +1655,9 @@
             "requiredNamespaces": [
                 0
             ],
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1522,6 +1684,9 @@
         "expected": {
             "query": "morelike: prefix:test intitle:test",
             "rawQuery": "morelike: prefix:test intitle:test",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1541,6 +1706,9 @@
         "expected": {
             "query": "foo morelike:baz",
             "rawQuery": "foo morelike:baz",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1555,6 +1723,9 @@
         "expected": {
             "query": "word local:word",
             "rawQuery": "word local:word",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
             "root": {
                 "words": {
                     "startOffset": 0,
@@ -1569,6 +1740,9 @@
         "expected": {
             "query": "intitle:foo\t\u0000 \u3000word\u3000\t \u0000intitle:bar",
             "rawQuery": "intitle:foo\t\u0000 \u3000word\u3000\t \u0000intitle:bar",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1624,6 +1798,10 @@
         "expected": {
             "query": "intitle:\"foo \"bar baz\"",
             "rawQuery": "intitle:\"foo \"bar baz\"",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrus-parse-error-unbalanced-phrase",
@@ -1683,6 +1861,9 @@
         "expected": {
             "query": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
             "rawQuery": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1728,6 +1909,9 @@
         "expected": {
             "query": "\"intitle:bar\"",
             "rawQuery": "\"intitle:bar\"",
+            "queryClassCache": [
+                "simple_phrase_query"
+            ],
             "root": {
                 "phrase": {
                     "startOffset": 0,
@@ -1745,6 +1929,9 @@
         "expected": {
             "query": "\"foo bar\"intitle:bar",
             "rawQuery": "\"foo bar\"intitle:bar",
+            "queryClassCache": [
+                "bag_of_words_with_phrase_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1783,6 +1970,9 @@
         "expected": {
             "query": "-intitle:bar !intitle:bar",
             "rawQuery": "-intitle:bar !intitle:bar",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 1,
@@ -1823,6 +2013,9 @@
         "expected": {
             "query": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
             "rawQuery": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1898,6 +2091,10 @@
         "expected": {
             "query": "\" intitle:test \"",
             "rawQuery": "\" intitle:test \"",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrus-parse-error-unbalanced-phrase",
@@ -1964,6 +2161,9 @@
         "expected": {
             "query": "morelike:Help:Help",
             "rawQuery": "morelike:Help:Help",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1985,6 +2185,9 @@
             "rawQuery": "prefix:Help:Help",
             "requiredNamespaces": [
                 12
+            ],
+            "queryClassCache": [
+                "complex_query"
             ],
             "root": {
                 "keyword": {
@@ -2012,6 +2215,9 @@
         "expected": {
             "query": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
             "rawQuery": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2072,6 +2278,9 @@
         "expected": {
             "query": "intitle:test intitle:\"foo bar\"",
             "rawQuery": "intitle:test intitle:\"foo bar\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2117,6 +2326,9 @@
         "expected": {
             "query": "prefer-recent:0.3,0.5",
             "rawQuery": "prefer-recent:0.3,0.5",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2140,6 +2352,9 @@
         "expected": {
             "query": "prefer-recent:0.3",
             "rawQuery": "prefer-recent:0.3",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2162,6 +2377,9 @@
         "expected": {
             "query": "prefer-recent:hello",
             "rawQuery": "prefer-recent:hello",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2202,6 +2420,9 @@
         "expected": {
             "query": "prefer-recent:hastemplate:hello",
             "rawQuery": "prefer-recent:hastemplate:hello",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2250,6 +2471,9 @@
         "expected": {
             "query": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
             "rawQuery": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2319,6 +2543,9 @@
         "expected": {
             "query": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
             "rawQuery": "insource:test insource:\"foo bar\" insource:\/201[0-0]\/i",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2379,6 +2606,9 @@
         "expected": {
             "query": "linksto:foobar linksto:\"foobar\"",
             "rawQuery": "linksto:foobar linksto:\"foobar\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2424,6 +2654,9 @@
         "expected": {
             "query": "inlanguage:fr,en inlanguage:\"fr,en\"",
             "rawQuery": "inlanguage:fr,en inlanguage:\"fr,en\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2481,6 +2714,10 @@
         "expected": {
             "query": "filesize:>30 filesize:<30 filesize:30,50 filesize:ab",
             "rawQuery": "filesize:>30 filesize:<30 filesize:30,50 filesize:ab",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-file-numeric-feature-not-a-number",
@@ -2584,6 +2821,10 @@
         "expected": {
             "query": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
             "rawQuery": "filebits:30 filebits:>30 filebits:<30 filebits:30,50 filebits:ab",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-file-numeric-feature-not-a-number",
@@ -2710,6 +2951,10 @@
         "expected": {
             "query": "incategory:foo incategory:foo|id:123 incategory:foo|bar|baz|qux",
             "rawQuery": "incategory:foo incategory:foo|id:123 incategory:foo|bar|baz|qux",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-feature-too-many-conditions",
@@ -2802,6 +3047,9 @@
         "expected": {
             "query": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
             "rawQuery": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2827,6 +3075,10 @@
         "expected": {
             "query": "foo AND AND bar",
             "rawQuery": "foo AND AND bar",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-token",
@@ -2873,6 +3125,9 @@
         "expected": {
             "query": "foo NOT AND bar",
             "rawQuery": "foo NOT AND bar",
+            "queryClassCache": [
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-token",
@@ -2918,6 +3173,9 @@
         "expected": {
             "query": "foo NOT NOT bar",
             "rawQuery": "foo NOT NOT bar",
+            "queryClassCache": [
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-token",
@@ -2963,6 +3221,10 @@
         "expected": {
             "query": "foo NOT -bar",
             "rawQuery": "foo NOT -bar",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-double-negation",
@@ -2992,7 +3254,7 @@
                                     "words": "bar"
                                 }
                             },
-                            "explicit": false
+                            "explicit": true
                         }
                     ]
                 }
@@ -3004,6 +3266,10 @@
         "expected": {
             "query": "foo OR ",
             "rawQuery": "foo OR ",
+            "queryClassCache": [
+                "simple_bag_of_words",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-end",
@@ -3029,6 +3295,10 @@
         "expected": {
             "query": "foo NOT ",
             "rawQuery": "foo NOT ",
+            "queryClassCache": [
+                "simple_bag_of_words",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-end",
@@ -3053,6 +3323,10 @@
         "expected": {
             "query": "AND foo",
             "rawQuery": "AND foo",
+            "queryClassCache": [
+                "simple_bag_of_words",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-token",
@@ -3078,6 +3352,9 @@
         "expected": {
             "query": "foo \"bar ",
             "rawQuery": "foo \"bar ",
+            "queryClassCache": [
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrus-parse-error-unbalanced-phrase",
@@ -3122,6 +3399,10 @@
         "expected": {
             "query": "foo -\"bar baz",
             "rawQuery": "foo -\"bar baz",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrus-parse-error-unbalanced-phrase",
@@ -3166,6 +3447,10 @@
         "expected": {
             "query": "AND && OR OR AND && ||",
             "rawQuery": "AND && OR OR AND && ||",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
             "warnings": [
                 {
                     "msg": "cirrussearch-parse-error-unexpected-token",

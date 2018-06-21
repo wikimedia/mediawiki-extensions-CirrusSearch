@@ -4,6 +4,7 @@ namespace CirrusSearch\Parser\AST;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor;
+use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use Wikimedia\Assert\Assert;
 
 /**
@@ -61,6 +62,16 @@ class ParsedQuery {
 	private $crossSearchStrategy;
 
 	/**
+	 * @var ParsedQueryClassifiersRepository
+	 */
+	private $classifierRepository;
+
+	/**
+	 * @var bool[] indexed by query class name
+	 */
+	private $queryClassCache = [];
+
+	/**
 	 * ParsedQuery constructor.
 	 * @param ParsedNode $root
 	 * @param string $query cleaned up query string
@@ -68,8 +79,17 @@ class ParsedQuery {
 	 * @param bool[] $queryCleanups indexed by cleanup type (non-empty when $query !== $rawQuery)
 	 * @param array|string $requiredNamespaces
 	 * @param ParseWarning[] $parseWarnings list of warnings detected during parsing
+	 * @param ParsedQueryClassifiersRepository $repository
 	 */
-	public function __construct( ParsedNode $root, $query, $rawQuery, $queryCleanups, $requiredNamespaces, array $parseWarnings = [] ) {
+	public function __construct(
+		ParsedNode $root,
+		$query,
+		$rawQuery,
+		$queryCleanups,
+		$requiredNamespaces,
+		array $parseWarnings,
+		ParsedQueryClassifiersRepository $repository
+	) {
 		$this->root = $root;
 		$this->query = $query;
 		$this->rawQuery = $rawQuery;
@@ -78,6 +98,7 @@ class ParsedQuery {
 		Assert::parameter( is_array( $requiredNamespaces ) || $requiredNamespaces === 'all',
 			'$requiredNamespaces', 'must be an array or "all"' );
 		$this->requiredNamespaces = $requiredNamespaces;
+		$this->classifierRepository = $repository;
 	}
 
 	/**
@@ -160,6 +181,40 @@ class ParsedQuery {
 	}
 
 	/**
+	 * @param string $class
+	 * @return bool
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException if the class is unknown
+	 */
+	public function isQueryOfClass( $class ) {
+		return $this->queryClassCache[$class] ?? $this->loadQueryClass( $class );
+	}
+
+	/**
+	 * @param string $class
+	 * @return bool
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
+	 */
+	private function loadQueryClass( $class ) {
+		$classifier = $this->classifierRepository->getClassifier( $class );
+		$newClasses = $classifier->classify( $this );
+		foreach ( $classifier->classes() as $k ) {
+			$this->queryClassCache[$k] = in_array( $k, $newClasses, true );
+		}
+		return $this->queryClassCache[$class];
+	}
+
+	/**
+	 * Preload all known query classes and classify this
+	 * query.
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
+	 */
+	public function preloadQueryClasses() {
+		foreach ( $this->classifierRepository->getKnownClassifiers() as $class ) {
+			$this->isQueryOfClass( $class );
+		}
+	}
+
+	/**
 	 * @return array
 	 */
 	public function toArray() {
@@ -172,6 +227,11 @@ class ParsedQuery {
 		}
 		if ( !empty( $this->queryCleanups ) ) {
 			$ar['queryCleanups'] = $this->queryCleanups;
+		}
+		$this->preloadQueryClasses();
+		$classes = array_keys( array_filter( $this->queryClassCache ) );
+		if ( !empty( $classes ) ) {
+			$ar['queryClassCache'] = $classes;
 		}
 		if ( !empty( $this->parseWarnings ) ) {
 			$ar['warnings'] = array_map( function ( ParseWarning $w ) {

@@ -7,8 +7,8 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
-use CirrusSearch\Parser\FullTextKeywordRegistry;
-use CirrusSearch\Search\Escaper;
+use CirrusSearch\Parser\QueryParser;
+use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -33,12 +33,18 @@ use CirrusSearch\SearchConfig;
  * @covers \CirrusSearch\Parser\QueryStringRegex\KeywordParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\Token
+ * @covers \CirrusSearch\Parser\FTQueryClassifiersRepository
+ * @covers \CirrusSearch\Parser\BasicQueryClassifier
  * @group CirrusSearch
  */
 class QueryStringRegexParserTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideRefImplQueries
+	 * @param array $expected
+	 * @param array $config
+	 * @param string $queryString
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function testRefImplFixtures( array $expected, $queryString, array $config = [] ) {
 		$this->assertQuery( $expected, $queryString, $config );
@@ -48,6 +54,7 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 	 * @param array $expected
 	 * @param string $queryString
 	 * @param array $config
+	 * @throws \CirrusSearch\Parser\ParsedQueryClassifierException
 	 */
 	public function assertQuery( array $expected, $queryString, array $config = [] ) {
 		$config = new HashSearchConfig(
@@ -77,7 +84,8 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 					$config = $data['config'];
 					$ntest['config'] = $config;
 				}
-				$ntest['expected'] = $this->parse( $data['query'], $config )->toArray();
+				$query = $this->parse( $data['query'], $config );
+				$ntest['expected'] = $query->toArray();
 				$ntests[$name] = $ntest;
 			}
 			CirrusTestCase::saveFixture( $file, $ntests );
@@ -126,17 +134,11 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 
 	/**
 	 * @param SearchConfig $config
-	 * @return QueryStringRegexParser
+	 * @return QueryParser
 	 */
 	public function buildParser( $config ) {
-		$escaper =
-			new Escaper( $config->get( 'LanguageCode' ),
-				$config->get( 'CirrusSearchAllowLeadingWildcard' ) );
-
-		$parser =
-			new QueryStringRegexParser( new FullTextKeywordRegistry( $config ), $escaper,
-				$config->get( 'CirrusSearchStripQuestionMarks' ) );
-
+		$parser = QueryParserFactory::newFullTextQueryParser( $config );
+		$this->assertInstanceOf( QueryStringRegexParser::class, $parser );
 		return $parser;
 	}
 }

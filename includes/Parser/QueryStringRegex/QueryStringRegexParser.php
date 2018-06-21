@@ -13,6 +13,7 @@ use CirrusSearch\Parser\AST\ParseWarning;
 use CirrusSearch\Parser\AST\PhraseQueryNode;
 use CirrusSearch\Parser\AST\Visitor\KeywordNodeVisitor;
 use CirrusSearch\Parser\AST\WordsQueryNode;
+use CirrusSearch\Parser\ParsedQueryClassifiersRepository;
 use CirrusSearch\Parser\QueryParser;
 use CirrusSearch\Query\KeywordFeature;
 use CirrusSearch\Query\PrefixFeature;
@@ -74,6 +75,11 @@ class QueryStringRegexParser implements QueryParser {
 	 * @var Escaper
 	 */
 	private $escaper;
+
+	/**
+	 * @var ParsedQueryClassifiersRepository
+	 */
+	private $classifierRepository;
 
 	/**
 	 * @var string|null user query (null when not yet cleaned up)
@@ -156,15 +162,22 @@ class QueryStringRegexParser implements QueryParser {
 	 * @param \CirrusSearch\Parser\KeywordRegistry $keywordRegistry
 	 * @param Escaper $escaper
 	 * @param string $qmarkStripLevel level of question mark stripping to apply
+	 * @param ParsedQueryClassifiersRepository $classifierRepository
 	 * @see Util::stripQuestionMarks() for acceptable $qmarkStripLevel values
 	 */
-	public function __construct( \CirrusSearch\Parser\KeywordRegistry $keywordRegistry, Escaper $escaper, $qmarkStripLevel ) {
+	public function __construct(
+		\CirrusSearch\Parser\KeywordRegistry $keywordRegistry,
+		Escaper $escaper,
+		$qmarkStripLevel,
+		ParsedQueryClassifiersRepository $classifierRepository
+	) {
 		$this->keywordRegistry = $keywordRegistry;
 		$this->escaper = $escaper;
 		$this->keywordParser = new KeywordParser();
 		$this->phraseQueryParser = new PhraseQueryParser( $escaper );
 		$this->nonPhraseParser = new NonPhraseParser( $escaper );
 		$this->questionMarkStripLevel = $qmarkStripLevel;
+		$this->classifierRepository = $classifierRepository;
 	}
 
 	/**
@@ -267,7 +280,8 @@ class QueryStringRegexParser implements QueryParser {
 		reset( $this->preTaggedNodes );
 		$root = $this->expression();
 		$additionalNamespaces = $this->extractRequiredNamespaces( $root );
-		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups, $additionalNamespaces, $this->warnings );
+		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups,
+			$additionalNamespaces, $this->warnings, $this->classifierRepository );
 	}
 
 	private function createClause( ParsedNode $node, $explicit = false, $occur = null ) {
@@ -304,6 +318,7 @@ class QueryStringRegexParser implements QueryParser {
 		$left = null;
 		// Last boolean operator seen, -1 means none
 		$lastBoolType = -1;
+		$explicitNegation = false;
 		// TODO: simplify, this is a bit hairy
 		while ( $this->nextToken() ) {
 			if ( $left === null ) {
@@ -317,6 +332,7 @@ class QueryStringRegexParser implements QueryParser {
 				continue;
 			}
 
+			$explicitNegation = false;
 			// The last boolean operator seen before the last one, -1 means none
 			// used to know if the node was attached explicitly by the user
 			$beforeLastBoolType = $lastBoolType;
@@ -338,6 +354,7 @@ class QueryStringRegexParser implements QueryParser {
 							$left = $node;
 						}
 					} else {
+						$explicitNegation = true;
 						$clauses[] = $this->createClause( $left );
 						$left = $this->explicitlyNegatedNode();
 					}
@@ -353,7 +370,7 @@ class QueryStringRegexParser implements QueryParser {
 						$left = $this->collapseWords( $left );
 
 					} else {
-						$clauses[] = $this->createClause( $left );
+						$clauses[] = $this->createClause( $left, $explicitNegation );
 						$left = $this->leaf();
 					}
 					Assert::postcondition( $left !== null, '$left must not be null' );
@@ -400,7 +417,7 @@ class QueryStringRegexParser implements QueryParser {
 				$occur = $this->boolToOccur( $lastBoolType );
 				$clauses[] = $this->createClause( $left, true, $occur );
 			} else {
-				$clauses[] = $this->createClause( $left );
+				$clauses[] = $this->createClause( $left, $explicitNegation );
 			}
 			return $this->createBoolNode( $clauses );
 		} elseif ( $left instanceof NegatedNode ) {
@@ -693,7 +710,6 @@ class QueryStringRegexParser implements QueryParser {
 	 * @return array|string array of additional namespaces, 'all' for everything
 	 */
 	private function extractRequiredNamespaces( ParsedNode $root ) {
-		$total = [];
 		$visitor = new class( [], [ PrefixFeature::class ] ) extends KeywordNodeVisitor {
 			/** @var string|int[] */
 			public $total = [];

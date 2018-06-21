@@ -5,9 +5,7 @@ namespace CirrusSearch\Parser\AST;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
-use CirrusSearch\Parser\FullTextKeywordRegistry;
-use CirrusSearch\Parser\QueryStringRegex\QueryStringRegexParser;
-use CirrusSearch\Search\Escaper;
+use CirrusSearch\Parser\QueryParserFactory;
 
 class ParsedQueryTest extends CirrusTestCase {
 
@@ -37,9 +35,7 @@ class ParsedQueryTest extends CirrusTestCase {
 	 * @covers \CirrusSearch\Parser\AST\ParsedQuery::getCrossSearchStrategy()
 	 */
 	public function testCrossSearchStrategy( $query, CrossSearchStrategy $expectedStratery ) {
-		$config = new HashSearchConfig( [] );
-		$parser = new QueryStringRegexParser( new FullTextKeywordRegistry( $config ),
-			new Escaper( 'en', true ), 'all' );
+		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$pQuery = $parser->parse( $query );
 		$this->assertEquals( $expectedStratery, $pQuery->getCrossSearchStrategy() );
 	}

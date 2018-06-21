@@ -72,6 +72,12 @@ class ParsedQuery {
 	private $queryClassCache = [];
 
 	/**
+	 * @var string[] list of used features in the query
+	 * @see \CirrusSearch\Query\KeywordFeature::getFeatureName()
+	 */
+	private $featuresUsed;
+
+	/**
 	 * ParsedQuery constructor.
 	 * @param ParsedNode $root
 	 * @param string $query cleaned up query string
@@ -215,6 +221,31 @@ class ParsedQuery {
 	}
 
 	/**
+	 * Get the list of keyword features used by this query.
+	 * @see \CirrusSearch\Query\KeywordFeature::getFeatureName()
+	 * @return string[]
+	 */
+	public function getFeaturesUsed() {
+		if ( $this->featuresUsed === null ) {
+			$visitor = new class() extends KeywordNodeVisitor {
+				public $features = [];
+
+				/**
+				 * @param KeywordFeatureNode $node
+				 */
+				function doVisitKeyword( KeywordFeatureNode $node ) {
+					$name = $node->getKeyword()
+						->getFeatureName( $node->getKey(), $node->getDelimiter() );
+					$this->features[$name] = true;
+				}
+			};
+			$this->root->accept( $visitor );
+			$this->featuresUsed = array_keys( $visitor->features );
+		}
+		return $this->featuresUsed;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function toArray() {
@@ -237,6 +268,9 @@ class ParsedQuery {
 			$ar['warnings'] = array_map( function ( ParseWarning $w ) {
 				return $w->toArray();
 			}, $this->parseWarnings );
+		}
+		if ( !empty( $this->getFeaturesUsed() ) ) {
+			$ar['featuresUsed'] = $this->getFeaturesUsed();
 		}
 		$ar['root'] = $this->getRoot()->toArray();
 		return $ar;

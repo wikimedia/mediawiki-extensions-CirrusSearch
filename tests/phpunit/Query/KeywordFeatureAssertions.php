@@ -415,7 +415,10 @@ class KeywordFeatureAssertions {
 	 * @return QueryBuildingContext
 	 */
 	private function mockBuilderContext( $data, SearchConfig $config ) {
-		$mock = $this->testCase->createMock( QueryBuildingContext::class );
+		$mock = $this->testCase->getMockBuilder( QueryBuildingContext::class )
+			->disableOriginalConstructor()
+			->getMock();
+
 		$mock->method( 'getKeywordExpandedData' )
 			->willReturn( $data );
 		$mock->method( 'getSearchConfig' )

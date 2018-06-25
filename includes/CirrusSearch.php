@@ -182,7 +182,8 @@ class CirrusSearch extends SearchEngine {
 		}
 
 		if ( $this->isFeatureEnabled( 'rewrite' ) &&
-			$matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] )
+			 $matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) &&
+			 $this->prefix === ''
 		) {
 			$status = $this->searchTextSecondTry( $term, $status );
 		}
@@ -340,6 +341,11 @@ class CirrusSearch extends SearchEngine {
 			$searcher->addSuggestPrefix( '~' );
 		}
 
+		if ( $this->prefix !== '' ) {
+			// TODO: move this to the query building code
+			\CirrusSearch\Query\PrefixFeature::prepareSearchContext( $searcher->getSearchContext(), $this->prefix );
+		}
+
 		$searcher->getSearchContext()->setLimitSearchToLocalWiki( $forceLocal );
 		$searcher->setSort( $this->getSort() );
 
@@ -429,19 +435,6 @@ class CirrusSearch extends SearchEngine {
 		} else {
 			return SearchSuggestionSet::emptySuggestionSet();
 		}
-	}
-
-	/**
-	 * Merge the prefix into the query (if any).
-	 * @param string $term search term
-	 * @return string possibly with a prefix appended
-	 */
-	public function transformSearchTerm( $term ) {
-		if ( $this->prefix != '' ) {
-			// Slap the standard prefix notation onto the query
-			$term = $term . ' ' . \CirrusSearch\Query\PrefixFeature::KEYWORD . ':' . $this->prefix;
-		}
-		return $term;
 	}
 
 	/**

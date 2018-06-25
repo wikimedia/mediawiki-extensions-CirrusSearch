@@ -846,4 +846,12 @@ class SearchContext implements WarningCollector {
 	public function getDebugOptions() {
 		return $this->debugOptions;
 	}
+
+	/**
+	 * NOTE: public for testing purposes.
+	 * @return AbstractQuery[]
+	 */
+	public function getFilters(): array {
+		return $this->filters;
+	}
 }

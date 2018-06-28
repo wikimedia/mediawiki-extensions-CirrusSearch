@@ -59,9 +59,9 @@ class QueryParserFactoryTest extends CirrusTestCase {
 			->parse( $query );
 
 		if ( $equals ) {
-			$this->assertEquals( $emptyConfigParsedQuery, $updatedConfigParsedQuery );
+			$this->assertEquals( $emptyConfigParsedQuery->toArray(), $updatedConfigParsedQuery->toArray() );
 		} else {
-			$this->assertNotEquals( $emptyConfigParsedQuery, $updatedConfigParsedQuery );
+			$this->assertNotEquals( $emptyConfigParsedQuery->toArray(), $updatedConfigParsedQuery->toArray() );
 		}
 	}
 }

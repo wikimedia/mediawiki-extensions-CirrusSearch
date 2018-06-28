@@ -139,10 +139,9 @@ class RunSearch extends Maintenance {
 	 */
 	protected function processResultSet( ResultSet $value, $query ) {
 		// these are prefix or full text results
-		$data['totalHits'] = $value->getTotalHits();
-		$data['rows'] = [];
+		$rows = [];
 		foreach ( $value as $result ) {
-			$data['rows'][] = [
+			$rows[] = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance
 				'docId' => $result->getDocId(),
@@ -159,7 +158,10 @@ class RunSearch extends Maintenance {
 				'extra' => $result->getExtensionData(),
 			];
 		}
-		return $data;
+		return [
+			'totalHits' => $value->getTotalHits(),
+			'rows' => $rows,
+		];
 	}
 
 	/**
@@ -168,16 +170,18 @@ class RunSearch extends Maintenance {
 	 * @return array
 	 */
 	protected function processSuggestionSet( SearchSuggestionSet $value ) {
-		$data['totalHits'] = $value->getSize();
-		$data['rows'] = [];
+		$rows = [];
 		foreach ( $value->getSuggestions() as $suggestion ) {
-			$data['rows'][] = [
+			$rows[] = [
 				'pageId' => $suggestion->getSuggestedTitleID(),
 				'title' => $suggestion->getSuggestedTitle()->getPrefixedText(),
 				'snippets' => [],
 			];
 		}
-		return $data;
+		return [
+			'totalHits' => $value->getSize(),
+			'rows' => $rows,
+		];
 	}
 
 	/**
@@ -186,16 +190,18 @@ class RunSearch extends Maintenance {
 	 * @return array
 	 */
 	protected function processArchiveResult( ResultWrapper $value ) {
-		$data['totalHits'] = $value->numRows();
-		$data['rows'] = [];
+		$rows = [];
 		foreach ( $value as $row ) {
-			$data['rows'][] = [
+			$rows[] = [
 				'title' => $row->ar_title,
 				'namespace' => $row->ar_namespace,
 				'count' => $row->count,
 			];
 		}
-		return $data;
+		return [
+			'totalHits' => $value->numRows(),
+			'rows' => $rows,
+		];
 	}
 
 	/**

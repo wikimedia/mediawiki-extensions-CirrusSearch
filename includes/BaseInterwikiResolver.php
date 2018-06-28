@@ -135,6 +135,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 * @return SearchConfig[] config indexed by iw prefix
 	 */
 	private function loadConfigFromAPI( $wikis, array $hashConfigFlags, $fallbackConfig ) {
+		$endpoints = [];
 		foreach ( $wikis as $prefix => $wiki ) {
 			$iw = $this->interwikiLookup->fetch( $prefix );
 			if ( !$iw || !$this->useConfigDumpApi || !$iw->isLocal() ) {
@@ -193,6 +194,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	private function sendConfigDumpRequest( $endpoints ) {
 		$logger = LoggerFactory::getInstance( 'CirrusSearch' );
+		$reqs = [];
 		foreach ( $endpoints as $prefix => $info ) {
 			$reqs[$prefix] = [
 				'method' => 'GET',

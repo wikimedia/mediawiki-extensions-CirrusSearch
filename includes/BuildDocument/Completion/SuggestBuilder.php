@@ -196,7 +196,7 @@ class SuggestBuilder {
 
 		$suggestions = $this->extractTitleAndSimilarRedirects( $inputDoc );
 
-		$docs[] = $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc );
+		$docs = [ $this->buildTitleSuggestion( $docId, $suggestions['group'], $score, $inputDoc ) ];
 		if ( !empty( $suggestions['candidates'] ) ) {
 			$docs[] = $this->buildRedirectsSuggestion( $docId, $suggestions['candidates'], $score, $inputDoc );
 		}

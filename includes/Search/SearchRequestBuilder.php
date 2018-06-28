@@ -32,9 +32,6 @@ class SearchRequestBuilder {
 	/** @var string search timeout, string with time and unit, e.g. 20s for 20 seconds*/
 	private $timeout;
 
-	/** @var boolean set to true when explanation is needed */
-	private $returnExplain;
-
 	/** @var Type force the type when set, use {@link Connection::pickIndexTypeForNamespaces}
 	 * otherwise */
 	private $pageType;
@@ -167,10 +164,7 @@ class SearchRequestBuilder {
 			$search->addIndex( $i );
 		}
 
-		if ( $this->returnExplain ) {
-			$query->setExplain( true );
-		}
-
+		$this->searchContext->getDebugOptions()->applyDebugOptions( $query );
 		return $search;
 	}
 
@@ -221,23 +215,6 @@ class SearchRequestBuilder {
 	 */
 	public function setTimeout( $timeout ) {
 		$this->timeout = $timeout;
-
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isReturnExplain() {
-		return $this->returnExplain;
-	}
-
-	/**
-	 * @param bool $returnExplain
-	 * @return SearchRequestBuilder
-	 */
-	public function setReturnExplain( $returnExplain ) {
-		$this->returnExplain = $returnExplain;
 
 		return $this;
 	}

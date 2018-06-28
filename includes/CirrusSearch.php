@@ -101,7 +101,7 @@ class CirrusSearch extends SearchEngine {
 	private $request;
 
 	/**
-	 * CirrusSearchIndexFieldFactory
+	 * @var CirrusSearchIndexFieldFactory
 	 */
 	private $searchIndexFieldFactory;
 
@@ -353,7 +353,6 @@ class CirrusSearch extends SearchEngine {
 		} else {
 			$searcher->updateNamespacesFromQuery( $term );
 		}
-		$this->showSuggestion = $this->debugOptions->isCirrusSuppressSuggest() ? false : $this->showSuggestion;
 
 		$searcher->setResultsType( new FullTextResultsType() );
 		$status = $searcher->searchText( $term, $this->showSuggestion );

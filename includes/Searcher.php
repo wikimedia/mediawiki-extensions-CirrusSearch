@@ -432,12 +432,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function buildSearch() {
 		$builder = new SearchRequestBuilder( $this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
-		return $this->applyDebugOptions( $builder->setLimit( $this->limit )
+		return $builder->setLimit( $this->limit )
 			->setOffset( $this->offset )
 			->setPageType( $this->pageType )
 			->setSort( $this->sort )
 			->setTimeout( $this->getTimeout() )
-		)->build();
+			->build();
 	}
 
 	/**
@@ -471,8 +471,9 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	protected function searchMulti( $searches, array $resultsTypes = [] ) {
 		$contextResultsType = $this->searchContext->getResultsType();
-		if ( $this->limit <= 0 && ! $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
-			if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+		$cirrusDebugOptions = $this->searchContext->getDebugOptions();
+		if ( $this->limit <= 0 && ! $cirrusDebugOptions->isCirrusDumpQuery() ) {
+			if ( $cirrusDebugOptions->isCirrusDumpResult() ) {
 				return Status::newGood( [
 						'description' => 'Canceled due to offset out of bounds',
 						'path' => '',
@@ -505,7 +506,7 @@ class Searcher extends ElasticsearchIntermediary {
 			]
 		);
 
-		if ( $this->searchContext->getDebugOptions()->isCirrusDumpQuery() ) {
+		if ( $cirrusDebugOptions->isCirrusDumpQuery() ) {
 			$retval = [];
 			$description = $log->formatDescription();
 			foreach ( $searches as $key => $search ) {
@@ -564,8 +565,8 @@ class Searcher extends ElasticsearchIntermediary {
 		};
 
 		// Wrap with caching if needed, but don't cache debugging queries
-		$skipCache = $this->searchContext->getDebugOptions()->isCirrusDumpResult()
-				|| $this->searchContext->getDebugOptions()->getCirrusExplain();
+		$skipCache = $cirrusDebugOptions->isCirrusDumpResult()
+					 || $cirrusDebugOptions->getCirrusExplain();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
@@ -626,7 +627,7 @@ class Searcher extends ElasticsearchIntermediary {
 		}
 
 		$retval = [];
-		if ( $this->searchContext->getDebugOptions()->isCirrusDumpResult() ) {
+		if ( $cirrusDebugOptions->isCirrusDumpResult() ) {
 			$description = $log->formatDescription();
 			foreach ( $status->getValue()->getResultSets() as $key => $resultSet ) {
 				$retval[$key] = [
@@ -811,7 +812,7 @@ class Searcher extends ElasticsearchIntermediary {
 	public function processRawReturn( $result, WebRequest $request ) {
 		$header = null;
 
-		if ( in_array( $this->searchContext->getDebugOptions()->getCirrusExplain(), [ 'verbose', 'pretty', 'hot' ] ) ) {
+		if ( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
 			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplain() );
 			$result = $printer->format( $result );
@@ -951,24 +952,11 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
-	 * Apply debug options to the search request builder
-	 * @param SearchRequestBuilder $search
-	 * @return SearchRequestBuilder
-	 */
-	public function applyDebugOptions( SearchRequestBuilder $search ) {
-		$search->setReturnExplain( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null );
-		return $search;
-	}
-
-	/**
 	 * Apply debug options to the elastica query
 	 * @param Query $query
 	 * @return Query
 	 */
 	public function applyDebugOptionsToQuery( Query $query ) {
-		if ( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null ) {
-			$query->setExplain( true );
-		}
-		return $query;
+		return $this->searchContext->getDebugOptions()->applyDebugOptions( $query );
 	}
 }

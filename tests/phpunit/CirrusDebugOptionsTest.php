@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use Elastica\Query;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,7 +28,6 @@ class CirrusDebugOptionsTest extends TestCase {
 		$debugOptions = CirrusDebugOptions::fromRequest( $request );
 		$this->assertEquals( 'my_model', $debugOptions->getCirrusMLRModel() );
 		$this->assertEquals( 'pretty', $debugOptions->getCirrusExplain() );
-		$this->assertTrue( $debugOptions->isCirrusSuppressSuggest() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertTrue( $debugOptions->isCirrusDumpResult() );
 		$this->assertEquals( [ 'foo', 'bar' ], $debugOptions->getCirrusCompletionVariant() );
@@ -43,7 +43,6 @@ class CirrusDebugOptionsTest extends TestCase {
 		$debugOptions = CirrusDebugOptions::forDumpingQueriesInUnitTests();
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplain() );
-		$this->assertFalse( $debugOptions->isCirrusSuppressSuggest() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
 		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
@@ -54,11 +53,22 @@ class CirrusDebugOptionsTest extends TestCase {
 	private function assertNone( CirrusDebugOptions $debugOptions ) {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplain() );
-		$this->assertFalse( $debugOptions->isCirrusSuppressSuggest() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
 		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
 		$this->assertFalse( $debugOptions->isReturnRaw() );
 		$this->assertFalse( $debugOptions->isDumpAndDie() );
+	}
+
+	public function testApplyToQuery() {
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [ 'cirrusExplain' => 'pretty' ] ) );
+		$query = new Query();
+		$options->applyDebugOptions( $query );
+		$this->assertTrue( $query->getParam( 'explain' ) );
+
+		$options = CirrusDebugOptions::defaultOptions();
+		$query = new Query();
+		$options->applyDebugOptions( $query );
+		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
 }

@@ -2,14 +2,12 @@
 
 namespace CirrusSearch;
 
+use Elastica\Query;
+
 /**
  * Cirrus debug options generally set via *unofficial* URI param (&cirrusXYZ=ZYX)
  */
 class CirrusDebugOptions {
-	/**
-	 * @var bool
-	 */
-	private $cirrusSuppressSuggest = false;
 
 	/**
 	 * @var string[]|null
@@ -50,7 +48,6 @@ class CirrusDebugOptions {
 	 */
 	public static function fromRequest( \WebRequest $request ) {
 		$options = new self();
-		$options->cirrusSuppressSuggest = self::debugFlag( $request, 'cirrusSuppressSuggest' );
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = self::debugFlag( $request, 'cirrusDumpQuery' );
 		$options->cirrusDumpResult = self::debugFlag( $request, 'cirrusDumpResult' );
@@ -111,13 +108,6 @@ class CirrusDebugOptions {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function isCirrusSuppressSuggest() {
-		return $this->cirrusSuppressSuggest;
-	}
-
-	/**
 	 * @return null|string[]
 	 */
 	public function getCirrusCompletionVariant() {
@@ -164,5 +154,16 @@ class CirrusDebugOptions {
 	 */
 	public function isReturnRaw() {
 		return $this->cirrusDumpQuery || $this->cirrusDumpResult;
+	}
+
+	/**
+	 * @param Query $query
+	 * @return Query
+	 */
+	public function applyDebugOptions( Query $query ) {
+		if ( $this->cirrusExplain !== null ) {
+			$query->setExplain( true );
+		}
+		return $query;
 	}
 }

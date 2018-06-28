@@ -91,11 +91,13 @@ class Saneitize extends Maintenance {
 		if ( $buildChunks ) {
 			$builder = new \CirrusSearch\Maintenance\ChunkBuilder();
 			$builder->build( $this->mSelf, $this->mOptions, $buildChunks, $this->fromPageId, $this->toPageId );
-			return;
+			return null;
 		}
 		$this->buildChecker();
 		$updated = $this->check();
 		$this->output( "Fixed $updated page(s) (" . ( $this->toPageId - $this->fromPageId ) . " checked)\n" );
+
+		return true;
 	}
 
 	/**

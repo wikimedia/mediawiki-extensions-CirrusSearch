@@ -161,7 +161,7 @@ class ForceSearchIndex extends Maintenance {
 		$buildChunks = $this->getOption( 'buildChunks' );
 		if ( $buildChunks !== null ) {
 			$this->buildChunks( $buildChunks );
-			return;
+			return null;
 		}
 		$this->queue = $this->getOption( 'queue' );
 		$this->maxJobs = $this->getOption( 'maxJobs' )
@@ -238,6 +238,8 @@ class ForceSearchIndex extends Maintenance {
 		}
 		$this->output( "$operationName a total of {$completed} pages at $rate/second\n" );
 		$this->waitForQueueToDrain( $wiki );
+
+		return true;
 	}
 
 	private function buildPageIdBatches() {

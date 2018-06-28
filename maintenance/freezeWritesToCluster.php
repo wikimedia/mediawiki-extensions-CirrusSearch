@@ -50,6 +50,8 @@ class FreezeWritesToCluster extends Maintenance {
 			$sender->freezeIndexes( $reason );
 			$this->output( "Applied cluster-wide freeze\n\n" );
 		}
+
+		return true;
 	}
 }
 

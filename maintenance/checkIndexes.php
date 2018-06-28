@@ -94,6 +94,8 @@ class CheckIndexes extends Maintenance {
 		if ( $errCount > 0 ) {
 			die( 2 );
 		}
+
+		return true;
 	}
 
 	private function checkMetastore( array $aliases ) {

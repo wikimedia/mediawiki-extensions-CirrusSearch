@@ -87,6 +87,8 @@ class SaneitizeJobs extends Maintenance {
 		} else {
 			$this->maybeHelp( true );
 		}
+
+		return true;
 	}
 
 	private function init() {

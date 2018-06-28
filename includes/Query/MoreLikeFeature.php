@@ -205,7 +205,6 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 	 * application side cache key. If the result is unstable we will see a
 	 * reduced hit rate, and waste cache storage space.
 	 *
-	 * @param SearchContext $context
 	 * @param Title[] $titles
 	 * @return \Elastica\Query\MoreLikeThis
 	 */

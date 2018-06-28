@@ -277,6 +277,8 @@ class UpdateSuggesterIndex extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace );
 		}
+
+		return true;
 	}
 
 	/**

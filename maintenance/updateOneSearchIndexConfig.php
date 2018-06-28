@@ -229,12 +229,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			if ( $this->getOption( 'justAllocation', false ) ) {
 				$this->validateShardAllocation();
-				return;
+				return true;
 			}
 
 			if ( $this->getOption( 'justMapping', false ) ) {
 				$this->validateMapping();
-				return;
+				return true;
 			}
 
 			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
@@ -259,6 +259,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				"Message: $message\n" .
 				"Trace:\n" . $trace );
 		}
+
+		return true;
 	}
 
 	/**

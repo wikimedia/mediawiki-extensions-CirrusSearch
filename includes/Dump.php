@@ -46,7 +46,7 @@ class Dump extends FormlessAction {
 		if ( !$esSources->isOK() ) {
 			// Exception has been logged
 			echo '{}';
-			return;
+			return null;
 		}
 		$esSources = $esSources->getValue();
 
@@ -61,6 +61,7 @@ class Dump extends FormlessAction {
 			];
 		}
 		echo json_encode( $result );
+		return null;
 	}
 
 	/**

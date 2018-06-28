@@ -72,6 +72,8 @@ class RunSearch extends Maintenance {
 		$forks = ctype_digit( $forks ) ? intval( $forks ) : 0;
 		$controller = new OrderedStreamingForkController( $forks, $callback, STDIN, STDOUT );
 		$controller->start();
+
+		return true;
 	}
 
 	/**

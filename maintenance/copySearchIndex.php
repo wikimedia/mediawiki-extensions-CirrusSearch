@@ -104,6 +104,8 @@ class CopySearchIndex extends Maintenance {
 		$reindexer->reindex( $slices, 1, $reindexChunkSize );
 		$reindexer->optimize();
 		$reindexer->waitForShards();
+
+		return true;
 	}
 
 	/**

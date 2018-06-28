@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
+use CirrusSearch\ExternalIndex;
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
@@ -776,7 +777,7 @@ class SearchContext implements WarningCollector {
 	 * Generally needed to query externilized file index.
 	 * Must be called only once the list of namespaces has been set.
 	 *
-	 * @return string[]
+	 * @return ExternalIndex[]
 	 * @see OtherIndexes::getExtraIndexesForNamespaces()
 	 */
 	public function getExtraIndices() {
@@ -784,6 +785,7 @@ class SearchContext implements WarningCollector {
 			return [];
 		}
 		return OtherIndexes::getExtraIndexesForNamespaces(
+			$this->config,
 			$this->getNamespaces()
 		);
 	}

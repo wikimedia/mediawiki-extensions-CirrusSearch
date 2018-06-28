@@ -160,8 +160,9 @@ class SearchRequestBuilder {
 		$pageType = $this->getPageType();
 
 		$search = $pageType->createSearch( $query, $queryOptions );
+		$clusterName = $this->connection->getClusterName();
 		foreach ( $extraIndexes as $i ) {
-			$search->addIndex( $i );
+			$search->addIndex( $i->getSearchIndex( $clusterName ) );
 		}
 
 		$this->searchContext->getDebugOptions()->applyDebugOptions( $query );

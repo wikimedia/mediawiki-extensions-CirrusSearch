@@ -197,7 +197,7 @@ class Updater extends ElasticsearchIntermediary {
 
 		$titles = $this->pagesToTitles( $pages );
 		if ( !$isInstantIndex ) {
-			Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
+			Job\OtherIndex::queueIfRequired( $this->searchConfig, $titles, $this->writeToClusterName );
 		}
 
 		$allDocuments = array_fill_keys( $this->connection->getAllIndexTypes(), [] );
@@ -242,7 +242,7 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return bool Always returns true.
 	 */
 	public function deletePages( $titles, $docIds, $indexType = null, $elasticType = null ) {
-		Job\OtherIndex::queueIfRequired( $titles, $this->writeToClusterName );
+		Job\OtherIndex::queueIfRequired( $this->searchConfig, $titles, $this->writeToClusterName );
 		$job = Job\ElasticaWrite::build(
 			$titles ? reset( $titles ) : Title::makeTitle( NS_SPECIAL, "Badtitle/" . Job\ElasticaWrite::class ),
 			'sendDeletes',

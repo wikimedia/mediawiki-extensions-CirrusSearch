@@ -41,29 +41,33 @@ class OtherIndexes extends Updater {
 
 	/**
 	 * Get the external index identifiers for title.
+	 * @param SearchConfig $config
 	 * @param Title $title
-	 * @return string[] array of index identifiers.  empty means none.
+	 * @return ExternalIndex[] array of external indices.
 	 */
-	public static function getExternalIndexes( Title $title ) {
-		global $wgCirrusSearchExtraIndexes;
+	public static function getExternalIndexes( SearchConfig $config, Title $title ) {
 		$namespace = $title->getNamespace();
-		return isset( $wgCirrusSearchExtraIndexes[ $namespace ] )
-			? $wgCirrusSearchExtraIndexes[ $namespace ] : [];
+		$indices = [];
+		foreach ( $config->get( 'CirrusSearchExtraIndexes' )[$namespace] ?? [] as $indexName ) {
+			$indices[] = new ExternalIndex( $config, $indexName );
+		}
+		return $indices;
 	}
 
 	/**
 	 * Get any extra indexes to query, if any, based on namespaces
+	 * @param SearchConfig $config
 	 * @param int[] $namespaces An array of namespace ids
-	 * @return string[] array of indexes
+	 * @return ExternalIndex[] array of indexes
 	 */
-	public static function getExtraIndexesForNamespaces( array $namespaces ) {
-		global $wgCirrusSearchExtraIndexes;
+	public static function getExtraIndexesForNamespaces( SearchConfig $config, array $namespaces ) {
 		$extraIndexes = [];
-		if ( $wgCirrusSearchExtraIndexes ) {
-			foreach ( $wgCirrusSearchExtraIndexes as $namespace => $indexes ) {
-				if ( in_array( $namespace, $namespaces ) ) {
-					$extraIndexes = array_merge( $extraIndexes, $indexes );
-				}
+		foreach ( $config->get( 'CirrusSearchExtraIndexes' ) ?: [] as $namespace => $indexes ) {
+			if ( !in_array( $namespace, $namespaces ) ) {
+				continue;
+			}
+			foreach ( $indexes as $indexName ) {
+				$extraIndexes[] = new ExternalIndex( $config, $indexName );
 			}
 		}
 		return $extraIndexes;
@@ -86,26 +90,16 @@ class OtherIndexes extends Updater {
 		// Build multisearch to find ids to update
 		$findIdsMultiSearch = new MultiSearch( $this->connection->getClient() );
 		$findIdsClosures = [];
+		$readClusterName = $this->connection->getClusterName();
 		foreach ( $titles as $title ) {
-			foreach ( self::getExternalIndexes( $title ) as $otherIndex ) {
-				if ( $otherIndex === null ) {
-					continue;
-				}
-				$type = $this->connection->getPageType( $otherIndex );
-
-				$bool = new \Elastica\Query\BoolQuery();
-				// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
-				$bool->addFilter( new \Elastica\Query\Term( [ 'title.keyword' => $title->getText() ] ) );
-				$bool->addFilter( new \Elastica\Query\Term( [ 'namespace' => $title->getNamespace() ] ) );
-
-				$query = new \Elastica\Query( $bool );
-				$query->setStoredFields( [] ); // We only need the _id so don't load the _source
-				$query->setSize( 1 );
-
-				$findIdsMultiSearch->addSearch( $type->createSearch( $query ) );
-				$findIdsClosures[] = function ( $docId ) use
-						( $otherIndex, &$updates, $title ) {
-					$updates[$otherIndex][] = [
+			foreach ( self::getExternalIndexes( $this->searchConfig, $title ) as $otherIndex ) {
+				$searchIndex = $otherIndex->getSearchIndex( $readClusterName );
+				$type = $this->connection->getPageType( $searchIndex );
+				$query = $this->queryForTitle( $title );
+				$search = $type->createSearch( $query );
+				$findIdsMultiSearch->addSearch( $search );
+				$findIdsClosures[] = function ( $docId ) use ( $otherIndex, &$updates, $title ) {
+					$updates[$otherIndex->getIndexName()][] = [
 						'docId' => $docId,
 						'ns' => $title->getNamespace(),
 						'dbKey' => $title->getDBkey(),
@@ -129,32 +123,27 @@ class OtherIndexes extends Updater {
 		$findIdsMultiSearchResult = $findIdsMultiSearch->search();
 		try {
 			$this->success();
-			for ( $i = 0; $i < $findIdsClosuresCount; $i++ ) {
-				$results = $findIdsMultiSearchResult[ $i ]->getResults();
-				if ( count( $results ) === 0 ) {
-					continue;
+			foreach ( $findIdsClosures as $i => $closure ) {
+				$results = $findIdsMultiSearchResult[$i]->getResults();
+				if ( count( $results ) ) {
+					$closure( $results[0]->getId() );
 				}
-				$result = $results[ 0 ];
-				call_user_func( $findIdsClosures[ $i ], $result->getId() );
 			}
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$this->failure( $e );
 			return;
 		}
 
-		if ( !$updates ) {
-			return;
-		}
-
-		// These are split into a job per index so one index
-		// being frozen doesn't block updates to other indexes
-		// in the same update.
 		foreach ( $updates as $indexName => $actions ) {
+			// These are split into a job per index so one index
+			// being frozen doesn't block updates to other indexes
+			// in the same update. Also because the external indexes
+			// may be configured to write to different clusters.
 			$job = Job\ElasticaWrite::build(
 				reset( $titles ),
 				'sendOtherIndexUpdates',
 				[ $this->localSite, $indexName, $actions ],
-				[ 'cluster' => $this->writeToClusterName ]
+				[ 'cluster' => $this->writeToClusterName, 'external-index' => $indexName ]
 			);
 			$job->run();
 		}
@@ -174,4 +163,23 @@ class OtherIndexes extends Updater {
 		LoggerFactory::getInstance( 'CirrusSearchChangeFailed' )->info(
 			"Other Index$reason for article ids: " . implode( ',', $articleIDs ) );
 	}
+
+	/**
+	 * @param Title $title
+	 * @return \Elastica\Query
+	 */
+	private function queryForTitle( Title $title ) {
+		$bool = new \Elastica\Query\BoolQuery();
+
+		// Note that we need to use the keyword indexing of title so the analyzer gets out of the way.
+		$bool->addFilter( new \Elastica\Query\Term( [ 'title.keyword' => $title->getText() ] ) );
+		$bool->addFilter( new \Elastica\Query\Term( [ 'namespace' => $title->getNamespace() ] ) );
+
+		$query = new \Elastica\Query( $bool );
+		$query->setStoredFields( [] ); // We only need the _id so don't load the _source
+		$query->setSize( 1 );
+
+		return $query;
+	}
+
 }

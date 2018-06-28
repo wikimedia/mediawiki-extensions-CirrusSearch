@@ -47,15 +47,16 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		$otherIndices = [];
 		if ( $requestedNamespaces && !$localSearch ) {
 			$otherIndices = OtherIndexes::getExtraIndexesForNamespaces(
+				$config,
 				$requestedNamespaces
 			);
 		}
 
 		$extraIndexBoostTemplates = [];
 		foreach ( $otherIndices as $extraIndex ) {
-			$extraIndexBoosts = $this->config->getElement( 'CirrusSearchExtraIndexBoostTemplates', $extraIndex );
-			if ( isset( $extraIndexBoosts['wiki'], $extraIndexBoosts['boosts'] ) ) {
-				$extraIndexBoostTemplates[$extraIndexBoosts['wiki']] = $extraIndexBoosts['boosts'];
+			list( $wiki, $boostTemplates ) = $extraIndex->getBoosts();
+			if ( $boostTemplates ) {
+				$extraIndexBoostTemplates[$wiki] = $boostTemplates;
 			}
 		}
 

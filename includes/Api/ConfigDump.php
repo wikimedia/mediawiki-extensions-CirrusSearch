@@ -35,6 +35,7 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchOptimizeIndexForExperimentalHighlighter',
 		'CirrusSearchNamespaceMappings',
 		'CirrusSearchExtraIndexes',
+		'CirrusSearchExtraIndexClusters',
 		'CirrusSearchFetchConfigFromApi',
 		'CirrusSearchUpdateShardTimeout',
 		'CirrusSearchClientSideUpdateTimeout',

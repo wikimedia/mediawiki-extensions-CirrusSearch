@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
+use CirrusSearch\ExternalIndex;
 use CirrusSearch\Updater;
 use CirrusSearch\SearchConfig;
 use Job as MWJob;
@@ -189,26 +190,36 @@ abstract class Job extends MWJob {
 	 * @return Connection[] indexed by cluster name
 	 */
 	protected function decideClusters() {
-		$cluster = isset( $this->params['cluster'] ) ? $this->params['cluster'] : null;
+		$cluster = $this->params['cluster'] ?? null;
 		if ( $cluster === null ) {
-			$conns = Connection::getWritableClusterConnections( $this->searchConfig );
+			$clusterNames = $this->searchConfig->getWritableClusters();
+		} elseif ( $this->searchConfig->canWriteToCluster( $cluster ) ) {
+			$clusterNames = [ $cluster ];
 		} else {
-			if ( !$this->searchConfig->canWriteToCluster( $cluster ) ) {
-				// Just in case a job is present in the queue but its cluster
-				// has been removed from the config file.
-				LoggerFactory::getInstance( 'CirrusSearch' )->warning(
-					"Received {command} job for unwritable cluster {cluster}",
-					[
-						'command' => $this->command,
-						'cluster' => $cluster
-					]
-				);
-				// this job does not allow retries so we just need to throw an exception
-				throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
-			}
-			$conns = [ $cluster => Connection::getPool( $this->searchConfig, $cluster ) ];
+			// Just in case a job is present in the queue but its cluster
+			// has been removed from the config file.
+			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
+				"Received {command} job for unwritable cluster {cluster}",
+				[
+					'command' => $this->command,
+					'cluster' => $cluster
+				]
+			);
+			// this job does not allow retries so we just need to throw an exception
+			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
 		}
 
+		if ( isset( $this->params['external-index'] ) ) {
+			// When the OtherIndex functionality is writing to an external index it is
+			// allowable that the provided cluster is not in the current list of writable
+			// clusters. This simply accepts the chosen cluster at face value.
+			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['other-index'] );
+			foreach ( $clusterNames as $i => $name ) {
+				$clusterNames[$i] = $otherIndex->getWriteCluster( $name );
+			}
+		}
+
+		$conns = Connection::getClusterConnections( $clusterNames, $this->searchConfig );
 		$timeout = $this->searchConfig->get( 'CirrusSearchClientSideUpdateTimeout' );
 		foreach ( $conns as $connection ) {
 			$connection->setTimeout( $timeout );

@@ -133,6 +133,28 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, false, 1 );
 		$builder->append( $fScore );
 		$this->assertTrue( $fScore->isEmptyFunction() );
+
+		$config = new HashSearchConfig( [
+			'CirrusSearchExtraIndexes' => [ NS_MAIN => [ 'extramain' ] ],
+			'CirrusSearchExtraIndexBoostTemplates' => [
+				'extramain' => [
+					'wiki' => 'phpunitwiki',
+					'boosts' => [ 'foo' => 0.44 ]
+				],
+			],
+		] );
+
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], true, true, 1 );
+		$builder->append( $fScore );
+		$this->assertTrue( $fScore->isEmptyFunction() );
+
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [], false, true, 1 );
+		$builder->append( $fScore );
+		$this->assertTrue( $fScore->isEmptyFunction() );
+
+		$builder = new BoostTemplatesFunctionScoreBuilder( $config, [ NS_MAIN ], false, true, 1 );
+		$builder->append( $fScore );
+		$this->assertFalse( $fScore->isEmptyFunction() );
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Job;
 
 use CirrusSearch\OtherIndexes;
+use CirrusSearch\SearchConfig;
 use JobQueueGroup;
 use Title;
 
@@ -28,14 +29,15 @@ class OtherIndex extends Job {
 	/**
 	 * Check if we need to make a job and inject one if so.
 	 *
+	 * @param SearchConfig $config
 	 * @param Title[] $titles The title we might update
 	 * @param string|null $cluster The name of the cluster to write
 	 *  to, or null for all clusters.
 	 */
-	public static function queueIfRequired( array $titles, $cluster ) {
+	public static function queueIfRequired( SearchConfig $config, array $titles, $cluster ) {
 		$titlesToUpdate = [];
 		foreach ( $titles as $title ) {
-			if ( OtherIndexes::getExternalIndexes( $title ) ) {
+			if ( OtherIndexes::getExternalIndexes( $config, $title ) ) {
 				$titlesToUpdate[] = [ $title->getNamespace(), $title->getText() ];
 			}
 		}
@@ -43,7 +45,7 @@ class OtherIndex extends Job {
 			// Note that we're updating a bunch of titles but we have to pick one to
 			// attach to the job so we pick the first one.
 			JobQueueGroup::singleton()->push(
-				new self( $titles[ 0 ], [
+				new self( $titles[0], [
 					'titles' => $titlesToUpdate,
 					'cluster' => $cluster,
 				] )
@@ -56,7 +58,7 @@ class OtherIndex extends Job {
 	 */
 	protected function doJob() {
 		$titles = [];
-		foreach ( $this->params[ 'titles' ] as $titleArr ) {
+		foreach ( $this->params['titles'] as $titleArr ) {
 			list( $namespace, $title ) = $titleArr;
 			$titles[] = Title::makeTitle( $namespace, $title );
 		}

@@ -1487,6 +1487,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "local"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 6,
@@ -1529,6 +1532,9 @@
             "rawQuery": "local:word",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "local"
             ],
             "root": {
                 "bool": {
@@ -1573,6 +1579,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "intitle"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1611,6 +1620,9 @@
             "rawQuery": "foo prefer-recent:",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "prefer-recent"
             ],
             "root": {
                 "bool": {
@@ -1658,6 +1670,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "prefix"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -1686,6 +1701,9 @@
             "rawQuery": "morelike: prefix:test intitle:test",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "more_like"
             ],
             "root": {
                 "keyword": {
@@ -1742,6 +1760,9 @@
             "rawQuery": "intitle:foo\t\u0000 \u3000word\u3000\t \u0000intitle:bar",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "intitle"
             ],
             "root": {
                 "bool": {
@@ -1808,6 +1829,9 @@
                     "start": 21
                 }
             ],
+            "featuresUsed": [
+                "intitle"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -1863,6 +1887,9 @@
             "rawQuery": "intitle:\/[a-z]\/ insource:\/<\\\/a>[^ ]\/i",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "regex"
             ],
             "root": {
                 "bool": {
@@ -1973,6 +2000,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "intitle"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 1,
@@ -2015,6 +2045,9 @@
             "rawQuery": "intitle:foo AND intitle:bar OR intitle:baz OR NOT intitle:buz",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "intitle"
             ],
             "root": {
                 "bool": {
@@ -2105,6 +2138,9 @@
                     "start": 15
                 }
             ],
+            "featuresUsed": [
+                "intitle"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2164,6 +2200,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "more_like"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2188,6 +2227,9 @@
             ],
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix"
             ],
             "root": {
                 "keyword": {
@@ -2217,6 +2259,10 @@
             "rawQuery": "intitle:test intitle:\"foo bar\" intitle:\/201[0-9]\/i",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "intitle",
+                "regex"
             ],
             "root": {
                 "bool": {
@@ -2281,6 +2327,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "intitle"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2329,6 +2378,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "prefer-recent"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2355,6 +2407,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "prefer-recent"
+            ],
             "root": {
                 "keyword": {
                     "startOffset": 0,
@@ -2379,6 +2434,9 @@
             "rawQuery": "prefer-recent:hello",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "prefer-recent"
             ],
             "root": {
                 "bool": {
@@ -2422,6 +2480,10 @@
             "rawQuery": "prefer-recent:hastemplate:hello",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "prefer-recent",
+                "hastemplate"
             ],
             "root": {
                 "bool": {
@@ -2473,6 +2535,9 @@
             "rawQuery": "hastemplate::foo hastemplate:test hastemplate:Help:Test",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "hastemplate"
             ],
             "root": {
                 "bool": {
@@ -2546,6 +2611,10 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "insource",
+                "regex"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2609,6 +2678,9 @@
             "queryClassCache": [
                 "complex_query"
             ],
+            "featuresUsed": [
+                "linksto"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -2656,6 +2728,9 @@
             "rawQuery": "inlanguage:fr,en inlanguage:\"fr,en\"",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "inlanguage"
             ],
             "root": {
                 "bool": {
@@ -2727,6 +2802,9 @@
                         "ab"
                     ]
                 }
+            ],
+            "featuresUsed": [
+                "filesize"
             ],
             "root": {
                 "bool": {
@@ -2834,6 +2912,9 @@
                         "ab"
                     ]
                 }
+            ],
+            "featuresUsed": [
+                "filebits"
             ],
             "root": {
                 "bool": {
@@ -2965,6 +3046,9 @@
                     ]
                 }
             ],
+            "featuresUsed": [
+                "incategory"
+            ],
             "root": {
                 "bool": {
                     "startOffset": 0,
@@ -3049,6 +3133,9 @@
             "rawQuery": "boost-templates:\"Template:Quality Image|200% Template:Low Quality|50%\"",
             "queryClassCache": [
                 "complex_query"
+            ],
+            "featuresUsed": [
+                "boost-templates"
             ],
             "root": {
                 "keyword": {

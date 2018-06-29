@@ -313,6 +313,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function getAllIndexSuffixesForNamespaces( $namespaces = null ) {
 		if ( $namespaces ) {
+			$indexTypes = [];
 			foreach ( $namespaces as $namespace ) {
 				$indexTypes[] = $this->getIndexSuffixForNamespace( $namespace );
 			}

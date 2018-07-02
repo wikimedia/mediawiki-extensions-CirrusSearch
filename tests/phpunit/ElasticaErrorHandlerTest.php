@@ -4,6 +4,7 @@ namespace CirrusSearch;
 
 /**
  * @group CirrusSearch
+ * @covers CirrusSearch\ElasticaErrorHandler
  */
 class ElasticaErrorHandlerTest extends CirrusTestCase {
 

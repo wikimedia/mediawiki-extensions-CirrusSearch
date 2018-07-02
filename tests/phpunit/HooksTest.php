@@ -21,6 +21,7 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers CirrusSearch\Hooks
  */
 class HooksTest extends CirrusTestCase {
 	public function testHooksAreArrays() {

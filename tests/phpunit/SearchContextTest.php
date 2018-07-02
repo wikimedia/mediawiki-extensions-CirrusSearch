@@ -6,6 +6,9 @@ use MediaWiki\MediaWikiServices;
 use MediaWikiTestCase;
 use CirrusSearch\Search\SearchContext;
 
+/**
+ * @covers CirrusSearch\Search\SearchContext
+ */
 class SearchContextTest extends MediaWikiTestCase {
 
 	/**

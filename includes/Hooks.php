@@ -741,7 +741,6 @@ class Hooks {
 	/**
 	 * Register CirrusSearch services
 	 * @param MediaWikiServices $container
-	 * @return bool
 	 */
 	public static function onMediaWikiServices( MediaWikiServices $container ) {
 		$container->defineService(

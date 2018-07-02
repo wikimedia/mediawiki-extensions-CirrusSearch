@@ -25,7 +25,7 @@ use Wikimedia\Assert\Assert;
 
 abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	/**
-	 * @param SearchConfig $config
+	 * @var SearchConfig
 	 */
 	protected $config;
 

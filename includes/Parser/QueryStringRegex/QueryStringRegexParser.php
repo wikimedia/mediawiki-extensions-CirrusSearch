@@ -604,7 +604,6 @@ class QueryStringRegexParser implements QueryParser {
 	}
 
 	/**
-	 * @param int $maxOffset
 	 * @return bool
 	 */
 	private function consumeWS() {
@@ -618,7 +617,6 @@ class QueryStringRegexParser implements QueryParser {
 
 	/**
 	 * Consume an explicit boolean operator (and/or/not)
-	 * @param int $maxOffset
 	 * @return bool true if consumed, false otherwise.
 	 */
 	private function consumeBoolOp() {
@@ -652,7 +650,7 @@ class QueryStringRegexParser implements QueryParser {
 	}
 
 	/**
-	 * @param int $maxOffset
+	 * @return bool
 	 */
 	private function consumeWord() {
 		$node = $this->nonPhraseParser->parse( $this->query, $this->offset );

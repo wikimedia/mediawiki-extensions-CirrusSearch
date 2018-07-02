@@ -42,6 +42,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 	}
 
 	/**
+	 * @return bool|null
 	 * @suppress PhanAccessPropertyProtected Phan has a bug where it thinks we can't
 	 *  access mOptions because its protected. That would be true but this
 	 *  class shares the hierarchy that contains mOptions so php allows it.
@@ -63,6 +64,8 @@ class UpdateSearchIndexConfig extends Maintenance {
 			$child->execute();
 			$child->done();
 		}
+
+		return true;
 	}
 }
 

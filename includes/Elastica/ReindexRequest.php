@@ -9,19 +9,19 @@ use Elastica\Response;
 use Elastica\Type;
 
 class ReindexRequest {
-	/** * @param array */
+	/** @var array */
 	private $source;
-	/** @param array */
+	/** @var array */
 	private $dest;
-	/** @param array|null */
+	/** @var array|null */
 	private $script;
-	/** @param int|null */
+	/** @var int|null */
 	private $size;
-	/** @param int */
+	/** @var int */
 	private $requestsPerSecond = -1;
-	/** @param int */
+	/** @var int */
 	private $slices = 1;
-	/** @param Client */
+	/** @var Client */
 	private $client;
 
 	/**

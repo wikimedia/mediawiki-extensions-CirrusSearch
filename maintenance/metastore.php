@@ -59,7 +59,7 @@ class Metastore extends Maintenance {
 
 		if ( $this->hasOption( 'dump' ) ) {
 			$this->dump();
-			return;
+			return true;
 		}
 
 		// Check if the metastore is usable
@@ -98,6 +98,8 @@ class Metastore extends Maintenance {
 		} else {
 			$this->maybeHelp( true );
 		}
+
+		return true;
 	}
 
 	/**

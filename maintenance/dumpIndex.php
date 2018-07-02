@@ -166,6 +166,8 @@ class DumpIndex extends Maintenance {
 			$this->outputProgress( $docsDumped, $totalDocsToDump );
 		}
 		$this->output( "Dump done ($docsDumped docs).\n" );
+
+		return true;
 	}
 
 	/**

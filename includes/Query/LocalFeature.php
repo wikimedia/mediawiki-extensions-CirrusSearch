@@ -59,5 +59,6 @@ class LocalFeature extends SimpleKeywordFeature implements LegacyKeywordFeature 
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
 		$context->setLimitSearchToLocalWiki( true );
+		return [ null, false ];
 	}
 }

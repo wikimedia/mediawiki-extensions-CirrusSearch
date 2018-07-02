@@ -38,6 +38,8 @@ class IndexNamespaces extends Maintenance {
 		$this->outputIndented( "Indexing namespaces..." );
 		$store->reindex( $wgContLang );
 		$this->output( "done\n" );
+
+		return true;
 	}
 }
 

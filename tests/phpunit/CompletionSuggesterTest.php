@@ -30,6 +30,8 @@ use Elastica\ResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers CirrusSearch\Search\CompletionResultsCollector
+ * @covers CirrusSearch\Query\CompSuggestQueryBuilder
  */
 class CompletionSuggesterTest extends CirrusTestCase {
 

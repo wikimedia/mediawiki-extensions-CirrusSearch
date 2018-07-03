@@ -5,6 +5,9 @@ namespace CirrusSearch;
 use CirrusSearch\Search\CompletionResultsCollector;
 use SearchSuggestion;
 
+/**
+ * @covers CirrusSearch\Search\CompletionResultsCollector
+ */
 class CompletionResultsCollectorTest extends CirrusTestCase {
 	public function test() {
 		$collector = new CompletionResultsCollector( 3 );

@@ -14,6 +14,10 @@ use CirrusSearch\InterwikiResolverFactory;
 
 /**
  * @group CirrusSearch
+ * @covers CirrusSearch\CirrusConfigInterwikiResolver
+ * @covers CirrusSearch\SiteMatrixInterwikiResolver
+ * @covers CirrusSearch\InterwikiResolverFactory
+ * @covers CirrusSearch\EmptyInterwikiResolver
  */
 class InterwikiResolverTest extends CirrusTestCase {
 	public function testCirrusConfigInterwikiResolver() {

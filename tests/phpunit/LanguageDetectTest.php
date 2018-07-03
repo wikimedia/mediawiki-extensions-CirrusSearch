@@ -24,6 +24,8 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers CirrusSearch\LanguageDetector\TextCat
+ * @covers CirrusSearch\LanguageDetector\HttpAccept
  */
 class LanguageDetectTest extends CirrusTestCase {
 

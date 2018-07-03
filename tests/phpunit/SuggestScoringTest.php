@@ -27,6 +27,9 @@ use CirrusSearch\BuildDocument\Completion\PQScore;
  * @group CirrusSearch
  */
 class SuggestScoringTest extends CirrusTestCase {
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 */
 	public function testQualityScoreNormFunctions() {
 		$qs = new QualityScore();
 		$qs->setMaxDocs( 10000 );
@@ -72,6 +75,9 @@ class SuggestScoringTest extends CirrusTestCase {
 			"scoreNormL2 cannot produce a score lower than 0" );
 	}
 
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 */
 	public function testQualityScoreBoostFunction() {
 		$qs = new QualityScore();
 		for ( $i = 0; $i < 1000; $i++ ) {
@@ -153,6 +159,9 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( $res, $score, "A neutral doc gets the same score" );
 	}
 
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 */
 	public function testQualityScoreRanking() {
 		$maxDocs = 10000000;
 		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
@@ -231,6 +240,9 @@ class SuggestScoringTest extends CirrusTestCase {
 			"Having more text_bytes than the norm give the same score" );
 	}
 
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 */
 	public function testQualityScoreWithRandomValues() {
 		$maxDocs = 10000000;
 		$qs = new QualityScore( [ 'Good' => 2, 'Bad' => 0.5 ] );
@@ -303,6 +315,11 @@ class SuggestScoringTest extends CirrusTestCase {
 			"With a zero page wiki the highest score is also " . QualityScore::SCORE_RANGE );
 	}
 
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\PQScore
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers CirrusSearch\BuildDocument\Completion\IncomingLinksScoringMethod
+	 */
 	public function testRobustness() {
 		$templates = [ 'Good' => 2, 'Bad' => 0.5 ];
 		$all_templates = array_keys( $templates );

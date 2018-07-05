@@ -28,8 +28,10 @@
 	"apihelp-cirrus-settings-dump-summary": "Dump av CirrusSearch-innstillinger for denne wikien.",
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-innstillingene for denne wiien.",
 	"apihelp-query+cirrusdoc-description": "Kopi av et CirrusSearch-artikkeldokument",
-	"apihelp-query+cirrusdoc-summary": "Kopi av et CirrusSearch-artikkeldokument",
-	"apihelp-query+cirrusdoc-example": "Hent en kopi av én CirrusSearch-artikkel.",
+	"apihelp-query+cirrusdoc-summary": "Kopi av et CirrusSearch-artikkeldokument fra søketjenerne",
+	"apihelp-query+cirrusdoc-example": "Hent en kopi av én CirrusSearch-artikkel som den for tiden er indeksert til søk.",
+	"apihelp-query+cirrusbuilddoc-summary": "Kopi av et CirrusSearch-artikkeldokument fra databasetjenerne",
+	"apihelp-query+cirrusbuilddoc-example": "Hent en kopi av én CirrusSearch-artikkel generert fra databasen.",
 	"apierror-cirrus-requesttoolong": "Prefikssøkforespørselen var lengre enn den tillatte makslengden. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Gi oss tilbakemelding",
 	"cirrussearch-morelikethis-settings": "#<!-- la denne linja være akkurat som den er --> <pre>\n# Denne beskjeden lar deg konfigurere innstillingene i funksjonen «mer som dette».\n# Endringer som gjøres her trer i kraft umiddelbart.\n# Syntaksen er som følger:\n# * Alt fra et «#»-tegn til slutten av linja er en kommentar.\n# * Hver ikke-blanke linje er innstillingen fulgt av et «:»-tegn, fulgt av innstillingens verdi\n# Innstillingene er:\n# * min_doc_freq (heltall): Minimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n# * max_doc_freq (heltall): Maksimalt antall dokumenter (per partisjon) som trenger et begrep for å bli vurdert.\n#           Begreper med høy frekvens er som regel «stopp-ord».\n# * max_query_terms (heltall): Maksimalt antall begreper som skal vurderes. Verdien er begrenset til $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit (100).\n# *min_term_freq (heltall): Minimalt antall ganger begrepet dukker opp i innputten til dokumentet som skal vurderes. For små felt (titler) bør denne verdien være 1.\n# * minimum_should_match (prosent, -100% til 100%, eller heltall): Prosenten av begreper det skal treffes på. Standard er 30%.\n# * min_word_len (heltall): Minimal lengde for at et begrep skal vurderes. Standard er 0.\n# * max_word_len (heltall): Maksimal lengde for at et ord skal ignoreres. Standard er ingen grense (0).\n# * fields (kommaskilt liste over verdier): Dette er feltene som skal brukes. Tillatte felt er title, text, auxiliary_text, opening_text, headings.\n# Eksempler på riktige linjer:\n# min_doc_freq:2\n# max_doc_freq:20000\n# max_query_erms:25\n# min_term_freq:2\n# minimum_should_match:30%\n# min_word_len:2\n# max_word_len:40\n# fields:text,opening_text\n# </pre> <!-- la denne linja være akkurat som den er -->",
@@ -75,6 +77,7 @@
 	"cirrussearch-feature-too-many-conditions": "For mange vilkår gitt til «$1», forkortes til $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint må settes til et gyldig SPARQL-endpoint for å bruke dypt kategorisøk.",
 	"cirrussearch-feature-deepcat-exception": "SPARQL-spørring for dypt kategorisøk feilet",
+	"cirrussearch-feature-deepcat-toomany": "Spørringen for dype kategorier returnerte for mange kategorier",
 	"cirrussearch-incategory-feature-no-valid-categories": "Ingen gyldige kategorier gitt til «$1».",
 	"cirrussearch-mlt-feature-no-valid-titles": "Ingen gyldige titler gitt til «$1».",
 	"cirrussearch-mlt-not-configured": "Funksjonen «$1» er feilkonfigurert. Be en administrator om å fikse $wgCirrusSearchMoreLikeThisFields",
@@ -84,5 +87,7 @@
 	"cirrussearch-explore-similar-related-none": "Ingen relaterte sider tilgjengelig",
 	"cirrussearch-explore-similar-categories-none": "Ingen kategorier tilgjengelig",
 	"cirrussearch-explore-similar-languages-none": "Ikke tilgjengelig på andre språk",
-	"cirrussearch-article-words": "Ord i alle innholdssider"
+	"cirrussearch-article-words": "Ord i alle innholdssider",
+	"cirrussearch-keyword-prefix-ns-mismatch": "Navnerommet funnet i søketermen <code>prefix:</code> er ikke kompatibelt med det forespurte navnerommet. Du kan fikse det ved å legge til <code>all:</code> først i spørringen.",
+	"cirrussearch-autoselect-profile": "La søkemotoren bestemme den beste profilen å bruke."
 }

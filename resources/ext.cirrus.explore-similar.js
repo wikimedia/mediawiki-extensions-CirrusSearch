@@ -12,7 +12,7 @@
 
 	$.when( mw.loader.using(
 		[
-			'mediawiki.api.messages',
+			'mediawiki.api',
 			'mediawiki.template.mustache',
 			'ext.uls.common'
 		] ), $.ready )

@@ -445,15 +445,6 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @param string $query
-	 * @return string
-	 * @deprecated will be removed soon
-	 */
-	public function replacePrefixes( $query ) {
-		return $query;
-	}
-
-	/**
 	 * Get the sort of sorts we allow
 	 * @return string[]
 	 */

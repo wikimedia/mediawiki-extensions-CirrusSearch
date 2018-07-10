@@ -1367,7 +1367,7 @@ $wgResourceModules += [
 		],
 		'dependencies' => [
 			'mediawiki.util',
-			'mediawiki.api.messages',
+			'mediawiki.api',
 			'mediawiki.template.mustache',
 		],
 		'styles' => [

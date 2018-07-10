@@ -21,6 +21,9 @@ use Psr\Log\AbstractLogger;
  * about.
  *
  * @group CirrusSearch
+ * @covers \CirrusSearch\RequestLogger
+ * @covers \CirrusSearch\ElasticsearchIntermediary
+ * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
  */
 class RequestLoggerTest extends CirrusTestCase {
 	public function requestLoggingProvider() {
@@ -255,7 +258,12 @@ class RequestLoggerTest extends CirrusTestCase {
 			],
 		] );
 		$connection = new Connection( $config, 'default' );
-
+		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',
+			function ( &$namespace, &$query ) use ( $connection ) {
+				return CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
+					$namespace, $query );
+			}
+		);
 		return [ $loggers, $config, $connection, $transport ];
 	}
 

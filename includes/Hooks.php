@@ -471,7 +471,17 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
-		$searcher = new Searcher( self::getConnection(), 0, 1, self::getConfig(), $namespaces );
+		return self::prefixSearchExtractNamespaceWithConnection( self::getConnection(), $namespaces, $search );
+	}
+
+	/**
+	 * @param Connection $connection
+	 * @param array &$namespaces
+	 * @param string &$search
+	 * @return bool
+	 */
+	public static function prefixSearchExtractNamespaceWithConnection( Connection $connection, &$namespaces, &$search ) {
+		$searcher = new Searcher( $connection, 0, 1, $connection->getConfig(), $namespaces );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getSearchContext()->getNamespaces();
 		return false;

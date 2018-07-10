@@ -63,11 +63,6 @@ class CirrusSearch extends SearchEngine {
 	const MAX_TITLE_SEARCH = 255;
 
 	/**
-	 * @var string The last prefix substituted by replacePrefixes.
-	 */
-	private $lastNamespacePrefix;
-
-	/**
 	 * @var array metrics about the last thing we searched sourced from the
 	 *  Searcher instance
 	 */
@@ -333,12 +328,30 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status
 	 */
 	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
-		$searcher = $this->makeSearcher( $config );
-
 		// Ignore leading ~ because it is used to force displaying search results but not to effect them
+		// TODO: move this to the parser
+		$tildePrefix = false;
 		if ( substr( $term, 0, 1 ) === '~' ) {
 			$term = substr( $term, 1 );
+			$tildePrefix = true;
+		}
+
+		// TODO: move this to the parser
+		$queryAndNs = self::parseNamespacePrefixes( $term, true, true );
+		$nsPrefix = null;
+		if ( $queryAndNs !== false ) {
+			$this->namespaces = $queryAndNs[1];
+			$term = $queryAndNs[0];
+			$nsPrefix = substr( $term, 0, strlen( $term ) - strlen( $term ) );
+		}
+
+		$searcher = $this->makeSearcher( $config );
+		if ( $tildePrefix ) {
 			$searcher->addSuggestPrefix( '~' );
+		}
+
+		if ( $nsPrefix !== null ) {
+			$searcher->addSuggestPrefix( $nsPrefix );
 		}
 
 		if ( $this->prefix !== '' ) {
@@ -352,12 +365,6 @@ class CirrusSearch extends SearchEngine {
 		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
 		if ( $profile !== null ) {
 			$searcher->getSearchContext()->setRescoreProfile( $profile );
-		}
-
-		if ( $this->lastNamespacePrefix ) {
-			$searcher->addSuggestPrefix( $this->lastNamespacePrefix );
-		} else {
-			$searcher->updateNamespacesFromQuery( $term );
 		}
 
 		$searcher->setResultsType( new FullTextResultsType() );
@@ -440,15 +447,10 @@ class CirrusSearch extends SearchEngine {
 	/**
 	 * @param string $query
 	 * @return string
+	 * @deprecated will be removed soon
 	 */
 	public function replacePrefixes( $query ) {
-		$parsed = parent::replacePrefixes( $query );
-		if ( $parsed !== $query ) {
-			$this->lastNamespacePrefix = substr( $query, 0, strlen( $query ) - strlen( $parsed ) );
-		} else {
-			$this->lastNamespacePrefix = '';
-		}
-		return $parsed;
+		return $query;
 	}
 
 	/**

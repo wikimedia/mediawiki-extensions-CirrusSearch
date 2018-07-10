@@ -358,4 +358,11 @@ class Connection extends ElasticaConnection {
 	public static function getAllClusterConnections( SearchConfig $config ) {
 		return self::getClusterConnections( $config->getAvailableClusters(), $config );
 	}
+
+	/**
+	 * @return SearchConfig
+	 */
+	public function getConfig() {
+		return $this->config;
+	}
 }

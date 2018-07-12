@@ -29,10 +29,8 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'regex' ] = [ 'build', 'use' ];
 
 $wgCirrusSearchQueryStringMaxDeterminizedStates = 500;
 $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
-// TODO: remove once 5.5.2 becomes the default everywhere
-$wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop_enable_native' ] = true;
-$wgCirrusSearchWikimediaExtraPlugin[ 'id_hash_mod_filter' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true;
+$wgCirrusSearchWikimediaExtraPlugin[ 'term_freq' ] = true;
 
 // Enable when https://gerrit.wikimedia.org/r/#/c/345174/ is available
 // $wgCirrusSearchWikimediaExtraPlugin[ 'token_count_router' ] = true;

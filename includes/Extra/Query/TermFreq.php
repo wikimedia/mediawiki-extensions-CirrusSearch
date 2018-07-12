@@ -10,6 +10,8 @@ use Wikimedia\Assert\Assert;
  *
  * @link https://github.com/wikimedia/search-extra/blob/master/docs/term_freq_token_filter.md
  *
+ * NOTE: only available if CirrusSearchWikimediaExtraPlugin['term_freq'] is set to true.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or

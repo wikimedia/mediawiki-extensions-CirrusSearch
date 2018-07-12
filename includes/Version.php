@@ -2,7 +2,6 @@
 
 namespace CirrusSearch;
 
-use ObjectCache;
 use Status;
 
 /**
@@ -39,26 +38,19 @@ class Version extends ElasticsearchIntermediary {
 	public function get() {
 		global $wgCirrusSearchClientSideSearchTimeout;
 
-		$cache = ObjectCache::getLocalClusterInstance();
-		$mcKey = $cache->makeKey( 'CirrusSearch', 'Elasticsearch', 'version' );
-		$result = $cache->get( $mcKey );
-		if ( !$result ) {
-			try {
-				$this->startNewLog( 'fetching elasticsearch version', 'version' );
-				// If this times out the cluster is in really bad shape but we should still
-				// check it.
-				$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
-				$result = $this->connection->getClient()->request( '' );
-				$this->success();
-			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
-				return $this->failure( $e );
-			}
-			$result = $result->getData();
-			$result = $result[ 'version' ][ 'number' ];
-			$cache->set( $mcKey, $result, 3600 * 12 );
+		try {
+			$this->startNewLog( 'fetching elasticsearch version', 'version' );
+			// If this times out the cluster is in really bad shape but we should still
+			// check it.
+			$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
+			$result = $this->connection->getClient()->request( '' );
+			$this->success();
+		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
+			return $this->failure( $e );
 		}
-
-		return Status::newGood( $result );
+		return Status::newGood(
+			$result->getData()['version']['number']
+		);
 	}
 
 	/**

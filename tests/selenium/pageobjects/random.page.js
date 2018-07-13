@@ -1,9 +1,9 @@
 'use strict';
-const Page = require( '../../../../../tests/selenium/pageobjects/page' );
+const Page = require( 'wdio-mediawiki/Page' );
 
 class RandomPage extends Page {
 	open() {
-		super.open( 'Special:RandomPage' );
+		super.openTitle( 'Special:RandomPage' );
 	}
 }
 module.exports = new RandomPage();

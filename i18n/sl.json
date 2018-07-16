@@ -4,5 +4,26 @@
 			"Janezdrilc"
 		]
 	},
+	"cirrussearch-pref-label": "Novo iskanje",
+	"cirrussearch-pref-completion-profile-help": "Nastavi način predlaganja za avtomatsko dopolnjevanje (iskanje med tipkanjem)",
+	"prefs-completion": "Samodejno dopolnjevanje gesel iskanja",
+	"cirrussearch-pref-completion-section-desc": "Predlagatelj iskanja",
+	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagatelj iskanja] je algoritem za iskanje predlogov s slovničnimi popravki in večjo ustreznostjo iskanja.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Privzeto (priporočeno)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Popravi do dve zatipkanji. Predlaga najbližje preusmeritve.",
+	"cirrussearch-completion-profile-strict-pref-name": "Strogi način (napredno)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Ne popravlja zatipkanj. Upošteva naglasna znamenja. Zahteva strogo ujemanje vpisanega gesla.",
+	"cirrussearch-completion-profile-normal-pref-name": "Preusmeritveni način (napredno)",
+	"cirrussearch-completion-profile-normal-pref-desc": "Ne popravlja zatipkanj. Predlaga najbližje preusmeritve.",
+	"cirrussearch-pref-completion-legacy-section-desc": "Iskanje po predponi",
+	"cirrussearch-pref-completion-legacy-section-legend": "Stari algoritem s predlaganjem iskanja med tipkanjem",
+	"cirrussearch-completion-profile-classic-pref-name": "Navadno iskanje po predponi",
+	"cirrussearch-completion-profile-classic-pref-desc": "Ne popravlja zatipkanj. Zadostuje ujemanje začetnih delov naslova.",
+	"cirrussearch-timed-out": "Čas iskanja je potekal, na voljo so samo delni rezultati.",
+	"cirrussearch-regex-timed-out": "Iskanje z regularnimi izrazi je poteklo, na voljo so samo delni rezultati. Za izpis celotnih rezultatov pokusi poenostaviti regularni izraz.",
+	"cirrussearch-explore-similar-categories": "Kategorije",
+	"cirrussearch-explore-similar-languages": "Jeziki",
+	"cirrussearch-explore-similar-categories-none": "Ni kategorij na voljo",
+	"cirrussearch-explore-similar-languages-none": "Ni na voljo v drugih jezikih",
 	"cirrussearch-article-words": "Besede na vseh straneh s vsebino"
 }

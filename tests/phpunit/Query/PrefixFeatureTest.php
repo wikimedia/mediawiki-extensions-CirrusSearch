@@ -288,4 +288,44 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$parsedQuery = $parser->parse( $query );
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
 	}
+
+	public function provideTestPrepareSearchContext() {
+		return [
+			'main' => [
+				[ NS_MAIN ],
+				'test',
+				[ NS_MAIN ]
+			],
+			'main add ns' => [
+				[ NS_MAIN ],
+				'help:test',
+				[ NS_MAIN, NS_HELP ]
+			],
+			'ns untouched' => [
+				null,
+				'help:test',
+				null
+			],
+			'ns to all' => [
+				[ NS_MAIN ],
+				'all:test',
+				null
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestPrepareSearchContext
+	 * @param int[]|null $initialNs
+	 * @param string $prefix
+	 * @param int[]|null $expectedNs
+	 */
+	public function testPrepareSearchContext( $initialNs, $prefix, $expectedNs ) {
+		$config = new HashSearchConfig( [] );
+		$context = new SearchContext( $config, $initialNs );
+		PrefixFeature::prepareSearchContext( $context, $prefix );
+		$this->assertEquals( $expectedNs, $context->getNamespaces() );
+		$this->assertCount( 1, $context->getFilters() );
+		$this->assertFilter( new PrefixFeature(), 'prefix:' . $prefix, $context->getFilters()[0], [], $config );
+	}
 }

@@ -77,18 +77,8 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		// XXX: only works because it's greedy
 		$context->addSuggestSuffix( ' prefix:' . $value );
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		$namespace = null;
-		if ( isset( $parsedValue['namespace'] ) ) {
-			$namespace = $parsedValue['namespace'];
-		}
-		if ( $namespace === null && $context->getNamespaces() ) {
-			$context->setNamespaces( null );
-		} elseif ( $context->getNamespaces() && !in_array( $namespace, $context->getNamespaces() ) ) {
-			$namespaces = $context->getNamespaces();
-			$namespaces[] = $namespace;
-			$context->setNamespaces( $namespaces );
-		}
-
+		$namespace = $parsedValue['namespace'] ?? null;
+		$this->alterSearchContextNamespace( $context, $namespace );
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
 		return [ $prefixQuery, false ];
 	}
@@ -177,5 +167,33 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 			$namespace = $node->getParsedValue()['namespace'];
 		}
 		return $this->buildQuery( $node->getParsedValue()['value'], $namespace );
+	}
+
+	/**
+	 * Adds a prefix filter to the search context
+	 * @param SearchContext $context
+	 * @param string $prefix
+	 */
+	public static function prepareSearchContext( SearchContext $context, $prefix ) {
+		$self = new self();
+		$parsedValue = $self->parseValue( self::KEYWORD, $prefix, '', '', '', $context );
+		$namespace = $parsedValue['namespace'] ?? null;
+		$self->alterSearchContextNamespace( $context, $namespace );
+		$context->addFilter( $self->buildQuery( $parsedValue['value'], $namespace ) );
+	}
+
+	/**
+	 * @param SearchContext $context
+	 * @param int|null $namespace
+	 */
+	protected function alterSearchContextNamespace( SearchContext $context, $namespace ) {
+		if ( $namespace === null && $context->getNamespaces() ) {
+			$context->setNamespaces( null );
+		} elseif ( $context->getNamespaces() &&
+				   !in_array( $namespace, $context->getNamespaces() ) ) {
+			$namespaces = $context->getNamespaces();
+			$namespaces[] = $namespace;
+			$context->setNamespaces( $namespaces );
+		}
 	}
 }

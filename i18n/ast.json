@@ -40,7 +40,7 @@
 	"cirrussearch-completion-profile-normal": "Desaniciaos dellos signos de puntuación, dellos diacríticos y ciertes palabres.",
 	"cirrussearch-completion-profile-normal-subphrases": "Desaniciaos dellos caráuteres de puntuación, signos diacríticos y palabres especiales. Tamién casa con frases parciales (pueden ser frases parciales o subpáxines dependiendo de la configuración interna de la wiki).",
 	"cirrussearch-completion-profile-fuzzy": "Asemeyáu a normal con igua d'errores ortográficos (dos fallos aceutaos).",
-	"cirrussearch-completion-profile-fast-fuzzy": "Perfil aproximáu esperimental (pue desaniciase'n cualquier momentu)",
+	"cirrussearch-completion-profile-fast-fuzzy": "Perfil difusu esperimental (puede desaniciase'n cualquier momentu)",
 	"cirrussearch-completion-profile-fuzzy-subphrases": "Asemeyao a normal con correición de faltes (hai encontu pa dos faltes). Tamién casa con frases parciales (pueden ser frases parciales o subpáxines dependiendo de la configuración interna de la wiki).",
 	"cirrussearch-qi-profile-classic": "Clasificación basada nel númberu d'enllaces entrantes, delles plantíes, llingua de la páxina y actualidá (plantíes/llingua/actualidá pueden nun tar activaes nesta wiki).",
 	"cirrussearch-qi-profile-classic-noboostlinks": "Clasificación basada en delles plantíes, llingua de la páxina y actualidá cuando s'activen nesta wiki.",

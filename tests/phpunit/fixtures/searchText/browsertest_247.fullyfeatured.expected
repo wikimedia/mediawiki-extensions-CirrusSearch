@@ -257,14 +257,14 @@
                                 {
                                     "script_score": {
                                         "script": {
-                                            "inline": "exp(decayConstant * (doc['timestamp'].value - now)) * decayPortion + nonDecayPortion",
                                             "lang": "expression",
                                             "params": {
                                                 "decayConstant": 8.0225368120364e-5,
                                                 "decayPortion": 0.99,
                                                 "nonDecayPortion": 0.01,
                                                 "now": 1468084245000
-                                            }
+                                            },
+                                            "source": "exp(decayConstant * (doc['timestamp'].value - now)) * decayPortion + nonDecayPortion"
                                         }
                                     },
                                     "weight": 1

@@ -394,14 +394,14 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
                                                 "lang": "expression",
                                                 "params": {
                                                     "decayConstant": 8.0225368120364e-9,
                                                     "decayPortion": 1,
                                                     "nonDecayPortion": 0,
                                                     "now": 1468084245000
-                                                }
+                                                },
+                                                "source": "exp(decayConstant * (doc['timestamp'].value - now))"
                                             }
                                         },
                                         "weight": 1
@@ -841,14 +841,14 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
                                                 "lang": "expression",
                                                 "params": {
                                                     "decayConstant": 8.0225368120364e-9,
                                                     "decayPortion": 1,
                                                     "nonDecayPortion": 0,
                                                     "now": 1468084245000
-                                                }
+                                                },
+                                                "source": "exp(decayConstant * (doc['timestamp'].value - now))"
                                             }
                                         },
                                         "weight": 1
@@ -870,8 +870,8 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))",
-                                                "lang": "expression"
+                                                "lang": "expression",
+                                                "source": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))"
                                             }
                                         },
                                         "weight": 13
@@ -1291,14 +1291,14 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
                                                 "lang": "expression",
                                                 "params": {
                                                     "decayConstant": 8.0225368120364e-9,
                                                     "decayPortion": 1,
                                                     "nonDecayPortion": 0,
                                                     "now": 1468084245000
-                                                }
+                                                },
+                                                "source": "exp(decayConstant * (doc['timestamp'].value - now))"
                                             }
                                         },
                                         "weight": 1
@@ -1718,14 +1718,14 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
                                                 "lang": "expression",
                                                 "params": {
                                                     "decayConstant": 8.0225368120364e-9,
                                                     "decayPortion": 1,
                                                     "nonDecayPortion": 0,
                                                     "now": 1468084245000
-                                                }
+                                                },
+                                                "source": "exp(decayConstant * (doc['timestamp'].value - now))"
                                             }
                                         },
                                         "weight": 1

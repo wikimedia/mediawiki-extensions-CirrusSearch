@@ -882,8 +882,8 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))",
-                                                "lang": "expression"
+                                                "lang": "expression",
+                                                "source": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))"
                                             }
                                         },
                                         "weight": 13

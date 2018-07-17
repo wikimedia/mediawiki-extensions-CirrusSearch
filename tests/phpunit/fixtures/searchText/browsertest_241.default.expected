@@ -257,14 +257,14 @@
                                 {
                                     "script_score": {
                                         "script": {
-                                            "inline": "exp(decayConstant * (doc['timestamp'].value - now))",
                                             "lang": "expression",
                                             "params": {
                                                 "decayConstant": 8.0225368120364e-6,
                                                 "decayPortion": 1,
                                                 "nonDecayPortion": 0,
                                                 "now": 1468084245000
-                                            }
+                                            },
+                                            "source": "exp(decayConstant * (doc['timestamp'].value - now))"
                                         }
                                     },
                                     "weight": 1

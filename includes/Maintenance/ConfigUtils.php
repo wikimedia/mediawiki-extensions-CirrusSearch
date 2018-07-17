@@ -49,9 +49,9 @@ class ConfigUtils {
 		}
 		$result = $result[ 'version' ][ 'number' ];
 		$this->output( "$result..." );
-		if ( !preg_match( '/^5./', $result ) ) {
+		if ( !preg_match( '/^6./', $result ) ) {
 			$this->output( "Not supported!\n" );
-			$this->fatalError( "Only Elasticsearch 5.x is supported.  Your version: $result." );
+			$this->fatalError( "Only Elasticsearch 6.x is supported.  Your version: $result." );
 		} else {
 			$this->output( "ok\n" );
 		}

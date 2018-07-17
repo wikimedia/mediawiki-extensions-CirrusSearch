@@ -379,7 +379,7 @@ class Searcher extends ElasticsearchIntermediary {
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
 					$pageType = $connection->getPageType( $this->indexBaseName, $indexType );
-					$query = new \Elastica\Query( new \Elastica\Query\Ids( null, $docIds ) );
+					$query = new \Elastica\Query( new \Elastica\Query\Ids( $docIds ) );
 					$query->setParam( '_source', $sourceFiltering );
 					$query->addParam( 'stats', 'get' );
 					// We ignore limits provided to the searcher

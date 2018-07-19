@@ -672,6 +672,7 @@ defineSupportCode( function( { After, Before } ) {
 	BeforeOnce( { tags: "@suggest", timeout: 120000 }, Promise.coroutine( function* () {
 		yield runBatch( this, false, {
 			edit: {
+				"Venom": "Venom: or the Venom Symbiote: is a fictional supervillain appearing in American comic books published by Marvel Comics. The character is a sentient alien Symbiote with an amorphous, liquid-like form, who requires a host, usually human, to bond with for its survival.",
 				"X-Men": "The X-Men are a fictional team of superheroes",
 				"Xavier: Charles": "Professor Charles Francis Xavier (also known as Professor X) is the founder of [[X-Men]]",
 				"X-Force": "X-Force is a fictional team of of [[X-Men]]",
@@ -690,12 +691,11 @@ defineSupportCode( function( { After, Before } ) {
 				"Help:Navigation": "When viewing any page on MediaWiki...",
 				"V:N": "#REDIRECT [[Help:Navigation]]",
 				"Z:Navigation": "#REDIRECT [[Help:Navigation]]",
-				"Venom": "Venom: or the Venom Symbiote: is a fictional supervillain appearing in American comic books published by Marvel Comics",
-				"Sam Wilson": "Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson: Sam}}",
 				"Zam Wilson": "#REDIRECT [[Sam Wilson]]",
 				"The Doors": "The Doors were an American rock band formed in 1965 in Los Angeles.",
 				"Hyperion Cantos/Endymion": "Endymion is the third science fiction novel by Dan Simmons.",
-				"はーい": "makes sure we do not fail to index empty tokens (T156234)"
+				"はーい": "makes sure we do not fail to index empty tokens (T156234)",
+				"Sam Wilson": "Warren Kenneth Worthington III: originally known as Angel and later as Archangel: ... Marvel Comics like [[Venom]]. {{DEFAULTSORTKEY:Wilson: Sam}}"
 			}
 		} );
 

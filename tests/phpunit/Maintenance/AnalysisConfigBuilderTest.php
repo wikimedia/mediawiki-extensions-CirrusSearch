@@ -5,6 +5,7 @@ namespace CirrusSearch\Tests\Maintenance;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\CirrusTestCase;
+use Normalizer;
 
 /**
  * @group CirrusSearch
@@ -430,6 +431,29 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			$this->markTestSkipped( "Generated new fixture" );
 		} else {
 			$this->assertEquals( $expected, $builder->buildConfig() );
+
+			// also verify that custom stop lists and patterns are in NFKC form
+			if ( array_key_exists( 'filter', $builder->buildConfig() ) ) {
+				foreach ( $builder->buildConfig()['filter'] as $filter ) {
+					if ( array_key_exists( 'type', $filter ) ) {
+						if ( $filter[ 'type' ] == 'stop'
+								&& array_key_exists( 'stopwords', $filter )
+								&& is_array( $filter[ 'stopwords' ] ) ) {
+							foreach ( $filter[ 'stopwords' ] as $stopword ) {
+								$this->assertEquals( $stopword,
+									Normalizer::normalize( $stopword, Normalizer::FORM_KC ) );
+							}
+						}
+						if ( $filter[ 'type' ] == 'pattern_replace'
+								&& array_key_exists( 'pattern', $filter )
+								) {
+							$pat = $filter[ 'pattern' ];
+							$this->assertEquals( $pat,
+								Normalizer::normalize( $pat, Normalizer::FORM_KC ) );
+						}
+					}
+				}
+			}
 		}
 	}
 

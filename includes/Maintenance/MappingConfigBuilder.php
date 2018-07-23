@@ -249,21 +249,6 @@ class MappingConfigBuilder {
 
 		$mappingConfig = [ 'page' => $page ];
 
-		$mappingConfig[ 'namespace' ] = [
-			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
-			'properties' => [
-				'name' => [
-					'type' => 'text',
-					'analyzer' => 'near_match_asciifolding',
-					'norms' => false,
-					'index_options' => 'docs',
-				],
-				'wiki' => $this->searchIndexFieldFactory
-					->newKeywordField( 'wiki' )->getMapping( $this->engine ),
-			],
-		];
-
 		$mappingConfig[ 'archive' ] = [
 			'dynamic' => false,
 			'_all' => [ 'enabled' => false ],

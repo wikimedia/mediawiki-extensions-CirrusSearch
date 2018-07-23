@@ -117,7 +117,6 @@ class MappingConfigBuilder {
 
 		$page = [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'timestamp' => [
 					'type' => 'date',
@@ -251,7 +250,6 @@ class MappingConfigBuilder {
 
 		$mappingConfig[ 'namespace' ] = [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'name' => [
 					'type' => 'text',
@@ -266,7 +264,6 @@ class MappingConfigBuilder {
 
 		$mappingConfig[ 'archive' ] = [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'namespace' => $page['properties']['namespace'],
 				'title' => $page['properties']['title'],

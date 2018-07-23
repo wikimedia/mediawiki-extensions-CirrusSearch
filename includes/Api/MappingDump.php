@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Api;
 
-use CirrusSearch\Connection;
 use CirrusSearch\SearchConfig;
 
 /**
@@ -32,7 +31,6 @@ class MappingDump extends \ApiBase {
 		foreach ( $conn->getAllIndexTypes() as $index ) {
 			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
-			$this->getResult()->addPreserveKeysList( [ $index, Connection::PAGE_TYPE_NAME ], '_all' );
 		}
 	}
 

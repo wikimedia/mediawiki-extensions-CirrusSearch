@@ -52,7 +52,6 @@ class SuggesterMappingConfigBuilder {
 	public function buildConfig() {
 		$suggest = [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'_source' => [ 'enabled' => true ],
 			'properties' => [
 				'batch_id' => [ 'type' => 'long' ],

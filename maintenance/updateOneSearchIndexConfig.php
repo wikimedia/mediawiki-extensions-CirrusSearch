@@ -4,6 +4,7 @@ namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticaErrorHandler;
+use CirrusSearch\Maintenance\Validators\MappingValidator;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Util;
 
@@ -104,9 +105,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private $reindexAcceptableCountDeviation;
 
 	/**
-	 * @var AnalysisConfigBuilder the builder for analysis config
+	 * @var array filtered analysis config
 	 */
-	private $analysisConfigBuilder;
+	private $analysisConfig;
 
 	/**
 	 * @var array(String) list of available plugins
@@ -124,7 +125,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	protected $optimizeIndexForExperimentalHighlighter;
 
 	/**
-	 * @var array
+	 * @var int|string
 	 */
 	protected $maxShardsPerNode;
 
@@ -137,6 +138,26 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @var string
 	 */
 	protected $masterTimeout;
+
+	/**
+	 * @var array
+	 */
+	private $mapping = [];
+
+	/**
+	 * @var array
+	 */
+	private $similarityConfig;
+
+	/**
+	 * @var string the name of the elastic type
+	 */
+	private $elasticType;
+
+	/**
+	 * @var bool true if the analysis config can be optimized
+	 */
+	private $safeToOptimizeAnalysisConfig;
 
 	public function __construct() {
 		parent::__construct();
@@ -184,7 +205,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'fieldsToDelete', 'List of of comma separated field names to delete ' .
 			'while reindexing documents (defaults to empty)', false, true );
 		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
-		$maintenance->addOption( 'archiveAlias', 'Add the archive alias.' );
 	}
 
 	public function execute() {
@@ -221,8 +241,10 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			? $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
+		$this->initMappingConfigBuilder();
+
 		try{
-			$indexTypes = $this->getConnection()->getAllIndexTypes();
+			$indexTypes = $this->getConnection()->getAllIndexTypes( null );
 			if ( !in_array( $this->indexType, $indexTypes ) ) {
 				$this->fatalError( 'indexType option must be one of ' .
 					implode( ', ', $indexTypes ) );
@@ -241,14 +263,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return true;
 			}
 
-			if ( $this->getOption( 'archiveAlias', false ) ) {
-				$this->validateArchiveAlias();
-				return true;
-			}
-
+			$this->initAnalysisConfig();
 			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption(
 				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
-			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 			$this->validateIndex();
 			$this->validateAnalyzers();
 			$this->validateMapping();
@@ -315,7 +332,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$indexCreator = new \CirrusSearch\Maintenance\IndexCreator(
 			$this->getIndex(),
-			$this->analysisConfigBuilder
+			$this->analysisConfig,
+			$this->similarityConfig
 		);
 
 		$this->outputIndented( $msg );
@@ -365,7 +383,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	private function validateAnalyzers() {
 		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator(
-			$this->getIndex(), $this->analysisConfigBuilder, $this );
+			$this->getIndex(), $this->analysisConfig, $this );
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
@@ -374,15 +392,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateMapping() {
-		$validator = new \CirrusSearch\Maintenance\Validators\MappingValidator(
+		$validator = new MappingValidator(
 			$this->getIndex(),
 			$this->masterTimeout,
 			$this->optimizeIndexForExperimentalHighlighter,
 			$this->availablePlugins,
-			$this->getMappingConfig(),
+			$this->mapping,
 			[
-				'page' => $this->getPageType(),
-				'archive' => $this->getArchiveType()
+				$this->elasticType => $this->getType(),
 			],
 			$this
 		);
@@ -398,7 +415,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Since validate the specific alias first as that can cause reindexing
 		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
-		$this->validateArchiveAlias();
 
 		if ( $this->indexType !== Connection::ARCHIVE_INDEX_TYPE ) {
 			// Do not add the archive index to the global alias
@@ -419,8 +435,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSearchConfig(),
 			$connection,
 			$connection,
-			[ $this->getPageType() ],
-			[ $this->getOldPageType() ],
+			$this->getType(),
+			$this->getOldType(),
 			$this->getShardCount(),
 			$this->getReplicaCount(),
 			$this->getMergeSettings(),
@@ -466,24 +482,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		}
 	}
 
-	public function validateArchiveAlias() {
-		if ( $this->indexType !== Connection::GENERAL_INDEX_TYPE ) {
-			return;
-		}
-		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator(
-			$this->getConnection()->getClient(),
-			$this->getConnection()->getIndexName( $this->getIndexName(), Connection::ARCHIVE_INDEX_TYPE ),
-			$this->getSpecificIndexName(),
-			$this->startOver,
-			$this->getIndexTypeName(),
-			$this
-		);
-		$status = $validator->validate();
-		if ( !$status->isOK() ) {
-			$this->fatalError( $status->getMessage()->text() );
-		}
-	}
-
 	/*
 	 * @return \CirrusSearch\Maintenance\Validators\Validator
 	 */
@@ -516,10 +514,9 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	/**
-	 * @return array
+	 * @throws \ConfigException
 	 */
-	protected function getMappingConfig() {
-		$builder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter );
+	protected function initMappingConfigBuilder() {
 		$configFlags = 0;
 		if ( $this->prefixSearchStartsWithAny ) {
 			$configFlags |= MappingConfigBuilder::PREFIX_START_WITH_ANY;
@@ -527,7 +524,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->phraseSuggestUseText ) {
 			$configFlags |= MappingConfigBuilder::PHRASE_SUGGEST_USE_TEXT;
 		}
-		return $builder->buildConfig( $configFlags );
+		switch ( $this->indexType ) {
+			case Connection::ARCHIVE_TYPE_NAME:
+				$mappingConfigBuilder = new ArchiveMappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter, $configFlags );
+				break;
+			default:
+				$mappingConfigBuilder = new MappingConfigBuilder( $this->optimizeIndexForExperimentalHighlighter, $configFlags );
+		}
+		$this->mapping = $mappingConfigBuilder->buildConfig();
+		$this->elasticType = $mappingConfigBuilder->getMainType();
+		$this->safeToOptimizeAnalysisConfig = $mappingConfigBuilder->canOptimizeAnalysisConfig();
 	}
 
 	/**
@@ -565,24 +571,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 *
 	 * @return \Elastica\Type
 	 */
-	protected function getPageType() {
-		return $this->getIndex()->getType( Connection::PAGE_TYPE_NAME );
-	}
-
-	/**
-	 * Get the namespace type being updated by the search config.
-	 *
-	 * @return \Elastica\Type
-	 */
-	protected function getArchiveType() {
-		return $this->getIndex()->getType( Connection::ARCHIVE_TYPE_NAME );
+	protected function getType() {
+		return $this->getIndex()->getType( $this->elasticType );
 	}
 
 	/**
 	 * @return \Elastica\Type
 	 */
-	protected function getOldPageType() {
-		return $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType );
+	protected function getOldType() {
+		return $this->getConnection()->getIndexType( $this->indexBaseName, $this->indexType, $this->elasticType );
 	}
 
 	/**
@@ -611,6 +608,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getReplicaCount() {
 		return $this->getConnection()->getSettings()->getReplicaCount( $this->indexType );
+	}
+
+	private function initAnalysisConfig() {
+		$analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
+
+		$this->analysisConfig = $analysisConfigBuilder->buildConfig();
+		if ( $this->safeToOptimizeAnalysisConfig ) {
+			$filter = new AnalysisFilter();
+			list( $this->analysisConfig, $this->mapping ) = $filter
+				->filterAnalysis( $this->analysisConfig, $this->mapping );
+		}
+		$this->similarityConfig = $analysisConfigBuilder->buildSimilarityConfig();
 	}
 }
 

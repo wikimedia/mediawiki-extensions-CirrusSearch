@@ -14,9 +14,10 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 		$tests = [];
 		foreach ( CirrusTestCase::findFixtures( 'mapping/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
+			$buildClass = preg_match( '/\Q-archive.config\E$/', $testFile ) ? ArchiveMappingConfigBuilder::class : MappingConfigBuilder::class;
 			$extraConfig = CirrusTestCase::loadFixture( $testFile );
 			$expectedFile = dirname( $testFile ) . "/$testName.expected";
-			$tests[$testName] = [ $expectedFile, $extraConfig ];
+			$tests[$testName] = [ $expectedFile, $extraConfig, $buildClass ];
 		}
 		return $tests;
 	}
@@ -24,7 +25,7 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 	/**
 	 * @dataProvider buildProvider
 	 */
-	public function testBuild( $expectedFile, $extraConfig ) {
+	public function testBuild( $expectedFile, $extraConfig, $buildClass ) {
 		// The set of installed extensions might have extra content models
 		// which provide extra fields, but we only want the default values
 		// from core.
@@ -47,7 +48,7 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 			],
 		];
 		$config = new HashSearchConfig( $defaultConfig + $extraConfig, [ 'inherit' ] );
-		$builder = new MappingConfigBuilder( true, $config );
+		$builder = new $buildClass( true, 0, $config );
 		$flags = 0;
 		$mapping = $builder->buildConfig( $flags );
 		$mappingJson = \FormatJson::encode( $mapping, true );

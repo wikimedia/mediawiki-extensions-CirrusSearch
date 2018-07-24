@@ -90,6 +90,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\LanguageDetector\\TextCat' => __DIR__ . '/includes/LanguageDetector/TextCat.php',
 	'CirrusSearch\\Maintenance\\AnalysisConfigBuilder' => __DIR__ . '/includes/Maintenance/AnalysisConfigBuilder.php',
 	'CirrusSearch\\Maintenance\\AnalysisFilter' => __DIR__ . '/includes/Maintenance/AnalysisFilter.php',
+	'CirrusSearch\\Maintenance\\ArchiveMappingConfigBuilder' => __DIR__ . '/includes/Maintenance/ArchiveMappingConfigBuilder.php',
 	'CirrusSearch\\Maintenance\\ChunkBuilder' => __DIR__ . '/includes/Maintenance/ChunkBuilder.php',
 	'CirrusSearch\\Maintenance\\ConfigUtils' => __DIR__ . '/includes/Maintenance/ConfigUtils.php',
 	'CirrusSearch\\Maintenance\\CopySearchIndex' => __DIR__ . '/maintenance/copySearchIndex.php',

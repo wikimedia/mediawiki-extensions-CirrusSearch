@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use ElasticaConnection;
 use Exception;
 use MWNamespace;
+use Wikimedia\Assert\Assert;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
@@ -67,6 +68,20 @@ class Connection extends ElasticaConnection {
 	 * @var string
 	 */
 	const ARCHIVE_TYPE_NAME = 'archive';
+
+	/**
+	 * string[] Map of index types (suffix names)
+	 * indexed by mapping type.
+	 */
+	private static $TYPE_MAPPING = [
+		self::PAGE_TYPE_NAME => [
+			self::CONTENT_INDEX_TYPE,
+			self::GENERAL_INDEX_TYPE,
+		],
+		self::ARCHIVE_TYPE_NAME => [
+			self::ARCHIVE_INDEX_TYPE
+		],
+	];
 
 	/**
 	 * @var SearchConfig
@@ -200,11 +215,35 @@ class Connection extends ElasticaConnection {
 	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *
+	 * @param string|null $mappingType the mapping type name the index must support to be returned
+	 * can be self::PAGE_TYPE_NAME for content and general indices but also self::ARCHIVE_TYPE_NAME
+	 * for the archive index. Defaults to Connection::PAGE_TYPE_NAME.
+	 * set to null to return all known index types (only suited for maintenance tasks, not for read/write operations).
 	 * @return string[]
 	 */
-	public function getAllIndexTypes() {
-		return array_merge( array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ),
-			[ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ] );
+	public function getAllIndexTypes( $mappingType = self::PAGE_TYPE_NAME ) {
+		Assert::parameter( $mappingType === null || isset( self::$TYPE_MAPPING[$mappingType] ),
+			'$mappingType', "Unknown mapping type $mappingType" );
+		$indexTypes = [];
+
+		if ( $mappingType === null ) {
+			foreach ( self::$TYPE_MAPPING as $types ) {
+				$indexTypes = array_merge( $indexTypes, $types );
+			}
+			$indexTypes = array_merge(
+				$indexTypes,
+				array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) )
+			);
+		} else {
+			$indexTypes = array_merge(
+				$indexTypes,
+				self::$TYPE_MAPPING[$mappingType],
+				$mappingType === self::PAGE_TYPE_NAME ?
+					array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ) : []
+			);
+		}
+
+		return $indexTypes;
 	}
 
 	/**
@@ -214,7 +253,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function extractIndexSuffix( $name ) {
 		$matches = [];
-		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes() ) );
+		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes( null ) ) );
 		if ( !preg_match( "/_($possible)_[^_]+$/", $name, $matches ) ) {
 			throw new Exception( "Can't parse index name: $name" );
 		}
@@ -275,7 +314,7 @@ class Connection extends ElasticaConnection {
 		}
 		// If no namespaces provided all indices are needed
 		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		return array_merge( [ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ],
+		return array_merge( self::$TYPE_MAPPING[self::PAGE_TYPE_NAME],
 			array_values( $mappings ) );
 	}
 

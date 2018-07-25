@@ -133,9 +133,8 @@ class Filters {
 	}
 
 	/**
-	 * Create a filter for insource: queries.  This was extracted from the big
-	 * switch block in Searcher.php.  This function is pure, deferring state
-	 * changes to the reference-updating return function.
+	 * Create a query for insource: queries. This function is pure, deferring
+	 * state changes to the reference-updating return function.
 	 *
 	 * @param Escaper $escaper
 	 * @param string $value
@@ -148,8 +147,7 @@ class Filters {
 	}
 
 	/**
-	 * Create a filter for intitle: queries.  This was extracted from the big
-	 * switch block in Searcher.php.
+	 * Create a query for intitle: queries.
 	 *
 	 * @param Escaper $escaper
 	 * @param string $value
@@ -160,7 +158,7 @@ class Filters {
 			if ( preg_match( '/[?*]/u', $queryString ) ) {
 				return [ 'title.plain', 'redirect.title.plain' ];
 			} else {
-				return [ 'title', 'redirect.title' ];
+				return [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ];
 			}
 		} );
 	}

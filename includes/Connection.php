@@ -209,7 +209,7 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Type
 	 */
 	public function getArchiveType( $name ) {
-		return $this->getIndex( $name, 'general' )->getType( self::ARCHIVE_TYPE_NAME );
+		return $this->getIndex( $name, self::ARCHIVE_INDEX_TYPE )->getType( self::ARCHIVE_TYPE_NAME );
 	}
 
 	/**

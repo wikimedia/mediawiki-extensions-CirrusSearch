@@ -255,14 +255,11 @@ class SearcherTest extends CirrusTestCase {
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
 		$decodedQuery = json_decode( $elasticQuery, true );
-		unset( $decodedQuery['path'] );
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
 			CirrusTestCase::saveFixture( $expected, $decodedQuery );
 		} else {
-			// Repeat normalizations applied to $elasticQuery
-			unset( $expected['path'] );
 
 			// Finally compare some things
 			$this->assertEquals( $expected, $decodedQuery, $elasticQuery );

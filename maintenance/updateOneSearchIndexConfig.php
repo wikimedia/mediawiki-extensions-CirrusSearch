@@ -183,6 +183,7 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$maintenance->addOption( 'fieldsToDelete', 'List of of comma separated field names to delete ' .
 			'while reindexing documents (defaults to empty)', false, true );
 		$maintenance->addOption( 'justMapping', 'Just try to update the mapping.' );
+		$maintenance->addOption( 'archiveAlias', 'Add the archive alias.' );
 	}
 
 	public function execute() {
@@ -234,6 +235,11 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 			if ( $this->getOption( 'justMapping', false ) ) {
 				$this->validateMapping();
+				return true;
+			}
+
+			if ( $this->getOption( 'archiveAlias', false ) ) {
+				$this->validateArchiveAlias();
 				return true;
 			}
 
@@ -382,7 +388,15 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		// Since validate the specific alias first as that can cause reindexing
 		// and we want the all index to stay with the old index during reindexing
 		$this->validateSpecificAlias();
-		$this->validateAllAlias();
+		$this->validateArchiveAlias();
+
+		if ( $this->indexType !== Connection::ARCHIVE_INDEX_TYPE ) {
+			// Do not add the archive index to the global alias
+			$this->validateAllAlias();
+		}
+		if ( $this->tooFewReplicas ) {
+			$this->validateIndexSettings();
+		}
 	}
 
 	/**
@@ -429,9 +443,18 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( !$status->isOK() ) {
 			$this->fatalError( $status->getMessage()->text() );
 		}
+	}
 
-		if ( $this->tooFewReplicas ) {
-			$this->validateIndexSettings();
+	public function validateArchiveAlias() {
+		if ( $this->indexType !== Connection::GENERAL_INDEX_TYPE ) {
+			return;
+		}
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator( $this->getConnection()->getClient(),
+			$this->getConnection()->getIndexName( $this->getIndexName(), Connection::ARCHIVE_INDEX_TYPE ),
+			$this->getSpecificIndexName(), $this->startOver, $this->getIndexTypeName(), $this );
+		$status = $validator->validate();
+		if ( !$status->isOK() ) {
+			$this->fatalError( $status->getMessage()->text() );
 		}
 	}
 

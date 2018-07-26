@@ -45,6 +45,12 @@ class Connection extends ElasticaConnection {
 	const TITLE_SUGGEST_TYPE = 'titlesuggest';
 
 	/**
+	 * Name of the index that hosts archive data
+	 * @var string
+	 */
+	const ARCHIVE_INDEX_TYPE = 'archive';
+
+	/**
 	 * Name of the page type.
 	 * @var string
 	 */

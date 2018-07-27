@@ -565,8 +565,8 @@ defineSupportCode( function( { After, Before } ) {
 
 	BeforeOnce( { tags: "@js_and_css" }, runBatchFn( {
 		edit: {
-			'User:Tools/Some.js':  articleText( 'some.js' ),
-			'User:Tools/Some.css': articleText( 'some.css' ),
+			'User:Admin/Some.js':  articleText( 'some.js' ),
+			'User:Admin/Some.css': articleText( 'some.css' ),
 		}
 	} ) );
 

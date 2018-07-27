@@ -44,7 +44,7 @@ class MappingValidator extends Validator {
 	private $types;
 
 	/**
-	 * @todo: this constructor takes way too much arguments - refactor
+	 * @todo this constructor takes way too much arguments - refactor
 	 *
 	 * @param Index $index
 	 * @param string $masterTimeout

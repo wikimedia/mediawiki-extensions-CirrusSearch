@@ -9,7 +9,9 @@
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
 		<exclude name="Squiz.Scope.MethodScope.Missing" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
-		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
+		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
+		<exclude name="MediaWiki.Usage.InArrayUsage.Found" />
+		<exclude name="MediaWiki.Usage.NestedFunctions.NestedFunction" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
 		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
 		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>

@@ -46,7 +46,7 @@ class TermFreq extends AbstractQuery {
 	 */
 	public function __construct( $field, $term, $operator, $number ) {
 		Assert::parameter(
-			in_array( $operator, array_keys( self::$map ) ),
+			isset( self::$map[$operator] ),
 			$operator,
 			"operator must be one of " . implode( ', ', array_keys( self::$map ) )
 		);

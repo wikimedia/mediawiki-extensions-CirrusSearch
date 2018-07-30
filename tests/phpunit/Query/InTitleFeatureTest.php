@@ -17,7 +17,7 @@ class InTitleFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProvider() {
 		$defaults = [
-			'fields' => [ 'title', 'redirect.title' ],
+			'fields' => [ 'title', 'title.plain', 'redirect.title', 'redirect.title.plain' ],
 			'default_operator' => 'AND',
 			'allow_leading_wildcard' => true,
 			'fuzzy_prefix_length' => 2,

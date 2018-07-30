@@ -53,12 +53,12 @@ Feature: Full text search
 
   @js_and_css
   Scenario: JS pages don't corrupt the output
-    When I search for User:Tools/some.js jQuery
+    When I search for User:Admin/some.js jQuery
     Then there is not alttitle on the first search result
 
   @js_and_css
   Scenario: CSS pages don't corrupt the output
-    When I search for User:Tools/some.css jQuery
+    When I search for User:Admin/some.css jQuery
     Then there is not alttitle on the first search result
 
   @setup_main

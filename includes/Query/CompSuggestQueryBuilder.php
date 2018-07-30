@@ -217,6 +217,11 @@ class CompSuggestQueryBuilder {
 				$hitsTotal += count( $suggested['options'] );
 				foreach ( $suggested['options'] as $suggest ) {
 					$page = $suggest['text'];
+					if ( !isset( $suggest['_id'] ) ) {
+						// likely a shard failure during the fetch phase
+						// https://github.com/elastic/elasticsearch/issues/32467
+						throw new \Elastica\Exception\RuntimeException( "Invalid response returned from the backend (probable shard failure during the fetch phase)" );
+					}
 					$targetTitle = $page;
 					$targetTitleNS = NS_MAIN;
 					if ( isset( $suggest['_source']['target_title'] ) ) {

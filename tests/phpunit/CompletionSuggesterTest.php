@@ -338,4 +338,50 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	/**
+	 * test bad responses caused by:
+	 * https://github.com/elastic/elasticsearch/issues/32467
+	 */
+	public function testBadResponseOnFetchFailure() {
+		$suggestions = [];
+		for ( $i = 1; $i <= 10; $i ++ ) {
+			$suggestions[] = [
+				'text' => "Title$i",
+			];
+		}
+
+		$suggestData = [
+			[
+				'prefix' => 'Tit',
+				'options' => $suggestions
+			]
+		];
+
+		$data = [
+			'suggest' => [
+				'plain' => $suggestData,
+				'plain_fuzzy_2' => $suggestData,
+				'plain_stop' => $suggestData,
+				'plain_stop_fuzzy_2' => $suggestData,
+			],
+		];
+		$resp = new ResultSet( new Response( $data ), new Query(), [] );
+
+		$config = new HashSearchConfig( [
+			'CirrusSearchCompletionSettings' => 'fuzzy',
+		] );
+		$builder =
+			new CompSuggestQueryBuilder( new SearchContext( $config ), $config->getProfileService()
+				->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ), 10, 0 );
+		$builder->build( "ignored", null );
+		$collector = new CompletionResultsCollector( $builder->getLimit(), 0 );
+		try {
+			$builder->postProcess( $collector, $resp, "wiki_titlesuggest" );
+			$this->fail( "Reading an invalid response should produce an exception" );
+		} catch ( \Elastica\Exception\RuntimeException $re ) {
+			$this->assertEquals( "Invalid response returned from the backend (probable shard failure during the fetch phase)",
+				$re->getMessage() );
+		}
+	}
 }

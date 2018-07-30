@@ -257,43 +257,6 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * Is there more then one namespace in the provided index type?
-	 *
-	 * @param string $indexType an index type
-	 * @return false|int false if the number of indexes is unknown, an integer if it is known
-	 */
-	public function namespacesInIndexType( $indexType ) {
-		if ( $indexType === self::GENERAL_INDEX_TYPE ) {
-			return false;
-		}
-
-		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		$inIndexType = [];
-		foreach ( $mappings as $ns => $type ) {
-			if ( $indexType === $type ) {
-				$inIndexType[$ns] = true;
-			}
-		}
-		if ( $indexType === self::CONTENT_INDEX_TYPE ) {
-			// The content namespace includes everything set in the mappings to content (count right now)
-			// Plus everything in wgContentNamespaces that isn't already in namespace mappings
-			$contentNamespaces = $this->config->get( 'ContentNamespaces' );
-			foreach ( $contentNamespaces as $ns ) {
-				if ( !isset( $mappings[$ns] ) ) {
-					$inIndexType[$ns] = true;
-				}
-			}
-			$defaultSearch = $this->config->get( 'NamespacesToBeSearchedDefault' );
-			foreach ( $defaultSearch as $ns => $shouldSearch ) {
-				if ( $shouldSearch && !isset( $mappings[$ns] ) ) {
-					$inIndexType[$ns] = true;
-				}
-			}
-		}
-		return count( $inIndexType );
-	}
-
-	/**
 	 * @param int[]|null $namespaces List of namespaces to check
 	 * @return string|false The suffix to use (e.g. content or general) to
 	 *  query the namespaces, or false if both need to be queried.

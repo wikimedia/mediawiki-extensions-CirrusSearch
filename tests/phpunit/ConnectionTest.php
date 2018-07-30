@@ -24,19 +24,6 @@ namespace CirrusSearch;
  * @covers CirrusSearch\Connection
  */
 class ConnectionTest extends CirrusTestCase {
-	/**
-	 * @dataProvider provideNamespacesInIndexType
-	 */
-	public function testNamespacesInIndexType( $contentNamespaces, $defaultSearchNamespaces, $namespaceMappings, $indexType, $expected ) {
-		$config = new HashSearchConfig( [
-			'ContentNamespaces' => $contentNamespaces,
-			'CirrusSearchNamespaceMappings' => $namespaceMappings,
-			'NamespacesToBeSearchedDefault' => $defaultSearchNamespaces,
-		], [ 'inherit' ] );
-		$conn = new Connection( $config );
-		$this->assertEquals( $expected, $conn->namespacesInIndexType( $indexType ) );
-	}
-
 	public static function provideNamespacesInIndexType() {
 		return [
 			// Standard:

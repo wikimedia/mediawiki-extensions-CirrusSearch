@@ -1598,3 +1598,14 @@ which use searches - e.g. completion search - a lot for main functionality, e.g.
 and thus want item to appear in the index as soon as possible, even at the cost of page data
 not being fully updated yet.
 Set to true to index all pages on wiki, or array of namespaces to index specific namespaces.
+
+; $wgCirrusSearchNamespaceResolutionMethod
+
+Default:
+  $wgCirrusSearchNamespaceResolutionMethod = 'elastic';
+
+Method to use for namespace name resolution, can be:
+- 'elastic': by using the metastore
+- 'naive': using ICU naive case/accent folding
+- 'utr30': using a more aggressive folding technique
+   based on the UTR30 specs (specs used but lucene but withdrawn by Unicode)

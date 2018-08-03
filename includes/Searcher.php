@@ -841,6 +841,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchive( $term ) {
+		$this->searchContext->setOriginalSearchTerm( $term );
 		$term = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 

@@ -273,7 +273,7 @@ class Updater extends ElasticsearchIntermediary {
 			$job = Job\ElasticaWrite::build(
 				$head['title'],
 				'sendData',
-				[ Connection::GENERAL_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
+				[ Connection::ARCHIVE_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
 				[ 'cluster' => $this->writeToClusterName ]
 			);
 			$job->run();

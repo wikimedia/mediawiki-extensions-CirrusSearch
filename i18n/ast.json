@@ -86,5 +86,6 @@
 	"cirrussearch-explore-similar-categories-none": "Nun hai nenguna categoría disponible",
 	"cirrussearch-explore-similar-languages-none": "Nun ta disponible n'otres llingües",
 	"cirrussearch-article-words": "Palabres en toles páxines de conteníu",
-	"cirrussearch-keyword-prefix-ns-mismatch": "L'espaciu de nomes que s'alcontró nel términu buscáu <code>prefix:</code> nun ye compatible colos espacios de nomes solicitaos. Puedes igualo poniendo a la consulta el prefixu <code>all:</code>."
+	"cirrussearch-keyword-prefix-ns-mismatch": "L'espaciu de nomes que s'alcontró nel términu buscáu <code>prefix:</code> nun ye compatible colos espacios de nomes solicitaos. Puedes igualo poniendo a la consulta el prefixu <code>all:</code>.",
+	"cirrussearch-autoselect-profile": "Dexar que'l motor de gueta decida'l meyor perfil a usar."
 }

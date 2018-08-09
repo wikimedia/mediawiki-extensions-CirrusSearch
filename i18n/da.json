@@ -13,5 +13,6 @@
 	"cirrussearch-pref-desc": "Prøv vores nye søgning, som understøtter et større antal sprog, giver mere opdaterede resultater og kan endda finde tekst inden i skabeloner.",
 	"cirrussearch-explore-similar-related": "Relateret",
 	"cirrussearch-explore-similar-categories": "Kategorier",
-	"cirrussearch-explore-similar-languages": "Sprog"
+	"cirrussearch-explore-similar-languages": "Sprog",
+	"cirrussearch-explore-similar-categories-none": "Ingen kategorier tilgængelige"
 }

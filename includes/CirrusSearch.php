@@ -113,7 +113,7 @@ class CirrusSearch extends SearchEngine {
 	 */
 	public function __construct( $baseName = null, SearchConfig $config = null, CirrusDebugOptions $debugOptions = null ) {
 		// Initialize UserTesting before we create a Connection
-		// This is useful to do tests accross multiple clusters
+		// This is useful to do tests across multiple clusters
 		UserTesting::getInstance();
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()

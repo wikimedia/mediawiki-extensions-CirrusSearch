@@ -64,7 +64,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		// Configure the UserTesting framework
 		// Useful in case an index needs to be built with a
 		// test config that is not meant to be the default.
-		// This is realistically only usefull to test accross
+		// This is realistically only usefull to test across
 		// multiple clusters.
 		// Perhaps setting $wgCirrusSearchIndexBaseName to an
 		// alternate value would testing on the same cluster

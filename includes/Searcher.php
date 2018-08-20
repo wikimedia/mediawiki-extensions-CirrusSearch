@@ -481,6 +481,7 @@ class Searcher extends ElasticsearchIntermediary {
 				] );
 			} else {
 				$this->searchContext->setResultsPossible( false );
+				$this->searchContext->addWarning( 'cirrussearch-offset-too-large', self::MAX_OFFSET_LIMIT, $this->offset );
 				$retval = [];
 				foreach ( $searches as $key => $search ) {
 					$retval[$key] = $contextResultsType->createEmptyResult();

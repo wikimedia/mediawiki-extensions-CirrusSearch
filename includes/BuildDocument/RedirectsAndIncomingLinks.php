@@ -157,6 +157,18 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 				$result = $this->linkCountMultiSearch->search();
 				$this->success();
 				for ( $index = 0; $index < $linkCountClosureCount; $index++ ) {
+					if ( $result[$index] === null ) {
+						// Seems to happen during connection issues? Treat it the
+						// same as an exception even though it wasn't thrown (why?)
+						$numNulls = 0;
+						for ( $i = 0; $i < $linkCountClosureCount; $i++ ) {
+							if ( $result[$i] === null ) {
+								$numNulls++;
+							}
+						}
+						throw new \Elastica\Exception\RuntimeException(
+							"Received null for link count on $numNulls out of $linkCountClosureCount pages" );
+					}
 					$this->linkCountClosures[ $index ]( $result[ $index ]->getTotalHits() );
 				}
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {

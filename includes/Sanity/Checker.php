@@ -309,7 +309,6 @@ class Checker {
 		} else {
 			$pageQuery = [
 				'tables' => [ 'page' ],
-				/** @suppress PhanDeprecatedFunction fallback to deprecated function */
 				'fields' => WikiPage::selectFields(),
 				'joins' => [],
 			];

@@ -219,7 +219,6 @@ class SearchContext implements WarningCollector {
 	 */
 	public function __construct( SearchConfig $config, array $namespaces = null, CirrusDebugOptions $options = null ) {
 		$this->config = $config;
-		/** @suppress PhanDeprecatedProperty */
 		$this->namespaces = $namespaces;
 		$this->debugOptions = $options ?? CirrusDebugOptions::defaultOptions();
 		$this->loadConfig();

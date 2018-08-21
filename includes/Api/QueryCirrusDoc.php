@@ -106,7 +106,7 @@ class QueryCirrusDoc extends \ApiQueryBase {
 				return [ $rev->getPage(), $hasRedirects ];
 			}
 			$content = $handler->unserializeContent(
-			/** @suppress PhanDeprecatedFunction TODO move to new API  */
+				/** @todo move to new API  */
 				$rev->getSerializedData(),
 				$rev->getContentFormat()
 			);

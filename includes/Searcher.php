@@ -151,7 +151,6 @@ class Searcher extends ElasticsearchIntermediary {
 	public function setResultsType( $resultsType ) {
 		$this->searchContext->setResultsType( $resultsType );
 		// BC, deprecated
-		/** @suppress PhanDeprecatedProperty BC */
 		$this->resultsType = $resultsType;
 	}
 

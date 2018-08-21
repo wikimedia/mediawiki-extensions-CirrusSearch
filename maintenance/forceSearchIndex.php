@@ -513,7 +513,6 @@ class ForceSearchIndex extends Maintenance {
 
 		return [
 			'tables' => [ 'page' ],
-			/** @suppress PhanDeprecatedFunction fallback to deprecated function */
 			'fields' => WikiPage::selectFields(),
 			'joins' => [],
 		];

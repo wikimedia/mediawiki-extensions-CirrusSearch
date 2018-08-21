@@ -41,7 +41,7 @@ class HTMLCompletionProfileSettings extends HTMLFormField {
 		$html = Html::openElement( 'div' );
 		$html .= Html::element( 'p',
 			[],
-			wfMessage( 'cirrussearch-pref-completion-profile-help' )
+			wfMessage( 'cirrussearch-pref-completion-profile-help' )->text()
 		);
 
 		$html .= Html::element( 'strong',

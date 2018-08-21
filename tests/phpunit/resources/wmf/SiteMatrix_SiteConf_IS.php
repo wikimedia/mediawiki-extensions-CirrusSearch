@@ -125,7 +125,6 @@ return [
 	'etwikimedia' => 'https://ee.wikimedia.org',
 	'execwiki' => 'https://exec.wikimedia.org',
 	'fdcwiki' => 'https://fdc.wikimedia.org',
-	'foundationwiki' => 'https://wikimediafoundation.org',
 	'grantswiki' => 'https://grants.wikimedia.org',
 	'iegcomwiki' => 'https://iegcom.wikimedia.org',
 	'incubatorwiki' => 'https://incubator.wikimedia.org',

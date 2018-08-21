@@ -97,5 +97,6 @@
 	"cirrussearch-explore-similar-languages-none": "在其它語言中不可用",
 	"cirrussearch-article-words": "所有內容頁面的字數",
 	"cirrussearch-keyword-prefix-ns-mismatch": "在搜尋項目 <code>prefix:</code> 找出的名稱空間與所請求的名稱空間不相容。您必須透過在您的查詢添加字首 <code>all:</code> 來修正。",
-	"cirrussearch-autoselect-profile": "讓搜尋引擎決定來使用最好的個人設置。"
+	"cirrussearch-autoselect-profile": "讓搜尋引擎決定來使用最好的個人設置。",
+	"cirrussearch-offset-too-large": "結果無法取得。可支援截止至 $1 的結果，但請求為起始自 $2 的結果。"
 }

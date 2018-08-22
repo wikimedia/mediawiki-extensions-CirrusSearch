@@ -94,5 +94,6 @@
 	"cirrussearch-explore-similar-languages-none": "Não disponível em outras idiomas",
 	"cirrussearch-article-words": "Palavras em todas as páginas de conteúdo",
 	"cirrussearch-keyword-prefix-ns-mismatch": "O espaço nominal encontrado no termo a pesquisar <code>prefix:</code> não é compatível com os espaços nominais pedidos. Pode corrigi-lo dando à sua consulta o prefixo <code>all:</code>.",
-	"cirrussearch-autoselect-profile": "Deixe o mecanismo de pesquisa decidir o melhor perfil a ser usado."
+	"cirrussearch-autoselect-profile": "Deixe o mecanismo de pesquisa decidir o melhor perfil a ser usado.",
+	"cirrussearch-offset-too-large": "Não foi possível obter os resultados. São suportados até $1 resultados de pesquisa, mas foram pedidos os resultados que começam em $2."
 }

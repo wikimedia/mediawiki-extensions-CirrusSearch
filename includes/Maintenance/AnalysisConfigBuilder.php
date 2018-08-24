@@ -716,7 +716,7 @@ class AnalysisConfigBuilder {
 			$filters[] = 'custom_stem';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
 			// Add asciifolding_preserve filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
@@ -825,7 +825,7 @@ STEMMER_RULES
 			$filters[] = 'asciifolding';
 			$config[ 'analyzer' ][ 'text' ][ 'filter' ] = $filters;
 
-			// Add asciifolding_preserve to the the plain analyzer as well (but not plain_search)
+			// Add asciifolding_preserve to the plain analyzer as well (but not plain_search)
 			$config[ 'analyzer' ][ 'plain' ][ 'filter' ][] = 'asciifolding_preserve';
 			// Add asciifolding_preserve to filters
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';

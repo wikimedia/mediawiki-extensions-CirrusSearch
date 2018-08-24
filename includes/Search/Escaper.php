@@ -59,7 +59,7 @@ class Escaper {
 	}
 
 	/**
-	 * Make sure the the query string part is well formed by escaping some syntax that we don't
+	 * Make sure the query string part is well formed by escaping some syntax that we don't
 	 * want users to get direct access to and making sure quotes are balanced.
 	 * These special characters _aren't_ escaped:
 	 * * and ?: Do a wildcard search against the stemmed text which isn't strictly a good

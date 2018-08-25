@@ -126,6 +126,9 @@ class SuggestScoringTest extends CirrusTestCase {
 		$this->assertEquals( $res, 0, "When score is 0 and boost is 0 the score is still 0." );
 	}
 
+	/**
+	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 */
 	public function testQualityScoreBoostTemplates() {
 		$goodDoc = [
 			'template' => [ 'Good' ]

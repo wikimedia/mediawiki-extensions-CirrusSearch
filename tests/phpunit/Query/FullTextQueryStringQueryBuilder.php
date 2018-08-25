@@ -9,6 +9,7 @@ use CirrusSearch\Util;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Query\FullTextQueryStringQueryBuilder
  */
 class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 

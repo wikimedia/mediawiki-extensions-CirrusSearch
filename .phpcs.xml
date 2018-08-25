@@ -13,7 +13,6 @@
 		<exclude name="MediaWiki.Usage.NestedFunctions.NestedFunction" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
 		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
-		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
 	</rule>
 	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">
 		<properties>

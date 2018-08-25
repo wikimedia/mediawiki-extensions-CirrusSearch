@@ -8,6 +8,7 @@ use MediaWiki\MediaWikiServices;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Search\Result
  */
 class ResultTest extends CirrusTestCase {
 

@@ -6,6 +6,7 @@ use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Search\CirrusSearchIndexFieldFactory
  */
 class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 

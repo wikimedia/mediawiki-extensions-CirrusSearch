@@ -2,6 +2,9 @@
 
 namespace CirrusSearch\Search;
 
+/**
+ * @covers \CirrusSearch\Search\TeamDraftInterleaver::interleaveResults
+ */
 class TeamDraftInterleaverTest extends \PHPUnit\Framework\TestCase {
 	public function testInterleaveResults() {
 		// Construct some pointless array with all overlapping values

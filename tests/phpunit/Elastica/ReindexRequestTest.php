@@ -8,6 +8,9 @@ use Elastica\Request;
 use Elastica\Response;
 use Elastica\Type;
 
+/**
+ * @covers \CirrusSearch\Elastica\ReindexRequest
+ */
 class ReindexRequestTest extends \PHPUnit\Framework\TestCase {
 	public function testAcceptsIndexSourceAndDest() {
 		$client = $this->getMockBuilder( Client::class )

@@ -5,6 +5,9 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Connection;
 use CirrusSearch\HashSearchConfig;
 
+/**
+ * @covers \CirrusSearch\Maintenance\Reindexer
+ */
 class ReindexerTest extends \MediaWikiTestCase {
 
 	public function provideDetectRemoteSourceParams() {

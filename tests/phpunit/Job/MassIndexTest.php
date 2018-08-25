@@ -24,6 +24,7 @@ use Title;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers \CirrusSearch\Job\MassIndex
  */
 class MassIndexTest extends CirrusTestCase {
 	/**

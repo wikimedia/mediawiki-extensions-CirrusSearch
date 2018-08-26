@@ -18,7 +18,7 @@
 	"cirrussearch-pref-desc": "Essaya nostre nove motor de recerca que supporta un numero major de linguas, forni resultatos plus actual e pote mesmo cercar texto intra patronos.",
 	"apihelp-cirrus-config-dump-summary": "Copia del configuration CirrusSearch.",
 	"apihelp-query+cirrusdoc-description": "Instantaneo del documento de un articulo CirrusSearch",
-	"apihelp-query+cirrusdoc-summary": "Instantaneo del documento de un articulo CirrusSearch",
-	"apihelp-query+cirrusdoc-example": "Obtener un instantaneo de un articulo CirrusSearch individual.",
+	"apihelp-query+cirrusdoc-summary": "Instantaneo del documento de un articulo CirrusSearch ab le servitores de recerca",
+	"apihelp-query+cirrusdoc-example": "Obtener un instantaneo de un articulo CirrusSearch individual como actualmente indexate in le motor de recerca.",
 	"cirrussearch-offset-too-large": "Impossibile recuperar le resultatos. Es supportate un maximo de $1 resultatos de recerca, ma esseva requestate resultatos a partir de $2."
 }

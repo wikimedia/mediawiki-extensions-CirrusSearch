@@ -332,11 +332,14 @@ class AnalysisConfigBuilder {
 		// For Slovak (sk), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
 		// For Bosnian (bs), Croatian (hr), and Serbo-Croatian (sh),
 		// see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
+		// For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 		case 'bs':
 		case 'hr':
 		case 'sh':
 		case 'sr':
 			return '[^ĐđŽžĆćŠšČč]';
+		case 'eo':
+			return '[^ĈĉĜĝĤĥĴĵŜŝŬŭ]';
 		case 'fi':
 			return '[^åäöÅÄÖ]';
 		case 'ru':
@@ -732,6 +735,21 @@ guidelines => guideline
 STEMMER_RULES
 				,
 			];
+			break;
+		case 'esperanto':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'asciifolding',
+					'esperanto_stemmer',
+				],
+			];
+
+			// Text_search is just a copy of text
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
 			break;
 		case 'french':
 			// Add asciifolding_preserve to filters
@@ -1373,6 +1391,7 @@ STEMMER_RULES
 		'en-ca' => true,
 		'en-gb' => true,
 		'simple' => true,
+		'eo' => true,
 		'fr' => true,
 		'he' => true,
 		'hr' => true,
@@ -1425,6 +1444,7 @@ STEMMER_RULES
 		 * For Bosnian, Croatian, and Serbo-Croatian, see
 		 *    https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
 		 * For Slovak, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
+		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
@@ -1432,6 +1452,7 @@ STEMMER_RULES
 		'analysis-stconvert,analysis-smartcn' => [ 'zh' => 'chinese' ],
 		'analysis-hebrew' => [ 'he' => 'hebrew' ],
 		'analysis-ukrainian' => [ 'uk' => 'ukrainian' ],
+		'extra-analysis-esperanto' => [ 'eo' => 'esperanto' ],
 		'extra-analysis-serbian' => [ 'bs' => 'bosnian', 'hr' => 'croatian',
 			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],

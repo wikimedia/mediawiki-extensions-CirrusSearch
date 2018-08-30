@@ -1009,20 +1009,16 @@ STEMMER_RULES
 
 			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0301=>'; // T102298
 
-			// The Russian analyzer is also used for Rusyn for now, so processing that's
-			// very specific to Russian should be separated out
-			if ( $language === 'ru' ) {
-				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0451=>\u0435';
-				$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0401=>\u0415';
+			// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
+			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
+			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0451=>\u0435';
+			$config[ 'char_filter' ][ 'russian_charfilter' ][ 'mappings' ][] = '\u0401=>\u0415';
 
-				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
-				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
-				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-				$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
-			}
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0451=>\u0435';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0401=>\u0415';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+			$config[ 'char_filter' ][ 'near_space_flattener' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
 
 			// Drop acute stress marks and fold ё=>е everywhere
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T124592

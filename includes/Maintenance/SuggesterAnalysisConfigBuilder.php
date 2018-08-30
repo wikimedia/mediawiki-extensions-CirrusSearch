@@ -137,6 +137,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				// issue similar to
 				// https://github.com/elastic/elasticsearch/pull/11158
 				// can be removed with es5 if we want
+				// note that icu_folding can introduce empty tokens, so
+				// maybe it is best to leave this in place
 				"remove_empty" => [
 					"type" => "length",
 					"min" => 1,

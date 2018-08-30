@@ -230,6 +230,11 @@ class AnalysisConfigBuilder {
 			'name' => 'nfkc',
 		];
 
+		$config['filter']['remove_empty'] = [
+			'type' => 'length',
+			'min' => 1,
+		];
+
 		$newfilters = [];
 		foreach ( $config['analyzer'] as $name => $value ) {
 			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
@@ -272,8 +277,9 @@ class AnalysisConfigBuilder {
 	 * @return string[] new list of filters
 	 */
 	private function switchFiltersToICUFolding( array $filters ) {
-		return array_replace( $filters,
-			[ array_search( 'asciifolding', $filters ) => 'icu_folding' ] );
+		array_splice( $filters, array_search( 'asciifolding', $filters ), 1,
+			[ 'icu_folding', 'remove_empty' ] );
+		return $filters;
 	}
 
 	/**
@@ -312,6 +318,7 @@ class AnalysisConfigBuilder {
 		$newfilters[] = 'preserve_original_recorder';
 		$newfilters[] = 'icu_folding';
 		$newfilters[] = 'preserve_original';
+		$newfilters[] = 'remove_empty';
 		array_splice( $filters, $ap_idx, 1, $newfilters );
 		return $filters;
 	}

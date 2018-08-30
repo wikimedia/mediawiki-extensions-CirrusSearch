@@ -219,7 +219,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'simple' => [
+			'simple folding' => [
 				[
 					'analyzer' => [
 						'plain' => [
@@ -239,6 +239,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 							'filter' => [
 								'icu_normalizer',
 								'icu_folding',
+								'remove_empty',
 								'kstem'
 							],
 						],
@@ -267,6 +268,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 								'kstem'
 							],
 						],
@@ -297,6 +299,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 								'icu_normalizer',
 								'kstem'
 							],
@@ -322,6 +325,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 							],
 						],
 					],
@@ -367,6 +371,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 							],
 						],
 						'source_text_plain' => [
@@ -524,7 +529,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				'en-ru-es-de-zh',
 			],
 			// sv has custom icu_folding filter
-			"sv" => [
+			"en-zh-sv" => [
 				[ 'en', 'zh', 'sv' ],
 				$emptyConfig,
 				$allPlugins,
@@ -553,6 +558,12 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'all_defaults',
+			],
+			"icu folding languages" => [
+				[ 'bs', 'el', 'en', 'eo', 'fr', 'he', 'hr', 'sh', 'simple', 'sk', 'sr', 'sv', ],
+				$emptyConfig,
+				[ 'extra', 'analysis-icu' ],
+				'icu_folders',
 			],
 		];
 	}

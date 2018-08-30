@@ -7,7 +7,8 @@
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original"
+                "preserve_original",
+                "remove_empty"
             ],
             "char_filter": [
                 "word_break_helper"
@@ -36,6 +37,7 @@
                 "icu_normalizer",
                 "stop",
                 "icu_folding",
+                "remove_empty",
                 "kstem",
                 "custom_stem"
             ]
@@ -53,6 +55,7 @@
                 "icu_normalizer",
                 "stop",
                 "icu_folding",
+                "remove_empty",
                 "kstem",
                 "custom_stem"
             ]
@@ -221,6 +224,10 @@
         },
         "icu_folding": {
             "type": "icu_folding"
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
         },
         "aggressive_splitting": {
             "type": "word_delimiter",

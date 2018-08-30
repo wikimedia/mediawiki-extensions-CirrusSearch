@@ -7,7 +7,8 @@
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original"
+                "preserve_original",
+                "remove_empty"
             ],
             "char_filter": [
                 "word_break_helper"
@@ -30,7 +31,8 @@
                 "niqqud",
                 "hebrew_lemmatizer",
                 "icu_normalizer",
-                "icu_folding"
+                "icu_folding",
+                "remove_empty"
             ]
         },
         "he_text_search": {
@@ -40,7 +42,8 @@
                 "niqqud",
                 "hebrew_lemmatizer",
                 "icu_normalizer",
-                "icu_folding"
+                "icu_folding",
+                "remove_empty"
             ]
         },
         "uk_plain": {
@@ -83,6 +86,10 @@
         },
         "icu_folding": {
             "type": "icu_folding"
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
         }
     },
     "char_filter": {

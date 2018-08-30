@@ -1,8 +1,11 @@
-/**
- * See also: http://webdriver.io/guide/testrunner/configurationfile.html
- */
 const fs = require( 'fs' ),
-	saveScreenshot = require( 'wdio-mediawiki' ).saveScreenshot;
+	path = require( 'path' ),
+	saveScreenshot = require( 'wdio-mediawiki' ).saveScreenshot,
+	logPath = process.env.LOG_DIR || __dirname + '/log';
+
+function relPath( foo ) {
+	return path.resolve( __dirname, '../..', foo );
+}
 
 exports.config = {
 	// ======
@@ -30,8 +33,12 @@ exports.config = {
 	// ============
 	// Capabilities
 	// ============
+
+	// How many instances of the same capability (browser) may be started at the same time.
+	maxInstances: 1,
+
 	capabilities: [ {
-		// https://sites.google.com/a/chromium.org/chromedriver/capabilities
+		// For Chrome/Chromium https://sites.google.com/a/chromium.org/chromedriver/capabilities
 		browserName: 'chrome',
 		maxInstances: 1,
 		chromeOptions: {
@@ -50,20 +57,50 @@ exports.config = {
 	// Test Configurations
 	// ===================
 
-	// Level of verbosity: silent | verbose | command | data | result | error
+	// Enabling synchronous mode (via the wdio-sync package), means specs don't have to
+	// use Promise#then() or await for browser commands, such as like `brower.element()`.
+	// Instead, it will automatically pause JavaScript execution until th command finishes.
+	//
+	// For non-browser commands (such as MWBot and other promises), this means you
+	// have to use `browser.call()` to make sure WDIO waits for it before the next
+	// browser command.
+	sync: true,
+
+	// Level of logging verbosity: silent | verbose | command | data | result | error
 	logLevel: 'error',
+
+	// Enables colors for log output.
+	coloredLogs: true,
+
+	// Warns when a deprecated command is used
+	deprecationWarnings: true,
+
+	// Stop the tests once a certain number of failed tests have been recorded.
+	// Default is 0 - don't bail, run all tests.
+	bail: 0,
 
 	// Setting this enables automatic screenshots for when a browser command fails
 	// It is also used by afterTest for capturig failed assertions.
-	screenshotPath: process.env.LOG_DIR || __dirname + '/log',
+	screenshotPath: logPath,
 
 	// Default timeout for each waitFor* command.
 	waitforTimeout: 10 * 1000,
 
-	// See also: http://webdriver.io/guide/testrunner/reporters.html
-	reporters: [ 'spec' ],
+	// Framework you want to run your specs with.
+	// See also: http://webdriver.io/guide/testrunner/frameworks.html
+	framework: 'mocha',
 
-	// See also: http://mochajs.org
+	// Test reporter for stdout.
+	// See also: http://webdriver.io/guide/testrunner/reporters.html
+	reporters: [ 'spec', 'junit' ],
+	reporterOptions: {
+		junit: {
+			outputDir: logPath
+		}
+	},
+
+	// Options to be passed to Mocha.
+	// See the full list at http://mochajs.org/
 	mochaOpts: {
 		ui: 'bdd',
 		timeout: 60 * 1000
@@ -72,6 +109,7 @@ exports.config = {
 	// =====
 	// Hooks
 	// =====
+	// See also: http://webdriver.io/guide/testrunner/configurationfile.html
 
 	/**
 	 * Save a screenshot when test fails.

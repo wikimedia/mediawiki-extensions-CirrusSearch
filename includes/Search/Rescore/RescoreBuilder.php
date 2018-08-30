@@ -116,7 +116,8 @@ class RescoreBuilder {
 		case self::PHRASE:
 			return $this->context->getPhraseRescoreQuery();
 		default:
-			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
+			throw new InvalidRescoreProfileException(
+				"Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
 	}
 
@@ -204,7 +205,8 @@ class RescoreBuilder {
 				->getProfileService()
 				->loadProfileByName( SearchProfileService::RESCORE, $profileName );
 			if ( !is_array( $profile ) ) {
-				throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
+				throw new InvalidRescoreProfileException(
+					"Invalid fallback profile, must be array: $profileName" );
 			}
 		}
 
@@ -237,7 +239,8 @@ class RescoreBuilder {
 					->getProfileService()
 					->loadProfileByName( SearchProfileService::RESCORE,  $profileName );
 				if ( !is_array( $profile ) ) {
-					throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
+					throw new InvalidRescoreProfileException(
+						"Invalid fallback profile, must be array: $profileName" );
 				}
 				continue;
 			}
@@ -268,7 +271,8 @@ class RescoreBuilder {
 				}
 				break;
 			default:
-				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces should be 'all', 'content' or an array of namespaces" );
+				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces " .
+					"should be 'all', 'content' or an array of namespaces" );
 			}
 		} else {
 			$profileNs = $profile['supported_namespaces'];

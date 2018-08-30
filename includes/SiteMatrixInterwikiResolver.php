@@ -23,7 +23,8 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 		parent::__construct( $config, $client );
 		$this->cache = ObjectCache::getLocalClusterInstance();
 		if ( $config->getWikiId() !== wfWikiID() ) {
-			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID() );
+			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " .
+				$config->getWikiId() . ", global: " . wfWikiID() );
 		}
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			throw new \RuntimeException( "SiteMatrix is required" );
@@ -151,7 +152,8 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				// In theory it's impossible to override something here
 				// should we log something if the case?
 				$prefixesByWiki[$dbname] = $lang;
-				$wikiLangCode = $wgConf->get( 'wgLanguageCode', $dbname, $myProject, [ 'lang' => $lang, 'site' => $myProject ] );
+				$wikiLangCode = $wgConf->get( 'wgLanguageCode', $dbname, $myProject,
+					[ 'lang' => $lang, 'site' => $myProject ] );
 				$languageMap[$wikiLangCode][] = $lang;
 			}
 			// Cleanup unambiguous languages

@@ -129,10 +129,21 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
-	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
-		User $user = null, $index = false, CirrusDebugOptions $options = null
+	public function __construct(
+		Connection $conn, $offset,
+		$limit,
+		SearchConfig $config,
+		array $namespaces = null,
+		User $user = null,
+		$index = false,
+		CirrusDebugOptions $options = null
 	) {
-		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
+		parent::__construct(
+			$conn,
+			$user,
+			$config->get( 'CirrusSearchSlowSearch' ),
+			$config->get( 'CirrusSearchExtraBackendLatency' )
+		);
 		$this->config = $config;
 		$this->offset = $offset;
 		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
@@ -238,7 +249,8 @@ class Searcher extends ElasticsearchIntermediary {
 		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
 
 		$builderSettings = $this->config->getProfileService()
-			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER, $this->searchContext->getFulltextQueryBuilderProfile() );
+			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER,
+				$this->searchContext->getFulltextQueryBuilderProfile() );
 		$features = ( new FullTextKeywordRegistry( $this->config ) )->getKeywords();
 		/** @var FullTextQueryBuilder $qb */
 		$qb = new $builderSettings['builder_class'](
@@ -254,7 +266,8 @@ class Searcher extends ElasticsearchIntermediary {
 		\Hooks::run( 'CirrusSearchFulltextQueryBuilder', [ &$qb, $this->searchContext ] );
 		// Query builder could be replaced here!
 		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
-			throw new RuntimeException( "Bad query builder object override, must implement FullTextQueryBuilder!" );
+			throw new RuntimeException(
+				"Bad query builder object override, must implement FullTextQueryBuilder!" );
 		}
 
 		if ( $this->offset != 0 || !$this->config->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
@@ -430,7 +443,8 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
-		$builder = new SearchRequestBuilder( $this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
+		$builder = new SearchRequestBuilder(
+			$this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
 		return $builder->setLimit( $this->limit )
 			->setOffset( $this->offset )
 			->setPageType( $this->pageType )
@@ -480,7 +494,8 @@ class Searcher extends ElasticsearchIntermediary {
 				] );
 			} else {
 				$this->searchContext->setResultsPossible( false );
-				$this->searchContext->addWarning( 'cirrussearch-offset-too-large', self::MAX_OFFSET_LIMIT, $this->offset );
+				$this->searchContext->addWarning( 'cirrussearch-offset-too-large',
+					self::MAX_OFFSET_LIMIT, $this->offset );
 				$retval = [];
 				foreach ( $searches as $key => $search ) {
 					$retval[$key] = $contextResultsType->createEmptyResult();
@@ -684,14 +699,19 @@ class Searcher extends ElasticsearchIntermediary {
 			// allow category intersections longer than the maximum
 			strpos( $term, 'incategory:' ) === false
 		) {
-			return Status::newFatal( 'cirrussearch-query-too-long', $this->language->formatNum( $requestLength ), $this->language->formatNum( self::MAX_TEXT_SEARCH ) );
+			return Status::newFatal(
+				'cirrussearch-query-too-long',
+				$this->language->formatNum( $requestLength ),
+				$this->language->formatNum( self::MAX_TEXT_SEARCH )
+			);
 		}
 		return Status::newGood();
 	}
 
 	/**
-	 * Attempt to suck a leading namespace followed by a colon from the query string.  Reaches out to Elasticsearch to
-	 * perform normalized lookup against the namespaces.  Should be fast but for the network hop.
+	 * Attempt to suck a leading namespace followed by a colon from the query string.
+	 * Reaches out to Elasticsearch to perform normalized lookup against the namespaces.
+	 * Should be fast but for the network hop.
 	 *
 	 * @param string &$query
 	 */

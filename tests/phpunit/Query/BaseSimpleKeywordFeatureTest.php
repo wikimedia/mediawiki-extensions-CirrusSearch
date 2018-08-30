@@ -39,7 +39,12 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param array|null $expected
 	 * @param array|null $expectedWarnings (null to disable warnings check)
 	 */
-	protected function assertParsedValue( KeywordFeature $feature, $term, $expected, $expectedWarnings = null ) {
+	protected function assertParsedValue(
+		KeywordFeature $feature,
+		$term,
+		$expected,
+		$expectedWarnings = null
+	) {
 		$this->kwAssertions->assertParsedValue( $feature, $term, $expected, $expectedWarnings );
 	}
 
@@ -50,7 +55,13 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param array|null $expectedWarnings (null to disable warnings check)
 	 * @param SearchConfig|null $config (if null will run with an empty SearchConfig)
 	 */
-	protected function assertExpandedData( KeywordFeature $feature, $term, array $expected, array $expectedWarnings = null, SearchConfig $config = null ) {
+	protected function assertExpandedData(
+		KeywordFeature $feature,
+		$term,
+		array $expected,
+		array $expectedWarnings = null,
+		SearchConfig $config = null
+	) {
 		$this->kwAssertions->assertExpandedData( $feature, $term, $expected, $expectedWarnings, $config );
 	}
 
@@ -59,7 +70,11 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param string $term
 	 * @param CrossSearchStrategy $expected
 	 */
-	protected function assertCrossSearchStrategy( KeywordFeature $feature, $term, CrossSearchStrategy $expected ) {
+	protected function assertCrossSearchStrategy(
+		KeywordFeature $feature,
+		$term,
+		CrossSearchStrategy $expected
+	) {
 		$this->kwAssertions->assertCrossSearchStrategy( $feature, $term, $expected );
 	}
 
@@ -70,7 +85,13 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param array|null $warnings
 	 * @param SearchConfig|null
 	 */
-	protected function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null, SearchConfig $config = null ) {
+	protected function assertFilter(
+		KeywordFeature $feature,
+		$term,
+		$filter = null,
+		array $warnings = null,
+		SearchConfig $config = null
+	) {
 		$this->kwAssertions->assertFilter( $feature, $term, $filter, $warnings, $config );
 	}
 
@@ -88,7 +109,12 @@ abstract class BaseSimpleKeywordFeatureTest extends CirrusTestCase {
 	 * @param array|string|null $highlightField
 	 * @param array|null $highlightField
 	 */
-	protected function assertHighlighting( KeywordFeature $feature, $term, $highlightField = null, array $higlightQuery = null ) {
+	protected function assertHighlighting(
+		KeywordFeature $feature,
+		$term,
+		$highlightField = null,
+		array $higlightQuery = null
+	) {
 		$this->kwAssertions->assertHighlighting( $feature, $term, $highlightField, $higlightQuery );
 	}
 

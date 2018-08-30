@@ -63,11 +63,13 @@ class KeywordParser implements WarningCollector {
 			$valueSideRegex = "${spacesAfterSep}{$valueRegex}";
 		}
 		$matches = [];
-		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u", $query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
+		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u",
+			$query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
 		$output = [];
 		foreach ( $matches as $match ) {
 			$key = $match['key'][0];
-			Assert::invariant( $feature->hasValue() === isset( $match['value'] ), 'a value must have matched if the keyword wants a value.' );
+			Assert::invariant( $feature->hasValue() === isset( $match['value'] ),
+				'a value must have matched if the keyword wants a value.' );
 			$quotedValue = '';
 			$value = '';
 			$valueDelimiter = '';
@@ -102,9 +104,11 @@ class KeywordParser implements WarningCollector {
 			if ( $feature->hasValue() && $quotedValue !== '' ) {
 				// Set the current offset so that we can collect warnings at the keyword offset
 				$this->currentOffset = $valueStart;
-				$parsedValue = $feature->parseValue( $key, $value, $quotedValue, $valueDelimiter, $valueSuffix, $this );
+				$parsedValue = $feature->parseValue(
+					$key, $value, $quotedValue, $valueDelimiter, $valueSuffix, $this );
 				if ( $parsedValue === false ) {
-					Assert::postcondition( $feature->allowEmptyValue(), 'Only features accepting empty value can reject a value' );
+					Assert::postcondition( $feature->allowEmptyValue(),
+						'Only features accepting empty value can reject a value' );
 					$value = '';
 					$quotedValue = '';
 					$end = $valueStart;
@@ -138,7 +142,8 @@ class KeywordParser implements WarningCollector {
 			$allDelims = '';
 			$optionalSuffixes = [];
 			foreach ( $feature->getValueDelimiters() as $delimConfig ) {
-				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
+				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1,
+					"Value delimiter must be a single byte char" );
 				$delim = preg_quote( $delimConfig['delimiter'], '/' );
 				$allDelims .= $delim;
 				if ( isset( $delimConfig['suffixes'] ) ) {

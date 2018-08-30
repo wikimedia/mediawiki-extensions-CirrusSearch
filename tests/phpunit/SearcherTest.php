@@ -170,8 +170,10 @@ class SearcherTest extends CirrusTestCase {
 					}
 				}
 			}
-			$this->assertEmpty( $notInApi, implode( ',', $notInApi ) . " are exported from \CirrusSearch\Api\ConfigDump" );
-			$this->assertEmpty( $notInSearchConfig, implode( ',', $notInSearchConfig ) . " are allowed in SearchConfig::getNonCirrusConfigVarNames()" );
+			$this->assertEmpty( $notInApi, implode( ',', $notInApi ) .
+				" are exported from \CirrusSearch\Api\ConfigDump" );
+			$this->assertEmpty( $notInSearchConfig, implode( ',', $notInSearchConfig ) .
+				" are allowed in SearchConfig::getNonCirrusConfigVarNames()" );
 		} finally {
 			SearchConfigUsageDecorator::resetUsedConfigKeys();
 		}

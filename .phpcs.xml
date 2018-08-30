@@ -26,7 +26,7 @@
 	</rule>
 	<rule ref="Generic.Files.LineLength">
 		<properties>
-			<property name="lineLimit" value="170" />
+			<property name="lineLimit" value="140" />
 		</properties>
 		<exclude-pattern>tests/phpunit/resources/wmf</exclude-pattern>
 	</rule>

@@ -208,8 +208,8 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexType => $documents ) {
-			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up against
-			// the max.  So we chunk it and do them sequentially.
+			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
+			// against the max.  So we chunk it and do them sequentially.
 			foreach ( array_chunk( $documents, 10 ) as $chunked ) {
 				$job = Job\ElasticaWrite::build(
 					reset( $titles ),
@@ -322,7 +322,14 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return \Elastica\Document Partial elasticsearch document representing only
 	 *  the fields.
 	 */
-	public static function buildDocument( \CirrusSearch $engine, WikiPage $page, Connection $connection, $forceParse, $skipParse, $skipLinks ) {
+	public static function buildDocument(
+		\CirrusSearch $engine,
+		WikiPage $page,
+		Connection $connection,
+		$forceParse,
+		$skipParse,
+		$skipLinks
+	) {
 		$title = $page->getTitle();
 		$doc = new \Elastica\Document( null, [
 			'version' => $page->getLatest(),
@@ -393,17 +400,18 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$doc = self::buildDocument( $engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
+			$doc = self::buildDocument(
+				$engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
 			$doc->setId( $this->searchConfig->makeId( $page->getId() ) );
 
-			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
-			// OtherIndex::updateOtherIndex.
-			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
-			// documents or any documents that we've been explicitly told it is ok to index when they aren't full.
-			// This is typically just done during the first phase of the initial index build.
-			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc unless they
-			// are objects in both doc and the indexed source.  We're ok with this because all of our fields are either
-			// regular types or lists of objects and lists are overwritten.
+			// Everything as sent as an update to prevent overwriting fields maintained in other processes
+			// like OtherIndex::updateOtherIndex.
+			// But we need a way to index documents that don't already exist.  We're willing to upsert any
+			// full documents or any documents that we've been explicitly told it is ok to index when they
+			// aren't full. This is typically just done during the first phase of the initial index build.
+			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc
+			// unless they are objects in both doc and the indexed source.  We're ok with this because all of
+			// our fields are either regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$doc->setRetryOnConflict( $this->searchConfig->get( 'CirrusSearchUpdateConflictRetryCount' ) );
 

@@ -140,7 +140,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addDescription( "Update the configuration or contents of one search index. This always operates on a single cluster." );
+		$this->addDescription( "Update the configuration or contents of one search index. This always " .
+			"operates on a single cluster." );
 		$this->addOption( 'indexType', 'Index to update.  Either content or general.', true, true );
 		self::addSharedOptions( $this );
 	}
@@ -202,7 +203,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 		$this->indexType = $this->getOption( 'indexType' );
 		$this->startOver = $this->getOption( 'startOver', false );
-		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+		$this->indexBaseName = $this->getOption( 'baseName',
+			$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 		$this->reindexAndRemoveOk = $this->getOption( 'reindexAndRemoveOk', false );
 		$this->reindexSlices = $this->getOption( 'reindexSlices', null );
 		$this->reindexAcceptableCountDeviation = Util::parsePotentialPercent(
@@ -215,7 +217,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 		$this->optimizeIndexForExperimentalHighlighter = $wgCirrusSearchOptimizeIndexForExperimentalHighlighter;
 		$this->masterTimeout = $wgCirrusSearchMasterTimeout;
-		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] ) ? $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
+		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] )
+			? $wgCirrusSearchMaxShardsPerNode[ $this->indexType ] : 'unlimited';
 		$this->refreshInterval = $wgCirrusSearchRefreshInterval;
 
 		try{
@@ -243,7 +246,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 				return true;
 			}
 
-			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption( $this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
+			$this->indexIdentifier = $utils->pickIndexIdentifierFromOption(
+				$this->getOption( 'indexIdentifier', 'current' ), $this->getIndexTypeName() );
 			$this->analysisConfigBuilder = $this->pickAnalyzer( $this->langCode, $this->availablePlugins );
 			$this->validateIndex();
 			$this->validateAnalyzers();
@@ -260,7 +264,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->output( "\nUnexpected Elasticsearch failure.\n" );
-			$this->fatalError( "Elasticsearch failed in an unexpected way.  This is always a bug in CirrusSearch.\n" .
+			$this->fatalError( "Elasticsearch failed in an unexpected way. " .
+				"This is always a bug in CirrusSearch.\n" .
 				"Error type: $type\n" .
 				"Message: $message\n" .
 				"Trace:\n" . $trace );
@@ -289,7 +294,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function validateIndex() {
 		// $this->startOver || !$this->getIndex()->exists() are the conditions
 		// under which a new index will be created
-		$this->tooFewReplicas = ( $this->startOver || !$this->getIndex()->exists() ) && $this->reindexAndRemoveOk;
+		$this->tooFewReplicas = ( $this->startOver || !$this->getIndex()->exists() )
+			&& $this->reindexAndRemoveOk;
 
 		if ( $this->startOver ) {
 			$this->createIndex( true, "Blowing away index to start over..." );
@@ -337,10 +343,13 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getIndexSettingsValidators() {
 		$validators = [];
-		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator( $this->getIndex(), $this->getShardCount(), $this );
-		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator( $this->getIndex(), $this->getReplicaCount(), $this );
+		$validators[] = new \CirrusSearch\Maintenance\Validators\NumberOfShardsValidator(
+			$this->getIndex(), $this->getShardCount(), $this );
+		$validators[] = new \CirrusSearch\Maintenance\Validators\ReplicaRangeValidator(
+			$this->getIndex(), $this->getReplicaCount(), $this );
 		$validators[] = $this->getShardAllocationValidator();
-		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator( $this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
+		$validators[] = new \CirrusSearch\Maintenance\Validators\MaxShardsPerNodeValidator(
+			$this->getIndex(), $this->indexType, $this->maxShardsPerNode, $this );
 		return $validators;
 	}
 
@@ -355,7 +364,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	private function validateAnalyzers() {
-		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator( $this->getIndex(), $this->analysisConfigBuilder, $this );
+		$validator = new \CirrusSearch\Maintenance\Validators\AnalyzersValidator(
+			$this->getIndex(), $this->analysisConfigBuilder, $this );
 		$validator->printDebugCheckConfig( $this->printDebugCheckConfig );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
@@ -424,7 +434,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 			$this->getSpecificIndexName(),
 			$this->startOver,
 			$reindexer,
-			[ $this->reindexSlices, $this->refreshInterval, $this->reindexChunkSize, $this->reindexAcceptableCountDeviation ],
+			[
+				$this->reindexSlices,
+				$this->refreshInterval,
+				$this->reindexChunkSize,
+				$this->reindexAcceptableCountDeviation
+			],
 			$this->getIndexSettingsValidators(),
 			$this->reindexAndRemoveOk,
 			$this->tooFewReplicas,
@@ -437,8 +452,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	}
 
 	public function validateAllAlias() {
-		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator( $this->getConnection()->getClient(),
-			$this->getIndexName(), $this->getSpecificIndexName(), $this->startOver, $this->getIndexTypeName(), $this );
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator(
+			$this->getConnection()->getClient(),
+			$this->getIndexName(),
+			$this->getSpecificIndexName(),
+			$this->startOver,
+			$this->getIndexTypeName(),
+			$this
+		);
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
 			$this->fatalError( $status->getMessage()->text() );
@@ -449,9 +470,14 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 		if ( $this->indexType !== Connection::GENERAL_INDEX_TYPE ) {
 			return;
 		}
-		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator( $this->getConnection()->getClient(),
+		$validator = new \CirrusSearch\Maintenance\Validators\IndexAllAliasValidator(
+			$this->getConnection()->getClient(),
 			$this->getConnection()->getIndexName( $this->getIndexName(), Connection::ARCHIVE_INDEX_TYPE ),
-			$this->getSpecificIndexName(), $this->startOver, $this->getIndexTypeName(), $this );
+			$this->getSpecificIndexName(),
+			$this->startOver,
+			$this->getIndexTypeName(),
+			$this
+		);
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
 			$this->fatalError( $status->getMessage()->text() );
@@ -463,7 +489,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 */
 	private function getShardAllocationValidator() {
 		global $wgCirrusSearchIndexAllocation;
-		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator( $this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
+		return new \CirrusSearch\Maintenance\Validators\ShardAllocationValidator(
+			$this->getIndex(), $wgCirrusSearchIndexAllocation, $this );
 	}
 
 	protected function validateShardAllocation() {
@@ -480,7 +507,8 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return AnalysisConfigBuilder
 	 */
 	private function pickAnalyzer( $langCode, array $availablePlugins = [] ) {
-		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder( $langCode, $availablePlugins );
+		$analysisConfigBuilder = new \CirrusSearch\Maintenance\AnalysisConfigBuilder(
+			$langCode, $availablePlugins );
 		$this->outputIndented( 'Picking analyzer...' .
 								$analysisConfigBuilder->getDefaultTextAnalyzerType( $langCode ) .
 								"\n" );
@@ -506,14 +534,16 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	 * @return \Elastica\Index being updated
 	 */
 	public function getIndex() {
-		return $this->getConnection()->getIndex( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+		return $this->getConnection()->getIndex(
+			$this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**
 	 * @return string name of the index being updated
 	 */
 	protected function getSpecificIndexName() {
-		return $this->getConnection()->getIndexName( $this->indexBaseName, $this->indexType, $this->indexIdentifier );
+		return $this->getConnection()->getIndexName(
+			$this->indexBaseName, $this->indexType, $this->indexIdentifier );
 	}
 
 	/**

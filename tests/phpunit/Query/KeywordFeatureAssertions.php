@@ -44,7 +44,8 @@ class KeywordFeatureAssertions {
 			$config = new SearchConfig();
 		}
 		$context->expects( $this->testCase->any() )->method( 'getConfig' )->willReturn( $config );
-		$context->expects( $this->testCase->any() )->method( 'escaper' )->willReturn( new Escaper( 'en', true ) );
+		$context->expects( $this->testCase->any() )->method( 'escaper' )
+			->willReturn( new Escaper( 'en', true ) );
 
 		return $context;
 	}
@@ -55,7 +56,11 @@ class KeywordFeatureAssertions {
 	 * @param bool $negated
 	 * @return SearchContext
 	 */
-	private function mockContextExpectingAddFilter( $expectedQuery = null, $negated = false, SearchConfig $config ) {
+	private function mockContextExpectingAddFilter(
+		$expectedQuery = null,
+		$negated = false,
+		SearchConfig $config
+	) {
 		$context = $this->mockContext();
 
 		$context->method( 'getConfig' )->willReturn( $config );
@@ -178,7 +183,13 @@ class KeywordFeatureAssertions {
 	 * @param array|null $expectedWarnings (null to disable warnings check)
 	 * @param SearchConfig|null $config (if null will run with an empty SearchConfig)
 	 */
-	public function assertExpandedData( KeywordFeature $feature, $term, array $expected, array $expectedWarnings = null, SearchConfig $config = null ) {
+	public function assertExpandedData(
+		KeywordFeature $feature,
+		$term,
+		array $expected,
+		array $expectedWarnings = null,
+		SearchConfig $config = null
+	) {
 		$node = $this->getParsedKeyword( $term, $feature );
 		if ( $config === null ) {
 			$config = new HashSearchConfig( [] );
@@ -198,10 +209,15 @@ class KeywordFeatureAssertions {
 	 * @param string $term
 	 * @param CrossSearchStrategy $expected
 	 */
-	public function assertCrossSearchStrategy( KeywordFeature $feature, $term, CrossSearchStrategy $expected ) {
+	public function assertCrossSearchStrategy(
+		KeywordFeature $feature,
+		$term,
+		CrossSearchStrategy $expected
+	) {
 		$parser = new KeywordParser();
 		$nodes = $parser->parse( $term, $feature, new OffsetTracker() );
-		$this->testCase->assertCount( 1, $nodes, "A single keyword expression must be provided for this test" );
+		$this->testCase->assertCount( 1, $nodes,
+			"A single keyword expression must be provided for this test" );
 		$node = $nodes[0];
 		if ( $node instanceof NegatedNode ) {
 			$node = $node->getChild();
@@ -216,7 +232,13 @@ class KeywordFeatureAssertions {
 	 * @param array|null $warnings
 	 * @param SearchConfig|null $config
 	 */
-	public function assertFilter( KeywordFeature $feature, $term, $filter = null, array $warnings = null, SearchConfig $config = null ) {
+	public function assertFilter(
+		KeywordFeature $feature,
+		$term,
+		$filter = null,
+		array $warnings = null,
+		SearchConfig $config = null
+	) {
 		if ( $config === null ) {
 			$config = new SearchConfig();
 		}
@@ -271,7 +293,13 @@ class KeywordFeatureAssertions {
 	 * @param array|null $warnings
 	 * @param SearchConfig|null $config
 	 */
-	public function assertBoost( KeywordFeature $feature, $term, $boostAssertion, $warnings = null, SearchConfig $config = null ) {
+	public function assertBoost(
+		KeywordFeature $feature,
+		$term,
+		$boostAssertion,
+		$warnings = null,
+		SearchConfig $config = null
+	) {
 		$this->testCase->assertInstanceOf( BoostFunctionFeature::class, $feature );
 
 		if ( $config === null ) {
@@ -321,7 +349,12 @@ class KeywordFeatureAssertions {
 	 * @param array|string|null $highlightField
 	 * @param array|null $higlightQuery
 	 */
-	public function assertHighlighting( KeywordFeature $feature, $term, $highlightField = null, array $higlightQuery = null ) {
+	public function assertHighlighting(
+		KeywordFeature $feature,
+		$term,
+		$highlightField = null,
+		array $higlightQuery = null
+	) {
 		$context = $this->mockContext();
 
 		if ( $highlightField !== null && $highlightField !== [] && !$this->isNegated( $feature, $term ) ) {
@@ -387,7 +420,8 @@ class KeywordFeatureAssertions {
 			$parser = new KeywordParser();
 		}
 		$nodes = $parser->parse( $term, $feature, new OffsetTracker() );
-		$this->testCase->assertCount( 1, $nodes, "A single keyword expression must be provided for this test" );
+		$this->testCase->assertCount( 1, $nodes,
+			"A single keyword expression must be provided for this test" );
 		$node = $nodes[0];
 		if ( $node instanceof NegatedNode ) {
 			$node = $node->getChild();
@@ -404,7 +438,8 @@ class KeywordFeatureAssertions {
 	private function isNegated( KeywordFeature $feature, $term ) {
 		$parser = new KeywordParser();
 		$nodes = $parser->parse( $term, $feature, new OffsetTracker() );
-		$this->testCase->assertCount( 1, $nodes, "A single keyword expression must be provided for this test" );
+		$this->testCase->assertCount( 1, $nodes,
+			"A single keyword expression must be provided for this test" );
 		$node = $nodes[0];
 		return $node instanceof NegatedNode;
 	}

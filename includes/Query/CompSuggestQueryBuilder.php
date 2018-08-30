@@ -167,7 +167,9 @@ class CompSuggestQueryBuilder {
 			$variantIndex++;
 			foreach ( $this->profile as $name => $profile ) {
 				$variantProfName = $name . '-variant-' . $variantIndex;
-				$profile = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT / $variantIndex );
+				$profile = $this->buildVariantProfile(
+					$profile, self::VARIANT_EXTRA_DISCOUNT / $variantIndex
+				);
 				$suggest = $this->buildSuggestQuery(
 					$variantProfName, $profile, $variant, $queryLen
 				);
@@ -220,7 +222,8 @@ class CompSuggestQueryBuilder {
 					if ( !isset( $suggest['_id'] ) ) {
 						// likely a shard failure during the fetch phase
 						// https://github.com/elastic/elasticsearch/issues/32467
-						throw new \Elastica\Exception\RuntimeException( "Invalid response returned from the backend (probable shard failure during the fetch phase)" );
+						throw new \Elastica\Exception\RuntimeException( "Invalid response returned from " .
+							"the backend (probable shard failure during the fetch phase)" );
 					}
 					$targetTitle = $page;
 					$targetTitleNS = NS_MAIN;
@@ -235,8 +238,8 @@ class CompSuggestQueryBuilder {
 					if ( $collector->collect( $suggestion, $name, $indexName ) ) {
 						if ( $type === SuggestBuilder::TITLE_SUGGESTION && $targetTitleNS === NS_MAIN ) {
 							// For title suggestions we always use the target_title
-							// This is because we may encounter default_sort or subphrases that are not valid titles...
-							// And we prefer to display the title over close redirects
+							// This is because we may encounter default_sort or subphrases that are not
+							// valid titles... And we prefer to display the title over close redirects
 							// for CrossNS redirect we prefer the returned suggestion
 							$suggestion->setText( $targetTitle );
 

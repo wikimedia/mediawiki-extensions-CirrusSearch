@@ -106,16 +106,25 @@ class Hooks {
 		self::overrideMoreLikeThisOptionsFromMessage();
 
 		if ( $request ) {
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost, $request, 'cirrusPhraseBoost' );
-			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
-			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );
-			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
-			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester, $request, 'cirrusUseCompletionSuggester' );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize,
+				$request, 'cirrusPhraseWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost,
+				$request, 'cirrusPhraseBoost' );
+			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ],
+				$request, 'cirrusPhraseSlop', 10 );
+			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize,
+				$request, 'cirrusFunctionWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchFragmentSize,
+				$request, 'cirrusFragmentSize', 1000 );
+			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
+				$request, 'cirrusUseAllFields' );
+			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
+				$request, 'cirrusUseCompletionSuggester' );
 			self::overrideMoreLikeThisOptions( $request );
-			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
-			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
+			self::overrideSecret( $wgCirrusSearchLogElasticRequests,
+				$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
+			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage,
+				$request, 'cirrusAltLanguage' );
 		}
 	}
 
@@ -129,7 +138,13 @@ class Hooks {
 	 * @param int|null $limit
 	 * @param bool $upperLimit
 	 */
-	private static function overrideNumeric( &$dest, WebRequest $request, $name, $limit = null, $upperLimit = true ) {
+	private static function overrideNumeric(
+		&$dest,
+		WebRequest $request,
+		$name,
+		$limit = null,
+		$upperLimit = true
+	) {
 		Util::overrideNumeric( $dest, $request, $name, $limit, $upperLimit );
 	}
 
@@ -271,14 +286,20 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_doc_freq'], $request, 'cirrusMltMinDocFreq' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'], $request, 'cirrusMltMaxDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_doc_freq'],
+			$request, 'cirrusMltMinDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'],
+			$request, 'cirrusMltMaxDocFreq' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
 			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'], $request, 'cirrusMltMinTermFreq' );
-		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'], $request, 'cirrusMltMinimumShouldMatch' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_length'], $request, 'cirrusMltMinWordLength' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'], $request, 'cirrusMltMaxWordLength' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'],
+			$request, 'cirrusMltMinTermFreq' );
+		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'],
+			$request, 'cirrusMltMinimumShouldMatch' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_length'],
+			$request, 'cirrusMltMinWordLength' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'],
+			$request, 'cirrusMltMaxWordLength' );
 		$fields = $request->getVal( 'cirrusMltFields' );
 		if ( isset( $fields ) ) {
 			$wgCirrusSearchMoreLikeThisFields = array_intersect(
@@ -480,7 +501,11 @@ class Hooks {
 	 * @param string &$search
 	 * @return bool
 	 */
-	public static function prefixSearchExtractNamespaceWithConnection( Connection $connection, &$namespaces, &$search ) {
+	public static function prefixSearchExtractNamespaceWithConnection(
+		Connection $connection,
+		&$namespaces,
+		&$search
+	) {
 		$searcher = new Searcher( $connection, 0, 1, $connection->getConfig(), $namespaces );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getSearchContext()->getNamespaces();
@@ -505,7 +530,8 @@ class Hooks {
 
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
-		$searcher = new Searcher( self::getConnection(), 0, 50, self::getConfig(), [ $title->getNamespace() ], $user );
+		$searcher = new Searcher(
+			self::getConnection(), 0, 50, self::getConfig(), [ $title->getNamespace() ], $user );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$searcher->updateNamespacesFromQuery( $term );
 		} else {
@@ -820,7 +846,17 @@ class Hooks {
 	 * @param int $flags
 	 * @param Revision $revision
 	 */
-	public static function onPageContentInsertComplete( WikiPage $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision ) {
+	public static function onPageContentInsertComplete(
+		WikiPage $wikiPage,
+		$user,
+		$content,
+		$summary,
+		$isMinor,
+		$isWatch,
+		$section,
+		$flags,
+		$revision
+	) {
 		global $wgCirrusSearchInstantIndexNew;
 		if ( empty( $wgCirrusSearchInstantIndexNew ) ) {
 			return;

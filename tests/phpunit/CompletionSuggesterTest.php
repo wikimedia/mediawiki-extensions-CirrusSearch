@@ -46,7 +46,8 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			// hook for setting user preference by default is run too early
 			// and have set this to "fuzzy"
 			$config->getProfileService()
-				->loadProfileByName( SearchProfileService::COMPLETION, $config->get( 'CirrusSearchCompletionSettings' ) ),
+				->loadProfileByName( SearchProfileService::COMPLETION,
+					$config->get( 'CirrusSearchCompletionSettings' ) ),
 			$limit
 		);
 
@@ -211,7 +212,8 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertEquals( count( $config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
+		$this->assertEquals( count( $config->getProfileService()
+			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertTrue( count( $suggest ) <= 4 );
 		// small queries
@@ -380,8 +382,8 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			$builder->postProcess( $collector, $resp, "wiki_titlesuggest" );
 			$this->fail( "Reading an invalid response should produce an exception" );
 		} catch ( \Elastica\Exception\RuntimeException $re ) {
-			$this->assertEquals( "Invalid response returned from the backend (probable shard failure during the fetch phase)",
-				$re->getMessage() );
+			$this->assertEquals( "Invalid response returned from the backend (probable shard failure " .
+				"during the fetch phase)", $re->getMessage() );
 		}
 	}
 }

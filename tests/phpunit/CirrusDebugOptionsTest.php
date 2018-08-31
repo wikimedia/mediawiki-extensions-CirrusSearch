@@ -50,6 +50,12 @@ class CirrusDebugOptionsTest extends TestCase {
 		$this->assertFalse( $debugOptions->isDumpAndDie() );
 	}
 
+	public function testRelTest() {
+		$debugOptions = CirrusDebugOptions::forRelevanceTesting( true );
+		$this->assertFalse( $debugOptions->isReturnRaw() );
+		$this->assertTrue( $debugOptions->getCirrusExplain() );
+	}
+
 	private function assertNone( CirrusDebugOptions $debugOptions ) {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
 		$this->assertNull( $debugOptions->getCirrusExplain() );

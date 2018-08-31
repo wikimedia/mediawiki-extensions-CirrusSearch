@@ -78,6 +78,16 @@ class CirrusDebugOptions {
 	}
 
 	/**
+	 * @param string|null $withExplain
+	 * @return CirrusDebugOptions
+	 */
+	public static function forRelevanceTesting( $withExplain = null ) {
+		$options = new self();
+		$options->cirrusExplain = $withExplain;
+		return $options;
+	}
+
+	/**
 	 * Inspect the param named $param and return true if set
 	 * false otherwise
 	 * @param \WebRequest $request

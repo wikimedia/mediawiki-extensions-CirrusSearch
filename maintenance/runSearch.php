@@ -7,7 +7,6 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
 use OrderedStreamingForkController;
 use PageArchive;
-use RequestContext;
 use SearchSuggestionSet;
 use Status;
 use Wikimedia\Rdbms\ResultWrapper;
@@ -143,7 +142,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
-			$rows[] = [
+			$row = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance
 				'docId' => $result->getDocId(),
@@ -159,6 +158,14 @@ class RunSearch extends Maintenance {
 				'explanation' => $result->getExplanation(),
 				'extra' => $result->getExtensionData(),
 			];
+			$img = $result->getFile() ?: wfFindFile( $result->getTitle() );
+			if ( $img ) {
+				$thumb = $img->transform( [ 'width' => 120, 'height' => 120 ] );
+				if ( $thumb ) {
+					$row['thumb_url'] = $thumb->getUrl();
+				}
+			}
+			$rows[] = $row;
 		}
 		return [
 			'totalHits' => $value->getTotalHits(),
@@ -232,11 +239,14 @@ class RunSearch extends Maintenance {
 		}
 
 		$limit = $this->getOption( 'limit', 10 );
-		if ( $this->getOption( 'explain' ) ) {
-			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );
-		}
+		CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
+		$this->getOption( 'explain', false ) ? 'raw' : null
+		);
 
 		$engine = new CirrusSearch( $this->indexBaseName );
+		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
+		$engine->setNamespaces( $namespaces );
+
 		$engine->setConnection( $this->getConnection() );
 		$engine->setLimitOffset( $limit );
 

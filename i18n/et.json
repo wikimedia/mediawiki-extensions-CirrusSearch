@@ -33,5 +33,6 @@
 	"cirrussearch-pref-completion-legacy-section-desc": "Eesliite otsing",
 	"cirrussearch-pref-completion-legacy-section-legend": "Tippimise ajal soovituste pakkumise vana algoritm.",
 	"cirrussearch-completion-profile-classic-pref-name": "Tavapärane eesliite otsing",
-	"cirrussearch-completion-profile-classic-pref-desc": "Ei paranda tippimisvigu. Soovitused vastavad pealkirjade algustele."
+	"cirrussearch-completion-profile-classic-pref-desc": "Ei paranda tippimisvigu. Soovitused vastavad pealkirjade algustele.",
+	"cirrussearch-article-words": "Sõnu kõigil sisulehekülgedel"
 }

@@ -87,5 +87,6 @@
 	"cirrussearch-explore-similar-languages-none": "Nun ta disponible n'otres llingües",
 	"cirrussearch-article-words": "Palabres en toles páxines de conteníu",
 	"cirrussearch-keyword-prefix-ns-mismatch": "L'espaciu de nomes que s'alcontró nel términu buscáu <code>prefix:</code> nun ye compatible colos espacios de nomes solicitaos. Puedes igualo poniendo a la consulta el prefixu <code>all:</code>.",
-	"cirrussearch-autoselect-profile": "Dexar que'l motor de gueta decida'l meyor perfil a usar."
+	"cirrussearch-autoselect-profile": "Dexar que'l motor de gueta decida'l meyor perfil a usar.",
+	"cirrussearch-offset-too-large": "Nun pudo llograse nengún resultáu. Hai encontu hasta $1 resultaos na gueta, pero solicitáronse resultaos que principien nel $2."
 }

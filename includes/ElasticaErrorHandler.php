@@ -19,7 +19,7 @@ class ElasticaErrorHandler {
 	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
 		$error = self::extractFullError( $exception );
 
-		return $error['type'] . ': ' .$error['reason'];
+		return $error['type'] . ': ' . $error['reason'];
 	}
 
 	/**

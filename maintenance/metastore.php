@@ -47,10 +47,10 @@ class Metastore extends Maintenance {
 		$this->addOption( 'show-all-index-versions',
 			'Show all versions for all indices managed by this cluster.' );
 		$this->addOption( 'show-index-version', 'Show index versions for this wiki.' );
-		$this->addOption( 'update-index-version', 'Update the version '.
-			'index for this wiki. Dangerous: index versions should be managed '.
+		$this->addOption( 'update-index-version', 'Update the version ' .
+			'index for this wiki. Dangerous: index versions should be managed ' .
 			'by updateSearchIndexConfig.php.' );
-		$this->addOption( 'index-version-basename', 'What basename to use when running --show-index-version '.
+		$this->addOption( 'index-version-basename', 'What basename to use when running --show-index-version ' .
 			'or --update-index-version, ' .
 			'defaults to wiki id', false, true );
 		$this->addOption( 'dump', 'Dump the metastore index to stdout (elasticsearch bulk index format).' );

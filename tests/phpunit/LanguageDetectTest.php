@@ -78,8 +78,8 @@ class LanguageDetectTest extends CirrusTestCase {
 		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			'wgCirrusSearchTextcatModel' => [
-				dirname( $tc->getFileName() )."/LM-query/",
-				dirname( $tc->getFileName() )."/LM/"
+				dirname( $tc->getFileName() ) . "/LM-query/",
+				dirname( $tc->getFileName() ) . "/LM/"
 			],
 			'wgCirrusSearchTextcatLanguages' => null,
 			'wgCirrusSearchTextcatConfig' => null,
@@ -98,7 +98,7 @@ class LanguageDetectTest extends CirrusTestCase {
 		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			// only use one language model directory in old non-array format
-			'wgCirrusSearchTextcatModel' => dirname( $tc->getFileName() )."/LM-query/",
+			'wgCirrusSearchTextcatModel' => dirname( $tc->getFileName() ) . "/LM-query/",
 			'wgCirrusSearchTextcatLanguages' => [ 'en', 'es', 'de', 'he', 'uk' ],
 			'wgCirrusSearchTextcatConfig' => [
 				'maxNgrams' => 9000,
@@ -118,8 +118,8 @@ class LanguageDetectTest extends CirrusTestCase {
 		$tc = new \ReflectionClass( 'TextCat' );
 		$this->setMwGlobals( [
 			'wgCirrusSearchTextcatModel' => [
-				dirname( $tc->getFileName() )."/LM-query/",
-				dirname( $tc->getFileName() )."/LM/"
+				dirname( $tc->getFileName() ) . "/LM-query/",
+				dirname( $tc->getFileName() ) . "/LM/"
 			],
 			'wgCirrusSearchTextcatLanguages' => [ "en", "ru" ],
 			'wgCirrusSearchTextcatConfig' => null,

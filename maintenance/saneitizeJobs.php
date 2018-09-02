@@ -68,7 +68,7 @@ class SaneitizeJobs extends Maintenance {
 		$this->addOption( 'show', 'Display job info.' );
 		$this->addOption( 'delete-job', 'Delete the job.' );
 		$this->addOption( 'refresh-freq', 'Refresh rate in seconds this ' .
-			'script is run from your crontab. This will be '.
+			'script is run from your crontab. This will be ' .
 			'used to spread jobs over time. Defaults to 7200 (2 ' .
 			'hours).', false, true );
 		$this->addOption( 'job-name', 'Tells the script the name of the ' .

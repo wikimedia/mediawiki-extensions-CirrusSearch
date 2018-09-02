@@ -1185,7 +1185,7 @@ STEMMER_RULES
 	 * @param string[] $analyzers List of analyzers to consider.
 	 * @return array List of default filters, each containing only filter type
 	 */
-	private function getDefaultFilters( array &$config,  array $analyzers ) {
+	private function getDefaultFilters( array &$config, array $analyzers ) {
 		$defaultFilters = [];
 		foreach ( $analyzers as $analyzer ) {
 			if ( empty( $config['analyzer'][$analyzer]['filter'] ) ) {

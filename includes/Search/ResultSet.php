@@ -293,7 +293,7 @@ class ResultSet extends SearchResultSet {
 	 * @param string $newQuery
 	 * @param string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet=null ) {
+	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
 		$this->rewrittenQuery = $newQuery;
 		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
 	}

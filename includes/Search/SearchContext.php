@@ -565,7 +565,7 @@ class SearchContext implements WarningCollector {
 		} else {
 			$mainQuery = new \Elastica\Query\BoolQuery();
 			if ( $this->mainQuery ) {
-				$mainQuery ->addMust( $this->mainQuery );
+				$mainQuery->addMust( $this->mainQuery );
 			}
 			foreach ( $this->nonTextQueries as $nonTextQuery ) {
 				$mainQuery->addMust( $nonTextQuery );
@@ -720,7 +720,7 @@ class SearchContext implements WarningCollector {
 	 * @param string|null $param2
 	 * @param string|null $param3
 	 */
-	public function addWarning( $message, $param1 = null,  $param2 = null, $param3 = null ) {
+	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
 		$this->isDirty = true;
 		$this->warnings[] = array_filter( func_get_args(), function ( $v ) {
 			return $v !== null;

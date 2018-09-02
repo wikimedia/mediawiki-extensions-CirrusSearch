@@ -289,7 +289,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		for ( $i = 1; $i <= $max; $i++ ) {
 			$score = $max - $i;
 			$suggestions[] = [
-				'_id' => $i.'t',
+				'_id' => $i . 't',
 				'text' => "Title$i",
 				'_score' => $score,
 			];

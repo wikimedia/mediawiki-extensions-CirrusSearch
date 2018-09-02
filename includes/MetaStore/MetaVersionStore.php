@@ -119,7 +119,7 @@ class MetaVersionStore implements MetaStore {
 			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
 		}
 		$mwInfo = new GitInfo( $IP );
-		$cirrusInfo = new GitInfo( __DIR__ .  '/../..' );
+		$cirrusInfo = new GitInfo( __DIR__ . '/../..' );
 		$docId = self::docId( $connection, $baseName, $typeName );
 		$data = [
 			'type' => self::METASTORE_TYPE,

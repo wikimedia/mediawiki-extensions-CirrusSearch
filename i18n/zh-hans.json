@@ -16,7 +16,8 @@
 			"Apflu",
 			"EagerLin",
 			"A2093064",
-			"Deathkon"
+			"Deathkon",
+			"夢蝶葬花"
 		]
 	},
 	"cirrussearch-desc": "以Elasticsearch为基础的MediaWiki搜索工具",
@@ -102,5 +103,6 @@
 	"cirrussearch-explore-similar-languages-none": "在其他语言中不可用",
 	"cirrussearch-article-words": "所有内容页面的字数",
 	"cirrussearch-keyword-prefix-ns-mismatch": "在搜索关键词<code>prefix:</code>中找到的名字空间与请求的名字空间不兼容。您可以通过在您的查询前加前缀<code>all:</code>来修复它。",
-	"cirrussearch-autoselect-profile": "让搜索引擎决定使用的最佳个人资料。"
+	"cirrussearch-autoselect-profile": "让搜索引擎决定使用的最佳个人资料。",
+	"cirrussearch-offset-too-large": "无法检索结果。最多支持$1搜索结果，但请求从$2开始的结果。"
 }

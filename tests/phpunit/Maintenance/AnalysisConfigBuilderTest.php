@@ -179,6 +179,23 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
+			'config without filter' => [
+				// cover some defective corner cases
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+			],
 		];
 	}
 
@@ -282,6 +299,29 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original',
 								'icu_normalizer',
 								'kstem'
+							],
+						],
+					],
+				],
+			],
+			'config without filter' => [
+				// cover some defective corner cases
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+							'filter' => [
+								'icu_nfkc_normalization',
+								'preserve_original_recorder',
+								'icu_folding',
+								'preserve_original',
 							],
 						],
 					],

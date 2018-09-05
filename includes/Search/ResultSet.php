@@ -34,11 +34,6 @@ class ResultSet extends SearchResultSet {
 	/**
 	 * @var int
 	 */
-	private $hits;
-
-	/**
-	 * @var int
-	 */
 	private $totalHits;
 
 	/**
@@ -75,7 +70,6 @@ class ResultSet extends SearchResultSet {
 	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax ) {
 		parent::__construct( $searchContainedSyntax );
 		$this->result = $res;
-		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->preCacheContainedTitles( $this->result );
 		$suggestion = $this->findSuggestion();
@@ -109,7 +103,6 @@ class ResultSet extends SearchResultSet {
 	 */
 	protected function copyTo( ResultSet $other ) {
 		$other->result = $this->result;
-		$other->hits = $this->hits;
 		$other->totalHits = $this->totalHits;
 		$other->suggestionQuery = $this->suggestionQuery;
 		$other->suggestionSnippet = $this->suggestionSnippet;
@@ -213,13 +206,6 @@ class ResultSet extends SearchResultSet {
 	 */
 	public function getTotalHits() {
 		return $this->totalHits;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function numRows() {
-		return $this->hits;
 	}
 
 	/**

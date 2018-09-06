@@ -240,7 +240,7 @@ class RunSearch extends Maintenance {
 
 		$limit = $this->getOption( 'limit', 10 );
 		CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
-		$this->getOption( 'explain', false ) ? 'raw' : null
+			$this->getOption( 'explain', false ) ? 'raw' : null
 		);
 
 		$engine = new CirrusSearch( $this->indexBaseName );

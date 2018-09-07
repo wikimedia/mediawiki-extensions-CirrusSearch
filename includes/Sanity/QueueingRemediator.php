@@ -86,6 +86,13 @@ class QueueingRemediator implements Remediator {
 		$this->pushLinksUpdateJob( $page );
 	}
 
+	/**
+	 * @param WikiPage $page
+	 */
+	public function oldDocument( WikiPage $page ) {
+		$this->pushLinksUpdateJob( $page );
+	}
+
 	private function pushLinksUpdateJob( WikiPage $page ) {
 		JobQueueGroup::singleton()->push(
 			new LinksUpdate( $page->getTitle(), [

@@ -60,6 +60,11 @@ interface Remediator {
 	 * @param string $indexType index contgaining outdated document
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexType );
+
+	/**
+	 * @param WikiPage $page Page considered too old in index
+	 */
+	public function oldDocument( WikiPage $page );
 }
 
 /**
@@ -100,6 +105,12 @@ class NoopRemediator implements Remediator {
 	 * @param string $indexType index contgaining outdated document
 	 */
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
+	}
+
+	/**
+	 * @param WikiPage $page Page considered too old in index
+	 */
+	public function oldDocument( WikiPage $page ) {
 	}
 }
 
@@ -154,6 +165,14 @@ class PrintingRemediator implements Remediator {
 	public function oldVersionInIndex( $docId, WikiPage $page, $indexType ) {
 		$this->log( $page->getId(), $page->getTitle(), "Outdated page in index: $indexType" );
 		$this->next->oldVersionInIndex( $docId, $page, $indexType );
+	}
+
+	/**
+	 * @param WikiPage $page Page considered too old in index
+	 */
+	public function oldDocument( WikiPage $page ) {
+		$this->log( $page->getId(), $page->getTitle(), "Old page in index" );
+		$this->next->oldDocument( $page );
 	}
 
 	/**

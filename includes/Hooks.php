@@ -448,7 +448,7 @@ class Hooks {
 				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
 		];
 		// Prioritize jobs that are triggered from a web process.  This should prioritize
-		// single page update jobs over those triggered by template changes.
+		// single page update jobs over those triggered by template changes or the saneitizer.
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
 		}

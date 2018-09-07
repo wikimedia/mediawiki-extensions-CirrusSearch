@@ -61,11 +61,15 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'limit', 'Set the max number of results returned by query (defaults to 10)', false, true );
 	}
 
+	public function finalSetup() {
+		parent::finalSetup();
+		$this->applyGlobals();
+	}
+
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
-		$this->applyGlobals();
 		$callback = [ $this, 'consume' ];
 		$forks = $this->getOption( 'fork', false );
 		$forks = ctype_digit( $forks ) ? intval( $forks ) : 0;
@@ -87,7 +91,18 @@ class RunSearch extends Maintenance {
 		$options = json_decode( $optionsData, true );
 		if ( $options ) {
 			foreach ( $options as $key => $value ) {
-				if ( array_key_exists( $key, $GLOBALS ) ) {
+				if ( strchr( $key, '.' ) !== - 1 ) {
+					// key path
+					$cur =& $GLOBALS;
+					foreach ( explode( '.', $key ) as $pathel ) {
+						if ( !array_key_exists( $pathel, $cur ) ) {
+							$this->error( "\nERROR: $key is not a valid global variable path\n" );
+							exit();
+						}
+						$cur =& $cur[$pathel];
+					}
+					$cur = $value;
+				} elseif ( array_key_exists( $key, $GLOBALS ) ) {
 					$GLOBALS[$key] = $value;
 				} else {
 					$this->error( "\nERROR: $key is not a valid global variable\n" );

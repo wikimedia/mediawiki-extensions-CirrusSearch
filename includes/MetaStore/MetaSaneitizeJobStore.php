@@ -105,6 +105,3 @@ class MetaSaneitizeJobStore implements MetaStore {
 		return [];
 	}
 }
-
-$maintClass = "CirrusSearch\Maintenance\SaneitizeJobs";
-require_once RUN_MAINTENANCE_IF_MAIN;

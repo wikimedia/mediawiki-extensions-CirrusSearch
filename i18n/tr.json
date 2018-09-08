@@ -10,7 +10,8 @@
 			"JackUKElliott",
 			"HakanIST",
 			"Rapsar",
-			"Diyapazon"
+			"Diyapazon",
+			"By erdo can"
 		]
 	},
 	"cirrussearch-desc": "MediaWiki için elastik arama-güçlü arama",
@@ -43,5 +44,10 @@
 	"cirrussearch-pref-completion-legacy-section-legend": "Yazdıkça, eski aramalardan öneriler sunma algoritmasıdır.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasik ön ek araması",
 	"cirrussearch-completion-profile-classic-pref-desc": "Yazım düzeltmesi yapılmaz. Sayfa adının başından itibaren eşleşen sonuçlar gösterilir.",
+	"cirrussearch-explore-similar-categories": "Kategoriler",
+	"cirrussearch-explore-similar-languages": "Diller",
+	"cirrussearch-explore-similar-related-none": "İlgili sayfa yok",
+	"cirrussearch-explore-similar-categories-none": "Kategori yok",
+	"cirrussearch-explore-similar-languages-none": "Diğer dillerde mevcut değil",
 	"cirrussearch-article-words": "Tüm içerik sayfalarındaki kelimeler"
 }

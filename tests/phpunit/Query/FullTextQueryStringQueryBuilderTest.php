@@ -140,6 +140,10 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 		$builder->build( $searchContext, $term );
 		$actual = $searchContext->getSyntaxUsed();
 
+		// These are returned for everything (TODO: why?)
+		$expected[] = 'full_text';
+		$expected[] = 'full_text_querystring';
+
 		// sort for stability
 		sort( $actual );
 		sort( $expected );

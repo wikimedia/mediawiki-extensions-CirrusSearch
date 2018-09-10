@@ -127,7 +127,8 @@ class ConfigUtils {
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
 			$plugins = [];
-			foreach ( $node[ $what ] as $plugin ) {
+			// The plugins section may not exist, default to [] when not found.
+			foreach ( $node[$what] ?? [] as $plugin ) {
 				$plugins[] = $plugin[ 'name' ];
 			}
 			if ( $first ) {

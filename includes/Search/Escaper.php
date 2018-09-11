@@ -53,7 +53,7 @@ class Escaper {
 			// character (״), call a Gershayim, which mark acronyms.  Here we guess if the intent
 			// was to mark a phrase, in which case we leave the quotes alone, or to mark an
 			// acronym, in which case we escape them.
-			return preg_replace( '/(\S+)"(\S)/u', '\1\\"\2', $text );
+			return preg_replace( '/(\S+)(?<!\\\\)"(\S)/u', '\1\\"\2', $text );
 		}
 		return $text;
 	}

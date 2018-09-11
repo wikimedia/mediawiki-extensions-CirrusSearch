@@ -1180,6 +1180,57 @@
             }
         }
     },
+    "phrase and words: hebrew has no quirks for gershayim when quoted": {
+        "query": "\"foo\\\"b\"",
+        "config": {
+            "LanguageCode": "he"
+        },
+        "expected": {
+            "query": "\"foo\\\"b\"",
+            "rawQuery": "\"foo\\\"b\"",
+            "queryClassCache": [
+                "simple_phrase_query"
+            ],
+            "root": {
+                "phrase": {
+                    "startOffset": 0,
+                    "endOffset": 8,
+                    "phrase": "foo\"b",
+                    "slop": -1,
+                    "stem": false,
+                    "unbalanced": false
+                }
+            }
+        }
+    },
+    "phrase and words: hebrew has no quirks for gershayim when quoted in a keyword": {
+        "query": "intitle:\"foo\\\"b\"",
+        "config": {
+            "LanguageCode": "he"
+        },
+        "expected": {
+            "query": "intitle:\"foo\\\"b\"",
+            "rawQuery": "intitle:\"foo\\\"b\"",
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "intitle"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 16,
+                    "keyword": "CirrusSearch\\Query\\InTitleFeature",
+                    "key": "intitle",
+                    "value": "foo\"b",
+                    "quotedValue": "\"foo\\\"b\"",
+                    "delimiter": "\"",
+                    "suffix": ""
+                }
+            }
+        }
+    },
     "bool and phrase: boolean within phrase are not interpreted": {
         "query": "\"foo AND NOT bar OR baz\"",
         "expected": {

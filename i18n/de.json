@@ -57,7 +57,7 @@
 	"cirrussearch-pref-completion-section-desc": "Suchvorschläge (komplexer Algorithmus)",
 	"cirrussearch-pref-completion-section-legend": "Dieser [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Algorithmus zur Anzeige von Suchvorschlägen mit Autovervollständigung] bietet Verbesserungen bei Tippfehlern und der Suchrelevanz.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standardmodus",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Bis zu zwei Tippfehler werden korrigiert. Berücksichtigt ähnliche Weiterleitungen.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korrigiert bis zu zwei Tippfehler. Entfernt Weiterleitungen, die dem Haupttitel sehr ähnlich sind.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrasenübereinstimmung (empfohlen für längere Seitennamen)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Korrigiert bis zu zwei Tippfehler. Löst nahe Weiterleitungen auf. Entspricht Subphrasen in Seitennamen.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strenger Modus (erweitert)",

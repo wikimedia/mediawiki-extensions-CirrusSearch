@@ -63,7 +63,7 @@
 	"cirrussearch-pref-completion-section-desc": "مقترح الإكمال",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester مقترح الإكمال] هو خوارزمية لاقتراحات البحث مع تصحيح إملائي أفضل وبحث مخصص.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "الافتراضي (موصى به)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "يصحح حتى خطأين إملائيين. يتبع التحويلات القريبة.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "يصحح ما يصل إلى اثنين من الأخطاء المطبعية، يزيل التحويلات التي تشبه إلى حد كبير العنوان الرئيسي.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "مطابقة العبارات الفرعية (موصى به لعناوين الصفحات الطويلة)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "يصحح حتى خطأين إملائيين. يتبع التحويلات القريبة. يطابق العبارات الفرعية في العناوين.",
 	"cirrussearch-completion-profile-strict-pref-name": "الوضع الدقيق (متقدم)",
@@ -96,5 +96,6 @@
 	"cirrussearch-explore-similar-languages-none": "غير متوفرة بلغات أخرى",
 	"cirrussearch-article-words": "الكلمات في كل صفحات المحتوى",
 	"cirrussearch-keyword-prefix-ns-mismatch": "النطاق الموجود في مصطلح البحث <code>prefix:</code> غير متوافق مع النطاقات المطلوبيمكنك إصلاحه عن طريق بدء استعلامك بـ<code>all:</code>.",
-	"cirrussearch-autoselect-profile": "دع محرك البحث يقرر أفضل ملف شخصي لاستخدامه."
+	"cirrussearch-autoselect-profile": "دع محرك البحث يقرر أفضل ملف شخصي لاستخدامه.",
+	"cirrussearch-offset-too-large": "لا يمكن استرجاع النتائج، يتم دعم ما يصل إلى $1 نتائج بحث، ولكن تم طلب النتائج بدءا من $2."
 }

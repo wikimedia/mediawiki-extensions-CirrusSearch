@@ -53,7 +53,7 @@
 	"cirrussearch-pref-completion-section-desc": "완성 제안 기능",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 완성 제안 기능]은 더 개선된 오자 교정 및 적합한 용어를 찾아주는 검색 제안 알고리즘입니다.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "기본값 (권장)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "최대 2개의 오자를 교정합니다. 근접한 넘겨주기를 결정합니다.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "최대 2개의 오자를 교정합니다. 주 제목과 매우 유사한 넘겨주기는 제거합니다.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "하위 문구 일치 (긴 문서 제목에 권장)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "최대 2개의 오자를 교정합니다. 근접한 넘겨주기를 결정합니다. 제목의 하위 문구와 일치시킵니다.",
 	"cirrussearch-completion-profile-strict-pref-name": "엄격 모드 (고급)",

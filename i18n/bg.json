@@ -14,7 +14,7 @@
 	"prefs-completion": "Допълване при търсене",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] е алгоритъм за предложения при търсене с по-добра корекция на правописните грешки и значение при търсене.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По подразбиране (препоръчително)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Коригира до две правописни грешки. Взима под внимание някои близки пренасочвания.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Коригира до две правописни грешки. Премахва пренасочвания, които са подобни на главното заглавие.",
 	"cirrussearch-completion-profile-strict-pref-name": "Стриктен режим (за напреднали)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Не коригира правописни грешки. Не взима под внимание акцент, произношение и пренасочвания. Стриктно съвпадение.",
 	"cirrussearch-completion-profile-normal-pref-name": "Пренасочващ режим (за напреднали)",

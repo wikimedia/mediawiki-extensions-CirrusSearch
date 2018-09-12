@@ -153,6 +153,11 @@ class QueryStringRegexParser implements QueryParser {
 	private $warnings = [];
 
 	/**
+	 * @var int|string|null
+	 */
+	private $namespaceHeader;
+
+	/**
 	 * Default
 	 */
 	const DEFAULT_OCCUR = BooleanClause::MUST;
@@ -194,6 +199,7 @@ class QueryStringRegexParser implements QueryParser {
 		$this->preTaggedNodes = [];
 		$this->warnings = [];
 		$this->queryCleanups = [];
+		$this->namespaceHeader = null;
 		$this->offset = 0;
 	}
 
@@ -229,6 +235,7 @@ class QueryStringRegexParser implements QueryParser {
 	public function parse( $query ) {
 		$this->reInit( $query );
 		$this->cleanup();
+		$this->parseNsHeader();
 		$this->token = new Token( $this->query );
 		$this->lookBehind = new Token( $this->query );
 
@@ -281,7 +288,7 @@ class QueryStringRegexParser implements QueryParser {
 		$root = $this->expression();
 		$additionalNamespaces = $this->extractRequiredNamespaces( $root );
 		return new ParsedQuery( $root, $this->query, $this->rawQuery, $this->queryCleanups,
-			$additionalNamespaces, $this->warnings, $this->classifierRepository );
+			$this->namespaceHeader, $additionalNamespaces, $this->warnings, $this->classifierRepository );
 	}
 
 	private function createClause( ParsedNode $node, $explicit = false, $occur = null ) {
@@ -548,7 +555,7 @@ class QueryStringRegexParser implements QueryParser {
 	private function parseKeywords( array $keywords ) {
 		foreach ( $keywords as $kw ) {
 			$parsedKeywords =
-				$this->keywordParser->parse( $this->query, $kw, $this->keywordOffsetsTracker );
+				$this->keywordParser->parse( $this->query, $kw, $this->keywordOffsetsTracker, $this->offset );
 			$this->keywordOffsetsTracker->appendNodes( $parsedKeywords );
 			foreach ( $parsedKeywords as $keyword ) {
 				$this->preTaggedNodes[] = $keyword;
@@ -728,7 +735,6 @@ class QueryStringRegexParser implements QueryParser {
 				}
 				Assert::precondition( is_array( $additional ),
 					'PrefixFeature::PARSED_NAMESPACES key must point to an array or "all"' );
-
 				$this->total = array_merge( $this->total, array_filter( $additional, function ( $v ) {
 					return !in_array( $v, $this->total );
 				} ) );
@@ -736,5 +742,30 @@ class QueryStringRegexParser implements QueryParser {
 		};
 		$root->accept( $visitor );
 		return $visitor->total;
+	}
+
+	/**
+	 * Inspect $this->query to see if it mentions a namespace in the first few chars
+	 * If yes $this->namespaceHeader will be set and this->offset will be advanced
+	 * to the actual start of the query.
+	 */
+	private function parseNsHeader() {
+		Assert::precondition( $this->offset === 0, 'ns header must be the first parsed bits or ' .
+			'you must properly handle offset in this method.' );
+		$queryAndNs = \SearchEngine::parseNamespacePrefixes( $this->query, true, true );
+		if ( $queryAndNs !== false ) {
+			Assert::postcondition( count( $queryAndNs ) === 2,
+				'\SearchEngine::parseNamespacePrefixes() must return false or a 2 elements array' );
+			if ( $queryAndNs[1] ) {
+				Assert::postcondition( is_array( $queryAndNs[1] ) && count( $queryAndNs[1] ) === 1,
+						'\SearchEngine::parseNamespacePrefixes() should return an array whose second ' .
+						'element is falsy or an array of size 1' );
+				$this->namespaceHeader = reset( $queryAndNs[1] );
+			} else {
+				$this->namespaceHeader = 'all';
+			}
+			$term = $queryAndNs[0];
+			$this->offset = strlen( $this->query ) - strlen( $term );
+		}
 	}
 }

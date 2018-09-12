@@ -29,9 +29,10 @@ class KeywordParser implements WarningCollector {
 	 * @param string $query
 	 * @param KeywordFeature $feature
 	 * @param OffsetTracker $tracker
+	 * @param int $startOffset start offset of the query in $query
 	 * @return ParsedNode[]
 	 */
-	public function parse( $query, KeywordFeature $feature, OffsetTracker $tracker ) {
+	public function parse( $query, KeywordFeature $feature, OffsetTracker $tracker, $startOffset = 0 ) {
 		if ( $feature->greedy() ) {
 			Assert::precondition( !$feature->allowEmptyValue(),
 				"greedy keywords must not accept empty value" );
@@ -39,7 +40,7 @@ class KeywordParser implements WarningCollector {
 			Assert::precondition( $feature->getValueDelimiters() === [ [ 'delimiter' => '"' ] ],
 				"getValueDelimiters() must not be overridden with greedy keywords" );
 		}
-		$offset = $tracker->getMinimalUnconsumedOffset();
+		$offset = $tracker->getMinimalUnconsumedOffset( $startOffset );
 		$keyListRegex = implode(
 			'|',
 			array_map(

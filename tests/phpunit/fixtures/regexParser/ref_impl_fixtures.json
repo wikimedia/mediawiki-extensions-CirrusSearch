@@ -265,6 +265,217 @@
             }
         }
     },
+    "namespace handling: namespace can be prefixed": {
+        "query": "help:word",
+        "expected": {
+            "query": "help:word",
+            "rawQuery": "help:word",
+            "namespaceHeader": 12,
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
+            "featuresUsed": [
+                "namespace_header"
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 5,
+                    "endOffset": 9,
+                    "words": "word"
+                }
+            }
+        }
+    },
+    "namespace handling: 'all' is a way for users to indicate they want to search in all namespaces": {
+        "query": "all:word",
+        "expected": {
+            "query": "all:word",
+            "rawQuery": "all:word",
+            "namespaceHeader": "all",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
+            "featuresUsed": [
+                "namespace_header"
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 4,
+                    "endOffset": 8,
+                    "words": "word"
+                }
+            }
+        }
+    },
+    "namespace handling: prefix keyword can also give hints about the required namespaces, like normal titles NS_MAIN is used by default": {
+        "query": "prefix:page",
+        "expected": {
+            "query": "prefix:page",
+            "rawQuery": "prefix:page",
+            "requiredNamespaces": [
+                0
+            ],
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 11,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "page",
+                    "quotedValue": "page",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "namespace": 0,
+                        "value": "page",
+                        "parsed_namespaces": [
+                            0
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "namespace handling: prefix also supports a specific namespace": {
+        "query": "prefix:help:page",
+        "expected": {
+            "query": "prefix:help:page",
+            "rawQuery": "prefix:help:page",
+            "requiredNamespaces": [
+                12
+            ],
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 16,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "help:page",
+                    "quotedValue": "help:page",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "namespace": 12,
+                        "value": "page",
+                        "parsed_namespaces": [
+                            12
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "namespace handling: prefix also supports the 'all' keyword": {
+        "query": "prefix:all:page",
+        "expected": {
+            "query": "prefix:all:page",
+            "rawQuery": "prefix:all:page",
+            "requiredNamespaces": "all",
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 0,
+                    "endOffset": 15,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "all:page",
+                    "quotedValue": "all:page",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "value": "page",
+                        "parsed_namespaces": "all"
+                    }
+                }
+            }
+        }
+    },
+    "namespace handling: namespace prefix and the prefix can be combined, even if they make 'no sense'": {
+        "query": "help:prefix:test",
+        "expected": {
+            "query": "help:prefix:test",
+            "rawQuery": "help:prefix:test",
+            "namespaceHeader": 12,
+            "requiredNamespaces": [
+                0
+            ],
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix",
+                "namespace_header"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 5,
+                    "endOffset": 16,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "test",
+                    "quotedValue": "test",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "namespace": 0,
+                        "value": "test",
+                        "parsed_namespaces": [
+                            0
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "namespace handling: namespace prefix and the prefix can be combined even if it's redundant": {
+        "query": "all:prefix:all:test",
+        "expected": {
+            "query": "all:prefix:all:test",
+            "rawQuery": "all:prefix:all:test",
+            "namespaceHeader": "all",
+            "requiredNamespaces": "all",
+            "queryClassCache": [
+                "complex_query"
+            ],
+            "featuresUsed": [
+                "prefix",
+                "namespace_header"
+            ],
+            "root": {
+                "keyword": {
+                    "startOffset": 4,
+                    "endOffset": 19,
+                    "keyword": "CirrusSearch\\Query\\PrefixFeature",
+                    "key": "prefix",
+                    "value": "all:test",
+                    "quotedValue": "all:test",
+                    "delimiter": "",
+                    "suffix": "",
+                    "parsedValue": {
+                        "value": "test",
+                        "parsed_namespaces": "all"
+                    }
+                }
+            }
+        }
+    },
     "negation prefix: a single word can be negated with !": {
         "query": "!word1",
         "expected": {

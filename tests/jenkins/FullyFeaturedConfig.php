@@ -20,7 +20,7 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-require_once "$IP/extensions/Elastica/Elastica.php";
+wfLoadExtension( 'Elastica' );
 
 $wgSearchType = 'CirrusSearch';
 $wgCirrusSearchUseExperimentalHighlighter = true;

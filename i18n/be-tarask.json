@@ -18,7 +18,7 @@
 	"cirrussearch-pref-completion-section-desc": "Падказьнік запаўненьня",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Прапановец аўтазапаўненьня] — альгарытм для пошуку прапановаў зь лепшым выпраўленьнем памылак і адпаведнасьці пошуку.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Дапомны (рэкамэндаваны)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да дзьвюх абдруковак. Выпраўляе блізкія перанакіраваньні.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Выпраўляе да дзьвюх абдруковак. Выдаляе перанакіраваньні, якія вельмі падобныя да асноўнай назвы.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Дапаўненьне падфразаў (рэкамэндуецца для доўгіх назваў старонак)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Выпраўляе да дзьвюх абдруковак. Выпраўляе блізкія перанакіраваньні. Супастаўляе падфразы ў загалоўках.",
 	"cirrussearch-completion-profile-strict-pref-name": "Дакладны рэжым (пашыраны)",

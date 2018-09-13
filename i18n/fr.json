@@ -66,7 +66,7 @@
 	"cirrussearch-pref-completion-section-desc": "Outil de suggestion de complétion",
 	"cirrussearch-pref-completion-section-legend": "L’[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester outil de suggestion de complétion] est un algorithme pour chercher des suggestions avec une meilleure correction des fautes de frappe et de la pertinence des recherches.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Par défaut (recommandé)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige jusqu’à deux fautes. Résout les redirections proches.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige jusqu’à deux fautes de frappe. Supprime les redirections qui sont très similaires au titre principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondance de partie de phrase (recommandé pour les titres de page plus longs)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige jusqu’à deux fautes de frappe. Résout les redirections proches. Fait correspondre les parties de phrase dans les titres.",
 	"cirrussearch-completion-profile-strict-pref-name": "Mode strict (avancé)",

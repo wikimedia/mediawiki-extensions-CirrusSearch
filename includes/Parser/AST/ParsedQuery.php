@@ -27,6 +27,11 @@ class ParsedQuery {
 	const CLEANUP_QMARK_STRIPPING = 'stripped_qmark';
 
 	/**
+	 * markup to indicate that we removed a '~' at the beginning of the query
+	 */
+	const TILDE_HEADER = 'tilde_header';
+
+	/**
 	 * @var ParsedNode
 	 */
 	private $root;

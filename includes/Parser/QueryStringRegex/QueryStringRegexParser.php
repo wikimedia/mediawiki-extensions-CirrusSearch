@@ -225,6 +225,10 @@ class QueryStringRegexParser implements QueryParser {
 				$query = $nquery;
 			}
 		}
+		if ( strlen( $query ) > 0 && $query[0] === '~' ) {
+			$query = substr( $query, 1 );
+			$this->queryCleanups[ParsedQuery::TILDE_HEADER] = true;
+		}
 		$this->query = $query;
 	}
 

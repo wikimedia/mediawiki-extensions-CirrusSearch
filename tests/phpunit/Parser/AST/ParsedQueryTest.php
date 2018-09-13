@@ -86,6 +86,8 @@ class ParsedQueryTest extends CirrusTestCase {
 			'none' => [ 'foobar', null, 0 ],
 			'simple' => [ 'help:foobar', NS_HELP, strlen( 'help:' ) ],
 			'all' => [ 'all:fobar', 'all', strlen( 'all:' ) ],
+			'tilde & all' => [ '~all:fobar', 'all', strlen( 'all:' ) ],
+			'tilde & simple' => [ '~help:fobar', NS_HELP, strlen( 'help:' ) ],
 		];
 	}
 
@@ -173,6 +175,11 @@ class ParsedQueryTest extends CirrusTestCase {
 				'all:prefix:help:foobar',
 				[],
 				[],
+			],
+			'a leading ~ does not disable namespace prefix' => [
+				'~help:test',
+				[ NS_MAIN ],
+				[ NS_HELP ],
 			]
 		];
 	}
@@ -187,5 +194,23 @@ class ParsedQueryTest extends CirrusTestCase {
 		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $expectedActualNamespace, $pq->getActualNamespaces( $initialNamespaces ) );
+	}
+
+	public function provideTestLeadingTilde() {
+		return [
+			'none' => [ 'foobar', false ],
+			'simple' => [ '~foobar', true ],
+			'a leading space discards this feature' => [ ' ~foobar', false ],
+		];
+	}
+	/**
+	 * @dataProvider provideTestLeadingTilde
+	 * @param $query
+	 * @param $hasLeadingTilde
+	 */
+	public function testLeadingTilde( $query, $hasLeadingTilde ) {
+		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
+		$pq = $parser->parse( $query );
+		$this->assertEquals( $hasLeadingTilde, $pq->hasCleanup( ParsedQuery::TILDE_HEADER ) );
 	}
 }

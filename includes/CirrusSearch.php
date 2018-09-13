@@ -341,8 +341,8 @@ class CirrusSearch extends SearchEngine {
 		$nsPrefix = null;
 		if ( $queryAndNs !== false ) {
 			$this->namespaces = $queryAndNs[1];
+			$nsPrefix = substr( $term, 0, -strlen( $queryAndNs[0] ) );
 			$term = $queryAndNs[0];
-			$nsPrefix = substr( $term, 0, strlen( $term ) - strlen( $term ) );
 		}
 
 		$searcher = $this->makeSearcher( $config );

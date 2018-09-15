@@ -42,7 +42,7 @@
 	"prefs-completion": "検索の補完",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester]は、タイプミスの補正を強化し関連性を重視した検索アルゴリズムです。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "既定（推奨）",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "2つのタイプミスを修正します。よく似たリダイレクトを解決します。",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "2つのタイプミスを修正します。メインの題名とよく似たリダイレクトを削除します。",
 	"cirrussearch-completion-profile-strict-pref-name": "完全一致モード（上級）",
 	"cirrussearch-completion-profile-strict-pref-desc": "タイプミスは修正しません。アクセントは織り込みません。完全一致のみです。",
 	"cirrussearch-completion-profile-normal-pref-name": "リダイレクトモード（上級）",

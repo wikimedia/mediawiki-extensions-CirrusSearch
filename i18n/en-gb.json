@@ -5,7 +5,8 @@
 			"Andibing",
 			"Codynguyen1116",
 			"Dejavu",
-			"Jdforrester"
+			"Jdforrester",
+			"Samwilson"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch-powered search for MediaWiki",
@@ -50,7 +51,7 @@
 	"cirrussearch-pref-completion-section-desc": "Completion suggester",
 	"cirrussearch-pref-completion-section-legend": "The [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester completion suggester] is an algorithm for search suggestions with better typo correction and search relevance.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Default (recommended)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrects up to two typos. Resolves close redirects.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrects up to two typos. Removes redirects that are very similar to the main title.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrase matching (recommended for longer article titles)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrects up to two typos. Resolves close redirects. Matches subphrase in titles.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strict mode (advanced)"

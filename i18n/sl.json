@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Janezdrilc"
+			"Janezdrilc",
+			"Dbc334"
 		]
 	},
 	"cirrussearch-backend-error": "Zaradi začasne težave nam ni uspelo izvesti vašega iskanja. Prosimo, poskusite kasneje.",
@@ -19,7 +20,7 @@
 	"cirrussearch-pref-completion-section-desc": "Predlagatelj iskanja",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagatelj iskanja] je algoritem za iskanje predlogov s slovničnimi popravki in večjo ustreznostjo iskanja.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Privzeto (priporočeno)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Popravi do dve zatipkanji. Predlaga najbližje preusmeritve.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Popravi do dve zatipkanji. Odstrani preusmeritve, ki so zelo podobne glavnemu naslovu.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Ujemanje podizraza (priporočeno za daljše naslove strani)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Popravi do dve zatipkanji. Predlaga najbližje preusmeritve. Zahteva ujemanje podizrazov v naslovih.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strogi način (napredno)",

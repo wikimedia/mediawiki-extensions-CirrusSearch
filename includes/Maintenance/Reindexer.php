@@ -464,6 +464,7 @@ class Reindexer {
 	 */
 	private function monitorReindexTask( ReindexTask $task, Type $target ) {
 		$consecutiveErrors = 0;
+		$sleepSeconds = self::monitorSleepSeconds( 1, 2, self::MONITOR_SLEEP_SECONDS );
 		while ( !$task->isComplete() ) {
 			try {
 				$status = $task->getStatus();
@@ -504,11 +505,20 @@ class Reindexer {
 				. "Indexed: {$status->getCreated()} / {$status->getTotal()}\n"
 			);
 			if ( !$status->isComplete() ) {
-				sleep( self::MONITOR_SLEEP_SECONDS );
+				sleep( $sleepSeconds->current() );
+				$sleepSeconds->next();
 			}
 		}
 
 		return $task->getResponse();
+	}
+
+	private static function monitorSleepSeconds( $base, $ratio, $max ) {
+		$val = $base;
+		while ( true ) {
+			yield $val;
+			$val = min( $max, $val * $ratio );
+		}
 	}
 
 	private function getNumberOfShards( Index $index ) {

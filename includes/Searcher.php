@@ -585,7 +585,7 @@ class Searcher extends ElasticsearchIntermediary {
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-				$cache = ObjectCache::getLocalClusterInstance();
+				$cache = ObjectCache::getMainWANInstance();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
 					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;

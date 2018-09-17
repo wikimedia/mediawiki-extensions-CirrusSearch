@@ -2,27 +2,35 @@
 
 namespace CirrusSearch\LanguageDetector;
 
-use CirrusSearch;
+use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 
 /**
  * Try to detect language with TextCat text categorizer
  */
 class TextCat implements Detector {
+
+	/**
+	 * @var SearchConfig $config
+	 */
+	private $config;
+
+	/**
+	 * TextCat constructor.
+	 * @param SearchConfig $config
+	 */
+	public function __construct( SearchConfig $config ) {
+		$this->config = $config;
+	}
+
 	/**
 	 * Detect language
 	 *
-	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found
 	 */
-	public function detect( CirrusSearch $cirrus, $text ) {
-		$config = $cirrus->getConfig();
-		if ( empty( $config ) ) {
-			// Should not happen
-			return null;
-		}
-		$dirs = $config->getElement( 'CirrusSearchTextcatModel' );
+	public function detect( $text ) {
+		$dirs = $this->config->getElement( 'CirrusSearchTextcatModel' );
 		if ( !$dirs ) {
 			return null;
 		}
@@ -40,7 +48,7 @@ class TextCat implements Detector {
 
 		$textcat = new \TextCat( $dirs );
 
-		$textcatConfig = $config->getElement( 'CirrusSearchTextcatConfig' );
+		$textcatConfig = $this->config->getElement( 'CirrusSearchTextcatConfig' );
 		if ( $textcatConfig ) {
 			if ( isset( $textcatConfig['maxNgrams'] ) ) {
 				$textcat->setMaxNgrams( intval( $textcatConfig['maxNgrams'] ) );
@@ -62,14 +70,14 @@ class TextCat implements Detector {
 			}
 
 			if ( isset( $textcatConfig['numBoostedLangs'] ) &&
-				$config->getElement( 'CirrusSearchTextcatLanguages' )
+				$this->config->getElement( 'CirrusSearchTextcatLanguages' )
 			) {
 				$textcat->setBoostedLangs( array_slice(
-					$config->getElement( 'CirrusSearchTextcatLanguages' ),
+					$this->config->getElement( 'CirrusSearchTextcatLanguages' ),
 					0, $textcatConfig['numBoostedLangs'] ) );
 			}
 		}
-		$languages = $textcat->classify( $text, $config->getElement( 'CirrusSearchTextcatLanguages' ) );
+		$languages = $textcat->classify( $text, $this->config->getElement( 'CirrusSearchTextcatLanguages' ) );
 		if ( !empty( $languages ) ) {
 			// For now, just return the best option
 			// TODO: think what else we could do
@@ -78,5 +86,14 @@ class TextCat implements Detector {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param \WebRequest $request
+	 * @return Detector
+	 */
+	public static function build( SearchConfig $config, \WebRequest $request ) {
+		return new self( $config );
 	}
 }

@@ -5,6 +5,7 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\InterwikiResolver;
+use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\SearchMetricsProvider;
@@ -16,7 +17,6 @@ use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\Search\FancyTitleResultsType;
 use CirrusSearch\Search\TitleResultsType;
 use CirrusSearch\UserTesting;
-use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -199,32 +199,11 @@ class CirrusSearch extends SearchEngine {
 		if ( !$this->config->isCrossLanguageSearchEnabled() ) {
 			return null;
 		}
-
+		$detectorsFactory = new LanguageDetectorFactory( $this->config, $this->request );
+		$detectors = $detectorsFactory->getDetectors();
 		$detected = null;
-		foreach ( $GLOBALS['wgCirrusSearchLanguageDetectors'] as $name => $klass ) {
-			if ( !class_exists( $klass ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->info(
-					"Unknown detector class for {name}: {class}",
-					[
-						"name" => $name,
-						"class" => $klass,
-					]
-				);
-				continue;
-
-			}
-			$detector = new $klass();
-			if ( !( $detector instanceof \CirrusSearch\LanguageDetector\Detector ) ) {
-				LoggerFactory::getInstance( 'CirrusSearch' )->info(
-					"Bad detector class for {name}: {class}",
-					[
-						"name" => $name,
-						"class" => $klass,
-					]
-				);
-				continue;
-			}
-			$lang = $detector->detect( $this, $term );
+		foreach ( $detectors as $name => $detector ) {
+			$lang = $detector->detect( $term );
 			if ( $lang === $this->config->get( 'LanguageCode' ) ) {
 				// The query is in the wiki language so we
 				// don't need to actually try another wiki.

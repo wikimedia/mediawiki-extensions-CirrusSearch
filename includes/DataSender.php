@@ -120,9 +120,8 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
-	public function sendData( $indexType, $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
-		$documentCount = count( $documents );
-		if ( $documentCount === 0 ) {
+	public function sendData( $indexType, array $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
+		if ( !$documents ) {
 			return Status::newGood();
 		}
 

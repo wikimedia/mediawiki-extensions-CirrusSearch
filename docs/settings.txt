@@ -857,13 +857,6 @@ query. The results of this query will not be attached to the
 SearchResultSet, and will not be displayed to the user. This is to estimate
 the effect of adding this additional load onto a search cluster.
 
-; $wgCirrusSearchInterwikiCacheTime
-
-Default:
-    $wgCirrusSearchInterwikiCacheTime = 7200;
-
-How long to cache interwiki search results for (in seconds).
-
 ; $wgCirrusSearchRefreshInterval
 
 Default:

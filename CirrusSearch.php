@@ -709,11 +709,6 @@ $wgCirrusSearchFetchConfigFromApi = false;
 $wgCirrusSearchInterwikiSources = [];
 
 /**
- * How long to cache interwiki search results for (in seconds)
- */
-$wgCirrusSearchInterwikiCacheTime = 7200;
-
-/**
  * Set the order of crossproject side boxes
  * Possible values:
  * - static: output crossproject results in the order provided

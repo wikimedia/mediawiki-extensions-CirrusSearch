@@ -76,9 +76,6 @@ class InterwikiSearcher extends Searcher {
 		if ( !$sources ) {
 			return null;
 		}
-		$this->searchContext->setCacheTtl(
-			$this->config->get( 'CirrusSearchInterwikiCacheTime' )
-		);
 
 		$overriddenProfiles = $this->config->get( 'CirrusSearchCrossProjectProfiles' );
 		$contexts = [];

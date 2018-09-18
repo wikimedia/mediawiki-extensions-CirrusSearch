@@ -50,4 +50,8 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 		}
 		return $decoded;
 	}
+
+	public static function fixturePath( $testFile ) {
+		return self::FIXTURE_DIR . $testFile;
+	}
 }

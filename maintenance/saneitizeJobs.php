@@ -249,12 +249,15 @@ EOD
 		// @var int
 		$from = $jobInfo->get( 'sanitize_job_id_offset' );
 		$lastLoop = $jobInfo->get( 'sanitize_job_last_loop' );
+		// ternary is BC for when loop_id didn't exist.
+		$loopId = $jobInfo->has( 'sanitize_job_loop_id' ) ? $jobInfo->get( 'sanitize_job_loop_id' ) : 0;
 		if ( $from <= $this->minId ) {
 			// Avoid sending too many CheckerJob for very small wikis
 			if ( !$this->checkMinLoopDuration( $lastLoop,  $minLoopDuration ) ) {
 				return;
 			}
 			$lastLoop = time();
+			$loopId += 1;
 		}
 		$jobsSent = $jobInfo->get( 'sanitize_job_jobs_sent' );
 		$jobsSentTotal = $jobInfo->get( 'sanitize_job_jobs_sent_total' );
@@ -263,7 +266,7 @@ EOD
 		$jobs = [];
 		for ( $i = 0; $i < $maxJobs; $i++ ) {
 			$to = min( $from + $chunkSize - 1, $this->maxId );
-			$job = $this->createCheckerJob( $from, $to, $pushJobFreq, $jobInfo->get( 'sanitize_job_cluster' ) );
+			$job = $this->createCheckerJob( $from, $to, $pushJobFreq, $jobInfo->get( 'sanitize_job_cluster' ), $loopId );
 			array_push( $jobs, $job );
 			$jobsSent++;
 			$jobsSentTotal++;
@@ -287,6 +290,7 @@ EOD
 		} );
 		JobQueueGroup::singleton()->push( $jobs );
 		$this->log( "Sent $jobsSent jobs, setting from offset to $from.\n" );
+		$jobInfo->set( 'sanitize_job_loop_id', $loopId );
 		$jobInfo->set( 'sanitize_job_last_loop', $lastLoop );
 		$jobInfo->set( 'sanitize_job_id_offset', $from );
 		$jobInfo->set( 'sanitize_job_jobs_sent', $jobsSent );
@@ -303,10 +307,10 @@ EOD
 	 * @param string|null $cluster
 	 * @return CheckerJob
 	 */
-	private function createCheckerJob( $from, $to, $refreshRate, $cluster ) {
+	private function createCheckerJob( $from, $to, $refreshRate, $cluster, $loopId ) {
 		$delay = mt_rand( 0, $refreshRate );
-		$this->log( "Creating CheckerJob( $from, $to, $delay, $cluster )\n" );
-		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster );
+		$this->log( "Creating CheckerJob( $from, $to, $delay, {$this->profileName}, $cluster, $loopId )\n" );
+		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster, $loopId );
 	}
 
 	/**

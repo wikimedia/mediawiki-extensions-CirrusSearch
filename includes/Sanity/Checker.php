@@ -69,6 +69,12 @@ class Checker {
 	private $pageCache;
 
 	/**
+	 * @var callable Accepts a WikiPage argument and returns boolean true if the page
+	 *  should be reindexed based on time since last reindex.
+	 */
+	private $isOldFn;
+
+	/**
 	 * Build the checker.
 	 * @param SearchConfig $config
 	 * @param Connection $connection
@@ -78,6 +84,8 @@ class Checker {
 	 * @param bool $logSane should we log sane ids
 	 * @param bool $fastRedirectCheck fast but inconsistent redirect check
 	 * @param ArrayObject|null $pageCache cache for WikiPage loaded from db
+	 * @param callable|null $isOldFn Accepts a WikiPage argument and returns boolean true if the page
+	 *  should be reindexed based on time since last reindex.
 	 */
 	public function __construct(
 		SearchConfig $config,
@@ -86,7 +94,8 @@ class Checker {
 		Searcher $searcher,
 		$logSane,
 		$fastRedirectCheck,
-		ArrayObject $pageCache = null
+		ArrayObject $pageCache = null,
+		callable $isOldFn = null
 	) {
 		$this->searchConfig = $config;
 		$this->connection = $connection;
@@ -95,6 +104,9 @@ class Checker {
 		$this->logSane = $logSane;
 		$this->fastRedirectCheck = $fastRedirectCheck;
 		$this->pageCache = $pageCache;
+		$this->isOldFn = $isOldFn ?? function ( WikiPage $page ) {
+			return false;
+		};
 	}
 
 	/**
@@ -109,6 +121,7 @@ class Checker {
 		$pagesFromDb = $this->loadPagesFromDB( $pageIds );
 		$pagesFromIndex = $this->loadPagesFromIndex( $docIds );
 		$nbPagesFixed = 0;
+		$nbPagesOld = 0;
 		foreach ( array_combine( $pageIds, $docIds ) as $pageId => $docId ) {
 			$fromIndex = [];
 			if ( isset( $pagesFromIndex[$docId] ) ) {
@@ -118,6 +131,10 @@ class Checker {
 			if ( isset( $pagesFromDb[$pageId] ) ) {
 				$page = $pagesFromDb[$pageId];
 				$updated = $this->checkExisitingPage( $docId, $pageId, $page, $fromIndex );
+				if ( !$updated && ( $this->isOldFn )( $page ) ) {
+					$this->remediator->oldDocument( $page );
+					$nbPagesOld++;
+				}
 			} else {
 				$updated = $this->checkInexistentPage( $docId, $pageId, $fromIndex );
 			}
@@ -129,6 +146,7 @@ class Checker {
 		$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.fixed", $nbPagesFixed );
 		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.checked", count( $pageIds ) );
+		$stats->updateCount( "CirrusSearch.$clusterName.sanitization.old", $nbPagesOld );
 		return $nbPagesFixed;
 	}
 

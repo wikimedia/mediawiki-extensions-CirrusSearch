@@ -57,7 +57,7 @@
 	"cirrussearch-pref-completion-section-desc": "Ifyllningsförslag",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Ifyllningsförslag] är en algoritm för att ge ifyllningsförslag på sökförslag med bättre korrigering av stavnings och sökrelevans.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (rekommenderas)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korrigerar upp till två stavfel. Löser stängda omdirigeringar.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korrigerar upp till två stavfel. Tar bort omdirigeringar som liknar huvudsidan.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Matchande underfraser (rekommenderas för längre sidtitlar)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Korrigerar upp till två stavfel. Löser stängda omdirigeringar. Matchar underfraser i titlar.",
 	"cirrussearch-completion-profile-strict-pref-name": "Strikt läge (avancerat)",

@@ -2,10 +2,11 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\CirrusIndexField;
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use CirrusSearch\Search\CirrusIndexField;
+use Sanitizer;
 use TextContent;
 use Title;
 use WikiPage;
@@ -356,6 +357,8 @@ class Updater extends ElasticsearchIntermediary {
 				}
 			}
 
+			$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
+
 			// Then let hooks have a go
 			MWHooks::run( 'CirrusSearchBuildDocumentParse', [
 				$doc,
@@ -478,6 +481,66 @@ class Updater extends ElasticsearchIntermediary {
 			$titles[] = $page->getTitle();
 		}
 		return $titles;
+	}
+
+	/**
+	 * @param Title $title
+	 * @param ParserOutput $output
+	 * @return string|null
+	 */
+	private static function extractDisplayTitle( \Title $title, \ParserOutput $output ) {
+		$titleText = $title->getText();
+		$titlePrefixedText = $title->getPrefixedText();
+
+		$raw = $output->getDisplayTitle();
+		if ( $raw === false ) {
+			return null;
+		}
+		$clean = Sanitizer::stripAllTags( $raw );
+		// Only index display titles that differ from the normal title
+		if ( self::isSameString( $clean, $titleText ) ||
+			self::isSameString( $clean, $titlePrefixedText )
+		) {
+			return null;
+		}
+		if ( $title->getNamespace() === 0 || false === strpos( $clean, ':' ) ) {
+			return $clean;
+		}
+		// There is no official way that namespaces work in display title, it
+		// is an arbitrary string. Even so some use cases, such as the
+		// Translate extension, will translate the namespace as well. Here
+		// `Help:foo` will have a display title of `Aide:bar`. If we were to
+		// simply index as is the autocomplete and near matcher would see
+		// Help:Aide:bar, which doesn't seem particularly useful.
+		// The strategy here is to see if the portion before the : is a valid namespace
+		// in either the language of the wiki or the language of the page. If it is
+		// then we strip it from the display title.
+		list( $maybeNs, $maybeDisplayTitle ) = explode( ':', $clean, 2 );
+		$cleanTitle = Title::newFromText( $clean );
+		if ( $cleanTitle->getNamespace() == $title->getNamespace() ) {
+			// While it doesn't really matter, $cleanTitle->getText() may
+			// have had ucfirst() applied depending on settings so we
+			// return the unmodified $maybeDisplayTitle.
+			return $maybeDisplayTitle;
+		}
+
+		$docLang = $title->getPageLanguage();
+		$nsIndex = $docLang->getNsIndex( $maybeNs );
+		if ( $nsIndex !== $title->getNamespace() ) {
+			// Valid namespace but not the same as the actual page.
+			// Keep the namespace in the display title.
+			return $clean;
+		}
+
+		return self::isSameString( $maybeDisplayTitle, $titleText )
+			? null
+			: $maybeDisplayTitle;
+	}
+
+	private static function isSameString( $a, $b ) {
+		$a = mb_strtolower( strtr( $a, '_', ' ' ) );
+		$b = mb_strtolower( strtr( $b, '_', ' ' ) );
+		return $a === $b;
 	}
 
 	/**

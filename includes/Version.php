@@ -36,13 +36,11 @@ class Version extends ElasticsearchIntermediary {
 	 * @return Status<string> version number as a string
 	 */
 	public function get() {
-		global $wgCirrusSearchClientSideSearchTimeout;
-
 		try {
 			$this->startNewLog( 'fetching elasticsearch version', 'version' );
 			// If this times out the cluster is in really bad shape but we should still
 			// check it.
-			$this->connection->setTimeout( $wgCirrusSearchClientSideSearchTimeout[ 'default' ] );
+			$this->connection->setTimeout( $this->getClientTimeout( 'version' ) );
 			$result = $this->connection->getClient()->request( '' );
 			$this->success();
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {

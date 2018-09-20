@@ -386,7 +386,7 @@ class Searcher extends ElasticsearchIntermediary {
 						'docIds' => $docIds,
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$connection->setTimeout( $this->getClientTimeout() );
+					$connection->setTimeout( $this->getClientTimeout( 'get' ) );
 					// We use a search query instead of _get/_mget, these methods are
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
@@ -426,11 +426,11 @@ class Searcher extends ElasticsearchIntermediary {
 						'query' => $name,
 					] );
 					$connection = $this->getOverriddenConnection();
-					$connection->setTimeout( $this->getClientTimeout() );
+					$connection->setTimeout( $this->getClientTimeout( 'namespace' ) );
 
 					$store = new MetaNamespaceStore( $connection, $this->config->getWikiId() );
 					$resultSet = $store->find( $name, [
-						'timeout' => $this->getTimeout(),
+						'timeout' => $this->getTimeout( 'namespace' ),
 					] );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -449,7 +449,7 @@ class Searcher extends ElasticsearchIntermediary {
 			->setOffset( $this->offset )
 			->setPageType( $this->pageType )
 			->setSort( $this->sort )
-			->setTimeout( $this->getTimeout() )
+			->setTimeout( $this->getTimeout( $this->searchContext->getSearchType() ) )
 			->build();
 	}
 
@@ -542,7 +542,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$search = new MultiSearch( $connection->getClient() );
 		$search->addSearches( $searches );
 
-		$connection->setTimeout( $this->getClientTimeout() );
+		$connection->setTimeout( $this->getClientTimeout( $this->searchContext->getSearchType() ) );
 
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
@@ -754,32 +754,6 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 		return 'CirrusSearch-Search';
-	}
-
-	/**
-	 * @return string search retrieval timeout
-	 */
-	private function getTimeout() {
-		if ( $this->searchContext->isSyntaxUsed( 'regex' ) ) {
-			$type = 'regex';
-		} else {
-			$type = 'default';
-		}
-
-		return $this->config->getElement( 'CirrusSearchSearchShardTimeout', $type );
-	}
-
-	/**
-	 * @return int the client side timeout
-	 */
-	private function getClientTimeout() {
-		if ( $this->searchContext->getSearchType() === 'regex' ) {
-			$type = 'regex';
-		} else {
-			$type = 'default';
-		}
-
-		return $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', $type );
 	}
 
 	/**

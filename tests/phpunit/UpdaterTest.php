@@ -127,6 +127,9 @@ class UpdaterTest extends \MediaWikiTestCase {
 		$page->expects( $this->any() )
 			->method( 'getContentHandler' )
 			->will( $this->returnValue( $contentHandler ) );
+		$page->expects( $this->any() )
+			->method( 'getContent' )
+			->will( $this->returnValue( new \WikitextContent( 'TEST_CONTENT' ) ) );
 
 		return $page;
 	}

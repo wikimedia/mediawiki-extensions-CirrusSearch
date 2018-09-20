@@ -76,6 +76,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Job\\OtherIndex' => __DIR__ . '/includes/Job/OtherIndex.php',
 	'CirrusSearch\\LanguageDetector\\Detector' => __DIR__ . '/includes/LanguageDetector/Detector.php',
 	'CirrusSearch\\LanguageDetector\\HttpAccept' => __DIR__ . '/includes/LanguageDetector/HttpAccept.php',
+	'CirrusSearch\\LanguageDetector\\LanguageDetectorFactory' => __DIR__ . '/includes/LanguageDetector/LanguageDetectorFactory.php',
 	'CirrusSearch\\LanguageDetector\\TextCat' => __DIR__ . '/includes/LanguageDetector/TextCat.php',
 	'CirrusSearch\\Maintenance\\AnalysisConfigBuilder' => __DIR__ . '/includes/Maintenance/AnalysisConfigBuilder.php',
 	'CirrusSearch\\Maintenance\\AnalysisFilter' => __DIR__ . '/includes/Maintenance/AnalysisFilter.php',

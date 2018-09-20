@@ -2,18 +2,25 @@
 
 namespace CirrusSearch\LanguageDetector;
 
-use CirrusSearch;
+use CirrusSearch\SearchConfig;
 
 /**
  * Interface for a language detector class
  */
 interface Detector {
+
+	/**
+	 * @param SearchConfig $config
+	 * @param \WebRequest $request
+	 * @return Detector
+	 */
+	static function build( SearchConfig $config, \WebRequest $request );
+
 	/**
 	 * Detect language
 	 *
-	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found
 	 */
-	public function detect( CirrusSearch $cirrus, $text );
+	function detect( $text );
 }

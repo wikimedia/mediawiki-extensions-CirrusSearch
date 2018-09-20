@@ -213,7 +213,7 @@ abstract class Job extends MWJob {
 			// When the OtherIndex functionality is writing to an external index it is
 			// allowable that the provided cluster is not in the current list of writable
 			// clusters. This simply accepts the chosen cluster at face value.
-			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['other-index'] );
+			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['external-index'] );
 			foreach ( $clusterNames as $i => $name ) {
 				$clusterNames[$i] = $otherIndex->getWriteCluster( $name );
 			}

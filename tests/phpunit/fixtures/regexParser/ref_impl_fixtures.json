@@ -476,6 +476,67 @@
             }
         }
     },
+    "tilde header: a tilde at the beginning is not part of the AST": {
+        "query": "~word",
+        "expected": {
+            "query": "word",
+            "rawQuery": "~word",
+            "queryCleanups": {
+                "tilde_header": true
+            },
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 0,
+                    "endOffset": 4,
+                    "words": "word"
+                }
+            }
+        }
+    },
+    "tilde header: the tilde must be strictly at the beginning to be discarded": {
+        "query": " ~word",
+        "expected": {
+            "query": " ~word",
+            "rawQuery": " ~word",
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 1,
+                    "endOffset": 6,
+                    "words": "~word"
+                }
+            }
+        }
+    },
+    "tilde header: a leading tilde does not disable namespace prefix handling": {
+        "query": "~help:word",
+        "expected": {
+            "query": "help:word",
+            "rawQuery": "~help:word",
+            "namespaceHeader": 12,
+            "queryCleanups": {
+                "tilde_header": true
+            },
+            "queryClassCache": [
+                "simple_bag_of_words"
+            ],
+            "featuresUsed": [
+                "namespace_header"
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 5,
+                    "endOffset": 9,
+                    "words": "word"
+                }
+            }
+        }
+    },
     "negation prefix: a single word can be negated with !": {
         "query": "!word1",
         "expected": {

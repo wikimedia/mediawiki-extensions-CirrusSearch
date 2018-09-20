@@ -351,6 +351,8 @@ $wgCirrusSearchClientSideConnectTimeout = 5;
  * slow at this point.
  */
 $wgCirrusSearchSearchShardTimeout = [
+	'comp_suggest' => '5s',
+	'prefix' => '5s',
 	'default' => '20s',
 	'regex' => '120s',
 ];
@@ -361,6 +363,8 @@ $wgCirrusSearchSearchShardTimeout = [
  * partial results.
  */
 $wgCirrusSearchClientSideSearchTimeout = [
+	'comp_suggest' => 10,
+	'prefix' => 10,
 	'default' => 40,
 	'regex' => 240,
 ];

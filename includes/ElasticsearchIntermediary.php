@@ -72,18 +72,18 @@ abstract class ElasticsearchIntermediary {
 	 *  is for when the action is being performed in some context where the user
 	 *  that caused it isn't available.  Like when an action is being performed
 	 *  during a job.
-	 * @param float $slowSeconds how many seconds a request through this
+	 * @param float|null $slowSeconds how many seconds a request through this
 	 *  intermediary needs to take before it counts as slow.  0 means none count
-	 *  as slow.
+	 *  as slow. Defaults to CirrusSearchSlowSearch config option.
 	 * @param int $extraBackendLatency artificial backend latency.
 	 */
-	protected function __construct( Connection $connection, User $user = null, $slowSeconds, $extraBackendLatency = 0 ) {
+	protected function __construct( Connection $connection, User $user = null, $slowSeconds = null, $extraBackendLatency = 0 ) {
 		$this->connection = $connection;
 		if ( is_null( $user ) ) {
 			$user = RequestContext::getMain()->getUser();
 		}
-		$this->user = $user;
-		$this->slowMillis = (int)( 1000 * $slowSeconds );
+		$this->user = $user ?? RequestContext::getMain()->getUser();
+		$this->slowMillis = (int)( 1000 * ( $slowSeconds ?? $connection->getConfig()->get( 'CirrusSearchSlowSearch' ) ) );
 		$this->extraBackendLatency = $extraBackendLatency;
 		if ( self::$requestLogger === null ) {
 			self::$requestLogger = new RequestLogger;
@@ -291,4 +291,36 @@ abstract class ElasticsearchIntermediary {
 	 * @return RequestLog
 	 */
 	abstract protected function newLog( $description, $queryType, array $extra = [] );
+
+	/**
+	 * @param string $searchType
+	 * @return string search retrieval timeout
+	 */
+	protected function getTimeout( $searchType = 'default' ) {
+		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', $searchType );
+		if ( $timeout !== null ) {
+			return $timeout;
+		}
+		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchSearchShardTimeout', 'default' );
+		if ( $timeout !== null ) {
+			return $timeout;
+		}
+		throw new \ConfigException( "wgCirrusSearchSearchShardTimeout should have at least a 'default' entry configured" );
+	}
+
+	/**
+	 * @param string $searchType
+	 * @return int the client side timeout
+	 */
+	protected function getClientTimeout( $searchType = 'default' ) {
+		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchClientSideSearchTimeout', $searchType );
+		if ( $timeout !== null ) {
+			return $timeout;
+		}
+		$timeout = $this->connection->getConfig()->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' );
+		if ( $timeout !== null ) {
+			return $timeout;
+		}
+		throw new \ConfigException( "wgCirrusSearchClientSideSearchTimeout should have at least a 'default' entry configured" );
+	}
 }

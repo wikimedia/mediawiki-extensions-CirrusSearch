@@ -45,7 +45,9 @@ class VersionTest extends \PHPUnit\Framework\TestCase {
 		$conn->expects( $this->any() )
 			->method( 'getClient' )
 			->will( $this->returnValue( $client ) );
-
+		$conn->expects( ( $this->any() ) )
+			->method( 'getConfig' )
+			->will( $this->returnValue( new HashSearchConfig( [], [ 'inherit' ] ) ) );
 		return $conn;
 	}
 }

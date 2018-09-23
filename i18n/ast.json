@@ -54,7 +54,7 @@
 	"cirrussearch-pref-completion-section-desc": "Suxeridor de completáu",
 	"cirrussearch-pref-completion-section-legend": "El [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester suxeridor de completáu] ye un algoritmu de suxerencies de gueta con meyor correición de faltes y relevancia de la gueta.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predetermináu (encamentáu)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Igua fasta dos faltes d'ortografía. Resuelve les redireiciones cercanes.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Igua hasta dos faltes d'ortografía. Desanicia les redireiciones que s'asemeyen enforma al títulu principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Casa con partes de la frase (recomendao pa los títulos de páxina más llargos)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Igua fasta dos faltes d'ortografía. Resuelve les redireiciones cercanes. Casa con partes de la frase nos títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Mou estrictu (avanzáu)",

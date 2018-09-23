@@ -4,7 +4,8 @@
 			"Tgr",
 			"Csega",
 			"Tacsipacsi",
-			"Bencemac"
+			"Bencemac",
+			"Csigabi"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch alapú MediaWiki kereső",
@@ -35,6 +36,7 @@
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Alapértelmezett (ajánlott)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Legfeljebb két elütést javít. Feloldja a közeli átirányításokat.",
 	"cirrussearch-completion-profile-strict-pref-name": "Szigorú mód (haladó)",
+	"cirrussearch-completion-profile-strict-pref-desc": "Nincs elütésjavítás. Az ékezetek és mellékjelek figyelembe vétele. Szigorú egyezés.",
 	"cirrussearch-completion-profile-normal-pref-name": "Átirányítás mód (haladó)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Nincs elütésjavítás. Feloldja a közeli átirányításokat.",
 	"cirrussearch-regex-timed-out": "A reguláris kifejezést használó keresés túllépte az időkorlátot, csak részleges eredmények érhetők el. Próbáld meg egyszerűsíteni a reguláris kifejezésedet.",

@@ -49,6 +49,14 @@ class RequestLogger {
 	private $extraPayload = [];
 
 	/**
+	 * @return bool True when logs have been generated during the current
+	 *  php execution.
+	 */
+	public function hasQueryLogs() {
+		return (bool)$this->logs;
+	}
+
+	/**
 	 * Summarizes all the requests made in this process and reports
 	 * them along with the test they belong to.
 	 */

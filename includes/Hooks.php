@@ -713,17 +713,17 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onAPIAfterExecute( $module ) {
-		if ( !( $module instanceof ApiOpenSearch ) ) {
+		if ( !ElasticsearchIntermediary::hasQueryLogs() ) {
 			return true;
 		}
-
-		$types = ElasticsearchIntermediary::getQueryTypesUsed();
-		if ( !$types ) {
-			return true;
-		}
-
 		$response = $module->getContext()->getRequest()->response();
-		$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
+		$response->header( 'X-Search-ID: ' . Util::getRequestSetToken() );
+		if ( $module instanceof ApiOpenSearch ) {
+			$types = ElasticsearchIntermediary::getQueryTypesUsed();
+			if ( $types ) {
+				$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
+			}
+		}
 		return true;
 	}
 

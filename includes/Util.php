@@ -420,9 +420,15 @@ class Util {
 	 */
 	public static function generateIdentToken( $extraData = '' ) {
 		$request = \RequestContext::getMain()->getRequest();
+		try {
+			$ip = $request->getIP();
+		} catch ( \MWException $e ) {
+			// No ip, probably running cli?
+			$ip = 'unknown';
+		}
 		return md5( implode( ':', [
 			$extraData,
-			$request->getIP(),
+			$ip,
 			$request->getHeader( 'X-Forwarded-For' ),
 			$request->getHeader( 'User-Agent' ),
 		] ) );

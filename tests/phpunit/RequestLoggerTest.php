@@ -8,6 +8,7 @@ use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\RequestLogger;
+use CirrusSearch\RequestLog;
 use CirrusSearch\Searcher;
 use Elastica\Request;
 use Elastica\Response;
@@ -26,6 +27,25 @@ use Psr\Log\AbstractLogger;
  * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
  */
 class RequestLoggerTest extends CirrusTestCase {
+
+	public function testHasQueryLogs() {
+		// Prevent Deferred updates from running. This basically means RequestLogger is
+		// broken for cli scripts (but considered not too important).
+		$this->setMwGlobals( [
+			'wgCommandLineMode' => false,
+		] );
+		$logger = new RequestLogger();
+		$this->assertFalse( $logger->hasQueryLogs() );
+		$log = $this->getMockBuilder( RequestLog::class )->getMock();
+		foreach ( [ 'getLogVariables', 'getRequests' ] as $fn ) {
+			$log->expects( $this->any() )
+				->method( $fn )
+				->will( $this->returnValue( [] ) );
+		}
+		$logger->addRequest( $log );
+		$this->assertTrue( $logger->hasQueryLogs() );
+	}
+
 	public function requestLoggingProvider() {
 		$tests = [];
 

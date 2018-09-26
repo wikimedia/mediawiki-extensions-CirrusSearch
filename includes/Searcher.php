@@ -22,7 +22,6 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Search;
-use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use ObjectCache;
@@ -79,11 +78,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var integer maximum number of result
 	 */
 	protected $limit;
-
-	/**
-	 * @var Language language of the wiki
-	 */
-	private $language;
 
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
@@ -152,7 +146,6 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->limit = $limit;
 		}
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
-		$this->language = $config->get( 'ContLang' );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
 	}
 
@@ -699,10 +692,14 @@ class Searcher extends ElasticsearchIntermediary {
 			// allow category intersections longer than the maximum
 			strpos( $term, 'incategory:' ) === false
 		) {
+			/**
+			 * @var \Language $language
+			 */
+			$language = $this->config->get( 'ContLang' );
 			return Status::newFatal(
 				'cirrussearch-query-too-long',
-				$this->language->formatNum( $requestLength ),
-				$this->language->formatNum( self::MAX_TEXT_SEARCH )
+				$language->formatNum( $requestLength ),
+				$language->formatNum( self::MAX_TEXT_SEARCH )
 			);
 		}
 		return Status::newGood();

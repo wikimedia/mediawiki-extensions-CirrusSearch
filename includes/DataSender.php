@@ -204,10 +204,13 @@ class DataSender extends ElasticsearchIntermediary {
 			$documentIds = array_map( function ( $d ) {
 				return $d->getId();
 			}, $documents );
+			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
+			if ( $exception ) {
+				$logContext['exception'] = $exception;
+			}
 			$this->failedLog->warning(
 				'Failed to update documents {docId}',
-				[ 'docId' => implode( ', ', $documentIds ) ] +
-					$exception ? [ 'exception' => $exception ] : []
+				$logContext
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}

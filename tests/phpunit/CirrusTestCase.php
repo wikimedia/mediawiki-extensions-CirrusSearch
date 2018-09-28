@@ -54,4 +54,22 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 	public static function fixturePath( $testFile ) {
 		return self::FIXTURE_DIR . $testFile;
 	}
+
+	/**
+	 * Capture the args of a mocked method
+	 *
+	 * @param mixed &$args placeholder for args to capture
+	 * @param callable|null $callback optional callback methods to run on captured args
+	 * @return \PHPUnit\Framework\Constraint\Callback
+	 * @see Assert::callback()
+	 */
+	public function captureArgs( &$args, callable $callback = null ) {
+		return $this->callback( function ( ...$argToCapture ) use ( &$args, $callback ) {
+			$args = $argToCapture;
+			if ( $callback !== null ) {
+				return $callback( $argToCapture );
+			}
+			return true;
+		} );
+	}
 }

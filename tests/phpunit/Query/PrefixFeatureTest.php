@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParserFactory;
+use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
@@ -319,6 +320,7 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 	}
 
 	/**
+	 * @covers \CirrusSearch\Search\SearchContext
 	 * @dataProvider provideTestPrepareSearchContext
 	 * @param int[]|null $initialNs
 	 * @param string $prefix
@@ -331,5 +333,39 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$this->assertEquals( $expectedNs, $context->getNamespaces() );
 		$this->assertCount( 1, $context->getFilters() );
 		$this->assertFilter( new PrefixFeature(), 'prefix:' . $prefix, $context->getFilters()[0], [], $config );
+	}
+
+	public function provideTestContextualFilter() {
+		return [
+			'main' => [
+				'test',
+				[ NS_MAIN ]
+			],
+			'specific' => [
+				'help:test',
+				[ NS_HELP ]
+			],
+			'all' => [
+				'all:test',
+				[]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestContextualFilter
+	 */
+	public function testContextualFilter( $prefix, $expectedNs ) {
+		$contextualFilter = PrefixFeature::asContextualFilter( $prefix );
+		$this->assertEquals( $expectedNs, $contextualFilter->requiredNamespaces() );
+		$filterBuilderMock = $this->createMock( FilterBuilder::class );
+		$filters = [];
+		$filterBuilderMock->expects( $this->once() )
+			->method( 'must' )
+			->with( $this->captureArgs( $filters ) );
+		$filterBuilderMock->expects( $this->never() )->method( 'mustNot' );
+		$contextualFilter->populate( $filterBuilderMock );
+		$this->assertCount( 1, $filters );
+		$this->assertFilter( new PrefixFeature(), 'prefix:' . $prefix,  $filters[0], [] );
 	}
 }

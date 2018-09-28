@@ -6,6 +6,7 @@ use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\OtherIndexes;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\SearchConfig;
@@ -36,7 +37,7 @@ use Elastica\Query\AbstractQuery;
  * The SearchContext stores the various states maintained
  * during the query building process.
  */
-class SearchContext implements WarningCollector {
+class SearchContext implements WarningCollector, FilterBuilder {
 	/**
 	 * @var SearchConfig
 	 */
@@ -852,5 +853,19 @@ class SearchContext implements WarningCollector {
 	 */
 	public function getFilters(): array {
 		return $this->filters;
+	}
+
+	/**
+	 * @param AbstractQuery $query
+	 */
+	public function must( AbstractQuery $query ) {
+		$this->addFilter( $query );
+	}
+
+	/**
+	 * @param AbstractQuery $query
+	 */
+	public function mustNot( AbstractQuery $query ) {
+		$this->addNotFilter( $query );
 	}
 }

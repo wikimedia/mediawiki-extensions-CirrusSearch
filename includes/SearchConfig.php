@@ -54,12 +54,6 @@ class SearchConfig implements \Config {
 	private $writableClusters;
 
 	/**
-	 * @var string[]|null clusters available (lazy loaded, call
-	 * getAvailableClusters() instead of direct access)
-	 */
-	private $availableClusters;
-
-	/**
 	 * @var SearchProfileService|null
 	 */
 	private $profileService;
@@ -256,16 +250,6 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * @return string[] array of all the cluster names defined in this config
-	 */
-	public function getAvailableClusters() {
-		if ( $this->availableClusters === null ) {
-			$this->initClusterConfig();
-		}
-		return $this->availableClusters;
-	}
-
-	/**
 	 * @return string[] array of all the clusters allowed to receive write operations
 	 */
 	public function getWritableClusters() {
@@ -291,28 +275,16 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * Check if this cluster is defined.
-	 * NOTE: this cluster may not be available for writes.
-	 *
-	 * @param string $cluster
-	 * @return bool
-	 */
-	public function clusterExists( $cluster ) {
-		return in_array( $cluster, $this->getAvailableClusters() );
-	}
-
-	/**
-	 * Initialization of availableClusters and writableClusters
+	 * Initialization of writableClusters
 	 */
 	private function initClusterConfig() {
-		$this->availableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
 		if ( $this->has( 'CirrusSearchWriteClusters' ) ) {
 			$this->writableClusters = $this->get( 'CirrusSearchWriteClusters' );
 			if ( is_null( $this->writableClusters ) ) {
 				$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
 			}
 		} else {
-			$this->writableClusters = $this->availableClusters;
+			$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
 		}
 	}
 

@@ -332,11 +332,8 @@ EOD
 		$connections = [];
 		if ( $this->hasOption( 'cluster' ) ) {
 			$cluster = $this->getOption( 'cluster' );
-			if ( !$this->getSearchConfig()->clusterExists( $cluster ) ) {
-				$this->fatalError( "Unknown cluster $cluster\n" );
-			}
 			if ( !$this->getSearchConfig()->canWriteToCluster( $cluster ) ) {
-				$this->fatalError( "$cluster is not writable\n" );
+				$this->fatalError( "$cluster is not in the set of writable clusters\n" );
 			}
 			$connections[$cluster] = Connection::getPool( $this->getSearchConfig(), $cluster );
 		} else {

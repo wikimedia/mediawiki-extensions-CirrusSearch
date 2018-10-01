@@ -363,6 +363,7 @@ class CirrusSearch extends SearchEngine {
 		if ( $this->isFeatureEnabled( 'interwiki' ) &&
 			$searcher->getSearchContext()->areResultsPossible() &&
 			$searcher->getSearchContext()->getSearchComplexity() <= InterwikiSearcher::MAX_COMPLEXITY &&
+			!$searcher->getSearchContext()->getLimitSearchToLocalWiki() &&
 			$config->isCrossProjectSearchEnabled() &&
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {

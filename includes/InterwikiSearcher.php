@@ -6,6 +6,8 @@ use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchQuery;
+use CirrusSearch\Search\SearchQueryBuilder;
 use MediaWiki\MediaWikiServices;
 use User;
 
@@ -29,11 +31,6 @@ use User;
  */
 class InterwikiSearcher extends Searcher {
 	/**
-	 * @var int Max complexity allowed to run on other indices
-	 */
-	const MAX_COMPLEXITY = 10;
-
-	/**
 	 * @param Connection $connection
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces Namespace numbers to search, or null for all of them
@@ -47,29 +44,16 @@ class InterwikiSearcher extends Searcher {
 		User $user = null,
 		CirrusDebugOptions $debugOptions = null
 	) {
-		// Only allow core namespaces. We can't be sure any others exist
-		// TODO: possibly move this later and try to detect if we run the default
-		// profile, so that we could try to run the default profile on sister wikis
-		if ( $namespaces !== null ) {
-			$namespaces = array_filter( $namespaces, function ( $namespace ) {
-				return $namespace <= NS_CATEGORY_TALK;
-			} );
-		}
 		$maxResults = $config->get( 'CirrusSearchNumCrossProjectSearchResults' );
 		parent::__construct( $connection, 0, $maxResults, $config, $namespaces, $user, false, $debugOptions );
 	}
 
 	/**
 	 * Fetch search results, from caches, if there's any
-	 * @param string $term Search term to look for
+	 * @param SearchQuery $query original search query
 	 * @return ResultSet[]|null
 	 */
-	public function getInterwikiResults( $term ) {
-		// Return early if we can
-		if ( !$term ) {
-			return null;
-		}
-
+	public function getInterwikiResults( SearchQuery $query ) {
 		$sources = MediaWikiServices::getInstance()
 			->getService( InterwikiResolver::SERVICE )
 			->getSisterProjectConfigs();
@@ -77,25 +61,24 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		$contexts = [];
+		$iwQueries = [];
 		$resultsType = new FullTextResultsType();
 		foreach ( $sources as $interwiki => $config ) {
-			$contexts[$interwiki] = new SearchContext( $config, $this->searchContext->getNamespaces(), $this->searchContext->getDebugOptions() );
-			$contexts[$interwiki]->setResultsType( $resultsType );
+			$iwQueries[$interwiki] = SearchQueryBuilder::forCrossProjectSearch( $config, $query )
+				->build();
 		}
 
 		$retval = [];
 		$searches = [];
 		$this->setResultsType( $resultsType );
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
-		foreach ( $contexts as $interwiki => $context ) {
+		foreach ( $iwQueries as $interwiki => $iwQuery ) {
+			$context = SearchContext::fromSearchQuery( $iwQuery );
 			$this->searchContext = $context;
 			$this->config = $context->getConfig();
-			$this->searchContext->setLimitSearchToLocalWiki( true );
-			$this->searchContext->setOriginalSearchTerm( $term );
-			$this->searchContext->setSuggestion( false );
-			$this->buildFullTextSearch( $term );
-			$this->searchContext = $context;
+			$this->limit = $iwQuery->getLimit();
+			$this->offset = $iwQuery->getOffset();
+			$this->buildFullTextSearch( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 			$this->indexBaseName = $context->getConfig()->get( 'CirrusSearchIndexBaseName' );
 			$search = $this->buildSearch();
 			if ( $this->searchContext->areResultsPossible() ) {

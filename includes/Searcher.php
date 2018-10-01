@@ -9,9 +9,11 @@ use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\EmptyResultSet;
+use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Search\TitleResultsType;
@@ -150,6 +152,28 @@ class Searcher extends ElasticsearchIntermediary {
 	}
 
 	/**
+	 * Unified search public entry-point.
+	 *
+	 * NOTE: only fulltext search supported for now.
+	 * @param SearchQuery $query
+	 * @return Status
+	 */
+	public function search( SearchQuery $query ) {
+		$this->searchContext = SearchContext::fromSearchQuery( $query );
+		$this->limit = $query->getLimit();
+		$this->offset = $query->getOffset();
+		$this->config = $query->getSearchConfig();
+		$this->sort = $query->getSort();
+
+		if ( $query->getSearchEngineEntryPoint() === 'searchText' ) {
+			$this->searchContext->setResultsType( new FullTextResultsType() );
+			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
+		} else {
+			throw new \RuntimeException( 'Only searchText is supported for now' );
+		}
+	}
+
+	/**
 	 * @param ResultsType $resultsType results type to return
 	 */
 	public function setResultsType( $resultsType ) {
@@ -240,9 +264,6 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->searchContext->setResultsPossible( false );
 		}
 
-		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
-		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
-
 		$builderSettings = $this->config->getProfileService()
 			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER,
 				$this->searchContext->getFulltextQueryBuilderProfile() );
@@ -282,11 +303,21 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $term term to search
 	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
 	 * @return Status
+	 * @deprecated Use search( SearchQuery $query )
 	 */
 	public function searchText( $term, $showSuggestion ) {
-		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
+		wfDeprecated( __METHOD__ );
 		$this->searchContext->setOriginalSearchTerm( $term );
 		$this->searchContext->setSuggestion( $showSuggestion );
+		return $this->searchTextInternal( $term );
+	}
+
+	/**
+	 * @param string $term
+	 * @return Status
+	 */
+	private function searchTextInternal( $term ) {
+		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
 		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}

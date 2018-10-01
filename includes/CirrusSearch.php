@@ -7,8 +7,8 @@ use CirrusSearch\InterwikiSearcher;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Profile\SearchProfileService;
-use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\SearchMetricsProvider;
+use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Search\ResultSet;
@@ -308,50 +308,29 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status
 	 */
 	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
-		// Ignore leading ~ because it is used to force displaying search results but not to effect them
-		// TODO: move this to the parser
-		$tildePrefix = false;
-		if ( substr( $term, 0, 1 ) === '~' ) {
-			$term = substr( $term, 1 );
-			$tildePrefix = true;
-		}
-
-		// TODO: move this to the parser
-		$queryAndNs = self::parseNamespacePrefixes( $term, true, true );
-		$nsPrefix = null;
-		if ( $queryAndNs !== false ) {
-			$this->namespaces = $queryAndNs[1];
-			$nsPrefix = substr( $term, 0, -strlen( $queryAndNs[0] ) );
-			$term = $queryAndNs[0];
-		}
-
-		$searcher = $this->makeSearcher( $config );
-		if ( $tildePrefix ) {
-			$searcher->addSuggestPrefix( '~' );
-		}
-
-		if ( $nsPrefix !== null ) {
-			$searcher->addSuggestPrefix( $nsPrefix );
-		}
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $term )
+			->setDebugOptions( $this->debugOptions )
+			->setInitialNamespaces( $this->namespaces )
+			->setLimit( $this->limit )
+			->setOffset( $this->offset )
+			->setSort( $this->getSort() )
+			->setExtraIndicesSearch( !$forceLocal )
+			->setCrossProjectSearch( !$forceLocal && $this->isFeatureEnabled( 'interwiki' ) )
+			->setWithDYMSuggestion( $this->showSuggestion );
 
 		if ( $this->prefix !== '' ) {
-			// TODO: move this to the query building code
-			\CirrusSearch\Query\PrefixFeature::prepareSearchContext( $searcher->getSearchContext(), $this->prefix );
+			$builder->addContextualFilter( 'prefix',
+				\CirrusSearch\Query\PrefixFeature::asContextualFilter( $this->prefix ) );
 		}
-
-		$searcher->getSearchContext()->setLimitSearchToLocalWiki( $forceLocal );
-		$searcher->setSort( $this->getSort() );
-
 		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
 		if ( $profile !== null ) {
-			$searcher->getSearchContext()->setRescoreProfile( $profile );
+			$builder->addForcedProfile( SearchProfileService::RESCORE, $profile );
 		}
 
-		$searcher->setResultsType( new FullTextResultsType() );
-		$status = $searcher->searchText( $term, $this->showSuggestion );
-
+		$query = $builder->build();
+		$searcher = $this->makeSearcher( $config );
+		$status = $searcher->search( $query );
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();
-
 		if ( !$status->isOK() ) {
 			return $status;
 		}
@@ -361,15 +340,14 @@ class CirrusSearch extends SearchEngine {
 		// Add interwiki results, if we have a sane result
 		// Note that we have no way of sending warning back to the user.  In this case all warnings
 		// are logged when they are added to the status object so we just ignore them here....
-		if ( $this->isFeatureEnabled( 'interwiki' ) &&
+		// TODO: move this to the Searcher class and get rid of InterwikiSearcher
+		// there are no reasons we can't do this in a single msearch request.
+		if ( $query->getCrossSearchStrategy()->isCrossProjectSearchSupported() &&
 			$searcher->getSearchContext()->areResultsPossible() &&
-			$searcher->getSearchContext()->getSearchComplexity() <= InterwikiSearcher::MAX_COMPLEXITY &&
-			!$searcher->getSearchContext()->getLimitSearchToLocalWiki() &&
-			$config->isCrossProjectSearchEnabled() &&
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
 			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $this->debugOptions );
-			$interwikiResults = $iwSearch->getInterwikiResults( $term );
+			$interwikiResults = $iwSearch->getInterwikiResults( $query );
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to
 				if ( $this->debugOptions->isReturnRaw() ) {

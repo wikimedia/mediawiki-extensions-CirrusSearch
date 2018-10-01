@@ -135,12 +135,24 @@ class ParsedQuery {
 	/**
 	 * The query being parsed
 	 * Some cleanups may have been made to the raw query
+	 * NOTE: the query may include the namespace header
 	 * @return string
 	 */
 	public function getQuery() {
 		return $this->query;
 	}
 
+	/**
+	 * The query string without the namespace header
+	 * @return string
+	 */
+	public function getQueryWithoutNsHeader() {
+		// TODO: remove once the AST is fully used by all building components.
+		if ( $this->namespaceHeader !== null ) {
+			return substr( $this->query, $this->namespaceHeader->getEndOffset() );
+		}
+		return $this->query;
+	}
 	/**
 	 * The raw query as received by the search engine
 	 * @return string
@@ -190,16 +202,22 @@ class ParsedQuery {
 	 * assuming that $namespaces is the list of namespaces initially requested
 	 * usually set <code>\SearchEngine::setNamespaces()</code>.
 	 *
-	 * @param int[]|null $namespaces
+	 * @param int[]|null $namespaces initial namespaces
+	 * @param int[]|null $additionalRequiredNamespaces additional namespaces required (by ContextualFilters)
 	 * @return int[] the list of namespaces that have to be queried,
 	 * empty array means all namespaces
 	 * @see \SearchEngine::setNamespaces()
 	 * @see self::getRequiredNamespaces()
 	 * @see self::getNamespaceHeader()
+	 * @see \CirrusSearch\Query\Builder\ContextualFilter::requiredNamespaces()
 	 */
-	public function getActualNamespaces( array $namespaces = null ) {
+	public function getActualNamespaces( array $namespaces = null, array $additionalRequiredNamespaces = null ) {
 		if ( $this->requiredNamespaces === 'all' ) {
 			// e.g. prefix:all:foo (all namespaces must be queried no matter what is requested before
+			return [];
+		}
+
+		if ( $additionalRequiredNamespaces === [] ) {
 			return [];
 		}
 
@@ -222,7 +240,10 @@ class ParsedQuery {
 		Assert::postcondition( is_array( $ns ) && $ns !== [],
 			'at this point we must have a list of specific namespaces' );
 
-		return array_unique( array_merge( $ns, $this->requiredNamespaces ), SORT_REGULAR );
+		return array_values( array_unique(
+			array_merge( $ns, $this->requiredNamespaces, $additionalRequiredNamespaces ?? [] ),
+			SORT_REGULAR
+		) );
 	}
 
 	/**

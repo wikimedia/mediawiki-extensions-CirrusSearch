@@ -34,6 +34,7 @@ class MappingConfigBuilderTest extends \MediaWikiTestCase {
 		$this->mergeMwGlobalArrayValue( 'wgHooks', [
 			'CirrusSearchMappingConfig' => [],
 			'GetContentModels' => [],
+			'SearchIndexFields' => [],
 		] );
 
 		$defaultConfig = [

@@ -61,8 +61,14 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return CrossSearchStrategy
 	 */
 	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
-		// Namespace handling seems to be wiki specific
-		return CrossSearchStrategy::hostWikiOnlyStrategy();
+		$parsedValue = $node->getParsedValue();
+		$namespace = $parsedValue['namespace'] ?? null;
+		if ( $namespace === null || $namespace <= NS_CATEGORY_TALK ) {
+			// we allow crosssearches for "standard" namespaces
+			return CrossSearchStrategy::allWikisStrategy();
+		} else {
+			return CrossSearchStrategy::hostWikiOnlyStrategy();
+		}
 	}
 
 	/**

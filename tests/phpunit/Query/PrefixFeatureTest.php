@@ -192,7 +192,11 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		$feature = new PrefixFeature();
 		if ( $assertions !== null ) {
-			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+			if ( $namespace === null || $namespace <= NS_CATEGORY_TALK ) {
+				$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::allWikisStrategy() );
+			} else {
+				$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+			}
 		}
 		$parsedValue = [ 'value' => $filterValue ];
 		if ( $namespace !== null ) {

@@ -87,8 +87,10 @@ class InterwikiSearcher extends Searcher {
 		$retval = [];
 		$searches = [];
 		$this->setResultsType( $resultsType );
+		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
 		foreach ( $contexts as $interwiki => $context ) {
 			$this->searchContext = $context;
+			$this->config = $context->getConfig();
 			$this->searchContext->setLimitSearchToLocalWiki( true );
 			$this->searchContext->setOriginalSearchTerm( $term );
 			$this->searchContext->setSuggestion( false );
@@ -114,7 +116,7 @@ class InterwikiSearcher extends Searcher {
 			return $retval;
 		}
 
-		return CrossProjectBlockScorerFactory::load( $this->config )->reorder( $retval );
+		return $blockScorer->reorder( $retval );
 	}
 
 	/**

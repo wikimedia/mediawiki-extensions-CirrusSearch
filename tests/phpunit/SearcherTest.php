@@ -151,6 +151,9 @@ class SearcherTest extends CirrusTestCase {
 	 */
 	private static $CONFIG_VARS_FALSE_POSITIVES = [
 		'CirrusSearchFetchConfigFromApi', // Should not be needed to build a crosswiki search
+		'DBname',
+		'SiteMatrixSites',
+		'CirrusSearchInterwikiPrefixOverrides'
 	];
 
 	private function assertConfigIsExported() {

@@ -77,12 +77,10 @@ class InterwikiSearcher extends Searcher {
 			return null;
 		}
 
-		$overriddenProfiles = $this->config->get( 'CirrusSearchCrossProjectProfiles' );
 		$contexts = [];
 		$resultsType = new FullTextResultsType();
 		foreach ( $sources as $interwiki => $config ) {
-			$overrides = isset( $overriddenProfiles[$interwiki] ) ? $overriddenProfiles[$interwiki] : [];
-			$contexts[$interwiki] = $this->buildOverriddenContext( $overrides, $config );
+			$contexts[$interwiki] = new SearchContext( $config, $this->searchContext->getNamespaces(), $this->searchContext->getDebugOptions() );
 			$contexts[$interwiki]->setResultsType( $resultsType );
 		}
 
@@ -125,31 +123,5 @@ class InterwikiSearcher extends Searcher {
 	 */
 	protected function getQueryCacheStatsKey() {
 		return 'CirrusSearch.query_cache.interwiki';
-	}
-
-	/**
-	 * Prepare a SearchContext able to run a query on target wiki defined
-	 * in $config. The default profile can also be overridden if the default
-	 * config is not suited for interwiki searches.
-	 *
-	 * @param array $overrides List of profiles to override
-	 * @param SearchConfig $config the SearchConfig of the target wiki
-	 * @return SearchContext a search context ready to run a query on the target wiki
-	 */
-	private function buildOverriddenContext( array $overrides, SearchConfig $config ) {
-		$searchContext = new SearchContext( $config, $this->searchContext->getNamespaces(), $this->searchContext->getDebugOptions() );
-		foreach ( $overrides as $name => $profile ) {
-			switch ( $name ) {
-			case 'ftbuilder':
-				$searchContext->setFulltextQueryBuilderProfile( $profile );
-				break;
-			case 'rescore':
-				$searchContext->setRescoreProfile( $profile );
-				break;
-			default:
-				throw new \RuntimeException( "Cannot override profile: unsupported type $name found in configuration" );
-			}
-		}
-		return $searchContext;
 	}
 }

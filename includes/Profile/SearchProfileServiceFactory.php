@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\InterwikiResolver;
 use CirrusSearch\SearchConfig;
 use User;
 use WebRequest;
@@ -80,6 +81,21 @@ class SearchProfileServiceFactory {
 	const CIRRUS_CONFIG = 'cirrus_config';
 
 	/**
+	 * @var InterwikiResolver
+	 */
+	private $interwikiResolver;
+
+	/**
+	 * @var SearchConfig
+	 */
+	private $hostWikiConfig;
+
+	public function __construct( InterwikiResolver $resolver, SearchConfig $hostWikiConfig ) {
+		$this->interwikiResolver = $resolver;
+		$this->hostWikiConfig = $hostWikiConfig;
+	}
+
+	/**
 	 * @param SearchConfig $config
 	 * @param WebRequest|null $request
 	 * @param User|null $user
@@ -98,7 +114,7 @@ class SearchProfileServiceFactory {
 		$this->loadPhraseSuggesterProfiles( $service, $config );
 		$this->loadSaneitizerProfiles( $service );
 		$this->loadFullTextQueryProfiles( $service, $config );
-
+		$this->loadInterwikiOverrides( $service, $config );
 		// Register extension profiles only if running on the host wiki.
 		// Only cirrus search is aware that we are running a crosswiki search
 		// Extensions have no way to know that the profiles they want to declare
@@ -239,5 +255,40 @@ class SearchProfileServiceFactory {
 			SearchProfileService::CONTEXT_DEFAULT, $config, 'CirrusSearchFullTextQueryBuilderProfile' );
 		$service->registerUriParamOverride( SearchProfileService::FT_QUERY_BUILDER,
 			SearchProfileService::CONTEXT_DEFAULT, 'cirrusFTQBProfile' );
+	}
+
+	/**
+	 * If the host wiki defines profiles in CirrusSearchCrossProjectProfiles
+	 * we inject the defaults into the target wiki profile service using a static overrider
+	 * with a prio that just supersedes the config default.
+	 *
+	 * Only rescore et ftbuilder are supported so far.
+	 *
+	 * @param SearchProfileService $service
+	 * @param SearchConfig $config
+	 */
+	private function loadInterwikiOverrides( SearchProfileService $service, SearchConfig $config ) {
+		if ( $config->isLocalWiki() || $config === $this->hostWikiConfig ) {
+			return;
+		}
+		$iwPrefix = $this->interwikiResolver->getInterwikiPrefix( $config->getWikiId() );
+		if ( $iwPrefix === null ) {
+			return;
+		}
+		$profiles = $this->hostWikiConfig->getElement( 'CirrusSearchCrossProjectProfiles',  $iwPrefix );
+		if ( $profiles === null || !is_array( $profiles ) || $profiles === [] ) {
+			return;
+		}
+		if ( isset( $profiles['rescore'] ) ) {
+			$service->registerProfileOverride( SearchProfileService::RESCORE,
+				SearchProfileService::CONTEXT_DEFAULT,
+				new StaticProfileOverride( $profiles['rescore'], SearchProfileOverride::CONFIG_PRIO - 1 ) );
+		}
+
+		if ( isset( $profiles['ftbuilder'] ) ) {
+			$service->registerProfileOverride( SearchProfileService::FT_QUERY_BUILDER,
+				SearchProfileService::CONTEXT_DEFAULT,
+				new StaticProfileOverride( $profiles['ftbuilder'], SearchProfileOverride::CONFIG_PRIO - 1 ) );
+		}
 	}
 }

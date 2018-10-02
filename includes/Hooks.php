@@ -795,7 +795,11 @@ class Hooks {
 		);
 		$container->defineService( SearchProfileServiceFactory::SERVICE_NAME,
 			function ( MediaWikiServices $serviceContainer ) {
-				return new SearchProfileServiceFactory();
+				$config = $serviceContainer->getConfigFactory()
+					->makeConfig( 'CirrusSearch' );
+				/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
+				return new SearchProfileServiceFactory( $serviceContainer
+					->getService( InterwikiResolver::SERVICE ), $config );
 			}
 		);
 	}

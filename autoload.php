@@ -164,6 +164,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Profile\\SearchProfileRepositoryTransformer' => __DIR__ . '/includes/Profile/SearchProfileRepositoryTransformer.php',
 	'CirrusSearch\\Profile\\SearchProfileService' => __DIR__ . '/includes/Profile/SearchProfileService.php',
 	'CirrusSearch\\Profile\\SearchProfileServiceFactory' => __DIR__ . '/includes/Profile/SearchProfileServiceFactory.php',
+	'CirrusSearch\\Profile\\StaticProfileOverride' => __DIR__ . '/includes/Profile/StaticProfileOverride.php',
 	'CirrusSearch\\Profile\\UriParamSearchProfileOverride' => __DIR__ . '/includes/Profile/UriParamSearchProfileOverride.php',
 	'CirrusSearch\\Profile\\UserPrefSearchProfileOverride' => __DIR__ . '/includes/Profile/UserPrefSearchProfileOverride.php',
 	'CirrusSearch\\Query\\BaseRegexFeature' => __DIR__ . '/includes/Query/BaseRegexFeature.php',

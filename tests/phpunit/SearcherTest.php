@@ -151,7 +151,8 @@ class SearcherTest extends CirrusTestCase {
 		'CirrusSearchFetchConfigFromApi', // Should not be needed to build a crosswiki search
 		'DBname',
 		'SiteMatrixSites',
-		'CirrusSearchInterwikiPrefixOverrides'
+		'CirrusSearchInterwikiPrefixOverrides',
+		'CirrusSearchCrossClusterSearch', // We explicitly want this to fall through to local wiki conf
 	];
 
 	private function assertConfigIsExported() {

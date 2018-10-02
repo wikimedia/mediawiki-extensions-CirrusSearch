@@ -8,7 +8,10 @@ use MultiConfig;
 /**
  * SearchConfig implemenation backed by a simple \HashConfig
  */
-class HashSearchConfig extends \CirrusSearch\SearchConfig {
+class HashSearchConfig extends SearchConfig {
+	/** @var bool */
+	private $isHostWiki = false;
+
 	/**
 	 * @param array $settings config vars
 	 * @param string[] $flags customization flags:
@@ -24,6 +27,7 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 
 		if ( in_array( 'inherit', $flags ) ) {
 			$config = new MultiConfig( [ $config, new GlobalVarConfig ] );
+			$this->isHostWiki = !isset( $settings['_wikiID' ] );
 		}
 		$this->setSource( $config );
 	}
@@ -37,5 +41,12 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 			return $this->get( '_wikiID' );
 		}
 		return parent::getWikiId();
+	}
+
+	public function getHostWikiConfig(): SearchConfig {
+		if ( $this->isHostWiki ) {
+			return $this;
+		}
+		return parent::getHostWikiConfig();
 	}
 }

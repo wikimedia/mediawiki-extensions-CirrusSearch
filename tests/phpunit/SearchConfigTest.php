@@ -66,24 +66,6 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertFalse( $config->has( 'TestVar' ) );
 	}
 
-	public function testWritableClusters() {
-		$this->setMwGlobals( [
-			'wgCirrusSearchClusters' => [
-				'one' => [],
-				'two' => [],
-				'readonly' => [],
-			],
-			'wgCirrusSearchWriteClusters' => [ 'one', 'two', 'unknown' ]
-		] );
-		$config = new SearchConfig();
-		// Unclear if it's right to not filter out with available cluster
-		// ElasticaWrite should error out if the cluster is unknown tho.
-		$this->assertEquals( [ 'one', 'two', 'unknown' ], $config->getWritableClusters() );
-		$this->assertTrue( $config->canWriteToCluster( 'one' ) );
-		$this->assertTrue( $config->canWriteToCluster( 'unknown' ) );
-		$this->assertFalse( $config->canWriteToCluster( 'readonly' ) );
-	}
-
 	public function testCrossSearchAccessors() {
 		$config = new SearchConfig();
 		$this->assertFalse( $config->isCrossLanguageSearchEnabled() );
@@ -146,5 +128,53 @@ class SearchConfigTest extends CirrusTestCase {
 		$this->assertEquals( wfWikiID(), $config->get( 'CirrusSearchIndexBaseName' ) );
 		$config = new HashSearchConfig( [ 'CirrusSearchIndexBaseName' => 'foobar' ] );
 		$this->assertEquals( 'foobar', $config->get( 'CirrusSearchIndexBaseName' ) );
+	}
+
+	public function getHostWikiConfigProvider() {
+		return [
+			'default' => [ 'same', new SearchConfig() ],
+			'override with inherit and same wikiid is same' => [ 'same', new HashSearchConfig( [
+				'CirrusSearchIndexBaseName' => 'phpunit',
+			], [ 'inherit' ] ) ],
+			'override without inherit and same wikiid is not same' => [ 'not', new HashSearchConfig( [
+				'CirrusSearchIndexBaseName' => 'phpunit',
+			] ) ],
+			'override with inherit and different wikiid is not same' => [ 'not', new HashSearchConfig( [
+				'_wikiID' => 'zomgwtfbbqwiki',
+			], [ 'inherit' ] ) ],
+			'override without inherit and different wikiid is not same' => [ 'not', new HashSearchConfig( [
+				'_wikiID' => 'zomgwtfbbqwiki',
+			] ) ],
+		];
+	}
+
+	/**
+	 * @dataProvider getHostWikiConfigProvider
+	 */
+	public function testGetHostWikiConfig( $same, SearchConfig $config ) {
+		if ( $same === 'same' ) {
+			$this->assertSame( $config, $config->getHostWikiConfig() );
+		} else {
+			$host = $config->getHostWikiConfig();
+			$this->assertNotSame( $host, $config );
+			$this->assertSame( $host, $host->getHostWikiConfig() );
+		}
+	}
+
+	public function testCirrusSearchServersOverride() {
+		$common = [
+			'CirrusSearchDefaultCluster' => 'primary',
+			'CirrusSearchReplicaGroup' => 'default',
+			'CirrusSearchClusters' => [
+				'primary' => [ '127.0.0.1:9200' ],
+			],
+		];
+		$config = new HashSearchConfig( $common );
+		$this->assertEquals( [ '127.0.0.1:9200' ], $config->getClusterAssignment()->getServerList() );
+
+		$config = new HashSearchConfig( $common + [
+			'CirrusSearchServers' => [ '10.9.8.7:9200' ],
+		] );
+		$this->assertEquals( [ '10.9.8.7:9200' ], $config->getClusterAssignment()->getServerList() );
 	}
 }

@@ -95,7 +95,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public static function getPool( SearchConfig $config, $cluster = null ) {
 		if ( $cluster === null ) {
-			$cluster = $config->get( 'CirrusSearchDefaultCluster' );
+			$cluster = $config->getClusterAssignment()->getSearchCluster();
 		}
 		$wiki = $config->getWikiId();
 		if ( isset( self::$pool[$wiki][$cluster] ) ) {
@@ -120,11 +120,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function __construct( SearchConfig $config, $cluster = null ) {
 		$this->config = $config;
-		if ( $cluster === null ) {
-			$this->cluster = $config->get( 'CirrusSearchDefaultCluster' );
-		} else {
-			$this->cluster = $cluster;
-		}
+		$this->cluster = $cluster ?? $config->getClusterAssignment()->getSearchCluster();
 		$this->setConnectTimeout( $this->getSettings()->getConnectTimeout() );
 		// overwrites previous connection if it exists, but these
 		// seemed more centralized than having the entry points
@@ -159,18 +155,7 @@ class Connection extends ElasticaConnection {
 	 *  specifications.
 	 */
 	public function getServerList() {
-		// This clause provides backwards compatibility with previous versions
-		// of CirrusSearch. Once this variable is removed cluster configuration
-		// will work as expected.
-		if ( $this->config->has( 'CirrusSearchServers' ) ) {
-			return $this->config->get( 'CirrusSearchServers' );
-		}
-		$config = $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
-		if ( $config === null ) {
-			throw new \RuntimeException( "No configuration available for cluster: {$this->cluster}" );
-		}
-
-		return $config;
+		return $this->config->getClusterAssignment()->getServerList( $this->cluster );
 	}
 
 	/**
@@ -317,7 +302,7 @@ class Connection extends ElasticaConnection {
 	 * @return Connection[] array of connection indexed by cluster name.
 	 */
 	public static function getWritableClusterConnections( SearchConfig $config ) {
-		return self::getClusterConnections( $config->getWritableClusters(), $config );
+		return self::getClusterConnections( $config->getClusterAssignment()->getWritableClusters(), $config );
 	}
 
 	/**

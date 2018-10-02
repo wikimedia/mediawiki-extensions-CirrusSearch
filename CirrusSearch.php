@@ -37,13 +37,13 @@ $wgExtensionCredits['other'][] = [
  */
 
 /**
- * Default cluster for read operations. This is an array key
- * mapping into $wgCirrusSearchClusters. When running multiple
- * clusters this should be pointed to the closest cluster, and
- * can be pointed at an alternate cluster during downtime.
+ * Default cluster for read operations. This refers to the cluster group from
+ * $wgCirrusSearchSearchClusters.  When running multiple clusters this should
+ * be pointed to the closest cluster, and can be pointed at an alternate
+ * cluster during downtime.
  *
- * As a form of backwards compatibility the existence of
- * $wgCirrusSearchServers will override all cluster configuration.
+ * As a form of backwards compatibility the existence of $wgCirrusSearchServers
+ * will override all cluster configuration.
  */
 $wgCirrusSearchDefaultCluster = 'default';
 
@@ -56,6 +56,11 @@ $wgCirrusSearchDefaultCluster = 'default';
  * ElasticaWrite job, unless $wgCirrusSearchWriteClusters is
  * configured (see below).
  *
+ * The list of addresses can additionally contain 'replica' and
+ * 'group' keys for controlling multi-cluster operations. By default
+ * 'replica' takes the value of the array key and 'group' is set
+ * to 'default'. For more information see docs/multi_cluster.txt.
+ *
  * $wgCirrusSearchClusters = array(
  * 	'dc-foo' => array( 'es01.foo.local', 'es02.foo.local' ),
  * 	'dc-bar' => array( 'es01.bar.local', 'es02.bar.local' ),
@@ -66,12 +71,28 @@ $wgCirrusSearchClusters = [
 ];
 
 /**
- * List of clusters that can be used for writing. Must be a subset of keys
- * from $wgCirrusSearchClusters.
- * By default or when set to null, all keys of $wgCirrusSearchClusters are
- * available for writing.
+ * List of clusters that can be used for writing. Must be a subset of cluster
+ * groups from $wgCirrusSearchClusters. By default or when set to null, all
+ * configured cluster groups are available for writing.
  */
 $wgCirrusSearchWriteClusters = null;
+
+/**
+ * Replica group the current wiki belongs to. This can be either a
+ * string for constant assignment, or a configuration array specifying
+ * a strategy for choosing the replica group. This should not be changed
+ * except in advanced multi-wiki configurations. For more information
+ * see docs/multi_cluster.txt.
+ */
+$wgCirrusSearchReplicaGroup = 'default';
+
+/**
+ * When true search queries will have their index name prepended with an
+ * elasticsearch cross-cluster-search identifier if the indices reside on a
+ * replica group separate from the host wiki.  This only applies to full text
+ * search queries, as they are the only ones that support cross-wiki search.
+ */
+$wgCirrusSearchCrossClusterSearch = false;
 
 /**
  * How many times to attempt connecting to a given server

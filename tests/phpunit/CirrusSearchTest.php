@@ -137,6 +137,7 @@ class CirrusSearchTest extends CirrusTestCase {
 				'default' => [ 'localhost' ],
 			],
 			'CirrusSearchDefaultCluster' => 'default',
+			'CirrusSearchReplicaGroup' => 'default',
 		];
 	}
 }

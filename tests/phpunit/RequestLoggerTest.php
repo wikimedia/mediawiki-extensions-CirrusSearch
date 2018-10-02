@@ -9,11 +9,11 @@ use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\RequestLogger;
 use CirrusSearch\RequestLog;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Elastica\Request;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
-use MediaWiki\MediaWikiServices;
 use Psr\Log\AbstractLogger;
 
 /**
@@ -123,7 +123,7 @@ class RequestLoggerTest extends CirrusTestCase {
 			$this->markTestSkipped( 'Stored fixtures for query' );
 		} else {
 			// Finally check for the expected log
-			$this->assertEquals( $expectedLogs, $logs );
+			$this->assertEquals( $expectedLogs, $logs, json_encode( $logs, JSON_PRETTY_PRINT ) );
 		}
 	}
 
@@ -240,10 +240,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		// Setting everything expected for running a search request/response
 		// is a pain...just use the real deal and override the clusters config
 		// to provide our transport.
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-
+		$config = SearchConfig::newFromGlobals();
 		if ( $responses === null ) {
 			// Build up an elastica transport that will record responses
 			// so they can be stored as fixtures.

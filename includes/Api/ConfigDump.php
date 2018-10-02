@@ -101,6 +101,7 @@ class ConfigDump extends \ApiBase {
 		'CirrusSearchDefaultCluster',
 		'CirrusSearchClientSideConnectTimeout',
 		'CirrusSearchClusters',
+		'CirrusSearchReplicaGroup',
 		'CirrusSearchExtraBackendLatency',
 		'CirrusSearchAllowLeadingWildcard',
 		'CirrusSearchClientSideSearchTimeout',

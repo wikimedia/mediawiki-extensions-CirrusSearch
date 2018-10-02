@@ -54,7 +54,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
-	 * @var string|array rescore profile to use
+	 * @var string rescore profile to use
 	 */
 	private $rescoreProfile;
 
@@ -302,7 +302,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return string|array the rescore profile to use
+	 * @return string the rescore profile to use
 	 */
 	public function getRescoreProfile() {
 		if ( $this->rescoreProfile === null ) {
@@ -313,7 +313,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @param string|array $rescoreProfile the rescore profile to use
+	 * @param string $rescoreProfile the rescore profile to use
 	 */
 	public function setRescoreProfile( $rescoreProfile ) {
 		$this->isDirty = true;

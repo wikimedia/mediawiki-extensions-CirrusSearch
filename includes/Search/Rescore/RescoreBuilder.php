@@ -192,22 +192,17 @@ class RescoreBuilder {
 	/**
 	 * Inspect requested namespaces and return the supported profile
 	 *
-	 * @param string|array $profileName
+	 * @param string $profileName
 	 * @return array the supported rescore profile.
 	 * @throws InvalidRescoreProfileException
 	 */
 	private function getSupportedProfile( $profileName ) {
-		if ( is_array( $profileName ) ) {
-			$profile = $profileName;
-			$profileName = '__provided__';
-		} else {
-			$profile = $this->context->getConfig()
-				->getProfileService()
-				->loadProfileByName( SearchProfileService::RESCORE, $profileName );
-			if ( !is_array( $profile ) ) {
-				throw new InvalidRescoreProfileException(
-					"Invalid fallback profile, must be array: $profileName" );
-			}
+		$profile = $this->context->getConfig()
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::RESCORE, $profileName );
+		if ( !is_array( $profile ) ) {
+			throw new InvalidRescoreProfileException(
+				"Invalid fallback profile, must be array: $profileName" );
 		}
 
 		$seen = [];

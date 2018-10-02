@@ -96,7 +96,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			return [];
 		}
 		list( $wiki, $prefix ) = $wikiAndPrefix;
-		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'siteConfSearchConfig' ] );
+		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'minimalSearchConfig' ] );
 	}
 
 	/** @return array[] */
@@ -220,7 +220,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 						'wiki' => $endpoints[$prefix]['wiki'],
 						'url' => $endpoints[$prefix]['url'],
 						'httpstatus' => $response['response']['code'],
-						'clienterror' => $response['error']
+						'clienterror' => $response['response']['error']
 					]
 				);
 				continue;
@@ -273,15 +273,5 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			],
 			array_merge( [ 'inherit' ], $hashConfigFlags )
 		);
-	}
-
-	/**
-	 * Full config loaded with SiteConfiguration ($wgConf)
-	 * @param string $wiki
-	 * @param string[] $hashConfigFlags constructor flags (ignored)
-	 * @return SearchConfig
-	 */
-	protected function siteConfSearchConfig( $wiki, array $hashConfigFlags ) {
-		return new SearchConfig( $wiki );
 	}
 }

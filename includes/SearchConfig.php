@@ -36,12 +36,6 @@ class SearchConfig implements \Config {
 	private $source;
 
 	/**
-	 * Wiki variables prefix.
-	 * @var string
-	 */
-	protected $prefix = '';
-
-	/**
 	 * Wiki id or null for current wiki
 	 * @var string|null
 	 */
@@ -59,26 +53,9 @@ class SearchConfig implements \Config {
 	private $profileService;
 
 	/**
-	 * Create new search config for current or other wiki.
-	 * NOTE: if loading another wiki config the list of variables extracted
-	 * is:
-	 *   - all globals with a prefix 'wgCirrus'
-	 *   - all non cirrus vars defined in self::$nonCirrusVars
-	 * Make sure to update this array when new vars are needed or you may encounter
-	 * issues when running queries on external wiki such as TextCat lang detection
-	 * see CirrusSearch::searchTextSecondTry().
-	 *
-	 * @param string|null $overrideName DB name for the wiki
+	 * Create new search config for the current wiki.
 	 */
-	public function __construct( $overrideName = null ) {
-		if ( $overrideName && $overrideName != wfWikiID() ) {
-			$this->wikiId = $overrideName;
-			$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
-			$this->prefix = 'wg';
-			// Re-create language object
-			$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
-			return;
-		}
+	public function __construct() {
 		$this->source = new \GlobalVarConfig();
 		$this->wikiId = wfWikiID();
 	}
@@ -94,37 +71,11 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * Get search config vars from other wiki's config
-	 *
-	 * Public for unit test purpose only.
-	 *
-	 * @param string $wiki Target wiki
-	 * @param string $prefix Cirrus variables prefix
-	 * @return array
-	 */
-	public function getConfigVars( $wiki, $prefix ) {
-		global $wgConf;
-
-		$cirrusVars = array_filter( array_keys( $GLOBALS ),
-				function ( $key ) use( $prefix ) {
-					if ( !isset( $GLOBALS[$key] ) || is_object( $GLOBALS[$key] ) ) {
-						return false;
-					}
-					return strncmp( $key, $prefix, strlen( $prefix ) ) === 0;
-				}
-		);
-		$cirrusVars = array_merge( $cirrusVars, self::$nonCirrusVars );
-		// Hack to work around https://phabricator.wikimedia.org/T111441
-		putenv( 'REQUEST_METHOD' );
-		return $wgConf->getConfig( $wiki, $cirrusVars );
-	}
-
-	/**
 	 * @param string $name
 	 * @return bool
 	 */
 	public function has( $name ) {
-		return $this->source->has( $this->prefix . $name );
+		return $this->source->has( $name );
 	}
 
 	/**
@@ -132,10 +83,10 @@ class SearchConfig implements \Config {
 	 * @return mixed
 	 */
 	public function get( $name ) {
-		if ( !$this->source->has( $this->prefix . $name ) ) {
+		if ( !$this->source->has( $name ) ) {
 			return null;
 		}
-		$value = $this->source->get( $this->prefix . $name );
+		$value = $this->source->get( $name );
 		if ( $name === self::INDEX_BASE_NAME && $value === self::WIKI_ID_MAGIC_WORD ) {
 			return $this->getWikiId();
 		}

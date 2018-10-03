@@ -308,12 +308,6 @@
                     }
                 }
             },
-            "wikibase_item": {
-                "type": "text",
-                "analyzer": "keyword",
-                "norms": false,
-                "index_options": "docs"
-            },
             "category": {
                 "type": "text",
                 "analyzer": "text",

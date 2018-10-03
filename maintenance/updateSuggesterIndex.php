@@ -473,6 +473,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
 				$totalDocsToDump = $results->getTotalHits();
+				if ( $totalDocsToDump === 0 ) {
+					break;
+				}
 				$docsDumped = 0;
 			}
 			$docIds = [];
@@ -606,6 +609,10 @@ class UpdateSuggesterIndex extends Maintenance {
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
+					if ( $totalDocsToDump === 0 ) {
+						$this->log( "No documents to index from $sourceIndexType\n" );
+						break;
+					}
 					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with " .
 						"batchId: {$this->builder->getBatchId()} and scoring method: " .
 						"{$this->scoreMethodName}\n" );

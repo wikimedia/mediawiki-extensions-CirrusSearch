@@ -270,6 +270,7 @@ class CirrusSearch extends SearchEngine {
 				$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
 				if ( $rewrittenResult->numRows() < $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) {
 					// replace the result but still try the alt language
+					$oldStatus = $rewrittenStatus;
 					$oldResult = $rewrittenResult;
 				} else {
 					return $rewrittenStatus;

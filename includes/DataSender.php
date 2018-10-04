@@ -297,8 +297,11 @@ class DataSender extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
 				$this->failedLog->warning(
-					'Delete for ids: ' . implode( ',', $docIds ),
-					[ 'exception' => $e ]
+					'Failed to delete documents: {docId}',
+					[
+						'docId' => implode( ', ', $docIds ),
+						'exception' => $e,
+					]
 				);
 				return Status::newFatal( 'cirrussearch-failed-send-deletes' );
 			}

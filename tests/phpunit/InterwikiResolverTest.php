@@ -342,10 +342,15 @@ class InterwikiResolverTest extends CirrusTestCase {
 			"config $wikiId has valid wikiId" );
 		$this->assertEquals( $wikiId, $configs[$prefix]->get( 'CirrusSearchIndexBaseName' ),
 			"config for $wikiId has valid CirrusSearchIndexBaseName" );
-		$this->assertEquals( !$valid,
-			$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ) === 'test_inheritance',
-			"config for $wikiId is" . ( !$valid ? " not" : "" ) .
-			" rescued using a fallback config" );
+		if ( $valid ) {
+			$this->assertNotEquals( 'test_inheritance',
+				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				"config for $wikiId is not rescued using a fallback config" );
+		} else {
+			$this->assertEquals( 'test_inheritance',
+				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				"config for $wikiId is rescued using a fallback config" );
+		}
 	}
 
 	/**

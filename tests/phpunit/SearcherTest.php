@@ -303,7 +303,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 		$val = parent::get( $name );
 		// Some config vars are objects.. (e.g. wgContLang)
 		if ( !is_object( $val ) ) {
-			static::$usedConfigKeys[$this->prefix . $name] = true;
+			static::$usedConfigKeys[$name] = true;
 		}
 		return $val;
 	}

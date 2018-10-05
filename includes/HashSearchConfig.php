@@ -16,6 +16,7 @@ class HashSearchConfig extends \CirrusSearch\SearchConfig {
 	 * - load-cont-lang: eagerly load ContLang from \Language::factory( 'LanguageCode' )
 	 */
 	public function __construct( array $settings, array $flags = [] ) {
+		parent::__construct();
 		$config = new \HashConfig( $settings );
 		if ( in_array( 'load-cont-lang', $flags ) && !$config->has( 'ContLang' ) && $config->has( 'LanguageCode' ) ) {
 			$config->set( 'ContLang', \Language::factory( $config->get( 'LanguageCode' ) ) );

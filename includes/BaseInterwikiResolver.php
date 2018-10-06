@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use BagOStuff;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -36,17 +37,27 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	private $interwikiLookup;
 
 	/**
+	 * @var BagOStuff
+	 */
+	private $cache;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
+	 * @param BagOStuff|null $cache Cache object for caching repeated requests
 	 */
-	public function __construct( SearchConfig $config, MultiHttpClient $client = null ) {
+	public function __construct( SearchConfig $config, MultiHttpClient $client = null, BagOStuff $cache = null ) {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
 		if ( $client === null ) {
 			$client = new MultiHttpClient( [] );
 		}
+		if ( $cache === null ) {
+			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
+		}
 		$this->httpClient = $client;
 		$this->interwikiLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
+		$this->cache = $cache;
 	}
 
 	/**
@@ -156,12 +167,11 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		}
 
 		if ( !empty( $endpoints ) ) {
-			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
 			$prefixes = array_keys( $endpoints );
 			asort( $prefixes );
 			$cacheKey = implode( '-', $prefixes );
-			$configs = $cache->getWithSetCallback(
-				$cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
+			$configs = $this->cache->getWithSetCallback(
+				$this->cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
 				self::CONFIG_CACHE_TTL,
 				function () use ( $endpoints ) {
 					return $this->sendConfigDumpRequest( $endpoints );

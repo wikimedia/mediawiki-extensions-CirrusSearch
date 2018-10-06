@@ -16,7 +16,8 @@
 			"Mbch331",
 			"Ooswesthoesbes",
 			"Mar(c)",
-			"Optilete"
+			"Optilete",
+			"Woodcutterty"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",
@@ -62,7 +63,7 @@
 	"cirrussearch-pref-completion-section-desc": "Aanvullingssuggesties",
 	"cirrussearch-pref-completion-section-legend": "De [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester aanvullingssuggestie] is een algoritme om zoekaanvullingssuggesties te geven met betere spellingcorrectie en zoekrelevantie.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standaard (aanbevolen)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Verbetert maximaal twee typefouten. Verwijderd doorverwijzingen die sterk lijken op de hoofd titel.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Verbetert maximaal twee typefouten. Verwijdert doorverwijzingen die sterk lijken op de hoofdtitel.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Subphrase matching (aanbevolen voor langere paginatitels)",
 	"cirrussearch-completion-profile-strict-pref-name": "Strikte modus (geavanceerd)",
 	"cirrussearch-completion-profile-strict-pref-desc": "Geen spellingcorrectie. Geen negeren van accenten. Strikte overeenkomst.",

@@ -61,7 +61,7 @@
 	"cirrussearch-pref-completion-section-desc": "Sugestões de preenchimento",
 	"cirrussearch-pref-completion-section-legend": "Um algoritmo para [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de preenchimento] com melhor correção de erros ortográficos e maior relevância das pesquisas.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros ortográficos. Resolve redirecionamentos de erros ortográficos.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros ortográficos. Remove redirecionamentos  que são muito parecidos com o título principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrases (recomendada para os títulos de página mais longos)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Corrige até dois erros ortográficos. Resolve redirecionamentos de erros ortográficos. Identifica correspondências de subfrases nos títulos.",
 	"cirrussearch-completion-profile-strict-pref-name": "Modo rigoroso (avançado)",

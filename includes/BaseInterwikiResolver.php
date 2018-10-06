@@ -149,7 +149,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				}
 				$api = isset( $parts['scheme'] ) ? $parts['scheme'] : 'http';
 				$api .= '://' . $parts['host'];
-				$api .= isset( $parts['port'] ) ? ':' + $parts['port'] : '';
+				$api .= isset( $parts['port'] ) ? ':' . $parts['port'] : '';
 				$api .= '/w/api.php';
 			}
 			$endpoints[$prefix] = [ 'url' => $api, 'wiki' => $wiki ];

@@ -57,8 +57,7 @@ class ParsedQuery {
 	private $parseWarnings;
 
 	/**
-	 * @var int|string|null namespace specified at the beginning of the query
-	 * int (specific namespace), 'all' (for all namespaces), null (none set)
+	 * @var NamespaceHeaderNode|null namespace specified at the beginning of the query
 	 */
 	private $namespaceHeader;
 
@@ -98,7 +97,7 @@ class ParsedQuery {
 	 * @param string $query cleaned up query string
 	 * @param string $rawQuery original query as received by the search engine
 	 * @param bool[] $queryCleanups indexed by cleanup type (non-empty when $query !== $rawQuery)
-	 * @param int|string|null $namespaceHeader namespace found as a "header" of the query
+	 * @param NamespaceHeaderNode|null $namespaceHeader namespace found as a "header" of the query
 	 *        is a int when a namespace id is provided, string with 'all' or null if none specified
 	 * @param array|string $requiredNamespaces
 	 * @param ParseWarning[] $parseWarnings list of warnings detected during parsing
@@ -109,7 +108,7 @@ class ParsedQuery {
 		$query,
 		$rawQuery,
 		$queryCleanups,
-		$namespaceHeader,
+		NamespaceHeaderNode $namespaceHeader = null,
 		$requiredNamespaces,
 		array $parseWarnings,
 		ParsedQueryClassifiersRepository $repository
@@ -119,9 +118,6 @@ class ParsedQuery {
 		$this->rawQuery = $rawQuery;
 		$this->queryCleanups = $queryCleanups;
 		$this->parseWarnings = $parseWarnings;
-		Assert::parameter( $namespaceHeader === null || is_int( $namespaceHeader )
-				|| $namespaceHeader === 'all',
-			'$namespaceHeader', 'must be null, an integer or a string equals to "all"' );
 		$this->namespaceHeader = $namespaceHeader;
 		Assert::parameter( is_array( $requiredNamespaces ) || $requiredNamespaces === 'all',
 			'$requiredNamespaces', 'must be an array or "all"' );
@@ -173,11 +169,10 @@ class ParsedQuery {
 	}
 
 	/**
-	 * Get the namespace identified in the prefix of the query.
-	 * It can be a specific namespace (int) for <code>file:foo</code>
-	 * It can be the string 'all' for <code>all:foo</code>
+	 * Get the node of the namespace header identified in the prefix of the query
+	 * if specified.
 	 * It can be null in all other cases
-	 * @return int|string|null
+	 * @return NamespaceHeaderNode|null
 	 */
 	public function getNamespaceHeader() {
 		return $this->namespaceHeader;
@@ -208,7 +203,7 @@ class ParsedQuery {
 			return [];
 		}
 
-		if ( $this->namespaceHeader === 'all' ) {
+		if ( $this->namespaceHeader !== null && $this->namespaceHeader->getNamespace() === 'all' ) {
 			// e.g. all:foo
 			return [];
 		}
@@ -220,10 +215,10 @@ class ParsedQuery {
 		}
 
 		// now everything else will be an explicit list of namespaces
-		Assert::postcondition( $this->namespaceHeader === null || is_int( $this->namespaceHeader ),
+		Assert::postcondition( $this->namespaceHeader === null || is_int( $this->namespaceHeader->getNamespace() ),
 			'$this->namespaceHeader must be null or an integer' );
 
-		$ns = $this->namespaceHeader === null ? $namespaces : [ $this->namespaceHeader ];
+		$ns = $this->namespaceHeader === null ? $namespaces : [ $this->namespaceHeader->getNamespace() ];
 		Assert::postcondition( is_array( $ns ) && $ns !== [],
 			'at this point we must have a list of specific namespaces' );
 
@@ -330,8 +325,8 @@ class ParsedQuery {
 			'rawQuery' => $this->rawQuery
 		];
 
-		if ( $this->getNamespaceHeader() !== null ) {
-			$ar['namespaceHeader'] = $this->getNamespaceHeader();
+		if ( $this->namespaceHeader !== null ) {
+			$ar += $this->namespaceHeader->toArray();
 		}
 		if ( $this->requiredNamespaces !== [] ) {
 			$ar['requiredNamespaces'] = $this->requiredNamespaces;

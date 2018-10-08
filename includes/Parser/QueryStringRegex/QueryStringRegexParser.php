@@ -5,6 +5,7 @@ namespace CirrusSearch\Parser\QueryStringRegex;
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Parser\AST\NamespaceHeaderNode;
 use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\ParsedNode;
@@ -153,7 +154,7 @@ class QueryStringRegexParser implements QueryParser {
 	private $warnings = [];
 
 	/**
-	 * @var int|string|null
+	 * @var NamespaceHeaderNode|null
 	 */
 	private $namespaceHeader;
 
@@ -760,16 +761,16 @@ class QueryStringRegexParser implements QueryParser {
 		if ( $queryAndNs !== false ) {
 			Assert::postcondition( count( $queryAndNs ) === 2,
 				'\SearchEngine::parseNamespacePrefixes() must return false or a 2 elements array' );
+			$queryOffset = strlen( $this->query ) - strlen( $queryAndNs[0] );
 			if ( $queryAndNs[1] ) {
 				Assert::postcondition( is_array( $queryAndNs[1] ) && count( $queryAndNs[1] ) === 1,
 						'\SearchEngine::parseNamespacePrefixes() should return an array whose second ' .
 						'element is falsy or an array of size 1' );
-				$this->namespaceHeader = reset( $queryAndNs[1] );
+				$this->namespaceHeader = new NamespaceHeaderNode( $this->offset, $queryOffset, reset( $queryAndNs[1] ) );
 			} else {
-				$this->namespaceHeader = 'all';
+				$this->namespaceHeader = new NamespaceHeaderNode( $this->offset, $queryOffset, 'all' );
 			}
-			$term = $queryAndNs[0];
-			$this->offset = strlen( $this->query ) - strlen( $term );
+			$this->offset = $queryOffset;
 		}
 	}
 }

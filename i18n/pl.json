@@ -9,7 +9,8 @@
 			"Woytecr",
 			"Nux",
 			"InternerowyGołąb",
-			"Rzuwig"
+			"Rzuwig",
+			"Railfail536"
 		]
 	},
 	"cirrussearch-desc": "Wyszukiwanie dla MediaWiki za pomocą Elasticsearch",
@@ -25,10 +26,13 @@
 	"cirrussearch-pref-label": "Nowe wyszukiwanie",
 	"cirrussearch-pref-desc": "Wypróbuj naszą nową wyszukiwarkę, która obsługuje większą liczbę języków, podaje bardziej aktualne wyniki wyszukiwania, a nawet umożliwia odnalezienie tekstu wewnątrz szablonów.",
 	"apihelp-cirrus-config-dump-description": "Zrzut konfiguracji CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Zrzut konfiguracji CirrusSearch.",
 	"apihelp-cirrus-config-dump-example": "Pobierz zrzut konfiguracji CirrusSearch.",
 	"apihelp-cirrus-mapping-dump-description": "Zrzut mapowania CirrusSearch dla tej wiki.",
+	"apihelp-cirrus-mapping-dump-summary": "Zrzut mapowania CirrusSearch dla tej wiki.",
 	"apihelp-cirrus-mapping-dump-example": "Pobierz zrzut mapowania CirrusSearch dla tej wiki.",
 	"apihelp-cirrus-settings-dump-description": "Zrzut ustawień CirrusSearch dla tej wiki.",
+	"apihelp-cirrus-settings-dump-summary": "Zrzut ustawień CirrusSearch dla tej wiki.",
 	"apihelp-cirrus-settings-dump-example": "Pobierz zrzut ustawień CirrusSearch dla tej wiki.",
 	"cirrussearch-give-feedback": "Wyślij nam opinię",
 	"cirrussearch-query-too-long": "Żądanie wyszukiwania jest dłuższe niż maksymalna dozwolona długość. ($1 > $2)",

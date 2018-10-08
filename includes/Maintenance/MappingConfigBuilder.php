@@ -172,10 +172,6 @@ class MappingConfigBuilder {
 					->setFlag( SearchIndexField::FLAG_CASEFOLD )
 					->getMapping( $this->engine ),
 				'suggest' => $suggestField,
-				// FIXME: this should be moved to Wikibase Client
-				'wikibase_item' => $this->searchIndexFieldFactory
-					->newKeywordField( 'wikibase_item' )
-					->getMapping( $this->engine ),
 			]
 		];
 

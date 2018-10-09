@@ -258,7 +258,9 @@ class RunSearch extends Maintenance {
 			$this->getOption( 'explain', false ) ? 'raw' : null
 		);
 
-		$engine = new CirrusSearch( $this->indexBaseName, null, $options );
+		$config = new CirrusSearch\HashSearchConfig( [ SearchConfig::INDEX_BASE_NAME => $this->indexBaseName ],
+			[ 'inherit' ] );
+		$engine = new CirrusSearch( $config, $options );
 		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
 		$engine->setNamespaces( $namespaces );
 

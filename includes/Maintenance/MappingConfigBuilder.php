@@ -68,7 +68,7 @@ class MappingConfigBuilder {
 	 */
 	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
-		$this->engine = new \CirrusSearch( null, $config );
+		$this->engine = new \CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
 	}

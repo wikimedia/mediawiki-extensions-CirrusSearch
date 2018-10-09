@@ -75,11 +75,6 @@ class CirrusSearch extends SearchEngine {
 	private $extraSearchMetrics = [];
 
 	/**
-	 * @var string
-	 */
-	private $indexBaseName;
-
-	/**
 	 * @var Connection
 	 */
 	private $connection;
@@ -107,20 +102,17 @@ class CirrusSearch extends SearchEngine {
 	private $debugOptions;
 	/**
 	 * CirrusSearch constructor.
-	 * @param string|null $baseName
 	 * @param SearchConfig|null $config
 	 * @param CirrusDebugOptions|null $debugOptions
 	 * @throws ConfigException
 	 */
-	public function __construct( $baseName = null, SearchConfig $config = null, CirrusDebugOptions $debugOptions = null ) {
+	public function __construct( SearchConfig $config = null, CirrusDebugOptions $debugOptions = null ) {
 		// Initialize UserTesting before we create a Connection
 		// This is useful to do tests across multiple clusters
 		UserTesting::getInstance();
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		// FIXME: get rid of basename here, it's never used and cumbersome to maintain so early
-		$this->indexBaseName = $baseName ?? $this->config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
@@ -303,7 +295,6 @@ class CirrusSearch extends SearchEngine {
 		}
 		$config = $this->detectSecondaryLanguage( $query );
 		if ( $config !== null ) {
-			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
 			$status = $this->searchTextReal(
 				SearchQueryBuilder::forCrossLanguageSearch( $config, $query )->build()
 			);
@@ -395,7 +386,7 @@ class CirrusSearch extends SearchEngine {
 		}
 		$suggester = new CompletionSuggester( $connection, $this->limit,
 				$this->offset, $config, $this->namespaces, null,
-				$this->indexBaseName, $profile );
+				null, $profile );
 
 		$response = $suggester->suggest( $search, $variants );
 		if ( $response->isOK() ) {
@@ -669,6 +660,6 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function makeSearcher( SearchConfig $config = null ) {
 		return new Searcher( $this->connection, $this->offset, $this->limit, $config ?? $this->config, $this->namespaces,
-				null, $this->indexBaseName, $this->debugOptions );
+				null, null, $this->debugOptions );
 	}
 }

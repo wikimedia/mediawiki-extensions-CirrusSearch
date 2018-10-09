@@ -111,7 +111,7 @@ class SearcherTest extends CirrusTestCase {
 		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
 
-		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new \CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
 		$engine->setNamespaces( [
@@ -254,7 +254,7 @@ class SearcherTest extends CirrusTestCase {
 			$termMain = $query;
 		}
 
-		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new \CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();

@@ -8,6 +8,7 @@ use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchMetricsProvider;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\CompletionSuggester;
@@ -118,6 +119,7 @@ class CirrusSearch extends SearchEngine {
 		$this->config = $config ?? MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
+		// FIXME: get rid of basename here, it's never used and cumbersome to maintain so early
 		$this->indexBaseName = $baseName ?? $this->config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->connection = new Connection( $this->config );
 		$this->request = RequestContext::getMain()->getRequest();
@@ -170,7 +172,28 @@ class CirrusSearch extends SearchEngine {
 	 * @return Status Value is either SearchResultSet, or null on error.
 	 */
 	protected function doSearchText( $term ) {
-		$status = $this->searchTextReal( $term, $this->config );
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $this->config, $term )
+			->setDebugOptions( $this->debugOptions )
+			->setInitialNamespaces( $this->namespaces )
+			->setLimit( $this->limit )
+			->setOffset( $this->offset )
+			->setSort( $this->getSort() )
+			->setExtraIndicesSearch( true )
+			->setCrossProjectSearch( $this->isFeatureEnabled( 'interwiki' ) )
+			->setWithDYMSuggestion( $this->showSuggestion );
+
+		if ( $this->prefix !== '' ) {
+			$builder->addContextualFilter( 'prefix',
+				\CirrusSearch\Query\PrefixFeature::asContextualFilter( $this->prefix ) );
+		}
+		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
+		if ( $profile !== null ) {
+			$builder->addForcedProfile( SearchProfileService::RESCORE, $profile );
+		}
+
+		$query = $builder->build();
+
+		$status = $this->searchTextReal( $query );
 		$matches = $status->getValue();
 		if ( !$status->isOK() || !$matches instanceof ResultSet ) {
 			return $status;
@@ -180,7 +203,7 @@ class CirrusSearch extends SearchEngine {
 			 $matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) &&
 			 $this->prefix === ''
 		) {
-			$status = $this->searchTextSecondTry( $term, $status );
+			$status = $this->searchTextSecondTry( $query, $status );
 		}
 		ElasticsearchIntermediary::setResultPages( [ $status->getValue() ] );
 		if ( $status->getValue() instanceof SearchMetricsProvider ) {
@@ -192,19 +215,19 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Check whether we want to try another language.
-	 * @param string $term Search term
+	 * @param SearchQuery $query
 	 * @return SearchConfig|null config for another wiki to try, or null
 	 */
-	private function detectSecondaryLanguage( $term ) {
-		if ( !$this->config->isCrossLanguageSearchEnabled() ) {
+	private function detectSecondaryLanguage( SearchQuery $query ) {
+		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
 			return null;
 		}
-		$detectorsFactory = new LanguageDetectorFactory( $this->config, $this->request );
+		$detectorsFactory = new LanguageDetectorFactory( $query->getSearchConfig(), $this->request );
 		$detectors = $detectorsFactory->getDetectors();
 		$detected = null;
 		foreach ( $detectors as $name => $detector ) {
-			$lang = $detector->detect( $term );
-			if ( $lang === $this->config->get( 'LanguageCode' ) ) {
+			$lang = $detector->detect( $query->getParsedQuery()->getRawQuery() );
+			if ( $lang === $query->getSearchConfig()->get( 'LanguageCode' ) ) {
 				// The query is in the wiki language so we
 				// don't need to actually try another wiki.
 				// Note that this may not be very accurate for
@@ -250,18 +273,19 @@ class CirrusSearch extends SearchEngine {
 	}
 
 	/**
-	 * @param string $term
+	 * @param SearchQuery $query
 	 * @param Status $oldStatus
 	 * @return Status
 	 */
-	private function searchTextSecondTry( $term, Status $oldStatus ) {
+	private function searchTextSecondTry( SearchQuery $query, Status $oldStatus ) {
 		// TODO: figure out who goes first - language or suggestion?
+		/** @var ResultSet $oldResult */
 		$oldResult = $oldStatus->getValue();
 		if ( $oldResult->numRows() == 0 && $oldResult->hasSuggestion() ) {
 			$rewritten = $oldResult->getSuggestionQuery();
 			$rewrittenSnippet = $oldResult->getSuggestionSnippet();
-			$this->showSuggestion = false;
-			$rewrittenStatus = $this->searchTextReal( $rewritten, $this->config );
+			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $rewritten )->build();
+			$rewrittenStatus = $this->searchTextReal( $rewrittenQuery );
 			$rewrittenResult = $rewrittenStatus->getValue();
 			if (
 				$rewrittenResult instanceof ResultSet
@@ -277,10 +301,12 @@ class CirrusSearch extends SearchEngine {
 				}
 			}
 		}
-		$config = $this->detectSecondaryLanguage( $term );
+		$config = $this->detectSecondaryLanguage( $query );
 		if ( $config !== null ) {
 			$this->indexBaseName = $config->get( SearchConfig::INDEX_BASE_NAME );
-			$status = $this->searchTextReal( $term, $config, true );
+			$status = $this->searchTextReal(
+				SearchQueryBuilder::forCrossLanguageSearch( $config, $query )->build()
+			);
 			$matches = $status->getValue();
 			if ( $matches instanceof ResultSet ) {
 				$numRows = $matches->numRows();
@@ -301,34 +327,11 @@ class CirrusSearch extends SearchEngine {
 
 	/**
 	 * Do the hard part of the searching - actual Searcher invocation
-	 * @param string $term
-	 * @param SearchConfig $config
-	 * @param bool $forceLocal set to true to force searching on the
-	 *        local wiki (e.g. avoid searching on commons)
+	 * @param SearchQuery $query
 	 * @return Status
 	 */
-	protected function searchTextReal( $term, SearchConfig $config, $forceLocal = false ) {
-		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $term )
-			->setDebugOptions( $this->debugOptions )
-			->setInitialNamespaces( $this->namespaces )
-			->setLimit( $this->limit )
-			->setOffset( $this->offset )
-			->setSort( $this->getSort() )
-			->setExtraIndicesSearch( !$forceLocal )
-			->setCrossProjectSearch( !$forceLocal && $this->isFeatureEnabled( 'interwiki' ) )
-			->setWithDYMSuggestion( $this->showSuggestion );
-
-		if ( $this->prefix !== '' ) {
-			$builder->addContextualFilter( 'prefix',
-				\CirrusSearch\Query\PrefixFeature::asContextualFilter( $this->prefix ) );
-		}
-		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
-		if ( $profile !== null ) {
-			$builder->addForcedProfile( SearchProfileService::RESCORE, $profile );
-		}
-
-		$query = $builder->build();
-		$searcher = $this->makeSearcher( $config );
+	protected function searchTextReal( SearchQuery $query ) {
+		$searcher = $this->makeSearcher( $query->getSearchConfig() );
 		$status = $searcher->search( $query );
 		$this->lastSearchMetrics = $searcher->getSearchMetrics();
 		if ( !$status->isOK() ) {
@@ -346,7 +349,7 @@ class CirrusSearch extends SearchEngine {
 			$searcher->getSearchContext()->areResultsPossible() &&
 			( $this->debugOptions->isReturnRaw() || method_exists( $result, 'addInterwikiResults' ) )
 		) {
-			$iwSearch = new InterwikiSearcher( $this->connection, $config, $this->namespaces, null, $this->debugOptions );
+			$iwSearch = new InterwikiSearcher( $this->connection, $query->getSearchConfig(), $this->namespaces, null, $this->debugOptions );
 			$interwikiResults = $iwSearch->getInterwikiResults( $query );
 			if ( $interwikiResults !== null ) {
 				// If we are dumping we need to convert into an array that can be appended to

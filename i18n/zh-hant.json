@@ -64,7 +64,7 @@
 	"cirrussearch-pref-completion-section-desc": "完整搜尋建議器",
 	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester 完整搜尋建議器]是一個有更佳的錯別字修正與搜尋相關性的搜尋建議演算法。",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "預設（推薦）",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "糾正最多兩個錯別字。修復相近重新導向。",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "糾正最多兩個錯別字。移除非常相似主要標題的重新導向。",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "字詞組比較（建議用於較長的頁面標題）",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "糾正倆個錯別字。修復相近的重新導向。符合在標題的字詞組。",
 	"cirrussearch-completion-profile-strict-pref-name": "嚴謹模式（進階）",

@@ -100,7 +100,7 @@ class ParsedQueryTest extends CirrusTestCase {
 	public function testNsHeader( $query, $expectedNsHeader, $queryStartOffset ) {
 		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
-		$this->assertEquals( $expectedNsHeader, $pq->getNamespaceHeader() );
+		$this->assertEquals( $expectedNsHeader, $pq->getNamespaceHeader() !== null ? $pq->getNamespaceHeader()->getNamespace() : null );
 		$this->assertEquals( $queryStartOffset, $pq->getRoot()->getStartOffset() );
 	}
 
@@ -186,6 +186,7 @@ class ParsedQueryTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideTestActualNamespace
+	 * @covers \CirrusSearch\Parser\AST\NamespaceHeaderNode
 	 * @param $query
 	 * @param $initialNamespaces
 	 * @param $expectedActualNamespace

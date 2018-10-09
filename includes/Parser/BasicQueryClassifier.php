@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Parser;
 
+use CirrusSearch\Parser\AST\NamespaceHeaderNode;
 use CirrusSearch\Parser\AST\Visitor\Visitor;
 use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
@@ -212,5 +213,11 @@ class BasicQueryClassifier implements ParsedQueryClassifier, Visitor {
 			self::COMPLEX_QUERY,
 			self::BOGUS_QUERY,
 		];
+	}
+
+	/**
+	 * @param NamespaceHeaderNode $node
+	 */
+	public function visitNamespaceHeader( NamespaceHeaderNode $node ) {
 	}
 }

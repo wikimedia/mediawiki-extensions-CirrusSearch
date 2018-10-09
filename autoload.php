@@ -124,6 +124,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Parser\\AST\\EmptyQueryNode' => __DIR__ . '/includes/Parser/AST/EmptyQueryNode.php',
 	'CirrusSearch\\Parser\\AST\\FuzzyNode' => __DIR__ . '/includes/Parser/AST/FuzzyNode.php',
 	'CirrusSearch\\Parser\\AST\\KeywordFeatureNode' => __DIR__ . '/includes/Parser/AST/KeywordFeatureNode.php',
+	'CirrusSearch\\Parser\\AST\\NamespaceHeaderNode' => __DIR__ . '/includes/Parser/AST/NamespaceHeaderNode.php',
 	'CirrusSearch\\Parser\\AST\\NegatedNode' => __DIR__ . '/includes/Parser/AST/NegatedNode.php',
 	'CirrusSearch\\Parser\\AST\\ParseWarning' => __DIR__ . '/includes/Parser/AST/ParseWarning.php',
 	'CirrusSearch\\Parser\\AST\\ParsedBooleanNode' => __DIR__ . '/includes/Parser/AST/ParsedBooleanNode.php',

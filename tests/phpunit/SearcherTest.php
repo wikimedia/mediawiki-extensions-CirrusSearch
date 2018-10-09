@@ -67,6 +67,7 @@ class SearcherTest extends CirrusTestCase {
 	public function testSearchText( array $config, $expected, $queryString ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
+			// We want to override the wikiid for consistent output, but this might break everything else...
 			'wgCirrusSearchExtraIndexes' => [],
 			'wgCirrusSearchExtraIndexBoostTemplates' => [],
 			'wgCirrusSearchIndexBaseName' => 'wiki',
@@ -127,8 +128,6 @@ class SearcherTest extends CirrusTestCase {
 		// regenerating the fixture wont cause changes. Do it always, instead of only when
 		// writing, so that the diff's from phpunit are also as minimal as possible.
 		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
-		// The actual name of the index may vary, and doesn't really matter
-		unset( $elasticQuery['path'] );
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
@@ -136,7 +135,6 @@ class SearcherTest extends CirrusTestCase {
 		} else {
 			// Repeat normalizations applied to $elasticQuery
 			$expected = $this->normalizeNow( $expected );
-			unset( $expected['path'] );
 
 			// Finally compare some things
 			$this->assertEquals( $expected, $elasticQuery, $encodedQuery );

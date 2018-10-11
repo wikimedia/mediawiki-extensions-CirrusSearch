@@ -92,6 +92,15 @@ class SearchConfig implements \Config {
 	}
 
 	/**
+	 * Reset any cached state so testing can ensures changes to global state
+	 * are reflected here. Only public for use from phpunit.
+	 */
+	public function clearCachesForTesting() {
+		$this->profileService = null;
+		$this->clusters = null;
+	}
+
+	/**
 	 * @return bool true if this config was built for this wiki.
 	 */
 	public function isLocalWiki() {

@@ -59,7 +59,6 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Extra\\Query\\TermFreq' => __DIR__ . '/includes/Extra/Query/TermFreq.php',
 	'CirrusSearch\\Extra\\Query\\TokenCountRouter' => __DIR__ . '/includes/Extra/Query/TokenCountRouter.php',
 	'CirrusSearch\\ForceSearchIndex' => __DIR__ . '/maintenance/forceSearchIndex.php',
-	'CirrusSearch\\HTMLCompletionProfileSettings' => __DIR__ . '/includes/HTMLCompletionProfileSettings.php',
 	'CirrusSearch\\HashSearchConfig' => __DIR__ . '/includes/HashSearchConfig.php',
 	'CirrusSearch\\Hooks' => __DIR__ . '/includes/Hooks.php',
 	'CirrusSearch\\InterwikiResolver' => __DIR__ . '/includes/InterwikiResolver.php',

@@ -2,6 +2,9 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Profile\SearchProfileServiceFactory;
+
 /**
  * Make sure cirrus doens't break any hooks.
  *
@@ -351,5 +354,47 @@ class HooksTest extends CirrusTestCase {
 		$request = new \FauxRequest( [ $paramName => $paramValue ] );
 		Hooks::initializeForRequest( $request );
 		$this->assertEquals( $expectedValue + $nullOptions, $GLOBALS[$option] );
+	}
+
+	private function preferencesForCompletionProfiles( array $profiles ) {
+		$this->setMwGlobals( [
+			'wgCirrusSearchUseCompletionSuggester' => true,
+		] );
+		$service = new SearchProfileService();
+		$service->registerDefaultProfile( SearchProfileService::COMPLETION,
+			SearchProfileService::CONTEXT_DEFAULT, 'fuzzy' );
+		$service->registerArrayRepository( SearchProfileService::COMPLETION, 'phpunit', $profiles );
+		$factory = $this->getMockBuilder( SearchProfileServiceFactory::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$factory->expects( $this->any() )
+			->method( 'loadService' )
+			->will( $this->returnValue( $service ) );
+		$this->setService( SearchProfileServiceFactory::SERVICE_NAME, $factory );
+
+		$prefs = [];
+		Hooks::onGetPreferences( new \User(), $prefs );
+		return $prefs;
+	}
+
+	public function testNoSearchPreferencesWhenNoChoice() {
+		$prefs = $this->preferencesForCompletionProfiles( [] );
+		$this->assertEquals( [], $prefs );
+	}
+
+	public function testNoSearchPreferencesWhenOnlyOneChoice() {
+		$prefs = $this->preferencesForCompletionProfiles( [
+			'fuzzy' => [ 'name' => 'fuzzy' ],
+		] );
+		$this->assertEquals( [], $prefs );
+	}
+
+	public function testSearchPreferencesAvailableWithMultipleChoices() {
+		$prefs = $this->preferencesForCompletionProfiles( [
+			'fuzzy' => [ 'name' => 'fuzzy' ],
+			'strict' => [ 'name' => 'strict' ],
+		] );
+		$this->assertCount( 1, $prefs );
+		$this->assertArrayHasKey( 'cirrussearch-pref-completion-profile', $prefs );
 	}
 }

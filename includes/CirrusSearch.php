@@ -172,7 +172,8 @@ class CirrusSearch extends SearchEngine {
 			->setSort( $this->getSort() )
 			->setExtraIndicesSearch( true )
 			->setCrossProjectSearch( $this->isFeatureEnabled( 'interwiki' ) )
-			->setWithDYMSuggestion( $this->showSuggestion );
+			->setWithDYMSuggestion( $this->showSuggestion )
+			->setAllowRewrite( $this->isFeatureEnabled( 'rewrite' ) );
 
 		if ( $this->prefix !== '' ) {
 			$builder->addContextualFilter( 'prefix',
@@ -191,7 +192,7 @@ class CirrusSearch extends SearchEngine {
 			return $status;
 		}
 
-		if ( $this->isFeatureEnabled( 'rewrite' ) &&
+		if ( $query->isAllowRewrite() &&
 			 $matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) &&
 			 $this->prefix === ''
 		) {

@@ -232,6 +232,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $config, $defaults->getSearchConfig() );
 		$this->assertEmpty( $defaults->getContextualFilters() );
 		$this->assertTrue( $defaults->isWithDYMSuggestion() );
+		$this->assertFalse( $defaults->isAllowRewrite() );
 	}
 
 	public function testBuilder() {
@@ -249,7 +250,8 @@ class SearchQueryTest extends CirrusTestCase {
 			->setLimit( 100 )
 			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
 			->setSort( 'size' )
-			->setWithDYMSuggestion( false );
+			->setWithDYMSuggestion( false )
+			->setAllowRewrite( true );
 		$custom = $builder->build();
 		$expectedParsedQuery = QueryParserFactory::newFullTextQueryParser( $config )->parse( 'test' );
 		$this->assertEquals( $expectedParsedQuery, $custom->getParsedQuery() );
@@ -266,6 +268,8 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests(), $custom->getDebugOptions() );
 		$this->assertEquals( $config, $custom->getSearchConfig() );
 		$this->assertEmpty( $custom->getContextualFilters() );
+		$this->assertFalse( $custom->isWithDYMSuggestion() );
+		$this->assertTrue( $custom->isAllowRewrite() );
 
 		// test that contextual filters force a hostwiki only crosswiki search
 		$builder->setExtraIndicesSearch( true )
@@ -450,6 +454,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( $targetWikiConfig, $crossSearchQuery->getSearchConfig() );
 		$this->assertEmpty( $crossSearchQuery->getContextualFilters() );
 		$this->assertFalse( $crossSearchQuery->isWithDYMSuggestion() );
+		$this->assertFalse( $crossSearchQuery->isAllowRewrite() );
 		$this->assertEquals( $offset, $crossSearchQuery->getOffset() );
 		$this->assertEquals( $limit, $crossSearchQuery->getLimit() );
 		if ( $forcedRescoreProfile !== null ) {
@@ -470,6 +475,7 @@ class SearchQueryTest extends CirrusTestCase {
 			->setLimit( 100 )
 			->setOffset( 10 )
 			->setSort( 'size' )
+			->setAllowRewrite( true )
 			->setInitialNamespaces( [ NS_HELP, NS_FILE ] )
 			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$query = $builder->build();
@@ -480,6 +486,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertFalse( $rewritten->getInitialCrossSearchStrategy()->isCrossProjectSearchSupported() );
 		$this->assertTrue( $rewritten->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported() );
 		$this->assertFalse( $rewritten->isWithDYMSuggestion() );
+		$this->assertFalse( $rewritten->isAllowRewrite() );
 
 		$this->assertEquals( $query->getDebugOptions(), $rewritten->getDebugOptions() );
 		// FIXME: config is a bit differrent to disable quotation mark stripping

@@ -6,6 +6,7 @@ use CirrusSearch\Search\CirrusIndexField;
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MWTimestamp;
 use Sanitizer;
 use TextContent;
 use Title;
@@ -339,8 +340,11 @@ class Updater extends ElasticsearchIntermediary {
 			'namespace_text' => Util::getNamespaceText( $title ),
 			'title' => $title->getText(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-			'create_timestamp' => wfTimestamp( TS_ISO_8601, $page->getOldestRevision()->getTimestamp() ),
 		] );
+		$createTs = self::loadCreateTimestamp( $page->getId(), TS_ISO_8601 );
+		if ( $createTs !== false ) {
+			$doc->set( 'create_timestamp', $createTs );
+		}
 		CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
 		if ( !$skipParse ) {
 			$contentHandler = $page->getContentHandler();
@@ -376,6 +380,27 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		return $doc;
+	}
+
+	/**
+	 * Timestamp the oldest revision of this page was created.
+	 * @param int $pageId
+	 * @param int $style TS_* output format constant
+	 * @return string|bool Formatted timestamp or false on failure
+	 */
+	private static function loadCreateTimestamp( $pageId, $style ) {
+		$db = wfGetDB( DB_REPLICA );
+		$row = $db->selectRow(
+			'revision',
+			'rev_timestamp',
+			[ 'rev_page' => $pageId ],
+			__METHOD__,
+			[ 'ORDER BY' => 'rev_timestamp ASC' ]
+		);
+		if ( !$row ) {
+			return false;
+		}
+		return MWTimestamp::convert( $style, $row->rev_timestamp );
 	}
 
 	/**

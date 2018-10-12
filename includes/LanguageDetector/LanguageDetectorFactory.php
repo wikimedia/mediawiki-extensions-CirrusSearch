@@ -43,7 +43,6 @@ class LanguageDetectorFactory {
 				);
 				continue;
 			}
-
 			if ( !in_array( \CirrusSearch\LanguageDetector\Detector::class, class_implements( $klass ) ) ) {
 				LoggerFactory::getInstance( 'CirrusSearch' )->info(
 					"Bad detector class for {name}: {class}",

@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Fallbacks\FallbackRunner;
+use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\MetaStore\MetaNamespaceStore;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
@@ -51,7 +53,7 @@ use WebRequest;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Searcher extends ElasticsearchIntermediary {
+class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
@@ -167,7 +169,15 @@ class Searcher extends ElasticsearchIntermediary {
 
 		if ( $query->getSearchEngineEntryPoint() === 'searchText' ) {
 			$this->searchContext->setResultsType( new FullTextResultsType() );
-			return $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
+			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
+			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
+				$runner = FallbackRunner::create( $this, $query, RequestContext::getMain()->getRequest() );
+				$newStatus = Status::newGood( $runner->run( $status->getValue() ) );
+				$newStatus->merge( $status );
+				$status = $newStatus;
+				$this->appendMetrics( $runner );
+			}
+			return $status;
 		} else {
 			throw new \RuntimeException( 'Only searchText is supported for now' );
 		}
@@ -985,5 +995,15 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function applyDebugOptionsToQuery( Query $query ) {
 		return $this->searchContext->getDebugOptions()->applyDebugOptions( $query );
+	}
+
+	/**
+	 * @param SearchQuery $query
+	 * @return Searcher
+	 */
+	public function makeSearcher( SearchQuery $query ) {
+		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
+			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
+			null, $query->getDebugOptions() );
 	}
 }

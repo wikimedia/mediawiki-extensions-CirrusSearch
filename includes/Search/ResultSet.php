@@ -73,6 +73,7 @@ class ResultSet extends SearchResultSet {
 		$this->totalHits = $res->getTotalHits();
 		$this->preCacheContainedTitles( $this->result );
 		$suggestion = $this->findSuggestion();
+		// TODO: move all the DYM "suggestion" code to PhraseSuggestFallbackMethod (once we get rid of suggest[Prefixes/Suffixes])
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
 			$this->suggestionSnippet = $this->escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );

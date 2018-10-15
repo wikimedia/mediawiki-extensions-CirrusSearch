@@ -78,7 +78,8 @@ class ReindexerTest extends \MediaWikiTestCase {
 	public function testDetectRemoteSourceParams( $expected, $clustersConfig, $sourceCluster = 'dc-foo', $destCluster = 'dc-bar' ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchDefaultCluster' => 'dc-foo',
-			'CirrusSearchClusters' => $clustersConfig
+			'CirrusSearchClusters' => $clustersConfig,
+			'CirrusSearchReplicaGroup' => 'default',
 		] );
 		$source = new Connection( $config, $sourceCluster );
 		$dest = new Connection( $config, $destCluster );

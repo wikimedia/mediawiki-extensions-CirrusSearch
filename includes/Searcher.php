@@ -836,6 +836,8 @@ class Searcher extends ElasticsearchIntermediary {
 		$term = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 
+		// This does not support cross-cluster search, but there is also no use case
+		// for cross-wiki archive search.
 		$this->pageType = $this->getOverriddenConnection()->getArchiveType( $this->indexBaseName );
 
 		// Setup the search query

@@ -30,6 +30,11 @@ class SearchConfig implements \Config {
 	];
 
 	/**
+	 * @var SearchConfig Configuration of host wiki.
+	 */
+	private $hostConfig;
+
+	/**
 	 * Override settings
 	 * @var Config
 	 */
@@ -42,10 +47,9 @@ class SearchConfig implements \Config {
 	private $wikiId;
 
 	/**
-	 * @var string[]|null writable clusters (lazy loaded, call
-	 * getWritableClusters() instead of direct access)
+	 * @var Assignment\ClusterAssignment|null
 	 */
-	private $writableClusters;
+	private $clusters;
 
 	/**
 	 * @var SearchProfileService|null
@@ -58,6 +62,33 @@ class SearchConfig implements \Config {
 	public function __construct() {
 		$this->source = new \GlobalVarConfig();
 		$this->wikiId = wfWikiID();
+		// The only ability to mutate SearchConfig is via a protected method, setSource.
+		// As long as we have an instance of SearchConfig it must then be the hostConfig.
+		$this->hostConfig = static::class === self::class ? $this : new SearchConfig();
+	}
+
+	/**
+	 * This must be delayed until after construction is complete. Before then
+	 * subclasses could change out the configuration we see.
+	 *
+	 * @return Assignment\ClusterAssignment
+	 */
+	private function createClusterAssignment(): Assignment\ClusterAssignment {
+		// Configuring CirrusSearchServers enables "easy mode" which assumes
+		// everything happens inside a single elasticsearch cluster.
+		if ( $this->has( 'CirrusSearchServers' ) ) {
+			return new Assignment\ConstantAssignment(
+				$this->get( 'CirrusSearchServers' ) );
+		} else {
+			return new Assignment\MultiClusterAssignment( $this );
+		}
+	}
+
+	public function getClusterAssignment(): Assignment\ClusterAssignment {
+		if ( $this->clusters === null ) {
+			$this->clusters = $this->createClusterAssignment();
+		}
+		return $this->clusters;
 	}
 
 	/**
@@ -68,6 +99,13 @@ class SearchConfig implements \Config {
 		// problem is that testing $this->wikiId === wfWikiId() would not work
 		// properly during unit tests.
 		return $this->source instanceof \GlobalVarConfig;
+	}
+
+	/**
+	 * @return SearchConfig Configuration of the host wiki.
+	 */
+	public function getHostWikiConfig(): SearchConfig {
+		return $this->hostConfig;
 	}
 
 	/**
@@ -198,16 +236,7 @@ class SearchConfig implements \Config {
 	 */
 	protected function setSource( Config $source ) {
 		$this->source = $source;
-	}
-
-	/**
-	 * @return string[] array of all the clusters allowed to receive write operations
-	 */
-	public function getWritableClusters() {
-		if ( $this->writableClusters === null ) {
-			$this->initClusterConfig();
-		}
-		return $this->writableClusters;
+		$this->clusters = null;
 	}
 
 	/**
@@ -222,21 +251,7 @@ class SearchConfig implements \Config {
 	 * @return bool
 	 */
 	public function canWriteToCluster( $cluster ) {
-		return in_array( $cluster, $this->getWritableClusters() );
-	}
-
-	/**
-	 * Initialization of writableClusters
-	 */
-	private function initClusterConfig() {
-		if ( $this->has( 'CirrusSearchWriteClusters' ) ) {
-			$this->writableClusters = $this->get( 'CirrusSearchWriteClusters' );
-			if ( is_null( $this->writableClusters ) ) {
-				$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
-			}
-		} else {
-			$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
-		}
+		return in_array( $cluster, $this->getClusterAssignment()->getWritableClusters() );
 	}
 
 	/**

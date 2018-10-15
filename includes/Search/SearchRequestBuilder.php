@@ -221,19 +221,33 @@ class SearchRequestBuilder {
 	}
 
 	/**
-	 * @return Type
+	 * @return Type An elastica type suitable for searching against
+	 *  the configured wiki over the host wiki's default connection.
 	 */
 	public function getPageType() {
 		if ( $this->pageType ) {
 			return $this->pageType;
 		} else {
+			$indexBaseName = $this->indexBaseName;
+			$config = $this->searchContext->getConfig();
+			$hostConfig = $config->getHostWikiConfig();
+			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
+				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
+				$current = $config->getClusterAssignment()->getCrossClusterName();
+				if ( $local !== $current ) {
+					$indexBaseName = $current . ':' . $indexBaseName;
+				}
+			}
 			$indexType = $this->connection->pickIndexTypeForNamespaces(
 				$this->searchContext->getNamespaces() );
-			return $this->connection->getPageType( $this->indexBaseName, $indexType );
+			return $this->connection->getPageType( $indexBaseName, $indexType );
 		}
 	}
 
 	/**
+	 * Override the index/type used for search. When this is used automatic
+	 * handling of cross-cluster search is disabled.
+	 *
 	 * @param Type|null $pageType
 	 * @return SearchRequestBuilder
 	 */

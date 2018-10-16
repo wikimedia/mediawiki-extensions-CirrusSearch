@@ -546,11 +546,6 @@ class CirrusSearch extends SearchEngine {
 				throw $e;
 			}
 			return SearchSuggestionSet::emptySuggestionSet();
-		} catch ( UsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return SearchSuggestionSet::emptySuggestionSet();
 		}
 
 		// There is no way to send errors or warnings back to the caller here so we have to make do with

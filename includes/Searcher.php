@@ -186,6 +186,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
 	 * @param string $term text by which to search
 	 * @return Status status containing results defined by resultsType on success
+	 * @throws \ApiUsageException
 	 */
 	public function nearMatchTitleSearch( $term ) {
 		( new NearMatchQueryBuilder() )->build( $this->searchContext, $term );
@@ -207,6 +208,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $term text by which to search
 	 * @param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
+	 * @throws \ApiUsageException
 	 */
 	public function prefixSearch( $term, $variants = [] ) {
 		( new PrefixSearchQueryBuilder() )->build( $this->searchContext, $term, $variants );

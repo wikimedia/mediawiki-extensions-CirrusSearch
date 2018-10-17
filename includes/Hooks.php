@@ -22,7 +22,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
 use ApiUsageException;
-use UsageException;
 use User;
 use WebRequest;
 use WikiPage;
@@ -518,7 +517,6 @@ class Hooks {
 	 * @param null|Title &$titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 * @throws ApiUsageException
-	 * @throws UsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgContLang;
@@ -541,11 +539,6 @@ class Hooks {
 		try {
 			$status = $searcher->nearMatchTitleSearch( $term );
 		} catch ( ApiUsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return true;
-		} catch ( UsageException $e ) {
 			if ( defined( 'MW_API' ) ) {
 				throw $e;
 			}

@@ -14,8 +14,11 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 
 	protected function setUp() {
 		parent::setUp();
-		MediaWikiServices::getInstance()
-			->resetServiceForTesting( InterwikiResolver::SERVICE );
+		$services = MediaWikiServices::getInstance();
+		$services->resetServiceForTesting( InterwikiResolver::SERVICE );
+		// MediaWikiTestCase::makeTestConfigFactoryInstantiator ends up carrying
+		// over the same instance of SearchConfig between tests. Evil but necessary.
+		$services->getConfigFactory()->makeConfig( 'CirrusSearch' )->clearCachesForTesting();
 	}
 
 	public static function findFixtures( $path ) {

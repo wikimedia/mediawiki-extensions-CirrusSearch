@@ -749,14 +749,46 @@ class Hooks {
 	public static function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
-		if ( !empty( $profiles ) && count( $profiles ) > 1 ) {
-			$prefs['cirrussearch-pref-completion-profile'] = [
-				'class' => HTMLCompletionProfileSettings::class,
-				'section' => 'searchoptions/completion',
-				'profiles' => $profiles
-			];
+		if ( empty( $profiles ) ) {
+			return true;
 		}
+		$options = self::autoCompleteOptionsForPreferences( $profiles );
+		if ( !$options ) {
+			return true;
+		}
+		$prefs['cirrussearch-pref-completion-profile'] = [
+			'type' => 'radio',
+			'section' => 'searchoptions/completion',
+			'options' => $options,
+			'label-message' => 'cirrussearch-pref-completion-profile-help',
+		];
 		return true;
+	}
+
+	private static function autoCompleteOptionsForPreferences( array $profiles ): array {
+		$available = [];
+		foreach ( $profiles as $profile ) {
+			$available[] = $profile['name'];
+		}
+		// Order in which we propose comp suggest profiles
+		$preferredOrder = [
+			'fuzzy',
+			'fuzzy-subphrases',
+			'strict',
+			'normal',
+			'normal-subphrases',
+			'classic'
+		];
+		$messages = [];
+		foreach ( $preferredOrder as $name ) {
+			if ( in_array( $name, $available ) ) {
+				$display = wfMessage( "cirrussearch-completion-profile-$name-pref-name" )->escaped()
+					. '<br>' . wfMessage( "cirrussearch-completion-profile-$name-pref-desc" )->escaped();
+				$messages[$display] = $name;
+			}
+		}
+		// At least 2 choices are required to provide the user a choice
+		return count( $messages ) >= 2 ? $messages : [];
 	}
 
 	public static function onUserGetDefaultOptions( &$defaultOptions ) {

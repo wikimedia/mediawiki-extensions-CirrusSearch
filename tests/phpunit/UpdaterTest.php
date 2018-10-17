@@ -10,6 +10,7 @@ use Title;
 use WikiPage;
 
 /**
+ * @group Database
  * @covers CirrusSearch\Updater
  */
 class UpdaterTest extends \MediaWikiTestCase {
@@ -100,6 +101,41 @@ class UpdaterTest extends \MediaWikiTestCase {
 		$skipParse = true;
 		$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
 		$this->assertFalse( $doc->has( 'display_title' ), 'field must not be set when parsing is skipped' );
+	}
+
+	public function testCreateTimestamp() {
+		$pageName = 'testCreateTimestamp' . mt_rand();
+		$page = new WikiPage( Title::newFromText( $pageName ) );
+		$engine = new CirrusSearch();
+		$conn = $this->mock( Connection::class );
+		$forceParse = false;
+		$skipParse = true; // parsing is unnecessary
+		$skipLinks = true; // otherwise it will query elasticsearch
+
+		// Control time to ensure the revision timestamps differ
+		$currentTime = 12345;
+		\MWTimestamp::setFakeTime( function () use ( &$currentTime ) {
+			return $currentTime;
+		} );
+		try {
+			// first revision should match create timestamp with revision
+			$status = $this->editPage( $pageName, 'phpunit' );
+			$this->assertTrue( $status->isOk() );
+			$created = wfTimestamp( TS_ISO_8601, $status->getValue()['revision']->getTimestamp() );
+			// Double check we are actually controlling the clock
+			$this->assertEquals( wfTimestamp( TS_ISO_8601, $currentTime ), $created );
+			$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
+
+			// With a second revision the create timestamp should still be the old one.
+			$currentTime += 42;
+			$status = $this->editPage( $pageName, 'phpunit and maybe other things' );
+			$this->assertTrue( $status->isOk() );
+			$doc = Updater::buildDocument( $engine, $page, $conn, $forceParse, $skipParse, $skipLinks );
+			$this->assertEquals( $created, $doc->get( 'create_timestamp' ) );
+		} finally {
+			\MWTimestamp::setFakeTime( null );
+		}
 	}
 
 	private function mock( $className ) {

@@ -47,7 +47,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "Καμία διόρθωση ορθογραφικού λάθους. Επιλύει κλείσιμο ανακατευθύνσεων.",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "Λειτουργία ανακατεύθυνσης με ταίριασμα υποφράσης (για προχωρημένους)",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "Μη διόρθωση τυπογραφικού λάθος. Επιλύει κλείσιμο ανακατευθυνσεών. Τέριασμα υποφράσεις σε τίτλους.",
-	"cirrussearch-pref-completion-legacy-section-desc": "Αναζήτηση πρόθεματος",
 	"cirrussearch-completion-profile-classic-pref-name": "Κλασικό πρόθεμα αναζήτησης",
 	"cirrussearch-completion-profile-classic-pref-desc": "Μη διόρθωση τυπογραφικού λάθους. Ταιριάζει με την αρχή των τίτλων.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Δεν παράσχηκαν έγκυρες κατηγορίες στο '$1'.",

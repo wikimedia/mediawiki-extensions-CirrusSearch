@@ -8,10 +8,9 @@
 	"cirrussearch-now-using": "Ovaj viki ima novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
 	"cirrussearch-pref-label": "Nova pretraga",
 	"cirrussearch-give-feedback": "Dajte nam Vaše mišljenje.",
-	"cirrussearch-pref-completion-profile-help": "Podešavanje automatskih sugestija (pretraga u toku kucanja).",
 	"prefs-completion": "Dovršavanje pretrage",
 	"cirrussearch-pref-completion-section-desc": "Predviđanje pretrage",
-	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predviđanje pretrage] je omogućeno algoritmom za davanje sugestija pri kucanju, sa boljim sistemom za raspoznavanje  i ispravljanje tipfelera te određivanje relevantnosti pretrage.",
+	"cirrussearch-pref-completion-profile-help": "Podešavanje automatskih sugestija (pretraga u toku kucanja).",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Podrazumevano (preporučeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Ispravlja do dva tipfelera. Rešava bliska preusmerenja.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Ispravlja do dva tipfelera. Rešava bliska preusmerenja. Traži podizraz u naslovima.",
@@ -19,8 +18,6 @@
 	"cirrussearch-completion-profile-strict-pref-desc": "Bez ispravljanja tipfelera. Bez poistovećivanja afrikata ili verzala sa ekvivalentima. Strogo podudaranje.",
 	"cirrussearch-completion-profile-normal-pref-name": "Režim preusmerenja (napredno)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Bez ispravljanja tipfelera. Rešava bliska preusmerenja.",
-	"cirrussearch-pref-completion-legacy-section-desc": "Pretraga po prefiksu",
-	"cirrussearch-pref-completion-legacy-section-legend": "Stari algoritam za automatsko dovršavanje pretrage u toku kucanja.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična pretraga po prefiksu",
 	"cirrussearch-completion-profile-classic-pref-desc": "Bez ispravljanja tipfelera. Traži početke naslova."
 }

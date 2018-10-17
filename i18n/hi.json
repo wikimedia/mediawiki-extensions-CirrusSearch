@@ -41,7 +41,6 @@
 	"cirrussearch-completion-profile-normal-pref-desc": "कोई टाइपो सुधार नहीं। करीब अनुप्रेषित को हल करता है",
 	"cirrussearch-completion-profile-normal-subphrases-pref-name": "सबफ़्रेज मिलान (उन्नत) के साथ पुननिर्देशित मोड",
 	"cirrussearch-completion-profile-normal-subphrases-pref-desc": "कोई टाइपो सुधार नहीं। करीब अनुप्रेषित को हल करता है, शीर्षक में सबफ़्रेश मेल करता है",
-	"cirrussearch-pref-completion-legacy-section-desc": "उपसर्ग खोज",
 	"cirrussearch-completion-profile-classic-pref-name": "पुराना उपसर्ग खोज",
 	"cirrussearch-completion-profile-classic-pref-desc": "कोई टाइपो सुधार नहीं। शीर्षक की शुरुआत से मेल खाता है।",
 	"cirrussearch-timed-out": "खोज का समय समाप्त हो गया है, केवल आंशिक परिणाम उपलब्ध हैं।",

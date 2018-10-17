@@ -10,12 +10,9 @@
 	"cirrussearch-give-feedback": "Dìne 'sa te par",
 	"prefs-completion": "Conpletamento de la riserca",
 	"cirrussearch-pref-completion-section-desc": "Sugeridor de conpletamento",
-	"cirrussearch-pref-completion-section-legend": "El [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugeridor de conpletamento] el xe un algoritmo par sugerirte la riserca fin che te scrivi, con coression dei erori de batidura e rilevansa de la riserca.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinìo (consejà)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "El corèje fin a do erori de batidura. El risolve i rimandi vissini.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Corespondensa de tochi de frase (racomandà par i titoli pi longhi)",
-	"cirrussearch-pref-completion-legacy-section-desc": "Serca par le prime létare",
-	"cirrussearch-pref-completion-legacy-section-legend": "El vecio algoritmo de serca-co-te-scrivi.",
 	"cirrussearch-completion-profile-classic-pref-name": "Riserca clàsega par prime létare",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nissuna coression dei erori de batidura. El cata i scominzi dei titoli."
 }

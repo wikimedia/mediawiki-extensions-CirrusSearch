@@ -19,10 +19,9 @@
 	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Пондерисана сума на основу долазних веза и седмичног броја прегледа",
 	"cirrussearch-qi-profile-wsum-inclinks": "Пондерисана сума на основу долазних веза",
-	"cirrussearch-pref-completion-profile-help": "Подешавање аутоматских сугестија (претрага у току куцања).",
 	"prefs-completion": "Довршавање претраге",
 	"cirrussearch-pref-completion-section-desc": "Предвиђање претраге",
-	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Предвиђање претраге] је омогућено алгоритмом за давање сугестија при куцању, са бољим системом за распознавање  и исправљање типфелера те одређивање релевантности претраге.",
+	"cirrussearch-pref-completion-profile-help": "Подешавање аутоматских сугестија (претрага у току куцања).",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Подразумевано (препоручено)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправља до две грешке у куцању. Уклања преусмерења која су веома слична главном наслову.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Исправља до два типфелера. Решава блиска преусмерења. Тражи подизраз у насловима.",
@@ -30,8 +29,6 @@
 	"cirrussearch-completion-profile-strict-pref-desc": "Без исправљања типфелера. Без поистовећивања африката или верзала са еквивалентима. Строго подударање.",
 	"cirrussearch-completion-profile-normal-pref-name": "Режим преусмерења (напредно)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Без исправљања типфелера. Решава блиска преусмерења.",
-	"cirrussearch-pref-completion-legacy-section-desc": "Претрага по префиксу",
-	"cirrussearch-pref-completion-legacy-section-legend": "Стари алгоритам за аутоматско довршавање претраге у току куцања.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
 	"cirrussearch-completion-profile-classic-pref-desc": "Без исправљања типфелера. Тражи почетке наслова."
 }

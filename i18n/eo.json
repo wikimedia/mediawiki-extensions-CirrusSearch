@@ -12,11 +12,9 @@
 	"cirrussearch-now-using": "Tiu ĉi vikio uzas novan serĉilon. ([[mw:Special:MyLanguage/Help:CirrusSearch|Lernu pli]])",
 	"cirrussearch-pref-label": "Nova serĉo",
 	"cirrussearch-give-feedback": "Donu al ni vian opinion",
-	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).",
 	"prefs-completion": "Kompletigo de serĉo",
 	"cirrussearch-pref-completion-section-desc": "Kompletiga sugestilo",
+	"cirrussearch-pref-completion-profile-help": "Igi la konduton por aŭtomata kompletigo (serĉado dum tajpado).",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Defaŭlta (inda)",
-	"cirrussearch-pref-completion-legacy-section-desc": "Prefiksa serĉo",
-	"cirrussearch-pref-completion-legacy-section-legend": "La heredaĵa dumtajpada serĉsugesta algoritmo.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasika prefiksa serĉo"
 }

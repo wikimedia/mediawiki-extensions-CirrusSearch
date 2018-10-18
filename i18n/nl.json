@@ -17,7 +17,8 @@
 			"Ooswesthoesbes",
 			"Mar(c)",
 			"Optilete",
-			"Woodcutterty"
+			"Woodcutterty",
+			"Bdijkstra"
 		]
 	},
 	"cirrussearch-desc": "Elasticsearch gebaseerde zoekfunctie voor MediaWiki",
@@ -80,5 +81,6 @@
 	"cirrussearch-explore-similar-languages": "Talen",
 	"cirrussearch-explore-similar-related-none": "Geen gerelateerde pagina's beschikbaar",
 	"cirrussearch-explore-similar-categories-none": "Geen categorieën beschikbaar",
-	"cirrussearch-explore-similar-languages-none": "Niet beschikbaar in andere talen"
+	"cirrussearch-explore-similar-languages-none": "Niet beschikbaar in andere talen",
+	"cirrussearch-article-words": "Aantal woorden in alle inhoudspagina's"
 }

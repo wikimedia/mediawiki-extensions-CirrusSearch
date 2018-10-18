@@ -58,7 +58,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Classificação baseada principalmente em contagens de links recebidos",
 	"prefs-completion": "Conclusão da pesquisa",
 	"cirrussearch-pref-completion-section-desc": "Sugestões de preenchimento",
-	"cirrussearch-pref-completion-profile-help": "Defina o comportamento para as sugestões de preenchimento automático (search-as-you-type).",
+	"cirrussearch-pref-completion-profile-help": "Defina o comportamento para as sugestões de preenchimento automático (search-as-you-type).\n\nA [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestão de conclusão] é um algoritmo para sugestões de pesquisa com melhor correção de erros de digitação e relevância de pesquisa. A pesquisa de prefixo é o algoritmo de sugestão legado de pesquisa como tipo.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros de digitação. Remove redirecionamentos muito semelhantes ao título principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de frase secundária (recomendada para títulos de página mais longos)",

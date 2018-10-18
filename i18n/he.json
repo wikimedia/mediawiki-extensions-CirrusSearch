@@ -52,7 +52,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "דירוג מבוסס בעיקר על מספר הקישורים על הדף",
 	"prefs-completion": "השלמת חיפוש",
 	"cirrussearch-pref-completion-section-desc": "הצעות להשלמת חיפוש",
-	"cirrussearch-pref-completion-profile-help": "הגדרת ההתנהגות של הצעות השלמה אוטומטית (חיפוש תוך כדי הקלדה).",
+	"cirrussearch-pref-completion-profile-help": "הגדרת ההתנהגות של הצעות השלמה אוטומטית (חיפוש תוך כדי הקלדה, search-as-you-type).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester מציע ההשלמות] הוא אלגוריתם להצעות חיפוש עם שיפורים בתיקון שגיאות כתיב וברלוונטיות החיפוש. חיפוש תחילית (prefix search) הוא האלגוריתם הישן לחיפוש תוך כדי הקלדה.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "ברירת מחדל (מומלץ)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "תיקון עד שתי שגיאות הקלדה. הסרת הפניות שדומות מאוד לכותרת הראשית.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "התאמת תת־משפט (מומלץ לכותרות דפים ארוכות יותר)",

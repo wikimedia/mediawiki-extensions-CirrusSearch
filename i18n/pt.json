@@ -58,7 +58,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Classificação baseada sobretudo na contagem de hiperligações para a página",
 	"prefs-completion": "Preenchimento de pesquisas",
 	"cirrussearch-pref-completion-section-desc": "Sugestões de preenchimento",
-	"cirrussearch-pref-completion-profile-help": "Defina o comportamento da funcionalidade que fornece sugestões (pesquisar-enquanto-escreve).",
+	"cirrussearch-pref-completion-profile-help": "Defina o comportamento da funcionalidade que fornece sugestões (pesquisar-enquanto-escreve).\n\nO algoritmo das [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester sugestões de preenchimento] faz uma melhor correção ortográfica e sugestões mais relevantes. A pesquisa de prefixos é feita com o algoritmo anterior de sugestões pesquisar-enquanto-escreve.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Padrão (recomendado)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corrige até dois erros ortográficos. Remove redirecionamentos  que são muito parecidos com o título principal.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Correspondência de subfrases (recomendada para os títulos de página mais longos)",

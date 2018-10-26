@@ -542,6 +542,10 @@ class Updater extends ElasticsearchIntermediary {
 		// then we strip it from the display title.
 		list( $maybeNs, $maybeDisplayTitle ) = explode( ':', $clean, 2 );
 		$cleanTitle = Title::newFromText( $clean );
+		if ( $cleanTitle === null ) {
+			// The title is invalid, we cannot extract the ns prefix
+			return $clean;
+		}
 		if ( $cleanTitle->getNamespace() == $title->getNamespace() ) {
 			// While it doesn't really matter, $cleanTitle->getText() may
 			// have had ucfirst() applied depending on settings so we

@@ -75,6 +75,12 @@ class UpdaterTest extends \MediaWikiTestCase {
 			'leaves existing but unrelated namespaces in display title' => [
 				'user:bar', $talkTitle, 'user:bar',
 			],
+			'invalid title is kept on NS_MAIN' => [
+				':', $mainTitle, ':',
+			],
+			'invalid title is kept on non NS_MAIN' => [
+				':', $talkTitle, ':',
+			],
 		];
 	}
 

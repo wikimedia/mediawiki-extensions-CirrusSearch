@@ -17,7 +17,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Uvrstitev na podlagi števila dohodnih povezav",
 	"prefs-completion": "Samodejno dopolnjevanje izrazov iskanja",
 	"cirrussearch-pref-completion-section-desc": "Predlagatelj iskanja",
-	"cirrussearch-pref-completion-profile-help": "Nastavi način predlaganja za samodejno dopolnjevanje (iskanje med tipkanjem).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagalnik dokončanja] je algoritem za iskalne predloge z boljšo popravo zatipkanj in pomembnostjo zadetkov. Iskanje po predponi je zapuščinski algoritem za predloge z iskanjem med tipkanjem.",
+	"cirrussearch-pref-completion-profile-help": "Nastavi način predlaganja za samodejno dopolnjevanje (iskanje med tipkanjem).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Predlagalnik dokončanja] je algoritem za iskalne predloge z boljšim popravljanjem zatipkanj in pomembnostjo zadetkov. Iskanje po predponi je algoritem za iskalne predloge med tipkanjem na podlagi predhodnih iskanj.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Privzeto (priporočeno)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Popravi do dve zatipkanji. Odstrani preusmeritve, ki so zelo podobne glavnemu naslovu.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Ujemanje podizraza (priporočeno za daljše naslove strani)",

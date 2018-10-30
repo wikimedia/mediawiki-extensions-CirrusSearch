@@ -575,8 +575,7 @@ class Searcher extends ElasticsearchIntermediary {
 		};
 
 		// Wrap with caching if needed, but don't cache debugging queries
-		$skipCache = $cirrusDebugOptions->isCirrusDumpResult()
-					 || $cirrusDebugOptions->getCirrusExplain();
+		$skipCache = $cirrusDebugOptions->mustNeverBeCached();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
@@ -805,9 +804,9 @@ class Searcher extends ElasticsearchIntermediary {
 	public function processRawReturn( $result, WebRequest $request ) {
 		$header = null;
 
-		if ( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null ) {
+		if ( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() !== null ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
-			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplain() );
+			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() );
 			$result = $printer->format( $result );
 		} else {
 			$header = 'Content-type: application/json; charset=UTF-8';

@@ -16,7 +16,8 @@
 			"Mouse21",
 			"Happy13241",
 			"Movses",
-			"Stjn"
+			"Stjn",
+			"Vlad5250"
 		]
 	},
 	"cirrussearch-desc": "Поиск для MediaWiki на базе Elasticsearch",
@@ -64,7 +65,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Ранжирование, основанное в первую очередь на числе входящих ссылок",
 	"prefs-completion": "Дополнение поиска",
 	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
-	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для предложений автодополнения (поиска по мере набора).",
+	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для предложений автодополнения (поиска по мере набора).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] — это алгоритм для предложений при поиске с улучшенным исправлением опечаток и лучшим утверждением релевантности. Поиск по префиксу — это более старый алгоритм для поиска при наборе.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправляет до двух опечаток. Подставляет подходящие перенаправления.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Поиск по подвыражениям (рекоммендуется для длинных заголовков страниц)",

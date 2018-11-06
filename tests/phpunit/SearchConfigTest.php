@@ -56,14 +56,23 @@ class SearchConfigTest extends CirrusTestCase {
 
 	public function testInherit() {
 		$this->setMwGlobals( [
-			'wgTestVar' => 'test'
+			'wgTestVar' => 'test',
+			'wgOverridden' => 'test'
 		] );
-		$config = new HashSearchConfig( [ 'foo' => 'bar' ], [ 'inherit' ] );
-		$this->assertEquals( 'bar', $config->get( 'foo' ) );
-		$this->assertTrue( $config->has( 'TestVar' ) );
 		$config = new HashSearchConfig( [ 'foo' => 'bar' ] );
 		$this->assertEquals( 'bar', $config->get( 'foo' ) );
 		$this->assertFalse( $config->has( 'TestVar' ) );
+
+		$config = new HashSearchConfig( [ 'foo' => 'bar', 'Overridden' => 'hop' ], [ 'inherit' ] );
+		$this->assertEquals( 'bar', $config->get( 'foo' ) );
+		$this->assertTrue( $config->has( 'TestVar' ) );
+		$this->assertEquals( 'hop', $config->get( 'Overridden' ) );
+
+		$config = new HashSearchConfig( [ 'baz' => 'qux' ], [ 'inherit' ], $config );
+		$this->assertEquals( 'bar', $config->get( 'foo' ) );
+		$this->assertTrue( $config->has( 'TestVar' ) );
+		$this->assertEquals( 'qux', $config->get( 'baz' ) );
+		$this->assertEquals( 'hop', $config->get( 'Overridden' ) );
 	}
 
 	public function testCrossSearchAccessors() {

@@ -87,6 +87,11 @@ final class SearchQueryBuilder {
 	private $withDYMSuggestion = false;
 
 	/**
+	 * @var bool
+	 */
+	private $allowRewrite = false;
+
+	/**
 	 * Construct a new FT (FullText) SearchQueryBuilder using the config
 	 * and query string provided.
 	 *
@@ -112,6 +117,7 @@ final class SearchQueryBuilder {
 		$builder->crossLanguageSearch = true;
 		$builder->extraIndicesSearch = true;
 		$builder->withDYMSuggestion = true;
+		$builder->allowRewrite = false;
 		return $builder;
 	}
 
@@ -176,6 +182,7 @@ final class SearchQueryBuilder {
 		$builder->crossLanguageSearch = false;
 		$builder->extraIndicesSearch = false;
 		$builder->withDYMSuggestion = false;
+		$builder->allowRewrite = false;
 		return $builder;
 	}
 
@@ -202,6 +209,7 @@ final class SearchQueryBuilder {
 	 * @return SearchQueryBuilder
 	 */
 	public static function forRewrittenQuery( SearchQuery $original, $term ): SearchQueryBuilder {
+		Assert::precondition( $original->isAllowRewrite(), 'The original query must allow rewrites' );
 		// Hack to prevent a second pass on this cleaning algo because its destructive
 		$config = new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'no' ],
 			[ 'inherit' ], $original->getSearchConfig() );
@@ -218,6 +226,7 @@ final class SearchQueryBuilder {
 		$builder->crossLanguageSearch = false;
 		$builder->extraIndicesSearch = $original->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported();
 		$builder->withDYMSuggestion = false;
+		$builder->allowRewrite = false;
 		return $builder;
 	}
 
@@ -241,7 +250,8 @@ final class SearchQueryBuilder {
 			$this->limit,
 			$this->debugOptions ?? CirrusDebugOptions::defaultOptions(),
 			$this->searchConfig,
-			$this->withDYMSuggestion
+			$this->withDYMSuggestion,
+			$this->allowRewrite
 		);
 	}
 
@@ -364,6 +374,16 @@ final class SearchQueryBuilder {
 	 */
 	public function addForcedProfile( $type, $forcedProfile ): SearchQueryBuilder {
 		$this->forcedProfiles[$type] = $forcedProfile;
+		return $this;
+	}
+
+	/**
+	 * @param bool $allowRewrite
+	 * @return SearchQueryBuilder
+	 */
+	public function setAllowRewrite( $allowRewrite ): SearchQueryBuilder {
+		$this->allowRewrite = $allowRewrite;
+
 		return $this;
 	}
 }

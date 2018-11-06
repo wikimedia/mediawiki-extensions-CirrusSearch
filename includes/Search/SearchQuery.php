@@ -82,6 +82,11 @@ class SearchQuery {
 	private $withDYMSuggestion;
 
 	/**
+	 * @var bool
+	 */
+	private $allowRewrite;
+
+	/**
 	 * SearchQuery constructor.
 	 * @param ParsedQuery $parsedQuery
 	 * @param int[] $initialNamespaces
@@ -95,6 +100,7 @@ class SearchQuery {
 	 * @param CirrusDebugOptions $debugOptions
 	 * @param SearchConfig $searchConfig
 	 * @param bool $withDYMSuggestion
+	 * @param bool $allowRewrite
 	 * @see SearchQueryBuilder
 	 */
 	public function __construct(
@@ -109,7 +115,8 @@ class SearchQuery {
 		$limit,
 		CirrusDebugOptions $debugOptions,
 		SearchConfig $searchConfig,
-		$withDYMSuggestion
+		$withDYMSuggestion,
+		$allowRewrite
 	) {
 		$this->parsedQuery = $parsedQuery;
 		$this->initialNamespaces = $initialNamespaces;
@@ -123,6 +130,7 @@ class SearchQuery {
 		$this->debugOptions = $debugOptions;
 		$this->searchConfig = $searchConfig;
 		$this->withDYMSuggestion = $withDYMSuggestion;
+		$this->allowRewrite = $allowRewrite;
 	}
 
 	/**
@@ -270,5 +278,12 @@ class SearchQuery {
 	 */
 	public function isWithDYMSuggestion() {
 		return $this->withDYMSuggestion;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isAllowRewrite() {
+		return $this->allowRewrite;
 	}
 }

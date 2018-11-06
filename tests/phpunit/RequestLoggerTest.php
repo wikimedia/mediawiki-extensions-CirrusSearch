@@ -147,8 +147,10 @@ class RequestLoggerTest extends CirrusTestCase {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
-
-				$searchEngine = new CirrusSearch( 'wiki' );
+				$config = new CirrusSearch\HashSearchConfig(
+					[ CirrusSearch\SearchConfig::INDEX_BASE_NAME => 'wiki' ],
+					[ 'inherit' ] );
+				$searchEngine = new CirrusSearch( $config );
 				$searchEngine->setConnection( $connection );
 				$searchEngine->setLimitOffset( $limit, $offset );
 				$searchEngine->setNamespaces( $namespaces );

@@ -194,7 +194,7 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function testLocalSearch() {
 		$hostWikiConfig = new HashSearchConfig(
 			[
-				'CirrusSearchIndexBaseName' => 'basenamefixme',
+				'CirrusSearchIndexBaseName' => 'hostwiki',
 				'CirrusSearchEnableAltLanguage' => true,
 				'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
 			],
@@ -203,7 +203,7 @@ class LanguageDetectTest extends CirrusTestCase {
 		$targetWikiConfig = new HashSearchConfig(
 			[
 				'CirrusSearchInterwikiSources' => null,
-				'CirrusSearchIndexBaseName' => 'basenamefixme',
+				'CirrusSearchIndexBaseName' => 'targetwiki',
 				'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
 			], [ 'inherit' ] );
 		$hostWikiQuery = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'hello' )
@@ -211,13 +211,13 @@ class LanguageDetectTest extends CirrusTestCase {
 			->setInitialNamespaces( [ NS_FILE ] )
 			->build();
 		$targetWikiQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig, $hostWikiQuery )->build();
-		$cirrus = new MyCirrusSearch( null, $hostWikiConfig, $hostWikiQuery->getDebugOptions() );
+		$cirrus = new MyCirrusSearch( $hostWikiConfig, $hostWikiQuery->getDebugOptions() );
 		$result = $cirrus->mySearchTextReal( $targetWikiQuery )->getValue();
 		$result = json_decode( $result, true );
-		$this->assertEquals( 'basenamefixme_general/page/_search', $result['path'] );
+		$this->assertEquals( 'targetwiki_general/page/_search', $result['path'] );
 		$result = $cirrus->mySearchTextReal( $hostWikiQuery )->getValue();
 		$result = json_decode( $result, true );
-		$this->assertEquals( 'basenamefixme_general,externalwiki_file/page/_search', $result['path'] );
+		$this->assertEquals( 'hostwiki_general,externalwiki_file/page/_search', $result['path'] );
 	}
 
 	public function getHttpLangs() {

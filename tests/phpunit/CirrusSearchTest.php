@@ -125,7 +125,7 @@ class CirrusSearchTest extends CirrusTestCase {
 	private function getSearchEngine( array $config = null ) {
 		// use cirrus base profiles
 		// only set needed config for Connection
-		return new \CirrusSearch( null, new HashSearchConfig( $config + $this->getMinimalConfig() ) );
+		return new \CirrusSearch( new HashSearchConfig( $config + $this->getMinimalConfig() ) );
 	}
 
 	/**

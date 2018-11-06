@@ -195,6 +195,12 @@ class ParsedQueryTest extends CirrusTestCase {
 		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $expectedActualNamespace, $pq->getActualNamespaces( $initialNamespaces ) );
+		if ( $expectedActualNamespace !== [] ) {
+			$this->assertEquals( array_merge( $expectedActualNamespace, [ NS_CATEGORY ] ),
+				$pq->getActualNamespaces( $initialNamespaces, [ NS_CATEGORY ] ) );
+		} else {
+			$this->assertEquals( [], $pq->getActualNamespaces( $initialNamespaces, [ NS_CATEGORY ] ) );
+		}
 	}
 
 	public function provideTestLeadingTilde() {
@@ -204,6 +210,7 @@ class ParsedQueryTest extends CirrusTestCase {
 			'a leading space discards this feature' => [ ' ~foobar', false ],
 		];
 	}
+
 	/**
 	 * @dataProvider provideTestLeadingTilde
 	 * @param $query
@@ -213,5 +220,20 @@ class ParsedQueryTest extends CirrusTestCase {
 		$parser = QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) );
 		$pq = $parser->parse( $query );
 		$this->assertEquals( $hasLeadingTilde, $pq->hasCleanup( ParsedQuery::TILDE_HEADER ) );
+	}
+
+	public function testGetQueryWithoutNsHeader() {
+		$this->assertEquals( 'foobar',
+			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) )
+				->parse( 'help:foobar' )->getQueryWithoutNsHeader() );
+		$this->assertEquals( 'foobar',
+			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) )
+				->parse( '~help:foobar' )->getQueryWithoutNsHeader() );
+		$this->assertEquals( '-foobar',
+			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) )
+				->parse( '~help:-foobar' )->getQueryWithoutNsHeader() );
+		$this->assertEquals( ' NOT foobar',
+			QueryParserFactory::newFullTextQueryParser( new HashSearchConfig( [] ) )
+				->parse( 'all: NOT foobar' )->getQueryWithoutNsHeader() );
 	}
 }

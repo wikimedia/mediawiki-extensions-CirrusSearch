@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\OtherIndexes;
+use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
@@ -400,19 +401,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		arsort( $this->syntaxUsed );
 		// Return the first heaviest syntax
 		return key( $this->syntaxUsed );
-	}
-
-	/**
-	 * @return int maximum complexity of the syntax used in search
-	 */
-	public function getSearchComplexity() {
-		if ( empty( $this->syntaxUsed ) ) {
-			return 1;
-		}
-		arsort( $this->syntaxUsed );
-
-		// Return the first heaviest syntax
-		return reset( $this->syntaxUsed );
 	}
 
 	/**
@@ -867,5 +855,44 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function mustNot( AbstractQuery $query ) {
 		$this->addNotFilter( $query );
+	}
+
+	/**
+	 * Builds a SearchContext based on a SearchQuery.
+	 *
+	 * Helper function used for building blocks that still work on top
+	 * of the SearchContext+queryString instead of SearchQuery.
+	 *
+	 * States initialized:
+	 * 	- limitSearchToLocalWiki
+	 *  - suggestion
+	 *  - custom rescoreProfile/fulltextQueryBuilderProfile
+	 *  - contextual filters: (eg. SearchEngine::$prefix)
+	 *  - SuggestPrefix (DYM prefix: ~ and/or namespace header)
+	 *
+	 * @param SearchQuery $query
+	 * @return SearchContext
+	 */
+	public static function fromSearchQuery( SearchQuery $query ) {
+		$searchContext = new SearchContext( $query->getSearchConfig(), $query->getNamespaces(), $query->getDebugOptions() );
+		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
+		$searchContext->suggestion = $query->isWithDYMSuggestion();
+
+		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
+		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
+
+		foreach ( $query->getContextualFilters() as $filter ) {
+			$filter->populate( $searchContext );
+		}
+		if ( $query->getParsedQuery()->hasCleanup( ParsedQuery::TILDE_HEADER ) ) {
+			$searchContext->addSuggestPrefix( '~' );
+		}
+		$pQuery = $query->getParsedQuery();
+		$searchContext->originalSearchTerm = $pQuery->getRawQuery();
+		$queryString = $query->getParsedQuery()->getQuery();
+		if ( $pQuery->getNamespaceHeader() !== null ) {
+			$searchContext->addSuggestPrefix( substr( $queryString, 0, $pQuery->getRoot()->getStartOffset() ) );
+		}
+		return $searchContext;
 	}
 }

@@ -254,11 +254,11 @@ class RunSearch extends Maintenance {
 		}
 
 		$limit = $this->getOption( 'limit', 10 );
-		CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
+		$options = CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
 			$this->getOption( 'explain', false ) ? 'raw' : null
 		);
 
-		$engine = new CirrusSearch( $this->indexBaseName );
+		$engine = new CirrusSearch( $this->indexBaseName, null, $options );
 		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
 		$engine->setNamespaces( $namespaces );
 

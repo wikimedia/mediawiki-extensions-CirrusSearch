@@ -6,11 +6,13 @@ use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\Builder\ContextualFilter;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\PrefixFeature;
+use CirrusSearch\SearchConfig;
 use PHPUnit\Framework\Assert;
 
 /**
@@ -162,7 +164,7 @@ class SearchQueryTest extends CirrusTestCase {
 
 	/**
 	 * Test how crosswiki strategy is merged between:
-	 * - what is requested from SearchQueryBuilder::setCrossProjectSearch/setCrossLanguageSearch/setWithExtraIndices
+	 * - what is requested from SearchQueryBuilder::setCrossProjectSearch/setCrossLanguageSearch/setExtraIndicesSearch
 	 * - what is allowed in the config (SearchRequestBuilder::build())
 	 * - what is allowed by the query syntax (ParsedQuery/SearchQuery::getCrossSearchStrategy())
 	 * @dataProvider provideCrossSearchStrategy
@@ -327,7 +329,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( '~help:test prefix:help_talk:test', $context->getOriginalSearchTerm() );
 	}
 
-	public function testForProjectSearch() {
+	public function testForCrossProjectSearch() {
 		$nbRes = rand( 1, 10 );
 		$hostWikiConfig = new HashSearchConfig( [
 			'CirrusSearchNumCrossProjectSearchResults' => $nbRes,
@@ -344,55 +346,153 @@ class SearchQueryTest extends CirrusTestCase {
 			]
 		] );
 
-		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'myquery' );
+		// Keep the $builder around so that we can reuse it for multiple queries & assertions.
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' );
 		$hostWikiQuery = $builder->build();
-		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
-		$this->assertEquals( $hostWikiQuery->getParsedQuery(), $crossSearchQuery->getParsedQuery() );
-		$this->assertFalse( $crossSearchQuery->hasForcedProfile() );
-		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $crossSearchQuery->getInitialCrossSearchStrategy() );
-		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $crossSearchQuery->getCrossSearchStrategy() );
-		$this->assertEquals( 'searchText', $crossSearchQuery->getSearchEngineEntryPoint() );
-		$this->assertEquals( [ NS_MAIN ], $crossSearchQuery->getNamespaces() );
-		$this->assertEquals( [ NS_MAIN ], $crossSearchQuery->getInitialNamespaces() );
-		$this->assertEquals( 'relevance', $crossSearchQuery->getSort() );
-		$this->assertEquals( 0, $crossSearchQuery->getOffset() );
-		$this->assertEquals( $nbRes, $crossSearchQuery->getLimit() );
-		$this->assertEquals( CirrusDebugOptions::defaultOptions(), $crossSearchQuery->getDebugOptions() );
-		$this->assertEquals( $targetWikiConfig, $crossSearchQuery->getSearchConfig() );
-		$this->assertEmpty( $crossSearchQuery->getContextualFilters() );
-		$this->assertFalse( $crossSearchQuery->isWithDYMSuggestion() );
+		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig,
+			$hostWikiQuery )->build();
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
+			[ NS_MAIN ], [ NS_MAIN ], 'relevance', 0, $nbRes );
 
-		$builder->setOffset( 10 );
-		$builder->setLimit( 100 );
-		$builder->addForcedProfile( SearchProfileService::RESCORE, 'foo' );
-		$builder->setInitialNamespaces( [ NS_MAIN, NS_HELP, 100 ] );
-		$builder->setSort( 'size' );
-		$builder->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() );
-
-		$hostWikiQuery = $builder->build();
-		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
-
-		$this->assertEquals( $hostWikiQuery->getParsedQuery(), $crossSearchQuery->getParsedQuery() );
-		$this->assertFalse( $crossSearchQuery->hasForcedProfile() );
-		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $crossSearchQuery->getInitialCrossSearchStrategy() );
-		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $crossSearchQuery->getCrossSearchStrategy() );
-		$this->assertEquals( 'searchText', $crossSearchQuery->getSearchEngineEntryPoint() );
-		$this->assertEquals( [ NS_MAIN, NS_HELP ], $crossSearchQuery->getNamespaces() );
-		$this->assertEquals( [ NS_MAIN, NS_HELP ], $crossSearchQuery->getInitialNamespaces() );
-		$this->assertEquals( 'size', $crossSearchQuery->getSort() );
-		$this->assertEquals( 0, $crossSearchQuery->getOffset() );
-		$this->assertEquals( $nbRes, $crossSearchQuery->getLimit() );
-		$this->assertEquals( CirrusDebugOptions::forDumpingQueriesInUnitTests(), $crossSearchQuery->getDebugOptions() );
-		$this->assertEquals( $targetWikiConfig, $crossSearchQuery->getSearchConfig() );
-		$this->assertEmpty( $crossSearchQuery->getContextualFilters() );
-		$this->assertFalse( $crossSearchQuery->isWithDYMSuggestion() );
+		$hostWikiQuery = $builder->setOffset( 10 )
+			->setLimit( 100 )
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN, NS_HELP, 100 ] )
+			->setSort( 'size' )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->build();
+		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig,
+			$hostWikiQuery )->build();
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
+			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 0, $nbRes,
+			CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 
 		// Test that forced profiles do not propagate to the cross search query if they do not exist
 		// on the target wiki. Forced profiles are only set using official API params, cirrus debug
 		// params may still allow to force a specific profile using the overrides chain.
-		$builder->addForcedProfile( SearchProfileService::RESCORE, 'common' );
-		$hostWikiQuery = $builder->build();
+		$hostWikiQuery = $builder->addForcedProfile( SearchProfileService::RESCORE, 'common' )
+			->build();
 		$crossSearchQuery = SearchQueryBuilder::forCrossProjectSearch( $targetWikiConfig, $hostWikiQuery )->build();
-		$this->assertTrue( $crossSearchQuery->hasForcedProfile() );
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
+			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 0, $nbRes,
+			CirrusDebugOptions::forDumpingQueriesInUnitTests(), 'common' );
+	}
+
+	public function testForCrossLanguageSearch() {
+		$hostWikiConfig = new HashSearchConfig( [
+			'CirrusSearchEnableAltLanguage' => true,
+			'CirrusSearchRescoreProfiles' => [
+				'foo' => [],
+				'common' => []
+			]
+		] );
+		$targetWikiConfig = new HashSearchConfig( [
+			'_wikiID' => 'target',
+			'CirrusSearchRescoreProfiles' => [
+				'common' => []
+			]
+		] );
+
+		// Keep the $builder around so that we can reuse it for multiple queries & assertions.
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'myquery' )
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' );
+		$hostWikiQuery = $builder->build();
+		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig,
+			$hostWikiQuery )->build();
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig );
+
+		$hostWikiQuery = $builder->setOffset( 10 )
+			->setLimit( 100 )
+			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
+			->setInitialNamespaces( [ NS_MAIN, NS_HELP, 100 ] )
+			->setSort( 'size' )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->build();
+
+		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig,
+			$hostWikiQuery )->build();
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
+			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 10, 100,
+			CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+
+		$hostWikiQuery = $builder->addForcedProfile( SearchProfileService::RESCORE, 'common' )
+			->build();
+		$crossSearchQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig, $hostWikiQuery )->build();
+		$this->copyForCrossSearchAssertions( $hostWikiQuery, $crossSearchQuery, $targetWikiConfig,
+			[ NS_MAIN, NS_HELP ], [ NS_MAIN, NS_HELP ], 'size', 10, 100,
+			CirrusDebugOptions::forDumpingQueriesInUnitTests(), 'common' );
+	}
+
+	private function copyForCrossSearchAssertions(
+		SearchQuery $hostWikiQuery,
+		SearchQuery $crossSearchQuery,
+		SearchConfig $targetWikiConfig,
+		$initialNs = [ NS_MAIN ],
+		$namespaces = [ NS_MAIN ],
+		$sortOptions = 'relevance',
+		$offset = 0,
+		$limit = 10,
+		CirrusDebugOptions $options = null,
+		$forcedRescoreProfile = null
+	) {
+		$this->assertEquals( $hostWikiQuery->getParsedQuery(), $crossSearchQuery->getParsedQuery() );
+		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(),
+			$crossSearchQuery->getInitialCrossSearchStrategy() );
+		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(),
+			$crossSearchQuery->getCrossSearchStrategy() );
+		$this->assertEquals( 'searchText', $crossSearchQuery->getSearchEngineEntryPoint() );
+		$this->assertEquals( $initialNs, $crossSearchQuery->getInitialNamespaces() );
+		$this->assertEquals( $namespaces, $crossSearchQuery->getNamespaces() );
+		$this->assertEquals( $sortOptions, $crossSearchQuery->getSort() );
+		$this->assertEquals( $options ?? CirrusDebugOptions::defaultOptions(),
+			$crossSearchQuery->getDebugOptions() );
+		$this->assertEquals( $targetWikiConfig, $crossSearchQuery->getSearchConfig() );
+		$this->assertEmpty( $crossSearchQuery->getContextualFilters() );
+		$this->assertFalse( $crossSearchQuery->isWithDYMSuggestion() );
+		$this->assertEquals( $offset, $crossSearchQuery->getOffset() );
+		$this->assertEquals( $limit, $crossSearchQuery->getLimit() );
+		if ( $forcedRescoreProfile !== null ) {
+			$this->assertEquals( $forcedRescoreProfile, $crossSearchQuery->getForcedProfile( SearchProfileService::RESCORE ) );
+		} else {
+			$this->assertFalse( $crossSearchQuery->hasForcedProfile() );
+		}
+	}
+
+	public function testforRewrittenQuery() {
+		$config = new HashSearchConfig( [
+			'CirrusSearchEnableAltLanguage' => true,
+			'CirrusSearchEnableCrossProjectSearch' => true,
+		] );
+		$builder = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'fooba\\?' )
+			->addForcedProfile( SearchProfileService::RESCORE, 'foobar' )
+			->addContextualFilter( 'hop', $this->getContextualFilter() )
+			->setLimit( 100 )
+			->setOffset( 10 )
+			->setSort( 'size' )
+			->setInitialNamespaces( [ NS_HELP, NS_FILE ] )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$query = $builder->build();
+
+		$rewritten = SearchQueryBuilder::forRewrittenQuery( $query, 'foobar?' )->build();
+		$this->assertFalse( $rewritten->getParsedQuery()->hasCleanup( ParsedQuery::CLEANUP_QMARK_STRIPPING ) );
+		$this->assertFalse( $rewritten->getInitialCrossSearchStrategy()->isCrossLanguageSearchSupported() );
+		$this->assertFalse( $rewritten->getInitialCrossSearchStrategy()->isCrossProjectSearchSupported() );
+		$this->assertTrue( $rewritten->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported() );
+		$this->assertFalse( $rewritten->isWithDYMSuggestion() );
+
+		$this->assertEquals( $query->getDebugOptions(), $rewritten->getDebugOptions() );
+		// FIXME: config is a bit differrent to disable quotation mark stripping
+		// $this->assertEquals( $query->getSearchConfig(), $rewritten->getSearchConfig() );
+		$this->assertEquals( $query->getInitialNamespaces(), $rewritten->getInitialNamespaces() );
+		$this->assertEquals( $query->getSort(), $rewritten->getSort() );
+		$this->assertEquals( 100, $rewritten->getLimit() );
+		$this->assertEquals( 10, $rewritten->getOffset() );
+		$this->assertEquals( $query->getForcedProfiles(), $rewritten->getForcedProfiles() );
+		$this->assertEquals( $query->getContextualFilters(), $rewritten->getContextualFilters() );
+
+		$query = $builder->setExtraIndicesSearch( false )->build();
+		$rewritten = SearchQueryBuilder::forRewrittenQuery( $query, 'foobar?' )->build();
+		$this->assertFalse( $rewritten->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported() );
 	}
 }

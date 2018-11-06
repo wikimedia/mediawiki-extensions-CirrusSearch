@@ -4,6 +4,7 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\QueryParserFactory;
 use CirrusSearch\Query\Builder\ContextualFilter;
@@ -126,16 +127,28 @@ final class SearchQueryBuilder {
 		Assert::precondition( $query->getCrossSearchStrategy()->isCrossProjectSearchSupported(),
 			'Trying to build a query for a cross-project search but the original query does not ' .
 			'support such searches.' );
-		Assert::precondition( $query->getContextualFilters() === [], 'The initial must not have contextual filters' );
 
+		$builder = self::copyQueryForCrossSearch( $config, $query );
+		$builder->offset = 0;
+		$builder->limit = $query->getSearchConfig()->get( 'CirrusSearchNumCrossProjectSearchResults' );
+		return $builder;
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param SearchQuery $original
+	 * @return SearchQueryBuilder
+	 */
+	private static function copyQueryForCrossSearch( SearchConfig $config, SearchQuery $original ): SearchQueryBuilder {
+		Assert::precondition( $original->getContextualFilters() === [], 'The initial must not have contextual filters' );
 		$builder = new self();
-		$builder->parsedQuery = $query->getParsedQuery();
-		$builder->searchEngineEntryPoint = $query->getSearchEngineEntryPoint();
+		$builder->parsedQuery = $original->getParsedQuery();
+		$builder->searchEngineEntryPoint = $original->getSearchEngineEntryPoint();
 
 		// Only allow core namespaces. We can't be sure any others exist
 		// TODO: possibly move this later and try to detect if we run the default
 		// profile, so that we could try to run the default profile on sister wikis
-		$namespaces = $query->getInitialNamespaces();
+		$namespaces = $original->getInitialNamespaces();
 		if ( $namespaces !== null ) {
 			$namespaces = array_filter( $namespaces, function ( $namespace ) {
 				return $namespace <= NS_CATEGORY_TALK;
@@ -143,16 +156,14 @@ final class SearchQueryBuilder {
 		}
 
 		$builder->initialNamespaces = $namespaces;
-		$builder->sort = $query->getSort();
-		$builder->debugOptions = $query->getDebugOptions();
-		$builder->limit = $query->getSearchConfig()->get( 'CirrusSearchNumCrossProjectSearchResults' );
-		$builder->offset = 0;
+		$builder->sort = $original->getSort();
+		$builder->debugOptions = $original->getDebugOptions();
 		$builder->searchConfig = $config;
 
 		$forcedProfiles = [];
 
 		// Copy forced profiles only if they exist on the target wiki.
-		foreach ( $query->getForcedProfiles() as $type => $name ) {
+		foreach ( $original->getForcedProfiles() as $type => $name ) {
 			if ( $config->getProfileService()->hasProfile( $type, $name ) ) {
 				$forcedProfiles[$type] = $name;
 			}
@@ -169,6 +180,48 @@ final class SearchQueryBuilder {
 	}
 
 	/**
+	 * @param SearchConfig $config
+	 * @param SearchQuery $original
+	 * @return SearchQueryBuilder
+	 */
+	public static function forCrossLanguageSearch( SearchConfig $config, SearchQuery $original ) {
+		Assert::parameter( !$config->isLocalWiki(), '$config', 'must not be the local wiki config' );
+		Assert::precondition( $original->getCrossSearchStrategy()->isCrossLanguageSearchSupported(),
+			'Trying to build a query for a cross-language search but the original query does not ' .
+			'support such searches.' );
+
+		$builder = self::copyQueryForCrossSearch( $config, $original );
+		$builder->offset = $original->getOffset();
+		$builder->limit = $original->getLimit();
+		return $builder;
+	}
+
+	/**
+	 * @param SearchQuery $original
+	 * @param string $term
+	 * @return SearchQueryBuilder
+	 */
+	public static function forRewrittenQuery( SearchQuery $original, $term ): SearchQueryBuilder {
+		// Hack to prevent a second pass on this cleaning algo because its destructive
+		$config = new HashSearchConfig( [ 'CirrusSearchStripQuestionMarks' => 'no' ],
+			[ 'inherit' ], $original->getSearchConfig() );
+
+		$builder = self::newFTSearchQueryBuilder( $config, $term );
+		$builder->contextualFilters = $original->getContextualFilters();
+		$builder->forcedProfiles = $original->getForcedProfiles();
+		$builder->initialNamespaces = $original->getInitialNamespaces();
+		$builder->sort = $original->getSort();
+		$builder->debugOptions = $original->getDebugOptions();
+		$builder->limit = $original->getLimit();
+		$builder->offset = $original->getOffset();
+		$builder->crossProjectSearch = false;
+		$builder->crossLanguageSearch = false;
+		$builder->extraIndicesSearch = $original->getInitialCrossSearchStrategy()->isExtraIndicesSearchSupported();
+		$builder->withDYMSuggestion = false;
+		return $builder;
+	}
+
+	/**
 	 * @return SearchQuery
 	 */
 	public function build(): SearchQuery {
@@ -176,7 +229,6 @@ final class SearchQueryBuilder {
 			$this->parsedQuery,
 			$this->initialNamespaces,
 			new CrossSearchStrategy(
-				// Only crossproject has a boolean flag to enable/disable this feature
 				$this->crossProjectSearch && $this->searchConfig->isCrossProjectSearchEnabled(),
 				$this->crossLanguageSearch && $this->searchConfig->isCrossLanguageSearchEnabled(),
 				$this->extraIndicesSearch

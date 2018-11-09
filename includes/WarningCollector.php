@@ -18,5 +18,5 @@ interface WarningCollector {
 	 * @param string|null $param2
 	 * @param string|null $param3
 	 */
-	function addWarning( $message, $param1 = null, $param2 = null, $param3 = null );
+	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null );
 }

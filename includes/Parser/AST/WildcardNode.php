@@ -48,7 +48,7 @@ class WildcardNode extends ParsedNode {
 	/**
 	 * @param Visitor $visitor
 	 */
-	function accept( Visitor $visitor ) {
+	public function accept( Visitor $visitor ) {
 		$visitor->visitWildcardNode( $this );
 	}
 }

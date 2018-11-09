@@ -27,5 +27,5 @@ interface LegacyKeywordFeature {
 	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
 	 *  string.
 	 */
-	function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated, $delimiter, $suffix );
+	public function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated, $delimiter, $suffix );
 }

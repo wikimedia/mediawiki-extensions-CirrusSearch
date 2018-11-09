@@ -185,7 +185,7 @@ class KeywordParser implements WarningCollector {
 	 * @param string|null $param2
 	 * @param string|null $param3
 	 */
-	function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
+	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
 		$args = array_filter( func_get_args() );
 		array_shift( $args );
 		$this->warnings[] = new ParseWarning( $message, $this->currentOffset, [], null, $args );

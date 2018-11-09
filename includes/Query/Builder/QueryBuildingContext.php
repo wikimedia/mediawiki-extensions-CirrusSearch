@@ -15,11 +15,11 @@ interface QueryBuildingContext {
 	/**
 	 * @return SearchConfig
 	 */
-	function getSearchConfig();
+	public function getSearchConfig();
 
 	/**
 	 * @param KeywordFeatureNode $node
 	 * @return array
 	 */
-	function getKeywordExpandedData( KeywordFeatureNode $node );
+	public function getKeywordExpandedData( KeywordFeatureNode $node );
 }

@@ -3,7 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 interface Printer {
-	function output( $message, $channel = null );
-	function outputIndented( $message );
-	function error( $err, $die = 0 );
+	public function output( $message, $channel = null );
+	public function outputIndented( $message );
+	public function error( $err, $die = 0 );
 }

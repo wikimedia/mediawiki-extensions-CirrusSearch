@@ -29,7 +29,7 @@ interface ResultsType {
 	 *
 	 * @return false|string|array corresponding to Elasticsearch source filtering syntax
 	 */
-	function getSourceFiltering();
+	public function getSourceFiltering();
 
 	/**
 	 * Get the fields to load.  Most of the time we'll use source filtering instead but
@@ -37,7 +37,7 @@ interface ResultsType {
 	 *
 	 * @return array corresponding to Elasticsearch fields syntax
 	 */
-	function getStoredFields();
+	public function getStoredFields();
 
 	/**
 	 * Get the highlighting configuration.
@@ -46,19 +46,19 @@ interface ResultsType {
 	 *  Empty if regex should be ignored.
 	 * @return array|null highlighting configuration for elasticsearch
 	 */
-	function getHighlightingConfiguration( array $extraHighlightFields );
+	public function getHighlightingConfiguration( array $extraHighlightFields );
 
 	/**
 	 * @param SearchContext $context
 	 * @param \Elastica\ResultSet $result
 	 * @return mixed Set of search results, the types of which vary by implementation.
 	 */
-	function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result );
+	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result );
 
 	/**
 	 * @return mixed Empty set of search results
 	 */
-	function createEmptyResult();
+	public function createEmptyResult();
 }
 
 abstract class BaseResultsType implements ResultsType {

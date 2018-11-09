@@ -14,7 +14,7 @@ interface Detector {
 	 * @param \WebRequest $request
 	 * @return Detector
 	 */
-	static function build( SearchConfig $config, \WebRequest $request );
+	public static function build( SearchConfig $config, \WebRequest $request );
 
 	/**
 	 * Detect language
@@ -22,5 +22,5 @@ interface Detector {
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found
 	 */
-	function detect( $text );
+	public function detect( $text );
 }

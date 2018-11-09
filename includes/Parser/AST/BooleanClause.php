@@ -77,7 +77,7 @@ class BooleanClause implements Visitable {
 	/**
 	 * @param Visitor $visitor
 	 */
-	function accept( Visitor $visitor ) {
+	public function accept( Visitor $visitor ) {
 		$visitor->visitBooleanClause( $this );
 	}
 }

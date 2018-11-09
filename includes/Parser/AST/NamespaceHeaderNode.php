@@ -53,7 +53,7 @@ class NamespaceHeaderNode extends ParsedNode {
 	/**
 	 * @param Visitor $visitor
 	 */
-	function accept( Visitor $visitor ) {
+	public function accept( Visitor $visitor ) {
 		$visitor->visitNamespaceHeader( $this );
 	}
 }

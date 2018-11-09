@@ -7,7 +7,6 @@
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures" />
 		<exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
-		<exclude name="Squiz.Scope.MethodScope.Missing" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
 		<exclude name="MediaWiki.Usage.NestedFunctions.NestedFunction" />

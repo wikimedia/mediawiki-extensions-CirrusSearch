@@ -31,7 +31,7 @@ class ByKeywordTemplateBoostFunction implements BoostFunctionBuilder {
 	 *
 	 * @param \Elastica\Query\FunctionScore $container
 	 */
-	function append( \Elastica\Query\FunctionScore $container ) {
+	public function append( \Elastica\Query\FunctionScore $container ) {
 		$this->queries->append( $container );
 	}
 }

@@ -101,5 +101,5 @@ abstract class KeywordNodeVisitor extends LeafVisitor {
 	/**
 	 * @param KeywordFeatureNode $node
 	 */
-	abstract function doVisitKeyword( KeywordFeatureNode $node );
+	abstract public function doVisitKeyword( KeywordFeatureNode $node );
 }

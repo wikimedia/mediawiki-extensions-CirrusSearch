@@ -15,5 +15,5 @@ interface BoostFunctionBuilder {
 	 *
 	 * @param FunctionScore $container
 	 */
-	function append( FunctionScore $container );
+	public function append( FunctionScore $container );
 }

@@ -505,7 +505,7 @@ class QueryStringRegexParser implements QueryParser {
 		if ( $this->token->getType() === Token::NOT ) {
 			$this->advance();
 			if ( !$this->nextToken() ) {
-				$this->unexpectedEOF( [ Token::PARSED_NODE ] );
+				return $this->unexpectedEOF( [ Token::PARSED_NODE ] );
 			}
 			return $this->explicitlyNegatedNode();
 		}

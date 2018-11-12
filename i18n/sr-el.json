@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Milicevic01",
-			"Obsuser"
+			"Obsuser",
+			"Zoranzoki21"
 		]
 	},
 	"cirrussearch-now-using": "Ovaj viki ima novi način pretrage. ([[mw:Special:MyLanguage/Help:CirrusSearch|Saznajte više]])",
@@ -19,5 +20,6 @@
 	"cirrussearch-completion-profile-normal-pref-name": "Režim preusmerenja (napredno)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Bez ispravljanja tipfelera. Rešava bliska preusmerenja.",
 	"cirrussearch-completion-profile-classic-pref-name": "Klasična pretraga po prefiksu",
-	"cirrussearch-completion-profile-classic-pref-desc": "Bez ispravljanja tipfelera. Traži početke naslova."
+	"cirrussearch-completion-profile-classic-pref-desc": "Bez ispravljanja tipfelera. Traži početke naslova.",
+	"cirrussearch-article-words": "Reči na svim stranicama sadržaja"
 }

@@ -30,5 +30,6 @@
 	"cirrussearch-completion-profile-normal-pref-name": "Режим преусмерења (напредно)",
 	"cirrussearch-completion-profile-normal-pref-desc": "Без исправљања типфелера. Решава блиска преусмерења.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
-	"cirrussearch-completion-profile-classic-pref-desc": "Без исправљања типфелера. Тражи почетке наслова."
+	"cirrussearch-completion-profile-classic-pref-desc": "Без исправљања типфелера. Тражи почетке наслова.",
+	"cirrussearch-article-words": "Речи на свим страницама са садржајем"
 }

@@ -3748,6 +3748,83 @@
             }
         }
     },
+    "fixups: NOT at start&eof is eaten as a word and produce a warning": {
+        "query": "NOT",
+        "expected": {
+            "query": "NOT",
+            "rawQuery": "NOT",
+            "queryClassCache": [
+                "simple_bag_of_words",
+                "bogus_query"
+            ],
+            "warnings": [
+                {
+                    "msg": "cirrussearch-parse-error-unexpected-end",
+                    "start": 3,
+                    "expected": [
+                        "QUERY"
+                    ],
+                    "actual": "EOF"
+                }
+            ],
+            "root": {
+                "words": {
+                    "startOffset": 0,
+                    "endOffset": 3,
+                    "words": "NOT"
+                }
+            }
+        }
+    },
+    "fixups: trailing NOT after bool op is eaten as a word and produce a warning": {
+        "query": "word AND NOT",
+        "expected": {
+            "query": "word AND NOT",
+            "rawQuery": "word AND NOT",
+            "queryClassCache": [
+                "complex_query",
+                "bogus_query"
+            ],
+            "warnings": [
+                {
+                    "msg": "cirrussearch-parse-error-unexpected-end",
+                    "start": 12,
+                    "expected": [
+                        "QUERY"
+                    ],
+                    "actual": "EOF"
+                }
+            ],
+            "root": {
+                "bool": {
+                    "startOffset": 0,
+                    "endOffset": 12,
+                    "clauses": [
+                        {
+                            "MUST": {
+                                "words": {
+                                    "startOffset": 0,
+                                    "endOffset": 4,
+                                    "words": "word"
+                                }
+                            },
+                            "explicit": true
+                        },
+                        {
+                            "MUST": {
+                                "words": {
+                                    "startOffset": 9,
+                                    "endOffset": 12,
+                                    "words": "NOT"
+                                }
+                            },
+                            "explicit": true
+                        }
+                    ]
+                }
+            }
+        }
+    },
     "fixups: leading boolean operator is eaten as a word and produce a warning": {
         "query": "AND foo",
         "expected": {

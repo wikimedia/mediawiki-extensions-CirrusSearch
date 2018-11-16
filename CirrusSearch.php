@@ -1329,7 +1329,10 @@ $wgHooks[ 'PageContentInsertComplete' ][] = 'CirrusSearch\Hooks::onPageContentIn
 /**
  * i18n
  */
-$wgMessagesDirs['CirrusSearch'] = __DIR__ . '/i18n';
+$wgMessagesDirs['CirrusSearch'] = [
+	__DIR__ . '/i18n',
+	__DIR__ . '/i18n/api',
+];
 
 /**
  * Jobs

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Arystanbek",
+			"JackUKElliott"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "CirrusSearch yapılandırma dökümü.",
+	"apihelp-cirrus-config-dump-example": "CirrusSearch yapılandırma dökümünü al.",
+	"apihelp-cirrus-mapping-dump-description": "Bu wiki için CirrusSearch haritalama dökümü.",
+	"apihelp-cirrus-mapping-dump-example": "Bu viki için CirrusSearch haritalama dökümünü al.",
+	"apihelp-cirrus-settings-dump-description": "Bu wiki için CirrusSearch ayarları dökümü.",
+	"apihelp-cirrus-settings-dump-example": "Bu viki için CirrusSearch ayarlarının dökümünü al."
+}

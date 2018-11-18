@@ -9,7 +9,6 @@
 	"cirrussearch-too-busy-error": "Iskanje je trenutno preobremenjeno. Prosimo, poskusi ponovno kasneje.",
 	"cirrussearch-now-using": "Ta wiki uporablja nov iskalnik.([[mw:Special:MyLanguage/Help:CirrusSearch|Poizvedi več]])",
 	"cirrussearch-pref-label": "Novo iskanje",
-	"apierror-cirrus-requesttoolong": "Vnešeno geslo za iskanje po predponi je bilo predolgo. ($1 &gt; $2)",
 	"cirrussearch-give-feedback": "Sporoči nam svoje mnenje",
 	"cirrussearch-query-too-long": "Vnešeno geslo je predolgo. ($1 > $2)",
 	"cirrussearch-completion-profile-fuzzy": "Podobno normalnemu s popravki zatipkanj (podprti dve zatipkanji)",

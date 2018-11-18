@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joetaras"
+		]
+	},
+	"apihelp-cirrus-config-dump-summary": "Configurazione d'u dump de CirrusSearch",
+	"apihelp-cirrus-config-dump-example": "Pigghie 'nu dump de CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Dump d'a mappature de CirrusSearch pe sta uicchi.",
+	"apihelp-cirrus-mapping-dump-summary": "Dump d'a mappature de CirrusSearch pe sta uicchi.",
+	"apihelp-cirrus-mapping-dump-example": "Pigghie 'nu dump d'a mappature de CirrusSearch pe sta uicchi.",
+	"apihelp-cirrus-settings-dump-description": "'Mbostaziune d'u dump de CirrusSearch pe sta uicchi.",
+	"apihelp-cirrus-settings-dump-summary": "'Mbostaziune d'u dump de CirrusSearch pe sta uicchi.",
+	"apihelp-cirrus-settings-dump-example": "Pigghie 'nu dump de CirrusSearch pe sta uicchi."
+}

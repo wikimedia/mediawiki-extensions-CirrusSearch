@@ -27,7 +27,7 @@ class CirrusDebugOptionsTest extends TestCase {
 		] );
 		$debugOptions = CirrusDebugOptions::fromRequest( $request );
 		$this->assertEquals( 'my_model', $debugOptions->getCirrusMLRModel() );
-		$this->assertEquals( 'pretty', $debugOptions->getCirrusExplain() );
+		$this->assertEquals( 'pretty', $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertTrue( $debugOptions->isCirrusDumpResult() );
 		$this->assertEquals( [ 'foo', 'bar' ], $debugOptions->getCirrusCompletionVariant() );
@@ -42,7 +42,7 @@ class CirrusDebugOptionsTest extends TestCase {
 	public function testUnitTests() {
 		$debugOptions = CirrusDebugOptions::forDumpingQueriesInUnitTests();
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
-		$this->assertNull( $debugOptions->getCirrusExplain() );
+		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertTrue( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
 		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
@@ -53,12 +53,12 @@ class CirrusDebugOptionsTest extends TestCase {
 	public function testRelTest() {
 		$debugOptions = CirrusDebugOptions::forRelevanceTesting( true );
 		$this->assertFalse( $debugOptions->isReturnRaw() );
-		$this->assertTrue( $debugOptions->getCirrusExplain() );
+		$this->assertTrue( $debugOptions->getCirrusExplainFormat() );
 	}
 
 	private function assertNone( CirrusDebugOptions $debugOptions ) {
 		$this->assertNull( $debugOptions->getCirrusMLRModel() );
-		$this->assertNull( $debugOptions->getCirrusExplain() );
+		$this->assertNull( $debugOptions->getCirrusExplainFormat() );
 		$this->assertFalse( $debugOptions->isCirrusDumpQuery() );
 		$this->assertFalse( $debugOptions->isCirrusDumpResult() );
 		$this->assertNull( $debugOptions->getCirrusCompletionVariant() );
@@ -77,4 +77,30 @@ class CirrusDebugOptionsTest extends TestCase {
 		$options->applyDebugOptions( $query );
 		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
+
+	public function testNeverCache() {
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [] ) );
+		$this->assertFalse( $options->mustNeverBeCached() );
+
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+			'cirrusExplain' => 'pretty'
+		] ) );
+		$this->assertTrue( $options->mustNeverBeCached() );
+
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+			'cirrusExplain' => 'raw'
+		] ) );
+		$this->assertTrue( $options->mustNeverBeCached() );
+
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+			'cirrusExplain' => 'unknown and ignored value'
+		] ) );
+		$this->assertFalse( $options->mustNeverBeCached() );
+
+		$options = CirrusDebugOptions::fromRequest( new \FauxRequest( [
+			'cirrusDumpResult' => '1'
+		] ) );
+		$this->assertTrue( $options->mustNeverBeCached() );
+	}
+
 }

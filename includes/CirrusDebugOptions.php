@@ -51,7 +51,7 @@ class CirrusDebugOptions {
 		$options->cirrusCompletionVariant = $request->getArray( 'cirrusCompletionVariant' );
 		$options->cirrusDumpQuery = self::debugFlag( $request, 'cirrusDumpQuery' );
 		$options->cirrusDumpResult = self::debugFlag( $request, 'cirrusDumpResult' );
-		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot' ] );
+		$options->cirrusExplain = self::debugOption( $request, 'cirrusExplain', [ 'verbose', 'pretty', 'hot', 'raw' ] );
 		$options->cirrusMLRModel = $request->getVal( 'cirrusMLRModel' );
 		$options->dumpAndDie = $options->cirrusDumpQuery || $options->cirrusDumpResult;
 		return $options;
@@ -139,10 +139,10 @@ class CirrusDebugOptions {
 	}
 
 	/**
-	 * @return string|null
+	 * @return string|null The formatting to apply, or null to return raw explains
 	 */
-	public function getCirrusExplain() {
-		return $this->cirrusExplain;
+	public function getCirrusExplainFormat() {
+		return $this->cirrusExplain === 'raw' ? null : $this->cirrusExplain;
 	}
 
 	/**
@@ -175,5 +175,13 @@ class CirrusDebugOptions {
 			$query->setExplain( true );
 		}
 		return $query;
+	}
+
+	/**
+	 * @return bool True when queries built with this set of debug options must
+	 *  not have their results cached and returned to other users.
+	 */
+	public function mustNeverBeCached() {
+		return $this->cirrusDumpResult || $this->cirrusExplain;
 	}
 }

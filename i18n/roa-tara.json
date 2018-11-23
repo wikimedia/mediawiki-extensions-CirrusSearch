@@ -13,6 +13,8 @@
 	"cirrussearch-give-feedback": "Mannane 'nu commende",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Predefinite (conzigliate)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Corregge 'mbonde a doje errore de battiture. Live le redirezionaminde ca s'assemegghiane a 'u titole prengepàle.",
+	"cirrussearch-completion-profile-strict-pref-name": "Mode rigorose (avanzate)",
+	"cirrussearch-completion-profile-normal-pref-name": "Mode reindirizzamende (avanzate)",
 	"cirrussearch-completion-profile-classic-pref-name": "Ricerche classeche pe prefisse",
 	"cirrussearch-completion-profile-classic-pref-desc": "Nisciuna correzzione de errore de battiture. S'accocchie cu l'inizie de le titole.",
 	"cirrussearch-incategory-feature-no-valid-categories": "Nisciuna categorije valide date a '$1'.",

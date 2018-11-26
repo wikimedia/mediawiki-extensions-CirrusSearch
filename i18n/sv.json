@@ -42,7 +42,7 @@
 	"cirrussearch-qi-profile-popular-inclinks": "Rankning baserat primärt på antal inkommande länkar",
 	"prefs-completion": "Sökningsifyllning",
 	"cirrussearch-pref-completion-section-desc": "Ifyllningsförslag",
-	"cirrussearch-pref-completion-profile-help": "Ändra beteendet för autoifyllningsförslag (sök-medan-du-skriver).",
+	"cirrussearch-pref-completion-profile-help": "Ändra beteendet för autoifyllningsförslag (sök-medan-du-skriver).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] är en algoritm för sökförslag med bättre felstavningskorrigering och sökrelevans. Prefixsökning är den gamla förslagsalgoritmen \"sök-medan-du-skriver\".",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (rekommenderas)",
 	"cirrussearch-completion-profile-fuzzy-pref-desc": "Korrigerar upp till två stavfel. Tar bort omdirigeringar som liknar huvudsidan.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Matchande underfraser (rekommenderas för längre sidtitlar)",
@@ -74,5 +74,7 @@
 	"cirrussearch-explore-similar-categories-none": "Inga kategorier tillgängliga",
 	"cirrussearch-explore-similar-languages-none": "Inte tillgänglig på andra språk",
 	"cirrussearch-article-words": "Ord i alla innehållssidor",
-	"cirrussearch-keyword-prefix-ns-mismatch": "Namnrymden som hittas i söktermen <code>prefix:</code> är inte kompatibel med den begärda namnrymden. Du kan åtgärda detta genom att lägga till <code>all:</code> som ett prefix i din fråga."
+	"cirrussearch-keyword-prefix-ns-mismatch": "Namnrymden som hittas i söktermen <code>prefix:</code> är inte kompatibel med den begärda namnrymden. Du kan åtgärda detta genom att lägga till <code>all:</code> som ett prefix i din fråga.",
+	"cirrussearch-autoselect-profile": "Låt sökmotorn bestämma den bästa profilen att använda.",
+	"cirrussearch-offset-too-large": "Kunde inte hämta resultat. Upp till $1 sökresultat stöds, men resultat från $2 efterfrågades."
 }

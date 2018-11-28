@@ -360,7 +360,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$wikiId = 'enwiki';
 		$myGlobals = [
 			'wgDBprefix' => null,
-			'wgDBName' => $wikiId,
+			'wgDBname' => $wikiId,
 			'wgLanguageCode' => 'en',
 			'wgCirrusSearchInterwikiSources' => [
 				'voy' => 'enwikivoyage',

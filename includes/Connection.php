@@ -298,14 +298,6 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * @param SearchConfig $config the search config
-	 * @return Connection[] array of connection indexed by cluster name.
-	 */
-	public static function getWritableClusterConnections( SearchConfig $config ) {
-		return self::getClusterConnections( $config->getClusterAssignment()->getWritableClusters(), $config );
-	}
-
-	/**
 	 * @return SearchConfig
 	 */
 	public function getConfig() {

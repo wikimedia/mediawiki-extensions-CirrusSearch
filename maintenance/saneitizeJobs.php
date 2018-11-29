@@ -8,6 +8,7 @@ use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\MetaStore\MetaSaneitizeJobStore;
 use CirrusSearch\Profile\SearchProfileService;
 use JobQueueGroup;
+use Wikimedia\Assert\Assert;
 
 /**
  * Push some sanitize jobs to the JobQueue
@@ -56,6 +57,11 @@ class SaneitizeJobs extends Maintenance {
 	 */
 	private $profileName;
 
+	/**
+	 * @var string[] list of clusters to check
+	 */
+	private $clusters;
+
 	public function __construct() {
 		parent::__construct();
 		$this->mDescription = 'Manage sanitize jobs (CheckerJob). This ' .
@@ -92,30 +98,9 @@ class SaneitizeJobs extends Maintenance {
 	}
 
 	private function init() {
+		$this->initClusters();
 		$this->initMetaStores();
-		$res = $this->getDB( DB_REPLICA )->select( 'page',
-			[ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
-		$row = $res->next();
-		/** @suppress PhanUndeclaredProperty */
-		$this->minId = $row->min_id;
-		/** @suppress PhanUndeclaredProperty */
-		$this->maxId = $row->max_id;
-		$profiles = $this->getSearchConfig()->getProfileService()
-			->listExposedProfiles( SearchProfileService::SANEITIZER );
-		uasort( $profiles, function ( $a, $b ) {
-			return $a['max_wiki_size'] < $b['max_wiki_size'] ? -1 : 1;
-		} );
-		$wikiSize = $this->maxId - $this->minId;
-		foreach ( $profiles as $name => $settings ) {
-			if ( $settings['max_wiki_size'] > $wikiSize ) {
-				$this->profileName = $name;
-				$this->log( "Detected $wikiSize ids to check, selecting profile $name\n" );
-				break;
-			}
-		}
-		if ( !$this->profileName ) {
-			$this->fatalError( "No profile found for $wikiSize ids, please check sanitization profiles" );
-		}
+		$this->initProfile();
 	}
 
 	/**
@@ -219,9 +204,6 @@ EOD
 
 	private function pushJobs() {
 		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
-		if ( !$this->getSearchConfig()->get( 'CirrusSearchSanityCheck' ) ) {
-			$this->fatalError( "Sanity check disabled, abandonning...\n" );
-		}
 		$profile = $this->getSearchConfig()
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
@@ -328,17 +310,35 @@ EOD
 		return true;
 	}
 
-	private function initMetaStores() {
-		$connections = [];
+	private function initClusters() {
+		$sanityCheckSetup = $this->getSearchConfig()->get( 'CirrusSearchSanityCheck' );
+		if ( !$sanityCheckSetup ) {
+			$this->fatalError( "Sanity check disabled, abandonning...\n" );
+		}
 		if ( $this->hasOption( 'cluster' ) ) {
 			$cluster = $this->getOption( 'cluster' );
-			if ( !$this->getSearchConfig()->canWriteToCluster( $cluster ) ) {
+			if ( $this->getSearchConfig()->canWriteToCluster( $cluster ) ) {
 				$this->fatalError( "$cluster is not in the set of writable clusters\n" );
 			}
-			$connections[$cluster] = Connection::getPool( $this->getSearchConfig(), $cluster );
-		} else {
-			$connections = Connection::getWritableClusterConnections( $this->getSearchConfig() );
+			$this->clusters = [ $this->getOption( 'cluster' ) ];
 		}
+		if ( $sanityCheckSetup === true ) {
+			$this->clusters =
+				$this->getSearchConfig()->getClusterAssignment()->getWritableClusters();
+		} else {
+			Assert::precondition( is_array( $sanityCheckSetup ),
+				"wgCirrusSearchSanityCheck must be " . "a bolean or an array of strings" );
+			$this->clusters =
+				array_intersect( $sanityCheckSetup,
+					$this->getSearchConfig()->getClusterAssignment()->getWritableClusters() );
+		}
+		if ( count( $this->clusters ) === 0 ) {
+			$this->fatalError( 'No clusters are writable...' );
+		}
+	}
+
+	private function initMetaStores() {
+		$connections = Connection::getClusterConnections( $this->clusters, $this->getSearchConfig() );
 
 		if ( empty( $connections ) ) {
 			$this->fatalError( "No writable cluster found." );
@@ -354,6 +354,35 @@ EOD
 				$this->fatalError( 'Metastore version is too old, expected at least 1.0' );
 			}
 			$this->metaStores[$cluster] = $store->saneitizeJobStore();
+		}
+	}
+
+	private function initProfile() {
+		$res =
+			$this->getDB( DB_REPLICA )
+				->select( 'page', [ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
+		$row = $res->next();
+		/** @suppress PhanUndeclaredProperty */
+		$this->minId = $row->min_id;
+		/** @suppress PhanUndeclaredProperty */
+		$this->maxId = $row->max_id;
+		$profiles =
+			$this->getSearchConfig()
+				->getProfileService()
+				->listExposedProfiles( SearchProfileService::SANEITIZER );
+		uasort( $profiles, function ( $a, $b ) {
+			return $a['max_wiki_size'] < $b['max_wiki_size'] ? - 1 : 1;
+		} );
+		$wikiSize = $this->maxId - $this->minId;
+		foreach ( $profiles as $name => $settings ) {
+			if ( $settings['max_wiki_size'] > $wikiSize ) {
+				$this->profileName = $name;
+				$this->log( "Detected $wikiSize ids to check, selecting profile $name\n" );
+				break;
+			}
+		}
+		if ( !$this->profileName ) {
+			$this->fatalError( "No profile found for $wikiSize ids, please check sanitization profiles" );
 		}
 	}
 
@@ -380,14 +409,6 @@ EOD
 			}
 		}
 		return $latest;
-	}
-
-	/**
-	 * @param string $jobName
-	 * @return string the job id
-	 */
-	private function jobId( $jobName ) {
-		return 'sanitize-job-' . wfWikiID() . '-' . $jobName;
 	}
 
 	/**

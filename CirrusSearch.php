@@ -1183,6 +1183,9 @@ $wgCirrusSearchMasterTimeout = '30s';
  * for a bi-hourly schedule (--refresh-freq=7200).
  * Setting $wgCirrusSearchSanityCheck to false will prevent the script from
  * pushing new jobs even if it's still scheduled by cron.
+ *
+ * By default all writable clusters are checked, set its value to a list of
+ * clusters to exclude some of them.
  */
 $wgCirrusSearchSanityCheck = true;
 

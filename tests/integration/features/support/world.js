@@ -122,7 +122,7 @@ function World( { attach, parameters } ) {
 
 		apiClients[wiki] = client.loginGetEditToken( {
 			username: w.username,
-			password: w.password,
+			password: w.botPassword,
 			apiUrl: w.apiUrl
 		} ).then( () => client );
 

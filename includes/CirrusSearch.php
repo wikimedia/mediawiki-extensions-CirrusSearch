@@ -475,7 +475,7 @@ class CirrusSearch extends SearchEngine {
 			// Need to fetch the name to fallback to prefix (not ideal)
 			// We should probably refactor this to have a single code path for prefix and completion suggester.
 			$profile = $this->config->getProfileService()
-				->loadProfile( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT, $profile );
+				->getProfileName( SearchProfileService::COMPLETION, SearchProfileService::CONTEXT_DEFAULT );
 		}
 		if ( $profile === self::COMPLETION_PREFIX_FALLBACK_PROFILE ) {
 			// Fallback to prefixsearch if the classic profile was selected.

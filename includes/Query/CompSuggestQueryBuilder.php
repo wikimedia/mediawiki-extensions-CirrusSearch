@@ -10,6 +10,7 @@ use Elastica\ResultSet;
 use Elastica\Suggest;
 use Elastica\Suggest\Completion;
 use SearchSuggestion;
+use Wikimedia\Assert\Assert;
 
 /**
  * Suggest (Completion) query builder.
@@ -50,6 +51,7 @@ class CompSuggestQueryBuilder {
 	public function __construct( SearchContext $context, array $profile, $limit, $offset = 0 ) {
 		$this->searchContext = $context;
 		$this->profile = $profile['fst'];
+		Assert::parameter( count( $this->profile ) > 0, '$profile', 'Profile must not be empty' );
 		$this->hardLimit = self::computeHardLimit( $limit, $offset, $context->getConfig() );
 		if ( $limit > $this->hardLimit - $offset ) {
 			$limit = $this->hardLimit - $offset;

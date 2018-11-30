@@ -80,6 +80,10 @@ class Page {
 		browser.setValue( '#wpName1', config.username );
 		browser.setValue( '#wpPassword1', config.password );
 		browser.click( '#wpLoginAttempt' );
+		if ( browser.elements( '#mw-input-skipReset' ).value.length > 0 ) {
+			// skip password reset
+			browser.click( '#mw-input-skipReset' );
+		}
 	}
 }
 module.exports = Page;

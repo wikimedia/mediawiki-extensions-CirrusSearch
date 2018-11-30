@@ -36,23 +36,35 @@ exports.config = {
 	password: process.env.MEDIAWIKI_PASSWORD === undefined ?
 		'vagrant' :
 		process.env.MEDIAWIKI_PASSWORD,
+	botPassword: process.env.MEDIAWIKI_BOT_PASSWORD === undefined ?
+		'vagrant' :
+		process.env.MEDIAWIKI_BOT_PASSWORD,
 	wikis: {
 		default: 'cirrustest',
 		cirrustest: {
 			username: 'Admin',
 			password: 'vagrant',
+			botPassword: process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_CIRRUSTEST_BOT_PASSWORD,
 			apiUrl: 'http://cirrustest.wiki.local.wmftest.net:8080/w/api.php',
 			baseUrl: 'http://cirrustest.wiki.local.wmftest.net:8080'
 		},
 		commons: {
 			username: 'Admin',
 			password: 'vagrant',
+			botPassword: process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_COMMONS_BOT_PASSWORD,
 			apiUrl: 'http://commons.wiki.local.wmftest.net:8080/w/api.php',
 			baseUrl: 'http://commons.wiki.local.wmftest.net:8080'
 		},
 		ru: {
 			username: 'Admin',
 			password: 'vagrant',
+			botPassword: process.env.MEDIAWIKI_RU_BOT_PASSWORD === undefined ?
+				'vagrant' :
+				process.env.MEDIAWIKI_RU_BOT_PASSWORD,
 			apiUrl: 'http://ru.wiki.local.wmftest.net:8080/w/api.php',
 			baseUrl: 'http://ru.wiki.local.wmftest.net:8080'
 		},

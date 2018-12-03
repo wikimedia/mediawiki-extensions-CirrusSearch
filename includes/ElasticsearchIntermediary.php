@@ -2,11 +2,13 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\SearchMetricsProvider;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
 use Status;
 use User;
+use Wikimedia\Assert\Assert;
 
 /**
  * Base class with useful functions for communicating with Elasticsearch.
@@ -277,7 +279,14 @@ abstract class ElasticsearchIntermediary {
 	 * @param string $value
 	 */
 	public static function appendLastLogPayload( $key, $value ) {
-		self::$requestLogger->appendLastLogPayload( $key, $value );
+		if ( self::$requestLogger !== null ) {
+			// Guard only for unit tests that heavily mock classes
+			self::$requestLogger->appendLastLogPayload( $key, $value );
+		} else {
+			Assert::invariant( defined( 'MW_PHPUNIT_TEST' ),
+				'appendLastLogPayload must only be called after self::$requestLogger has been set ' .
+				'or during unit tests' );
+		}
 	}
 
 	/**
@@ -333,5 +342,12 @@ abstract class ElasticsearchIntermediary {
 			return $timeout;
 		}
 		throw new \ConfigException( "wgCirrusSearchClientSideSearchTimeout should have at least a 'default' entry configured" );
+	}
+
+	/**
+	 * @param SearchMetricsProvider $provider
+	 */
+	protected function appendMetrics( SearchMetricsProvider $provider ) {
+		$this->searchMetrics += $provider->getMetrics();
 	}
 }

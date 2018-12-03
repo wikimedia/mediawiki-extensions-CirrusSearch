@@ -5,8 +5,6 @@ namespace CirrusSearch;
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\LanguageDetector\TextCat;
 use CirrusSearch\LanguageDetector\HttpAccept;
-use CirrusSearch\Search\SearchQuery;
-use CirrusSearch\Search\SearchQueryBuilder;
 
 /**
  * Completion Suggester Tests
@@ -185,41 +183,6 @@ class LanguageDetectTest extends CirrusTestCase {
 		$this->assertEquals( "en", $detect );
 	}
 
-	/**
-	 * Simply test the searchTextReal $forceLocal boolean flag.
-	 * Testing the full chain seems hard so we just test that
-	 * the $forceLocal flag is running a search on the local
-	 * wiki.
-	 */
-	public function testLocalSearch() {
-		$hostWikiConfig = new HashSearchConfig(
-			[
-				'CirrusSearchIndexBaseName' => 'hostwiki',
-				'CirrusSearchEnableAltLanguage' => true,
-				'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
-			],
-			[ 'inherit' ]
-		);
-		$targetWikiConfig = new HashSearchConfig(
-			[
-				'CirrusSearchInterwikiSources' => null,
-				'CirrusSearchIndexBaseName' => 'targetwiki',
-				'CirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
-			], [ 'inherit' ] );
-		$hostWikiQuery = SearchQueryBuilder::newFTSearchQueryBuilder( $hostWikiConfig, 'hello' )
-			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
-			->setInitialNamespaces( [ NS_FILE ] )
-			->build();
-		$targetWikiQuery = SearchQueryBuilder::forCrossLanguageSearch( $targetWikiConfig, $hostWikiQuery )->build();
-		$cirrus = new MyCirrusSearch( $hostWikiConfig, $hostWikiQuery->getDebugOptions() );
-		$result = $cirrus->mySearchTextReal( $targetWikiQuery )->getValue();
-		$result = json_decode( $result, true );
-		$this->assertEquals( 'targetwiki_general/page/_search', $result['path'] );
-		$result = $cirrus->mySearchTextReal( $hostWikiQuery )->getValue();
-		$result = json_decode( $result, true );
-		$this->assertEquals( 'hostwiki_general,externalwiki_file/page/_search', $result['path'] );
-	}
-
 	public function getHttpLangs() {
 		return [
 			[ "en", [ "en" ], null ],
@@ -245,14 +208,5 @@ class LanguageDetectTest extends CirrusTestCase {
 
 		$detect = $detector->detect( "test" );
 		$this->assertEquals( $result, $detect );
-	}
-}
-
-/**
- * Just a simple wrapper to access the protected method searchTextReal
- */
-class MyCirrusSearch extends \CirrusSearch {
-	public function mySearchTextReal( SearchQuery $query ) {
-		return $this->searchTextReal( $query );
 	}
 }

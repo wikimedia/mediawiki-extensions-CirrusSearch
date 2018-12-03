@@ -4,8 +4,6 @@ use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\InterwikiSearcher;
-use CirrusSearch\InterwikiResolver;
-use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
@@ -179,6 +177,7 @@ class CirrusSearch extends SearchEngine {
 			$builder->addContextualFilter( 'prefix',
 				\CirrusSearch\Query\PrefixFeature::asContextualFilter( $this->prefix ) );
 		}
+
 		$profile = $this->extractProfileFromFeatureData( SearchEngine::FT_QUERY_INDEP_PROFILE_TYPE );
 		if ( $profile !== null ) {
 			$builder->addForcedProfile( SearchProfileService::RESCORE, $profile );
@@ -188,73 +187,14 @@ class CirrusSearch extends SearchEngine {
 
 		$status = $this->searchTextReal( $query );
 		$matches = $status->getValue();
-		if ( !$status->isOK() || !$matches instanceof ResultSet ) {
-			return $status;
+		if ( $matches instanceof ResultSet ) {
+			ElasticsearchIntermediary::setResultPages( [ $matches ] );
 		}
-
-		if ( $query->isAllowRewrite() &&
-			 $matches->isQueryRewriteAllowed( $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) &&
-			 $this->prefix === ''
-		) {
-			$status = $this->searchTextSecondTry( $query, $status );
-		}
-		ElasticsearchIntermediary::setResultPages( [ $status->getValue() ] );
-		if ( $status->getValue() instanceof SearchMetricsProvider ) {
+		if ( $matches instanceof SearchMetricsProvider ) {
 			$this->extraSearchMetrics += $status->getValue()->getMetrics();
 		}
 
 		return $status;
-	}
-
-	/**
-	 * Check whether we want to try another language.
-	 * @param SearchQuery $query
-	 * @return SearchConfig|null config for another wiki to try, or null
-	 */
-	private function detectSecondaryLanguage( SearchQuery $query ) {
-		if ( !$query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
-			return null;
-		}
-		$detectorsFactory = new LanguageDetectorFactory( $query->getSearchConfig(), $this->request );
-		$detectors = $detectorsFactory->getDetectors();
-		$detected = null;
-		foreach ( $detectors as $name => $detector ) {
-			$lang = $detector->detect( $query->getParsedQuery()->getRawQuery() );
-			if ( $lang === $query->getSearchConfig()->get( 'LanguageCode' ) ) {
-				// The query is in the wiki language so we
-				// don't need to actually try another wiki.
-				// Note that this may not be very accurate for
-				// wikis that use deprecated language codes
-				// but the interwiki resolver should not return
-				// ourselves.
-				continue;
-			}
-			$iwPrefixAndConfig = MediaWikiServices::getInstance()
-				->getService( InterwikiResolver::SERVICE )
-				->getSameProjectConfigByLang( $lang );
-			if ( !empty( $iwPrefixAndConfig ) ) {
-				// it might be more accurate to attach these to the 'next'
-				// log context? It would be inconsistent with the
-				// langdetect => false condition which does not have a next
-				// request though.
-				Searcher::appendLastLogPayload( 'langdetect', $name );
-				$detected = $iwPrefixAndConfig;
-				break;
-			}
-		}
-		if ( is_array( $detected ) ) {
-			// Report language detection with search metrics
-			// TODO: do we still need this metric? (see T151796)
-			reset( $detected );
-			$prefix = key( $detected );
-			$config = $detected[$prefix];
-			$metric = [ $config->getWikiId(), $prefix ];
-			$this->extraSearchMetrics['wgCirrusSearchAltLanguage'] = $metric;
-			return $config;
-		} else {
-			Searcher::appendLastLogPayload( 'langdetect', 'failed' );
-			return null;
-		}
 	}
 
 	/**
@@ -263,58 +203,6 @@ class CirrusSearch extends SearchEngine {
 	 */
 	private function isFeatureEnabled( $feature ) {
 		return isset( $this->features[$feature] ) && $this->features[$feature];
-	}
-
-	/**
-	 * @param SearchQuery $query
-	 * @param Status $oldStatus
-	 * @return Status
-	 */
-	private function searchTextSecondTry( SearchQuery $query, Status $oldStatus ) {
-		// TODO: figure out who goes first - language or suggestion?
-		/** @var ResultSet $oldResult */
-		$oldResult = $oldStatus->getValue();
-		if ( $oldResult->numRows() == 0 && $oldResult->hasSuggestion() ) {
-			$rewritten = $oldResult->getSuggestionQuery();
-			$rewrittenSnippet = $oldResult->getSuggestionSnippet();
-			$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $query, $rewritten )->build();
-			$rewrittenStatus = $this->searchTextReal( $rewrittenQuery );
-			$rewrittenResult = $rewrittenStatus->getValue();
-			if (
-				$rewrittenResult instanceof ResultSet
-				&& $rewrittenResult->numRows() > 0
-			) {
-				$rewrittenResult->setRewrittenQuery( $rewritten, $rewrittenSnippet );
-				if ( $rewrittenResult->numRows() < $GLOBALS['wgCirrusSearchInterwikiThreshold'] ) {
-					// replace the result but still try the alt language
-					$oldStatus = $rewrittenStatus;
-					$oldResult = $rewrittenResult;
-				} else {
-					return $rewrittenStatus;
-				}
-			}
-		}
-		$config = $this->detectSecondaryLanguage( $query );
-		if ( $config !== null ) {
-			$status = $this->searchTextReal(
-				SearchQueryBuilder::forCrossLanguageSearch( $config, $query )->build()
-			);
-			$matches = $status->getValue();
-			if ( $matches instanceof ResultSet ) {
-				$numRows = $matches->numRows();
-				$this->extraSearchMetrics['wgCirrusSearchAltLanguageNumResults'] = $numRows;
-				// check whether we have second language functionality enabled.
-				// This comes after the actual query is run so we can collect metrics about
-				// users in the control buckets, and provide them the same latency as users
-				// in the test bucket.
-				if ( $GLOBALS['wgCirrusSearchEnableAltLanguage'] && $numRows > 0 ) {
-					$oldResult->addInterwikiResults( $matches, SearchResultSet::INLINE_RESULTS, $config->getWikiId() );
-				}
-			}
-		}
-
-		// Don't have any other options yet.
-		return $oldStatus;
 	}
 
 	/**

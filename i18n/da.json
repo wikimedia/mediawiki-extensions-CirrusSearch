@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Christian List",
-			"Saederup92"
+			"Saederup92",
+			"Weblars"
 		]
 	},
 	"cirrussearch-desc": "Søgning for MediaWiki drevet af Elasticsearch",
@@ -12,6 +13,7 @@
 	"cirrussearch-pref-label": "Ny søgning",
 	"cirrussearch-pref-desc": "Prøv vores nye søgning, som understøtter et større antal sprog, giver mere opdaterede resultater og kan endda finde tekst inden i skabeloner.",
 	"cirrussearch-give-feedback": "Giv os tilbagemelding",
+	"prefs-completion": "Søgeforslag",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "Standard (anbefalet)",
 	"cirrussearch-explore-similar-related": "Relateret",
 	"cirrussearch-explore-similar-categories": "Kategorier",

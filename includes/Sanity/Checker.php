@@ -212,7 +212,10 @@ class Checker {
 		$inIndex = $fromIndex !== [];
 		if ( $inIndex ) {
 			foreach ( $fromIndex as $r ) {
-				$title = Title::makeTitle( $r->namespace, $r->title );
+				$title = Title::makeTitleSafe( $r->namespace, $r->title );
+				if ( $title === null ) {
+					$title = Title::makeTitleSafe( NS_SPECIAL, 'Badtitle/InvalidInDBOrElastic' );
+				}
 				$this->remediator->ghostPageInIndex( $docId, $title );
 			}
 			return true;
@@ -341,6 +344,11 @@ class Checker {
 		);
 		foreach ( $res as $row ) {
 			$page = WikiPage::newFromRow( $row );
+			if ( Title::newFromDBkey( $page->getTitle()->getPrefixedDBkey() ) === null ) {
+				// The DB may contain invalid titles, make sure we try to sanitize only valid titles
+				// invalid titles like this may have to wait for a dedicated clean up action
+				continue;
+			}
 			$cache->offsetSet( $page->getId(), $page );
 		}
 		return $cache->getArrayCopy();

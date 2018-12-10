@@ -69,7 +69,6 @@ class ArrayProfileRepository implements SearchProfileRepository {
 	 * @param string $repoType
 	 * @param string $repoName
 	 * @param array[]|callable $profilesOrCallback
-	 * @param boolean $isCallable
 	 */
 	private function __construct( $repoType, $repoName, $profilesOrCallback ) {
 		$this->type = $repoType;

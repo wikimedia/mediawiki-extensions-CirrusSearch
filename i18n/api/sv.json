@@ -17,7 +17,8 @@
 	"apihelp-cirrus-settings-dump-example": "Få en dump av CirrusSearch-inställningarna för denna wiki.",
 	"apihelp-query+cirrusdoc-description": "Kopia av ett CirrusSearch-artikeldokument",
 	"apihelp-query+cirrusdoc-summary": "Kopia av ett CirrusSearch-artikeldokument från sökservrarna",
-	"apihelp-query+cirrusdoc-example": "Skaffa en kopia av en CirrusSearch-artikel",
+	"apihelp-query+cirrusdoc-example": "Hämta en kopia av en CirrusSearch-artikel som den för nuvarande är indexerad till sökning.",
 	"apihelp-query+cirrusbuilddoc-summary": "Kopia av ett CirrusSearch-artikeldokument från databasservrarna",
+	"apihelp-query+cirrusbuilddoc-example": "Hämta en kopia av en CirrusSearch-artikel som den är genererad från databasen.",
 	"apierror-cirrus-requesttoolong": "Prefixsökfrågan var längre än maximal tillåten längd. ($1 &gt; $2)"
 }

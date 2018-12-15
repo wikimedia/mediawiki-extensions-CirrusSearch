@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sociologist"
+			"Sociologist",
+			"Malikxan"
 		]
 	},
-	"cirrussearch-now-using": "Ushbu vikida yangi qidiruv mexanizmi ishlatilmoqda ([[mw:Special:MyLanguage/Help:CirrusSearch|batafsil]])."
+	"cirrussearch-now-using": "Ushbu vikida yangi qidiruv mexanizmi ishlatilmoqda ([[mw:Special:MyLanguage/Help:CirrusSearch|batafsil]]).",
+	"cirrussearch-article-words": "Barcha kontent sahifalaridagi so‘zlar"
 }

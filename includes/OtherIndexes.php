@@ -43,13 +43,17 @@ class OtherIndexes extends Updater {
 	 * Get the external index identifiers for title.
 	 * @param SearchConfig $config
 	 * @param Title $title
+	 * @param string|null $cluster cluster (as in CirrusSearchWriteClusters) to filter on
 	 * @return ExternalIndex[] array of external indices.
 	 */
-	public static function getExternalIndexes( SearchConfig $config, Title $title ) {
+	public static function getExternalIndexes( SearchConfig $config, Title $title, $cluster = null ) {
 		$namespace = $title->getNamespace();
 		$indices = [];
 		foreach ( $config->get( 'CirrusSearchExtraIndexes' )[$namespace] ?? [] as $indexName ) {
-			$indices[] = new ExternalIndex( $config, $indexName );
+			$ei = new ExternalIndex( $config, $indexName );
+			if ( $cluster === null || !$ei->isClusterBlacklisted( $cluster ) ) {
+				$indices[] = $ei;
+			}
 		}
 		return $indices;
 	}
@@ -90,7 +94,7 @@ class OtherIndexes extends Updater {
 		// Build multisearch to find ids to update
 		$findIdsMultiSearch = new MultiSearch( $this->connection->getClient() );
 		$findIdsClosures = [];
-		$readClusterName = $this->connection->getClusterName();
+		$readClusterName = $this->connection->getConfig()->getClusterAssignment()->getCrossClusterName();
 		foreach ( $titles as $title ) {
 			foreach ( self::getExternalIndexes( $this->searchConfig, $title ) as $otherIndex ) {
 				$searchIndex = $otherIndex->getSearchIndex( $readClusterName );

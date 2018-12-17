@@ -29,12 +29,13 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	public function testGetExternalIndexes( $assertions, $extraIndexes ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchExtraIndexes' => $extraIndexes,
+			'CirrusSearchReplicaGroup' => 'default',
 		] );
 
 		foreach ( $assertions as $title => $expectedIndices ) {
 			$found = array_map(
 				function ( $other ) {
-					return $other->getSearchIndex( 'foo' );
+					return $other->getSearchIndex( 'default' );
 				},
 				OtherIndexes::getExternalIndexes( $config, Title::newFromText( $title ) )
 			);
@@ -71,13 +72,14 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	public function testGetExtraIndexesForNamespace( $assertions, $extraIndexes ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchExtraIndexes' => $extraIndexes,
+			'CirrusSearchReplicaGroup' => 'default',
 		] );
 
 		foreach ( $assertions as $assertion ) {
 			list( $namespaces, $indices ) = $assertion;
 			$found = array_map(
 				function ( $other ) {
-					return $other->getSearchIndex( 'foo' );
+					return $other->getSearchIndex( 'default' );
 				},
 				OtherIndexes::getExtraIndexesForNamespaces( $config, $namespaces )
 			);

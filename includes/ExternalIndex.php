@@ -13,10 +13,10 @@ class ExternalIndex {
 	private $config;
 
 	/**
-	 * @var string[] Map from cluster name to the related external cluster. Any
-	 *  cluster not mapped will take assumption index is found on same cluster.
+	 * @var string replica group to write to, null if the index requested is hosted on the same
+	 * cluster group declared in as the default group in this SearchConfig $config.
 	 */
-	private $clusters;
+	private $crossClusterName;
 
 	/**
 	 * @var string Name of index on external clusters
@@ -25,12 +25,19 @@ class ExternalIndex {
 
 	/**
 	 * @param Searchconfig $config
-	 * @param string $indexName Name of index on external clusters.
+	 * @param string $indexName Name of index on external clusters. Can include a group prefix
+	 * (e.g. "cluster_group:index_name")
 	 */
 	public function __construct( SearchConfig $config, $indexName ) {
 		$this->config = $config;
-		$this->indexName = $indexName;
-		$this->clusters = $config->get( 'CirrusSearchExtraIndexClusters' )[$indexName] ?? [];
+		$groupAndIndex = explode( ':', $indexName, 2 );
+		if ( count( $groupAndIndex ) === 2 ) {
+			$currentGroup = $config->getClusterAssignment()->getCrossClusterName();
+			$this->crossClusterName = $currentGroup !== $groupAndIndex[0] ? $groupAndIndex[0] : null;
+			$this->indexName = $groupAndIndex[1];
+		} else {
+			$this->indexName = $indexName;
+		}
 	}
 
 	/**
@@ -41,24 +48,24 @@ class ExternalIndex {
 	}
 
 	/**
-	 * @param string $sourceCluster The cluster primary wiki writes
-	 *  are being sent to.
-	 * @return string The cluster external index writes must be sent to.
+	 * @return string|null The group external index writes must be sent to, null to send to current group.
 	 */
-	public function getWriteCluster( $sourceCluster ) {
-		return $this->clusters[$sourceCluster] ?? $sourceCluster;
+	public function getCrossClusterName() {
+		return $this->crossClusterName;
 	}
 
 	/**
-	 * @param string $sourceCluster Name of the cluster being queried.
+	 * @param string|null $sourceCrossClusterName Name of the cluster as configured in the cross-cluster
+	 * search settings, null for simple&deprecated configs.
 	 * @return string The name of the index to search. Includes
 	 *   cross-cluster identifier if necessary.
 	 */
-	public function getSearchIndex( $sourceCluster ) {
-		$targetCluster = $this->clusters[$sourceCluster] ?? $sourceCluster;
-		return $sourceCluster === $targetCluster
+	public function getSearchIndex( $sourceCrossClusterName ) {
+		$currentGroup = $this->crossClusterName ?? $this->config->getClusterAssignment()->getCrossClusterName();
+
+		return $sourceCrossClusterName === $currentGroup || $currentGroup === null
 			? $this->indexName
-			: "{$targetCluster}:{$this->indexName}";
+			: "{$currentGroup}:{$this->indexName}";
 	}
 
 	/**
@@ -72,5 +79,13 @@ class ExternalIndex {
 		} else {
 			return [ '', [] ];
 		}
+	}
+
+	/**
+	 * @param string $cluster cluster
+	 * @return bool true if writes must be avoided to this cluster replica (cluster as in DC).
+	 */
+	public function isClusterBlacklisted( $cluster ) {
+		return (bool)$this->config->getElement( 'CirrusSearchExtraIndexClusterBlacklist', $this->indexName, $cluster );
 	}
 }

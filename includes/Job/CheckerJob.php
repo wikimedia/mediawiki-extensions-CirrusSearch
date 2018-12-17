@@ -130,6 +130,11 @@ class CheckerJob extends Job {
 			return false;
 		}
 
+		$connections = $this->decideClusters();
+		if ( empty( $connections ) ) {
+			return true;
+		}
+
 		$from = $this->params['fromPageId'];
 		$to = $this->params['toPageId'];
 
@@ -156,7 +161,6 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(

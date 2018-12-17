@@ -23,8 +23,7 @@ interface ClusterAssignment {
 	public function getServerList( $cluster = null ): array;
 
 	/**
-	 * @return string The name to use to refer to this wikis group in cross-cluster-search.
-	 * @throws \RuntimeException when cross-cluster-search is unsupported
+	 * @return string|null The name to use to refer to this wikis group in cross-cluster-search.
 	 */
 	public function getCrossClusterName();
 }

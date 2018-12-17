@@ -12,7 +12,6 @@ class ConstantAssignmentTest extends \MediaWikiTestCase {
 		$this->assertEquals( [ 'default' ], $clusters->getWritableClusters() );
 		$this->assertEquals( [ 'localhost:9200' ], $clusters->getServerList() );
 		$this->assertEquals( [ 'localhost:9200' ], $clusters->getServerList( 'default' ) );
-		$this->setExpectedException( \RuntimeException::class );
-		$clusters->getCrossClusterName();
+		$this->assertNull( $clusters->getCrossClusterName() );
 	}
 }

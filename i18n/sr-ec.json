@@ -13,7 +13,7 @@
 	"cirrussearch-too-busy-error": "Претрага је тренутно презаузета. Покушајте поново касније.",
 	"cirrussearch-regex-syntax-error": "Регуларни израз грешке синтаксе у $2: $1",
 	"cirrussearch-regex-too-busy-error": "Превише регуларних израза претраживања тренутно ради. Покушајте поново касније.",
-	"cirrussearch-now-using": "Овај вики има нови начин претраге. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
+	"cirrussearch-now-using": "Овај вики користи нови претраживач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
 	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
 	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",

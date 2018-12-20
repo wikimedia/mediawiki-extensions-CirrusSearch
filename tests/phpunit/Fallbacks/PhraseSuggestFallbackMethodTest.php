@@ -61,10 +61,11 @@ class PhraseSuggestFallbackMethodTest extends BaseFallbackMethodTest {
 			->build();
 		$rewritten = $suggestionQuery !== null ? SearchQueryBuilder::forRewrittenQuery( $query, $suggestionQuery )->build() : null;
 
-		$rewrittenResults = $numRewrittenResults >= 0 ? DummyResultSet::fakeNumRows( $numRewrittenResults ) : null;
+		$rewrittenResults = $numRewrittenResults >= 0 ? DummyResultSet::fakeTotalHits( $numRewrittenResults ) : null;
 		$searcherFactory = $this->getSearcherFactoryMock( $expectedApproxScore > 0 ? $rewritten : null, $rewrittenResults );
 		$fallback = new PhraseSuggestFallbackMethod( $searcherFactory, $query );
-		$initialResults = DummyResultSet::fakeNumRowWithSuggestion( $numInitialResults, $suggestionQuery, htmlspecialchars( $suggestionQuery ) );
+		$initialResults = DummyResultSet::fakeTotalHitsWithSuggestion( $numInitialResults,
+			$suggestionQuery, htmlspecialchars( $suggestionQuery ) );
 		$this->assertEquals( $expectedApproxScore, $fallback->successApproximation( $initialResults ) );
 		if ( $expectedApproxScore > 0 ) {
 			$actualNewResults = $fallback->rewrite( $initialResults, $initialResults );

@@ -61,6 +61,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Extra\\Query\\TokenCountRouter' => __DIR__ . '/includes/Extra/Query/TokenCountRouter.php',
 	'CirrusSearch\\Fallbacks\\BaseFallbackMethodTest' => __DIR__ . '/tests/phpunit/Fallbacks/BaseFallbackMethodTest.php',
 	'CirrusSearch\\Fallbacks\\FallbackMethod' => __DIR__ . '/includes/Fallbacks/FallbackMethod.php',
+	'CirrusSearch\\Fallbacks\\FallbackMethodTrait' => __DIR__ . '/includes/Fallbacks/FallbackMethodTrait.php',
 	'CirrusSearch\\Fallbacks\\FallbackRunner' => __DIR__ . '/includes/Fallbacks/FallbackRunner.php',
 	'CirrusSearch\\Fallbacks\\LangDetectFallbackMethod' => __DIR__ . '/includes/Fallbacks/LangDetectFallbackMethod.php',
 	'CirrusSearch\\Fallbacks\\PhraseSuggestFallbackMethod' => __DIR__ . '/includes/Fallbacks/PhraseSuggestFallbackMethod.php',

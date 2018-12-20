@@ -16,6 +16,7 @@ use MediaWiki\MediaWikiServices;
 use Wikimedia\Assert\Assert;
 
 class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider {
+	use FallbackMethodTrait;
 
 	/**
 	 * @var SearchQuery
@@ -90,10 +91,13 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	 * @return float
 	 */
 	public function successApproximation( ResultSet $firstPassResults ) {
+		if ( !$this->query->isAllowRewrite() ) {
+			return 0.0;
+		}
 		if ( !$this->query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
 			return 0.0;
 		}
-		if ( $firstPassResults->numRows() >= $this->threshold ) {
+		if ( $this->resultsThreshold( $firstPassResults, $this->threshold ) ) {
 			return 0.0;
 		}
 		if ( !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) ) {
@@ -141,8 +145,7 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 		Assert::precondition( $this->detectedLangWikiConfig !== null,
 			'nothing has been detected, this should not even be tried.' );
 
-		if ( $previousSet->numRows() >= $this->threshold ||
-			 !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) ) {
+		if ( $this->resultsThreshold( $previousSet, $this->threshold ) ) {
 			return $previousSet;
 		}
 

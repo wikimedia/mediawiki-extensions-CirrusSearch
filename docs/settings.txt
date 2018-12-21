@@ -517,6 +517,20 @@ Default:
 Set additional phrase suggester profiles
 (see profiles/PhraseSuggesterProfiles.config.php)
 
+; $wgCirrusSearchInterwikiHTTPTimeout
+
+Read timeout (in seconds) for HTTP requests done to another wiki API.
+
+Default:
+    $wgCirrusSearchInterwikiHTTPTimeout = 10
+
+; $wgCirrusSearchInterwikiHTTPConnectTimeout
+
+Connection timeout (in seconds) for HTTP requests done to another wiki API.
+
+Default:
+    $wgCirrusSearchInterwikiHTTPConnectTimeout = 5
+
 ; $wgCirrusSearchPhraseSuggestReverseField
 
 Default:

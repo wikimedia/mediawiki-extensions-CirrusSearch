@@ -749,6 +749,16 @@ $wgCirrusSearchCrossProjectOrder = 'static';
 $wgCirrusSearchCrossProjectBlockScorerProfiles = [];
 
 /**
+ * Read timeout (in seconds) for HTTP requests done to another wiki API
+ */
+$wgCirrusSearchInterwikiHTTPTimeout = 10;
+
+/**
+ * Connection timeout (in seconds) for HTTP requests done to another wiki API
+ */
+$wgCirrusSearchInterwikiHTTPConnectTimeout = 5;
+
+/**
  * The seconds Elasticsearch will wait to batch index changes before making
  * them available for search.  Lower values make search more real time but put
  * more load on Elasticsearch.  Defaults to 1 second because that is the default

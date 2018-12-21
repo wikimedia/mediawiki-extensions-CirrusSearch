@@ -50,7 +50,10 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
 		if ( $client === null ) {
-			$client = new MultiHttpClient( [] );
+			$client = new MultiHttpClient( [
+				'connTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPConnectTimeout' ),
+				'reqTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPTimeout' )
+			] );
 		}
 		if ( $cache === null ) {
 			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();

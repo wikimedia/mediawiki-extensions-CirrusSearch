@@ -153,6 +153,8 @@ class SearcherTest extends CirrusTestCase {
 		'SiteMatrixSites',
 		'CirrusSearchInterwikiPrefixOverrides',
 		'CirrusSearchCrossClusterSearch', // We explicitly want this to fall through to local wiki conf
+		'CirrusSearchInterwikiHTTPConnectTimeout', // Needed to fetch crosswiki config
+		'CirrusSearchInterwikiHTTPTimeout' // Needed to fetch crosswiki config
 	];
 
 	private function assertConfigIsExported() {

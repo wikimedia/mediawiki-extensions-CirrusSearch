@@ -40,5 +40,9 @@
 	"cirrussearch-explore-similar-languages": "Ngôn ngữ",
 	"cirrussearch-explore-similar-related-none": "Không có sẵn trang liên quan",
 	"cirrussearch-explore-similar-categories-none": "Không có sẵn thể loại",
-	"cirrussearch-explore-similar-languages-none": "Không có sẵn trong ngôn ngữ khác"
+	"cirrussearch-explore-similar-languages-none": "Không có sẵn trong ngôn ngữ khác",
+	"cirrussearch-article-words": "Tổng số từ trong các trang nội dung",
+	"cirrussearch-keyword-prefix-ns-mismatch": "Không gian tên trong cụm từ tìm kiếm <code>prefix:</code> không tương thích với không gian tên được yêu cầu. Bạn có thể sửa bằng cách thay tiền tố prefix bằng <code>all:</code>",
+	"cirrussearch-autoselect-profile": "Để bộ máy tìm kiếm quyết định dùng hồ sơ tốt nhất.",
+	"cirrussearch-offset-too-large": "Không truy xuất được kết quả. Số kết quả tìm kiếm tối đa là $1, nhưng lại yêu cầu kết quả từ $2."
 }

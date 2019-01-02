@@ -118,7 +118,7 @@ class KeywordNodeVisitorTest extends CirrusTestCase {
 				$this->states = $states;
 			}
 
-			function doVisitKeyword( KeywordFeatureNode $node ) {
+			public function doVisitKeyword( KeywordFeatureNode $node ) {
 				TestCase::assertThat( $this->nbCall, TestCase::lessThan( count( $this->states ) ) );
 				$assertionStates = $this->states[$this->nbCall++];
 				TestCase::assertEquals( $assertionStates['negated'], $this->negated() );

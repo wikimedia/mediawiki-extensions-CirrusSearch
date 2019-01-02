@@ -201,11 +201,11 @@ class SearchQueryTest extends CirrusTestCase {
 				$this->namespaces = $namespaces;
 			}
 
-			function populate( FilterBuilder $builder ) {
+			public function populate( FilterBuilder $builder ) {
 				Assert::fail();
 			}
 
-			function requiredNamespaces() {
+			public function requiredNamespaces() {
 				return $this->namespaces;
 			}
 		};

@@ -264,7 +264,7 @@ class ParsedQuery {
 				/**
 				 * @param KeywordFeatureNode $node
 				 */
-				function doVisitKeyword( KeywordFeatureNode $node ) {
+				public function doVisitKeyword( KeywordFeatureNode $node ) {
 					$this->strategy = $this->strategy
 						->intersect( $node->getKeyword()->getCrossSearchStrategy( $node ) );
 				}
@@ -322,7 +322,7 @@ class ParsedQuery {
 				/**
 				 * @param KeywordFeatureNode $node
 				 */
-				function doVisitKeyword( KeywordFeatureNode $node ) {
+				public function doVisitKeyword( KeywordFeatureNode $node ) {
 					$name = $node->getKeyword()
 						->getFeatureName( $node->getKey(), $node->getDelimiter() );
 					$this->features[$name] = true;

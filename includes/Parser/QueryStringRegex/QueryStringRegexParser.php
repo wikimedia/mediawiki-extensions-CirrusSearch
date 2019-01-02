@@ -727,7 +727,7 @@ class QueryStringRegexParser implements QueryParser {
 			/**
 			 * @param KeywordFeatureNode $node
 			 */
-			function doVisitKeyword( KeywordFeatureNode $node ) {
+			public function doVisitKeyword( KeywordFeatureNode $node ) {
 				if ( $this->total === 'all' ) {
 					return;
 				}

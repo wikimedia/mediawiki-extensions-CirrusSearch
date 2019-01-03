@@ -214,6 +214,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Query\\QueryHelper' => __DIR__ . '/includes/Query/QueryHelper.php',
 	'CirrusSearch\\Query\\SimpleKeywordFeature' => __DIR__ . '/includes/Query/SimpleKeywordFeature.php',
 	'CirrusSearch\\Query\\SubPageOfFeature' => __DIR__ . '/includes/Query/SubPageOf.php',
+	'CirrusSearch\\Query\\TextFieldFilterFeature' => __DIR__ . '/includes/Query/TextFieldFilterFeature.php',
 	'CirrusSearch\\RequestLog' => __DIR__ . '/includes/RequestLog.php',
 	'CirrusSearch\\RequestLogger' => __DIR__ . '/includes/RequestLogger.php',
 	'CirrusSearch\\Saneitize' => __DIR__ . '/maintenance/saneitize.php',

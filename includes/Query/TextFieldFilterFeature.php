@@ -6,21 +6,35 @@ use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\SearchConfig;
 use Elastica\Query;
 use Elastica\Query\AbstractQuery;
 
 /**
- * File type features:
- *  filetype:bitmap
- * Selects only files of these specified features.
+ * Feature for filtering on specific text fields. Supports plain AND matching
+ * by default, and phrase matching when quoted.
  */
-class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+class TextFieldFilterFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+
+	/** @var string Full text keyword to register */
+	private $keyword;
+
+	/** @var string Elasticsearch field to filter against */
+	private $field;
+
+	/**
+	 * @param string $keyword Full text keyword to register
+	 * @param string $field Elasticsearch field to filter against
+	 */
+	public function __construct( $keyword, $field ) {
+		$this->keyword = $keyword;
+		$this->field = $field;
+	}
+
 	/**
 	 * @return string[]
 	 */
 	protected function getKeywords() {
-		return [ 'filetype' ];
+		return [ $this->keyword ];
 	}
 
 	/**
@@ -45,24 +59,26 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$query = $this->doGetFilterQuery( $context->getConfig(), $key, $value, $quotedValue );
+		$query = $this->doGetFilterQuery( $value, $quotedValue );
 
 		return [ $query, false ];
 	}
 
 	/**
-	 * @param SearchConfig $config
-	 * @param string $key
 	 * @param string $value
 	 * @param string $quotedValue
 	 * @return Query\Match|Query\MatchPhrase
 	 */
-	protected function doGetFilterQuery( SearchConfig $config, $key, $value, $quotedValue ) {
-		$aliases = $config->get( 'CirrusSearchFiletypeAliases' );
-		if ( is_array( $aliases ) && isset( $aliases[$value] ) ) {
-			$value = $aliases[$value];
+	protected function doGetFilterQuery( $value, $quotedValue ) {
+		if ( $value !== $quotedValue ) {
+			// If used with quotes we create a more precise phrase query
+			$query = new Query\MatchPhrase( $this->field, $value );
+		} else {
+			$query = new Query\Match( $this->field, [ 'query' => $value ] );
+			$query->setFieldOperator( $this->field, 'AND' );
 		}
-		return new Query\Match( 'file_media_type', [ 'query' => $value ] );
+
+		return $query;
 	}
 
 	/**
@@ -71,7 +87,6 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return $this->doGetFilterQuery( $context->getSearchConfig(), $node->getKey(),
-			$node->getValue(), $node->getQuotedValue() );
+		return $this->doGetFilterQuery( $node->getValue(), $node->getQuotedValue() );
 	}
 }

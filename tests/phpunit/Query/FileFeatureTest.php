@@ -152,25 +152,6 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 				],
 				'filetype:office',
 			],
-			'mime match phrase' => [
-				[
-					'match_phrase' => [
-						'file_mime' => 'image/png',
-					]
-				],
-				'filemime:"image/png"',
-			],
-			'mime match' => [
-				[
-					'match' => [
-						'file_mime' => [
-							'query' => 'pdf',
-							'operator' => 'AND'
-						],
-					]
-				],
-				'filemime:pdf',
-			]
 		];
 	}
 
@@ -179,6 +160,10 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	 */
 	public function testParseType( $expected, $term ) {
 		$feature = new FileTypeFeature();
+		$this->assertFeature( $expected, $term, $feature );
+	}
+
+	private function assertFeature( $expected, $term, $feature ) {
 		if ( $expected !== null ) {
 			$this->assertParsedValue( $feature, $term, null, [] );
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );

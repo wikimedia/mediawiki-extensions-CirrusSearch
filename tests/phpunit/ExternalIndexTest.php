@@ -7,22 +7,46 @@ namespace CirrusSearch;
  */
 class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 
-	public function testSimpleConfiguration() {
-		$config = new HashSearchConfig( [] );
+	public function testGetSearchIndex() {
+		$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => 'default' ] );
 		$idx = new ExternalIndex( $config, 'foo' );
-		$this->assertEquals( 'foo', $idx->getSearchIndex( 'anything' ) );
+		$this->assertEquals( 'foo', $idx->getSearchIndex( $config->getClusterAssignment()->getCrossClusterName() ) );
+		$this->assertEquals( 'default:foo', $idx->getSearchIndex( 'custom' ) );
+
+		$idx = new ExternalIndex( $config, 'custom:foo' );
+		$this->assertEquals( 'foo', $idx->getSearchIndex( 'custom' ) );
+		$this->assertEquals( 'custom:foo', $idx->getSearchIndex( 'default' ) );
+
+		$idx = new ExternalIndex( $config, 'default:foo' );
+		$this->assertEquals( 'default:foo', $idx->getSearchIndex( 'custom' ) );
+		$this->assertEquals( 'foo', $idx->getSearchIndex( 'default' ) );
+	}
+
+	public function testIsClusterBlacklisted() {
+		$config = new HashSearchConfig( [
+			'CirrusSearchReplicaGroup' => 'default',
+			'CirrusSearchExtraIndexClusterBlacklist' => [
+				'test' => [ 'foo' => true ]
+			]
+		] );
+		$idx = new ExternalIndex( $config, 'test' );
+		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
+		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
 
 		$config = new HashSearchConfig( [
-			'CirrusSearchExtraIndexClusters' => [
-				'foo' => [
-					'a2' => 'a1',
-				],
-			],
+			'CirrusSearchReplicaGroup' => 'custom_group',
+			'CirrusSearchExtraIndexClusterBlacklist' => [
+				'test' => [ 'foo' => true ]
+			]
 		] );
-		$idx = new ExternalIndex( $config, 'foo' );
-		$this->assertEquals( 'foo', $idx->getSearchIndex( 'anything' ) );
-		$this->assertEquals( 'foo', $idx->getSearchIndex( 'a1' ) );
-		$this->assertEquals( 'a1:foo', $idx->getSearchIndex( 'a2' ) );
+
+		$idx = new ExternalIndex( $config, 'test' );
+		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
+		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
+
+		$idx = new ExternalIndex( $config, 'custom_group:test' );
+		$this->assertTrue( $idx->isClusterBlacklisted( 'foo' ) );
+		$this->assertFalse( $idx->isClusterBlacklisted( 'bar' ) );
 	}
 
 	public function getWriteClustersProvider() {
@@ -30,33 +54,40 @@ class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 
 		// Current wiki writes to cluster `1` in datacenters `a` and `b`
 		$config = [
-			'CirrusSearchWriteClusters' => [ 'a1', 'b1' ],
-			'CirrusSearchExtraIndexClusters' => [
-				// Direct all external index usage to cluster `2`
-				'unittest' => [
-					'a1' => 'a2',
-					'b1' => 'b2',
-				]
+			'CirrusSearchClusters' => [
+				'DCA-group1' => [
+					'replica' => 'DCA',
+					'group' => 'group1',
+					[]
+				],
+				'DCB-group1' => [
+					'replica' => 'DCB',
+					'group' => 'group1',
+					[]
+				],
+				'DCA-group2' => [
+					'replica' => 'DCA',
+					'group' => 'group2',
+					[]
+				],
+				'DCB-default' => [
+					'replica' => 'DCB',
+					'group' => 'group2',
+					[]
+				],
+			],
+			'CirrusSearchReplicaGroup' => 'group1',
+			'CirrusSearchWriteClusters' => [ 'DCA', 'DCB' ],
+			'CirrusSearchExtraIndex' => [
+				NS_FILE => "group2:unittest"
 			],
 		];
 		$assertions = [
-			// Writes for all clusters should return cluster 2
-			[ 'source' => 'a1', 'target' => 'a2' ],
-			[ 'source' => 'b1', 'target' => 'b2' ],
-			// Unconfigured clusters should return themselves
-			[ 'source' => 'a2', 'target' => 'a2' ],
-			[ 'source' => 'b2', 'target' => 'b2' ],
-			// We dont know if they exist
-			[ 'source' => 'c', 'target' => 'c' ],
+			[ 'source' => 'group2', 'target' => null ],
+			[ 'source' => 'group1', 'target' => 'group2' ],
+			[ 'source' => 'random', 'target' => 'group2' ],
 		];
 
-		foreach ( $assertions as $testCase ) {
-			$tests[] = [ $config, $testCase['source'], $testCase['target'] ];
-		}
-
-		// Wiki writing to cluster `2` should continue sending external
-		// writes to same clusters.
-		$config['CirrusSearchWriteClusters'] = [ 'a2', 'b2' ];
 		foreach ( $assertions as $testCase ) {
 			$tests[] = [ $config, $testCase['source'], $testCase['target'] ];
 		}
@@ -68,32 +99,10 @@ class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 	 * @dataProvider getWriteClustersProvider
 	 */
 	public function testGetWriteClusters( $config, $sourceCluster, $targetCluster ) {
-		$config = new HashSearchConfig( $config + [
-			'CirrusSearchClusters' => [
-				'a1' => [],
-				'a2' => [],
-				'b1' => [],
-				'b2' => [],
-			],
-		] );
-		$idx = new ExternalIndex( $config, 'unittest' );
-		$this->assertEquals( $targetCluster, $idx->getWriteCluster( $sourceCluster ) );
-	}
-
-	public function testGetSearchIndex() {
-		$config = new HashSearchConfig( [
-			'CirrusSearchExtraIndexClusters' => [
-				'unittest' => [
-					'a2' => 'a1',
-					'b2' => 'b1',
-				],
-			],
-		] );
-		$index = new ExternalIndex( $config, 'unittest' );
-		$this->assertEquals( 'unittest', $index->getSearchIndex( 'a1' ) );
-		$this->assertEquals( 'a1:unittest', $index->getSearchIndex( 'a2' ) );
-		$this->assertEquals( 'unittest', $index->getSearchIndex( 'b1' ) );
-		$this->assertEquals( 'b1:unittest', $index->getSearchIndex( 'b2' ) );
+		$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $sourceCluster ],
+			[ 'inherit' ], new HashSearchConfig( $config ) );
+		$idx = new ExternalIndex( $config, $config->getElement( 'CirrusSearchExtraIndex', NS_FILE ) );
+		$this->assertEquals( $targetCluster, $idx->getCrossClusterName() );
 	}
 
 	public function getBoostsProvider() {
@@ -114,8 +123,9 @@ class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 	public function testGetBoosts( $expectedWiki, $expectedBoosts, $boostConfig ) {
 		$config = new HashSearchConfig( [
 			'CirrusSearchExtraIndexBoostTemplates' => $boostConfig,
+			'CirrusSearchReplicaGroup' => 'default'
 		] );
-		$idx = new ExternalIndex( $config, 'testindex', [] );
+		$idx = new ExternalIndex( $config, 'testindex' );
 		list( $wiki, $boosts ) = $idx->getBoosts();
 		$this->assertEquals( $expectedWiki, $wiki );
 		$this->assertEquals( $expectedBoosts, $boosts );

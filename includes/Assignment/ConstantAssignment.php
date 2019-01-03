@@ -30,6 +30,6 @@ class ConstantAssignment implements ClusterAssignment {
 	}
 
 	public function getCrossClusterName() {
-		throw new \RuntimeException( 'Cross cluster not supported by ConstantAssignment' );
+		return null;
 	}
 }

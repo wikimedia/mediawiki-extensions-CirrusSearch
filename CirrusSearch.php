@@ -274,11 +274,11 @@ $wgCirrusSearchNamespaceMappings = [];
  * results until the job is done.
  *
  * NOTE Part Three: Removing an index from here will stop generating update
- * jobs, but jobs already enqueued will run to completion. If there is a
- * corresponding $wgCirrusSearchExtraIndexClusters configuration it should not
- * be removed until the job queue is cleared, or the jobs will attempt to write
- * to the cluster(s) of the local wiki, potentially creating new indices if
- * elasticsearch has auto_create_index enabled.
+ * jobs, but jobs already enqueued will run to completion.
+ *
+ * NOTE Part Four: When using a multi cluster (wgCirrusSearchReplicaGroup) setup
+ * you can prefix with the remote cross cluster name. E.g for an index named "bar"
+ * hosted on the "foo" cluster the index name as declared here should be 'foo:bar'.
  *
  * Example:
  *   $wgCirrusSearchExtraIndexes = [
@@ -288,29 +288,18 @@ $wgCirrusSearchNamespaceMappings = [];
 $wgCirrusSearchExtraIndexes = [];
 
 /**
- * Define cluster mappings for indices in $wgCirrusSearchExtraIndexes. Extra
- * indexes may live on separate cluster(s) from the cluster(s) this wiki lives
- * on. The mapping is two dimensional with the first level being the name of
- * the extra index, and the second level the name of the cluster the wiki is
- * performing operations on. The value is the cluster operations should be
- * directed at. These clusters must be configured in $wgCirrusSearchClusters,
- * and $wgCirrusSearchWriteClusters must be configured to exclude them.
- *
- * NOTE: At query time this utilizes elasticsearch's cross cluster search
- * functionality. Remote clusters must be configured in elasticsearch.yml using
- * the same cluster names as in $wgCirrusSearchClusters.
+ * Define a blacklist of clusters (as seen in $wgCirrusSearchWriteClusters) to not
+ * write to. When an update triggers an Extra index update it is sometime useful
+ * to not write to a particular cluster.
  *
  * Example:
- *   $wgCirrusSearchExtraIndexClusters = [
- *       'other_index' => [
- *           'eqiad-b' => 'eqiad-a',
- *           'eqiad-c' => 'eqiad-a',
- *           'codfw-b' => 'codfw-a',
- *           'codfw-c' => 'codfw-a',
- *       ]
- *  ];
+ * $wgCirrusSearchExtraIndexClusterBlacklist = [
+ *   'other_index' => [
+ *     'wmsc-temp-replica' => true,
+ *   ]
+ * ];
  */
-$wgCirrusSearchExtraIndexClusters = [];
+$wgCirrusSearchExtraIndexClusterBlacklist = [];
 
 /**
  * Template boosts to apply to extra index queries. This is pretty much a complete

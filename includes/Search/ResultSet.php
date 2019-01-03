@@ -113,21 +113,13 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * Is rewriting this query OK?
-	 *
-	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.
-	 * @return bool True when rewriting this query is allowed
+	 * @param int $threshold
+	 * @return bool always false
+	 * @deprecated always return false, moved to \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
+	 * @see \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
 	 */
 	public function isQueryRewriteAllowed( $threshold = 1 ) {
-		if ( $this->numRows() >= $threshold || $this->searchContainedSyntax() ) {
-			return false;
-		}
-		foreach ( $this->getInterwikiResults( SearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
-			if ( $resultSet->numRows() >= $threshold ) {
-				return false;
-			}
-		}
-		return true;
+		return false;
 	}
 
 	/**

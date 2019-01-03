@@ -26,7 +26,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 	private $execOrder = [];
 
 	public function testOrdering() {
-		$results = DummyResultSet::fakeNumRows( 0 );
+		$results = DummyResultSet::fakeTotalHits( 0 );
 		$methods = [];
 
 		$methods[] = $this->getFallbackMethod( 0.1, $this->trackingCb( 'E' ), [ 'E' => 'E' ] );
@@ -48,7 +48,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 	}
 
 	public function testEarlyStop() {
-		$results = DummyResultSet::fakeNumRows( 0 );
+		$results = DummyResultSet::fakeTotalHits( 0 );
 		$methods = [];
 
 		$methods[] = self::getFallbackMethod( 0.1 );
@@ -164,17 +164,17 @@ class FallbackRunnerTest extends CirrusTestCase {
 		$searcherFactory->expects( $this->exactly( 2 ) )
 			->method( 'makeSearcher' )
 			->willReturnOnConsecutiveCalls(
-				$this->mockSearcher( DummyResultSet::fakeNumRows( 2 ) ),
-				$this->mockSearcher( DummyResultSet::fakeNumRows( 3 ) )
+				$this->mockSearcher( DummyResultSet::fakeTotalHits( 2 ) ),
+				$this->mockSearcher( DummyResultSet::fakeTotalHits( 3 ) )
 			);
 		$runner = FallbackRunner::create( $searcherFactory, $query, $request );
-		$initialResults = DummyResultSet::fakeNumRowWithSuggestion( 0, 'foobar' );
+		$initialResults = DummyResultSet::fakeTotalHitsWithSuggestion( 0, 'foobar' );
 		$newResults = $runner->run( $initialResults );
-		$this->assertEquals( 2, $newResults->numRows() );
+		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
 		$this->assertNotEmpty( $iwResults );
 		$this->assertArrayHasKey( 'frwiki', $iwResults );
-		$this->assertEquals( 3, $iwResults['frwiki']->numRows() );
+		$this->assertEquals( 3, $iwResults['frwiki']->getTotalHits() );
 		$this->assertArrayEquals(
 			[
 				'wgCirrusSearchAltLanguageNumResults' => 3,

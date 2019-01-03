@@ -13,6 +13,7 @@ use CirrusSearch\Search\SearchQueryBuilder;
  * but in the future it'll be responsible from setting the suggestion in the ResultSet
  */
 class PhraseSuggestFallbackMethod implements FallbackMethod {
+	use FallbackMethodTrait;
 
 	/**
 	 * @var SearchQuery
@@ -52,9 +53,11 @@ class PhraseSuggestFallbackMethod implements FallbackMethod {
 		if ( !$this->query->isAllowRewrite() ) {
 			return 0.0;
 		}
-		if ( $firstPassResults->numRows() > 0 ) {
+
+		if ( $this->resultsThreshold( $firstPassResults ) ) {
 			return 0.0;
 		}
+
 		if ( !$this->query->getParsedQuery()->isQueryOfClass( BasicQueryClassifier::SIMPLE_BAG_OF_WORDS ) ) {
 			return 0.0;
 		}
@@ -70,9 +73,10 @@ class PhraseSuggestFallbackMethod implements FallbackMethod {
 	 * @return ResultSet
 	 */
 	public function rewrite( ResultSet $firstPassResults, ResultSet $previousSet ) {
-		if ( $previousSet->numRows() > 0 ) {
+		if ( $this->resultsThreshold( $previousSet ) ) {
 			return $previousSet;
 		}
+
 		$rewrittenQuery = SearchQueryBuilder::forRewrittenQuery( $this->query,
 			$firstPassResults->getSuggestionQuery() )->build();
 		$searcher = $this->searcherFactory->makeSearcher( $rewrittenQuery );

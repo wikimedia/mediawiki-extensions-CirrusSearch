@@ -3,6 +3,7 @@
 namespace CirrusSearch;
 
 use CirrusSearch\Search\ResultSet;
+use SearchResultSet;
 
 class DummyResultSet extends ResultSet {
 	/**
@@ -22,34 +23,39 @@ class DummyResultSet extends ResultSet {
 
 	/**
 	 * DummyResultSet constructor.
-	 * @param array $results
+	 * @param int $totalHits
 	 * @param bool $withSyntax
 	 */
-	public function __construct( array $results, $withSyntax = false ) {
+	public function __construct( $totalHits, $withSyntax = false ) {
 		parent::__construct( [], [],
-			new \Elastica\ResultSet( new \Elastica\Response( '{}' ),
+			new \Elastica\ResultSet( new \Elastica\Response( [ "hits" => [ "total" => $totalHits ] ] ),
 				new \Elastica\Query(),
 				[] ),
 			$withSyntax );
-		$this->results = $results;
+		$this->results = array_fill( 0, min( $totalHits, 20 ), null );
 	}
 
 	/**
-	 * @param int $numRows
+	 * @param int $totalHits
+	 * @param int[] $interwikiTotals total hits for secondary results interwiki results.
 	 * @return DummyResultSet
 	 */
-	public static function fakeNumRows( $numRows ) {
-		return new self( array_fill( 0, $numRows, null ) );
+	public static function fakeTotalHits( $totalHits, array $interwikiTotals = [] ) {
+		$results = new self( $totalHits );
+		foreach ( $interwikiTotals as $pref => $iwTotal ) {
+			$results->addInterwikiResults( self::fakeTotalHits( $iwTotal ), SearchResultSet::SECONDARY_RESULTS, (string)$pref );
+		}
+		return $results;
 	}
 
 	/**
-	 * @param int $numRows
+	 * @param int $totalHits
 	 * @param string|null $suggestionQuery
 	 * @param null $suggestionSnippet
 	 * @return DummyResultSet
 	 */
-	public static function fakeNumRowWithSuggestion( $numRows, $suggestionQuery = null, $suggestionSnippet = null ) {
-		$res = self::fakeNumRows( $numRows );
+	public static function fakeTotalHitsWithSuggestion( $totalHits, $suggestionQuery = null, $suggestionSnippet = null ) {
+		$res = self::fakeTotalHits( $totalHits );
 		$res->overriddenSuggestion = $suggestionQuery;
 		$res->overriddenSuggestionSnippet = $suggestionSnippet;
 		$res->useOverriddenSuggestion = true;

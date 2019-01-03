@@ -131,7 +131,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, $query )
 			->setAllowRewrite( true )
 			->build();
-		$expectedRewrittenResults = $secondTryNumResults >= 0 ? DummyResultSet::fakeNumRows( $secondTryNumResults ) : null;
+		$expectedRewrittenResults = $secondTryNumResults >= 0 ? DummyResultSet::fakeTotalHits( $secondTryNumResults ) : null;
 		$searcherFactory = null;
 		if ( $expectedScoreApprox > 0 ) {
 			$searcherFactory = $this->getSearcherFactoryMock(
@@ -149,7 +149,7 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			],
 			$this->getInterwikiMock( $targetWikiConfig, $returnedLang !== 'en' ? $returnedLang : null ) );
 
-		$initialResults = DummyResultSet::fakeNumRows( $initialNumResults );
+		$initialResults = DummyResultSet::fakeTotalHits( $initialNumResults );
 		$this->assertEquals( $expectedScoreApprox, $fallback->successApproximation( $initialResults ) );
 		if ( $expectedScoreApprox > 0 ) {
 			$rewrittenResults = $fallback->rewrite( $initialResults, $initialResults );
@@ -164,6 +164,41 @@ class LangDetectFallbackMethodTest extends BaseFallbackMethodTest {
 			}
 		}
 		$this->assertEquals( $expectedMetrics, $fallback->getMetrics() );
+	}
+
+	public function provideTestNotRunWhenRewriteDisabled() {
+		return [
+			'allowed' => [ true, 0.5 ],
+			'not allowed' => [ false, 0.0 ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestNotRunWhenRewriteDisabled()
+	 */
+	public function testNotRunWhenRewriteDisabled( $allowRewrite, $expectedScore ) {
+		$config = new HashSearchConfig( [
+			'CirrusSearchInterwikiThreshold' => 2,
+			'CirrusSearchEnableAltLanguage' => true,
+			'LanguageCode' => 'en',
+		] );
+		$targetWikiConfig = new HashSearchConfig( [
+			'_wikiID' => 'targetwiki',
+			'LanguageCode' => 'fr',
+		] );
+
+		$query =
+			SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foo' )
+				->setAllowRewrite( $allowRewrite )
+				->build();
+
+		$searcherFactory = $this->getSearcherFactoryMock( null, null );
+		$fallback = new LangDetectFallbackMethod( $query, $searcherFactory,
+			[ 'tested_detector' => $this->getLanguageDetector( 'fr' ) ],
+			$this->getInterwikiMock( $targetWikiConfig, $allowRewrite ? 'fr' : null ) );
+
+		$initialResults = DummyResultSet::fakeTotalHits( 0 );
+		$this->assertEquals( $expectedScore, $fallback->successApproximation( $initialResults ) );
 	}
 
 	public function getLanguageDetector( $expectedLang ) {

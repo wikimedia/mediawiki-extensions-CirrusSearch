@@ -169,7 +169,7 @@ class KeywordFeatureAssertions {
 			$this->testCase->assertNull( $node->getParsedValue() );
 		} else {
 			$this->testCase->assertNotNull( $node->getParsedValue() );
-			$this->testCase->assertEquals( $node->getParsedValue(), $expected );
+			$this->testCase->assertEquals( $expected, $node->getParsedValue() );
 		}
 		if ( $expectedWarnings !== null ) {
 			$actualWarnings = $this->extractWarnings( $parser );

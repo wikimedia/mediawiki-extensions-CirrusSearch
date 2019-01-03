@@ -61,7 +61,7 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// inlanguage keyword
 			new LanguageFeature(),
 			// File types
-			new FileTypeFeature(),
+			new FileTypeFeature( $config ),
 			// File mime types
 			new TextFieldFilterFeature( 'filemime', 'file_mime' ),
 			// File numeric characteristics - size, resolution, etc.

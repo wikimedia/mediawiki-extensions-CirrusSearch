@@ -1266,7 +1266,8 @@ $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
 $wgCirrusSearchDevelOptions = [];
 
 /**
- * Aliases for file types in filtype: search.
+ * Aliases for file types in filtype: search. The array keys must
+ * all be lowercased, or they will not match.
  * Example:
  * $wgCirrusSearchFiletypeAliases = [
  *  'jpg' => 'bitmap',

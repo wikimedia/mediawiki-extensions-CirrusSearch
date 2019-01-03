@@ -1465,7 +1465,8 @@ NOTE: never activate any of these on a production site.
 Default:
     $wgCirrusSearchFiletypeAliases = [];
 
-Aliases for file types in filtype: search.
+Aliases for file types in filtype: search. The array keys must
+all be lowercased, or they will not match.
 
 Example:
     $wgCirrusSearchFiletypeAliases = [

@@ -5,17 +5,30 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
+use CirrusSearch\Search\Filters;
 use CirrusSearch\Search\SearchContext;
-use CirrusSearch\SearchConfig;
+use CirrusSearch\WarningCollector;
+use Config;
 use Elastica\Query;
 use Elastica\Query\AbstractQuery;
 
 /**
  * File type features:
  *  filetype:bitmap
+ * Types can be OR'd together:
+ *  filetype:bitmap|png
  * Selects only files of these specified features.
  */
 class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature {
+	const MAX_CONDITIONS = 20;
+
+	/** @var string[] Map of aliases from user provided term to term to search for */
+	private $aliases;
+
+	public function __construct( Config $config ) {
+		$this->aliases = $config->get( 'CirrusSearchFiletypeAliases' );
+	}
+
 	/**
 	 * @return string[]
 	 */
@@ -45,24 +58,62 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 *  string.
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$query = $this->doGetFilterQuery( $context->getConfig(), $key, $value, $quotedValue );
+		$parsed = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
+		$query = $this->matchFileType( array_merge( $parsed['aliased'], $parsed['user_types'] ) );
 
 		return [ $query, false ];
 	}
 
 	/**
-	 * @param SearchConfig $config
 	 * @param string $key
 	 * @param string $value
 	 * @param string $quotedValue
-	 * @return Query\Match|Query\MatchPhrase
+	 * @param string $valueDelimiter
+	 * @param string $suffix
+	 * @param WarningCollector $warningCollector
+	 * @return array|false|null
 	 */
-	protected function doGetFilterQuery( SearchConfig $config, $key, $value, $quotedValue ) {
-		$aliases = $config->get( 'CirrusSearchFiletypeAliases' );
-		if ( is_array( $aliases ) && isset( $aliases[$value] ) ) {
-			$value = $aliases[$value];
+	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		// TODO: The explode/count/warn is repeated elsewhere and should be generalized?
+		$types = explode( '|', $value );
+		if ( count( $types ) > self::MAX_CONDITIONS ) {
+			$warningCollector->addWarning(
+				'cirrussearch-feature-too-many-conditions',
+				$key,
+				self::MAX_CONDITIONS
+			);
+			$types = array_slice(
+				$types,
+				0,
+				self::MAX_CONDITIONS
+			);
 		}
-		return new Query\Match( 'file_media_type', [ 'query' => $value ] );
+
+		$aliased = [];
+		foreach ( $types as $type ) {
+			$lcType = mb_strtolower( $type );
+			if ( isset( $this->aliases[$lcType] ) ) {
+				$aliased[] = $this->aliases[$lcType];
+			}
+		}
+
+		return [
+			'user_types' => $types,
+			'aliased' => $aliased,
+		];
+	}
+
+	/**
+	 * @param string[] $types
+	 * @return Query\BoolQuery|Query\Match|null
+	 */
+	protected function matchFileType( $types ) {
+		$queries = [];
+		foreach ( $types as $type ) {
+			$queries[] = new Query\Match( 'file_media_type', [ 'query' => $type ] );
+		}
+
+		return Filters::booleanOr( $queries, false );
 	}
 
 	/**
@@ -71,7 +122,7 @@ class FileTypeFeature extends SimpleKeywordFeature implements FilterQueryFeature
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		return $this->doGetFilterQuery( $context->getSearchConfig(), $node->getKey(),
-			$node->getValue(), $node->getQuotedValue() );
+		$parsed = $node->getParsedValue();
+		return $this->matchFileType( array_merge( $parsed['aliased'], $parsed['user_types'] ) );
 	}
 }

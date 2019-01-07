@@ -54,6 +54,7 @@
             "queryType": "full_text",
             "source": "cli",
             "suggestion": "main page",
+            "suggestionRequested": true,
             "syntax": [
                 "full_text",
                 "full_text_querystring"

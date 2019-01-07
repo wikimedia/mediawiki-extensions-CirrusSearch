@@ -84,7 +84,7 @@
             "query": "main",
             "queryType": "full_text",
             "source": "cli",
-            "suggestion": null,
+            "suggestionRequested": false,
             "syntax": [
                 "full_text",
                 "full_text_querystring"

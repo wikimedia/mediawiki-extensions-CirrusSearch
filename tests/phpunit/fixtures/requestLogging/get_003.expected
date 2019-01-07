@@ -78,6 +78,7 @@
             "maxScore": 1,
             "queryType": "get",
             "source": "cli",
+            "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",

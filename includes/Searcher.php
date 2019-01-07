@@ -548,10 +548,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			[
 				'query' => $this->searchContext->getOriginalSearchTerm(),
 				'limit' => $this->limit ?: null,
-				// null means not requested, '' means not found. If found
-				// parent::buildLogContext will replace the '' with an
-				// actual suggestion.
-				'suggestion' => $this->searchContext->getSuggest() ? '' : null,
 				// Used syntax
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			]

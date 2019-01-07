@@ -198,7 +198,7 @@ class RequestLogger {
 					// populated below
 					'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
 					'suggestion' => isset( $context['suggestion'] ) ? (string)$context['suggestion'] : '',
-					'suggestionRequested' => isset( $context['suggestion'] ),
+					'suggestionRequested' => (bool)( $context['suggestionRequested'] ?? isset( $context['suggestion'] ) ),
 					'maxScore' => isset( $context['maxScore'] ) ? (float)$context['maxScore'] : -1.0,
 					'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
 					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],

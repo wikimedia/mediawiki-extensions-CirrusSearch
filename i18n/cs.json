@@ -53,8 +53,22 @@
 	"cirrussearch-completion-profile-classic-pref-desc": "Bez opravy překlepů. Porovnává začátky názvů.",
 	"cirrussearch-timed-out": "Čas pro vyhledávání vypršel, dostupné výsledky nejsou úplné.",
 	"cirrussearch-regex-timed-out": "Čas pro vyhledávání regulárním výrazem vypršel, dostupné výsledky nejsou úplné. Pro získání úplných výsledků se pokuste regulární výraz zjednodušit.",
+	"cirrussearch-file-numeric-feature-not-a-number": "Vyhledávací klíčové slovo „$1“ vyžaduje číselné hodnoty, ale bylo uvedeno „$2“.",
+	"cirrussearch-feature-not-available": "Vyhledávací klíčové slovo „$1“ není na této wiki zapnuto.",
+	"cirrussearch-feature-too-many-conditions": "U „$1“ uvedeno příliš mnoho podmínek, oříznuto na $2.",
 	"cirrussearch-feature-deepcat-endpoint": "$wgCirrusSearchCategoryEndpoint by měl být nastaven na platném konečném bodu SPARQL k použití hlubokého prohledání kategorií.",
 	"cirrussearch-feature-deepcat-exception": "Hluboké prohledávání kategorií pomocí SPARQL se nezdařilo",
 	"cirrussearch-feature-deepcat-toomany": "Rekurzivní prohledávání kategorií vrátilo příliš mnoho kategorií",
-	"cirrussearch-article-words": "Slova ve všech obsahových stránkách"
+	"cirrussearch-incategory-feature-no-valid-categories": "U „$1“ nebyly uvedeny žádné platné kategorie.",
+	"cirrussearch-mlt-feature-no-valid-titles": "U „$1“ nebyly uvedeny žádné platné názvy.",
+	"cirrussearch-mlt-not-configured": "Funkce „$1“ je nakonfigurována chybně. Požádejte administrátora, aby opravil $wgCirrusSearchMoreLikeThisFields.",
+	"cirrussearch-explore-similar-related": "Související",
+	"cirrussearch-explore-similar-categories": "Kategorie",
+	"cirrussearch-explore-similar-languages": "Jazyky",
+	"cirrussearch-explore-similar-related-none": "Žádné související stránky nejsou dostupné",
+	"cirrussearch-explore-similar-categories-none": "Žádné kategorie nejsou dostupné",
+	"cirrussearch-explore-similar-languages-none": "Není dostupné v jiných jazycích",
+	"cirrussearch-article-words": "Slova ve všech obsahových stránkách",
+	"cirrussearch-keyword-prefix-ns-mismatch": "Jmenný prostor nalezený u klíčového slova <code>prefix:</code> nesouhlasí s požadovanými jmennými prostory. Můžete to opravit přidáním <code>all:</code> na začátek dotazu.",
+	"cirrussearch-offset-too-large": "Nepodařilo se načíst výsledky. Je podporováno nejvýše $1 výsledků hledání, ale byly vyžádány výsledky počínaje $2."
 }

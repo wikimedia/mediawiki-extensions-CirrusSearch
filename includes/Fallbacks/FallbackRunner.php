@@ -5,8 +5,10 @@ namespace CirrusSearch\Fallbacks;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
+use Wikimedia\Assert\Assert;
 
 class FallbackRunner implements SearchMetricsProvider {
+	private static $NOOP_RUNNER = null;
 
 	/**
 	 * @var FallbackMethod[]
@@ -25,6 +27,15 @@ class FallbackRunner implements SearchMetricsProvider {
 		$this->fallbackMethods = $fallbackMethods;
 	}
 
+	/**
+	 * Noop fallback runner
+	 * @return FallbackRunner
+	 */
+	public static function noopRunner(): FallbackRunner {
+		self::$NOOP_RUNNER = self::$NOOP_RUNNER ?? new self( [] );
+		return self::$NOOP_RUNNER;
+	}
+
 	public static function create( SearcherFactory $factory, SearchQuery $query, \WebRequest $request ) {
 		$fallbackMethods = [];
 		if ( $query->isWithDYMSuggestion() ) {
@@ -35,6 +46,7 @@ class FallbackRunner implements SearchMetricsProvider {
 		}
 		return new self( $fallbackMethods );
 	}
+
 	/**
 	 * @param ResultSet $initialResult
 	 * @return ResultSet
@@ -67,6 +79,26 @@ class FallbackRunner implements SearchMetricsProvider {
 			$previousResults = $this->execute( $fallback, $previousResults, $initialResult );
 		}
 		return $previousResults;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getElasticSuggesters(): array {
+		$suggesters = [];
+		foreach ( $this->fallbackMethods as $method ) {
+			if ( $method instanceof ElasticSearchSuggestFallbackMethod ) {
+				$suggestQueries = $method->getSuggestQueries();
+				if ( $suggestQueries !== null ) {
+					foreach ( $suggestQueries as $name => $suggestQ ) {
+						Assert::precondition( !array_key_exists( $name, $suggesters ),
+							get_class( $method ) . " is trying to add a suggester [$name] (duplicate)" );
+						$suggesters[$name] = $suggestQ;
+					}
+				}
+			}
+		}
+		return $suggesters;
 	}
 
 	/**

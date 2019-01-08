@@ -75,16 +75,19 @@ class SearchRequestBuilder {
 			$query->setHighlight( $highlight );
 		}
 
-		if ( $this->searchContext->getSuggest() ) {
+		$suggestQueries = $this->searchContext->getFallbackRunner()->getElasticSuggesters();
+		if ( !empty( $suggestQueries ) ) {
 			if ( interface_exists( 'Elastica\\ArrayableInterface' ) ) {
 				// Elastica 2.3.x.  For some reason it unwraps our suggest
 				// query when we don't want it to, so wrap it one more time
 				// to make the unwrap do nothing.
 				$query->setParam( 'suggest', [
-					'suggest' => $this->searchContext->getSuggest()
+					// TODO: remove special case on 1-elt array, added to not change the test fixtures
+					// We should switch to explicit naming
+					'suggest' => count( $suggestQueries ) === 1 ? reset( $suggestQueries ) : $suggestQueries
 				] );
 			} else {
-				$query->setParam( 'suggest', $this->searchContext->getSuggest() );
+				$query->setParam( 'suggest', $suggestQueries );
 			}
 			$query->addParam( 'stats', 'suggest' );
 		}

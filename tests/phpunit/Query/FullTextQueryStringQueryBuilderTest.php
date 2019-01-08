@@ -136,7 +136,6 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 		$config = new HashSearchConfig( [ 'wgLanguageCode' => 'en' ] );
 		$builder = new FullTextQueryStringQueryBuilder( $config, [] );
 		$searchContext = new SearchContext( $config );
-		$searchContext->setSuggestion( false );
 		$builder->build( $searchContext, $term );
 		$actual = $searchContext->getSyntaxUsed();
 

@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
 use Elastica\Query\FunctionScore;
 
@@ -17,12 +16,12 @@ class TermBoostScoreBuilder extends FunctionScoreBuilder {
 	private $boostedQueries;
 
 	/**
-	 * @param SearchConfig|SearchContext $contextOrConfig
+	 * @param SearchConfig $config
 	 * @param float $weight
 	 * @param array $profile
 	 */
-	public function __construct( $contextOrConfig, $weight, $profile ) {
-		parent::__construct( $contextOrConfig, $weight );
+	public function __construct( $config, $weight, $profile ) {
+		parent::__construct( $config, $weight );
 		$queries = [];
 		$weights = [];
 		foreach ( $profile as $field => $matches ) {

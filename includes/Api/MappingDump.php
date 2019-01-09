@@ -41,13 +41,6 @@ class MappingDump extends \ApiBase {
 	}
 
 	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Dump of CirrusSearch mapping for this wiki.';
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

@@ -84,12 +84,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	protected $limit;
 
 	/**
-	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
-	 * @deprecated
-	 */
-	protected $resultsType;
-
-	/**
 	 * @var string sort type
 	 */
 	private $sort = 'relevance';
@@ -182,8 +176,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	public function setResultsType( $resultsType ) {
 		$this->searchContext->setResultsType( $resultsType );
-		// BC, deprecated
-		$this->resultsType = $resultsType;
 	}
 
 	/**
@@ -244,14 +236,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	}
 
 	/**
-	 * @param string $suggestPrefix prefix to be prepended to suggestions
-	 * @deprecated use \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 */
-	public function addSuggestPrefix( $suggestPrefix ) {
-	}
-
-	/**
 	 * Build full text search for articles with provided term. All the
 	 * state is applied to $this->searchContext. The returned query
 	 * builder can be used to build a degraded query if necessary.
@@ -298,19 +282,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			[ $qb, $term, $this->searchContext ] );
 
 		return $qb;
-	}
-
-	/**
-	 * Search articles with provided term.
-	 * @param string $term term to search
-	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
-	 * @return Status
-	 * @deprecated Use search( SearchQuery $query )
-	 */
-	public function searchText( $term, $showSuggestion ) {
-		wfDeprecated( __METHOD__ );
-		$this->searchContext->setOriginalSearchTerm( $term );
-		return $this->searchTextInternal( $term );
 	}
 
 	/**

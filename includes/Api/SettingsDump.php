@@ -42,13 +42,6 @@ class SettingsDump extends \ApiBase {
 	}
 
 	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Dump of CirrusSearch settings for this wiki.';
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

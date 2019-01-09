@@ -393,13 +393,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @param string $type The type of search being performed. ex: full_text, near_match, prefix, etc.
-	 * @deprecated Use addSyntaxUsed()
-	 */
-	public function setSearchType( $type ) {
-	}
-
-	/**
 	 * @param AbstractQuery $filter Query results must match this filter
 	 */
 	public function addFilter( AbstractQuery $filter ) {
@@ -501,42 +494,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return string[] always empty array
-	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 */
-	public function getSuggestPrefixes() {
-		return [];
-	}
-
-	/**
-	 * Does nothing
-	 * @param string $prefix Prefix to be prepended to suggestions
-	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 */
-	public function addSuggestPrefix( $prefix ) {
-	}
-
-	/**
-	 * @return string[] always empty array
-	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 */
-	public function getSuggestSuffixes() {
-		return [];
-	}
-
-	/**
-	 * Noop
-	 * @param string $suffix Suffix to be appended to suggestions
-	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
-	 */
-	public function addSuggestSuffix( $suffix ) {
-	}
-
-	/**
 	 * @return AbstractQuery The primary query to be sent to elasticsearch. Includes
 	 *  the main quedry, non text queries, and any additional filters.
 	 */
@@ -588,22 +545,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	public function addNonTextQuery( \Elastica\Query\AbstractQuery $match ) {
 		$this->isDirty = true;
 		$this->nonTextQueries[] = $match;
-	}
-
-	/**
-	 * @return array always empty array
-	 * @deprecated use \CirrusSearch\Fallbacks\FallbackRunner::getElasticSuggesters()
-	 * @see \CirrusSearch\Fallbacks\FallbackRunner::getElasticSuggesters()
-	 */
-	public function getSuggest() {
-		return [];
-	}
-
-	/**
-	 * @param array $suggest Configuration for suggest query
-	 * @deprecated Implement a FallbackMethod to alter the SuggestQueries
-	 */
-	public function setSuggest( array $suggest ) {
 	}
 
 	/**
@@ -803,24 +744,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 */
 	public function getAggregations() {
 		return $this->aggs;
-	}
-
-	/**
-	 * Whether to supply search suggestions for better search terms.
-	 * @return bool always false
-	 * @deprecated Use SearchQuery::isWithDYMSuggestion
-	 */
-	public function suggestionEnabled() {
-		return false;
-	}
-
-	/**
-	 * Whether to supply search suggestions for better search terms.
-	 * @param bool $suggestion
-	 * @deprecated use SearchQueryBuilder::setWithDYMSuggestion
-	 * @see SearchQueryBuilder::setWithDYMSuggestion()
-	 */
-	public function setSuggestion( $suggestion ) {
 	}
 
 	/**

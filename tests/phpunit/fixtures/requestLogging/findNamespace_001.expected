@@ -52,6 +52,7 @@
             "query": "file",
             "queryType": "namespace",
             "source": "cli",
+            "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",

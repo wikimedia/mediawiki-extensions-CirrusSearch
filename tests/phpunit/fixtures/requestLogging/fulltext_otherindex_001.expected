@@ -85,7 +85,7 @@
             "query": "svg",
             "queryType": "full_text",
             "source": "cli",
-            "suggestion": "",
+            "suggestionRequested": true,
             "syntax": [
                 "full_text",
                 "full_text_querystring"

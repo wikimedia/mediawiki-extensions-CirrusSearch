@@ -53,7 +53,7 @@
             "query": "does not exist or at least i hope not",
             "queryType": "full_text",
             "source": "cli",
-            "suggestion": "",
+            "suggestionRequested": true,
             "syntax": [
                 "full_text",
                 "full_text_querystring"

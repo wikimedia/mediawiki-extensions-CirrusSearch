@@ -145,6 +145,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Parser\\AST\\PrefixNode' => __DIR__ . '/includes/Parser/AST/PrefixNode.php',
 	'CirrusSearch\\Parser\\AST\\Visitor\\KeywordNodeVisitor' => __DIR__ . '/includes/Parser/AST/Visitor/KeywordNodeVisitor.php',
 	'CirrusSearch\\Parser\\AST\\Visitor\\LeafVisitor' => __DIR__ . '/includes/Parser/AST/Visitor/LeafVisitor.php',
+	'CirrusSearch\\Parser\\AST\\Visitor\\QueryFixer' => __DIR__ . '/includes/Parser/AST/Visitor/QueryFixer.php',
 	'CirrusSearch\\Parser\\AST\\Visitor\\Visitable' => __DIR__ . '/includes/Parser/AST/Visitor/Visitable.php',
 	'CirrusSearch\\Parser\\AST\\Visitor\\Visitor' => __DIR__ . '/includes/Parser/AST/Visitor/Visitor.php',
 	'CirrusSearch\\Parser\\AST\\WildcardNode' => __DIR__ . '/includes/Parser/AST/WildcardNode.php',

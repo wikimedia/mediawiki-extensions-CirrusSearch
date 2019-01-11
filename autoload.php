@@ -164,6 +164,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Parser\\QueryStringRegex\\PhraseQueryParser' => __DIR__ . '/includes/Parser/QueryStringRegex/PhraseQueryParser.php',
 	'CirrusSearch\\Parser\\QueryStringRegex\\QueryStringRegexParser' => __DIR__ . '/includes/Parser/QueryStringRegex/QueryStringRegexParser.php',
 	'CirrusSearch\\Parser\\QueryStringRegex\\Token' => __DIR__ . '/includes/Parser/QueryStringRegex/Token.php',
+	'CirrusSearch\\Profile\\ArrayPathSetter' => __DIR__ . '/includes/Profile/ArrayPathSetter.php',
 	'CirrusSearch\\Profile\\ArrayProfileRepository' => __DIR__ . '/includes/Profile/ArrayProfileRepository.php',
 	'CirrusSearch\\Profile\\CompletionSearchProfileRepository' => __DIR__ . '/includes/Profile/CompletionSearchProfileRepository.php',
 	'CirrusSearch\\Profile\\ConfigProfileRepository' => __DIR__ . '/includes/Profile/ConfigProfileRepository.php',

@@ -109,7 +109,8 @@ class RescoreBuilder {
 	private function buildRescoreQuery( array $rescoreDef ) {
 		switch ( $rescoreDef['type'] ) {
 		case self::FUNCTION_SCORE_TYPE:
-			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
+			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'],
+				$rescoreDef['function_chain_overrides'] ?? [] );
 			return $funcChain->buildRescoreQuery();
 		case self::LTR_TYPE:
 			return $this->buildLtrQuery( $rescoreDef['model'] );

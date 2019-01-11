@@ -10,7 +10,7 @@ use MultiConfig;
  */
 class HashSearchConfig extends SearchConfig {
 	/** @var bool */
-	private $isHostWiki = false;
+	private $localWiki = false;
 
 	/**
 	 * @param array $settings config vars
@@ -28,7 +28,7 @@ class HashSearchConfig extends SearchConfig {
 
 		if ( in_array( 'inherit', $flags ) ) {
 			$config = new MultiConfig( [ $config, $inherited ?? new GlobalVarConfig ] );
-			$this->isHostWiki = !isset( $settings['_wikiID' ] );
+			$this->localWiki = !isset( $settings['_wikiID' ] );
 		}
 		$this->setSource( $config );
 	}
@@ -45,9 +45,13 @@ class HashSearchConfig extends SearchConfig {
 	}
 
 	public function getHostWikiConfig(): SearchConfig {
-		if ( $this->isHostWiki ) {
+		if ( $this->localWiki ) {
 			return $this;
 		}
 		return parent::getHostWikiConfig();
+	}
+
+	public function isLocalWiki() {
+		return $this->localWiki;
 	}
 }

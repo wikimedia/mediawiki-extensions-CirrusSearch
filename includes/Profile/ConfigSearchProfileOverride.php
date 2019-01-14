@@ -37,9 +37,10 @@ class ConfigSearchProfileOverride implements SearchProfileOverride {
 
 	/**
 	 * Get the overridden name or null if it cannot be overridden.
+	 * @param string[] $contextParams
 	 * @return string|null
 	 */
-	public function getOverriddenName() {
+	public function getOverriddenName( array $contextParams ) {
 		if ( $this->config->has( $this->configEntry ) ) {
 			return $this->config->get( $this->configEntry );
 		}

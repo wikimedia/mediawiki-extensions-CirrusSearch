@@ -169,6 +169,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Profile\\CompletionSearchProfileRepository' => __DIR__ . '/includes/Profile/CompletionSearchProfileRepository.php',
 	'CirrusSearch\\Profile\\ConfigProfileRepository' => __DIR__ . '/includes/Profile/ConfigProfileRepository.php',
 	'CirrusSearch\\Profile\\ConfigSearchProfileOverride' => __DIR__ . '/includes/Profile/ConfigSearchProfileOverride.php',
+	'CirrusSearch\\Profile\\ContextualProfileOverride' => __DIR__ . '/includes/Profile/ContextualProfileOverride.php',
 	'CirrusSearch\\Profile\\PhraseSuggesterProfileRepoWrapper' => __DIR__ . '/includes/Profile/PhraseSuggesterProfileRepoWrapper.php',
 	'CirrusSearch\\Profile\\SearchProfileException' => __DIR__ . '/includes/Profile/SearchProfileException.php',
 	'CirrusSearch\\Profile\\SearchProfileOverride' => __DIR__ . '/includes/Profile/SearchProfileOverride.php',

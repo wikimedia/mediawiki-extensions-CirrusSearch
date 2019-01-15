@@ -17,6 +17,23 @@ class FunctionScoreChainTest extends \MediaWikiTestCase {
 		$this->assertNull( $query );
 	}
 
+	public function testOverrides() {
+		$func = [
+			'type' => 'script',
+			'script' => '...',
+			'weight' => 5,
+		];
+		$chain = $this->createChain( $func, [] );
+		$query = $chain->buildRescoreQuery()->toArray();
+		$this->assertEquals( 5, $query['function_score']['functions'][0]['weight'] );
+
+		$chain = $this->createChain( $func, [
+			'functions.0.weight' => 2,
+		] );
+		$query = $chain->buildRescoreQuery()->toArray();
+		$this->assertEquals( 2, $query['function_score']['functions'][0]['weight'] );
+	}
+
 	public function implProvider() {
 		return [
 			[ [ 'type' => 'boostlinks' ] ],
@@ -52,7 +69,7 @@ class FunctionScoreChainTest extends \MediaWikiTestCase {
 		];
 	}
 
-	private function createChain( $func ) {
+	private function createChain( $func, array $overrides = [] ) {
 		$this->setTemporaryHook( 'CirrusSearchProfileService',
 			function ( $service ) use ( $func ) {
 				$service->registerArrayRepository(
@@ -75,13 +92,13 @@ class FunctionScoreChainTest extends \MediaWikiTestCase {
 		], [ 'inherit' ] );
 		$this->assertTrue( $config->isLocalWiki(), 'only local wiki runs profile hook' );
 		$context = new SearchContext( $config );
-		return new FunctionScoreChain( $context, 'phpunit' );
+		return new FunctionScoreChain( $context, 'phpunit', $overrides );
 	}
 
 	/**
 	 * @dataProvider implProvider
 	 */
-	public function testImplementationAvailable( $func ) {
+	public function testImplementationAvailable( array $func ) {
 		$chain = $this->createChain( $func );
 		$this->assertNotNull( $chain->buildRescoreQuery() );
 	}

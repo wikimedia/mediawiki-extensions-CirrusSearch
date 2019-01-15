@@ -23,8 +23,6 @@ use Elastica\Query\FunctionScore;
 class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	/** @var string */
 	private $field;
-	/** @var int */
-	private $impact;
 	/** @var float */
 	private $midpoint;
 	/** @var float */
@@ -83,9 +81,6 @@ class LogScaleBoostFunctionScoreBuilder extends FunctionScoreBuilder {
 	}
 
 	public function append( FunctionScore $functionScore ) {
-		if ( $this->impact == 0 ) {
-			return;
-		}
 		$formula = $this->getScript();
 
 		$functionScore->addScriptScoreFunction( new \Elastica\Script\Script( $formula, null,

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
 use MediaWiki\MediaWikiServices;
@@ -297,6 +298,43 @@ class SearcherTest extends CirrusTestCase {
 		$query = new Query();
 		$searcher->applyDebugOptionsToQuery( $query );
 		$this->assertFalse( $query->hasParam( 'explain' ) );
+	}
+
+	public function provideTestOffsetLimitBounds() {
+		return [
+			'ok' => [
+				5000, 5000,
+				[ 5000, 5000 ]
+			],
+			'out of bounds but repairable' => [
+				5000, 5001,
+				[ 5000, 5000 ]
+			],
+			'out of bounds non repairable' => [
+				10000, 10,
+				[ 10000, 0 ]
+			],
+			'out of bounds non repairable (2)' => [
+				10010, 10,
+				[ 10010, -10 ]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestOffsetLimitBounds
+	 */
+	public function testOffsetLimitBounds( $offset, $limit, $expected ) {
+		$conf = new HashSearchConfig( [], [ 'inherit' ] );
+		$searcher = new Searcher( new DummyConnection( $conf ), $offset, $limit, $conf );
+		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
+		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $conf, 'test' )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->setOffset( $offset )
+			->setLimit( $limit );
+		$searcher->search( $query->build() );
+		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 	}
 }
 

@@ -33,6 +33,7 @@ use RequestContext;
 use Status;
 use User;
 use WebRequest;
+use Wikimedia\Assert\Assert;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -143,12 +144,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$config->get( 'CirrusSearchExtraBackendLatency' )
 		);
 		$this->config = $config;
-		$this->offset = $offset;
-		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
-			$this->limit = self::MAX_OFFSET_LIMIT - $offset;
-		} else {
-			$this->limit = $limit;
-		}
+		$this->setOffsetLimit( $offset, $limit );
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
 	}
@@ -162,8 +158,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	public function search( SearchQuery $query ) {
 		$this->searchContext = SearchContext::fromSearchQuery( $query );
-		$this->limit = $query->getLimit();
-		$this->offset = $query->getOffset();
+		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();
 		$this->sort = $query->getSort();
 
@@ -1000,5 +995,28 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
 			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
 			null, $query->getDebugOptions() );
+	}
+
+	/**
+	 * @param int $offset
+	 * @param int $limit
+	 */
+	private function setOffsetLimit( $offset, $limit ) {
+		$this->offset = $offset;
+		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
+			$this->limit = self::MAX_OFFSET_LIMIT - $offset;
+		} else {
+			$this->limit = $limit;
+		}
+	}
+
+	/**
+	 * Visible for testing
+	 * @return int[] 2 elements array
+	 */
+	public function getOffsetLimit() {
+		Assert::precondition( defined( 'MW_PHPUNIT_TEST' ),
+			'getOffsetLimit must only be called for testing purposes' );
+		return [ $this->offset, $this->limit ];
 	}
 }

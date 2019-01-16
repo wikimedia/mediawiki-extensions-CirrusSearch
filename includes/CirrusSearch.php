@@ -295,8 +295,7 @@ class CirrusSearch extends SearchEngine {
 			'relevance', 'just_match', 'none',
 			'incoming_links_asc', 'incoming_links_desc',
 			'last_edit_asc', 'last_edit_desc',
-			// This should not be exposed until the indices have been populated
-			// 'create_timestamp_asc', 'create_timestamp_desc',
+			'create_timestamp_asc', 'create_timestamp_desc',
 		];
 	}
 

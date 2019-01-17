@@ -4,6 +4,9 @@ namespace CirrusSearch;
 
 use Title;
 
+/**
+ * @covers CirrusSearch\OtherIndexes
+ */
 class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 
 	public function getExternalIndexesProvider() {
@@ -87,4 +90,65 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	public function testUpdateOtherIndex() {
+		// multi
+		$responseString = json_encode( [
+			'responses' => [ [
+				'took' => 1,
+				'timed_out' => false,
+				'hits' => [
+					'total' => 1,
+					'max_score' => 0,
+					'hits' => [ [
+						'_id' => 12345
+					] ]
+				]
+			] ]
+		] );
+		$response = new \Elastica\Response( $responseString, 200 );
+		$transport = $this->getMockBuilder( \Elastica\Transport\AbstractTransport::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$transport->expects( $this->any() )
+			->method( 'exec' )
+			->will( $this->returnValue( $response ) );
+
+		$config = new HashSearchConfig( [
+			'CirrusSearchWikimediaExtraPlugin' => [
+				'super_detect_noop' => true,
+			],
+			'CirrusSearchReplicaGroup' => 'a',
+			'CirrusSearchExtraIndexes' => [
+				NS_MAIN => [ 'otherplace:phpunit_other_index' ],
+			],
+			'CirrusSearchDefaultCluster' => 'default',
+			'CirrusSearchClusters' => [
+				'default' => [
+					[ 'transport' => $transport ],
+				]
+			],
+		] );
+
+		$conn = new Connection( $config );
+		$oi = $this->getMockBuilder( OtherIndexes::class )
+			->setConstructorArgs( [ $conn, $config, [], wfWikiId() ] )
+			->setMethods( [ 'runUpdates' ] )
+			->getMock();
+		$oi->expects( $this->once() )
+			->method( 'runUpdates' )
+			->will( $this->returnCallback( function ( \Title $title, array $updates ) {
+				$this->assertCount( 1, $updates );
+				foreach ( $updates as $data ) {
+					list( $otherIndex, $actions ) = $data;
+					$this->assertInternalType( 'array', $actions );
+					$this->assertCount( 1, $actions );
+					$action = $actions[0];
+					$this->assertArrayHasKey( 'docId', $action );
+					$this->assertArrayHasKey( 'ns', $action );
+					$this->assertArrayHasKey( 'dbKey', $action );
+					$this->assertEquals( 'otherplace:phpunit_other_index', $otherIndex->getGroupAndIndexName() );
+				}
+			} ) );
+		$oi->updateOtherIndex( [ Title::newMainPage() ] );
+	}
 }

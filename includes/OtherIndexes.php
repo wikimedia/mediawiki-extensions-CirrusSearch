@@ -82,9 +82,7 @@ class OtherIndexes extends Updater {
 	 * @param Title[] $titles array of titles in other indexes to update
 	 */
 	public function updateOtherIndex( $titles ) {
-		global $wgCirrusSearchWikimediaExtraPlugin;
-
-		if ( !isset( $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop'] ) ) {
+		if ( !$this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
 			$this->logFailure( $titles, 'super_detect_noop plugin not enabled' );
 			return;
 		}
@@ -103,7 +101,13 @@ class OtherIndexes extends Updater {
 				$search = $type->createSearch( $query );
 				$findIdsMultiSearch->addSearch( $search );
 				$findIdsClosures[] = function ( $docId ) use ( $otherIndex, &$updates, $title ) {
-					$updates[$otherIndex->getIndexName()][] = [
+					// The searchIndex, including the cluster specified, is needed
+					// as this gets passed to the ExternalIndex constructor in
+					// the created jobs.
+					if ( !isset( $updates[spl_object_hash( $otherIndex )] ) ) {
+						$updates[spl_object_hash( $otherIndex )] = [ $otherIndex, [] ];
+					}
+					$updates[spl_object_hash( $otherIndex )][1][] = [
 						'docId' => $docId,
 						'ns' => $title->getNamespace(),
 						'dbKey' => $title->getDBkey(),
@@ -138,16 +142,26 @@ class OtherIndexes extends Updater {
 			return;
 		}
 
-		foreach ( $updates as $indexName => $actions ) {
-			// These are split into a job per index so one index
-			// being frozen doesn't block updates to other indexes
-			// in the same update. Also because the external indexes
-			// may be configured to write to different clusters.
+		$this->runUpdates( reset( $titles ), $updates );
+	}
+
+	protected function runUpdates( Title $title, array $updates ) {
+		// These are split into a job per index so one index
+		// being frozen doesn't block updates to other indexes
+		// in the same update. Also because the external indexes
+		// may be configured to write to different clusters.
+		foreach ( $updates as $data ) {
+			list( $otherIndex, $actions ) = $data;
+			// Name of the index to write to on whatever cluster is connected to
+			$indexName = $otherIndex->getIndexName();
+			// Index name and, potentially, a replica group identifier. Needed to
+			// create an appropriate ExternalIndex instance in the job.
+			$externalIndex = $otherIndex->getGroupAndIndexName();
 			$job = Job\ElasticaWrite::build(
-				reset( $titles ),
+				$title,
 				'sendOtherIndexUpdates',
 				[ $this->localSite, $indexName, $actions ],
-				[ 'cluster' => $this->writeToClusterName, 'external-index' => $indexName ]
+				[ 'cluster' => $this->writeToClusterName, 'external-index' => $externalIndex ]
 			);
 			$job->run();
 		}

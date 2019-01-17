@@ -231,15 +231,22 @@ class SearchRequestBuilder {
 			$indexBaseName = $this->indexBaseName;
 			$config = $this->searchContext->getConfig();
 			$hostConfig = $config->getHostWikiConfig();
+			$indexType = $this->connection->pickIndexTypeForNamespaces(
+				$this->searchContext->getNamespaces() );
 			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
 				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
 				$current = $config->getClusterAssignment()->getCrossClusterName();
 				if ( $local !== $current ) {
 					$indexBaseName = $current . ':' . $indexBaseName;
+					if ( $hostConfig->getElement( 'CirrusSearchElasticQuirks', 'cross_cluster_single_shard_search' ) === true ) {
+						// https://github.com/elastic/elasticsearch/issues/26833
+						// Elasticsearch < 5.6.3 workaround. Cross cluster searches that
+						// hit a single shard optimization fail. Workaround by ensuring
+						// cross cluster searches query more than one shard.
+						$indexType = false;
+					}
 				}
 			}
-			$indexType = $this->connection->pickIndexTypeForNamespaces(
-				$this->searchContext->getNamespaces() );
 			return $this->connection->getPageType( $indexBaseName, $indexType );
 		}
 	}

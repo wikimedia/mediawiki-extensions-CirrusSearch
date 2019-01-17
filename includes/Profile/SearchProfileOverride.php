@@ -17,15 +17,22 @@ interface SearchProfileOverride {
 	const USER_PREF_PRIO = 200;
 
 	/**
+	 * Default prority for contextual overrides
+	 */
+	const CONTEXTUAL_PRIO = 300;
+
+	/**
 	 * Default priority for config overrides
 	 */
-	const CONFIG_PRIO = 300;
+	const CONFIG_PRIO = 400;
 
 	/**
 	 * Get the overridden name or null if it cannot be overridden.
+	 * @param string[] $contextParams Arbitrary parameters describing the context
+	 *  provided by the profile requestor.
 	 * @return string|null
 	 */
-	public function getOverriddenName();
+	public function getOverriddenName( array $contextParams );
 
 	/**
 	 * The priority of this override, lower wins

@@ -192,15 +192,17 @@ class SearchProfileService {
 	 * @param string $type
 	 * @param string $context used to determine the name of the profile if $name is not provided
 	 * @param string|null $name force the name of the profile to use
+	 * @param string[] $contextParams Parameters of the context, for determining the profile
+	 *  name. Some overriders use these to decide if an override is appropriate.
 	 * @return array
 	 * @see self::getProfileName()
 	 */
-	public function loadProfile( $type, $context = self::CONTEXT_DEFAULT, $name = null ) {
+	public function loadProfile( $type, $context = self::CONTEXT_DEFAULT, $name = null, $contextParams = [] ) {
 		if ( $name === null && $context === null ) {
 			throw new SearchProfileException( '$name and $context cannot be both null' );
 		}
 		if ( $name === null ) {
-			$name = $this->getProfileName( $type, $context );
+			$name = $this->getProfileName( $type, $context, $contextParams );
 		}
 		return $this->loadProfileByName( $type, $name );
 	}
@@ -208,9 +210,11 @@ class SearchProfileService {
 	/**
 	 * @param string $type the type of the profile (see class doc)
 	 * @param string $context
+	 * @param string[] $contextParams Parameters of the context, for determining the profile
+	 *  name. Some overriders use these to decide if an override is appropriate.
 	 * @return string
 	 */
-	public function getProfileName( $type, $context = self::CONTEXT_DEFAULT ) {
+	public function getProfileName( $type, $context = self::CONTEXT_DEFAULT, array $contextParams = [] ) {
 		$minPrio = PHP_INT_MAX;
 		if ( !isset( $this->defaultProfiles[$type][$context] ) ) {
 			throw new SearchProfileException( "No default profile found for $type in context $context" );
@@ -226,7 +230,7 @@ class SearchProfileService {
 
 		foreach ( $this->overriders[$type][$context] as $overrider ) {
 			if ( $overrider->priority() < $minPrio ) {
-				$name = $overrider->getOverriddenName();
+				$name = $overrider->getOverriddenName( $contextParams );
 				if ( $name !== null && $this->hasProfile( $type, $name ) ) {
 					$minPrio = $overrider->priority();
 					$profile = $name;
@@ -360,6 +364,18 @@ class SearchProfileService {
 	 */
 	public function registerUserPrefOverride( $type, $profileContext, $userPref ) {
 		$this->registerProfileOverride( $type, $profileContext, new UserPrefSearchProfileOverride( $this->user, $userPref ) );
+	}
+
+	/**
+	 * @param string $type
+	 * @param string|string[] $profileContext one or multiple contexts
+	 * @param string $template A templated profile name
+	 * @param string[] $params Map from string in $template to context parameter to
+	 *  replace with. All params must be available in the context parameters or
+	 *  no override will be applied.
+	 */
+	public function registerContextualOverride( $type, $profileContext, $template, array $params ) {
+		$this->registerProfileOverride( $type, $profileContext, new ContextualProfileOverride( $template, $params ) );
 	}
 
 	/**

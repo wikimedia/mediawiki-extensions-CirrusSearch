@@ -55,6 +55,11 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
+	 * @var array
+	 */
+	private $profileContextParams = [];
+
+	/**
 	 * @var string rescore profile to use
 	 */
 	private $rescoreProfile;
@@ -296,10 +301,14 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	/**
 	 * @param string $profileContext
+	 * @param string[] $contextParams
 	 */
-	public function setProfileContext( $profileContext ) {
-		$this->isDirty = $this->isDirty || $this->profileContext !== $profileContext;
+	public function setProfileContext( $profileContext, array $contextParams = [] ) {
+		$this->isDirty = $this->isDirty ||
+			$this->profileContext !== $profileContext ||
+			$this->profileContextParams !== $contextParams;
 		$this->profileContext = $profileContext;
+		$this->profileContextParams = $contextParams;
 	}
 
 	/**
@@ -308,7 +317,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	public function getRescoreProfile() {
 		if ( $this->rescoreProfile === null ) {
 			$this->rescoreProfile = $this->config->getProfileService()
-				->getProfileName( SearchProfileService::RESCORE, $this->profileContext );
+				->getProfileName( SearchProfileService::RESCORE, $this->profileContext, $this->profileContextParams );
 		}
 		return $this->rescoreProfile;
 	}

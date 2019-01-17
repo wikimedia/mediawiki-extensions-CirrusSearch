@@ -14,13 +14,13 @@ class ConfigSearchProfileOverrideTest extends CirrusTestCase {
 		$config = new \HashConfig( [ 'paramOverride' => 'overridden' ] );
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride' );
 		$this->assertEquals( SearchProfileOverride::CONFIG_PRIO, $override->priority() );
-		$this->assertEquals( 'overridden', $override->getOverriddenName() );
+		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
 	}
 
 	public function testWithoutConfigParam() {
 		$config = new \HashConfig( [ 'paramOverride' => 'overridden' ] );
 		$override = new ConfigSearchProfileOverride( $config, 'paramOverride2' );
-		$this->assertNull( $override->getOverriddenName() );
+		$this->assertNull( $override->getOverriddenName( [] ) );
 	}
 
 	public function testCustomPrio() {

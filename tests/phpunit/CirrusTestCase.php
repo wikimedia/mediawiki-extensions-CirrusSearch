@@ -31,12 +31,16 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 	}
 
 	public static function saveFixture( $testFile, $fixture ) {
+		file_put_contents(
+			self::FIXTURE_DIR . $testFile,
+			self::encodeFixture( $fixture )
+		);
+	}
+
+	public static function encodeFixture( $fixture ) {
 		$old = ini_set( 'serialize_precision', 14 );
 		try {
-			file_put_contents(
-				self::FIXTURE_DIR . $testFile,
-				json_encode( $fixture, JSON_PRETTY_PRINT )
-			);
+			return json_encode( $fixture, JSON_PRETTY_PRINT );
 		} finally {
 			ini_set( 'serialize_precision', $old );
 		}
@@ -74,5 +78,19 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 			}
 			return true;
 		} );
+	}
+
+	/**
+	 * @param \Elastica\Response ...$responses
+	 * @return \Elastica\Transport\AbstractTransport
+	 */
+	public function mockTransportWithResponse( ...$responses ) {
+		$transport = $this->getMockBuilder( \Elastica\Transport\AbstractTransport::class )
+			->disableOriginalConstructor()
+			->getMock();
+		$transport->expects( $this->any() )
+			->method( 'exec' )
+			->willReturnOnConsecutiveCalls( ...$responses );
+		return $transport;
 	}
 }

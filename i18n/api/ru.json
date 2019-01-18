@@ -4,7 +4,8 @@
 			"Facenapalm",
 			"Kareyac",
 			"Okras",
-			"Putnik"
+			"Putnik",
+			"Movses"
 		]
 	},
 	"apihelp-cirrus-config-dump-description": "Дамп конфигурации CirrusSearch.",
@@ -17,7 +18,7 @@
 	"apihelp-cirrus-settings-dump-summary": "Дамп настроек CirrusSearch для этой вики.",
 	"apihelp-cirrus-settings-dump-example": "Получить дамп настроек CirrusSearch для этой вики.",
 	"apihelp-query+cirrusdoc-description": "Дамп статьи CirrusSearch",
-	"apihelp-query+cirrusdoc-summary": "Дамп статьи CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Дамп статьи CirrusSearch с поисковых серверов",
 	"apihelp-query+cirrusdoc-example": "Получить дамп CirrusSearch для одной статьи.",
 	"apierror-cirrus-requesttoolong": "Поисковый запрос превышает максимально допустимую длину. ($1 > $2)"
 }

@@ -24,12 +24,19 @@ class ExternalIndex {
 	private $indexName;
 
 	/**
+	 * @var string Name of index on external clusters. Can include a group prefix
+	 *  when required.
+	 */
+	private $groupAndIndexName;
+
+	/**
 	 * @param Searchconfig $config
 	 * @param string $indexName Name of index on external clusters. Can include a group prefix
 	 * (e.g. "cluster_group:index_name")
 	 */
 	public function __construct( SearchConfig $config, $indexName ) {
 		$this->config = $config;
+		$this->groupAndIndexName = $indexName;
 		$groupAndIndex = explode( ':', $indexName, 2 );
 		if ( count( $groupAndIndex ) === 2 ) {
 			$currentGroup = $config->getClusterAssignment()->getCrossClusterName();
@@ -38,6 +45,14 @@ class ExternalIndex {
 		} else {
 			$this->indexName = $indexName;
 		}
+	}
+
+	/**
+	 * @return string Name of index on external clusters. Can include a group prefix
+	 *  when required.
+	 */
+	public function getGroupAndIndexName() {
+		return $this->groupAndIndexName;
 	}
 
 	/**

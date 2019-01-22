@@ -4,7 +4,8 @@
 			"Milicevic01",
 			"Zoranzoki21",
 			"Сербијана",
-			"Obsuser"
+			"Obsuser",
+			"BadDog"
 		]
 	},
 	"cirrussearch-backend-error": "Нисмо могли завршити претрагу због привременог проблема. Покушајте поново касније.",
@@ -12,25 +13,23 @@
 	"cirrussearch-too-busy-error": "Претрага је тренутно презаузета. Покушајте поново касније.",
 	"cirrussearch-regex-syntax-error": "Регуларни израз грешке синтаксе у $2: $1",
 	"cirrussearch-regex-too-busy-error": "Превише регуларних израза претраживања тренутно ради. Покушајте поново касније.",
-	"cirrussearch-now-using": "Овај вики има нови начин претраге. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
+	"cirrussearch-now-using": "Овај вики користи нови претраживач. ([[mw:Special:MyLanguage/Help:CirrusSearch|Сазнајте више]])",
 	"cirrussearch-pref-label": "Нова претрага",
 	"cirrussearch-give-feedback": "Дајте нам Ваше мишљење.",
 	"cirrussearch-completion-profile-fast-fuzzy": "Експериментални фази профил (може се уклонити било када)",
 	"cirrussearch-qi-profile-wsum-inclinks-pv": "Пондерисана сума на основу долазних веза и седмичног броја прегледа",
 	"cirrussearch-qi-profile-wsum-inclinks": "Пондерисана сума на основу долазних веза",
-	"cirrussearch-pref-completion-profile-help": "Подешавање аутоматских сугестија (претрага у току куцања).",
 	"prefs-completion": "Довршавање претраге",
 	"cirrussearch-pref-completion-section-desc": "Предвиђање претраге",
-	"cirrussearch-pref-completion-section-legend": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Предвиђање претраге] је омогућено алгоритмом за давање сугестија при куцању, са бољим системом за распознавање  и исправљање типфелера те одређивање релевантности претраге.",
-	"cirrussearch-completion-profile-fuzzy-pref-name": "Подразумевано (препоручено)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправља до два типфелера. Решава блиска преусмерења.",
+	"cirrussearch-pref-completion-profile-help": "Поставите понашање за предлоге аутоматског довршавања (претражујте-док-куцате).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Предлагач довршавања] је алгоритам за предлоге за претрагу са бољом исправком грешки у куцању и релевантности претраге. Претрага по префиксу је застарели алгоритам (претражујте-док-куцате) за предлоге.",
+	"cirrussearch-completion-profile-fuzzy-pref-name": "Подразумевано (препоручује се)",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправља до две грешке у куцању. Уклања преусмерења која су веома слична главном наслову.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Исправља до два типфелера. Решава блиска преусмерења. Тражи подизраз у насловима.",
 	"cirrussearch-completion-profile-strict-pref-name": "Строги режим (напредно)",
-	"cirrussearch-completion-profile-strict-pref-desc": "Без исправљања типфелера. Без поистовећивања африката или верзала са еквивалентима. Строго подударање.",
+	"cirrussearch-completion-profile-strict-pref-desc": "Не исправља грешке у куцању. Не поистовећује африкате или верзале са еквивалентима. Строго подударање.",
 	"cirrussearch-completion-profile-normal-pref-name": "Режим преусмерења (напредно)",
-	"cirrussearch-completion-profile-normal-pref-desc": "Без исправљања типфелера. Решава блиска преусмерења.",
-	"cirrussearch-pref-completion-legacy-section-desc": "Претрага по префиксу",
-	"cirrussearch-pref-completion-legacy-section-legend": "Стари алгоритам за аутоматско довршавање претраге у току куцања.",
+	"cirrussearch-completion-profile-normal-pref-desc": "Не исправља грешке у куцању. Решава блиска преусмерења.",
 	"cirrussearch-completion-profile-classic-pref-name": "Класична претрага по префиксу",
-	"cirrussearch-completion-profile-classic-pref-desc": "Без исправљања типфелера. Тражи почетке наслова."
+	"cirrussearch-completion-profile-classic-pref-desc": "Не исправља грешке у куцању. Тражи почетке наслова.",
+	"cirrussearch-article-words": "Речи на свим страницама са садржајем"
 }

@@ -4,6 +4,8 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Query\Builder\ContextualFilter;
+use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Query\Builder\QueryBuildingContext;
 use CirrusSearch\WarningCollector;
 use Elastica\Query\AbstractQuery;
@@ -61,8 +63,14 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return CrossSearchStrategy
 	 */
 	public function getCrossSearchStrategy( KeywordFeatureNode $node ) {
-		// Namespace handling seems to be wiki specific
-		return CrossSearchStrategy::hostWikiOnlyStrategy();
+		$parsedValue = $node->getParsedValue();
+		$namespace = $parsedValue['namespace'] ?? null;
+		if ( $namespace === null || $namespace <= NS_CATEGORY_TALK ) {
+			// we allow crosssearches for "standard" namespaces
+			return CrossSearchStrategy::allWikisStrategy();
+		} else {
+			return CrossSearchStrategy::hostWikiOnlyStrategy();
+		}
 	}
 
 	/**
@@ -77,18 +85,8 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 		// XXX: only works because it's greedy
 		$context->addSuggestSuffix( ' prefix:' . $value );
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
-		$namespace = null;
-		if ( isset( $parsedValue['namespace'] ) ) {
-			$namespace = $parsedValue['namespace'];
-		}
-		if ( $namespace === null && $context->getNamespaces() ) {
-			$context->setNamespaces( null );
-		} elseif ( $context->getNamespaces() && !in_array( $namespace, $context->getNamespaces() ) ) {
-			$namespaces = $context->getNamespaces();
-			$namespaces[] = $namespace;
-			$context->setNamespaces( $namespaces );
-		}
-
+		$namespace = $parsedValue['namespace'] ?? null;
+		self::alterSearchContextNamespace( $context, $namespace );
 		$prefixQuery = $this->buildQuery( $parsedValue['value'], $namespace );
 		return [ $prefixQuery, false ];
 	}
@@ -103,6 +101,15 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return array|false|null
 	 */
 	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+		return $this->internalParseValue( $value );
+	}
+
+	/**
+	 * Parse the value of the prefix keyword mainly to extract the namespace prefix
+	 * @param string $value
+	 * @return array|false|null
+	 */
+	private function internalParseValue( $value ) {
 		$trimQuote = '/^"([^"]*)"\s*$/';
 		$value = preg_replace( $trimQuote, "$1", $value );
 		// NS_MAIN by default
@@ -141,7 +148,7 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	}
 
 	/**
-	 * @param string $value
+	 * @param string|null $value
 	 * @param int|null $namespace
 	 * @return AbstractQuery|null null in the case of prefix:all:
 	 */
@@ -171,11 +178,80 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return AbstractQuery|null
 	 */
 	public function getFilterQuery( KeywordFeatureNode $node, QueryBuildingContext $context ) {
-		$namespace = null;
+		return $this->buildQuery( $node->getParsedValue()['value'],
+			$node->getParsedValue()['namespace'] ?? null );
+	}
 
-		if ( isset( $node->getParsedValue()['namespace'] ) ) {
-			$namespace = $node->getParsedValue()['namespace'];
+	/**
+	 * Adds a prefix filter to the search context
+	 * @param SearchContext $context
+	 * @param string $prefix
+	 */
+	public static function prepareSearchContext( SearchContext $context, $prefix ) {
+		$filter = self::asContextualFilter( $prefix );
+		$filter->populate( $context );
+		$namespaces = $filter->requiredNamespaces();
+		Assert::postcondition( $namespaces !== null && count( $namespaces ) <= 1,
+			'PrefixFeature must extract one or all namespaces' );
+		self::alterSearchContextNamespace( $context,
+			count( $namespaces ) === 1 ? reset( $namespaces ) : null );
+	}
+
+	/**
+	 * Alter the set of namespaces in the SearchContext
+	 * This is a special (and historic) behavior of the prefix keyword
+	 * it has the ability to extend the list requested namespaces to the ones
+	 * it wants to query.
+	 *
+	 * @param SearchContext $context
+	 * @param int|null $namespace
+	 */
+	private static function alterSearchContextNamespace( SearchContext $context, $namespace ) {
+		if ( $namespace === null && $context->getNamespaces() ) {
+			$context->setNamespaces( null );
+		} elseif ( $context->getNamespaces() &&
+				   !in_array( $namespace, $context->getNamespaces() ) ) {
+			$namespaces = $context->getNamespaces();
+			$namespaces[] = $namespace;
+			$context->setNamespaces( $namespaces );
 		}
-		return $this->buildQuery( $node->getParsedValue()['value'], $namespace );
+	}
+
+	/**
+	 * @param string $prefix
+	 * @return ContextualFilter
+	 */
+	public static function asContextualFilter( $prefix ) {
+		$feature = new self();
+		$parsedValue = $feature->internalParseValue( $prefix );
+		$namespace = $parsedValue['namespace'] ?? null;
+		$query = $feature->buildQuery( $parsedValue['value'], $namespace );
+		return new class( $query, $namespace !== null ? [ $namespace ] : [] ) implements ContextualFilter {
+			/**
+			 * @var AbstractQuery
+			 */
+			private $query;
+
+			/**
+			 * @var int[]
+			 */
+			private $namespaces;
+
+			public function __construct( $query, array $namespaces ) {
+				$this->query = $query;
+				$this->namespaces = $namespaces;
+			}
+
+			public function populate( FilterBuilder $filteringContext ) {
+				$filteringContext->must( $this->query );
+			}
+
+			/**
+			 * @return int[]|null
+			 */
+			public function requiredNamespaces() {
+				return $this->namespaces;
+			}
+		};
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Elastica;
 
+use Elastica\Exception\Connection\HttpException;
 use Elastica\Transport\Http;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -59,12 +60,20 @@ class PooledHttp extends Http {
 			);
 		} else {
 			$pool = $conn->getConfig( 'pool' );
-			// Note that if the connection pool is full this will block
+			// If the connection pool is full this will block
 			// up to curl.namedPools.$pool.connGetTimeout ms, defaulting
-			// to 5000. If the timeout is reached hhvm will raise a fatal
-			// error.
+			// to 5000. If the timeout is reached hhvm will throw a
+			// RuntimeException.
 			$start = microtime( true );
-			$ch = curl_init_pooled( $pool );
+			try {
+				$ch = curl_init_pooled( $pool );
+			} catch ( \RuntimeException $e ) {
+				// Don't fallback to the non-pooled connection like all the
+				// other error cases. Problems with the connection pool filling
+				// up are potentially related to either network partitions or cluster
+				// overload and should bubble up the chain.
+				throw new HttpException( $e->getMessage() );
+			}
 			$this->reportTiming( microtime( true ) - $start );
 
 			if ( $ch === null ) {

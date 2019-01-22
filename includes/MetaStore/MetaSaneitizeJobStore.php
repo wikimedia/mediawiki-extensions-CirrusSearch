@@ -38,6 +38,7 @@ class MetaSaneitizeJobStore implements MetaStore {
 			[
 				'type' => self::METASTORE_TYPE,
 				'wiki' => wfWikiID(),
+				'sanitize_job_loop_id' => 0,
 				'sanitize_job_wiki' => wfWikiID(), // Deprecated, use common wiki field
 				'sanitize_job_created' => time(),
 				'sanitize_job_updated' => time(),
@@ -105,6 +106,3 @@ class MetaSaneitizeJobStore implements MetaStore {
 		return [];
 	}
 }
-
-$maintClass = "CirrusSearch\Maintenance\SaneitizeJobs";
-require_once RUN_MAINTENANCE_IF_MAIN;

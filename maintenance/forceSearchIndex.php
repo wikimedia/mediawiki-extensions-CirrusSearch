@@ -513,7 +513,6 @@ class ForceSearchIndex extends Maintenance {
 
 		return [
 			'tables' => [ 'page' ],
-			/** @suppress PhanDeprecatedFunction fallback to deprecated function */
 			'fields' => WikiPage::selectFields(),
 			'joins' => [],
 		];
@@ -623,6 +622,16 @@ class ForceSearchIndex extends Maintenance {
 		// Updater's redirect tracing logic which is very complete.  Also, it returns null on
 		// self redirects.  Great!
 		list( $page, ) = $updater->traceRedirects( $page->getTitle() );
+
+		if ( $page != null &&
+			Title::makeTitleSafe( $page->getTitle()->getNamespace(), $page->getTitle()->getText() ) === null
+		) {
+			// The title cannot be rebuilt from its ns_prefix + text.
+			// It happens if an invalid title is present in the DB
+			// We may prefer to not index them as they are hardly viewable
+			$this->output( 'Skipping page with invalid title: ' . $page->getTitle()->getPrefixedText() );
+			return null;
+		}
 
 		return $page;
 	}

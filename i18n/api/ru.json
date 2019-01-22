@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Facenapalm",
+			"Kareyac",
+			"Okras",
+			"Putnik",
+			"Movses"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "Дамп конфигурации CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Дамп конфигурации CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Получить дамп конфигурации CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Дамп маппинга CirrusSearch для этой вики.",
+	"apihelp-cirrus-mapping-dump-summary": "Дамп маппинга CirrusSearch для этой вики.",
+	"apihelp-cirrus-mapping-dump-example": "Получить дамп маппинга CirrusSearch для этой вики.",
+	"apihelp-cirrus-settings-dump-description": "Дамп настроек CirrusSearch для этой вики.",
+	"apihelp-cirrus-settings-dump-summary": "Дамп настроек CirrusSearch для этой вики.",
+	"apihelp-cirrus-settings-dump-example": "Получить дамп настроек CirrusSearch для этой вики.",
+	"apihelp-query+cirrusdoc-description": "Дамп статьи CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Дамп статьи CirrusSearch с поисковых серверов",
+	"apihelp-query+cirrusdoc-example": "Получить дамп CirrusSearch для одной статьи.",
+	"apierror-cirrus-requesttoolong": "Поисковый запрос превышает максимально допустимую длину. ($1 > $2)"
+}

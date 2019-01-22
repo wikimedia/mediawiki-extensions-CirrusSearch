@@ -79,7 +79,7 @@ class ConfigUtils {
 			if ( count( $found ) > 1 ) {
 				$this->output( "error\n" );
 				$this->fatalError( "Looks like the index has more than one identifier. You should delete all\n" .
-					"but the one of them currently active. Here is the list: " .  implode( ',', $found ) );
+					"but the one of them currently active. Here is the list: " . implode( ',', $found ) );
 			}
 			if ( $found ) {
 				$identifier = substr( $found[0], strlen( $typeName ) + 1 );
@@ -127,7 +127,8 @@ class ConfigUtils {
 		$first = true;
 		foreach ( array_values( $result[ 'nodes' ] ) as $node ) {
 			$plugins = [];
-			foreach ( $node[ $what ] as $plugin ) {
+			// The plugins section may not exist, default to [] when not found.
+			foreach ( $node[$what] ?? [] as $plugin ) {
 				$plugins[] = $plugin[ 'name' ];
 			}
 			if ( $first ) {
@@ -231,7 +232,7 @@ class ConfigUtils {
 		$path = "_cluster/health/$indexName";
 		$response = $this->client->request( $path );
 		if ( $response->hasError() ) {
-			throw new \Exception( "Error while fetching index health status: ". $response->getError() );
+			throw new \Exception( "Error while fetching index health status: " . $response->getError() );
 		}
 		return $response->getData();
 	}

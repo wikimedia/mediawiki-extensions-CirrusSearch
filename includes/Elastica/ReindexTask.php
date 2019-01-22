@@ -55,7 +55,7 @@ class ReindexTask {
 
 	/**
 	 * Delete the task
-	 * @return bool True if delete was sucessfull, false otherwise.
+	 * @return bool True if delete was successfull, false otherwise.
 	 *  Throws Elastica NotFoundException for unknown task (already
 	 *  deleted?) or HttpException for communication failures.
 	 */

@@ -53,13 +53,13 @@ class Escaper {
 			// character (״), call a Gershayim, which mark acronyms.  Here we guess if the intent
 			// was to mark a phrase, in which case we leave the quotes alone, or to mark an
 			// acronym, in which case we escape them.
-			return preg_replace( '/(\S+)"(\S)/u', '\1\\"\2', $text );
+			return preg_replace( '/(\S+)(?<!\\\\)"(\S)/u', '\1\\"\2', $text );
 		}
 		return $text;
 	}
 
 	/**
-	 * Make sure the the query string part is well formed by escaping some syntax that we don't
+	 * Make sure the query string part is well formed by escaping some syntax that we don't
 	 * want users to get direct access to and making sure quotes are balanced.
 	 * These special characters _aren't_ escaped:
 	 * * and ?: Do a wildcard search against the stemmed text which isn't strictly a good
@@ -218,7 +218,7 @@ class Escaper {
 	 * @param string $escapeChar escape sequence
 	 * @return string
 	 */
-	public function unescape( $query, $escapeChar  = '\\' ) {
+	public function unescape( $query, $escapeChar = '\\' ) {
 		$escapeChar = preg_quote( $escapeChar, '/' );
 		return preg_replace( "/$escapeChar(.)/u", '$1', $query );
 	}

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
+use CirrusSearch\Profile\ArrayPathSetter;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\FunctionScore;
@@ -67,19 +68,26 @@ class FunctionScoreChain {
 	 * @param SearchContext $context
 	 * @param string $chainName the name of the chain (must be a valid
 	 *  chain in wgCirrusSearchRescoreFunctionScoreChains)
+	 * @param array $overrides Parameter overrides
 	 */
-	public function __construct( SearchContext $context, $chainName ) {
+	public function __construct( SearchContext $context, $chainName, $overrides ) {
 		$this->chainName = $chainName;
 		$this->context = $context;
 		$this->functionScore = new FunctionScoreDecorator();
-		$this->chain = $context->getConfig()
+		$chain = $context->getConfig()
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::RESCORE_FUNCTION_CHAINS, $chainName );
+		$this->chain = $overrides ? $this->applyOverrides( $chain, $overrides ) : $chain;
 
 		$params = array_intersect_key( $this->chain, array_flip( self::$functionScoreParams ) );
 		foreach ( $params as $param => $value ) {
 			$this->functionScore->setParam( $param, $value );
 		}
+	}
+
+	private function applyOverrides( array $chain, array $overrides ) {
+		$transformer = new ArrayPathSetter( $overrides );
+		return $transformer->transform( $chain );
 	}
 
 	/**

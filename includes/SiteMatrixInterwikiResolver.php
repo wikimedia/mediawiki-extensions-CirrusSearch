@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use BagOStuff;
 use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
 use ObjectCache;
@@ -13,17 +14,25 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 
 	const MATRIX_CACHE_TTL = 600;
 
+	/**
+	 * @var BagOStuff
+	 */
 	private $cache;
 
 	/**
 	 * @param SearchConfig $config
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
+	 * @param BagOStuff|null $cache Cache object for caching repeated requests
 	 */
-	public function __construct( SearchConfig $config, \MultiHttpClient $client = null ) {
-		parent::__construct( $config, $client );
-		$this->cache = ObjectCache::getLocalClusterInstance();
+	public function __construct( SearchConfig $config, \MultiHttpClient $client = null, BagOStuff $cache = null ) {
+		parent::__construct( $config, $client, $cache );
+		if ( $cache === null ) {
+			$cache = ObjectCache::getLocalClusterInstance();
+		}
+		$this->cache = $cache;
 		if ( $config->getWikiId() !== wfWikiID() ) {
-			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " . $config->getWikiId() . ", global: " . wfWikiID() );
+			throw new \RuntimeException( "This resolver cannot with an external wiki config. (config: " .
+				$config->getWikiId() . ", global: " . wfWikiID() );
 		}
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			throw new \RuntimeException( "SiteMatrix is required" );
@@ -151,7 +160,8 @@ class SiteMatrixInterwikiResolver extends BaseInterwikiResolver {
 				// In theory it's impossible to override something here
 				// should we log something if the case?
 				$prefixesByWiki[$dbname] = $lang;
-				$wikiLangCode = $wgConf->get( 'wgLanguageCode', $dbname, $myProject, [ 'lang' => $lang, 'site' => $myProject ] );
+				$wikiLangCode = $wgConf->get( 'wgLanguageCode', $dbname, $myProject,
+					[ 'lang' => $lang, 'site' => $myProject ] );
 				$languageMap[$wikiLangCode][] = $lang;
 			}
 			// Cleanup unambiguous languages

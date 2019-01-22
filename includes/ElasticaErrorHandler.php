@@ -19,7 +19,7 @@ class ElasticaErrorHandler {
 	public static function extractMessage( \Elastica\Exception\ExceptionInterface $exception ) {
 		$error = self::extractFullError( $exception );
 
-		return $error['type'] . ': ' .$error['reason'];
+		return $error['type'] . ': ' . $error['reason'];
 	}
 
 	/**
@@ -127,7 +127,7 @@ class ElasticaErrorHandler {
 	 * @return bool is this a parse error?
 	 */
 	public static function isParseError( Status $status ) {
-		/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
+		/** @todo No good replacements for getErrorsArray */
 		foreach ( $status->getErrorsArray() as $errorMessage ) {
 			if ( $errorMessage[ 0 ] === 'cirrussearch-parse-error' ) {
 				return true;

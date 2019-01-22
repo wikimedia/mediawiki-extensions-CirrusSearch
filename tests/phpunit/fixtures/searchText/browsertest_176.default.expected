@@ -8,6 +8,7 @@
         "search_type": "dfs_query_then_fetch",
         "timeout": "20s"
     },
+    "path": "wiki\/page\/_search",
     "query": {
         "_source": [
             "namespace",
@@ -179,7 +180,9 @@
                                         "default_operator": "AND",
                                         "fields": [
                                             "redirect.title",
-                                            "title"
+                                            "redirect.title.plain",
+                                            "title",
+                                            "title.plain"
                                         ],
                                         "fuzzy_prefix_length": 2,
                                         "query": "programming",

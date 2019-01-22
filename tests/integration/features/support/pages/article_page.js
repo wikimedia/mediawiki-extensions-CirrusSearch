@@ -36,7 +36,7 @@ class ArticlePage extends TitlePage {
 
 	get_search_suggestions() {
 		let selector = '.suggestions .suggestions-results a.mw-searchSuggest-link';
-		browser.waitForVisible(selector, 5000);
+		browser.waitForVisible(selector, 10000);
 		return this.collect_element_attribute('title', selector);
 	}
 

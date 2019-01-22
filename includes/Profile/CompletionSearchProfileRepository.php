@@ -55,7 +55,7 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 	 * @param SearchConfig $config
 	 * @param callable $arrayLoader callable that resolves to an array of original profiles
 	 */
-	private function __construct( $repoType, $repoName, SearchConfig $config , callable $arrayLoader ) {
+	private function __construct( $repoType, $repoName, SearchConfig $config, callable $arrayLoader ) {
 		$this->wrapped = ArrayProfileRepository::lazyLoaded( $repoType, $repoName, function () use ( $arrayLoader, $config ) {
 			$profiles = [];
 

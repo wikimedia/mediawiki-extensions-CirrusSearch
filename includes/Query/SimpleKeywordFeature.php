@@ -99,7 +99,14 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * (only allowed for keywords that allows empty value)
 	 * @see self::allowEmptyValue
 	 */
-	public function parseValue( $key, $value, $quotedValue, $valueDelimiter, $suffix, WarningCollector $warningCollector ) {
+	public function parseValue(
+		$key,
+		$value,
+		$quotedValue,
+		$valueDelimiter,
+		$suffix,
+		WarningCollector $warningCollector
+	) {
 		return null;
 	}
 
@@ -117,7 +124,11 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 * @param WarningCollector $warningCollector
 	 * @return array
 	 */
-	public function expand( KeywordFeatureNode $node, SearchConfig $config, WarningCollector $warningCollector ) {
+	public function expand(
+		KeywordFeatureNode $node,
+		SearchConfig $config,
+		WarningCollector $warningCollector
+	) {
 		return [];
 	}
 
@@ -134,7 +145,8 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 		if ( $this->greedy() ) {
 			Assert::precondition( !$this->allowEmptyValue(), "greedy keywords must not accept empty value" );
 			// XXX: we ignore value delimiter for greedy keywords
-			Assert::precondition( $this->getValueDelimiters() === [ [ 'delimiter' => '"' ] ], "getValueDelimiters() must not be overridden with greedy keywords" );
+			Assert::precondition( $this->getValueDelimiters() === [ [ 'delimiter' => '"' ] ],
+				"getValueDelimiters() must not be overridden with greedy keywords" );
 			// XXX: we send raw value to the keyword
 			return '(?<unquoted>.+)';
 		} else {
@@ -143,7 +155,8 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			$allDelims = '';
 			$optionalSuffixes = [];
 			foreach ( $this->getValueDelimiters() as $delimConfig ) {
-				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
+				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1,
+					"Value delimiter must be a single byte char" );
 				$delim = preg_quote( $delimConfig['delimiter'], '/' );
 				$allDelims .= $delim;
 				if ( isset( $delimConfig['suffixes'] ) ) {
@@ -199,7 +212,15 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 	 *  query. Second a boolean indicating if the quotedValue should be kept in the search
 	 *  string.
 	 */
-	public function doApplyExtended( SearchContext $context, $key, $value, $quotedValue, $negated, $delimiter, $suffix ) {
+	public function doApplyExtended(
+		SearchContext $context,
+		$key,
+		$value,
+		$quotedValue,
+		$negated,
+		$delimiter,
+		$suffix
+	) {
 		return $this->doApply( $context, $key, $value, $quotedValue, $negated );
 	}
 

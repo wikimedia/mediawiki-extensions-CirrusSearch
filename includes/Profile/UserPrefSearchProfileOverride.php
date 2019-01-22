@@ -38,9 +38,10 @@ class UserPrefSearchProfileOverride implements SearchProfileOverride {
 
 	/**
 	 * Get the overridden name or null if it cannot be overridden.
+	 * @param string[] $contextParams
 	 * @return string|null
 	 */
-	public function getOverriddenName() {
+	public function getOverriddenName( array $contextParams ) {
 		// Only check user options if the user is logged to avoid loading
 		// default user options.
 		if ( $this->user->getId() === 0 ) {

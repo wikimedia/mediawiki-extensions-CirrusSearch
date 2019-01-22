@@ -53,6 +53,7 @@
             "indexType": false,
             "queryType": "get",
             "source": "cli",
+            "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",

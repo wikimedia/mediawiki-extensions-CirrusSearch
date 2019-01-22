@@ -12,45 +12,45 @@ interface RequestLog {
 	/**
 	 * Called when the network request is started
 	 */
-	function start();
+	public function start();
 
 	/**
 	 * Called when the network request has finished
 	 */
-	function finish();
+	public function finish();
 
 	/**
 	 * @return string The type of query that was performed
 	 */
-	function getQueryType();
+	public function getQueryType();
 
 	/**
 	 * @return string Get the raw psr-3 compliant request description
 	 */
-	function getDescription();
+	public function getDescription();
 
 	/**
 	 * @return string Get the request description, formatted as per psr-3 guidelines
 	 *  with self::getLogVariables()
 	 */
-	function formatDescription();
+	public function formatDescription();
 
 	/**
 	 * @return int|null The number of ms php spend waiting for the request,
 	 *  or null if the request has not finished yet.
 	 */
-	function getTookMs();
+	public function getTookMs();
 
 	/**
 	 * @return int The number of ms elasticsearch reported spending on the request,
 	 *  or -1 if no request was made (such as cached responses).
 	 */
-	function getElasticTookMs();
+	public function getElasticTookMs();
 
 	/**
 	 * @return bool Was this query answered without talking to elasticsearch?
 	 */
-	function isCachedResponse();
+	public function isCachedResponse();
 
 	/**
 	 * @return array Various information about the request(s). The exact set of
@@ -59,7 +59,7 @@ interface RequestLog {
 	 *  of k/v pairs regardless of the number of requests represented here.
 	 *  This is utilized primarily for error reporting purposes.
 	 */
-	function getLogVariables();
+	public function getLogVariables();
 
 	/**
 	 * @return array[] array of arrays containing various information about the
@@ -69,5 +69,5 @@ interface RequestLog {
 	 * primarily used for structured logging of request data to be analyzed in
 	 * analytics platforms.
 	 */
-	function getRequests();
+	public function getRequests();
 }

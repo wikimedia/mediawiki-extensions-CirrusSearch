@@ -668,4 +668,53 @@ class RescoreBuilderTest extends CirrusTestCase {
 			],
 		];
 	}
+
+	/**
+	 * @covers CirrusSearch\Search\Rescore\RescoreBuilder
+	 */
+	public function testRescoreFunctionChainOverrides() {
+		$initialWeight = 4;
+		$weight = 7;
+
+		$settings = [
+			'CirrusSearchRescoreFunctionScoreChains' => [
+				'test' => [
+					'functions' => [
+						[
+							'type' => 'script',
+							'script' => '...',
+							'weight' => $initialWeight
+						],
+					],
+				],
+			],
+			'CirrusSearchRescoreProfiles' => [
+				'default' => [
+					'supported_namespaces' => 'all',
+					'rescore' => [
+						[
+							'window' => 123,
+							'type' => 'function_score',
+							'function_chain' => 'test',
+							'function_chain_overrides' => [
+								'functions.0.weight' => $weight,
+							]
+						]
+					]
+				]
+			]
+		];
+
+		$config = new HashSearchConfig( $settings + [
+			'CirrusSearchRescoreProfile' => 'default',
+		] );
+
+		$context = new SearchContext( $config, [ NS_MAIN, NS_USER ] );
+		$builder = new RescoreBuilder( $context, 'default' );
+		$rescores = $builder->build();
+		$this->assertCount( 1, $rescores );
+		$query = $rescores[0]['query']['rescore_query']->toArray();
+		// Check the weight override was applied
+		$this->assertEquals( $weight, $query['function_score']['functions'][0]['weight'] );
+	}
 }

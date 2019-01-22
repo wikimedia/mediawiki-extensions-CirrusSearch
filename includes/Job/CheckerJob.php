@@ -43,9 +43,11 @@ class CheckerJob extends Job {
 	 * @param int $delay
 	 * @param string $profile sanitization profile to use
 	 * @param string|null $cluster
+	 * @param int $loopId The number of times the checker jobs have looped
+	 *  over the pages to be checked.
 	 * @return CheckerJob
 	 */
-	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster ) {
+	public static function build( $fromPageId, $toPageId, $delay, $profile, $cluster, $loopId ) {
 		$job = new self( Title::makeTitle( NS_SPECIAL, "Badtitle/" . __CLASS__ ), [
 			'fromPageId' => $fromPageId,
 			'toPageId' => $toPageId,
@@ -53,6 +55,7 @@ class CheckerJob extends Job {
 			'retryCount' => 0,
 			'profile' => $profile,
 			'cluster' => $cluster,
+			'loopId' => $loopId,
 		] );
 		$job->setDelay( $delay );
 		return $job;
@@ -71,6 +74,10 @@ class CheckerJob extends Job {
 		if ( isset( $params['toId'] ) ) {
 			$params['toPageId'] = $params['toId'];
 			unset( $params['toId'] );
+		}
+		// BC for jobs created before loop id existed
+		if ( !isset( $params['loopId'] ) ) {
+			$params['loopId'] = 0;
 		}
 		parent::__construct( $title, $params );
 	}
@@ -92,14 +99,14 @@ class CheckerJob extends Job {
 			);
 			return false;
 		}
-		$maxPressure = isset( $profile['update_jobs_max_pressure'] ) ? $profile['update_jobs_max_pressure'] : null;
+		$maxPressure = $profile['update_jobs_max_pressure'] ?? null;
 		if ( !$maxPressure || $maxPressure < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid update_jobs_max_pressure, check CirrusSearchSanityCheck config."
 			);
 			return false;
 		}
-		$batchSize = isset( $profile['checker_batch_size'] ) ? $profile['checker_batch_size'] : null;
+		$batchSize = $profile['checker_batch_size'] ?? null;
 		if ( !$batchSize || $batchSize < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_batch_size, check CirrusSearchSanityCheck config."
@@ -107,7 +114,7 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$chunkSize = isset( $profile['jobs_chunk_size'] ) ? $profile['jobs_chunk_size'] : null;
+		$chunkSize = $profile['jobs_chunk_size'] ?? null;
 		if ( !$chunkSize || $chunkSize < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid jobs_chunk_size, check CirrusSearchSanityCheck config."
@@ -115,12 +122,17 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$maxTime = isset( $profile['checker_job_max_time'] ) ? $profile['checker_job_max_time'] : null;
+		$maxTime = $profile['checker_job_max_time'] ?? null;
 		if ( !$maxTime || $maxTime < 0 ) {
 			LoggerFactory::getInstance( 'CirrusSearch' )->warning(
 				"Cannot run CheckerJob invalid checker_job_max_time, check CirrusSearchSanityCheck config."
 			);
 			return false;
+		}
+
+		$connections = $this->decideClusters();
+		if ( empty( $connections ) ) {
+			return true;
 		}
 
 		$from = $this->params['fromPageId'];
@@ -149,7 +161,6 @@ class CheckerJob extends Job {
 			return false;
 		}
 
-		$connections = $this->decideClusters();
 		$clusterNames = implode( ', ', array_keys( $connections ) );
 
 		LoggerFactory::getInstance( 'CirrusSearch' )->debug(
@@ -159,6 +170,15 @@ class CheckerJob extends Job {
 				'clusters' => array_keys( $connections ),
 			]
 		);
+
+		$isOld = null;
+		$reindexAfterLoops = $profile['reindex_after_loops'] ?? null;
+		if ( $reindexAfterLoops ) {
+			$isOld = self::makeIsOldClosure(
+				$this->params['loopId'],
+				$reindexAfterLoops
+			);
+		}
 
 		$startTime = time();
 
@@ -173,7 +193,8 @@ class CheckerJob extends Job {
 				$searcher,
 				false, // logSane
 				false, // fastRedirectCheck
-				$pageCache
+				$pageCache,
+				$isOld
 			);
 			$checkers[] = $checker;
 		}
@@ -194,6 +215,29 @@ class CheckerJob extends Job {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Decide if a document should be reindexed based on time since last reindex
+	 *
+	 * Consider a page as old every $numCycles times the saneitizer loops over
+	 * the same document. This ensures documents have been reindexed within the
+	 * last `$numCycles * actual_loop_duration` (note that the configured
+	 * duration is min_loop_duration, but in practice configuration ensures min
+	 * and actual are typically the same).
+	 *
+	 * @param int $loopId The number of times the checker has looped over
+	 *  the document set.
+	 * @param int $numCycles The number of loops after which a document
+	 *  is considered old.
+	 * @return \Closure
+	 */
+	private static function makeIsOldClosure( $loopId, $numCycles ) {
+		$loopMod = $loopId % $numCycles;
+		return function ( \WikiPage $page ) use ( $numCycles, $loopMod ) {
+			$pageIdMod = $page->getId() % $numCycles;
+			return $pageIdMod == $loopMod;
+		};
 	}
 
 	/**

@@ -143,3 +143,7 @@ Feature: Full text search
   Scenario: If the search started with a namespace it doesn't pick up the accented namespace
     When I api search for file:mo:some text
     Then Mó:Test is not in the api search results
+
+  Scenario: Zero result queries are rewritten with suggestions
+    When I api search with rewrites enabled for mani page
+    Then Main Page is the first api search result

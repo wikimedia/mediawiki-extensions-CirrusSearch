@@ -8,6 +8,7 @@ namespace CirrusSearch\Maintenance;
  * Asserts that maintenance scripts are loadable independently. These
  * classes are loaded prior to the autoloader and we need an assurance
  * they dont extend/implement something not available.
+ * @coversNothing
  */
 class ScriptsRunnableTest extends \PHPUnit\Framework\TestCase {
 	public function scriptPathProvider() {

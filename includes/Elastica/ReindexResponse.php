@@ -12,7 +12,7 @@ class ReindexResponse extends ReindexStatus {
 
 	/**
 	 * @return string The reason the reindex was unsuccessful
-	 * @throws Exception If the reindex completed succesfully
+	 * @throws Exception If the reindex completed successfully
 	 */
 	public function getUnsuccessfulReason() {
 		if ( $this->isCanceled() ) {

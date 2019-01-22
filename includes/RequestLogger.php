@@ -49,6 +49,14 @@ class RequestLogger {
 	private $extraPayload = [];
 
 	/**
+	 * @return bool True when logs have been generated during the current
+	 *  php execution.
+	 */
+	public function hasQueryLogs() {
+		return (bool)$this->logs;
+	}
+
+	/**
 	 * Summarizes all the requests made in this process and reports
 	 * them along with the test they belong to.
 	 */
@@ -190,7 +198,7 @@ class RequestLogger {
 					// populated below
 					'namespaces' => isset( $context['namespaces'] ) ? array_map( 'intval', $context['namespaces'] ) : [],
 					'suggestion' => isset( $context['suggestion'] ) ? (string)$context['suggestion'] : '',
-					'suggestionRequested' => isset( $context['suggestion'] ),
+					'suggestionRequested' => (bool)( $context['suggestionRequested'] ?? isset( $context['suggestion'] ) ),
 					'maxScore' => isset( $context['maxScore'] ) ? (float)$context['maxScore'] : -1.0,
 					'payload' => isset( $context['payload'] ) ? array_map( 'strval', $context['payload'] ) : [],
 					'hits' => isset( $context['hits'] ) ? $this->encodeHits( $context['hits'] ) : [],

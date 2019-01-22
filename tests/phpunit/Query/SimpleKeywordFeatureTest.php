@@ -7,6 +7,7 @@ use CirrusSearch\Search\SearchContext;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Query\SimpleKeywordFeature
  */
 class SimpleKeywordFeatureTest extends CirrusTestCase {
 	public function applyProvider() {

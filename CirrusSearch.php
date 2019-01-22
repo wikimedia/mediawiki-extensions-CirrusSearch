@@ -37,13 +37,13 @@ $wgExtensionCredits['other'][] = [
  */
 
 /**
- * Default cluster for read operations. This is an array key
- * mapping into $wgCirrusSearchClusters. When running multiple
- * clusters this should be pointed to the closest cluster, and
- * can be pointed at an alternate cluster during downtime.
+ * Default cluster for read operations. This refers to the cluster group from
+ * $wgCirrusSearchSearchClusters.  When running multiple clusters this should
+ * be pointed to the closest cluster, and can be pointed at an alternate
+ * cluster during downtime.
  *
- * As a form of backwards compatibility the existence of
- * $wgCirrusSearchServers will override all cluster configuration.
+ * As a form of backwards compatibility the existence of $wgCirrusSearchServers
+ * will override all cluster configuration.
  */
 $wgCirrusSearchDefaultCluster = 'default';
 
@@ -56,6 +56,11 @@ $wgCirrusSearchDefaultCluster = 'default';
  * ElasticaWrite job, unless $wgCirrusSearchWriteClusters is
  * configured (see below).
  *
+ * The list of addresses can additionally contain 'replica' and
+ * 'group' keys for controlling multi-cluster operations. By default
+ * 'replica' takes the value of the array key and 'group' is set
+ * to 'default'. For more information see docs/multi_cluster.txt.
+ *
  * $wgCirrusSearchClusters = array(
  * 	'dc-foo' => array( 'es01.foo.local', 'es02.foo.local' ),
  * 	'dc-bar' => array( 'es01.bar.local', 'es02.bar.local' ),
@@ -66,12 +71,28 @@ $wgCirrusSearchClusters = [
 ];
 
 /**
- * List of clusters that can be used for writing. Must be a subset of keys
- * from $wgCirrusSearchClusters.
- * By default or when set to null, all keys of $wgCirrusSearchClusters are
- * available for writing.
+ * List of clusters that can be used for writing. Must be a subset of cluster
+ * groups from $wgCirrusSearchClusters. By default or when set to null, all
+ * configured cluster groups are available for writing.
  */
 $wgCirrusSearchWriteClusters = null;
+
+/**
+ * Replica group the current wiki belongs to. This can be either a
+ * string for constant assignment, or a configuration array specifying
+ * a strategy for choosing the replica group. This should not be changed
+ * except in advanced multi-wiki configurations. For more information
+ * see docs/multi_cluster.txt.
+ */
+$wgCirrusSearchReplicaGroup = 'default';
+
+/**
+ * When true search queries will have their index name prepended with an
+ * elasticsearch cross-cluster-search identifier if the indices reside on a
+ * replica group separate from the host wiki.  This only applies to full text
+ * search queries, as they are the only ones that support cross-wiki search.
+ */
+$wgCirrusSearchCrossClusterSearch = false;
 
 /**
  * How many times to attempt connecting to a given server
@@ -88,7 +109,7 @@ $wgCirrusSearchConnectionAttempts = 1;
  *  'cluster2' => array( 'content' => 3, 'general' => 3 ),
  * );
  */
-$wgCirrusSearchShardCount = [ 'content' => 4, 'general' => 4, 'titlesuggest' => 4 ];
+$wgCirrusSearchShardCount = [ 'content' => 4, 'general' => 4, 'archive' => 4, 'titlesuggest' => 4 ];
 
 /**
  * Number of replicas Elasticsearch can expand or contract to. This allows for
@@ -253,11 +274,11 @@ $wgCirrusSearchNamespaceMappings = [];
  * results until the job is done.
  *
  * NOTE Part Three: Removing an index from here will stop generating update
- * jobs, but jobs already enqueued will run to completion. If there is a
- * corresponding $wgCirrusSearchExtraIndexClusters configuration it should not
- * be removed until the job queue is cleared, or the jobs will attempt to write
- * to the cluster(s) of the local wiki, potentially creating new indices if
- * elasticsearch has auto_create_index enabled.
+ * jobs, but jobs already enqueued will run to completion.
+ *
+ * NOTE Part Four: When using a multi cluster (wgCirrusSearchReplicaGroup) setup
+ * you can prefix with the remote cross cluster name. E.g for an index named "bar"
+ * hosted on the "foo" cluster the index name as declared here should be 'foo:bar'.
  *
  * Example:
  *   $wgCirrusSearchExtraIndexes = [
@@ -267,29 +288,18 @@ $wgCirrusSearchNamespaceMappings = [];
 $wgCirrusSearchExtraIndexes = [];
 
 /**
- * Define cluster mappings for indices in $wgCirrusSearchExtraIndexes. Extra
- * indexes may live on separate cluster(s) from the cluster(s) this wiki lives
- * on. The mapping is two dimensional with the first level being the name of
- * the extra index, and the second level the name of the cluster the wiki is
- * performing operations on. The value is the cluster operations should be
- * directed at. These clusters must be configured in $wgCirrusSearchClusters,
- * and $wgCirrusSearchWriteClusters must be configured to exclude them.
- *
- * NOTE: At query time this utilizes elasticsearch's cross cluster search
- * functionality. Remote clusters must be configured in elasticsearch.yml using
- * the same cluster names as in $wgCirrusSearchClusters.
+ * Define a blacklist of clusters (as seen in $wgCirrusSearchWriteClusters) to not
+ * write to. When an update triggers an Extra index update it is sometime useful
+ * to not write to a particular cluster.
  *
  * Example:
- *   $wgCirrusSearchExtraIndexClusters = [
- *       'other_index' => [
- *           'eqiad-b' => 'eqiad-a',
- *           'eqiad-c' => 'eqiad-a',
- *           'codfw-b' => 'codfw-a',
- *           'codfw-c' => 'codfw-a',
- *       ]
- *  ];
+ * $wgCirrusSearchExtraIndexClusterBlacklist = [
+ *   'other_index' => [
+ *     'wmsc-temp-replica' => true,
+ *   ]
+ * ];
  */
-$wgCirrusSearchExtraIndexClusters = [];
+$wgCirrusSearchExtraIndexClusterBlacklist = [];
 
 /**
  * Template boosts to apply to extra index queries. This is pretty much a complete
@@ -351,6 +361,8 @@ $wgCirrusSearchClientSideConnectTimeout = 5;
  * slow at this point.
  */
 $wgCirrusSearchSearchShardTimeout = [
+	'comp_suggest' => '5s',
+	'prefix' => '5s',
 	'default' => '20s',
 	'regex' => '120s',
 ];
@@ -361,6 +373,8 @@ $wgCirrusSearchSearchShardTimeout = [
  * partial results.
  */
 $wgCirrusSearchClientSideSearchTimeout = [
+	'comp_suggest' => 10,
+	'prefix' => 10,
 	'default' => 40,
 	'regex' => 240,
 ];
@@ -709,11 +723,6 @@ $wgCirrusSearchFetchConfigFromApi = false;
 $wgCirrusSearchInterwikiSources = [];
 
 /**
- * How long to cache interwiki search results for (in seconds)
- */
-$wgCirrusSearchInterwikiCacheTime = 7200;
-
-/**
  * Set the order of crossproject side boxes
  * Possible values:
  * - static: output crossproject results in the order provided
@@ -727,6 +736,16 @@ $wgCirrusSearchCrossProjectOrder = 'static';
  * Profiles to control ordering of blocks of CrossProject searchresults.
  */
 $wgCirrusSearchCrossProjectBlockScorerProfiles = [];
+
+/**
+ * Read timeout (in seconds) for HTTP requests done to another wiki API
+ */
+$wgCirrusSearchInterwikiHTTPTimeout = 10;
+
+/**
+ * Connection timeout (in seconds) for HTTP requests done to another wiki API
+ */
+$wgCirrusSearchInterwikiHTTPConnectTimeout = 5;
 
 /**
  * The seconds Elasticsearch will wait to batch index changes before making
@@ -1121,7 +1140,6 @@ $wgCirrusSearchInterwikiThreshold = 3;
  *
  * CirrusSearch\LanguageDetector\HttpAccept - uses the first language in the
  *  Accept-Language header that is not the current content language.
- * CirrusSearch\LanguageDetector\ElasticSearch - uses the elasticsearch lang-detect plugin
  * CirrusSearch\LanguageDetector\TextCat - uses TextCat library
  */
 $wgCirrusSearchLanguageDetectors = [];
@@ -1164,6 +1182,9 @@ $wgCirrusSearchMasterTimeout = '30s';
  * for a bi-hourly schedule (--refresh-freq=7200).
  * Setting $wgCirrusSearchSanityCheck to false will prevent the script from
  * pushing new jobs even if it's still scheduled by cron.
+ *
+ * By default all writable clusters are checked, set its value to a list of
+ * clusters to exclude some of them.
  */
 $wgCirrusSearchSanityCheck = true;
 
@@ -1245,7 +1266,8 @@ $wgCirrusSearchIgnoreOnWikiBoostTemplates = false;
 $wgCirrusSearchDevelOptions = [];
 
 /**
- * Aliases for file types in filtype: search.
+ * Aliases for file types in filtype: search. The array keys must
+ * all be lowercased, or they will not match.
  * Example:
  * $wgCirrusSearchFiletypeAliases = [
  *  'jpg' => 'bitmap',
@@ -1310,7 +1332,10 @@ $wgHooks[ 'PageContentInsertComplete' ][] = 'CirrusSearch\Hooks::onPageContentIn
 /**
  * i18n
  */
-$wgMessagesDirs['CirrusSearch'] = __DIR__ . '/i18n';
+$wgMessagesDirs['CirrusSearch'] = [
+	__DIR__ . '/i18n',
+	__DIR__ . '/i18n/api',
+];
 
 /**
  * Jobs

@@ -109,14 +109,16 @@ class RescoreBuilder {
 	private function buildRescoreQuery( array $rescoreDef ) {
 		switch ( $rescoreDef['type'] ) {
 		case self::FUNCTION_SCORE_TYPE:
-			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'] );
+			$funcChain = new FunctionScoreChain( $this->context, $rescoreDef['function_chain'],
+				$rescoreDef['function_chain_overrides'] ?? [] );
 			return $funcChain->buildRescoreQuery();
 		case self::LTR_TYPE:
 			return $this->buildLtrQuery( $rescoreDef['model'] );
 		case self::PHRASE:
 			return $this->context->getPhraseRescoreQuery();
 		default:
-			throw new InvalidRescoreProfileException( "Unsupported rescore query type: " . $rescoreDef['type'] );
+			throw new InvalidRescoreProfileException(
+				"Unsupported rescore query type: " . $rescoreDef['type'] );
 		}
 	}
 
@@ -191,21 +193,17 @@ class RescoreBuilder {
 	/**
 	 * Inspect requested namespaces and return the supported profile
 	 *
-	 * @param string|array $profileName
+	 * @param string $profileName
 	 * @return array the supported rescore profile.
 	 * @throws InvalidRescoreProfileException
 	 */
 	private function getSupportedProfile( $profileName ) {
-		if ( is_array( $profileName ) ) {
-			$profile = $profileName;
-			$profileName = '__provided__';
-		} else {
-			$profile = $this->context->getConfig()
-				->getProfileService()
-				->loadProfileByName( SearchProfileService::RESCORE, $profileName );
-			if ( !is_array( $profile ) ) {
-				throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
-			}
+		$profile = $this->context->getConfig()
+			->getProfileService()
+			->loadProfileByName( SearchProfileService::RESCORE, $profileName );
+		if ( !is_array( $profile ) ) {
+			throw new InvalidRescoreProfileException(
+				"Invalid fallback profile, must be array: $profileName" );
 		}
 
 		$seen = [];
@@ -237,7 +235,8 @@ class RescoreBuilder {
 					->getProfileService()
 					->loadProfileByName( SearchProfileService::RESCORE,  $profileName );
 				if ( !is_array( $profile ) ) {
-					throw new InvalidRescoreProfileException( "Invalid fallback profile, must be array: $profileName" );
+					throw new InvalidRescoreProfileException(
+						"Invalid fallback profile, must be array: $profileName" );
 				}
 				continue;
 			}
@@ -268,7 +267,8 @@ class RescoreBuilder {
 				}
 				break;
 			default:
-				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces should be 'all', 'content' or an array of namespaces" );
+				throw new InvalidRescoreProfileException( "Invalid rescore profile: supported_namespaces " .
+					"should be 'all', 'content' or an array of namespaces" );
 			}
 		} else {
 			$profileNs = $profile['supported_namespaces'];

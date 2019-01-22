@@ -4,6 +4,7 @@ namespace CirrusSearch\Job;
 
 use CirrusSearch\Connection;
 use CirrusSearch\ExternalIndex;
+use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Updater;
 use CirrusSearch\SearchConfig;
 use Job as MWJob;
@@ -192,7 +193,7 @@ abstract class Job extends MWJob {
 	protected function decideClusters() {
 		$cluster = $this->params['cluster'] ?? null;
 		if ( $cluster === null ) {
-			$clusterNames = $this->searchConfig->getWritableClusters();
+			$clusterNames = $this->searchConfig->getClusterAssignment()->getWritableClusters();
 		} elseif ( $this->searchConfig->canWriteToCluster( $cluster ) ) {
 			$clusterNames = [ $cluster ];
 		} else {
@@ -209,18 +210,24 @@ abstract class Job extends MWJob {
 			throw new \RuntimeException( "Received {$this->command} job for an unwritable cluster $cluster." );
 		}
 
+		$config = $this->searchConfig;
 		if ( isset( $this->params['external-index'] ) ) {
-			// When the OtherIndex functionality is writing to an external index it is
-			// allowable that the provided cluster is not in the current list of writable
-			// clusters. This simply accepts the chosen cluster at face value.
-			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['other-index'] );
-			foreach ( $clusterNames as $i => $name ) {
-				$clusterNames[$i] = $otherIndex->getWriteCluster( $name );
+			$otherIndex = new ExternalIndex( $this->searchConfig, $this->params['external-index'] );
+			if ( $otherIndex->getCrossClusterName() !== null ) {
+				// We assume that the cluster configs is mostly shared across cluster groups
+				// e.g. this group config is available in CirrusSearchClusters
+				// So that changing the CirrusSearchReplicaGroup to the CrossClusterName of the external
+				// index we build the correct config to write to desired replica group.
+				$config = new HashSearchConfig( [ 'CirrusSearchReplicaGroup' => $otherIndex->getCrossClusterName() ],
+					[ 'inherited' ], $config );
 			}
+			$clusterNames = array_filter( $clusterNames, function ( $cluster ) use ( $otherIndex ) {
+				return !$otherIndex->isClusterBlacklisted( $cluster );
+			} );
 		}
 
-		$conns = Connection::getClusterConnections( $clusterNames, $this->searchConfig );
-		$timeout = $this->searchConfig->get( 'CirrusSearchClientSideUpdateTimeout' );
+		$conns = Connection::getClusterConnections( $clusterNames, $config );
+		$timeout = $config->get( 'CirrusSearchClientSideUpdateTimeout' );
 		foreach ( $conns as $connection ) {
 			$connection->setTimeout( $timeout );
 		}

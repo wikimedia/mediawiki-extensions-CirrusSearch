@@ -46,7 +46,8 @@ class CompletionSuggesterTest extends CirrusTestCase {
 			// hook for setting user preference by default is run too early
 			// and have set this to "fuzzy"
 			$config->getProfileService()
-				->loadProfileByName( SearchProfileService::COMPLETION, $config->get( 'CirrusSearchCompletionSettings' ) ),
+				->loadProfileByName( SearchProfileService::COMPLETION,
+					$config->get( 'CirrusSearchCompletionSettings' ) ),
 			$limit
 		);
 
@@ -211,7 +212,8 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		$suggest = $completion->build( $query, [] )->toArray()['suggest'];
 		$profiles = $completion->getMergedProfiles();
 		// Unused profiles are kept
-		$this->assertEquals( count( $config->getProfileService()->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
+		$this->assertEquals( count( $config->getProfileService()
+			->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' )['fst'] ), count( $profiles ) );
 		// Never run more than 4 suggest query (without variants)
 		$this->assertTrue( count( $suggest ) <= 4 );
 		// small queries
@@ -287,7 +289,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 		for ( $i = 1; $i <= $max; $i++ ) {
 			$score = $max - $i;
 			$suggestions[] = [
-				'_id' => $i.'t',
+				'_id' => $i . 't',
 				'text' => "Title$i",
 				'_score' => $score,
 			];
@@ -337,5 +339,51 @@ class CompletionSuggesterTest extends CirrusTestCase {
 				5, 200, null, null, 0, 50
 			],
 		];
+	}
+
+	/**
+	 * test bad responses caused by:
+	 * https://github.com/elastic/elasticsearch/issues/32467
+	 */
+	public function testBadResponseOnFetchFailure() {
+		$suggestions = [];
+		for ( $i = 1; $i <= 10; $i ++ ) {
+			$suggestions[] = [
+				'text' => "Title$i",
+			];
+		}
+
+		$suggestData = [
+			[
+				'prefix' => 'Tit',
+				'options' => $suggestions
+			]
+		];
+
+		$data = [
+			'suggest' => [
+				'plain' => $suggestData,
+				'plain_fuzzy_2' => $suggestData,
+				'plain_stop' => $suggestData,
+				'plain_stop_fuzzy_2' => $suggestData,
+			],
+		];
+		$resp = new ResultSet( new Response( $data ), new Query(), [] );
+
+		$config = new HashSearchConfig( [
+			'CirrusSearchCompletionSettings' => 'fuzzy',
+		] );
+		$builder =
+			new CompSuggestQueryBuilder( new SearchContext( $config ), $config->getProfileService()
+				->loadProfileByName( SearchProfileService::COMPLETION, 'fuzzy' ), 10, 0 );
+		$builder->build( "ignored", null );
+		$collector = new CompletionResultsCollector( $builder->getLimit(), 0 );
+		try {
+			$builder->postProcess( $collector, $resp, "wiki_titlesuggest" );
+			$this->fail( "Reading an invalid response should produce an exception" );
+		} catch ( \Elastica\Exception\RuntimeException $re ) {
+			$this->assertEquals( "Invalid response returned from the backend (probable shard failure " .
+				"during the fetch phase)", $re->getMessage() );
+		}
 	}
 }

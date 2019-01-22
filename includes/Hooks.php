@@ -22,7 +22,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RequestContext;
 use ApiUsageException;
-use UsageException;
 use User;
 use WebRequest;
 use WikiPage;
@@ -106,16 +105,25 @@ class Hooks {
 		self::overrideMoreLikeThisOptionsFromMessage();
 
 		if ( $request ) {
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize, $request, 'cirrusPhraseWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost, $request, 'cirrusPhraseBoost' );
-			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ], $request, 'cirrusPhraseSlop', 10 );
-			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize, $request, 'cirrusFunctionWindow', 10000 );
-			self::overrideNumeric( $wgCirrusSearchFragmentSize, $request, 'cirrusFragmentSize', 1000 );
-			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ], $request, 'cirrusUseAllFields' );
-			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester, $request, 'cirrusUseCompletionSuggester' );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreWindowSize,
+				$request, 'cirrusPhraseWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchPhraseRescoreBoost,
+				$request, 'cirrusPhraseBoost' );
+			self::overrideNumeric( $wgCirrusSearchPhraseSlop[ 'boost' ],
+				$request, 'cirrusPhraseSlop', 10 );
+			self::overrideNumeric( $wgCirrusSearchFunctionRescoreWindowSize,
+				$request, 'cirrusFunctionWindow', 10000 );
+			self::overrideNumeric( $wgCirrusSearchFragmentSize,
+				$request, 'cirrusFragmentSize', 1000 );
+			self::overrideYesNo( $wgCirrusSearchAllFields[ 'use' ],
+				$request, 'cirrusUseAllFields' );
+			self::overrideYesNo( $wgCirrusSearchUseCompletionSuggester,
+				$request, 'cirrusUseCompletionSuggester' );
 			self::overrideMoreLikeThisOptions( $request );
-			self::overrideSecret( $wgCirrusSearchLogElasticRequests, $wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
-			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage, $request, 'cirrusAltLanguage' );
+			self::overrideSecret( $wgCirrusSearchLogElasticRequests,
+				$wgCirrusSearchLogElasticRequestsSecret, $request, 'cirrusLogElasticRequests', false );
+			self::overrideYesNo( $wgCirrusSearchEnableAltLanguage,
+				$request, 'cirrusAltLanguage' );
 		}
 	}
 
@@ -129,7 +137,13 @@ class Hooks {
 	 * @param int|null $limit
 	 * @param bool $upperLimit
 	 */
-	private static function overrideNumeric( &$dest, WebRequest $request, $name, $limit = null, $upperLimit = true ) {
+	private static function overrideNumeric(
+		&$dest,
+		WebRequest $request,
+		$name,
+		$limit = null,
+		$upperLimit = true
+	) {
 		Util::overrideNumeric( $dest, $request, $name, $limit, $upperLimit );
 	}
 
@@ -271,14 +285,20 @@ class Hooks {
 			$wgCirrusSearchMoreLikeThisMaxQueryTermsLimit,
 			$wgCirrusSearchMoreLikeThisFields;
 
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_doc_freq'], $request, 'cirrusMltMinDocFreq' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'], $request, 'cirrusMltMaxDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_doc_freq'],
+			$request, 'cirrusMltMinDocFreq' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_doc_freq'],
+			$request, 'cirrusMltMaxDocFreq' );
 		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_query_terms'],
 			$request, 'cirrusMltMaxQueryTerms', $wgCirrusSearchMoreLikeThisMaxQueryTermsLimit );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'], $request, 'cirrusMltMinTermFreq' );
-		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'], $request, 'cirrusMltMinimumShouldMatch' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_length'], $request, 'cirrusMltMinWordLength' );
-		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'], $request, 'cirrusMltMaxWordLength' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_term_freq'],
+			$request, 'cirrusMltMinTermFreq' );
+		self::overrideMinimumShouldMatch( $wgCirrusSearchMoreLikeThisConfig['minimum_should_match'],
+			$request, 'cirrusMltMinimumShouldMatch' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['min_word_length'],
+			$request, 'cirrusMltMinWordLength' );
+		self::overrideNumeric( $wgCirrusSearchMoreLikeThisConfig['max_word_length'],
+			$request, 'cirrusMltMaxWordLength' );
 		$fields = $request->getVal( 'cirrusMltFields' );
 		if ( isset( $fields ) ) {
 			$wgCirrusSearchMoreLikeThisFields = array_intersect(
@@ -427,7 +447,7 @@ class Hooks {
 				$linksUpdate->getRemovedLinks(), $wgCirrusSearchUnlinkedArticlesToUpdate ),
 		];
 		// Prioritize jobs that are triggered from a web process.  This should prioritize
-		// single page update jobs over those triggered by template changes.
+		// single page update jobs over those triggered by template changes or the saneitizer.
 		if ( PHP_SAPI != 'cli' ) {
 			$params[ 'prioritize' ] = true;
 		}
@@ -471,7 +491,21 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function prefixSearchExtractNamespace( &$namespaces, &$search ) {
-		$searcher = new Searcher( self::getConnection(), 0, 1, self::getConfig(), $namespaces );
+		return self::prefixSearchExtractNamespaceWithConnection( self::getConnection(), $namespaces, $search );
+	}
+
+	/**
+	 * @param Connection $connection
+	 * @param array &$namespaces
+	 * @param string &$search
+	 * @return bool
+	 */
+	public static function prefixSearchExtractNamespaceWithConnection(
+		Connection $connection,
+		&$namespaces,
+		&$search
+	) {
+		$searcher = new Searcher( $connection, 0, 1, $connection->getConfig(), $namespaces );
 		$searcher->updateNamespacesFromQuery( $search );
 		$namespaces = $searcher->getSearchContext()->getNamespaces();
 		return false;
@@ -483,7 +517,6 @@ class Hooks {
 	 * @param null|Title &$titleResult resulting match.  A Title if we found something, unchanged otherwise.
 	 * @return bool return false if we find something, true otherwise so mediawiki can try its default behavior
 	 * @throws ApiUsageException
-	 * @throws UsageException
 	 */
 	public static function onSearchGetNearMatch( $term, &$titleResult ) {
 		global $wgContLang;
@@ -495,7 +528,8 @@ class Hooks {
 
 		$user = RequestContext::getMain()->getUser();
 		// Ask for the first 50 results we see.  If there are more than that too bad.
-		$searcher = new Searcher( self::getConnection(), 0, 50, self::getConfig(), [ $title->getNamespace() ], $user );
+		$searcher = new Searcher(
+			self::getConnection(), 0, 50, self::getConfig(), [ $title->getNamespace() ], $user );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$searcher->updateNamespacesFromQuery( $term );
 		} else {
@@ -505,11 +539,6 @@ class Hooks {
 		try {
 			$status = $searcher->nearMatchTitleSearch( $term );
 		} catch ( ApiUsageException $e ) {
-			if ( defined( 'MW_API' ) ) {
-				throw $e;
-			}
-			return true;
-		} catch ( UsageException $e ) {
 			if ( defined( 'MW_API' ) ) {
 				throw $e;
 			}
@@ -677,17 +706,17 @@ class Hooks {
 	 * @return bool
 	 */
 	public static function onAPIAfterExecute( $module ) {
-		if ( !( $module instanceof ApiOpenSearch ) ) {
+		if ( !ElasticsearchIntermediary::hasQueryLogs() ) {
 			return true;
 		}
-
-		$types = ElasticsearchIntermediary::getQueryTypesUsed();
-		if ( !$types ) {
-			return true;
-		}
-
 		$response = $module->getContext()->getRequest()->response();
-		$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
+		$response->header( 'X-Search-ID: ' . Util::getRequestSetToken() );
+		if ( $module instanceof ApiOpenSearch ) {
+			$types = ElasticsearchIntermediary::getQueryTypesUsed();
+			if ( $types ) {
+				$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
+			}
+		}
 		return true;
 	}
 
@@ -720,14 +749,46 @@ class Hooks {
 	public static function onGetPreferences( $user, &$prefs ) {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
-		if ( !empty( $profiles ) && count( $profiles ) > 1 ) {
-			$prefs['cirrussearch-pref-completion-profile'] = [
-				'class' => HTMLCompletionProfileSettings::class,
-				'section' => 'searchoptions/completion',
-				'profiles' => $profiles
-			];
+		if ( empty( $profiles ) ) {
+			return true;
 		}
+		$options = self::autoCompleteOptionsForPreferences( $profiles );
+		if ( !$options ) {
+			return true;
+		}
+		$prefs['cirrussearch-pref-completion-profile'] = [
+			'type' => 'radio',
+			'section' => 'searchoptions/completion',
+			'options' => $options,
+			'label-message' => 'cirrussearch-pref-completion-profile-help',
+		];
 		return true;
+	}
+
+	private static function autoCompleteOptionsForPreferences( array $profiles ): array {
+		$available = [];
+		foreach ( $profiles as $profile ) {
+			$available[] = $profile['name'];
+		}
+		// Order in which we propose comp suggest profiles
+		$preferredOrder = [
+			'fuzzy',
+			'fuzzy-subphrases',
+			'strict',
+			'normal',
+			'normal-subphrases',
+			'classic'
+		];
+		$messages = [];
+		foreach ( $preferredOrder as $name ) {
+			if ( in_array( $name, $available ) ) {
+				$display = wfMessage( "cirrussearch-completion-profile-$name-pref-name" )->escaped()
+					. '<br>' . wfMessage( "cirrussearch-completion-profile-$name-pref-desc" )->escaped();
+				$messages[$display] = $name;
+			}
+		}
+		// At least 2 choices are required to provide the user a choice
+		return count( $messages ) >= 2 ? $messages : [];
 	}
 
 	public static function onUserGetDefaultOptions( &$defaultOptions ) {
@@ -759,7 +820,11 @@ class Hooks {
 		);
 		$container->defineService( SearchProfileServiceFactory::SERVICE_NAME,
 			function ( MediaWikiServices $serviceContainer ) {
-				return new SearchProfileServiceFactory();
+				$config = $serviceContainer->getConfigFactory()
+					->makeConfig( 'CirrusSearch' );
+				/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
+				return new SearchProfileServiceFactory( $serviceContainer
+					->getService( InterwikiResolver::SERVICE ), $config );
 			}
 		);
 	}
@@ -810,7 +875,17 @@ class Hooks {
 	 * @param int $flags
 	 * @param Revision $revision
 	 */
-	public static function onPageContentInsertComplete( WikiPage $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision ) {
+	public static function onPageContentInsertComplete(
+		WikiPage $wikiPage,
+		$user,
+		$content,
+		$summary,
+		$isMinor,
+		$isWatch,
+		$section,
+		$flags,
+		$revision
+	) {
 		global $wgCirrusSearchInstantIndexNew;
 		if ( empty( $wgCirrusSearchInstantIndexNew ) ) {
 			return;

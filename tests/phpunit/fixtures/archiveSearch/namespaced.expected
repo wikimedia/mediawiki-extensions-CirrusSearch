@@ -1,5 +1,6 @@
 {
-    "description": "archive search for '{query}'",
+    "description": "archive search for 'Content'",
+    "path": "wiki_archive\/archive\/_search",
     "params": {
         "timeout": "20s",
         "search_type": "dfs_query_then_fetch"

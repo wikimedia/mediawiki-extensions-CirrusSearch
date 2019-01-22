@@ -35,7 +35,7 @@ class PrefixNode extends ParsedNode {
 	/**
 	 * @param Visitor $visitor
 	 */
-	function accept( Visitor $visitor ) {
+	public function accept( Visitor $visitor ) {
 		$visitor->visitPrefixNode( $this );
 	}
 }

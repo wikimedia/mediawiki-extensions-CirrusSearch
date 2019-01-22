@@ -30,16 +30,15 @@ class SearchConfig implements \Config {
 	];
 
 	/**
+	 * @var SearchConfig Configuration of host wiki.
+	 */
+	private $hostConfig;
+
+	/**
 	 * Override settings
 	 * @var Config
 	 */
 	private $source;
-
-	/**
-	 * Wiki variables prefix.
-	 * @var string
-	 */
-	protected $prefix = '';
 
 	/**
 	 * Wiki id or null for current wiki
@@ -48,16 +47,9 @@ class SearchConfig implements \Config {
 	private $wikiId;
 
 	/**
-	 * @var string[]|null writable clusters (lazy loaded, call
-	 * getWritableClusters() instead of direct access)
+	 * @var Assignment\ClusterAssignment|null
 	 */
-	private $writableClusters;
-
-	/**
-	 * @var string[]|null clusters available (lazy loaded, call
-	 * getAvailableClusters() instead of direct access)
-	 */
-	private $availableClusters;
+	private $clusters;
 
 	/**
 	 * @var SearchProfileService|null
@@ -65,28 +57,47 @@ class SearchConfig implements \Config {
 	private $profileService;
 
 	/**
-	 * Create new search config for current or other wiki.
-	 * NOTE: if loading another wiki config the list of variables extracted
-	 * is:
-	 *   - all globals with a prefix 'wgCirrus'
-	 *   - all non cirrus vars defined in self::$nonCirrusVars
-	 * Make sure to update this array when new vars are needed or you may encounter
-	 * issues when running queries on external wiki such as TextCat lang detection
-	 * see CirrusSearch::searchTextSecondTry().
-	 *
-	 * @param string|null $overrideName DB name for the wiki
+	 * Create new search config for the current wiki.
 	 */
-	public function __construct( $overrideName = null ) {
-		if ( $overrideName && $overrideName != wfWikiID() ) {
-			$this->wikiId = $overrideName;
-			$this->source = new \HashConfig( $this->getConfigVars( $overrideName, self::CIRRUS_VAR_PREFIX ) );
-			$this->prefix = 'wg';
-			// Re-create language object
-			$this->source->set( 'wgContLang', \Language::factory( $this->source->get( 'wgLanguageCode' ) ) );
-			return;
-		}
+	public function __construct() {
 		$this->source = new \GlobalVarConfig();
 		$this->wikiId = wfWikiID();
+		// The only ability to mutate SearchConfig is via a protected method, setSource.
+		// As long as we have an instance of SearchConfig it must then be the hostConfig.
+		$this->hostConfig = static::class === self::class ? $this : new SearchConfig();
+	}
+
+	/**
+	 * This must be delayed until after construction is complete. Before then
+	 * subclasses could change out the configuration we see.
+	 *
+	 * @return Assignment\ClusterAssignment
+	 */
+	private function createClusterAssignment(): Assignment\ClusterAssignment {
+		// Configuring CirrusSearchServers enables "easy mode" which assumes
+		// everything happens inside a single elasticsearch cluster.
+		if ( $this->has( 'CirrusSearchServers' ) ) {
+			return new Assignment\ConstantAssignment(
+				$this->get( 'CirrusSearchServers' ) );
+		} else {
+			return new Assignment\MultiClusterAssignment( $this );
+		}
+	}
+
+	public function getClusterAssignment(): Assignment\ClusterAssignment {
+		if ( $this->clusters === null ) {
+			$this->clusters = $this->createClusterAssignment();
+		}
+		return $this->clusters;
+	}
+
+	/**
+	 * Reset any cached state so testing can ensures changes to global state
+	 * are reflected here. Only public for use from phpunit.
+	 */
+	public function clearCachesForTesting() {
+		$this->profileService = null;
+		$this->clusters = null;
 	}
 
 	/**
@@ -100,29 +111,10 @@ class SearchConfig implements \Config {
 	}
 
 	/**
-	 * Get search config vars from other wiki's config
-	 *
-	 * Public for unit test purpose only.
-	 *
-	 * @param string $wiki Target wiki
-	 * @param string $prefix Cirrus variables prefix
-	 * @return array
+	 * @return SearchConfig Configuration of the host wiki.
 	 */
-	public function getConfigVars( $wiki, $prefix ) {
-		global $wgConf;
-
-		$cirrusVars = array_filter( array_keys( $GLOBALS ),
-				function ( $key ) use( $prefix ) {
-					if ( !isset( $GLOBALS[$key] ) || is_object( $GLOBALS[$key] ) ) {
-						return false;
-					}
-					return strncmp( $key, $prefix, strlen( $prefix ) ) === 0;
-				}
-		);
-		$cirrusVars = array_merge( $cirrusVars, self::$nonCirrusVars );
-		// Hack to work around https://phabricator.wikimedia.org/T111441
-		putenv( 'REQUEST_METHOD' );
-		return $wgConf->getConfig( $wiki, $cirrusVars );
+	public function getHostWikiConfig(): SearchConfig {
+		return $this->hostConfig;
 	}
 
 	/**
@@ -130,7 +122,7 @@ class SearchConfig implements \Config {
 	 * @return bool
 	 */
 	public function has( $name ) {
-		return $this->source->has( $this->prefix . $name );
+		return $this->source->has( $name );
 	}
 
 	/**
@@ -138,10 +130,10 @@ class SearchConfig implements \Config {
 	 * @return mixed
 	 */
 	public function get( $name ) {
-		if ( !$this->source->has( $this->prefix . $name ) ) {
+		if ( !$this->source->has( $name ) ) {
 			return null;
 		}
-		$value = $this->source->get( $this->prefix . $name );
+		$value = $this->source->get( $name );
 		if ( $name === self::INDEX_BASE_NAME && $value === self::WIKI_ID_MAGIC_WORD ) {
 			return $this->getWikiId();
 		}
@@ -253,26 +245,7 @@ class SearchConfig implements \Config {
 	 */
 	protected function setSource( Config $source ) {
 		$this->source = $source;
-	}
-
-	/**
-	 * @return string[] array of all the cluster names defined in this config
-	 */
-	public function getAvailableClusters() {
-		if ( $this->availableClusters === null ) {
-			$this->initClusterConfig();
-		}
-		return $this->availableClusters;
-	}
-
-	/**
-	 * @return string[] array of all the clusters allowed to receive write operations
-	 */
-	public function getWritableClusters() {
-		if ( $this->writableClusters === null ) {
-			$this->initClusterConfig();
-		}
-		return $this->writableClusters;
+		$this->clusters = null;
 	}
 
 	/**
@@ -287,33 +260,7 @@ class SearchConfig implements \Config {
 	 * @return bool
 	 */
 	public function canWriteToCluster( $cluster ) {
-		return in_array( $cluster, $this->getWritableClusters() );
-	}
-
-	/**
-	 * Check if this cluster is defined.
-	 * NOTE: this cluster may not be available for writes.
-	 *
-	 * @param string $cluster
-	 * @return bool
-	 */
-	public function clusterExists( $cluster ) {
-		return in_array( $cluster, $this->getAvailableClusters() );
-	}
-
-	/**
-	 * Initialization of availableClusters and writableClusters
-	 */
-	private function initClusterConfig() {
-		$this->availableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
-		if ( $this->has( 'CirrusSearchWriteClusters' ) ) {
-			$this->writableClusters = $this->get( 'CirrusSearchWriteClusters' );
-			if ( is_null( $this->writableClusters ) ) {
-				$this->writableClusters = array_keys( $this->get( 'CirrusSearchClusters' ) );
-			}
-		} else {
-			$this->writableClusters = $this->availableClusters;
-		}
+		return in_array( $cluster, $this->getClusterAssignment()->getWritableClusters() );
 	}
 
 	/**

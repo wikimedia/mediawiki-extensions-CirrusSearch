@@ -82,7 +82,8 @@ class CompletionSearchProfileRepositoryTest extends CirrusTestCase {
 
 		// Without subphrases the normal-subphrases is visible
 		$config = new HashSearchConfig( $configArray );
-		$repo = CompletionSearchProfileRepository::fromFile( 'my_type', 'my_repo', __DIR__ . '/../../../profiles/SuggestProfiles.config.php', $config );
+		$repo = CompletionSearchProfileRepository::fromFile( 'my_type', 'my_repo',
+			__DIR__ . '/../../../profiles/SuggestProfiles.config.php', $config );
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_repo', $repo->repositoryName() );
 		$this->assertTrue( $repo->hasProfile( 'fuzzy' ) );

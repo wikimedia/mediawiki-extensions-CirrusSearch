@@ -26,6 +26,7 @@ use CirrusSearch\SearchConfig;
  * @covers \CirrusSearch\Parser\AST\EmptyQueryNode
  * @covers \CirrusSearch\Parser\AST\WildcardNode
  * @covers \CirrusSearch\Parser\AST\FuzzyNode
+ * @covers \CirrusSearch\Parser\AST\NamespaceHeaderNode
  * @covers \CirrusSearch\Parser\QueryParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\PhraseQueryParser
  * @covers \CirrusSearch\Parser\QueryStringRegex\NonPhraseParser
@@ -93,6 +94,10 @@ class QueryStringRegexParserTest extends CirrusTestCase {
 		}
 		$unittests = [];
 		foreach ( $tests as $test => $data ) {
+			if ( !isset( $data['expected'] ) ) {
+				$this->fail( "Expected data not found for test $test, please regenerate this fixture " .
+					"file by setting REGEN_PARSER_TESTS=$filename" );
+			}
 			$unittests[$test] = [
 				$data['expected'],
 				$data['query'],

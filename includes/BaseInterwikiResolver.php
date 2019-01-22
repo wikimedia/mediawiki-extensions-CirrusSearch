@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use BagOStuff;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -36,17 +37,30 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	private $interwikiLookup;
 
 	/**
+	 * @var BagOStuff
+	 */
+	private $cache;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
+	 * @param BagOStuff|null $cache Cache object for caching repeated requests
 	 */
-	public function __construct( SearchConfig $config, MultiHttpClient $client = null ) {
+	public function __construct( SearchConfig $config, MultiHttpClient $client = null, BagOStuff $cache = null ) {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
 		if ( $client === null ) {
-			$client = new MultiHttpClient( [] );
+			$client = new MultiHttpClient( [
+				'connTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPConnectTimeout' ),
+				'reqTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPTimeout' )
+			] );
+		}
+		if ( $cache === null ) {
+			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
 		}
 		$this->httpClient = $client;
 		$this->interwikiLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
+		$this->cache = $cache;
 	}
 
 	/**
@@ -96,7 +110,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			return [];
 		}
 		list( $wiki, $prefix ) = $wikiAndPrefix;
-		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'siteConfSearchConfig' ] );
+		return $this->loadConfigFromAPI( [ $prefix => $wiki ], [ 'load-cont-lang' ], [ $this, 'minimalSearchConfig' ] );
 	}
 
 	/** @return array[] */
@@ -149,19 +163,18 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				}
 				$api = isset( $parts['scheme'] ) ? $parts['scheme'] : 'http';
 				$api .= '://' . $parts['host'];
-				$api .= isset( $parts['port'] ) ? ':' + $parts['port'] : '';
+				$api .= isset( $parts['port'] ) ? ':' . $parts['port'] : '';
 				$api .= '/w/api.php';
 			}
 			$endpoints[$prefix] = [ 'url' => $api, 'wiki' => $wiki ];
 		}
 
 		if ( !empty( $endpoints ) ) {
-			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
 			$prefixes = array_keys( $endpoints );
 			asort( $prefixes );
 			$cacheKey = implode( '-', $prefixes );
-			$configs = $cache->getWithSetCallback(
-				$cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
+			$configs = $this->cache->getWithSetCallback(
+				$this->cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
 				self::CONFIG_CACHE_TTL,
 				function () use ( $endpoints ) {
 					return $this->sendConfigDumpRequest( $endpoints );
@@ -220,7 +233,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 						'wiki' => $endpoints[$prefix]['wiki'],
 						'url' => $endpoints[$prefix]['url'],
 						'httpstatus' => $response['response']['code'],
-						'clienterror' => $response['error']
+						'clienterror' => $response['response']['error']
 					]
 				);
 				continue;
@@ -273,15 +286,5 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			],
 			array_merge( [ 'inherit' ], $hashConfigFlags )
 		);
-	}
-
-	/**
-	 * Full config loaded with SiteConfiguration ($wgConf)
-	 * @param string $wiki
-	 * @param string[] $hashConfigFlags constructor flags (ignored)
-	 * @return SearchConfig
-	 */
-	protected function siteConfSearchConfig( $wiki, array $hashConfigFlags ) {
-		return new SearchConfig( $wiki );
 	}
 }

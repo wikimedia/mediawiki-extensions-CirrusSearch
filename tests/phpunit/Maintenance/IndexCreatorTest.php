@@ -33,9 +33,8 @@ class IndexCreatorTest extends CirrusTestCase {
 	 */
 	public function testCreateIndex( $rebuild, $maxShardsPerNode, Response $response ) {
 		$index = $this->getIndex( $response );
-		$analysisConfigBuilder = $this->getAnalysisConfigBuilder();
 
-		$indexCreator = new IndexCreator( $index, $analysisConfigBuilder );
+		$indexCreator = new IndexCreator( $index, [], [] );
 
 		$status = $indexCreator->createIndex(
 			$rebuild,
@@ -75,11 +74,5 @@ class IndexCreatorTest extends CirrusTestCase {
 			->will( $this->returnValue( $response ) );
 
 		return $index;
-	}
-
-	private function getAnalysisConfigBuilder() {
-		return $this->getMockBuilder( 'CirrusSearch\Maintenance\AnalysisConfigBuilder' )
-			->disableOriginalConstructor()
-			->getMock();
 	}
 }

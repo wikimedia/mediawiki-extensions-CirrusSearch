@@ -28,7 +28,6 @@ class SuggestIndex extends \ApiBase {
 		// and probably should be eventually replaced with something more sane.
 		$updaterScript = "extensions/CirrusSearch/maintenance/updateSuggesterIndex.php";
 		$this->getResult()->addValue( null, 'result',
-			/** @suppress PhanDeprecatedFunction this is a test-only api call. */
 			wfShellExecWithStderr( "unset REQUEST_METHOD; /usr/local/bin/mwscript $updaterScript --wiki " . wfWikiID() )
 		);
 	}

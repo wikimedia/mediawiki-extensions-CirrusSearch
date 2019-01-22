@@ -72,6 +72,12 @@ class EscaperTest extends CirrusTestCase {
 			[ 'he', 'מַ"כִּית', 'מַ\"כִּית' ],
 			[ 'he', 'הוּא שִׂרְטֵט עַיִ"ן', 'הוּא שִׂרְטֵט עַיִ\"ן' ],
 			[ 'he', '"הוּא שִׂרְטֵט עַיִ"ן"', '"הוּא שִׂרְטֵט עַיִ\"ן"' ],
+			// If a term is quoted then it must have escaped
+			// the gershayim, and we have to respect that.
+			[ 'he', '"אומ\\"ץ"', '"אומ\\"ץ"' ],
+			// Ideally in the un-quoted case we would still escape
+			// the \, but doesn't work.
+			// [ 'he', 'אומ\\"ץ', 'אומ\\\\"ץ' ],
 		];
 	}
 

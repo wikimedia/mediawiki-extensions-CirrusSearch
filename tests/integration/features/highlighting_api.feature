@@ -109,12 +109,12 @@ Feature: Highlighting
   @references
   Scenario: References ([1]) don't appear in highlighted text
     When I api search for Reference Text Highlight Test
-    Then *Reference* *Text*   foo   baz   bar is the highlighted snippet of the first api search result
+    Then *Reference* *Text* foo baz bar is the highlighted snippet of the first api search result
 
   @references
   Scenario: References are highlighted if you search for them
     When I api search for Reference foo bar baz Highlight Test
-    Then *Reference* Text   *foo*   *baz*   *bar* is the highlighted snippet of the first api search result
+    Then *Reference* Text *foo* *baz* *bar* is the highlighted snippet of the first api search result
 
   @programmer_friendly
   Scenario: camelCase is highlighted correctly

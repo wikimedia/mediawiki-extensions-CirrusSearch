@@ -137,6 +137,8 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 				// issue similar to
 				// https://github.com/elastic/elasticsearch/pull/11158
 				// can be removed with es5 if we want
+				// note that icu_folding can introduce empty tokens, so
+				// maybe it is best to leave this in place
 				"remove_empty" => [
 					"type" => "length",
 					"min" => 1,
@@ -229,15 +231,11 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 			// T102298 ignore combining acute / stress accents
 			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0301=>';
 
-			// The Russian analyzer is also used for Ukrainian and Rusyn for now, so processing that's
-			// very specific to Russian should be separated out
-			if ( $language === 'ru' ) {
-				// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
-				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0451=>\u0435';
-				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0401=>\u0415';
-				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
-				$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
-			}
+			// T124592 fold ё=>е and Ё=>Е, precomposed or with combining diacritic
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0451=>\u0435';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0401=>\u0415';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0435\u0308=>\u0435';
+			$config[ 'char_filter' ][ 'word_break_helper' ][ 'mappings' ][] = '\u0415\u0308=>\u0415';
 			break;
 		}
 

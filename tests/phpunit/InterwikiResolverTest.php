@@ -14,10 +14,11 @@ use CirrusSearch\InterwikiResolverFactory;
 
 /**
  * @group CirrusSearch
- * @covers CirrusSearch\CirrusConfigInterwikiResolver
- * @covers CirrusSearch\SiteMatrixInterwikiResolver
- * @covers CirrusSearch\InterwikiResolverFactory
- * @covers CirrusSearch\EmptyInterwikiResolver
+ * @covers \CirrusSearch\CirrusConfigInterwikiResolver
+ * @covers \CirrusSearch\SiteMatrixInterwikiResolver
+ * @covers \CirrusSearch\BaseInterwikiResolver
+ * @covers \CirrusSearch\InterwikiResolverFactory
+ * @covers \CirrusSearch\EmptyInterwikiResolver
  */
 class InterwikiResolverTest extends CirrusTestCase {
 	public function testCirrusConfigInterwikiResolver() {
@@ -239,12 +240,23 @@ class InterwikiResolverTest extends CirrusTestCase {
 		];
 	}
 
-	public function testLoadConfigFromAPI() {
+	public function testLoadConfigForCrossProject() {
+		$this->setMwGlobals( [ 'wgCirrusSearchRescoreProfile' => 'test_inheritance' ] );
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
 			$this->markTestSkipped( 'SiteMatrix not available.' );
 		}
-
-		$apiResponse = CirrusTestCase::loadFixture( 'configDump/enwiki_sisterproject_configs.json' );
+		$fixtureFile = 'configDump/enwiki_sisterproject_configs.json';
+		if ( !CirrusTestCase::hasFixture( $fixtureFile ) ) {
+			$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
+			if ( $createIfMissing ) {
+				CirrusTestCase::saveFixture( $fixtureFile, $this->genSisterProjectFixtures() );
+				$this->markTestSkipped();
+				return;
+			} else {
+				$this->fail( 'Missing fixture file ' . $fixtureFile );
+			}
+		}
+		$apiResponse = CirrusTestCase::loadFixture( $fixtureFile );
 
 		$client = $this->getMockBuilder( '\MultiHttpClient' )
 			->disableOriginalConstructor()
@@ -252,11 +264,93 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$client->expects( $this->any() )
 			->method( 'runMulti' )
 			->will( $this->returnValue( $apiResponse ) );
-		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [ 'b' ], [], $client );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
 		$configs = $resolver->getSisterProjectConfigs();
+
 		$this->assertEquals( array_keys( $configs ), array_keys( $resolver->getSisterProjectPrefixes() ) );
-		$this->assertEquals( $configs['q']->getWikiId(), 'enwikiquote' );
-		$this->assertEquals( $configs['q']->get( 'CirrusSearchIndexBaseName' ), 'enwikiquote' );
+
+		$wikis = [
+			'enwiktionary' => true,
+			'enwikiversity' => true,
+			'enwikivoyage' => true,
+			'enwikinews' => false,
+			'enwikibooks' => false,
+			'enwikiquote' => false,
+			'enwikisource' => false,
+		];
+		foreach ( $wikis as $wikiId => $validConfig ) {
+			$prefix = $resolver->getInterwikiPrefix( $wikiId );
+			$this->assertNotNull( $prefix, "$wikiId does not seem to exist" );
+			$this->assertArrayHasKey( $prefix, $configs,
+				"config for $wikiId is available" );
+			$this->assertEquals( $configs[$prefix]->getWikiId(), $wikiId,
+				"config $wikiId has valid wikiId" );
+			$this->assertEquals( $wikiId, $configs[$prefix]->get( 'CirrusSearchIndexBaseName' ),
+				"config for $wikiId has valid CirrusSearchIndexBaseName" );
+			$this->assertEquals( !$validConfig,
+				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ) === 'test_inheritance',
+				"config for $wikiId is" . ( !$validConfig ? " not" : "" ) .
+				" rescued using a fallback config" );
+		}
+	}
+
+	public function provideTestLoadConfigForCrossLang() {
+		return [
+			'enwiki loads frwiki config properly' => [ true ],
+			'enwiki loads frwiki config and fails' => [ false ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestLoadConfigForCrossLang
+	 * @param bool $valid
+	 * @throws \MWException
+	 */
+	public function testLoadConfigForCrossLang( $valid ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'SiteMatrix' ) ) {
+			$this->markTestSkipped( 'SiteMatrix not available.' );
+		}
+		$this->setMwGlobals( [ 'wgCirrusSearchRescoreProfile' => 'test_inheritance' ] );
+		$fixtureFile = 'configDump/enwiki_crosslang_frwiki' . ( !$valid ? '_invalid' : '' ) . '_config.json';
+		if ( !CirrusTestCase::hasFixture( $fixtureFile ) ) {
+			$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
+			if ( $createIfMissing ) {
+				CirrusTestCase::saveFixture( $fixtureFile, $this->genFrProjectConfig( $valid ) );
+				$this->markTestSkipped();
+				return;
+			} else {
+				$this->fail( 'Missing fixture file ' . $fixtureFile );
+			}
+		}
+
+		$apiResponse = CirrusTestCase::loadFixture( $fixtureFile );
+		$client = $this->getMockBuilder( '\MultiHttpClient' )
+			->disableOriginalConstructor()
+			->getMock();
+		$client->expects( $this->any() )
+			->method( 'runMulti' )
+			->will( $this->returnValue( $apiResponse ) );
+		$resolver = $this->getSiteMatrixInterwikiResolver( 'enwiki', [], [], $client );
+		$configs = $resolver->getSameProjectConfigByLang( 'fr' );
+
+		$wikiId = "frwiki";
+		$prefix = $resolver->getInterwikiPrefix( $wikiId );
+		$this->assertNotNull( $prefix, "$wikiId does not seem to exist" );
+		$this->assertArrayHasKey( $prefix, $configs,
+			"config for $wikiId is available" );
+		$this->assertEquals( $configs[$prefix]->getWikiId(), $wikiId,
+			"config $wikiId has valid wikiId" );
+		$this->assertEquals( $wikiId, $configs[$prefix]->get( 'CirrusSearchIndexBaseName' ),
+			"config for $wikiId has valid CirrusSearchIndexBaseName" );
+		if ( $valid ) {
+			$this->assertNotEquals( 'test_inheritance',
+				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				"config for $wikiId is not rescued using a fallback config" );
+		} else {
+			$this->assertEquals( 'test_inheritance',
+				$configs[$prefix]->get( 'CirrusSearchRescoreProfile' ),
+				"config for $wikiId is rescued using a fallback config" );
+		}
 	}
 
 	/**
@@ -266,7 +360,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		$wikiId = 'enwiki';
 		$myGlobals = [
 			'wgDBprefix' => null,
-			'wgDBName' => $wikiId,
+			'wgDBname' => $wikiId,
 			'wgLanguageCode' => 'en',
 			'wgCirrusSearchInterwikiSources' => [
 				'voy' => 'enwikivoyage',
@@ -341,9 +435,10 @@ class InterwikiResolverTest extends CirrusTestCase {
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
 		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ 'inherit' ] );
+		$cache = new \EmptyBagOStuff();
 		$resolver = MediaWikiServices::getInstance()
 			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config, $client );
+			->getResolver( $config, $client, $cache );
 		$this->assertEquals( SiteMatrixInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}
@@ -367,6 +462,95 @@ class InterwikiResolverTest extends CirrusTestCase {
 			->getService( InterwikiResolverFactory::SERVICE )
 			->getResolver( $config );
 		$this->assertInstanceOf( EmptyInterwikiResolver::class, $resolver );
+	}
+
+	private function genFrProjectConfig( $valid = true ) {
+		$reqs = [
+			'fr' => [
+				'method' => 'GET',
+				'url' => 'https://fr.wikipedia.org' . ( !$valid ? '.invalid' : '' ) . '/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			]
+		];
+		// to not expose you personal IP
+		// use a proxy from vagrant e.g. webproxy on WMF infra by opening
+		// a ssh tunnel e.g.:
+		// ssh -L10.11.12.1:8765:webproxy.eqiad.wmnet:8080 XYZ.eqiad.wmnet
+		$client = new \MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
+		return $client->runMulti( $reqs );
+	}
+
+	private function genSisterProjectFixtures() {
+		$reqs = [
+			'wikt' => [
+				'method' => 'GET',
+				'url' => 'https://en.wiktionary.org/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			],
+			'n' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikinews.org.invalid/w/api.php',
+				'query' => [
+					'action' => 'cirrus-confi-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			],
+			'b' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikibooks.org:1/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			],
+			'q' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikiquote.org/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump-wont-work',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			],
+			's' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikisource.org/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'xml',
+				]
+			],
+			'v' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikiversity.org/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			],
+			'voy' => [
+				'method' => 'GET',
+				'url' => 'https://en.wikivoyage.org/w/api.php',
+				'query' => [
+					'action' => 'cirrus-config-dump',
+					'format' => 'json',
+					'formatversion' => '2',
+				]
+			]
+		];
+		$client = new \MultiHttpClient( [ 'proxy' => '10.11.12.1:8765' ] );
+		return $client->runMulti( $reqs );
 	}
 
 }

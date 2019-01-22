@@ -37,16 +37,6 @@ class EmptyResultSet extends ResultSet {
 	}
 
 	/**
-	 * Is rewriting this query OK?
-	 *
-	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.
-	 * @return bool True when rewriting this query is allowed
-	 */
-	public function isQueryRewriteAllowed( $threshold = 1 ) {
-		return false;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getTotalHits() {
@@ -110,7 +100,7 @@ class EmptyResultSet extends ResultSet {
 	 * @param string $newQuery
 	 * @param string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet=null ) {
+	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
 		throw new \Exception( "Can't rewrite empty result set" );
 	}
 

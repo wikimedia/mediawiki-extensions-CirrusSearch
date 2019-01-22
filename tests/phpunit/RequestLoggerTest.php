@@ -8,11 +8,12 @@ use CirrusSearch\CompletionSuggester;
 use CirrusSearch\Connection;
 use CirrusSearch\ElasticsearchIntermediary;
 use CirrusSearch\RequestLogger;
+use CirrusSearch\RequestLog;
+use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
 use Elastica\Request;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
-use MediaWiki\MediaWikiServices;
 use Psr\Log\AbstractLogger;
 
 /**
@@ -21,8 +22,30 @@ use Psr\Log\AbstractLogger;
  * about.
  *
  * @group CirrusSearch
+ * @covers \CirrusSearch\RequestLogger
+ * @covers \CirrusSearch\ElasticsearchIntermediary
+ * @covers \CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection()
  */
 class RequestLoggerTest extends CirrusTestCase {
+
+	public function testHasQueryLogs() {
+		// Prevent Deferred updates from running. This basically means RequestLogger is
+		// broken for cli scripts (but considered not too important).
+		$this->setMwGlobals( [
+			'wgCommandLineMode' => false,
+		] );
+		$logger = new RequestLogger();
+		$this->assertFalse( $logger->hasQueryLogs() );
+		$log = $this->getMockBuilder( RequestLog::class )->getMock();
+		foreach ( [ 'getLogVariables', 'getRequests' ] as $fn ) {
+			$log->expects( $this->any() )
+				->method( $fn )
+				->will( $this->returnValue( [] ) );
+		}
+		$logger->addRequest( $log );
+		$this->assertTrue( $logger->hasQueryLogs() );
+	}
+
 	public function requestLoggingProvider() {
 		$tests = [];
 
@@ -100,7 +123,7 @@ class RequestLoggerTest extends CirrusTestCase {
 			$this->markTestSkipped( 'Stored fixtures for query' );
 		} else {
 			// Finally check for the expected log
-			$this->assertEquals( $expectedLogs, $logs );
+			$this->assertEquals( $expectedLogs, $logs, json_encode( $logs, JSON_PRETTY_PRINT ) );
 		}
 	}
 
@@ -124,8 +147,10 @@ class RequestLoggerTest extends CirrusTestCase {
 				$offset = isset( $query['offset'] ) ? $query['offset'] : 0;
 				$limit = isset( $query['limit'] ) ? $query['limit'] : 20;
 				$namespaces = isset( $query['namespaces'] ) ? $query['namespaces'] : null;
-
-				$searchEngine = new CirrusSearch( 'wiki' );
+				$config = new CirrusSearch\HashSearchConfig(
+					[ CirrusSearch\SearchConfig::INDEX_BASE_NAME => 'wiki' ],
+					[ 'inherit' ] );
+				$searchEngine = new CirrusSearch( $config );
 				$searchEngine->setConnection( $connection );
 				$searchEngine->setLimitOffset( $limit, $offset );
 				$searchEngine->setNamespaces( $namespaces );
@@ -217,10 +242,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		// Setting everything expected for running a search request/response
 		// is a pain...just use the real deal and override the clusters config
 		// to provide our transport.
-		$config = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'CirrusSearch' );
-
+		$config = SearchConfig::newFromGlobals();
 		if ( $responses === null ) {
 			// Build up an elastica transport that will record responses
 			// so they can be stored as fixtures.
@@ -255,7 +277,12 @@ class RequestLoggerTest extends CirrusTestCase {
 			],
 		] );
 		$connection = new Connection( $config, 'default' );
-
+		$this->setTemporaryHook( 'PrefixSearchExtractNamespace',
+			function ( &$namespace, &$query ) use ( $connection ) {
+				return CirrusSearch\Hooks::prefixSearchExtractNamespaceWithConnection( $connection,
+					$namespace, $query );
+			}
+		);
 		return [ $loggers, $config, $connection, $transport ];
 	}
 

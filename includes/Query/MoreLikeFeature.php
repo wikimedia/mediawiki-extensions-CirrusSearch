@@ -12,7 +12,6 @@ use WikiPage;
 
 class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
 	const MORE_LIKE_THIS = 'morelike';
-	const MORE_LIKE_THIS_JUST_WIKIBASE = 'morelikewithwikibase';
 
 	/**
 	 * @var SearchConfig
@@ -44,7 +43,7 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 	}
 
 	protected function getKeywords() {
-		return [ self::MORE_LIKE_THIS, self::MORE_LIKE_THIS_JUST_WIKIBASE ];
+		return [ self::MORE_LIKE_THIS ];
 	}
 
 	/**
@@ -90,12 +89,7 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 		// to save cpu cycles
 		$context->setHighlightQuery( new \Elastica\Query\MatchAll() );
 
-		$wbFilter = null;
-
-		if ( $key === self::MORE_LIKE_THIS_JUST_WIKIBASE ) {
-				$wbFilter = new \Elastica\Query\Exists( 'wikibase_item' );
-		}
-		return [ $wbFilter, false ];
+		return [ null, false ];
 	}
 
 	/**

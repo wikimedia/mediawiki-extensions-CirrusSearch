@@ -181,7 +181,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "keyword",
@@ -612,7 +614,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "keyword",
@@ -1086,7 +1090,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "keyword",
@@ -1517,7 +1523,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "keyword",

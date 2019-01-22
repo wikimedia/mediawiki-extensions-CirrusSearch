@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piramidion",
+			"Ата"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "Дамп конфігурації CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Дамп конфігурації CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Отримати дамп конфігурації CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Дамп відображення CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-mapping-dump-summary": "Дамп відображення CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-mapping-dump-example": "Отримати дамп мапування CirrusSearch для цієї вікі.",
+	"apihelp-cirrus-settings-dump-description": "Дамп налаштувань CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-settings-dump-summary": "Дамп налаштувань CirrusSearch для цієї Вікі.",
+	"apihelp-cirrus-settings-dump-example": "Отримати дамп налаштувань CirrusSearch для цієї вікі.",
+	"apihelp-query+cirrusdoc-description": "Дамп документа статті CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Дамп документа статті CirrusSearch із пошукових серверів",
+	"apihelp-query+cirrusdoc-example": "Отримати дамп окремої статті CirrusSearch, як вона індексується в пошуку на поточний момент.",
+	"apihelp-query+cirrusbuilddoc-summary": "Дамп документа статті CirrusSearch із серверів бази даних",
+	"apihelp-query+cirrusbuilddoc-example": "Отримати дамп окремої статті CirrusSearch, згенерований з бази даних.",
+	"apierror-cirrus-requesttoolong": "Запит на пошук за префіксом був довшим, аніж дозволено. ($1 &gt; $2)"
+}

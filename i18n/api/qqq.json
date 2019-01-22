@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kunal Mehta",
+			"Shirayuki",
+			"Siebrand",
+			"Srolanh",
+			"Umherirrender",
+			"Dcausse",
+			"Amire80",
+			"Kghbln",
+			"Robby",
+			"Mar(c)"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "{{doc-apihelp-description|cirrus-config-dump}}",
+	"apihelp-cirrus-config-dump-summary": "{{doc-apihelp-summary|cirrus-config-dump}}",
+	"apihelp-cirrus-config-dump-example": "{{doc-apihelp-example|cirrus-config-dump}}",
+	"apihelp-cirrus-mapping-dump-description": "{{doc-apihelp-description|cirrus-mapping-dump}}",
+	"apihelp-cirrus-mapping-dump-summary": "{{doc-apihelp-summary|cirrus-mapping-dump}}",
+	"apihelp-cirrus-mapping-dump-example": "{{doc-apihelp-example|cirrus-mapping-dump}}",
+	"apihelp-cirrus-settings-dump-description": "{{doc-apihelp-description|cirrus-settings-dump}}",
+	"apihelp-cirrus-settings-dump-summary": "{{doc-apihelp-summary|cirrus-settings-dump}}",
+	"apihelp-cirrus-settings-dump-example": "{{doc-apihelp-example|cirrus-settings-dump}}",
+	"apihelp-query+cirrusdoc-description": "{{doc-apihelp-description|query+cirrusdoc}}",
+	"apihelp-query+cirrusdoc-summary": "{{doc-apihelp-summary|query+cirrusdoc}}",
+	"apihelp-query+cirrusdoc-example": "{{doc-apihelp-example|query+cirrusdoc}}",
+	"apihelp-query+cirrusbuilddoc-summary": "{{doc-apihelp-summary|query+cirrusbuilddoc}}",
+	"apihelp-query+cirrusbuilddoc-example": "{{doc-apihelp-example|query+cirrusbuilddoc}}",
+	"apierror-cirrus-requesttoolong": "{{doc-apierror}}\n\nParameters:\n* $1 - Submitted request length\n* $2 - Maximum allowed request length"
+}

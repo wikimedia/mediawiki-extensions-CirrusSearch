@@ -37,7 +37,7 @@ class DeleteArchive extends Job {
 		$updater->deletePages(
 			[ $this->title ],
 			array_keys( $docs ),
-			Connection::GENERAL_INDEX_TYPE,
+			Connection::ARCHIVE_INDEX_TYPE,
 			Connection::ARCHIVE_TYPE_NAME
 		);
 

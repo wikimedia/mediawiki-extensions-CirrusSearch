@@ -7,6 +7,7 @@ use SearchIndexField;
 
 /**
  * @group CirrusSearch
+ * @covers \SearchIndexField
  */
 class SearchFieldsTest extends CirrusTestCase {
 

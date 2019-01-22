@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
 use MediaWiki\MediaWikiServices;
@@ -67,6 +68,7 @@ class SearcherTest extends CirrusTestCase {
 	public function testSearchText( array $config, $expected, $queryString ) {
 		// Override some config for parsing purposes
 		$this->setMwGlobals( $config + [
+			// We want to override the wikiid for consistent output, but this might break everything else...
 			'wgCirrusSearchExtraIndexes' => [],
 			'wgCirrusSearchExtraIndexBoostTemplates' => [],
 			'wgCirrusSearchIndexBaseName' => 'wiki',
@@ -110,7 +112,7 @@ class SearcherTest extends CirrusTestCase {
 		$linkCache->addGoodLinkObj( 12345, Title::newFromText( 'Some page' ) );
 		$linkCache->addGoodLinkObj( 23456, Title::newFromText( 'Other page' ) );
 
-		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new \CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		// Set some default namespaces, otherwise installed extensions will change
 		// the generated query
 		$engine->setNamespaces( [
@@ -127,8 +129,6 @@ class SearcherTest extends CirrusTestCase {
 		// regenerating the fixture wont cause changes. Do it always, instead of only when
 		// writing, so that the diff's from phpunit are also as minimal as possible.
 		$elasticQuery = $this->normalizeOrdering( $elasticQuery );
-		// The actual name of the index may vary, and doesn't really matter
-		unset( $elasticQuery['path'] );
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
@@ -136,7 +136,6 @@ class SearcherTest extends CirrusTestCase {
 		} else {
 			// Repeat normalizations applied to $elasticQuery
 			$expected = $this->normalizeNow( $expected );
-			unset( $expected['path'] );
 
 			// Finally compare some things
 			$this->assertEquals( $expected, $elasticQuery, $encodedQuery );
@@ -151,6 +150,12 @@ class SearcherTest extends CirrusTestCase {
 	 */
 	private static $CONFIG_VARS_FALSE_POSITIVES = [
 		'CirrusSearchFetchConfigFromApi', // Should not be needed to build a crosswiki search
+		'DBname',
+		'SiteMatrixSites',
+		'CirrusSearchInterwikiPrefixOverrides',
+		'CirrusSearchCrossClusterSearch', // We explicitly want this to fall through to local wiki conf
+		'CirrusSearchInterwikiHTTPConnectTimeout', // Needed to fetch crosswiki config
+		'CirrusSearchInterwikiHTTPTimeout' // Needed to fetch crosswiki config
 	];
 
 	private function assertConfigIsExported() {
@@ -170,8 +175,10 @@ class SearcherTest extends CirrusTestCase {
 					}
 				}
 			}
-			$this->assertEmpty( $notInApi, implode( ',', $notInApi ) . " are exported from \CirrusSearch\Api\ConfigDump" );
-			$this->assertEmpty( $notInSearchConfig, implode( ',', $notInSearchConfig ) . " are allowed in SearchConfig::getNonCirrusConfigVarNames()" );
+			$this->assertEmpty( $notInApi, implode( ',', $notInApi ) .
+				" are exported from \CirrusSearch\Api\ConfigDump" );
+			$this->assertEmpty( $notInSearchConfig, implode( ',', $notInSearchConfig ) .
+				" are allowed in SearchConfig::getNonCirrusConfigVarNames()" );
 		} finally {
 			SearchConfigUsageDecorator::resetUsedConfigKeys();
 		}
@@ -250,19 +257,16 @@ class SearcherTest extends CirrusTestCase {
 			$termMain = $query;
 		}
 
-		$engine = new \CirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine = new \CirrusSearch( null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
 		$engine->setLimitOffset( 20, 0 );
 		$engine->setNamespaces( [ $ns ] );
 		$elasticQuery = $engine->searchArchiveTitle( $termMain )->getValue();
 		$decodedQuery = json_decode( $elasticQuery, true );
-		unset( $decodedQuery['path'] );
 
 		if ( is_string( $expected ) ) {
 			// Flag to generate a new fixture.
 			CirrusTestCase::saveFixture( $expected, $decodedQuery );
 		} else {
-			// Repeat normalizations applied to $elasticQuery
-			unset( $expected['path'] );
 
 			// Finally compare some things
 			$this->assertEquals( $expected, $decodedQuery, $elasticQuery );
@@ -295,6 +299,43 @@ class SearcherTest extends CirrusTestCase {
 		$searcher->applyDebugOptionsToQuery( $query );
 		$this->assertFalse( $query->hasParam( 'explain' ) );
 	}
+
+	public function provideTestOffsetLimitBounds() {
+		return [
+			'ok' => [
+				5000, 5000,
+				[ 5000, 5000 ]
+			],
+			'out of bounds but repairable' => [
+				5000, 5001,
+				[ 5000, 5000 ]
+			],
+			'out of bounds non repairable' => [
+				10000, 10,
+				[ 10000, 0 ]
+			],
+			'out of bounds non repairable (2)' => [
+				10010, 10,
+				[ 10010, -10 ]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestOffsetLimitBounds
+	 */
+	public function testOffsetLimitBounds( $offset, $limit, $expected ) {
+		$conf = new HashSearchConfig( [], [ 'inherit' ] );
+		$searcher = new Searcher( new DummyConnection( $conf ), $offset, $limit, $conf );
+		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
+		$searcher = new Searcher( new DummyConnection( $conf ), 0, 20, $conf );
+		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $conf, 'test' )
+			->setDebugOptions( CirrusDebugOptions::forDumpingQueriesInUnitTests() )
+			->setOffset( $offset )
+			->setLimit( $limit );
+		$searcher->search( $query->build() );
+		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
+	}
 }
 
 class SearchConfigUsageDecorator extends SearchConfig {
@@ -304,7 +345,7 @@ class SearchConfigUsageDecorator extends SearchConfig {
 		$val = parent::get( $name );
 		// Some config vars are objects.. (e.g. wgContLang)
 		if ( !is_object( $val ) ) {
-			static::$usedConfigKeys[$this->prefix . $name] = true;
+			static::$usedConfigKeys[$name] = true;
 		}
 		return $val;
 	}

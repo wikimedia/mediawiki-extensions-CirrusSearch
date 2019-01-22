@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\LanguageDetector\TextCat;
 use CirrusSearch\LanguageDetector\HttpAccept;
 
@@ -24,20 +25,74 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers CirrusSearch\LanguageDetector\LanguageDetectorFactory
  * @covers CirrusSearch\LanguageDetector\TextCat
  * @covers CirrusSearch\LanguageDetector\HttpAccept
  */
 class LanguageDetectTest extends CirrusTestCase {
 
 	/**
-	 * @var \CirrusSearch
+	 * @var string
 	 */
-	private $cirrus;
+	private $textCatModelBaseDir;
+
+	public function provideTestFactory() {
+		return [
+			'empty' => [ [ 'CirrusSearchLanguageDetectors' => [] ], [] ],
+			'textcat only' => [
+				[
+					'CirrusSearchLanguageDetectors' => [
+						'textcat' => TextCat::class
+					]
+				],
+				[ 'textcat' => TextCat::class ]
+			],
+			'textcat first' => [
+				[
+					'CirrusSearchLanguageDetectors' => [
+						'textcat' => TextCat::class,
+						'accept-lang' => HttpAccept::class,
+					]
+				],
+				[
+					'textcat' => TextCat::class,
+					'accept-lang' => HttpAccept::class,
+				]
+			],
+			'accept-lang first' => [
+				[
+					'CirrusSearchLanguageDetectors' => [
+						'accept-lang' => HttpAccept::class,
+						'textcat' => TextCat::class,
+					]
+				],
+				[
+					'accept-lang' => HttpAccept::class,
+					'textcat' => TextCat::class,
+				]
+			],
+			'bad setup does not blow-up' => [
+				[
+					'CirrusSearchLanguageDetectors' => [
+						'meh' => 'this.class.does.not.exist.Detector',
+						'Title can do many things' => \Title::class,
+					],
+				],
+				[]
+			]
+		];
+	}
 
 	/**
-	 * @var TextCat
+	 * @dataProvider provideTestFactory
 	 */
-	private $textcat;
+	public function testFactory( $config, $exepected ) {
+		$factory = new LanguageDetectorFactory( new HashSearchConfig( $config ), new \FauxRequest() );
+		$actual = array_map( function ( $v ) {
+			return get_class( $v );
+		}, $factory->getDetectors() );
+		$this->assertEquals( $exepected, $actual );
+	}
 
 	/**
 	 * data provided is: text, lang1, lang2
@@ -64,8 +119,8 @@ class LanguageDetectTest extends CirrusTestCase {
 
 	public function setUp() {
 		parent::setUp();
-		$this->cirrus = new \CirrusSearch();
-		$this->textcat = new TextCat();
+		$tc = new \ReflectionClass( 'TextCat' );
+		$this->textCatModelBaseDir = dirname( $tc->getFileName() );
 	}
 
 	/**
@@ -75,16 +130,16 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param string $ignore
 	 */
 	public function testTextCatDetector( $text, $language, $ignore ) {
-		$tc = new \ReflectionClass( 'TextCat' );
-		$this->setMwGlobals( [
-			'wgCirrusSearchTextcatModel' => [
-				dirname( $tc->getFileName() )."/LM-query/",
-				dirname( $tc->getFileName() )."/LM/"
+		$config = new HashSearchConfig( [
+			'CirrusSearchTextcatModel' => [
+				$this->textCatModelBaseDir . "/LM-query/",
+				$this->textCatModelBaseDir . "/LM/"
 			],
-			'wgCirrusSearchTextcatLanguages' => null,
-			'wgCirrusSearchTextcatConfig' => null,
+			'CirrusSearchTextcatLanguages' => null,
+			'CirrusSearchTextcatConfig' => null,
 		] );
-		$detect = $this->textcat->detect( $this->cirrus, $text );
+		$textcat = new TextCat( $config );
+		$detect = $textcat->detect( $text );
 		$this->assertEquals( $language, $detect );
 	}
 
@@ -95,12 +150,11 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param string $language
 	 */
 	public function testTextCatDetectorWithParams( $text, $ignore, $language ) {
-		$tc = new \ReflectionClass( 'TextCat' );
-		$this->setMwGlobals( [
+		$config = new HashSearchConfig( [
 			// only use one language model directory in old non-array format
-			'wgCirrusSearchTextcatModel' => dirname( $tc->getFileName() )."/LM-query/",
-			'wgCirrusSearchTextcatLanguages' => [ 'en', 'es', 'de', 'he', 'uk' ],
-			'wgCirrusSearchTextcatConfig' => [
+			'CirrusSearchTextcatModel' => $this->textCatModelBaseDir . "/LM-query/",
+			'CirrusSearchTextcatLanguages' => [ 'en', 'es', 'de', 'he', 'uk' ],
+			'CirrusSearchTextcatConfig' => [
 				'maxNgrams' => 9000,
 				'maxReturnedLanguages' => 1,
 				'resultsRatio' => 1.06,
@@ -110,44 +164,23 @@ class LanguageDetectTest extends CirrusTestCase {
 				'numBoostedLangs' => 1,
 			],
 		] );
-		$detect = $this->textcat->detect( $this->cirrus, $text );
+		$textcat = new TextCat( $config );
+		$detect = $textcat->detect( $text );
 		$this->assertEquals( $language, $detect );
 	}
 
 	public function testTextCatDetectorLimited() {
-		$tc = new \ReflectionClass( 'TextCat' );
-		$this->setMwGlobals( [
-			'wgCirrusSearchTextcatModel' => [
-				dirname( $tc->getFileName() )."/LM-query/",
-				dirname( $tc->getFileName() )."/LM/"
+		$config = new HashSearchConfig( [
+			'CirrusSearchTextcatModel' => [
+				$this->textCatModelBaseDir . "/LM-query/",
+				$this->textCatModelBaseDir . "/LM/"
 			],
-			'wgCirrusSearchTextcatLanguages' => [ "en", "ru" ],
-			'wgCirrusSearchTextcatConfig' => null,
+			'CirrusSearchTextcatLanguages' => [ "en", "ru" ],
+			'CirrusSearchTextcatConfig' => null,
 		] );
-		$detect = $this->textcat->detect( $this->cirrus, "volviendose malo" );
+		$textcat = new TextCat( $config );
+		$detect = $textcat->detect( "volviendose malo" );
 		$this->assertEquals( "en", $detect );
-	}
-
-	/**
-	 * Simply test the searchTextReal $forceLocal boolean flag.
-	 * Testing the full chain seems hard so we just test that
-	 * the $forceLocal flag is running a search on the local
-	 * wiki.
-	 */
-	public function testLocalSearch() {
-		$this->setMwGlobals( [
-			'wgCirrusSearchInterwikiSources' => null,
-			'wgCirrusSearchIndexBaseName' => 'mywiki',
-			'wgCirrusSearchExtraIndexes' => [ NS_FILE => [ 'externalwiki_file' ] ],
-		] );
-		$cirrus = new MyCirrusSearch( null, null, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
-		$cirrus->setNamespaces( [ NS_FILE ] );
-		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig(), true )->getValue();
-		$result = json_decode( $result, true );
-		$this->assertEquals( 'mywiki_general/page/_search', $result['path'] );
-		$result = $cirrus->mySearchTextReal( 'hello', $cirrus->getConfig() )->getValue();
-		$result = json_decode( $result, true );
-		$this->assertEquals( 'mywiki_general,externalwiki_file/page/_search', $result['path'] );
 	}
 
 	public function getHttpLangs() {
@@ -169,26 +202,11 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @param string $result
 	 */
 	public function testHttpAcceptDetector( $content, $http, $result ) {
-		$detector = new TestHttpAccept();
+		$request = new \FauxRequest();
+		$request->setHeader( 'Accept-Language', implode( ';', $http ) );
+		$detector = HttpAccept::build( new HashSearchConfig( [ 'LanguageCode' => $content ] ), $request );
 
-		$detector->setLanguages( $content, $http );
-		$detect = $detector->detect( $this->cirrus, "test" );
+		$detect = $detector->detect( "test" );
 		$this->assertEquals( $result, $detect );
-	}
-}
-
-class TestHttpAccept extends HttpAccept {
-	function setLanguages( $content, $http ) {
-		$this->wikiLang = $content;
-		$this->httpLang = $http;
-	}
-}
-
-/**
- * Just a simple wrapper to access the protected method searchTextReal
- */
-class MyCirrusSearch extends \CirrusSearch {
-	public function mySearchTextReal( $term, SearchConfig $config = null, $forceLocal = false ) {
-		return $this->searchTextReal( $term, $config, $forceLocal );
 	}
 }

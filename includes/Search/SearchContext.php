@@ -5,7 +5,9 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\ExternalIndex;
 use CirrusSearch\OtherIndexes;
+use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Profile\SearchProfileService;
+use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
 use CirrusSearch\Search\Rescore\RescoreBuilder;
 use CirrusSearch\SearchConfig;
@@ -36,7 +38,7 @@ use Elastica\Query\AbstractQuery;
  * The SearchContext stores the various states maintained
  * during the query building process.
  */
-class SearchContext implements WarningCollector {
+class SearchContext implements WarningCollector, FilterBuilder {
 	/**
 	 * @var SearchConfig
 	 */
@@ -53,7 +55,12 @@ class SearchContext implements WarningCollector {
 	private $profileContext = SearchProfileService::CONTEXT_DEFAULT;
 
 	/**
-	 * @var string|array rescore profile to use
+	 * @var array
+	 */
+	private $profileContextParams = [];
+
+	/**
+	 * @var string rescore profile to use
 	 */
 	private $rescoreProfile;
 
@@ -219,7 +226,6 @@ class SearchContext implements WarningCollector {
 	 */
 	public function __construct( SearchConfig $config, array $namespaces = null, CirrusDebugOptions $options = null ) {
 		$this->config = $config;
-		/** @suppress PhanDeprecatedProperty */
 		$this->namespaces = $namespaces;
 		$this->debugOptions = $options ?? CirrusDebugOptions::defaultOptions();
 		$this->loadConfig();
@@ -295,25 +301,29 @@ class SearchContext implements WarningCollector {
 
 	/**
 	 * @param string $profileContext
+	 * @param string[] $contextParams
 	 */
-	public function setProfileContext( $profileContext ) {
-		$this->isDirty = $this->isDirty || $this->profileContext !== $profileContext;
+	public function setProfileContext( $profileContext, array $contextParams = [] ) {
+		$this->isDirty = $this->isDirty ||
+			$this->profileContext !== $profileContext ||
+			$this->profileContextParams !== $contextParams;
 		$this->profileContext = $profileContext;
+		$this->profileContextParams = $contextParams;
 	}
 
 	/**
-	 * @return string|array the rescore profile to use
+	 * @return string the rescore profile to use
 	 */
 	public function getRescoreProfile() {
 		if ( $this->rescoreProfile === null ) {
 			$this->rescoreProfile = $this->config->getProfileService()
-				->getProfileName( SearchProfileService::RESCORE, $this->profileContext );
+				->getProfileName( SearchProfileService::RESCORE, $this->profileContext, $this->profileContextParams );
 		}
 		return $this->rescoreProfile;
 	}
 
 	/**
-	 * @param string|array $rescoreProfile the rescore profile to use
+	 * @param string $rescoreProfile the rescore profile to use
 	 */
 	public function setRescoreProfile( $rescoreProfile ) {
 		$this->isDirty = true;
@@ -400,19 +410,6 @@ class SearchContext implements WarningCollector {
 		arsort( $this->syntaxUsed );
 		// Return the first heaviest syntax
 		return key( $this->syntaxUsed );
-	}
-
-	/**
-	 * @return int maximum complexity of the syntax used in search
-	 */
-	public function getSearchComplexity() {
-		if ( empty( $this->syntaxUsed ) ) {
-			return 1;
-		}
-		arsort( $this->syntaxUsed );
-
-		// Return the first heaviest syntax
-		return reset( $this->syntaxUsed );
 	}
 
 	/**
@@ -566,7 +563,7 @@ class SearchContext implements WarningCollector {
 		} else {
 			$mainQuery = new \Elastica\Query\BoolQuery();
 			if ( $this->mainQuery ) {
-				$mainQuery ->addMust( $this->mainQuery );
+				$mainQuery->addMust( $this->mainQuery );
 			}
 			foreach ( $this->nonTextQueries as $nonTextQuery ) {
 				$mainQuery->addMust( $nonTextQuery );
@@ -721,7 +718,7 @@ class SearchContext implements WarningCollector {
 	 * @param string|null $param2
 	 * @param string|null $param3
 	 */
-	public function addWarning( $message, $param1 = null,  $param2 = null, $param3 = null ) {
+	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
 		$this->isDirty = true;
 		$this->warnings[] = array_filter( func_get_args(), function ( $v ) {
 			return $v !== null;
@@ -845,5 +842,66 @@ class SearchContext implements WarningCollector {
 	 */
 	public function getDebugOptions() {
 		return $this->debugOptions;
+	}
+
+	/**
+	 * NOTE: public for testing purposes.
+	 * @return AbstractQuery[]
+	 */
+	public function getFilters(): array {
+		return $this->filters;
+	}
+
+	/**
+	 * @param AbstractQuery $query
+	 */
+	public function must( AbstractQuery $query ) {
+		$this->addFilter( $query );
+	}
+
+	/**
+	 * @param AbstractQuery $query
+	 */
+	public function mustNot( AbstractQuery $query ) {
+		$this->addNotFilter( $query );
+	}
+
+	/**
+	 * Builds a SearchContext based on a SearchQuery.
+	 *
+	 * Helper function used for building blocks that still work on top
+	 * of the SearchContext+queryString instead of SearchQuery.
+	 *
+	 * States initialized:
+	 * 	- limitSearchToLocalWiki
+	 *  - suggestion
+	 *  - custom rescoreProfile/fulltextQueryBuilderProfile
+	 *  - contextual filters: (eg. SearchEngine::$prefix)
+	 *  - SuggestPrefix (DYM prefix: ~ and/or namespace header)
+	 *
+	 * @param SearchQuery $query
+	 * @return SearchContext
+	 */
+	public static function fromSearchQuery( SearchQuery $query ) {
+		$searchContext = new SearchContext( $query->getSearchConfig(), $query->getNamespaces(), $query->getDebugOptions() );
+		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
+		$searchContext->suggestion = $query->isWithDYMSuggestion();
+
+		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
+		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
+
+		foreach ( $query->getContextualFilters() as $filter ) {
+			$filter->populate( $searchContext );
+		}
+		if ( $query->getParsedQuery()->hasCleanup( ParsedQuery::TILDE_HEADER ) ) {
+			$searchContext->addSuggestPrefix( '~' );
+		}
+		$pQuery = $query->getParsedQuery();
+		$searchContext->originalSearchTerm = $pQuery->getRawQuery();
+		$queryString = $query->getParsedQuery()->getQuery();
+		if ( $pQuery->getNamespaceHeader() !== null ) {
+			$searchContext->addSuggestPrefix( substr( $queryString, 0, $pQuery->getRoot()->getStartOffset() ) );
+		}
+		return $searchContext;
 	}
 }

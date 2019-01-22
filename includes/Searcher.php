@@ -2,6 +2,8 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Fallbacks\FallbackRunner;
+use CirrusSearch\Fallbacks\SearcherFactory;
 use CirrusSearch\MetaStore\MetaNamespaceStore;
 use CirrusSearch\Parser\FullTextKeywordRegistry;
 use CirrusSearch\Profile\SearchProfileService;
@@ -9,9 +11,11 @@ use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
 use CirrusSearch\Search\EmptyResultSet;
+use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchRequestBuilder;
 use CirrusSearch\Search\TeamDraftInterleaver;
 use CirrusSearch\Search\TitleResultsType;
@@ -22,7 +26,6 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Search;
-use Language;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use ObjectCache;
@@ -30,6 +33,7 @@ use RequestContext;
 use Status;
 use User;
 use WebRequest;
+use Wikimedia\Assert\Assert;
 
 /**
  * Performs searches using Elasticsearch.  Note that each instance of this class
@@ -50,7 +54,7 @@ use WebRequest;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  */
-class Searcher extends ElasticsearchIntermediary {
+class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	const SUGGESTION_HIGHLIGHT_PRE = '<em>';
 	const SUGGESTION_HIGHLIGHT_POST = '</em>';
 	const HIGHLIGHT_PRE_MARKER = ''; // \uE000. Can't be a unicode literal until php7
@@ -79,11 +83,6 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @var integer maximum number of result
 	 */
 	protected $limit;
-
-	/**
-	 * @var Language language of the wiki
-	 */
-	private $language;
 
 	/**
 	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
@@ -129,20 +128,54 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param CirrusDebugOptions|null $options the debugging options to use or null to use defaults
 	 * @see CirrusDebugOptions::defaultOptions()
 	 */
-	public function __construct( Connection $conn, $offset, $limit, SearchConfig $config, array $namespaces = null,
-		User $user = null, $index = false, CirrusDebugOptions $options = null
+	public function __construct(
+		Connection $conn, $offset,
+		$limit,
+		SearchConfig $config,
+		array $namespaces = null,
+		User $user = null,
+		$index = false,
+		CirrusDebugOptions $options = null
 	) {
-		parent::__construct( $conn, $user, $config->get( 'CirrusSearchSlowSearch' ), $config->get( 'CirrusSearchExtraBackendLatency' ) );
+		parent::__construct(
+			$conn,
+			$user,
+			$config->get( 'CirrusSearchSlowSearch' ),
+			$config->get( 'CirrusSearchExtraBackendLatency' )
+		);
 		$this->config = $config;
-		$this->offset = $offset;
-		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
-			$this->limit = self::MAX_OFFSET_LIMIT - $offset;
-		} else {
-			$this->limit = $limit;
-		}
+		$this->setOffsetLimit( $offset, $limit );
 		$this->indexBaseName = $index ?: $config->get( SearchConfig::INDEX_BASE_NAME );
-		$this->language = $config->get( 'ContLang' );
 		$this->searchContext = new SearchContext( $this->config, $namespaces, $options );
+	}
+
+	/**
+	 * Unified search public entry-point.
+	 *
+	 * NOTE: only fulltext search supported for now.
+	 * @param SearchQuery $query
+	 * @return Status
+	 */
+	public function search( SearchQuery $query ) {
+		$this->searchContext = SearchContext::fromSearchQuery( $query );
+		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
+		$this->config = $query->getSearchConfig();
+		$this->sort = $query->getSort();
+
+		if ( $query->getSearchEngineEntryPoint() === 'searchText' ) {
+			$this->searchContext->setResultsType( new FullTextResultsType() );
+			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
+			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
+				$runner = FallbackRunner::create( $this, $query, RequestContext::getMain()->getRequest() );
+				$newStatus = Status::newGood( $runner->run( $status->getValue() ) );
+				$newStatus->merge( $status );
+				$status = $newStatus;
+				$this->appendMetrics( $runner );
+			}
+			return $status;
+		} else {
+			throw new \RuntimeException( 'Only searchText is supported for now' );
+		}
 	}
 
 	/**
@@ -151,7 +184,6 @@ class Searcher extends ElasticsearchIntermediary {
 	public function setResultsType( $resultsType ) {
 		$this->searchContext->setResultsType( $resultsType );
 		// BC, deprecated
-		/** @suppress PhanDeprecatedProperty BC */
 		$this->resultsType = $resultsType;
 	}
 
@@ -183,6 +215,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * Perform a "near match" title search which is pretty much a prefix match without the prefixes.
 	 * @param string $term text by which to search
 	 * @return Status status containing results defined by resultsType on success
+	 * @throws \ApiUsageException
 	 */
 	public function nearMatchTitleSearch( $term ) {
 		( new NearMatchQueryBuilder() )->build( $this->searchContext, $term );
@@ -204,6 +237,7 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $term text by which to search
 	 * @param string[] $variants variants to search for
 	 * @return Status status containing results defined by resultsType on success
+	 * @throws \ApiUsageException
 	 */
 	public function prefixSearch( $term, $variants = [] ) {
 		( new PrefixSearchQueryBuilder() )->build( $this->searchContext, $term, $variants );
@@ -235,11 +269,9 @@ class Searcher extends ElasticsearchIntermediary {
 			$this->searchContext->setResultsPossible( false );
 		}
 
-		$term = Util::stripQuestionMarks( $term, $this->config->get( 'CirrusSearchStripQuestionMarks' ) );
-		// Transform Mediawiki specific syntax to filters and extra (pre-escaped) query string
-
 		$builderSettings = $this->config->getProfileService()
-			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER, $this->searchContext->getFulltextQueryBuilderProfile() );
+			->loadProfileByName( SearchProfileService::FT_QUERY_BUILDER,
+				$this->searchContext->getFulltextQueryBuilderProfile() );
 		$features = ( new FullTextKeywordRegistry( $this->config ) )->getKeywords();
 		/** @var FullTextQueryBuilder $qb */
 		$qb = new $builderSettings['builder_class'](
@@ -255,7 +287,8 @@ class Searcher extends ElasticsearchIntermediary {
 		\Hooks::run( 'CirrusSearchFulltextQueryBuilder', [ &$qb, $this->searchContext ] );
 		// Query builder could be replaced here!
 		if ( !( $qb instanceof FullTextQueryBuilder ) ) {
-			throw new RuntimeException( "Bad query builder object override, must implement FullTextQueryBuilder!" );
+			throw new RuntimeException(
+				"Bad query builder object override, must implement FullTextQueryBuilder!" );
 		}
 
 		if ( $this->offset != 0 || !$this->config->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
@@ -275,11 +308,21 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @param string $term term to search
 	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
 	 * @return Status
+	 * @deprecated Use search( SearchQuery $query )
 	 */
 	public function searchText( $term, $showSuggestion ) {
-		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
+		wfDeprecated( __METHOD__ );
 		$this->searchContext->setOriginalSearchTerm( $term );
 		$this->searchContext->setSuggestion( $showSuggestion );
+		return $this->searchTextInternal( $term );
+	}
+
+	/**
+	 * @param string $term
+	 * @return Status
+	 */
+	private function searchTextInternal( $term ) {
+		$checkLengthStatus = $this->checkTextSearchRequestLength( $term );
 		if ( !$checkLengthStatus->isOK() ) {
 			return $checkLengthStatus;
 		}
@@ -374,7 +417,7 @@ class Searcher extends ElasticsearchIntermediary {
 						'docIds' => $docIds,
 					] );
 					// Shard timeout not supported on get requests so we just use the client side timeout
-					$connection->setTimeout( $this->getClientTimeout() );
+					$connection->setTimeout( $this->getClientTimeout( 'get' ) );
 					// We use a search query instead of _get/_mget, these methods are
 					// theorically well suited for this kind of job but they are not
 					// supported on aliases with multiple indices (content/general)
@@ -414,11 +457,11 @@ class Searcher extends ElasticsearchIntermediary {
 						'query' => $name,
 					] );
 					$connection = $this->getOverriddenConnection();
-					$connection->setTimeout( $this->getClientTimeout() );
+					$connection->setTimeout( $this->getClientTimeout( 'namespace' ) );
 
 					$store = new MetaNamespaceStore( $connection, $this->config->getWikiId() );
 					$resultSet = $store->find( $name, [
-						'timeout' => $this->getTimeout(),
+						'timeout' => $this->getTimeout( 'namespace' ),
 					] );
 					return $this->success( $resultSet->getResults() );
 				} catch ( \Elastica\Exception\ExceptionInterface $e ) {
@@ -431,12 +474,13 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return \Elastica\Search
 	 */
 	protected function buildSearch() {
-		$builder = new SearchRequestBuilder( $this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
+		$builder = new SearchRequestBuilder(
+			$this->searchContext, $this->getOverriddenConnection(), $this->indexBaseName );
 		return $builder->setLimit( $this->limit )
 			->setOffset( $this->offset )
 			->setPageType( $this->pageType )
 			->setSort( $this->sort )
-			->setTimeout( $this->getTimeout() )
+			->setTimeout( $this->getTimeout( $this->searchContext->getSearchType() ) )
 			->build();
 	}
 
@@ -481,6 +525,8 @@ class Searcher extends ElasticsearchIntermediary {
 				] );
 			} else {
 				$this->searchContext->setResultsPossible( false );
+				$this->searchContext->addWarning( 'cirrussearch-offset-too-large',
+					self::MAX_OFFSET_LIMIT, $this->offset );
 				$retval = [];
 				foreach ( $searches as $key => $search ) {
 					$retval[$key] = $contextResultsType->createEmptyResult();
@@ -497,10 +543,6 @@ class Searcher extends ElasticsearchIntermediary {
 			[
 				'query' => $this->searchContext->getOriginalSearchTerm(),
 				'limit' => $this->limit ?: null,
-				// null means not requested, '' means not found. If found
-				// parent::buildLogContext will replace the '' with an
-				// actual suggestion.
-				'suggestion' => $this->searchContext->getSuggest() ? '' : null,
 				// Used syntax
 				'syntax' => $this->searchContext->getSyntaxUsed(),
 			]
@@ -527,7 +569,7 @@ class Searcher extends ElasticsearchIntermediary {
 		$search = new MultiSearch( $connection->getClient() );
 		$search->addSearches( $searches );
 
-		$connection->setTimeout( $this->getClientTimeout() );
+		$connection->setTimeout( $this->getClientTimeout( $this->searchContext->getSearchType() ) );
 
 		if ( $this->config->get( 'CirrusSearchMoreAccurateScoringMode' ) ) {
 			$search->setSearchType( \Elastica\Search::OPTION_SEARCH_TYPE_DFS_QUERY_THEN_FETCH );
@@ -565,12 +607,11 @@ class Searcher extends ElasticsearchIntermediary {
 		};
 
 		// Wrap with caching if needed, but don't cache debugging queries
-		$skipCache = $cirrusDebugOptions->isCirrusDumpResult()
-					 || $cirrusDebugOptions->getCirrusExplain();
+		$skipCache = $cirrusDebugOptions->mustNeverBeCached();
 		if ( $this->searchContext->getCacheTtl() > 0 && !$skipCache ) {
 			$work = function () use ( $work, $searches, $log, $resultsTypes, $contextResultsType ) {
 				$requestStats = MediaWikiServices::getInstance()->getStatsdDataFactory();
-				$cache = ObjectCache::getLocalClusterInstance();
+				$cache = ObjectCache::getMainWANInstance();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
 					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;
@@ -684,14 +725,23 @@ class Searcher extends ElasticsearchIntermediary {
 			// allow category intersections longer than the maximum
 			strpos( $term, 'incategory:' ) === false
 		) {
-			return Status::newFatal( 'cirrussearch-query-too-long', $this->language->formatNum( $requestLength ), $this->language->formatNum( self::MAX_TEXT_SEARCH ) );
+			/**
+			 * @var \Language $language
+			 */
+			$language = $this->config->get( 'ContLang' );
+			return Status::newFatal(
+				'cirrussearch-query-too-long',
+				$language->formatNum( $requestLength ),
+				$language->formatNum( self::MAX_TEXT_SEARCH )
+			);
 		}
 		return Status::newGood();
 	}
 
 	/**
-	 * Attempt to suck a leading namespace followed by a colon from the query string.  Reaches out to Elasticsearch to
-	 * perform normalized lookup against the namespaces.  Should be fast but for the network hop.
+	 * Attempt to suck a leading namespace followed by a colon from the query string.
+	 * Reaches out to Elasticsearch to perform normalized lookup against the namespaces.
+	 * Should be fast but for the network hop.
 	 *
 	 * @param string &$query
 	 */
@@ -734,32 +784,6 @@ class Searcher extends ElasticsearchIntermediary {
 			}
 		}
 		return 'CirrusSearch-Search';
-	}
-
-	/**
-	 * @return string search retrieval timeout
-	 */
-	private function getTimeout() {
-		if ( $this->searchContext->isSyntaxUsed( 'regex' ) ) {
-			$type = 'regex';
-		} else {
-			$type = 'default';
-		}
-
-		return $this->config->getElement( 'CirrusSearchSearchShardTimeout', $type );
-	}
-
-	/**
-	 * @return int the client side timeout
-	 */
-	private function getClientTimeout() {
-		if ( $this->searchContext->getSearchType() === 'regex' ) {
-			$type = 'regex';
-		} else {
-			$type = 'default';
-		}
-
-		return $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', $type );
 	}
 
 	/**
@@ -812,9 +836,9 @@ class Searcher extends ElasticsearchIntermediary {
 	public function processRawReturn( $result, WebRequest $request ) {
 		$header = null;
 
-		if ( $this->searchContext->getDebugOptions()->getCirrusExplain() !== null ) {
+		if ( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() !== null ) {
 			$header = 'Content-type: text/html; charset=UTF-8';
-			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplain() );
+			$printer = new ExplainPrinter( $this->searchContext->getDebugOptions()->getCirrusExplainFormat() );
 			$result = $printer->format( $result );
 		} else {
 			$header = 'Content-type: application/json; charset=UTF-8';
@@ -841,9 +865,12 @@ class Searcher extends ElasticsearchIntermediary {
 	 * @return Status<Title[]>
 	 */
 	public function searchArchive( $term ) {
+		$this->searchContext->setOriginalSearchTerm( $term );
 		$term = $this->searchContext->escaper()->fixupWholeQueryString( $term );
 		$this->setResultsType( new TitleResultsType() );
 
+		// This does not support cross-cluster search, but there is also no use case
+		// for cross-wiki archive search.
 		$this->pageType = $this->getOverriddenConnection()->getArchiveType( $this->indexBaseName );
 
 		// Setup the search query
@@ -958,5 +985,38 @@ class Searcher extends ElasticsearchIntermediary {
 	 */
 	public function applyDebugOptionsToQuery( Query $query ) {
 		return $this->searchContext->getDebugOptions()->applyDebugOptions( $query );
+	}
+
+	/**
+	 * @param SearchQuery $query
+	 * @return Searcher
+	 */
+	public function makeSearcher( SearchQuery $query ) {
+		return new self( $this->connection, $query->getOffset(), $query->getLimit(),
+			$query->getSearchConfig(), $query->getNamespaces(), $this->user,
+			null, $query->getDebugOptions() );
+	}
+
+	/**
+	 * @param int $offset
+	 * @param int $limit
+	 */
+	private function setOffsetLimit( $offset, $limit ) {
+		$this->offset = $offset;
+		if ( $offset + $limit > self::MAX_OFFSET_LIMIT ) {
+			$this->limit = self::MAX_OFFSET_LIMIT - $offset;
+		} else {
+			$this->limit = $limit;
+		}
+	}
+
+	/**
+	 * Visible for testing
+	 * @return int[] 2 elements array
+	 */
+	public function getOffsetLimit() {
+		Assert::precondition( defined( 'MW_PHPUNIT_TEST' ),
+			'getOffsetLimit must only be called for testing purposes' );
+		return [ $this->offset, $this->limit ];
 	}
 }

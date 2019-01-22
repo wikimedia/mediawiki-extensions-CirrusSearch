@@ -123,7 +123,7 @@ class CompletionResultsCollector {
 	}
 
 	/**
-	 * Test whether the the collector is full
+	 * Test whether the collector is full
 	 * @return bool true if it's full
 	 */
 	public function isFull() {

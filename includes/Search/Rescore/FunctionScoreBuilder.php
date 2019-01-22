@@ -47,7 +47,6 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	 */
 	public function __construct( $contextOrConfig, $weight ) {
 		if ( $contextOrConfig instanceof SearchContext ) {
-			/** @suppress PhanDeprecatedProperty */
 			$this->context = $contextOrConfig;
 			$this->config = $contextOrConfig->getConfig();
 		} elseif ( $contextOrConfig instanceof SearchConfig ) {

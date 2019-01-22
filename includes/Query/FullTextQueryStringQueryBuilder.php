@@ -42,7 +42,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	public function __construct( SearchConfig $config, array $features, array $settings = [] ) {
 		$this->config = $config;
 		$this->features = $features;
-		$this->useTokenCountRouter = $this->config->getElement( 'CirrusSearchWikimediaExtraPlugin', 'token_count_router' ) === true;
+		$this->useTokenCountRouter = $this->config->getElement(
+			'CirrusSearchWikimediaExtraPlugin', 'token_count_router' ) === true;
 	}
 
 	/**
@@ -197,7 +198,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		}
 		$fields = array_merge(
 			self::buildFullTextSearchFields( $searchContext, 1, '.plain', true ),
-			self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
+			self::buildFullTextSearchFields( $searchContext,
+				$this->config->get( 'CirrusSearchStemmedWeight' ), '', true ) );
 		$nearMatchFields = self::buildFullTextSearchFields( $searchContext,
 			$this->config->get( 'CirrusSearchNearMatchWeight' ), '.near_match', true );
 		$searchContext->setMainQuery( $this->buildSearchTextQuery( $searchContext, $fields, $nearMatchFields,
@@ -208,8 +210,10 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		if ( $this->config->getElement( 'CirrusSearchAllFields', 'use' ) ) {
 			$nonAllFields = array_merge(
 				self::buildFullTextSearchFields( $searchContext, 1, '.plain', false ),
-				self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
-			$nonAllQueryString = $searchContext->escaper()->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
+				self::buildFullTextSearchFields( $searchContext,
+					$this->config->get( 'CirrusSearchStemmedWeight' ), '', false ) );
+			$nonAllQueryString = $searchContext->escaper()
+				->fixupWholeQueryString( implode( ' ', $nonAllQuery ) );
 			$searchContext->setHighlightQuery(
 				$this->buildHighlightQuery( $searchContext, $nonAllFields, $nonAllQueryString, 1 )
 			);
@@ -253,7 +257,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 
 		$fields = array_merge(
 			self::buildFullTextSearchFields( $searchContext, 1, '.plain', true ),
-			self::buildFullTextSearchFields( $searchContext, $this->config->get( 'CirrusSearchStemmedWeight' ), '', true )
+			self::buildFullTextSearchFields( $searchContext,
+				$this->config->get( 'CirrusSearchStemmedWeight' ), '', true )
 		);
 
 		$searchContext->addSyntaxUsed( 'degraded_full_text' );
@@ -353,7 +358,13 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @param string $nearMatchQuery
 	 * @return \Elastica\Query\AbstractQuery
 	 */
-	protected function buildSearchTextQuery( SearchContext $searchContext, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
+	protected function buildSearchTextQuery(
+		SearchContext $searchContext,
+		array $fields,
+		array $nearMatchFields,
+		$queryString,
+		$nearMatchQuery
+	) {
 		$slop = $this->config->getElement( 'CirrusSearchPhraseSlop', 'default' );
 		$queryForMostFields = $this->buildQueryString( $fields, $queryString, $slop );
 		$searchContext->addSyntaxUsed( 'full_text_querystring', 5 );
@@ -397,7 +408,9 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
 		$option = 'max_determinized_states';
 		// Workround https://github.com/elastic/elasticsearch/issues/22722
-		if ( $this->config->getElement( 'CirrusSearchElasticQuirks', 'query_string_max_determinized_states' ) === true ) {
+		if ( $this->config->getElement(
+			'CirrusSearchElasticQuirks', 'query_string_max_determinized_states' ) === true
+		) {
 			$option = 'max_determined_states';
 		}
 		if ( isset( $states ) ) {
@@ -452,7 +465,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * @return string
 	 */
 	private static function switchSearchToExact( SearchContext $context, $term, $allFieldAllowed ) {
-		$exact = implode( ' OR ', self::buildFullTextSearchFields( $context, 1, ".plain:$term", $allFieldAllowed ) );
+		$exact = implode( ' OR ',
+			self::buildFullTextSearchFields( $context, 1, ".plain:$term", $allFieldAllowed ) );
 		return "($exact)";
 	}
 
@@ -466,7 +480,12 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 *  collecting phrases for the highlighter.
 	 * @return string[] array of fields to query
 	 */
-	private static function buildFullTextSearchFields( SearchContext $context, $weight, $fieldSuffix, $allFieldAllowed ) {
+	private static function buildFullTextSearchFields(
+		SearchContext $context,
+		$weight,
+		$fieldSuffix,
+		$allFieldAllowed
+	) {
 		$searchWeights = $context->getConfig()->get( 'CirrusSearchWeights' );
 
 		if ( $allFieldAllowed && $context->getConfig()->getElement( 'CirrusSearchAllFields', 'use' ) ) {
@@ -525,7 +544,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$result = [];
 		foreach ( $query as $queryPart ) {
 			if ( isset( $queryPart[ 'raw' ] ) ) {
-				$result = array_merge( $result, self::replacePartsOfQuery( $queryPart[ 'raw' ], $regex, $callable ) );
+				$result = array_merge( $result,
+					self::replacePartsOfQuery( $queryPart[ 'raw' ], $regex, $callable ) );
 			} else {
 				$result[] = $queryPart;
 			}

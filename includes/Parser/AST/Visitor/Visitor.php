@@ -6,6 +6,7 @@ use CirrusSearch\Parser\AST\BooleanClause;
 use CirrusSearch\Parser\AST\EmptyQueryNode;
 use CirrusSearch\Parser\AST\FuzzyNode;
 use CirrusSearch\Parser\AST\KeywordFeatureNode;
+use CirrusSearch\Parser\AST\NamespaceHeaderNode;
 use CirrusSearch\Parser\AST\NegatedNode;
 use CirrusSearch\Parser\AST\ParsedBooleanNode;
 use CirrusSearch\Parser\AST\PhrasePrefixNode;
@@ -68,8 +69,14 @@ interface Visitor {
 	 * @param EmptyQueryNode $node
 	 */
 	public function visitEmptyQueryNode( EmptyQueryNode $node );
+
 	/**
 	 * @param KeywordFeatureNode $node
 	 */
 	public function visitKeywordFeatureNode( KeywordFeatureNode $node );
+
+	/**
+	 * @param NamespaceHeaderNode $node
+	 */
+	public function visitNamespaceHeader( NamespaceHeaderNode $node );
 }

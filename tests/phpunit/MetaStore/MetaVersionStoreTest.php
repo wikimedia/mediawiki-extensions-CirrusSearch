@@ -39,7 +39,7 @@ class MetaVersionStoreTest extends \PHPUnit\Framework\TestCase {
 		$type->expects( $this->once() )
 			->method( 'addDocuments' )
 			->will( $this->returnCallback( function ( $docs ) {
-				$this->assertCount( 2, $docs );
+				$this->assertCount( 3, $docs );
 			} ) );
 		$store->updateAll( 'unittest' );
 	}

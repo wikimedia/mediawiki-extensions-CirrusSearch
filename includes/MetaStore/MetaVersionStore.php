@@ -4,6 +4,7 @@ namespace CirrusSearch\MetaStore;
 
 use CirrusSearch\Connection;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
+use CirrusSearch\Maintenance\ArchiveMappingConfigBuilder;
 use CirrusSearch\Maintenance\MappingConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterAnalysisConfigBuilder;
 use CirrusSearch\Maintenance\SuggesterMappingConfigBuilder;
@@ -63,7 +64,7 @@ class MetaVersionStore implements MetaStore {
 	 */
 	public function updateAll( $baseName ) {
 		$docs = [];
-		foreach ( $this->connection->getAllIndexTypes() as $typeName ) {
+		foreach ( $this->connection->getAllIndexTypes( null ) as $typeName ) {
 			$docs[] = self::buildDocument( $this->connection, $baseName, $typeName );
 		}
 		$this->getType()->addDocuments( $docs );
@@ -90,7 +91,7 @@ class MetaVersionStore implements MetaStore {
 			->setTerm( 'type', self::METASTORE_TYPE ) );
 		if ( $baseName !== null ) {
 			$ids = new \Elastica\Query\Ids();
-			foreach ( $this->connection->getAllIndexTypes() as $typeName ) {
+			foreach ( $this->connection->getAllIndexTypes( null ) as $typeName ) {
 				$ids->addId( self::docId( $this->connection, $baseName, $typeName ) );
 			}
 			$filter->addFilter( $ids );
@@ -114,12 +115,15 @@ class MetaVersionStore implements MetaStore {
 		if ( $typeName == Connection::TITLE_SUGGEST_TYPE ) {
 			list( $aMaj, $aMin ) = explode( '.', SuggesterAnalysisConfigBuilder::VERSION );
 			list( $mMaj, $mMin ) = explode( '.', SuggesterMappingConfigBuilder::VERSION );
+		} elseif ( $typeName === Connection::ARCHIVE_INDEX_TYPE ) {
+			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
+			list( $mMaj, $mMin ) = explode( '.', ArchiveMappingConfigBuilder::VERSION );
 		} else {
 			list( $aMaj, $aMin ) = explode( '.', AnalysisConfigBuilder::VERSION );
 			list( $mMaj, $mMin ) = explode( '.', MappingConfigBuilder::VERSION );
 		}
 		$mwInfo = new GitInfo( $IP );
-		$cirrusInfo = new GitInfo( __DIR__ .  '/../..' );
+		$cirrusInfo = new GitInfo( __DIR__ . '/../..' );
 		$docId = self::docId( $connection, $baseName, $typeName );
 		$data = [
 			'type' => self::METASTORE_TYPE,

@@ -120,9 +120,8 @@ class DataSender extends ElasticsearchIntermediary {
 	 * @param string $elasticType Mapping type to use for the document
 	 * @return Status
 	 */
-	public function sendData( $indexType, $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
-		$documentCount = count( $documents );
-		if ( $documentCount === 0 ) {
+	public function sendData( $indexType, array $documents, $elasticType = Connection::PAGE_TYPE_NAME ) {
+		if ( !$documents ) {
 			return Status::newGood();
 		}
 
@@ -205,9 +204,13 @@ class DataSender extends ElasticsearchIntermediary {
 			$documentIds = array_map( function ( $d ) {
 				return $d->getId();
 			}, $documents );
+			$logContext = [ 'docId' => implode( ', ', $documentIds ) ];
+			if ( $exception ) {
+				$logContext['exception'] = $exception;
+			}
 			$this->failedLog->warning(
-				'Update for doc ids: ' . implode( ',', $documentIds ),
-				$exception ? [ 'exception' => $exception ] : []
+				'Failed to update documents {docId}',
+				$logContext
 			);
 			return Status::newFatal( 'cirrussearch-failed-send-data' );
 		}
@@ -261,7 +264,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {
 		if ( $indexType === null ) {
-			$indexes = $this->connection->getAllIndexTypes();
+			$indexes = $this->connection->getAllIndexTypes( Connection::PAGE_TYPE_NAME );
 		} else {
 			$indexes = [ $indexType ];
 		}
@@ -294,8 +297,11 @@ class DataSender extends ElasticsearchIntermediary {
 			} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 				$this->failure( $e );
 				$this->failedLog->warning(
-					'Delete for ids: ' . implode( ',', $docIds ),
-					[ 'exception' => $e ]
+					'Failed to delete documents: {docId}',
+					[
+						'docId' => implode( ', ', $docIds ),
+						'exception' => $e,
+					]
 				);
 				return Status::newFatal( 'cirrussearch-failed-send-deletes' );
 			}

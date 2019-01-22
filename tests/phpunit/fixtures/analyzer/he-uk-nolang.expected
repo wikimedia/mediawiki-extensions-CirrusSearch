@@ -7,7 +7,8 @@
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "icu_folding",
-                "preserve_original"
+                "preserve_original",
+                "remove_empty"
             ],
             "char_filter": [
                 "word_break_helper"
@@ -79,6 +80,10 @@
         },
         "icu_folding": {
             "type": "icu_folding"
+        },
+        "remove_empty": {
+            "type": "length",
+            "min": 1
         }
     },
     "char_filter": {

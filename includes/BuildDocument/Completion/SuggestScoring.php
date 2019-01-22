@@ -158,11 +158,16 @@ class QualityScore implements SuggestScoringMethod {
 	}
 
 	protected function intermediateScore( array $doc ) {
-		$incLinks = $this->scoreNormL2( isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0, $this->incomingLinksNorm );
-		$pageSize = $this->scoreNormL2( isset( $doc['text_bytes'] ) ? $doc['text_bytes'] : 0, self::PAGE_SIZE_NORM );
-		$extLinks = $this->scoreNorm( isset( $doc['external_link'] ) ? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
-		$headings = $this->scoreNorm( isset( $doc['heading'] ) ? count( $doc['heading'] ) : 0, self::HEADING_NORM );
-		$redirects = $this->scoreNorm( isset( $doc['redirect'] ) ? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM );
+		$incLinks = $this->scoreNormL2( isset( $doc['incoming_links'] )
+			? $doc['incoming_links'] : 0, $this->incomingLinksNorm );
+		$pageSize = $this->scoreNormL2( isset( $doc['text_bytes'] )
+			? $doc['text_bytes'] : 0, self::PAGE_SIZE_NORM );
+		$extLinks = $this->scoreNorm( isset( $doc['external_link'] )
+			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
+		$headings = $this->scoreNorm( isset( $doc['heading'] )
+			? count( $doc['heading'] ) : 0, self::HEADING_NORM );
+		$redirects = $this->scoreNorm( isset( $doc['redirect'] )
+			? count( $doc['redirect'] ) : 0, self::REDIRECT_NORM );
 
 		$score = $incLinks * self::INCOMING_LINKS_WEIGHT;
 
@@ -172,7 +177,8 @@ class QualityScore implements SuggestScoringMethod {
 		$score += $redirects * self::REDIRECT_WEIGHT;
 
 		// We have a standardized composite score between 0 and 1
-		$score /= self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT + self::PAGE_SIZE_WEIGHT + self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
+		$score /= self::INCOMING_LINKS_WEIGHT + self::EXTERNAL_LINKS_WEIGHT + self::PAGE_SIZE_WEIGHT
+			+ self::HEADING_WEIGHT + self::REDIRECT_WEIGHT;
 
 		return $this->boostTemplates( $doc, $score );
 	}

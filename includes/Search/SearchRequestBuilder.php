@@ -160,9 +160,9 @@ class SearchRequestBuilder {
 		$pageType = $this->getPageType();
 
 		$search = $pageType->createSearch( $query, $queryOptions );
-		$clusterName = $this->connection->getClusterName();
+		$crossClusterName = $this->connection->getConfig()->getClusterAssignment()->getCrossClusterName();
 		foreach ( $extraIndexes as $i ) {
-			$search->addIndex( $i->getSearchIndex( $clusterName ) );
+			$search->addIndex( $i->getSearchIndex( $crossClusterName ) );
 		}
 
 		$this->searchContext->getDebugOptions()->applyDebugOptions( $query );
@@ -221,19 +221,40 @@ class SearchRequestBuilder {
 	}
 
 	/**
-	 * @return Type
+	 * @return Type An elastica type suitable for searching against
+	 *  the configured wiki over the host wiki's default connection.
 	 */
 	public function getPageType() {
 		if ( $this->pageType ) {
 			return $this->pageType;
 		} else {
+			$indexBaseName = $this->indexBaseName;
+			$config = $this->searchContext->getConfig();
+			$hostConfig = $config->getHostWikiConfig();
 			$indexType = $this->connection->pickIndexTypeForNamespaces(
 				$this->searchContext->getNamespaces() );
-			return $this->connection->getPageType( $this->indexBaseName, $indexType );
+			if ( $hostConfig->get( 'CirrusSearchCrossClusterSearch' ) ) {
+				$local = $hostConfig->getClusterAssignment()->getCrossClusterName();
+				$current = $config->getClusterAssignment()->getCrossClusterName();
+				if ( $local !== $current ) {
+					$indexBaseName = $current . ':' . $indexBaseName;
+					if ( $hostConfig->getElement( 'CirrusSearchElasticQuirks', 'cross_cluster_single_shard_search' ) === true ) {
+						// https://github.com/elastic/elasticsearch/issues/26833
+						// Elasticsearch < 5.6.3 workaround. Cross cluster searches that
+						// hit a single shard optimization fail. Workaround by ensuring
+						// cross cluster searches query more than one shard.
+						$indexType = false;
+					}
+				}
+			}
+			return $this->connection->getPageType( $indexBaseName, $indexType );
 		}
 	}
 
 	/**
+	 * Override the index/type used for search. When this is used automatic
+	 * handling of cross-cluster search is disabled.
+	 *
 	 * @param Type|null $pageType
 	 * @return SearchRequestBuilder
 	 */

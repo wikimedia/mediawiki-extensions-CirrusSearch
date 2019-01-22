@@ -524,8 +524,10 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^A valid mapping dump is produced$/, function () {
 		return withApi( this, () => {
 			expect( this.apiError ).to.equal( undefined );
-			expect( this.apiResponse ).to.include.all.keys( 'content', 'general' );
-			expect( this.apiResponse.content ).to.have.all.keys( 'archive', 'page' );
+			expect( this.apiResponse ).to.include.all.keys( 'content', 'general', 'archive' );
+			expect( this.apiResponse.content ).to.have.all.keys( 'page' );
+			expect( this.apiResponse.general ).to.have.all.keys( 'page' );
+			expect( this.apiResponse.archive ).to.have.all.keys( 'archive' );
 			expect( this.apiResponse.content.page ).to.have.all.keys(
 				'dynamic', 'properties' );
 			expect( this.apiResponse.content.page.properties ).to.include.keys(

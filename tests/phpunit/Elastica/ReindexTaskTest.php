@@ -6,8 +6,11 @@ use Elastica\Client;
 use Elastica\Request;
 use Elastica\Response;
 
-// This class is a bit fragile. Would be much better to build this into
-// Elastica and use their test framework that sets up a live server to talk to.
+/**
+ * This class is a bit fragile. Would be much better to build this into
+ * Elastica and use their test framework that sets up a live server to talk to.
+ * @covers \CirrusSearch\Elastica\ReindexTask
+ */
 class ReindexTaskTest extends \PHPUnit\Framework\TestCase {
 	// example status response to in-progress task
 	private $inProgressTaskResponse = [

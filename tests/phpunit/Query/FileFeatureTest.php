@@ -10,7 +10,6 @@ use CirrusSearch\CrossSearchStrategy;
  * @group CirrusSearch
  */
 class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
-
 	public function parseProviderNumeric() {
 		return [
 			'numeric with no sign - same as >' => [
@@ -142,7 +141,11 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 	public function parseProviderType() {
 		return [
-			'type match' => [
+			'basic match' => [
+				[
+					'user_types' => [ 'office' ],
+					'aliased' => [],
+				],
 				[
 					'match' => [
 						'file_media_type' => [
@@ -152,24 +155,90 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 				],
 				'filetype:office',
 			],
-			'mime match phrase' => [
+
+			'bool or type match' => [
 				[
-					'match_phrase' => [
-						'file_mime' => 'image/png',
-					]
+					'user_types' => [ 'office', 'jpg' ],
+					'aliased' => [],
 				],
-				'filemime:"image/png"',
-			],
-			'mime match' => [
 				[
-					'match' => [
-						'file_mime' => [
-							'query' => 'pdf',
-							'operator' => 'AND'
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'office',
+									],
+								],
+							],
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'jpg',
+									],
+								],
+							],
 						],
 					]
+
 				],
-				'filemime:pdf',
+				'filetype:office|jpg'
+			],
+
+			'applies aliases' => [
+				[
+					'user_types' => [ 'doc' ],
+					'aliased' => [ 'office' ],
+				],
+				[
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'office',
+									],
+								],
+							],
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'doc',
+									],
+								],
+							],
+						],
+					],
+				],
+				'filetype:doc'
+			],
+
+			'lowercases before checking aliases' => [
+				[
+					'user_types' => [ 'DoC' ],
+					'aliased' => [ 'office' ],
+				],
+				[
+					'bool' => [
+						'should' => [
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'office',
+									],
+								],
+							],
+							[
+								'match' => [
+									'file_media_type' => [
+										'query' => 'DoC',
+									],
+								],
+							],
+						],
+					],
+				],
+				'filetype:DoC'
 			]
 		];
 	}
@@ -177,14 +246,41 @@ class FileFeatureTest extends BaseSimpleKeywordFeatureTest {
 	/**
 	 * @dataProvider parseProviderType
 	 */
-	public function testParseType( $expected, $term ) {
-		$feature = new FileTypeFeature();
-		if ( $expected !== null ) {
-			$this->assertParsedValue( $feature, $term, null, [] );
+	public function testParseType( $expectedParsed, $expectedQuery, $term ) {
+		$config = new \HashConfig( [ 'CirrusSearchFiletypeAliases' => [
+			'doc' => 'office',
+		] ] );
+		$feature = new FileTypeFeature( $config );
+		if ( $expectedQuery !== null ) {
+			$this->assertParsedValue( $feature, $term, $expectedParsed, [] );
 			$this->assertCrossSearchStrategy( $feature, $term, CrossSearchStrategy::allWikisStrategy() );
 			$this->assertExpandedData( $feature, $term, [], [] );
 		}
-		$this->assertFilter( $feature, $term, $expected, [] );
+		$this->assertFilter( $feature, $term, $expectedQuery, [] );
+	}
+
+	public function warningTypeProvider() {
+		return [
+			'too many conditions' => [
+				[
+					[ 'cirrussearch-feature-too-many-conditions', 'filetype', FileTypeFeature::MAX_CONDITIONS ],
+				],
+				[
+					'user_types' => array_map( 'strval', range( 0, FileTypeFeature::MAX_CONDITIONS - 1 ) ),
+					'aliased' => [],
+				],
+				'filetype:' . implode( '|', range( 0, 100 ) ),
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider warningTypeProvider
+	 */
+	public function testWarningType( $expectedWarnings, $expectedParsed, $term ) {
+		$config = new \HashConfig( [ 'CirrusSearchFiletypeAliases' => [] ] );
+		$feature = new FileTypeFeature( $config );
+		$this->assertParsedValue( $feature, $term, $expectedParsed, $expectedWarnings );
 	}
 
 	public function warningNumericProvider() {

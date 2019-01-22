@@ -2,10 +2,12 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Search\CirrusIndexField;
 use Hooks as MWHooks;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
-use CirrusSearch\Search\CirrusIndexField;
+use MWTimestamp;
+use Sanitizer;
 use TextContent;
 use Title;
 use WikiPage;
@@ -208,8 +210,8 @@ class Updater extends ElasticsearchIntermediary {
 
 		$count = 0;
 		foreach ( $allDocuments as $indexType => $documents ) {
-			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up against
-			// the max.  So we chunk it and do them sequentially.
+			// Elasticsearch has a queue capacity of 50 so if $documents contains 50 pages it could bump up
+			// against the max.  So we chunk it and do them sequentially.
 			foreach ( array_chunk( $documents, 10 ) as $chunked ) {
 				$job = Job\ElasticaWrite::build(
 					reset( $titles ),
@@ -273,7 +275,7 @@ class Updater extends ElasticsearchIntermediary {
 			$job = Job\ElasticaWrite::build(
 				$head['title'],
 				'sendData',
-				[ Connection::GENERAL_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
+				[ Connection::ARCHIVE_INDEX_TYPE, $chunked, Connection::ARCHIVE_TYPE_NAME ],
 				[ 'cluster' => $this->writeToClusterName ]
 			);
 			$job->run();
@@ -322,7 +324,14 @@ class Updater extends ElasticsearchIntermediary {
 	 * @return \Elastica\Document Partial elasticsearch document representing only
 	 *  the fields.
 	 */
-	public static function buildDocument( \CirrusSearch $engine, WikiPage $page, Connection $connection, $forceParse, $skipParse, $skipLinks ) {
+	public static function buildDocument(
+		\CirrusSearch $engine,
+		WikiPage $page,
+		Connection $connection,
+		$forceParse,
+		$skipParse,
+		$skipLinks
+	) {
 		$title = $page->getTitle();
 		$doc = new \Elastica\Document( null, [
 			'version' => $page->getLatest(),
@@ -331,8 +340,11 @@ class Updater extends ElasticsearchIntermediary {
 			'namespace_text' => Util::getNamespaceText( $title ),
 			'title' => $title->getText(),
 			'timestamp' => wfTimestamp( TS_ISO_8601, $page->getTimestamp() ),
-			'create_timestamp' => wfTimestamp( TS_ISO_8601, $page->getOldestRevision()->getTimestamp() ),
 		] );
+		$createTs = self::loadCreateTimestamp( $page->getId(), TS_ISO_8601 );
+		if ( $createTs !== false ) {
+			$doc->set( 'create_timestamp', $createTs );
+		}
 		CirrusIndexField::addNoopHandler( $doc, 'version', 'documentVersion' );
 		if ( !$skipParse ) {
 			$contentHandler = $page->getContentHandler();
@@ -348,6 +360,8 @@ class Updater extends ElasticsearchIntermediary {
 					CirrusIndexField::addIndexingHints( $doc, $field, $hints );
 				}
 			}
+
+			$doc->set( 'display_title', self::extractDisplayTitle( $page->getTitle(), $output ) );
 
 			// Then let hooks have a go
 			MWHooks::run( 'CirrusSearchBuildDocumentParse', [
@@ -366,6 +380,27 @@ class Updater extends ElasticsearchIntermediary {
 		}
 
 		return $doc;
+	}
+
+	/**
+	 * Timestamp the oldest revision of this page was created.
+	 * @param int $pageId
+	 * @param int $style TS_* output format constant
+	 * @return string|bool Formatted timestamp or false on failure
+	 */
+	private static function loadCreateTimestamp( $pageId, $style ) {
+		$db = wfGetDB( DB_REPLICA );
+		$row = $db->selectRow(
+			'revision',
+			'rev_timestamp',
+			[ 'rev_page' => $pageId ],
+			__METHOD__,
+			[ 'ORDER BY' => 'rev_timestamp ASC' ]
+		);
+		if ( !$row ) {
+			return false;
+		}
+		return MWTimestamp::convert( $style, $row->rev_timestamp );
 	}
 
 	/**
@@ -393,17 +428,18 @@ class Updater extends ElasticsearchIntermediary {
 				continue;
 			}
 
-			$doc = self::buildDocument( $engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
+			$doc = self::buildDocument(
+				$engine, $page, $this->connection, $forceParse, $skipParse, $skipLinks );
 			$doc->setId( $this->searchConfig->makeId( $page->getId() ) );
 
-			// Everything as sent as an update to prevent overwriting fields maintained in other processes like
-			// OtherIndex::updateOtherIndex.
-			// But we need a way to index documents that don't already exist.  We're willing to upsert any full
-			// documents or any documents that we've been explicitly told it is ok to index when they aren't full.
-			// This is typically just done during the first phase of the initial index build.
-			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc unless they
-			// are objects in both doc and the indexed source.  We're ok with this because all of our fields are either
-			// regular types or lists of objects and lists are overwritten.
+			// Everything as sent as an update to prevent overwriting fields maintained in other processes
+			// like OtherIndex::updateOtherIndex.
+			// But we need a way to index documents that don't already exist.  We're willing to upsert any
+			// full documents or any documents that we've been explicitly told it is ok to index when they
+			// aren't full. This is typically just done during the first phase of the initial index build.
+			// A quick note about docAsUpsert's merging behavior:  It overwrites all fields provided by doc
+			// unless they are objects in both doc and the indexed source.  We're ok with this because all of
+			// our fields are either regular types or lists of objects and lists are overwritten.
 			$doc->setDocAsUpsert( $fullDocument || $indexOnSkip );
 			$doc->setRetryOnConflict( $this->searchConfig->get( 'CirrusSearchUpdateConflictRetryCount' ) );
 
@@ -470,6 +506,70 @@ class Updater extends ElasticsearchIntermediary {
 			$titles[] = $page->getTitle();
 		}
 		return $titles;
+	}
+
+	/**
+	 * @param Title $title
+	 * @param ParserOutput $output
+	 * @return string|null
+	 */
+	private static function extractDisplayTitle( \Title $title, \ParserOutput $output ) {
+		$titleText = $title->getText();
+		$titlePrefixedText = $title->getPrefixedText();
+
+		$raw = $output->getDisplayTitle();
+		if ( $raw === false ) {
+			return null;
+		}
+		$clean = Sanitizer::stripAllTags( $raw );
+		// Only index display titles that differ from the normal title
+		if ( self::isSameString( $clean, $titleText ) ||
+			self::isSameString( $clean, $titlePrefixedText )
+		) {
+			return null;
+		}
+		if ( $title->getNamespace() === 0 || false === strpos( $clean, ':' ) ) {
+			return $clean;
+		}
+		// There is no official way that namespaces work in display title, it
+		// is an arbitrary string. Even so some use cases, such as the
+		// Translate extension, will translate the namespace as well. Here
+		// `Help:foo` will have a display title of `Aide:bar`. If we were to
+		// simply index as is the autocomplete and near matcher would see
+		// Help:Aide:bar, which doesn't seem particularly useful.
+		// The strategy here is to see if the portion before the : is a valid namespace
+		// in either the language of the wiki or the language of the page. If it is
+		// then we strip it from the display title.
+		list( $maybeNs, $maybeDisplayTitle ) = explode( ':', $clean, 2 );
+		$cleanTitle = Title::newFromText( $clean );
+		if ( $cleanTitle === null ) {
+			// The title is invalid, we cannot extract the ns prefix
+			return $clean;
+		}
+		if ( $cleanTitle->getNamespace() == $title->getNamespace() ) {
+			// While it doesn't really matter, $cleanTitle->getText() may
+			// have had ucfirst() applied depending on settings so we
+			// return the unmodified $maybeDisplayTitle.
+			return $maybeDisplayTitle;
+		}
+
+		$docLang = $title->getPageLanguage();
+		$nsIndex = $docLang->getNsIndex( $maybeNs );
+		if ( $nsIndex !== $title->getNamespace() ) {
+			// Valid namespace but not the same as the actual page.
+			// Keep the namespace in the display title.
+			return $clean;
+		}
+
+		return self::isSameString( $maybeDisplayTitle, $titleText )
+			? null
+			: $maybeDisplayTitle;
+	}
+
+	private static function isSameString( $a, $b ) {
+		$a = mb_strtolower( strtr( $a, '_', ' ' ) );
+		$b = mb_strtolower( strtr( $b, '_', ' ' ) );
+		return $a === $b;
 	}
 
 	/**

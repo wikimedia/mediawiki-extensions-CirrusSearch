@@ -2,7 +2,7 @@
 
 namespace CirrusSearch\LanguageDetector;
 
-use CirrusSearch;
+use CirrusSearch\SearchConfig;
 
 /**
  * Try to detect language via Accept-Language header. Takes the
@@ -18,23 +18,27 @@ class HttpAccept implements Detector {
 
 	/**
 	 * Current HTTP languages
-	 * @var array
+	 * @var string[]
 	 */
 	protected $httpLang;
 
-	public function __construct() {
-		$this->wikiLang = $GLOBALS['wgContLang']->getCode();
-		$this->httpLang = array_keys( $GLOBALS['wgRequest']->getAcceptLang() );
+	/**
+	 * HttpAccept constructor.
+	 * @param string $languageCode host wiki language code
+	 * @param \WebRequest $request
+	 */
+	public function __construct( $languageCode, \WebRequest $request ) {
+		$this->wikiLang = $languageCode;
+		$this->httpLang = array_keys( $request->getAcceptLang() );
 	}
 
 	/**
 	 * Detect language
 	 *
-	 * @param CirrusSearch $cirrus Searching class
 	 * @param string $text Text to detect language
 	 * @return string|null Preferred language, or null if none found
 	 */
-	public function detect( CirrusSearch $cirrus, $text ) {
+	public function detect( $text ) {
 		foreach ( $this->httpLang  as $lang ) {
 			if ( $lang == '*' ) {
 				continue;
@@ -48,5 +52,14 @@ class HttpAccept implements Detector {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param SearchConfig $config
+	 * @param \WebRequest $request
+	 * @return Detector
+	 */
+	public static function build( SearchConfig $config, \WebRequest $request ) {
+		return new self( $config->get( 'LanguageCode' ), $request );
 	}
 }

@@ -20,6 +20,7 @@ use CirrusSearch\Query\PreferRecentFeature;
 use CirrusSearch\Query\PrefixFeature;
 use CirrusSearch\Query\SimpleKeywordFeature;
 use CirrusSearch\Query\SubPageOfFeature;
+use CirrusSearch\Query\TextFieldFilterFeature;
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -60,7 +61,9 @@ class FullTextKeywordRegistry implements KeywordRegistry {
 			// inlanguage keyword
 			new LanguageFeature(),
 			// File types
-			new FileTypeFeature(),
+			new FileTypeFeature( $config ),
+			// File mime types
+			new TextFieldFilterFeature( 'filemime', 'file_mime' ),
 			// File numeric characteristics - size, resolution, etc.
 			new FileNumericFeature(),
 			// Content model feature

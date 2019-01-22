@@ -34,11 +34,6 @@ class ResultSet extends SearchResultSet {
 	/**
 	 * @var int
 	 */
-	private $hits;
-
-	/**
-	 * @var int
-	 */
 	private $totalHits;
 
 	/**
@@ -75,10 +70,10 @@ class ResultSet extends SearchResultSet {
 	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax ) {
 		parent::__construct( $searchContainedSyntax );
 		$this->result = $res;
-		$this->hits = $res->count();
 		$this->totalHits = $res->getTotalHits();
 		$this->preCacheContainedTitles( $this->result );
 		$suggestion = $this->findSuggestion();
+		// TODO: move all the DYM "suggestion" code to PhraseSuggestFallbackMethod (once we get rid of suggest[Prefixes/Suffixes])
 		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
 			$this->suggestionQuery = $suggestion[ 'text' ];
 			$this->suggestionSnippet = $this->escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
@@ -109,7 +104,6 @@ class ResultSet extends SearchResultSet {
 	 */
 	protected function copyTo( ResultSet $other ) {
 		$other->result = $this->result;
-		$other->hits = $this->hits;
 		$other->totalHits = $this->totalHits;
 		$other->suggestionQuery = $this->suggestionQuery;
 		$other->suggestionSnippet = $this->suggestionSnippet;
@@ -119,21 +113,13 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * Is rewriting this query OK?
-	 *
-	 * @param int $threshold Minimum number of results to reach before rewriting is not allowed.
-	 * @return bool True when rewriting this query is allowed
+	 * @param int $threshold
+	 * @return bool always false
+	 * @deprecated always return false, moved to \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
+	 * @see \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
 	 */
 	public function isQueryRewriteAllowed( $threshold = 1 ) {
-		if ( $this->numRows() >= $threshold || $this->searchContainedSyntax() ) {
-			return false;
-		}
-		foreach ( $this->getInterwikiResults( SearchResultSet::SECONDARY_RESULTS ) as $resultSet ) {
-			if ( $resultSet->numRows() >= $threshold ) {
-				return false;
-			}
-		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -216,13 +202,6 @@ class ResultSet extends SearchResultSet {
 	}
 
 	/**
-	 * @return int
-	 */
-	public function numRows() {
-		return $this->hits;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function hasSuggestion() {
@@ -293,7 +272,7 @@ class ResultSet extends SearchResultSet {
 	 * @param string $newQuery
 	 * @param string|null $newQuerySnippet
 	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet=null ) {
+	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
 		$this->rewrittenQuery = $newQuery;
 		$this->rewrittenQuerySnippet = $newQuerySnippet ?: htmlspecialchars( $newQuery );
 	}

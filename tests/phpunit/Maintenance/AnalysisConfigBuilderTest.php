@@ -5,6 +5,7 @@ namespace CirrusSearch\Tests\Maintenance;
 use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\CirrusTestCase;
+use Normalizer;
 
 /**
  * @group CirrusSearch
@@ -178,6 +179,23 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
+			'config without filter' => [
+				// cover some defective corner cases
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+			],
 		];
 	}
 
@@ -201,7 +219,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 					],
 				],
 			],
-			'simple' => [
+			'simple folding' => [
 				[
 					'analyzer' => [
 						'plain' => [
@@ -221,6 +239,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 							'filter' => [
 								'icu_normalizer',
 								'icu_folding',
+								'remove_empty',
 								'kstem'
 							],
 						],
@@ -249,6 +268,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 								'kstem'
 							],
 						],
@@ -279,8 +299,33 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 								'icu_normalizer',
 								'kstem'
+							],
+						],
+					],
+				],
+			],
+			'config without filter' => [
+				// cover some defective corner cases
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+						],
+					],
+				],
+				[
+					'analyzer' => [
+						'plain' => [
+							'type' => 'custom',
+							'filter' => [
+								'icu_nfkc_normalization',
+								'preserve_original_recorder',
+								'icu_folding',
+								'preserve_original',
+								'remove_empty',
 							],
 						],
 					],
@@ -326,6 +371,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 								'preserve_original_recorder',
 								'icu_folding',
 								'preserve_original',
+								'remove_empty',
 							],
 						],
 						'source_text_plain' => [
@@ -422,6 +468,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-smartcn', 'analysis-hebrew',
 			'analysis-ukrainian', 'analysis-stconvert',
 			'extra-analysis-serbian', 'extra-analysis-slovak',
+			'extra-analysis-esperanto'
 		];
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( is_string( $expected ) ) {
@@ -430,6 +477,29 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			$this->markTestSkipped( "Generated new fixture" );
 		} else {
 			$this->assertEquals( $expected, $builder->buildConfig() );
+
+			// also verify that custom stop lists and patterns are in NFKC form
+			if ( array_key_exists( 'filter', $builder->buildConfig() ) ) {
+				foreach ( $builder->buildConfig()['filter'] as $filter ) {
+					if ( array_key_exists( 'type', $filter ) ) {
+						if ( $filter[ 'type' ] == 'stop'
+								&& array_key_exists( 'stopwords', $filter )
+								&& is_array( $filter[ 'stopwords' ] ) ) {
+							foreach ( $filter[ 'stopwords' ] as $stopword ) {
+								$this->assertEquals( $stopword,
+									Normalizer::normalize( $stopword, Normalizer::FORM_KC ) );
+							}
+						}
+						if ( $filter[ 'type' ] == 'pattern_replace'
+								&& array_key_exists( 'pattern', $filter )
+								) {
+							$pat = $filter[ 'pattern' ];
+							$this->assertEquals( $pat,
+								Normalizer::normalize( $pat, Normalizer::FORM_KC ) );
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -459,7 +529,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				'en-ru-es-de-zh',
 			],
 			// sv has custom icu_folding filter
-			"sv" => [
+			"en-zh-sv" => [
 				[ 'en', 'zh', 'sv' ],
 				$emptyConfig,
 				$allPlugins,
@@ -488,6 +558,24 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 				$emptyConfig,
 				[ 'extra', 'analysis-icu' ],
 				'all_defaults',
+			],
+			"icu folding languages" => [
+				[ 'bs', 'el', 'en', 'eo', 'fr', 'he', 'hr', 'sh', 'simple', 'sk', 'sr', 'sv', ],
+				$emptyConfig,
+				[ 'extra', 'analysis-icu' ],
+				'icu_folders',
+			],
+			"chinese without surrogate merger" => [
+				[ 'zh', ],
+				$emptyConfig,
+				[ 'analysis-stconvert', 'analysis-smartcn' ],
+				'zh_no_surrogate_merger',
+			],
+			"chinese with surrogate merger" => [
+				[ 'zh', ],
+				$emptyConfig,
+				[ 'extra-analysis-surrogates', 'analysis-stconvert', 'analysis-smartcn' ],
+				'zh_surrogate_merger',
 			],
 		];
 	}

@@ -190,7 +190,7 @@ class DumpIndex extends Maintenance {
 	 * @param string $data
 	 */
 	private function writeLine( $data ) {
-		if ( !fwrite( STDOUT, $data  . "\n" ) ) {
+		if ( !fwrite( STDOUT, $data . "\n" ) ) {
 			throw new IndexDumperException( "Cannot write to standard output" );
 		}
 	}

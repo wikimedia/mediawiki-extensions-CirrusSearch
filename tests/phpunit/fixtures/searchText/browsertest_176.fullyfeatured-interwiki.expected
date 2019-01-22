@@ -181,7 +181,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "programming",
@@ -491,7 +493,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "programming",
@@ -817,7 +821,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "programming",
@@ -1127,7 +1133,9 @@
                                             "default_operator": "AND",
                                             "fields": [
                                                 "redirect.title",
-                                                "title"
+                                                "redirect.title.plain",
+                                                "title",
+                                                "title.plain"
                                             ],
                                             "fuzzy_prefix_length": 2,
                                             "query": "programming",

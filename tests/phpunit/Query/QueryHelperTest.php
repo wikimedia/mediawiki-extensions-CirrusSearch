@@ -6,6 +6,7 @@ use CirrusSearch\CirrusTestCase;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Query\QueryHelper
  */
 class QueryHelperTest extends CirrusTestCase {
 	/**

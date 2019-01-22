@@ -9,6 +9,7 @@ use MediaWiki\MediaWikiServices;
 
 /**
  * @group CirrusSearch
+ * @covers \SearchIndexField
  */
 class IndexFieldsTest extends CirrusTestCase {
 

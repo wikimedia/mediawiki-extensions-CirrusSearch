@@ -151,7 +151,7 @@ class Util {
 		$key = "$type:$wgCirrusSearchPoolCounterKey";
 
 		$errorCallback = function ( Status $status ) use ( $key, $busyErrorMsg ) {
-			/** @suppress PhanDeprecatedFunction No good replacements for getErrorsArray */
+			/** @todo No good replacements for getErrorsArray */
 			$errors = $status->getErrorsArray();
 			$error = $errors[0][0];
 
@@ -420,9 +420,15 @@ class Util {
 	 */
 	public static function generateIdentToken( $extraData = '' ) {
 		$request = \RequestContext::getMain()->getRequest();
+		try {
+			$ip = $request->getIP();
+		} catch ( \MWException $e ) {
+			// No ip, probably running cli?
+			$ip = 'unknown';
+		}
 		return md5( implode( ':', [
 			$extraData,
-			$request->getIP(),
+			$ip,
 			$request->getHeader( 'X-Forwarded-For' ),
 			$request->getHeader( 'User-Agent' ),
 		] ) );

@@ -46,8 +46,10 @@ abstract class Maintenance extends \Maintenance implements Printer {
 
 	public function __construct() {
 		parent::__construct();
-		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster', false, true );
-		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing framework, e.g. --userTestTrigger=trigger', false, true );
+		$this->addOption( 'cluster', 'Perform all actions on the specified elasticsearch cluster',
+			false, true );
+		$this->addOption( 'userTestTrigger', 'Use config var and profiles set in the user testing ' .
+			'framework, e.g. --userTestTrigger=trigger', false, true );
 	}
 
 	public function finalSetup() {
@@ -64,7 +66,7 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		// Configure the UserTesting framework
 		// Useful in case an index needs to be built with a
 		// test config that is not meant to be the default.
-		// This is realistically only usefull to test accross
+		// This is realistically only usefull to test across
 		// multiple clusters.
 		// Perhaps setting $wgCirrusSearchIndexBaseName to an
 		// alternate value would testing on the same cluster
@@ -97,9 +99,10 @@ abstract class Maintenance extends \Maintenance implements Printer {
 	public function getConnection( $cluster = null ) {
 		if ( $cluster ) {
 			if ( !$this->getSearchConfig() instanceof SearchConfig ) {
-				// We shouldn't ever get here ... but the makeConfig type signature returns the parent class of SearchConfig
-				// so just being extra careful...
-				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' . get_class( $this->getSearchConfig() ) );
+				// We shouldn't ever get here ... but the makeConfig type signature returns the parent
+				// class of SearchConfig so just being extra careful...
+				throw new \RuntimeException( 'Expected instanceof CirrusSearch\SearchConfig, but received ' .
+					get_class( $this->getSearchConfig() ) );
 			}
 			if ( !$this->getSearchConfig()->getElement( 'CirrusSearchClusters', $cluster ) ) {
 				$this->fatalError( 'Unknown cluster.' );

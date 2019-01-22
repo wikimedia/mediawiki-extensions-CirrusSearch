@@ -83,7 +83,8 @@ class SearchProfileServiceTest extends CirrusTestCase {
 			'prof1' => [ 'inprof1' => [] ],
 			'prof2' => [ 'inprof2' => [] ],
 			'prof3' => [ 'inprof3' => [] ],
-			'prof4' => [ 'inprof4' => [] ]
+			'prof4' => [ 'inprof4' => [] ],
+			'prof5' => [ 'inprof5' => [] ],
 		];
 
 		$service = new SearchProfileService( $request, $user );
@@ -94,17 +95,20 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$service->registerDefaultProfile( 'type', 'config_override', 'prof1' );
 		$service->registerDefaultProfile( 'type', 'uri_param_override', 'prof1' );
 		$service->registerDefaultProfile( 'type', 'user_pref_override', 'prof1' );
+		$service->registerDefaultProfile( 'type', 'contextual_override', 'prof1' );
 		$service->registerDefaultProfile( 'type', 'all_override', 'prof1' );
 
 		$service->registerConfigOverride( 'type', [ 'config_override', 'all_override' ], $config, 'ConfigDefault' );
 		$service->registerUriParamOverride( 'type', [ 'uri_param_override', 'all_override' ], 'profile' );
 		$service->registerUserPrefOverride( 'type', [ 'user_pref_override', 'all_override' ], 'profile-pref' );
+		$service->registerContextualOverride( 'type', [ 'contextual_override', 'all_override' ], 'prof{n}', [ '{n}' => 'n' ] );
 
 		$service->freeze();
 		$this->assertEquals( 'prof1', $service->getProfileName( 'type', 'no_override' ) );
 		$this->assertEquals( 'prof2', $service->getProfileName( 'type', 'config_override' ) );
 		$this->assertEquals( 'prof3', $service->getProfileName( 'type', 'uri_param_override' ) );
 		$this->assertEquals( 'prof4', $service->getProfileName( 'type', 'user_pref_override' ) );
+		$this->assertEquals( 'prof5', $service->getProfileName( 'type', 'contextual_override', [ 'n' => 5 ] ) );
 		// URI param wins it has lower prio
 		$this->assertEquals( 'prof3', $service->getProfileName( 'type', 'all_override' ) );
 	}

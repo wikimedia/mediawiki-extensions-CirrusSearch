@@ -111,7 +111,19 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		// now add alias & remove indices for real
 		$status = Status::newGood();
 		$status->merge( $this->swapAliases( $add ) );
-		$status->merge( parent::updateIndices( [], $remove ) );
+		$toRemove = [];
+		foreach ( $remove as $indexToRemove ) {
+			$resp = $this->client->request( $indexToRemove . '/_aliases', 'GET' );
+			if ( !$resp->isOk() ) {
+				return Status::newFatal( "Cannot fetch aliases of the old index $indexToRemove" );
+			}
+			if ( count( $resp->getData()[$indexToRemove]['aliases'] ?? [] ) > 0 ) {
+				$this->outputIndented( "\t$indexToRemove still have active aliases, cannot remove.\n" );
+			} else {
+				$toRemove[] = $indexToRemove;
+			}
+		}
+		$status->merge( parent::updateIndices( [], $toRemove ) );
 		return $status;
 	}
 

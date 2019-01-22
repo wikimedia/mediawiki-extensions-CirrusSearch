@@ -64,14 +64,14 @@ class Reindexer {
 	private $connection;
 
 	/**
-	 * @var Type[]
+	 * @var Type
 	 */
-	private $types;
+	private $type;
 
 	/**
-	 * @var Type[]
+	 * @var Type
 	 */
-	private $oldTypes;
+	private $oldType;
 
 	/**
 	 * @var int
@@ -102,8 +102,8 @@ class Reindexer {
 	 * @param SearchConfig $searchConfig
 	 * @param Connection $source
 	 * @param Connection $target
-	 * @param Type[] $types
-	 * @param Type[] $oldTypes
+	 * @param Type $type
+	 * @param Type $oldType
 	 * @param int $shardCount
 	 * @param string $replicaCount
 	 * @param array $mergeSettings
@@ -115,8 +115,8 @@ class Reindexer {
 		SearchConfig $searchConfig,
 		Connection $source,
 		Connection $target,
-		array $types,
-		array $oldTypes,
+		Type $type,
+		Type $oldType,
 		$shardCount,
 		$replicaCount,
 		array $mergeSettings,
@@ -127,19 +127,15 @@ class Reindexer {
 		$this->searchConfig = $searchConfig;
 		$this->oldConnection = $source;
 		$this->connection = $target;
-		$this->types = $types;
-		$this->oldTypes = $oldTypes;
+		$this->type = $type;
+		$this->oldType = $oldType;
 		$this->shardCount = $shardCount;
 		$this->replicaCount = $replicaCount;
 		$this->mergeSettings = $mergeSettings;
 		$this->out = $out;
 		$this->fieldsToDelete = $fieldsToDelete;
-
-		if ( empty( $types ) || empty( $oldTypes ) ) {
-			throw new \Exception( "Types list should be non-empty" );
-		}
-		$this->index = $types[0]->getIndex();
-		$this->oldIndex = $oldTypes[0]->getIndex();
+		$this->index = $type->getIndex();
+		$this->oldIndex = $oldType->getIndex();
 	}
 
 	/**
@@ -171,57 +167,50 @@ class Reindexer {
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		] );
 
-		foreach ( $this->types as $i => $type ) {
-			$oldType = $this->oldTypes[$i];
+		$request = new ReindexRequest( $this->oldType, $this->type, $chunkSize );
+		if ( $slices === null ) {
+			$request->setSlices( $this->getNumberOfShards( $this->oldType->getIndex() ) );
+		} else {
+			$request->setSlices( $slices );
+		}
+		$remote = self::makeRemoteReindexInfo( $this->oldConnection, $this->connection );
+		if ( $remote !== null ) {
+			$request->setRemoteInfo( $remote );
+		}
+		$script = $this->makeDeleteFieldsScript();
+		if ( $script !== null ) {
+			$request->setScript( $script );
+		}
 
-			$request = new ReindexRequest( $oldType, $type, $chunkSize );
-			if ( $slices === null ) {
-				$request->setSlices( $this->getNumberOfShards( $oldType->getIndex() ) );
-			} else {
-				$request->setSlices( $slices );
-			}
-			$remote = self::makeRemoteReindexInfo( $this->oldConnection, $this->connection );
-			if ( $remote !== null ) {
-				$request->setRemoteInfo( $remote );
-			}
-			$script = $this->makeDeleteFieldsScript();
-			if ( $script !== null ) {
-				$request->setScript( $script );
-			}
+		try {
+			$task = $request->reindexTask();
+		} catch ( \Exception $e ) {
+			$this->fatalError( $e->getMessage() );
+		}
 
-			try {
-				$task = $request->reindexTask();
-			} catch ( \Exception $e ) {
-				$this->fatalError( $e->getMessage() );
-			}
-
-			$this->out->outputIndented( "Started reindex task: " . $task->getId() . "\n" );
-			$response = $this->monitorReindexTask( $task, $type );
-			$task->delete();
-			if ( !$response->isSuccessful() ) {
-				$this->fatalError(
-					"Reindex task was not successfull: " . $response->getUnsuccessfulReason()
-				);
-			}
+		$this->out->outputIndented( "Started reindex task: " . $task->getId() . "\n" );
+		$response = $this->monitorReindexTask( $task, $this->type );
+		$task->delete();
+		if ( !$response->isSuccessful() ) {
+			$this->fatalError(
+				"Reindex task was not successfull: " . $response->getUnsuccessfulReason()
+			);
 		}
 
 		$this->outputIndented( "Verifying counts..." );
 		// We can't verify counts are exactly equal because they won't be - we still push updates
 		// into the old index while reindexing the new one.
-		foreach ( $this->types as $i => $type ) {
-			$oldType = $this->oldTypes[$i];
-			$oldCount = (float)$oldType->count();
-			$this->index->refresh();
-			$newCount = (float)$type->count();
-			$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
-			if ( $difference > $acceptableCountDeviation ) {
-				$this->output(
-					"Not close enough!  old=$oldCount new=$newCount difference=$difference\n"
-				);
-				$this->fatalError( 'Failed to load index - counts not close enough.  ' .
-					"old=$oldCount new=$newCount difference=$difference.  " .
-					'Check for warnings above.' );
-			}
+		$oldCount = (float)$this->oldType->count();
+		$this->index->refresh();
+		$newCount = (float)$this->type->count();
+		$difference = $oldCount > 0 ? abs( $oldCount - $newCount ) / $oldCount : 0;
+		if ( $difference > $acceptableCountDeviation ) {
+			$this->output(
+				"Not close enough!  old=$oldCount new=$newCount difference=$difference\n"
+			);
+			$this->fatalError( 'Failed to load index - counts not close enough.  ' .
+				"old=$oldCount new=$newCount difference=$difference.  " .
+				'Check for warnings above.' );
 		}
 		$this->output( "done\n" );
 
@@ -464,6 +453,7 @@ class Reindexer {
 	 */
 	private function monitorReindexTask( ReindexTask $task, Type $target ) {
 		$consecutiveErrors = 0;
+		$sleepSeconds = self::monitorSleepSeconds( 1, 2, self::MONITOR_SLEEP_SECONDS );
 		while ( !$task->isComplete() ) {
 			try {
 				$status = $task->getStatus();
@@ -504,11 +494,20 @@ class Reindexer {
 				. "Indexed: {$status->getCreated()} / {$status->getTotal()}\n"
 			);
 			if ( !$status->isComplete() ) {
-				sleep( self::MONITOR_SLEEP_SECONDS );
+				sleep( $sleepSeconds->current() );
+				$sleepSeconds->next();
 			}
 		}
 
 		return $task->getResponse();
+	}
+
+	private static function monitorSleepSeconds( $base, $ratio, $max ) {
+		$val = $base;
+		while ( true ) {
+			yield $val;
+			$val = min( $max, $val * $ratio );
+		}
 	}
 
 	private function getNumberOfShards( Index $index ) {

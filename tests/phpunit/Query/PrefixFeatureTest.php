@@ -5,6 +5,7 @@ namespace CirrusSearch\Query;
 use CirrusSearch\CrossSearchStrategy;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\QueryParserFactory;
+use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\SearchContext;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
@@ -192,7 +193,11 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 
 		$feature = new PrefixFeature();
 		if ( $assertions !== null ) {
-			$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+			if ( $namespace === null || $namespace <= NS_CATEGORY_TALK ) {
+				$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::allWikisStrategy() );
+			} else {
+				$this->assertCrossSearchStrategy( $feature, $query, CrossSearchStrategy::hostWikiOnlyStrategy() );
+			}
 		}
 		$parsedValue = [ 'value' => $filterValue ];
 		if ( $namespace !== null ) {
@@ -287,5 +292,80 @@ class PrefixFeatureTest extends BaseSimpleKeywordFeatureTest {
 		$parser = QueryParserFactory::newFullTextQueryParser( $config );
 		$parsedQuery = $parser->parse( $query );
 		$this->assertEquals( $additionalNs, $parsedQuery->getRequiredNamespaces() );
+	}
+
+	public function provideTestPrepareSearchContext() {
+		return [
+			'main' => [
+				[ NS_MAIN ],
+				'test',
+				[ NS_MAIN ]
+			],
+			'main add ns' => [
+				[ NS_MAIN ],
+				'help:test',
+				[ NS_MAIN, NS_HELP ]
+			],
+			'ns untouched' => [
+				null,
+				'help:test',
+				null
+			],
+			'ns to all' => [
+				[ NS_MAIN ],
+				'all:test',
+				null
+			],
+		];
+	}
+
+	/**
+	 * @covers \CirrusSearch\Search\SearchContext
+	 * @dataProvider provideTestPrepareSearchContext
+	 * @param int[]|null $initialNs
+	 * @param string $prefix
+	 * @param int[]|null $expectedNs
+	 */
+	public function testPrepareSearchContext( $initialNs, $prefix, $expectedNs ) {
+		$config = new HashSearchConfig( [] );
+		$context = new SearchContext( $config, $initialNs );
+		PrefixFeature::prepareSearchContext( $context, $prefix );
+		$this->assertEquals( $expectedNs, $context->getNamespaces() );
+		$this->assertCount( 1, $context->getFilters() );
+		$this->assertFilter( new PrefixFeature(), 'prefix:' . $prefix, $context->getFilters()[0], [], $config );
+	}
+
+	public function provideTestContextualFilter() {
+		return [
+			'main' => [
+				'test',
+				[ NS_MAIN ]
+			],
+			'specific' => [
+				'help:test',
+				[ NS_HELP ]
+			],
+			'all' => [
+				'all:test',
+				[]
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestContextualFilter
+	 */
+	public function testContextualFilter( $prefix, $expectedNs ) {
+		$contextualFilter = PrefixFeature::asContextualFilter( $prefix );
+		$this->assertEquals( $expectedNs, $contextualFilter->requiredNamespaces() );
+		$filterBuilderMock = $this->createMock( FilterBuilder::class );
+		$filters = [];
+		$filterBuilderMock->expects( $this->once() )
+			->method( 'must' )
+			->with( $this->captureArgs( $filters ) );
+		$filterBuilderMock->expects( $this->never() )->method( 'mustNot' );
+		$contextualFilter->populate( $filterBuilderMock );
+		$this->assertCount( 1, $filters );
+		$this->assertFilter( new PrefixFeature(), 'prefix:' . $prefix,  $filters[0], [] );
 	}
 }

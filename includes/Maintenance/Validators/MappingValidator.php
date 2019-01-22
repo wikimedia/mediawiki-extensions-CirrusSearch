@@ -11,6 +11,7 @@ use Elastica\Type;
 use Elastica\Type\Mapping;
 use RawMessage;
 use Status;
+use Wikimedia\Assert\Assert;
 
 class MappingValidator extends Validator {
 	/**
@@ -44,7 +45,7 @@ class MappingValidator extends Validator {
 	private $types;
 
 	/**
-	 * @todo: this constructor takes way too much arguments - refactor
+	 * @todo this constructor takes way too much arguments - refactor
 	 *
 	 * @param Index $index
 	 * @param string $masterTimeout
@@ -69,7 +70,11 @@ class MappingValidator extends Validator {
 		$this->masterTimeout = $masterTimeout;
 		$this->optimizeIndexForExperimentalHighlighter = $optimizeIndexForExperimentalHighlighter;
 		$this->availablePlugins = $availablePlugins;
+		Assert::parameter( count( $mappingConfig ) === 1, '$mappingConfig',
+			'Multiple types per index is no longer supported' );
 		$this->mappingConfig = $mappingConfig;
+		Assert::parameter( count( $types ) === 1, '$types',
+			'Multiple types per index is no longer supported' );
 		$this->types = $types;
 	}
 

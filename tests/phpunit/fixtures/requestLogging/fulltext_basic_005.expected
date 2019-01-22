@@ -71,6 +71,7 @@
             "query": "intitle",
             "queryType": "namespace",
             "source": "cli",
+            "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",
@@ -90,7 +91,7 @@
             "query": "intitle:main",
             "queryType": "full_text",
             "source": "cli",
-            "suggestion": null,
+            "suggestionRequested": false,
             "syntax": [
                 "full_text",
                 "full_text_querystring",

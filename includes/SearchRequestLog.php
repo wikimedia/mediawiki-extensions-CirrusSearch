@@ -144,6 +144,11 @@ class SearchRequestLog extends BaseRequestLog {
 		if ( isset( $query['query']['filtered']['filter']['terms']['namespace'] ) ) {
 			$vars['namespaces'] = $query['query']['filtered']['filter']['terms']['namespace'];
 		}
+		if ( !empty( $query['suggest'] ) ) {
+			$vars['suggestionRequested'] = true;
+		} else {
+			$vars['suggestionRequested'] = false;
+		}
 
 		return $vars;
 	}

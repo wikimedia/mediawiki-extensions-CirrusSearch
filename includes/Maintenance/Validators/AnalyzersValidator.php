@@ -2,7 +2,6 @@
 
 namespace CirrusSearch\Maintenance\Validators;
 
-use CirrusSearch\Maintenance\AnalysisConfigBuilder;
 use CirrusSearch\Maintenance\Printer;
 use Elastica\Index;
 use RawMessage;
@@ -15,20 +14,20 @@ class AnalyzersValidator extends Validator {
 	private $index;
 
 	/**
-	 * @var AnalysisConfigBuilder
+	 * @var array
 	 */
-	private $analysisConfigBuilder;
+	private $analysisConfig;
 
 	/**
 	 * @param Index $index
-	 * @param AnalysisConfigBuilder $analysisConfigBuilder
+	 * @param array $analysisConfig
 	 * @param Printer|null $out
 	 */
-	public function __construct( Index $index, AnalysisConfigBuilder $analysisConfigBuilder, Printer $out = null ) {
+	public function __construct( Index $index, array $analysisConfig, Printer $out = null ) {
 		parent::__construct( $out );
 
 		$this->index = $index;
-		$this->analysisConfigBuilder = $analysisConfigBuilder;
+		$this->analysisConfig = $analysisConfig;
 	}
 
 	/**
@@ -37,8 +36,7 @@ class AnalyzersValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "Validating analyzers..." );
 		$settings = $this->index->getSettings()->get();
-		$requiredAnalyzers = $this->analysisConfigBuilder->buildConfig();
-		if ( $this->checkConfig( $settings[ 'analysis' ], $requiredAnalyzers ) ) {
+		if ( $this->checkConfig( $settings[ 'analysis' ], $this->analysisConfig ) ) {
 			$this->output( "ok\n" );
 		} else {
 			$this->output( "cannot correct\n" );

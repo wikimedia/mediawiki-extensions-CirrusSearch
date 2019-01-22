@@ -41,14 +41,16 @@ class Metastore extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Update and check the CirrusSearch metastore index. Always operates on a single cluster.";
+		$this->mDescription = "Update and check the CirrusSearch metastore index. " .
+			"Always operates on a single cluster.";
 		$this->addOption( 'upgrade', 'Create or upgrade the metastore index.' );
-		$this->addOption( 'show-all-index-versions', 'Show all versions for all indices managed by this cluster.' );
+		$this->addOption( 'show-all-index-versions',
+			'Show all versions for all indices managed by this cluster.' );
 		$this->addOption( 'show-index-version', 'Show index versions for this wiki.' );
-		$this->addOption( 'update-index-version', 'Update the version '.
-			'index for this wiki. Dangerous: index versions should be managed '.
+		$this->addOption( 'update-index-version', 'Update the version ' .
+			'index for this wiki. Dangerous: index versions should be managed ' .
 			'by updateSearchIndexConfig.php.' );
-		$this->addOption( 'index-version-basename', 'What basename to use when running --show-index-version '.
+		$this->addOption( 'index-version-basename', 'What basename to use when running --show-index-version ' .
 			'or --update-index-version, ' .
 			'defaults to wiki id', false, true );
 		$this->addOption( 'dump', 'Dump the metastore index to stdout (elasticsearch bulk index format).' );
@@ -88,12 +90,14 @@ class Metastore extends Maintenance {
 		} elseif ( $this->hasOption( 'show-all-index-versions' ) ) {
 			$this->showIndexVersions();
 		} elseif ( $this->hasOption( 'update-index-version' ) ) {
-			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+			$baseName = $this->getOption( 'index-version-basename',
+				$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 			$this->updateIndexVersion( $baseName );
 		} elseif ( $this->hasOption( 'show-index-version' ) ) {
 			// While it might seem like wiki would be a better option than basename, the update
 			// needs basename to generate document id's and we want
-			$baseName = $this->getOption( 'index-version-basename', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
+			$baseName = $this->getOption( 'index-version-basename',
+				$this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 			$this->showIndexVersions( $baseName );
 		} else {
 			$this->maybeHelp( true );
@@ -114,7 +118,8 @@ class Metastore extends Maintenance {
 			$this->outputIndented( "  analysis version: {$data['analysis_maj']}.{$data['analysis_min']}\n" );
 			$this->outputIndented( "  mapping version: {$data['mapping_maj']}.{$data['mapping_min']}\n" );
 			if ( isset( $data['mediawiki_version'] ) ) {
-				$this->outputIndented( "  code version: {$data['mediawiki_version']} ({$data['mediawiki_commit']}, Cirrus: {$data['cirrus_commit']})\n" );
+				$this->outputIndented( "  code version: {$data['mediawiki_version']} " .
+					"({$data['mediawiki_commit']}, Cirrus: {$data['cirrus_commit']})\n" );
 			}
 			$this->outputIndented( "  shards: {$data['shard_count']}\n" );
 		}

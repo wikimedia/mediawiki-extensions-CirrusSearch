@@ -27,6 +27,7 @@ use Elastica\Query\Term;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
+ * @covers \CirrusSearch\Search\Filters
  */
 class FiltersTest extends CirrusTestCase {
 	/**

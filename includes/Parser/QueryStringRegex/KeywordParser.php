@@ -29,9 +29,10 @@ class KeywordParser implements WarningCollector {
 	 * @param string $query
 	 * @param KeywordFeature $feature
 	 * @param OffsetTracker $tracker
+	 * @param int $startOffset start offset of the query in $query
 	 * @return ParsedNode[]
 	 */
-	public function parse( $query, KeywordFeature $feature, OffsetTracker $tracker ) {
+	public function parse( $query, KeywordFeature $feature, OffsetTracker $tracker, $startOffset = 0 ) {
 		if ( $feature->greedy() ) {
 			Assert::precondition( !$feature->allowEmptyValue(),
 				"greedy keywords must not accept empty value" );
@@ -39,7 +40,7 @@ class KeywordParser implements WarningCollector {
 			Assert::precondition( $feature->getValueDelimiters() === [ [ 'delimiter' => '"' ] ],
 				"getValueDelimiters() must not be overridden with greedy keywords" );
 		}
-		$offset = $tracker->getMinimalUnconsumedOffset();
+		$offset = $tracker->getMinimalUnconsumedOffset( $startOffset );
 		$keyListRegex = implode(
 			'|',
 			array_map(
@@ -63,11 +64,13 @@ class KeywordParser implements WarningCollector {
 			$valueSideRegex = "${spacesAfterSep}{$valueRegex}";
 		}
 		$matches = [];
-		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u", $query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
+		preg_match_all( "/{$begin}{$keywordRegex}(?<colon>:)${valueSideRegex}/u",
+			$query, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $offset );
 		$output = [];
 		foreach ( $matches as $match ) {
 			$key = $match['key'][0];
-			Assert::invariant( $feature->hasValue() === isset( $match['value'] ), 'a value must have matched if the keyword wants a value.' );
+			Assert::invariant( $feature->hasValue() === isset( $match['value'] ),
+				'a value must have matched if the keyword wants a value.' );
 			$quotedValue = '';
 			$value = '';
 			$valueDelimiter = '';
@@ -102,9 +105,11 @@ class KeywordParser implements WarningCollector {
 			if ( $feature->hasValue() && $quotedValue !== '' ) {
 				// Set the current offset so that we can collect warnings at the keyword offset
 				$this->currentOffset = $valueStart;
-				$parsedValue = $feature->parseValue( $key, $value, $quotedValue, $valueDelimiter, $valueSuffix, $this );
+				$parsedValue = $feature->parseValue(
+					$key, $value, $quotedValue, $valueDelimiter, $valueSuffix, $this );
 				if ( $parsedValue === false ) {
-					Assert::postcondition( $feature->allowEmptyValue(), 'Only features accepting empty value can reject a value' );
+					Assert::postcondition( $feature->allowEmptyValue(),
+						'Only features accepting empty value can reject a value' );
 					$value = '';
 					$quotedValue = '';
 					$end = $valueStart;
@@ -138,7 +143,8 @@ class KeywordParser implements WarningCollector {
 			$allDelims = '';
 			$optionalSuffixes = [];
 			foreach ( $feature->getValueDelimiters() as $delimConfig ) {
-				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1, "Value delimiter must be a single byte char" );
+				Assert::precondition( strlen( $delimConfig['delimiter'] ) === 1,
+					"Value delimiter must be a single byte char" );
 				$delim = preg_quote( $delimConfig['delimiter'], '/' );
 				$allDelims .= $delim;
 				if ( isset( $delimConfig['suffixes'] ) ) {
@@ -179,7 +185,7 @@ class KeywordParser implements WarningCollector {
 	 * @param string|null $param2
 	 * @param string|null $param3
 	 */
-	function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
+	public function addWarning( $message, $param1 = null, $param2 = null, $param3 = null ) {
 		$args = array_filter( func_get_args() );
 		array_shift( $args );
 		$this->warnings[] = new ParseWarning( $message, $this->currentOffset, [], null, $args );

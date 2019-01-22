@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "Резервен склад на поставките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Резервен склад на поставките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Дај резервен склад на поставките на CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Резервен склад на пресликувањата на CirrusSearch за ова вики.",
+	"apihelp-cirrus-mapping-dump-summary": "Резервен склад на пресликувањата на CirrusSearch за ова вики.",
+	"apihelp-cirrus-mapping-dump-example": "Дај резервен склад на пресликувањата на CirrusSearch за ова вики.",
+	"apihelp-cirrus-settings-dump-description": "Резервен склад на поставките на CirrusSearch за ова вики.",
+	"apihelp-cirrus-settings-dump-summary": "Резервен склад на поставките на CirrusSearch за ова вики.",
+	"apihelp-cirrus-settings-dump-example": "Дај резервен склад на поставките на CirrusSearch за ова вики.",
+	"apihelp-query+cirrusdoc-description": "Склад за статиски документ на CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Резервен склад на статиски документ на CirrusSearch од пребарувачките опслужвачи",
+	"apihelp-query+cirrusdoc-example": "Дај резервен склад на поединечна статија на CirrusSearch тековно индексирани во пребарувањето.",
+	"apihelp-query+cirrusbuilddoc-summary": "Резервен склад на статиски документ на CirrusSearch од базните опслужвачи",
+	"apihelp-query+cirrusbuilddoc-example": "Даја резервен склад на поединечна статија на CirrusSearch создаден од базата.",
+	"apierror-cirrus-requesttoolong": "Пребараното со претставка ја надмина допуштената должина. ($1 &gt; $2)"
+}

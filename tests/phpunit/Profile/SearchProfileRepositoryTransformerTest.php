@@ -6,12 +6,13 @@ use CirrusSearch\CirrusTestCase;
 
 /**
  * @covers \CirrusSearch\Profile\SearchProfileRepositoryTransformer
+ * @covers \CirrusSearch\Profile\ArrayPathSetter
  * @group CirrusSearch
  */
 class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 
 	public function provideRepositories() {
-		return [
+		$tests = [
 			'simple' => [
 				[ 'prof1' => [ 'replace' => 'me' ] ],
 				[ 'replace' => 'replaced' ],
@@ -157,6 +158,11 @@ class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 				],
 			]
 		];
+		foreach ( $tests as $name => $testCase ) {
+			$bcTestCase = array_merge( $testCase, [ true ] );
+			$tests[$name . '_bc'] = $bcTestCase;
+		}
+		return $tests;
 	}
 
 	/**
@@ -164,9 +170,15 @@ class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 	 * @param array $profiles
 	 * @param array $replacements
 	 * @param array $expectedProfiles
+	 * @param array $testBcConstructor
 	 */
-	public function test( $profiles, $replacements, $expectedProfiles ) {
-		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', $profiles ), $replacements );
+	public function test( $profiles, $replacements, $expectedProfiles, $testBcConstructor = false ) {
+		if ( $testBcConstructor ) {
+			$transformer = $replacements;
+		} else {
+			$transformer = new ArrayPathSetter( $replacements );
+		}
+		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', $profiles ), $transformer );
 		$this->assertEquals( 'my_type', $repo->repositoryType() );
 		$this->assertEquals( 'my_name', $repo->repositoryName() );
 		$this->assertArrayEquals( $expectedProfiles, $repo->listExposedProfiles() );
@@ -191,8 +203,9 @@ class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 	 * @dataProvider provideBadReplacements
 	 */
 	public function testBadSyntax( $badRepl ) {
+		$transformer = new ArrayPathSetter( [ $badRepl => '' ] );
 		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', [ 'hop' => [] ] ),
-			[ $badRepl => '' ] );
+			$transformer );
 		$repo->getProfile( 'hop' );
 	}
 }

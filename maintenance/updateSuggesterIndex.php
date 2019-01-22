@@ -132,9 +132,9 @@ class UpdateSuggesterIndex extends Maintenance {
 	public $builder;
 
 	/**
-	 * @var AnalysisConfigBuilder
+	 * @var array
 	 */
-	private $analysisConfigBuilder;
+	private $analysisConfig;
 
 	/**
 	 * @var bool
@@ -215,9 +215,8 @@ class UpdateSuggesterIndex extends Maintenance {
 		$this->bannedPlugins = $wgCirrusSearchBannedPlugins;
 
 		$this->availablePlugins = $this->utils->scanAvailablePlugins( $this->bannedPlugins );
-		$this->analysisConfigBuilder = $this->pickAnalyzer(
-			$this->langCode, $this->availablePlugins
-		);
+		$this->analysisConfig = $this->pickAnalyzer( $this->langCode, $this->availablePlugins )
+			->buildConfig();
 
 		$this->utils->checkElasticsearchVersion();
 
@@ -402,7 +401,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			return false;
 		}
 
-		$validator = new AnalyzersValidator( $oldIndex, $this->analysisConfigBuilder, $this );
+		$validator = new AnalyzersValidator( $oldIndex, $this->analysisConfig, $this );
 		$status = $validator->validate();
 		if ( !$status->isOK() ) {
 			$this->error( 'Analysis config differs, cannot recycle.' );
@@ -473,6 +472,9 @@ class UpdateSuggesterIndex extends Maintenance {
 		foreach ( $scroll as $results ) {
 			if ( $totalDocsToDump === -1 ) {
 				$totalDocsToDump = $results->getTotalHits();
+				if ( $totalDocsToDump === 0 ) {
+					break;
+				}
 				$docsDumped = 0;
 			}
 			$docIds = [];
@@ -606,6 +608,10 @@ class UpdateSuggesterIndex extends Maintenance {
 			foreach ( $scroll as $results ) {
 				if ( $totalDocsToDump === -1 ) {
 					$totalDocsToDump = $results->getTotalHits();
+					if ( $totalDocsToDump === 0 ) {
+						$this->log( "No documents to index from $sourceIndexType\n" );
+						break;
+					}
 					$this->log( "Indexing $totalDocsToDump documents from $sourceIndexType with " .
 						"batchId: {$this->builder->getBatchId()} and scoring method: " .
 						"{$this->scoreMethodName}\n" );
@@ -713,7 +719,7 @@ class UpdateSuggesterIndex extends Maintenance {
 			// for convenience on small install.
 			'auto_expand_replicas' => "0-0",
 			'refresh_interval' => -1,
-			'analysis' => $this->analysisConfigBuilder->buildConfig(),
+			'analysis' => $this->analysisConfig,
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		];
 

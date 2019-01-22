@@ -5,6 +5,7 @@ namespace CirrusSearch;
 use ElasticaConnection;
 use Exception;
 use MWNamespace;
+use Wikimedia\Assert\Assert;
 
 /**
  * Forms and caches connection to Elasticsearch as well as client objects
@@ -45,6 +46,12 @@ class Connection extends ElasticaConnection {
 	const TITLE_SUGGEST_TYPE = 'titlesuggest';
 
 	/**
+	 * Name of the index that hosts archive data
+	 * @var string
+	 */
+	const ARCHIVE_INDEX_TYPE = 'archive';
+
+	/**
 	 * Name of the page type.
 	 * @var string
 	 */
@@ -61,6 +68,20 @@ class Connection extends ElasticaConnection {
 	 * @var string
 	 */
 	const ARCHIVE_TYPE_NAME = 'archive';
+
+	/**
+	 * string[] Map of index types (suffix names)
+	 * indexed by mapping type.
+	 */
+	private static $TYPE_MAPPING = [
+		self::PAGE_TYPE_NAME => [
+			self::CONTENT_INDEX_TYPE,
+			self::GENERAL_INDEX_TYPE,
+		],
+		self::ARCHIVE_TYPE_NAME => [
+			self::ARCHIVE_INDEX_TYPE
+		],
+	];
 
 	/**
 	 * @var SearchConfig
@@ -89,7 +110,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public static function getPool( SearchConfig $config, $cluster = null ) {
 		if ( $cluster === null ) {
-			$cluster = $config->get( 'CirrusSearchDefaultCluster' );
+			$cluster = $config->getClusterAssignment()->getSearchCluster();
 		}
 		$wiki = $config->getWikiId();
 		if ( isset( self::$pool[$wiki][$cluster] ) ) {
@@ -114,11 +135,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function __construct( SearchConfig $config, $cluster = null ) {
 		$this->config = $config;
-		if ( $cluster === null ) {
-			$this->cluster = $config->get( 'CirrusSearchDefaultCluster' );
-		} else {
-			$this->cluster = $cluster;
-		}
+		$this->cluster = $cluster ?? $config->getClusterAssignment()->getSearchCluster();
 		$this->setConnectTimeout( $this->getSettings()->getConnectTimeout() );
 		// overwrites previous connection if it exists, but these
 		// seemed more centralized than having the entry points
@@ -153,18 +170,7 @@ class Connection extends ElasticaConnection {
 	 *  specifications.
 	 */
 	public function getServerList() {
-		// This clause provides backwards compatibility with previous versions
-		// of CirrusSearch. Once this variable is removed cluster configuration
-		// will work as expected.
-		if ( $this->config->has( 'CirrusSearchServers' ) ) {
-			return $this->config->get( 'CirrusSearchServers' );
-		}
-		$config = $this->config->getElement( 'CirrusSearchClusters', $this->cluster );
-		if ( $config === null ) {
-			throw new \RuntimeException( "No configuration available for cluster: {$this->cluster}" );
-		}
-
-		return $config;
+		return $this->config->getClusterAssignment()->getServerList( $this->cluster );
 	}
 
 	/**
@@ -203,17 +209,41 @@ class Connection extends ElasticaConnection {
 	 * @return \Elastica\Type
 	 */
 	public function getArchiveType( $name ) {
-		return $this->getIndex( $name, 'general' )->getType( self::ARCHIVE_TYPE_NAME );
+		return $this->getIndex( $name, self::ARCHIVE_INDEX_TYPE )->getType( self::ARCHIVE_TYPE_NAME );
 	}
 
 	/**
 	 * Get all index types we support, content, general, plus custom ones
 	 *
+	 * @param string|null $mappingType the mapping type name the index must support to be returned
+	 * can be self::PAGE_TYPE_NAME for content and general indices but also self::ARCHIVE_TYPE_NAME
+	 * for the archive index. Defaults to Connection::PAGE_TYPE_NAME.
+	 * set to null to return all known index types (only suited for maintenance tasks, not for read/write operations).
 	 * @return string[]
 	 */
-	public function getAllIndexTypes() {
-		return array_merge( array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ),
-			[ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ] );
+	public function getAllIndexTypes( $mappingType = self::PAGE_TYPE_NAME ) {
+		Assert::parameter( $mappingType === null || isset( self::$TYPE_MAPPING[$mappingType] ),
+			'$mappingType', "Unknown mapping type $mappingType" );
+		$indexTypes = [];
+
+		if ( $mappingType === null ) {
+			foreach ( self::$TYPE_MAPPING as $types ) {
+				$indexTypes = array_merge( $indexTypes, $types );
+			}
+			$indexTypes = array_merge(
+				$indexTypes,
+				array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) )
+			);
+		} else {
+			$indexTypes = array_merge(
+				$indexTypes,
+				self::$TYPE_MAPPING[$mappingType],
+				$mappingType === self::PAGE_TYPE_NAME ?
+					array_values( $this->config->get( 'CirrusSearchNamespaceMappings' ) ) : []
+			);
+		}
+
+		return $indexTypes;
 	}
 
 	/**
@@ -223,7 +253,7 @@ class Connection extends ElasticaConnection {
 	 */
 	public function extractIndexSuffix( $name ) {
 		$matches = [];
-		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes() ) );
+		$possible = implode( '|', array_map( 'preg_quote', $this->getAllIndexTypes( null ) ) );
 		if ( !preg_match( "/_($possible)_[^_]+$/", $name, $matches ) ) {
 			throw new Exception( "Can't parse index name: $name" );
 		}
@@ -248,43 +278,6 @@ class Connection extends ElasticaConnection {
 
 		return MWNamespace::isContent( $namespace ) ?
 			self::CONTENT_INDEX_TYPE : self::GENERAL_INDEX_TYPE;
-	}
-
-	/**
-	 * Is there more then one namespace in the provided index type?
-	 *
-	 * @param string $indexType an index type
-	 * @return false|int false if the number of indexes is unknown, an integer if it is known
-	 */
-	public function namespacesInIndexType( $indexType ) {
-		if ( $indexType === self::GENERAL_INDEX_TYPE ) {
-			return false;
-		}
-
-		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		$inIndexType = [];
-		foreach ( $mappings as $ns => $type ) {
-			if ( $indexType === $type ) {
-				$inIndexType[$ns] = true;
-			}
-		}
-		if ( $indexType === self::CONTENT_INDEX_TYPE ) {
-			// The content namespace includes everything set in the mappings to content (count right now)
-			// Plus everything in wgContentNamespaces that isn't already in namespace mappings
-			$contentNamespaces = $this->config->get( 'ContentNamespaces' );
-			foreach ( $contentNamespaces as $ns ) {
-				if ( !isset( $mappings[$ns] ) ) {
-					$inIndexType[$ns] = true;
-				}
-			}
-			$defaultSearch = $this->config->get( 'NamespacesToBeSearchedDefault' );
-			foreach ( $defaultSearch as $ns => $shouldSearch ) {
-				if ( $shouldSearch && !isset( $mappings[$ns] ) ) {
-					$inIndexType[$ns] = true;
-				}
-			}
-		}
-		return count( $inIndexType );
 	}
 
 	/**
@@ -321,7 +314,7 @@ class Connection extends ElasticaConnection {
 		}
 		// If no namespaces provided all indices are needed
 		$mappings = $this->config->get( 'CirrusSearchNamespaceMappings' );
-		return array_merge( [ self::CONTENT_INDEX_TYPE, self::GENERAL_INDEX_TYPE ],
+		return array_merge( self::$TYPE_MAPPING[self::PAGE_TYPE_NAME],
 			array_values( $mappings ) );
 	}
 
@@ -344,18 +337,9 @@ class Connection extends ElasticaConnection {
 	}
 
 	/**
-	 * @param SearchConfig $config the search config
-	 * @return Connection[] array of connection indexed by cluster name.
+	 * @return SearchConfig
 	 */
-	public static function getWritableClusterConnections( SearchConfig $config ) {
-		return self::getClusterConnections( $config->getWritableClusters(), $config );
-	}
-
-	/**
-	 * @param SearchConfig $config the search config
-	 * @return Connection[] array of connection indexed by cluster name.
-	 */
-	public static function getAllClusterConnections( SearchConfig $config ) {
-		return self::getClusterConnections( $config->getAvailableClusters(), $config );
+	public function getConfig() {
+		return $this->config;
 	}
 }

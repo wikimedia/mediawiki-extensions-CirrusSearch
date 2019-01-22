@@ -5,6 +5,7 @@ namespace CirrusSearch\Profile;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
+use CirrusSearch\InterwikiResolverFactory;
 
 /**
  * @group CirrusSearch
@@ -23,7 +24,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	public function testSaneDefaults( $type, $context ) {
 		// Even with an empty search config we should have default profiles
 		// available
-		$factory = new SearchProfileServiceFactory();
+		$factory = $this->getFactory();
 		$service = $factory->loadService( new HashSearchConfig( [] ) );
 		$this->assertNotNull( $service->getProfileName( $type, $context ) );
 		$this->assertNotNull( $service->loadProfile( $type, $context ) );
@@ -54,7 +55,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	 * @throws \MWException
 	 */
 	public function testOverrides( $type, $context, $overrideType, $overrideKey, $profiles ) {
-		$factory = new SearchProfileServiceFactory();
+		$factory = $this->getFactory();
 		$this::setTemporaryHook( 'CirrusSearchProfileService',
 			function ( SearchProfileService $service ) use ( $type, $profiles ) {
 				$service->registerArrayRepository( $type, 'unit_test', $profiles );
@@ -145,7 +146,7 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 	 * @throws \MWException
 	 */
 	public function testExportedProfilesWithI18N( $type, array $must_have ) {
-		$factory = new SearchProfileServiceFactory();
+		$factory = $this->getFactory();
 		$service = $factory->loadService( new HashSearchConfig( [] ) );
 		$profiles = $service->listExposedProfiles( $type );
 
@@ -172,5 +173,76 @@ class SearchProfileServiceFactoryTest extends CirrusTestCase {
 				[ 'classic', 'fuzzy', 'normal', 'strict' ]
 			]
 		];
+	}
+
+	public function provideTestInterwikiOverrides() {
+		$baseConfig = [
+			'CirrusSearchInterwikiSources' => [
+				'my' => 'mywiki',
+			],
+		];
+		return [
+			'rescore' => [
+				$baseConfig + [
+					'CirrusSearchCrossProjectProfiles' => [
+						'my' => [
+							'rescore' => 'overridden'
+						]
+					]
+				],
+				[
+					'_wikiID' => 'mywiki',
+					'CirrusSearchRescoreProfiles' => [
+						'default' => [],
+						'overridden' => [ 'INTERWIKI' ]
+					],
+					'CirrusSearchRescoreProfile' => 'default',
+				],
+				SearchProfileService::RESCORE,
+				'overridden'
+			],
+			'ftbuilder' => [
+				$baseConfig + [
+					'CirrusSearchCrossProjectProfiles' => [
+						'my' => [
+							'ftbuilder' => 'overridden'
+						]
+					]
+				],
+				[
+					'_wikiID' => 'mywiki',
+					'CirrusSearchFullTextQueryBuilderProfiles' => [
+						'default' => [],
+						'overridden' => [ 'INTERWIKI' ]
+					],
+					'CirrusSearchFullTextQueryBuilderProfile' => 'test',
+				],
+				SearchProfileService::FT_QUERY_BUILDER,
+				'overridden'
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider provideTestInterwikiOverrides
+	 * @param array $hostWikiConfig
+	 * @param array $targetWikiConfig
+	 * @param string $profileType
+	 * @param string $defaultProfile
+	 * @throws \FatalError
+	 * @throws \MWException
+	 */
+	public function testInterwikiOverrides( array $hostWikiConfig, array $targetWikiConfig, $profileType, $overridden ) {
+		$factory = $this->getFactory( $hostWikiConfig );
+		$service = $factory->loadService( new HashSearchConfig( $targetWikiConfig ) );
+		$this->assertEquals( $overridden,
+			$service->getProfileName( $profileType, SearchProfileService::CONTEXT_DEFAULT ) );
+		$this->assertEquals( [ 'INTERWIKI' ], $service->loadProfile( $profileType ) );
+	}
+
+	private function getFactory( array $hostWikiConfig = [] ) {
+		$config = new HashSearchConfig( $hostWikiConfig );
+		$resolver = ( new InterwikiResolverFactory() )->getResolver( $config );
+		return new SearchProfileServiceFactory( $resolver, $config );
 	}
 }

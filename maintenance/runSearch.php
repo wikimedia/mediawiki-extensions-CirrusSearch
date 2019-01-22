@@ -7,7 +7,6 @@ use CirrusSearch\SearchConfig;
 use CirrusSearch\Search\ResultSet;
 use OrderedStreamingForkController;
 use PageArchive;
-use RequestContext;
 use SearchSuggestionSet;
 use Status;
 use Wikimedia\Rdbms\ResultWrapper;
@@ -62,11 +61,15 @@ class RunSearch extends Maintenance {
 		$this->addOption( 'limit', 'Set the max number of results returned by query (defaults to 10)', false, true );
 	}
 
+	public function finalSetup() {
+		parent::finalSetup();
+		$this->applyGlobals();
+	}
+
 	public function execute() {
 		$this->disablePoolCountersAndLogging();
 		$this->indexBaseName = $this->getOption( 'baseName', $this->getSearchConfig()->get( SearchConfig::INDEX_BASE_NAME ) );
 
-		$this->applyGlobals();
 		$callback = [ $this, 'consume' ];
 		$forks = $this->getOption( 'fork', false );
 		$forks = ctype_digit( $forks ) ? intval( $forks ) : 0;
@@ -88,7 +91,18 @@ class RunSearch extends Maintenance {
 		$options = json_decode( $optionsData, true );
 		if ( $options ) {
 			foreach ( $options as $key => $value ) {
-				if ( array_key_exists( $key, $GLOBALS ) ) {
+				if ( strchr( $key, '.' ) !== - 1 ) {
+					// key path
+					$cur =& $GLOBALS;
+					foreach ( explode( '.', $key ) as $pathel ) {
+						if ( !array_key_exists( $pathel, $cur ) ) {
+							$this->error( "\nERROR: $key is not a valid global variable path\n" );
+							exit();
+						}
+						$cur =& $cur[$pathel];
+					}
+					$cur = $value;
+				} elseif ( array_key_exists( $key, $GLOBALS ) ) {
 					$GLOBALS[$key] = $value;
 				} else {
 					$this->error( "\nERROR: $key is not a valid global variable\n" );
@@ -143,7 +157,7 @@ class RunSearch extends Maintenance {
 		// these are prefix or full text results
 		$rows = [];
 		foreach ( $value as $result ) {
-			$rows[] = [
+			$row = [
 				// use getDocId() rather than asking the title to allow this script
 				// to work when a production index has been imported to a test es instance
 				'docId' => $result->getDocId(),
@@ -159,6 +173,14 @@ class RunSearch extends Maintenance {
 				'explanation' => $result->getExplanation(),
 				'extra' => $result->getExtensionData(),
 			];
+			$img = $result->getFile() ?: wfFindFile( $result->getTitle() );
+			if ( $img ) {
+				$thumb = $img->transform( [ 'width' => 120, 'height' => 120 ] );
+				if ( $thumb ) {
+					$row['thumb_url'] = $thumb->getUrl();
+				}
+			}
+			$rows[] = $row;
 		}
 		return [
 			'totalHits' => $value->getTotalHits(),
@@ -232,11 +254,16 @@ class RunSearch extends Maintenance {
 		}
 
 		$limit = $this->getOption( 'limit', 10 );
-		if ( $this->getOption( 'explain' ) ) {
-			RequestContext::getMain()->getRequest()->setVal( 'cirrusExplain', true );
-		}
+		$options = CirrusSearch\CirrusDebugOptions::forRelevanceTesting(
+			$this->getOption( 'explain', false ) ? 'raw' : null
+		);
 
-		$engine = new CirrusSearch( $this->indexBaseName );
+		$config = new CirrusSearch\HashSearchConfig( [ SearchConfig::INDEX_BASE_NAME => $this->indexBaseName ],
+			[ 'inherit' ] );
+		$engine = new CirrusSearch( $config, $options );
+		$namespaces = array_keys( $engine->getConfig()->get( 'NamespacesToBeSearchedDefault' ), true );
+		$engine->setNamespaces( $namespaces );
+
 		$engine->setConnection( $this->getConnection() );
 		$engine->setLimitOffset( $limit );
 

@@ -106,7 +106,7 @@ class QueryCirrusDoc extends \ApiQueryBase {
 				return [ $rev->getPage(), $hasRedirects ];
 			}
 			$content = $handler->unserializeContent(
-			/** @suppress PhanDeprecatedFunction TODO move to new API  */
+				/** @todo move to new API  */
 				$rev->getSerializedData(),
 				$rev->getContentFormat()
 			);
@@ -130,7 +130,7 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	 * @param int $resultPageId The page id as represented in the api result.
 	 *  This may be negative for missing pages. If those pages were recently
 	 *  deleted they could still be in the elastic index.
-	 * @param Title|null The requested title
+	 * @param Title $title The requested title
 	 */
 	private function addByPageId( $resultPageId, Title $title ) {
 		list( $docId, $hasRedirects ) = $this->determineCirrusDocId( $title );

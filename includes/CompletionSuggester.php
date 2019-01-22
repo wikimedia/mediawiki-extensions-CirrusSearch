@@ -82,6 +82,11 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 	const MSEARCH_KEY_PREFIX = "prefix";
 
 	/**
+	 * Search type (used for logs & timeout configs)
+	 */
+	const SEARCH_TYPE = 'comp_suggest';
+
+	/**
 	 * @var integer maximum number of result (final)
 	 */
 	private $limit;
@@ -194,12 +199,12 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 			return Status::newGood( SearchSuggestionSet::emptySuggestionSet() );
 		}
 
-		$this->connection->setTimeout( $this->config->getElement( 'CirrusSearchClientSideSearchTimeout', 'default' ) );
+		$this->connection->setTimeout( $this->getClientTimeout( self::SEARCH_TYPE ) );
 		$result = Util::doPoolCounterWork(
 			'CirrusSearch-Completion',
 			$this->user,
 			function () use( $msearch, $text ) {
-				$log = $this->newLog( "{queryType} search for '{query}'", "comp_suggest", [
+				$log = $this->newLog( "{queryType} search for '{query}'", self::SEARCH_TYPE, [
 					'query' => $text,
 					'offset' => $this->offset,
 				] );
@@ -353,6 +358,7 @@ class CompletionSuggester extends ElasticsearchIntermediary {
 		$prefixSearchContext->setResultsType( new FancyTitleResultsType( 'prefix' ) );
 		$this->prefixSearchQueryBuilder->build( $prefixSearchContext, $term, $variants );
 		$this->prefixSearchRequestBuilder = new SearchRequestBuilder( $prefixSearchContext, $this->connection, $this->indexBaseName );
+		$this->prefixSearchRequestBuilder->setTimeout( $this->getTimeout( self::SEARCH_TYPE ) );
 		return $this->prefixSearchRequestBuilder->setLimit( $limit )
 			// collect all results up to $limit, $this->offset is the offset the client wants
 			// not the offset in prefix search results.

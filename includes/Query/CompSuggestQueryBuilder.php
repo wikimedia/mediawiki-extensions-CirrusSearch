@@ -10,6 +10,7 @@ use Elastica\ResultSet;
 use Elastica\Suggest;
 use Elastica\Suggest\Completion;
 use SearchSuggestion;
+use Wikimedia\Assert\Assert;
 
 /**
  * Suggest (Completion) query builder.
@@ -50,6 +51,7 @@ class CompSuggestQueryBuilder {
 	public function __construct( SearchContext $context, array $profile, $limit, $offset = 0 ) {
 		$this->searchContext = $context;
 		$this->profile = $profile['fst'];
+		Assert::parameter( count( $this->profile ) > 0, '$profile', 'Profile must not be empty' );
 		$this->hardLimit = self::computeHardLimit( $limit, $offset, $context->getConfig() );
 		if ( $limit > $this->hardLimit - $offset ) {
 			$limit = $this->hardLimit - $offset;
@@ -167,7 +169,9 @@ class CompSuggestQueryBuilder {
 			$variantIndex++;
 			foreach ( $this->profile as $name => $profile ) {
 				$variantProfName = $name . '-variant-' . $variantIndex;
-				$profile = $this->buildVariantProfile( $profile, self::VARIANT_EXTRA_DISCOUNT / $variantIndex );
+				$profile = $this->buildVariantProfile(
+					$profile, self::VARIANT_EXTRA_DISCOUNT / $variantIndex
+				);
 				$suggest = $this->buildSuggestQuery(
 					$variantProfName, $profile, $variant, $queryLen
 				);
@@ -217,6 +221,12 @@ class CompSuggestQueryBuilder {
 				$hitsTotal += count( $suggested['options'] );
 				foreach ( $suggested['options'] as $suggest ) {
 					$page = $suggest['text'];
+					if ( !isset( $suggest['_id'] ) ) {
+						// likely a shard failure during the fetch phase
+						// https://github.com/elastic/elasticsearch/issues/32467
+						throw new \Elastica\Exception\RuntimeException( "Invalid response returned from " .
+							"the backend (probable shard failure during the fetch phase)" );
+					}
 					$targetTitle = $page;
 					$targetTitleNS = NS_MAIN;
 					if ( isset( $suggest['_source']['target_title'] ) ) {
@@ -230,8 +240,8 @@ class CompSuggestQueryBuilder {
 					if ( $collector->collect( $suggestion, $name, $indexName ) ) {
 						if ( $type === SuggestBuilder::TITLE_SUGGESTION && $targetTitleNS === NS_MAIN ) {
 							// For title suggestions we always use the target_title
-							// This is because we may encounter default_sort or subphrases that are not valid titles...
-							// And we prefer to display the title over close redirects
+							// This is because we may encounter default_sort or subphrases that are not
+							// valid titles... And we prefer to display the title over close redirects
 							// for CrossNS redirect we prefer the returned suggestion
 							$suggestion->setText( $targetTitle );
 

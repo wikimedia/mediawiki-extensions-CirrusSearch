@@ -22,7 +22,7 @@
                         "mw_cirrus_metastore"
                     ],
                     "limit": -1,
-                    "maxScore": 1.6931472000000001,
+                    "maxScore": 1.6931472,
                     "namespaces": [],
                     "payload": [],
                     "query": "file",
@@ -47,11 +47,12 @@
             "hitsTotal": 1,
             "identity": "2c33c9c64851a02e2ba8143c6550a3b8",
             "index": "mw_cirrus_metastore",
-            "maxScore": 1.6931472000000001,
+            "maxScore": 1.6931472,
             "namespaceName": "file",
             "query": "file",
             "queryType": "namespace",
             "source": "cli",
+            "suggestionRequested": false,
             "tookMs": 0
         },
         "level": "debug",

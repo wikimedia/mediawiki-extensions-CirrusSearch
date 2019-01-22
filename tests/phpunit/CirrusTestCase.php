@@ -14,8 +14,11 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 
 	protected function setUp() {
 		parent::setUp();
-		MediaWikiServices::getInstance()
-			->resetServiceForTesting( InterwikiResolver::SERVICE );
+		$services = MediaWikiServices::getInstance();
+		$services->resetServiceForTesting( InterwikiResolver::SERVICE );
+		// MediaWikiTestCase::makeTestConfigFactoryInstantiator ends up carrying
+		// over the same instance of SearchConfig between tests. Evil but necessary.
+		$services->getConfigFactory()->makeConfig( 'CirrusSearch' )->clearCachesForTesting();
 	}
 
 	public static function findFixtures( $path ) {
@@ -49,5 +52,27 @@ abstract class CirrusTestCase extends MediaWikiTestCase {
 			throw new \RuntimeException( "Failed decoding {$errorMessage}: $testFile" );
 		}
 		return $decoded;
+	}
+
+	public static function fixturePath( $testFile ) {
+		return self::FIXTURE_DIR . $testFile;
+	}
+
+	/**
+	 * Capture the args of a mocked method
+	 *
+	 * @param mixed &$args placeholder for args to capture
+	 * @param callable|null $callback optional callback methods to run on captured args
+	 * @return \PHPUnit\Framework\Constraint\Callback
+	 * @see Assert::callback()
+	 */
+	public function captureArgs( &$args, callable $callback = null ) {
+		return $this->callback( function ( ...$argToCapture ) use ( &$args, $callback ) {
+			$args = $argToCapture;
+			if ( $callback !== null ) {
+				return $callback( $argToCapture );
+			}
+			return true;
+		} );
 	}
 }

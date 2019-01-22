@@ -9,6 +9,7 @@ use CirrusSearch\Util;
 
 /**
  * @group CirrusSearch
+ * @covers \CirrusSearch\Query\FullTextQueryStringQueryBuilder
  */
 class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 
@@ -138,6 +139,10 @@ class FullTextQueryStringQueryBuilderTest extends CirrusTestCase {
 		$searchContext->setSuggestion( false );
 		$builder->build( $searchContext, $term );
 		$actual = $searchContext->getSyntaxUsed();
+
+		// These are returned for everything (TODO: why?)
+		$expected[] = 'full_text';
+		$expected[] = 'full_text_querystring';
 
 		// sort for stability
 		sort( $actual );

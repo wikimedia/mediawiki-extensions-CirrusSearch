@@ -13,17 +13,29 @@ class IndexCreator {
 	private $index;
 
 	/**
-	 * @var AnalysisConfigBuilder
+	 * @var array
 	 */
-	private $analysisConfigBuilder;
+	private $analysisConfig;
+
+	/**
+	 * @var array
+	 */
+	private $similarityConfig;
+
+	/**
+	 * @var array $mapping
+	 */
+	private $mapping;
 
 	/**
 	 * @param Index $index
-	 * @param AnalysisConfigBuilder $analysisConfigBuilder
+	 * @param array $analysisConfig
+	 * @param array $similarityConfig
 	 */
-	public function __construct( Index $index, AnalysisConfigBuilder $analysisConfigBuilder ) {
+	public function __construct( Index $index, array $analysisConfig, array $similarityConfig ) {
 		$this->index = $index;
-		$this->analysisConfigBuilder = $analysisConfigBuilder;
+		$this->analysisConfig = $analysisConfig;
+		$this->similarityConfig = $similarityConfig;
 	}
 
 	/**
@@ -100,13 +112,13 @@ class IndexCreator {
 			'settings' => [
 				'number_of_shards' => $shardCount,
 				'auto_expand_replicas' => $replicaCount,
-				'analysis' => $this->analysisConfigBuilder->buildConfig(),
+				'analysis' => $this->analysisConfig,
 				'refresh_interval' => $refreshInterval . 's',
 				'merge.policy' => $mergeSettings,
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			] + $extraSettings
 		];
-		$similarity = $this->analysisConfigBuilder->buildSimilarityConfig();
+		$similarity = $this->similarityConfig;
 		if ( $similarity ) {
 			$args['settings']['similarity'] = $similarity;
 		}

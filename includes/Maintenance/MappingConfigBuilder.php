@@ -2,6 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
+use CirrusSearch\Connection;
 use CirrusSearch\Search\CirrusIndexField;
 use CirrusSearch\Search\CirrusSearchIndexFieldFactory;
 use CirrusSearch\SearchConfig;
@@ -9,6 +10,7 @@ use CirrusSearch\Search\TextIndexField;
 use CirrusSearch\Search\SourceTextIndexField;
 use Hooks;
 use SearchIndexField;
+use Wikimedia\Assert\Assert;
 
 /**
  * Builds elasticsearch mapping configuration arrays.
@@ -55,19 +57,30 @@ class MappingConfigBuilder {
 	/**
 	 * @var \CirrusSearch
 	 */
-	private $engine;
+	protected $engine;
 
 	/**
 	 * @var CirrusSearchIndexFieldFactory
 	 */
-	private $searchIndexFieldFactory;
+	protected $searchIndexFieldFactory;
+
+	/**
+	 * @var int
+	 */
+	protected $flags = 0;
 
 	/**
 	 * @param bool $optimizeForExperimentalHighlighter should the index be optimized for the experimental highlighter?
+	 * @param int $flags
 	 * @param SearchConfig|null $config
+	 * @throws \ConfigException
 	 */
-	public function __construct( $optimizeForExperimentalHighlighter, SearchConfig $config = null ) {
+	public function __construct( $optimizeForExperimentalHighlighter, $flags = 0, SearchConfig $config = null ) {
 		$this->optimizeForExperimentalHighlighter = $optimizeForExperimentalHighlighter;
+		if ( $this->optimizeForExperimentalHighlighter ) {
+			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
+		}
+		$this->flags = $flags;
 		$this->engine = new \CirrusSearch( $config );
 		$this->config = $this->engine->getConfig();
 		$this->searchIndexFieldFactory = new CirrusSearchIndexFieldFactory( $this->config );
@@ -76,10 +89,9 @@ class MappingConfigBuilder {
 	/**
 	 * Get definitions for default index fields.
 	 * These fields are always present in the index.
-	 * @param int $flags
 	 * @return array
 	 */
-	private function getDefaultFields( $flags ) {
+	private function getDefaultFields() {
 		// Note never to set something as type='object' here because that isn't returned by elasticsearch
 		// and is inferred anyway.
 		$titleExtraAnalyzers = [
@@ -89,7 +101,7 @@ class MappingConfigBuilder {
 			[ 'analyzer' => 'near_match_asciifolding', 'index_options' => 'docs', 'norms' => false ],
 			[ 'analyzer' => 'keyword', 'index_options' => 'docs', 'norms' => false ],
 		];
-		if ( $flags & self::PREFIX_START_WITH_ANY ) {
+		if ( $this->flags & self::PREFIX_START_WITH_ANY ) {
 			$titleExtraAnalyzers[] = [
 				'analyzer' => 'word_prefix',
 				'search_analyzer' => 'plain_search',
@@ -139,14 +151,14 @@ class MappingConfigBuilder {
 				'title' => $this->searchIndexFieldFactory->newStringField( 'title',
 					TextIndexField::ENABLE_NORMS | TextIndexField::COPY_TO_SUGGEST |
 					TextIndexField::SUPPORT_REGEX,
-					$titleExtraAnalyzers )->setMappingFlags( $flags )->getMapping( $this->engine ),
-				'text' => $this->getTextFieldMapping( $flags ),
+					$titleExtraAnalyzers )->setMappingFlags( $this->flags )->getMapping( $this->engine ),
+				'text' => $this->getTextFieldMapping(),
 				'text_bytes' => $this->searchIndexFieldFactory
 					->newLongField( 'text_bytes' )
 					->setFlag( SearchIndexField::FLAG_NO_INDEX )
 					->getMapping( $this->engine ),
 				'source_text' => $this->buildSourceTextStringField( 'source_text' )
-					->setMappingFlags( $flags )->getMapping( $this->engine ),
+					->setMappingFlags( $this->flags )->getMapping( $this->engine ),
 				'redirect' => [
 					'dynamic' => false,
 					'properties' => [
@@ -160,7 +172,7 @@ class MappingConfigBuilder {
 								| TextIndexField::SUPPORT_REGEX,
 								$titleExtraAnalyzers
 							)
-							->setMappingFlags( $flags )
+							->setMappingFlags( $this->flags )
 							->getMapping( $this->engine ),
 					]
 				],
@@ -180,22 +192,18 @@ class MappingConfigBuilder {
 
 	/**
 	 * Build the mapping config.
-	 * @param int $flags Flags for building the configuration
 	 * @return array the mapping config
 	 */
-	public function buildConfig( $flags = 0 ) {
+	public function buildConfig() {
 		global $wgCirrusSearchAllFields, $wgCirrusSearchWeights;
 
-		if ( $this->optimizeForExperimentalHighlighter ) {
-			$flags |= self::OPTIMIZE_FOR_EXPERIMENTAL_HIGHLIGHTER;
-		}
-		$page = $this->getDefaultFields( $flags );
+		$page = $this->getDefaultFields();
 
 		$fields = $this->engine->getSearchIndexFields();
 
 		foreach ( $fields as $fieldName => $field ) {
 			if ( $field instanceof CirrusIndexField ) {
-				$field->setMappingFlags( $flags );
+				$field->setMappingFlags( $this->flags );
 			}
 			$config = $field->getMapping( $this->engine );
 			if ( $config ) {
@@ -215,7 +223,7 @@ class MappingConfigBuilder {
 			$allField = $this->searchIndexFieldFactory->
 				newStringField( 'all', TextIndexField::ENABLE_NORMS );
 			$page['properties']['all'] =
-				$allField->setMappingFlags( $flags )->getMapping( $this->engine );
+				$allField->setMappingFlags( $this->flags )->getMapping( $this->engine );
 			$page = $this->setupCopyTo( $page, $wgCirrusSearchWeights, 'all' );
 
 			// Now repeat for near_match fields.  The same considerations above apply except near_match
@@ -243,22 +251,16 @@ class MappingConfigBuilder {
 			$page = $this->setupCopyTo( $page, $nearMatchFields, 'all_near_match' );
 		}
 
-		$mappingConfig = [ 'page' => $page ];
+		$mappingConfig = [ $this->getMainType() => $page ];
 
-		$mappingConfig[ 'archive' ] = [
-			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
-			'properties' => [
-				'namespace' => $page['properties']['namespace'],
-				'title' => $page['properties']['title'],
-				'wiki' => $page['properties']['wiki'],
-			],
-		];
-		// Do not use copy settings for archive
-		unset( $mappingConfig['archive']['properties']['title']['copy_to'] );
-
-		Hooks::run( 'CirrusSearchMappingConfig', [ &$mappingConfig, $this ] );
-
+		if ( $this->getMainType() === Connection::PAGE_TYPE_NAME ) {
+			// For now only trigger the hook on the "page" indices.
+			// It's probably that implementors don't pay attention to the new getMainType()
+			// method.
+			Hooks::run( 'CirrusSearchMappingConfig', [ &$mappingConfig, $this ] );
+			Assert::postcondition( count( $mappingConfig ) === 1,
+				'CirrusSearchMappingConfig implementations must not add a new mapping type' );
+		}
 		return $mappingConfig;
 	}
 
@@ -297,15 +299,14 @@ class MappingConfigBuilder {
 	}
 
 	/**
-	 * @param int $flags
 	 * @return array
 	 */
-	private function getTextFieldMapping( $flags ) {
+	private function getTextFieldMapping() {
 		$stringFieldMapping = $this->searchIndexFieldFactory->newStringField(
 			'text',
 			null,
 			[]
-		)->setMappingFlags( $flags )->getMapping( $this->engine );
+		)->setMappingFlags( $this->flags )->getMapping( $this->engine );
 
 		$extraFieldMapping = [
 			'fields' => [
@@ -320,5 +321,26 @@ class MappingConfigBuilder {
 		$textFieldMapping = array_merge_recursive( $stringFieldMapping, $extraFieldMapping );
 
 		return $textFieldMapping;
+	}
+
+	/**
+	 * The elastic type name used by this index
+	 * @return string
+	 */
+	public function getMainType() {
+		return Connection::PAGE_TYPE_NAME;
+	}
+
+	/**
+	 * Whether or not it's safe to optimize the analysis config.
+	 * It's generally safe to optimize if all the analyzers needed are
+	 * properly referenced in the mapping.
+	 * In the case an analyzer is used directly in a query but not referenced
+	 * in the mapping it's not safe to optimize.
+	 *
+	 * @return bool
+	 */
+	public function canOptimizeAnalysisConfig() {
+		return false;
 	}
 }

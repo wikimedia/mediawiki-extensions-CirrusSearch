@@ -96,4 +96,40 @@ class ConnectionTest extends CirrusTestCase {
 		$conn = new Connection( $config );
 		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}
+
+	public function testGetAllIndexTypes() {
+		$con = new Connection( new HashSearchConfig( [
+			'CirrusSearchServers' => [ 'localhost' ],
+			'CirrusSearchNamespaceMappings' => []
+		] ) );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ],
+			$con->getAllIndexTypes() );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::PAGE_TYPE_NAME ) );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( null ) );
+		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::ARCHIVE_TYPE_NAME ) );
+
+		$con = new Connection( new HashSearchConfig( [
+			'CirrusSearchServers' => [ 'localhost' ],
+			'CirrusSearchNamespaceMappings' => [ NS_FILE => 'file' ]
+		] ) );
+
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, 'file' ],
+			$con->getAllIndexTypes() );
+		$this->assertArrayEquals( [ Connection::CONTENT_INDEX_TYPE, Connection::GENERAL_INDEX_TYPE, 'file' ],
+			$con->getAllIndexTypes( Connection::PAGE_TYPE_NAME ) );
+		$this->assertArrayEquals(
+			[
+				Connection::CONTENT_INDEX_TYPE,
+				Connection::GENERAL_INDEX_TYPE,
+				Connection::ARCHIVE_INDEX_TYPE,
+				'file'
+			],
+			$con->getAllIndexTypes( null )
+		);
+		$this->assertArrayEquals( [ Connection::ARCHIVE_INDEX_TYPE ],
+			$con->getAllIndexTypes( Connection::ARCHIVE_TYPE_NAME ) );
+	}
 }

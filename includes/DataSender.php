@@ -264,7 +264,7 @@ class DataSender extends ElasticsearchIntermediary {
 	 */
 	public function sendDeletes( $docIds, $indexType = null, $elasticType = null ) {
 		if ( $indexType === null ) {
-			$indexes = $this->connection->getAllIndexTypes();
+			$indexes = $this->connection->getAllIndexTypes( Connection::PAGE_TYPE_NAME );
 		} else {
 			$indexes = [ $indexType ];
 		}

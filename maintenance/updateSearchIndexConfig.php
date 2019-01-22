@@ -57,7 +57,7 @@ class UpdateSearchIndexConfig extends Maintenance {
 		$child->execute();
 		$child->done();
 
-		foreach ( $this->getConnection()->getAllIndexTypes() as $indexType ) {
+		foreach ( $this->getConnection()->getAllIndexTypes( null ) as $indexType ) {
 			$this->outputIndented( "$indexType index...\n" );
 			$child = $this->runChild( UpdateOneSearchIndexConfig::class );
 			$child->mOptions[ 'indexType' ] = $indexType;

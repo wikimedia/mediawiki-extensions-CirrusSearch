@@ -109,7 +109,7 @@ $wgCirrusSearchConnectionAttempts = 1;
  *  'cluster2' => array( 'content' => 3, 'general' => 3 ),
  * );
  */
-$wgCirrusSearchShardCount = [ 'content' => 4, 'general' => 4, 'titlesuggest' => 4 ];
+$wgCirrusSearchShardCount = [ 'content' => 4, 'general' => 4, 'archive' => 4, 'titlesuggest' => 4 ];
 
 /**
  * Number of replicas Elasticsearch can expand or contract to. This allows for

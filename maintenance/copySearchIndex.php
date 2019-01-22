@@ -91,11 +91,11 @@ class CopySearchIndex extends Maintenance {
 			$sourceConnection,
 			$targetConnection,
 			// Target Index
-			[ $targetConnection->getIndex( $this->indexBaseName, $this->indexType,
-				$indexIdentifier )->getType( Connection::PAGE_TYPE_NAME )
-			],
+			$targetConnection
+				->getIndex( $this->indexBaseName, $this->indexType, $indexIdentifier )
+				->getType( Connection::PAGE_TYPE_NAME ),
 			// Source Index
-			[ $this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ) ],
+			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ),
 			$clusterSettings->getShardCount( $this->indexType ),
 			$clusterSettings->getReplicaCount( $this->indexType ),
 			$this->getMergeSettings(),

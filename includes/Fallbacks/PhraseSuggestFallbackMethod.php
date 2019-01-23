@@ -46,10 +46,9 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	/**
 	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
-	 * @param \WebRequest $request
 	 * @return FallbackMethod
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query, \WebRequest $request ) {
+	public static function build( SearcherFactory $factory, SearchQuery $query ) {
 		return new self( $factory, $query );
 	}
 

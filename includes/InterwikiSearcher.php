@@ -75,7 +75,7 @@ class InterwikiSearcher extends Searcher {
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
 			$context = SearchContext::fromSearchQuery( $iwQuery,
-				FallbackRunner::create( $this, $iwQuery, \RequestContext::getMain()->getRequest() ) );
+				FallbackRunner::create( $this, $iwQuery ) );
 			$this->searchContext = $context;
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();

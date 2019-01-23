@@ -150,7 +150,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	public function search( SearchQuery $query ) {
-		$fallbackRunner = FallbackRunner::create( $this, $query, RequestContext::getMain()->getRequest() );
+		$fallbackRunner = FallbackRunner::create( $this, $query );
 		$this->searchContext = SearchContext::fromSearchQuery( $query, $fallbackRunner );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();

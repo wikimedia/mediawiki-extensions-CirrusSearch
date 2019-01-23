@@ -6,13 +6,13 @@ use CirrusSearch\CirrusConfigInterwikiResolver;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
-use CirrusSearch\LanguageDetector\HttpAccept;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
 use CirrusSearch\Test\DummyResultSet;
+use CirrusSearch\Test\MockLanguageDetector;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;
@@ -99,13 +99,11 @@ class FallbackRunnerTest extends CirrusTestCase {
 			/**
 			 * @param SearcherFactory $searcherFactory
 			 * @param SearchQuery $query
-			 * @param \WebRequest $request
 			 * @return FallbackMethod
 			 */
 			public static function build(
 				SearcherFactory $searcherFactory,
-				SearchQuery $query,
-				\WebRequest $request
+				SearchQuery $query
 			) {
 				throw new AssertionFailedError();
 			}
@@ -146,8 +144,9 @@ class FallbackRunnerTest extends CirrusTestCase {
 				'fr' => 'frwiki',
 			],
 			'CirrusSearchLanguageDetectors' => [
-				'language' => HttpAccept::class
+				'language' => MockLanguageDetector::class
 			],
+			'CirrusSearchMockLanguage' => 'fr',
 			'CirrusSearchFetchConfigFromApi' => false,
 			'CirrusSearchEnablePhraseSuggest' => true,
 		] );
@@ -158,8 +157,6 @@ class FallbackRunnerTest extends CirrusTestCase {
 					$this->createMock( \MultiHttpClient::class ), new \EmptyBagOStuff() );
 			}
 		);
-		$request = new \FauxRequest( [] );
-		$request->setHeader( 'Accept-Language', 'fr-FR' );
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars' )
 			->setAllowRewrite( true )
 			->setWithDYMSuggestion( true )
@@ -171,7 +168,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 				$this->mockSearcher( DummyResultSet::fakeTotalHits( 2 ) ),
 				$this->mockSearcher( DummyResultSet::fakeTotalHits( 3 ) )
 			);
-		$runner = FallbackRunner::create( $searcherFactory, $query, $request );
+		$runner = FallbackRunner::create( $searcherFactory, $query );
 		$response = [
 			"hits" => [
 				"total" => 0,

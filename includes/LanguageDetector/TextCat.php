@@ -90,10 +90,9 @@ class TextCat implements Detector {
 
 	/**
 	 * @param SearchConfig $config
-	 * @param \WebRequest $request
 	 * @return Detector
 	 */
-	public static function build( SearchConfig $config, \WebRequest $request ) {
+	public static function build( SearchConfig $config ) {
 		return new self( $config );
 	}
 }

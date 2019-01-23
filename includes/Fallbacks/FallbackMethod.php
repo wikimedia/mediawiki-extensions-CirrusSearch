@@ -22,10 +22,9 @@ interface FallbackMethod {
 	/**
 	 * @param SearcherFactory $searcherFactory
 	 * @param SearchQuery $query
-	 * @param \WebRequest $request
 	 * @return FallbackMethod
 	 */
-	public static function build( SearcherFactory $searcherFactory, SearchQuery $query, \WebRequest $request );
+	public static function build( SearcherFactory $searcherFactory, SearchQuery $query );
 
 	/**
 	 * Approximation of the success of this fallback method

@@ -36,13 +36,13 @@ class FallbackRunner implements SearchMetricsProvider {
 		return self::$NOOP_RUNNER;
 	}
 
-	public static function create( SearcherFactory $factory, SearchQuery $query, \WebRequest $request ) {
+	public static function create( SearcherFactory $factory, SearchQuery $query ) {
 		$fallbackMethods = [];
 		if ( $query->isWithDYMSuggestion() ) {
-			$fallbackMethods[] = PhraseSuggestFallbackMethod::build( $factory, $query, $request );
+			$fallbackMethods[] = PhraseSuggestFallbackMethod::build( $factory, $query );
 		}
 		if ( $query->getCrossSearchStrategy()->isCrossLanguageSearchSupported() ) {
-			$fallbackMethods[] = LangDetectFallbackMethod::build( $factory, $query, $request );
+			$fallbackMethods[] = LangDetectFallbackMethod::build( $factory, $query );
 		}
 		return new self( $fallbackMethods );
 	}

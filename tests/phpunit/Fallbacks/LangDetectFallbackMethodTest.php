@@ -2,13 +2,13 @@
 
 namespace CirrusSearch\Fallbacks;
 
-use CirrusSearch\DummyResultSet;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\Detector;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\SearchConfig;
+use CirrusSearch\Test\DummyResultSet;
 
 /**
  * @covers \CirrusSearch\Fallbacks\LangDetectFallbackMethod

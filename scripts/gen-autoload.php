@@ -15,11 +15,10 @@ function main() {
 	foreach ( glob( $base . '/*.php' ) as $file ) {
 		$generator->readFile( $file );
 	}
-	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/TestUtils.php' );
+	$generator->readDir( dirname( __DIR__ ) . '/tests/phpunit/mocks' );
 	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/CirrusTestCase.php' );
 	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/Query/BaseSimpleKeywordFeatureTest.php' );
 	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/Query/KeywordFeatureAssertions.php' );
-	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/DummyResultSet.php' );
 	$generator->readFile( dirname( __DIR__ ) . '/tests/phpunit/Fallbacks/BaseFallbackMethodTest.php' );
 
 	$data = $generator->getAutoload( basename( __DIR__ ) . '/' . basename( __FILE__ ) );

@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Test\SearchConfigUsageDecorator;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
@@ -466,26 +467,5 @@ class SearcherTest extends CirrusTestCase {
 		} else {
 			$this->assertArrayNotHasKey( 'suggest', $query );
 		}
-	}
-}
-
-class SearchConfigUsageDecorator extends SearchConfig {
-	private static $usedConfigKeys = [];
-
-	public function get( $name ) {
-		$val = parent::get( $name );
-		// Some config vars are objects.. (e.g. wgContLang)
-		if ( !is_object( $val ) ) {
-			static::$usedConfigKeys[$name] = true;
-		}
-		return $val;
-	}
-
-	public static function getUsedConfigKeys() {
-		return static::$usedConfigKeys;
-	}
-
-	public static function resetUsedConfigKeys() {
-		static::$usedConfigKeys = [];
 	}
 }

@@ -3,10 +3,10 @@
 namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\DummyResultSet;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
+use CirrusSearch\Test\DummyResultSet;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\Result;

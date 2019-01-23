@@ -11,7 +11,6 @@ use CirrusSearch\RequestLogger;
 use CirrusSearch\RequestLog;
 use CirrusSearch\SearchConfig;
 use CirrusSearch\Searcher;
-use Elastica\Request;
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;
 use Psr\Log\AbstractLogger;
@@ -382,101 +381,5 @@ class RequestLoggerTest extends CirrusTestCase {
 			unset( $log['context']['requests'][$idx]['tookMs'] );
 		}
 		return $log;
-	}
-}
-
-class ArrayLogger extends AbstractLogger {
-	private $logs = [];
-
-	public function log( $level, $message, array $context = [] ) {
-		$this->logs[] = [
-			'level' => $level,
-			'message' => $message,
-			'context' => $context,
-		];
-	}
-
-	public function getLogs() {
-		return $this->logs;
-	}
-}
-
-class PassThruTransport extends AbstractTransport {
-
-	private $transportConfig;
-	private $inner;
-	private $responses = [];
-
-	public function __construct( $inner ) {
-		if ( $inner instanceof AbstractTransport ) {
-			$this->inner = $inner;
-		} else {
-			$this->transportConfig = $inner;
-		}
-	}
-
-	public function getResponses() {
-		return $this->responses;
-	}
-
-	// Wrapped functions from AbstractTransport
-	public function exec( Request $request, array $params ) {
-		$response = $this->inner->exec( $request, $params );
-		$this->responses[] = $response;
-
-		return $response;
-	}
-
-	public function getConnection() {
-		return $this->inner->getConnection();
-	}
-
-	public function setConnection( \Elastica\Connection $connection ) {
-		if ( $this->inner ) {
-			$this->inner->setConnection( $connection );
-		} else {
-			$this->inner = AbstractTransport::create(
-				$this->transportConfig['transport'],
-				$connection,
-				$this->transportConfig['params']
-			);
-		}
-
-		return $this;
-	}
-
-	// Wrapped functions from Param
-	public function toArray() {
-		return $this->inner->toArray();
-	}
-
-	public function setParam( $key, $value ) {
-		$this->inner->setParam( $key, $value );
-
-		return $this;
-	}
-
-	public function setParams( array $params ) {
-		$this->inner->setParams( $params );
-
-		return $this;
-	}
-
-	public function addParam( $key, $value ) {
-		$this->inner->addParam( $key, $value );
-
-		return $this;
-	}
-
-	public function getParam( $key ) {
-		return $this->inner->getParam( $key );
-	}
-
-	public function hasParam( $key ) {
-		return $this->inner->hasParam( $key );
-	}
-
-	public function getParams() {
-		return $this->inner->getParams();
 	}
 }

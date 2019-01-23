@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Test;
 
 use CirrusSearch\Search\ResultSet;
 use SearchResultSet;

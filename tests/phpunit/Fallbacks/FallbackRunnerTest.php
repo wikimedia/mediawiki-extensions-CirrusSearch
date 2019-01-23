@@ -4,7 +4,6 @@ namespace CirrusSearch\Fallbacks;
 
 use CirrusSearch\CirrusConfigInterwikiResolver;
 use CirrusSearch\CirrusTestCase;
-use CirrusSearch\DummyResultSet;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\InterwikiResolver;
 use CirrusSearch\LanguageDetector\HttpAccept;
@@ -13,6 +12,7 @@ use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
+use CirrusSearch\Test\DummyResultSet;
 use Elastica\Query;
 use Elastica\Response;
 use Elastica\ResultSet\DefaultBuilder;

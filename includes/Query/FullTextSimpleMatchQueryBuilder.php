@@ -251,8 +251,6 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			}
 			$query->addShould( $dismax );
 		}
-		// Removed in future lucene version https://issues.apache.org/jira/browse/LUCENE-7347
-		$query->setParam( 'disable_coord', true );
 		return $query;
 	}
 

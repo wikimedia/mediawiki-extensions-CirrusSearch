@@ -399,6 +399,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	private function buildQueryString( array $fields, $queryString, $phraseSlop ) {
 		$query = new \Elastica\Query\QueryString( $queryString );
 		$query->setFields( $fields );
+		// TODO: This doesn't do anything in elastic 6.x. Leaving here to generate
+		// deprecation notices until we have a replacement plan.
 		$query->setAutoGeneratePhraseQueries( true );
 		$query->setPhraseSlop( $phraseSlop );
 		$query->setDefaultOperator( 'AND' );
@@ -406,15 +408,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
-		$option = 'max_determinized_states';
-		// Workround https://github.com/elastic/elasticsearch/issues/22722
-		if ( $this->config->getElement(
-			'CirrusSearchElasticQuirks', 'query_string_max_determinized_states' ) === true
-		) {
-			$option = 'max_determined_states';
-		}
 		if ( isset( $states ) ) {
-			$query->setParam( $option, $states );
+			$query->setParam( 'max_determinized_states', $states );
 		}
 		return $query;
 	}

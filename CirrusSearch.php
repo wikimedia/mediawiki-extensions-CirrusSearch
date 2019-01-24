@@ -189,12 +189,6 @@ $wgCirrusSearchOptimizeIndexForExperimentalHighlighter = false;
  * wikimedia-extra versions 1.3.1, 1.4.2, 1.5.0, and greater:
  * $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
  *
- * As of elastic 5.5 native scripts have been deprecated the super_detect_noop is
- * now available as a normal script with language "super_detect_noop".
- * If you run elastic prior to 5.5.2 you must enable this option if using
- * super_detect_noop.
- * $wgCirrusSearchWikimediaExtraPlugin['super_detect_noop_enable_native'] = true;
- *
  * Controls the list of extra handlers to set when the noop script
  * is enabled.
  *
@@ -834,14 +828,15 @@ $wgCirrusSearchMergeSettings = [
 		// because it is searched more frequently.
 		'max_merge_at_once' => 5,
 		'segments_per_tier' => 5,
-		'reclaim_deletes_weight' => 3.0,
+		'deletes_pct_allowed' => 25.0,
+		// TODO: Really? This is well beyond elastic guidelines
 		'max_merged_segment' => '25g',
 	],
 	'general' => [
 		// The Elasticsearch defaults for this less frequently searched index.
 		'max_merge_at_once' => 10,
 		'segments_per_tier' => 10,
-		'reclaim_deletes_weight' => 2.0,
+		'deletes_pct_allowed' => 33.0,
 		'max_merged_segment' => '5g',
 	],
 ];

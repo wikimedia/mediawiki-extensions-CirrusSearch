@@ -383,16 +383,16 @@ class Reindexer {
 		}
 
 		$script = [
-			'inline' => '',
+			'source' => '',
 			'lang' => 'painless',
 		];
 		foreach ( $this->fieldsToDelete as $field ) {
 			$field = trim( $field );
 			if ( strlen( $field ) ) {
-				$script['inline'] .= "ctx._source.remove('$field');";
+				$script['source'] .= "ctx._source.remove('$field');";
 			}
 		}
-		if ( $script['inline'] === '' ) {
+		if ( $script['source'] === '' ) {
 			return null;
 		}
 

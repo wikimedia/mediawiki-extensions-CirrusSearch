@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\Search\CrossProjectBlockScorerFactory;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultSet;
@@ -73,7 +74,8 @@ class InterwikiSearcher extends Searcher {
 		$this->setResultsType( $resultsType );
 		$blockScorer = CrossProjectBlockScorerFactory::load( $this->config );
 		foreach ( $iwQueries as $interwiki => $iwQuery ) {
-			$context = SearchContext::fromSearchQuery( $iwQuery );
+			$context = SearchContext::fromSearchQuery( $iwQuery,
+				FallbackRunner::create( $this, $iwQuery ) );
 			$this->searchContext = $context;
 			$this->config = $context->getConfig();
 			$this->limit = $iwQuery->getLimit();

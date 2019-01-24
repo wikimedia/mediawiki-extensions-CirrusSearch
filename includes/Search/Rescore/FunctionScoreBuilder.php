@@ -2,9 +2,7 @@
 
 namespace CirrusSearch\Search\Rescore;
 
-use CirrusSearch\Search\SearchContext;
 use CirrusSearch\SearchConfig;
-use Wikimedia\Assert\Assert;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -35,25 +33,11 @@ abstract class FunctionScoreBuilder implements BoostFunctionBuilder {
 	protected $weight;
 
 	/**
-	 * @deprecated you should not depend on the SearchContext
-	 * @var SearchContext|null
-	 */
-	protected $context;
-
-	/**
-	 * @param SearchConfig|SearchContext $contextOrConfig the search config
+	 * @param SearchConfig $config the search config
 	 * @param float $weight the global weight
-	 * NOTE: SearchContext usage is being deprecated
 	 */
-	public function __construct( $contextOrConfig, $weight ) {
-		if ( $contextOrConfig instanceof SearchContext ) {
-			$this->context = $contextOrConfig;
-			$this->config = $contextOrConfig->getConfig();
-		} elseif ( $contextOrConfig instanceof SearchConfig ) {
-			$this->config = $contextOrConfig;
-		} else {
-			Assert::parameter( false, '$contextOrConfig', 'must be a SearchConfig' );
-		}
+	public function __construct( $config, $weight ) {
+		$this->config = $config;
 		$this->weight = $this->getOverriddenFactor( $weight );
 	}
 

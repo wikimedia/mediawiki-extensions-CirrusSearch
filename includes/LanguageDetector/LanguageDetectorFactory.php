@@ -4,7 +4,6 @@ namespace CirrusSearch\LanguageDetector;
 
 use CirrusSearch\SearchConfig;
 use MediaWiki\Logger\LoggerFactory;
-use WebRequest;
 
 class LanguageDetectorFactory {
 	/**
@@ -13,18 +12,11 @@ class LanguageDetectorFactory {
 	private $config;
 
 	/**
-	 * @var WebRequest
-	 */
-	private $request;
-
-	/**
 	 * LanguageDetectorFactory constructor.
 	 * @param SearchConfig $config
-	 * @param WebRequest $request
 	 */
-	public function __construct( SearchConfig $config, WebRequest $request ) {
+	public function __construct( SearchConfig $config ) {
 		$this->config = $config;
-		$this->request = $request;
 	}
 
 	/**
@@ -53,7 +45,7 @@ class LanguageDetectorFactory {
 				);
 				continue;
 			}
-			$detectors[$name] = $klass::build( $this->config, $this->request );
+			$detectors[$name] = $klass::build( $this->config );
 		}
 		return $detectors;
 	}

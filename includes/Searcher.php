@@ -10,7 +10,6 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\CountContentWordsBuilder;
 use CirrusSearch\Query\NearMatchQueryBuilder;
 use CirrusSearch\Query\PrefixSearchQueryBuilder;
-use CirrusSearch\Search\EmptyResultSet;
 use CirrusSearch\Search\FullTextResultsType;
 use CirrusSearch\Search\ResultsType;
 use CirrusSearch\Search\ResultSet;
@@ -85,12 +84,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	protected $limit;
 
 	/**
-	 * @var ResultsType|null type of results.  null defaults to FullTextResultsType
-	 * @deprecated
-	 */
-	protected $resultsType;
-
-	/**
 	 * @var string sort type
 	 */
 	private $sort = 'relevance';
@@ -157,7 +150,8 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 * @return Status
 	 */
 	public function search( SearchQuery $query ) {
-		$this->searchContext = SearchContext::fromSearchQuery( $query );
+		$fallbackRunner = FallbackRunner::create( $this, $query );
+		$this->searchContext = SearchContext::fromSearchQuery( $query, $fallbackRunner );
 		$this->setOffsetLimit( $query->getOffset(), $query->getLimit() );
 		$this->config = $query->getSearchConfig();
 		$this->sort = $query->getSort();
@@ -166,11 +160,10 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			$this->searchContext->setResultsType( new FullTextResultsType() );
 			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
-				$runner = FallbackRunner::create( $this, $query, RequestContext::getMain()->getRequest() );
-				$newStatus = Status::newGood( $runner->run( $status->getValue() ) );
+				$newStatus = Status::newGood( $fallbackRunner->run( $status->getValue() ) );
 				$newStatus->merge( $status );
 				$status = $newStatus;
-				$this->appendMetrics( $runner );
+				$this->appendMetrics( $fallbackRunner );
 			}
 			return $status;
 		} else {
@@ -183,8 +176,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	 */
 	public function setResultsType( $resultsType ) {
 		$this->searchContext->setResultsType( $resultsType );
-		// BC, deprecated
-		$this->resultsType = $resultsType;
 	}
 
 	/**
@@ -245,13 +236,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	}
 
 	/**
-	 * @param string $suggestPrefix prefix to be prepended to suggestions
-	 */
-	public function addSuggestPrefix( $suggestPrefix ) {
-		$this->searchContext->addSuggestPrefix( $suggestPrefix );
-	}
-
-	/**
 	 * Build full text search for articles with provided term. All the
 	 * state is applied to $this->searchContext. The returned query
 	 * builder can be used to build a degraded query if necessary.
@@ -291,9 +275,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				"Bad query builder object override, must implement FullTextQueryBuilder!" );
 		}
 
-		if ( $this->offset != 0 || !$this->config->get( 'CirrusSearchEnablePhraseSuggest' ) ) {
-			$this->searchContext->setSuggestion( false );
-		}
 		$qb->build( $this->searchContext, $term );
 
 		// Give other builder opportunity to override
@@ -301,20 +282,6 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			[ $qb, $term, $this->searchContext ] );
 
 		return $qb;
-	}
-
-	/**
-	 * Search articles with provided term.
-	 * @param string $term term to search
-	 * @param bool $showSuggestion should this search suggest alternative searches that might be better?
-	 * @return Status
-	 * @deprecated Use search( SearchQuery $query )
-	 */
-	public function searchText( $term, $showSuggestion ) {
-		wfDeprecated( __METHOD__ );
-		$this->searchContext->setOriginalSearchTerm( $term );
-		$this->searchContext->setSuggestion( $showSuggestion );
-		return $this->searchTextInternal( $term );
 	}
 
 	/**
@@ -971,7 +938,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	}
 
 	private function emptyResultSet() {
-		$status = Status::newGood( new EmptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
+		$status = Status::newGood( ResultSet::emptyResultSet( $this->searchContext->isSpecialKeywordUsed() ) );
 		foreach ( $this->searchContext->getWarnings() as $warning ) {
 			$status->warning( ...$warning );
 		}

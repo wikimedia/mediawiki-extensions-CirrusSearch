@@ -2,9 +2,7 @@
 
 namespace CirrusSearch\Query;
 
-use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\SearchConfig;
-use CirrusSearch\Searcher;
 use CirrusSearch\Search\SearchContext;
 use CirrusSearch\Extra\Query\TokenCountRouter;
 use MediaWiki\Logger\LoggerFactory;
@@ -54,7 +52,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 	 * searches that might be better?
 	 */
 	public function build( SearchContext $searchContext, $term ) {
-		$showSuggestion = $searchContext->suggestionEnabled();
 		$searchContext->addSyntaxUsed( 'full_text' );
 		// Transform Mediawiki specific syntax to filters and extra
 		// (pre-escaped) query string
@@ -234,13 +231,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 						$this->config->getElement( 'CirrusSearchPhraseSlop', 'boost' )
 					) );
 		}
-
-		if ( $showSuggestion ) {
-			$searchContext->setSuggest( [
-				'text' => $term,
-				'suggest' => $this->buildSuggestConfig( 'suggest', $searchContext ),
-			] );
-		}
 	}
 
 	/**
@@ -269,81 +259,6 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		] ] ) );
 
 		return true;
-	}
-
-	/**
-	 * Build suggest config for $field.
-	 *
-	 * @param string $field field to suggest against
-	 * @param SearchContext $searchContext
-	 * @return array[] array of Elastica configuration
-	 */
-	private function buildSuggestConfig( $field, $searchContext ) {
-		// check deprecated settings
-		$suggestSettings = $this->config->getProfileService()
-			->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
-		$settings = [
-			'phrase' => [
-				'field' => $field,
-				'size' => 1,
-				'max_errors' => $suggestSettings['max_errors'],
-				'confidence' => $suggestSettings['confidence'],
-				'real_word_error_likelihood' => $suggestSettings['real_word_error_likelihood'],
-				'direct_generator' => [
-					[
-						'field' => $field,
-						'suggest_mode' => $suggestSettings['mode'],
-						'max_term_freq' => $suggestSettings['max_term_freq'],
-						'min_doc_freq' => $suggestSettings['min_doc_freq'],
-						'prefix_length' => $suggestSettings['prefix_length'],
-					],
-				],
-				'highlight' => [
-					'pre_tag' => Searcher::HIGHLIGHT_PRE_MARKER,
-					'post_tag' => Searcher::HIGHLIGHT_POST_MARKER,
-				],
-			],
-		];
-		// Add a second generator with the reverse field
-		// Only do this for local queries, we don't know if it's activated
-		// on other wikis.
-		if ( $this->config->getElement( 'CirrusSearchPhraseSuggestReverseField', 'use' )
-			&& empty( $searchContext->getExtraIndices() )
-		) {
-			$settings['phrase']['direct_generator'][] = [
-				'field' => $field . '.reverse',
-				'suggest_mode' => $suggestSettings['mode'],
-				'max_term_freq' => $suggestSettings['max_term_freq'],
-				'min_doc_freq' => $suggestSettings['min_doc_freq'],
-				'prefix_length' => $suggestSettings['prefix_length'],
-				'pre_filter' => 'token_reverse',
-				'post_filter' => 'token_reverse'
-			];
-		}
-		if ( !empty( $suggestSettings['collate'] ) ) {
-			$collateFields = [ 'title.plain', 'redirect.title.plain' ];
-			if ( $this->config->get( 'CirrusSearchPhraseSuggestUseText' ) ) {
-				$collateFields[] = 'text.plain';
-			}
-			$settings['phrase']['collate'] = [
-				'query' => [
-					'inline' => [
-						'multi_match' => [
-							'query' => '{{suggestion}}',
-							'operator' => 'or',
-							'minimum_should_match' => $suggestSettings['collate_minimum_should_match'],
-							'type' => 'cross_fields',
-							'fields' => $collateFields
-						],
-					],
-				],
-			];
-		}
-		if ( isset( $suggestSettings['smoothing_model'] ) ) {
-			$settings['phrase']['smoothing'] = $suggestSettings['smoothing_model'];
-		}
-
-		return $settings;
 	}
 
 	/**

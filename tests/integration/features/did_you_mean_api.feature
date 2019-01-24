@@ -47,15 +47,13 @@ Feature: Did you mean
     When I api search for Rrr Worrd
     Then rrr *word* is the did you mean suggestion from the api
 
-  Scenario Outline: Special search syntax is preserved in suggestions (though sometimes moved around)
+  Scenario Outline: Special search syntax is preserved in suggestions
     When I api search for <term>
     Then <suggested> is the did you mean suggestion from the api
   Examples:
     |                    term                   |                  suggested                  |
-    | prefer-recent:noble prize                 | *nobel* prize                 | # FIXME: should be prefer-recent:*nobel* prize
-    | intitle:noble prize                       | *nobel* prize                 | # FIXME: should be intitle:*nobel* prize
+    | prefer-recent:noble prize                 | prefer-recent:*nobel* prize                 |
     | incategory:prize noble prize              | incategory:prize *nobel* prize              |
-    | noble incategory:prize prize              | incategory:prize *nobel* prize              |
     | hastemplate:prize noble prize             | hastemplate:prize *nobel* prize             |
     | -hastemplate:prize noble prize            | -hastemplate:prize *nobel* prize            |
     | boost-templates:"prize\|150%" noble prize | boost-templates:"prize\|150%" *nobel* prize |

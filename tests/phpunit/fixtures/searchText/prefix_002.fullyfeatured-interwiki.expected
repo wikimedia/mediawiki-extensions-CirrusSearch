@@ -1779,51 +1779,11 @@
             "stats": [
                 "full_text",
                 "full_text_simple_match",
-                "prefix",
-                "suggest"
+                "prefix"
             ],
             "stored_fields": [
                 "text.word_count"
-            ],
-            "suggest": {
-                "suggest": {
-                    "phrase": {
-                        "confidence": 2,
-                        "direct_generator": [
-                            {
-                                "field": "suggest",
-                                "max_term_freq": 0.5,
-                                "min_doc_freq": 0,
-                                "prefix_length": 2,
-                                "suggest_mode": "always"
-                            },
-                            {
-                                "field": "suggest.reverse",
-                                "max_term_freq": 0.5,
-                                "min_doc_freq": 0,
-                                "post_filter": "token_reverse",
-                                "pre_filter": "token_reverse",
-                                "prefix_length": 2,
-                                "suggest_mode": "always"
-                            }
-                        ],
-                        "field": "suggest",
-                        "highlight": {
-                            "post_tag": "\ue001",
-                            "pre_tag": "\ue000"
-                        },
-                        "max_errors": 2,
-                        "real_word_error_likelihood": 0.95,
-                        "size": 1,
-                        "smoothing": {
-                            "stupid_backoff": {
-                                "discount": 0.4
-                            }
-                        }
-                    }
-                },
-                "text": "something AND"
-            }
+            ]
         }
     }
 ]

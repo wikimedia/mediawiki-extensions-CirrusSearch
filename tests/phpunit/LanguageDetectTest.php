@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 use CirrusSearch\LanguageDetector\LanguageDetectorFactory;
 use CirrusSearch\LanguageDetector\TextCat;
-use CirrusSearch\LanguageDetector\HttpAccept;
+use CirrusSearch\Test\MockLanguageDetector;
 
 /**
  * Completion Suggester Tests
@@ -27,7 +27,6 @@ use CirrusSearch\LanguageDetector\HttpAccept;
  * @group CirrusSearch
  * @covers CirrusSearch\LanguageDetector\LanguageDetectorFactory
  * @covers CirrusSearch\LanguageDetector\TextCat
- * @covers CirrusSearch\LanguageDetector\HttpAccept
  */
 class LanguageDetectTest extends CirrusTestCase {
 
@@ -51,23 +50,23 @@ class LanguageDetectTest extends CirrusTestCase {
 				[
 					'CirrusSearchLanguageDetectors' => [
 						'textcat' => TextCat::class,
-						'accept-lang' => HttpAccept::class,
+						'mock-lang' => MockLanguageDetector::class,
 					]
 				],
 				[
 					'textcat' => TextCat::class,
-					'accept-lang' => HttpAccept::class,
+					'mock-lang' => MockLanguageDetector::class,
 				]
 			],
-			'accept-lang first' => [
+			'mock-lang first' => [
 				[
 					'CirrusSearchLanguageDetectors' => [
-						'accept-lang' => HttpAccept::class,
+						'mock-lang' => MockLanguageDetector::class,
 						'textcat' => TextCat::class,
 					]
 				],
 				[
-					'accept-lang' => HttpAccept::class,
+					'mock-lang' => MockLanguageDetector::class,
 					'textcat' => TextCat::class,
 				]
 			],
@@ -87,7 +86,10 @@ class LanguageDetectTest extends CirrusTestCase {
 	 * @dataProvider provideTestFactory
 	 */
 	public function testFactory( $config, $exepected ) {
-		$factory = new LanguageDetectorFactory( new HashSearchConfig( $config ), new \FauxRequest() );
+		$config = $config + [
+			'CirrusSearchMockLanguage' => null,
+		];
+		$factory = new LanguageDetectorFactory( new HashSearchConfig( $config ) );
 		$actual = array_map( function ( $v ) {
 			return get_class( $v );
 		}, $factory->getDetectors() );
@@ -193,20 +195,5 @@ class LanguageDetectTest extends CirrusTestCase {
 			[ "en", [ "pt-BR", "en-US" ], "pt" ],
 			[ "en", [ "en-US", "pt-BR" ], "pt" ],
 		];
-	}
-
-	/**
-	 * @dataProvider getHttpLangs
-	 * @param string $content
-	 * @param array  $http
-	 * @param string $result
-	 */
-	public function testHttpAcceptDetector( $content, $http, $result ) {
-		$request = new \FauxRequest();
-		$request->setHeader( 'Accept-Language', implode( ';', $http ) );
-		$detector = HttpAccept::build( new HashSearchConfig( [ 'LanguageCode' => $content ] ), $request );
-
-		$detect = $detector->detect( "test" );
-		$this->assertEquals( $result, $detect );
 	}
 }

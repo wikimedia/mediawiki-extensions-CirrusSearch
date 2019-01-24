@@ -1,6 +1,6 @@
 <?php
 
-namespace CirrusSearch;
+namespace CirrusSearch\Test;
 
 use CirrusSearch\Search\ResultSet;
 use SearchResultSet;
@@ -27,11 +27,10 @@ class DummyResultSet extends ResultSet {
 	 * @param bool $withSyntax
 	 */
 	public function __construct( $totalHits, $withSyntax = false ) {
-		parent::__construct( [], [],
+		parent::__construct( $withSyntax,
 			new \Elastica\ResultSet( new \Elastica\Response( [ "hits" => [ "total" => $totalHits ] ] ),
 				new \Elastica\Query(),
-				[] ),
-			$withSyntax );
+				[] ) );
 		$this->results = array_fill( 0, min( $totalHits, 20 ), null );
 	}
 

@@ -4,6 +4,7 @@ namespace CirrusSearch\Query;
 
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\Search\SearchContext;
+use CirrusSearch\Test\MockSimpleKeywordFeature;
 
 /**
  * @group CirrusSearch
@@ -186,21 +187,5 @@ class SimpleKeywordFeatureTest extends CirrusTestCase {
 		);
 
 		$this->assertEquals( $expectedArgs, $feature->getApplyCallArguments() );
-	}
-}
-
-class MockSimpleKeywordFeature extends SimpleKeywordFeature implements LegacyKeywordFeature {
-	private $calls = [];
-
-	protected function getKeywords() {
-		return [ 'mock', 'mock2' ];
-	}
-
-	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		$this->calls[] = [ $key, $value, $quotedValue, $negated ];
-	}
-
-	public function getApplyCallArguments() {
-		return $this->calls;
 	}
 }

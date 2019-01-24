@@ -2,17 +2,7 @@
 
 namespace CirrusSearch\Maintenance;
 
-class NoopPrinter implements Printer {
-	public function output( $message, $channel = null ) {
-	}
-
-	public function outputIndented( $message ) {
-	}
-
-	public function error( $err, $die = 0 ) {
-		throw new \RuntimeException();
-	}
-}
+use CirrusSearch\Test\NoopPrinter;
 
 class ConfigUtilsTest extends \PHPUnit\Framework\TestCase {
 	public function scanAvailablePluginsProvider() {

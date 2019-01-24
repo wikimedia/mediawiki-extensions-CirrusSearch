@@ -5,6 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\CirrusTestCase;
 use CirrusSearch\CrossSearchStrategy;
+use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Parser\QueryParserFactory;
@@ -292,15 +293,14 @@ class SearchQueryTest extends CirrusTestCase {
 			SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'test' )->build() );
 		$this->assertEquals( $config, $context->getConfig() );
 		$this->assertEquals( [ NS_MAIN ], $context->getNamespaces() );
-		$this->assertTrue( $context->suggestionEnabled() );
 		$this->assertFalse( $context->getLimitSearchToLocalWiki() );
 		$this->assertEmpty( $context->getFilters() );
 		$this->assertEquals( $config->getProfileService()->getProfileName( SearchProfileService::RESCORE ),
 			$context->getRescoreProfile() );
 		$this->assertEquals( $config->getProfileService()->getProfileName( SearchProfileService::FT_QUERY_BUILDER ),
 			$context->getFulltextQueryBuilderProfile() );
-		$this->assertEmpty( $context->getSuggestPrefixes() );
 		$this->assertEquals( 'test', $context->getOriginalSearchTerm() );
+		$this->assertSame( FallbackRunner::noopRunner(), $context->getFallbackRunner() );
 	}
 
 	public function testSearchContextFromBuilder() {
@@ -316,21 +316,22 @@ class SearchQueryTest extends CirrusTestCase {
 			->addForcedProfile( SearchProfileService::RESCORE, 'foo' )
 			->addForcedProfile( SearchProfileService::FT_QUERY_BUILDER, 'bar' )
 			->build();
+		$myFallbackRunner = new FallbackRunner( [] );
 		$context = SearchContext::fromSearchQuery(
-			$query
+			$query,
+			$myFallbackRunner
 		);
 		$this->assertEquals( $config, $context->getConfig() );
 		// the help prefix overrides NS_MAIN
 		// the prefix keyword will add NS_HELP_TALK
 		// the contextual filter will then add NS_CATEGORY
 		$this->assertEquals( [ NS_HELP, NS_HELP_TALK, NS_CATEGORY ], $context->getNamespaces() );
-		$this->assertFalse( $context->suggestionEnabled() );
 		$this->assertTrue( $context->getLimitSearchToLocalWiki() );
 		$this->assertNotEmpty( $context->getFilters() );
 		$this->assertEquals( 'foo', $context->getRescoreProfile() );
 		$this->assertEquals( 'bar', $context->getFulltextQueryBuilderProfile() );
-		$this->assertEquals( [ '~', 'help:' ], $context->getSuggestPrefixes() );
 		$this->assertEquals( '~help:test prefix:help_talk:test', $context->getOriginalSearchTerm() );
+		$this->assertSame( $myFallbackRunner, $context->getFallbackRunner() );
 	}
 
 	public function testForCrossProjectSearch() {

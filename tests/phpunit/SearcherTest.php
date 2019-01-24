@@ -2,9 +2,12 @@
 
 namespace CirrusSearch;
 
+use CirrusSearch\Test\SearchConfigUsageDecorator;
+use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Test\DummyConnection;
 use Elastica\Query;
+use Elastica\Response;
 use MediaWiki\MediaWikiServices;
 use Title;
 
@@ -336,25 +339,133 @@ class SearcherTest extends CirrusTestCase {
 		$searcher->search( $query->build() );
 		$this->assertEquals( $expected, $searcher->getOffsetLimit() );
 	}
-}
 
-class SearchConfigUsageDecorator extends SearchConfig {
-	private static $usedConfigKeys = [];
-
-	public function get( $name ) {
-		$val = parent::get( $name );
-		// Some config vars are objects.. (e.g. wgContLang)
-		if ( !is_object( $val ) ) {
-			static::$usedConfigKeys[$name] = true;
+	public function provideTestSuggestQueries() {
+		$tests = [];
+		foreach ( CirrusTestCase::findFixtures( 'phraseSuggest/*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, -7 );
+			$fixture = CirrusTestCase::loadFixture( $testFile );
+			$expectedFile = dirname( $testFile ) . "/$testName.expected";
+			$tests[$testName] = [
+				$expectedFile,
+				$fixture['query'],
+				$fixture['namespaces'],
+				$fixture['offset'],
+				$fixture['with_dym'] ?? true,
+				$fixture['config']
+			];
 		}
-		return $val;
+		return $tests;
 	}
 
-	public static function getUsedConfigKeys() {
-		return static::$usedConfigKeys;
+	/**
+	 * @dataProvider provideTestSuggestQueries()
+	 */
+	public function testPhraseSuggest( $expectedFile, $query, $namespaces, $offset, $withDym, $config ) {
+		$engine = new \CirrusSearch( new HashSearchConfig( $config + [
+					'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
+				], [ 'inherit' ] ),
+				CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine->setShowSuggestion( $withDym );
+		$engine->setNamespaces( $namespaces );
+		$engine->setLimitOffset( 20, $offset );
+		$status = $engine->searchText( $query );
+		$createIfMissing = getenv( 'CIRRUS_REBUILD_FIXTURES' ) === 'yes';
+		$res = json_decode( $status->getValue(), JSON_OBJECT_AS_ARRAY );
+		$q = null;
+		if ( isset( $res['query']['suggest'] ) ) {
+			$q = [ 'suggest' => $res['query']['suggest'] ];
+		}
+		$this->assertFileContains(
+			CirrusTestCase::fixturePath( $expectedFile ),
+			CirrusTestCase::encodeFixture( $q ),
+			$createIfMissing
+		);
 	}
 
-	public static function resetUsedConfigKeys() {
-		static::$usedConfigKeys = [];
+	public function providePhraseSuggestResponse() {
+		$tests = [];
+		foreach ( CirrusTestCase::findFixtures( 'phraseSuggestResponses/*.config' ) as $testFile ) {
+			$testName = substr( basename( $testFile ), 0, - 7 );
+			$fixture = CirrusTestCase::loadFixture( $testFile );
+			$tests[$testName] = [
+				$fixture['query'],
+				$fixture['response'],
+				$fixture['approxScore'],
+				$fixture['suggestion'],
+				$fixture['suggestionSnippet'],
+			];
+		}
+		return $tests;
+	}
+
+	/**
+	 * @dataProvider providePhraseSuggestResponse
+	 */
+	public function testPhraseSuggestResponse( $query, $response, $approxScore, $suggestion, $suggestionSnippet ) {
+		$this->setMwGlobals( [ 'wgCirrusSearchLogElasticRequests' => false ] );
+		$rewrittenResponse = new \Elastica\Response( json_encode(
+			[
+				'status' => 200,
+				'responses' => [
+					[
+						'hits' => [ 'total' => 123456, 'max_score' => 0.0, 'hits' => [] ]
+					]
+			] ] )
+		);
+		$transport = $this->mockTransportWithResponse(
+			new Response( [
+				'status' => 200,
+				'responses' => [ $response ]
+			] ),
+			$rewrittenResponse
+		);
+		$config = new HashSearchConfig( [
+			'CirrusSearchLogElasticRequests' => false,
+			'CirrusSearchDefaultCluster' => 'default',
+			'CirrusSearchClusters' => [
+				'default' => [
+					[ 'transport' => $transport ]
+				]
+			],
+			'CirrusSearchEnablePhraseSuggest' => true,
+			'CirrusSearchPhraseSuggestReverseField' => [ 'use' => false ],
+		], [ 'inherit' ] );
+		$engine = new \CirrusSearch( $config );
+		$engine->setFeatureData( 'rewrite', true );
+		$engine->setShowSuggestion( true );
+		/**
+		 * @var ResultSet $resultSet
+		 */
+		$resultSet = $engine->searchText( $query )->getValue();
+
+		$engine = new \CirrusSearch( $config, CirrusDebugOptions::forDumpingQueriesInUnitTests() );
+		$engine->setFeatureData( 'rewrite', true );
+		$engine->setShowSuggestion( true );
+		$query = json_decode( $engine->searchText( $query )->getValue(), JSON_OBJECT_AS_ARRAY );
+
+		if ( $approxScore > 0 ) {
+			$this->assertArrayHasKey( 'suggest', $query['query'] );
+			$this->assertEquals( $response['suggest']['suggest'][0]['text'],
+				$query['query']['suggest']['text'] );
+
+			$suggestionSnippet = strtr( htmlspecialchars( $suggestionSnippet ), [
+				Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
+				Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
+			] );
+
+			if ( $resultSet->getTotalHits() === 123456 ) {
+				$this->assertEquals( $suggestion, $resultSet->getQueryAfterRewrite() );
+
+				$this->assertEquals( $suggestionSnippet, $resultSet->getQueryAfterRewriteSnippet() );
+			} else {
+				$this->assertNull( $resultSet->getQueryAfterRewrite() );
+				$this->assertNull( $resultSet->getQueryAfterRewriteSnippet() );
+				$this->assertEquals( $suggestion, $resultSet->getSuggestionQuery() );
+				$this->assertEquals( $suggestionSnippet, $resultSet->getSuggestionSnippet() );
+			}
+		} else {
+			$this->assertArrayNotHasKey( 'suggest', $query );
+		}
 	}
 }

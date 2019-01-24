@@ -82,8 +82,6 @@ class PrefixFeature extends SimpleKeywordFeature implements FilterQueryFeature {
 	 * @return array
 	 */
 	protected function doApply( SearchContext $context, $key, $value, $quotedValue, $negated ) {
-		// XXX: only works because it's greedy
-		$context->addSuggestSuffix( ' prefix:' . $value );
 		$parsedValue = $this->parseValue( $key, $value, $quotedValue, '', '', $context );
 		$namespace = $parsedValue['namespace'] ?? null;
 		self::alterSearchContextNamespace( $context, $namespace );

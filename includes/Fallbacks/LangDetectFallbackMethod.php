@@ -78,11 +78,10 @@ class LangDetectFallbackMethod implements FallbackMethod, SearchMetricsProvider 
 	/**
 	 * @param SearcherFactory $factory
 	 * @param SearchQuery $query
-	 * @param \WebRequest $request
 	 * @return FallbackMethod
 	 */
-	public static function build( SearcherFactory $factory, SearchQuery $query, \WebRequest $request ) {
-		$langDetectFactory = new LanguageDetectorFactory( $query->getSearchConfig(), $request );
+	public static function build( SearcherFactory $factory, SearchQuery $query ) {
+		$langDetectFactory = new LanguageDetectorFactory( $query->getSearchConfig() );
 		return new self( $query, $factory, $langDetectFactory->getDetectors() );
 	}
 

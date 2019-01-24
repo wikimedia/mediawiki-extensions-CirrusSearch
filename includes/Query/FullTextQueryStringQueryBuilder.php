@@ -321,15 +321,8 @@ class FullTextQueryStringQueryBuilder implements FullTextQueryBuilder {
 		$query->setFuzzyPrefixLength( 2 );
 		$query->setRewrite( $this->getMultiTermRewriteMethod() );
 		$states = $this->config->get( 'CirrusSearchQueryStringMaxDeterminizedStates' );
-		$option = 'max_determinized_states';
-		// Workround https://github.com/elastic/elasticsearch/issues/22722
-		if ( $this->config->getElement(
-			'CirrusSearchElasticQuirks', 'query_string_max_determinized_states' ) === true
-		) {
-			$option = 'max_determined_states';
-		}
 		if ( isset( $states ) ) {
-			$query->setParam( $option, $states );
+			$query->setParam( 'max_determinized_states', $states );
 		}
 		return $query;
 	}

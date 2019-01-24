@@ -1481,11 +1481,7 @@ Default:
   $wgCirrusSearchElasticQuirks = [];
 
 Workarounds:
-- from elastic 5.0.0 to 5.1.2 the max_determinized_states option in query_string
-  has been incorrectly renamed to max_determined_states (see
-  https://github.com/elastic/elasticsearch/issues/22722). Add the following key
-  to enable this workaround if you are running such version:
-  'query_string_max_determinized_states' => true
+- None currently
 
 ; $wgCirrusSearchFieldTypes
 

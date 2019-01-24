@@ -57,13 +57,6 @@ class QueryBuildDocument extends \ApiQueryBase {
 	}
 
 	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Compute the document that should be stored in elasticsearch';
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

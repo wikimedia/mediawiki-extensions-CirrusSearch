@@ -47,11 +47,4 @@ class FreezeWritesToCluster extends \ApiBase {
 			'thaw' => 'Allow writes to the elasticsearch cluster. When not provided writes will be frozen.',
 		];
 	}
-
-	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Freeze/thaw writes to the ES cluster. This should *never* be available in a production environment.';
-	}
 }

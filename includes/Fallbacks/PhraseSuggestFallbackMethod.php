@@ -176,7 +176,6 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	private function buildSuggestConfig() {
 		$field = 'suggest';
 		$config = $this->query->getSearchConfig();
-		// check deprecated settings
 		$suggestSettings = $config->getProfileService()
 			->loadProfile( SearchProfileService::PHRASE_SUGGESTER );
 		$settings = [

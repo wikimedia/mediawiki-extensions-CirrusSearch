@@ -183,13 +183,6 @@ class ConfigDump extends \ApiBase {
 	}
 
 	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Dump of CirrusSearch configuration.';
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

@@ -200,13 +200,6 @@ class QueryCirrusDoc extends \ApiQueryBase {
 	}
 
 	/**
-	 * @deprecated since MediaWiki core 1.25
-	 */
-	public function getDescription() {
-		return 'Dump stored CirrusSearch document for page.';
-	}
-
-	/**
 	 * @see ApiBase::getExamplesMessages
 	 * @return array
 	 */

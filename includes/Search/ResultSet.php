@@ -4,7 +4,6 @@ namespace CirrusSearch\Search;
 
 use LinkBatch;
 use SearchResultSet;
-use Wikimedia\Assert\Assert;
 
 /**
  * A set of results from Elasticsearch.
@@ -62,35 +61,12 @@ class ResultSet extends SearchResultSet {
 	private $rewrittenQuerySnippet;
 
 	/**
-	 * @param string[]|bool $suggestPrefixesOrSearchContainedSyntax
-	 * @param string[]|\Elastica\ResultSet|null $suggestSuffixesOrElasticResult
-	 * @param \Elastica\ResultSet|null $res
-	 * @param bool|null $searchContainedSyntax
+	 * @param bool $searchContainedSyntax
+	 * @param \Elastica\ResultSet|null $elasticResultSet
 	 */
-	public function __construct(
-		$suggestPrefixesOrSearchContainedSyntax = false,
-		$suggestSuffixesOrElasticResult = null,
-		\Elastica\ResultSet $res = null,
-		$searchContainedSyntax = null
-	) {
-		// FIXME: remove backcompat code, constructor args should be:
-		// bool containedSyntext, \Elastica\ResultSet $resultSet = null
-		if ( !is_array( $suggestPrefixesOrSearchContainedSyntax ) ) {
-			Assert::parameter( is_bool( $suggestPrefixesOrSearchContainedSyntax ), '$suggestPrefixesOrSearchContainedSyntax',
-				'must be an array or a boolean' );
-			Assert::parameter( $searchContainedSyntax === null || $suggestSuffixesOrElasticResult instanceof \Elastica\ResultSet,
-				'$suggestSuffixesOrElasticResult',
-				'must be null or an instance of \Elastica\ResultSet if $suggestPrefixesOrSearchContainedSyntax is a boolean' );
-			parent::__construct( $suggestPrefixesOrSearchContainedSyntax );
-			$this->result = $suggestSuffixesOrElasticResult;
-		} else {
-			Assert::parameter( is_bool( $searchContainedSyntax ), '$searchContainedSyntax',
-				'must be an array or a boolean' );
-			Assert::parameter( $res === null || $res instanceof \Elastica\ResultSet, '$res',
-				'must be null or an instance of \Elastica\ResultSet if $suggestPrefixesOrSearchContainedSyntax is a boolean' );
-			parent::__construct( $searchContainedSyntax );
-			$this->result = $res;
-		}
+	public function __construct( $searchContainedSyntax = false, \Elastica\ResultSet $elasticResultSet = null ) {
+		parent::__construct( $searchContainedSyntax );
+		$this->result = $elasticResultSet;
 		if ( $this->result != null ) {
 			$this->totalHits = $this->result->getTotalHits();
 			$this->preCacheContainedTitles( $this->result );
@@ -132,16 +108,6 @@ class ResultSet extends SearchResultSet {
 		$other->interwikiResults = $this->interwikiResults;
 		$other->rewrittenQuery = $this->rewrittenQuery;
 		$other->rewrittenQuerySnippet = $this->rewrittenQuerySnippet;
-	}
-
-	/**
-	 * @param int $threshold
-	 * @return bool always false
-	 * @deprecated always return false, moved to \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
-	 * @see \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
-	 */
-	public function isQueryRewriteAllowed( $threshold = 1 ) {
-		return false;
 	}
 
 	/**

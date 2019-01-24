@@ -269,13 +269,13 @@ class ConfigUtils {
 	 * @return bool true if this is an index, false if it's an alias or if unknown
 	 */
 	public function isIndex( $indexName ) {
-		// We must emit a HEAD request before calling the _aliases
+		// We must emit a HEAD request before calling the _alias
 		// as it may return an error if the index/alias is missing
 		if ( !$this->client->getIndex( $indexName )->exists() ) {
 			return false;
 		}
 
-		$response = $this->client->request( $indexName . '/_aliases' );
+		$response = $this->client->request( $indexName . '/_alias' );
 		if ( $response->isOK() ) {
 			// Only index names are listed as top level keys So if
 			// HEAD /$indexName returns HTTP 200 but $indexName is
@@ -294,12 +294,12 @@ class ConfigUtils {
 	 * @return string[] index names
 	 */
 	public function getIndicesWithAlias( $aliasName ) {
-		// We must emit a HEAD request before calling the _aliases
+		// We must emit a HEAD request before calling the _alias
 		// as it may return an error if the index/alias is missing
 		if ( !$this->client->getIndex( $aliasName )->exists() ) {
 			return [];
 		}
-		$response = $this->client->request( $aliasName . '/_aliases' );
+		$response = $this->client->request( $aliasName . '/_alias' );
 		if ( $response->isOK() ) {
 			return array_keys( $response->getData() );
 		} else {

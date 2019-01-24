@@ -113,7 +113,7 @@ class SpecificAliasValidator extends IndexAliasValidator {
 		$status->merge( $this->swapAliases( $add ) );
 		$toRemove = [];
 		foreach ( $remove as $indexToRemove ) {
-			$resp = $this->client->request( $indexToRemove . '/_aliases', 'GET' );
+			$resp = $this->client->request( $indexToRemove . '/_alias', 'GET' );
 			if ( !$resp->isOk() ) {
 				return Status::newFatal( "Cannot fetch aliases of the old index $indexToRemove" );
 			}

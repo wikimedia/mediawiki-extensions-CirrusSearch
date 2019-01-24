@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Search;
 
-use SearchResultSet;
-
 /**
  * An empty set of results from Elasticsearch.
  *
@@ -23,105 +21,5 @@ use SearchResultSet;
  * http://www.gnu.org/copyleft/gpl.html
  */
 class EmptyResultSet extends ResultSet {
-	/**
-	 * @param bool $containedSyntax Did the search use special syntax?
-	 */
-	public function __construct( $containedSyntax = false ) {
-		// Skip our direct parent constructor and go straight
-		// to grandparent. The parent constructor sources a
-		// bunch of info from an elasticsearch result set that
-		// we don't have available.
-		/** @suppress PhanUndeclaredStaticMethod this is an allowed way to call parent class */
-		SearchResultSet::__construct( $containedSyntax );
-		$this->results = [];
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getTotalHits() {
-		return 0;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function numRows() {
-		return 0;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasSuggestion() {
-		return false;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getSuggestionQuery() {
-		return null;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getSuggestionSnippet() {
-		return null;
-	}
-
-	/**
-	 * @param ResultSet $res
-	 * @param int $type One of SearchResultSet::* constants
-	 * @param string $interwiki
-	 */
-	public function addInterwikiResults( ResultSet $res, $type, $interwiki ) {
-		throw new \RuntimeException( "Can't add interwiki results to empty result set" );
-	}
-
-	/**
-	 * @param int $type
-	 * @return SearchResultSet[]
-	 */
-	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return [];
-	}
-
-	/**
-	 * @param int $type
-	 * @return bool
-	 */
-	public function hasInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return false;
-	}
-
-	/**
-	 * @param string $newQuery
-	 * @param string|null $newQuerySnippet
-	 */
-	public function setRewrittenQuery( $newQuery, $newQuerySnippet = null ) {
-		throw new \Exception( "Can't rewrite empty result set" );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasRewrittenQuery() {
-		return false;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getQueryAfterRewrite() {
-		return null;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getQueryAfterRewriteSnippet() {
-		return null;
-	}
+	// TODO: maybe remove?
 }

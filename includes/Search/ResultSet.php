@@ -2,9 +2,9 @@
 
 namespace CirrusSearch\Search;
 
-use CirrusSearch\Searcher;
 use LinkBatch;
 use SearchResultSet;
+use Wikimedia\Assert\Assert;
 
 /**
  * A set of results from Elasticsearch.
@@ -34,7 +34,7 @@ class ResultSet extends SearchResultSet {
 	/**
 	 * @var int
 	 */
-	private $totalHits;
+	private $totalHits = 0;
 
 	/**
 	 * @var string|null
@@ -62,34 +62,56 @@ class ResultSet extends SearchResultSet {
 	private $rewrittenQuerySnippet;
 
 	/**
-	 * @param string[] $suggestPrefixes
-	 * @param string[] $suggestSuffixes
-	 * @param \Elastica\ResultSet $res
-	 * @param bool $searchContainedSyntax
+	 * @param string[]|bool $suggestPrefixesOrSearchContainedSyntax
+	 * @param string[]|\Elastica\ResultSet|null $suggestSuffixesOrElasticResult
+	 * @param \Elastica\ResultSet|null $res
+	 * @param bool|null $searchContainedSyntax
 	 */
-	public function __construct( array $suggestPrefixes, array $suggestSuffixes, \Elastica\ResultSet $res, $searchContainedSyntax ) {
-		parent::__construct( $searchContainedSyntax );
-		$this->result = $res;
-		$this->totalHits = $res->getTotalHits();
-		$this->preCacheContainedTitles( $this->result );
-		$suggestion = $this->findSuggestion();
-		// TODO: move all the DYM "suggestion" code to PhraseSuggestFallbackMethod (once we get rid of suggest[Prefixes/Suffixes])
-		if ( $suggestion && ! $this->resultContainsFullyHighlightedMatch() ) {
-			$this->suggestionQuery = $suggestion[ 'text' ];
-			$this->suggestionSnippet = $this->escapeHighlightedSuggestion( $suggestion[ 'highlighted' ] );
-			if ( $suggestPrefixes ) {
-				$suggestPrefix = implode( ' ', $suggestPrefixes );
-				// No need to escape suggestionQuery because Linker will escape it.
-				$this->suggestionQuery = $suggestPrefix . $this->suggestionQuery;
-				$this->suggestionSnippet = htmlspecialchars( $suggestPrefix ) . $this->suggestionSnippet;
-			}
-			if ( $suggestSuffixes ) {
-				$suggestSuffix = implode( ' ', $suggestSuffixes );
-				// No need to escape suggestionQuery because Linker will escape it.
-				$this->suggestionQuery = $this->suggestionQuery . $suggestSuffix;
-				$this->suggestionSnippet = $this->suggestionSnippet . htmlspecialchars( $suggestSuffix );
-			}
+	public function __construct(
+		$suggestPrefixesOrSearchContainedSyntax = false,
+		$suggestSuffixesOrElasticResult = null,
+		\Elastica\ResultSet $res = null,
+		$searchContainedSyntax = null
+	) {
+		// FIXME: remove backcompat code, constructor args should be:
+		// bool containedSyntext, \Elastica\ResultSet $resultSet = null
+		if ( !is_array( $suggestPrefixesOrSearchContainedSyntax ) ) {
+			Assert::parameter( is_bool( $suggestPrefixesOrSearchContainedSyntax ), '$suggestPrefixesOrSearchContainedSyntax',
+				'must be an array or a boolean' );
+			Assert::parameter( $searchContainedSyntax === null || $suggestSuffixesOrElasticResult instanceof \Elastica\ResultSet,
+				'$suggestSuffixesOrElasticResult',
+				'must be null or an instance of \Elastica\ResultSet if $suggestPrefixesOrSearchContainedSyntax is a boolean' );
+			parent::__construct( $suggestPrefixesOrSearchContainedSyntax );
+			$this->result = $suggestSuffixesOrElasticResult;
+		} else {
+			Assert::parameter( is_bool( $searchContainedSyntax ), '$searchContainedSyntax',
+				'must be an array or a boolean' );
+			Assert::parameter( $res === null || $res instanceof \Elastica\ResultSet, '$res',
+				'must be null or an instance of \Elastica\ResultSet if $suggestPrefixesOrSearchContainedSyntax is a boolean' );
+			parent::__construct( $searchContainedSyntax );
+			$this->result = $res;
 		}
+		if ( $this->result != null ) {
+			$this->totalHits = $this->result->getTotalHits();
+			$this->preCacheContainedTitles( $this->result );
+		}
+	}
+
+	/**
+	 * @param bool $searchContainedSyntax
+	 * @return ResultSet an empty result set
+	 */
+	final public static function emptyResultSet( $searchContainedSyntax = false ) {
+		return new self( $searchContainedSyntax );
+	}
+
+	/**
+	 * @param string $suggestionQuery
+	 * @param string $suggestionSnippet
+	 */
+	public function setSuggestionQuery( $suggestionQuery, $suggestionSnippet ) {
+		$this->suggestionQuery = $suggestionQuery;
+		$this->suggestionSnippet = $suggestionSnippet;
 	}
 
 	/**
@@ -119,56 +141,6 @@ class ResultSet extends SearchResultSet {
 	 * @see \CirrusSearch\Fallbacks\FallbackMethodTrait::resultsThreshold()
 	 */
 	public function isQueryRewriteAllowed( $threshold = 1 ) {
-		return false;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	private function findSuggestion() {
-		// TODO some kind of weighting?
-		$suggest = $this->result->getResponse()->getData();
-		if ( !isset( $suggest[ 'suggest' ] ) ) {
-			return null;
-		}
-		$suggest = $suggest[ 'suggest' ];
-		// Elasticsearch will send back the suggest element but no sub suggestion elements if the wiki is empty.
-		// So we should check to see if they exist even though in normal operation they always will.
-		if ( isset( $suggest[ 'suggest' ] ) ) {
-			// Now just grab the first one it sent back.
-			foreach ( $suggest[ 'suggest' ][ 0 ][ 'options' ] as $option ) {
-				return $option;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Escape a highlighted suggestion coming back from Elasticsearch.
-	 *
-	 * @param string $suggestion suggestion from elasticsearch
-	 * @return string $suggestion with html escaped _except_ highlighting pre and post tags
-	 */
-	private function escapeHighlightedSuggestion( $suggestion ) {
-		return strtr( htmlspecialchars( $suggestion ), [
-			Searcher::HIGHLIGHT_PRE_MARKER => Searcher::SUGGESTION_HIGHLIGHT_PRE,
-			Searcher::HIGHLIGHT_POST_MARKER => Searcher::SUGGESTION_HIGHLIGHT_POST,
-		] );
-	}
-
-	/**
-	 * @return bool
-	 */
-	private function resultContainsFullyHighlightedMatch() {
-		foreach ( $this->result->getResults() as $result ) {
-			$highlights = $result->getHighlights();
-			// If the whole string is highlighted then return true
-			$regex = '/' . Searcher::HIGHLIGHT_PRE_MARKER . '.*?' . Searcher::HIGHLIGHT_POST_MARKER . '/';
-			if ( isset( $highlights[ 'title' ] ) &&
-					!trim( preg_replace( $regex, '', $highlights[ 'title' ][ 0 ] ) ) ) {
-				return true;
-			}
-		}
 		return false;
 	}
 
@@ -225,10 +197,12 @@ class ResultSet extends SearchResultSet {
 	public function extractResults() {
 		if ( $this->results === null ) {
 			$this->results = [];
-			foreach ( $this->result->getResults() as $result ) {
-				$transformed = $this->transformOneResult( $result );
-				$this->augmentResult( $transformed );
-				$this->results[] = $transformed;
+			if ( $this->result !== null ) {
+				foreach ( $this->result->getResults() as $result ) {
+					$transformed = $this->transformOneResult( $result );
+					$this->augmentResult( $transformed );
+					$this->results[] = $transformed;
+				}
 			}
 		}
 		return $this->results;
@@ -296,5 +270,19 @@ class ResultSet extends SearchResultSet {
 	 */
 	public function getQueryAfterRewriteSnippet() {
 		return $this->rewrittenQuerySnippet;
+	}
+
+	/**
+	 * @return \Elastica\Response|null
+	 */
+	public function getElasticResponse() {
+		return $this->result != null ? $this->result->getResponse() : null;
+	}
+
+	/**
+	 * @return \Elastica\ResultSet|null
+	 */
+	public function getElasticaResultSet() {
+		return $this->result;
 	}
 }

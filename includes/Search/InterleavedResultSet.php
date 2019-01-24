@@ -24,6 +24,7 @@ class InterleavedResultSet extends ResultSet implements SearchMetricsProvider {
 		array $teamB,
 		$offset
 	) {
+		parent::__construct();
 		$this->results = $interleaved;
 		$this->teamA = $teamA;
 		$this->teamB = $teamB;

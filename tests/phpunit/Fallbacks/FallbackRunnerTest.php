@@ -13,6 +13,9 @@ use CirrusSearch\Search\SearchMetricsProvider;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Search\SearchQueryBuilder;
 use CirrusSearch\Searcher;
+use Elastica\Query;
+use Elastica\Response;
+use Elastica\ResultSet\DefaultBuilder;
 use MediaWiki\MediaWikiServices;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\AssertionFailedError;
@@ -146,6 +149,7 @@ class FallbackRunnerTest extends CirrusTestCase {
 				'language' => HttpAccept::class
 			],
 			'CirrusSearchFetchConfigFromApi' => false,
+			'CirrusSearchEnablePhraseSuggest' => true,
 		] );
 
 		MediaWikiServices::getInstance()->redefineService( InterwikiResolver::SERVICE,
@@ -168,7 +172,30 @@ class FallbackRunnerTest extends CirrusTestCase {
 				$this->mockSearcher( DummyResultSet::fakeTotalHits( 3 ) )
 			);
 		$runner = FallbackRunner::create( $searcherFactory, $query, $request );
-		$initialResults = DummyResultSet::fakeTotalHitsWithSuggestion( 0, 'foobar' );
+		$response = [
+			"hits" => [
+				"total" => 0,
+				"hits" => [],
+			],
+			"suggest" => [
+				"suggest" => [
+					[
+						"text" => "foubar",
+						"offset" => 0,
+						"options" => [
+							[
+								"text" => "foobar",
+								"highlighted" => Searcher::HIGHLIGHT_PRE_MARKER . "foobar" . Searcher::HIGHLIGHT_POST_MARKER,
+								"score" => 0.0026376657,
+							]
+						]
+					]
+				]
+			]
+		];
+		$initialResults = new ResultSet( false,
+			( new DefaultBuilder() )->buildResultSet( new Response( $response ), new Query() ) );
+		$this->assertNotEmpty( $runner->getElasticSuggesters() );
 		$newResults = $runner->run( $initialResults );
 		$this->assertEquals( 2, $newResults->getTotalHits() );
 		$iwResults = $newResults->getInterwikiResults( \SearchResultSet::INLINE_RESULTS );
@@ -190,5 +217,11 @@ class FallbackRunnerTest extends CirrusTestCase {
 			->method( 'search' )
 			->willReturn( \Status::newGood( $resultSet ) );
 		return $mock;
+	}
+
+	public function testNoop() {
+		$noop = FallbackRunner::noopRunner();
+		$this->assertSame( $noop, FallbackRunner::noopRunner() );
+		$this->assertEquals( $noop, new FallbackRunner( [] ) );
 	}
 }

@@ -300,14 +300,10 @@ abstract class SimpleKeywordFeature implements KeywordFeature {
 			return $keepText ? "$quotedValue " : '';
 		};
 
-		return QueryHelper::extractSpecialSyntaxFromTerm(
-			$context,
-			$term,
-			// initial positive lookbehind ensures keyword doesn't
-			// match in the middle of a word.
+		return preg_replace_callback(
 			"/{$begin}{$keywordRegex}:${valueSideRegex}/",
 			$callback,
-			!$this->greedy() // greedy needs to be suffixed not prefixed
+			$term
 		);
 	}
 }

@@ -7,6 +7,9 @@ use CirrusSearch\DummyResultSet;
 use CirrusSearch\Search\ResultSet;
 use CirrusSearch\Search\SearchQuery;
 use CirrusSearch\Searcher;
+use Elastica\Query;
+use Elastica\Response;
+use Elastica\Result;
 
 class BaseFallbackMethodTest extends CirrusTestCase {
 
@@ -105,5 +108,38 @@ class BaseFallbackMethodTest extends CirrusTestCase {
 			$this->assertEquals( $mock->resultsThreshold( $resultSet ),
 				$mock->resultsThreshold( $resultSet, $threshold ) );
 		}
+	}
+
+	/**
+	 * @covers \CirrusSearch\Fallbacks\FallbackMethodTrait::resultContainsFullyHighlightedMatch()
+	 */
+	public function testResultContainsFullyHighlightedMatch() {
+		$mock = $this->getMockForTrait( FallbackMethodTrait::class );
+
+		$resultset = new \Elastica\ResultSet( new Response( [] ), new Query(), [] );
+		$this->assertFalse( $mock->resultContainsFullyHighlightedMatch( $resultset ) );
+
+		$resultset = new \Elastica\ResultSet( new Response( [] ), new Query(), [
+			new Result( [] )
+		] );
+		$this->assertFalse( $mock->resultContainsFullyHighlightedMatch( $resultset ) );
+
+		$resultset = new \Elastica\ResultSet( new Response( [] ), new Query(), [
+			new Result( [
+				'highlight' => [
+					'title' => 'foo' . Searcher::HIGHLIGHT_PRE_MARKER . 'bar' . Searcher::HIGHLIGHT_POST_MARKER
+				]
+			] )
+		] );
+		$this->assertFalse( $mock->resultContainsFullyHighlightedMatch( $resultset ) );
+
+		$resultset = new \Elastica\ResultSet( new Response( [] ), new Query(), [
+			new Result( [
+				'highlight' => [
+					'title' => Searcher::HIGHLIGHT_PRE_MARKER . 'foo bar' . Searcher::HIGHLIGHT_POST_MARKER
+				]
+			] )
+		] );
+		$this->assertFalse( $mock->resultContainsFullyHighlightedMatch( $resultset ) );
 	}
 }

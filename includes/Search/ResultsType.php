@@ -478,18 +478,16 @@ class FullTextResultsType extends BaseResultsType {
 	 */
 	public function transformElasticsearchResult( SearchContext $context, \Elastica\ResultSet $result ) {
 		return new ResultSet(
-			$context->getSuggestPrefixes(),
-			$context->getSuggestSuffixes(),
-			$result,
-			$context->isSpecialKeywordUsed()
+			$context->isSpecialKeywordUsed(),
+			$result
 		);
 	}
 
 	/**
-	 * @return EmptyResultSet
+	 * @return ResultSet
 	 */
 	public function createEmptyResult() {
-		return new EmptyResultSet();
+		return ResultSet::emptyResultSet();
 	}
 
 	/**

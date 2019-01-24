@@ -4,8 +4,8 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusDebugOptions;
 use CirrusSearch\ExternalIndex;
+use CirrusSearch\Fallbacks\FallbackRunner;
 use CirrusSearch\OtherIndexes;
-use CirrusSearch\Parser\AST\ParsedQuery;
 use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Query\Builder\FilterBuilder;
 use CirrusSearch\Search\Rescore\BoostFunctionBuilder;
@@ -116,18 +116,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $phraseRescoreQuery;
 
 	/**
-	 * @var string[] array of prefixes that should be prepended to suggestions. Can be added
-	 *  to externally and is added to during search syntax parsing.
-	 */
-	private $suggestPrefixes = [];
-
-	/**
-	 * @var string[] array of suffixes that should be prepended to suggestions. Can be added
-	 *  to externally and is added to during search syntax parsing.
-	 */
-	private $suggestSuffixes = [];
-
-	/**
 	 * @var AbstractQuery|null main query. null defaults to MatchAll
 	 */
 	private $mainQuery;
@@ -137,11 +125,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 *  more advanced searching (e.g. match_phrase_prefix for regular quoted strings).
 	 */
 	private $nonTextQueries = [];
-
-	/**
-	 * @var array|null Configuration for suggest query
-	 */
-	private $suggest;
 
 	/**
 	 * @var bool Should this search limit results to the local wiki?
@@ -167,12 +150,6 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * @var Escaper $escaper
 	 */
 	private $escaper;
-
-	/**
-	 * Should this search suggest alternative searches that might be better?
-	 * @var boolean
-	 */
-	private $suggestion;
 
 	/**
 	 * @var int[] weights of different syntaxes
@@ -220,14 +197,26 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	private $debugOptions;
 
 	/**
+	 * @var FallbackRunner|null
+	 */
+	private $fallbackRunner;
+
+	/**
 	 * @param SearchConfig $config
 	 * @param int[]|null $namespaces
 	 * @param CirrusDebugOptions|null $options
+	 * @param FallbackRunner|null $fallbackRunner
 	 */
-	public function __construct( SearchConfig $config, array $namespaces = null, CirrusDebugOptions $options = null ) {
+	public function __construct(
+		SearchConfig $config,
+		array $namespaces = null,
+		CirrusDebugOptions $options = null,
+		FallbackRunner $fallbackRunner = null
+	) {
 		$this->config = $config;
 		$this->namespaces = $namespaces;
 		$this->debugOptions = $options ?? CirrusDebugOptions::defaultOptions();
+		$this->fallbackRunner = $fallbackRunner ?? FallbackRunner::noopRunner();
 		$this->loadConfig();
 	}
 
@@ -521,36 +510,39 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return string[] List of prefixes to be prepended to suggestions
+	 * @return string[] always empty array
+	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
+	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
 	 */
 	public function getSuggestPrefixes() {
-		return $this->suggestPrefixes;
+		return [];
 	}
 
 	/**
+	 * Does nothing
 	 * @param string $prefix Prefix to be prepended to suggestions
+	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
+	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
 	 */
 	public function addSuggestPrefix( $prefix ) {
-		// This intentionally does not update the dirty state. It's a bit
-		// unrelated .. but it has no practical effect on the search it
-		// is only used by certain result types to adjust the way output
-		// is represented.
-		$this->suggestPrefixes[] = $prefix;
 	}
 
 	/**
-	 * @return string[] List of suffixes to be appended to suggestions
+	 * @return string[] always empty array
+	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
+	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
 	 */
 	public function getSuggestSuffixes() {
-		return $this->suggestSuffixes;
+		return [];
 	}
 
 	/**
+	 * Noop
 	 * @param string $suffix Suffix to be appended to suggestions
+	 * @deprecated Use \CirrusSearch\Parser\AST\Visitor\QueryFixer
+	 * @see \CirrusSearch\Parser\AST\Visitor\QueryFixer
 	 */
 	public function addSuggestSuffix( $suffix ) {
-		$this->isDirty = true;
-		$this->suggestSuffixes[] = $suffix;
 	}
 
 	/**
@@ -608,18 +600,19 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	}
 
 	/**
-	 * @return array|null Configuration for suggest query
+	 * @return array always empty array
+	 * @deprecated use \CirrusSearch\Fallbacks\FallbackRunner::getElasticSuggesters()
+	 * @see \CirrusSearch\Fallbacks\FallbackRunner::getElasticSuggesters()
 	 */
 	public function getSuggest() {
-		return $this->suggest;
+		return [];
 	}
 
 	/**
 	 * @param array $suggest Configuration for suggest query
+	 * @deprecated Implement a FallbackMethod to alter the SuggestQueries
 	 */
 	public function setSuggest( array $suggest ) {
-		$this->isDirty = true;
-		$this->suggest = $suggest;
 	}
 
 	/**
@@ -823,18 +816,20 @@ class SearchContext implements WarningCollector, FilterBuilder {
 
 	/**
 	 * Whether to supply search suggestions for better search terms.
-	 * @return bool
+	 * @return bool always false
+	 * @deprecated Use SearchQuery::isWithDYMSuggestion
 	 */
 	public function suggestionEnabled() {
-		return $this->suggestion;
+		return false;
 	}
 
 	/**
 	 * Whether to supply search suggestions for better search terms.
 	 * @param bool $suggestion
+	 * @deprecated use SearchQueryBuilder::setWithDYMSuggestion
+	 * @see SearchQueryBuilder::setWithDYMSuggestion()
 	 */
 	public function setSuggestion( $suggestion ) {
-		$this->suggestion = $suggestion;
 	}
 
 	/**
@@ -873,19 +868,20 @@ class SearchContext implements WarningCollector, FilterBuilder {
 	 * of the SearchContext+queryString instead of SearchQuery.
 	 *
 	 * States initialized:
-	 * 	- limitSearchToLocalWiki
+	 *    - limitSearchToLocalWiki
 	 *  - suggestion
 	 *  - custom rescoreProfile/fulltextQueryBuilderProfile
 	 *  - contextual filters: (eg. SearchEngine::$prefix)
 	 *  - SuggestPrefix (DYM prefix: ~ and/or namespace header)
 	 *
 	 * @param SearchQuery $query
+	 * @param FallbackRunner|null $fallbackRunner
 	 * @return SearchContext
 	 */
-	public static function fromSearchQuery( SearchQuery $query ) {
-		$searchContext = new SearchContext( $query->getSearchConfig(), $query->getNamespaces(), $query->getDebugOptions() );
+	public static function fromSearchQuery( SearchQuery $query, FallbackRunner $fallbackRunner = null ) {
+		$searchContext = new SearchContext( $query->getSearchConfig(), $query->getNamespaces(),
+			$query->getDebugOptions(), $fallbackRunner );
 		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
-		$searchContext->suggestion = $query->isWithDYMSuggestion();
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
 		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
@@ -893,15 +889,15 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		foreach ( $query->getContextualFilters() as $filter ) {
 			$filter->populate( $searchContext );
 		}
-		if ( $query->getParsedQuery()->hasCleanup( ParsedQuery::TILDE_HEADER ) ) {
-			$searchContext->addSuggestPrefix( '~' );
-		}
 		$pQuery = $query->getParsedQuery();
 		$searchContext->originalSearchTerm = $pQuery->getRawQuery();
-		$queryString = $query->getParsedQuery()->getQuery();
-		if ( $pQuery->getNamespaceHeader() !== null ) {
-			$searchContext->addSuggestPrefix( substr( $queryString, 0, $pQuery->getRoot()->getStartOffset() ) );
-		}
 		return $searchContext;
+	}
+
+	/**
+	 * @return FallbackRunner
+	 */
+	public function getFallbackRunner(): FallbackRunner {
+		return $this->fallbackRunner;
 	}
 }

@@ -387,7 +387,7 @@ class MetaStoreIndex {
 			$indexName = self::INDEX_NAME;
 			$reindex['script'] = [
 				'lang' => 'painless',
-				'inline' => <<<EOD
+				'source' => <<<EOD
 ctx._source.type = ctx._type;
 if (ctx._type == '{$version}') {
 	ctx._source.index_name = ctx._id;

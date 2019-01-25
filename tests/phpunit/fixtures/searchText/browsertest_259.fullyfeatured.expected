@@ -210,7 +210,6 @@
                 "should": [
                     {
                         "bool": {
-                            "disable_coord": true,
                             "filter": [
                                 {
                                     "bool": {

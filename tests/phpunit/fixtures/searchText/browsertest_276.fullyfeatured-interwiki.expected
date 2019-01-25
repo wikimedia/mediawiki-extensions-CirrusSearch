@@ -210,7 +210,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -645,7 +644,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -1123,7 +1121,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -1558,7 +1555,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {

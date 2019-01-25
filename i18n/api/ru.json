@@ -19,6 +19,6 @@
 	"apihelp-cirrus-settings-dump-example": "Получить дамп настроек CirrusSearch для этой вики.",
 	"apihelp-query+cirrusdoc-description": "Дамп статьи CirrusSearch",
 	"apihelp-query+cirrusdoc-summary": "Дамп статьи CirrusSearch с поисковых серверов",
-	"apihelp-query+cirrusdoc-example": "Получить дамп CirrusSearch для одной статьи.",
+	"apihelp-query+cirrusdoc-example": "Получить дамп отдельной статьи CirrusSearch, в том виде, как она проиндексирована для поиска.",
 	"apierror-cirrus-requesttoolong": "Поисковый запрос превышает максимально допустимую длину. ($1 > $2)"
 }

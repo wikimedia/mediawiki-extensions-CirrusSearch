@@ -54,7 +54,7 @@
 	"cirrussearch-pref-completion-section-desc": "Подсказчик автозаполнения",
 	"cirrussearch-pref-completion-profile-help": "Задаёт поведение для предложений автодополнения (поиска по мере набора).\n\n[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:CirrusSearch/CompletionSuggester Completion suggester] — это алгоритм для предложений при поиске с улучшенным исправлением опечаток и лучшим утверждением релевантности. Поиск по префиксу — это более старый алгоритм для поиска при наборе.",
 	"cirrussearch-completion-profile-fuzzy-pref-name": "По умолчанию (рекомендуется)",
-	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправляет до двух опечаток. Подставляет подходящие перенаправления.",
+	"cirrussearch-completion-profile-fuzzy-pref-desc": "Исправляет до двух опечаток. Убирает перенаправления, которые очень похожи на заголовок статьи.",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-name": "Поиск по подвыражениям (рекоммендуется для длинных заголовков страниц)",
 	"cirrussearch-completion-profile-fuzzy-subphrases-pref-desc": "Исправляет до двух опечаток. Подставляет подходящие перенаправления. Находит подвыражения в заголовках.",
 	"cirrussearch-completion-profile-strict-pref-name": "Точный режим (расширенный)",

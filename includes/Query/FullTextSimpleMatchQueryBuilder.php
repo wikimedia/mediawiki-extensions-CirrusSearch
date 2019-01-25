@@ -83,7 +83,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	 * @return \Elastica\Query\AbstractQuery
 	 */
 	protected function buildSearchTextQuery( SearchContext $context, array $fields, array $nearMatchFields, $queryString, $nearMatchQuery ) {
-		if ( $context->isSyntaxUsed( 'query_string' ) || $this->requireAutoGeneratePhrase( $queryString ) ) {
+		if ( $context->isSyntaxUsed( 'query_string' ) ) {
 			return parent::buildSearchTextQuery( $context, $fields,
 				$nearMatchFields, $queryString, $nearMatchQuery );
 		}
@@ -105,27 +105,6 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$bool->addShould( $nearMatch );
 
 		return $bool;
-	}
-
-	/**
-	 * Tries to track queries that would need the auto_generate_phrase
-	 * from query string.
-	 * We don't try to mimic all the behaviors of the lucene tokenizers
-	 * but to detect the words we break explicitly with the wordbreaker.
-	 * This includes mainly search for acronyms.
-	 * Other chars may require a phrase query like hyphens...
-	 *
-	 * @param string $query
-	 * @return true if a word is broken by one the char in the wordbreaker
-	 */
-	private function requireAutoGeneratePhrase( $query ) {
-		// Track all query that would need a phrase query to
-		// properly filter them. This is basically the list
-		// of char used in the wordbreaker_helper in the analysis
-		// config. This is mostly a hack to handle properly queries
-		// that contain an acronym.
-		$wb = '._';
-		return preg_match( "/[^\\s$wb][$wb]+[^\\s$wb]/", $query ) > 0;
 	}
 
 	/**

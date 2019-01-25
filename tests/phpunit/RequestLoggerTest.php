@@ -133,6 +133,7 @@ class RequestLoggerTest extends CirrusTestCase {
 		$globals = [
 			'wgCirrusSearchFullTextQueryBuilderProfile' => 'default',
 			'wgCirrusSearchInterwikiSources' => [],
+			'wgCirrusSearchNamespaceResolutionMethod' => 'elastic',
 		];
 		if ( isset( $query['interwiki'] ) ) {
 			$globals['wgCirrusSearchInterwikiSources'] = $query['interwiki'];

@@ -9,6 +9,7 @@ use Status;
 use Title;
 use UIDGenerator;
 use WebRequest;
+use Wikimedia\Assert\Assert;
 
 /**
  * Random utility functions that don't have a better home
@@ -447,4 +448,51 @@ class Util {
 		}
 	}
 
+	/**
+	 * Identify a namespace by attempting some unicode folding techniques.
+	 * 2 methods supported:
+	 * - naive: case folding + naive accents removal (only some combined accents are removed)
+	 * - utr30: (slow to load) case folding + strong accent squashing based on the withdrawn UTR30 specs
+	 * all methods will apply something similar to near space flattener.
+	 * @param string $namespace name of the namespace to identify
+	 * @param string $method either naive or utr30
+	 * @param \Language|null $language
+	 * @return bool|int
+	 */
+	public static function identifyNamespace( $namespace, $method = 'naive', \Language $language = null ) {
+		static $naive = null;
+		static $utr30 = null;
+
+		$normalizer = null;
+		if ( $method === 'naive' ) {
+			if ( $naive === null ) {
+				$naive = \Transliterator::createFromRules( '::NFD;::Upper;::Lower;::[:Nonspacing Mark:] Remove;::NFC;[\_\-\'\u2019\u02BC]>\u0020;' );
+			}
+			$normalizer = $naive;
+		} elseif ( $method === 'utr30' ) {
+			if ( $utr30 === null ) {
+				$utr30 =
+				$normalizer = \Transliterator::createFromRules( file_get_contents( __DIR__ . '/../data/utr30.txt', "r" ) );
+			}
+			$normalizer = $utr30;
+		}
+
+		Assert::postcondition( $normalizer !== null,
+			'Failed to load Transliterator with method ' . $method );
+		if ( $language === null ) {
+			global $wgContLang;
+			$language = $wgContLang;
+		}
+		$namespace = $normalizer->transliterate( $namespace );
+		if ( $namespace === '' ) {
+			return false;
+		}
+		foreach ( $language->getNamespaceIds() as $candidate => $nsId ) {
+			if ( $normalizer->transliterate( $candidate ) === $namespace ) {
+				return $nsId;
+			}
+		}
+
+		return false;
+	}
 }

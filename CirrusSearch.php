@@ -1496,6 +1496,17 @@ $wgCirrusSearchCategoryMax = 256;
  * Set to true to index all pages on wiki, or array of namespaces to index specific namespaces.
  */
 $wgCirrusSearchInstantIndexNew = false;
+
+/**
+ * Method to use for namespace name resolution
+ * can be:
+ * - 'elastic': by using the metastore
+ * - 'naive': using ICU naive case/accent folding
+ * - 'utr30': using a more aggressive folding technique
+ *    based on the UTR30 specs (specs used by lucene but withdrawn by Unicode)
+ */
+$wgCirrusSearchNamespaceResolutionMethod = 'elastic';
+
 /*
  * Please update docs/settings.txt if you add new values!
  */

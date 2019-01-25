@@ -32,6 +32,8 @@ $wgCirrusSearchWikimediaExtraPlugin[ 'super_detect_noop' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'documentVersion' ] = true;
 $wgCirrusSearchWikimediaExtraPlugin[ 'term_freq' ] = true;
 
+$wgCirrusSearchNamespaceResolutionMethod = 'utr30';
+
 // Enable when https://gerrit.wikimedia.org/r/#/c/345174/ is available
 // $wgCirrusSearchWikimediaExtraPlugin[ 'token_count_router' ] = true;
 

@@ -27,6 +27,7 @@ use Language;
  * @covers CirrusSearch\Util
  */
 class UtilTest extends CirrusTestCase {
+
 	/**
 	 * @dataProvider recursiveSameTestCases
 	 */
@@ -279,5 +280,50 @@ class UtilTest extends CirrusTestCase {
 		$this->setPrivateVar( \MessageCache::class, 'instance', null );
 		$this->setPrivateVar( Util::class, 'defaultBoostTemplates', null );
 		parent::tearDown();
+		// Clean ns cache after we restore config vars
+		\MWNamespace::clearCaches();
+	}
+
+	/**
+	 * @dataProvider provideTestIdentifyNamespace
+	 * @param string $namespace
+	 * @param int|bool $expected
+	 */
+	public function testIdentifyNamespace( $namespace, $expected, $method ) {
+		$this->setMwGlobals( [
+			'wgExtraNamespaces' => [
+				100 => 'Maçon',
+				101 => 'Cédille',
+				102 => 'Groß',
+				103 => 'Norræn goðafræði',
+				104 => 'لَحَم', // لحم
+				105 => 'Thảo_luận',
+			],
+			'wgNamespaceAliases' => [
+				'Mañsoner' => 100,
+			]
+		] );
+		$language = new Language();
+		\MWNamespace::clearCaches();
+		$this->assertEquals( $expected, Util::identifyNamespace( $namespace, $method, $language ) );
+	}
+
+	public function provideTestIdentifyNamespace() {
+		return [
+			'simple' => [ 'macon', 100, 'naive' ],
+			'simple utr30' => [ 'macon', 100, 'utr30' ],
+			'both sides' => [ 'mäcon', 100, 'naive' ],
+			'both sides utr30' => [ 'mäcon', 100, 'utr30' ],
+			'simple alias' => [ 'mansoner', 100, 'naive' ],
+			'simple alias utr30' => [ 'mansoner', 100, 'utr30' ],
+			'no match' => [ 'maçons', false, 'naive' ],
+			'no match utr30' => [ 'maçons', false, 'utr30' ],
+			'arabic' => [ 'لحم', 104, 'naive' ],
+			'arabic utr30' => [ 'لحم', 104, 'utr30' ],
+			'gods are not naive' => [ 'norræn godafræði', false, 'naive' ],
+			'gods are weak with utr30' => [ 'norraen godafraeði', 103, 'utr30' ],
+			'case folding can be gross' => [ 'gross', 102, 'naive' ],
+			'case folding can be gross even with utr30' => [ 'gross', 102, 'utr30' ]
+		];
 	}
 }

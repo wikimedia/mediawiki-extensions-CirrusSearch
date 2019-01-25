@@ -3,7 +3,7 @@
 namespace CirrusSearch\Parser\AST;
 
 /**
- * A warning that occured during the parse process.
+ * A warning that occurred during the parse process.
  */
 class ParseWarning {
 	/**

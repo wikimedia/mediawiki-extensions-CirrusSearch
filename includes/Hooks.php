@@ -61,21 +61,17 @@ class Hooks {
 	 * @param User $user
 	 * @param \WebRequest $request
 	 * @param \MediaWiki $mediaWiki
-	 * @return bool
 	 */
 	public static function onBeforeInitialize( $title, $unused, $outputPage, $user, $request, $mediaWiki ) {
 		self::initializeForRequest( $request );
-		return true;
 	}
 
 	/**
 	 * Hooked to call initialize after the user is set up.
 	 * @param ApiMain $apiMain The ApiMain instance being used
-	 * @return bool
 	 */
 	public static function onApiBeforeMain( $apiMain ) {
 		self::initializeForRequest( $apiMain->getRequest() );
-		return true;
 	}
 
 	/**
@@ -310,7 +306,6 @@ class Hooks {
 	/**
 	 * Hook to call before an article is deleted
 	 * @param WikiPage $page The page we're deleting
-	 * @return bool
 	 */
 	public static function onArticleDelete( $page ) {
 		// We use this to pick up redirects so we can update their targets.
@@ -330,8 +325,6 @@ class Hooks {
 				);
 			} );
 		}
-
-		return true;
 	}
 
 	/**
@@ -340,7 +333,6 @@ class Hooks {
 	 * @param User $user The user deleting the page
 	 * @param string $reason Reason the page is being deleted
 	 * @param int $pageId Page id being deleted
-	 * @return bool
 	 */
 	public static function onArticleDeleteComplete( $page, $user, $reason, $pageId ) {
 		// Note that we must use the article id provided or it'll be lost in the ether.  The job can't
@@ -350,7 +342,6 @@ class Hooks {
 				'docId' => self::getConfig()->makeId( $pageId )
 			] )
 		);
-		return true;
 	}
 
 	/**
@@ -360,7 +351,6 @@ class Hooks {
 	 * should not be in the index.
 	 *
 	 * @param Title $title The page title we've had a revision deleted on
-	 * @return bool
 	 */
 	public static function onRevisionDelete( $title ) {
 		JobQueueGroup::singleton()->push(
@@ -370,13 +360,11 @@ class Hooks {
 				'prioritize' => true
 			] )
 		);
-		return true;
 	}
 
 	/**
 	 * Hook called to include Elasticsearch version info on Special:Version
 	 * @param array &$software Array of wikitext and version numbers
-	 * @return bool
 	 */
 	public static function onSoftwareInfo( &$software ) {
 		$version = new Version( self::getConnection() );
@@ -385,14 +373,12 @@ class Hooks {
 			// We've already logged if this isn't ok and there is no need to warn the user on this page.
 			$software[ '[https://www.elastic.co/products/elasticsearch Elasticsearch]' ] = $status->getValue();
 		}
-		return true;
 	}
 
 	/**
 	 * @param SpecialSearch $specialSearch
 	 * @param OutputPage $out
 	 * @param string $term
-	 * @return bool
 	 */
 	public static function onSpecialSearchResultsAppend( $specialSearch, $out, $term ) {
 		global $wgCirrusSearchFeedbackLink;
@@ -406,7 +392,6 @@ class Hooks {
 		if ( $engine instanceof CirrusSearch ) {
 			$out->addJsConfigVars( $engine->getLastSearchMetrics() );
 		}
-		return true;
 	}
 
 	/**
@@ -428,7 +413,6 @@ class Hooks {
 	 * Hooked to update the search index when pages change directly or when templates that
 	 * they include change.
 	 * @param LinksUpdate $linksUpdate source of all links update information
-	 * @return bool
 	 */
 	public static function onLinksUpdateCompleted( $linksUpdate ) {
 		global $wgCirrusSearchLinkedArticlesToUpdate,
@@ -437,7 +421,7 @@ class Hooks {
 
 		// Titles that are created by a move don't need their own job.
 		if ( in_array( $linksUpdate->getTitle()->getPrefixedDBkey(), self::$movingTitles ) ) {
-			return true;
+			return;
 		}
 
 		$params = [
@@ -456,13 +440,11 @@ class Hooks {
 		$job->setDelay( $delay );
 
 		JobQueueGroup::singleton()->push( $job );
-		return true;
 	}
 
 	/**
 	 * Register Cirrus's unit tests.
 	 * @param array &$files containing tests
-	 * @return bool
 	 */
 	public static function onUnitTestsList( &$files ) {
 		// This is pretty much exactly how the Translate extension declares its
@@ -480,8 +462,6 @@ class Hooks {
 
 		// a bit of a hack...but pull in abstract classes that arn't in the autoloader
 		require_once $dir . '/Query/BaseSimpleKeywordFeatureTest.php';
-
-		return true;
 	}
 
 	/**
@@ -498,7 +478,7 @@ class Hooks {
 	 * @param Connection $connection
 	 * @param array &$namespaces
 	 * @param string &$search
-	 * @return bool
+	 * @return false
 	 */
 	public static function prefixSearchExtractNamespaceWithConnection(
 		Connection $connection,
@@ -582,12 +562,9 @@ class Hooks {
 	 * @param Title $title old title
 	 * @param Title $newTitle new title
 	 * @param User $user User who made the move
-	 * @return bool should move move actions be precessed (yes)
 	 */
 	public static function onTitleMove( Title $title, Title $newTitle, $user ) {
 		self::$movingTitles[] = $title->getPrefixedDBkey();
-
-		return true;
 	}
 
 	/**
@@ -596,14 +573,13 @@ class Hooks {
 	 * @param Title $newTitle The new title
 	 * @param User $user User who made the move
 	 * @param int $oldId The page id of the old page.
-	 * @return bool
 	 */
 	public static function onTitleMoveComplete( Title $title, Title $newTitle, $user, $oldId ) {
 		// When a page is moved the update and delete hooks are good enough to catch
 		// almost everything.  The only thing they miss is if a page moves from one
 		// index to another.  That only happens if it switches namespace.
 		if ( $title->getNamespace() === $newTitle->getNamespace() ) {
-			return true;
+			return;
 		}
 
 		$conn = self::getConnection();
@@ -619,8 +595,6 @@ class Hooks {
 				JobQueueGroup::singleton()->lazyPush( $job );
 			} );
 		}
-
-		return true;
 	}
 
 	/**
@@ -671,7 +645,6 @@ class Hooks {
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ResourceLoaderGetConfigVars
 	 *
 	 * @param array &$vars
-	 * @return bool
 	 */
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
 		global $wgCirrusSearchEnableSearchLogging,
@@ -681,8 +654,6 @@ class Hooks {
 			'wgCirrusSearchEnableSearchLogging' => $wgCirrusSearchEnableSearchLogging,
 			'wgCirrusSearchFeedbackLink' => $wgCirrusSearchFeedbackLink,
 		];
-
-		return true;
 	}
 
 	/**
@@ -719,11 +690,10 @@ class Hooks {
 
 	/**
 	 * @param ApiBase $module
-	 * @return bool
 	 */
 	public static function onAPIAfterExecute( $module ) {
 		if ( !ElasticsearchIntermediary::hasQueryLogs() ) {
-			return true;
+			return;
 		}
 		$response = $module->getContext()->getRequest()->response();
 		$response->header( 'X-Search-ID: ' . Util::getRequestSetToken() );
@@ -733,7 +703,6 @@ class Hooks {
 				$response->header( 'X-OpenSearch-Type: ' . implode( ',', $types ) );
 			}
 		}
-		return true;
 	}
 
 	/**
@@ -766,11 +735,11 @@ class Hooks {
 		$search = new CirrusSearch();
 		$profiles = $search->getProfiles( \SearchEngine::COMPLETION_PROFILE_TYPE, $user );
 		if ( empty( $profiles ) ) {
-			return true;
+			return;
 		}
 		$options = self::autoCompleteOptionsForPreferences( $profiles );
 		if ( !$options ) {
-			return true;
+			return;
 		}
 		$prefs['cirrussearch-pref-completion-profile'] = [
 			'type' => 'radio',
@@ -778,7 +747,6 @@ class Hooks {
 			'options' => $options,
 			'label-message' => 'cirrussearch-pref-completion-profile-help',
 		];
-		return true;
 	}
 
 	private static function autoCompleteOptionsForPreferences( array $profiles ): array {
@@ -812,7 +780,6 @@ class Hooks {
 				->getConfigFactory()
 				->makeConfig( 'CirrusSearch' );
 		$defaultOptions['cirrussearch-pref-completion-profile'] = $config->get( 'CirrusSearchCompletionSettings' );
-		return true;
 	}
 
 	/**
@@ -853,18 +820,16 @@ class Hooks {
 	 * @param string $comment
 	 * @param string $oldPageId
 	 * @param array $restoredPages
-	 * @return bool
 	 */
 	public static function onArticleUndelete( Title $title, $create, $comment, $oldPageId, $restoredPages ) {
 		global $wgCirrusSearchIndexDeletes;
 		if ( !$wgCirrusSearchIndexDeletes ) {
 			// Not indexing, thus nothing to remove here.
-			return true;
+			return;
 		}
 		JobQueueGroup::singleton()->push(
 			new Job\DeleteArchive( $title, [ 'docIds' => $restoredPages ] )
 		);
-		return true;
 	}
 
 	public static function onSpecialStatsAddExtra( &$extraStats, $context ) {

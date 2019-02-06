@@ -361,7 +361,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		$oldIndex = $this->getConnection()->getIndex(
 			$this->indexBaseName, $this->indexTypeName, $oldIndexIdentifier
 		);
-		if ( ! $oldIndex->exists() ) {
+		if ( !$oldIndex->exists() ) {
 			$this->error( 'Index does not exist yet cannot recycle.' );
 			return false;
 		}

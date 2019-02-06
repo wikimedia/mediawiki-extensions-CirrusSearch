@@ -9,7 +9,7 @@ use CirrusSearch\Search\SearchContext;
  * @covers CirrusSearch\Query\PrefixSearchQueryBuilder
  */
 class PrefixSearchQueryBuilderTest extends \PHPUnit\Framework\TestCase {
-	static private $WEIGHTS = [
+	private static $WEIGHTS = [
 		'title' => 2,
 		'redirect' => 0.2,
 		'title_asciifolding' => 1,

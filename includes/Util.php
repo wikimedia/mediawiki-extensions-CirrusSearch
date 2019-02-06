@@ -40,7 +40,7 @@ class Util {
 	/**
 	 * @var string Id identifying this php execution
 	 */
-	static private $executionId;
+	private static $executionId;
 
 	/**
 	 * Get the textual representation of a namespace with underscores stripped, varying

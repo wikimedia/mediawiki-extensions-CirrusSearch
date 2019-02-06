@@ -526,7 +526,7 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		// Wrap $mainQuery in a filtered query if there are any filters
 		$unifiedFilter = Filters::unify( $filters, $this->notFilters );
 		if ( $unifiedFilter !== null ) {
-			if ( ! ( $mainQuery instanceof \Elastica\Query\BoolQuery ) ) {
+			if ( !( $mainQuery instanceof \Elastica\Query\BoolQuery ) ) {
 				$bool = new \Elastica\Query\BoolQuery();
 				$bool->addMust( $mainQuery );
 				$mainQuery = $bool;

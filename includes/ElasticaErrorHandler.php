@@ -75,7 +75,7 @@ class ElasticaErrorHandler {
 		$error = self::extractFullError( $exception );
 		if ( isset( $error['root_cause'][0]['type'] ) ) {
 			$error = reset( $error['root_cause'] );
-		} elseif ( ! ( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
+		} elseif ( !( isset( $error['type'] ) && isset( $error['reason'] ) ) ) {
 			return 'unknown';
 		}
 

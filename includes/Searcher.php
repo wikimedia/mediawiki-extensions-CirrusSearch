@@ -483,7 +483,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 	protected function searchMulti( $searches, array $resultsTypes = [] ) {
 		$contextResultsType = $this->searchContext->getResultsType();
 		$cirrusDebugOptions = $this->searchContext->getDebugOptions();
-		if ( $this->limit <= 0 && ! $cirrusDebugOptions->isCirrusDumpQuery() ) {
+		if ( $this->limit <= 0 && !$cirrusDebugOptions->isCirrusDumpQuery() ) {
 			if ( $cirrusDebugOptions->isCirrusDumpResult() ) {
 				return Status::newGood( [
 						'description' => 'Canceled due to offset out of bounds',

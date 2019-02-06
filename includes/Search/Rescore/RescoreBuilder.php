@@ -215,10 +215,10 @@ class RescoreBuilder {
 				);
 			}
 
-			if ( ! $this->isProfileNamespaceSupported( $profile )
-				|| ! $this->isProfileSyntaxSupported( $profile )
+			if ( !$this->isProfileNamespaceSupported( $profile )
+				|| !$this->isProfileSyntaxSupported( $profile )
 			) {
-				if ( ! isset( $profile['fallback_profile'] ) ) {
+				if ( !isset( $profile['fallback_profile'] ) ) {
 					throw new InvalidRescoreProfileException(
 						"Invalid rescore profile: fallback_profile is mandatory "
 						. "if supported_namespaces is not 'all' or "

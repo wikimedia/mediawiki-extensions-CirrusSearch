@@ -347,7 +347,7 @@ class CompletionSuggesterTest extends CirrusTestCase {
 	 */
 	public function testBadResponseOnFetchFailure() {
 		$suggestions = [];
-		for ( $i = 1; $i <= 10; $i ++ ) {
+		for ( $i = 1; $i <= 10; $i++ ) {
 			$suggestions[] = [
 				'text' => "Title$i",
 			];

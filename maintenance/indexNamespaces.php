@@ -2,8 +2,6 @@
 
 namespace CirrusSearch\Maintenance;
 
-use CirrusSearch\MetaStore\MetaNamespaceStore;
-
 /**
  * Index all namespaces for quick lookup.
  *
@@ -34,7 +32,7 @@ class IndexNamespaces extends Maintenance {
 	public function execute() {
 		global $wgContLang;
 
-		$store = new MetaNamespaceStore( $this->getConnection() );
+		$store = $this->maybeCreateMetastore()->namespaceStore();
 		$this->outputIndented( "Indexing namespaces..." );
 		$store->reindex( $wgContLang );
 		$this->output( "done\n" );

@@ -155,15 +155,26 @@ class MetaStoreIndex {
 		);
 	}
 
+	/**
+	 * @return \Elastica\Index|null Index on creation, or null if the index
+	 *  already exists.
+	 */
+	public function createIfNecessary() {
+		// If the mw_cirrus_metastore alias does not exists it
+		// means we need to create everything from scratch.
+		if ( self::cirrusReady( $this->connection ) ) {
+			return null;
+		}
+		$this->log( self::INDEX_NAME . " missing, creating new metastore index.\n" );
+		$newIndex = $this->createNewIndex();
+		$this->switchAliasTo( $newIndex );
+		return $newIndex;
+	}
+
 	public function createOrUpgradeIfNecessary() {
 		$this->fixOldName();
-		// If the mw_cirrus_metastore alias still not exists it
-		// means we need to create everything from scratch.
-		if ( !$this->client->getIndex( self::INDEX_NAME )->exists() ) {
-			$this->log( self::INDEX_NAME . " missing creating.\n" );
-			$newIndex = $this->createNewIndex();
-			$this->switchAliasTo( $newIndex );
-		} else {
+		$newIndex = $this->createIfNecessary();
+		if ( $newIndex === null ) {
 			list( $major, $minor ) = $this->metastoreVersion();
 			if ( $major < self::METASTORE_MAJOR_VERSION ) {
 				$this->log( self::INDEX_NAME . " major version mismatch upgrading.\n" );

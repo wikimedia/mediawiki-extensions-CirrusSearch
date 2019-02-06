@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use Elastica\Client;
+use MWElasticUtils;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -223,21 +224,6 @@ class ConfigUtils {
 	}
 
 	/**
-	 * Get index health
-	 *
-	 * @param string $indexName
-	 * @return array the index health status
-	 */
-	public function getIndexHealth( $indexName ) {
-		$path = "_cluster/health/$indexName";
-		$response = $this->client->request( $path );
-		if ( $response->hasError() ) {
-			throw new \Exception( "Error while fetching index health status: " . $response->getError() );
-		}
-		return $response->getData();
-	}
-
-	/**
 	 * Wait for the index to go green
 	 *
 	 * @param string $indexName
@@ -245,22 +231,12 @@ class ConfigUtils {
 	 * @return bool true if the index is green false otherwise.
 	 */
 	public function waitForGreen( $indexName, $timeout ) {
-		$startTime = time();
-		while ( ( $startTime + $timeout ) > time() ) {
-			try {
-				$response = $this->getIndexHealth( $indexName );
-				$status = isset( $response['status'] ) ? $response['status'] : 'unknown';
-				if ( $status == 'green' ) {
-					$this->outputIndented( "\tGreen!\n" );
-					return true;
-				}
-				$this->outputIndented( "\tIndex is $status retrying...\n" );
-				sleep( 5 );
-			} catch ( \Exception $e ) {
-				$this->output( "Error while waiting for green ({$e->getMessage()}), retrying...\n" );
-			}
+		$statuses = MWElasticUtils::waitForGreen(
+			$this->client, $indexName, $timeout );
+		foreach ( $statuses as $message ) {
+			$this->outputIndented( $message );
 		}
-		return false;
+		return $statuses->getReturn();
 	}
 
 	/**

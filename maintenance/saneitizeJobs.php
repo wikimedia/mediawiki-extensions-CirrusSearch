@@ -167,6 +167,7 @@ class SaneitizeJobs extends Maintenance {
 		$idsTotalPerHour = round( $idsRateTotal * 3600, 2 );
 		$idsTotalPerDay = round( $idsRateTotal * 3600 * 24, 2 );
 
+		$loopId = $jobInfo->has( 'sanitize_job_loop_id' ) ? $jobInfo->get( 'sanitize_job_loop_id' ) : 0;
 		$idsTodo = $this->maxId - $jobInfo->get( 'sanitize_job_id_offset' );
 		$loopEta = date( $fmt, time() + ( $idsTodo * $jobsRate ) );
 		$loopRestartMinTime = date( $fmt, $jobInfo->get( 'sanitize_job_last_loop' ) + $minLoopDuration );
@@ -194,6 +195,7 @@ JobDetail for {$jobName}
 		Loop:	{$idsPerHour} ids/hour, {$idsPerDay} ids/day
 		Total:	{$idsTotalPerHour} ids/hour, {$idsTotalPerDay} ids/day
 	Loop:
+		Loop:	{$loopId}
 		Todo:	{$idsTodo} ids
 		ETA:	{$loopEta}
 	Loop restart min time: {$loopRestartMinTime}

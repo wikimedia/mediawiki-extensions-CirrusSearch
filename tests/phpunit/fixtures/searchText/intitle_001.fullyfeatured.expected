@@ -110,8 +110,7 @@
                                                     "locale": "en",
                                                     "max_determinized_states": 20000,
                                                     "ngram_field": "redirect.title.trigram",
-                                                    "regex": "ab?c",
-                                                    "timeout": "120s"
+                                                    "regex": "ab?c"
                                                 }
                                             },
                                             {
@@ -121,8 +120,7 @@
                                                     "locale": "en",
                                                     "max_determinized_states": 20000,
                                                     "ngram_field": "title.trigram",
-                                                    "regex": "ab?c",
-                                                    "timeout": "120s"
+                                                    "regex": "ab?c"
                                                 }
                                             }
                                         ]

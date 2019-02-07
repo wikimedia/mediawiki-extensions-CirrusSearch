@@ -205,16 +205,13 @@ EOD
 	}
 
 	private function pushJobs() {
-		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
 		$profile = $this->getSearchConfig()
 			->getProfileService()
 			->loadProfileByName( SearchProfileService::SANEITIZER, $this->profileName );
-		$chunkSize = $profile['jobs_chunk_size'];
 		$maxJobs = $profile['max_checker_jobs'];
 		if ( !$maxJobs || $maxJobs <= 0 ) {
 			$this->fatalError( "max_checker_jobs invalid abandonning.\n" );
 		}
-		$minLoopDuration = $profile['min_loop_duration'];
 
 		$pressure = $this->getPressure();
 		if ( $pressure >= $maxJobs ) {
@@ -230,86 +227,28 @@ EOD
 		if ( $jobInfo === null ) {
 			$jobInfo = $this->createNewJob( $jobName );
 		}
-		// @var int
-		$from = $jobInfo->get( 'sanitize_job_id_offset' );
-		$lastLoop = $jobInfo->get( 'sanitize_job_last_loop' );
-		// ternary is BC for when loop_id didn't exist.
-		$loopId = $jobInfo->has( 'sanitize_job_loop_id' ) ? $jobInfo->get( 'sanitize_job_loop_id' ) : 0;
-		if ( $from <= $this->minId ) {
-			// Avoid sending too many CheckerJob for very small wikis
-			if ( !$this->checkMinLoopDuration( $lastLoop,  $minLoopDuration ) ) {
-				return;
-			}
-			$lastLoop = time();
-			$loopId += 1;
-		}
-		$jobsSent = $jobInfo->get( 'sanitize_job_jobs_sent' );
-		$jobsSentTotal = $jobInfo->get( 'sanitize_job_jobs_sent_total' );
-		$idsSent = $jobInfo->get( 'sanitize_job_ids_sent' );
-		$idsSentTotal = $jobInfo->get( 'sanitize_job_ids_sent_total' );
-		$jobs = [];
-		for ( $i = 0; $i < $maxJobs; $i++ ) {
-			$to = min( $from + $chunkSize - 1, $this->maxId );
-			$job = $this->createCheckerJob( $from, $to, $pushJobFreq, $jobInfo->get( 'sanitize_job_cluster' ), $loopId );
-			array_push( $jobs, $job );
-			$jobsSent++;
-			$jobsSentTotal++;
-			$idsSent += $to - $from;
-			$idsSentTotal += $to - $from;
-			$from = $to;
-			if ( $from >= $this->maxId ) {
-				$from = $this->minId;
-				$idsSent = 0;
-				$jobsSent = 0;
-				if ( !$this->checkMinLoopDuration( $lastLoop, $minLoopDuration ) ) {
-					break;
-				}
-				$lastLoop = time();
-			} else {
-				$from++;
-			}
-		}
-		usort( $jobs, function ( CheckerJob $job1, CheckerJob $job2 ) {
-			return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
-		} );
-		JobQueueGroup::singleton()->push( $jobs );
-		$this->log( "Sent $jobsSent jobs, setting from offset to $from.\n" );
-		$jobInfo->set( 'sanitize_job_loop_id', $loopId );
-		$jobInfo->set( 'sanitize_job_last_loop', $lastLoop );
-		$jobInfo->set( 'sanitize_job_id_offset', $from );
-		$jobInfo->set( 'sanitize_job_jobs_sent', $jobsSent );
-		$jobInfo->set( 'sanitize_job_jobs_sent_total', $jobsSentTotal );
-		$jobInfo->set( 'sanitize_job_ids_sent', $idsSent );
-		$jobInfo->set( 'sanitize_job_ids_sent_total', $idsSentTotal );
-		$this->updateJob( $jobInfo );
-	}
 
-	/**
-	 * @param int $from
-	 * @param int $to
-	 * @param int $refreshRate
-	 * @param string|null $cluster
-	 * @return CheckerJob
-	 */
-	private function createCheckerJob( $from, $to, $refreshRate, $cluster, $loopId ) {
-		$delay = mt_rand( 0, $refreshRate );
-		$this->log( "Creating CheckerJob( $from, $to, $delay, {$this->profileName}, $cluster, $loopId )\n" );
-		return CheckerJob::build( $from, $to, $delay, $this->profileName, $cluster, $loopId );
-	}
-
-	/**
-	 * @param int|null $lastLoop last loop start time
-	 * @param int $minLoopDuration minimal duration of a loop
-	 * @return bool true if minLoopDuration is not reached false otherwize
-	 */
-	private function checkMinLoopDuration( $lastLoop, $minLoopDuration ) {
-		if ( $lastLoop !== null && ( time() - $lastLoop ) < $minLoopDuration ) {
-			$date = date( 'Y-m-d H:i:s', $lastLoop );
-			$newLoop = date( 'Y-m-d H:i:s', $lastLoop + $minLoopDuration );
-			$this->log( "Last loop ended at $date, new jobs will be sent when min_loop_duration is reached at $newLoop\n" );
-			return false;
+		$pushJobFreq = $this->getOption( 'refresh-freq', 2 * 3600 );
+		$loop = new SaneitizeLoop(
+			$this->profileName,
+			$pushJobFreq,
+			$profile['jobs_chunk_size'],
+			$profile['min_loop_duration'],
+			function ( $msg, $channel ) {
+				$this->log( $msg, $channel );
+			} );
+		$jobs = $loop->run( $jobInfo, $maxJobs, $this->minId, $this->maxId );
+		if ( $jobs ) {
+			// Some job queues implementations ignore the timestamps and
+			// instead run these jobs with concurrency limits to keep them
+			// spread over time. Insert jobs in the order we asked for them
+			// to be run to have some semblance of sanity.
+			usort( $jobs, function ( CheckerJob $job1, CheckerJob $job2 ) {
+				return $job1->getReadyTimestamp() - $job2->getReleaseTimestamp();
+			} );
+			JobQueueGroup::singleton()->push( $jobs );
+			$this->updateJob( $jobInfo );
 		}
-		return true;
 	}
 
 	private function initClusters() {

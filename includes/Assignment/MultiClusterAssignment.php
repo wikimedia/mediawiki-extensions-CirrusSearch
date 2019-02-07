@@ -108,7 +108,8 @@ class MultiClusterAssignment implements ClusterAssignment {
 			$replica = $this->config->get( 'CirrusSearchDefaultCluster' );
 		}
 		if ( !isset( $this->clusters[$replica] ) ) {
-			throw new \RuntimeException( "Missing replica: $replica" );
+			$available = implode( ',', array_keys( $this->clusters ) );
+			throw new \RuntimeException( "Missing replica <$replica>, have <$available>" );
 		} elseif ( isset( $this->clusters[$replica][$this->group] ) ) {
 			return $this->clusters[$replica][$this->group];
 		} elseif ( count( $this->clusters[$replica] ) === 1 ) {

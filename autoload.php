@@ -105,6 +105,7 @@ $wgAutoloadClasses += [
 	'CirrusSearch\\Maintenance\\Reindexer' => __DIR__ . '/includes/Maintenance/Reindexer.php',
 	'CirrusSearch\\Maintenance\\RunSearch' => __DIR__ . '/maintenance/runSearch.php',
 	'CirrusSearch\\Maintenance\\SaneitizeJobs' => __DIR__ . '/maintenance/saneitizeJobs.php',
+	'CirrusSearch\\Maintenance\\SaneitizeLoop' => __DIR__ . '/includes/Maintenance/SaneitizeLoop.php',
 	'CirrusSearch\\Maintenance\\Set' => __DIR__ . '/includes/Maintenance/Set.php',
 	'CirrusSearch\\Maintenance\\SuggesterAnalysisConfigBuilder' => __DIR__ . '/includes/Maintenance/SuggesterAnalysisConfigBuilder.php',
 	'CirrusSearch\\Maintenance\\SuggesterMappingConfigBuilder' => __DIR__ . '/includes/Maintenance/SuggesterMappingConfigBuilder.php',

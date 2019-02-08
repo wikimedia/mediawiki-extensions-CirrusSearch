@@ -1069,17 +1069,13 @@ STEMMER_RULES
 		case 'slovak':
 			// Unpack default analyzer to add Slovak stemming and custom folding
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
-			$config[ 'filter' ][ 'skstemmer' ] = [
-				'type' => 'slovak_stemmer',
-			];
-
 			$config['analyzer']['text'] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
 					'lowercase',
 					'asciifolding',
-					'skstemmer',
+					'slovak_stemmer',
 				],
 			];
 

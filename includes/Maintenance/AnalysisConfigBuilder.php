@@ -618,17 +618,13 @@ class AnalysisConfigBuilder {
 			// Unpack default analyzer to add Serbian stemming and custom folding
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
 			// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-			$config[ 'filter' ][ 'scstemmer' ] = [
-				'type' => 'serbian_stemmer',
-			];
-
 			$config['analyzer']['text'] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
 					'lowercase',
 					'asciifolding',
-					'scstemmer',
+					'serbian_stemmer',
 				],
 			];
 

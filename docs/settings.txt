@@ -975,18 +975,7 @@ just leave this as it is.
 ; $wgCirrusSearchMergeSettings
 
 Default:
-    $wgCirrusSearchMergeSettings = [
-        'content' => [
-            'max_merge_at_once' => 5,
-            'segments_per_tier' => 5,
-            'max_merged_segment' => '25g',
-        ],
-        'general' => [
-            'max_merge_at_once' => 10,
-            'segments_per_tier' => 10,
-            'max_merged_segment' => '5g',
-        ],
-    ];
+    $wgCirrusSearchMergeSettings = [];
 
 Merge configuration for the indices.  See
 http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-merge.html

@@ -589,11 +589,12 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 	private function getMergeSettings() {
 		global $wgCirrusSearchMergeSettings;
 
-		if ( isset( $wgCirrusSearchMergeSettings[ $this->indexType ] ) ) {
-			return $wgCirrusSearchMergeSettings[ $this->indexType ];
-		}
-		// If there aren't configured merge settings for this index type default to the content type.
-		return $wgCirrusSearchMergeSettings[ 'content' ];
+		return $wgCirrusSearchMergeSettings[$this->indexType]
+			// If there aren't configured merge settings for this index type
+			// default to the content type.
+			?? $wgCirrusSearchMergeSettings['content']
+			// It's also fine to not specify merge settings.
+			?? [];
 	}
 
 	/**

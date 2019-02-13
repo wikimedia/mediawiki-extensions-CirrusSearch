@@ -822,24 +822,7 @@ $wgCirrusSearchPoolCounterKey = '_elasticsearch';
  * http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules-merge.html
  * for the meanings.
  */
-$wgCirrusSearchMergeSettings = [
-	'content' => [
-		// Aggressive settings to try to keep the content index more optimized
-		// because it is searched more frequently.
-		'max_merge_at_once' => 5,
-		'segments_per_tier' => 5,
-		'deletes_pct_allowed' => 25.0,
-		// TODO: Really? This is well beyond elastic guidelines
-		'max_merged_segment' => '25g',
-	],
-	'general' => [
-		// The Elasticsearch defaults for this less frequently searched index.
-		'max_merge_at_once' => 10,
-		'segments_per_tier' => 10,
-		'deletes_pct_allowed' => 33.0,
-		'max_merged_segment' => '5g',
-	],
-];
+$wgCirrusSearchMergeSettings = [];
 
 /**
  * Whether search events should be logged in the client side.

@@ -1,4 +1,3 @@
-/*jshint esversion: 6,  node:true */
 /**
  * StepHelpers are abstracted functions that usually represent the
  * behaviour of a step. They are placed here, instead of in the actual step,
@@ -13,8 +12,8 @@
 const expect = require( 'chai' ).expect,
 	fs = require( 'fs' ),
 	path = require( 'path' ),
-	Promise = require( 'bluebird' ), // jshint ignore:line
-	articlePath = path.dirname(path.dirname(path.dirname(__dirname))) + '/integration/articles/';
+	Promise = require( 'bluebird' ),
+	articlePath = path.dirname( path.dirname( path.dirname( __dirname ) ) ) + '/integration/articles/';
 
 class StepHelpers {
 	constructor( world, wiki ) {
@@ -31,7 +30,7 @@ class StepHelpers {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 			try {
-				yield client.delete( title, "CirrusSearch integration test delete" );
+				yield client.delete( title, 'CirrusSearch integration test delete' );
 				if ( !options.skipWaitForOperatoin ) {
 					yield this.waitForOperation( 'delete', title );
 				}
@@ -57,7 +56,7 @@ class StepHelpers {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 
-			if ( text[0] === '@' ) {
+			if ( text[ 0 ] === '@' ) {
 				text = fs.readFileSync( path.join( articlePath, text.substr( 1 ) ) ).toString();
 			}
 			let fetchedText = yield this.getWikitext( title );
@@ -77,17 +76,17 @@ class StepHelpers {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
 			let response = yield client.request( {
-				action: "query",
-				format: "json",
+				action: 'query',
+				format: 'json',
 				formatversion: 2,
-				prop: "revisions",
-				rvprop: "content",
+				prop: 'revisions',
+				rvprop: 'content',
 				titles: title
 			} );
-			if ( response.query.pages[0].missing ) {
-				return "";
+			if ( response.query.pages[ 0 ].missing ) {
+				return '';
 			}
-			return response.query.pages[0].revisions[0].content;
+			return response.query.pages[ 0 ].revisions[ 0 ].content;
 		} ).call( this );
 	}
 
@@ -99,7 +98,7 @@ class StepHelpers {
 				from: from,
 				to: to,
 				noredirect: noRedirect ? 1 : 0,
-				token: client.editToken,
+				token: client.editToken
 			} );
 			// If no redirect was left behind we have no way to check the
 			// old page has been removed from elasticsearch. The page table
@@ -138,7 +137,7 @@ class StepHelpers {
 			let request = {
 				action: 'opensearch',
 				search: query,
-				profile: profile,
+				profile: profile
 			};
 			if ( namespaces ) {
 				request.namespace = namespaces.replace( /','/g, '|' );
@@ -158,10 +157,10 @@ class StepHelpers {
 
 			try {
 				let response = yield client.request( Object.assign( options, {
-					action: "query",
-					list: "search",
+					action: 'query',
+					list: 'search',
 					srsearch: query,
-					srprop: "snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch",
+					srprop: 'snippet|titlesnippet|redirectsnippet|sectionsnippet|categorysnippet|isfilematch',
 					formatversion: 2
 				} ) );
 				this.world.setApiResponse( response );
@@ -180,7 +179,7 @@ class StepHelpers {
 				let doc = yield this.getCirrusIndexedContent( title );
 				if ( doc.cirrusdoc && doc.cirrusdoc.length > 0 ) {
 					try {
-						check( doc.cirrusdoc[0] );
+						check( doc.cirrusdoc[ 0 ] );
 						break;
 					} catch ( err ) {
 						lastError = err;
@@ -199,70 +198,70 @@ class StepHelpers {
 	}
 
 	waitForOperation( operation, title, timeoutMs = null, revisionId = null ) {
-		return this.waitForOperations([[operation, title, revisionId]], null, timeoutMs );
+		return this.waitForOperations( [ [ operation, title, revisionId ] ], null, timeoutMs );
 	}
 
 	/**
 	 * Wait by scanning the cirrus indices to check if the list of operations
 	 * has been done and are effective in elastic.
 	 *
-	 * @param operations {Array.<Array>} list of operations to wait for. Array elements are
-	 * [ operation, title, revisionId (optional) ]
-	 * @param log {callback} log callback when an operation is done
-	 * @param timeoutMs {int} max time to wait, default to Xsec*number of operations. Where X is 10 for simple operations
-	 * and 30s for uploads.
-	 * @returns {Promise} that resolves when everything is done or fails otherwise.
+	 * @param {Array[]} operations List of operations to wait for.
+	 *  Array elements are [ operation, title, revisionId (optional) ]
+	 * @param {callback} log Log callback when an operation is done
+	 * @param {number} timeoutMs Max time to wait, default to Xsec*number of operations.
+	 *  Where X is 10 for simple operations and 30s for uploads.
+	 * @return {Promise} that resolves when everything is done or fails otherwise.
 	 */
 	waitForOperations( operations, log = null, timeoutMs = null ) {
 		return Promise.coroutine( function* () {
 			if ( !timeoutMs ) {
-				timeoutMs = operations.reduce((total, v) => total + ( v[0].match(/^upload/) ? 30000 : 10000 ), 0 );
+				timeoutMs = operations.reduce( ( total, v ) => total + ( v[ 0 ].match( /^upload/ ) ? 30000 : 10000 ), 0 );
 			}
 			let start = new Date();
 
 			let done = [];
-			let failedOps = (ops, doneOps) => ops.filter((v, idx) => doneOps.indexOf(idx) === -1).map(v => `[${v[0]}:${v[1]}]`).join();
-			while (done.length !== operations.length) {
+			let failedOps = ( ops, doneOps ) => ops.filter( ( v, idx ) => doneOps.indexOf( idx ) === -1 ).map( ( v ) => `[${v[ 0 ]}:${v[ 1 ]}]` ).join();
+			while ( done.length !== operations.length ) {
 				let consecutiveFailures = 0;
-				for (let i = 0; i < operations.length; i++) {
-					let operation = operations[i][0];
-					let title = operations[i][1];
-					let revisionId = operations[i][2];
-					if ( done.indexOf(i) !== -1 ) {
+				for ( let i = 0; i < operations.length; i++ ) {
+					let operation = operations[ i ][ 0 ];
+					let title = operations[ i ][ 1 ];
+					let revisionId = operations[ i ][ 2 ];
+					if ( done.indexOf( i ) !== -1 ) {
 						continue;
 					}
-					if (consecutiveFailures > 10) {
+					if ( consecutiveFailures > 10 ) {
 						// restart the loop when we fail too many times
 						// next pages, let's retry from the beginning.
 						// mwbot is perhaps behind so instead of continuing to check
 						consecutiveFailures = 0;
 						break;
 					}
-					if ((operation === 'upload' || operation === 'uploadOverwrite') && title.substr(0, 5) !== 'File:') {
+					if ( ( operation === 'upload' || operation === 'uploadOverwrite' ) && title.substr( 0, 5 ) !== 'File:' ) {
 						title = 'File:' + title;
 					}
 					let expect = operation !== 'delete';
-					let exists = yield this.checkExists(title, revisionId);
+					let exists = yield this.checkExists( title, revisionId );
 					if ( exists === expect ) {
-						if (log) {
-							log(title, done.length + 1);
+						if ( log ) {
+							log( title, done.length + 1 );
 						}
-						done.push(i);
+						done.push( i );
 						consecutiveFailures = 0;
 					} else {
 						consecutiveFailures++;
 					}
-					yield this.waitForMs(10);
+					yield this.waitForMs( 10 );
 				}
-				if (done.length === operations.length) {
+				if ( done.length === operations.length ) {
 					break;
 				}
 
-				if (new Date() - start >= timeoutMs) {
-					let failed_ops = failedOps(operations, done);
-					throw new Error(`Timed out waiting for ${failed_ops}`);
+				if ( new Date() - start >= timeoutMs ) {
+					let failed_ops = failedOps( operations, done );
+					throw new Error( `Timed out waiting for ${failed_ops}` );
 				}
-				yield this.waitForMs(50);
+				yield this.waitForMs( 50 );
 			}
 		} ).call( this );
 	}
@@ -275,7 +274,7 @@ class StepHelpers {
 	 * over multiple indices (content/general).
 	 *
 	 * @param {string} title page title
-	 * @returns {Promise.<[]>} resolves to an array of indexed docs or null if title not indexed
+	 * @return {Promise.<[]>} resolves to an array of indexed docs or null if title not indexed
 	 */
 	getCirrusIndexedContent( title ) {
 		return Promise.coroutine( function* () {
@@ -308,7 +307,7 @@ class StepHelpers {
 	 * Check if title is indexed
 	 * @param {string} title
 	 * @param {string} revisionId
-	 * @returns {Promise.<boolean>} resolves to a boolean
+	 * @return {Promise.<boolean>} resolves to a boolean
 	 */
 	checkExists( title, revisionId = null ) {
 		return Promise.coroutine( function* () {
@@ -321,8 +320,8 @@ class StepHelpers {
 			// wont match, but the backend api ensures the redirect is now contained
 			// within the document. Unfortunately if the page was just edited to
 			// now be a redirect anymore this is wrong ...
-			if ( isOk && revisionId && content[0].source.title === page.title ) {
-				isOk = parseInt( content[0].source.version, 10 ) === revisionId;
+			if ( isOk && revisionId && content[ 0 ].source.title === page.title ) {
+				isOk = parseInt( content[ 0 ].source.version, 10 ) === revisionId;
 			}
 			return isOk;
 		} ).call( this );
@@ -331,8 +330,8 @@ class StepHelpers {
 	pageIdOf( title ) {
 		return Promise.coroutine( function* () {
 			let client = yield this.apiPromise;
-			let response = yield client.request( { action: "query", titles: title, formatversion: 2 } );
-			return response.query.pages[0].pageid;
+			let response = yield client.request( { action: 'query', titles: title, formatversion: 2 } );
+			return response.query.pages[ 0 ].pageid;
 		} ).call( this );
 	}
 }

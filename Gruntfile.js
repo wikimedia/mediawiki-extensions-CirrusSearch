@@ -1,21 +1,21 @@
-/*jshint esversion: 6, node:true */
 /*!
  * Grunt file
  *
  * @package CirrusSearch
  */
 
+/* eslint-env node, es6 */
+
 const path = require( 'path' );
 
-/*jshint node:true */
 module.exports = function ( grunt ) {
-	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
-	grunt.loadNpmTasks( 'grunt-jsonlint' );
+	var WebdriverIOconfigFile;
+
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
+	grunt.loadNpmTasks( 'grunt-eslint' );
+	grunt.loadNpmTasks( 'grunt-jsonlint' );
 	grunt.loadNpmTasks( 'grunt-stylelint' );
 	grunt.loadNpmTasks( 'grunt-webdriver' );
-
-	var WebdriverIOconfigFile;
 
 	if ( process.env.JENKINS_HOME ) {
 		WebdriverIOconfigFile = './tests/integration/config/wdio.conf.jenkins.js';
@@ -26,9 +26,9 @@ module.exports = function ( grunt ) {
 	}
 
 	grunt.initConfig( {
-		jshint: {
+		eslint: {
 			options: {
-				jshintrc: true
+				reportUnusedDisableDirectives: true
 			},
 			all: [
 				'**/*.js',
@@ -74,15 +74,15 @@ module.exports = function ( grunt ) {
 					if ( !spec ) {
 						return undefined;
 					}
-					if ( spec[0] === '/' ) {
+					if ( spec[ 0 ] === '/' ) {
 						return spec;
 					}
-					return path.join(__dirname, 'tests/integration/features', spec);
+					return path.join( __dirname, 'tests/integration/features', spec );
 				} )()
 			}
 		}
 	} );
 
-	grunt.registerTask( 'test', [ 'jshint', 'jsonlint', 'banana', 'stylelint' ] );
+	grunt.registerTask( 'test', [ 'eslint', 'jsonlint', 'banana', 'stylelint' ] );
 	grunt.registerTask( 'default', 'test' );
 };

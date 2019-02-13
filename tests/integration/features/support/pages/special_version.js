@@ -1,6 +1,4 @@
-/*jshint esversion: 6, node:true */
-
-const TitlePage = require('./title_page');
+const TitlePage = require( './title_page' );
 
 class SpecialVersion extends TitlePage {
 	constructor( title ) {
@@ -8,7 +6,7 @@ class SpecialVersion extends TitlePage {
 	}
 
 	software_table_row( name ) {
-		return this.table('#sv-software').element( 'td=' + name ).value;
+		return this.table( '#sv-software' ).element( 'td=' + name ).value;
 	}
 }
 

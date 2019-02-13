@@ -1,0 +1,17 @@
+{
+	"extends": [
+		"wikimedia/server"
+	],
+	"env": {
+		"mocha": true
+	},
+	"globals": {
+		"browser": false
+	},
+	"rules": {
+		"max-len": "off",
+		"no-console": "off",
+		"camelcase": "off",
+		"no-underscore-dangle": "off"
+	}
+}

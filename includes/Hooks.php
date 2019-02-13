@@ -766,8 +766,11 @@ class Hooks {
 		$messages = [];
 		foreach ( $preferredOrder as $name ) {
 			if ( in_array( $name, $available ) ) {
-				$display = wfMessage( "cirrussearch-completion-profile-$name-pref-name" )->escaped()
-					. '<br>' . wfMessage( "cirrussearch-completion-profile-$name-pref-desc" )->escaped();
+				$display = wfMessage( "cirrussearch-completion-profile-$name-pref-name" )->escaped() .
+					new \OOUI\LabelWidget( [
+						'classes' => [ 'oo-ui-inline-help' ],
+						'label' => wfMessage( "cirrussearch-completion-profile-$name-pref-desc" )->text()
+					] );
 				$messages[$display] = $name;
 			}
 		}

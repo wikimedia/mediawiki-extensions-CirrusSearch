@@ -1,6 +1,3 @@
-/*jshint esversion: 6,  node:true */
-/*global browser */
-
 /**
  * Step definitions. Each step definition is bound to the World object,
  * so any methods or properties in World are available here.
@@ -10,14 +7,14 @@
  * bind `this` to the parent function instead, which is not what we want.
  */
 
-const {defineSupportCode, defineParameterType} = require('cucumber'),
-	SpecialVersion = require('../support/pages/special_version'),
-	SpecialUndelete = require('../support/pages/special_undelete'),
-	ArticlePage = require('../support/pages/article_page'),
-	TitlePage = require('../support/pages/title_page'),
+const { defineSupportCode, defineParameterType } = require( 'cucumber' ),
+	SpecialVersion = require( '../support/pages/special_version' ),
+	SpecialUndelete = require( '../support/pages/special_undelete' ),
+	ArticlePage = require( '../support/pages/article_page' ),
+	TitlePage = require( '../support/pages/title_page' ),
 	expect = require( 'chai' ).expect,
 	querystring = require( 'querystring' ),
-	Promise = require( 'bluebird' ); // jshint ignore:line
+	Promise = require( 'bluebird' );
 
 // Attach extra information to assertion errors about what api call triggered the problem
 function withApi( world, fn ) {
@@ -27,14 +24,14 @@ function withApi( world, fn ) {
 		let request = world.apiResponse ? world.apiResponse.__request : world.apiError.request;
 		if ( request ) {
 			let qs = Object.assign( {}, request.qs, request.form ),
-			    href = request.uri + '?' + querystring.stringify( qs );
+				href = request.uri + '?' + querystring.stringify( qs );
 
 			e.message += `\nLast Api: ${href}\nExtra: ` + JSON.stringify( world.apiResponse || world.apiError );
 		} else {
 			e.message += '\nLast Api: UNKNOWN';
 		}
 		if ( world.apiError ) {
-			e.message += `\nError reported: ${JSON.stringify(world.apiError)}`;
+			e.message += `\nError reported: ${JSON.stringify( world.apiError )}`;
 		}
 		throw e;
 	}
@@ -48,7 +45,7 @@ const searchVars = {};
 // has to be matched as .+). That broken matching also means (?:foo (.+) bar)
 // would have to be matched as '.+) bar' but we don't bother.
 let expressions = [ '.+', '.+?', '.+)' ];
-let transformer = (s) => {
+let transformer = ( s ) => {
 	if ( s === undefined ) {
 		return s;
 	}
@@ -56,11 +53,11 @@ let transformer = (s) => {
 		return '';
 	}
 	s = s.replace( /%{epoch}/g, epoch );
-	s = s.replace( /%ideographic_whitspace%/g, "\u3000" );
+	s = s.replace( /%ideographic_whitspace%/g, '\u3000' );
 
 	// Replace %{\uXXXX}% with the appropriate unicode code point
-	s = s.replace(/%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
-	s = Object.keys(searchVars).reduce( ( str, pattern ) => str.replace( pattern, searchVars[pattern] ), s );
+	s = s.replace( /%\{\\u([\dA-Fa-f]{4,6})\}%/g, ( match, codepoint ) => JSON.parse( `"\\u${codepoint}"` ) );
+	s = Object.keys( searchVars ).reduce( ( str, pattern ) => str.replace( pattern, searchVars[ pattern ] ), s );
 	return s.replace( /%{exact:([^}]*)}/g, '$1' );
 };
 
@@ -68,11 +65,11 @@ for ( let expression of expressions ) {
 	defineParameterType( {
 		regexp: expression,
 		transformer: transformer,
-		typeName: 'replacements_' + expression ,
+		typeName: 'replacements_' + expression
 	} );
 }
 
-defineSupportCode( function( {Given, When, Then} ) {
+defineSupportCode( function ( { Given, When, Then } ) {
 
 	When( /^I go to (.+)$/, function ( title ) {
 		return this.visit( new TitlePage( title ) );
@@ -82,33 +79,33 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.suggestionSearch( query );
 	} );
 
-	When( /^I ask suggestion API at most (\d+) items? for (.+)$/, function( limit, query ) {
+	When( /^I ask suggestion API at most (\d+) items? for (.+)$/, function ( limit, query ) {
 		return this.stepHelpers.suggestionSearch( query, limit );
 	} );
 
-	Then( /^there is a software version row for (.+)$/ , function ( name ) {
+	Then( /^there is a software version row for (.+)$/, function ( name ) {
 		expect( SpecialVersion.software_table_row( name ) ).not.to.equal( null );
 	} );
 
-	Then( /^the API should produce list containing (.+)/, function( term ) {
+	Then( /^the API should produce list containing (.+)/, function ( term ) {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.include( term );
 		} );
 	} );
 
-	Then( /^the API should produce empty list/, function() {
+	Then( /^the API should produce empty list/, function () {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.have.length( 0 );
 		} );
 	} );
 
-	Then( /^the API should produce list starting with (.+)/, function( term ) {
+	Then( /^the API should produce list starting with (.+)/, function ( term ) {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ][ 0 ] ).to.equal( term );
 		} );
 	} );
 
-	Then( /^the API should produce list of length (\d+)/, function( length ) {
+	Then( /^the API should produce list of length (\d+)/, function ( length ) {
 		return withApi( this, () => {
 			expect( this.apiResponse[ 1 ] ).to.have.length( parseInt( length, 10 ) );
 		} );
@@ -122,24 +119,24 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/, function( search, profile, namespaces ) {
+	When( /^I get api suggestions for (.+?)(?: using the (.+) profile)?(?: on namespaces (\d+(?:,\d+)*))?$/, function ( search, profile, namespaces ) {
 		// TODO: Add step helper
-		return this.stepHelpers.suggestionsWithProfile( search, profile || "fuzzy", namespaces );
+		return this.stepHelpers.suggestionsWithProfile( search, profile || 'fuzzy', namespaces );
 	} );
 
 	Then( /^(.+) is the (.+) api suggestion$/, function ( title, position ) {
 		return withApi( this, () => {
-			let pos = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth'].indexOf( position );
-			if ( title === "none" ) {
+			let pos = [ 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth' ].indexOf( position );
+			if ( title === 'none' ) {
 				if ( this.apiError && pos === 1 ) {
 					// TODO: Why 1? maybe 0?
 					return;
 				} else {
-					expect( this.apiResponse[1] ).to.have.lengthOf.at.most( pos );
+					expect( this.apiResponse[ 1 ] ).to.have.lengthOf.at.most( pos );
 				}
 			} else {
-				expect( this.apiResponse[1] ).to.have.lengthOf.at.least( pos );
-				expect( this.apiResponse[1][pos] ).to.equal( title );
+				expect( this.apiResponse[ 1 ] ).to.have.lengthOf.at.least( pos );
+				expect( this.apiResponse[ 1 ][ pos ] ).to.equal( title );
 			}
 		} );
 	} );
@@ -147,16 +144,16 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^(.+) is( not)? in the api suggestions$/, function ( title, should_not ) {
 		return withApi( this, () => {
 			if ( should_not ) {
-				expect( this.apiResponse[1] ).to.not.include( title );
+				expect( this.apiResponse[ 1 ] ).to.not.include( title );
 			} else {
-				expect( this.apiResponse[1] ).to.include( title );
+				expect( this.apiResponse[ 1 ] ).to.include( title );
 			}
 		} );
 	} );
 
-	Then( /^the api should offer to search for pages containing (.+)$/, function( term ) {
+	Then( /^the api should offer to search for pages containing (.+)$/, function ( term ) {
 		return withApi( this, () => {
-			expect( this.apiResponse[0] ).to.equal( term );
+			expect( this.apiResponse[ 0 ] ).to.equal( term );
 		} );
 	} );
 
@@ -170,21 +167,20 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-
 	Then( /^I get api near matches for (.+)$/, function ( search ) {
-		return this.stepHelpers.searchFor( search, { srwhat: "nearmatch" } );
+		return this.stepHelpers.searchFor( search, { srwhat: 'nearmatch' } );
 	} );
 
 	function checkApiSearchResultStep( title, in_ok, indexes ) {
 		indexes = indexes.split( ' or ' ).map( ( index ) => {
 			return 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
 		} );
-		if ( title === "none" ) {
+		if ( title === 'none' ) {
 			expect( this.apiResponse.query.search ).to.have.lengthOf.below( 1 + Math.min.apply( null, indexes ) );
 		} else {
-			let found = indexes.map( pos => {
-				if ( this.apiResponse.query.search[pos] ) {
-					return this.apiResponse.query.search[pos].title;
+			let found = indexes.map( ( pos ) => {
+				if ( this.apiResponse.query.search[ pos ] ) {
+					return this.apiResponse.query.search[ pos ].title;
 				} else {
 					return null;
 				}
@@ -195,9 +191,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 				// Chai doesnt (yet) have a native assertion for this:
 				// https://github.com/chaijs/chai/issues/858
 				let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
-				expect( ok, `expected ${JSON.stringify(found)} to include "${title}"` ).to.equal(true);
+				expect( ok, `expected ${JSON.stringify( found )} to include "${title}"` ).to.equal( true );
 			} else {
-				expect( found ).to.include(title);
+				expect( found ).to.include( title );
 			}
 		}
 	}
@@ -214,20 +210,20 @@ defineSupportCode( function( {Given, When, Then} ) {
 			// https://github.com/chaijs/chai/issues/858
 			let found = this.apiResponse.query.search.map( ( result ) => result.title );
 			let ok = found.reduce( ( a, b ) => a || b.indexOf( title ) > -1, false );
-			let msg = `Expected ${JSON.stringify(found)} to${not_searching ? ' not' : ''} include ${title}`;
+			let msg = `Expected ${JSON.stringify( found )} to${not_searching ? ' not' : ''} include ${title}`;
 
 			if ( not_searching ) {
-				expect( ok, msg ).to.equal(false);
+				expect( ok, msg ).to.equal( false );
 			} else {
-				expect( ok, msg ).to.equal(true);
+				expect( ok, msg ).to.equal( true );
 			}
 		} );
 	} );
 
 	When( /^I api search( with rewrites enabled)?(?: with query independent profile ([^ ]+))?(?: with offset (\d+))?(?: in the (.+) language)?(?: in namespaces? (\d+(?: \d+)*))?(?: on ([a-z]+))? for (.+)$/, function ( enableRewrites, qiprofile, offset, lang, namespaces, wiki, search ) {
 		let options = {
-			srnamespace: (namespaces || "0").split(' ').join(','),
-			srenablerewrites: enableRewrites ? 1 : 0,
+			srnamespace: ( namespaces || '0' ).split( ' ' ).join( ',' ),
+			srenablerewrites: enableRewrites ? 1 : 0
 		};
 		if ( offset ) {
 			options.sroffset = offset;
@@ -241,14 +237,14 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 		let stepHelpers = this.stepHelpers;
 		if ( wiki ) {
-			stepHelpers = this.stepHelpers.onWiki(wiki);
+			stepHelpers = this.stepHelpers.onWiki( wiki );
 		}
 		return stepHelpers.searchFor( search, options );
 	} );
 
 	Then( /^there are no errors reported by the api$/, function () {
 		return withApi( this, () => {
-			expect( this.apiError ).to.equal(undefined);
+			expect( this.apiError ).to.equal( undefined );
 		} );
 	} );
 
@@ -270,9 +266,9 @@ defineSupportCode( function( {Given, When, Then} ) {
 		} );
 	} );
 
-	Then( /^(.+) is( not)? in the api search results$/, function( title, not ) {
+	Then( /^(.+) is( not)? in the api search results$/, function ( title, not ) {
 		return withApi( this, () => {
-			let titles = this.apiResponse.query.search.map( res => res.title );
+			let titles = this.apiResponse.query.search.map( ( res ) => res.title );
 			if ( not ) {
 				expect( titles ).to.not.include( title );
 			} else {
@@ -300,7 +296,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 			expect( this.apiResponse.query.searchinfo ).to.include.any.keys( 'suggestionsnippet', 'rewrittenquerysnippet' );
 			let suggestion = this.apiResponse.query.searchinfo.suggestionsnippet ||
 				this.apiResponse.query.searchinfo.rewrittenquerysnippet;
-			suggestion = suggestion.replace(/<em>/g, "*").replace(/<\/em>/g, "*").replace(/&quot;/g, '"');
+			suggestion = suggestion.replace( /<em>/g, '*' ).replace( /<\/em>/g, '*' ).replace( /&quot;/g, '"' );
 			if ( second ) {
 				expect( suggestion ).to.be.oneOf( [ first, second ] );
 			} else {
@@ -314,12 +310,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 			let position = 'first second third fourth fifth sixth seventh eighth ninth tenth'.split( ' ' ).indexOf( index );
 			expect( this.apiResponse.query.search ).to.have.lengthOf.gt( position );
 
-			if ( key === 'title' && expected.indexOf( '*' ) > -1) {
+			if ( key === 'title' && expected.indexOf( '*' ) > -1 ) {
 				key = 'titlesnippet';
 			}
-			expect( this.apiResponse.query.search[position] ).to.include.keys( key );
-			let snippet = this.apiResponse.query.search[position][key].replace(
-				/<span class="searchmatch">(.+?)<\/span>/g, '*$1*');
+			expect( this.apiResponse.query.search[ position ] ).to.include.keys( key );
+			let snippet = this.apiResponse.query.search[ position ][ key ].replace(
+				/<span class="searchmatch">(.+?)<\/span>/g, '*$1*' );
 			if ( in_ok ) {
 				expect( snippet ).to.include( expected );
 			} else {
@@ -330,13 +326,13 @@ defineSupportCode( function( {Given, When, Then} ) {
 
 	Then( /^the first api search result is a match to file content$/, function () {
 		withApi( this, () => {
-			expect( this.apiResponse.query.search[0].isfilematch ).to.equal(true);
+			expect( this.apiResponse.query.search[ 0 ].isfilematch ).to.equal( true );
 		} );
 	} );
 
 	Then( /^I locate the page id of (.+) and store it as (%.+%)$/, function ( title, varname ) {
 		return Promise.coroutine( function* () {
-			searchVars[varname] = yield this.stepHelpers.pageIdOf( title );
+			searchVars[ varname ] = yield this.stepHelpers.pageIdOf( title );
 		} ).call( this );
 	} );
 
@@ -353,7 +349,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^I globally freeze indexing$/, Promise.coroutine( function* () {
 		let client = yield this.onWiki();
 		yield client.request( {
-			action: 'cirrus-freeze-writes',
+			action: 'cirrus-freeze-writes'
 		} );
 	} ) );
 
@@ -373,15 +369,15 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return stepHelpers.uploadFile( title, fileName, description );
 	} );
 
-	Then(/^I am on a page titled (.+)$/, function( title ) {
-		expect(ArticlePage.articleTitle, `I am on ${title}`).to.equal(title);
+	Then( /^I am on a page titled (.+)$/, function ( title ) {
+		expect( ArticlePage.articleTitle, `I am on ${title}` ).to.equal( title );
 	} );
 
-	Given(/^I am at a random page$/, function() {
+	Given( /^I am at a random page$/, function () {
 		return this.visit( new TitlePage( 'Special:Random' ) );
 	} );
 
-	When(/^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I api search for (.+)$/, function ( field, length, search ) {
+	When( /^I set More Like This Options to ([^ ]+) field, word length to (\d+) and I api search for (.+)$/, function ( field, length, search ) {
 		let options = {
 			cirrusMtlUseFields: 'yes',
 			cirrusMltFields: field,
@@ -393,7 +389,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.searchFor( search, options );
 	} );
 
-	When(/^I set More Like This Options to ([^ ]+) field, percent terms to match to (-?\d+%) and I api search for (.+)$/, function( field, percent, search ) {
+	When( /^I set More Like This Options to ([^ ]+) field, percent terms to match to (-?\d+%) and I api search for (.+)$/, function ( field, percent, search ) {
 		let options = {
 			cirrusMtlUseFields: 'yes',
 			cirrusMltFields: field,
@@ -406,7 +402,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.searchFor( search, options );
 	} );
 
-	When(/^I set More Like This Options to bad settings and I api search for (.+)$/, function ( search ) {
+	When( /^I set More Like This Options to bad settings and I api search for (.+)$/, function ( search ) {
 		let options = {
 			cirrusMtlUseFields: 'yes',
 			cirrusMltFields: 'title',
@@ -428,7 +424,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		return this.stepHelpers.movePage( from, to, noRedirect );
 	} );
 
-	Then( /^I search deleted pages for (.+)$/, function( title ) {
+	Then( /^I search deleted pages for (.+)$/, function ( title ) {
 		SpecialUndelete.login( this );
 		this.visit( SpecialUndelete );
 		SpecialUndelete.search_input = title;
@@ -439,12 +435,12 @@ defineSupportCode( function( {Given, When, Then} ) {
 		expect( SpecialUndelete.get_result_at( 1 ) ).to.equal( title );
 	} );
 
-	When( /^I dump the cirrus data for (.+)$/, function( title ) {
-		this.visit(new TitlePage(title + '?action=cirrusDump'));
+	When( /^I dump the cirrus data for (.+)$/, function ( title ) {
+		this.visit( new TitlePage( title + '?action=cirrusDump' ) );
 	} );
 
-	Then ( /^the page text contains (.+)$/, function( text ) {
-		expect(browser.getSource()).to.contains(text);
+	Then( /^the page text contains (.+)$/, function ( text ) {
+		expect( browser.getSource() ).to.contains( text );
 	} );
 
 	Then( /^there are( no)? api search results with (.+) in the data$/, function ( should_not, within ) {
@@ -471,7 +467,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 				stepHelpers = this.stepHelpers.onWiki( wiki );
 			}
 			return stepHelpers.waitForDocument( title, ( doc ) => {
-				expect( doc.source[field] ).to.include( value );
+				expect( doc.source[ field ] ).to.include( value );
 			} );
 		} );
 	} );
@@ -479,7 +475,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 	Then( /^I wait for (.+) to have (.+) of (.+)$/, function ( title, field, value ) {
 		return withApi( this, () => {
 			return this.stepHelpers.waitForDocument( title, ( doc ) => {
-				expect( String( doc.source[field] ) ).to.equal( value );
+				expect( String( doc.source[ field ] ) ).to.equal( value );
 			} );
 		} );
 	} );
@@ -488,7 +484,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		let client = yield this.onWiki();
 		try {
 			let response = yield client.request( {
-				action: 'cirrus-config-dump',
+				action: 'cirrus-config-dump'
 			} );
 			this.setApiResponse( response );
 		} catch ( err ) {
@@ -513,7 +509,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		let client = yield this.onWiki();
 		try {
 			let response = yield client.request( {
-				action: 'cirrus-mapping-dump',
+				action: 'cirrus-mapping-dump'
 			} );
 			this.setApiResponse( response );
 		} catch ( err ) {
@@ -539,7 +535,7 @@ defineSupportCode( function( {Given, When, Then} ) {
 		let client = yield this.onWiki();
 		try {
 			let response = yield client.request( {
-				action: 'cirrus-settings-dump',
+				action: 'cirrus-settings-dump'
 			} );
 			this.setApiResponse( response );
 		} catch ( err ) {
@@ -582,4 +578,4 @@ defineSupportCode( function( {Given, When, Then} ) {
 				`full_text search for '${query}'` );
 		} );
 	} );
-});
+} );

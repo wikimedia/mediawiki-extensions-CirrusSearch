@@ -1,11 +1,6 @@
 const fs = require( 'fs' ),
-	path = require( 'path' ),
 	saveScreenshot = require( 'wdio-mediawiki' ).saveScreenshot,
 	logPath = process.env.LOG_DIR || __dirname + '/log';
-
-function relPath( foo ) {
-	return path.resolve( __dirname, '../..', foo );
-}
 
 exports.config = {
 	// ======

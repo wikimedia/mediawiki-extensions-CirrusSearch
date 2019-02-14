@@ -1,14 +1,8 @@
-/*jshint esversion: 6,  node:true */
-/*global browser, console */
-
-/* eslint-env node */
-/* eslint no-undef: "error" */
-/* eslint-disable no-console, comma-dangle */
 'use strict';
 
 const child_process = require( 'child_process' ),
 	path = require( 'path' ),
-	fs = require('fs');
+	fs = require( 'fs' );
 
 function relPath( foo ) {
 	return path.resolve( __dirname, '../..', foo );
@@ -79,9 +73,9 @@ exports.config = {
 	// Sauce Labs
 	// ======
 	//
-	//services: [ 'sauce' ],
-	//user: process.env.SAUCE_USERNAME,
-	//key: process.env.SAUCE_ACCESS_KEY,
+	// services: [ 'sauce' ],
+	// user: process.env.SAUCE_USERNAME,
+	// key: process.env.SAUCE_ACCESS_KEY,
 	//
 	// ==================
 	// Specify Test Files
@@ -98,11 +92,11 @@ exports.config = {
 		tagsInTitle: true,
 		timeout: 60000,
 		require: [
-			relPath('./integration/features/support/world.js'),
-			relPath('./integration/features/support/hooks.js'),
-			relPath('./integration/features/step_definitions/page_step_helpers.js'),
-			relPath('./integration/features/step_definitions/page_steps.js'),
-			relPath('./integration/features/step_definitions/search_steps.js')
+			relPath( './integration/features/support/world.js' ),
+			relPath( './integration/features/support/hooks.js' ),
+			relPath( './integration/features/step_definitions/page_step_helpers.js' ),
+			relPath( './integration/features/step_definitions/page_steps.js' ),
+			relPath( './integration/features/step_definitions/search_steps.js' )
 		]
 	},
 	// Patterns to exclude.
@@ -301,14 +295,14 @@ exports.config = {
 	//
 	// Gets executed after all workers got shut down and the process is about to exit. It is not
 	// possible to defer the end of the process using a promise.
-	onComplete: function() {
+	onComplete: function () {
 		// TODO: Is this method being called a guarantee, or should we handle signals to be sure?
 		try {
-			forkedTracker.send({exit: true});
-		} catch (err) {
-			console.log( `Failed to send exit signal to tracker: ${err}`);
+			forkedTracker.send( { exit: true } );
+		} catch ( err ) {
+			console.log( `Failed to send exit signal to tracker: ${err}` );
 			// Force unlinking the socket
-			fs.unlinkSync(unixSocket);
+			fs.unlinkSync( unixSocket );
 		}
 	}
 };

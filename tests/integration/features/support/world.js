@@ -1,6 +1,3 @@
-/*jshint esversion: 6, node:true */
-/*global browser */
-
 /**
  * The World is a container for global state shared across test steps.
  * The World is instanciated after every scenario, so state cannot be
@@ -10,13 +7,13 @@
  * to the same apiClient instance as `World` (useful because the apiClient
  * keeps a user/login state).
  */
-const {defineSupportCode} = require( 'cucumber' ),
-	request = require('request-promise-native'),
+const { defineSupportCode } = require( 'cucumber' ),
+	request = require( 'request-promise-native' ),
 	log = require( 'semlog' ).log,
 	Bot = require( 'mwbot' ),
 	StepHelpers = require( '../step_definitions/page_step_helpers' ),
 	Page = require( './pages/page' ),
-	Promise = require( 'bluebird' ); // jshint ignore:line
+	Promise = require( 'bluebird' );
 
 // Client for the Server implemented in lib/tracker.js. The server
 // tracks what tags have already been initialized so we don't have
@@ -30,26 +27,26 @@ class TagClient {
 
 	check( tag ) {
 		return Promise.coroutine( function* () {
-			if ( this.tags[tag] ) {
-				return this.tags[tag];
+			if ( this.tags[ tag ] ) {
+				return this.tags[ tag ];
 			}
 			log( `[D] TAG >> ${tag}`, this.silentLog );
 			let response = yield this.post( { check: tag } );
 			log( `[D] TAG << ${tag}`, this.silentLog );
 			if ( response.status === 'complete' || response.status === 'reject' ) {
-				this.tags[tag] = response.status;
+				this.tags[ tag ] = response.status;
 			}
 			return response.status;
 		} ).call( this );
 	}
 
 	reject( tag ) {
-		this.tags[tag] = 'reject';
+		this.tags[ tag ] = 'reject';
 		return this.post( { reject: tag } );
 	}
 
 	complete( tag ) {
-		this.tags[tag] = 'complete';
+		this.tags[ tag ] = 'complete';
 		return this.post( { complete: tag } );
 	}
 
@@ -79,7 +76,7 @@ function World( { attach, parameters } ) {
 	this.apiResponse = undefined;
 	this.apiError = undefined;
 
-	this.setApiResponse = function( value ) {
+	this.setApiResponse = function ( value ) {
 		this.apiResponse = value;
 		this.apiError = undefined;
 	};
@@ -95,20 +92,20 @@ function World( { attach, parameters } ) {
 	this.tags = tagClient;
 
 	// Per-wiki api clients
-	this.onWiki = function( wiki = this.config.wikis.default ) {
-		if ( apiClients[wiki] ) {
-			return apiClients[wiki];
+	this.onWiki = function ( wiki = this.config.wikis.default ) {
+		if ( apiClients[ wiki ] ) {
+			return apiClients[ wiki ];
 		}
 
 		let w = this.config.wikis[ wiki ];
 		let client = new Bot();
-		client.setOptions({
+		client.setOptions( {
 			verbose: true,
 			silent: false,
 			defaultSummary: 'MWBot',
 			concurrency: 1,
 			apiUrl: w.apiUrl
-		});
+		} );
 
 		// Add a generic method to get access to the request that triggered a response, so we
 		// can add generic error reporting that includes the requested api url
@@ -120,7 +117,7 @@ function World( { attach, parameters } ) {
 			} );
 		};
 
-		apiClients[wiki] = client.loginGetEditToken( {
+		apiClients[ wiki ] = client.loginGetEditToken( {
 			username: w.username,
 			password: w.botPassword,
 			apiUrl: w.apiUrl
@@ -129,7 +126,7 @@ function World( { attach, parameters } ) {
 		// Catch anything trying to re-login and break everything
 		client.loginGetEditToken = undefined;
 
-		return apiClients[wiki];
+		return apiClients[ wiki ];
 	};
 
 	// Binding step helpers to this World.
@@ -140,7 +137,7 @@ function World( { attach, parameters } ) {
 	// Shortcut for browser.url(), accepts a Page object
 	// as well as a string, assumes the Page object
 	// has a url property
-	this.visit = function( page, wiki = this.config.wikis.default ) {
+	this.visit = function ( page, wiki = this.config.wikis.default ) {
 		let tmpUrl;
 		if ( page instanceof Page && page.url ) {
 			tmpUrl = page.url;
@@ -151,7 +148,7 @@ function World( { attach, parameters } ) {
 		if ( !tmpUrl ) {
 			throw Error( `In "World.visit(page)" page is falsy: page=${ page }` );
 		}
-		tmpUrl = this.config.wikis[wiki].baseUrl + tmpUrl;
+		tmpUrl = this.config.wikis[ wiki ].baseUrl + tmpUrl;
 		log( `[D] Visiting page: ${tmpUrl}`, this.tags.silentLog );
 		browser.url( tmpUrl );
 		// logs full URL in case of typos, misplaced backslashes.
@@ -159,6 +156,6 @@ function World( { attach, parameters } ) {
 	};
 }
 
-defineSupportCode( function( { setWorldConstructor } ) {
+defineSupportCode( function ( { setWorldConstructor } ) {
 	setWorldConstructor( World );
-});
+} );

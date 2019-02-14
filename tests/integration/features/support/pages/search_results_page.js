@@ -1,25 +1,25 @@
-/*jshint esversion: 6,  node:true */
-/*global browser */
-
-const Page = require('./page');
+const Page = require( './page' );
 
 class SearchResultsPage extends Page {
 
 	/**
 	 * Open the Search results searching for search
+	 *
 	 * @param {string} search
+	 * @chainable
+	 * @return {SearchResultsPage}
 	 */
 	search( search ) {
-		this.url = `/w/index.php?search=${encodeURIComponent(search)}`;
+		this.url = `/w/index.php?search=${encodeURIComponent( search )}`;
 		return this;
 	}
 
 	has_search_results() {
-		return browser.elements(".searchresults ul.mw-search-results").value.length > 0;
+		return browser.elements( '.searchresults ul.mw-search-results' ).value.length > 0;
 	}
 
 	get_warnings() {
-		return this.collect_element_texts(".searchresults div.warningbox p");
+		return this.collect_element_texts( '.searchresults div.warningbox p' );
 	}
 
 	has_warnings() {
@@ -27,7 +27,7 @@ class SearchResultsPage extends Page {
 	}
 
 	get_errors() {
-		return this.collect_element_texts(".searchresults div.errorbox p");
+		return this.collect_element_texts( '.searchresults div.errorbox p' );
 	}
 
 	has_errors() {
@@ -35,12 +35,12 @@ class SearchResultsPage extends Page {
 	}
 
 	has_create_page_link() {
-		return browser.elements(".searchresults p.mw-search-createlink a.new").value.length === 1;
+		return browser.elements( '.searchresults p.mw-search-createlink a.new' ).value.length === 1;
 	}
 
 	is_on_srp() {
-		return browser.elements("form#search div#mw-search-top-table").value.length > 0 ||
-			browser.elements("form#powersearch div#mw-search-top-table").value.length > 0;
+		return browser.elements( 'form#search div#mw-search-top-table' ).value.length > 0 ||
+			browser.elements( 'form#powersearch div#mw-search-top-table' ).value.length > 0;
 	}
 
 	set search_query( search ) {
@@ -52,11 +52,11 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_element_at( nth ) {
-		let resultLink = this.results_block().element( `a[data-serp-pos=\"${nth-1}\"]` );
+		let resultLink = this.results_block().element( `a[data-serp-pos="${nth - 1}"]` );
 		if ( !resultLink.isExisting() ) {
 			return null;
 		}
-		return resultLink.element("..");
+		return resultLink.element( '..' );
 	}
 
 	get_result_image_link_at( nth ) {
@@ -72,7 +72,7 @@ class SearchResultsPage extends Page {
 		//    <td>[RESULT ELEMENT BLOCK] position returned by get_result_element_at</td>
 		//  </tr>
 		// </tbody>
-		let tr = resElem.element("..");
+		let tr = resElem.element( '..' );
 		if ( tr.getTagName() !== 'tr' ) {
 			return null;
 		}
@@ -84,7 +84,7 @@ class SearchResultsPage extends Page {
 	}
 
 	has_search_data_in_results( data ) {
-		return this.results_block().element( `div.mw-search-result-data*=${data}`).isExisting();
+		return this.results_block().element( `div.mw-search-result-data*=${data}` ).isExisting();
 	}
 
 	get_search_alt_title_at( nth ) {
@@ -92,7 +92,7 @@ class SearchResultsPage extends Page {
 		if ( resultBlock === null ) {
 			return null;
 		}
-		let elt = resultBlock.element("span.searchalttitle");
+		let elt = resultBlock.element( 'span.searchalttitle' );
 		if ( elt.isExisting() ) {
 			return elt.getText();
 		}
@@ -100,33 +100,33 @@ class SearchResultsPage extends Page {
 	}
 
 	get_result_at( nth ) {
-		return this.results_block().getAttribute( `a[data-serp-pos=\"${nth-1}\"]`, 'title' );
+		return this.results_block().getAttribute( `a[data-serp-pos="${nth - 1}"]`, 'title' );
 	}
 
 	in_search_results( title ) {
-		let elt = this.results_block().element(`a[title="${title}"]` );
+		let elt = this.results_block().element( `a[title="${title}"]` );
 		return elt.isExisting();
 	}
 
 	results_block() {
-		let elt = browser.elements( "div.searchresults" );
+		let elt = browser.elements( 'div.searchresults' );
 
 		if ( !elt.value ) {
-			throw new Error("Cannot locate search results block, are you on the SRP?");
+			throw new Error( 'Cannot locate search results block, are you on the SRP?' );
 		}
 		return elt;
 	}
 
 	click_search() {
-		let forms = ['form#powersearch', 'form#search'];
-		for( let form of forms ) {
+		let forms = [ 'form#powersearch', 'form#search' ];
+		for ( let form of forms ) {
 			let elt = browser.element( form );
 			if ( elt.value ) {
-				elt.click('button[type="submit"]');
+				elt.click( 'button[type="submit"]' );
 				return;
 			}
 		}
-		throw new Error("Cannot click the search button, are you on the Search page?");
+		throw new Error( 'Cannot click the search button, are you on the Search page?' );
 	}
 
 	/**

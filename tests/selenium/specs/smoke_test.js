@@ -22,7 +22,7 @@ describe( 'Smoke test for search', function () {
 		ArticlePage.search_query_top_right = 'main p';
 		assert.ok( ArticlePage.has_search_suggestions() );
 		let expectedSuggestion = 'Main Page';
-		assert.equal( ArticlePage.get_search_suggestion_at(1), expectedSuggestion,
+		assert.equal( ArticlePage.get_search_suggestion_at( 1 ), expectedSuggestion,
 			`${expectedSuggestion} is the first suggestion` );
 	} );
 
@@ -32,7 +32,7 @@ describe( 'Smoke test for search', function () {
 	 * And I click the search button
 	 * Then I am on a page titled Search results
 	 */
-	it( 'Fill in search term and click search', function() {
+	it( 'Fill in search term and click search', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'ma';
 		ArticlePage.click_search_top_right();
@@ -46,7 +46,7 @@ describe( 'Smoke test for search', function () {
 	 * When I search for África
 	 * Then I am on a page titled África
 	 */
-	it ( 'Search with accent yields result page with accent', function() {
+	it( 'Search with accent yields result page with accent', function () {
 		RandomPage.open();
 		ArticlePage.search_query_top_right = 'África';
 		ArticlePage.click_search_top_right();

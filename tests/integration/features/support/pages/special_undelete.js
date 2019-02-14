@@ -1,7 +1,4 @@
-/*jshint esversion: 6, node:true */
-/*global browser */
-
-var TitlePage = require('./title_page');
+var TitlePage = require( './title_page' );
 
 class SpecialUndelete extends TitlePage {
 	constructor() {
@@ -14,7 +11,7 @@ class SpecialUndelete extends TitlePage {
 	}
 
 	get search_input() {
-		browser.getValue( '#prefix' );
+		return browser.getValue( '#prefix' );
 	}
 
 	click_search_button() {

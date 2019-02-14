@@ -1,10 +1,8 @@
-/*jshint esversion: 6,  node:true */
-
 /**
  * Base page denoting a Title (can be article or special pages).
  */
 
-const Page = require('./page');
+const Page = require( './page' );
 
 class TitlePage extends Page {
 	constructor( title ) {
@@ -18,7 +16,7 @@ class TitlePage extends Page {
 		return this._url;
 	}
 	set url( title ) {
-		super.url =  `/wiki/${title}`;
+		super.url = `/wiki/${title}`;
 	}
 }
 module.exports = TitlePage;

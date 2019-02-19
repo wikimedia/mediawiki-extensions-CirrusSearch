@@ -336,11 +336,22 @@ class KeywordFeatureAssertions {
 	/**
 	 * @param KeywordFeature $feature
 	 * @param string $term
+	 * @param array|null $expectedWarnings
 	 */
-	public function assertNoResultsPossible( KeywordFeature $feature, $term ) {
+	public function assertNoResultsPossible( KeywordFeature $feature, $term, array $expectedWarnings = null ) {
 		$context = $this->mockContext();
 		$context->expects( $this->testCase->atLeastOnce() )->method( 'setResultsPossible' )->with( false );
+		$warnings = [];
+		if ( $expectedWarnings !== null ) {
+			$context->method( 'addWarning' )
+				->will( $this->testCase->returnCallback( function ( ...$args ) use ( &$warnings ) {
+					$warnings[] = array_filter( $args );
+				} ) );
+		}
 		$feature->apply( $context, $term );
+		if ( $expectedWarnings !== null ) {
+			$this->testCase->assertEquals( $expectedWarnings, $warnings );
+		}
 	}
 
 	/**

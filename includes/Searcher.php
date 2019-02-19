@@ -156,7 +156,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 		$this->config = $query->getSearchConfig();
 		$this->sort = $query->getSort();
 
-		if ( $query->getSearchEngineEntryPoint() === 'searchText' ) {
+		if ( $query->getSearchEngineEntryPoint() === SearchQuery::SEARCH_TEXT ) {
 			$this->searchContext->setResultsType( new FullTextResultsType() );
 			$status = $this->searchTextInternal( $query->getParsedQuery()->getQueryWithoutNsHeader() );
 			if ( $status->isOK() && $status->getValue() instanceof ResultSet ) {
@@ -167,7 +167,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 			}
 			return $status;
 		} else {
-			throw new \RuntimeException( 'Only searchText is supported for now' );
+			throw new \RuntimeException( 'Only ' . SearchQuery::SEARCH_TEXT . ' is supported for now' );
 		}
 	}
 

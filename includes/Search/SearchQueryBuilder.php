@@ -112,7 +112,7 @@ final class SearchQueryBuilder {
 		$builder->offset = 0;
 		$builder->searchConfig = $config;
 		$builder->forcedProfiles = [];
-		$builder->searchEngineEntryPoint = 'searchText';
+		$builder->searchEngineEntryPoint = SearchQuery::SEARCH_TEXT;
 		$builder->crossProjectSearch = true;
 		$builder->crossLanguageSearch = true;
 		$builder->extraIndicesSearch = true;

@@ -62,7 +62,7 @@ class QueryBuildDocument extends \ApiQueryBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=query&prop=cirrusibuilddoc&titles=Main_Page' =>
+			'action=query&prop=cirrusbuilddoc&titles=Main_Page' =>
 				'apihelp-query+cirrusbuilddoc-example'
 		];
 	}

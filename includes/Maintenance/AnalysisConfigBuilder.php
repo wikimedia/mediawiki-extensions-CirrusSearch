@@ -926,6 +926,70 @@ STEMMER_RULES
 
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'korean':
+			// Unpack nori analyzer to add ICU normalization and custom filters
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
+
+			// 'mixed' mode keeps the original token plus the compound parts
+			// the default is 'discard' which only keeps the parts
+			$config['tokenizer']['nori_tok'] = [
+				'type' => 'nori_tokenizer',
+				'decompound_mode' => 'mixed',
+			];
+
+			// Nori-specific character filters:
+			// * convert middle dot to arae-a
+			// * convert dotted-I to I
+			// * remove soft hyphens and zero-width non-joiners
+			$config[ 'char_filter' ][ 'nori_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					"\\u0130=>I",
+					"\\u00B7=>\\u0020",
+					"\\u318D=>\\u0020",
+					"\\u00AD=>",
+					"\\u200C=>",
+				],
+			];
+
+			// Nori-specific pattern_replace to strip combining diacritics
+			$config[ 'char_filter' ][ 'nori_combo_filter' ] = [
+				'type' => 'pattern_replace',
+				'pattern' => '[\\u0300-\\u0331]',
+				'replacement' => '',
+			];
+
+			// Nori-specific remove empty tokens
+			$config[ 'filter' ][ 'nori_length' ] = [
+				'type' => 'length',
+				'min' => 1,
+			];
+
+			// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
+			$config[ 'filter' ][ 'nori_posfilter' ] = [
+				'type' => 'nori_part_of_speech',
+				'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC',
+					'SSO', 'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA',
+					'VSV', 'VCP', 'VCN', 'VX' ],
+			];
+
+			$config['analyzer']['text'] = [
+				'type' => 'custom',
+				'tokenizer' => 'nori_tok',
+				'char_filter' => [
+					'nori_charfilter',
+					'nori_combo_filter',
+				],
+				'filter' => [
+					'nori_posfilter',
+					'nori_readingform',
+					'lowercase',
+					'nori_length',
+				],
+			];
+
+			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			break;
 		case 'mirandese':
 			// Unpack default analyzer to add Mirandese-specific elision and stop words
 			// See phab ticket T194941
@@ -1451,6 +1515,7 @@ STEMMER_RULES
 		 *    https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
 		 * For Slovak, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
 		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		 * For Korean see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
@@ -1465,5 +1530,6 @@ STEMMER_RULES
 		'extra-analysis-serbian' => [ 'bs' => 'bosnian', 'hr' => 'croatian',
 			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
+		'analysis-nori' => [ 'ko' => 'korean' ],
 	];
 }

@@ -2,10 +2,17 @@
 
 namespace CirrusSearch\Profile;
 
+use CirrusSearch\Dispatch\BasicSearchQueryRoute;
+use CirrusSearch\Dispatch\CirrusDefaultSearchQueryRoute;
+use CirrusSearch\Dispatch\DefaultSearchQueryDispatchService;
+use CirrusSearch\Dispatch\SearchQueryDispatchService;
+use CirrusSearch\Dispatch\SearchQueryRoute;
+use CirrusSearch\Search\SearchQuery;
 use \Config;
 use \RequestContext;
 use \User;
 use \WebRequest;
+use Wikimedia\Assert\Assert;
 
 /**
  * Service to manage and access search profiles.
@@ -141,12 +148,26 @@ class SearchProfileService {
 	private $frozen;
 
 	/**
+	 * @var SearchQueryDispatchService|null (lazy loaded)
+	 */
+	private $dispatchService;
+
+	/**
+	 * @var SearchQueryRoute[][]
+	 */
+	private $routes;
+
+	/**
+	 * SearchProfileService constructor.
 	 * @param WebRequest|null $request obtained from \RequestContext::getMain()->getRequest() if null
 	 * @param User|null $user obtained from \RequestContext::getMain()->getUser() if null
 	 */
 	public function __construct( WebRequest $request = null, User $user = null ) {
 		$this->request = $request ?? RequestContext::getMain()->getRequest();
 		$this->user = $user ?? RequestContext::getMain()->getUser();
+		$this->routes = [
+			'searchText' => [ CirrusDefaultSearchQueryRoute::searchTextDefaultRoute() ]
+		];
 	}
 
 	/**
@@ -390,6 +411,60 @@ class SearchProfileService {
 	 */
 	public function registerContextualOverride( $type, $profileContext, $template, array $params ) {
 		$this->registerProfileOverride( $type, $profileContext, new ContextualProfileOverride( $template, $params ) );
+	}
+
+	/**
+	 * Register a new route to be used by the SearchQueryDispatchService
+	 *
+	 * @param SearchQueryRoute $route
+	 * @see SearchQueryDispatchService
+	 * @see SearchProfileService::getDispatchService()
+	 */
+	public function registerSearchQueryRoute( SearchQueryRoute $route ) {
+		$this->checkFrozen();
+		if ( !isset( $this->routes[$route->getSearchEngineEntryPoint()] ) ) {
+			throw new SearchProfileException( "Unsupported search engine entry point {$route->getSearchEngineEntryPoint()}" );
+		}
+		$this->routes[$route->getSearchEngineEntryPoint()][] = $route;
+	}
+
+	/**
+	 * Register a new static route for fulltext search queries.
+	 *
+	 * @param string $profileContext
+	 * @param float $score score of the route
+	 * @param int[] $supportedNamespaces
+	 * @param string[] $acceptableQueryClasses
+	 * @see SearchProfileService::getDispatchService()
+	 * @see SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
+	 */
+	public function registerFTSearchQueryRoute(
+		$profileContext,
+		$score,
+		array $supportedNamespaces,
+		array $acceptableQueryClasses = []
+	) {
+		Assert::parameter( $score > SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE, '$score',
+			"This route will never be selected it must " .
+			"be greater than " . SearchQueryDispatchService::CIRRUS_DEFAULTS_SCORE
+		);
+		$this->registerSearchQueryRoute( new BasicSearchQueryRoute( SearchQuery::SEARCH_TEXT,
+			$supportedNamespaces, $acceptableQueryClasses, $profileContext, $score ) );
+	}
+
+	/**
+	 * Return the service responsible for dispatching a SearchQuery
+	 * to its preferred profile context.
+	 *
+	 * @return SearchQueryDispatchService
+	 */
+	public function getDispatchService(): SearchQueryDispatchService {
+		if ( $this->dispatchService === null ) {
+			Assert::precondition( $this->frozen,
+				"Must be frozen when accessing the SearchQuery dispatch service." );
+			$this->dispatchService = new DefaultSearchQueryDispatchService( $this->routes );
+		}
+		return $this->dispatchService;
 	}
 
 	/**

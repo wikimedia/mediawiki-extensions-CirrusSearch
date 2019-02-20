@@ -336,6 +336,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 'bar', $context->getFulltextQueryBuilderProfile() );
 		$this->assertEquals( '~help:test prefix:help_talk:test', $context->getOriginalSearchTerm() );
 		$this->assertEquals( [ 'foo' => 'bar' ], $context->getProfileContextParams() );
+		$this->assertEquals( SearchProfileService::CONTEXT_DEFAULT, $context->getProfileContext() );
 		$this->assertSame( $myFallbackRunner, $context->getFallbackRunner() );
 	}
 

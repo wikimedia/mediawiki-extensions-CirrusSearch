@@ -820,6 +820,13 @@ class SearchContext implements WarningCollector, FilterBuilder {
 		$searchContext->limitSearchToLocalWiki = !$query->getCrossSearchStrategy()->isExtraIndicesSearchSupported();
 
 		$searchContext->rescoreProfile = $query->getForcedProfile( SearchProfileService::RESCORE );
+		$profileContext = $query->getSearchConfig()
+			->getProfileService()
+			->getDispatchService()
+			->bestRoute( $query )
+			->getProfileContext();
+		$searchContext->setProfileContext( $profileContext );
+		// TODO: Clarify what happens when user forces a profile, should we disable the dispatch service?
 		$searchContext->fulltextQueryBuilderProfile = $query->getForcedProfile( SearchProfileService::FT_QUERY_BUILDER );
 		$searchContext->profileContextParams = $query->getProfileContextParameters();
 

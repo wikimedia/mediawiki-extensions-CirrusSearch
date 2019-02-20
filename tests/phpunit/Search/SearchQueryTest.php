@@ -223,7 +223,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertFalse( $defaults->hasForcedProfile() );
 		$this->assertEquals( CrossSearchStrategy::allWikisStrategy(), $defaults->getInitialCrossSearchStrategy() );
 		$this->assertEquals( CrossSearchStrategy::allWikisStrategy(), $defaults->getCrossSearchStrategy() );
-		$this->assertEquals( 'searchText', $defaults->getSearchEngineEntryPoint() );
+		$this->assertEquals( SearchQuery::SEARCH_TEXT, $defaults->getSearchEngineEntryPoint() );
 		$this->assertEquals( [ NS_MAIN ], $defaults->getNamespaces() );
 		$this->assertEquals( [ NS_MAIN ], $defaults->getInitialNamespaces() );
 		$this->assertEquals( 'relevance', $defaults->getSort() );
@@ -260,7 +260,7 @@ class SearchQueryTest extends CirrusTestCase {
 		$this->assertEquals( 'test', $custom->getForcedProfile( SearchProfileService::RESCORE ) );
 		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $custom->getInitialCrossSearchStrategy() );
 		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(), $custom->getCrossSearchStrategy() );
-		$this->assertEquals( 'searchText', $custom->getSearchEngineEntryPoint() );
+		$this->assertEquals( SearchQuery::SEARCH_TEXT, $custom->getSearchEngineEntryPoint() );
 		$this->assertEquals( [ NS_MAIN, NS_HELP ], $custom->getNamespaces() );
 		$this->assertEquals( [ NS_MAIN, NS_HELP ], $custom->getInitialNamespaces() );
 		$this->assertEquals( 'size', $custom->getSort() );
@@ -446,7 +446,7 @@ class SearchQueryTest extends CirrusTestCase {
 			$crossSearchQuery->getInitialCrossSearchStrategy() );
 		$this->assertEquals( CrossSearchStrategy::hostWikiOnlyStrategy(),
 			$crossSearchQuery->getCrossSearchStrategy() );
-		$this->assertEquals( 'searchText', $crossSearchQuery->getSearchEngineEntryPoint() );
+		$this->assertEquals( SearchQuery::SEARCH_TEXT, $crossSearchQuery->getSearchEngineEntryPoint() );
 		$this->assertEquals( $initialNs, $crossSearchQuery->getInitialNamespaces() );
 		$this->assertEquals( $namespaces, $crossSearchQuery->getNamespaces() );
 		$this->assertEquals( $sortOptions, $crossSearchQuery->getSort() );

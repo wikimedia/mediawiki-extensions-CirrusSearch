@@ -13,6 +13,24 @@ use CirrusSearch\SearchConfig;
  */
 class SearchQuery {
 	/**
+	 * Identifier for the fulltext SearchEngine entry point
+	 * @see \SearchEngine::searchText()
+	 */
+	const SEARCH_TEXT = 'searchText';
+
+	/**
+	 * Identifier for the near match SearchEngine entry point
+	 * @see \SearchEngine::getNearMatcher()
+	 */
+	const NEAR_MATCH = 'nearMatch';
+
+	/**
+	 * Identifier for the completionSearch SearchEngine entry point
+	 * @see \SearchEngine::completionSearch() and related endpoints
+	 */
+	const COMPLETION_SEARCH = 'completionSearch';
+
+	/**
 	 * @var ParsedQuery
 	 */
 	private $parsedQuery;

@@ -3,6 +3,7 @@
 namespace CirrusSearch\Maintenance;
 
 use CirrusSearch\Connection;
+use CirrusSearch\MetaStore\MetaStoreIndex;
 use CirrusSearch\SearchConfig;
 use MediaWiki\MediaWikiServices;
 use CirrusSearch\UserTesting;
@@ -212,5 +213,18 @@ abstract class Maintenance extends \Maintenance implements Printer {
 		if ( $stats ) {
 			$stats->setEnabled( false );
 		}
+	}
+
+	/**
+	 * Create metastore only if the alias does not already exist
+	 * @return MetaStoreIndex
+	 */
+	protected function maybeCreateMetastore() {
+		$metastore = new MetaStoreIndex(
+			$this->getConnection(),
+			$this,
+			$this->getSearchConfig() );
+		$metastore->createIfNecessary();
+		return $metastore;
 	}
 }

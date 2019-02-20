@@ -84,9 +84,6 @@ class ConnectionTest extends CirrusTestCase {
 		$this->assertEquals( $expected, $conn->extractIndexSuffix( $name ) );
 	}
 
-	/**
-	 * @expectedException \Exception
-	 */
 	public function testExtractIndexSuffixThrowsExceptionOnUnknown() {
 		$config = new HashSearchConfig( [
 			'CirrusSearchNamespaceMappings' => [],
@@ -94,6 +91,7 @@ class ConnectionTest extends CirrusTestCase {
 			'CirrusSearchServers' => [ 'localhost' ],
 		] );
 		$conn = new Connection( $config );
+		$this->expectException( \Exception::class );
 		$conn->extractIndexSuffix( 'testwiki_file_first' );
 	}
 

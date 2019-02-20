@@ -199,13 +199,13 @@ class SearchProfileRepositoryTransformerTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @expectedException \CirrusSearch\Profile\SearchProfileException
 	 * @dataProvider provideBadReplacements
 	 */
 	public function testBadSyntax( $badRepl ) {
 		$transformer = new ArrayPathSetter( [ $badRepl => '' ] );
 		$repo = new SearchProfileRepositoryTransformer( ArrayProfileRepository::fromArray( 'my_type', 'my_name', [ 'hop' => [] ] ),
 			$transformer );
+		$this->expectException( SearchProfileException::class );
 		$repo->getProfile( 'hop' );
 	}
 }

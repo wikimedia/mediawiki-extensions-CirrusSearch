@@ -3,7 +3,7 @@
 namespace CirrusSearch;
 
 /**
- * @covers CirrusSearch\ExternalIndex
+ * @covers \CirrusSearch\ExternalIndex
  */
 class ExternalIndexTest extends \PHPUnit\Framework\TestCase {
 

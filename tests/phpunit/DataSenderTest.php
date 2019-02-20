@@ -23,7 +23,7 @@ use CirrusSearch\Search\CirrusIndexField;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
- * @covers CirrusSearch\DataSender
+ * @covers \CirrusSearch\DataSender
  */
 class DataSenderTest extends CirrusTestCase {
 	/**

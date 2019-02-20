@@ -5,7 +5,7 @@ namespace CirrusSearch\Maintenance;
 use CirrusSearch\Job\CheckerJob;
 
 /**
- * @covers CirrusSearch\Maintenance\SaneitizeLoop
+ * @covers \CirrusSearch\Maintenance\SaneitizeLoop
  */
 class SaneitizeLoopTest extends \PHPUnit\Framework\TestCase {
 	public function loopProvider() {

@@ -6,7 +6,7 @@ use CirrusSearch\Search\CompletionResultsCollector;
 use SearchSuggestion;
 
 /**
- * @covers CirrusSearch\Search\CompletionResultsCollector
+ * @covers \CirrusSearch\Search\CompletionResultsCollector
  */
 class CompletionResultsCollectorTest extends CirrusTestCase {
 	public function test() {

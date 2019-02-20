@@ -4,7 +4,7 @@ namespace CirrusSearch;
 
 /**
  * @group CirrusSearch
- * @covers CirrusSearch\ClusterSettings
+ * @covers \CirrusSearch\ClusterSettings
  */
 class ClusterSettingsTest extends CirrusTestCase {
 

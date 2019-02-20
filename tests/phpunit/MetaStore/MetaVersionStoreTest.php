@@ -8,7 +8,7 @@ use MediaWiki\MediaWikiServices;
 /**
  * Mostly stupid happy path tests. :(
  *
- * @covers CirrusSearch\MetaStore\MetaVersionStore
+ * @covers \CirrusSearch\MetaStore\MetaVersionStore
  */
 class MetaVersionStoreTest extends \PHPUnit\Framework\TestCase {
 	public function testBuildDocument() {

@@ -5,7 +5,7 @@ namespace CirrusSearch;
 use Title;
 
 /**
- * @covers CirrusSearch\OtherIndexes
+ * @covers \CirrusSearch\OtherIndexes
  */
 class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 
@@ -26,7 +26,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\OtherIndexes::getExternalIndexes
+	 * @covers \CirrusSearch\OtherIndexes::getExternalIndexes
 	 * @dataProvider getExternalIndexesProvider
 	 */
 	public function testGetExternalIndexes( $assertions, $extraIndexes ) {
@@ -69,7 +69,7 @@ class OtherIndexesTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\OtherIndexes::getExtraIndexesForNamespaces
+	 * @covers \CirrusSearch\OtherIndexes::getExtraIndexesForNamespaces
 	 * @dataProvider getExtraIndexesForNamespaceProvider
 	 */
 	public function testGetExtraIndexesForNamespace( $assertions, $extraIndexes ) {

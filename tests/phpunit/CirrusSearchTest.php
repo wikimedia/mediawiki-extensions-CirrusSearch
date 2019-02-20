@@ -79,7 +79,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideExtractProfileFromFeatureData
-	 * @covers CirrusSearch::extractProfileFromFeatureData()
+	 * @covers \CirrusSearch::extractProfileFromFeatureData
 	 * @throws \ConfigException
 	 */
 	public function testExtractProfileFromFeatureData( $type, $setValue, $expected ) {
@@ -110,7 +110,7 @@ class CirrusSearchTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideCompletionSuggesterEnabled
-	 * @covers CirrusSearch::completionSuggesterEnabled()
+	 * @covers \CirrusSearch::completionSuggesterEnabled
 	 */
 	public function testCompletionSuggesterEnabled( $configValue, $expected ) {
 		$engine = $this->getSearchEngine( [ 'CirrusSearchUseCompletionSuggester' => $configValue ] );

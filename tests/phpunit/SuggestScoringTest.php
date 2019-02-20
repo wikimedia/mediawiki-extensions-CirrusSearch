@@ -28,7 +28,7 @@ use CirrusSearch\BuildDocument\Completion\PQScore;
  */
 class SuggestScoringTest extends CirrusTestCase {
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
 	 */
 	public function testQualityScoreNormFunctions() {
 		$qs = new QualityScore();
@@ -76,7 +76,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
 	 */
 	public function testQualityScoreBoostFunction() {
 		$qs = new QualityScore();
@@ -127,7 +127,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
 	 */
 	public function testQualityScoreBoostTemplates() {
 		$goodDoc = [
@@ -163,7 +163,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
 	 */
 	public function testQualityScoreRanking() {
 		$maxDocs = 10000000;
@@ -244,7 +244,7 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
 	 */
 	public function testQualityScoreWithRandomValues() {
 		$maxDocs = 10000000;
@@ -319,9 +319,9 @@ class SuggestScoringTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\BuildDocument\Completion\PQScore
-	 * @covers CirrusSearch\BuildDocument\Completion\QualityScore
-	 * @covers CirrusSearch\BuildDocument\Completion\IncomingLinksScoringMethod
+	 * @covers \CirrusSearch\BuildDocument\Completion\PQScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\QualityScore
+	 * @covers \CirrusSearch\BuildDocument\Completion\IncomingLinksScoringMethod
 	 */
 	public function testRobustness() {
 		$templates = [ 'Good' => 2, 'Bad' => 0.5 ];

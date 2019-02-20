@@ -6,7 +6,7 @@ use CirrusSearch\Connection;
 use MediaWiki\MediaWikiServices;
 
 /**
- * @covers CirrusSearch\MetaStore\MetaSaneitizeJobStore
+ * @covers \CirrusSearch\MetaStore\MetaSaneitizeJobStore
  */
 class MetaSaneitizeJobStoreTest extends \PHPUnit\Framework\TestCase {
 	public function testCreate() {

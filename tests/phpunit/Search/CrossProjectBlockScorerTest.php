@@ -5,7 +5,7 @@ namespace CirrusSearch\Search;
 use CirrusSearch\HashSearchConfig;
 
 /**
- * @covers CirrusSearch\Search\RecallCrossProjectBlockScorer
+ * @covers \CirrusSearch\Search\RecallCrossProjectBlockScorer
  */
 class CrossProjectBlockScorerTest extends \PHPUnit\Framework\TestCase {
 	public function testRecallScorer() {

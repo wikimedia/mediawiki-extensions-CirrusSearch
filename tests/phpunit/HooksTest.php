@@ -24,7 +24,7 @@ use CirrusSearch\Profile\SearchProfileServiceFactory;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
- * @covers CirrusSearch\Hooks
+ * @covers \CirrusSearch\Hooks
  */
 class HooksTest extends CirrusTestCase {
 	public function testHooksAreArrays() {
@@ -199,11 +199,11 @@ class HooksTest extends CirrusTestCase {
 
 	/**
 	 * @dataProvider provideOverrides
-	 * @covers       \CirrusSearch\Hooks::initializeForRequest()
-	 * @covers       \CirrusSearch\Hooks::overrideYesNo()
-	 * @covers       \CirrusSearch\Hooks::overrideSecret()
-	 * @covers       \CirrusSearch\Hooks::overrideNumeric()
-	 * @covers       \CirrusSearch\Hooks::overrideSecret()
+	 * @covers \CirrusSearch\Hooks::initializeForRequest
+	 * @covers \CirrusSearch\Hooks::overrideYesNo
+	 * @covers \CirrusSearch\Hooks::overrideSecret
+	 * @covers \CirrusSearch\Hooks::overrideNumeric
+	 * @covers \CirrusSearch\Hooks::overrideSecret
 	 * @param string $option
 	 * @param mixed $originalValue
 	 * @param string $paramName

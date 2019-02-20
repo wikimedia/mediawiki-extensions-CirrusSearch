@@ -21,7 +21,7 @@ namespace CirrusSearch;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
- * @covers CirrusSearch\Connection
+ * @covers \CirrusSearch\Connection
  */
 class ConnectionTest extends CirrusTestCase {
 	public static function provideNamespacesInIndexType() {

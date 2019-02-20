@@ -24,7 +24,7 @@ use Elastica\Response;
  *
  * @group CirrusSearch
  *
- * @covers CirrusSearch\Maintenance\IndexCreator
+ * @covers \CirrusSearch\Maintenance\IndexCreator
  */
 class IndexCreatorTest extends CirrusTestCase {
 

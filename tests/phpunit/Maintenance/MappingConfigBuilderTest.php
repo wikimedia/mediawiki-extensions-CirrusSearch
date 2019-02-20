@@ -6,7 +6,7 @@ use CirrusSearch\CirrusTestCase;
 use CirrusSearch\HashSearchConfig;
 
 /**
- * @covers CirrusSearch\Maintenance\MappingConfigBuilder
+ * @covers \CirrusSearch\Maintenance\MappingConfigBuilder
  */
 class MappingConfigBuilderTest extends \MediaWikiTestCase {
 

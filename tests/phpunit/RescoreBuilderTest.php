@@ -670,7 +670,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 	}
 
 	/**
-	 * @covers CirrusSearch\Search\Rescore\RescoreBuilder
+	 * @covers \CirrusSearch\Search\Rescore\RescoreBuilder
 	 */
 	public function testRescoreFunctionChainOverrides() {
 		$initialWeight = 4;

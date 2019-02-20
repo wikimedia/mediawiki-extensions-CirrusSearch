@@ -6,7 +6,7 @@ use CirrusSearch\HashSearchConfig;
 use CirrusSearch\Search\SearchContext;
 
 /**
- * @covers CirrusSearch\Query\PrefixSearchQueryBuilder
+ * @covers \CirrusSearch\Query\PrefixSearchQueryBuilder
  */
 class PrefixSearchQueryBuilderTest extends \PHPUnit\Framework\TestCase {
 	private static $WEIGHTS = [

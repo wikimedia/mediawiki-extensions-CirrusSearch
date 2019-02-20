@@ -24,7 +24,7 @@ use Language;
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @group CirrusSearch
- * @covers CirrusSearch\Util
+ * @covers \CirrusSearch\Util
  */
 class UtilTest extends CirrusTestCase {
 

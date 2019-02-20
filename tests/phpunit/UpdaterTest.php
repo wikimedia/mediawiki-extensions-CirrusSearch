@@ -11,7 +11,7 @@ use WikiPage;
 
 /**
  * @group Database
- * @covers CirrusSearch\Updater
+ * @covers \CirrusSearch\Updater
  */
 class UpdaterTest extends \MediaWikiTestCase {
 

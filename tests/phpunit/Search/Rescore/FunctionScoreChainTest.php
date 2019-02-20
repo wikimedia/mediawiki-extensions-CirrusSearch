@@ -7,7 +7,7 @@ use CirrusSearch\Profile\SearchProfileService;
 use CirrusSearch\Search\SearchContext;
 
 /**
- * @covers CirrusSearch\Search\Rescore\FunctionScoreChain
+ * @covers \CirrusSearch\Search\Rescore\FunctionScoreChain
  */
 class FunctionScoreChainTest extends \MediaWikiTestCase {
 

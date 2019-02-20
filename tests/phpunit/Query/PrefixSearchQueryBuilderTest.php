@@ -9,6 +9,8 @@ use CirrusSearch\Search\SearchContext;
  * @covers CirrusSearch\Query\PrefixSearchQueryBuilder
  */
 class PrefixSearchQueryBuilderTest extends \PHPUnit\Framework\TestCase {
+	use \PHPUnit4And6Compat;
+
 	private static $WEIGHTS = [
 		'title' => 2,
 		'redirect' => 0.2,
@@ -16,9 +18,6 @@ class PrefixSearchQueryBuilderTest extends \PHPUnit\Framework\TestCase {
 		'redirect_asciifolding' => 0.1
 	];
 
-	/**
-	 * @expectedException ApiUsageException
-	 */
 	public function testRejectsOversizeQueries() {
 		$qb = new PrefixSearchQueryBuilder();
 		$config = new HashSearchConfig( [
@@ -26,6 +25,7 @@ class PrefixSearchQueryBuilderTest extends \PHPUnit\Framework\TestCase {
 			'CirrusSearchPrefixWeights' => self::$WEIGHTS,
 		] );
 		$context = new SearchContext( $config );
+		$this->expectException( \ApiUsageException::class );
 		$qb->build( $context, str_repeat( 'a', 4096 ) );
 	}
 

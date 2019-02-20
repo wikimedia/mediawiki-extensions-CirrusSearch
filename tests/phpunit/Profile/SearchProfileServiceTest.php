@@ -113,12 +113,10 @@ class SearchProfileServiceTest extends CirrusTestCase {
 		$this->assertEquals( 'prof3', $service->getProfileName( 'type', 'all_override' ) );
 	}
 
-	/**
-	 * @expectedException \CirrusSearch\Profile\SearchProfileException
-	 */
 	public function testFrozen() {
 		$service = new SearchProfileService();
 		$service->freeze();
+		$this->expectException( SearchProfileException::class );
 		$service->registerArrayRepository( 'type', 'name', [] );
 	}
 }

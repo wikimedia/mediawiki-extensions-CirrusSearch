@@ -37,21 +37,17 @@ class ConfigProfileRepositoryTest extends CirrusTestCase {
 		$this->assertNull( $repo->getProfile( 'prof3' ) );
 	}
 
-	/**
-	 * @expectedException \CirrusSearch\Profile\SearchProfileException
-	 */
 	public function testBadConfigWithHas() {
 		$config = new \HashConfig( [ 'profiles' => 123 ] );
 		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$this->expectException( SearchProfileException::class );
 		$repo->hasProfile( 'prof3' );
 	}
 
-	/**
-	 * @expectedException \CirrusSearch\Profile\SearchProfileException
-	 */
 	public function testBadConfigWithGet() {
 		$config = new \HashConfig( [ 'profiles' => 123 ] );
 		$repo = new ConfigProfileRepository( 'my_type', 'my_name',  'profiles', $config );
+		$this->expectException( SearchProfileException::class );
 		$repo->getProfile( 'prof3' );
 	}
 }

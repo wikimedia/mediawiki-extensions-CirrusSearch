@@ -56,10 +56,8 @@ class ElasticsearchIntermediaryTest extends CirrusTestCase {
 		$intermediary->assertions( $searchType, $expectedClientTimeout, $expectedShardTimeout );
 	}
 
-	/**
-	 * @expectedException \ConfigException
-	 */
 	public function testTimeoutMisconfiguration() {
+		$this->expectException( \ConfigException::class );
 		$this->testTimeouts( [], 'test', 1, '1s' );
 	}
 }

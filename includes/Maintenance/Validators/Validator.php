@@ -45,12 +45,6 @@ abstract class Validator {
 			$this->debugCheckConfig( "\n$indent$key: " );
 			if ( !array_key_exists( $key, $actual ) ) {
 				$this->debugCheckConfig( "not found..." );
-				if ( $key === '_all' ) {
-					// The _all field never comes back so we just have to assume it
-					// is set correctly.
-					$this->debugCheckConfig( "was the all field so skipping..." );
-					continue;
-				}
 				return false;
 			}
 			if ( is_array( $value ) ) {

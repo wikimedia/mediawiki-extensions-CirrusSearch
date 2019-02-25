@@ -62,7 +62,7 @@ class MetaNamespaceStore implements MetaStore {
 		}
 		$type = $this->getType();
 		$type->deleteByQuery( \Elastica\Query::create(
-			$this->queryFilter()->addMustNot( new Ids( null, $docIds ) ) ) );
+			$this->queryFilter()->addMustNot( new Ids( $docIds ) ) ) );
 		$type->addDocuments( $documents );
 	}
 

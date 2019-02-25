@@ -1,15 +1,31 @@
 {
     "analyzer": {
         "text": {
-            "type": "cjk",
+            "type": "custom",
+            "tokenizer": "nori_tok",
             "char_filter": [
-                "word_break_helper"
+                "nori_charfilter",
+                "nori_combo_filter"
+            ],
+            "filter": [
+                "nori_posfilter",
+                "nori_readingform",
+                "lowercase",
+                "nori_length"
             ]
         },
         "text_search": {
-            "type": "cjk",
+            "type": "custom",
+            "tokenizer": "nori_tok",
             "char_filter": [
-                "word_break_helper"
+                "nori_charfilter",
+                "nori_combo_filter"
+            ],
+            "filter": [
+                "nori_posfilter",
+                "nori_readingform",
+                "lowercase",
+                "nori_length"
             ]
         },
         "plain": {
@@ -199,6 +215,36 @@
             "type": "truncate",
             "length": 5000
         },
+        "nori_length": {
+            "type": "length",
+            "min": 1
+        },
+        "nori_posfilter": {
+            "type": "nori_part_of_speech",
+            "stoptags": [
+                "E",
+                "IC",
+                "J",
+                "MAG",
+                "MAJ",
+                "MM",
+                "SP",
+                "SSC",
+                "SSO",
+                "SC",
+                "SE",
+                "XPN",
+                "XSA",
+                "XSN",
+                "XSV",
+                "UNA",
+                "NA",
+                "VSV",
+                "VCP",
+                "VCN",
+                "VX"
+            ]
+        },
         "dedup_asciifolding": {
             "type": "unique",
             "only_on_same_position": true
@@ -216,6 +262,10 @@
             "type": "nGram",
             "min_gram": 3,
             "max_gram": 3
+        },
+        "nori_tok": {
+            "type": "nori_tokenizer",
+            "decompound_mode": "mixed"
         }
     },
     "char_filter": {
@@ -247,6 +297,21 @@
                 ")=>\\u0020",
                 ":=>\\u0020"
             ]
+        },
+        "nori_charfilter": {
+            "type": "mapping",
+            "mappings": [
+                "\\u0130=>I",
+                "\\u00B7=>\\u0020",
+                "\\u318D=>\\u0020",
+                "\\u00AD=>",
+                "\\u200C=>"
+            ]
+        },
+        "nori_combo_filter": {
+            "type": "pattern_replace",
+            "pattern": "[\\u0300-\\u0331]",
+            "replacement": ""
         }
     }
 }

@@ -1,9 +1,6 @@
 {
     "archive": {
         "dynamic": false,
-        "_all": {
-            "enabled": false
-        },
         "properties": {
             "namespace": {
                 "type": "long"

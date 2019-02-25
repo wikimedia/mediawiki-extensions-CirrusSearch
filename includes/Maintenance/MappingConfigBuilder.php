@@ -129,7 +129,6 @@ class MappingConfigBuilder {
 
 		$page = [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'timestamp' => [
 					'type' => 'date',

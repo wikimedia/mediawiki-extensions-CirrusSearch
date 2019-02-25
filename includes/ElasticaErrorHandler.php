@@ -57,7 +57,15 @@ class ElasticaErrorHandler {
 			];
 		}
 
-		return $exception->getResponse()->getFullError();
+		$error = $exception->getResponse()->getFullError();
+		if ( is_string( $error ) ) {
+			$error = [
+				'type' => 'unknown',
+				'reason' => $error,
+			];
+		}
+
+		return $error;
 	}
 
 	/**

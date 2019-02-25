@@ -6,7 +6,7 @@
             "filter": [
                 "lowercase",
                 "asciifolding",
-                "scstemmer"
+                "serbian_stemmer"
             ]
         },
         "text_search": {
@@ -15,7 +15,7 @@
             "filter": [
                 "lowercase",
                 "asciifolding",
-                "scstemmer"
+                "serbian_stemmer"
             ]
         },
         "plain": {
@@ -204,9 +204,6 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
-        },
-        "scstemmer": {
-            "type": "serbian_stemmer"
         },
         "dedup_asciifolding": {
             "type": "unique",

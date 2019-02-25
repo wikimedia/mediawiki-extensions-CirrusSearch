@@ -19,11 +19,11 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->fixAsciiFolding( $input );
 
-		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
-		if ( isset( $expected['filter'] ) ) {
-			$this->assertEquals( $expected['filter'], $result['filter'] );
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
+		if ( isset( $expected[ 'filter' ] ) ) {
+			$this->assertEquals( $expected[ 'filter' ], $result[ 'filter' ] );
 		} else {
-			$this->assertFalse( isset( $result['filter'] ) );
+			$this->assertFalse( isset( $result[ 'filter' ] ) );
 		}
 	}
 
@@ -33,7 +33,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'unknown_language', $plugins, $config );
 		$result = $builder->enableICUFolding( $input, 'unknown_language' );
-		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
 		$this->assertTrue( $builder->isIcuAvailable() );
@@ -43,7 +43,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$plugins = [ 'extra', 'analysis-icu' ];
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$result = $builder->enableICUFolding( $input, 'unknown_language' );
-		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 		$this->assertFalse( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'simple' ) );
 
@@ -53,7 +53,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$builder = new AnalysisConfigBuilder( 'en', $plugins, $config );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'unknown_language' ) );
 		$this->assertTrue( $builder->shouldActivateIcuFolding( 'en' ) );
-		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 
 		// Test that we can force disabling ICU folding
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuFolding' => 'no' ] );
@@ -85,7 +85,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		$result = $builder->enableICUTokenizer( $input );
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'en' ) );
 		$this->assertTrue( $builder->shouldActivateIcuTokenization( 'bo' ) );
-		$this->assertEquals( $expected['analyzer'], $result['analyzer'] );
+		$this->assertEquals( $expected[ 'analyzer' ], $result[ 'analyzer' ] );
 
 		$config = $this->buildConfig( [ 'CirrusSearchUseIcuTokenizer' => 'no' ] );
 		$plugins = [ 'extra', 'analysis-icu' ];
@@ -435,8 +435,8 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 		foreach ( CirrusTestCase::findFixtures( 'languageAnalysis/*.config' ) as $testFile ) {
 			$testName = substr( basename( $testFile ), 0, -7 );
 			$extraConfig = CirrusTestCase::loadFixture( $testFile );
-			if ( isset( $extraConfig['LangCode'] ) ) {
-				$langCode = $extraConfig['LangCode'];
+			if ( isset( $extraConfig[ 'LangCode' ] ) ) {
+				$langCode = $extraConfig[ 'LangCode' ];
 			} else {
 				$langCode = $testName;
 			}
@@ -446,7 +446,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			} else {
 				$expected = $expectedFile;
 			}
-			$tests[$testName] = [ $expected, $langCode, $extraConfig ];
+			$tests[ $testName ] = [ $expected, $langCode, $extraConfig ];
 		}
 		return $tests;
 	}
@@ -468,7 +468,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 			'analysis-smartcn', 'analysis-hebrew',
 			'analysis-ukrainian', 'analysis-stconvert',
 			'extra-analysis-serbian', 'extra-analysis-slovak',
-			'extra-analysis-esperanto'
+			'extra-analysis-esperanto', 'analysis-nori',
 		];
 		$builder = new AnalysisConfigBuilder( $langCode, $plugins, $config );
 		if ( is_string( $expected ) ) {
@@ -480,7 +480,7 @@ class AnalysisConfigBuilderTest extends CirrusTestCase {
 
 			// also verify that custom stop lists and patterns are in NFKC form
 			if ( array_key_exists( 'filter', $builder->buildConfig() ) ) {
-				foreach ( $builder->buildConfig()['filter'] as $filter ) {
+				foreach ( $builder->buildConfig()[ 'filter' ] as $filter ) {
 					if ( array_key_exists( 'type', $filter ) ) {
 						if ( $filter[ 'type' ] == 'stop'
 								&& array_key_exists( 'stopwords', $filter )

@@ -232,10 +232,6 @@ abstract class BaseRegexFeature extends SimpleKeywordFeature implements FilterQu
 			$filter->setCaseSensitive( !$insensitive );
 			$filter->setLocale( $this->languageCode );
 
-			if ( $this->shardTimeout && in_array( 'use_extra_timeout', $this->regexPlugin ) ) {
-				$filter->setTimeout( $this->shardTimeout );
-			}
-
 			$filters[] = $filter;
 		}
 

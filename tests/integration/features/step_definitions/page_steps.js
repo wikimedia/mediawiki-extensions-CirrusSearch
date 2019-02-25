@@ -525,7 +525,7 @@ defineSupportCode( function ( { Given, When, Then } ) {
 			expect( this.apiResponse.general ).to.have.all.keys( 'page' );
 			expect( this.apiResponse.archive ).to.have.all.keys( 'archive' );
 			expect( this.apiResponse.content.page ).to.have.all.keys(
-				'dynamic', '_all', 'properties' );
+				'dynamic', 'properties' );
 			expect( this.apiResponse.content.page.properties ).to.include.keys(
 				'all', 'all_near_match', 'title', 'category', 'redirect' );
 		} );

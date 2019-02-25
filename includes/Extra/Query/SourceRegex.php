@@ -157,14 +157,4 @@ class SourceRegex extends AbstractQuery {
 	public function setMaxNgramClauses( $maxNgramClauses ) {
 		return $this->setParam( 'max_ngram_clauses', $maxNgramClauses );
 	}
-
-	/**
-	 * NOTE: do not set this timeout if no timeout on the search request is set.
-	 * The format is similar to the one used in the search options.
-	 * @param string $timeout more accurate timeout
-	 * @return self
-	 */
-	public function setTimeout( $timeout ) {
-		return $this->setParam( 'timeout', $timeout );
-	}
 }

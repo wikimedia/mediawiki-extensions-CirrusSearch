@@ -123,8 +123,8 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuFolding[$language] ) ) {
-				return $this->languagesWithIcuFolding[$language];
+			if ( isset( $this->languagesWithIcuFolding[ $language ] ) ) {
+				return $this->languagesWithIcuFolding[ $language ];
 			}
 		default:
 			return false;
@@ -148,8 +148,8 @@ class AnalysisConfigBuilder {
 		case 'no':
 			return false;
 		case 'default':
-			if ( isset( $this->languagesWithIcuTokenization[$language] ) ) {
-				return $this->languagesWithIcuTokenization[$language];
+			if ( isset( $this->languagesWithIcuTokenization[ $language ] ) ) {
+				return $this->languagesWithIcuTokenization[ $language ];
 			}
 		default:
 			return false;
@@ -184,8 +184,8 @@ class AnalysisConfigBuilder {
 	 * @return array|null the similarity config
 	 */
 	public function buildSimilarityConfig() {
-		if ( $this->similarity != null && isset( $this->similarity['similarity'] ) ) {
-			return $this->similarity['similarity'];
+		if ( $this->similarity != null && isset( $this->similarity[ 'similarity' ] ) ) {
+			return $this->similarity[ 'similarity' ];
 		}
 		return null;
 	}
@@ -195,12 +195,12 @@ class AnalysisConfigBuilder {
 	 * @return mixed[] update config
 	 */
 	public function enableICUTokenizer( array $config ) {
-		foreach ( $config['analyzer'] as $name => &$value ) {
-			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+		foreach ( $config[ 'analyzer' ] as $name => &$value ) {
+			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}
-			if ( isset( $value['tokenizer'] ) && 'standard' === $value['tokenizer'] ) {
-				$value['tokenizer'] = 'icu_tokenizer';
+			if ( isset( $value[ 'tokenizer' ] ) && 'standard' === $value[ 'tokenizer' ] ) {
+				$value[ 'tokenizer' ] = 'icu_tokenizer';
 			}
 		}
 		return $config;
@@ -218,54 +218,54 @@ class AnalysisConfigBuilder {
 			'type' => 'icu_folding',
 		];
 		if ( !empty( $unicodeSetFilter ) ) {
-			$filter['unicodeSetFilter'] = $unicodeSetFilter;
+			$filter[ 'unicodeSetFilter' ] = $unicodeSetFilter;
 		}
-		$config['filter']['icu_folding'] = $filter;
+		$config[ 'filter' ][ 'icu_folding' ] = $filter;
 
 		// Adds a simple nfkc normalizer for cases where
 		// we preserve original but the lowercase filter
 		// is not used before
-		$config['filter']['icu_nfkc_normalization'] = [
+		$config[ 'filter' ][ 'icu_nfkc_normalization' ] = [
 			'type' => 'icu_normalizer',
 			'name' => 'nfkc',
 		];
 
-		$config['filter']['remove_empty'] = [
+		$config[ 'filter' ][ 'remove_empty' ] = [
 			'type' => 'length',
 			'min' => 1,
 		];
 
 		$newfilters = [];
-		foreach ( $config['analyzer'] as $name => $value ) {
-			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+		foreach ( $config[ 'analyzer' ] as $name => $value ) {
+			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}
-			if ( !isset( $value['filter'] ) ) {
+			if ( !isset( $value[ 'filter' ] ) ) {
 				continue;
 			}
-			if ( in_array( 'asciifolding', $value['filter'] ) ) {
-				$newfilters[$name] = $this->switchFiltersToICUFolding( $value['filter'] );
+			if ( in_array( 'asciifolding', $value[ 'filter' ] ) ) {
+				$newfilters[ $name ] = $this->switchFiltersToICUFolding( $value[ 'filter' ] );
 			}
-			if ( in_array( 'asciifolding_preserve', $value['filter'] ) ) {
-				$newfilters[$name] = $this->switchFiltersToICUFoldingPreserve( $value['filter'] );
+			if ( in_array( 'asciifolding_preserve', $value[ 'filter' ] ) ) {
+				$newfilters[ $name ] = $this->switchFiltersToICUFoldingPreserve( $value[ 'filter' ] );
 			}
 		}
 
 		foreach ( $newfilters as $name => $filters ) {
-			$config['analyzer'][$name]['filter'] = $filters;
+			$config[ 'analyzer' ][ $name ][ 'filter' ] = $filters;
 		}
 		// Explicitly enable icu_folding on plain analyzers if it's not
 		// already enabled
 		foreach ( [ 'plain' ] as $analyzer ) {
-			if ( !isset( $config['analyzer'][$analyzer] ) ) {
+			if ( !isset( $config[ 'analyzer' ][ $analyzer ] ) ) {
 				continue;
 			}
-			if ( !isset( $config['analyzer'][$analyzer]['filter'] ) ) {
-				$config['analyzer'][$analyzer]['filter'] = [];
+			if ( !isset( $config[ 'analyzer' ][ $analyzer ][ 'filter' ] ) ) {
+				$config[ 'analyzer' ][ $analyzer ][ 'filter' ] = [];
 			}
-			$config['analyzer'][$analyzer]['filter'] =
+			$config[ 'analyzer' ][ $analyzer ][ 'filter' ] =
 				$this->switchFiltersToICUFoldingPreserve(
-					$config['analyzer'][$analyzer]['filter'], true );
+					$config[ 'analyzer' ][ $analyzer ][ 'filter' ], true );
 		}
 
 		return $config;
@@ -618,22 +618,18 @@ class AnalysisConfigBuilder {
 			// Unpack default analyzer to add Serbian stemming and custom folding
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T183015
 			// and https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
-			$config[ 'filter' ][ 'scstemmer' ] = [
-				'type' => 'serbian_stemmer',
-			];
-
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
 					'lowercase',
 					'asciifolding',
-					'scstemmer',
+					'serbian_stemmer',
 				],
 			];
 
 			// For BCS, text_search is just a copy of text
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'chinese_surrogate_fix':
 			// remove empty tokens generated by surrogate_merger (T168427)
@@ -756,7 +752,7 @@ STEMMER_RULES
 			break;
 		case 'esperanto':
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
@@ -767,7 +763,7 @@ STEMMER_RULES
 			];
 
 			// Text_search is just a copy of text
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'french':
 			// Add asciifolding_preserve to filters
@@ -888,7 +884,7 @@ STEMMER_RULES
 				'language' => 'indonesian',
 			];
 
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'char_filter' => [ 'indonesian_charfilter' ],
@@ -930,6 +926,70 @@ STEMMER_RULES
 
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
+		case 'korean':
+			// Unpack nori analyzer to add ICU normalization and custom filters
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
+
+			// 'mixed' mode keeps the original token plus the compound parts
+			// the default is 'discard' which only keeps the parts
+			$config[ 'tokenizer' ][ 'nori_tok' ] = [
+				'type' => 'nori_tokenizer',
+				'decompound_mode' => 'mixed',
+			];
+
+			// Nori-specific character filters:
+			// * convert middle dot to arae-a
+			// * convert dotted-I to I
+			// * remove soft hyphens and zero-width non-joiners
+			$config[ 'char_filter' ][ 'nori_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					"\\u0130=>I",
+					"\\u00B7=>\\u0020",
+					"\\u318D=>\\u0020",
+					"\\u00AD=>",
+					"\\u200C=>",
+				],
+			];
+
+			// Nori-specific pattern_replace to strip combining diacritics
+			$config[ 'char_filter' ][ 'nori_combo_filter' ] = [
+				'type' => 'pattern_replace',
+				'pattern' => '[\\u0300-\\u0331]',
+				'replacement' => '',
+			];
+
+			// Nori-specific remove empty tokens
+			$config[ 'filter' ][ 'nori_length' ] = [
+				'type' => 'length',
+				'min' => 1,
+			];
+
+			// Nori-specific part of speech filter (add 'VCP', 'VCN', 'VX' to default)
+			$config[ 'filter' ][ 'nori_posfilter' ] = [
+				'type' => 'nori_part_of_speech',
+				'stoptags' => [ 'E', 'IC', 'J', 'MAG', 'MAJ', 'MM', 'SP', 'SSC',
+					'SSO', 'SC', 'SE', 'XPN', 'XSA', 'XSN', 'XSV', 'UNA', 'NA',
+					'VSV', 'VCP', 'VCN', 'VX' ],
+			];
+
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'nori_tok',
+				'char_filter' => [
+					'nori_charfilter',
+					'nori_combo_filter',
+				],
+				'filter' => [
+					'nori_posfilter',
+					'nori_readingform',
+					'lowercase',
+					'nori_length',
+				],
+			];
+
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
 		case 'mirandese':
 			// Unpack default analyzer to add Mirandese-specific elision and stop words
 			// See phab ticket T194941
@@ -947,7 +1007,7 @@ STEMMER_RULES
 				'stopwords' => require __DIR__ . '/AnalysisLanguageData/mirandeseStopwords.php',
 			];
 
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
@@ -958,7 +1018,7 @@ STEMMER_RULES
 			];
 
 			// Text_search is just a copy of text
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'polish':
 			$config[ 'char_filter' ][ 'polish_charfilter' ] = [
@@ -1073,21 +1133,17 @@ STEMMER_RULES
 		case 'slovak':
 			// Unpack default analyzer to add Slovak stemming and custom folding
 			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
-			$config[ 'filter' ][ 'skstemmer' ] = [
-				'type' => 'slovak_stemmer',
-			];
-
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
 					'lowercase',
 					'asciifolding',
-					'skstemmer',
+					'slovak_stemmer',
 				],
 			];
 
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'swedish':
 			// Add asciifolding_preserve to filters
@@ -1095,16 +1151,16 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// Unpack built-in swedish analyzer to add asciifolding_preserve
-			$config['filter']['swedish_stop'] = [
+			$config[ 'filter' ][ 'swedish_stop' ] = [
 				'type' => 'stop',
 				'stopwords' => '_swedish_',
 			];
-			$config['filter']['swedish_stemmer'] = [
+			$config[ 'filter' ][ 'swedish_stemmer' ] = [
 				'type' => 'stemmer',
 				'language' => 'swedish',
 			];
 
-			$config['analyzer']['text'] = [
+			$config[ 'analyzer' ][ 'text' ] = [
 				'type' => 'custom',
 				'tokenizer' => 'standard',
 				'filter' => [
@@ -1116,7 +1172,7 @@ STEMMER_RULES
 			];
 
 			// In Swedish text_search is just a copy of text
-			$config['analyzer']['text_search'] = $config['analyzer']['text'];
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'turkish':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'turkish';
@@ -1153,21 +1209,21 @@ STEMMER_RULES
 	 */
 	public function fixAsciiFolding( array $config ) {
 		$needDedupFilter = false;
-		foreach ( $config['analyzer'] as $name => &$value ) {
-			if ( isset( $value['type'] ) && $value['type'] != 'custom' ) {
+		foreach ( $config[ 'analyzer' ] as $name => &$value ) {
+			if ( isset( $value[ 'type' ] ) && $value[ 'type' ] != 'custom' ) {
 				continue;
 			}
-			if ( !isset( $value['filter'] ) ) {
+			if ( !isset( $value[ 'filter' ] ) ) {
 				continue;
 			}
-			$ascii_idx = array_search( 'asciifolding_preserve', $value['filter'] );
+			$ascii_idx = array_search( 'asciifolding_preserve', $value[ 'filter' ] );
 			if ( $ascii_idx !== false ) {
 				$needDedupFilter = true;
-				array_splice( $value['filter'], $ascii_idx + 1, 0, [ 'dedup_asciifolding' ] );
+				array_splice( $value[ 'filter' ], $ascii_idx + 1, 0, [ 'dedup_asciifolding' ] );
 			}
 		}
 		if ( $needDedupFilter ) {
-			$config['filter']['dedup_asciifolding'] = [
+			$config[ 'filter' ][ 'dedup_asciifolding' ] = [
 				'type' => 'unique',
 				'only_on_same_position' => true,
 			];
@@ -1202,13 +1258,13 @@ STEMMER_RULES
 	private function getDefaultFilters( array &$config, array $analyzers ) {
 		$defaultFilters = [];
 		foreach ( $analyzers as $analyzer ) {
-			if ( empty( $config['analyzer'][$analyzer]['filter'] ) ) {
+			if ( empty( $config[ 'analyzer' ][ $analyzer ][ 'filter' ] ) ) {
 				continue;
 			}
-			foreach ( $config['analyzer'][$analyzer]['filter'] as $filterName ) {
-				if ( !isset( $config['filter'][$filterName] ) ) {
+			foreach ( $config[ 'analyzer' ][ $analyzer ][ 'filter' ] as $filterName ) {
+				if ( !isset( $config[ 'filter' ][ $filterName ] ) ) {
 					// This is default definition for the built-in filter
-					$defaultFilters[$filterName] = [ 'type' => $filterName ];
+					$defaultFilters[ $filterName ] = [ 'type' => $filterName ];
 				}
 			}
 		}
@@ -1228,12 +1284,12 @@ STEMMER_RULES
 	 */
 	private function resolveFilters( array &$config, array $standardFilters, array $defaultFilters, $prefix ) {
 		$resultFilters = [];
-		foreach ( $config['filter'] as $name => $filter ) {
+		foreach ( $config[ 'filter' ] as $name => $filter ) {
 			$existingFilter = null;
-			if ( isset( $standardFilters[$name] ) ) {
-				$existingFilter = $standardFilters[$name];
-			} elseif ( isset( $defaultFilters[$name] ) ) {
-				$existingFilter = $defaultFilters[$name];
+			if ( isset( $standardFilters[ $name ] ) ) {
+				$existingFilter = $standardFilters[ $name ];
+			} elseif ( isset( $defaultFilters[ $name ] ) ) {
+				$existingFilter = $defaultFilters[ $name ];
 			}
 
 			if ( $existingFilter ) { // Filter with this name already exists
@@ -1242,10 +1298,10 @@ STEMMER_RULES
 					// rename by adding prefix
 					$newName = $prefix . '_' . $name;
 					$this->replaceFilter( $config, $name, $newName );
-					$resultFilters[$newName] = $filter;
+					$resultFilters[ $newName ] = $filter;
 				}
 			} else {
-				$resultFilters[$name] = $filter;
+				$resultFilters[ $name ] = $filter;
 			}
 		}
 		return $resultFilters;
@@ -1258,16 +1314,16 @@ STEMMER_RULES
 	 * @param string $newName
 	 */
 	private function replaceFilter( array &$config, $oldName, $newName ) {
-		foreach ( $config['analyzer'] as &$analyzer ) {
-			if ( !isset( $analyzer['filter'] ) ) {
+		foreach ( $config[ 'analyzer' ] as &$analyzer ) {
+			if ( !isset( $analyzer[ 'filter' ] ) ) {
 				continue;
 			}
-			$analyzer['filter'] = array_map( function ( $filter ) use ( $oldName, $newName ) {
+			$analyzer[ 'filter' ] = array_map( function ( $filter ) use ( $oldName, $newName ) {
 				if ( $filter === $oldName ) {
 					return $newName;
 				}
 				return $filter;
-			}, $analyzer['filter'] );
+			}, $analyzer[ 'filter' ] );
 		}
 	}
 
@@ -1280,29 +1336,29 @@ STEMMER_RULES
 	 * @param string $prefix Prefix for this configuration
 	 */
 	private function mergeConfig( array &$config, array $langConfig, $name, $prefix ) {
-		$analyzer = $langConfig['analyzer'][$name];
-		$config['analyzer'][$prefix . '_' . $name] = $analyzer;
-		if ( !empty( $analyzer['filter'] ) ) {
+		$analyzer = $langConfig[ 'analyzer' ][ $name ];
+		$config[ 'analyzer' ][ $prefix . '_' . $name ] = $analyzer;
+		if ( !empty( $analyzer[ 'filter' ] ) ) {
 			// Add private filters for this analyzer
-			foreach ( $analyzer['filter'] as $filter ) {
+			foreach ( $analyzer[ 'filter' ] as $filter ) {
 				// Copy filters that are in language config but not in the main config.
 				// We would not copy the same filter into the main config since due to
 				// the resolution step we know they are the same (otherwise we would have
 				// renamed it).
-				if ( isset( $langConfig['filter'][$filter] ) &&
-					!isset( $config['filter'][$filter] ) ) {
-					$config['filter'][$filter] = $langConfig['filter'][$filter];
+				if ( isset( $langConfig[ 'filter' ][ $filter ] ) &&
+					!isset( $config[ 'filter' ][ $filter ] ) ) {
+					$config[ 'filter' ][ $filter ] = $langConfig[ 'filter' ][ $filter ];
 				}
 			}
 		}
-		if ( !empty( $analyzer['char_filter'] ) ) {
+		if ( !empty( $analyzer[ 'char_filter' ] ) ) {
 			// Add private char_filters for this analyzer
-			foreach ( $analyzer['char_filter'] as $filter ) {
+			foreach ( $analyzer[ 'char_filter' ] as $filter ) {
 				// Here unlike above we do not check for $langConfig since we assume
 				// language config is not broken and all char filters are namespaced
 				// nicely, so if the filter is mentioned in analyzer it is also defined.
-				if ( !isset( $config['char_filter'][$filter] ) ) {
-					$config['char_filter'][$filter] = $langConfig['char_filter'][$filter];
+				if ( !isset( $config[ 'char_filter' ][ $filter ] ) ) {
+					$config[ 'char_filter' ][ $filter ] = $langConfig[ 'char_filter' ][ $filter ];
 				}
 			}
 		}
@@ -1328,7 +1384,7 @@ STEMMER_RULES
 			// Char filters are nicely namespaced
 			// Filters are NOT - e.g. lowercase & icu_folding filters are different for different
 			// languages! So we need to do some disambiguation here.
-			$langConfig['filter'] = $this->resolveFilters( $langConfig, $config['filter'], $defaultFilters, $lang );
+			$langConfig[ 'filter' ] = $this->resolveFilters( $langConfig, $config[ 'filter' ], $defaultFilters, $lang );
 			// Merge configs
 			foreach ( $analyzers as $analyzer ) {
 				$this->mergeConfig( $config, $langConfig, $analyzer, $lang );
@@ -1459,6 +1515,7 @@ STEMMER_RULES
 		 *    https://www.mediawiki.org/wiki/User:TJones_(WMF)/T192395
 		 * For Slovak, see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T190815
 		 * For Esperanto (eo), see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T202173
+		 * For Korean see https://www.mediawiki.org/wiki/User:TJones_(WMF)/T206874
 		 */
 
 		'analysis-stempel' => [ 'pl' => 'polish' ],
@@ -1473,5 +1530,6 @@ STEMMER_RULES
 		'extra-analysis-serbian' => [ 'bs' => 'bosnian', 'hr' => 'croatian',
 			'sh' => 'serbo-croatian', 'sr' => 'serbian' ],
 		'extra-analysis-slovak' => [ 'sk' => 'slovak' ],
+		'analysis-nori' => [ 'ko' => 'korean' ],
 	];
 }

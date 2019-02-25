@@ -187,7 +187,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -609,7 +608,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -860,8 +858,8 @@
                                     {
                                         "script_score": {
                                             "script": {
-                                                "inline": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))",
-                                                "lang": "expression"
+                                                "lang": "expression",
+                                                "source": "pow(doc['incoming_links'].value , 0.7) \/ ( pow(doc['incoming_links'].value, 0.7) + pow(30,0.7))"
                                             }
                                         },
                                         "weight": 13
@@ -1074,7 +1072,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {
@@ -1496,7 +1493,6 @@
                     "should": [
                         {
                             "bool": {
-                                "disable_coord": true,
                                 "filter": [
                                     {
                                         "bool": {

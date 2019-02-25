@@ -6,7 +6,7 @@
             "filter": [
                 "lowercase",
                 "asciifolding",
-                "skstemmer"
+                "slovak_stemmer"
             ]
         },
         "text_search": {
@@ -15,7 +15,7 @@
             "filter": [
                 "lowercase",
                 "asciifolding",
-                "skstemmer"
+                "slovak_stemmer"
             ]
         },
         "plain": {
@@ -204,9 +204,6 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
-        },
-        "skstemmer": {
-            "type": "slovak_stemmer"
         },
         "dedup_asciifolding": {
             "type": "unique",

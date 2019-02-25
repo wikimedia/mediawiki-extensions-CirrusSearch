@@ -31,8 +31,6 @@ class MappingDump extends \ApiBase {
 		foreach ( $conn->getAllIndexTypes( null ) as $index ) {
 			$mapping = $conn->getIndex( $indexPrefix, $index )->getMapping();
 			$this->getResult()->addValue( null, $index, $mapping );
-			$type = key( $mapping );
-			$this->getResult()->addPreserveKeysList( [ $index, $type ], '_all' );
 		}
 	}
 

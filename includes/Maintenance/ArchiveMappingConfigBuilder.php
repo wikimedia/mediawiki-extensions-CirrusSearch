@@ -11,7 +11,6 @@ class ArchiveMappingConfigBuilder extends MappingConfigBuilder {
 	public function buildConfig() {
 		return [ $this->getMainType() => [
 			'dynamic' => false,
-			'_all' => [ 'enabled' => false ],
 			'properties' => [
 				'namespace' => $this->searchIndexFieldFactory
 					->newLongField( 'namespace' )

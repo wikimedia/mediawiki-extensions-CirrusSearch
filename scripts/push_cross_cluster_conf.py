@@ -56,4 +56,3 @@ parser.add_argument('--ccc', help='cross cluster conf: name=seedsfile', nargs="*
 
 if __name__ == '__main__':
     main(parser.parse_args())
-

@@ -67,8 +67,7 @@
                                         "locale": "en",
                                         "max_determinized_states": 20000,
                                         "ngram_field": "source_text.trigram",
-                                        "regex": "a(b|c)d",
-                                        "timeout": "120s"
+                                        "regex": "a(b|c)d"
                                     }
                                 },
                                 {

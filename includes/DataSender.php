@@ -142,14 +142,10 @@ class DataSender extends ElasticsearchIntermediary {
 		 * significantly simpler object to define a round trip with.
 		 */
 		if ( $this->searchConfig->getElement( 'CirrusSearchWikimediaExtraPlugin', 'super_detect_noop' ) ) {
-			$enableNative = !empty( $this->searchConfig->getElement(
-				'CirrusSearchWikimediaExtraPlugin',
-				'super_detect_noop_enable_native'
-			) );
 			foreach ( $documents as $i => $doc ) {
 				// BC Check for jobs that used to contain Document|Script
 				if ( $doc instanceof \Elastica\Document ) {
-					$documents[$i] = $this->docToSuperDetectNoopScript( $doc, $enableNative );
+					$documents[$i] = $this->docToSuperDetectNoopScript( $doc );
 				}
 			}
 		}
@@ -338,7 +334,7 @@ class DataSender extends ElasticsearchIntermediary {
 						],
 						'handlers' => [ 'local_sites_with_dupe' => 'set' ],
 					],
-					'native'
+					'super_detect_noop'
 				);
 				$script->setId( $update['docId'] );
 				$script->setParam( '_type', 'page' );
@@ -463,10 +459,9 @@ class DataSender extends ElasticsearchIntermediary {
 	 * Converts a document into a call to super_detect_noop from the wikimedia-extra plugin.
 	 * @internal made public for testing purposes
 	 * @param \Elastica\Document $doc
-	 * @param bool $enableNative enable the use of native scripts (deprecated as of elastic 5.5+)
 	 * @return \Elastica\Script\Script
 	 */
-	public function docToSuperDetectNoopScript( \Elastica\Document $doc, $enableNative = false ) {
+	public function docToSuperDetectNoopScript( \Elastica\Document $doc ) {
 		$handlers = CirrusIndexField::getHint( $doc, CirrusIndexField::NOOP_HINT );
 		$params = $doc->getParams();
 		$params['source'] = $doc->getData();
@@ -488,11 +483,7 @@ class DataSender extends ElasticsearchIntermediary {
 			// causing class cast exception failures
 			$params['handlers'] = new \stdClass();
 		}
-		if ( $enableNative ) {
-			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'native' );
-		} else {
-			$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
-		}
+		$script = new \Elastica\Script\Script( 'super_detect_noop', $params, 'super_detect_noop' );
 		if ( $doc->getDocAsUpsert() ) {
 			CirrusIndexField::resetHints( $doc );
 			$script->setUpsert( $doc );

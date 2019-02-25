@@ -189,7 +189,7 @@ class RescoreBuilderTest extends CirrusTestCase {
 		$this->assertFalse( $fScore->isEmptyFunction() );
 		$array = $fScore->toArray();
 		$this->assertTrue( isset( $array['function_score']['functions'][0]['script_score'] ) );
-		$this->assertEquals( $script, $array['function_score']['functions'][0]['script_score']['script']['inline'] );
+		$this->assertEquals( $script, $array['function_score']['functions'][0]['script_score']['script']['source'] );
 		$this->assertEquals( 'expression', $array['function_score']['functions'][0]['script_score']['script']['lang'] );
 		$this->assertEquals( 2, $array['function_score']['functions'][0]['weight'] );
 	}

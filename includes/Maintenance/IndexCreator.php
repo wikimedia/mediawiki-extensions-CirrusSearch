@@ -18,7 +18,7 @@ class IndexCreator {
 	private $analysisConfig;
 
 	/**
-	 * @var array
+	 * @var array|null
 	 */
 	private $similarityConfig;
 
@@ -30,9 +30,9 @@ class IndexCreator {
 	/**
 	 * @param Index $index
 	 * @param array $analysisConfig
-	 * @param array $similarityConfig
+	 * @param array|null $similarityConfig
 	 */
-	public function __construct( Index $index, array $analysisConfig, array $similarityConfig ) {
+	public function __construct( Index $index, array $analysisConfig, array $similarityConfig = null ) {
 		$this->index = $index;
 		$this->analysisConfig = $analysisConfig;
 		$this->similarityConfig = $similarityConfig;

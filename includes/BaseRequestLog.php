@@ -14,7 +14,7 @@ abstract class BaseRequestLog implements RequestLog {
 	protected $queryType;
 
 	/**
-	 * @var string[]
+	 * @var array
 	 */
 	protected $extra;
 
@@ -31,7 +31,7 @@ abstract class BaseRequestLog implements RequestLog {
 	/**
 	 * @param string $description
 	 * @param string $queryType
-	 * @param string[] $extra
+	 * @param array $extra
 	 */
 	public function __construct( $description, $queryType, array $extra = [] ) {
 		$this->description = $description;

@@ -69,11 +69,12 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 		if ( !isset( self::$externalLinks[$conn] ) ) {
 			$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'CirrusSearch' );
 			// @todo should there instead be a way to source $config from $conn?
-			/** @suppress PhanTypeMismatchArgument $config is a SearchConfig instance */
+			/** @phan-suppress-next-line PhanTypeMismatchArgument $config is a SearchConfig instance */
 			self::$externalLinks[$conn] = new self( $config, $conn );
 		}
 		/** @var self $externalLink */
 		$externalLink = self::$externalLinks[$conn];
+		/** @phan-suppress-next-line PhanNonClassMethodCall */
 		$externalLink->realBuildDocument( $doc, $title );
 		return true;
 	}
@@ -88,8 +89,9 @@ class RedirectsAndIncomingLinks extends ElasticsearchIntermediary {
 			return false;
 		}
 		foreach ( self::$externalLinks as $conn ) {
-			/** @var self $instance */
 			$instance = self::$externalLinks[$conn];
+			/** @var self $instance */
+			/* @phan-suppress-next-line PhanNonClassMethodCall */
 			$instance->realFinishBatch( $pages );
 		}
 		self::$externalLinks = null;

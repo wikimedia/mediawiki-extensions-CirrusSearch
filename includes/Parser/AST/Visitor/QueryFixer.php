@@ -95,10 +95,10 @@ class QueryFixer implements Visitor {
 		}
 
 		if ( $this->node instanceof KeywordFeatureNode ) {
-			/** @suppress PhanUndeclaredMethod */
+			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			return $this->node->getValue();
 		} elseif ( $this->node instanceof WordsQueryNode ) {
-			/** @suppress PhanUndeclaredMethod */
+			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			return $this->node->getWords();
 		} else {
 			Assert::invariant( false, "Unsupported node type " . get_class( $this->node ) );
@@ -125,7 +125,7 @@ class QueryFixer implements Visitor {
 		}
 		$res .= substr( $this->parsedQuery->getQuery(), 0, $this->node->getStartOffset() );
 		if ( $this->node instanceof KeywordFeatureNode ) {
-			/** @suppress PhanUndeclaredMethod */
+			/** @phan-suppress-next-line PhanUndeclaredMethod */
 			$res .= $this->node->getKey() . ':';
 		}
 		if ( $escapeBoundaries ) {
@@ -201,7 +201,7 @@ class QueryFixer implements Visitor {
 	 * @param WildcardNode $node
 	 */
 	public function visitWildcardNode( WildcardNode $node ) {
-		if ( strpos( '?', $node->getWildcardQuery() ) !== -1 ) {
+		if ( strpos( $node->getWildcardQuery(), '?' ) !== -1 ) {
 			$this->hasQMarkInWildcard = true;
 		}
 		$this->isComplex = true;
@@ -245,10 +245,8 @@ class QueryFixer implements Visitor {
 		}
 		$oldNegated = $this->inNegation;
 		$node = $clause->getNode();
-		/** @suppress PhanUndeclaredMethod */
 		if ( $node instanceof KeywordFeatureNode && $node->getKey() === 'intitle' && $node->getDelimiter() === '' ) {
 			// Inhibits the fixer when it sees an un-acceptable value inside a keyword (legacy browsertest_176)
-			/** @suppress PhanUndeclaredMethod */
 			$this->isComplex = $this->isComplex || !$this->acceptableString( $node->getValue() );
 		}
 		if ( $clause->getOccur() === BooleanClause::MUST_NOT ) {

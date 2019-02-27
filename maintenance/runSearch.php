@@ -243,7 +243,7 @@ class RunSearch extends Maintenance {
 	 * search result. Varies based on CLI input argument `type`.
 	 *
 	 * @param string $query
-	 * @return Status<ResultSet>
+	 * @return Status<ResultSet|ResultWrapper>
 	 */
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );

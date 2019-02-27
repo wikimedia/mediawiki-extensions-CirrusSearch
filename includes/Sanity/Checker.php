@@ -325,7 +325,6 @@ class Checker {
 		$dbr = $this->getDB();
 		$where = 'page_id IN (' . $dbr->makeList( $pageIds ) . ')';
 		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
-			/** @suppress PhanUndeclaredStaticMethod Static call to undeclared method */
 			$pageQuery = WikiPage::getQueryInfo();
 		} else {
 			$pageQuery = [

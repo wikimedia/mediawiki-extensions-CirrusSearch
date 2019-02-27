@@ -6,6 +6,7 @@ use CirrusSearch\Search\SearchMetricsProvider;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use RequestContext;
+use SearchResultSet;
 use Status;
 use User;
 use Wikimedia\Assert\Assert;
@@ -106,7 +107,7 @@ abstract class ElasticsearchIntermediary {
 	 * API's that is correct, for Special:Search a hook catches the final results and
 	 * sets them here.
 	 *
-	 * @param array[Search\ResultSet|null] $matches
+	 * @param SearchResultSet[] $matches
 	 */
 	public static function setResultPages( array $matches ) {
 		if ( self::$requestLogger === null ) {
@@ -293,7 +294,7 @@ abstract class ElasticsearchIntermediary {
 	 * @param string $description A psr-3 compliant string describing the request
 	 * @param string $queryType The type of search being performed such as
 	 * fulltext, get, etc.
-	 * @param string[] $extra A map of additional request-specific data
+	 * @param array $extra A map of additional request-specific data
 	 * @return RequestLog
 	 */
 	protected function startNewLog( $description, $queryType, array $extra = [] ) {
@@ -307,7 +308,7 @@ abstract class ElasticsearchIntermediary {
 	 * @param string $description A psr-3 compliant string describing the request
 	 * @param string $queryType The type of search being performed such as
 	 * fulltext, get, etc.
-	 * @param string[] $extra A map of additional request-specific data
+	 * @param array $extra A map of additional request-specific data
 	 * @return RequestLog
 	 */
 	abstract protected function newLog( $description, $queryType, array $extra = [] );

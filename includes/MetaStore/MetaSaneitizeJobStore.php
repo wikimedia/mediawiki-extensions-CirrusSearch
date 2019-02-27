@@ -82,8 +82,6 @@ class MetaSaneitizeJobStore implements MetaStore {
 		$version = time();
 		$jobInfo->set( 'sanitize_job_updated', $version );
 		$jobInfo->setVersion( $version );
-		// @todo: remove this suppress (https://github.com/ruflin/Elastica/pull/1134)
-		/** @suppress PhanTypeMismatchArgument this method is improperly annotated */
 		$jobInfo->setVersionType( 'external' );
 		$this->getType()->addDocument( $jobInfo );
 	}

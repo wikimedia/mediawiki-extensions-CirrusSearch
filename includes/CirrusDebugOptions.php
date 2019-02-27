@@ -30,7 +30,7 @@ class CirrusDebugOptions {
 	private $cirrusExplain;
 
 	/**
-	 * @var @var string|null
+	 * @var string|null
 	 */
 	private $cirrusMLRModel;
 

@@ -16,7 +16,7 @@ class CompletionResultsCollector {
 	private $suggestionsByDocId = [];
 
 	/**
-	 * @var string[] profile names indexed by pageId (mutable)
+	 * @var string[][] profile names indexed by pageId (mutable)
 	 */
 	private $suggestionMetadataByDocId = [];
 

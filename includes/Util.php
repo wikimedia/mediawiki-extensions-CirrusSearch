@@ -261,7 +261,7 @@ class Util {
 	/**
 	 * Get boost templates configured in messages.
 	 * @param SearchConfig|null $config Search config requesting the templates
-	 * @return \float[]
+	 * @return float[]
 	 */
 	public static function getDefaultBoostTemplates( SearchConfig $config = null ) {
 		if ( is_null( $config ) ) {
@@ -293,7 +293,7 @@ class Util {
 	 * or the value possibly unknown if run from a non local wiki.
 	 *
 	 * @param SearchConfig $config
-	 * @return \float[] indexed by template name
+	 * @return float[] indexed by template name
 	 */
 	private static function getOnWikiBoostTemplates( SearchConfig $config ) {
 		$cache = \ObjectCache::getLocalClusterInstance();

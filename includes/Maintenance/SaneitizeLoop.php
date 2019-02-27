@@ -59,7 +59,7 @@ class SaneitizeLoop {
 		$this->pushJobFreq = $pushJobFreq;
 		$this->chunkSize = $chunkSize;
 		$this->minLoopDuration = $minLoopDuration;
-		$this->logger = $logger ?? function () {
+		$this->logger = $logger ?? function ( $msg, $channel = null ) {
 		};
 	}
 
@@ -126,6 +126,7 @@ class SaneitizeLoop {
 	 * @param int $from
 	 * @param int $to
 	 * @param string|null $cluster
+	 * @param int $loopId
 	 * @return CheckerJob
 	 */
 	private function createCheckerJob( $from, $to, $cluster, $loopId ) {

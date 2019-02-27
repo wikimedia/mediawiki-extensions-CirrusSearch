@@ -35,12 +35,12 @@ class Dump extends FormlessAction {
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'CirrusSearch' );
-		/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
+		/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
 		$conn = new Connection( $config );
-		/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
+		/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
 		$searcher = new Searcher( $conn, 0, 0, $config, [], $this->getUser() );
 
-		/** @suppress PhanUndeclaredMethod Phan doesn't know $config is a SearchConfig */
+		/** @phan-suppress-next-line PhanUndeclaredMethod Phan doesn't know $config is a SearchConfig */
 		$docId = $config->makeId( $this->getTitle()->getArticleID() );
 		$esSources = $searcher->get( [ $docId ], true );
 		if ( !$esSources->isOK() ) {

@@ -122,7 +122,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
-	 * @return string|null
+	 * @return array|null Suggestion options, see "options" part in
+	 *      https://www.elastic.co/guide/en/elasticsearch/reference/6.4/search-suggesters.html
 	 */
 	private function findSuggestion( ResultSet $resultSet ) {
 		// TODO some kind of weighting?
@@ -167,9 +168,8 @@ class PhraseSuggestFallbackMethod implements FallbackMethod, ElasticSearchSugges
 	}
 
 	/**
-	 * Build suggest config for $field.
+	 * Build suggest config for 'suggest' field.
 	 *
-	 * @param string $field field to suggest against
 	 * @return array[] array of Elastica configuration
 	 */
 	private function buildSuggestConfig() {

@@ -106,7 +106,7 @@ class UpdateSuggesterIndex extends Maintenance {
 	private $optimizeIndex;
 
 	/**
-	 * @var array
+	 * @var string|int
 	 */
 	protected $maxShardsPerNode;
 
@@ -220,9 +220,7 @@ class UpdateSuggesterIndex extends Maintenance {
 
 		$this->utils->checkElasticsearchVersion();
 
-		$this->maxShardsPerNode = isset( $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ] )
-			? $wgCirrusSearchMaxShardsPerNode[ $this->indexTypeName ]
-			: 'unlimited';
+		$this->maxShardsPerNode = $wgCirrusSearchMaxShardsPerNode[$this->indexTypeName] ?? 'unlimited';
 
 		$this->scoreMethodName = $this->getOption(
 			'scoringMethod', $wgCirrusSearchCompletionDefaultScore
@@ -267,7 +265,7 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticaErrorHandler::extractMessage( $e );
-			/** @suppress PhanUndeclaredMethod ExceptionInterface has no methods */
+			/** @phan-suppress-next-line PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->fatalError( "Elasticsearch failed in an unexpected way.  " .

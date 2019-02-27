@@ -175,6 +175,7 @@ class TextIndexField extends CirrusIndexField {
 		if ( $disableNorms ) {
 			$disableNorms = [ 'norms' => false ];
 			$field = array_merge( $field, $disableNorms );
+			/* @phan-suppress-next-line PhanTypeMismatchArgumentInternal, PhanTypeMismatchDimFetch */
 			$field[ 'fields' ][ 'plain' ] = array_merge( $field[ 'fields' ][ 'plain' ], $disableNorms );
 		}
 		foreach ( $extra as $extraField ) {

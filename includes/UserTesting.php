@@ -103,7 +103,7 @@ class UserTesting {
 	 * @param string|null $trigger Value to manually trigger a test.
 	 */
 	public function __construct( array $config, $callback = null, $trigger = '' ) {
-		/** @suppress PhanTypeComparisonFromArray phan is just wrong here */
+		/** @phan-suppress-next-line PhanTypeComparisonFromArray phan is just wrong here */
 		if ( $callback === null ) {
 			$callback = [ __CLASS__, 'oneIn' ];
 		}

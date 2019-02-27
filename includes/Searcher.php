@@ -30,6 +30,7 @@ use MediaWiki\MediaWikiServices;
 use ObjectCache;
 use RequestContext;
 use Status;
+use Title;
 use User;
 use WebRequest;
 use Wikimedia\Assert\Assert;

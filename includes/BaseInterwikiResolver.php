@@ -201,7 +201,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	}
 
 	/**
-	 * @param array[] list of arrays containing 'url' and 'wiki', indexed by iw prefix
+	 * @param array[] $endpoints list of arrays containing 'url' and 'wiki', indexed by iw prefix
 	 * @return array[] list of array containing extracted config vars, failed wikis
 	 * are not returned.
 	 */

@@ -49,17 +49,14 @@ class CompletionRequestLog extends BaseRequestLog {
 	/**
 	 * @param SearchSuggestion[] $result The set of suggestion results that
 	 *  will be returned to the user.
-	 * @param string[] $suggestionMetadataByDocId A map from elasticsearch
+	 * @param string[][] $suggestionMetadataByDocId A map from elasticsearch
 	 *  document id to the completion profile that provided the highest score
 	 *  for that document id.
 	 */
 	public function setResult( array $result, array $suggestionMetadataByDocId ) {
 		$maxScore = $this->maxScore;
 		foreach ( $result as $docId => $suggestion ) {
-			$index = '';
-			if ( isset( $suggestionMetadataByDocId[$docId]['index'] ) ) {
-				$index = $suggestionMetadataByDocId[$docId]['index'];
-			}
+			$index = $suggestionMetadataByDocId[$docId]['index'] ?? '';
 			$title = $suggestion->getSuggestedTitle();
 			$pageId = $suggestion->getSuggestedTitleID() ?: -1;
 			$maxScore = $maxScore !== null ? max( $maxScore, $suggestion->getScore() ) : $suggestion->getScore();
@@ -68,9 +65,7 @@ class CompletionRequestLog extends BaseRequestLog {
 				'index' => $index,
 				'pageId' => (int)$pageId,
 				'score' => $suggestion->getScore(),
-				'profileName' => isset( $suggestionMetadataByDocId[$docId]['profile'] )
-					? $suggestionMetadataByDocId[$docId]['profile']
-					: "",
+				'profileName' => $suggestionMetadataByDocId[$docId]['profile'] ?? '',
 			];
 		}
 		$this->maxScore = $maxScore !== null ? (float)$maxScore : null;

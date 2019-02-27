@@ -218,7 +218,7 @@ class MoreLikeFeature extends SimpleKeywordFeature implements LegacyKeywordFeatu
 		$query->setParams( $this->config->get( 'CirrusSearchMoreLikeThisConfig' ) );
 		$query->setFields( $moreLikeThisFields );
 
-		/** @suppress PhanTypeMismatchArgument library is mis-annotated */
+		/** @phan-suppress-next-line PhanTypeMismatchArgument library is mis-annotated */
 		$query->setLike( $likeDocs );
 
 		return $query;

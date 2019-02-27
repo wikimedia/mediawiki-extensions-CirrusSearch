@@ -507,7 +507,6 @@ class ForceSearchIndex extends Maintenance {
 	 */
 	private static function getPageQueryInfo() {
 		if ( is_callable( [ WikiPage::class, 'getQueryInfo' ] ) ) {
-			/** @suppress PhanUndeclaredStaticMethod Static call to undeclared method */
 			return WikiPage::getQueryInfo();
 		}
 

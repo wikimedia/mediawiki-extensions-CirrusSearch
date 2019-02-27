@@ -99,7 +99,7 @@ class Connection extends ElasticaConnection {
 	private $clusterSettings;
 
 	/**
-	 * @var Connection[]
+	 * @var Connection[][]
 	 */
 	private static $pool = [];
 

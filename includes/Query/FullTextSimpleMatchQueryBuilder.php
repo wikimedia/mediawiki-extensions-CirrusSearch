@@ -50,7 +50,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	private $dismaxSettings;
 
 	/**
-	 * @var array[] filter settings
+	 * @var array filter settings
 	 */
 	private $filter;
 
@@ -67,7 +67,7 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$this->defaultStemWeight = $settings['default_stem_weight'];
 		$this->defaultQueryType = $settings['default_query_type'];
 		$this->defaultMinShouldMatch = $settings['default_min_should_match'];
-		$this->dismaxSettings = isset( $settings['dismax_settings'] ) ? $settings['dismax_settings'] : [];
+		$this->dismaxSettings = $settings['dismax_settings'] ?? [];
 	}
 
 	/**
@@ -119,7 +119,6 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 		$query = parent::buildHighlightQuery( $context, $fields, $queryText, $slop );
 		if ( $this->usedExpQuery && $query instanceof \Elastica\Query\QueryString ) {
 			// the exp query accepts more docs (stopwords in query are not required)
-			/** @suppress PhanUndeclaredMethod $query is a QueryString */
 			$query->setDefaultOperator( 'OR' );
 		}
 		return $query;
@@ -236,9 +235,9 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 	/**
 	 * Attach the query filter to $boolQuery
 	 *
-	 * @param array[] filter definition
+	 * @param array $filterDef filter definition
 	 * @param string $query query text
-	 * @param \Elastica\Query\BoolQuery the query to attach the filter to
+	 * @param \Elastica\Query\BoolQuery $boolQuery the query to attach the filter to
 	 */
 	private function attachFilter( array $filterDef, $query, \Elastica\Query\BoolQuery $boolQuery ) {
 		if ( !isset( $filterDef['type'] ) ) {

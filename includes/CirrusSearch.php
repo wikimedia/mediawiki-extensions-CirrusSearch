@@ -304,7 +304,6 @@ class CirrusSearch extends SearchEngine {
 	 * @return array
 	 */
 	public function getLastSearchMetrics() {
-		/** @suppress PhanTypeMismatchReturn Phan doesn't handle array addition correctly */
 		return $this->lastSearchMetrics + $this->extraSearchMetrics;
 	}
 

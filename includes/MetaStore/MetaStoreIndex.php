@@ -262,7 +262,7 @@ class MetaStoreIndex {
 			}
 			$overlap = array_intersect_key( $properties, $storeProperties );
 			if ( $overlap ) {
-				throw new \Exception( 'Metastore property overlap on: ' . implode( ', ', $overlap ) );
+				throw new \Exception( 'Metastore property overlap on: ' . implode( ', ', array_keys( $overlap ) ) );
 			}
 			$properties += $storeProperties;
 		}

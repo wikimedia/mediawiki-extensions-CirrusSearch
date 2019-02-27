@@ -142,7 +142,7 @@ class RequestLogger {
 	 * API's that is correct, for Special:Search a hook catches the final results and
 	 * sets them here.
 	 *
-	 * @param array[Search\ResultSet|null] $matches
+	 * @param SearchResultSet[] $matches
 	 */
 	public function setResultPages( array $matches ) {
 		$titleStrings = [];

@@ -41,7 +41,7 @@ class SearchRequestLog extends BaseRequestLog {
 	 * @param \Elastica\Client $client
 	 * @param string $description
 	 * @param string $queryType
-	 * @param string[] $extra
+	 * @param array $extra
 	 */
 	public function __construct( \Elastica\Client $client, $description, $queryType, array $extra = [] ) {
 		parent::__construct( $description, $queryType, $extra );

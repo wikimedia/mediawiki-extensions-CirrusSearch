@@ -29,7 +29,7 @@ class MultiClusterAssignment implements ClusterAssignment {
 	}
 
 	/**
-	 * @param array
+	 * @param array $groupConfig
 	 * @return string
 	 */
 	private function evalGroupStrategy( array $groupConfig ) {

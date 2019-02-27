@@ -7,6 +7,7 @@ use Elastica\Index;
 use Elastica\Request;
 use Elastica\Response;
 use Elastica\Type;
+use InvalidArgumentException;
 
 class ReindexRequest {
 	/** @var array */
@@ -154,7 +155,7 @@ class ReindexRequest {
 		} elseif ( $input instanceof Index ) {
 			return [ 'index' => $input->getName() ];
 		}
-		throw new \InvalidArgumentException( 'Expected Type|Index, got '
+		throw new InvalidArgumentException( 'Expected Type|Index, got '
 			. is_object( $input ) ? get_class( $input ) : gettype( $input )
 		);
 	}

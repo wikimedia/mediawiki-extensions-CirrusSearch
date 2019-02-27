@@ -169,8 +169,6 @@ class UpdateOneSearchIndexConfig extends Maintenance {
 
 	/**
 	 * @param Maintenance $maintenance
-	 * @suppress PhanAccessMethodProtected Phan incorrectly thinks we can't call protected methods
-	 *  on other Maintenance classes.
 	 */
 	public static function addSharedOptions( $maintenance ) {
 		$maintenance->addOption( 'startOver', 'Blow away the identified index and rebuild it with ' .

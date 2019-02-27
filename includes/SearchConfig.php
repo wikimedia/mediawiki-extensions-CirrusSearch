@@ -219,6 +219,7 @@ class SearchConfig implements \Config {
 
 	/**
 	 * Get chain of elements from config array
+	 * @suppress PhanCommentParamWithoutRealParam
 	 * @param string $configName
 	 * @param string $path,... list of path elements
 	 * @return mixed Returns value or null if not present

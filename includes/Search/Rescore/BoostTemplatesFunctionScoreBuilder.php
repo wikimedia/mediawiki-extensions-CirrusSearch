@@ -35,10 +35,10 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		if ( $withDefaultBoosts ) {
 			$boostTemplates = Util::getDefaultBoostTemplates( $config );
 			if ( $boostTemplates ) {
-				foreach ( $boostTemplates as $name => $weight ) {
+				foreach ( $boostTemplates as $name => $boostWeight ) {
 					$match = new \Elastica\Query\Match();
 					$match->setFieldQuery( 'template', $name );
-					$weights[] = $weight * $this->weight;
+					$weights[] = $boostWeight * $this->weight;
 					$queries[] = $match;
 				}
 			}
@@ -61,12 +61,12 @@ class BoostTemplatesFunctionScoreBuilder extends FunctionScoreBuilder {
 		}
 
 		foreach ( $extraIndexBoostTemplates as $wiki => $boostTemplates ) {
-			foreach ( $boostTemplates as $name => $weight ) {
+			foreach ( $boostTemplates as $name => $boostWeight ) {
 				$bool = new \Elastica\Query\BoolQuery();
 				$bool->addMust( ( new \Elastica\Query\Match() )->setFieldQuery( 'wiki', $wiki ) );
 				$bool->addMust( ( new \Elastica\Query\Match() )->setFieldQuery( 'template',
 					$name ) );
-				$weights[] = $weight * $this->weight;
+				$weights[] = $boostWeight * $this->weight;
 				$queries[] = $bool;
 			}
 		}

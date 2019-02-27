@@ -494,7 +494,7 @@ class Hooks {
 		} else {
 			$colon = strpos( $search, ':' );
 			if ( $colon === false ) {
-				return;
+				return false;
 			}
 			$namespaceName = substr( $search, 0, $colon );
 			$ns = Util::identifyNamespace( $namespaceName, $method );
@@ -808,9 +808,8 @@ class Hooks {
 			function ( MediaWikiServices $serviceContainer ) {
 				$config = $serviceContainer->getConfigFactory()
 					->makeConfig( 'CirrusSearch' );
-				/** @suppress PhanTypeMismatchArgument $config is actually a SearchConfig */
-				return new SearchProfileServiceFactory( $serviceContainer
-					->getService( InterwikiResolver::SERVICE ), $config );
+				/** @phan-suppress-next-line PhanTypeMismatchArgument $config is actually a SearchConfig */
+				return new SearchProfileServiceFactory( $serviceContainer->getService( InterwikiResolver::SERVICE ), $config );
 			}
 		);
 	}

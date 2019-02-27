@@ -2,6 +2,8 @@
 
 namespace CirrusSearch\Elastica;
 
+use Exception;
+
 class ReindexResponse extends ReindexStatus {
 	/**
 	 * @return bool True when the reindex completed successfully
@@ -20,7 +22,7 @@ class ReindexResponse extends ReindexStatus {
 		} elseif ( $this->isFailed() ) {
 			return "Failed: " . json_encode( $this->getFailures() );
 		} else {
-			throw new \Exception( "Request was successful" );
+			throw new Exception( "Request was successful" );
 		}
 	}
 

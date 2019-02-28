@@ -296,7 +296,7 @@ class Util {
 	 * @return float[] indexed by template name
 	 */
 	private static function getOnWikiBoostTemplates( SearchConfig $config ) {
-		$cache = \ObjectCache::getLocalClusterInstance();
+		$cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
 		$cacheKey = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $config->getWikiId() );
 		if ( $config->getWikiId() == wfWikiID() ) {
 			// Local wiki we can fetch boost templates from system

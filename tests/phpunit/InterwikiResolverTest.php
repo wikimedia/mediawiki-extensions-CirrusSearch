@@ -435,10 +435,11 @@ class InterwikiResolverTest extends CirrusTestCase {
 		MediaWikiServices::getInstance()
 			->resetServiceForTesting( 'InterwikiLookup' );
 		$config = new HashSearchConfig( [ '_wikiID' => $wikiId ], [ 'inherit' ] );
-		$cache = new \EmptyBagOStuff();
+		$wanCache = \WANObjectCache::newEmpty();
+		$srvCache = new \EmptyBagOStuff();
 		$resolver = MediaWikiServices::getInstance()
 			->getService( InterwikiResolverFactory::SERVICE )
-			->getResolver( $config, $client, $cache );
+			->getResolver( $config, $client, $wanCache, $srvCache );
 		$this->assertEquals( SiteMatrixInterwikiResolver::class, get_class( $resolver ) );
 		return $resolver;
 	}

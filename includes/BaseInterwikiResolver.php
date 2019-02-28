@@ -2,6 +2,7 @@
 
 namespace CirrusSearch;
 
+use WANObjectCache;
 use BagOStuff;
 use MediaWiki\Interwiki\InterwikiLookup;
 use MediaWiki\Logger\LoggerFactory;
@@ -39,14 +40,20 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	/**
 	 * @var BagOStuff
 	 */
-	private $cache;
+	private $srvCache;
 
 	/**
 	 * @param SearchConfig $config
 	 * @param \MultiHttpClient|null $client http client to fetch cirrus config
-	 * @param BagOStuff|null $cache Cache object for caching repeated requests
+	 * @param WANObjectCache|null $wanCache Cache object for caching repeated requests
+	 * @param BagOStuff|null $srvCache Local server cache object for caching repeated requests
 	 */
-	public function __construct( SearchConfig $config, MultiHttpClient $client = null, BagOStuff $cache = null ) {
+	public function __construct(
+		SearchConfig $config,
+		MultiHttpClient $client = null,
+		WANObjectCache $wanCache = null,
+		BagOStuff $srvCache = null
+	) {
 		$this->config = $config;
 		$this->useConfigDumpApi = $this->config->get( 'CirrusSearchFetchConfigFromApi' );
 		if ( $client === null ) {
@@ -55,12 +62,10 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				'reqTimeout' => $this->config->get( 'CirrusSearchInterwikiHTTPTimeout' )
 			] );
 		}
-		if ( $cache === null ) {
-			$cache = MediaWikiServices::getInstance()->getLocalServerObjectCache();
-		}
 		$this->httpClient = $client;
-		$this->interwikiLookup = MediaWikiServices::getInstance()->getInterwikiLookup();
-		$this->cache = $cache;
+		$services = MediaWikiServices::getInstance();
+		$this->interwikiLookup = $services->getInterwikiLookup();
+		$this->srvCache = $srvCache ?: $services->getLocalServerObjectCache();
 	}
 
 	/**
@@ -173,8 +178,8 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 			$prefixes = array_keys( $endpoints );
 			asort( $prefixes );
 			$cacheKey = implode( '-', $prefixes );
-			$configs = $this->cache->getWithSetCallback(
-				$this->cache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
+			$configs = $this->srvCache->getWithSetCallback(
+				$this->srvCache->makeKey( 'cirrussearch-load-iw-config', $cacheKey ),
 				self::CONFIG_CACHE_TTL,
 				function () use ( $endpoints ) {
 					return $this->sendConfigDumpRequest( $endpoints );

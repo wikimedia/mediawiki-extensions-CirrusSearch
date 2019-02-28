@@ -153,8 +153,12 @@ class FallbackRunnerTest extends CirrusTestCase {
 
 		MediaWikiServices::getInstance()->redefineService( InterwikiResolver::SERVICE,
 			function () use ( $config ) {
-				return new CirrusConfigInterwikiResolver( $config,
-					$this->createMock( \MultiHttpClient::class ), new \EmptyBagOStuff() );
+				return new CirrusConfigInterwikiResolver(
+					$config,
+					$this->createMock( \MultiHttpClient::class ),
+					\WANObjectCache::newEmpty(),
+					new \EmptyBagOStuff()
+				);
 			}
 		);
 		$query = SearchQueryBuilder::newFTSearchQueryBuilder( $config, 'foobars' )

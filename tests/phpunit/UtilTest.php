@@ -131,17 +131,17 @@ class UtilTest extends CirrusTestCase {
 
 	/**
 	 * Put data for a wiki into test cache.
-	 * @param \BagOStuff $cache
+	 * @param \WANObjectCache $cache
 	 * @param string $wiki
 	 */
-	private function putDataIntoCache( \BagOStuff $cache, $wiki ) {
+	private function putDataIntoCache( \WANObjectCache $cache, $wiki ) {
 		$key = $cache->makeGlobalKey( 'cirrussearch-boost-templates', $wiki );
 		$cache->set( $key, [ "Data for $wiki" => 2 ] );
 	}
 
 	/**
 	 * Create test local cache
-	 * @return \BagOStuff
+	 * @return \WANObjectCache
 	 */
 	private function makeLocalCache() {
 		$this->setMwGlobals( [
@@ -149,14 +149,12 @@ class UtilTest extends CirrusTestCase {
 			'wgObjectCaches' => [ 'UtilTest' => [ 'class' => \HashBagOStuff::class ] ]
 		] );
 		$services = MediaWikiServices::getInstance();
-		if ( method_exists( $services, 'getLocalClusterObjectCache' ) ) {
-			$services->resetServiceForTesting( 'LocalClusterObjectCache' );
-			$services->redefineService( 'LocalClusterObjectCache', function () {
-				return new \HashBagOStuff();
-			} );
-		}
+		$services->resetServiceForTesting( 'MainWANObjectCache' );
+		$services->redefineService( 'MainWANObjectCache', function () {
+			return new \WANObjectCache( [ 'cache' => new \HashBagOStuff() ] );
+		} );
 
-		return \ObjectCache::getLocalClusterInstance();
+		return $services->getMainWANObjectCache();
 	}
 
 	/**

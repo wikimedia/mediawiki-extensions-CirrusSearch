@@ -93,8 +93,6 @@ class SpecificAliasValidator extends IndexAliasValidator {
 			$this->outputIndented( "\tReindexing...\n" );
 			$this->reindexer->reindex( ...$this->reindexParams );
 			if ( $this->tooFewReplicas ) {
-				$this->reindexer->optimize();
-
 				foreach ( $this->reindexValidators as $validator ) {
 					$status = $validator->validate();
 					if ( !$status->isOK() ) {

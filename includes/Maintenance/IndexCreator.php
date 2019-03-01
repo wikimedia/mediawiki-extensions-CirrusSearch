@@ -114,10 +114,14 @@ class IndexCreator {
 				'auto_expand_replicas' => $replicaCount,
 				'analysis' => $this->analysisConfig,
 				'refresh_interval' => $refreshInterval . 's',
-				'merge.policy' => $mergeSettings,
 				'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 			] + $extraSettings
 		];
+
+		if ( $mergeSettings ) {
+			$args['settings']['merge.policy'] = $mergeSettings;
+		}
+
 		$similarity = $this->similarityConfig;
 		if ( $similarity ) {
 			$args['settings']['similarity'] = $similarity;

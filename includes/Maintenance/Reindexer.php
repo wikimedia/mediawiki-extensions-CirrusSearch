@@ -162,8 +162,6 @@ class Reindexer {
 		$maxShardsPerNode = $this->decideMaxShardsPerNodeForReindex();
 		$settings->set( [
 			'refresh_interval' => -1,
-			'merge.policy.segments_per_tier' => 40,
-			'merge.policy.max_merge_at_once' => 40,
 			'routing.allocation.total_shards_per_node' => $maxShardsPerNode,
 		] );
 
@@ -215,30 +213,11 @@ class Reindexer {
 		$this->output( "done\n" );
 
 		// Revert settings changed just for reindexing
-		$settings->set( [
-			'refresh_interval' => $refreshInterval . 's',
-			'merge.policy' => $this->mergeSettings,
-		] );
-	}
-
-	public function optimize() {
-		// Optimize the index so it'll be more compact for replication.  Not required
-		// but should be helpful.
-		$this->outputIndented( "\tOptimizing..." );
-		try {
-			// Reset the timeout just in case we lost it somewhere along the line
-			$this->setConnectionTimeout();
-			$this->index->forcemerge( [ 'max_num_segments' => 5 ] );
-			$this->output( "Done\n" );
-		} catch ( HttpException $e ) {
-			if ( $e->getMessage() === 'Operation timed out' ) {
-				$this->output( "Timed out...Continuing any way\n" );
-				// To continue without blowing up we need to reset the connection.
-				$this->destroyClients();
-			} else {
-				throw $e;
-			}
+		$newSettings = [ 'refresh_interval' => $refreshInterval . 's' ];
+		if ( $this->mergeSettings ) {
+			$newSettings['merge.policy'] = $this->mergeSettings;
 		}
+		$settings->set( $newSettings );
 	}
 
 	public function waitForShards() {

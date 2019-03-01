@@ -357,6 +357,7 @@ class HooksTest extends CirrusTestCase {
 	}
 
 	private function preferencesForCompletionProfiles( array $profiles ) {
+		\OutputPage::setupOOUI();
 		$this->setMwGlobals( [
 			'wgCirrusSearchUseCompletionSuggester' => true,
 		] );

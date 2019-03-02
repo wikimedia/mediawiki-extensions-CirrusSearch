@@ -54,7 +54,7 @@ class CheckIndexes extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
-		$this->mDescription = "Check that all Cirrus indexes report OK. This always operates on a single cluster.";
+		$this->mDescription = 'Check that all Cirrus indexes report OK. This always operates on a single cluster.';
 		$this->addOption( 'nagios', 'Output in nagios format' );
 	}
 
@@ -106,7 +106,7 @@ class CheckIndexes extends Maintenance {
 				$this->checkIndex( $indexName, 1 );
 			}
 		} else {
-			$this->err( "does not exist" );
+			$this->err( 'does not exist' );
 		}
 		$this->out();
 	}
@@ -119,7 +119,7 @@ class CheckIndexes extends Maintenance {
 		$metadata = $this->getIndexMetadata( $indexName );
 		$this->in( $indexName );
 		if ( $metadata === null ) {
-			$this->err( "does not exist" );
+			$this->err( 'does not exist' );
 			$this->out();
 			return;
 		}
@@ -183,8 +183,6 @@ class CheckIndexes extends Maintenance {
 	 * @param string $explanation
 	 */
 	private function err( $explanation ) {
-		$err = $this->path;
-		$err[] = $explanation;
 		$e = &$this->errors;
 		foreach ( $this->path as $element ) {
 			$e = &$e[ $element ];

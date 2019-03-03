@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vlad5250"
+		]
+	},
+	"apihelp-cirrus-config-dump-description": "Резервно хранилище на настройките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-summary": "Резервно хранилище на настройките на CirrusSearch.",
+	"apihelp-cirrus-config-dump-example": "Дай резервно хранилище на настройките на CirrusSearch.",
+	"apihelp-cirrus-mapping-dump-description": "Резервно хранилище на мапинг на CirrusSearch за това уики.",
+	"apihelp-cirrus-mapping-dump-summary": "Резервно хранилище на мапинг на CirrusSearch за това уики.",
+	"apihelp-cirrus-mapping-dump-example": "Дай резервно хранилище на мапинг на CirrusSearch за това уики.",
+	"apihelp-cirrus-settings-dump-description": "Резервно хранилище на настройките на CirrusSearch за това уики.",
+	"apihelp-cirrus-settings-dump-summary": "Резервно хранилище на настройките на CirrusSearch за това уики.",
+	"apihelp-cirrus-settings-dump-example": "Дай резервно хранилище на настройките на CirrusSearch за това уики.",
+	"apihelp-query+cirrusdoc-description": "Хранилище за статиен документ на CirrusSearch",
+	"apihelp-query+cirrusdoc-summary": "Резервно хранилище на статиен документ на CirrusSearch от сървърите на търсене",
+	"apihelp-query+cirrusdoc-example": "Дай резервно хранилище на отделна статия на CirrusSearch, текущо индексирани в търсенето.",
+	"apihelp-query+cirrusbuilddoc-summary": "Резервно хранилище на статиен документ на CirrusSearch от сървърите на база данни",
+	"apihelp-query+cirrusbuilddoc-example": "Дай резервно хранилище на отделна статия на CirrusSearch, създадено от базата данни.",
+	"apierror-cirrus-requesttoolong": "Търсеното с представка превишава разрешената дължина. ($1 &gt; $2)"
+}

@@ -258,7 +258,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		}
 		$apiResponse = CirrusTestCase::loadFixture( $fixtureFile );
 
-		$client = $this->getMockBuilder( '\MultiHttpClient' )
+		$client = $this->getMockBuilder( \MultiHttpClient::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$client->expects( $this->any() )
@@ -324,7 +324,7 @@ class InterwikiResolverTest extends CirrusTestCase {
 		}
 
 		$apiResponse = CirrusTestCase::loadFixture( $fixtureFile );
-		$client = $this->getMockBuilder( '\MultiHttpClient' )
+		$client = $this->getMockBuilder( \MultiHttpClient::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$client->expects( $this->any() )

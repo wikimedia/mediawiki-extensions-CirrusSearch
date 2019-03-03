@@ -49,5 +49,5 @@ class NukeAllIndexes extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Jenkins\NukeAllIndexes";
+$maintClass = NukeAllIndexes::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

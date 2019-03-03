@@ -74,5 +74,5 @@ class DeleteBrowserTestPages extends Maintenance {
 	}
 }
 
-$maintClass = "CirrusSearch\Jenkins\DeleteBrowserTestPages";
+$maintClass = DeleteBrowserTestPages::class;
 require_once RUN_MAINTENANCE_IF_MAIN;

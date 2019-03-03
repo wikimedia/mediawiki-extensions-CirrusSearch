@@ -41,7 +41,7 @@ class UserTestingTest extends CirrusTestCase {
 	// There is no way to run this test correctly...random values mean
 	// best we can do is measure distribution over a decent sample size
 	public function testSamplesFairlyWithDefaultCallback() {
-		$mockReq = $this->getMockBuilder( 'WebRequest' )
+		$mockReq = $this->getMockBuilder( \WebRequest::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$mockReq->expects( $this->any() )

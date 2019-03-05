@@ -89,7 +89,7 @@ class UtilTest extends CirrusTestCase {
 	 * @return MessageCache
 	 */
 	private function getMockCache() {
-		$mock = $this->getMockBuilder( 'MessageCache' )->disableOriginalConstructor()->getMock();
+		$mock = $this->getMockBuilder( \MessageCache::class )->disableOriginalConstructor()->getMock();
 		$mock->method( 'get' )->willReturnCallback( function ( $key, $useDB, Language $lang ) {
 			return "This is $key in {$lang->getCode()}|100%";
 		} );

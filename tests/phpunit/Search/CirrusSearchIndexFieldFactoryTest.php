@@ -3,6 +3,7 @@
 namespace CirrusSearch\Search;
 
 use CirrusSearch\CirrusTestCase;
+use CirrusSearch\SearchConfig;
 
 /**
  * @group CirrusSearch
@@ -41,7 +42,7 @@ class CirrusSearchIndexFieldFactoryTest extends CirrusTestCase {
 	}
 
 	private function getSearchConfig() {
-		return $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
+		return $this->getMockBuilder( SearchConfig::class )
 			->getMock();
 	}
 

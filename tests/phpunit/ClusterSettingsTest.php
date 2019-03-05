@@ -30,7 +30,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideShardCount
 	 */
 	public function testShardCount( $shardCounts, $cluster, $indexType, $expect ) {
-		$config = $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
+		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$config->expects( $this->any() )
@@ -71,7 +71,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideReplicaCounts
 	 */
 	public function testReplicaCount( $replicas, $cluster, $indexType, $expect ) {
-		$config = $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
+		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$config->expects( $this->any() )
@@ -100,7 +100,7 @@ class ClusterSettingsTest extends CirrusTestCase {
 	 * @dataProvider provideDropDelayedJobsAfter()
 	 */
 	public function testDropDelayedJobsAfter( $timeout, $cluster, $expect ) {
-		$config = $this->getMockBuilder( 'CirrusSearch\SearchConfig' )
+		$config = $this->getMockBuilder( SearchConfig::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$config->expects( $this->any() )

@@ -96,7 +96,7 @@ class CrossProjectBlockScorerTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	private function mockRS( $totalHits ) {
-		$rs = $this->getMockBuilder( 'CirrusSearch\Search\ResultSet' )
+		$rs = $this->getMockBuilder( ResultSet::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$rs->expects( $this->any() )

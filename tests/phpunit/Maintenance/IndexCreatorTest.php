@@ -5,6 +5,7 @@ namespace CirrusSearch\Tests\Maintenance;
 use CirrusSearch\Maintenance\IndexCreator;
 use CirrusSearch\CirrusTestCase;
 use Elastica\Response;
+use Elastica\Index;
 
 /**
  * This program is free software; you can redistribute it and/or modify
@@ -65,7 +66,7 @@ class IndexCreatorTest extends CirrusTestCase {
 	}
 
 	private function getIndex( $response ) {
-		$index = $this->getMockBuilder( 'Elastica\Index' )
+		$index = $this->getMockBuilder( Index::class )
 			->disableOriginalConstructor()
 			->getMock();
 

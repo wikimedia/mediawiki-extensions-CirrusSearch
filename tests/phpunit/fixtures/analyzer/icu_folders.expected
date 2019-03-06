@@ -42,6 +42,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "lowercase",
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "el_icu_folding",
@@ -56,6 +57,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "lowercase",
                 "icu_normalizer"
             ],
             "char_filter": [
@@ -63,15 +65,25 @@
             ]
         },
         "el_text": {
-            "type": "greek",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "icu_normalizer",
+                "greek_stop",
+                "greek_stemmer",
+                "greek_length"
             ]
         },
         "el_text_search": {
-            "type": "greek",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "icu_normalizer",
+                "greek_stop",
+                "greek_stemmer",
+                "greek_length"
             ]
         },
         "en_plain": {
@@ -544,8 +556,24 @@
             "type": "length",
             "min": 1
         },
+        "lowercase": {
+            "type": "lowercase",
+            "language": "greek"
+        },
         "el_icu_folding": {
             "type": "icu_folding"
+        },
+        "greek_stop": {
+            "type": "stop",
+            "stopwords": "_greek_"
+        },
+        "greek_stemmer": {
+            "type": "stemmer",
+            "language": "greek"
+        },
+        "greek_length": {
+            "type": "length",
+            "min": 1
         },
         "en_icu_folding": {
             "type": "icu_folding"

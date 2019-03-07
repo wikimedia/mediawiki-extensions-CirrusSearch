@@ -99,15 +99,13 @@ class Jenkins {
 	/**
 	 * If the page ends in '/<language code>' then set the page's language to that code.
 	 * @param Title $title
-	 * @param string|Language &$pageLang the page content language (either an object or a language code)
-	 * @param Language $wgLang the user language
-	 * @return bool
+	 * @param string|Language|StubUserLang &$pageLang the page content language
+	 * @param Language|StubUserLang $wgLang the user language
 	 */
 	public static function setLanguage( $title, &$pageLang, $wgLang ) {
 		$matches = [];
 		if ( preg_match( '/\/..$/', $title->getText(), $matches ) ) {
-			$pageLang = substr( $matches[0], 1 );
+			$pageLang = Language::factory( substr( $matches[0], 1 ) );
 		}
-		return true;
 	}
 }

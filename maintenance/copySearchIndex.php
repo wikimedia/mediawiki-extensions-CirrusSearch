@@ -70,13 +70,13 @@ class CopySearchIndex extends Maintenance {
 
 		$reindexChunkSize = $this->getOption( 'reindexChunkSize', 100 );
 		$targetCluster = $this->getOption( 'targetCluster' );
-		$slices = $this->getOption( 'reindexSlices', null );
+		$slices = $this->getOption( 'reindexSlices' );
 
 		$sourceConnection = $this->getConnection();
 		$targetConnection = $this->getConnection( $targetCluster );
 
 		if ( $sourceConnection->getClusterName() == $targetConnection->getClusterName() ) {
-			$this->fatalError( "Target cluster should be different from current cluster." );
+			$this->fatalError( 'Target cluster should be different from current cluster.' );
 		}
 		$clusterSettings = new ClusterSettings( $this->getSearchConfig(), $targetConnection->getClusterName() );
 
@@ -91,8 +91,7 @@ class CopySearchIndex extends Maintenance {
 			$sourceConnection,
 			$targetConnection,
 			// Target Index
-			$targetConnection
-				->getIndex( $this->indexBaseName, $this->indexType, $indexIdentifier )
+			$targetConnection->getIndex( $this->indexBaseName, $this->indexType, $indexIdentifier )
 				->getType( Connection::PAGE_TYPE_NAME ),
 			// Source Index
 			$this->getConnection()->getPageType( $this->indexBaseName, $this->indexType ),

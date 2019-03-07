@@ -72,7 +72,7 @@ class RunSearch extends Maintenance {
 
 		$callback = [ $this, 'consume' ];
 		$forks = $this->getOption( 'fork', false );
-		$forks = ctype_digit( $forks ) ? intval( $forks ) : 0;
+		$forks = ctype_digit( $forks ) ? (int)$forks : 0;
 		$controller = new OrderedStreamingForkController( $forks, $callback, STDIN, STDOUT );
 		$controller->start();
 
@@ -137,8 +137,8 @@ class RunSearch extends Maintenance {
 				$data += $this->processSuggestionSet( $value );
 			} else {
 				throw new \RuntimeException(
-					"Unknown result type: "
-					. is_object( $value ) ? get_class( $value ) : gettype( $value )
+					'Unknown result type: '
+					. ( is_object( $value ) ? get_class( $value ) : gettype( $value ) )
 				);
 			}
 		} else {
@@ -248,7 +248,7 @@ class RunSearch extends Maintenance {
 	protected function searchFor( $query ) {
 		$searchType = $this->getOption( 'type', 'full_text' );
 
-		if ( $searchType == 'archive' ) {
+		if ( $searchType === 'archive' ) {
 			// Archive has its own engine so go directly there
 			return $this->searchArchive( $query );
 		}

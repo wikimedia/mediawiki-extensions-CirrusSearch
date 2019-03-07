@@ -78,6 +78,79 @@
         "message": ""
     },
     {
+        "channel": "cirrussearch-request",
+        "context": {
+            "$schema": "/mediawiki/cirrussearch/request/0.0.1",
+            "all_elasticsearch_requests_cached": false,
+            "http": {
+                "client_ip": "127.0.0.1",
+                "has_cookies": false,
+                "method": "GET"
+            },
+            "elasticsearch_requests": [
+                {
+                    "cached": false,
+                    "hits": [
+                        {
+                            "index": "wiki_titlesuggest",
+                            "page_id": 14,
+                            "page_title": "Test2",
+                            "profile_name": "plain",
+                            "score": 4713
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "page_id": 17,
+                            "page_title": "Test2\/en",
+                            "profile_name": "plain",
+                            "score": 132
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "page_id": 19,
+                            "page_title": "Test2\/fr",
+                            "profile_name": "plain",
+                            "score": 131
+                        },
+                        {
+                            "index": "wiki_titlesuggest",
+                            "page_id": 20,
+                            "page_title": "Test\/Subpage 1",
+                            "profile_name": "plain",
+                            "score": 78
+                        },
+                        {
+                            "index": "wiki_general",
+                            "page_id": 34,
+                            "page_title": "Help:Test",
+                            "profile_name": "prefix",
+                            "score": 77
+                        }
+                    ],
+                    "hits_offset": 0,
+                    "hits_returned": 5,
+                    "hits_total": 9,
+                    "indices": [
+                        "wiki_titlesuggest",
+                        "wiki_general"
+                    ],
+                    "max_score": 4713,
+                    "namespaces": [
+                        0,
+                        12
+                    ],
+                    "query": "Te",
+                    "query_type": "comp_suggest",
+                    "search_time_ms": 0,
+                    "suggestion_requested": false
+                }
+            ],
+            "source": "cli"
+        },
+        "level": "debug",
+        "message": ""
+    },
+    {
         "channel": "CirrusSearchRequests",
         "context": {
             "elasticTookMs": 0,

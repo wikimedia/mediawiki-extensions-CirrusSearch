@@ -122,7 +122,16 @@ class LanguageDetectTest extends CirrusTestCase {
 	public function setUp() {
 		parent::setUp();
 		$tc = new \ReflectionClass( 'TextCat' );
-		$this->textCatModelBaseDir = dirname( $tc->getFileName() );
+		$classDir = dirname( $tc->getFileName() );
+		if ( file_exists( "$classDir/LM" ) ) {
+			// pre src move
+			$this->textCatModelBaseDir = $classDir;
+		} elseif ( file_exists( "$classDir/../LM" ) ) {
+			// post moving TextCat class to src/
+			$this->textCatModelBaseDir = $classDir . "/..";
+		} else {
+			throw new \RuntimeException( "Can not locate language model directory" );
+		}
 	}
 
 	/**

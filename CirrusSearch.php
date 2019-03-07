@@ -1131,7 +1131,7 @@ $wgCirrusSearchTextcatModel = [];
  * Configuration for specifying TextCat parameters.
  * Keys are maxNgrams, maxReturnedLanguages, resultsRatio,
  * minInputLength, maxProportion, langBoostScore, and numBoostedLangs.
- * See vendor/wikimedia/textcat/TextCat.php
+ * See vendor/wikimedia/textcat/src/TextCat.php
  */
 
 $wgCirrusSearchTextcatConfig = [];

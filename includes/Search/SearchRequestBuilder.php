@@ -4,7 +4,6 @@ namespace CirrusSearch\Search;
 
 use CirrusSearch\Connection;
 use Elastica\Query;
-use Elastica\Search;
 use Elastica\Type;
 use MediaWiki\Logger\LoggerFactory;
 
@@ -47,7 +46,7 @@ class SearchRequestBuilder {
 
 	/**
 	 * Build the search request
-	 * @return Search
+	 * @return \Elastica\Search
 	 */
 	public function build() {
 		$resultsType = $this->searchContext->getResultsType();
@@ -64,13 +63,14 @@ class SearchRequestBuilder {
 			) );
 		}
 
-		$query->setQuery( $this->searchContext->getQuery() );
+		$mainQuery = $this->searchContext->getQuery();
+		$query->setQuery( $mainQuery );
 
 		foreach ( $this->searchContext->getAggregations() as $agg ) {
 			$query->addAggregation( $agg );
 		}
 
-		$highlight = $this->searchContext->getHighlight( $resultsType );
+		$highlight = $this->searchContext->getHighlight( $resultsType, $mainQuery );
 		if ( $highlight ) {
 			$query->setHighlight( $highlight );
 		}

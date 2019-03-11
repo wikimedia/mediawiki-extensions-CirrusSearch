@@ -116,6 +116,6 @@ class ReindexStatus {
 	 *  sliced. Empty if this request wasn't sliced into sub-requests.
 	 */
 	public function getSlices() {
-		return isset( $this->status['slices'] ) ? $this->status['slices'] : [];
+		return $this->status['slices'] ?? [];
 	}
 }

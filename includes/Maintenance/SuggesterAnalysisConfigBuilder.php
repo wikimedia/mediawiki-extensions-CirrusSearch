@@ -316,7 +316,7 @@ class SuggesterAnalysisConfigBuilder extends AnalysisConfigBuilder {
 	 * @return string
 	 */
 	private function getDefaultStopSet( $lang ) {
-		return isset( self::$stopwords[$lang] ) ? self::$stopwords[$lang] : '_none_';
+		return self::$stopwords[$lang] ?? '_none_';
 	}
 
 	/**

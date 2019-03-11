@@ -44,8 +44,7 @@ class MaxShardsPerNodeValidator extends Validator {
 		$settings = $this->index->getSettings()->get();
 		// Elasticsearch uses negative numbers or an unset value to represent unlimited.  We use the word 'unlimited'
 		// because that is easier to read.
-		$actualMaxShardsPerNode = isset( $settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] ) ?
-			$settings[ 'routing' ][ 'allocation' ][ 'total_shards_per_node' ] : 'unlimited';
+		$actualMaxShardsPerNode = $settings['routing']['allocation']['total_shards_per_node'] ?? 'unlimited';
 		$actualMaxShardsPerNode = $actualMaxShardsPerNode < 0 ? 'unlimited' : $actualMaxShardsPerNode;
 		$expectedMaxShardsPerNode = $this->maxShardsPerNode;
 		if ( $actualMaxShardsPerNode == $expectedMaxShardsPerNode ) {

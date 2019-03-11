@@ -184,15 +184,15 @@ class FullTextSimpleMatchQueryBuilder extends FullTextQueryStringQueryBuilder {
 			$in_dismax = null;
 
 			if ( is_array( $settings ) ) {
-				$boost = isset( $settings['boost'] ) ? $settings['boost'] : $boost;
-				$queryType = isset( $settings['query_type'] ) ? $settings['query_type'] : $queryType;
-				$minShouldMatch = isset( $settings['min_should_match'] ) ? $settings['min_should_match'] : $minShouldMatch;
+				$boost = $settings['boost'] ?? $boost;
+				$queryType = $settings['query_type'] ?? $queryType;
+				$minShouldMatch = $settings['min_should_match'] ?? $minShouldMatch;
 				if ( isset( $settings['is_plain'] ) && $settings['is_plain'] ) {
 					$fields = [ $f ];
 				} else {
 					$fields = [ "$f.plain^1", "$f^$stemWeight" ];
 				}
-				$in_dismax = isset( $settings['in_dismax'] ) ? $settings['in_dismax'] : null;
+				$in_dismax = $settings['in_dismax'] ?? null;
 			} else {
 				$boost = $settings;
 			}

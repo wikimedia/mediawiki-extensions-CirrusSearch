@@ -240,7 +240,7 @@ class RequestLogger {
 				$bogusResult = $titleString;
 			}
 
-			$resultHits[] = isset( $allHitsByTitle[$titleString] ) ? $allHitsByTitle[$titleString] : [
+			$resultHits[] = $allHitsByTitle[$titleString] ?? [
 				'title' => $titleString,
 				'index' => "",
 				'pageId' => -1,

@@ -87,7 +87,7 @@ class SearchRequestLog extends BaseRequestLog {
 		}
 		$data = $this->response->getData();
 
-		return isset( $data['took'] ) ? $data['took'] : -1;
+		return $data['took'] ?? -1;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class SearchRequestLog extends BaseRequestLog {
 		}
 
 		$vars = [
-			'hitsOffset' => isset( $query['from'] ) ? $query['from'] : 0,
+			'hitsOffset' => $query['from'] ?? 0,
 		];
 		// @todo detecting this seems like a hack, would be better to explicitly pass in
 		if ( isset( $query['query']['filtered']['filter']['terms']['namespace'] ) ) {
@@ -209,9 +209,9 @@ class SearchRequestLog extends BaseRequestLog {
 				$title = Title::makeTitle( $hit['_source']['namespace'], $hit['_source']['title'] );
 				$hits[] = [
 					'title' => (string)$title,
-					'index' => isset( $hit['_index'] ) ? $hit['_index'] : "",
-					'pageId' => isset( $hit['_id'] ) ? $hit['_id'] : -1,
-					'score' => isset( $hit['_score'] ) ? $hit['_score'] : -1.0,
+					'index' => $hit['_index'] ?? "",
+					'pageId' => $hit['_id'] ?? -1,
+					'score' => $hit['_score'] ?? -1.0,
 				];
 			}
 		}

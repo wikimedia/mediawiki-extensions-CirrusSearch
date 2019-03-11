@@ -35,7 +35,7 @@ class ReplicaRangeValidator extends Validator {
 	public function validate() {
 		$this->outputIndented( "\tValidating replica range..." );
 		$settings = $this->index->getSettings()->get();
-		$actualReplicaCount = isset( $settings['auto_expand_replicas'] ) ? $settings['auto_expand_replicas'] : 'false';
+		$actualReplicaCount = $settings['auto_expand_replicas'] ?? 'false';
 		if ( $actualReplicaCount == $this->replicaCount ) {
 			$this->output( "ok\n" );
 		} else {

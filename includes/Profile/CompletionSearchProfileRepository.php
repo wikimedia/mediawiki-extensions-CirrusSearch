@@ -62,7 +62,6 @@ class CompletionSearchProfileRepository implements SearchProfileRepository {
 			$allowedFields = [ 'suggest' => true, 'suggest-stop' => true ];
 			// Check that we can use the subphrases FST
 			if ( $config->getElement( 'CirrusSearchCompletionSuggesterSubphrases', 'use' ) ) {
-				/* @phan-suppress-next-line PhanTypeInvalidDimOffset phan misunderstands array type */
 				$allowedFields['suggest-subphrases'] = true;
 			}
 			$originalProfiles = call_user_func( $arrayLoader );

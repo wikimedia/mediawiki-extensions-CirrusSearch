@@ -582,7 +582,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				$cache = ObjectCache::getMainWANInstance();
 				$keyParts = [];
 				foreach ( $searches as $key => $search ) {
-					$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;
+					$resultsType = $resultsTypes[$key] ?? $contextResultsType;
 					$keyParts[] = $search->getPath() .
 						serialize( $search->getOptions() ) .
 						serialize( $search->getQuery()->toArray() ) .
@@ -655,7 +655,7 @@ class Searcher extends ElasticsearchIntermediary implements SearcherFactory {
 				// @todo error handling
 				$retval[$key] = null;
 			} else {
-				$resultsType = isset( $resultsTypes[$key] ) ? $resultsTypes[$key] : $contextResultsType;
+				$resultsType = $resultsTypes[$key] ?? $contextResultsType;
 				$retval[$key] = $resultsType->transformElasticsearchResult(
 					$this->searchContext,
 					$resultSet

@@ -303,9 +303,7 @@ EOD
 			$this->getDB( DB_REPLICA )
 				->select( 'page', [ 'MIN(page_id) as min_id', 'MAX(page_id) as max_id' ] );
 		$row = $res->next();
-		/** @phan-suppress-next-line PhanUndeclaredProperty */
 		$this->minId = $row->min_id;
-		/** @phan-suppress-next-line PhanUndeclaredProperty */
 		$this->maxId = $row->max_id;
 		$profiles =
 			$this->getSearchConfig()
@@ -344,7 +342,6 @@ EOD
 			$this->checkJobClusterMismatch( $current );
 			if ( $latest == null ) {
 				$latest = $current;
-			/** @phan-suppress-next-line PhanNonClassMethodCall $current cannot be null */
 			} elseif ( $current->get( 'sanitize_job_updated' ) > $latest->get( 'sanitize_job_updated' ) ) {
 				$latest = $current;
 			}

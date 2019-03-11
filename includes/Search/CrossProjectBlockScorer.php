@@ -51,7 +51,7 @@ class CrossProjectBlockScorerFactory {
 	public static function load( SearchConfig $searchConfig ) {
 		$profile = $searchConfig->getProfileService()
 			->loadProfile( SearchProfileService::CROSS_PROJECT_BLOCK_SCORER );
-		return static::loadScorer( $profile['type'], isset( $profile['settings'] ) ? $profile['settings'] : [] );
+		return static::loadScorer( $profile['type'], $profile['settings'] ?? [] );
 	}
 
 	public static function loadScorer( $type, array $config ) {
@@ -141,8 +141,8 @@ class CompositeCrossProjectBlockScorer extends CrossProjectBlockScorer {
 	public function __construct( array $settings ) {
 		parent::__construct( $settings );
 		foreach ( $settings as $type => $subSettings ) {
-			$weight = isset( $subSettings['weight'] ) ? $subSettings['weight'] : 1;
-			$scorerSettings = isset( $subSettings['settings'] ) ? $subSettings['settings'] : [];
+			$weight = $subSettings['weight'] ?? 1;
+			$scorerSettings = $subSettings['settings'] ?? [];
 			$scorer = CrossProjectBlockScorerFactory::loadScorer( $type, $scorerSettings );
 			$this->scorers[] = [
 				'weight' => $weight,

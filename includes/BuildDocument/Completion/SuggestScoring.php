@@ -74,7 +74,7 @@ class IncomingLinksScoringMethod implements SuggestScoringMethod {
 	 * @inheritDoc
 	 */
 	public function score( array $doc ) {
-		return isset( $doc['incoming_links'] ) ? $doc['incoming_links'] : 0;
+		return $doc['incoming_links'] ?? 0;
 	}
 
 	/**
@@ -158,10 +158,10 @@ class QualityScore implements SuggestScoringMethod {
 	}
 
 	protected function intermediateScore( array $doc ) {
-		$incLinks = $this->scoreNormL2( isset( $doc['incoming_links'] )
-			? $doc['incoming_links'] : 0, $this->incomingLinksNorm );
-		$pageSize = $this->scoreNormL2( isset( $doc['text_bytes'] )
-			? $doc['text_bytes'] : 0, self::PAGE_SIZE_NORM );
+		$incLinks = $this->scoreNormL2( $doc['incoming_links'] ?? 0,
+			$this->incomingLinksNorm );
+		$pageSize = $this->scoreNormL2( $doc['text_bytes'] ?? 0,
+			self::PAGE_SIZE_NORM );
 		$extLinks = $this->scoreNorm( isset( $doc['external_link'] )
 			? count( $doc['external_link'] ) : 0, self::EXTERNAL_LINKS_NORM );
 		$headings = $this->scoreNorm( isset( $doc['heading'] )
@@ -306,7 +306,7 @@ class PQScore extends QualityScore {
 	 */
 	public function score( array $doc ) {
 		$score = $this->intermediateScore( $doc ) * self::QSCORE_WEIGHT;
-		$pop = isset( $doc['popularity_score'] ) ? $doc['popularity_score'] : 0;
+		$pop = $doc['popularity_score'] ?? 0;
 		if ( $pop > self::POPULARITY_MAX ) {
 			$pop = 1;
 		} else {

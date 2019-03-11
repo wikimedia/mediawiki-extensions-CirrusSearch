@@ -176,7 +176,8 @@
             "output_unigrams": true
         },
         "lowercase": {
-            "type": "lowercase"
+            "type": "lowercase",
+            "language": "irish"
         },
         "aggressive_splitting": {
             "type": "word_delimiter",

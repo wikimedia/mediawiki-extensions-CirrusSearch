@@ -1,15 +1,23 @@
 {
     "analyzer": {
         "text": {
-            "type": "greek",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "greek_stop",
+                "greek_stemmer",
+                "greek_length"
             ]
         },
         "text_search": {
-            "type": "greek",
-            "char_filter": [
-                "word_break_helper"
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+                "lowercase",
+                "greek_stop",
+                "greek_stemmer",
+                "greek_length"
             ]
         },
         "plain": {
@@ -199,6 +207,18 @@
         "truncate_keyword": {
             "type": "truncate",
             "length": 5000
+        },
+        "greek_stop": {
+            "type": "stop",
+            "stopwords": "_greek_"
+        },
+        "greek_stemmer": {
+            "type": "stemmer",
+            "language": "greek"
+        },
+        "greek_length": {
+            "type": "length",
+            "min": 1
         },
         "dedup_asciifolding": {
             "type": "unique",

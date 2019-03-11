@@ -817,6 +817,39 @@ STEMMER_RULES
 			break;
 		case 'greek':
 			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'greek';
+
+			// Unpack Greek analysis so we can add empty-token filter
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T203117
+			$config[ 'filter' ][ 'greek_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => '_greek_',
+			];
+
+			$config[ 'filter' ][ 'greek_stemmer' ] = [
+				'type' => 'stemmer',
+				'language' => 'greek',
+			];
+
+			// Greek-specific remove empty tokens
+			$config[ 'filter' ][ 'greek_length' ] = [
+				'type' => 'length',
+				'min' => 1,
+			];
+
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'filter' => [
+					'lowercase',
+					'greek_stop',
+					'greek_stemmer',
+					'greek_length',
+				],
+			];
+
+			// Text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+
 			break;
 		case 'hebrew':
 			$config[ 'analyzer' ][ 'text' ] = [
@@ -825,6 +858,43 @@ STEMMER_RULES
 				'filter' => [ 'niqqud', 'hebrew_lemmatizer', 'lowercase', 'asciifolding' ],
 			];
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
+		case 'indonesian':
+		case 'malay':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
+			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = [
+				'type' => 'mapping',
+				'mappings' => [
+					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
+				],
+			];
+
+			$config[ 'filter' ][ 'indonesian_stop' ] = [
+				'type' => 'stop',
+				'stopwords' => '_indonesian_',
+			];
+			$config[ 'filter' ][ 'indonesian_stemmer' ] = [
+				'type' => 'stemmer',
+				'language' => 'indonesian',
+			];
+
+			$config[ 'analyzer' ][ 'text' ] = [
+				'type' => 'custom',
+				'tokenizer' => 'standard',
+				'char_filter' => [ 'indonesian_charfilter' ],
+				'filter' => [
+					'lowercase',
+					'indonesian_stop',
+					'indonesian_stemmer',
+				],
+			];
+
+			// In Indonesian/Malay text_search is just a copy of text
+			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
+			break;
+		case 'irish':
+			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
+			$config[ 'filter' ][ 'lowercase' ][ 'language' ] = 'irish';
 			break;
 		case 'italian':
 			$config[ 'filter' ][ 'italian_elision' ] = [
@@ -864,39 +934,6 @@ STEMMER_RULES
 			$config[ 'analyzer' ][ 'lowercase_keyword' ][ 'filter' ][] = 'asciifolding_preserve';
 
 			// In Italian text_search is just a copy of text
-			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
-			break;
-		case 'indonesian':
-		case 'malay':
-			// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T196780
-			$config[ 'char_filter' ][ 'indonesian_charfilter' ] = [
-				'type' => 'mapping',
-				'mappings' => [
-					'\u0130=>I',	// dotted I (fix regression caused by unpacking)
-				],
-			];
-
-			$config[ 'filter' ][ 'indonesian_stop' ] = [
-				'type' => 'stop',
-				'stopwords' => '_indonesian_',
-			];
-			$config[ 'filter' ][ 'indonesian_stemmer' ] = [
-				'type' => 'stemmer',
-				'language' => 'indonesian',
-			];
-
-			$config[ 'analyzer' ][ 'text' ] = [
-				'type' => 'custom',
-				'tokenizer' => 'standard',
-				'char_filter' => [ 'indonesian_charfilter' ],
-				'filter' => [
-					'lowercase',
-					'indonesian_stop',
-					'indonesian_stemmer',
-				],
-			];
-
-			// In Indonesian/Malay text_search is just a copy of text
 			$config[ 'analyzer' ][ 'text_search' ] = $config[ 'analyzer' ][ 'text' ];
 			break;
 		case 'japanese':
@@ -1186,12 +1223,25 @@ STEMMER_RULES
 				if ( !isset( $analyzer[ 'filter'  ] ) ) {
 					continue;
 				}
-				$analyzer[ 'filter' ] = array_map( function ( $filter ) {
+
+				$tmpFilters = [];
+				foreach ( $analyzer[ 'filter' ] as $filter ) {
 					if ( $filter === 'lowercase' ) {
-						return 'icu_normalizer';
+						// If lowercase filter has language-specific processing, keep it,
+						// and do it before ICU normalization, particularly for Greek,
+						// Irish, and Turkish
+						// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T203117
+						// See https://www.mediawiki.org/wiki/User:TJones_(WMF)/T217602
+						if ( isset( $config[ 'filter' ][ 'lowercase' ][ 'language' ] ) ) {
+							$tmpFilters[] = 'lowercase';
+						}
+						$tmpFilters[] = 'icu_normalizer';
+					} else {
+						$tmpFilters[] = $filter;
 					}
-					return $filter;
-				}, $analyzer[ 'filter' ] );
+				}
+				$analyzer[ 'filter' ] = $tmpFilters;
+
 			}
 		}
 

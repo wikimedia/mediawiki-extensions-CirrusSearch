@@ -28,6 +28,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "lowercase",
                 "icu_normalizer",
                 "preserve_original_recorder",
                 "el_icu_folding",
@@ -42,6 +43,7 @@
             "type": "custom",
             "tokenizer": "standard",
             "filter": [
+                "lowercase",
                 "icu_normalizer"
             ],
             "char_filter": [
@@ -301,6 +303,10 @@
         "remove_empty": {
             "type": "length",
             "min": 1
+        },
+        "lowercase": {
+            "type": "lowercase",
+            "language": "greek"
         },
         "el_icu_folding": {
             "type": "icu_folding"

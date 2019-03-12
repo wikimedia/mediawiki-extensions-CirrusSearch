@@ -15,6 +15,7 @@ INPUT                  = README ./
 EXCLUDE_PATTERNS       = */vendor/*
 EXCLUDE_PATTERNS      += */docs/*
 EXCLUDE_PATTERNS      += */node_modules/*
+EXCLUDE_PATTERNS      += */tests/*
 FILE_PATTERNS          = *.php
 RECURSIVE              = YES
 # Requires doxygen 1.8.3+

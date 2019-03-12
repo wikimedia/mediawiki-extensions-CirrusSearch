@@ -50,7 +50,7 @@ class NaiveSubphrasesSuggestionsBuilder implements ExtraSuggestionsBuilder {
 	}
 
 	public static function create( array $config ) {
-		$limit = isset( $config['limit'] ) ? $config['limit'] : self::MAX_SUBPHRASES;
+		$limit = $config['limit'] ?? self::MAX_SUBPHRASES;
 		if ( !isset( self::$RANGES_BY_TYPE[$config['type']] ) ) {
 			throw new \Exception( "Unsupported NaiveSubphrasesSuggestionsBuilder type " .
 				$config['type'] );

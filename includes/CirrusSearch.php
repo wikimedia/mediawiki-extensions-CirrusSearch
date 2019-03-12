@@ -461,7 +461,7 @@ class CirrusSearch extends SearchEngine {
 			// here.
 			$profiles[] = [
 				'name' => $name,
-				'desc-message' => isset( $profile['i18n_msg'] ) ? $profile['i18n_msg'] : null,
+				'desc-message' => $profile['i18n_msg'] ?? null,
 			];
 		}
 		if ( $profiles !== [] ) {

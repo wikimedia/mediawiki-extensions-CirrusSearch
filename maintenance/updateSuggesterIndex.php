@@ -265,7 +265,6 @@ class UpdateSuggesterIndex extends Maintenance {
 		} catch ( \Elastica\Exception\ExceptionInterface $e ) {
 			$type = get_class( $e );
 			$message = ElasticaErrorHandler::extractMessage( $e );
-			/** @phan-suppress-next-line PhanUndeclaredMethod ExceptionInterface has no methods */
 			$trace = $e->getTraceAsString();
 			$this->log( "\nUnexpected Elasticsearch failure.\n" );
 			$this->fatalError( "Elasticsearch failed in an unexpected way.  " .

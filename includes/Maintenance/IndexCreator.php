@@ -73,9 +73,7 @@ class IndexCreator {
 		try {
 			$response = $this->index->create( $args, $rebuild );
 
-			/** @phan-suppress-next-line PhanNonClassMethodCall library is mis-annotated */
 			if ( $response->hasError() === true ) {
-				/** @phan-suppress-next-line PhanNonClassMethodCall library is mis-annotated */
 				return Status::newFatal( $response->getError() );
 			}
 		} catch ( \Elastica\Exception\InvalidException $ex ) {

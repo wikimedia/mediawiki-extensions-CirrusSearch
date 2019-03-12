@@ -102,6 +102,7 @@ class ParsedQuery {
 	 * @param array|string $requiredNamespaces
 	 * @param ParseWarning[] $parseWarnings list of warnings detected during parsing
 	 * @param ParsedQueryClassifiersRepository $repository
+	 * @suppress PhanParamReqAfterOpt $namespaceHeader is not optional but nullable
 	 */
 	public function __construct(
 		ParsedNode $root,

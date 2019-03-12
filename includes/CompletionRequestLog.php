@@ -93,14 +93,14 @@ class CompletionRequestLog extends BaseRequestLog {
 		// using it directly. The use case is small enough for this class we can
 		// be more explicit about returned variables.
 		return [
-			'query' => isset( $this->extra['query'] ) ? $this->extra['query'] : '',
+			'query' => $this->extra['query'] ?? '',
 			'queryType' => $this->getQueryType(),
 			'index' => implode( ',', $this->indices ),
 			'elasticTookMs' => $this->getElasticTookMs(),
 			'hitsTotal' => $this->hitsTotal,
-			'maxScore' => $this->maxScore !== null ? $this->maxScore : 0.0,
+			'maxScore' => $this->maxScore ?? 0.0,
 			'hitsReturned' => count( $this->hits ),
-			'hitsOffset' => isset( $this->extra['offset'] ) ? $this->extra['offset'] : 0,
+			'hitsOffset' => $this->extra['offset'] ?? 0,
 			'tookMs' => $this->getTookMs(),
 		];
 	}

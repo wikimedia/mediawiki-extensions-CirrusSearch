@@ -197,7 +197,7 @@ class ResultSet extends SearchResultSet {
 	 * @return SearchResultSet[]
 	 */
 	public function getInterwikiResults( $type = SearchResultSet::SECONDARY_RESULTS ) {
-		return isset( $this->interwikiResults[$type] ) ? $this->interwikiResults[$type] : [];
+		return $this->interwikiResults[$type] ?? [];
 	}
 
 	/**

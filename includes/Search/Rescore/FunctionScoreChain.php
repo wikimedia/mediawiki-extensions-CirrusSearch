@@ -121,7 +121,7 @@ class FunctionScoreChain {
 	 * @throws InvalidRescoreProfileException
 	 */
 	private function getImplementation( $func ) {
-		$weight = isset( $func['weight'] ) ? $func['weight'] : 1;
+		$weight = $func['weight'] ?? 1;
 		$config = $this->context->getConfig();
 		switch ( $func['type'] ) {
 			case 'boostlinks':

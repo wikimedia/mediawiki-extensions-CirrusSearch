@@ -73,7 +73,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	public function getSisterProjectPrefixes() {
 		$matrix = $this->getMatrix();
-		return isset( $matrix['sister_projects'] ) ? $matrix['sister_projects'] : [];
+		return $matrix['sister_projects'] ?? [];
 	}
 
 	/**
@@ -90,7 +90,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 	 */
 	public function getInterwikiPrefix( $wikiId ) {
 		$matrix = $this->getMatrix();
-		return isset( $matrix['prefixes_by_wiki'][$wikiId] ) ? $matrix['prefixes_by_wiki'][$wikiId] : null;
+		return $matrix['prefixes_by_wiki'][$wikiId] ?? null;
 	}
 
 	/**
@@ -101,7 +101,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 		$matrix = $this->getMatrix();
 		// Most of the time the language is equal to the interwiki prefix.
 		// But it's not always the case, use the language_map to identify the interwiki prefix first.
-		$lang = isset( $matrix['language_map'][$lang] ) ? $matrix['language_map'][$lang] : $lang;
+		$lang = $matrix['language_map'][$lang] ?? $lang;
 		return isset( $matrix['cross_language'][$lang] ) ? [ $matrix['cross_language'][$lang], $lang ] : [];
 	}
 
@@ -166,7 +166,7 @@ abstract class BaseInterwikiResolver implements InterwikiResolver {
 				if ( !isset( $parts['host'] ) ) {
 					continue;
 				}
-				$api = isset( $parts['scheme'] ) ? $parts['scheme'] : 'http';
+				$api = $parts['scheme'] ?? 'http';
 				$api .= '://' . $parts['host'];
 				$api .= isset( $parts['port'] ) ? ':' . $parts['port'] : '';
 				$api .= '/w/api.php';

@@ -103,7 +103,6 @@ class UserTesting {
 	 * @param string|null $trigger Value to manually trigger a test.
 	 */
 	public function __construct( array $config, $callback = null, $trigger = '' ) {
-		/** @phan-suppress-next-line PhanTypeComparisonFromArray phan is just wrong here */
 		if ( $callback === null ) {
 			$callback = [ __CLASS__, 'oneIn' ];
 		}
@@ -139,7 +138,7 @@ class UserTesting {
 	 *  be the empty string.
 	 */
 	public function getBucket( $testName ) {
-		return isset( $this->tests[$testName] ) ? $this->tests[$testName] : '';
+		return $this->tests[$testName] ?? '';
 	}
 
 	/**

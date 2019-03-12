@@ -76,8 +76,7 @@ class ShardAllocationValidator extends Validator {
 	 */
 	private function fetchActualAllocation() {
 		$settings = $this->index->getSettings()->get();
-		return isset( $settings['routing']['allocation'] ) ?
-			$settings['routing']['allocation'] : [];
+		return $settings['routing']['allocation'] ?? [];
 	}
 
 	/**

@@ -391,4 +391,40 @@ class SearchProfileService {
 			throw new SearchProfileException( self::class . " is frozen, you cannot register new repositories/overriders." );
 		}
 	}
+
+	/**
+	 * List profile types
+	 * @return string[]
+	 */
+	public function listProfileTypes() {
+		return array_keys( $this->repositories );
+	}
+
+	/**
+	 * List default profile per context
+	 * @param string $type
+	 * @return string[] context is the key, the default profile name
+	 */
+	public function listProfileContexts( $type ) {
+		return $this->defaultProfiles[$type] ?? [];
+	}
+
+	/**
+	 * List profile repositories
+	 * @param string $type
+	 * @return SearchProfileRepository[]
+	 */
+	public function listProfileRepositories( $type ) {
+		return $this->repositories[$type] ?? [];
+	}
+
+	/**
+	 * L
+	 * @param string $type
+	 * @param string $context
+	 * @return SearchProfileOverride[]
+	 */
+	public function listProfileOverrides( $type, $context ) {
+		return $this->overriders[$type][$context] ?? [];
+	}
 }

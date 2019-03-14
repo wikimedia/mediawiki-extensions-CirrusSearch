@@ -40,4 +40,15 @@ class StaticProfileOverride implements SearchProfileOverride {
 	public function priority() {
 		return $this->priority;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function explain(): array {
+		return [
+			'type' => 'static',
+			'priority' => $this->priority(),
+			'value' => $this->name,
+		];
+	}
 }

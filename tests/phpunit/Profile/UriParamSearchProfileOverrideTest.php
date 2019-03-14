@@ -15,6 +15,14 @@ class UriParamSearchProfileOverrideTest extends CirrusTestCase {
 		$override = new UriParamSearchProfileOverride( $request, 'paramOverride' );
 		$this->assertEquals( SearchProfileOverride::URI_PARAM_PRIO, $override->priority() );
 		$this->assertEquals( 'overridden', $override->getOverriddenName( [] ) );
+		$this->assertEquals(
+			[
+				'type' => 'uriParam',
+				'priority' => StaticProfileOverride::URI_PARAM_PRIO,
+				'uriParam' => 'paramOverride'
+			],
+			$override->explain()
+		);
 	}
 
 	public function testWithoutUriParam() {

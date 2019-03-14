@@ -39,4 +39,11 @@ interface SearchProfileOverride {
 	 * @return int
 	 */
 	public function priority();
+
+	/**
+	 * Returns some explanation of the features stored in this overrider.
+	 * @return array the explanation (must only contains primitives types arrays/numbers/strings
+	 * so that it's easily serializable)
+	 */
+	public function explain(): array;
 }
